@@ -474,8 +474,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					} else if (missingValues=="excludeListwise") {
 						# Check data
 						#
-					    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
-					                         all.target = c(variableName, variable2Name), observations.amount = '< 2')
+					    errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+					                         type = c('observations','variance', 'infinity', 'observationsPairwise'),
+					                         all.target = c(variableName, variable2Name), observations.amount = '< 2',
+					                         observationsPairwise.amount = 2)
 
 					    if (!identical(errors, FALSE)) {
 					        # Note: Data: NOT ok,
@@ -547,8 +549,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						if (perform == "run") {
 							# Note: Data screening
 							#
-						    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
-						                         all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+						                         type = c('observations','variance', 'infinity', 'observationsPairwise'),
+						                         all.target = c(variableName, variable2Name), observations.amount = '< 2',
+						                         observationsPairwise.amount = 2)
 
 						    #
 						    # if (missingValues=="excludePairwise"){

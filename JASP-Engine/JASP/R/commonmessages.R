@@ -35,6 +35,8 @@
   "Variance = {{variance.equalTo}} in {{variables}}"  
   m$error$observations <- 
   "Number of observations {{observations.amount}} in {{variables}}"  
+  m$error$observationsPairwise <- 
+  "Number of pairwise observations <{{observationsPairwise.amount}} in {{variables}}"  
   m$error$levene <- 
   "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
   m$error$limits <-
