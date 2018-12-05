@@ -72,7 +72,7 @@ public:
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
 	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
 	bool				loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
-	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName + "/"; }
+	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName; }
 	Json::Value			requiredPackages()	const { return _requiredPackages; }
 
 	std::string			generatedPackageName()					const { return _name + "Pkg"; }

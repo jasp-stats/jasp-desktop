@@ -97,7 +97,7 @@ QString AnalysisQMLForm::_getAnalysisQMLPath()
 					_QMLwatcher.addPath(testAnalyseQMLName);
 					connect(&_QMLwatcher, &QFileSystemWatcher::fileChanged, this, &AnalysisQMLForm::QMLFileModifiedHandler);
 				}
-				path = QString("file:") + testAnalyseQMLName;
+				path = "file:" + testAnalyseQMLName;
 				
 				QString testRAnalyseRName = Settings::value(Settings::TEST_ANALYSIS_R).toString();
 				if (!testRAnalyseRName.isEmpty())

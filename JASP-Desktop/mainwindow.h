@@ -141,6 +141,9 @@ private slots:
 	void showForm(Analysis *analysis);
 	void showQMLWindow(QString urlQml);
 
+	void showBackstage();
+	void showMainPage();
+
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
