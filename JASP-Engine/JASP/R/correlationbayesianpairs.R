@@ -486,8 +486,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				    errorMessage <- NULL
 
 				    errors <- .hasErrors(dataset, perform = perform, message = 'short',
-				                         type = c('observations','variance', 'infinity'),
-				                         all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				                         type = c('observations','variance', 'infinity', 'observationsPairwise'),
+				                         all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2', 
+				                         observationsPairwise.amount = 2)
 
 				    #
 				    # if (options$missingValues == "excludeListwise"){
