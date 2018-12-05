@@ -28,9 +28,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 
   # Compute Results for Tables
   multinomialResults <- .computeMultinomialResults(jaspResults, dataset, options) 
-
   # Output tables and plots
-  .multBayesContainerTables(jaspResults, options)
   .createMultBayesMainTable(jaspResults, options, multinomialResults) 
   .createMultBayesDescriptivesTable(jaspResults, options, multinomialResults)
   .createMultBayesDescriptivesPlot(jaspResults, options, multinomialResults)
@@ -80,7 +78,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   hyps  <- .multinomialHypotheses(dataset, options, nlev) # exact equality constraints
   nms   <- multinomialResults[["specs"]][["hypNames"]]
   nhyps <- length(hyps)
-  
+
   # Results for main table: Bayesian multinomial test 
   multinomialResults$mainTable <- vector('list', length = nhyps)
   for(h in 1:nhyps){
@@ -111,8 +109,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
     for(h in 1:nhyps){
     multinomialResults$descriptivesTable[["descCounts"]][[nms[h]]]   <- multinomialResults$mainTable[[nms[h]]]$expected
     }  
-  multinomialResults$descriptivesTable[["descProps"]]    <- as.data.frame(multinomialResults$descriptivesTable[["descProps"]])
-  multinomialResults$descriptivesTable[["descCounts"]]   <- as.data.frame(multinomialResults$descriptivesTable[["descCounts"]])
+
+  multinomialResults$descriptivesTable[["descProps"]]    <- setNames(as.data.frame(multinomialResults$descriptivesTable[["descProps"]]), c("fact", "observed", nms))
+  multinomialResults$descriptivesTable[["descCounts"]]   <- setNames(as.data.frame(multinomialResults$descriptivesTable[["descCounts"]]), c("fact", "observed", nms))
   multinomialResults$descriptivesTable[["descPropsCI"]]  <- .multComputeCIs(t, options$credibleIntervalInterval)
   multinomialResults$descriptivesTable[["descCountsCI"]] <- .multComputeCIs(t, options$credibleIntervalInterval) * N
   
@@ -271,16 +270,10 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   if(options$hypothesis == "multinomialTest"){
     specs$hypNames <- "Multinomial"
   } else if(options$hypothesis == "expectedProbs"){
-    specs$hypNames <- .v(sapply(options$tableWidget, function(hyps) hyps$name))   
+    specs$hypNames <- sapply(seq_along(options$tableWidget), function(x) paste0("H\u2080 (", letters[x], ")")) 
   }
 
   return(specs)
-}
-.multBayesContainerTables <- function(jaspResults, options) {
-  if (is.null(jaspResults[["containerTables"]])) {
-    jaspResults[["containerTables"]] <- createJaspContainer("Bayesian Multinomial Test")
-    jaspResults[["containerTables"]]$dependOnOptions("descriptives")
-  }
 }
 .multComputeCIs <- function(counts, credibleInterval){
   # based on marginal beta distributions with uniform Dirichlet prior 
