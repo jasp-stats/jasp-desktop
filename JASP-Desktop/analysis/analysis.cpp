@@ -216,10 +216,9 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 
 std::string Analysis::qmlFormPath() const
 {
-	if(_moduleData != NULL)
-		return _moduleData->qmlFilePath();
-	else
-		return Dirs::QMLAnalysesDir() + "/" + module() + "/qml/"  + name() + ".qml";
+	return "file:" + (_moduleData != NULL	?
+				_moduleData->qmlFilePath()	:
+				Dirs::QMLAnalysesDir() + "/" + module() + "/qml/"  + name() + ".qml");
 }
 
 Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackground)

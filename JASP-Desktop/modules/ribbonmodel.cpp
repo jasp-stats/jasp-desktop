@@ -34,7 +34,7 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath)
 	if(!modulePath.exists())
 		return;
 
-	QFile descriptionFile(modulePath.absolutePath() + "/description.json");
+	QFile descriptionFile(modulePath.absoluteFilePath() + "/description.json");
 	if(!descriptionFile.exists())
 		return;
 

@@ -144,19 +144,12 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 
 	StartOnlineDataManager();
 
-	const QString debugPath =
-#ifdef JASP_DEBUG
-		"../jasp-desktop/";
-#else
-		"";
-#endif
-
 	// Add static modules
-	setupRibbonModels(QFileInfo(debugPath + "Resources/Common/"				));
-	setupRibbonModels(QFileInfo(debugPath + "Resources/Summary Statistics/"	));
-	setupRibbonModels(QFileInfo(debugPath + "Resources/Network/"			));
-	setupRibbonModels(QFileInfo(debugPath + "Resources/Meta Analysis/"		));
-	setupRibbonModels(QFileInfo(debugPath + "Resources/SEM/"				));
+	setupRibbonModels(QFileInfo("./Resources/Common/"				));
+	setupRibbonModels(QFileInfo("./Resources/Summary Statistics/"	));
+	setupRibbonModels(QFileInfo("./Resources/Network/"				));
+	setupRibbonModels(QFileInfo("./Resources/Meta Analysis/"		));
+	setupRibbonModels(QFileInfo("./Resources/SEM/"					));
 
 	// Add dynamic modules and connect signals to slots
 	_ribbonModel->connectToDynamicModules(_dynamicModules);
@@ -165,7 +158,7 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 	makeConnections();
 	
 	// Set the initial tab on Common.
-	tabChanged(1);
+	showMainPage();
 	
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
 
@@ -1046,29 +1039,43 @@ void MainWindow::analysisUnselectedHandler()
 		hideOptionsPanel();
 }
 
+void MainWindow::showBackstage()
+{
+	static int backstageIndex = ui->topLevelWidgets->indexOf(ui->backStage);
+	ui->topLevelWidgets->setCurrentIndex(backstageIndex);
+}
+
+
+void MainWindow::showMainPage()
+{
+	static int mainPageIndex = ui->topLevelWidgets->indexOf(ui->mainPage);
+	ui->topLevelWidgets->setCurrentIndex(mainPageIndex);
+
+
+	QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+	RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
+
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
+
+	bool enable = currentModel != NULL;
+	if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
+		enable = false;
+	}
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
+}
+
+
 
 void MainWindow::tabChanged(int index)
 {
 	if (index == 0)
-	{
-		ui->topLevelWidgets->setCurrentIndex(0);
-	}
+		showBackstage();
 	else
-	{
-		ui->topLevelWidgets->setCurrentIndex(1);  //Should be a reference to the mainPage
+		showMainPage();
 
-		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-		RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
 
-		ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
-		ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
 
-		bool enable = currentModel != NULL;
-		if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
-			enable = false;
-		}
-		ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
-	}
 }
 
 
@@ -1269,6 +1276,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				startComparingResults();
 
 			ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", true); //Should really call a function or something or set something in a model!
+
+
 		}
 		else
 		{
@@ -1663,13 +1672,9 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 void MainWindow::adjustOptionsPanelWidth()
 {
 	if (ui->panel_2_Options->width() == ui->panel_2_Options->maximumWidth() && ui->panel_1_Data->isHidden())
-	{
 		showDataPanel();
-	}
 	else if (ui->panel_1_Data->width() == ui->panel_1_Data->minimumWidth() && ui->panel_1_Data->isVisible() && ui->panel_2_Options->isVisible())
-	{
 		hideDataPanel();
-	}
 
 	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
