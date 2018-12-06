@@ -62,7 +62,7 @@
 				"median",
 				"averaged"
 			],
-			"default": "best"
+			"default": "averaged"
 		},
 		{
 			"name": "descriptives",
@@ -155,7 +155,7 @@
 		},
 		{
 			"options": ["Bernoulli", "beta.binomial", "uniform"],
-			"default": "uniform",
+			"default": "beta.binomial",
 			"name": "modelPrior",
 			"type": "List"
 		},

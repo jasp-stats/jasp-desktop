@@ -143,6 +143,7 @@
   checks[['factorLevels']] <- list(callback=.checkFactorLevels)
   checks[['variance']] <- list(callback=.checkVariance, addGroupingMsg=TRUE)
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
+  checks[['observationsPairwise']] <- list(callback=.checkObservationsPairwise, addGroupingMsg=TRUE)
   checks[['varCovMatrix']] <- list(callback=.checkVarCovMatrix, addGroupingMsg=FALSE)
   checks[['limits']] <- list(callback=.checkLimits, addGroupingMsg=FALSE)
   checks[['varCovData']] <- list(callback=.checkVarCovData, addGroupingMsg=TRUE)
@@ -492,6 +493,26 @@
     }
     
   }
+  return(result)
+}
+
+.checkObservationsPairwise <- function(dataset, target, amount, grouping=NULL, groupingLevel=NULL) {
+  # Check the number of observations in the dependent(s).
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   amount: String vector indicating the amount to check for (e.g. '< 2', or '> 4000').
+  #   grouping: String vector indicating the grouping variables.
+  #   groupingLevel: Vector indicating the level of each of the grouping variables.
+  result <- list(error=FALSE, errorVars=NULL)
+
+  dataPairs <- dataset[, .v(target)]
+  
+  if (sum(!apply(dataPairs, 1, function(x){any(is.na(x))})) <= amount) { # See if any of the expressions is true.
+    result$error <- TRUE
+    result$errorVars <- c(result$errorVars, target)
+  }
+
   return(result)
 }
 

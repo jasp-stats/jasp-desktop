@@ -140,12 +140,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       } else if (perform == "run" && ready) {
         # here do calculations
         #
-        errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity', 'observations'),
-                             all.target = c(var1, var2), observations.amount = "< 3")
+        errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+                             type = c('variance', 'infinity', 'observations', 'observationsPairwise'),
+                             all.target = c(var1, var2), observations.amount = "< 3", 
+                             observationsPairwise.amount = 2)
 
         if (! identical(errors, FALSE)) {
           estimate <- p.value <- MPR <- upperCI <- lowerCI <- "NaN"
           errorMessage <- errors$message
+
         } else {
           obs1 <- dataset[[ .v(var1) ]]
           obs2 <- dataset[[ .v(var2) ]]
@@ -161,7 +164,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           estimate <- as.numeric(result$estimate)
           p.value  <- as.numeric(result$p.value)
           MPR <- .VovkSellkeMPR(p.value)
-
+          
           if (test == "pearson") {
             upperCI <- as.numeric(result$conf.int[2])
             lowerCI <- as.numeric(result$conf.int[1])
@@ -175,6 +178,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
             upperCI <- as.numeric(kendallCI[2])
             lowerCI <- as.numeric(kendallCI[1])
+          }
+          if (length(c(lowerCI, upperCI)) == 0) {
+            upperCI <- lowerCI <- "NaN"
           }
         }
       }
@@ -488,8 +494,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       variable.statuses[[i]]$unplotable <- FALSE
       variable.statuses[[i]]$plottingError <- NULL
 
-      errors <- .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-                           all.target=variables[i], message="short", observations.amount="< 3")
+      errors <- .hasErrors(dataset, perform, type=c("infinity", "variance", "observations", "observationsPairwise"),
+                           all.target=variables[i], message="short", observations.amount="< 3",
+                           observationsPairwise.amount=2)
+      
       if (! identical(errors, FALSE)) {
         variable.statuses[[i]]$unplotable <- TRUE
         variable.statuses[[i]]$plottingError <- errors$message
@@ -676,7 +684,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		hdiff <- 1L
 		xBreaks <- unique(variable)
 		yBreaks <- c(0, max(table(variable)))
-
 		p <- p + ggplot2::geom_bar(
 			mapping  = ggplot2::aes(x = x),
 			fill     = "grey",
