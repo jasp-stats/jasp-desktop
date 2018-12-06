@@ -738,7 +738,8 @@ function formatCellforLaTeX (toFormat) {
 
     matched = text.match('<em>(.*)</em>');
     if (matched !== null) {
-        text = text.replace(matched[0], matched[1]);
+        let formatted = '\\textit{' + matched[1] + '}';
+        text = text.replace(matched[0], formatted);
     }
 
     let special_match_after = ['<'];
@@ -749,4 +750,11 @@ function formatCellforLaTeX (toFormat) {
     }
 
     return text
+}
+
+function camelize (str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+        if (+match === 0) return "";
+        return index == 0 ? match.toLowerCase() : match.toUpperCase();
+    });
 }
