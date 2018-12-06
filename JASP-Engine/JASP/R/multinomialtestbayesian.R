@@ -124,10 +124,10 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 }
 .createMultBayesMainTable <- function(jaspResults, options, multinomialResults){
   if (!is.null(jaspResults[["multinomialTable"]])) return()
-  
+
   # Create table
-  defaultOptions                                         <- multinomialResults$specs$defaultOptions
-  multinomialTable                                       <- createJaspTable(title = "Bayesian Multinomial Test")
+  defaultOptions                    <- multinomialResults$specs$defaultOptions
+  multinomialTable                  <- createJaspTable(title = "Bayesian Multinomial Test")
   jaspResults[["multinomialTable"]] <- multinomialTable
   multinomialTable$position         <- 1
   multinomialTable$dependOnOptions(c(defaultOptions, "bayesFactorType"))
@@ -142,14 +142,17 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
     bf.title <- "Log(\u0042\u0046\u2081\u2080)"
   }
 
-  # Add columns to the table
+  # Add columns 
   multinomialTable$addColumnInfo(name = "case",    title = "",       type = "string", combine = TRUE)
   multinomialTable$addColumnInfo(name = "level",   title = "Levels", type = "integer")
   multinomialTable$addColumnInfo(name = "BF",      title = bf.title, type = "number", format="sf:4;dp:3")
 
-
-  # show empty table
-  if(!multinomialResults$specs[["ready"]]) return() 
+  # Show empty table if no variable is selected
+  if(!multinomialResults$specs[["ready"]]) {
+    emptyDf <- data.frame(case  = '.', level = '.', BF    = '.')
+    multinomialTable$setData(emptyDf)
+    return()
+  }
 
   # Add rows
   fact  <- multinomialResults[["specs"]][["factorVariable"]]
@@ -157,63 +160,54 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   nms   <- multinomialResults[["specs"]][["hypNames"]]
   for (h in 1:nhyps) {
     row <- data.frame(case  = nms[h],
-                      level = multinomialResults[["mainTable"]][["nlevels"]],
-                      BF    = multinomialResults[["mainTable"]][[nms[h]]][["BF"]][[options$bayesFactorType]]
+                       level = multinomialResults[["mainTable"]][["nlevels"]],
+                       BF    = multinomialResults[["mainTable"]][[nms[h]]][["BF"]][[options$bayesFactorType]]
     )
-    multinomialTable$addRows(row, rowNames =  nms[h])
-  }
-
-  # Add footnotes
-  for (h in 1:nhyps) {
-    if (!is.null(multinomialResults[["mainTable"]][[nms[h]]][["warn"]])) {
-      multinomialTable$addFootnote(message   = multinomialResults[["mainTable"]][[nms[h]]][["warn"]],
-                                     col_names = bf.title,
-                                     row_names = nms[h],
-                                     symbol    = "<em>Note.</em>")
-    }
+    multinomialTable$addRows(row)
   }
 }
 .createMultBayesDescriptivesTable <- function(jaspResults, options, multinomialResults){
-  # If there is no data OR descriptives is not selected: do not create a table
+  # If descriptives is not selected: do not create a table
   if(!options[["descriptives"]]) return()
 
   # Create table
-  factorVariable                                                     <- multinomialResults[["specs"]][["factorVariable"]]
-  descriptivesTable                                                  <- createJaspTable(title = "Descriptives")
+  factorVariable                                <- multinomialResults[["specs"]][["factorVariable"]]
+  descriptivesTable                             <- createJaspTable(title = "Descriptives")
   jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
   descriptivesTable$dependOnOptions(c("countProp", "descriptives", "credibleIntervalInterval"))
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   descriptivesTable$position                 <- 2
-  
-  
-  # Add columns to the table  
+
+  # Add columns
   nhyps <- multinomialResults[["mainTable"]][["nhyps"]]
   nms   <- multinomialResults[["specs"]][["hypNames"]]
-
-  # Default Table
-  if (!multinomialResults[["specs"]][["ready"]]) {
-    descriptivesTable$addColumnInfo(name = "fact",     title = "Factor", type = "string", combine = TRUE)
-    descriptivesTable$addColumnInfo(name = "observed", title = "Observed", type = "integer")  
-    descriptivesTable$addColumnInfo(name = "expected", title = "Expected", type = "number", format = "sf:4")  
-    return()
-  }
 
   descriptivesTable$addColumnInfo(name = "fact",     title = factorVariable, type = "string", combine = TRUE)
   descriptivesTable$addColumnInfo(name = "observed", title = "Observed", type = "integer")
 
-  if(nhyps > 1){
-    for(h in 1:nhyps){
-      descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = "number", format = "sf:4", overtitle = "Expected")
+  # If no variable is selected, adjust column title
+  if(is.null(nhyps)){
+    descriptivesTable$addColumnInfo(name = "expected", title = "Expected", type = "number", format = "sf:4") 
+  } else if(nhyps == 1) {
+      descriptivesTable$addColumnInfo(name = nms, title = paste0("Expected: ", nms), type = "number", format = "sf:4")
+    } else if(nhyps > 1) {
+      for(h in 1:nhyps){
+        descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = "number", format = "sf:4", overtitle = "Expected")
       }
-  } else {
-    descriptivesTable$addColumnInfo(name = nms, title = paste0("Expected: ", nms), type = "number", format = "sf:4")
-  }
+    }
 
   if (options$credibleInterval) {
     descriptivesTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number", format = "sf:4",
-                                overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
+                                    overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
     descriptivesTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
-                                overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
+                                    overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
+  }
+
+  # Show empty table if no variable is selected
+  if(!multinomialResults$specs[["ready"]]) {
+    emptyDf <- data.frame(Factor  = ".", observed = ".", expected = ".", lowerCI = ".", upperCI = ".")
+    descriptivesTable$setData(emptyDf)
+    return()
   }
 
   # Add rows
@@ -241,40 +235,6 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 
 }
 # Helper functions 
-.multBayesCalcSpecs <- function(dataset, options){
-  specs <- list()
-  
-  # Default options
-  specs$defaultOptions <- c("tableWidget", "priorCounts","factor", "counts", "exProbVar", "hypothesis",
-                            "credibleIntervalInterval")
-  
-  # Ready statement
-  ready <- options$factor != "" && !is.null(dataset)
-  specs$ready <- ready
-  
-  # Specify factor variable  
-  specs$factorVariable <- NULL
-  specs$countVariable  <- NULL
-  if (options$factor != "") {
-    specs$factorVariable <- options$factor
-    # Specify count variable
-    if (options$counts != "") {
-      countVariable <- options$counts
-      if (options$exProbVar != "") {
-        countVariable <- c(countVariable, options$exProbVar)
-      }
-      specs$countVariable <- countVariable
-    }
-  } 
-
-  if(options$hypothesis == "multinomialTest"){
-    specs$hypNames <- "Multinomial"
-  } else if(options$hypothesis == "expectedProbs"){
-    specs$hypNames <- sapply(seq_along(options$tableWidget), function(x) paste0("H\u2080 (", letters[x], ")")) 
-  }
-
-  return(specs)
-}
 .multComputeCIs <- function(counts, credibleInterval){
   # based on marginal beta distributions with uniform Dirichlet prior 
   N             <- sum(counts)
@@ -337,12 +297,7 @@ return(p)
 }
 
 # Functions for Analysis
-.multBayesBfEquality      <- function(alphas, counts, thetas){
-  warn <- NULL
-  if(sum(thetas) != 1){
-    thetas <- thetas/sum(thetas)
-    warn   <- "Parameters have been rescaled."
-  }
+.multBayesBfEquality <- function(alphas, counts, thetas){
   # expected counts under the null hypothesis (Binomial median)
   expected <- setNames(sum(counts)*thetas, names(counts))
   # compute Bayes factor
@@ -366,12 +321,47 @@ return(p)
                    BF01    = .clean(1/exp(LogBF10)))
   
   return(list(BF       = BF,
-              warn     = warn,
               expected = expected))
   
 }
 
 # Init functions ----
+.multBayesCalcSpecs <- function(dataset, options){
+  specs <- list()
+  
+  # Default options
+  specs$defaultOptions <- c("tableWidget", "priorCounts","factor", "counts", "exProbVar", "hypothesis",
+                            "credibleIntervalInterval")
+  
+  # Ready statement
+  ready <- options$factor != "" && !is.null(dataset)
+  specs$ready <- ready
+  
+  # Specify factor variable  
+  specs$factorVariable <- NULL
+  specs$countVariable  <- NULL
+  if (options$factor != "") {
+    specs$factorVariable <- options$factor
+    # Specify count variable
+    if (options$counts != "") {
+      countVariable <- options$counts
+      if (options$exProbVar != "") {
+        countVariable <- c(countVariable, options$exProbVar)
+      }
+      specs$countVariable <- countVariable
+    }
+  } else {
+    specs$factorVariable <- "Factor"
+  }
+  
+  if(options$hypothesis == "multinomialTest"){
+    specs$hypNames <- "Multinomial"
+  } else if(options$hypothesis == "expectedProbs"){
+    specs$hypNames <- sapply(seq_along(options$tableWidget), function(x) paste0("H\u2080 (", letters[x], ")")) 
+  }
+  
+  return(specs)
+}
 .multinomialBayesReadData <- function(dataset, options) {
   # First, we load the variables into the R environment
   asnum <- NULL
@@ -423,4 +413,5 @@ return(p)
                exitAnalysisIfErrors = TRUE)
   }
 }
+
 
