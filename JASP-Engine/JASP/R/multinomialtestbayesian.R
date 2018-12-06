@@ -183,16 +183,16 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   nms   <- multinomialResults[["specs"]][["hypNames"]]
 
   descriptivesTable$addColumnInfo(name = "fact",     title = factorVariable, type = "string", combine = TRUE)
-  descriptivesTable$addColumnInfo(name = "observed", title = "Observed", type = "integer")
+  descriptivesTable$addColumnInfo(name="observed", title="Observed", type = "integer")
 
   # If no variable is selected, adjust column title
   if(is.null(nhyps)){
-    descriptivesTable$addColumnInfo(name = "expected", title = "Expected", type = "number", format = "sf:4") 
+    descriptivesTable$addColumnInfo(name = "expected", title = "Expected", type = "number", format = "sf:4;dp:3") 
   } else if(nhyps == 1) {
-      descriptivesTable$addColumnInfo(name = nms, title = paste0("Expected: ", nms), type = "number", format = "sf:4")
+      descriptivesTable$addColumnInfo(name = nms, title = paste0("Expected: ", nms), type = "number", format = "sf:4;dp:3")
     } else if(nhyps > 1) {
       for(h in 1:nhyps){
-        descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = "number", format = "sf:4", overtitle = "Expected")
+        descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = "number", format = "sf:4;dp:3", overtitle = "Expected")
       }
     }
 
@@ -278,6 +278,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 
   # Prepare data for plotting
   plotFrame <- multinomialResults[["descriptivesPlot"]][[options$countProp]]
+  # We need to reverse the factor's levels because of the coord_flip later
+  plotFrame$fact <- factor(plotFrame$fact, levels = rev(plotFrame$fact))
+
   # Create plot
   p <- ggplot2::ggplot(data = plotFrame,
                        mapping = ggplot2::aes(x = fact, y = observed)) +
@@ -289,9 +292,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
     base_breaks_y(plotFrame[["upperCI"]]) +
     ggplot2::xlab(factorVariable) +
     ggplot2::ylab(yname) +
-    ggplot2::coord_flip() +
-    ggplot2::theme_bw() 
-  p <- JASPgraphs::themeJasp(p)
+    ggplot2::coord_flip() 
+  p <- JASPgraphs::themeJasp(p, xAxis = FALSE)
 
 return(p)
 }
