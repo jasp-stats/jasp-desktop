@@ -362,7 +362,7 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 		_imageOptions			= jsonRequest.get("image",			Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
-		_analysisJaspResults	= jsonRequest.get("jaspResults",	false).asBool();
+		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
 		_analysisRequiresInit	= jsonRequest.get("requiresInit",	Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
 		_ppi					= jsonRequest.get("ppi",			96).asInt();
 		_imageBackground		= jsonRequest.get("imageBackground", "white").asString();
