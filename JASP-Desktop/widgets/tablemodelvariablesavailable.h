@@ -24,9 +24,9 @@
 #include <QList>
 #include <QMimeData>
 
-#include "terms.h"
+#include "analysis/options/terms.h"
 #include "common.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
 class TableModelVariablesAvailable : public TableModelVariables, public VariableInfoProvider
 {

@@ -21,17 +21,17 @@
 
 #include "tablemodel.h"
 #include "boundmodel.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
 #include "common.h"
-#include "terms.h"
+#include "analysis/options/terms.h"
 
-#include "options/optionvariables.h"
-#include "options/optionstring.h"
-#include "options/optionlist.h"
-#include "options/optionstable.h"
+#include "analysis/options/optionvariables.h"
+#include "analysis/options/optionstring.h"
+#include "analysis/options/optionlist.h"
+#include "analysis/options/optionstable.h"
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 typedef QPair<QString, QStringList> Factor;
 

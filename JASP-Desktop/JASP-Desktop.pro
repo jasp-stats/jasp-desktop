@@ -1,4 +1,5 @@
-QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets
+QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
+DEFINES += JASP_USES_QT_HERE
 
 include(../JASP.pri)
 
@@ -70,6 +71,9 @@ windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_I
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH = $$PWD/imports
+
 include(JASP-Desktop.pri)
 
 # List all pri files in the analysis
@@ -87,7 +91,7 @@ defineReplace(list_pri_files) {
 }
 
 # Directory containing the analysis forms
-ANALYSIS_DIR = $$PWD/analysisforms
+ANALYSIS_DIR = $$PWD/analysis/analysisforms
 # Directory containing the modules
 MODULES_DIR = $$list_pri_files($$ANALYSIS_DIR)
 

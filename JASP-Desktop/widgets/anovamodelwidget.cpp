@@ -19,11 +19,11 @@
 #include "anovamodelwidget.h"
 #include "ui_anovamodelwidget.h"
 
-#include <boost/foreach.hpp>
+
 #include <QMenu>
 #include <QDebug>
 
-#include "analysisforms/analysisform.h"
+#include "analysis/analysisform.h"
 #include "draganddrop.h"
 
 using namespace std;

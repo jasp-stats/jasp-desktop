@@ -40,7 +40,7 @@ void TableViewMenuEditor::setMenuContent(QStringList menuItems, QString selected
 
 	QAction *active;
 
-	foreach (QString item, menuItems)
+	for (QString item : menuItems)
 	{
 		QAction *added = _menu->addAction(item);
 		if (selected == item)

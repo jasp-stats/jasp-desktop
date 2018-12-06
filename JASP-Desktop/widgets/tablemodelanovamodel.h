@@ -24,8 +24,8 @@
 
 #include "tablemodelvariablesavailable.h"
 #include "enhanceddroptarget.h"
-#include "options/optionterm.h"
-#include "options/optionstable.h"
+#include "analysis/options/optionterm.h"
+#include "analysis/options/optionstable.h"
 
 #include "tablemodel.h"
 

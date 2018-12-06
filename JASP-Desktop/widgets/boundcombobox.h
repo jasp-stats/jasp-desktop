@@ -20,8 +20,8 @@
 #define BOUNDCOMBOBOX_H
 
 #include <QComboBox>
-#include "bound.h"
-#include "options/optionlist.h"
+#include "analysis/options/bound.h"
+#include "analysis/options/optionlist.h"
 #include "itemmodelselectitem.h"
 
 class BoundComboBox : public QComboBox, public Bound

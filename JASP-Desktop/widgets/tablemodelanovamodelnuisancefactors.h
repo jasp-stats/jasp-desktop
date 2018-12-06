@@ -20,7 +20,7 @@
 #define TABLEMODELANOVAMODELNUISANCEFACTORS_H
 
 #include "tablemodelanovamodel.h"
-#include "options/optionvariables.h"
+#include "analysis/options/optionvariables.h"
 
 class TableModelAnovaModelNuisanceFactors : public TableModelAnovaModel
 {

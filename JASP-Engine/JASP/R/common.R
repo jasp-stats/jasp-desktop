@@ -173,8 +173,9 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 }
 
 
-runJaspResults <- function(name, title, dataKey, options, stateKey)
+runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
+
 	if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 
@@ -192,7 +193,9 @@ runJaspResults <- function(name, title, dataKey, options, stateKey)
     setwd(root)
   }
 
-  analysis    <- eval(parse(text=name))
+  #print("analysis    <- eval(parse(text=functionCall)), analysis: ");
+  analysis    <- eval(parse(text=functionCall))
+  #print(analysis)
 
   dataset <- NULL
   if (! is.null(dataKey)) {
@@ -207,7 +210,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey)
 
   newState <-
     tryCatch(
-      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options, state=oldState), error=.addStackTrace),
+      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options), error=.addStackTrace),
       error=function(e) e
     )
 
@@ -1479,7 +1482,6 @@ isTryError <- function(obj){
 	dataset
 }
 
-
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
 	new.df <- NULL
 	namez <- NULL
@@ -1587,7 +1589,7 @@ isTryError <- function(obj){
 .fromRCPP <- function(x, ...) {
 
 	if (length(x) != 1 || ! is.character(x)) {
-		stop("Invalid type supplied, expected character")
+    stop("Invalid type supplied to .fromRCPP, expected character")
 	}
 
 	collection <- c(
@@ -1610,7 +1612,7 @@ isTryError <- function(obj){
 	} else {
 		location <- getAnywhere(x)
 		if (length(location[["objs"]]) == 0) {
-			stop("Could not locate object")
+      stop(paste0("Could not locate ",x," in environment (.fromRCPP)"))
 		}
 		obj <- location[["objs"]][[1]]
 	}

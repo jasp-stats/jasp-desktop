@@ -1,0 +1,93 @@
+{
+	"moduleDescription" :
+	{
+		"title"          : "Summary Statistics",
+		"description"    : "Summary Statistics module",
+		"requiresDataset": false,
+		"version"        : 1,
+		"author"         : "JASP Team",
+		"maintainer"     : "JASP Team <jasp-stats.org>",
+		"website"        : "jasp-stats.org",
+		"license"        : "GPL (>= 2)",
+		"dynamic"        : false
+	},
+
+	"ribbonEntries":
+	[
+		{
+			"title"   : "T-Tests",
+			"icon"    : "analysis-bayesian-ttest.svg",
+			"analyses":
+			[
+				{
+					"title"   : "Bayesian Independent Samples T-Test",
+					"function": "SummaryStatsTTestBayesianIndependentSamples"
+				},
+				{
+					"title"   : "Bayesian Paired Samples T-Test",
+					"function": "SummaryStatsTTestBayesianPairedSamples"
+				},
+				{
+					"title"   : "Bayesian One Sample T-Test",
+					"function": "SummaryStatsTTestBayesianOneSample"
+				},
+				{
+				},
+				{
+					"title"   : "QML Bayesian Independent Samples T-Test",
+					"function": "QMLSummaryStatsTTestBayesianIndependentSamples"
+				},
+				{
+					"title"   : "QML Bayesian Paired Samples T-Test",
+					"function": "QMLSummaryStatsTTestBayesianPairedSamples"
+				},
+				{
+					"title"   : "QML Bayesian One Sample T-Test",
+					"function": "QMLSummaryStatsTTestBayesianOneSample"
+				}
+			]
+		},
+		{
+			"title"   : "Regression",
+			"icon"    : "analysis-bayesian-crosstabs.svg",
+			"analyses":
+			[
+				{
+					"title"   : "Bayesian Correlation Pairs",
+					"function": "SummaryStatsCorrelationBayesianPairs"
+				},
+				{
+					"title"   : "Bayesian Linear Regression",
+					"function": "SummaryStatsRegressionLinearBayesian"
+				},
+				{
+				},
+				{
+					"title"   : "QML Bayesian Correlation Pairs",
+					"function": "QMLSummaryStatsCorrelationBayesianPairs"
+				},
+				{
+					"title"   : "QML Bayesian Linear Regression",
+					"function": "QMLSummaryStatsRegressionLinearBayesian"
+				}
+			]
+		},
+		{
+			"title"   : "Frequencies",
+			"icon"    : "analysis-bayesian-regression.svg",
+			"analyses":
+			[
+				{
+					"title"   : "Bayesian Binomial Test",
+					"function": "SummaryStatsBinomialTestBayesian"
+				},
+				{
+				},
+				{
+					"title"   : "QML Bayesian Binomial Test",
+					"function": "QMLSummaryStatsBinomialTestBayesian"
+				}
+			]
+		}
+	]
+}

@@ -22,16 +22,16 @@
 #include <QTableWidget>
 #include <QStringList>
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 
 #include "common.h"
-#include "options/option.h"
-#include "options/optionstable.h"
-#include "options/optionvariables.h"
-#include "options/optiondoublearray.h"
-#include "options/optionstring.h"
+#include "analysis/options/option.h"
+#include "analysis/options/optionstable.h"
+#include "analysis/options/optionvariables.h"
+#include "analysis/options/optiondoublearray.h"
+#include "analysis/options/optionstring.h"
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 class BoundTableWidget : public QTableWidget, public Bound
 {

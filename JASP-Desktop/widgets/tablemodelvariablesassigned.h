@@ -22,7 +22,7 @@
 #include "tablemodelvariables.h"
 
 #include "tablemodelvariablesavailable.h"
-#include "options/optionterms.h"
+#include "analysis/options/optionterms.h"
 
 #include "column.h"
 

@@ -169,4 +169,22 @@ DISTFILES += \
     JASP/DESCRIPTION \
     JASP/NAMESPACE \
     JASP/R/distributionSamplers.R \
-    JASP/R/friendlyConstructorFunctions.R
+    JASP/R/friendlyConstructorFunctions.R \
+    JASP/R/exposeUs.R \
+    JASPgraphs/DESCRIPTION \
+    JASPgraphs/NAMESPACE \
+    JASPgraphs/R/todo.R \
+    JASPgraphs/R/compatability.R \
+    JASPgraphs/R/convenience.R \
+    JASPgraphs/R/customGeoms.R \
+    JASPgraphs/R/descriptivesPlots.R \
+    JASPgraphs/R/functions.R \
+    JASPgraphs/R/getPrettyAxisBreaks.R \
+    JASPgraphs/R/ggMatrixPlot.R \
+    JASPgraphs/R/graphOptions.R \
+    JASPgraphs/R/highLevelPlots.R \
+    JASPgraphs/R/jaspLabelAxes.R \
+    JASPgraphs/R/jaspScales.R \
+    JASPgraphs/R/legendToPlotRatio.R \
+    JASPgraphs/R/themeJasp.R
+

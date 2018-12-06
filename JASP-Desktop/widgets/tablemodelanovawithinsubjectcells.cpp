@@ -18,8 +18,8 @@
 
 #include "tablemodelanovawithinsubjectcells.h"
 
-#include "terms.h"
-#include "qutils.h"
+#include "analysis/options/terms.h"
+#include "utilities/qutils.h"
 
 #include <QSize>
 #include <QMimeData>
@@ -156,7 +156,7 @@ bool TableModelAnovaWithinSubjectCells::canDropMimeData(const QMimeData *data, Q
 	Terms dropped;
 	dropped.set(encodedData);
 
-	foreach (const Term &term, dropped)
+	for (const Term &term : dropped)
 	{
 		if ( ! isAllowed(term))
 			return false;
@@ -272,7 +272,7 @@ QMimeData *TableModelAnovaWithinSubjectCells::mimeData(const QModelIndexList &in
 
 	dataStream << indexes.length();
 
-	foreach (const QModelIndex &index, indexes)
+	for (const QModelIndex &index : indexes)
 	{
 		if (index.isValid())
 		{
@@ -290,7 +290,7 @@ void TableModelAnovaWithinSubjectCells::mimeDataMoved(const QModelIndexList &ind
 {
 	beginResetModel();
 
-	foreach (const QModelIndex index, indexes)
+	for (const QModelIndex & index : indexes)
 		_variables[index.row()] = "";
 
 	endResetModel();
@@ -389,7 +389,7 @@ int TableModelAnovaWithinSubjectCells::designCellCount() const
 
 	int rows = 1;
 
-	foreach (const Factor &factor, _design)
+	for (const Factor &factor : _design)
 		rows *= factor.second.length();
 
 	return rows;

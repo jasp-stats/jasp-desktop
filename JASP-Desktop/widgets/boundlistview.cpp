@@ -24,7 +24,7 @@
 #include <vector>
 #include <string>
 
-#include "options/optionvariables.h"
+#include "analysis/options/optionvariables.h"
 
 #include "widgets/boundmodel.h"
 #include "tableviewmenueditordelegate.h"

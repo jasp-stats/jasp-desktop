@@ -26,13 +26,13 @@
 #include "droptarget.h"
 
 #include "tablemodelvariablesavailable.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
-#include "options/optionstable.h"
-#include "options/optionstring.h"
-#include "options/optionlist.h"
+#include "analysis/options/optionstable.h"
+#include "analysis/options/optionstring.h"
+#include "analysis/options/optionlist.h"
 
- #include "qutils.h"
+#include "utilities/qutils.h"
 
 class TableModelVariablesLevels : public TableModel, public BoundModel, public DropTarget, public VariableInfoConsumer
 {

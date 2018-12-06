@@ -23,7 +23,7 @@
 
 #include "boundmodel.h"
 #include "common.h"
-#include "options/optionlist.h"
+#include "analysis/options/optionlist.h"
 
 class ItemModelSelectItem : public QStandardItemModel, public BoundModel
 {

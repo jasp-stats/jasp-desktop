@@ -1,0 +1,35 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 		"SEM",
+		"description" : "SEM module.",
+		"version":		1,
+		"author":		"JASP Team",
+		"maintainer":	"JASP Team <jasp-stats.org>",
+		"website":		"jasp-stats.org",
+		"license":		"GPL (>= 2)",
+		"dynamic":		false
+	},
+
+	"requiredPackages":	[],
+
+	"ribbonEntries":
+	[
+		{
+			"title": 	"Lavaan",
+			"icon": 	"analysis-classical-sem.svg",
+			"analyses":  [
+				{
+					"title":	"Lavaan",
+					"function":	"SEMSimple"
+				},
+				{
+				},
+				{
+					"title":	"QML Lavaan",
+					"function":	"QMLSEMSimple"
+				}
+			]
+		}
+	]
+}

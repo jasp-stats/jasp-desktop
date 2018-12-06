@@ -21,7 +21,7 @@
 
 #include <QAbstractListModel>
 
-#include "options/optionvariablesgroups.h"
+#include "analysis/options/optionvariablesgroups.h"
 #include "tablemodelvariables.h"
 #include "tablemodel.h"
 #include "droptarget.h"

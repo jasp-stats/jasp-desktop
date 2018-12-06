@@ -15,22 +15,29 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
 
 Rectangle {
-    default property alias content: column.children
-    property bool usesJaspResults: false
-    property int formMargin: Theme.formMargin
-    property int formWidthAvailable: width - 2 * formMargin 
-    width: Theme.formWidth
-    color: Theme.analysisBackgroundColor
+
+	id:		form
+	width:	Theme.formWidth
+	color:	Theme.analysisBackgroundColor
     
-    property var jaspControls: []
+	default property alias	content:			column.children
+			property bool	usesJaspResults:	false
+			property int	majorVersion:		1
+			property int	minorVersion:		0
+			property bool	usesVariablesModel: false
+			property int	availableWidth:		form.width - 2 * Theme.formMargin
+			property var	jaspControls:		[]
+    
+            property int    plotHeight:         320
+            property int    plotWidth:          480
     
     function getJASPControls(controls, item) {
         for (var i = 0; i < item.children.length; ++i) {
@@ -51,36 +58,43 @@ Rectangle {
         }            
     }        
      
-    TextField { visible: false; name: "plotWidth"; inputType: "integer"; text: "480" }
-    TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: "320" }
+    TextField { visible: false; name: "plotWidth"; inputType: "integer"; text: plotHeight }
+    TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth }
     
     
     Flickable {
         id: flickable
         anchors.fill: parent
-        anchors.margins: formMargin
+        anchors.leftMargin: Theme.formMargin
+        anchors.topMargin: Theme.formMargin
+        anchors.bottomMargin: Theme.formMargin
+        // Do not set the rightMargin, but set a contentWidth as if there was a rightMargin:
+        // this space at the right side will be used by the scroller.
+        contentWidth: parent.width - 2 * Theme.formMargin
         contentHeight: column.childrenRect.height
-
-        ColumnLayout {
-            id: column
-            spacing: 10
+        
+        Rectangle {
+            id: errorMessagesBox
+            property alias text: errorMessagesText.text
+            objectName: "errorMessagesBox"
+            visible: false
+            color: Theme.errorMessagesBackgroundColor
             width: parent.width
-            
-            Rectangle {
-                property alias text: errorMessagesText.text
-                objectName: "errorMessagesBox"
-                visible: false
-                color: Theme.errorMessagesBackgroundColor
-                width: parent.width
-                height: errorMessagesText.implicitHeight;
-                Text {
-                    padding: 5
-                    verticalAlignment: Text.AlignVCenter
-                    id: errorMessagesText
-                }
+            height: errorMessagesText.height;
+            Text {
+                padding: 5
+                verticalAlignment: Text.AlignVCenter
+                id: errorMessagesText
             }
         }
-
+        
+        ColumnLayout {
+            id: column
+            anchors.top: errorMessagesBox.visible ? errorMessagesBox.bottom : parent.top
+            spacing: 10
+            width: parent.width            
+        }
+        
         ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded}
     }
     

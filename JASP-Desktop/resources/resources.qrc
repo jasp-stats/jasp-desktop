@@ -57,6 +57,8 @@
         <file>FilterConstructor/OperatorSelectorComputedColumns.qml</file>
         <file>JASPMouseAreaToolTipped.qml</file>
         <file>JASPScrollBar.qml</file>
+        <file>Ribbon/Ribbon.qml</file>
+        <file>Ribbon/RibbonButton.qml</file>
     </qresource>
     <qresource prefix="/">
         <file>icons/variance.png</file>

@@ -30,6 +30,7 @@ public:
 	static std::string exeDir();
 	static std::string rHomeDir();
 	static std::string libraryDir();
+	static std::string QMLAnalysesDir();
 
 	class Exception : public std::runtime_error
 	{

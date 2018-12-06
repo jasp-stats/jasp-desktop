@@ -16,29 +16,27 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 JASPControl {
-    controlType: "RadioButton"
-    isBound: false
-    property alias text: control.text
+	controlType:			"RadioButton"
+	isBound:				false
+	useDefaultBackground:	true
+	implicitHeight:			control.height
+	implicitWidth:			control.width
+
+	property alias text:	control.text
     property alias checked: control.checked
-    implicitHeight: control.height
-    implicitWidth: control.width
-    
     property var buttonGroup
-    
+
     RadioButton {
         id: control
         height: Theme.radioIndicatorDiameter + 4
         width: Theme.radioIndicatorDiameter + label.implicitWidth + control.spacing + 6
         focus: true
         ButtonGroup.group: buttonGroup
-        
-        background: backgroundRectangle
-        
         indicator: Rectangle {
             width: Theme.radioIndicatorDiameter
             height: Theme.radioIndicatorDiameter
@@ -50,7 +48,6 @@ JASPControl {
             color: control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
             border.color: control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor) : Theme.disableControlBackgroundColor
             border.width: 1
-    
             Rectangle {
                 anchors.centerIn: parent
                 implicitWidth: Theme.radioIndicatorDiameter / 2
@@ -60,7 +57,6 @@ JASPControl {
                 color: Theme.controlBackgroundColor
             }
         }
-        
         contentItem: Label {
             id: label
             anchors.left: control.indicator.right

@@ -19,96 +19,100 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "analysisforms/Common/ancovabayesianform.h"
-#include "analysisforms/Common/ancovaform.h"
-#include "analysisforms/Common/ancovamultivariateform.h"
-#include "analysisforms/Common/anovabayesianform.h"
-#include "analysisforms/Common/anovaform.h"
-#include "analysisforms/Common/anovamultivariateform.h"
-#include "analysisforms/Common/anovaonewayform.h"
-#include "analysisforms/Common/anovarepeatedmeasuresbayesianform.h"
-#include "analysisforms/Common/anovarepeatedmeasuresform.h"
-#include "analysisforms/Common/binomialtestbayesianform.h"
-#include "analysisforms/Common/binomialtestform.h"
-#include "analysisforms/Common/contingencytablesbayesianform.h"
-#include "analysisforms/Common/contingencytablesform.h"
-#include "analysisforms/Common/correlationbayesianform.h"
-#include "analysisforms/Common/correlationbayesianpairsform.h"
-#include "analysisforms/Common/correlationform.h"
-#include "analysisforms/Common/correlationpartialform.h"
-#include "analysisforms/Common/descriptivesform.h"
-#include "analysisforms/Common/exploratoryfactoranalysisform.h"
-#include "analysisforms/Common/principalcomponentanalysisform.h"
-#include "analysisforms/Common/regressionlinearbayesianform.h"
-#include "analysisforms/Common/regressionlinearform.h"
-#include "analysisforms/Common/regressionlogisticform.h"
-#include "analysisforms/Common/regressionloglinearbayesianform.h"
-#include "analysisforms/Common/regressionloglinearform.h"
-#include "analysisforms/Common/reliabilityanalysisform.h"
-#include "analysisforms/Common/ttestbayesianindependentsamplesform.h"
-#include "analysisforms/Common/ttestbayesianonesampleform.h"
-#include "analysisforms/Common/ttestbayesianpairedsamplesform.h"
-#include "analysisforms/Common/ttestindependentsamplesform.h"
-#include "analysisforms/Common/ttestonesampleform.h"
-#include "analysisforms/Common/ttestpairedsamplesform.h"
-#include "analysisforms/Common/multinomialtestform.h"
+#include "analysis/analysisqmlform.h"
+#include "analysis/analysisforms/Common/ancovabayesianform.h"
+#include "analysis/analysisforms/Common/ancovaform.h"
+#include "analysis/analysisforms/Common/ancovamultivariateform.h"
+#include "analysis/analysisforms/Common/anovabayesianform.h"
+#include "analysis/analysisforms/Common/anovaform.h"
+#include "analysis/analysisforms/Common/anovamultivariateform.h"
+#include "analysis/analysisforms/Common/anovaonewayform.h"
+#include "analysis/analysisforms/Common/anovarepeatedmeasuresbayesianform.h"
+#include "analysis/analysisforms/Common/anovarepeatedmeasuresform.h"
+#include "analysis/analysisforms/Common/binomialtestbayesianform.h"
+#include "analysis/analysisforms/Common/binomialtestform.h"
+#include "analysis/analysisforms/Common/contingencytablesbayesianform.h"
+#include "analysis/analysisforms/Common/contingencytablesform.h"
+#include "analysis/analysisforms/Common/correlationbayesianform.h"
+#include "analysis/analysisforms/Common/correlationbayesianpairsform.h"
+#include "analysis/analysisforms/Common/correlationform.h"
+#include "analysis/analysisforms/Common/correlationpartialform.h"
+#include "analysis/analysisforms/Common/descriptivesform.h"
+#include "analysis/analysisforms/Common/exploratoryfactoranalysisform.h"
+#include "analysis/analysisforms/Common/principalcomponentanalysisform.h"
+#include "analysis/analysisforms/Common/regressionlinearbayesianform.h"
+#include "analysis/analysisforms/Common/regressionlinearform.h"
+#include "analysis/analysisforms/Common/regressionlogisticform.h"
+#include "analysis/analysisforms/Common/regressionloglinearbayesianform.h"
+#include "analysis/analysisforms/Common/regressionloglinearform.h"
+#include "analysis/analysisforms/Common/reliabilityanalysisform.h"
+#include "analysis/analysisforms/Common/ttestbayesianindependentsamplesform.h"
+#include "analysis/analysisforms/Common/ttestbayesianonesampleform.h"
+#include "analysis/analysisforms/Common/ttestbayesianpairedsamplesform.h"
+#include "analysis/analysisforms/Common/ttestindependentsamplesform.h"
+#include "analysis/analysisforms/Common/ttestonesampleform.h"
+#include "analysis/analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysis/analysisforms/Common/multinomialtestform.h"
 
-#include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
-#include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
-#include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
-#include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
-#include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
-#include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
 
-#include "analysisforms/SEM/semsimpleform.h"
+#include "analysis/analysisforms/SEM/semsimpleform.h"
 
-#include "analysisforms/ReinforcementLearning/reinforcementlearningr11tlearningform.h"
+#include "analysis/analysisforms/ReinforcementLearning/reinforcementlearningr11tlearningform.h"
 
-#include "analysisforms/Network/networkanalysisform.h"
+#include "analysis/analysisforms/Network/networkanalysisform.h"
 
-#include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
+#include "analysis/analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
 
 
 ///// 1-analyses headers
 
+#include <QDir>
 #include <QDebug>
 #include <QFile>
-#include <QFileInfo>
 #include <QToolTip>
+#include <QFileInfo>
+#include <QShortcut>
 #include <QMessageBox>
 #include <QStringBuilder>
-#include <QDropEvent>
-#include <QShortcut>
-#include <QDesktopWidget>
-#include <QTabBar>
-#include <QMenuBar>
-#include <QDir>
-#include <QFileDialog>
 #include <QDesktopServices>
+#include <QDesktopWidget>
+#include <QDropEvent>
+#include <QFileDialog>
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QScreen>
+#include <QQuickView>
+#include <QMenuBar>
+#include <QTabBar>
 
-#include "analysisloader.h"
+#include "analysis/analysisloader.h"
 
-#include "qutils.h"
-#include "appdirs.h"
+#include "utilities/qutils.h"
+#include "utilities/appdirs.h"
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "appinfo.h"
 
-#include "aboutdialog.h"
-#include "preferencesdialog.h"
+#include "gui/aboutdialog.h"
+#include "gui/preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "column.h"
 #include "sharedmemory.h"
-#include "module.h"
-#include "settings.h"
+#include "utilities/settings.h"
 
-#include "options/optionvariablesgroups.h"
-#include "datasetview.h"
+#include "analysis/options/optionvariablesgroups.h"
+#include "QML/datasetview.h"
+#include "modules/dynamicmodules.h"
+#include "modules/ribbonentry.h"
+#include "modules/analysismenumodel.h"
 
 #include "timers.h"
 #include "resultstesting/compareresults.h"
@@ -121,7 +125,7 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 
 	ui->setupUi(this);
 
-	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
+	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	_resultsJsInterface		= new ResultsJsInterface(this);
 	_package				= new DataSetPackage();
@@ -131,18 +135,34 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 	_labelFilterGenerator	= new labelFilterGenerator(_package, this);
 	_columnsModel			= new ColumnsModel(this);
 	_analyses				= new Analyses();
-	_engineSync				= new EngineSync(_analyses, _package, this);
+	_dynamicModules			= new DynamicModules(this);
+	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
+	_ribbonModel			= new RibbonModel(this);
+
 
 	StartOnlineDataManager();
+
+	// Add static modules
+	setupRibbonModels(QFileInfo("./Resources/Common/"				));
+	setupRibbonModels(QFileInfo("./Resources/Summary Statistics/"	));
+	setupRibbonModels(QFileInfo("./Resources/Network/"				));
+	setupRibbonModels(QFileInfo("./Resources/Meta Analysis/"		));
+	setupRibbonModels(QFileInfo("./Resources/SEM/"					));
+
+	// Add dynamic modules and connect signals to slots
+	_ribbonModel->connectToDynamicModules(_dynamicModules);
+
 	initQWidgetGUIParts();
 	makeConnections();
 	
 	// Set the initial tab on Common.
-	tabChanged(1);
+	showMainPage();
 	
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
+
+	loadRibbonQML();
 	loadQML();
 
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
@@ -220,8 +240,6 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::analysisAdded,							ui->backStage,			&BackStageWidget::analysisAdded								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
-	connect(_analyses,				&Analyses::requestComputedColumnCreation,			_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
-	connect(_analyses,				&Analyses::requestComputedColumnDestruction,		_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 
 	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
@@ -251,13 +269,10 @@ void MainWindow::makeConnections()
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
 
-	connectRibbonButton(ui->ribbonAnalysis);
-	connectRibbonButton(ui->ribbonSEM);
-	connectRibbonButton(ui->ribbonReinforcementLearning);
-	connectRibbonButton(ui->ribbonSummaryStatistics);
-	connectRibbonButton(ui->ribbonMetaAnalysis);
-	connectRibbonButton(ui->ribbonNetworkAnalysis);
+	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
 }
+
+
 
 void MainWindow::initQWidgetGUIParts()
 {
@@ -266,7 +281,8 @@ void MainWindow::initQWidgetGUIParts()
 
 	ui->splitter->setSizes(QList<int>({575}));
 
-	ui->tabBar->init(this);
+	ui->tabBar->init(this, _dynamicModules, _ribbonModel);
+	ui->tabBar->addModuleInstallerEntryToPlusMenu();
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -277,7 +293,7 @@ void MainWindow::initQWidgetGUIParts()
 	_buttonPanel		= new QWidget(ui->panel_2_Options);
 	_buttonPanelLayout	= new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
-	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top(), _buttonPanelLayout->contentsMargins().right(), 0);
+	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top() - 5, _buttonPanelLayout->contentsMargins().right(), 0);
 
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
@@ -291,8 +307,8 @@ void MainWindow::initQWidgetGUIParts()
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
-	_buttonPanelLayout->addWidget(_runButton);
-	_buttonPanelLayout->addStretch();
+	//_buttonPanelLayout->addWidget(_runButton);
+	//_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
@@ -329,6 +345,7 @@ void MainWindow::loadQML()
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
 
+	ui->quickWidget_Data->engine()->addImportPath("qrc:///components");
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
 	QObject * DataView				= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
@@ -339,6 +356,84 @@ void MainWindow::loadQML()
 
 	qmlProgressBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
 }
+
+
+void MainWindow::loadRibbonQML()
+{
+	QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+
+	// TODO: This statement causes a crash if it cannot find the module
+	RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
+
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
+
+	bool enable = currentModel != NULL;
+	if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
+		enable = false;
+	}
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
+
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("modulesPath", AppDirs::modulesDir());
+	ui->quickWidget_Ribbon->setSource(QUrl(QString("qrc:///qml/Ribbon/Ribbon.qml")));
+
+	QObject *ribbonButton = ui->quickWidget_Ribbon->rootObject()->findChild<QObject*>("jaspRibbon");
+	connect(ribbonButton, SIGNAL(ribbonButtonClicked(QVariant)), this, SLOT(handleRibbonButtonClicked(QVariant)));
+}
+
+
+void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
+{
+	// NOTE: Workaround for now. This will be replaced when mainwindow is made in QML
+
+	AnalysisMenuModel* model			= qvariant_cast<AnalysisMenuModel*>(analysisMenuModel);
+	Modules::AnalysisEntries entries	= model->getAnalysisEntries();
+
+	if(entries.size() == 1)
+	{
+		QAction *action = new QAction();
+		action->setText(QString::fromStdString(entries[0]->title()));
+		action->setData(QString::fromStdString(entries[0]->buttonMenuString()));
+		onMenuClicked(action);
+	}
+	else
+	{
+
+		QMenu *menu = new QMenu(this); //Who cleans this up?
+		connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onMenuClicked(QAction *)));
+
+		for (auto * i : entries) {
+
+			if (i->title() == "???") {
+				menu->addSeparator();
+				continue;
+			}
+
+			QAction *action = new QAction();
+			action->setText(QString::fromStdString(i->title()));
+			action->setData(QString::fromStdString(i->buttonMenuString()));
+			menu->addAction(action);
+		}
+
+		menu->exec(QCursor::pos());
+	}
+}
+
+void MainWindow::onMenuClicked(QAction *action)
+{
+	std::string possiblyCodedReference = action->data().toString().toStdString();
+
+	try
+	{
+		addAnalysisFromDynamicModule(_dynamicModules->retrieveCorrespondingAnalysisEntry(possiblyCodedReference));
+	}
+	catch(Modules::ModuleException &)
+	{
+		// It probably is a "normal entry"
+		ribbonEntrySelected(action->data().toString());
+	}
+}
+
 
 void MainWindow::open(QString filepath)
 {
@@ -441,12 +536,12 @@ bool MainWindow::filterShortCut()
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateExcludeKey()));
 	timer->start(100);
 #endif
-	
+
 	return exclude;
 }
 
 void MainWindow::saveKeysSelected()
-{	
+{
 	if (filterShortCut())
 		return;
 
@@ -468,7 +563,7 @@ void MainWindow::refreshKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	refreshAllAnalyses();
 }
 
@@ -476,7 +571,7 @@ void MainWindow::zoomInKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomIn();
 }
 
@@ -484,7 +579,7 @@ void MainWindow::zoomOutKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomOut();
 }
 
@@ -492,7 +587,7 @@ void MainWindow::zoomEqualKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomReset();
 }
 
@@ -728,7 +823,7 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 		}
 		else
 		{
-			QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			QString imagePath = QString::fromStdString(TempFiles::sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
 			if (QFile::exists(finalPath))
 			{
 				QFile::remove(finalPath);
@@ -746,7 +841,7 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 		return;
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
 
-	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString imagePath = QString::fromStdString(TempFiles::sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
 	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
 
 	if (!finalPath.isEmpty())
@@ -783,31 +878,34 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
 	if (_analysisFormsMap.count(analysis) == 0)
 	{
-		AnalysisForm * formCreated	= loadForm(analysis->name());
+		AnalysisForm * formCreated	= createAnalysisForm(analysis);
 		_analysisFormsMap[analysis] = formCreated;
 
-		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
-		for (QObject * child : formCreated->children())
+		if (!analysis->fromQML())
 		{
-			QWidget* w = dynamic_cast<QWidget*>(child);
-			if (w != NULL && w->objectName() == "topWidget")
+			//sizing of options widget and panel to fit buttons and conform to largest size for consistency
+			for (QObject * child : formCreated->children())
 			{
-				w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
-				break;
+				QWidget* w = dynamic_cast<QWidget*>(child);
+				if (w != NULL && w->objectName() == "topWidget")
+				{
+					w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
+					break;
+				}
 			}
 		}
 
 
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet();
-		formCreated->connectToAvailableVariablesModel(dataSet);
 		formCreated->bindTo(options, dataSet);
 
 		connect(formCreated, &AnalysisForm::illegalChanged, this, &MainWindow::illegalOptionStateChanged);
 	}
-	else
-		_analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
-	
+	//else
+		//We no longer need to do this? _analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
+
+
 	illegalOptionStateChanged(_analysisFormsMap[analysis]);
 	_analysisFormsMap[analysis]->show();
 
@@ -816,18 +914,25 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 void MainWindow::updateShownVariablesModel()
 {
-	if(_currentOptionsWidget != NULL)
-		_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
+	//if(_currentOptionsWidget != NULL)
+		//_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
+
+#ifdef JASP_DEBUG
+	std::cout << "void MainWindow::updateShownVariablesModel() does not do anything anymore because connectToAvailableVariablesModel is gone, this however is no problem if any new added columns show up in you analysisform. If they do It is probably also nice to remove this warning and function etc!" << std::endl;
+#endif
 }
 
-
-AnalysisForm* MainWindow::loadForm(const string name)
+AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 {
+	const string name = analysis->name();
+
+	qDebug() << "Form " << QString::fromStdString(name) << " loaded";
 	AnalysisForm *form = NULL;
 
 	QWidget *contentArea = ui->optionsContentArea;
 
-	if		(name == "Ancova")										form = new AncovaForm(contentArea);
+	if (analysis->fromQML())										form = new AnalysisQMLForm(contentArea, analysis);
+	else if (name == "Ancova")										form = new AncovaForm(contentArea);
 	else if (name == "AnovaOneWay")									form = new AnovaOneWayForm(contentArea);
 	else if (name == "Correlation")									form = new CorrelationForm(contentArea);
 	else if (name == "Descriptives")								form = new DescriptivesForm(contentArea);
@@ -870,11 +975,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "BinomialTest")								form = new BinomialTestForm(contentArea);
 	else if (name == "SEMSimple")									form = new SEMSimpleForm(contentArea);
 	else if (name == "Anova")										form = new AnovaForm(contentArea);
-///// 4-analysis if-else ladder
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
-	if(form != NULL)
+	if (form != NULL)
 	{
 		connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
 		connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
@@ -892,8 +996,9 @@ void MainWindow::showForm(Analysis *analysis)
 
 	if (_currentOptionsWidget != NULL)
 	{
+		QWidget *theWidget = _currentOptionsWidget->getWidget();
 
-		int requiredSize		= _currentOptionsWidget->sizeHint().width();
+		int requiredSize		= theWidget->sizeHint().width();
 		int currentOptionSpace	= ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
 
 		if (requiredSize > currentOptionSpace)
@@ -901,10 +1006,12 @@ void MainWindow::showForm(Analysis *analysis)
 			ui->panel_2_Options->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
-		_currentOptionsWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
 
-		_currentOptionsWidget->show();
-		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
+		theWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
+		theWidget->show();
+
+		ui->scrollArea->setVerticalScrollBarPolicy(analysis->fromQML() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAlwaysOn);
+		ui->optionsContentAreaLayout->addWidget(theWidget);//, 0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panel_2_Options->isVisible() == false)
 			showOptionsPanel();
@@ -925,7 +1032,8 @@ void MainWindow::closeCurrentOptionsWidget()
 {
 	if (_currentOptionsWidget != NULL)
 	{
-		_currentOptionsWidget->hide();
+		//no need to disconnect illegalChanged and illegalOptionStateChanged, options shouldn't change if the form isn't visible right?
+		_currentOptionsWidget->getWidget()->hide();
 		_currentOptionsWidget = NULL;
 	}
 }
@@ -949,24 +1057,43 @@ void MainWindow::analysisUnselectedHandler()
 		hideOptionsPanel();
 }
 
+void MainWindow::showBackstage()
+{
+	static int backstageIndex = ui->topLevelWidgets->indexOf(ui->backStage);
+	ui->topLevelWidgets->setCurrentIndex(backstageIndex);
+}
+
+
+void MainWindow::showMainPage()
+{
+	static int mainPageIndex = ui->topLevelWidgets->indexOf(ui->mainPage);
+	ui->topLevelWidgets->setCurrentIndex(mainPageIndex);
+
+
+	QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+	RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
+
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
+
+	bool enable = currentModel != NULL;
+	if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
+		enable = false;
+	}
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
+}
+
+
 
 void MainWindow::tabChanged(int index)
 {
 	if (index == 0)
-	{
-		ui->topLevelWidgets->setCurrentIndex(0);
-	}
+		showBackstage();
 	else
-	{
-		ui->topLevelWidgets->setCurrentIndex(1); //Should be a reference to the mainPage
+		showMainPage();
 
-		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-		if (Module::isModuleName(currentActiveTab))
-		{
-			const Module& module = Module::getModule(currentActiveTab);
-			ui->ribbon->setCurrentIndex(module.ribbonIndex());
-		}
-	}
+
+
 }
 
 
@@ -1028,7 +1155,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		}
 		else
 		{
-			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 			_loader.io(event, _package);
 			showProgress();
@@ -1045,35 +1172,22 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			getAnalysesUserData();
 			_resultsJsInterface->exportPreviewHTML();
 
-			Json::Value analysesDataList = Json::arrayValue;
-			for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
-			{
-				Analysis *analysis = *itr;
-				if (analysis != NULL && analysis->isVisible())
-				{
-					Json::Value analysisData = analysis->asJSON();
-					analysisData["options"] = analysis->options()->asJSON();
-					analysisData["userdata"] = analysis->userData();
-					analysesDataList.append(analysisData);
-				}
-			}
+			Json::Value analysesData(Json::objectValue);
 
-			Json::Value analysesData = Json::objectValue;
-			analysesData["analyses"] = analysesDataList;
-
-			analysesData["meta"] = _resultsJsInterface->getResultsMeta();
+			analysesData["analyses"]	= _analyses->asJson();
+			analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
 
 			_package->setAnalysesData(analysesData);
 		}
 
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_loader.io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_resultsJsInterface->exportHTML();
 
@@ -1082,7 +1196,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
 		showProgress();
 	}
@@ -1091,7 +1205,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		if (_package->dataSet() == NULL)
 			return;
 
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
 		showProgress();
 	}
@@ -1107,7 +1221,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			{
 				FileEvent *saveEvent = ui->backStage->save();
 				event->chain(saveEvent);
-				connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 				ui->panel_1_Data->hide();
 			}
 			else if (reply == QMessageBox::Cancel)
@@ -1177,6 +1291,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
 				startComparingResults();
+
+			ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", true); //Should really call a function or something or set something in a model!
+
+
 		}
 		else
 		{
@@ -1309,31 +1427,17 @@ void MainWindow::populateUIfromDataSet()
 				}
 			}
 
-			for (Json::ValueIterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
+			for (Json::Value &analysisData : analysesDataList)
 			{
 				try
 				{
-					Json::Value &analysisData = *iter;
-
-					QString name = QString::fromStdString(analysisData["name"].asString());
-					QString module = QString::fromStdString(analysisData["module"].asString());
-					if (module.isEmpty())
-						module = "Common";
-					int id = analysisData["id"].asInt();
-
-					Json::Value &optionsJson	= analysisData["options"];
-					Json::Value &resultsJson	= analysisData["results"];
-					Json::Value &userDataJson	= analysisData["userdata"];
-					Json::Value &versionJson	= analysisData["version"];
-
-					Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-
-					Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
-
-					Analysis *analysis			= _analyses->create(module, name, id, version, &optionsJson, status);
-
-					analysis->setUserData(userDataJson);
-					analysis->setResults(resultsJson);
+					_analyses->createFromJaspFileEntry(analysisData, _dynamicModules);
+				}
+				catch (Modules::ModuleException modProb)
+				{
+					//Maybe show a nicer messagebox?
+					errorFound = true;
+					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << modProb.what();
 				}
 				catch (runtime_error e)
 				{
@@ -1349,7 +1453,7 @@ void MainWindow::populateUIfromDataSet()
 		}
 
 		if (corruptAnalyses == 1)
-			errorMsg << "An error was detected in an analyses. This analyses has been removed for the following reason:\n" << corruptionStrings.str();
+			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 	}
@@ -1376,11 +1480,11 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 {
 	bool loaded = _package->isLoaded();
 
-	ui->ribbonAnalysis->setDataSetLoaded(loaded);
-	ui->ribbonSEM->setDataSetLoaded(loaded);
-	ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
-	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
-	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
+	// ui->ribbonAnalysis->setDataSetLoaded(loaded);
+	// ui->ribbonSEM->setDataSetLoaded(loaded);
+	// ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
+	// ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
+	// ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
 ///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 
@@ -1528,21 +1632,39 @@ void MainWindow::emptyValuesChangedHandler()
 	}
 }
 
-void MainWindow::itemSelected(const QString &item)
+void MainWindow::ribbonEntrySelected(const QString &item)
 {
 	try
 	{
-		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-		const Module& module = Module::getModule(currentActiveTab);
-
-		_currentAnalysis = _analyses->create(module.name(), item);
+		QString currentActiveTab	= ui->tabBar->getCurrentActiveTab();
+		_currentAnalysis			= _analyses->create(currentActiveTab, item);
 
 		showForm(_currentAnalysis);
+		_analyses->analysisAdded(_currentAnalysis);
+
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
-		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
-		info = info.arg(_currentAnalysis->id());
+		checkUsedModules();
+	}
+	catch (runtime_error& e)
+	{
+		_fatalError = tq(e.what());
+		fatalError();
+	}
+}
+
+void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
+{
+	try
+	{
+		_currentAnalysis = _analyses->create(entry);
+
+		showForm(_currentAnalysis);
+		_analyses->analysisAdded(_currentAnalysis);
+
+		_currentAnalysis->setResults(entry->getDefaultResults());
+
+		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
 		checkUsedModules();
 	}
@@ -1579,13 +1701,9 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 void MainWindow::adjustOptionsPanelWidth()
 {
 	if (ui->panel_2_Options->width() == ui->panel_2_Options->maximumWidth() && ui->panel_1_Data->isHidden())
-	{
 		showDataPanel();
-	}
 	else if (ui->panel_1_Data->width() == ui->panel_1_Data->minimumWidth() && ui->panel_1_Data->isVisible() && ui->panel_2_Options->isVisible())
-	{
 		hideDataPanel();
-	}
 
 	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
@@ -1741,7 +1859,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		selected = true;
 		closeCurrentOptionsWidget();
 	}
-	
+
 	delete _analysisFormsMap[analysis];
 	_analysisFormsMap.erase(analysis);
 
@@ -1811,13 +1929,10 @@ void MainWindow::getAnalysesUserData()
 	Json::Reader parser;
 	parser.parse(fq(userData.toString()), data);
 
-	for (Json::Value::iterator iter = data.begin(); iter != data.end(); iter++)
+	for (Json::Value &userDataObj  : data)
 	{
-		Json::Value &userDataObj = *iter;
-
-		Analysis *analysis = _analyses->get(userDataObj["id"].asInt());
-
-		Json::Value &analysisUserData = userDataObj["userdata"];
+		Analysis *analysis				= _analyses->get(userDataObj["id"].asInt());
+		Json::Value &analysisUserData	= userDataObj["userdata"];
 
 		analysis->setUserData(analysisUserData);
 	}
@@ -2004,6 +2119,15 @@ void MainWindow::unitTestTimeOut()
 	_application->exit(2);
 }
 
+void MainWindow::analysisFormChangedHandler(Analysis *analysis)
+{
+	if (_currentOptionsWidget == _analysisFormsMap[analysis])
+		closeCurrentOptionsWidget();
+	delete _analysisFormsMap[analysis];
+	_analysisFormsMap.erase(analysis);
+	showForm(analysis);
+}
+
 void MainWindow::startComparingResults()
 {
 	if (resultXmlCompare::compareResults::theOne()->testMode())
@@ -2078,4 +2202,31 @@ void MainWindow::pauseEngines()
 void MainWindow::resumeEngines()
 {
 	_engineSync->resume();
+}
+
+QWebEngineView* MainWindow::getWebViewResults()
+{
+	return ui->webViewResults;
+}
+
+void MainWindow::setCurrentTab(QString tabName)
+{
+	ui->tabBar->setCurrentTab(tabName);
+}
+
+void MainWindow::showQMLWindow(QString urlQml)
+{
+	std::cout << "showing some qml in a separate window, should be all QML!" << std::endl;
+
+	QQuickView * newQMLWindow = new QQuickView;
+
+	newQMLWindow->engine()->addImportPath("qrc:///components");
+	newQMLWindow->rootContext()->setContextProperty("dynamicModules", _dynamicModules);
+	newQMLWindow->rootContext()->setContextProperty("ppiScale", 1);
+	newQMLWindow->setSource(urlQml);
+	newQMLWindow->setResizeMode(QQuickView::SizeRootObjectToView);
+	newQMLWindow->show();
+
+	connect(newQMLWindow->rootObject(), SIGNAL(closeWindow()), newQMLWindow, SLOT(close()));
+
 }

@@ -20,7 +20,7 @@
 #define BOUNDPAIRSTABLE_H
 
 #include <QTableView>
-#include "bound.h"
+#include "analysis/options/bound.h"
 #include "availablefieldslistview.h"
 #include "assignbutton.h"
 #include "tablemodelpairsassigned.h"

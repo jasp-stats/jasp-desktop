@@ -22,8 +22,8 @@
 #include <QAbstractTableModel>
 
 #include "boundmodel.h"
-#include "options/optionstable.h"
-#include "terms.h"
+#include "analysis/options/optionstable.h"
+#include "analysis/options/terms.h"
 
 class TableModelVariablesOptions : public QAbstractTableModel, public BoundModel
 {

@@ -20,7 +20,7 @@
 
 #include "boost/foreach.hpp"
 
-#include "availablefields.h"
+#include "analysis/options/availablefields.h"
 
 AvailableFieldsListView::AvailableFieldsListView(QWidget *parent) :
 	ListView(parent)

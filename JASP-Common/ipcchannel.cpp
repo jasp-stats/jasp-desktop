@@ -35,9 +35,9 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _bas
 	_memoryMasterToSlave	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameMtS.c_str(), *_sizeMtoS);
 	_memorySlaveToMaster	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameStM.c_str(), *_sizeStoM);
 
-	tempFiles_addShmemFileName(_baseName);
-	tempFiles_addShmemFileName(_nameMtS);
-	tempFiles_addShmemFileName(_nameStM);
+	TempFiles::addShmemFileName(_baseName);
+	TempFiles::addShmemFileName(_nameMtS);
+	TempFiles::addShmemFileName(_nameStM);
 
 	generateNames();
 
@@ -175,6 +175,12 @@ void IPCChannel::doubleMemoryOut()
 	std::cout << *_sizeOut << "\n" << std::flush;
 #endif
 }
+
+void IPCChannel::send(string &&data, bool alreadyLockedMutex)
+{
+	send(data, alreadyLockedMutex);
+}
+
 
 void IPCChannel::send(string &data, bool alreadyLockedMutex)
 {

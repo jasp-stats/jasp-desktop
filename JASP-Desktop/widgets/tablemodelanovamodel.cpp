@@ -21,10 +21,10 @@
 #include <QMimeData>
 #include <QDebug>
 
-#include "qutils.h"
-#include <boost/foreach.hpp>
+#include "utilities/qutils.h"
 
-#include "options/optionboolean.h"
+
+#include "analysis/options/optionboolean.h"
 
 using namespace std;
 
@@ -150,7 +150,7 @@ void TableModelAnovaModel::bindTo(Option *option)
 	_terms.clear();
 	_terms.removeParent();
 
-	foreach (Options *row, _rows)
+	for (Options *row : _rows)
 	{
 		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
 		vector<string> term = nameOption->term();
@@ -185,7 +185,7 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 	Terms terms = _terms;
 	Terms toRemove;
 
-	foreach (const QModelIndex &index, sorted)
+	for (const QModelIndex &index : sorted)
 	{
 		int rowNo = index.row();
 
@@ -198,7 +198,7 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 		lastRowDeleted = rowNo;
 	}
 
-	foreach (const Term &rem, toRemove)
+	for (const Term &rem : toRemove)
 	{
 		size_t i = 0;
 

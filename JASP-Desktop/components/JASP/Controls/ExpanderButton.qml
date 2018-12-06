@@ -15,43 +15,42 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.10
+
+import QtQuick 2.11
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 FocusScope {
-    id: expanderWrapper
-    implicitHeight: expanderButton.height + (expanded ? 15 + expanderArea.height : 0)
-    implicitWidth: form.formWidthAvailable
-    anchors.topMargin: 15
-    default property alias content: expanderArea.children
-    
-    property alias button: expanderButton
-    property alias area: expanderArea
-    property alias spacing: expanderArea.spacing
-    property alias text: label.text
-    property bool expanded: false
-    property alias debug: expanderButton.debug
+	id:					expanderWrapper
+	implicitHeight:		expanderButton.height + (expanded ? 15 + expanderArea.height : 0)
+	implicitWidth:		parent.width
+	anchors.topMargin:	15
 
-    readonly property string iconsFolder: "qrc:/images/"
-    readonly property string expandedIcon: "expander-arrow-down.png"
-    readonly property string contractedIcon: "expander-arrow-up.png"
-    
-    property var childControls: []
+	default		property alias	content:		expanderArea.children
+				property alias	button:			expanderButton
+				property alias	area:			expanderArea
+				property alias	spacing:		expanderArea.spacing
+				property alias	text:			label.text
+				property bool	expanded:		false
+				property alias	debug:			expanderButton.debug
+	readonly	property string iconsFolder:	"qrc:/images/"
+	readonly	property string	expandedIcon:	"expander-arrow-down.png"
+	readonly	property string	contractedIcon: "expander-arrow-up.png"
+				property var	childControls:	[]
 
     clip: true
     Behavior on implicitHeight {
-        PropertyAnimation {duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3}
+		PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3}
     }
   
 
     JASPControl {
-        id: expanderButton
-        controlType: "Expander"
-        isBound: false
-        backgroundRectangle: expanderRectangle
-        width: parent.width
-        height: 22
+		id:					expanderButton
+		controlType:		"Expander"
+		isBound:			false
+		controlBackground:	expanderRectangle
+		width:				parent.width
+		height:				22
         
         property var nextExpander: null
         

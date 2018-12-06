@@ -32,10 +32,10 @@
 #include <QIcon>
 #include <QAbstractItemView>
 
-#include "terms.h"
+#include "analysis/options/terms.h"
 #include "tablemodel.h"
 #include "common.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
 class TableModelVariables : public TableModel, public VariableInfoConsumer
 {
@@ -60,7 +60,7 @@ public:
     virtual Qt::DropActions supportedDragActions() const OVERRIDE;
 
     virtual QStringList mimeTypes() const OVERRIDE;
-    virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
+	virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
     virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
     virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
 
@@ -91,8 +91,6 @@ private:
 
 	int _variableTypesSuggested;
 	int _variableTypesAllowed;
-
-	QMimeData *_mimeData;
 
 	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;

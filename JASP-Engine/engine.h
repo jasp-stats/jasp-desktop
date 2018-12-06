@@ -66,59 +66,55 @@ public:
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 
-	bool paused() { return currentEngineState == engineState::paused; }
+	bool paused() { return _currentEngineState == engineState::paused; }
 
-private:
-// Methods:
-	void receiveFilterMessage(			Json::Value jsonRequest);
+
+private: // Methods:
 	void receiveRCodeMessage(			Json::Value jsonRequest);
-	void receiveComputeColumnMessage(	Json::Value jsonRequest);
+	void receiveFilterMessage(			Json::Value jsonRequest);
 	void receiveAnalysisMessage(		Json::Value jsonRequest);
+	void receiveComputeColumnMessage(	Json::Value jsonRequest);
+	void receiveModuleRequestMessage(	Json::Value jsonRequest);
 
+	void runComputeColumn(	std::string computeColumnName, std::string computeColumnCode, Column::ColumnType computeColumnType);
 	void runAnalysis();
-	void runRCode();
-	void runFilter();
-	void runComputeColumn();
+	void runFilter(			std::string filter, std::string generatedFilter, int filterRequestId);
+	void runRCode(			std::string rCode,	int rCodeRequestId);
+
 
 	void pauseEngine();
 	void resumeEngine();
 	void sendEnginePaused();
 	void sendEngineResumed();
 
-	void removeNonKeepFiles(Json::Value filesToKeepValue);
 	void saveImage();
     void editImage();
+	void removeNonKeepFiles(	Json::Value filesToKeepValue);
 
 	void sendAnalysisResults();
-
-	void sendFilterResult(std::vector<bool> filterResult, std::string warning = "");
-	void sendFilterError(std::string errorMessage);
-
-
-	void sendRCodeResult(std::string rCodeResult);
-	void sendRCodeError();
+	void sendFilterResult(		int filterRequestId,	std::vector<bool> filterResult, std::string warning = "");
+	void sendFilterError(		int filterRequestId,	std::string errorMessage);
+	void sendRCodeResult(		std::string rCodeResult,		int rCodeRequestId);
+	void sendRCodeError(		int rCodeRequestId);
 
 	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();
 
-	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
-	void provideStateFileName(std::string &root,		std::string &relativePath);
-	void provideJaspResultsFileName(std::string &root,	std::string &relativePath);
+	void provideTempFileName(		const std::string &extension,	std::string &root,			std::string &relativePath);
+	void provideStateFileName(		std::string &root,				std::string &relativePath);
+	void provideJaspResultsFileName(std::string &root,				std::string &relativePath);
 
-// Data:
+private: // Data:
 	static Engine * _EngineInstance;
 
 	Status _analysisStatus = empty;
-
 
 	int			_analysisId,
 				_analysisRevision,
 				_progress,
 				_ppi = 96,
-				_slaveNo = 0,
-				_rCodeRequestId = -1,
-				_filterRequestId = -1;
+				_slaveNo = 0;
 
 	bool		_analysisRequiresInit,
 				_analysisJaspResults,
@@ -131,14 +127,9 @@ private:
 				_analysisResultsMeta,
 				_analysisStateKey,
 				_analysisResultsString,
-				_filter = "",
-				_generatedFilter = "",
-				_rCode = "",
-				_computeColumnCode = "",
-				_computeColumnName = "",
-				_imageBackground = "white";
-
-	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
+				_imageBackground = "white",
+				_analysisRFile		= "",
+				_dynamicModuleCall	= "";
 
 	Json::Value _imageOptions,
 				_analysisResults;
@@ -147,7 +138,7 @@ private:
 
 	unsigned long _parentPID = 0;
 
-	engineState currentEngineState = engineState::idle;
+	engineState _currentEngineState = engineState::idle;
 };
 
 #endif // ENGINE_H

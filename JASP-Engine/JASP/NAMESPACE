@@ -1,3 +1,8 @@
 exportPattern("^[[:alpha:]]+")
 export(`%|%`)
 export('.fromRCPP')
+export('.readDataSetToEnd')
+export('.readDataSetHeader')
+export('.unv')
+export('.v')
+export('.clean')

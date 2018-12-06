@@ -16,15 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 JASPControl {
-    controlType: "CheckBox"
-    implicitWidth: control.width; implicitHeight: control.height
-    property alias text: control.text
+	controlType:			"CheckBox"
+	implicitWidth:			control.width; implicitHeight: control.height
+	useDefaultBackground:	true
+	property alias text:	control.text
     property alias checked: control.checked
+    property alias control: control
+
     signal clicked();
     
     Component.onCompleted: {
@@ -34,10 +37,9 @@ JASPControl {
     CheckBox {
         id: control
         height: Theme.checkBoxIndicatorLength + 4
-        width: Theme.checkBoxIndicatorLength + label.implicitWidth + control.spacing + 6
-        focus: true
-        
-        background: backgroundRectangle
+
+        width: Theme.checkBoxIndicatorLength + 4 + (label.implicitWidth ? label.implicitWidth + control.spacing + 2 : 0)
+        focus: true        
 
         indicator: Rectangle {
             width: Theme.checkBoxIndicatorLength

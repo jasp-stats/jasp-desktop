@@ -21,9 +21,9 @@
 
 #include "tablemodel.h"
 #include "boundmodel.h"
-#include "options/options.h"
-#include "options/optionstable.h"
-#include "terms.h"
+#include "analysis/options/options.h"
+#include "analysis/options/optionstable.h"
+#include "analysis/options/terms.h"
 
 class TableModelContrasts : public TableModel, public BoundModel
 {

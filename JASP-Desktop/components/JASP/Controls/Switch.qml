@@ -16,13 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 JASPControl {
     controlType: "Switch"
     implicitWidth: control.width; implicitHeight: control.height
+
+    useDefaultBackground: true
+
     property alias text: control.text
     property alias checked: control.checked
     signal clicked();
@@ -36,9 +39,6 @@ JASPControl {
         height: control.indicator.height + 4
         width: control.indicator.width + label.implicitWidth + control.spacing + 6
         focus: true
-        
-        background: backgroundRectangle
-        
         indicator: Rectangle {
             id: switchHandle
             width: Theme.switchHeight * 2.2

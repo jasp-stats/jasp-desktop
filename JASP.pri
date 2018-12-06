@@ -3,8 +3,8 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = JASP-R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION = 5 # Interface changes
-JASP_R_INTERFACE_MINOR_VERSION = 1 # Code changes
+JASP_R_INTERFACE_MAJOR_VERSION = 6 # Interface changes
+JASP_R_INTERFACE_MINOR_VERSION = 0 # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -73,3 +73,6 @@ exists(/app/lib/*)	{ INSTALLPATH = /app/bin
  } else	{
   INSTALLPATH = /usr/bin
 }
+
+DEFINES += QT_NO_FOREACH #Common Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
+macx: QMAKE_CXXFLAGS += -Wunused-parameter

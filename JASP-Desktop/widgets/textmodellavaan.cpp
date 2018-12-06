@@ -22,7 +22,7 @@
 #include <QRegExp>
 #include <QDebug>
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 TextModelLavaan::TextModelLavaan(QObject *parent)
 	: QTextDocument(parent)
@@ -102,7 +102,7 @@ TextModelLavaan::SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 	operatorPatterns << "\\=" << "\\~" << "\\<"
 					 << "\\*" << "\\>" << "\\:"
 					 << "\\%" << "\\|" << "\\+";
-	foreach (const QString &pattern, operatorPatterns) {
+	for (const QString &pattern : operatorPatterns) {
 		rule.pattern = QRegularExpression(pattern);
 		rule.format = operatorFormat;
 		highlightingRules.append(rule);
@@ -124,9 +124,11 @@ TextModelLavaan::SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 
 void TextModelLavaan::SyntaxHighlighter::highlightBlock(const QString &text)
 {
-	foreach (const HighlightingRule &rule, highlightingRules) {
+	for (const HighlightingRule &rule : highlightingRules)
+	{
 		QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
-		while (matchIterator.hasNext()) {
+		while (matchIterator.hasNext())
+		{
 			QRegularExpressionMatch match = matchIterator.next();
 			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
 		}

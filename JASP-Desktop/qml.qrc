@@ -2,24 +2,36 @@
     <qresource prefix="/">
         <file>components/JASP/Theme/qmldir</file>
         <file>components/JASP/Theme/Theme.qml</file>
-        <file>components/JASP/Controls/Button.qml</file>
-        <file>components/JASP/Controls/CheckBox.qml</file>
-        <file>components/JASP/Controls/Switch.qml</file>
-        <file>components/JASP/Controls/AssignedVariablesList.qml</file>
-        <file>components/JASP/Controls/VariablesList.qml</file>
-        <file>components/JASP/Controls/Form.qml</file>
+        <file>components/JASP/Controls/qmldir</file>
         <file>components/JASP/Controls/AssignButton.qml</file>
+        <file>components/JASP/Controls/AssignedVariablesList.qml</file>
+        <file>components/JASP/Controls/Button.qml</file>
+        <file>components/JASP/Controls/ButtonGroup.qml</file>
+        <file>components/JASP/Controls/CheckBox.qml</file>
+        <file>components/JASP/Controls/ComboBox.qml</file>
         <file>components/JASP/Controls/ExpanderButton.qml</file>
-        <file>components/JASP/Controls/TextField.qml</file>
-        <file>components/JASP/Controls/VariablesForm.qml</file>
-        <file>components/JASP/Controls/RadioButton.qml</file>
-        <file>components/JASP/Controls/Label.qml</file>
+        <file>components/JASP/Controls/Form.qml</file>
+        <file>components/JASP/Controls/GridLayout.qml</file>
         <file>components/JASP/Controls/GroupBox.qml</file>
         <file>components/JASP/Controls/JASPControl.qml</file>
-        <file>components/JASP/Controls/GridLayout.qml</file>
-        <file>components/JASP/Controls/ButtonGroup.qml</file>
+        <file>components/JASP/Controls/Label.qml</file>
         <file>components/JASP/Controls/PercentField.qml</file>
-        <file>components/JASP/Controls/ComboBox.qml</file>
-        <file>components/JASP/Controls/qmldir</file>
+        <file>components/JASP/Controls/RadioButton.qml</file>
+        <file>components/JASP/Controls/TextField.qml</file>
+        <file>components/JASP/Controls/VariablesList.qml</file>
+        <file>components/JASP/Controls/VariablesForm.qml</file>
+        <file>components/JASP/Controls/Switch.qml</file>
+        <file>modules/ModuleInstaller.qml</file>
+        <file>components/JASP/Controls/FactorsList.qml</file>
+        <file>components/JASP/Controls/ExtraControlColumn.qml</file>
+        <file>components/JASP/Controls/Slider.qml</file>
+        <file>components/JASP/Controls/TextArea.qml</file>
+        <file>components/JASP/Controls/TableView.qml</file>
+        <file>components/JASP/Widgets/qmldir</file>
+        <file>components/JASP/Widgets/BayesFactorType.qml</file>
+        <file>components/JASP/Widgets/Divider.qml</file>
+        <file>components/JASP/Widgets/SubjectivePriors.qml</file>
+        <file>components/JASP/Widgets/ContrastsList.qml</file>
+        <file>components/JASP/Widgets/Chi2TestTableView.qml</file>
     </qresource>
 </RCC>

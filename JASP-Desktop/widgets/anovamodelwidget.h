@@ -24,10 +24,10 @@
 #include <QPainter>
 #include <QToolTip>
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 
-#include "options/optionvariables.h"
-#include "availablefields.h"
+#include "analysis/options/optionvariables.h"
+#include "analysis/options/availablefields.h"
 
 #include "tablemodelvariablesavailable.h"
 #include "tablemodelanovamodel.h"
