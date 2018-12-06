@@ -7,4 +7,4 @@ Maintainer: Bruno Boutin <B.Boutin@uva.nl>
 Description: Package contains the JASP Bayesian and Frequentist analyses.
     See <https://jasp-stats.org> for more details.
 License: GPL2+
-Imports: modules
+Imports:
