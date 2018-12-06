@@ -230,14 +230,21 @@ std::string	result::diffToString(const result & other) const
 	if(isEqual(other))
 		return "Results are the same\n";
 
-	if(resultTables.size() != other.resultTables.size())
-		return "Results have different count of tables\n";
-
 	std::stringstream out;
-	out << "Tables:\n";
 
-	for(size_t i=0; i<resultTables.size(); i++)
-		out << resultTables[i].diffToString(other.resultTables[i]) << "\n";
+	if(resultTables.size() != other.resultTables.size())
+	{
+		out << "Results have different count of tables\n";
+		out << "Result old =\n" << toString() << "\n";
+		out << "Result new =\n" << other.toString() << "\n";
+	}
+	else
+	{
+		out << "Tables:\n";
+
+		for(size_t i=0; i<resultTables.size(); i++)
+			out << resultTables[i].diffToString(other.resultTables[i]) << "\n";
+	}
 
 	return out.str();
 

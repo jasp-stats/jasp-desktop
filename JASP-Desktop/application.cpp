@@ -23,16 +23,15 @@
 
 #include <iostream>
 
-Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut) :
+Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save) :
 	QApplication(argc, argv)
 {
 	_mainWindow = new MainWindow(this);
-	//Show when welcome page is loaded (ResultsJsInterface::resultsPageLoaded)
 
 	QStringList args = QApplication::arguments();
 
 	if(unitTest)
-		_mainWindow->testLoadedJaspFile(timeOut);
+		_mainWindow->testLoadedJaspFile(timeOut, save);
 
 	if(filePath.size() > 0)
 		_mainWindow->open(filePath);

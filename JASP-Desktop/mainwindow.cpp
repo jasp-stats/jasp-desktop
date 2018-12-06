@@ -172,6 +172,7 @@ void MainWindow::makeConnections()
 	_package->pauseEngines.connect(		boost::bind(&MainWindow::pauseEngines,			this));
 	_package->resumeEngines.connect(	boost::bind(&MainWindow::resumeEngines,			this));
 
+
 	CONNECT_SHORTCUT("Ctrl+S",		&MainWindow::saveKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+O",		&MainWindow::openKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+Y",		&MainWindow::syncKeysSelected);
@@ -179,6 +180,8 @@ void MainWindow::makeConnections()
 	CONNECT_SHORTCUT("Ctrl++",		&MainWindow::zoomInKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+-",		&MainWindow::zoomOutKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+=",		&MainWindow::zoomEqualKeysSelected);
+
+	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 
 	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn				);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
@@ -339,6 +342,9 @@ void MainWindow::loadQML()
 
 void MainWindow::open(QString filepath)
 {
+	if(resultXmlCompare::compareResults::theOne()->testMode())
+		resultXmlCompare::compareResults::theOne()->setFilePath(filepath);
+
 	_openedUsingArgs = true;
 	if (_resultsViewLoaded)
 		ui->backStage->open(filepath);
@@ -1008,7 +1014,6 @@ void MainWindow::checkUsedModules()
 	ui->tabBar->setModulePlusMenu(usedModules);
 }
 
-
 void MainWindow::dataSetIORequest(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
@@ -1188,6 +1193,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
+		bool testingAndSaving = resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave();
+
 		if (event->successful())
 		{
 			QString name = QFileInfo(event->path()).baseName();
@@ -1195,11 +1202,21 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->setModified(false);
 			setWindowTitle(name);
 			showAnalysis = true;
+
+			if(testingAndSaving)
+				std::cerr << "Tested and saved " << event->path().toStdString() << " succesfully!" << std::endl;
+
 		}
 		else
 		{
 			QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
+
+			if(testingAndSaving)
+				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;
 		}
+
+		if(testingAndSaving)
+			finishSavingComparedResults();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -1970,10 +1987,13 @@ void MainWindow::updateExcludeKey()
 }
 
 
-void MainWindow::testLoadedJaspFile(int timeOut)
+void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 {
 	std::cout << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
 	resultXmlCompare::compareResults::theOne()->enableTestMode();
+
+	if(save)
+		resultXmlCompare::compareResults::theOne()->enableSaving();
 
 	QTimer::singleShot(60000 * timeOut, this, &MainWindow::unitTestTimeOut);
 }
@@ -2015,14 +2035,38 @@ void MainWindow::analysesForComparingDoneAlready()
 
 void MainWindow::finishComparingResults()
 {
-	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->exportCalled())
+	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->exportCalled() && !resultXmlCompare::compareResults::theOne()->comparedAlready())
 	{
 		std::string resultHtml = _package->analysesHTML();
 		resultXmlCompare::compareResults::theOne()->setRefreshResult(QString::fromStdString(resultHtml));
 
-		bool success = resultXmlCompare::compareResults::theOne()->compare();
+		resultXmlCompare::compareResults::theOne()->compare();
 
-		_application->exit(success ? 0 : 1);
+		if(resultXmlCompare::compareResults::theOne()->shouldSave())
+			emit saveJaspFile();
+		else
+			_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
+	}
+}
+
+void MainWindow::saveJaspFileHandler()
+{
+	std::cerr << "saving file!" << std::endl;
+
+	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
+
+	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
+
+	dataSetIORequest(saveEvent);
+
+}
+
+
+void MainWindow::finishSavingComparedResults()
+{
+	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave())
+	{
+		_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
 }
 

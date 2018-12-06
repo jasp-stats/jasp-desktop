@@ -228,8 +228,8 @@ result compareResults::convertXmltoResultStruct(const QString &  resultXml)
 	if(xml.hasError())
 	{
 		std::cerr << "xml hadError: " << xml.errorString().toStdString() << "!" << std::endl;
-		const char * xmlDivider = "<---------------------------------------------------------------------------------------------------------------------------------------------------------------------->\n";
-		std::cerr << "broken XML:\n" << xmlDivider << resultXml.toStdString() << xmlDivider << std::endl;
+		//const char * xmlDivider = "<---------------------------------------------------------------------------------------------------------------------------------------------------------------------->\n";
+		//std::cerr << "broken XML:\n" << xmlDivider << resultXml.toStdString() << xmlDivider << std::endl;
 	}
 
 	return res;
@@ -242,6 +242,8 @@ bool compareResults::compare()
 
 bool compareResults::compare(const QString & resultOld, const QString & resultNew)
 {
+	ranCompare = true;
+
 	//std::cout << "Old result:\n" << resultOld.toStdString() << "\n" << std::endl;
 	std::cout << "Old result conversion:" << std::endl;
 	result oldRes = convertXmltoResultStruct(resultOld);
@@ -252,14 +254,14 @@ bool compareResults::compare(const QString & resultOld, const QString & resultNe
 	result newRes = convertXmltoResultStruct(resultNew);
 	std::cout << "\nConverted to:\n" << newRes.toString() << "" << std::endl;
 
-	bool theSame = oldRes == newRes;
+	succes = oldRes == newRes;
 
-	std::cerr << "The results are " << (theSame ? "the same!" : "different...") << std::endl;
+	std::cerr << "The results are " << (succes ? "the same!" : "different...") << std::endl;
 
-	if(!theSame)
+	if(!succes)
 		std::cerr << oldRes.diffToString(newRes) << std::endl;
 
-	return theSame;
+	return succes;
 }
 
 

@@ -57,7 +57,7 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QApplication *application);
 	void open(QString filepath);
-	void testLoadedJaspFile(int timeOut);
+	void testLoadedJaspFile(int timeOut, bool save);
 
 	~MainWindow() override;
 
@@ -115,6 +115,7 @@ private:
 	void startComparingResults();
 	void analysesForComparingDoneAlready();
 	void finishComparingResults();
+	void finishSavingComparedResults();
 
 	bool filterShortCut();
 	void loadQML();
@@ -127,6 +128,7 @@ signals:
 	void updateAnalysesUserData(QString userData);
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(QString value);
+	void saveJaspFile();
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -189,6 +191,7 @@ private slots:
 	void dataSetChanged(DataSet * dataSet);
 	void unitTestTimeOut();
 
+	void saveJaspFileHandler();
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;

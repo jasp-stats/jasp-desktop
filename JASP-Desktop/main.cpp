@@ -52,11 +52,16 @@ void checkTimeOut(int argc, char *argv[], int index, int & timeOut)
 	}
 }
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut)
+const std::string	jaspExtension	= ".jasp",
+					unitTestArg		= "--unitTest",
+					saveArg			= "--save";
+
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save)
 {
 	filePath	= "";
 	unitTest	= false,
 	dirTest		= false;
+	save		= false;
 
 	if (argc > 1)
 	{
@@ -64,14 +69,12 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 		if (argFirst[0] != '-')
 		{
-			const std::string	jaspExtension	= ".jasp",
-								unitTestArg		= "--unitTest";
-
 					filePath	= argFirst;
 			bool	isJaspFile	= filePath.size() >= jaspExtension.size()  &&  filePath.substr(filePath.size() - jaspExtension.size()) == jaspExtension;
 					unitTest	= isJaspFile && argc > 2 && argv[2] == unitTestArg;
+					save		= unitTest && argc > 3 && argv[3] == saveArg;
 
-			checkTimeOut(argc, argv, 3, timeOut);
+			checkTimeOut(argc, argv, save ? 4 : 3, timeOut);
 
 		}
 		else
@@ -90,15 +93,17 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 				dirTest		= true;
 				filePath	= argFolder;
+				save		= argc > 3 && argv[3] == saveArg;
 
-				checkTimeOut(argc, argv, 3, timeOut);
+				checkTimeOut(argc, argv, save ? 4 : 3, timeOut);
 			}
 			else if(argFirst.find("--remote-debugging-port=")	== std::string::npos &&
 					argFirst.find("-qmljsdebugger")				== std::string::npos) //only other excepted argument
 			{
-				std::cout	<< "JASP can be started without arguments, or the following: filename {--unitTest {--timeOut=10}} | --unitTestRecursive folder {--timeOut=10}\n"
+				std::cout	<< "JASP can be started without arguments, or the following: filename {--unitTest {--save} {--timeOut=10}} | --unitTestRecursive folder {--save} {--timeOut=10}\n"
 							<< "If a filename is supplied JASP will try to load it. If --unitTest is specified JASP will refresh all analyses in the JASP file and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
 							<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
+							<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
 							<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes."
 							<< std::endl;
 				exit(1);
@@ -109,7 +114,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 #define SEPARATE_PROCESS
 
-void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & timeOut, int argc, char *argv[])
+void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & timeOut, int argc, char *argv[], bool save)
 {
 	const QString jaspExtension(".jasp");
 
@@ -124,7 +129,7 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 		//std::cout << "QDir dir: " << dir.path().toStdString() << " has " << files.size() << " subfiles!" << std::endl;
 
 		for(QFileInfo subFile : dir.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Files | QDir::Dirs))
-			recursiveFileOpener(subFile, failures, total, timeOut, argc, argv);
+			recursiveFileOpener(subFile, failures, total, timeOut, argc, argv, save);
 
 	}
 	else if(file.isFile())
@@ -144,7 +149,16 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 #ifdef SEPARATE_PROCESS
 				QProcess subJasp;
 				subJasp.setProgram(argv[0]);
-				subJasp.setArguments({file.absoluteFilePath(), "--unitTest", QString::fromStdString("--timeOut="+std::to_string(timeOut)), "-platform", "minimal" });
+				QStringList arguments({file.absoluteFilePath(), "--unitTest"});
+
+				if(save)
+					arguments << "--save";
+
+				arguments << QString::fromStdString("--timeOut="+std::to_string(timeOut));
+				arguments << "-platform" << "minimal";
+
+				std::cout << "Starting subJASP with args: " << arguments.join(' ').toStdString() << std::endl;
+				subJasp.setArguments(arguments);
 				subJasp.start();
 
 				subJasp.waitForFinished((timeOut * 60000) + 10000);
@@ -183,10 +197,11 @@ int main(int argc, char *argv[])
 
 	std::string filePath;
 	bool		unitTest,
-				dirTest;
+				dirTest,
+				save;
 	int			timeOut;
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save);
 
 	QString filePathQ(QString::fromStdString(filePath));
 
@@ -201,7 +216,7 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-			Application a(argc, argv, filePathQ, unitTest, timeOut);
+			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
 			return a.exec();
 		}
 		catch(...) { return -1; }
@@ -210,7 +225,7 @@ int main(int argc, char *argv[])
 		int		failures	= 0,
 				total		= 0;
 
-		recursiveFileOpener(QFileInfo(filePathQ), failures, total, timeOut, argc, argv);
+		recursiveFileOpener(QFileInfo(filePathQ), failures, total, timeOut, argc, argv, save);
 
 		if(total == 0)
 		{
