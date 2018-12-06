@@ -715,8 +715,8 @@ function formatCellforLaTeX (toFormat) {
         return '';
     }
     let text = toFormat.toString();
-    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B']
-    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*']
+    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B',    '\u221E']
+    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*', '$\\infty$']
 
     // Handle special characters
     for (let i = 0; i < special_match.length; ++i) {
