@@ -36,6 +36,9 @@ Rectangle {
 			property int	availableWidth:		form.width - 2 * Theme.formMargin
 			property var	jaspControls:		[]
     
+            property int    plotHeight:         320
+            property int    plotWidth:          480
+    
     function getJASPControls(controls, item) {
         for (var i = 0; i < item.children.length; ++i) {
             var child = item.children[i];
@@ -55,8 +58,8 @@ Rectangle {
         }            
     }        
      
-    TextField { visible: false; name: "plotWidth"; inputType: "integer"; text: "480" }
-    TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: "320" }
+    TextField { visible: false; name: "plotWidth"; inputType: "integer"; text: plotHeight }
+    TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth }
     
     
     Flickable {

@@ -28,9 +28,9 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form)
 	, QMLListView(item, form)
 	, BoundQMLItem(item, form)
 {
-	_boundTo = NULL;
-	_model = NULL;
-	_currentIndex = -1;
+	_boundTo = nullptr;
+	_model = nullptr;
+	_currentIndex = _item->property("currentIndex").toInt();
 	bool addEmptyValue = _item->property("addEmptyValue").toBool();
 	QString emptyValue = _item->property("emptyValue").toString();
 	
@@ -99,7 +99,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionList *>(option);
 
-	if (_boundTo != NULL)
+	if (_boundTo != nullptr)
 	{
 		QString selectedValue = QString::fromStdString(_boundTo->value());
 		int index = -1;
@@ -120,7 +120,8 @@ void BoundQMLComboBox::bindTo(Option *option)
 				}
 			}
 		}
-		_boundTo->resetOptions(_model->terms().asVector(), index);
+		std::vector<std::string> options = _getOptionValues();
+		_boundTo->resetOptions(options, index);
 		
 		_setCurrentValue(index, false, false);
 		
@@ -143,7 +144,7 @@ void BoundQMLComboBox::resetQMLItem(QQuickItem *item)
 	QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 
-Option *BoundQMLComboBox::createOption()
+std::vector<std::string> BoundQMLComboBox::_getOptionValues()
 {
 	std::vector<std::string> options;
 	const Terms& terms = _model->terms();
@@ -154,18 +155,23 @@ Option *BoundQMLComboBox::createOption()
 			val = _keyToValueMap[val];
 		options.push_back(val.toStdString());
 	}
-		
+	
+	return options;
+}
+
+Option *BoundQMLComboBox::createOption()
+{
+	std::vector<std::string> options = _getOptionValues();
 	
 	int index = _item->property("currentIndex").toInt();
 	
 	if (options.size() == 0)
 		index = -1;
-	else if (index >= (int)(options.size()))
-		index = 0;
+	else if (index >= int(options.size()))		index = 0;
 	
 	std::string selected = "";
 	if (index >= 0)
-		selected = options[index];
+		selected = options[size_t(index)];
 	
 	return new OptionList(options, selected);
 }
@@ -174,6 +180,7 @@ void BoundQMLComboBox::setUp()
 {
 	QMLListView::setUp();
 	
+	_setCurrentValue(_currentIndex, true, false);
 	_item->setProperty("initialized", true);
 }
 
@@ -198,7 +205,7 @@ void BoundQMLComboBox::modelChangedHandler()
 	if (!found)
 	{
 		index = -1;
-		if (terms.size() >= 0)
+		if (terms.size() > 0U)
 			index = 0;
 	}
 	
@@ -213,7 +220,7 @@ void BoundQMLComboBox::modelChangedHandler()
 void BoundQMLComboBox::comboBoxChangeValueSlot(int index)
 {
 	const Terms& terms = _model->terms();
-	if (index < 0 || index >= (int)(terms.size()))
+	if (index < 0 || index >= int(terms.size()))
 		return;
 	
 	if (_currentIndex != index)
@@ -246,9 +253,16 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 	if (_currentIndex >= 0)
 	{
 		const Terms& terms = _model->terms();
-		if (_currentIndex < terms.size())
+		if (_currentIndex >= int(terms.size()))
 		{
-			_currentText = terms.at(_currentIndex).asQString();
+			if (terms.size() > 0)
+				_currentIndex = -1;
+			else
+				_currentIndex = 0;
+		}
+		if (_currentIndex >= 0)
+		{
+			_currentText = terms.at(size_t(_currentIndex)).asQString();
 			QModelIndex index(_model->index(_currentIndex, 0));
 			_currentIconPath = _model->data(index, ListModel::TypeRole).toString();			
 		}
@@ -258,5 +272,5 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 	if (setComboBoxIndex)
 		_item->setProperty("currentIndex", _currentIndex);
 	if (setOption && _boundTo)
-		_boundTo->set(_currentIndex);
+		_boundTo->set(size_t(_currentIndex));
 }

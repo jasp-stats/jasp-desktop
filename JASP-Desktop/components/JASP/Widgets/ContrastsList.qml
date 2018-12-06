@@ -16,6 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+import JASP.Controls 1.0
+
 VariablesList {
     title: qsTr("Factors")
     syncModels: "fixedFactors"

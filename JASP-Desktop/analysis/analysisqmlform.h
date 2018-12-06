@@ -24,7 +24,6 @@ class AnalysisQMLForm : public AnalysisForm
 
 public:
 	explicit	AnalysisQMLForm(QWidget *parent, Analysis* analysis);
-				~AnalysisQMLForm() {}
 
 	void		bindTo(Options *options, DataSet *dataSet)	OVERRIDE;
 	void		unbind()									OVERRIDE;

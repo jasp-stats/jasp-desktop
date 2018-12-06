@@ -49,7 +49,7 @@ AnalysisQMLForm::AnalysisQMLForm(QWidget *parent, Analysis* analysis)
 	:  AnalysisForm("AnalysisQMLForm", parent)
 	, _quickWidget(new QQuickWidget(this))
 	, _analysis(analysis)
-	, _errorMessagesItem(NULL)
+	, _errorMessagesItem(nullptr)
 {
 	_quickWidget->engine()->addImportPath("qrc:///components");
 	_quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
@@ -181,7 +181,7 @@ void AnalysisQMLForm::_parseQML()
 			controlNames.append(controlName);
 		}
 		
-		QMLItem *control = NULL;
+		QMLItem *control = nullptr;
 		qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
 
 		if (!isVisible && controlType == qmlControlType::VariablesListView)
@@ -230,7 +230,7 @@ void AnalysisQMLForm::_parseQML()
 		}
 		case qmlControlType::VariablesListView:
 		{
-			QMLListView* listView = NULL;
+			QMLListView* listView = nullptr;
 			QString			listViewTypeStr = QQmlProperty(quickItem, "listViewType").read().toString();
 			qmlListViewType	listViewType;
 
@@ -374,7 +374,7 @@ void AnalysisQMLForm::_setAllAvailableVariablesModel()
 	
 	vector<string> columnNames;
 
-	if (_dataSet != NULL)
+	if (_dataSet != nullptr)
 		for (Column &column: _dataSet->columns())
 			columnNames.push_back(column.name());
 
@@ -384,7 +384,7 @@ void AnalysisQMLForm::_setAllAvailableVariablesModel()
 
 void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
 {
-	if (_options != NULL)
+	if (_options != nullptr)
 		unbind();
 
 	_dataSet = dataSet;
@@ -423,13 +423,13 @@ void AnalysisQMLForm::unbind()
 	_bounds.clear();
 	updateIllegalStatus();
 
-	if (_options == NULL)
+	if (_options == nullptr)
 		return;
 	
 	for (BoundQMLItem* item : _boundItemsOrdered)
 		item->unbind();
 
-	_options = NULL;
+	_options = nullptr;
 }
 
 void AnalysisQMLForm::addError(const QString &error)

@@ -18,6 +18,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Widgets 1.0
 
 Form {
     id: form
@@ -77,7 +78,7 @@ Form {
         }
         
         ComboBox { name: "sumOfSquares"
-            currentIndex: 0
+            currentIndex: 2
             label.text: qsTr("Sum of squares")
             model: ListModel {    
                 ListElement { key: "Type \u2160"; value: "type1"}
@@ -91,14 +92,30 @@ Form {
     ExpanderButton {
         text: qsTr("Assumption Checks")
 
-        CheckBox { text: qsTr("Homogeneity tests")      ; name: "homogeneityTests"}
-        CheckBox { text: qsTr("Q-Q plot of residuals")  ; name: "qqPlot"}
+        CheckBox { text: qsTr("Homogeneity tests")          ; name: "homogeneityTests" }
+        CheckBox { text: qsTr("Homogeneity corrections")    ; name: "homogeneityCorrections" ; id: homogeneityCorrections }
+        RowLayout {
+            Layout.leftMargin: 20
+            enabled: homogeneityCorrections.checked
+            CheckBox { text: qsTr("None")           ; name: "homogeneityNone" ; checked: true }
+            CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
+            CheckBox { text: qsTr("Welch")          ; name: "homogeneityWelch" ; checked: true }            
+        }
+        CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
     }
     
     ExpanderButton {
         text: qsTr("Contrasts")
    
-        ContrastsList {}
+        ContrastsList {
+            syncModels: ["fixedFactors", "randomFactors"]
+        }
+        
+        CheckBox { text: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance" ; checked: true }
+        RowLayout {
+            CheckBox { text: qsTr("Confidence intervals") ; name: "confidenceIntervalsContrast"; id: confidenceIntervalsContrast }
+            PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95; enabled: confidenceIntervalsContrast.checked }            
+        }
     }
 
     ExpanderButton {
@@ -115,14 +132,29 @@ Form {
             }
         }
         
-        CheckBox { text: qsTr("Effect Size")        ; name: "postHocTestEffectSize"}
-        
-        GroupBox {
-            title: qsTr("Correction")
-            CheckBox { text: qsTr("Tukey")          ; name: "postHocTestsTukey"     ; checked: true }
-            CheckBox { text: qsTr("Scheffe")        ; name: "postHocTestsScheffe"                   }
-            CheckBox { text: qsTr("Bonferroni")     ; name: "postHocTestsBonferroni"                }
-            CheckBox { text: qsTr("Holm")           ; name: "postHocTestsHolm"                      }
+        GridLayout {
+            CheckBox { text: qsTr("Effect Size")            ; name: "postHocTestEffectSize"}
+            
+            RowLayout {
+                CheckBox { text: qsTr("Confidence intervals")   ; name: "confidenceIntervalsPostHoc"; id: confidenceIntervalsPostHoc }
+                PercentField { name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95; enabled: confidenceIntervalsPostHoc.checked }
+            }
+            
+            GroupBox {
+                title: qsTr("Correction")
+                CheckBox { text: qsTr("Tukey")          ; name: "postHocTestsTukey"     ; checked: true }
+                CheckBox { text: qsTr("Scheffe")        ; name: "postHocTestsScheffe"                   }
+                CheckBox { text: qsTr("Bonferroni")     ; name: "postHocTestsBonferroni"                }
+                CheckBox { text: qsTr("Holm")           ; name: "postHocTestsHolm"                      }
+            }
+            
+            GroupBox {
+                title: qsTr("Type")
+                CheckBox { text: qsTr("Standard")       ; name: "postHocTestsTypeStandard" ; checked: true }
+                CheckBox { text: qsTr("Games-Howell")   ; name: "postHocTestsTypeGames"                 }
+                CheckBox { text: qsTr("Dunnett")        ; name: "postHocTestsTypeDunnett"               }
+                CheckBox { text: qsTr("Dunn")           ; name: "postHocTestsTypeDunn"                  }
+            }
         }
     }
 
@@ -130,8 +162,8 @@ Form {
         text: qsTr("Descriptives Plots")
 
         VariablesForm {
-            height: 200
-            availableVariablesList {        title: qsTr("Factors")          ; name: "descriptivePlotsVariables" ; syncModels: "fixedFactors" }
+            height: 170
+            availableVariablesList {        title: qsTr("Factors")          ; name: "descriptivePlotsVariables" ; syncModels: ["fixedFactors", "randomFactors"] }
             defaultAssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"    ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Separate lines")   ; name: "plotSeparateLines"     ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Separate plots")   ; name: "plotSeparatePlots"     ; singleItem: true }
@@ -144,7 +176,7 @@ Form {
            ButtonGroup {
                name: "errorBarType"
                RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
-               PercentField {Layout.leftMargin: 15; label.text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
+               PercentField { Layout.leftMargin: 15; label.text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
                RadioButton { text: qsTr("Standard error"); name: "standardError" }
            }
         }
@@ -190,8 +222,8 @@ Form {
         text: qsTr("Simple Main Effects")
         
         VariablesForm {
-            height: 200
-            availableVariablesList {        title: qsTr("Factors")              ; name: "effectsVariables"      ; syncModels: "fixedFactors" }
+            height: 170
+            availableVariablesList {        title: qsTr("Factors")              ; name: "effectsVariables"      ; syncModels:  ["fixedFactors", "randomFactors"] }
             defaultAssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"          ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"    ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Moderator factor 2")   ; name: "moderatorFactorTwo"    ; singleItem: true }
@@ -203,11 +235,9 @@ Form {
         
         VariablesForm {
             height: 200
-            availableVariablesList {        title: qsTr("Kruskal-Wallis test")  ; name: "kruskalVariablesAvailable";  syncModels: "fixedFactors" }
+            availableVariablesList {        title: qsTr("Kruskal-Wallis test")  ; name: "kruskalVariablesAvailable";  syncModels:  ["fixedFactors", "randomFactors"] }
             defaultAssignedVariablesList {  name: "kruskalVariablesAssigned" }
-        }
-        
-        CheckBox { text: qsTr("Dunn's post hoc test")        ; name: "dunnTest"}
+        }        
     }
 
 }

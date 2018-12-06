@@ -5,6 +5,9 @@ import JASP.Controls 1.0
 Form {
     id: form
 
+    plotHeight: 300
+    plotWidth:  350
+
     VariablesForm {
         height: 200
         defaultAssignedVariablesList {
@@ -54,14 +57,14 @@ Form {
                     Layout.leftMargin: 15
                     enabled : locationParameter.checked
                     CheckBox {  text: qsTr("Confidence interval")                   ; name: "meanDiffConfidenceIntervalCheckbox"; id: locParConfidenceInterval }
-                    PercentField { enabled: locParConfidenceInterval.checked        ; name: "meanDiffConfidenceIntervalPercent"  ; defaultValue: 95 }
+                    PercentField { enabled: locParConfidenceInterval.checked        ; name: "descriptivesMeanDiffConfidenceIntervalPercent"  ; defaultValue: 95 }
                 }
                 CheckBox {  text: qsTr("Effect Size")                               ; name: "effectSize"; id: effectSize }
                 Row {
                     Layout.leftMargin: 15
                     enabled : effectSize.checked
                     CheckBox {  text: qsTr("Confidence interval")                   ; name: "effSizeConfidenceIntervalCheckbox"; id: effectSizeConfidenceInterval }
-                    PercentField { enabled: effectSizeConfidenceInterval.checked    ; name: "effSizeConfidenceIntervalPercent" ; defaultValue: 95 }
+                    PercentField { enabled: effectSizeConfidenceInterval.checked    ; name: "descriptivesEffectSizeConfidenceIntervalPercent" ; defaultValue: 95 }
                 }
                 CheckBox {  text: qsTr("Descriptives")                              ; name: "descriptives"                        }
                 CheckBox {  text: qsTr("Descriptives plots")                        ; name: "descriptivesPlots"; id: descriptivePlots  }

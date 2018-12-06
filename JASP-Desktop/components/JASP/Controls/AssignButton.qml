@@ -22,8 +22,6 @@ import JASP.Theme 1.0
 
 Button {
     id: button
-    readonly property string iconToLeft: "qrc:/images/arrow-left.png"
-    readonly property string iconToRight: "qrc:/images/arrow-right.png"
     
     hasTabFocus: false    
 
@@ -37,12 +35,8 @@ Button {
     readonly property string iconToLeft: "qrc:/images/arrow-left.png"
     readonly property string iconToRight: "qrc:/images/arrow-right.png"
     text: ""
-    x: (rightSource.x + leftSource.width - width) / 2
-    y: rightSource.y + rightSource.rectangleY
-
     width: 40
     height: 20
-
 
     image.source: leftToRight ? iconToRight : iconToLeft
     
