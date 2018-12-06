@@ -233,13 +233,13 @@ private:
 	QVBoxLayout						*_buttonPanelLayout		= NULL;
 	QPushButton						*_okButton				= NULL,
 									*_runButton				= NULL;
-	QSettings						_settings				= NULL;
 	CustomWebEnginePage				*_customPage			= NULL;
 	RibbonModel						*_ribbonModel			= NULL;
 	RibbonButtonModel				*_ribbonButtonModel		= NULL;
 	QObject							*qmlProgressBar			= NULL;
 	QApplication					*_application 			= nullptr;
 
+	QSettings						_settings;
 	analysisFormMap					_analysisFormsMap;
 	TableModelVariablesAvailable	_availableVariablesModel;
 
