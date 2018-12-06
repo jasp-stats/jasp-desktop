@@ -274,5 +274,5 @@ bool TableModelVariables::isAllowed(const Term &term) const
 
 bool TableModelVariables::isDroppingToSelf(const QMimeData *mimeData) const
 {
-	return mimeData->data("application/pointerToSelf") != QByteArray::fromStdString(std::to_string((unsigned long)this));
+	return mimeData->data("application/pointerToSelf") == QByteArray::fromStdString(std::to_string((unsigned long)this));
 }

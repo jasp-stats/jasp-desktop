@@ -26,6 +26,9 @@ import JASP.Widgets 1.0
 Form {
     id: form
 
+    plotHeight: 340
+    plotWidth:  420    
+    
     VariablesForm {
         height: 200
         defaultAssignedVariablesList {

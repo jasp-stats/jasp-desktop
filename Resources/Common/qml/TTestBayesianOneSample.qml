@@ -25,7 +25,12 @@ import JASP.Widgets 1.0
 
 Form {
     id: form
+    
+    plotHeight: 240
+    plotWidth:  320    
 
+    CheckBox { name: "standardizedEffectSize"; checked: true; visible: false } 
+    
     VariablesForm {
         height: 200
         defaultAssignedVariablesList {

@@ -18,6 +18,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Widgets 1.0
 
 Form {
     id: form
@@ -30,7 +31,7 @@ Form {
     TextField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"; inputType: "integer"; text: "350" }
 
     VariablesForm {
-        formHeight: 400
+        height: 400
         defaultAssignedVariablesList {
             name: "dependent"
             title: qsTr("Dependent Variable")
@@ -66,7 +67,7 @@ Form {
         text: qsTr("Model")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {
                 title: qsTr("Components")
                 name: "components"
@@ -115,7 +116,7 @@ Form {
         text: qsTr("Post Hoc Tests")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {
                 name: "postHocTestsAvailable"
                 syncModels: "fixedFactors"
@@ -155,7 +156,7 @@ Form {
         text: qsTr("Descriptives Plots")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        title: qsTr("Factors")          ; name: "descriptivePlotsVariables" ; syncModels: "fixedFactors" }
             defaultAssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"    ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Separate lines")   ; name: "plotSeparateLines"     ; singleItem: true }
@@ -180,7 +181,7 @@ Form {
         Label { text: qsTr("Marginal means") }
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "modelTerms"; showVariableTypeIcon: false }
             defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
         }
@@ -215,7 +216,7 @@ Form {
         text: qsTr("Simple Main Effects")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        title: qsTr("Factors")              ; name: "effectsVariables"      ; syncModels: "fixedFactors" }
             defaultAssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"          ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"    ; singleItem: true }
@@ -227,7 +228,7 @@ Form {
         text: qsTr("Nonparametrics")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        title: qsTr("Kruskal-Wallis test")  ; name: "kruskalVariablesAvailable";  syncModels: "fixedFactors" }
             defaultAssignedVariablesList {  name: "kruskalVariablesAssigned" }
         }

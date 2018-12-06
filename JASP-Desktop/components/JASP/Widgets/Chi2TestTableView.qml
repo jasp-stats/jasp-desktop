@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.11
+import JASP.Controls 1.0
 
 Item {
     id: chi2TestTableView

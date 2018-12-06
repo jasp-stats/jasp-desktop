@@ -25,7 +25,7 @@ FocusScope {
     readonly property string iconFolder: "qrc:/icons/"
     
     Component.onCompleted: {
-        if (!DEBUG_MODE && debug)
+        if (typeof(DEBUG_MODE) !== "undefined" && !DEBUG_MODE && debug)
             visible = false;
         if (typeof(control) !== "undefined")
         {

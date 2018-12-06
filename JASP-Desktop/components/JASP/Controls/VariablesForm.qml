@@ -52,8 +52,15 @@ Item {
     Item {
         id: items
     }
-
+    
     Component.onCompleted: {
+        var assignButtonComponent = Qt.createComponent("AssignButton.qml");
+        
+        if (assignButtonComponent.status === Component.Error) {
+            console.log("Error loading AssignButton component:", assignButtonComponent.errorString());
+            return;
+        }
+        
         var titleHeight = Theme.variablesListTitle;
 
         if (availableVariablesList.title && !defaultAssignedVariablesList.title)
@@ -110,7 +117,6 @@ Item {
             anchorTop = allJASPControls[i].bottom;
         }
 
-        var component = Qt.createComponent("AssignButton.qml");
         for (i = 0; i < allAssignedVariablesList.length; i++) {
             var assignedList = allAssignedVariablesList[i];
             availableVariablesList.dropKeys.push(assignedList.name);
@@ -119,7 +125,7 @@ Item {
                 assignedList.dropKeys.push(allAssignedVariablesList[j].name);
             }
 
-            var assignButton = component.createObject(variablesForm,
+            var assignButton = assignButtonComponent.createObject(variablesForm,
                                    {"leftSource" : availableVariablesList,
                                     "rightSource" : assignedList});
         }

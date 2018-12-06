@@ -39,7 +39,8 @@ Form {
         text: qsTr("Plots")
 
         GroupBox {
-            CheckBox {  text: qsTr("Distribution plots")    ; name: "plotVariables"               }
+            CheckBox {  text: qsTr("Distribution plots")    ; name: "plotVariables"; id: plotVariables   }
+            CheckBox {  text: qsTr("Display density")       ; name: "distPlotDensity"; enabled: plotVariables.checked; Layout.leftMargin: 20 }
             CheckBox {  text: qsTr("Correlation plots")     ; name: "plotCorrelationMatrix"       }
             CheckBox {  text: qsTr("Boxplots")              ; name: "splitPlots"; id: splitPlots  }
             
@@ -113,12 +114,12 @@ Form {
             
             GroupBox {
                 title: qsTr("Dispersion")
-                CheckBox {  text: qsTr("Std.deviation") ; name: "standardDeviation"       }
-                CheckBox {  text: qsTr("Minimum")       ; name: "minimum"; checked: true  }
-                CheckBox {  text: qsTr("Variance")      ; name: "variance"                }
-                CheckBox {  text: qsTr("Maximum")       ; name: "maximum"                 }
-                CheckBox {  text: qsTr("Range")         ; name: "range"                   }
-                CheckBox {  text: qsTr("S. E. mean")    ; name: "standardErrorMean"       }
+                CheckBox {  text: qsTr("Std.deviation") ; name: "standardDeviation" ; checked: true }
+                CheckBox {  text: qsTr("Minimum")       ; name: "minimum"           ; checked: true }
+                CheckBox {  text: qsTr("Maximum")       ; name: "maximum"           ; checked: true }
+                CheckBox {  text: qsTr("Variance")      ; name: "variance"                          }
+                CheckBox {  text: qsTr("Range")         ; name: "range"                             }
+                CheckBox {  text: qsTr("S. E. mean")    ; name: "standardErrorMean"                 }
             }
             GroupBox {
                 title: qsTr("Distribution")
@@ -126,6 +127,8 @@ Form {
                 CheckBox {  text: qsTr("Kurtosis")      ; name: "kurtosis"                }
             }
         }
+        
+        CheckBox { text: qsTr("Values are group midpoints"); name: "statisticsValuesAreGroupMidpoints"; debug: true }
     }
     
     ExpanderButton {

@@ -4,6 +4,11 @@ import JASP.Controls 1.0
 
 Form {
     id: form
+    
+    plotHeight: 300
+    plotWidth:  350 
+    
+    CheckBox { name: "welchs"; checked: false; visible: false }
 
     VariablesForm {
         height: 200

@@ -56,6 +56,7 @@ protected:
 	
 	void _resetItemWidth();
 	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);
+	std::vector<std::string> _getOptionValues();
 };
 
 #endif // BOUNDQMLCOMBOBOX_H

@@ -4,9 +4,7 @@ AssignedVariablesList 1.0 AssignedVariablesList.qml
 Button 1.0 Button.qml
 ButtonGroup 1.0 ButtonGroup.qml
 CheckBox 1.0 CheckBox.qml
-Chi2TestTableView 1.0 Chi2TestTableView.qml
 ComboBox 1.0 ComboBox.qml
-ContrastsList 1.0 ContrastsList.qml
 ExpanderButton 1.0 ExpanderButton.qml
 FactorsList 1.0 FactorsList.qml
 Form 1.0 Form.qml
