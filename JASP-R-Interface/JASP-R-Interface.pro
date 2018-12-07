@@ -107,4 +107,6 @@ DISTFILES += \
     jaspResults/R/RcppExports.R \
     jaspResults/R/zzaLoadModule.R \
     jaspResults/R/zzzWrappers.R \
-    jaspResults/R/writeImage.R
+    jaspResults/R/writeImage.R \
+    jaspResults/DESCRIPTION \
+    jaspResults/NAMESPACE

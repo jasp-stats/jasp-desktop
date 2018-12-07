@@ -140,8 +140,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 }
 
 .descriptivesDescriptivesTable <- function(dataset, options, jaspResults) {
-# This was refactored unhampered by an overwhelming knowledge of what the code was supposed to do by JCG in april 2018 for use with jaspResults
-
   if(!is.null(jaspResults[["stats"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   wantsSplit              <- options$splitby != ""
@@ -161,11 +159,14 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     stats$transposeWithOvertitle <- TRUE
     stats$addColumnInfo(name="Variable",  title="", type="string")
     stats$addColumnInfo(name="Level",     title="", type="string")
-  } else {
+  } else
     stats$addColumnInfo(name="Variable",  title="", type="string")
-  }
+
   stats$addColumnInfo(name="Valid",   type="integer")
   stats$addColumnInfo(name="Missing", type="integer")
+
+  stats$setExpectedSize(7, 3)
+
 
   if (options$mean)                 stats$addColumnInfo(name="Mean",                        type="number", format="sf:4")
   if (options$standardErrorMean)    stats$addColumnInfo(name="Std. Error of Mean",          type="number", format="sf:4")
@@ -184,8 +185,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   if (options$percentileValuesQuartiles) {
                                     stats$addColumnInfo(name="q1", title="25th percentile", type="number", format="sf:4")
-				    stats$addColumnInfo(name="q2", title="50th percentile", type="number", format="sf:4")
-				    stats$addColumnInfo(name="q3", title="75th percentile", type="number", format="sf:4")
+                                    stats$addColumnInfo(name="q2", title="50th percentile", type="number", format="sf:4")
+                                    stats$addColumnInfo(name="q3", title="75th percentile", type="number", format="sf:4")
   }
 
   if (options$percentileValuesEqualGroups)  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
@@ -240,6 +241,9 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   if(shouldAddModeMoreThanOnceFootnote)
     stats$addFootnote(message="More than one mode exists, only the first is reported", col_names="Mode")
+
+  stats$print()
+  print(stats$toHtml())
 
   return(stats)
 }

@@ -50,3 +50,4 @@ flatpak-builder-folder/
 
 .RData
 .Rhistory
+.vscode

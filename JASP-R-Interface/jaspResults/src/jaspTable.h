@@ -88,6 +88,10 @@ public:
 	Json::Value	getCell(size_t col, size_t row);
 	std::string	getCellFormatted(size_t col, size_t row);
 
+	void		setExpectedSize(size_t columns, size_t rows)	{ setExpectedRows(rows); setExpectedColumns(columns);	}
+	void		setExpectedRows(size_t rows)					{ _expectedRowCount = rows;								}
+	void		setExpectedColumns(size_t columns)				{ _expectedColumnCount = columns;						}
+
 private:
 	std::vector<std::string>	getDisplayableColTitles(bool normalizeLengths = true, bool onlySpecifiedColumns = true);
 	std::vector<std::string>	getDisplayableRowTitles(bool normalizeLengths = true);
@@ -367,6 +371,8 @@ private:
 	Json::Value								_footnotes = Json::arrayValue;
 	std::vector<std::vector<Json::Value>>	_data;	//First columns, then rows.
 	std::vector<jaspColRowCombination>		_colRowCombinations;
+	size_t									_expectedColumnCount	= 0,
+											_expectedRowCount		= 0;
 
 };
 
@@ -396,15 +402,19 @@ public:
 	void addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)	{ ((jaspTable*)myJaspObject)->addColumnInfo(name, title, type, format, combine, overtitle); }
 	void addFootnote(Rcpp::RObject message, Rcpp::RObject symbol, Rcpp::RObject col_names, Rcpp::RObject row_names)											{ ((jaspTable*)myJaspObject)->addFootnote(message, symbol, col_names, row_names); }
 
-	void setData(Rcpp::RObject newData)							{ ((jaspTable*)myJaspObject)->setData(newData); }
-	void addColumns(Rcpp::RObject newColumns)					{ ((jaspTable*)myJaspObject)->addColumns(newColumns); }
+	void setData(Rcpp::RObject newData)							{ ((jaspTable*)myJaspObject)->setData(newData);			}
+	void addColumns(Rcpp::RObject newColumns)					{ ((jaspTable*)myJaspObject)->addColumns(newColumns);	}
 
-	//void combineColumns(Rcpp::map_named_args named_args)			{ ((jaspTable*)myJaspObject)->combineColumns(named_args); }
-	//void combineRows(Rcpp::map_named_args named_args)				{ ((jaspTable*)myJaspObject)->combineRows(named_args); }
+	//void combineColumns(Rcpp::map_named_args named_args)			{ ((jaspTable*)myJaspObject)->combineColumns(named_args);	}
+	//void combineRows(Rcpp::map_named_args named_args)				{ ((jaspTable*)myJaspObject)->combineRows(named_args);		}
 
-	void addRows(Rcpp::RObject newRows, Rcpp::CharacterVector rowNames)	{ ((jaspTable*)myJaspObject)->addRows(newRows, rowNames); }
-	void addRowsWithoutNames(Rcpp::RObject newRows)						{ ((jaspTable*)myJaspObject)->addRowsWithoutNames(newRows); }
-	void setColumn(std::string columnName, Rcpp::RObject column)		{ ((jaspTable*)myJaspObject)->setColumn(columnName, column); }
+	void addRows(Rcpp::RObject newRows, Rcpp::CharacterVector rowNames)	{ ((jaspTable*)myJaspObject)->addRows(newRows, rowNames);		}
+	void addRowsWithoutNames(Rcpp::RObject newRows)						{ ((jaspTable*)myJaspObject)->addRowsWithoutNames(newRows);		}
+	void setColumn(std::string columnName, Rcpp::RObject column)		{ ((jaspTable*)myJaspObject)->setColumn(columnName, column);	}
+
+	void setExpectedSize(size_t columns, size_t rows)	{ ((jaspTable*)myJaspObject)->setExpectedSize(columns, rows);	}
+	void setExpectedRows(size_t rows)					{ ((jaspTable*)myJaspObject)->setExpectedRows(rows);			}
+	void setExpectedColumns(size_t columns)				{ ((jaspTable*)myJaspObject)->setExpectedColumns(columns);		}
 
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeTable,				TransposeTable)

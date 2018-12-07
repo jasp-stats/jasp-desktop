@@ -136,6 +136,10 @@ RCPP_MODULE(jaspResults)
 												&jaspTable_Interface::setError,						"Stores the kind of error that might've occured during table-generation")
 
 		.method( "[[<-",						&jaspTable_Interface::setColumn,					"Insert a single column into the table, if a string is used then it will look for an existing column name and set that column with the new data and otherwise will just add it at the end. If it is indexed by integer it will simply set it there.")
+
+		.method("setExpectedSize",				&jaspTable_Interface::setExpectedSize,				"Set the expected size of this table to the specified columnCount and rowCount. It will make your table show up, filled with dots, at this size and as you add data the dots will be replaced with it.")
+		.method("setExpectedColumns",			&jaspTable_Interface::setExpectedColumns,				"Set the expected size of this table to the specified columnCount. It will make your table show up, filled with dots, at this size and as you add data the dots will be replaced with it.")
+		.method("setExpectedRows",				&jaspTable_Interface::setExpectedRows,				"Set the expected size of this table to the specified rowCount. It will make your table show up, filled with dots, at this size and as you add data the dots will be replaced with it.")
 	;
 
 	Rcpp::class_<jaspHtml_Interface>("jaspHtml")

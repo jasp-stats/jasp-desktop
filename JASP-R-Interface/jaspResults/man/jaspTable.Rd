@@ -46,7 +46,10 @@
 		\item{\code{setColFormats}:}{Overwrite all current column Formats with a list of new names.}
 		\item{\code{setColCombiness}:}{Overwrite all current column Conbinations with a list of new combinations.}
 		\item{\code{setRowNames}:}{Overwrite all current row names with a list of new names.}
-		\item{\code{setRowTitles}:}{Overwrite all current row titles with a list of new titles.} 
+    \item{\code{setRowTitles}:}{Overwrite all current row titles with a list of new titles.}
+    \item{\code{setExpectedSize}:}{Set the expected size of this table to the specified columnCount and rowCount. It will make your table show up, filled with dots, at this size and as you add data the dots will be replaced with it.}
+    \item{\code{setExpectedColumns}:}{Set the expected size of this table to the specified columnCount. It will make your table show up, filled with dots, at this size and as you add data the dots will be replaced with it.}
+    \item{\code{setExpectedRows}:}{Set the expected size of this table to the specified rowCount. It will make your table show up, filled with dots, at this size and as you add data the dots will be replaced with it.}
 	 }
 }	
 \section{Properties}{
