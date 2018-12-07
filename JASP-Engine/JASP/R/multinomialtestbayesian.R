@@ -50,7 +50,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 
   # First, we perform a precalculation of variables we use throughout the analysis
   multinomialResults$specs <- .multBayesCalcSpecs(dataset, options)
-  
+
   if (!multinomialResults$specs[["ready"]]) return(multinomialResults)
 
   # Prepare for running the Bayesian Multinomial test
@@ -300,6 +300,11 @@ return(p)
 
 # Functions for Analysis
 .multBayesBfEquality <- function(alphas, counts, thetas){
+  
+  # if needed: rescale
+  if(sum(thetas) != 1){
+    thetas <- thetas/sum(thetas)
+  }
   # expected counts under the null hypothesis (Binomial median)
   expected <- setNames(sum(counts)*thetas, names(counts))
   # compute Bayes factor
@@ -342,26 +347,30 @@ return(p)
   # Specify factor variable  
   specs$factorVariable <- NULL
   specs$countVariable  <- NULL
+  specs$exProbVariable <- NULL
   if (options$factor != "") {
     specs$factorVariable <- options$factor
     # Specify count variable
     if (options$counts != "") {
-      countVariable <- options$counts
-      if (options$exProbVar != "") {
-        countVariable <- c(countVariable, options$exProbVar)
+      specs$countVariable <- options$counts
       }
-      specs$countVariable <- countVariable
-    }
+    if (options$exProbVar != "") {
+        specs$exProbVariable <- options$exProbVar
+      }
   } else {
     specs$factorVariable <- "Factor"
   }
   
-  if(options$hypothesis == "multinomialTest"){
+  if(options$exProbVar != ""){
+    specs$hypNames <- specs$exProbVariable
+  } else if(options$hypothesis == "multinomialTest"){
     specs$hypNames <- "Multinomial"
   } else if(options$hypothesis == "expectedProbs"){
     specs$hypNames <- sapply(seq_along(options$tableWidget), function(x) paste0("H\u2080 (", letters[x], ")")) 
+  } else if(!is.null(specs$exProbVariable)){
+    specs$hypNames <- specs$exProbVariable
   }
-  
+
   return(specs)
 }
 .multinomialBayesReadData <- function(dataset, options) {
