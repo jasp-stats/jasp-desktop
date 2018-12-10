@@ -873,7 +873,7 @@ void jaspTable::addFootnote(Rcpp::RObject message, Rcpp::RObject symbol, Rcpp::R
 	note["symbol"]	= symbol.isNULL()	? "" :	Rcpp::as<std::string>(symbol);
 	note["text"]	= Rcpp::as<std::string>(message);
 	note["cols"]	= colNames.size() == 0 ? Json::nullValue : jaspJson::VectorJson_to_ArrayJson(colNames);
-	note["rows"]	= rowNames.size() == 0 ? Json::nullValue : jaspJson::VectorJson_to_ArrayJson(rowNames);
+	note["row"]	= rowNames.size() == 0 ? Json::nullValue : jaspJson::VectorJson_to_ArrayJson(rowNames);
 
 	_footnotes.append(note);
 }
