@@ -41,7 +41,7 @@ Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, c
 	Json::Value resultsMeta = Json::nullValue;
 	Json::Value optionsJson = Json::nullValue;
 	
-	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
+	string path = Dirs::resourcesDir() + "/Library/" + analysisName + ".json";
 	nowide::ifstream file(path.c_str(), fstream::in);
 	if (file.is_open())
 	{

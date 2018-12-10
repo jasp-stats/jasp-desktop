@@ -29,8 +29,7 @@ public:
 	static std::string tempDir();
 	static std::string exeDir();
 	static std::string rHomeDir();
-	static std::string libraryDir();
-	static std::string QMLAnalysesDir();
+	static std::string resourcesDir();
 
 	class Exception : public std::runtime_error
 	{

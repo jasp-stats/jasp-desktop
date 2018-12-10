@@ -145,11 +145,11 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 	StartOnlineDataManager();
 
 	// Add static modules
-	setupRibbonModels(QFileInfo("./Resources/Common/"				));
-	setupRibbonModels(QFileInfo("./Resources/Summary Statistics/"	));
-	setupRibbonModels(QFileInfo("./Resources/Network/"				));
-	setupRibbonModels(QFileInfo("./Resources/Meta Analysis/"		));
-	setupRibbonModels(QFileInfo("./Resources/SEM/"					));
+	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Common/"	)));
+	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Summary Statistics/" )));
+	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Network/"			)));
+	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Meta Analysis/"		)));
+	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "SEM/"				)));
 
 	// Add dynamic modules and connect signals to slots
 	_ribbonModel->connectToDynamicModules(_dynamicModules);
