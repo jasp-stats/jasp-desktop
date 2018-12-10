@@ -165,7 +165,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   stats$addColumnInfo(name="Valid",   type="integer")
   stats$addColumnInfo(name="Missing", type="integer")
 
-  stats$setExpectedSize(7, 3)
+  stats$setExpectedRows(1)
 
 
   if (options$mean)                 stats$addColumnInfo(name="Mean",                        type="number", format="sf:4")
