@@ -279,26 +279,16 @@ string Dirs::rHomeDir()
 	return dir;
 }
 
-
-string Dirs::libraryDir()
+string Dirs::resourcesDir()
 {
     string dir = exeDir();
 
 #ifdef __APPLE__
-	dir += "/../Resources/Library";
-#else
-	dir += "/Resources/Library";
-#endif
-
-    return dir;
-}
-
-string Dirs::QMLAnalysesDir()
-{
-    string dir = exeDir();
-
-#ifdef __APPLE__
-	dir += "/../Resources";
+	static bool isQtBuild = filesystem::exists("Makefile");
+	if (isQtBuild)
+		dir += "/Resources/";
+	else
+		dir += "/../Resources/";
 #else
 	dir += "/Resources";
 #endif

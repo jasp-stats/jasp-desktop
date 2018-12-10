@@ -24,9 +24,9 @@
 
 #ifdef __WIN32__
 #include <windows.h>
+#endif
 #include "utilities/qutils.h"
 #include "utils.h"
-#endif
 
 #include "dirs.h"
 #include <QStandardPaths>
@@ -35,22 +35,13 @@ using namespace std;
 
 QString AppDirs::examples()
 {
-#ifdef __APPLE__
-    static QString dir = QApplication::applicationDirPath() + "/../Resources/Data Sets";
-#else
-    static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Resources/Data Sets";
-#endif
-
+    static QString dir = tq(Dirs::resourcesDir()) + tq("Data Sets");
 	return dir;
 }
 
 QString AppDirs::help()
 {
-#ifdef __APPLE__
-	static QString dir = QApplication::applicationDirPath() + "/../Resources/Help";
-#else
-	static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Resources/Help";
-#endif
+	static QString dir = tq(Dirs::resourcesDir()) + tq("Help");
 
 	return dir;
 }
