@@ -467,7 +467,7 @@
 			"sources":[
 				{
 					"type":"git",
-					"branch": "development",
+					"branch": "version_0_9_2",
 					"url": "https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
