@@ -608,13 +608,19 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     rownames(eProps) <- fact
 
     # Reorder to match factor levels
-    eProps <- data.frame(eProps[levels(fact),])
+    eProps           <- data.frame(eProps[levels(fact),])
     colnames(eProps) <- options$exProbVar
     rownames(eProps) <- levels(fact)
+    # Exclude missing values
+    eProps           <- na.omit(eProps)
 
     if (nlevels != nrow(eProps)) {
-      stop("Expected counts do not match number of levels of factor!")
+      .quitAnalysis("Expected counts do not match number of levels of factor!")
     }
+
+  if(any(is.infinite(eProps[[1]]))) {
+    .quitAnalysis("Invalid expected counts: variable contains infinity.")
+  }
 
     return(eProps)
 
