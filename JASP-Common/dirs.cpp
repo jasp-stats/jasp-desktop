@@ -290,7 +290,7 @@ string Dirs::resourcesDir()
 	else
 		dir += "/../Resources/";
 #else
-	dir += "/Resources";
+	dir += "/Resources/";
 #endif
 
     return dir;
