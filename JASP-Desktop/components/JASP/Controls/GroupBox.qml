@@ -65,7 +65,6 @@ Rectangle {
             for (var i = 0; i < column.children.length; i++) {
                 var child = column.children[i];
                 if (child.hasOwnProperty('controlType') && child.controlType === 'TextField') {
-                    console.log("Has TextField: " + child.name);
                     textFieldsControls.push(child);
                     if (maxX < child.control.x) maxX = child.control.x;
                 }
