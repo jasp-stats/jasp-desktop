@@ -56,23 +56,22 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   # Prepare for running the Bayesian Multinomial test
   factorVariable <- multinomialResults$specs$factorVariable
   countVariable  <- multinomialResults$specs$countVariable
-  prior          <- options$priorCounts[[1]]
   fact           <- dataset[[.v(factorVariable)]]
-  fact           <- fact[!is.na(fact)]
+  fact           <- as.factor(fact[!is.na(fact)])
+  nlev           <- nlevels(fact)
+  prior          <- options$priorCounts[[1]]
   a              <- setNames(prior$values, prior$levels)
   # If applicable, convert counts variable to factor
   if (!is.null(countVariable)) {
-    c <- dataset[[.v(countVariable)]]
-    if (length(c) != length(levels(fact))) {
-      .quitAnalysis("Invalid counts: the number of counts does not equal the number of categories. 
-                    Check your count dataset!")
-    }
-    fact <- factor(rep(fact, c), levels = levels(fact))
+    counts <- dataset[[.v(countVariable)]]
+    counts <- counts[!is.na(counts)]
+    # Check for invalid counts
+    .checkCountsMultinomial(counts, nlev)
+    fact <- factor(rep(fact, counts), levels = levels(fact))
   }
   # Determine observed counts and factor levels
   t    <- table(fact)
   N    <- sum(t)
-  nlev <- nlevels(fact)
 
   # Extract hypotheses
   hyps  <- .multinomialHypotheses(dataset, options, nlev) # exact equality constraints
@@ -221,8 +220,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 
   # Add rows
   descDF <- multinomialResults[["descriptivesTable"]][[options$countProp]]
-  if(options$countProp == "descCounts")
-    descDF[["expected"]] <- as.integer(round(descDF$expected))
+  if(options$countProp == "descCounts"){
+    descDF[[nms]] <- as.integer(round(descDF[[nms]]))
+  }
 
   if(options$credibleInterval){
     ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
