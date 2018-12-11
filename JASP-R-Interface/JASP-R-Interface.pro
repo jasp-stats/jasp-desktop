@@ -109,4 +109,13 @@ DISTFILES += \
     jaspResults/R/zzzWrappers.R \
     jaspResults/R/writeImage.R \
     jaspResults/DESCRIPTION \
-    jaspResults/NAMESPACE
+    jaspResults/NAMESPACE \
+    jaspResults/man/jaspList.Rd \
+    jaspResults/man/jaspTable.Rd \
+    jaspResults/man/jaspResultsClass.Rd \
+    jaspResults/man/jaspPlot.Rd \
+    jaspResults/man/jaspObject.Rd \
+    jaspResults/man/jaspHtml.Rd \
+    jaspResults/man/jaspContainer.Rd \
+    jaspResults/man/jaspState.Rd \
+    jaspResults/man/jaspResults-package.Rd
