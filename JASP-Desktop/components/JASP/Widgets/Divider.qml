@@ -18,22 +18,24 @@
 
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.3
 
-Column {
+
+ColumnLayout {
     spacing: 5
-    width: parent.width
+    implicitHeight: 2
+    implicitWidth: parent.width
     property alias label: textLabel.text
 
     Rectangle {
         border.width: 1
-        height: 2
-        width: parent.width
-        anchors.margins: 20
-        border.color: "#2d2b19"
+        implicitHeight: parent.implicitHeight
+        implicitWidth: parent.implicitWidth
+        border.color: Theme.black
     }
     Text {
         id: textLabel
-        width: parent.width
+        visible: text !== ''
         horizontalAlignment: Text.AlignHCenter
         font.bold: true
     }

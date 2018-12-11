@@ -28,6 +28,7 @@ Rectangle {
     property int spacing: Theme.rowSpacing
     property string title: ""
     property bool debug: false
+    property bool alignTextFields: true
     property var childControls: []
     default property alias content: column.children
     implicitHeight: (title ? 20 : 0) + column.childrenRect.height
@@ -56,6 +57,23 @@ Rectangle {
         for (var i = 0; i < childControls.length; i++) {
             if (control.debug)
                 childControls[i].debug = true;
+        }
+        
+        if (alignTextFields) {
+            var textFieldsControls = [];
+            var maxX = 0;
+            for (var i = 0; i < column.children.length; i++) {
+                var child = column.children[i];
+                if (child.hasOwnProperty('controlType') && child.controlType === 'TextField') {
+                    console.log("Has TextField: " + child.name);
+                    textFieldsControls.push(child);
+                    if (maxX < child.control.x) maxX = child.control.x;
+                }
+            }
+            
+            for (i = 0; i < textFieldsControls.length; i++) {
+                textFieldsControls[i].control.Layout.leftMargin = maxX - textFieldsControls[i].control.x;
+            }
         }
     }
     
