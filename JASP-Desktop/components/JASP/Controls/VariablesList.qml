@@ -74,7 +74,6 @@ JASPControl
     
     function moveSelectedItems(target) {
         if (!hasSelectedItems) {
-            console.log('no item selected');
             return;
         }
 
@@ -473,8 +472,6 @@ JASPControl
                     }
                     
                     onClicked: {
-                        console.log("MouseArea click");
-
                         if (itemRectangle.clearOtherSelectedItemsWhenClicked) {
                             listView.clearSelectedItems();
                             listView.selectItem(itemRectangle, true);

@@ -86,8 +86,6 @@ JASPControl {
                 }
                 else if (child.controlType !== "ButtonGroup") {
                     linkRadioButtons(child);
-                } else {
-                    console.log("ButtonGroup " + child.name + " found for " + control.name)                    
                 }
             } else {
                 linkRadioButtons(child)
