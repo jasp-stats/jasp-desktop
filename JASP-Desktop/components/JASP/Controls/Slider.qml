@@ -1,6 +1,6 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import JASP.Controls 1.0
+import JASP.Controls 1.0 as JC
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
@@ -94,7 +94,7 @@ JASPControl {
                 
         }
         
-        TextField {
+        JC.TextField {
             id: textField
             text: control.value
             inputType: "number";

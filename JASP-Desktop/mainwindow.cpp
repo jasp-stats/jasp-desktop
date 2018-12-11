@@ -119,7 +119,7 @@
 
 using namespace std;
 
-MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new Ui::MainWindow), _application(application)
+MainWindow::MainWindow(QApplication * application) : QMainWindow(nullptr), ui(new Ui::MainWindow), _application(application)
 {
 	JASPTIMER_START(MainWindowConstructor);
 
@@ -368,8 +368,8 @@ void MainWindow::loadRibbonQML()
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
 
-	bool enable = currentModel != NULL;
-	if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
+	bool enable = currentModel != nullptr;
+	if (enable && currentModel->requiresDataset() && _package->dataSet() == nullptr) {
 		enable = false;
 	}
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
@@ -417,6 +417,19 @@ void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
 
 		menu->exec(QCursor::pos());
 	}
+}
+
+void MainWindow::analysisFormChangedHandler(Analysis *analysis)
+{
+	AnalysisForm* form = _analysisFormsMap[analysis];
+	if (form != nullptr)
+	{
+		if (_currentOptionsWidget == form)
+			closeCurrentOptionsWidget();
+		delete _analysisFormsMap[analysis];
+		_analysisFormsMap.erase(analysis);
+	}
+	showForm(analysis);
 }
 
 void MainWindow::onMenuClicked(QAction *action)
@@ -645,7 +658,7 @@ void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedCo
 
 	for (Analysis* analysis : *_analyses)
 	{
-		if (analysis == NULL) continue;
+		if (analysis == nullptr) continue;
 
 		std::set<std::string> variables = analysis->usedVariables();
 
@@ -713,7 +726,7 @@ void MainWindow::setUIScaleHandler(float scale)
 
 void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 {
-	DataSet * dataSet = package == NULL ? NULL : package->dataSet();
+	DataSet * dataSet = package == nullptr ? nullptr : package->dataSet();
 	_tableModel->setDataSetPackage(package);
 	_levelsTableModel->setDataSet(dataSet);
 	_columnsModel->setDataSet(dataSet);
@@ -775,7 +788,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 void MainWindow::analysisSaveImageHandler(int id, QString options)
 {
 	Analysis *analysis = _analyses->get(id);
-	if (analysis == NULL)
+	if (analysis == nullptr)
 		return;
 
 	if (analysis->version() != AppInfo::version)
@@ -860,7 +873,7 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 {
 
     Analysis *analysis = _analyses->get(id);
-    if (analysis == NULL)
+    if (analysis == nullptr)
         return;
 
     string utf8 = fq(options);
@@ -887,7 +900,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 			for (QObject * child : formCreated->children())
 			{
 				QWidget* w = dynamic_cast<QWidget*>(child);
-				if (w != NULL && w->objectName() == "topWidget")
+				if (w != nullptr && w->objectName() == "topWidget")
 				{
 					w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
 					break;
@@ -914,7 +927,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 void MainWindow::updateShownVariablesModel()
 {
-	//if(_currentOptionsWidget != NULL)
+	//if(_currentOptionsWidget != nullptr)
 		//_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
 
 #ifdef JASP_DEBUG
@@ -927,7 +940,7 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 	const string name = analysis->name();
 
 	qDebug() << "Form " << QString::fromStdString(name) << " loaded";
-	AnalysisForm *form = NULL;
+	AnalysisForm *form = nullptr;
 
 	QWidget *contentArea = ui->optionsContentArea;
 
@@ -978,10 +991,11 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
-	if (form != NULL)
+	if (form != nullptr)
 	{
 		connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
 		connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
+		connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::analysisFormChangedHandler);
 	}
 
 	return form;
@@ -994,7 +1008,7 @@ void MainWindow::showForm(Analysis *analysis)
 
 	_currentOptionsWidget = loadForm(analysis);
 
-	if (_currentOptionsWidget != NULL)
+	if (_currentOptionsWidget != nullptr)
 	{
 		QWidget *theWidget = _currentOptionsWidget->getWidget();
 
@@ -1030,11 +1044,11 @@ void MainWindow::showForm(Analysis *analysis)
 
 void MainWindow::closeCurrentOptionsWidget()
 {
-	if (_currentOptionsWidget != NULL)
+	if (_currentOptionsWidget != nullptr)
 	{
 		//no need to disconnect illegalChanged and illegalOptionStateChanged, options shouldn't change if the form isn't visible right?
 		_currentOptionsWidget->getWidget()->hide();
-		_currentOptionsWidget = NULL;
+		_currentOptionsWidget = nullptr;
 	}
 }
 
@@ -1043,7 +1057,7 @@ void MainWindow::analysisSelectedHandler(int id)
 {
 	_currentAnalysis = _analyses->get(id);
 
-	if (_currentAnalysis != NULL)
+	if (_currentAnalysis != nullptr)
 	{
 		showForm(_currentAnalysis);
 		ui->tabBar->setCurrentTab(QString::fromStdString(_currentAnalysis->module()));
@@ -1076,8 +1090,8 @@ void MainWindow::showMainPage()
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
 
-	bool enable = currentModel != NULL;
-	if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
+	bool enable = currentModel != nullptr;
+	if (enable && currentModel->requiresDataset() && _package->dataSet() == nullptr) {
 		enable = false;
 	}
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
@@ -1130,7 +1144,7 @@ void MainWindow::checkUsedModules()
 	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 	{
 		Analysis *analysis = *itr;
-		if (analysis != NULL && analysis->isVisible())
+		if (analysis != nullptr && analysis->isVisible())
 		{
 			QString moduleName = QString::fromStdString(analysis->module());
 			if (!usedModules.contains(moduleName))
@@ -1202,7 +1216,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
-		if (_package->dataSet() == NULL)
+		if (_package->dataSet() == nullptr)
 			return;
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
@@ -1298,10 +1312,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			if (_package->dataSet() != NULL)
+			if (_package->dataSet() != nullptr)
 				_loader.free(_package->dataSet());
 			_package->reset();
-			setDataSetAndPackageInModels(NULL);
+			setDataSetAndPackageInModels(nullptr);
 
 			QMessageBox::warning(this, "", "Unable to open file.\n\n" + event->message());
 
@@ -1358,10 +1372,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_analysisFormsMap.clear();
 			_analyses->clear();
 			hideOptionsPanel();
-			setDataSetAndPackageInModels(NULL);
+			setDataSetAndPackageInModels(nullptr);
 			_loader.free(_package->dataSet());
 			_package->reset();
-			_filterModel->setDataSetPackage(NULL);
+			_filterModel->setDataSetPackage(nullptr);
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
@@ -1740,7 +1754,7 @@ void MainWindow::hideOptionsPanel()
 	sizes[1] = 0;
 
 	ui->panel_2_Options->hide();
-	if(_package != NULL && _package->dataSet() != NULL && _package->dataSet()->rowCount() > 0)		ui->panel_1_Data->show();
+	if(_package != nullptr && _package->dataSet() != nullptr && _package->dataSet()->rowCount() > 0)		ui->panel_1_Data->show();
 	else																							ui->panel_1_Data->hide();
 	ui->splitter->setSizes(sizes);
 }
@@ -1828,7 +1842,7 @@ void MainWindow::hideDataPanel()
 
 void MainWindow::analysisOKed()
 {
-	if (_currentOptionsWidget != NULL)
+	if (_currentOptionsWidget != nullptr)
 		closeCurrentOptionsWidget();
 
 	_resultsJsInterface->unselect();
@@ -1839,7 +1853,7 @@ void MainWindow::analysisOKed()
 
 void MainWindow::analysisRunned()
 {
-	if (_currentAnalysis == NULL)
+	if (_currentAnalysis == nullptr)
 		return;
 
 	if (_currentAnalysis->status() == Analysis::Running)
@@ -1854,7 +1868,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 	bool selected = false;
 	analysis->abort();
 
-	if (_currentOptionsWidget != NULL && analysis == _currentAnalysis)
+	if (_currentOptionsWidget != nullptr && analysis == _currentAnalysis)
 	{
 		selected = true;
 		closeCurrentOptionsWidget();
@@ -1887,7 +1901,7 @@ void MainWindow::removeAllAnalyses()
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
-			if (analysis == NULL) continue;
+			if (analysis == nullptr) continue;
 			removeAnalysis(analysis);
 		}
 	}
@@ -1899,7 +1913,7 @@ void MainWindow::refreshAllAnalyses()
 	for (Analyses::iterator it = _analyses->begin(); it != _analyses->end(); ++it)
 	{
 		Analysis *analysis = *it;
-		if (analysis == NULL) continue;
+		if (analysis == nullptr) continue;
 		analysis->refresh();
 	}
 }
@@ -1948,7 +1962,7 @@ void MainWindow::setPackageModified()
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 {
 	Analysis *analysis = _analyses->get(id);
-	if (analysis == NULL)
+	if (analysis == nullptr)
 		return;
 
 	string utf8 = fq(options);
@@ -1977,7 +1991,7 @@ void MainWindow::startDataEditorHandler()
 		if (reply == QMessageBox::Cancel)
 			return;
 
-		FileEvent *event = NULL;
+		FileEvent *event = nullptr;
 		if (reply == QMessageBox::Yes)
 		{
 			QString caption = "Generate Data File as CSV";
@@ -2119,15 +2133,6 @@ void MainWindow::unitTestTimeOut()
 	_application->exit(2);
 }
 
-void MainWindow::analysisFormChangedHandler(Analysis *analysis)
-{
-	if (_currentOptionsWidget == _analysisFormsMap[analysis])
-		closeCurrentOptionsWidget();
-	delete _analysisFormsMap[analysis];
-	_analysisFormsMap.erase(analysis);
-	showForm(analysis);
-}
-
 void MainWindow::startComparingResults()
 {
 	if (resultXmlCompare::compareResults::theOne()->testMode())
@@ -2146,7 +2151,7 @@ void MainWindow::analysesForComparingDoneAlready()
 		bool allCompleted = true;
 
 		for(Analysis * analysis : *_analyses)
-			if(analysis != NULL && !analysis->isFinished())
+			if(analysis != nullptr && !analysis->isFinished())
 				allCompleted = false;
 
 		if(allCompleted)

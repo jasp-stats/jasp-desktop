@@ -208,35 +208,35 @@ private slots:
 
 	void saveJaspFileHandler();
 	void handleRibbonButtonClicked(QVariant);
-
+	
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
 
-	Ui::MainWindow					*ui						= NULL;
-	Analyses						*_analyses				= NULL;
-	ResultsJsInterface				*_resultsJsInterface	= NULL;
-	AnalysisForm					*_currentOptionsWidget	= NULL;
-	DataSetPackage					*_package				= NULL;
-	DataSetTableModel				*_tableModel			= NULL;
-	LevelsTableModel				*_levelsTableModel		= NULL;
-	Analysis						*_currentAnalysis		= NULL;
-	labelFilterGenerator			*_labelFilterGenerator	= NULL;
-	ColumnsModel					*_columnsModel			= NULL;
-	ComputedColumnsModel			*_computedColumnsModel	= NULL;
-	FilterModel						*_filterModel			= NULL;	
-	OnlineDataManager				*_odm					= NULL;
-	DynamicModules					*_dynamicModules		= NULL;
-	QWidget							*_buttonPanel			= NULL;
-	QVBoxLayout						*_buttonPanelLayout		= NULL;
-	QPushButton						*_okButton				= NULL,
-									*_runButton				= NULL;
-	CustomWebEnginePage				*_customPage			= NULL;
-	RibbonModel						*_ribbonModel			= NULL;
-	RibbonButtonModel				*_ribbonButtonModel		= NULL;
-	QObject							*qmlProgressBar			= NULL;
+	Ui::MainWindow					*ui						= nullptr;
+	Analyses						*_analyses				= nullptr;
+	ResultsJsInterface				*_resultsJsInterface	= nullptr;
+	AnalysisForm					*_currentOptionsWidget	= nullptr;
+	DataSetPackage					*_package				= nullptr;
+	DataSetTableModel				*_tableModel			= nullptr;
+	LevelsTableModel				*_levelsTableModel		= nullptr;
+	Analysis						*_currentAnalysis		= nullptr;
+	labelFilterGenerator			*_labelFilterGenerator	= nullptr;
+	ColumnsModel					*_columnsModel			= nullptr;
+	ComputedColumnsModel			*_computedColumnsModel	= nullptr;
+	FilterModel						*_filterModel			= nullptr;	
+	OnlineDataManager				*_odm					= nullptr;
+	DynamicModules					*_dynamicModules		= nullptr;
+	QWidget							*_buttonPanel			= nullptr;
+	QVBoxLayout						*_buttonPanelLayout		= nullptr;
+	QPushButton						*_okButton				= nullptr,
+									*_runButton				= nullptr;
+	CustomWebEnginePage				*_customPage			= nullptr;
+	RibbonModel						*_ribbonModel			= nullptr;
+	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
+	QObject							*qmlProgressBar			= nullptr;
 	QApplication					*_application 			= nullptr;
 
 	QSettings						_settings;
