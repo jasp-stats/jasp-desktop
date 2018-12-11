@@ -9,7 +9,7 @@
 }
 \section{Creation}{
   \describe{
-		\item{\code{createJaspTable(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL)}:}{
+    \item{\code{createJaspTable(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL)}:}{
 			Creates a jaspTable with the set values. If the title is "" then, when it is placed in a container(/results), it will use it's fieldname.
 			It will only show up in your results if it or one of it's parents is jaspResults.
 			Any argument passed in data will be processed as if 'setData' was used, the rest will be passed through to the corresponding 'set'-functions (aka setColNames for colNames etc). }
@@ -17,7 +17,7 @@
 }
 \section{Methods}{
   \describe{
-	  	\item{\code{addColumnInfo(name=NULL, title=NULL, type=NULL, format=NULL, combine=NULL)}:}{Adds a column to the table with the specified properties, this is not strictly necessary but it gives you control on the order and look of your table in an easy way. 
+      \item{\code{addColumnInfo(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL)}:}{Adds a column to the table with the specified properties, this is not strictly necessary but it gives you control on the order and look of your table in an easy way.
 		  All arguments are optional but it makes sense to give your columns a name and a title at the very least. It is easier to use this method then directly accessing colNames and the others. }
 
 		\item{\code{setData(data)}:}{Set the data of the table, this methods accepts lists, dataframes, matrices and vectors. If any column- or rownames are specified they are set on the object, but only if they aren't set yet. Any one-dimensional data given will be assumed to be a row.}

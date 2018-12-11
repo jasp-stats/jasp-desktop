@@ -2857,7 +2857,7 @@ createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
   return(container)
 }
 
-createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
+createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
 {
   jaspObj <- jaspResultsModule$create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
 
@@ -2869,6 +2869,9 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
 
   if(!is.null(colTitles))
     jaspObj$setColTitles(colTitles)
+
+  if(!is.null(overtitles))
+    jaspObj$setColOvertitles(overtitles)
 
   if(!is.null(colFormats))
     jaspObj$setColFormats(colFormats)
