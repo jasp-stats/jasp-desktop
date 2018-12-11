@@ -56,6 +56,7 @@ AnalysisQMLForm::AnalysisQMLForm(QWidget *parent, Analysis* analysis)
 
 	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisQMLForm::statusChangedWidgetHandler);
 	connect(_quickWidget,	&QQuickWidget::sceneGraphError,	this,	&AnalysisQMLForm::sceneGraphErrorHandler);
+	connect(&_QMLwatcher,	&QFileSystemWatcher::fileChanged, this, &AnalysisQMLForm::QMLFileModifiedHandler);
 
 	bool debug = false;
 #ifdef JASP_DEBUG
@@ -78,44 +79,18 @@ AnalysisQMLForm::AnalysisQMLForm(QWidget *parent, Analysis* analysis)
 
 QString AnalysisQMLForm::_getAnalysisQMLPath()
 {
-	QString path			= QString::fromStdString(_analysis->qmlFormPath());
+	QString path = QString::fromStdString(_analysis->qmlFormPath());
 
-	if (_analysis->name() == "AnalysisTest")
+	if (_analysis->isDynamicModule())
 	{
-		QString testAnalyseQMLName = Settings::value(Settings::TEST_ANALYSIS_QML).toString();
-		if (!testAnalyseQMLName.isEmpty())
+		QString ospath = path;
+		if (ospath.startsWith("file:"))
+			ospath.remove(0, 5);
+		if (!_QMLwatcher.files().contains(ospath)) 
 		{
-			if (!QFile::exists(testAnalyseQMLName))
-			{
-				QMessageBox::warning(this, "Error", "Test QML file does not exist: " + testAnalyseQMLName);
-				path.clear();
-			}
-			else
-			{
-				if (!_QMLwatcher.files().contains(testAnalyseQMLName)) 
-				{
-					_QMLwatcher.addPath(testAnalyseQMLName);
-					connect(&_QMLwatcher, &QFileSystemWatcher::fileChanged, this, &AnalysisQMLForm::QMLFileModifiedHandler);
-				}
-				path = "file:" + testAnalyseQMLName;
-				
-				QString testRAnalyseRName = Settings::value(Settings::TEST_ANALYSIS_R).toString();
-				if (!testRAnalyseRName.isEmpty())
-				{
-					if (!QFile::exists(testRAnalyseRName))
-						QMessageBox::warning(this, "Error", "Test R file does not exist: " + testRAnalyseRName);
-					else
-					{
-						_analysis->setRFile(testRAnalyseRName.toStdString());
-						if (!_Rwatcher.files().contains(testRAnalyseRName))
-						{
-							_Rwatcher.addPath(testRAnalyseRName);
-							connect(&_Rwatcher, &QFileSystemWatcher::fileChanged, this, &AnalysisQMLForm::RFileModifiedHandler);
-						}
-					}
-				}
-			}
-		}
+			if (!_QMLwatcher.addPath(ospath))
+				qDebug() << "Could not add watcher to " << ospath;
+		}		
 	}
 
 	return path;
@@ -457,11 +432,15 @@ void AnalysisQMLForm::statusChangedWidgetHandler(QQuickWidget::Status status)
 void AnalysisQMLForm::QMLFileModifiedHandler(QString path)
 {
 	qDebug() << "Test QML file modified";
-	_controls.empty();
-	_relatedModelMap.empty();
-	_availableVariablesModels.empty();
-	_modelMap.empty();
-	
+/*	_controls.clear();
+	_boundItemsOrdered.clear();
+	_relatedModelMap.clear();
+	_availableVariablesModels.clear();
+	_modelMap.clear();
+	_allAvailableVariablesModels.clear();
+	_errorMessagesItem = nullptr;
+	_errorMessages.clear();	
+*/	
 	_quickWidget->engine()->clearComponentCache();
 	emit formChanged(_analysis);
 }

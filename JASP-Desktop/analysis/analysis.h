@@ -57,7 +57,8 @@ public:
 	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
 	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
 
-	bool isWaitingForModule() { return _moduleData == NULL ? false : !_moduleData->dynamicModule()->readyForUse(); }
+	bool isWaitingForModule() { return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
+	bool isDynamicModule() { return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
@@ -157,7 +158,7 @@ private:
 	Version					_version;
 	int						_revision		= 0;
 
-	Modules::AnalysisEntry	*_moduleData	= NULL;
+	Modules::AnalysisEntry	*_moduleData	= nullptr;
 };
 
 #endif // ANALYSIS_H
