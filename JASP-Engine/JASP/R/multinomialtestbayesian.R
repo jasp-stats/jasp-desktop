@@ -221,7 +221,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   # Add rows
   descDF <- multinomialResults[["descriptivesTable"]][[options$countProp]]
   if(options$countProp == "descCounts"){
-    descDF[[nms]] <- as.integer(round(descDF[[nms]]))
+    descDF[nms] <- round(descDF[nms])
+    descDF[nms] <- apply(descDF[nms], 2, as.integer)
   }
 
   if(options$credibleInterval){
