@@ -38,7 +38,7 @@ class TableModelVariablesLevels : public TableModel, public BoundModel, public D
 {
 	Q_OBJECT
 public:
-	explicit TableModelVariablesLevels(QWidget *parent = 0);
+	explicit TableModelVariablesLevels(QObject *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;

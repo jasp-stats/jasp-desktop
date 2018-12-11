@@ -16,23 +16,25 @@
 //
 
 #include "aboutdialogjsinterface.h"
-#include "ui_aboutdialog.h"
 #include <QWebChannel>
+#include <iostream>
 
-AboutDialogJsInterface::AboutDialogJsInterface(QWidget *parent) : QObject(parent)
+AboutDialogJsInterface::AboutDialogJsInterface(QObject *parent) : QObject(parent)
 {
-	_aboutDialog = dynamic_cast<AboutDialog *>(parent);
+	/*_aboutDialog = dynamic_cast<AboutDialog *>(parent);
 	_aboutView = _aboutDialog->ui->aboutView;
 	_aboutView->setContextMenuPolicy(Qt::NoContextMenu);
 
 	QWebChannel *channel = new QWebChannel(this);
 	channel->registerObject(QStringLiteral("about"), this);
-	_aboutView->page()->setWebChannel(channel);
+	_aboutView->page()->setWebChannel(channel);*/
 }
 
 void AboutDialogJsInterface::runJavaScript(const QString &str)
 {
-	_aboutView->page()->runJavaScript(str);
+	//_aboutView->page()->runJavaScript(str);
+
+	std::cout << "AboutDialogJsInterface::runJavaScript does nothing!" << std::endl;
 }
 
 
@@ -56,6 +58,7 @@ void AboutDialogJsInterface::setNewVersion(const QString& version)
 
 void AboutDialogJsInterface::closeWindow()
 {
-	_aboutDialog->close();
+	std::cout << "AboutDialogJsInterface::closeWindow does nothing!" << std::endl;
+//	_aboutDialog->close();
 }
 

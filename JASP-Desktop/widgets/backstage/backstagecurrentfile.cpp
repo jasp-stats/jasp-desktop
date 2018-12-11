@@ -2,16 +2,13 @@
 #include "ui_backstageform.h"
 #include "utilities/qutils.h"
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QFileInfo>
 #include <QDir>
 
-BackstageCurrentFile::BackstageCurrentFile(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+BackstageCurrentFile::BackstageCurrentFile(QObject *parent): BackstagePage(parent)
 {	
-	
-	_currentFileListModel = new CurrentFileListModel(this);
-	
-	qquickfilemenu->rootContext()->setContextProperty("backstageCurrentFile",this);
-	qquickfilemenu->rootContext()->setContextProperty("currentFileListModel",_currentFileListModel);
+	setListModel(new CurrentFileListModel(this));
 	
 	_currentFilePath = "";
 	_currentDataFilePath = "";
@@ -111,4 +108,14 @@ QString BackstageCurrentFile::getHeaderText()
 void BackstageCurrentFile::syncFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);
+}
+
+
+void BackstageCurrentFile::setListModel(CurrentFileListModel * listModel)
+{
+	if (_currentFileListModel == listModel)
+		return;
+
+	_currentFileListModel = listModel;
+	emit listModelChanged(_currentFileListModel);
 }

@@ -28,7 +28,7 @@
 
 using namespace std;
 
-TableModelVariablesLevels::TableModelVariablesLevels(QWidget *parent) :
+TableModelVariablesLevels::TableModelVariablesLevels(QObject *parent) :
 	TableModel(parent)
 {
 	_boundTo = NULL;
@@ -37,10 +37,10 @@ TableModelVariablesLevels::TableModelVariablesLevels(QWidget *parent) :
 	_variableTypesSuggested = 0;
 	_variableTypesAllowed = 0xff;
 
-	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
-	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
-	_scaleIcon = QIcon(":/icons/variable-scale.svg");
+	_nominalTextIcon	= QIcon(":/icons/variable-nominal-text.svg");
+	_nominalIcon		= QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon		= QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon			= QIcon(":/icons/variable-scale.svg");
 
 	_limitToOneLevel = false;
 }

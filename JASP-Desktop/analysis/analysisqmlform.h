@@ -1,7 +1,6 @@
 #ifndef ANALYSISQMLFORM_H
 #define ANALYSISQMLFORM_H
 
-#include <QWidget>
 #include <QQuickItem>
 #include <QMessageBox>
 #include <QQuickWidget>
@@ -23,12 +22,10 @@ class AnalysisQMLForm : public AnalysisForm
 	Q_OBJECT
 
 public:
-	explicit	AnalysisQMLForm(QWidget *parent, Analysis* analysis);
+	explicit	AnalysisQMLForm(QObject *parent, Analysis* analysis);
 
 	void		bindTo(Options *options, DataSet *dataSet)	OVERRIDE;
 	void		unbind()									OVERRIDE;
-	
-	QWidget*	getWidget()									OVERRIDE	{ return _quickWidget; }
 	
 	void		addError(const QString& error);
 
@@ -39,7 +36,7 @@ public:
 	DataSet*	getDataSet()							{ return _dataSet; }
 
 public slots:
-	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{ QMessageBox::warning(this, "Error", "Error when painting analysis form: " + message); }
+	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{  std::cerr << "Should be in aa messagebox of some king: QMessageBox::warning(this, \"Error\", \"Error when painting analysis form: " << message.toStdString() << std::endl; }
 	void		statusChangedWidgetHandler(QQuickWidget::Status status);
 
 protected:

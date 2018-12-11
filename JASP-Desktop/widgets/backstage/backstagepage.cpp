@@ -18,7 +18,7 @@
 
 #include "backstagepage.h"
 
-BackstagePage::BackstagePage(QWidget *parent) : QWidget(parent)
+BackstagePage::BackstagePage(QObject *parent) : QObject(parent)
 {
 	_mode = FileEvent::FileOpen;
 }

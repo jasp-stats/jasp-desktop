@@ -1,33 +1,26 @@
 #ifndef PREFERENCESDIALOG_H
 #define PREFERENCESDIALOG_H
 
-#include "widgets/tabbar.h"
 #include "column.h"
 #include "utilities/qutils.h"
-#include <QDialog>
-#include <QFileDialog>
 #include <QSizePolicy>
 #include <QButtonGroup>
 #include <QAbstractButton>
 
-namespace Ui {
-class PreferencesDialog;
-}
 
-class PreferencesDialog : public QDialog
+class PreferencesDialog : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit PreferencesDialog(QWidget *parent = 0);
+	explicit PreferencesDialog(QObject *parent = 0);
 	~PreferencesDialog();
 
 	void setDefaultPPI(int ppi);
 
 private:
-	Ui::PreferencesDialog *ui;
-	TabBar *_tabBar;
-	QButtonGroup* _imageBackgroundGroup;
+	//TabBar *_tabBar;
+	//QButtonGroup* _imageBackgroundGroup;
 	static int _currentTab;
 	std::vector<std::string> getStdVectorFromEmptyValueList();
 	QString getTokenStringFromEmptyValueList();

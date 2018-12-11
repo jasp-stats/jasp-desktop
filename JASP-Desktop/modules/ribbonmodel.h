@@ -29,6 +29,7 @@
 class RibbonModel : public QAbstractListModel
 {
 	Q_OBJECT
+	Q_PROPERTY(RibbonButtonModel *currentButtonModel	READ currentButtonModel WRITE setCurrentButtonModel NOTIFY currentButtonModelChanged)
 
 public:
 	enum {
@@ -57,6 +58,12 @@ public:
 
 	void						connectToDynamicModules(DynamicModules * dynamicModules);
 
+	RibbonButtonModel*			currentButtonModel() const							{ return _currentButtonModel; }
+	void						setCurrentButtonModel(RibbonButtonModel* newModel);
+
+signals:
+	void currentButtonModelChanged();
+
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
 	void removeDynamicRibbonButtonModel(std::string moduleName)			{ removeRibbonButtonModel(moduleName);				}
@@ -67,6 +74,7 @@ private: // functions
 private: // fields
 	std::map<std::string, RibbonButtonModel*>	_modulesByName;
 	std::vector<std::string>					_moduleNames; //To keep order
+	RibbonButtonModel							*_currentButtonModel = nullptr;
 };
 
 

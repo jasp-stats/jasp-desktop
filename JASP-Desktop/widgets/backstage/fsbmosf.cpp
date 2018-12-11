@@ -18,8 +18,6 @@
 
 #include "fsbmosf.h"
 
-#include <QGridLayout>
-#include <QLabel>
 #include <QNetworkAccessManager>
 #include <QUrl>
 #include <QNetworkRequest>

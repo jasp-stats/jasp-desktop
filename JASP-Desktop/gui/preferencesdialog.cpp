@@ -1,7 +1,5 @@
 #include "preferencesdialog.h"
 #include "utils.h"
-#include "ui_preferencesdialog.h"
-#include <QMessageBox>
 #include <QDebug>
 #include "utilities/settings.h"
 
@@ -9,13 +7,10 @@ using namespace std;
 
 int PreferencesDialog::_currentTab = 0;
 
-PreferencesDialog::PreferencesDialog(QWidget *parent) :
-	QDialog(),
-	ui(new Ui::PreferencesDialog)
+PreferencesDialog::PreferencesDialog(QObject *parent) :
+	QObject(parent)
 {
-	ui->setupUi(this);
-	_tabBar = dynamic_cast<TabBar *>(parent);
-
+	/*
 	//Num decimals
 	QString input_num_decimals = Settings::value(Settings::NUM_DECIMALS).toString();
 	bool fix_decimals = !input_num_decimals.isEmpty();
@@ -88,52 +83,52 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	connect(ui->openQMLFile,					&QPushButton::pressed,			this, &PreferencesDialog::getQMLFile			);
 	connect(ui->openRFile,						&QPushButton::pressed,			this, &PreferencesDialog::getRFile				);
 
-	ui->tabsPreferences->setCurrentIndex(_currentTab);
+	ui->tabsPreferences->setCurrentIndex(_currentTab);*/
 }
 
 PreferencesDialog::~PreferencesDialog()
 {
-	delete ui;
+
 }
 
 const float sliderMult = 0.33333f;
 
 void PreferencesDialog::setSliderUIScale(float scale)
 {
-	float	scaleX		= std::log((scale) / sliderMult) * 32.0f;
+/*	float	scaleX		= std::log((scale) / sliderMult) * 32.0f;
 	int		minSlider	= ui->sliderUIScale->minimum(),
 			maxSlider	= ui->sliderUIScale->maximum(),
 			newPos		= std::max(minSlider, std::min(maxSlider, int(scaleX)));
 
-	ui->sliderUIScale->setValue(newPos);
+	ui->sliderUIScale->setValue(newPos);*/
 }
 
 float PreferencesDialog::sliderUIScale()
 {
-	float curPos = ui->sliderUIScale->value();
+	//float curPos = ui->sliderUIScale->value();
 
-	return std::exp(curPos / 32.0f) * sliderMult;
-
+	//return std::exp(curPos / 32.0f) * sliderMult;
+	return -1;
 }
 
 void PreferencesDialog::sliderUIScaleChanged(int)
 {
-	float scale = sliderUIScale();
+/*	float scale = sliderUIScale();
 	Settings::setValue(Settings::UI_SCALE, scale);
-	emit _tabBar->UIScaleChanged(scale);
+	emit _tabBar->UIScaleChanged(scale);*/
 }
 
 void PreferencesDialog::setDefaultPPI(int ppi)
 {
 	QString ppiStr;
 	ppiStr.setNum(ppi);
-	ui->labelDefaultPPI->setText(QString::fromLatin1(": ") + ppiStr);
+	//ui->labelDefaultPPI->setText(QString::fromLatin1(": ") + ppiStr);
 }
 
 std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
 {
 	std::vector<std::string> result;
-	QListWidgetItem *itm;
+/*	QListWidgetItem *itm;
 	unsigned int count = ui->missingValuesList->count();
 	QString s;
 	
@@ -146,14 +141,14 @@ std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
 		s = s.trimmed();
 		if (!s.isEmpty())
 			result.push_back(s.toStdString());
-	}
+	}*/
 	
 	return result;
 }
 
 void PreferencesDialog::on_fixDecimals_clicked()
 {
-
+/*
 	if (ui->fixDecimals->checkState()==Qt::Checked)
 	{
 		this->ui->numDecimals->show();
@@ -161,14 +156,14 @@ void PreferencesDialog::on_fixDecimals_clicked()
 	else
 	{
 		this->ui->numDecimals->hide();
-	}
+	}*/
 	
 }
 
 QString PreferencesDialog::getTokenStringFromEmptyValueList()
 {
 	QString result;
-	QListWidgetItem *itm;
+	/*QListWidgetItem *itm;
 	unsigned int count = ui->missingValuesList->count();
 	
 	//No stripping is done
@@ -179,7 +174,7 @@ QString PreferencesDialog::getTokenStringFromEmptyValueList()
 		result += itemtoadd;
 		if (i<count-1) result += "|";
 	}
-	
+	*/
 	return result;
 	
 }
@@ -187,7 +182,7 @@ QString PreferencesDialog::getTokenStringFromEmptyValueList()
 bool PreferencesDialog::addStringToEmptyValueList(const QString &in)
 {
 	bool itemexist = false;
-	
+/*
 	QString prepare = in.trimmed();
 	prepare = stripFirstAndLastChar(prepare, "\"");
 	prepare = prepare.trimmed();
@@ -209,21 +204,21 @@ bool PreferencesDialog::addStringToEmptyValueList(const QString &in)
 			ui->itemEdit->setText("");
 		}
 	}
-	
+	*/
 	return itemexist;
 }
 
 void PreferencesDialog::on_addPushButton_clicked()
 {
 
-	addStringToEmptyValueList(ui->itemEdit->text());
+//	addStringToEmptyValueList(ui->itemEdit->text());
 	
 }
 
 void PreferencesDialog::on_deletePushButton_clicked()
 {
-	QListWidgetItem *itm = ui->missingValuesList->takeItem(ui->missingValuesList->currentRow());
-	delete itm;
+	//QListWidgetItem *itm = ui->missingValuesList->takeItem(ui->missingValuesList->currentRow());
+	//delete itm;
 }
 
 void PreferencesDialog::on_resetPushButton_clicked()
@@ -238,7 +233,7 @@ void PreferencesDialog::currentTabChanged(int tabNr)
 
 void PreferencesDialog::checkEmptyValueList()
 {
-	// Forgot to save something?
+/*	// Forgot to save something?
 	if (ui->itemEdit->text() != "")
 	{
 		QMessageBox::StandardButton reply;
@@ -260,12 +255,12 @@ void PreferencesDialog::checkEmptyValueList()
 		Settings::setValue(Settings::MISSING_VALUES_LIST, settingmissingvalues);
 		Utils::setEmptyValues(missingvalues);
 		emit _tabBar->emptyValuesChanged();
-	}
+	}*/
 }
 
 void PreferencesDialog::savePreferences()
 {
-	// Check empty value list
+/*	// Check empty value list
 	checkEmptyValueList();
 
 	//Auto Sync Switch
@@ -331,13 +326,13 @@ void PreferencesDialog::savePreferences()
 	//Done
 	Settings::sync();
 
-	this->close();
+	this->close();*/
 	
 }
 
 void PreferencesDialog::setDefaultEditorCheck(bool defaulteditor)
 {
-		
+		/*
 	if (defaulteditor)
 	{
 		ui->openEditor->setEnabled(false);
@@ -349,7 +344,7 @@ void PreferencesDialog::setDefaultEditorCheck(bool defaulteditor)
 		ui->openEditor->setDefault(true);
 		ui->spreadsheetEditorName->setEnabled(true);
 	}
-	
+	*/
 }
 
 void PreferencesDialog::getSpreadsheetEditor()
@@ -366,9 +361,9 @@ void PreferencesDialog::getSpreadsheetEditor()
 	applicationfolder = "/usr/bin";
 #endif
 
-	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", applicationfolder, filter);
+	/*QString filename = QFileDialog::getOpenFileName(this, "Select a file...", applicationfolder, filter);
 	if (filename != "")
-		ui->spreadsheetEditorName->setText(filename);
+		ui->spreadsheetEditorName->setText(filename);*/
 	
 }
 
@@ -385,10 +380,10 @@ void PreferencesDialog::getQMLFile()
 #else
 	folder = "/";
 #endif
-
+/*
 	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", folder, filter);
 	if (filename != "")
-		ui->testAnalyseQMLName->setText(filename);	
+		ui->testAnalyseQMLName->setText(filename);	*/
 }
 
 void PreferencesDialog::getRFile()
@@ -403,28 +398,28 @@ void PreferencesDialog::getRFile()
 #else
 	folder = "/";
 #endif
-
+/*
 	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", folder, filter);
 	if (filename != "")
-		ui->testAnalyseRName->setText(filename);	
+		ui->testAnalyseRName->setText(filename);	*/
 }
 
 
 void PreferencesDialog::showEvent(QShowEvent * event)
 {
 	fillMissingValueList(Utils::getEmptyValues());
-	QDialog::showEvent(event);
+//	QDialog::showEvent(event);
 }
 
 void PreferencesDialog::fillMissingValueList(const vector<string> &emptyValues)
 {
-	ui->missingValuesList->clear();
+/*	ui->missingValuesList->clear();
 	std::string s;
 
 	for (unsigned int t=0; t<emptyValues.size() ; ++t)
 	{
 		s = emptyValues.at(t);
 		ui->missingValuesList->addItem(s.c_str());
-	}
+	}*/
 }
 

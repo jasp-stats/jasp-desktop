@@ -21,26 +21,29 @@
 
 #include "backstagepage.h"
 #include "recentfileslistmodel.h"
-#include <QQmlContext>
-#include <QQuickWidget>
-
 
 class BackstageRecentFiles : public BackstagePage		
 {
-	
 	Q_OBJECT	
+	Q_PROPERTY(RecentFilesListModel * recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged)
 	
 public:
-	explicit BackstageRecentFiles(QWidget *parent = nullptr, QQuickWidget *qquickfilemenu = nullptr);
-	~BackstageRecentFiles();
+	explicit BackstageRecentFiles(QObject *parent = nullptr);
+
 	void pushRecentFilePath(const QString & newrecent);
+
+	RecentFilesListModel * recentFiles() const { return _recentFilesListModel; }
 
 public slots:
 	void openFile(FileEvent *event);
 	
+	void setRecentFiles(RecentFilesListModel * recentFiles);
+
+signals:
+	void recentFilesChanged(RecentFilesListModel * recentFiles);
+
 private:
 	RecentFilesListModel *_recentFilesListModel;
-	
 };
 				
 #endif // BACKSTAGERECENTFILES_H

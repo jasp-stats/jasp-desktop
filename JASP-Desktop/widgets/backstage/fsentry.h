@@ -21,6 +21,7 @@
 
 #include <QString>
 #include "utils.h"
+#include <QHash>
 
 class FSEntry
 {
@@ -62,6 +63,18 @@ public:
 			
 		}
 		return entrytype;
+	}
+
+	static QHash<int, QString> sourcesIcons()
+	{
+		static QHash<int, QString> icons = {
+			{ FSEntry::JASP,	":/icons/file-jasp.svg"		},
+			{ FSEntry::CSV,		":/icons/spreadsheet.svg"	},
+			{ FSEntry::SPSS,	":/icons/spreadsheet.svg"	},
+			{ FSEntry::Other,	":/icons/spreadsheet.svg"	},
+			{ FSEntry::Folder,	":/icons/folder.svg"		} };
+
+		return icons;
 	}
 
 };

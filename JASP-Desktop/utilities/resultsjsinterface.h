@@ -27,9 +27,6 @@
 #include <QAuthenticator>
 #include <QNetworkReply>
 
-#include "mainwindow.h"
-
-class MainWindow;
 
 class ResultsJsInterface : public QObject
 {
@@ -38,7 +35,7 @@ class ResultsJsInterface : public QObject
 
 public:
 	explicit ResultsJsInterface(QWidget *parent = 0);
-
+/*
 	void setZoom(double zoom);
 	void zoomIn();
 	void zoomOut();
@@ -121,7 +118,7 @@ private slots:
 	void latexCodeSelected();
 	void saveImage();
 	void editImage();
-	void noteSelected();
+	void noteSelected();*/
 };
 
 

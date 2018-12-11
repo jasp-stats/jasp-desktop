@@ -81,5 +81,37 @@
         <file>icons/JASP_logo_gray.svg</file>
         <file>icons/JASP_logo_green.svg</file>
         <file>icons/JASP-logo_blue.svg</file>
+        <file>icons/variance.png</file>
+        <file>icons/trashcan.svg</file>
+        <file>icons/trashcan_open.svg</file>
+        <file>icons/sum.png</file>
+        <file>icons/sigma.png</file>
+        <file>icons/rootTail.png</file>
+        <file>icons/rootHead.png</file>
+        <file>icons/recycle.svg</file>
+        <file>icons/or.png</file>
+        <file>icons/notEqual.png</file>
+        <file>icons/negative.png</file>
+        <file>icons/lessThanEqual.png</file>
+        <file>icons/lessThan.png</file>
+        <file>icons/greaterThanEqual.png</file>
+        <file>icons/greaterThan.png</file>
+        <file>icons/equal.png</file>
+        <file>icons/divide.png</file>
+        <file>icons/and.png</file>
+        <file>icons/gear.svg</file>
+        <file>icons/modulo.png</file>
+        <file>icons/product.png</file>
+        <file>icons/NotR.png</file>
+        <file>icons/R.png</file>
+        <file>icons/QuestionMark.png</file>
+        <file>icons/trashcan_open.png</file>
+        <file>icons/trashcan.png</file>
+        <file>icons/check-mark.png</file>
+        <file>icons/ConditionBy.png</file>
+        <file>icons/error.png</file>
+        <file>icons/square_trashcan.png</file>
+        <file>icons/columnConstructorBackground.png</file>
+        <file>icons/filterConstructorBackground.png</file>
     </qresource>
 </RCC>

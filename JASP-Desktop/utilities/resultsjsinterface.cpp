@@ -34,7 +34,7 @@
 
 ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 {
-	JASPTIMER_START(ResultsJsInterface());
+/*	JASPTIMER_START(ResultsJsInterface());
 	_mainWindow = dynamic_cast<MainWindow *>(parent);
 	_webViewResults = _mainWindow->getWebViewResults();
 	_webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
@@ -54,10 +54,11 @@ ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 // to emit the scrollValuesChanged signal.
 //	connect(_webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
 
-	JASPTIMER_FINISH(ResultsJsInterface());
+	JASPTIMER_FINISH(ResultsJsInterface());*/
 
 }
 
+/*
 void ResultsJsInterface::setZoom(double zoom)
 {
 	_webViewZoom = zoom;
@@ -657,4 +658,4 @@ void ResultsJsInterface::cbSetAllUserData(const QVariant &vAllUserData)
 {
 	_allUserData = vAllUserData;
 	emit getAllUserDataCompleted();
-}
+}*/

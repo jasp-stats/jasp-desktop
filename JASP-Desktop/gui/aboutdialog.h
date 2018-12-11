@@ -19,9 +19,6 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
-#include <QDialog>
-#include <QAbstractButton>
-#include <QWebEngineView>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -32,20 +29,16 @@
 
 class AboutDialogJsInterface;
 
-namespace Ui {
-class AboutDialog;
-}
-
-class AboutDialog : public QDialog
+class AboutDialog : public QObject
 {
 	Q_OBJECT
 	friend class AboutDialogJsInterface;
 
 public:
-	explicit	AboutDialog(QWidget *parent = 0);
+	explicit	AboutDialog(QObject *parent = 0);
 				~AboutDialog();
 
-	void showEvent(QShowEvent * e) override;
+	//void showEvent(QShowEvent * e) override;
 	
 private slots:
 	void aboutPageLoaded(bool success);
@@ -53,7 +46,6 @@ private slots:
 	void checkForJaspUpdate();
 
 private:
-	Ui::AboutDialog			*ui;
 	QNetworkAccessManager	*m_network_manager;	// make the HTTP GET request
 	QNetworkReply			*m_network_reply;
 	QByteArray				*m_pBuffer;

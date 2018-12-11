@@ -17,30 +17,26 @@
 //
 
 #include "aboutdialog.h"
-#include "ui_aboutdialog.h"
 
 #include "utilities/qutils.h"
 #include "appinfo.h"
 
-AboutDialog::AboutDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::AboutDialog)
+AboutDialog::AboutDialog(QObject *parent) :
+	QObject(parent)
 {
-	ui->setupUi(this);
-
 	m_aboutDialogJsInterface = new AboutDialogJsInterface(this);
 	
 	m_network_manager = new QNetworkAccessManager();
 	m_pBuffer = new QByteArray();
 	
-	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint);
+	//setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint);
 
 	//loading the about-page at construction time makes JASP start slow! Its better if we load it later (in showEvent)
 }
 
 AboutDialog::~AboutDialog()
 {
-	delete ui;
+
 }
 
 void AboutDialog::aboutPageLoaded(bool success)
@@ -116,6 +112,7 @@ void AboutDialog::downloadFinished()
 	}
 }
 
+/*
 void AboutDialog::showEvent(QShowEvent * e)
 {
 	static QUrl aboutUrl = QUrl(QString("qrc:///core/about.html"));
@@ -128,3 +125,4 @@ void AboutDialog::showEvent(QShowEvent * e)
 
 	QDialog::showEvent(e);
 }
+*/

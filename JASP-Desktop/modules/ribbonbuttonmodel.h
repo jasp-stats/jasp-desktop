@@ -36,7 +36,8 @@ public:
 	enum {
 		AnalysisMenuRole = Qt::UserRole,
 		DisplayRole,
-		IconSourceRole
+		IconSourceRole,
+		EnabledRibbonRole
 	};
 
 	RibbonButtonModel(QObject *parent, Json::Value description);

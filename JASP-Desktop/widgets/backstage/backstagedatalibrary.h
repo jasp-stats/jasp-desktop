@@ -31,17 +31,31 @@ class BackstageDataLibrary : public BackstagePage
 {
 	
 	Q_OBJECT
+	Q_PROPERTY(DataLibraryListModel * listModel						READ listModel			WRITE setListModel			NOTIFY listModelChanged)
+	Q_PROPERTY(DataLibraryBreadCrumbsListModel * breadcrumbsmodel	READ breadcrumbsmodel	WRITE setBreadcrumbsmodel	NOTIFY breadcrumbsmodelChanged)
+
+
 public:
-	explicit BackstageDataLibrary(QWidget *parent = nullptr, QQuickWidget *qquickfilemenu = nullptr);
-	~BackstageDataLibrary();
+	explicit BackstageDataLibrary(QObject *parent = nullptr);
+	~BackstageDataLibrary() {}
+
+	DataLibraryListModel *				listModel()			const {	return _dataLibraryListModel; }
+	DataLibraryBreadCrumbsListModel *	breadcrumbsmodel()	const {	return _dataLibraryBreadCrumbsListModel; }
+
+signals:
+	void breadcrumbsmodelChanged();
+	void listModelChanged();
 
 public slots:
 	void openFile(FileEvent *event);
 	
-private:	
-	DataLibraryListModel *_dataLibraryListModel;
-	DataLibraryBreadCrumbsListModel *_dataLibraryBreadCrumbsListModel;
-				
+	void setListModel(DataLibraryListModel * listModel);
+	void setBreadcrumbsmodel(DataLibraryBreadCrumbsListModel * breadcrumbsmodel);
+
+private:
+	DataLibraryListModel			*_dataLibraryListModel				= nullptr;
+	DataLibraryBreadCrumbsListModel	*_dataLibraryBreadCrumbsListModel	= nullptr;
+
 };
 
 #endif // BACKSTAGEDATALIBRARY_H

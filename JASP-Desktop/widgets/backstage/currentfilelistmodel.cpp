@@ -1,5 +1,5 @@
 #include "currentfilelistmodel.h"
-#include "fsentrywidget.h"
+#include "fsentry.h"
 #include <QFileInfo>
 #include <QDir>
 
@@ -8,7 +8,7 @@ CurrentFileListModel::CurrentFileListModel(QObject *parent)
 {
 	_fsbmCurrentFile = new FSBMCurrentFile(this);
 	_fsbmCurrentFile->refresh();
-	_iconsources = FSEntryWidget::sourcesIcons();
+	_iconsources = FSEntry::sourcesIcons();
 	
 	connect(this, SIGNAL(syncFile(FileEvent *)), parent, SLOT(syncFile(FileEvent *)));
 }
@@ -28,27 +28,17 @@ QVariant CurrentFileListModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 	
-	//Get the FileSystemEntryList
 	FSBMCurrentFile::FileSystemEntryList fileEntryList = _fsbmCurrentFile->entries();
-	
-	//Get the FileEntry
 	FSEntry item = fileEntryList[index.row()];
 	
 	switch (role)
 	{
-	case NameRole:
-		return QVariant(item.name);
-	case PathRole:
-		return QVariant(item.path);
-	case FolderRole:
-		{QFileInfo  fi(item.path);
-		return QVariant(fi.path() + QDir::separator());}
-	case TypeRole:
-		return QVariant(item.entryType);
-	case IconSourceRole:
-		return QVariant("qrc"+_iconsources[item.entryType]);
-	default:
-		return QVariant(QStringLiteral("Unknown role"));
+	case NameRole:			return QVariant(item.name);
+	case PathRole:			return QVariant(item.path);
+	case FolderRole:		return QVariant(QFileInfo(item.path).path() + QDir::separator());
+	case TypeRole:			return QVariant(item.entryType);
+	case IconSourceRole:	return QVariant("qrc"+_iconsources[item.entryType]);
+	default:				return QVariant(QStringLiteral("Unknown role"));
 	}
 }
 

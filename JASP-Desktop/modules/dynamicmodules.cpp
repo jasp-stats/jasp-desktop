@@ -218,7 +218,7 @@ Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const
 
 void DynamicModules::openModuleInstallerWindow()
 {
-	emit showModuleInstallerWindow("qrc:///modules/ModuleInstaller.qml");
+	emit showModuleInstallerWindow("qrc:///components/JASP/Widgets/ModuleInstaller.qml");
 }
 
 bool DynamicModules::isFileAnArchive(QString filepath)
