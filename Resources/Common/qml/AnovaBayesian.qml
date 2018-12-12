@@ -83,7 +83,7 @@ Form {
 
         VariablesForm {
             height: 200
-            showDefaultAssignedVariablesList: false
+            showDefaultAssignedVariablesList: false // Cannot use defaultAssignedVariablesList with an ExtraControlColumn
             listWidth: parent.width * 5 / 9
 
             availableVariablesList {

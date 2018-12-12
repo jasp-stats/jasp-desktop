@@ -38,6 +38,7 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 	_hasExtraControlColumns = QQmlProperty(_item, "hasExtraControlColumns").read().toBool();
 	if (_hasExtraControlColumns)
 	{
+		_extraControlVariableName = QQmlProperty(_item, "extraControlVariableName").read().toString().toStdString();
 		QList<QVariant> extraColumns = QQmlProperty(_item, "controlColumns").read().toList();
 		for (const QVariant& extraColumnVariant : extraColumns)
 		{

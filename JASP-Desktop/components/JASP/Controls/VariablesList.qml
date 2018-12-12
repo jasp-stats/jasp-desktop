@@ -53,6 +53,7 @@ JASPControl
 
 	property bool	showVariableTypeIcon:	true
 	property bool	hasExtraControlColumns:	false
+    property string extraControlVariableName: "variable"
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 

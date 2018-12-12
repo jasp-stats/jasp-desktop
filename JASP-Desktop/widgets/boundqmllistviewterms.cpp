@@ -46,7 +46,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 			return;
 		}
 		Options* templote = new Options();
-		templote->add("variable", new OptionVariable());
+		templote->add(_extraControlVariableName, new OptionVariable());
 		addExtraOptions(templote);
 		_optionsTable->setTemplate(templote);
 		
@@ -128,7 +128,7 @@ Option* BoundQMLListViewTerms::createOption()
 			Options* options = new Options();
 			OptionVariable* optionVariable = new OptionVariable();
 			optionVariable->setValue(term.asString());
-			options->add("variable", optionVariable);
+			options->add(_extraControlVariableName, optionVariable);
 			allOptions.push_back(options);
 		}
 		optionsTable->connectOptions(allOptions);
@@ -170,7 +170,7 @@ void BoundQMLListViewTerms::_connectExtraControlOptions()
 		Options* options = new Options();
 		OptionVariable* optionVariable = new OptionVariable();
 		optionVariable->setValue(termStr);
-		options->add("variable", optionVariable);
+		options->add(_extraControlVariableName, optionVariable);
 		
 		QMap<QString, BoundQMLItem* > row = _rowsWithControls[termQStr];
 		QMapIterator<QString, BoundQMLItem*> it(row);

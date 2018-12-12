@@ -63,13 +63,7 @@ Form {
     }
 
     GridLayout {
-        ButtonGroup {
-            title: qsTr("Bayes Factor")
-            name: "bayesFactorType"
-            RadioButton { text: qsTr("BF\u2081\u2080"); name: "BF10"; checked: true }
-            RadioButton { text: qsTr("BF\u2080\u2081"); name: "BF01" }
-            RadioButton { text: qsTr("Log(BF\u2081\u2080)"); name: "LogBF10" }
-        }
+        BayesFactorType {}
 
         GroupBox {
             title: qsTr("Output")
@@ -98,7 +92,7 @@ Form {
 
         VariablesForm {
             height: 200
-            showDefaultAssignedVariablesList: false
+            showDefaultAssignedVariablesList: false // Cannot use defaultAssignedVariablesList with an ExtraControlColumn
             listWidth: parent.width * 5 / 9
 
             availableVariablesList {

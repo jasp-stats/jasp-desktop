@@ -43,6 +43,7 @@ protected:
 	ListModelAssignedInterface* assignedModel();
 	
 	bool _hasExtraControlColumns;
+	std::string _extraControlVariableName;
 	QMap<QString, QMap<QString, QString> > _extraControlColumns;
 	QMap<QString, QMap<QString, BoundQMLItem*> > _rowsWithControls;
 	

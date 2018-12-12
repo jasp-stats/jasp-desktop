@@ -14,6 +14,7 @@ JASPControl {
     
 	property int	labelSpacing:			4
 	property alias	label:					label
+    property alias	text:					label.text
 	property string	currentText				//Am i empty or what?
 	property string	currentIconPath			//Same here
 	property alias	currentIndex:			control.currentIndex
