@@ -3558,15 +3558,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 # HELPER FUNCTIONS INFORMED BAYESIAN T-TESTS
 #-------------------------------------------------------------------------------
 
-
-.term_normalprior <- function(t, n, nu, mu.delta, g) {
-
-  (1 + n*g)^(-1/2) * exp(-mu.delta^2/(2*(1/n + g))) *
-    (1 + t^2/(nu*(1 + n*g)))^(-(nu + 1)/2) *
-    (.A(t, n, nu, mu.delta, g) + .B(t, n, nu, mu.delta, g))
-
-}
-
 .integrand_t <- function(delta, t, n, nu, mu.delta, gamma, kappa) {
 
   suppressWarnings(
@@ -3642,26 +3633,19 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                          prior.scale, prior.df, rel.tol = .Machine$double.eps^0.25) {
 
   neff <- ifelse(independentSamples, n1 * n2 / (n1 + n2), n1)
-  nu <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
+  nu   <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
 
-  mu.delta <- prior.location
-  gamma <- prior.scale
-  kappa <- prior.df
+  mu.delta  <- prior.location
+  gamma     <- prior.scale
+  kappa     <- prior.df
 
-  numerator <- suppressWarnings(
+  numerator   <- suppressWarnings(
     dt(x = t, df = nu, ncp = sqrt(neff) * delta) *
     1 / gamma * dt( (delta - mu.delta) / gamma, df = kappa)
   )
-
-  denominator <- integrate(.integrand_t,
-                           lower = -Inf, upper = Inf,
-                           t = t, n = neff, nu = nu,
-                           mu.delta = mu.delta,
-                           gamma = gamma,
-                           kappa = kappa,
-                           rel.tol = rel.tol)$value
-
-  out <- numerator / denominator
+  denominator <- integrate(.integrand_t, lower = -Inf, upper = Inf, t = t, n = neff, nu = nu,
+                           mu.delta = mu.delta, gamma = gamma, kappa = kappa, rel.tol = rel.tol)$value
+  out         <- numerator / denominator
   out[is.na(out)] <- 0
 
   return(out)
@@ -3669,113 +3653,81 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 .cdf_t <- function(x, t, n1, n2 = NULL, independentSamples = FALSE, prior.location, prior.scale, prior.df) {
 
-  integrate(posterior_t,
-            lower = -Inf, upper = x,
-            t = t, n1 = n1, n2 = n2,
-            independentSamples = independentSamples,
-            prior.location = prior.location,
-            prior.scale = prior.scale,
-            prior.df = prior.df)$value
+  integrate(.posterior_t, lower = -Inf, upper = x, t = t, n1 = n1, n2 = n2,
+            independentSamples = independentSamples, prior.location = prior.location,
+            prior.scale = prior.scale, prior.df = prior.df)$value
 }
 
 .quantile_t <- function(q, t, n1, n2 = NULL, independentSamples = FALSE, prior.location, prior.scale,
                         prior.df, tol = 0.0001, max.iter = 100) {
-  # compute quantiles via Newton-Raphson method
+  # Computes quantiles via Newton-Raphson method
 
   x.cur <- Inf
   # get reasonable starting value
   delta <- seq(-2, 2, length.out = 400)
-  dens <- posterior_t(delta, t = t, n1 = n1, n2 = n2,
-                      independentSamples = independentSamples,
-                      prior.location = prior.location,
-                      prior.scale = prior.scale,
-                      prior.df = prior.df)
+  dens  <- .posterior_t(delta, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                        prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
   x.new <- delta[which.max(dens)]
-  i <- 1
 
+  i <- 1
   while (abs(x.cur - x.new) > tol && i < max.iter) {
 
     x.cur <- x.new
-    x.new <- x.cur - (cdf_t(x.cur, t = t, n1 = n1, n2 = n2,
-                            independentSamples = independentSamples,
-                            prior.location = prior.location,
-                            prior.scale = prior.scale,
-                            prior.df = prior.df) - q)/
-      posterior_t(x.cur, t = t, n1 = n1, n2 = n2,
-                  independentSamples = independentSamples,
-                  prior.location = prior.location,
-                  prior.scale = prior.scale,
-                  prior.df = prior.df)
+    x.new <- x.cur - (.cdf_t(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                             prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df) - q) /
+                      .posterior_t(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                                   prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
     i <- i + 1
   }
 
   return(x.new)
 }
 
-.ciPlusMedian_t <- function(t, n1, n2 = NULL, independentSamples = FALSE, prior.location,
-                            prior.scale, prior.df, ci = .95, type = "two-sided", tol = 0.0001,
-                            max.iter = 100) {
+.ciPlusMedian_t <- function(t, n1, n2 = NULL, independentSamples = FALSE, prior.location, prior.scale,
+                            prior.df, ci = .95, tol = 0.0001, max.iter = 100, oneSided) {
 
-  lower <- (1 - ci)/2
-  upper <- ci + (1 - ci)/2
-  med <- .5
+  lower <- (1 - ci) / 2
+  upper <- ci + (1 - ci) / 2
+  med   <- .5
 
-  postAreaSmaller0 <- cdf_t(x = 0, t = t, n1 = n1, n2 = n2,
-                            independentSamples = independentSamples,
-                            prior.location = prior.location,
-                            prior.scale = prior.scale,
-                            prior.df = prior.df)
+  postAreaSmaller0 <- .cdf_t(x = 0, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                             prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
 
-  if (type == "plus-sided") {
+  if (oneSided == "right") {
 
-    lower <- postAreaSmaller0 + (1 - postAreaSmaller0)*lower
-    upper <- postAreaSmaller0 + (1 - postAreaSmaller0)*upper
-    med <- postAreaSmaller0 + (1 - postAreaSmaller0)*med
+    lower <- postAreaSmaller0 + (1 - postAreaSmaller0) * lower
+    upper <- postAreaSmaller0 + (1 - postAreaSmaller0) * upper
+    med   <- postAreaSmaller0 + (1 - postAreaSmaller0) * med
+} else if (oneSided == "left") {
 
-  } else if (type == "min-sided") {
-
-    lower <- postAreaSmaller0*lower
-    upper <- postAreaSmaller0*upper
-    med <- postAreaSmaller0*med
-
+    lower <- postAreaSmaller0 * lower
+    upper <- postAreaSmaller0 * upper
+    med   <- postAreaSmaller0 * med
   }
 
-  ciLower <- quantile_t(lower, t = t, n1 = n1, n2 = n2,
-                        independentSamples = independentSamples,
-                        prior.location = prior.location,
-                        prior.scale = prior.scale,
-                        prior.df = prior.df)
-  ciUpper <- quantile_t(upper, t = t, n1 = n1, n2 = n2,
-                        independentSamples = independentSamples,
-                        prior.location = prior.location,
-                        prior.scale = prior.scale,
-                        prior.df = prior.df)
-  median <- quantile_t(med, t = t, n1 = n1, n2 = n2,
-                       independentSamples = independentSamples,
-                       prior.location = prior.location,
-                       prior.scale = prior.scale,
-                       prior.df = prior.df)
+  ciLower <- .quantile_t(lower, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                         prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
+  ciUpper <- .quantile_t(upper, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                         prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
+  median  <- .quantile_t(med,   t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                         prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
 
   return(list(ciLower = ciLower, median = median, ciUpper = ciUpper))
-
 }
 
 .posterior_normal <- function(delta, t, n1, n2 = NULL, independentSamples = FALSE, prior.mean,
                               prior.variance, rel.tol = .Machine$double.eps^0.25) {
 
-  neff <- ifelse(independentSamples, n1 * n2 / (n1 + n2), n1)
-  nu <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
+  neff        <- ifelse(independentSamples, n1 * n2 / (n1 + n2), n1)
+  nu          <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
+  mu.delta    <- prior.mean
+  g           <- prior.variance
 
-  mu.delta <- prior.mean
-  g <- prior.variance
+  numerator   <- dt(x = t, df = nu, ncp = sqrt(neff) * delta) * dnorm(x = delta, mean = mu.delta, sd = sqrt(g))
 
-  numerator <- dt(x = t, df = nu, ncp = sqrt(neff) * delta) *
-    dnorm(x = delta, mean = mu.delta, sd = sqrt(g))
-
-  denominator <- 1 / sqrt(1 + neff * g) *
-    dt(x = t / sqrt(1 + neff * g),
-       df = nu,
-       ncp = sqrt(neff / (1 + neff * g)) * mu.delta)
+  denominator <- 1 / sqrt(1 + neff * g) * dt(x = t / sqrt(1 + neff * g),
+                                             df = nu,
+                                             ncp = sqrt(neff / (1 + neff * g)) * mu.delta)
 
   out <- numerator / denominator
   out[is.na(out)] <- 0
@@ -3786,84 +3738,64 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 .cdf_normal <- function(x, t, n1, n2 = NULL, independentSamples = FALSE, prior.mean, prior.variance) {
 
-  integrate(posterior_normal, lower = -Inf, upper = x,
-            t = t, n1 = n1, n2 = n2,
-            independentSamples = independentSamples,
-            prior.mean = prior.mean,
-            prior.variance = prior.variance)$value
+  integrate(.posterior_normal, lower = -Inf, upper = x, t = t, n1 = n1, n2 = n2,
+            independentSamples = independentSamples, prior.mean = prior.mean, prior.variance = prior.variance)$value
 }
 
 .quantile_normal <- function(q, t, n1, n2 = NULL, independentSamples = FALSE, prior.mean,
                              prior.variance, tol = 0.0001, max.iter = 100) {
-  # compute quantiles via Newton-Raphson method
+  # Compute quantiles via Newton-Raphson method
 
   x.cur <- Inf
   # get reasonable start value
   delta <- seq(-2, 2, length.out = 400)
-  dens <- posterior_normal(delta, t = t, n1 = n1, n2 = n2,
-                           independentSamples = independentSamples,
-                           prior.mean = prior.mean,
-                           prior.variance = prior.variance)
+  dens  <- .posterior_normal(delta, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                             prior.mean = prior.mean, prior.variance = prior.variance)
   x.new <- delta[which.max(dens)]
-  i <- 1
+  i     <- 1
 
   while (abs(x.cur - x.new) > tol && i < max.iter) {
 
     x.cur <- x.new
-    x.new <- x.cur - (cdf_normal(x.cur, t = t, n1 = n1, n2 = n2,
-                                 independentSamples = independentSamples,
-                                 prior.mean = prior.mean,
-                                 prior.variance = prior.variance) - q)/
-      posterior_normal(x.cur, t = t, n1 = n1, n2 = n2,
-                       independentSamples = independentSamples,
-                       prior.mean = prior.mean,
-                       prior.variance = prior.variance)
+    x.new <- x.cur - (.cdf_normal(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                                  prior.mean = prior.mean, prior.variance = prior.variance) - q) /
+                      .posterior_normal(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                                        prior.mean = prior.mean, prior.variance = prior.variance)
     i <- i + 1
-
   }
 
   return(x.new)
 }
 
 .ciPlusMedian_normal <- function(t, n1, n2 = NULL, independentSamples = FALSE, prior.mean,
-                                 prior.variance, ci = .95, type = "two-sided", tol = 0.0001,
+                                 prior.variance, ci = .95, oneSided = FALSE, tol = 0.0001,
                                  max.iter = 100) {
 
   lower <- (1 - ci)/2
   upper <- ci + (1 - ci)/2
-  med <- .5
+  med   <- .5
 
-  postAreaSmaller0 <- cdf_normal(x = 0, t = t, n1 = n1, n2 = n2,
-                                 independentSamples = independentSamples,
-                                 prior.mean = prior.mean,
-                                 prior.variance = prior.variance)
+  postAreaSmaller0 <- .cdf_normal(x = 0, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                                 prior.mean = prior.mean, prior.variance = prior.variance)
 
-  if (type == "plus-sided") {
+  if (oneSided == "right") {
 
-    lower <- postAreaSmaller0 + (1 - postAreaSmaller0)*lower
-    upper <- postAreaSmaller0 + (1 - postAreaSmaller0)*upper
-    med <- postAreaSmaller0 + (1 - postAreaSmaller0)*med
+    lower <- postAreaSmaller0 + (1 - postAreaSmaller0) * lower
+    upper <- postAreaSmaller0 + (1 - postAreaSmaller0) * upper
+    med   <- postAreaSmaller0 + (1 - postAreaSmaller0) * med
+} else if (oneSided == "left") {
 
-  } else if (type == "min-sided") {
-
-    lower <- postAreaSmaller0*lower
-    upper <- postAreaSmaller0*upper
-    med <- postAreaSmaller0*med
-
+    lower <- postAreaSmaller0 * lower
+    upper <- postAreaSmaller0 * upper
+    med   <- postAreaSmaller0 * med
   }
 
-  ciLower <- quantile_normal(lower, t = t, n1 = n1, n2 = n2,
-                             independentSamples = independentSamples,
-                             prior.mean = prior.mean,
-                             prior.variance = prior.variance)
-  ciUpper <- quantile_normal(upper, t = t, n1 = n1, n2 = n2,
-                             independentSamples = independentSamples,
-                             prior.mean = prior.mean,
-                             prior.variance = prior.variance)
-  median <- quantile_normal(med, t = t, n1 = n1, n2 = n2,
-                            independentSamples = independentSamples,
-                            prior.mean = prior.mean,
-                            prior.variance = prior.variance)
+  ciLower <- .quantile_normal(lower, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                              prior.mean = prior.mean, prior.variance = prior.variance)
+  ciUpper <- .quantile_normal(upper, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                              prior.mean = prior.mean, prior.variance = prior.variance)
+  median  <- .quantile_normal(med,   t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                              prior.mean = prior.mean, prior.variance = prior.variance)
 
   return(list(ciLower = ciLower, median = median, ciUpper = ciUpper))
 }
@@ -3876,44 +3808,51 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                         prior.scale = options[["informativeCauchyScale"]],
                         prior.df = 1)
     if (oneSided == "right") {
-      out <- ifelse(delta < 0, 0, out/(1 - .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                                  prior.location = options[["informativeCauchyLocation"]],
-                                                  prior.scale = options[["informativeCauchyScale"]],
-                                                  prior.df = 1)))
+
+      out <- ifelse(delta < 0, 0, out / (1 - .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                                    prior.location = options[["informativeCauchyLocation"]],
+                                                    prior.scale = options[["informativeCauchyScale"]],
+                                                    prior.df = 1)))
     } else if (oneSided == "left") {
-      out <- ifelse(delta > 0, 0, out/.cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                             prior.location = options[["informativeCauchyLocation"]],
-                                             prior.scale = options[["informativeCauchyScale"]],
-                                             prior.df = 1))
+
+      out <- ifelse(delta > 0, 0, out / .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                               prior.location = options[["informativeCauchyLocation"]],
+                                               prior.scale = options[["informativeCauchyScale"]],
+                                               prior.df = 1))
     }
   } else if (options[["informativeStandardizedEffectSize"]] == "t") {
+
     out <- .posterior_t(delta, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                         prior.location = options[["informativeTLocation"]],
                         prior.scale = options[["informativeTScale"]],
                         prior.df = options[["informativeTDf"]])
+
     if (oneSided == "right") {
-      out <- ifelse(delta < 0, 0, out/(1 - .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                                  prior.location = options[["informativeTLocation"]],
-                                                  prior.scale = options[["informativeTScale"]],
-                                                  prior.df = options[["informativeTDf"]])))
+      out <- ifelse(delta < 0, 0, out / (1 - .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                                    prior.location = options[["informativeTLocation"]],
+                                                    prior.scale = options[["informativeTScale"]],
+                                                    prior.df = options[["informativeTDf"]])))
+
     } else if (oneSided == "left") {
-      out <- ifelse(delta > 0, 0, out/.cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                             prior.location = options[["informativeTLocation"]],
-                                             prior.scale = options[["informativeTScale"]],
-                                             prior.df = options[["informativeTDf"]]))
+      out <- ifelse(delta > 0, 0, out / .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                               prior.location = options[["informativeTLocation"]],
+                                               prior.scale = options[["informativeTScale"]],
+                                               prior.df = options[["informativeTDf"]]))
     }
   } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
     out <- .posterior_normal(delta, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                              prior.mean = options[["informativeNormalMean"]],
                              prior.variance = options[["informativeNormalStd"]]^2)
+
     if (oneSided == "right") {
-      out <- ifelse(delta < 0, 0, out/(1 - .cdf_normal(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                                       prior.mean = options[["informativeNormalMean"]],
-                                                       prior.variance = options[["informativeNormalStd"]]^2)))
+      out <- ifelse(delta < 0, 0, out / (1 - .cdf_normal(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                                         prior.mean = options[["informativeNormalMean"]],
+                                                         prior.variance = options[["informativeNormalStd"]]^2)))
+
     } else if (oneSided == "left") {
-      out <- ifelse(delta > 0, 0, out/.cdf_normal(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                                  prior.mean = options[["informativeNormalMean"]],
-                                                  prior.variance = options[["informativeNormalStd"]]^2))
+      out <- ifelse(delta > 0, 0, out / .cdf_normal(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                                    prior.mean = options[["informativeNormalMean"]],
+                                                    prior.variance = options[["informativeNormalStd"]]^2))
     }
   }
 
@@ -3921,71 +3860,91 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   return(out)
 }
 
-.bf10_t <- function(t, n1, n2 = NULL, independentSamples = FALSE, prior.location, prior.scale,
-                    prior.df, rel.tol = .Machine$double.eps^0.25) {
+.bf10_t <- function(t, n1, n2 = NULL, oneSided, independentSamples = FALSE, prior.location,
+                    prior.scale, prior.df, rel.tol = .Machine$double.eps^0.25) {
 
   neff <- ifelse(independentSamples, n1 * n2 / (n1 + n2), n1)
-  nu <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
+  nu   <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
 
-  mu.delta <- prior.location
-  gamma <- prior.scale
-  kappa <- prior.df
-  numerator <- integrate(.integrand_t, lower = -Inf, upper = Inf,
-                         t = t, n = neff, nu = nu,
-                         mu.delta = mu.delta,
-                         gamma = gamma,
-                         kappa = kappa,
-                         rel.tol = rel.tol)$value
+  mu.delta    <- prior.location
+  gamma       <- prior.scale
+  kappa       <- prior.df
+
+  # FIXME: lower = 0 in the original code.
+  int         <- integrate(.integrand_t, lower = -Inf, upper = Inf, t = t, n = neff, nu = nu,
+                           mu.delta = mu.delta, gamma = gamma, kappa = kappa, rel.tol = rel.tol)
+  numerator   <- int$value
   denominator <- dt(x = t, df = nu)
+  BF10        <- numerator / denominator
+  error       <- exp(log(int[[2]]) - log(BF10))
 
-  BF10 <- numerator / denominator
+  if (oneSided == FALSE) {
+    return(list(bf = BF10, error = error))
+  }
+
   priorAreaSmaller0 <- pt(q = - mu.delta / gamma, df = kappa)
-  postAreaSmaller0 <- cdf_t(x = 0, t = t, n1 = n1, n2 = n2,
-                            independentSamples = independentSamples,
-                            prior.location = prior.location,
-                            prior.scale = prior.scale,
-                            prior.df = prior.df)
-  BFmin1 <- postAreaSmaller0 / priorAreaSmaller0
-  BFplus1 <- (1 - postAreaSmaller0) / (1 - priorAreaSmaller0)
-  BFmin0 <- BFmin1 * BF10
-  BFplus0 <- BFplus1 * BF10
+  postAreaSmaller0  <- .cdf_t(x = 0, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                              prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
 
-  return(list(BF10 = BF10, BFplus0 = BFplus0, BFmin0 = BFmin0))
+  bf <- 'NA'
+  if (oneSided == "left") {
+    BFmin1  <- postAreaSmaller0 / priorAreaSmaller0
+    BFmin0  <- BFmin1  * BF10
+
+    # TODO: Verify this
+    bf <- BFmin0
+  } else if (oneSided  == "right") {
+    BFplus1 <- (1 - postAreaSmaller0) / (1 - priorAreaSmaller0)
+    BFplus0 <- BFplus1 * BF10
+    # TODO: Verify this
+    bf <- BFplus0
+  }
+
+  return(list(bf = bf, error = error))
 }
 
-.bf10_normal <- function(t, n1, n2 = NULL, independentSamples = FALSE, prior.mean, prior.variance) {
+.bf10_normal <- function(t, n1, n2 = NULL, oneSided, independentSamples = FALSE, prior.mean, prior.variance) {
 
   neff <- ifelse(independentSamples, n1 * n2 / (n1 + n2), n1)
-  nu <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
+  nu   <- ifelse(independentSamples, n1 + n2 - 2, n1 - 1)
 
-  mu.delta <- prior.mean
-  g <- prior.variance
-  numerator <- 1 / sqrt(1 + neff * g) *
-    dt(x = t / sqrt(1 + neff * g),
-       df = nu,
-       ncp = sqrt(neff / (1 + neff * g)) * mu.delta)
+  mu.delta    <- prior.mean
+  g           <- prior.variance
+  numerator   <- 1 / sqrt(1 + neff * g) * dt(x = t / sqrt(1 + neff * g), df = nu,
+                                             ncp = sqrt(neff / (1 + neff * g)) * mu.delta)
   denominator <- dt(x = t, df = nu)
+  BF10        <- numerator / denominator
 
-  BF10 <- numerator / denominator
-  priorAreaSmaller0 <- pnorm(0, mean = prior.mean,
-                             sd = sqrt(prior.variance))
-  postAreaSmaller0 <- cdf_normal(x = 0, t = t, n1 = n1, n2 = n2,
-                                 independentSamples = independentSamples,
-                                 prior.mean = prior.mean,
-                                 prior.variance = prior.variance)
-  BFmin1 <- postAreaSmaller0 / priorAreaSmaller0
+  if (oneSided == FALSE) {
+      return (BF10)
+  }
+
+  priorAreaSmaller0 <- pnorm(0, mean = prior.mean, sd = sqrt(prior.variance))
+  postAreaSmaller0  <- .cdf_normal(x = 0, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
+                                   prior.mean = prior.mean, prior.variance = prior.variance)
+
+  BFmin1  <- postAreaSmaller0 / priorAreaSmaller0
   BFplus1 <- (1 - postAreaSmaller0) / (1 - priorAreaSmaller0)
-  BFmin0 <- BFmin1 * BF10
+  BFmin0  <- BFmin1  * BF10
   BFplus0 <- BFplus1 * BF10
 
-  return(list(BF10 = BF10, BFplus0 = BFplus0, BFmin0 = BFmin0))
+  bf <- 'NA'
+  if (oneSided == "left") {
+    BFmin1  <- postAreaSmaller0 / priorAreaSmaller0
+    bf  <- BFmin1  * BF10
+  } else if (oneSided  == "right") {
+
+    BFplus1 <- (1 - postAreaSmaller0) / (1 - priorAreaSmaller0)
+    bf      <- BFplus1 * BF10
+  }
+
+  return (bf)
 }
 
 #-------------------------------------------------------------------------------
 # GENERAL T-TEST BF FUNCTION
 #-------------------------------------------------------------------------------
-.generalTtestBF <- function(x = NULL, y = NULL, paired = FALSE,
-                            oneSided = FALSE, options) {
+.generalTtestBF <- function(x = NULL, y = NULL, paired = FALSE, oneSided = FALSE, options) {
 
   tValue <- unname(t.test(x, y, paired = paired, var.equal = TRUE)$statistic)
   # numeric multiplication is more robust in R
@@ -3994,8 +3953,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
   if(options[["effectSizeStandardized"]] == "default") {
 
-    ### default zero-centered Cauchy prior ###
-
+    ### default zero-centered Cauchy prior
     if (oneSided == FALSE) {
       nullInterval <- c(-Inf, Inf)
     } else if (oneSided == "right") {
@@ -4010,7 +3968,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
       n2 = n2,
       rscale = options$priorWidth,
       nullInterval = nullInterval)
-    bf <- exp(bfObject$bf)
+
+    bf    <- exp(bfObject$bf)
     error <- 100*bfObject$properror
 
   } else if (options[["effectSizeStandardized"]] == "informative") {
@@ -4023,6 +3982,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     # as an "effective" sample size and in the degrees of freedom for which it does
     # not matter whether we swap the two, we retain this order for easier extension
     # of the one-sample case.
+
+    print("it's informative")
 
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
       bfObject <- .bf10_t(t = tValue, n1 = n1, n2 = n2, oneSided = oneSided,

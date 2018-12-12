@@ -364,7 +364,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
   ### Informed prior case: non-central scaled Cauchy, Student t, or Normal (uniform is lacking?)
   if (options$effectSizeStandardized == "informative") {
     # Note that strictly speaking, in case of the independent samples t-test,
-    # for the informed prior n1 corresponds to nx and n2 to ny and not vice-versa.
+    # for the informed prior n1 corresponds to n1 and n2 to n2 and not vice-versa.
     # However, since in the expression for the Bayes factor they only appear
     # as an "effective" sample size and in the degrees of freedom for which it does
     # not matter whether we swap the two, we retain this order for easier extension
@@ -375,7 +375,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 
     # Note: .bf10_ functions gives weired value if paired = FALSE in single sample case
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
-      bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = side,
+      bfObject <- .bf10_t(t = tValue, n1 = n1, n2 = n2, oneSided = side,
                           independentSamples = !paired,
                           prior.location = options[["informativeCauchyLocation"]],
                           prior.scale = options[["informativeCauchyScale"]],
@@ -383,7 +383,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
       bf <- bfObject$bf
       error <- 100*bfObject$error
     } else if (options[["informativeStandardizedEffectSize"]] == "t") {
-      bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = side,
+      bfObject <- .bf10_t(t = tValue, n1 = n1, n2 = n2, oneSided = side,
                           independentSamples = !paired,
                           prior.location = options[["informativeTLocation"]],
                           prior.scale = options[["informativeTScale"]],
@@ -391,7 +391,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
       bf <- bfObject$bf
       error <- 100*bfObject$error
     } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
-      bf <- .bf10_normal(t = tValue, ny = n1, nx = n2, oneSided = side,
+      bf <- .bf10_normal(t = tValue, n1 = n1, n2 = n2, oneSided = side,
                          independentSamples = !paired,
                          prior.mean = options[["informativeNormalMean"]],
                          prior.variance = options[["informativeNormalStd"]]^2)
