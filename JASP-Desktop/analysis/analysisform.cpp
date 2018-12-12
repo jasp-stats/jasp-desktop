@@ -27,15 +27,14 @@
 
 #include "options/bound.h"
 #include "utilities/qutils.h"
-#include "widgets/boundlistview.h"
-#include "widgets/boundpairstable.h"
+
 
 using namespace std;
 
 int AnalysisForm::_scriptRequestCounter = 0;
 
-AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
-	QWidget(parent),
+AnalysisForm::AnalysisForm(QString name, QObject *parent) :
+	QObject(parent),
 	_availableVariablesModel(this)
 {
 	setObjectName(name);
@@ -45,65 +44,6 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	_dataSet = NULL;
 
 	_hasIllegalValue = false;
-}
-
-void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
-{
-	if (_options != NULL)
-		unbind();
-
-	_dataSet = dataSet;
-	_options = options;
-
-	setVariablesModel();
-
-	for (const string &name: options->names)
-	{
-		Option *option = options->get(name);
-
-		QString qsName = QString::fromUtf8(name.c_str(), name.length());
-		qsName.replace('/', '_');
-
-		QWidget *child = this->findChild<QWidget*>(qsName);
-
-		Bound *boundChild = dynamic_cast<Bound*>(child);
-
-		if (boundChild != NULL)
-		{
-			_bounds.push_back(boundChild);
-			boundChild->bindTo(option);
-			boundChild->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
-		}
-		else
-			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
-	}
-
-	updateIllegalStatus();
-}
-
-
-void AnalysisForm::unbind()
-{
-	_bounds.clear();
-	updateIllegalStatus();
-
-	if (_options == NULL)
-		return;
-
-	for (const string &name: _options->names)
-	{
-		QString qsName = QString::fromUtf8(name.c_str(), name.length());
-		qsName.replace('/', '_');
-
-		QWidget *child = this->findChild<QWidget*>(qsName);
-
-		Bound *boundChild = dynamic_cast<Bound*>(child);
-
-		if (boundChild != NULL)
-			boundChild->unbind();
-	}
-
-	_options = NULL;
 }
 
 bool AnalysisForm::hasIllegalValue() const
@@ -216,9 +156,4 @@ void AnalysisForm::rScriptDoneHandler(QVariant key, const QString & result)
 bool AnalysisForm::runRScriptRequestedForId(int requestId) 
 { 
 	return _scriptRequestIdToKey.count(requestId) > 0; 
-}
-
-QWidget *AnalysisForm::getWidget()
-{
-	return this;
 }

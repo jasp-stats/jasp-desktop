@@ -1,8 +1,8 @@
 #include "datalibrarybreadcrumbsmodel.h"
 #include "fsbmdatalibrary.h"
 
-DataLibraryBreadCrumbsListModel::DataLibraryBreadCrumbsListModel(QObject *parent)
-	: QAbstractListModel(parent)
+DataLibraryBreadCrumbsListModel::DataLibraryBreadCrumbsListModel(QObject *parent, const QChar sep)
+	: QAbstractListModel(parent), _separator(sep)
 {	
 	_crumbNameList.append(FSBMDataLibrary::rootelementname);
 	_physicalPathList.append(FSBMDataLibrary::rootelementname);

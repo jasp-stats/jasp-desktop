@@ -1,5 +1,5 @@
 #include "computerlistmodel.h"
-#include "fsentrywidget.h"
+#include "fsentry.h"
 #include <QFileInfo>
 #include <QDir>
 
@@ -8,7 +8,7 @@ ComputerListModel::ComputerListModel(QObject *parent)
 {
 	_fsbmRecentFoilders = new FSBMRecentFolders();
 	_fsbmRecentFoilders->refresh();
-	_iconsources = FSEntryWidget::sourcesIcons();
+	_iconsources = FSEntry::sourcesIcons();
 	
 }
 

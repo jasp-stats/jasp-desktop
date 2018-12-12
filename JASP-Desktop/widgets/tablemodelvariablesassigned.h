@@ -32,7 +32,7 @@ class TableModelVariablesAssigned : public TableModelVariables, public BoundMode
 {
 	Q_OBJECT
 public:
-	explicit TableModelVariablesAssigned(QWidget *parent = NULL) : TableModelVariables(parent) {}
+	explicit TableModelVariablesAssigned(QObject *parent = NULL) : TableModelVariables(parent) {}
 
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;

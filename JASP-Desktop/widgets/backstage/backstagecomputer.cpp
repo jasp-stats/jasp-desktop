@@ -17,20 +17,11 @@
 //
 
 #include "backstagecomputer.h"
-#include <QFileDialog>
-#include <QQmlContext>
+#include <QDir>
 
-BackstageComputer::BackstageComputer(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
-
+BackstageComputer::BackstageComputer(QObject *parent): BackstagePage(parent)
 {
-	_computerListModel = new ComputerListModel(this);
-
-	qquickfilemenu->rootContext()->setContextProperty("computerListModel", _computerListModel);
-	qquickfilemenu->rootContext()->setContextProperty("backstagecomputer", this);
-}
-
-BackstageComputer::~BackstageComputer()
-{
+	setListModel(new ComputerListModel(this));
 }
 
 FileEvent *BackstageComputer::browseOpen(const QString &path)
@@ -44,7 +35,12 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	QString filter = "Data Sets (*.jasp *.csv *.txt *.sav *.ods)";
 	if (_mode == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, filter);
+
+	QString finalPath = "???";
+
+	std::cerr << "finalPath not being set cause we aint got filedialog: QFileDialog::getOpenFileName(this, \"Open\", browsePath, filter);" << std::endl;
+
+	throw std::runtime_error("AAARGH");
 
 	FileEvent *event = new FileEvent(this, _mode);
 
@@ -104,7 +100,11 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 		throw std::runtime_error("Wrong FileEvent type for saving!");
 	}
 
-	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
+	QString finalPath = "???";
+
+	std::cerr << "QFileDialog::getSaveFileName(this, caption, browsePath, filter);" << std::endl;;
+
+	throw std::runtime_error("AAARG!");
 
 	FileEvent *event = new FileEvent(this, mode);
 
@@ -148,13 +148,14 @@ void BackstageComputer::clearFileName()
 	_hasFileName = false;
 }
 
+/*
 bool BackstageComputer::eventFilter(QObject *object, QEvent *event)
 {
 	if (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
 		_computerListModel->refresh();
 
 	return QWidget::eventFilter(object, event);
-}
+}*/
 
 //Slots
 void BackstageComputer::browsePath(QString path)
@@ -169,4 +170,14 @@ void BackstageComputer::browseMostRecent()
 {
 	QString mostrecent = _computerListModel->getMostRecent();
 	browsePath(mostrecent);
+}
+
+
+void BackstageComputer::setListModel(ComputerListModel * listModel)
+{
+	if (_computerListModel == listModel)
+		return;
+
+	_computerListModel = listModel;
+	emit listModelChanged(_computerListModel);
 }

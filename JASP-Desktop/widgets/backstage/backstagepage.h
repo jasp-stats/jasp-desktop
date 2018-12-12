@@ -19,15 +19,15 @@
 #ifndef BACKSTAGEPAGE_H
 #define BACKSTAGEPAGE_H
 
-#include <QWidget>
+#include <QObject>
 
 #include "data/fileevent.h"
 
-class BackstagePage : public QWidget
+class BackstagePage : public QObject
 {
 	Q_OBJECT
 public:
-	explicit BackstagePage(QWidget *parent = 0);
+	explicit BackstagePage(QObject *parent = 0);
 
 	virtual void setMode(FileEvent::FileMode mode);
 

@@ -19,45 +19,33 @@
 #include "backstageosf.h"
 #include "ui_backstageform.h"
 #include <QRegularExpression>
-#include <QInputDialog>
-#include <QMessageBox>
 #include <QQmlEngine>
 #include <QFileInfo>
 
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
 
-BackstageOSF::BackstageOSF(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+BackstageOSF::BackstageOSF(QObject *parent): BackstagePage(parent)
 {				
 	
-	_osfBreadCrumbsListModel = new OSFBreadCrumbsListModel(this);
-	_osfBreadCrumbsListModel->setSeparator(/* QDir::separator() */ QChar('/'));		
+	setBreadCrumbs(new OSFBreadCrumbsListModel(this, QChar('/')));
 	
 	_model = new FSBMOSF(parent , FSBMOSF::rootelementname);
 	
-	_osfListModel = new OSFListModel(this);		
-	_osfListModel ->setFSBModel(_model);
-	_osfListModel->setBreadCrumbsListModel(_osfBreadCrumbsListModel);
-	
-	qquickfilemenu->engine()->addImportPath("qrc:///components");
-		
-	qquickfilemenu->rootContext()->setContextProperty("osfListModel", _osfListModel);
-	qquickfilemenu->rootContext()->setContextProperty("osfBreadCrumbsListModel",_osfBreadCrumbsListModel);
-	qquickfilemenu->rootContext()->setContextProperty("breadcrumbsmodel",_osfBreadCrumbsListModel);
-	qquickfilemenu->rootContext()->setContextProperty("backstageosf", this);
+	setListModel(new OSFListModel(this, _model, _osfBreadCrumbsListModel));
 	
 	connect(_model,						&FSBMOSF::authenticationSuccess,				this,			&BackstageOSF::updateUserDetails);
 	connect(_model,						&FSBMOSF::authenticationClear,					this,			&BackstageOSF::updateUserDetails);
 	connect(_model,						&FSBMOSF::entriesChanged,						this,			&BackstageOSF::resetOSFListModel);
 	connect(_model,						&FSBMOSF::stopProcessing,						this,			&BackstageOSF::stopProcessing);
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&BackstageOSF::startProcessing);
-	connect(_osfBreadCrumbsListModel,	SIGNAL(crumbIndexChanged(const int &)),			_osfListModel,	SLOT(changePath(const int &)));
+	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
 	connect(this,						&BackstageOSF::openFileRequest,					this,			&BackstageOSF::notifyDataSetOpened);
 
-	_fsBrowser = new FSBrowser(this);
+	/*_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
 	_fsBrowser->setFSModel(_model);
-	_fsBrowser->hide();
+	_fsBrowser->hide();*/
 	
 	setShowfiledialog(false);
 		
@@ -215,11 +203,11 @@ void BackstageOSF::saveClicked()
 	if (currentNodeData.canCreateFiles == false)
 	{
 		if (currentNodeData.level == 0)
-			QMessageBox::warning(this, "Projects", "Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+			std::cerr << " QMessageBox::warning(this, \"Projects\", \"Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services."<< std::endl;
 		else if (currentNodeData.level == 1)
-			QMessageBox::warning(this, "Data Providers", "Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+			std::cerr << " QMessageBox::warning(this, \"Data Providers\", \"Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services."<< std::endl;
 		else
-			QMessageBox::warning(this, currentNodeData.name, "Files cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+			std::cerr << " QMessageBox::warning(this, currentNodeData.name, \"Files cannot be added to '" << currentNodeData.name.toStdString() << "' for an unknown reason."<< std::endl;
 		return;
 	}
 
@@ -256,7 +244,7 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 	}
 	else
 	{
-		QMessageBox::warning(this, "File Types", event->getLastError());
+		std::cerr << "QMessageBox::warning(this, \"File Types\" " <<  event->getLastError().toStdString() << std::endl;
 		event->setComplete(false, "Failed to open file from OSF");
 		return;
 	}
@@ -310,7 +298,7 @@ void BackstageOSF::newFolderCreated()
 	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
 
 	if (node->error())
-		QMessageBox::warning(this, "", "An error occured and the folder could not be created.");
+		std::cerr << "QMessageBox::warning(this,\"\", \"An error occured and the folder could not be created.\")" << std::endl;
 	else
 		_model->refresh();
 	
@@ -324,11 +312,11 @@ void BackstageOSF::newFolderClicked()
 	if (currentNodeData.canCreateFolders == false)
 	{
 		if (currentNodeData.level == 0)
-			QMessageBox::warning(this, "Projects", "A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+			std::cerr << "QMessageBox::warning(this, \"Projects\", \"A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services." << std::endl;
 		else if (currentNodeData.level == 1)
-			QMessageBox::warning(this, "Data Providers", "A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+			std::cerr << "QMessageBox::warning(this, \"Data Providers\", \"A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services." << std::endl;
 		else
-			QMessageBox::warning(this, currentNodeData.name, "A new folder cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+			std::cerr << "QMessageBox::warning(this, currentNodeData.name, \"A new folder cannot be added to '" << currentNodeData.name.toStdString() << "' for an unknown reason." << std::endl;
 		return;
 	}
 
@@ -338,7 +326,8 @@ void BackstageOSF::newFolderClicked()
 
 	do
 	{
-		name = QInputDialog::getText(this, "New folder", "New folder name", QLineEdit::Normal, name, &ok);
+		std::cerr << "Qname = QInputDialog::getText(this, \"New folder\", \"New folder name\", QLineEdit::Normal, name, &ok);" << std::endl;
+		throw std::runtime_error("No Inputdialog available cause were in QML");
 	}
 	while(ok && checkEntryName(name, "Folder", false) == false);
 
@@ -428,7 +417,7 @@ void BackstageOSF::loginRequested(const QString &username, const QString &passwo
 {
 	if  (password == "" || username =="" )
 	{
-		QMessageBox::warning(this, "Login", " User or password cannot be empty. ");
+		std::cerr << "QMessageBox::warning(this, \"Login\", \" User or password cannot be empty. \");" << std::endl;
 		return;
 	}
 	
@@ -463,7 +452,7 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 {
 	if (name.trimmed() == "")
 	{
-		QMessageBox::warning(this, "", "Entry name cannot be empty.");
+		std::cerr << "QMessageBox::warning(this, \"\", \"Entry name cannot be empty.\");" << std::endl;
 		return false;
 	}
 	else
@@ -471,10 +460,29 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 		QRegularExpression r("[^\\w\\s" + (QString)(allowFullStop ? "\\.-" : "-") + "]");
 		if (r.match(name).hasMatch())
 		{
-			QMessageBox::warning(this, "", entryTitle + " name can only contain the following characters A-Z a-z 0-9 _ " + (allowFullStop ? ". -" : "-"));
+			std::cerr << "QMessageBox::warning(this, \"\", entryTitle + \" name can only contain the following characters A-Z a-z 0-9 _ \" + (allowFullStop ? \". -\" : \"-\"));" << std::endl;
 			return false;
 		}
 	}
 
 	return true;
+}
+
+
+void BackstageOSF::setListModel(OSFListModel * listModel)
+{
+	if (_osfListModel == listModel)
+		return;
+
+	_osfListModel = listModel;
+	emit listModelChanged(_osfListModel);
+}
+
+void BackstageOSF::setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs)
+{
+	if (_osfBreadCrumbsListModel == breadCrumbs)
+		return;
+
+	_osfBreadCrumbsListModel = breadCrumbs;
+	emit breadCrumbsChanged(_osfBreadCrumbsListModel);
 }

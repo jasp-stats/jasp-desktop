@@ -10,7 +10,7 @@ class OSFListModel : public QAbstractListModel
 	Q_OBJECT
 	
 public:
-	explicit OSFListModel(QObject *parent = nullptr);
+	explicit OSFListModel(QObject *parent, FSBMOSF * fsbMod, OSFBreadCrumbsListModel * crummyList);
 		
 	enum
 	{
@@ -33,7 +33,7 @@ public:
 	
 public slots:
 	void changePath(const QString& name, const QString& path);
-	void changePath(const int& index);
+	void changePathCrumbIndex(const int& index);
 	
 signals:
 	void startProcessing();

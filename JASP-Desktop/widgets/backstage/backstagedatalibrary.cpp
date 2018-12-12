@@ -20,33 +20,37 @@
 #include <QDir>
 #include <QQuickWidget>
 #include <QQmlContext>
+#include <QQmlEngine>
 
-BackstageDataLibrary::BackstageDataLibrary(QWidget *parent, QQuickWidget *qquickfilemenu) : BackstagePage(parent)
+BackstageDataLibrary::BackstageDataLibrary(QObject *parent) : BackstagePage(parent)
 {
-			
-	_dataLibraryBreadCrumbsListModel = new DataLibraryBreadCrumbsListModel(this);
-	_dataLibraryBreadCrumbsListModel->setSeparator(QDir::separator());
+	setBreadcrumbsmodel(new DataLibraryBreadCrumbsListModel(this, QDir::separator()));
+	setListModel(new DataLibraryListModel(this, breadcrumbsmodel()));
 	
-	_dataLibraryListModel = new DataLibraryListModel(this);
-	_dataLibraryListModel->setBreadCrumbsListModel(_dataLibraryBreadCrumbsListModel);
-	
-	connect(_dataLibraryBreadCrumbsListModel, SIGNAL(crumbIndexChanged(const int &)), _dataLibraryListModel, SLOT(changePath(const int &)));
-
-	qquickfilemenu->rootContext()->setContextProperty("dataLibraryListModel",_dataLibraryListModel);
-	qquickfilemenu->rootContext()->setContextProperty("breadcrumbsmodel",_dataLibraryBreadCrumbsListModel); // Calling changePath(index)
-	qquickfilemenu->rootContext()->setContextProperty("dataLibraryBreadCrumbsListModel",_dataLibraryBreadCrumbsListModel);
-	qquickfilemenu->rootContext()->setContextProperty("backstagedatalibrary",this);	
-			
-}
-
-BackstageDataLibrary::~BackstageDataLibrary()
-{
-	
+	connect(_dataLibraryBreadCrumbsListModel, &DataLibraryBreadCrumbsListModel::crumbIndexChanged, _dataLibraryListModel, &DataLibraryListModel::changePathCrumbIndex);
 }
 
 void BackstageDataLibrary::openFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);
+}
+
+void BackstageDataLibrary::setListModel(DataLibraryListModel * listModel)
+{
+	if (_dataLibraryListModel == listModel)
+		return;
+
+	_dataLibraryListModel = listModel;
+	emit listModelChanged();
+}
+
+void BackstageDataLibrary::setBreadcrumbsmodel(DataLibraryBreadCrumbsListModel * breadcrumbsmodel)
+{
+	if (_dataLibraryBreadCrumbsListModel == breadcrumbsmodel)
+		return;
+
+	_dataLibraryBreadCrumbsListModel = breadcrumbsmodel;
+	emit breadcrumbsmodelChanged();
 }
 
 

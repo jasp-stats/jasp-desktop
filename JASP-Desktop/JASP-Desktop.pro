@@ -90,17 +90,6 @@ defineReplace(list_pri_files) {
     return($$PRI_FILES)
 }
 
-# Directory containing the analysis forms
-ANALYSIS_DIR = $$PWD/analysis/analysisforms
-# Directory containing the modules
-MODULES_DIR = $$list_pri_files($$ANALYSIS_DIR)
-
-# Include all the module pri files
-for(file, $$list($$MODULES_DIR)) {
-    include($$file)
-}
-
-
 exists(/app/lib/*) {
 	flatpak_desktop.files = ../Tools/flatpak/org.jasp.JASP.desktop
 	flatpak_desktop.path = /app/share/applications

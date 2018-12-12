@@ -155,13 +155,14 @@ HEADERS += \
     utilities/simplecryptkey.h \
     variablespage/labelfiltergenerator.h \
     variablespage/levelstablemodel.h \
-    widgets/backstage/authwidget.h \
-    widgets/backstage/backstagedatalibrary.h \
     widgets/backstage/backstagepage.h \
-    widgets/backstage/breadcrumbs.h \
+    widgets/backstage/backstagedatalibrary.h \
+    widgets/backstage/backstagerecentfiles.h \
+    widgets/backstage/backstagecurrentfile.h \
+    widgets/backstage/backstagecomputer.h \
+    widgets/backstage/backstageosf.h \
     widgets/backstage/datalibrarybreadcrumbsmodel.h \
     widgets/backstage/datalibrarylistmodel.h \
-    widgets/backstage/elidelabel.h \
     widgets/backstage/fsbmcomputer.h \
     widgets/backstage/fsbmcurrent.h \
     widgets/backstage/fsbmexamples.h \
@@ -169,54 +170,20 @@ HEADERS += \
     widgets/backstage/fsbmosf.h \
     widgets/backstage/fsbmrecent.h \
     widgets/backstage/fsbmrecentfolders.h \
-    widgets/backstage/fsbrowser.h \
     widgets/backstage/fsentry.h \
-    widgets/backstage/fsentrywidget.h \
-    widgets/backstage/verticalscrollarea.h \
-    widgets/backstage/verticaltabbar.h \
-    widgets/backstage/verticaltabwidget.h \
-    widgets/anovamodelwidget.h \
-    widgets/assignbutton.h \
-    widgets/assignbuttonmenu.h \
-    widgets/availablefieldslistview.h \
-    widgets/boundassignwidget.h \
-    widgets/boundcheckbox.h \
-    widgets/boundcombobox.h \
-    widgets/boundgroupbox.h \
-    widgets/boundlistview.h \
     widgets/boundmodel.h \
-    widgets/boundpairstable.h \
     widgets/boundqmlcheckbox.h \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
-    widgets/boundsingleitemview.h \
-    widgets/boundtableview.h \
-    widgets/boundtablewidget.h \
-    widgets/boundtextbox.h \
-    widgets/boundtextedit.h \
-    widgets/button.h \
-    widgets/customhoverdelegate.h \
-    widgets/customwebenginepage.h \
-    widgets/customwebengineview.h \
     widgets/draganddrop.h \
     widgets/droptarget.h \
     widgets/enhanceddroptarget.h \
-    widgets/expanderbutton.h \
-    widgets/groupbox.h \
-    widgets/infopopup.h \
-    widgets/itemmodelselectitem.h \
-    widgets/itemmodelselectvariable.h \
     widgets/listmodelanovaassigned.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
-    widgets/listview.h \
     gui/preferencesdialog.h \
-    widgets/ribbonbutton.h \
-    widgets/stealthbutton.h \
-    widgets/subjectivepriorswidget.h \
-    widgets/tabbar.h \
     widgets/tablemodel.h \
     widgets/tablemodelanovadesign.h \
     widgets/tablemodelanovamodel.h \
@@ -229,11 +196,7 @@ HEADERS += \
     widgets/tablemodelvariablesavailable.h \
     widgets/tablemodelvariableslevels.h \
     widgets/tablemodelvariablesoptions.h \
-    widgets/tableview.h \
-    widgets/tableviewmenueditor.h \
-    widgets/tableviewmenueditordelegate.h \
     widgets/textmodellavaan.h \
-    widgets/toolbutton.h \
     mainwindow.h \
     utilities/extractarchive.h \
     widgets/boundqmlfactorslist.h \
@@ -257,21 +220,17 @@ HEADERS += \
     widgets/boundqmltableview.h \
     widgets/listmodelmultinomialchi2test.h  \
     data/filtermodel.h \
-    widgets/backstage/backstagerecentfiles.h \
     widgets/backstage/recentfileslistmodel.h \
     widgets/backstage/fsbmdatalibrary.h \
     widgets/backstage/fsbmrecentfiles.h \
-    widgets/backstage/backstagecurrentfile.h \
     widgets/backstage/currentfilelistmodel.h \
     widgets/backstage/fsbmcurrentfile.h \
-    widgets/backstage/backstagecomputer.h \
     widgets/backstage/computerlistmodel.h \
-    widgets/backstage/backstageosf.h \
     widgets/backstage/osflistmodel.h \
     widgets/backstage/osfbreadcrumbslistmodel.h \
     resultstesting/compareresults.h \
     resultstesting/resultscomparetable.h \
-    filemenu.h
+    $$PWD/widgets/backstage/filemenu.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -382,13 +341,14 @@ SOURCES += \
     utilities/simplecrypt.cpp \
     variablespage/labelfiltergenerator.cpp \
     variablespage/levelstablemodel.cpp \
-    widgets/backstage/authwidget.cpp \
-    widgets/backstage/backstagedatalibrary.cpp \
     widgets/backstage/backstagepage.cpp \
-    widgets/backstage/breadcrumbs.cpp \
+    widgets/backstage/backstagedatalibrary.cpp \
+    widgets/backstage/backstagerecentfiles.cpp \
+    widgets/backstage/backstagecurrentfile.cpp \
+    widgets/backstage/backstagecomputer.cpp \
+    widgets/backstage/backstageosf.cpp \
     widgets/backstage/datalibrarybreadcrumbsmodel.cpp \
     widgets/backstage/datalibrarylistmodel.cpp \
-    widgets/backstage/elidelabel.cpp \
     widgets/backstage/fsbmcomputer.cpp \
     widgets/backstage/fsbmcurrent.cpp \
     widgets/backstage/fsbmexamples.cpp \
@@ -396,48 +356,16 @@ SOURCES += \
     widgets/backstage/fsbmosf.cpp \
     widgets/backstage/fsbmrecent.cpp \
     widgets/backstage/fsbmrecentfolders.cpp \
-    widgets/backstage/fsbrowser.cpp \
-    widgets/backstage/fsentrywidget.cpp \
-    widgets/backstage/verticalscrollarea.cpp \
-    widgets/backstage/verticaltabbar.cpp \
-    widgets/backstage/verticaltabwidget.cpp \
-    widgets/anovamodelwidget.cpp \
-    widgets/assignbutton.cpp \
-    widgets/assignbuttonmenu.cpp \
-    widgets/availablefieldslistview.cpp \
-    widgets/boundassignwidget.cpp \
-    widgets/boundcheckbox.cpp \
-    widgets/boundcombobox.cpp \
-    widgets/boundgroupbox.cpp \
-    widgets/boundlistview.cpp \
-    widgets/boundpairstable.cpp \
     widgets/boundqmlcheckbox.cpp \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
-    widgets/boundsingleitemview.cpp \
-    widgets/boundtableview.cpp \
-    widgets/boundtablewidget.cpp \
-    widgets/boundtextbox.cpp \
-    widgets/boundtextedit.cpp \
-    widgets/button.cpp \
-    widgets/customwebenginepage.cpp \
-    widgets/customwebengineview.cpp \
     widgets/draganddrop.cpp \
-    widgets/expanderbutton.cpp \
-    widgets/infopopup.cpp \
-    widgets/itemmodelselectitem.cpp \
-    widgets/itemmodelselectvariable.cpp \
     widgets/listmodelanovaassigned.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
-    widgets/listview.cpp \
     gui/preferencesdialog.cpp \
-    widgets/ribbonbutton.cpp \
-    widgets/stealthbutton.cpp \
-    widgets/subjectivepriorswidget.cpp \
-    widgets/tabbar.cpp \
     widgets/tablemodelanovadesign.cpp \
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelanovamodelnuisancefactors.cpp \
@@ -449,11 +377,7 @@ SOURCES += \
     widgets/tablemodelvariablesavailable.cpp \
     widgets/tablemodelvariableslevels.cpp \
     widgets/tablemodelvariablesoptions.cpp \
-    widgets/tableview.cpp \
-    widgets/tableviewmenueditor.cpp \
-    widgets/tableviewmenueditordelegate.cpp \
     widgets/textmodellavaan.cpp \
-    widgets/toolbutton.cpp \
     main.cpp \
     mainwindow.cpp \
     utilities/extractarchive.cpp \
@@ -478,43 +402,26 @@ SOURCES += \
     widgets/boundqmltableview.cpp \
     widgets/listmodelmultinomialchi2test.cpp \
     data/filtermodel.cpp \
-    widgets/backstage/backstagerecentfiles.cpp \
     widgets/backstage/recentfileslistmodel.cpp \
     widgets/backstage/fsbmdatalibrary.cpp \
     widgets/backstage/fsbmrecentfiles.cpp \
-    widgets/backstage/backstagecurrentfile.cpp \
     widgets/backstage/currentfilelistmodel.cpp \
     widgets/backstage/fsbmcurrentfile.cpp \
-    widgets/backstage/backstagecomputer.cpp \
     widgets/backstage/computerlistmodel.cpp \
-    widgets/backstage/backstageosf.cpp \
     widgets/backstage/osflistmodel.cpp \
     widgets/backstage/osfbreadcrumbslistmodel.cpp \
     resultstesting/compareresults.cpp \
     resultstesting/resultscomparetable.cpp \
-    filemenu.cpp
+    $$PWD/widgets/backstage/filemenu.cpp
 
-FORMS += \
-    gui/aboutdialog.ui \
-    gui/preferencesdialog.ui \
-    widgets/backstage/authwidget.ui \
-    widgets/backstage/backstagecomputer.ui \
-    widgets/backstage/backstagedatalibrary.ui \
-    mainwindow.ui \
-    widgets/anovamodelwidget.ui \
-    widgets/backstage/backstageform.ui \
-    widgets/boundassignwidget.ui \
-    widgets/datasetbrowser.ui \
-    widgets/subjectivepriorswidget.ui \
-    widgets/variableswidget.ui
+FORMS +=
 
 
 RESOURCES += \
     html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc \
-    qml.qrc \
-    widgets/backstage/backstage.qrc
+    qml.qrc
 
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
@@ -542,9 +449,6 @@ DISTFILES += \
     JASPControls/TextField.qml \
     JASPControls/VariablesForm.qml \
     JASPControls/VariablesList.qml \
-    widgets/backstage/BackstageDataLibrary.qml \
-    widgets/backstage/DataLibraryBreadCrumbs.qml \
-    widgets/backstage/DataLibraryList.qml \
     JASPControls/AssignButton.qml \
     JASPControls/AssignedVariablesList.qml \
     JASPControls/Button.qml \
@@ -565,6 +469,94 @@ DISTFILES += \
     JASPControls/TextField.qml \
     JASPControls/VariablesForm.qml \
     JASPControls/VariablesList.qml \
-    modules/ModuleInstaller.qml \
     QMLTheme/Theme/JASPTheme.qml \
-    components/JASP/Controls/tableviewcolumn.qmodel
+    components/JASP/Widgets/FilterConstructor/ColumnDrag.qml \
+    components/JASP/Widgets/FilterConstructor/ColumnsSelector.qml \
+    components/JASP/Widgets/FilterConstructor/ComputedColumnsConstructor.qml \
+    components/JASP/Widgets/FilterConstructor/DragGeneric.qml \
+    components/JASP/Widgets/FilterConstructor/DropSpot.qml \
+    components/JASP/Widgets/FilterConstructor/DropTrash.qml \
+    components/JASP/Widgets/FilterConstructor/ElementView.qml \
+    components/JASP/Widgets/FilterConstructor/FilterConstructor.qml \
+    components/JASP/Widgets/FilterConstructor/Function.qml \
+    components/JASP/Widgets/FilterConstructor/FunctionDrag.qml \
+    components/JASP/Widgets/FilterConstructor/JASPColumn.qml \
+    components/JASP/Widgets/FilterConstructor/JSONtoFormulas.qml \
+    components/JASP/Widgets/FilterConstructor/Number.qml \
+    components/JASP/Widgets/FilterConstructor/NumberDrag.qml \
+    components/JASP/Widgets/FilterConstructor/Operator.qml \
+    components/JASP/Widgets/FilterConstructor/OperatorDrag.qml \
+    components/JASP/Widgets/FilterConstructor/OperatorSelector.qml \
+    components/JASP/Widgets/FilterConstructor/OperatorSelectorComputedColumns.qml \
+    components/JASP/Widgets/FilterConstructor/OperatorVertical.qml \
+    components/JASP/Widgets/FilterConstructor/OperatorVerticalDrag.qml \
+    components/JASP/Widgets/FilterConstructor/String.qml \
+    components/JASP/Widgets/FilterConstructor/StringDrag.qml \
+    components/JASP/Widgets/FilterConstructor/VariablesList.qml \
+    components/JASP/Widgets/qmldir \
+    components/JASP/Widgets/BasicTableViewJasp.qml \
+    components/JASP/Widgets/BayesFactorType.qml \
+    components/JASP/Widgets/Chi2TestTableView.qml \
+    components/JASP/Widgets/ComputeColumnWindow.qml \
+    components/JASP/Widgets/ContrastsList.qml \
+    components/JASP/Widgets/CreateComputeColumnDialog.qml \
+    components/JASP/Widgets/DataTableView.qml \
+    components/JASP/Widgets/Divider.qml \
+    components/JASP/Widgets/FilterButton.qml \
+    components/JASP/Widgets/FilterWindow.qml \
+    components/JASP/Widgets/JASPDataView.qml \
+    components/JASP/Widgets/JASPMouseAreaToolTipped.qml \
+    components/JASP/Widgets/ModuleInstaller.qml \
+    components/JASP/Widgets/ProgressBarHolder.qml \
+    components/JASP/Widgets/SubjectivePriors.qml \
+    components/JASP/Widgets/TableViewJasp.qml \
+    components/JASP/Widgets/TableViewStyleJasp.qml \
+    components/JASP/Widgets/VariablesWindow.qml \
+    components/JASP/Widgets/Ribbon/Ribbon.qml \
+    components/JASP/Widgets/Ribbon/RibbonButton.qml \
+    components/JASP/Controls/qmldir \
+    components/JASP/Controls/AssignButton.qml \
+    components/JASP/Controls/AssignedVariablesList.qml \
+    components/JASP/Controls/Button.qml \
+    components/JASP/Controls/ButtonGroup.qml \
+    components/JASP/Controls/CheckBox.qml \
+    components/JASP/Controls/ComboBox.qml \
+    components/JASP/Controls/ExpanderButton.qml \
+    components/JASP/Controls/ExtraControlColumn.qml \
+    components/JASP/Controls/FactorsList.qml \
+    components/JASP/Controls/Form.qml \
+    components/JASP/Controls/GridLayout.qml \
+    components/JASP/Controls/GroupBox.qml \
+    components/JASP/Controls/JASPControl.qml \
+    components/JASP/Controls/JASPDataView.qml \
+    components/JASP/Controls/JASPScrollBar.qml \
+    components/JASP/Controls/Label.qml \
+    components/JASP/Controls/PercentField.qml \
+    components/JASP/Controls/PlusMinusCheckButton.qml \
+    components/JASP/Controls/RadioButton.qml \
+    components/JASP/Controls/Slider.qml \
+    components/JASP/Controls/Switch.qml \
+    components/JASP/Controls/TableView.qml \
+    components/JASP/Controls/TextArea.qml \
+    components/JASP/Controls/TextField.qml \
+    components/JASP/Controls/VariablesForm.qml \
+    components/JASP/Controls/VariablesList.qml \
+    components/JASP/Theme/Theme.qml \
+    components/JASP/Widgets/MainWindow.qml \
+    components/JASP/Widgets/DataPanel.qml \
+    components/JASP/Widgets/MainPage.qml \
+    components/JASP/Widgets/RecentFilesList.qml \
+    components/JASP/Widgets/OSFLogin.qml \
+    components/JASP/Widgets/OSFList.qml \
+    components/JASP/Widgets/FileMenu.qml \
+    components/JASP/Widgets/DataLibraryList.qml \
+    components/JASP/Widgets/DataLibraryBreadCrumbs.qml \
+    components/JASP/Widgets/BackstageRecentFiles.qml \
+    components/JASP/Widgets/BackstageOSF.qml \
+    components/JASP/Widgets/BackstageDataLibrary.qml \
+    components/JASP/Widgets/BackstageCurrentFile.qml \
+    components/JASP/Widgets/BackstageComputer.qml \
+    components/JASP/Widgets/BreadCrumbs.qml \
+    components/JASP/Widgets/CurrentFileList.qml \
+    components/JASP/Widgets/ComputerList.qml
+

@@ -67,6 +67,7 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 	case AnalysisMenuRole:      return QVariant::fromValue(menuModel);
 	case DisplayRole:			return QString::fromStdString(entry->title());
 	case IconSourceRole:		return QString::fromStdString(entry->icon());
+	case EnabledRibbonRole:		{std::cout << "EnabledRibbonRole not implemented!" << std::endl; return true; }
 	default:					return QVariant();
 	}
 }
@@ -75,9 +76,11 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> RibbonButtonModel::roleNames() const
 {
 	static const auto roles = QHash<int, QByteArray>{
-		{	AnalysisMenuRole,	"analysisMenu"	},
-		{	DisplayRole,		"displayText"	},
-		{	IconSourceRole,		"iconSource"	}
+		{	AnalysisMenuRole,	"analysisMenu"		},
+		{	DisplayRole,		"displayText"		},
+		{	IconSourceRole,		"iconSource"		},
+		{	EnabledRibbonRole,	"ribbonEnabled"		}
+
 	};
 
 	return roles;

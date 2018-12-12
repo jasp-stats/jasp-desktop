@@ -19,7 +19,6 @@
 #define ABOUTDIALOGJSINTERFACE_H
 
 #include <QObject>
-#include "aboutdialog.h"
 
 class AboutDialog;
 
@@ -28,7 +27,7 @@ class AboutDialogJsInterface : public QObject
 	Q_OBJECT
 	
 public:
-	explicit AboutDialogJsInterface(QWidget *parent = 0);
+	explicit AboutDialogJsInterface(QObject *parent = 0);
 	
 	void setAppInfo(const QString& version, const QString& builddate);
 	void setNewVersion(const QString& version);
@@ -41,7 +40,7 @@ private:
 	void runJavaScript(const QString &str);
 	
 	AboutDialog *_aboutDialog;
-	QWebEngineView *_aboutView;
+	//QWebEngineView *_aboutView;
 
 };
 

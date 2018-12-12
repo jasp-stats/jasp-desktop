@@ -22,10 +22,8 @@
 #include "backstagepage.h"
 #include "osflistmodel.h"
 #include "osfbreadcrumbslistmodel.h"
-#include "fsbrowser.h"
 
 #include <QQmlContext>
-#include <QQuickWidget>
 
 class BackstageOSF: public BackstagePage
 {
@@ -38,10 +36,13 @@ class BackstageOSF: public BackstagePage
 	Q_PROPERTY(	bool	rememberme		READ rememberme		WRITE setRememberme		NOTIFY remembermeChanged)
 	Q_PROPERTY(	QString	username		READ username		WRITE setUsername		NOTIFY usernameChanged)
 	Q_PROPERTY(	QString	password		READ password		WRITE setPassword		NOTIFY passwordChanged)
-	
+
+	Q_PROPERTY(OSFListModel * listModel					READ listModel		WRITE setListModel		NOTIFY listModelChanged)
+	Q_PROPERTY(OSFBreadCrumbsListModel * breadCrumbs	READ breadCrumbs	WRITE setBreadCrumbs	NOTIFY breadCrumbsChanged)
+
 	
 public:
-	explicit BackstageOSF(QWidget *parent = nullptr, QQuickWidget *qquickfilemenu = nullptr);
+	explicit BackstageOSF(QObject *parent = nullptr);
 	
 	bool loggedin();	
 	bool rememberme();
@@ -64,6 +65,9 @@ public:
 	void setCurrentFileName(QString currentFileName);
 	void setMode(FileEvent::FileMode mode) OVERRIDE;
 
+	OSFListModel * listModel()				const	{ return _osfListModel;	}
+	OSFBreadCrumbsListModel * breadCrumbs() const	{ return _osfBreadCrumbsListModel;	}
+
 signals:
 	//void dataSetOpened(QString path); dead code
 	void newFolderRequested(QString folderName);
@@ -75,7 +79,11 @@ signals:
 	void usernameChanged();
 	void passwordChanged();
 	void openFileRequest(QString path);
-		
+
+	void listModelChanged(OSFListModel * listModel);
+
+	void breadCrumbsChanged(OSFBreadCrumbsListModel * breadCrumbs);
+
 private slots:
 	void notifyDataSetSelected(QString path);
 	void notifyDataSetOpened(QString path);
@@ -102,24 +110,26 @@ public slots:
 	void newFolderClicked();
 	void closeFileDialog();
 	
-private:	
+	void setListModel(OSFListModel * listModel);
+	void setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs);
+
+private:
 	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);	
 	
-	OnlineDataManager *_odm;	
-	OSFListModel *_osfListModel;
-	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel;
-	FSBMOSF *_model;
-	FSBrowser *_fsBrowser;	
-	QString _currentFileName;	
+	OnlineDataManager		*_odm						= nullptr;
+	OSFListModel			*_osfListModel				= nullptr;
+	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel	= nullptr;
+	FSBMOSF					*_model						= nullptr;
 	
-	bool _mLoggedin;
-	bool _mRememberMe;
-	bool _mProcessing;
-	bool _mShowFileDialog;
-	QString _mSaveFileName;
-	QString _mUserName;
-	QString _mPassword;
-		
+	bool	_mLoggedin,
+			_mRememberMe,
+			_mProcessing,
+			_mShowFileDialog;
+
+	QString	_currentFileName,
+			_mSaveFileName,
+			_mUserName,
+			_mPassword;
 };
 
 

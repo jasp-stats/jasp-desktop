@@ -94,6 +94,9 @@ void RibbonModel::addRibbonButtonModel(RibbonButtonModel* model)
 	_modulesByName[model->title()] = model;
 
 	emit endResetModel();
+
+	if(_currentButtonModel == nullptr)
+		setCurrentButtonModel(model);
 }
 
 void RibbonModel::removeRibbonButtonModel(std::string moduleName)
@@ -111,4 +114,13 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 			_moduleNames.erase(_moduleNames.begin() + i);
 
 	emit endResetModel();
+}
+
+void RibbonModel::setCurrentButtonModel(RibbonButtonModel* newModel)
+{
+	if(_currentButtonModel != newModel)
+	{
+		_currentButtonModel = newModel;
+		emit currentButtonModelChanged();
+	}
 }

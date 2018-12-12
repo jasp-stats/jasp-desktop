@@ -1,18 +1,11 @@
 #include "backstagerecentfiles.h"
 #include "ui_backstageform.h"
+#include <QQmlEngine>
 
 
-BackstageRecentFiles::BackstageRecentFiles(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+BackstageRecentFiles::BackstageRecentFiles(QObject *parent): BackstagePage(parent)
 {	
-	
-	_recentFilesListModel = new RecentFilesListModel(this);
-	
-	qquickfilemenu->rootContext()->setContextProperty("recentFilesListModel", _recentFilesListModel);
-	
-}
-
-BackstageRecentFiles::~BackstageRecentFiles()
-{
+	setRecentFiles(new RecentFilesListModel(this));
 }
 
 void BackstageRecentFiles::pushRecentFilePath(const QString &newrecent)
@@ -25,3 +18,11 @@ void BackstageRecentFiles::openFile(FileEvent *event)
 	emit dataSetIORequest(event);
 }
 
+void BackstageRecentFiles::setRecentFiles(RecentFilesListModel * recentFiles)
+{
+	if (_recentFilesListModel == recentFiles)
+		return;
+
+	_recentFilesListModel = recentFiles;
+	emit recentFilesChanged(_recentFilesListModel);
+}

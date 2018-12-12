@@ -19,8 +19,9 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
-#include <QMainWindow>
 #include <QSettings>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
 #include "dataset.h"
 
@@ -36,7 +37,6 @@
 #include "data/asyncloaderthread.h"
 #include "data/fileevent.h"
 #include "utilities/resultsjsinterface.h"
-#include "widgets/customwebenginepage.h"
 #include "data/columnsmodel.h"
 #include "utilities/jsonutilities.h"
 #include "data/computedcolumnsmodel.h"
@@ -46,7 +46,7 @@
 #include "modules/ribbonbuttonmodel.h"
 #include "modules/ribbonentry.h"
 #include "data/filtermodel.h"
-#include "filemenu.h"
+#include "widgets/backstage/filemenu.h"
 
 class ResultsJsInterface;
 class FileMenu;
@@ -55,14 +55,20 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(QString	runButtonText		READ runButtonText			WRITE setRunButtonText			NOTIFY runButtonTextChanged			)
+	Q_PROPERTY(bool		runButtonEnabled	READ runButtonEnabled		WRITE setRunButtonEnabled		NOTIFY runButtonEnabledChanged		)
+	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
+	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
+	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
 
 	friend class ResultsJsInterface;
 	friend class FileMenu;
+
 public:
-	explicit MainWindow(QApplication *application);
+	explicit MainWindow(QGuiApplication *application);
 	void open(QString filepath);
 	void testLoadedJaspFile(int timeOut, bool save);
 
@@ -72,16 +78,86 @@ public:
 
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
+	QString runButtonText() const
+	{
+		return m_runButtonText;
+	}
+
+	bool runButtonEnabled() const
+	{
+		return m_runButtonEnabled;
+	}
+
+	bool progressBarVisible() const
+	{
+		return m_progressBarVisible;
+	}
+
+	int progressBarProgress() const
+	{
+		return m_progressBarProgress;
+	}
+
+	QString progressBarStatus() const
+	{
+		return m_progressBarStatus;
+	}
+
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
 	void setImageBackgroundHandler(QString value);
 	void setUIScaleHandler(float scale);
 
-protected:
+/*protected:
 	void resizeEvent(QResizeEvent *event)		override;
 	void dragEnterEvent(QDragEnterEvent *event) override;
 	void dropEvent(QDropEvent *event)			override;
-	void closeEvent(QCloseEvent *event)			override;
+	void closeEvent(QCloseEvent *event)			override;*/
+
+	void setRunButtonText(QString runButtonText)
+	{
+		if (m_runButtonText == runButtonText)
+			return;
+
+		m_runButtonText = runButtonText;
+		emit runButtonTextChanged(m_runButtonText);
+	}
+
+	void setRunButtonEnabled(bool runButtonEnabled)
+	{
+		if (m_runButtonEnabled == runButtonEnabled)
+			return;
+
+		m_runButtonEnabled = runButtonEnabled;
+		emit runButtonEnabledChanged(m_runButtonEnabled);
+	}
+
+	void setProgressBarVisible(bool progressBarVisible)
+	{
+		if (m_progressBarVisible == progressBarVisible)
+			return;
+
+		m_progressBarVisible = progressBarVisible;
+		emit progressBarVisibleChanged(m_progressBarVisible);
+	}
+
+	void setProgressBarProgress(int progressBarProgress)
+	{
+		if (m_progressBarProgress == progressBarProgress)
+			return;
+
+		m_progressBarProgress = progressBarProgress;
+		emit progressBarProgressChanged(m_progressBarProgress);
+	}
+
+	void setProgressBarStatus(QString progressBarStatus)
+	{
+		if (m_progressBarStatus == progressBarStatus)
+			return;
+
+		m_progressBarStatus = progressBarStatus;
+		emit progressBarStatusChanged(m_progressBarStatus);
+	}
 
 private:
 	void makeConnections();
@@ -142,6 +218,19 @@ signals:
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(QString value);
 	void saveJaspFile();
+	void openFile(QString filepath); //I am not yet connected to anything!
+	void saveFile();//I am not yet connected to anything!
+	void titleChanged(QString newTitle);//I am not yet connected to anything!
+
+	void runButtonTextChanged(QString runButtonText);
+
+	void runButtonEnabledChanged(bool runButtonEnabled);
+
+	void progressBarVisibleChanged(bool progressBarVisible);
+
+	void progressBarProgressChanged(int progressBarProgress);
+
+	void progressBarStatusChanged(QString progressBarStatus);
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -165,19 +254,11 @@ private slots:
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
 	void ribbonEntrySelected(const QString &item);
-	void onMenuClicked(QAction *);
 
-	void adjustOptionsPanelWidth();
-	void splitterMovedHandler(int, int);
-
-	void hideOptionsPanel();
-	void showOptionsPanel();
-	void showDataPanel();
-	void hideDataPanel();
 	void startDataEditorHandler();
 	void startDataEditorEventCompleted(FileEvent *event);
 
-	void analysisOKed();
+	//void analysisOKed();
 	void analysisRunned();
 
 	void updateMenuEnabledDisabledStatus();
@@ -190,7 +271,7 @@ private slots:
 	void zoomOutKeysSelected();
 	void zoomEqualKeysSelected();
 
-	void illegalOptionStateChanged(AnalysisForm * form);
+	//void illegalOptionStateChanged(AnalysisForm * form);
 	void fatalError();
 
 	void helpFirstLoaded(bool ok);
@@ -211,7 +292,7 @@ private slots:
 	void unitTestTimeOut();
 
 	void saveJaspFileHandler();
-	void handleRibbonButtonClicked(QVariant);
+	//void handleRibbonButtonClicked(QVariant);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
@@ -219,10 +300,9 @@ private:
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
 
-	Ui::MainWindow					*ui						= nullptr;
+	QQmlApplicationEngine			*_qml					= nullptr;
 	Analyses						*_analyses				= nullptr;
 	ResultsJsInterface				*_resultsJsInterface	= nullptr;
-	AnalysisForm					*_currentOptionsWidget	= nullptr;
 	DataSetPackage					*_package				= nullptr;
 	DataSetTableModel				*_tableModel			= nullptr;
 	LevelsTableModel				*_levelsTableModel		= nullptr;
@@ -230,18 +310,14 @@ private:
 	labelFilterGenerator			*_labelFilterGenerator	= nullptr;
 	ColumnsModel					*_columnsModel			= nullptr;
 	ComputedColumnsModel			*_computedColumnsModel	= nullptr;
-	FilterModel						*_filterModel			= nullptr;
+	FilterModel						*_filterModel			= nullptr;	
 	OnlineDataManager				*_odm					= nullptr;
 	DynamicModules					*_dynamicModules		= nullptr;
-	QWidget							*_buttonPanel			= nullptr;
-	QVBoxLayout						*_buttonPanelLayout		= nullptr;
-	QPushButton						*_okButton				= nullptr,
-									*_runButton				= nullptr;
-	CustomWebEnginePage				*_customPage			= nullptr;
+//	CustomWebEnginePage				*_customPage			= nullptr;
 	RibbonModel						*_ribbonModel			= nullptr;
 	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
-	QObject							*_qmlProgressBar		= nullptr;
-	QApplication					*_application 			= nullptr;
+	QObject							*qmlProgressBar			= nullptr;
+	QGuiApplication					*_application 			= nullptr;
 
 	QSettings						_settings;
 
@@ -268,6 +344,11 @@ private:
 	FileMenu						*_fileMenu;
 
 
+	QString m_runButtonText;
+	bool m_runButtonEnabled;
+	bool m_progressBarVisible;
+	int m_progressBarProgress;
+	QString m_progressBarStatus;
 };
 
 #endif // MAINWIDGET_H

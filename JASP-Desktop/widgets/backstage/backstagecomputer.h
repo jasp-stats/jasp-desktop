@@ -26,32 +26,38 @@
 class BackstageComputer : public BackstagePage
 {
 	Q_OBJECT
+	Q_PROPERTY(ComputerListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit BackstageComputer(QWidget *parent = nullptr,  QQuickWidget *qquickfilemenu = nullptr);
-	~BackstageComputer();
-	
+	explicit BackstageComputer(QObject *parent = nullptr);
+
 	FileEvent *browseOpen(const QString &path = "");
 	FileEvent *browseSave(const QString &path = "", FileEvent::FileMode mode = FileEvent::FileSave);
 	
 	void setFileName(const QString &filename);
 	void clearFileName();
 	void addRecentFolder(const QString &path);
-		
+
+	ComputerListModel * listModel() const { return _computerListModel; }
+
 protected:
-	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
+	//bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
 
 public slots:
 	void browsePath(QString path);
 	void browseMostRecent();
 	
+	void setListModel(ComputerListModel * listModel);
+
+signals:
+	void listModelChanged(ComputerListModel * listModel);
+
 private:
 	// these two variables are a hack!
 	bool _hasFileName;
 	QString _fileName;	
 	
-	ComputerListModel *_computerListModel;	
-
+	ComputerListModel *_computerListModel = nullptr;
 };
 
 #endif // BACKSTAGECOMPUTER_H

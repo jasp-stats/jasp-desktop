@@ -11,7 +11,7 @@ class DataLibraryListModel : public QAbstractListModel
 	Q_OBJECT
 
 public:
-	explicit DataLibraryListModel(QObject *parent = nullptr);
+	explicit DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs);
 	
 	enum
 	{
@@ -46,7 +46,7 @@ signals:
 
 public slots:
 	void changePath(const QString& name, const QString& path);
-	void changePath(const int& index);
+	void changePathCrumbIndex(const int& index);
 	
 	void openFile(const QString& path);
 

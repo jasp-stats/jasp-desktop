@@ -19,34 +19,27 @@
 #ifndef ANALYSISFORM_H
 #define ANALYSISFORM_H
 
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QPushButton>
 #include <QMap>
 
 #include "dataset.h"
+#include "options/bound.h"
 #include "options/options.h"
 #include "options/optionvariables.h"
 
 #include "options/availablefields.h"
-#include "widgets/availablefieldslistview.h"
-#include "widgets/assignbutton.h"
-#include "widgets/boundlistview.h"
-
 #include "widgets/tablemodelvariablesavailable.h"
 
 #include "analysis/options/variableinfo.h"
 #include "analysis.h"
 
-class AnalysisForm : public QWidget, public VariableInfoProvider
+class AnalysisForm : public QObject, public VariableInfoProvider
 {
 	Q_OBJECT
 
 public:
-	explicit					AnalysisForm(QString name, QWidget *parent = 0);
-	virtual		void			bindTo(Options *options, DataSet *dataSet);
-	virtual		void			unbind();
-	virtual		QWidget*		getWidget();
+	explicit					AnalysisForm(QString name, QObject *parent = 0);
+	virtual		void			bindTo(Options *options, DataSet *dataSet) = 0;
+	virtual		void			unbind()	= 0;
 
 				bool			hasIllegalValue()		const;
 				const QString	&illegalValueMessage()	const;

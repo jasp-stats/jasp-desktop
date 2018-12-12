@@ -1,12 +1,15 @@
 #include "osflistmodel.h"
-#include "fsentrywidget.h"
+#include "fsentry.h"
 #include <QFileInfo>
 #include <QDir>
 
-OSFListModel::OSFListModel(QObject *parent)
+OSFListModel::OSFListModel(QObject *parent, FSBMOSF * fsbMod, OSFBreadCrumbsListModel * crummyList)
 	: QAbstractListModel(parent)
 {
-	_iconsources = FSEntryWidget::sourcesIcons();	
+	_iconsources = FSEntry::sourcesIcons();	
+
+	setFSBModel(fsbMod);
+	setBreadCrumbsListModel(crummyList);
 }
 
 void OSFListModel::setBreadCrumbsListModel(OSFBreadCrumbsListModel *osfBreadCrumbsListModel)
@@ -37,34 +40,27 @@ QVariant OSFListModel::data(const QModelIndex &index, int role) const
 	
 	switch (role)
 	{
-	case NameRole:
-		return QVariant(item.name);
-	case PathRole:
-		return QVariant(item.path);
-	case DescriptionRole:
-		return QVariant(item.description);
-	case TypeRole:
-		return QVariant(item.entryType);
-	case IconSourceRole:
-		return QVariant("qrc"+_iconsources[item.entryType]);	
-	case DirRole:
-		{QFileInfo  fi(item.path);
-		return QVariant(fi.path() + QDir::separator());}
-	default:
-		return QVariant(QStringLiteral("Unknown type"));
+	case NameRole:			return QVariant(item.name);
+	case PathRole:			return QVariant(item.path);
+	case DescriptionRole:	return QVariant(item.description);
+	case TypeRole:			return QVariant(item.entryType);
+	case IconSourceRole:	return QVariant("qrc"+_iconsources[item.entryType]);
+	case DirRole:			return QVariant(QFileInfo(item.path).path() + QDir::separator());
+	default:				return QVariant(QStringLiteral("Unknown type"));
 	}
 	
 }
 
 QHash<int, QByteArray> OSFListModel::roleNames() const
 {	
-	QHash<int, QByteArray> names;
-	names[NameRole] = "name";
-	names[DescriptionRole] ="description";
-	names[PathRole] = "path";
-	names[TypeRole] ="type";
-	names[IconSourceRole] ="iconsource";
-	names[DirRole] ="dirpath";
+	static QHash<int, QByteArray> names = {
+		{ NameRole,			"name" },
+		{ DescriptionRole,	"description" },
+		{ PathRole,			"path" },
+		{ TypeRole,			"type" },
+		{ IconSourceRole,	"iconsource" },
+		{ DirRole,			"dirpath" } };
+
 	return names;	
 }
 
@@ -99,7 +95,7 @@ void OSFListModel::changePath(const QString &name, const QString &path)
 	endResetModel();
 }
 
-void OSFListModel::changePath(const int &index)
+void OSFListModel::changePathCrumbIndex(const int &index)
 {
 	if (_osfBreadCrumbsListModel->rowCount() == index+1)
 		return;

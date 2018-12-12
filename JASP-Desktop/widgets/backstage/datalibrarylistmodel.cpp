@@ -1,14 +1,13 @@
 #include "datalibrarylistmodel.h"
-#include "fsentrywidget.h"
+#include "fsentry.h"
 #include <QFileInfo>
 #include <QDir>
 
-DataLibraryListModel::DataLibraryListModel(QObject *parent)
-	: QAbstractListModel(parent)
+DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : QAbstractListModel(parent), _dataLibraryBreadCrumbsListModel(crumbs)
 {
 	_fsbmDataLibrary = new FSBMDataLibrary(this,  FSBMDataLibrary::rootelementname );
 	_fsbmDataLibrary->refresh();
-	_iconsources = FSEntryWidget::sourcesIcons();
+	_iconsources = FSEntry::sourcesIcons();
 
 	connect(this, SIGNAL(openFile(FileEvent *)), parent, SLOT(openFile(FileEvent *)));	//connect(_dataLibraryBreadCrumbsListModel, SIGNAL(indexChanged(const int &)), this, SLOT(changePath(const int &)));
 }
@@ -146,7 +145,7 @@ void DataLibraryListModel::changePath(const QString &name, const QString &path)
 	endResetModel();
 }
 
-void DataLibraryListModel::changePath(const int &index)
+void DataLibraryListModel::changePathCrumbIndex(const int &index)
 {
 	// Called from breadcrumbs
 	beginResetModel();	

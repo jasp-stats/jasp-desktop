@@ -13,7 +13,7 @@ public:
         NameRole = Qt::UserRole
     };
 	
-	explicit DataLibraryBreadCrumbsListModel(QObject *parent = nullptr);
+	explicit DataLibraryBreadCrumbsListModel(QObject *parent, const QChar sep);
 	void setSeparator(const QChar &separator);
 		
 	// Basic functionality:

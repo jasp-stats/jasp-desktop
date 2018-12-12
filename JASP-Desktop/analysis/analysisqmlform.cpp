@@ -17,11 +17,12 @@
 //
 
 #include "analysisqmlform.h"
-#include <QQuickWidget>
 #include <QQmlEngine>
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QDebug>
+
+#include <QQuickWidget>
 
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
@@ -45,9 +46,9 @@
 
 using namespace std;
 
-AnalysisQMLForm::AnalysisQMLForm(QWidget *parent, Analysis* analysis)
+AnalysisQMLForm::AnalysisQMLForm(QObject *parent, Analysis* analysis)
 	:  AnalysisForm("AnalysisQMLForm", parent)
-	, _quickWidget(new QQuickWidget(this))
+	, _quickWidget(new QQuickWidget())
 	, _analysis(analysis)
 	, _errorMessagesItem(nullptr)
 {
@@ -425,7 +426,7 @@ void AnalysisQMLForm::statusChangedWidgetHandler(QQuickWidget::Status status)
 				message += '\n';
 			message += error.toString();
 		}
-		QMessageBox::warning(this, "Error", "Error when loading analysis form: \n" + message);
+		std::cerr << "QMessageBox::warning(this, \"Error\", \"Error when loading analysis form: \n" << message.toStdString() << ");";
 	}
 }
 

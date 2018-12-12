@@ -27,9 +27,10 @@
 class BackstageCurrentFile : public BackstagePage
 {
 	Q_OBJECT
+	Q_PROPERTY(CurrentFileListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit BackstageCurrentFile(QWidget *parent = nullptr,  QQuickWidget *qquickfilemenu = nullptr);
+	explicit BackstageCurrentFile(QObject *parent = nullptr);
 	~BackstageCurrentFile();
 	
 	void setCurrentFilePath(const QString &path);
@@ -45,6 +46,8 @@ public:
 	//Special
 	CurrentFileListModel * getCurrentFileListModel();
 
+	CurrentFileListModel * listModel() const { return _currentFileListModel; }
+
 public slots:
 	QString getCurrentFilePath();
 	QString getCurrentDataFilePath();
@@ -53,14 +56,19 @@ public slots:
 	QString getHeaderText();		
 	void syncFile(FileEvent *event);
 	
+	void setListModel(CurrentFileListModel * listModel);
+signals:
+	void listModelChanged(CurrentFileListModel * listModel);
+
 private:
-	CurrentFileListModel *_currentFileListModel;
+	CurrentFileListModel *_currentFileListModel = nullptr;
 	
-	QString _currentFilePath;
-	QString _currentDataFilePath;
+	QString _currentFilePath,
+			_currentDataFilePath;
+
 	Utils::FileType _currentFileType;
 	bool _currentFileReadOnly;
-		
+
 };
 
 #endif // BACKSTAGECURRENTFILE_H

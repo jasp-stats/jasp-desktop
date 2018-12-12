@@ -45,14 +45,14 @@ QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon() const
 	if(ColumnTypeAndIcons.size() == 0)
 	{
 		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal.svg")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal-text.svg")));
+		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-nominal.svg")));
+		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-nominal-text.svg")));
 		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-ordinal.svg")));
+		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-ordinal.svg")));
 		ColumnTypeAndIcons.push_back(QVariant(QString("")));
 		ColumnTypeAndIcons.push_back(QVariant(QString("")));
 		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-scale.svg")));
+		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-scale.svg")));
 	}
 
 	return QVariant(ColumnTypeAndIcons);

@@ -1,5 +1,5 @@
 #include "recentfileslistmodel.h"
-#include "fsentrywidget.h"
+#include "fsentry.h"
 #include <QFileInfo>
 #include <QDir>
 
@@ -8,7 +8,7 @@ RecentFilesListModel::RecentFilesListModel(QObject *parent)
 {
 	_fsbmRecentFiles = new FSBMRecentFiles(this);
 	_fsbmRecentFiles->refresh();
-	_iconsources = FSEntryWidget::sourcesIcons();
+	_iconsources = FSEntry::sourcesIcons();
 
 	connect(this, SIGNAL(openFile(FileEvent *)), parent, SLOT(openFile(FileEvent *)));
 
