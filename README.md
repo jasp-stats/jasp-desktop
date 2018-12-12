@@ -31,7 +31,7 @@
 
     @MISC{JASP2018,
       AUTHOR = {{JASP Team}},
-      TITLE  = {{JASP (Version 0.9.1)[Computer software]}},
+      TITLE  = {{JASP (Version 0.9.2)[Computer software]}},
       YEAR   = {2018},
       URL    = {https://jasp-stats.org/}
     }
