@@ -1,45 +1,5 @@
-
-Core - Unit Tests
+Unit Tests
 ==========
-
-Guide to build Unit test project and run 
------------------------------------------
-
-1) use Qt creator and build the project JASP.pro
-
-2) use qmake from terminal (in a different build directory)
-
-```
-    qmake ../jasp-desktop/JASP.pro
-    make 
-    ./JASPTests
-```
-
-Adding new unit tests to the project
-------------------------------------
-
-To add new test (for example Tester), include "AutomatedTests.h" in the header file and the last line in the file should be 
-    DECLARE_TEST(Tester)
-
-Update the JASP-Tests-app.pro file to include the source file and the header file
-
-The test will run automatically when the project is built and run.
-
-
-Unit Tests in the project
--------------------------
-
-1) Opening of Text files (tests the AsyncLoader class)
-
-2) Testing of OSF login and file opening
-
-3) CSV importer 
-
-4) SPSS importer
-
-
-Analyses - Unit Tests
-=====================
 
 Running the tests
 -----------------
@@ -113,7 +73,7 @@ test_that("Binomial table results match", {
   options[["variables"]] <- "contBinom"
   results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE)
   table <- results[["results"]][["binomial"]][["data"]]
-  expect_equal_tables(table, 
+  expect_equal_tables(table,
    list("contBinom", 0, 58, 100, 0.58, 0.133210619207213, 0.477119195723914,
     0.678014460645203, "TRUE", "contBinom", 1, 42, 100, 0.42, 0.133210619207213,
     0.321985539354797, 0.522880804276086, "FALSE"))
