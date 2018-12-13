@@ -1,15 +1,15 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
-//import JASP.Controls 1.0
-//import JASP.Theme 1.0
+import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 
 Rectangle {
 	id : osfLogin
 
-	property bool rememberme : backstageosf.rememberme
-	property string username : backstageosf.username
-	property string password : backstageosf.password
+	property bool rememberme : fileMenuModel.osf.rememberme
+	property string username : fileMenuModel.osf.username
+	property string password : fileMenuModel.osf.password
 
 	width :implicitWidth
 	height : implicitHeight
@@ -21,7 +21,7 @@ Rectangle {
 
 	Component.onCompleted: {
 		usernameText.focus = true
-		backstageosf.updateLoginScreen()
+		fileMenuModel.osf.updateLoginScreen()
 		usernameText.text = username
 		passwordText.text = password
 
@@ -88,7 +88,7 @@ Rectangle {
 			font.pixelSize: 14
 
 			onTextChanged: {
-				backstageosf.username = usernameText.text
+				fileMenuModel.osf.username = usernameText.text
 			}
 
 			onAccepted: {
@@ -143,11 +143,11 @@ Rectangle {
 			font.pixelSize: 14
 
 			onTextChanged: {
-				backstageosf.password = text;
+				fileMenuModel.osf.password = text;
 			}
 			onAccepted:
 			{
-				backstageosf.loginRequested(username, password)
+				fileMenuModel.osf.loginRequested(username, password)
 			}
 		}
 	}
@@ -165,7 +165,7 @@ Rectangle {
 		text: "Remember me"
 
 		onClicked: {
-			backstageosf.remembermeCheckChanged(checked) }
+			fileMenuModel.osf.remembermeCheckChanged(checked) }
 	}
 
 	Button {
@@ -191,7 +191,7 @@ Rectangle {
 		text: "Login"
 
 		onClicked: {
-			backstageosf.loginRequested(backstageosf.username, password)
+			fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, password)
 		}
 	}
 

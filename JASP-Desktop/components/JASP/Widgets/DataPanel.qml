@@ -11,8 +11,9 @@ Rectangle {
 
     ProgressBarHolder
     {
-        id: progressBarHolder
-        objectName: "progressBarHolder"
+		id:			progressBarHolder
+		objectName: "progressBarHolder"
+		visible:	mainWindow.progressBarVisible
     }
 
     SplitView
@@ -26,8 +27,8 @@ Rectangle {
 			bottom:	rootDataset.bottom
 		}
 
-        orientation: Qt.Vertical
-		visible: false
+		orientation:	Qt.Vertical
+		visible:		!mainWindow.progressBarVisible
 
 
 

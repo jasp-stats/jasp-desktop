@@ -14,7 +14,7 @@ ListView  {
 			
 	spacing : 10
 	
-	model: computerListModel
+	model: fileMenuModel.computer.listModel
 	
 	delegate: modelDelegate
 	

@@ -89,5 +89,6 @@
         <file>components/JASP/Widgets/OSFList.qml</file>
         <file>components/JASP/Widgets/OSFLogin.qml</file>
         <file>components/JASP/Widgets/RecentFilesList.qml</file>
+        <file>components/JASP/Widgets/BreadCrumbs.qml</file>
     </qresource>
 </RCC>

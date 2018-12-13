@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
-//import JASP.Theme 1.0
+import JASP.Theme 1.0
+import JASP.Widgets 1.0
 
 
 Rectangle
@@ -10,9 +11,9 @@ Rectangle
 	objectName: "rect"
 	color: "#ececec"
 	
-	property bool loggedin : backstageosf.loggedin
-	property bool processing : backstageosf.processing
-	property bool showfiledialog : backstageosf.showfiledialog
+	property bool loggedin:			fileMenuModel.osf.loggedin
+	property bool processing:		fileMenuModel.osf.processing
+	property bool showfiledialog:	fileMenuModel.osf.showfiledialog
 	
 	
 	Label
@@ -58,24 +59,24 @@ Rectangle
 		anchors.topMargin: 12
 		
 		onClicked: {
-			backstageosf.logoutClicked();		
+			fileMenuModel.osf.logoutClicked();
 		}
 	}
 	
 	BreadCrumbs
 	{
-		id:osfbreadcrumbs
+		id:		osfbreadcrumbs
 		
 		visible: loggedin
 		
-		model : osfBreadCrumbsListModel
+		model : fileMenuModel.osf.breadCrumbs
 		
-		width: rect.width
-		height: loggedin ? 40 : 0
-		anchors.top: headLabel.bottom
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.leftMargin: 12  //Position datalibrary breadcrumbs
+		width:				rect.width
+		height:				loggedin ? 40 : 0
+		anchors.top:		headLabel.bottom
+		anchors.left:		parent.left
+		anchors.right:		parent.right
+		anchors.leftMargin:	12  //Position datalibrary breadcrumbs
 	}
 	
 	
@@ -141,13 +142,13 @@ Rectangle
 				anchors.leftMargin: 10
 				selectByMouse: true
 				
-				text: backstageosf.savefilename
+				text: fileMenuModel.osf.savefilename
 				
 				verticalAlignment: Text.AlignVCenter			
 				font.pixelSize: 14
 				
 				onAccepted: {
-					backstageosf.saveFile(filenameText.text)
+					fileMenuModel.osf.saveFile(filenameText.text)
 				}
 			}		
 		}
@@ -174,7 +175,7 @@ Rectangle
 			anchors.topMargin: 12
 			
 			onClicked: {
-				backstageosf.newFolderClicked()
+				fileMenuModel.osf.newFolderClicked()
 			}
 		}
 		
@@ -199,7 +200,7 @@ Rectangle
 			anchors.rightMargin: 12
 			
 			onClicked: {
-				backstageosf.saveFile(filenameText.text)	
+				fileMenuModel.osf.saveFile(filenameText.text)
 			}
 		}					
 	}

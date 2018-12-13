@@ -9,10 +9,10 @@ Rectangle
     width: 600
     height:400
 
-    property variant actionbuttons: ["Open", "Save","Save As", "Export Results", "Export Data","Sync Data", "Close"]
-	property variant resourcesbuttons: ["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
-	property int action_button_height: 35
-	property int resource_button_height: 1.5 * action_button_height
+	property variant actionbuttons:			["Open", "Save","Save As", "Export Results", "Export Data","Sync Data", "Close"]
+	property variant resourcesbuttons:		["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
+	property int action_button_height:		35
+	property int resource_button_height:	1.5 * action_button_height
   
     // Left verical tab : Action Menu
     Rectangle {
@@ -46,9 +46,9 @@ Rectangle
 					anchors.leftMargin: 3
 					anchors.left: parent.left
 					onClicked: {
-						filemenu.fileOperationClicked(index)
+						fileMenuModel.fileOperationClicked(index)
 					}
-					enabled: filemenu.buttonsenabled[index];
+					enabled: fileMenuModel.buttonsenabled[index];
 				}
 			}
 			
@@ -160,7 +160,7 @@ Rectangle
                 anchors.left: parent.left
 
                 enabled: true
-				visible: filemenu.recentfiles_button_visible
+				visible: fileMenuModel.recentfiles_button_visible
                 onClicked: locationMenu.state = "recentfiles"
             }
 			
@@ -175,7 +175,7 @@ Rectangle
                 anchors.left: parent.left
 
                 enabled: true
-				visible: filemenu.currentfile_button_visible
+				visible: fileMenuModel.currentfile_button_visible
                 onClicked: locationMenu.state = "currentfile"
             }
 
@@ -206,7 +206,7 @@ Rectangle
 				onClicked: {
 					
 					locationMenu.state= "osf"
-					filemenu.resourceButtonClicked(3)
+					fileMenuModel.resourceButtonClicked(3)
 				}
             }
 
@@ -220,7 +220,7 @@ Rectangle
                 anchors.left: parent.left
 
                 enabled: true
-				visible: filemenu.datalibrary_button_visible
+				visible: fileMenuModel.datalibrary_button_visible
                 onClicked: locationMenu.state= "datalibrary"
             }
         } //Column Filelocation

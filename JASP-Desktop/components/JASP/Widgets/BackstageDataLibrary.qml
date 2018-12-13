@@ -25,9 +25,9 @@ Rectangle
 	
 	BreadCrumbs
 	{
-		id:datalibrarybreadcrumbs
+		id:	datalibrarybreadcrumbs
 		
-		model : dataLibraryBreadCrumbsListModel
+		model : fileMenuModel.datalibrary.breadcrumbsmodel
 		
 		width: rect.width
 		height:40

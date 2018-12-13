@@ -13,7 +13,7 @@ ListView {
 	
 	spacing : 10
 	
-	model: currentFileListModel
+	model: fileMenuModel.currentFile.listModel
 	
 	delegate: currentFileDelegate
 		
@@ -57,7 +57,7 @@ ListView {
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignVCenter
 				
-				text: backstageCurrentFile.getCurrentDataFileName();
+				text: fileMenuModel.currentFile.getCurrentDataFileName();
 				font.family: "SansSerif"
 				font.pixelSize: 12
 			}
@@ -73,7 +73,7 @@ ListView {
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignVCenter
 				
-				text: backstageCurrentFile.getCurrentDataFolder();
+				text: fileMenuModel.currentFile.getCurrentDataFolder();
 				font.family: "SansSerif"
 				font.pixelSize: 10				
 			}
@@ -92,7 +92,7 @@ ListView {
 					listView.currentIndex = index
 					firsttimeclicked = true
 					if (model.type !== 3) //Other then folder type
-						currentFileListModel.syncFile(backstageCurrentFile.getCurrentDataFilePath())
+						fileMenuModel.currentFile.listModel.syncFile(fileMenuModel.currentFile.getCurrentDataFilePath())
 				}
 				
 				ToolTip {

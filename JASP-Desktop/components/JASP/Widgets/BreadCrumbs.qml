@@ -65,7 +65,7 @@ ListView
 						anchors.fill: parent
 						cursorShape: Qt.PointingHandCursor 
 						onClicked: {
-							breadcrumbsmodel.indexChanged(model.index);
+							fileMenuModel.osf.breadCrumbs.indexChanged(model.index);
 						}					
 					}
 					

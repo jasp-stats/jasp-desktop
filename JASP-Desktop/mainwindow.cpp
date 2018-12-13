@@ -277,18 +277,19 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("levelsTableModel",			_levelsTableModel);
 	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel);
-	_qml->rootContext()->setContextProperty("engineSync",					_engineSync);
+	_qml->rootContext()->setContextProperty("engineSync",				_engineSync);
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel);
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20);
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
 	_qml->rootContext()->setContextProperty("ppiScale",					Settings::value(Settings::UI_SCALE).toFloat());
 
 	_qml->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
-	_qml->rootContext()->setContextProperty("columnTypeOrdinal",			int(Column::ColumnType::ColumnTypeOrdinal));
-	_qml->rootContext()->setContextProperty("columnTypeNominal",			int(Column::ColumnType::ColumnTypeNominal));
-	_qml->rootContext()->setContextProperty("columnTypeNominalText",		int(Column::ColumnType::ColumnTypeNominalText));
+	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
+	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
+	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
 
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
+	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 
 	_qml->addImportPath("qrc:///components");
 
@@ -300,12 +301,6 @@ void MainWindow::loadQML()
 
 	connect(DataView,				SIGNAL(dataTableDoubleClicked()),	this,					SLOT(startDataEditorHandler()));
 	connect(levelsTableView,		SIGNAL(columnChanged(QString)),		this,					SLOT(refreshAnalysesUsingColumn(QString)));
-
-	std::cout << "progressBarHolder should only be touched INSIDE QML" << std::endl;
-	qmlProgressBar			= _qml->findChild<QObject*>("progressBarHolder");
-
-
-
 }
 
 /*
@@ -937,50 +932,6 @@ void MainWindow::analysisUnselectedHandler()
 		std::cout << "should hide options panel now" << std::endl;
 }
 
-void MainWindow::showBackstage()
-{
-	//static int backstageIndex = ui->topLevelWidgets->indexOf(ui->backStage);
-	//ui->topLevelWidgets->setCurrentIndex(backstageIndex);
-
-	std::cout << "showBackstage does nothing" << std::endl;
-}
-
-
-void MainWindow::showMainPage()
-{
-	std::cout << "showBackstage does nothing" << std::endl;
-
-	/*static int mainPageIndex = ui->topLevelWidgets->indexOf(ui->mainPage);
-	ui->topLevelWidgets->setCurrentIndex(mainPageIndex);
-
-
-	QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-	RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
-
-	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
-	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
-
-	bool enable = currentModel != nullptr;
-	if (enable && currentModel->requiresDataset() && _package->dataSet() == nullptr) {
-		enable = false;
-	}
-	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);*/
-}
-
-
-
-void MainWindow::tabChanged(int index)
-{
-	if (index == 0)
-		showBackstage();
-	else
-		showMainPage();
-
-
-
-}
-
-
 void MainWindow::helpToggled(bool on)
 {
 /*	static int helpWidth = 0;
@@ -1121,6 +1072,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 				event->setComplete(true);
 				dataSetIOCompleted(event);
 				ui->panel_1_Data->hide();
+				setDataPanelVisible(false); ??
 			}*/
 
 			std::cout << "I should show a messagebox with MODIFIED WANNA SAVE?" << std::endl;
@@ -1129,6 +1081,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		{
 			event->setComplete();
 			dataSetIOCompleted(event);
+			setDataPanelVisible(false);
 		}
 
 		closeVariablesPage();
@@ -1298,6 +1251,7 @@ void MainWindow::populateUIfromDataSet()
 	}
 
 	hideProgress();
+	setDataPanelVisible(true);
 
 	bool errorFound = false;
 	stringstream errorMsg;
@@ -1864,6 +1818,7 @@ void MainWindow::startDataEditor(QString path)
 
 void MainWindow::showProgress()
 {
+	setDataPanelVisible(true);
 	setProgressBarVisible(true);
 }
 
@@ -1871,6 +1826,7 @@ void MainWindow::hideProgress()
 {
 	setProgressBarVisible(false);
 }
+
 
 void MainWindow::setProgressStatus(QString status, int progress)
 {

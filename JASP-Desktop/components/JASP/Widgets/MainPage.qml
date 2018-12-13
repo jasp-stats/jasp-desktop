@@ -16,7 +16,7 @@ OLD.SplitView
 		width:					visible ? 300 : 0
 		Layout.fillWidth:		visible
 		Layout.minimumWidth:	visible ? 200 : 0
-		visible:				true
+		visible:				mainWindow.dataPanelVisible
 	}
 
 	WebEngineView

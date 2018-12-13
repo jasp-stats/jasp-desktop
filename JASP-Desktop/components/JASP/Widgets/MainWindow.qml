@@ -7,7 +7,7 @@ Window
 {
 	title:		"JASP"
 	visible:	true
-	width:		900
+	width:		1900
 	height:		600
 
 	Ribbon
@@ -21,12 +21,28 @@ Window
 		}
 	}
 
-	MainPage
+	FileMenu
 	{
+		id: filemenu
+
+		width: 600
+
 		anchors
 		{
 			top:	ribbon.bottom
 			left:	parent.left
+			bottom:	parent.bottom
+		}
+	}
+
+	MainPage
+	{
+		id: mainpage
+
+		anchors
+		{
+			top:	ribbon.bottom
+			left:	filemenu.right
 			right:	parent.right
 			bottom:	parent.bottom
 		}

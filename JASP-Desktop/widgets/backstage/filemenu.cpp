@@ -28,11 +28,11 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_currentFileType = Utils::FileType::unknown;
 	_currentFileReadOnly = false;
 
-	_bsRecentFiles	= new BackstageRecentFiles(parent);
-	_bsCurrentFile	= new BackstageCurrentFile(parent);
-	_bsComputer		= new BackstageComputer(parent);
-	_bsOSF			= new BackstageOSF(parent);
-	_bsDataLibrary	= new BackstageDataLibrary(parent);
+	setRecentFiles(	new BackstageRecentFiles(parent)	);
+	setCurrentFile(	new BackstageCurrentFile(parent)	);
+	setComputer(	new BackstageComputer(parent)		);
+	setOsf(			new BackstageOSF(parent)			);
+	setDatalibrary(	new BackstageDataLibrary(parent)	);
 	
 	connect(_bsRecentFiles, &BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
 	connect(_bsCurrentFile, &BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);

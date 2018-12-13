@@ -5,7 +5,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Window 2.3
-
+import JASP.Controls 1.0
 
 ListView
 {
@@ -24,7 +24,7 @@ ListView
 
 	spacing : 10
 
-	model : dataLibraryListModel
+	model : fileMenuModel.datalibrary.listModel
 
 	delegate: modelDelegate
 
@@ -90,12 +90,12 @@ ListView
 
 						onClicked: {
 							if (model.type === 3) //Folder type
-								dataLibraryListModel.changePath(model.name, model.path);
+								fileMenuModel.datalibrary.listModel.changePath(model.name, model.path);
 						}
 
 						onDoubleClicked: {
 							if (model.type !== 3) //Other then folder type
-								dataLibraryListModel.openFile(model.path)
+								fileMenuModel.datalibrary.listModel.openFile(model.path)
 						}
 
 						onEntered: m_TopButtonHovered = true;
@@ -130,7 +130,7 @@ ListView
 						anchors.fill: parent
 						hoverEnabled: true
 
-						onDoubleClicked: dataLibraryListModel.openFile(model.dirpath + model.associated_datafile)
+						onDoubleClicked: fileMenuModel.datalibrary.listModel.openFile(model.dirpath + model.associated_datafile)
 						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 
@@ -164,12 +164,12 @@ ListView
 
 					onClicked: {
 						if (model.type === 3) //Folder type
-							dataLibraryListModel.changePath(model.name, model.path);
+							fileMenuModel.datalibrary.listModel.changePath(model.name, model.path);
 					}
 
 					onDoubleClicked: {
 						if (model.type !== 3) //Other then folder type
-							dataLibraryListModel.openFile(model.path)
+							fileMenuModel.datalibrary.listModel.openFile(model.path)
 					}
 
 					onEntered: m_TopButtonHovered = true;

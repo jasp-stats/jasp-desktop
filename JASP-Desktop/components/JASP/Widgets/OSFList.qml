@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
-//import JASP.Controls 1.0
+import JASP.Controls 1.0
 
 
 ListView {
@@ -15,7 +15,7 @@ ListView {
 		
 	spacing : 10
 	
-	model: osfListModel
+	model: fileMenuModel.osf.listModel
 	
 	delegate: modelDelegate
 	
@@ -94,14 +94,14 @@ ListView {
 					listView.currentIndex = index
 					firsttimeclicked = true	
 					if (model.type === 3) //Folder type
-						osfListModel.changePath(model.name, model.path);
+						fileMenuModel.osf.listModel.changePath(model.name, model.path);
 					
 				}
 				
 				onDoubleClicked: {
 					firsttimeclicked = false
 					if (model.type !== 3) //Other then folder type
-						backstageosf.openFile(model.path)
+						fileMenuModel.osf.openFile(model.path)
 				}
 				
 				ToolTip {

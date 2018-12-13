@@ -58,3 +58,4 @@ FileMenu 1.0 FileMenu.qml
 OSFList 1.0 OSFList.qml
 OSFLogin 1.0 OSFLogin.qml
 RecentFilesList 1.0 RecentFilesList.qml
+BreadCrumbs 1.0 BreadCrumbs.qml

@@ -14,7 +14,7 @@ ListView  {
 	
 	spacing : 10
 	
-	model: recentFilesListModel
+	model: fileMenuModel.recentFiles.listModel
 	
 	delegate: modelDelegate
 	

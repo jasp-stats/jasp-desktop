@@ -37,7 +37,7 @@ Rectangle
 		anchors.left: parent.left  //Position Recent Files label
 		anchors.leftMargin: 12		
 		height: 20
-		text: backstageCurrentFile.getHeaderText()	//For shorcut key		
+		text: fileMenuModel.currentFile.getHeaderText()	//For shorcut key
 	}
 	 
 	CurrentFileList {

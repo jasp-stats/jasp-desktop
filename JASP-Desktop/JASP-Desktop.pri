@@ -230,7 +230,7 @@ HEADERS += \
     widgets/backstage/osfbreadcrumbslistmodel.h \
     resultstesting/compareresults.h \
     resultstesting/resultscomparetable.h \
-    $$PWD/widgets/backstage/filemenu.h
+    widgets/backstage/filemenu.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -412,7 +412,7 @@ SOURCES += \
     widgets/backstage/osfbreadcrumbslistmodel.cpp \
     resultstesting/compareresults.cpp \
     resultstesting/resultscomparetable.cpp \
-    $$PWD/widgets/backstage/filemenu.cpp
+    widgets/backstage/filemenu.cpp
 
 FORMS +=
 

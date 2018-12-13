@@ -11,10 +11,10 @@ Rectangle
 
     Text
     {
-        id: loadingText
-        horizontalAlignment: Text.AlignHCenter
-        text: "Load some data or a .jasp file"
-		font.pixelSize: baseFontSize * ppiScale
+		id:						loadingText
+		horizontalAlignment:	Text.AlignHCenter
+		text:					mainWindow.progressBarStatus
+		font.pixelSize:			baseFontSize * ppiScale
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -24,10 +24,10 @@ Rectangle
 
     ProgressBar
     {
-        id: loadingBar
-        minimumValue: 0
-        maximumValue: 100
-        value: 0
+		id:				loadingBar
+		minimumValue:	0
+		maximumValue:	100
+		value:			mainWindow.progressBarProgress
 
 
         anchors.left: progressBarHolder.left
@@ -35,25 +35,4 @@ Rectangle
         anchors.top: loadingText.top
         anchors.topMargin: 24
     }
-
-    function show()
-    {
-        setStatus("", 0)
-        visible = true
-        splitViewData.visible = false
-    }
-
-    function hide()
-    {
-        visible = false
-        splitViewData.visible = true
-    }
-
-    function setStatus(statusString, progress)
-    {
-        loadingText.text = statusString
-        loadingBar.value = progress
-
-    }
-
 }

@@ -63,6 +63,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
 	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
+	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged)
 
 	friend class ResultsJsInterface;
 	friend class FileMenu;
@@ -80,27 +81,32 @@ public:
 
 	QString runButtonText() const
 	{
-		return m_runButtonText;
+		return _runButtonText;
 	}
 
 	bool runButtonEnabled() const
 	{
-		return m_runButtonEnabled;
+		return _runButtonEnabled;
 	}
 
 	bool progressBarVisible() const
 	{
-		return m_progressBarVisible;
+		return _progressBarVisible;
 	}
 
 	int progressBarProgress() const
 	{
-		return m_progressBarProgress;
+		return _progressBarProgress;
 	}
 
 	QString progressBarStatus() const
 	{
-		return m_progressBarStatus;
+		return _progressBarStatus;
+	}
+
+	bool dataPanelVisible() const
+	{
+		return _dataPanelVisible;
 	}
 
 public slots:
@@ -116,47 +122,56 @@ public slots:
 
 	void setRunButtonText(QString runButtonText)
 	{
-		if (m_runButtonText == runButtonText)
+		if (_runButtonText == runButtonText)
 			return;
 
-		m_runButtonText = runButtonText;
-		emit runButtonTextChanged(m_runButtonText);
+		_runButtonText = runButtonText;
+		emit runButtonTextChanged(_runButtonText);
 	}
 
 	void setRunButtonEnabled(bool runButtonEnabled)
 	{
-		if (m_runButtonEnabled == runButtonEnabled)
+		if (_runButtonEnabled == runButtonEnabled)
 			return;
 
-		m_runButtonEnabled = runButtonEnabled;
-		emit runButtonEnabledChanged(m_runButtonEnabled);
+		_runButtonEnabled = runButtonEnabled;
+		emit runButtonEnabledChanged(_runButtonEnabled);
 	}
 
 	void setProgressBarVisible(bool progressBarVisible)
 	{
-		if (m_progressBarVisible == progressBarVisible)
+		if (_progressBarVisible == progressBarVisible)
 			return;
 
-		m_progressBarVisible = progressBarVisible;
-		emit progressBarVisibleChanged(m_progressBarVisible);
+		_progressBarVisible = progressBarVisible;
+		emit progressBarVisibleChanged(_progressBarVisible);
 	}
 
 	void setProgressBarProgress(int progressBarProgress)
 	{
-		if (m_progressBarProgress == progressBarProgress)
+		if (_progressBarProgress == progressBarProgress)
 			return;
 
-		m_progressBarProgress = progressBarProgress;
-		emit progressBarProgressChanged(m_progressBarProgress);
+		_progressBarProgress = progressBarProgress;
+		emit progressBarProgressChanged(_progressBarProgress);
 	}
 
 	void setProgressBarStatus(QString progressBarStatus)
 	{
-		if (m_progressBarStatus == progressBarStatus)
+		if (_progressBarStatus == progressBarStatus)
 			return;
 
-		m_progressBarStatus = progressBarStatus;
-		emit progressBarStatusChanged(m_progressBarStatus);
+		_progressBarStatus = progressBarStatus;
+		emit progressBarStatusChanged(_progressBarStatus);
+	}
+
+	void setDataPanelVisible(bool dataPanelVisible)
+	{
+		if (_dataPanelVisible == dataPanelVisible)
+			return;
+
+		_dataPanelVisible = dataPanelVisible;
+		emit dataPanelVisibleChanged(_dataPanelVisible);
 	}
 
 private:
@@ -232,12 +247,11 @@ signals:
 
 	void progressBarStatusChanged(QString progressBarStatus);
 
+	void dataPanelVisibleChanged(bool dataPanelVisible);
+
 private slots:
 	void showForm(Analysis *analysis);
 	void showQMLWindow(QString urlQml);
-
-	void showBackstage();
-	void showMainPage();
 
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
@@ -247,7 +261,6 @@ private slots:
 	void refreshAnalysesUsingColumn(QString col);
 	void updateShownVariablesModel();
 
-	void tabChanged(int index);
 	void helpToggled(bool on);
 
 	void dataSetIORequestHandler(FileEvent *event);
@@ -313,7 +326,6 @@ private:
 	FilterModel						*_filterModel			= nullptr;	
 	OnlineDataManager				*_odm					= nullptr;
 	DynamicModules					*_dynamicModules		= nullptr;
-//	CustomWebEnginePage				*_customPage			= nullptr;
 	RibbonModel						*_ribbonModel			= nullptr;
 	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
 	QObject							*qmlProgressBar			= nullptr;
@@ -325,13 +337,15 @@ private:
 	TableModelVariablesAvailable	_availableVariablesModel;
 
 	int								_scrollbarWidth = 0,
-									_tableViewWidthBeforeOptionsMadeVisible;
-
+									_tableViewWidthBeforeOptionsMadeVisible,
+									_progressBarProgress;
 
 	QString							_lastRequestedHelpPage,
 									_openOnLoadFilename,
 									_fatalError,
-									_currentFilePath;
+									_currentFilePath,
+									_runButtonText,
+									_progressBarStatus;
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
@@ -340,15 +354,13 @@ private:
 									_applicationExiting		= false,
 									_resultsViewLoaded		= false,
 									_openedUsingArgs		= false,
-									_excludeKey				= false;
+									_excludeKey				= false,
+									_runButtonEnabled		= false,
+									_progressBarVisible		= false,
+									_dataPanelVisible		= false;
+
 	FileMenu						*_fileMenu;
 
-
-	QString m_runButtonText;
-	bool m_runButtonEnabled;
-	bool m_progressBarVisible;
-	int m_progressBarProgress;
-	QString m_progressBarStatus;
 };
 
 #endif // MAINWIDGET_H
