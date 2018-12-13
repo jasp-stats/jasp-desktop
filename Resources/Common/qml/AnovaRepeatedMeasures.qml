@@ -92,7 +92,7 @@ Form {
         }
 
         ComboBox { name: "sumOfSquares"
-            currentIndex: 0
+            currentIndex: 2
             label.text: qsTr("Sum of squares")
             model: ListModel {
                 ListElement {key: "Type \u2160"; value: "type1"}

@@ -55,6 +55,28 @@ using namespace std;
 
 int AnalysisForm::_scriptRequestCounter = 0;
 
+QString AnalysisForm::iconPath = "qrc:/icons/";
+QMap<QString, QVariant> AnalysisForm::iconFiles {
+	{ "nominalText"	, iconPath + "variable-nominal-text.svg" },
+	{ "nominal"		, iconPath + "variable-nominal.svg"},
+	{ "ordinal"		, iconPath + "variable-ordinal.svg"},
+	{ "scale"		, iconPath + "variable-scale.svg"}
+};
+
+QMap<QString, QVariant> AnalysisForm::iconInactiveFiles {
+	{ "nominalText"	, iconPath + "variable-nominal-inactive.svg" },
+	{ "nominal"		, iconPath + "variable-nominal-inactive.svg"},
+	{ "ordinal"		, iconPath + "variable-ordinal-inactive.svg"},
+	{ "scale"		, iconPath + "variable-scale-inactive.svg"}
+};
+
+QMap<int, QString> AnalysisForm::columnTypeMap {
+	{ Column::ColumnTypeNominalText	, "nominalText" },
+	{ Column::ColumnTypeNominal		, "nominal"},
+	{ Column::ColumnTypeOrdinal		, "ordinal"},
+	{ Column::ColumnTypeScale		, "scale"}
+};
+
 AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _availableVariablesModel(this), _analysis(analysis), _errorMessagesItem(nullptr)
 {
 	setObjectName("AnalysisForm");
@@ -342,8 +364,6 @@ void AnalysisForm::_parseQML()
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
 				listView = availableVariablesListView;
 				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-				_availableVariablesModels.push_back(availableModel);
-
 				if (availableVariablesListView->syncModelsList().isEmpty()) // If there is no syncModels, set all available variables.
 					_allAvailableVariablesModels.push_back(availableModel);
 				break;
@@ -429,17 +449,15 @@ void AnalysisForm::_setUpItems()
 			index++;
 		}
 	}
-	std::sort(controls.begin(), controls.end(),
-			  [](QMLItem* a, QMLItem* b) {
-					return a->depends().length() > b->depends().length();
+	std::sort(controls.begin(), controls.end(), 
+			  [](QMLItem* a, QMLItem* b) { 
+					return a->depends().length() < b->depends().length(); 
 			});
 
 	for (QMLItem* control : controls)
 	{
-		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(control);
-		if (boundItem)
-			_boundItemsOrdered.push_back(boundItem);
-	}
+		_orderedControls.push_back(control);
+	}	
 }
 
 void AnalysisForm::_setErrorMessages()
@@ -485,26 +503,31 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 	_options = options;
 
 	_options->blockSignals(true);
-
-	_setAllAvailableVariablesModel();
-
-	for (BoundQMLItem* item : _boundItemsOrdered)
+	
+	_setAllAvailableVariablesModel();	
+	
+	for (QMLItem* control : _orderedControls)
 	{
-		string name = item->name().toStdString();
-		Option* option = options->get(name);
-		if (!option)
+		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+		if (boundControl)
 		{
-			option = item->createOption();
-			options->add(name, option);
+			std::string name = boundControl->name().toStdString();
+			Option* option = options->get(name);
+			if (!option)
+			{
+				option = boundControl->createOption();
+				options->add(name, option);
+			}
+			boundControl->bindTo(option);
+			boundControl->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}
-		item->bindTo(option);
-		item->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
-	}
-
-	for (ListModelTermsAvailable* availableModel : _availableVariablesModels)
-	{
-		// The availableModel are not bound, but they have to be updated when the form is initialized.
-		availableModel->resetTermsFromSyncModels();
+		else
+		{
+			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
+			// The availableListControl are not bound, but they have to be updated when the form is initialized.
+			if (availableListControl)
+				availableListControl->availableModel()->resetTermsFromSyncModels();
+		}
 	}
 
 	_options->blockSignals(false);
@@ -519,9 +542,13 @@ void AnalysisForm::unbind()
 
 	if (_options == nullptr)
 		return;
-
-	for (BoundQMLItem* item : _boundItemsOrdered)
-		item->unbind();
+	
+	for (QMLItem* control : _orderedControls)
+	{
+		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+		if (boundControl)
+			boundControl->unbind();
+	}
 
 	_options = nullptr;
 }
@@ -554,9 +581,7 @@ void AnalysisForm::QMLFileModifiedHandler(QString path)
 {
 	qDebug() << "Test QML file modified";
 /*	_controls.clear();
-	_boundItemsOrdered.clear();
 	_relatedModelMap.clear();
-	_availableVariablesModels.clear();
 	_modelMap.clear();
 	_allAvailableVariablesModels.clear();
 	_errorMessagesItem = nullptr;

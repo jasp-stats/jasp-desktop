@@ -64,6 +64,10 @@ const Terms& BoundQMLListViewMeasuresCells::getLevels()
 Option* BoundQMLListViewMeasuresCells::createOption()
 {
 	OptionVariables *result = new OptionVariables();
+	vector<string> values;
+	for (size_t i = 0; i < getLevels().size(); i++)
+		values.push_back("");
+	result->setValue(values);
 	
 	return result;
 }

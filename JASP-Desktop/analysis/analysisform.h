@@ -86,6 +86,12 @@ public:
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
+	
+	static		QString					iconPath;
+	static		QMap<QString, QVariant>	iconFiles;
+	static		QMap<QString, QVariant>	iconInactiveFiles;
+	static		QMap<int, QString>		columnTypeMap;
+	
 
 protected:
 	void		_setAllAvailableVariablesModel();
@@ -104,9 +110,8 @@ private slots:
 protected:
 	Analysis								*_analysis;
 	QMap<QString, QMLItem* >				_controls;
-	QVector<BoundQMLItem*>					_boundItemsOrdered;
+	QVector<QMLItem*>						_orderedControls;	
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
-	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
 	std::map<QString, ListModel* >			_modelMap;
 
 

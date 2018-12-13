@@ -30,7 +30,8 @@ Q_OBJECT
 public:
 	QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form);
 	
-	virtual ListModel* model() OVERRIDE	{ return _availableModel; }
+	virtual ListModel*			model() OVERRIDE	{ return _availableModel; }
+	ListModelTermsAvailable*	availableModel()	{ return _availableModel; }
 	virtual void setTermsAreNotVariables() OVERRIDE;
 
 	void addAssignedModel(ListModelAssignedInterface* model);
