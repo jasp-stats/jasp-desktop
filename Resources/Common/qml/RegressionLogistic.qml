@@ -40,6 +40,7 @@ Form {
         AssignedVariablesList {
             name: "factors"
             title: qsTr("Factors")
+            itemType: "fixedFactors"
             allowedColumns: ["nominal", "ordinal"]
         }
         AssignedVariablesList {
