@@ -20,7 +20,7 @@
 #define MAINWIDGET_H
 
 #include <QSettings>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 
 #include "dataset.h"
@@ -61,7 +61,7 @@ class MainWindow : public QObject
 
 	friend class FileMenu;
 public:
-	explicit MainWindow(QGuiApplication *application);
+	explicit MainWindow(QApplication *application);
 	void open(QString filepath);
 	void testLoadedJaspFile(int timeOut, bool save);
 
@@ -163,9 +163,9 @@ signals:
 	void progressBarProgressChanged(int progressBarProgress);
 	void progressBarStatusChanged(QString progressBarStatus);
 	void dataPanelVisibleChanged(bool dataPanelVisible);
-
-
 	void windowTitleChanged(QString windowTitle);
+
+	void showWarning(QString title, QString message);
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -250,7 +250,7 @@ private:
 	RibbonModel						*_ribbonModel			= nullptr;
 	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
 	QObject							*qmlProgressBar			= nullptr;
-	QGuiApplication					*_application 			= nullptr;
+	QApplication					*_application 			= nullptr;
 
 	QSettings						_settings;
 

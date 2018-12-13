@@ -56,10 +56,11 @@
 #include "timers.h"
 #include "resultstesting/compareresults.h"
 #include "widgets/backstage/filemenu.h"
+#include "gui/messageforwarder.h"
 
 using namespace std;
 
-MainWindow::MainWindow(QGuiApplication * application) : QObject(application), _application(application)
+MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
 {
 	JASPTIMER_START(MainWindowConstructor);
 
@@ -80,7 +81,7 @@ MainWindow::MainWindow(QGuiApplication * application) : QObject(application), _a
 	_ribbonModel			= new RibbonModel(this);
 	_fileMenu				= new FileMenu(this);
 
-
+	new MessageForwarder(this); //We do not need to store this
 
 	StartOnlineDataManager();
 
@@ -1155,12 +1156,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->reset();
 			setDataSetAndPackageInModels(nullptr);
 
-			std::cout << "Oughta show warning that I was unable to open a file" << std::endl;
+			if (_openedUsingArgs)	_application->exit(1);
+			else					MessageForwarder::showWarning("Unable to open file.\n\n" + event->message());
 
-			/*QMessageBox::warning(this, "", "Unable to open file.\n\n" + event->message()); */
-
-			if (_openedUsingArgs)
-				std::cout << "I SHOULD CLOSE NOW BUT WONT" << std::endl;
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -1225,7 +1223,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setWindowTitle("JASP");
 
 			if (_applicationExiting)
-				QGuiApplication::exit();
+				QApplication::exit();
 			else
 				std::cout << " IM not hiding: ui->panel_1_Data->hide();" << std::endl;
 
@@ -1245,18 +1243,20 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 void MainWindow::populateUIfromDataSet()
 {
+	MessageForwarder::showWarning("Nothing WRONG", "populateUIfromDataSet!");
 	setDataSetAndPackageInModels(_package);
 
 	if(_package->dataSet()->rowCount() == 0)
-		std::cout << " im not doing:ui->panel_1_Data->hide(); //for summary stats etc we dont want to see an empty data panel " <<std::endl;
+		setDataPanelVisible(false);
 	else
 	{
 		_filterModel->setDataSetPackage(_package);
 		_filterModel->init();
+		setDataPanelVisible(true);
 	}
 
 	hideProgress();
-	setDataPanelVisible(true);
+
 
 	bool errorFound = false;
 	stringstream errorMsg;
@@ -1317,8 +1317,8 @@ void MainWindow::populateUIfromDataSet()
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 	}
 
-	if (_package->warningMessage() != "")	std::cout << "should show warningbox with: " << _package->warningMessage() << std::endl; //QMessageBox::warning(this, "", tq(_package->warningMessage()));
-	else if (errorFound)					std::cout << "should show warningbox with: " << errorMsg.str() << std::endl; //QMessageBox::warning(this, "", tq(errorMsg.str()));
+	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
+	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
 
 	matchComputedColumnsToAnalyses();
 
@@ -1401,7 +1401,7 @@ void MainWindow::fatalError()
 		std::cerr << "Should show a message box with a FATAL error saying:\n" <<
 		//QMessageBox::warning(this, "Error",
 							 "JASP has experienced an unexpected internal error.\n\n\"" << _fatalError.toStdString() << "\"\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n" << std::endl;
-		QGuiApplication::exit(1);
+		QApplication::exit(1);
 	}
 }
 
@@ -1808,19 +1808,12 @@ void MainWindow::startDataEditor(QString path)
 		startProcess = "\"" + appname + "\" \"" + path + "\"";
 #endif
 		if (!QProcess::startDetached(startProcess))
-		{
-			//QMessageBox::warning(this,QString("Start Editor"), QString("Unable to start the editor : ") + appname + QString(". Please check your editor settings in the preference menu."), QMessageBox::Ok);
-			std::cout << "Had a problem with startDataEditor, editor didnt start" << std::endl;
-		}
+			MessageForwarder::showWarning("Start Editor", "Unable to start the editor : " + appname + ". Please check your editor settings in the preference menu.");
 	}
 	else
-	{
 		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
-		{
-			//QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
-			std::cout << "Had a problem with startDataEditor, no default" << std::endl;
-		}
-	}
+			MessageForwarder::showWarning("Start Spreadsheet Editor", "No default spreadsheet editor for file " + fileInfo.completeBaseName() + ". Use Preferences to set the right editor.");
+
 }
 
 void MainWindow::showProgress()

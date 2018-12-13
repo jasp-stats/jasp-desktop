@@ -24,6 +24,7 @@
 
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
+#include "gui/messageforwarder.h"
 
 BackstageOSF::BackstageOSF(QObject *parent): BackstagePage(parent)
 {				
@@ -202,12 +203,9 @@ void BackstageOSF::saveClicked()
 
 	if (currentNodeData.canCreateFiles == false)
 	{
-		if (currentNodeData.level == 0)
-			std::cerr << " QMessageBox::warning(this, \"Projects\", \"Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services."<< std::endl;
-		else if (currentNodeData.level == 1)
-			std::cerr << " QMessageBox::warning(this, \"Data Providers\", \"Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services."<< std::endl;
-		else
-			std::cerr << " QMessageBox::warning(this, currentNodeData.name, \"Files cannot be added to '" << currentNodeData.name.toStdString() << "' for an unknown reason."<< std::endl;
+		if (currentNodeData.level == 0)			MessageForwarder::showWarning("Projects",			"Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+		else if (currentNodeData.level == 1)	MessageForwarder::showWarning("Data Providers",		"Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+		else									MessageForwarder::showWarning(currentNodeData.name, "Files cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
 		return;
 	}
 
@@ -244,7 +242,7 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 	}
 	else
 	{
-		std::cerr << "QMessageBox::warning(this, \"File Types\" " <<  event->getLastError().toStdString() << std::endl;
+		MessageForwarder::showWarning("File Types", event->getLastError());
 		event->setComplete(false, "Failed to open file from OSF");
 		return;
 	}
@@ -297,8 +295,7 @@ void BackstageOSF::newFolderCreated()
 {
 	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
 
-	if (node->error())
-		std::cerr << "QMessageBox::warning(this,\"\", \"An error occured and the folder could not be created.\")" << std::endl;
+	if (node->error())	MessageForwarder::showWarning("", "An error occured and the folder could not be created.");
 	else
 		_model->refresh();
 	
@@ -311,12 +308,10 @@ void BackstageOSF::newFolderClicked()
 
 	if (currentNodeData.canCreateFolders == false)
 	{
-		if (currentNodeData.level == 0)
-			std::cerr << "QMessageBox::warning(this, \"Projects\", \"A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services." << std::endl;
-		else if (currentNodeData.level == 1)
-			std::cerr << "QMessageBox::warning(this, \"Data Providers\", \"A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services." << std::endl;
-		else
-			std::cerr << "QMessageBox::warning(this, currentNodeData.name, \"A new folder cannot be added to '" << currentNodeData.name.toStdString() << "' for an unknown reason." << std::endl;
+		if (currentNodeData.level == 0)			MessageForwarder::showWarning("Projects",			"A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+		else if (currentNodeData.level == 1)	MessageForwarder::showWarning("Data Providers",		"A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+		else									MessageForwarder::showWarning(currentNodeData.name, "A new folder cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+
 		return;
 	}
 
@@ -417,7 +412,7 @@ void BackstageOSF::loginRequested(const QString &username, const QString &passwo
 {
 	if  (password == "" || username =="" )
 	{
-		std::cerr << "QMessageBox::warning(this, \"Login\", \" User or password cannot be empty. \");" << std::endl;
+		MessageForwarder::showWarning("Login", "User or password cannot be empty.");
 		return;
 	}
 	
@@ -452,7 +447,7 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 {
 	if (name.trimmed() == "")
 	{
-		std::cerr << "QMessageBox::warning(this, \"\", \"Entry name cannot be empty.\");" << std::endl;
+		MessageForwarder::showWarning("Entry name cannot be empty.");
 		return false;
 	}
 	else
@@ -460,7 +455,7 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 		QRegularExpression r("[^\\w\\s" + (QString)(allowFullStop ? "\\.-" : "-") + "]");
 		if (r.match(name).hasMatch())
 		{
-			std::cerr << "QMessageBox::warning(this, \"\", entryTitle + \" name can only contain the following characters A-Z a-z 0-9 _ \" + (allowFullStop ? \". -\" : \"-\"));" << std::endl;
+			MessageForwarder::showWarning(entryTitle + " name can only contain the following characters A-Z a-z 0-9 _ " + (allowFullStop ? ". -" : "-"));
 			return false;
 		}
 	}

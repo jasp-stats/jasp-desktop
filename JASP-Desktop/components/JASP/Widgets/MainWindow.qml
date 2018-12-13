@@ -5,6 +5,7 @@ import JASP.Widgets 1.0
 
 Window
 {
+	id:			mainWindowRoot
 	title:		mainWindow.windowTitle
 	visible:	true
 	width:		1800
@@ -63,6 +64,8 @@ Window
 				right:	parent.right
 				bottom:	parent.bottom
 			}
+
+			onClicked: msgBox.showWarning("PLUS", "I am a horrible warning!")
 		}
 	}
 
@@ -92,5 +95,18 @@ Window
 			right:	parent.right
 			bottom:	parent.bottom
 		}
+	}
+
+	MessageBox
+	{
+		id:	msgBox
+
+
+		Connections
+		{
+			target:			mainWindow
+			onShowWarning:	msgBox.showWarning(title, message)
+		}
+
 	}
 }

@@ -24,11 +24,11 @@
 #include <iostream>
 
 Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save) :
-	QGuiApplication(argc, argv)
+	QApplication(argc, argv)
 {
 	_mainWindow = new MainWindow(this);
 
-	QStringList args = QGuiApplication::arguments();
+	QStringList args = QApplication::arguments();
 
 	if(unitTest)
 		_mainWindow->testLoadedJaspFile(timeOut, save);
@@ -52,7 +52,7 @@ bool Application::notify(QObject *receiver, QEvent *event)
 {
 	try
 	{
-		return QGuiApplication::notify(receiver, event);
+		return QApplication::notify(receiver, event);
 	}
 	catch (std::exception &e)
 	{
@@ -75,6 +75,6 @@ bool Application::event(QEvent *event)
 	}
 	else
 	{
-		return QGuiApplication::event(event);
+		return QApplication::event(event);
 	}
 }

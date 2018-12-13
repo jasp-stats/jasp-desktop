@@ -29,9 +29,10 @@
 #include <functional>
 #include "timers.h"
 #include "utilities/settings.h"
-#include <QApplication>
 #include <QMimeData>
 #include <QAction>
+#include "gui/messageforwarder.h"
+#include <QApplication>
 
 ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
@@ -428,7 +429,7 @@ void ResultsJsInterface::pushImageToClipboard(const QByteArray &base64, const QS
 
 void ResultsJsInterface::displayMessageFromResults(QString msg)
 {
-	std::cout << "QMessageBox::warning(_mainWindow, \"Results Warning\", msg);" << std::endl;
+	MessageForwarder::showWarning("Results Warning", msg);
 }
 
 void ResultsJsInterface::showAnalysis(int id)

@@ -19,11 +19,11 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <QGuiApplication>
+#include <QApplication>
 #include "mainwindow.h"
 #include "common.h"
 
-class Application : public QGuiApplication
+class Application : public QApplication
 {
 	Q_OBJECT
 public:

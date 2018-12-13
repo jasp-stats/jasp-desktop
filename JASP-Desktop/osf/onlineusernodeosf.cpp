@@ -8,7 +8,7 @@
 #include <QByteArray>
 #include <QEventLoop>
 #include <stdexcept>
-#include <QMessageBox>
+#include <gui/messageforwarder.h>
 
 
 using namespace std;
@@ -83,7 +83,7 @@ bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
 
 	QNetworkReply::NetworkError error = reply->error();
 	if (error != QNetworkReply::NoError && error != QNetworkReply::AuthenticationRequiredError) //Authorisation message will be shown later on
-		QMessageBox::warning(NULL, "OSF Warning", reply->errorString());
+		MessageForwarder::showWarning("OSF Warning", reply->errorString());
 
 	delete reply;
 

@@ -13,6 +13,7 @@
 #include "options/variableinfo.h"
 #include "analysisqmldefines.h"
 #include "widgets/listmodeltermsavailable.h"
+#include "gui/messageforwarder.h"
 
 class ListModelTermsAssigned;
 class BoundQMLItem;
@@ -36,7 +37,7 @@ public:
 	DataSet*	getDataSet()							{ return _dataSet; }
 
 public slots:
-	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{  std::cerr << "Should be in aa messagebox of some king: QMessageBox::warning(this, \"Error\", \"Error when painting analysis form: " << message.toStdString() << std::endl; }
+	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{  MessageForwarder::showWarning("Error", "Error when painting analysis form: " + message); }
 	void		statusChangedWidgetHandler(QQuickWidget::Status status);
 
 protected:

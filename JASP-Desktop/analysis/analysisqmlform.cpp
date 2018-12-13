@@ -23,6 +23,7 @@
 #include <QDebug>
 
 #include <QQuickWidget>
+#include <QMessageBox>
 
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
@@ -43,6 +44,8 @@
 #include "utils.h"
 #include "dirs.h"
 #include "utilities/settings.h"
+#include "gui/messageforwarder.h"
+
 
 using namespace std;
 
@@ -426,7 +429,8 @@ void AnalysisQMLForm::statusChangedWidgetHandler(QQuickWidget::Status status)
 				message += '\n';
 			message += error.toString();
 		}
-		std::cerr << "QMessageBox::warning(this, \"Error\", \"Error when loading analysis form: \n" << message.toStdString() << ");";
+
+		MessageForwarder::showWarning("Error", "Error when loading analysis form: \n" + message);
 	}
 }
 

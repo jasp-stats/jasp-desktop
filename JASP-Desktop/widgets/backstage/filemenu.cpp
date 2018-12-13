@@ -20,6 +20,7 @@
 
 #include <QFileInfo>
 #include "utilities/settings.h"
+#include "gui/messageforwarder.h"
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {
@@ -176,7 +177,7 @@ FileEvent *FileMenu::save()
 		event = new FileEvent(this, FileEvent::FileSave);
 		if (!event->setPath(_currentFilePath))
 		{
-			std::cerr << "no QMessageBox available in QML : QMessageBox::warning(_mainWindow, \"File Types\", event->getLastError());" << std::endl;
+			MessageForwarder::showWarning("File Types", event->getLastError());
 			event->setComplete(false, "Failed to open file from OSF");
 			return event;
 		}
