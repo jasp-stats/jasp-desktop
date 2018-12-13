@@ -18,6 +18,7 @@
 
 # QT files
 *.pro.user
+*.pro.user.*
 
 # Annoying OSX files
 *.DS_Store
@@ -39,7 +40,7 @@ Tools/includeFiles*.nsi
 JASP.pro.user.b601785
 .Rproj.user
 
-#Extracted testfiles 
+#Extracted testfiles
 Resources/TestFiles
 
 *.autosave

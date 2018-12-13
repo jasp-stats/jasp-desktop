@@ -18,22 +18,19 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtQuick.Controls.Material 2.1
 import QtGraphicalEffects 1.0
 
 
 Rectangle {
-    id                            : button
+    id                            : ribbonButton
     width                         : (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + 20 // + 2*tbutton.width
     height                        : 60  // backgroundImage.height + innerText.height
     radius                        : 5
+    color                         : "#FFFFFF"
             property alias text   : innerText.text
             property alias source : backgroundImage.source
             property alias enabled: mice.enabled
     default property var   menu
-
-    Material.elevation           : 10  // FIXME
-    color                        : "#FFFFFF"
 
     signal clicked
 
@@ -61,21 +58,28 @@ Rectangle {
         anchors.bottom          : parent.bottom
         anchors.topMargin       : 5
 
-		color:		mice.enabled ? "black" : "lightgrey"
-		font.bold:	false
+        color    : mice.enabled ? "black" : "lightgrey"
+        font.bold: false
     }
 
     MouseArea {
-		id:				mice
-		anchors.fill:	parent
-		hoverEnabled:	true
-		onClicked:		jaspRibbon.dispatchButtonClickSignal(button.menu)
-		onPressed:		button.color = Qt.tint("grey", "#EEEEEE")
-		onReleased:		button.color = "transparent"
-		onEntered:		button.border.color = Qt.tint("grey", "#10FF0000")
-        onExited: {
-						button.border.color = "transparent";
-						button.color = "#FFFFFF";
+        id          : mice
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton
+        onClicked   : {
+            clusterMenu.popup()
+        }
+        onPressed   : ribbonButton.color = Qt.tint("grey", "#EEEEEE")
+        onReleased  : ribbonButton.color = "transparent"
+        onEntered   : ribbonButton.border.color = Qt.tint("grey", "#10FF0000")
+        onExited    : {
+            ribbonButton.border.color = "transparent";
+            ribbonButton.color        = "#FFFFFF";
+        }
+
+        ClusterMenu {
+            id: clusterMenu
         }
     }
 }

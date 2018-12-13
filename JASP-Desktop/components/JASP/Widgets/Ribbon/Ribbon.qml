@@ -18,7 +18,6 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtQuick.Controls.Material 2.1
 
 Rectangle {
 	id        : jaspRibbon
@@ -33,10 +32,10 @@ Rectangle {
 	}
 
 	Row {
-		id          : ribbonRow
-		objectName  : "ribbonRow"
-		padding     : 10
-		spacing     : 10
+		id        : ribbonRow
+		objectName: "ribbonRow"
+		padding   : 10
+		spacing   : 10
 
 		Repeater {
 			id      : tabs
@@ -59,11 +58,10 @@ Rectangle {
 					id: toolSeparator
 
 					ToolSeparator {
-						height  : jaspRibbon.height
+						height: jaspRibbon.height
 					}
 				}
 			}
 		}
 	}
 }
-
