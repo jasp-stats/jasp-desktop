@@ -48,7 +48,7 @@
 #include "utilities/settings.h"
 
 #include "analysis/options/optionvariablesgroups.h"
-#include "QML/datasetview.h"
+#include "qquick/datasetview.h"
 #include "modules/dynamicmodules.h"
 #include "modules/ribbonentry.h"
 #include "modules/analysismenumodel.h"

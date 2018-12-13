@@ -21,7 +21,6 @@
 
 #include <QGuiApplication>
 #include "mainwindow.h"
-
 #include "common.h"
 
 class Application : public QGuiApplication

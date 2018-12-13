@@ -16,11 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "mainwindow.h"
-#include <QApplication>
-#include <QDialog>
-#include <QGridLayout>
-#include <QLayout>
 #include <QDebug>
 #include <QDir>
 

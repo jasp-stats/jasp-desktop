@@ -148,14 +148,6 @@ void BackstageComputer::clearFileName()
 	_hasFileName = false;
 }
 
-/*
-bool BackstageComputer::eventFilter(QObject *object, QEvent *event)
-{
-	if (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
-		_computerListModel->refresh();
-
-	return QWidget::eventFilter(object, event);
-}*/
 
 //Slots
 void BackstageComputer::browsePath(QString path)

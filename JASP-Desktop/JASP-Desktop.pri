@@ -129,7 +129,7 @@ HEADERS += \
     engine/rscriptstore.h \
     gui/aboutdialog.h \
     gui/aboutdialogjsinterface.h \
-    QML/datasetview.h \
+    qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
     modules/dynamicmodules.h \
@@ -316,7 +316,7 @@ SOURCES += \
     engine/enginesync.cpp \
     gui/aboutdialog.cpp \
     gui/aboutdialogjsinterface.cpp \
-    QML/datasetview.cpp \
+    qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
     modules/dynamicmodules.cpp \
@@ -414,9 +414,6 @@ SOURCES += \
     resultstesting/resultscomparetable.cpp \
     widgets/backstage/filemenu.cpp
 
-FORMS +=
-
-
 RESOURCES += \
     html/html.qrc \
     resources/icons.qrc \
@@ -426,137 +423,4 @@ RESOURCES += \
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
 
-DISTFILES += \
-    widgets/backstage/firsttabsstylesheet.qss \
-    widgets/backstage/secondtabsstylesheet.qss \
-    JASPControls/AssignButton.qml \
-    JASPControls/AssignedVariablesList.qml \
-    JASPControls/Button.qml \
-    JASPControls/ButtonGroup.qml \
-    JASPControls/CheckBox.qml \
-    JASPControls/ComboBox.qml \
-    JASPControls/ExpanderButton.qml \
-    JASPControls/Form.qml \
-    JASPControls/GridLayout.qml \
-    JASPControls/GroupBox.qml \
-    JASPControls/JASPControl.qml \
-    JASPControls/JASPDataView.qml \
-    JASPControls/Label.qml \
-    JASPControls/PercentField.qml \
-    JASPControls/RadioButton.qml \
-    JASPControls/Switch.qml \
-    JASPControls/TableView.qml \
-    JASPControls/TextField.qml \
-    JASPControls/VariablesForm.qml \
-    JASPControls/VariablesList.qml \
-    JASPControls/AssignButton.qml \
-    JASPControls/AssignedVariablesList.qml \
-    JASPControls/Button.qml \
-    JASPControls/ButtonGroup.qml \
-    JASPControls/CheckBox.qml \
-    JASPControls/ComboBox.qml \
-    JASPControls/ExpanderButton.qml \
-    JASPControls/Form.qml \
-    JASPControls/GridLayout.qml \
-    JASPControls/GroupBox.qml \
-    JASPControls/JASPControl.qml \
-    JASPControls/JASPDataView.qml \
-    JASPControls/Label.qml \
-    JASPControls/PercentField.qml \
-    JASPControls/RadioButton.qml \
-    JASPControls/Switch.qml \
-    JASPControls/TableView.qml \
-    JASPControls/TextField.qml \
-    JASPControls/VariablesForm.qml \
-    JASPControls/VariablesList.qml \
-    QMLTheme/Theme/JASPTheme.qml \
-    components/JASP/Widgets/FilterConstructor/ColumnDrag.qml \
-    components/JASP/Widgets/FilterConstructor/ColumnsSelector.qml \
-    components/JASP/Widgets/FilterConstructor/ComputedColumnsConstructor.qml \
-    components/JASP/Widgets/FilterConstructor/DragGeneric.qml \
-    components/JASP/Widgets/FilterConstructor/DropSpot.qml \
-    components/JASP/Widgets/FilterConstructor/DropTrash.qml \
-    components/JASP/Widgets/FilterConstructor/ElementView.qml \
-    components/JASP/Widgets/FilterConstructor/FilterConstructor.qml \
-    components/JASP/Widgets/FilterConstructor/Function.qml \
-    components/JASP/Widgets/FilterConstructor/FunctionDrag.qml \
-    components/JASP/Widgets/FilterConstructor/JASPColumn.qml \
-    components/JASP/Widgets/FilterConstructor/JSONtoFormulas.qml \
-    components/JASP/Widgets/FilterConstructor/Number.qml \
-    components/JASP/Widgets/FilterConstructor/NumberDrag.qml \
-    components/JASP/Widgets/FilterConstructor/Operator.qml \
-    components/JASP/Widgets/FilterConstructor/OperatorDrag.qml \
-    components/JASP/Widgets/FilterConstructor/OperatorSelector.qml \
-    components/JASP/Widgets/FilterConstructor/OperatorSelectorComputedColumns.qml \
-    components/JASP/Widgets/FilterConstructor/OperatorVertical.qml \
-    components/JASP/Widgets/FilterConstructor/OperatorVerticalDrag.qml \
-    components/JASP/Widgets/FilterConstructor/String.qml \
-    components/JASP/Widgets/FilterConstructor/StringDrag.qml \
-    components/JASP/Widgets/FilterConstructor/VariablesList.qml \
-    components/JASP/Widgets/qmldir \
-    components/JASP/Widgets/BasicTableViewJasp.qml \
-    components/JASP/Widgets/BayesFactorType.qml \
-    components/JASP/Widgets/Chi2TestTableView.qml \
-    components/JASP/Widgets/ComputeColumnWindow.qml \
-    components/JASP/Widgets/ContrastsList.qml \
-    components/JASP/Widgets/CreateComputeColumnDialog.qml \
-    components/JASP/Widgets/DataTableView.qml \
-    components/JASP/Widgets/Divider.qml \
-    components/JASP/Widgets/FilterButton.qml \
-    components/JASP/Widgets/FilterWindow.qml \
-    components/JASP/Widgets/JASPDataView.qml \
-    components/JASP/Widgets/JASPMouseAreaToolTipped.qml \
-    components/JASP/Widgets/ModuleInstaller.qml \
-    components/JASP/Widgets/ProgressBarHolder.qml \
-    components/JASP/Widgets/SubjectivePriors.qml \
-    components/JASP/Widgets/TableViewJasp.qml \
-    components/JASP/Widgets/TableViewStyleJasp.qml \
-    components/JASP/Widgets/VariablesWindow.qml \
-    components/JASP/Widgets/Ribbon/Ribbon.qml \
-    components/JASP/Widgets/Ribbon/RibbonButton.qml \
-    components/JASP/Controls/qmldir \
-    components/JASP/Controls/AssignButton.qml \
-    components/JASP/Controls/AssignedVariablesList.qml \
-    components/JASP/Controls/Button.qml \
-    components/JASP/Controls/ButtonGroup.qml \
-    components/JASP/Controls/CheckBox.qml \
-    components/JASP/Controls/ComboBox.qml \
-    components/JASP/Controls/ExpanderButton.qml \
-    components/JASP/Controls/ExtraControlColumn.qml \
-    components/JASP/Controls/FactorsList.qml \
-    components/JASP/Controls/Form.qml \
-    components/JASP/Controls/GridLayout.qml \
-    components/JASP/Controls/GroupBox.qml \
-    components/JASP/Controls/JASPControl.qml \
-    components/JASP/Controls/JASPDataView.qml \
-    components/JASP/Controls/JASPScrollBar.qml \
-    components/JASP/Controls/Label.qml \
-    components/JASP/Controls/PercentField.qml \
-    components/JASP/Controls/PlusMinusCheckButton.qml \
-    components/JASP/Controls/RadioButton.qml \
-    components/JASP/Controls/Slider.qml \
-    components/JASP/Controls/Switch.qml \
-    components/JASP/Controls/TableView.qml \
-    components/JASP/Controls/TextArea.qml \
-    components/JASP/Controls/TextField.qml \
-    components/JASP/Controls/VariablesForm.qml \
-    components/JASP/Controls/VariablesList.qml \
-    components/JASP/Theme/Theme.qml \
-    components/JASP/Widgets/MainWindow.qml \
-    components/JASP/Widgets/DataPanel.qml \
-    components/JASP/Widgets/MainPage.qml \
-    components/JASP/Widgets/RecentFilesList.qml \
-    components/JASP/Widgets/OSFLogin.qml \
-    components/JASP/Widgets/OSFList.qml \
-    components/JASP/Widgets/FileMenu.qml \
-    components/JASP/Widgets/DataLibraryList.qml \
-    components/JASP/Widgets/DataLibraryBreadCrumbs.qml \
-    components/JASP/Widgets/BackstageRecentFiles.qml \
-    components/JASP/Widgets/BackstageOSF.qml \
-    components/JASP/Widgets/BackstageDataLibrary.qml \
-    components/JASP/Widgets/BackstageCurrentFile.qml \
-    components/JASP/Widgets/BackstageComputer.qml \
-    components/JASP/Widgets/BreadCrumbs.qml \
-    components/JASP/Widgets/CurrentFileList.qml \
-    components/JASP/Widgets/ComputerList.qml
 
