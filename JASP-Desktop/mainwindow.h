@@ -48,13 +48,6 @@
 #include "data/filtermodel.h"
 #include "widgets/backstage/filemenu.h"
 
-class ResultsJsInterface;
-class FileMenu;
-
-namespace Ui {
-class MainWindow;
-}
-
 class MainWindow : public QObject
 {
 	Q_OBJECT
@@ -63,11 +56,10 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
 	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
-	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged)
+	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
+	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
 
-	friend class ResultsJsInterface;
 	friend class FileMenu;
-
 public:
 	explicit MainWindow(QGuiApplication *application);
 	void open(QString filepath);
@@ -79,35 +71,13 @@ public:
 
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
-	QString runButtonText() const
-	{
-		return _runButtonText;
-	}
-
-	bool runButtonEnabled() const
-	{
-		return _runButtonEnabled;
-	}
-
-	bool progressBarVisible() const
-	{
-		return _progressBarVisible;
-	}
-
-	int progressBarProgress() const
-	{
-		return _progressBarProgress;
-	}
-
-	QString progressBarStatus() const
-	{
-		return _progressBarStatus;
-	}
-
-	bool dataPanelVisible() const
-	{
-		return _dataPanelVisible;
-	}
+	QString	runButtonText()			const	{ return _runButtonText;		}
+	bool	runButtonEnabled()		const	{ return _runButtonEnabled;		}
+	bool	progressBarVisible()	const	{ return _progressBarVisible;	}
+	int		progressBarProgress()	const	{ return _progressBarProgress;	}
+	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
+	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
+	QString	windowTitle()			const	{ return m_windowTitle;			}
 
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
@@ -120,59 +90,13 @@ public slots:
 	void dropEvent(QDropEvent *event)			override;
 	void closeEvent(QCloseEvent *event)			override;*/
 
-	void setRunButtonText(QString runButtonText)
-	{
-		if (_runButtonText == runButtonText)
-			return;
-
-		_runButtonText = runButtonText;
-		emit runButtonTextChanged(_runButtonText);
-	}
-
-	void setRunButtonEnabled(bool runButtonEnabled)
-	{
-		if (_runButtonEnabled == runButtonEnabled)
-			return;
-
-		_runButtonEnabled = runButtonEnabled;
-		emit runButtonEnabledChanged(_runButtonEnabled);
-	}
-
-	void setProgressBarVisible(bool progressBarVisible)
-	{
-		if (_progressBarVisible == progressBarVisible)
-			return;
-
-		_progressBarVisible = progressBarVisible;
-		emit progressBarVisibleChanged(_progressBarVisible);
-	}
-
-	void setProgressBarProgress(int progressBarProgress)
-	{
-		if (_progressBarProgress == progressBarProgress)
-			return;
-
-		_progressBarProgress = progressBarProgress;
-		emit progressBarProgressChanged(_progressBarProgress);
-	}
-
-	void setProgressBarStatus(QString progressBarStatus)
-	{
-		if (_progressBarStatus == progressBarStatus)
-			return;
-
-		_progressBarStatus = progressBarStatus;
-		emit progressBarStatusChanged(_progressBarStatus);
-	}
-
-	void setDataPanelVisible(bool dataPanelVisible)
-	{
-		if (_dataPanelVisible == dataPanelVisible)
-			return;
-
-		_dataPanelVisible = dataPanelVisible;
-		emit dataPanelVisibleChanged(_dataPanelVisible);
-	}
+	void setRunButtonText(QString runButtonText);
+	void setRunButtonEnabled(bool runButtonEnabled);
+	void setProgressBarVisible(bool progressBarVisible);
+	void setProgressBarProgress(int progressBarProgress);
+	void setProgressBarStatus(QString progressBarStatus);
+	void setDataPanelVisible(bool dataPanelVisible);
+	void setWindowTitle(QString windowTitle);
 
 private:
 	void makeConnections();
@@ -221,7 +145,6 @@ private:
 	void loadRibbonQML();
 	void loadQML();
 
-	QWebEngineView* getWebViewResults();
 	void			setCurrentTab(QString tabName);
 
 
@@ -233,21 +156,16 @@ signals:
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(QString value);
 	void saveJaspFile();
-	void openFile(QString filepath); //I am not yet connected to anything!
-	void saveFile();//I am not yet connected to anything!
-	void titleChanged(QString newTitle);//I am not yet connected to anything!
 
 	void runButtonTextChanged(QString runButtonText);
-
 	void runButtonEnabledChanged(bool runButtonEnabled);
-
 	void progressBarVisibleChanged(bool progressBarVisible);
-
 	void progressBarProgressChanged(int progressBarProgress);
-
 	void progressBarStatusChanged(QString progressBarStatus);
-
 	void dataPanelVisibleChanged(bool dataPanelVisible);
+
+
+	void windowTitleChanged(QString windowTitle);
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -307,6 +225,9 @@ private slots:
 	void saveJaspFileHandler();
 	//void handleRibbonButtonClicked(QVariant);
 
+
+	void ppiChangedHandler(int ppi) { setPPIHandler(ppi); }
+
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 
@@ -361,6 +282,7 @@ private:
 
 	FileMenu						*_fileMenu;
 
+	QString m_windowTitle;
 };
 
 #endif // MAINWIDGET_H

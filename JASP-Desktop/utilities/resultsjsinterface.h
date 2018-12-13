@@ -21,21 +21,24 @@
 
 #include <QObject>
 #include <QString>
-#include <QWebEngineView>
-#include <QWebChannel>
-#include <QMenu>
+#include <QQmlWebChannel>
 #include <QAuthenticator>
 #include <QNetworkReply>
+#include "utilities/jsonutilities.h"
+#include "analysis/analysis.h"
 
 
 class ResultsJsInterface : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(QQmlWebChannel *	channel			READ channel		WRITE setChannel		NOTIFY channelChanged			)
+	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
+	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged)
 
 
 public:
-	explicit ResultsJsInterface(QWidget *parent = 0);
-/*
+	explicit ResultsJsInterface(QObject *parent = 0);
+
 	void setZoom(double zoom);
 	void zoomIn();
 	void zoomOut();
@@ -46,15 +49,36 @@ public:
 	void setResultsMeta(QString str);
 	void unselect();
 	void removeAnalysis(Analysis *analysis);
-	Json::Value &getResultsMeta();
-	QVariant &getAllUserData();
 	void showInstruction();
 	void exportPreviewHTML();
 	void exportHTML();
 
+	Json::Value &getResultsMeta();
+	QVariant	&getAllUserData();
+
+	QQmlWebChannel*	channel()			const { return _channel;		}
+	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
+	double			zoom()				const { return _webViewZoom;	}
+
 signals:
-	void getResultsMetaCompleted();
-	void getAllUserDataCompleted();
+	void		getResultsMetaCompleted();
+	void		getAllUserDataCompleted();
+	void		channelChanged(QQmlWebChannel * channel);
+	void		resultsPageUrlChanged(QUrl resultsPageUrl);
+	void		runJavaScript(QString js);
+	QVariant	runJavaScriptCallback(QString js);
+	void		zoomChanged(double zoom);
+	void		packageModified();
+	void		analysisUnselected();
+	void		analysisChangedDownstream(int id, QString options);
+	void		saveTextToFile(const QString &filename, const QString &data);
+	void		analysisSaveImage(int id, QString options);
+	void		analysisEditImage(int id, QString options);
+	void		removeAnalysisRequest(int id);
+	void		analysisSelected(int id);
+	void		openFileTab();
+	void		resultsPageLoadedPpi(bool succes, int ppi);
+	void		ppiChanged(int ppi);
 
 public slots:
 	void setExactPValuesHandler(bool exact);
@@ -62,43 +86,21 @@ public slots:
 	void analysisImageEditedHandler(Analysis *analysis);
 	void showAnalysesMenu(QString options);
 	void simulatedMouseClick(int x, int y, int count);
-	void analysisUnselected();
-	void analysisSelected(int id);
 	void saveTempImage(int id, QString path, QByteArray data);
-	void analysisChangedDownstream(int id, QString options);
-	void resultsDocumentChanged();
-	void updateUserData(int id, QString key);
-	void saveTextToFile(const QString &filename, const QString &data);
-	void analysisSaveImage(int id, QString options);
-	void analysisEditImage(int id, QString options);
-	void removeAnalysisRequest(int id);
+	void resultsDocumentChanged()				{ emit packageModified(); }
+	void updateUserData(int id, QString key)	{ emit packageModified(); }
 	void pushImageToClipboard(const QByteArray &base64, const QString &html);
 	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
 	void displayMessageFromResults(QString path);
-
 	void exportSelected(const QString &filename);
 	void getImageInBase64(int id, const QString &path);
-	void openFileTab();
-
 	void getDefaultPPI();
+	void setChannel(QQmlWebChannel * channel);
+	void setResultsPageUrl(QString resultsPageUrl);
 
 private:
-	MainWindow *_mainWindow;
-	QWebEngineView *_webViewResults;
-	QWebChannel *_channel;
-
-	QMenu *_analysisMenu;
-	QMenu *_copySpecialMenu;
-	double _webViewZoom;
-
-	Json::Value _resultsMeta;
-	QVariant _allUserData;
-
-	void setGlobalJsValues();
-	QString escapeJavascriptString(const QString &str);
-	void runJavaScript(const QString &str);
 	void runJavaScript(const QString &str, std::function<void(const QVariant&)> cb);
-
+	void setGlobalJsValues();
 	void cbSetPPI(const QVariant &vppi);
 	void cbSetPPIAndRefresh(const QVariant &vppi);
 	void cbSetResultstMeta(const QVariant &vMetaData);
@@ -106,9 +108,10 @@ private:
 
 	int _getPPIFromVariant(const QVariant &vppi, bool &success);
 
+	QString escapeJavascriptString(const QString &str);
+
 private slots:
 	void resultsPageLoaded(bool success);
-	void scrollValueChangedHandle();
 	void menuHidding();
 	void removeSelected();
 	void collapseSelected();
@@ -118,7 +121,15 @@ private slots:
 	void latexCodeSelected();
 	void saveImage();
 	void editImage();
-	void noteSelected();*/
+	void noteSelected();
+
+private:
+	QQmlWebChannel	*_channel = nullptr;
+	double			_webViewZoom;
+	Json::Value		_resultsMeta;
+	QVariant		_allUserData;
+	QString			_resultsPageUrl = "qrc:///core/index.html";
+
 };
 
 

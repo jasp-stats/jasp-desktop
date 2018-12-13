@@ -660,3 +660,12 @@ void FileMenu::setDatalibrary_button_visible(bool datalibrary_button_visible)
 	m_datalibrary_button_visible = datalibrary_button_visible;
 	emit datalibrary_button_visibleChanged(m_datalibrary_button_visible);
 }
+
+void FileMenu::setVisible(bool visible)
+{
+	if (m_visible == visible)
+		return;
+
+	m_visible = visible;
+	emit visibleChanged(m_visible);
+}

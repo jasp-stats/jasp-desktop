@@ -26,44 +26,34 @@
 #include "utilities/qutils.h"
 #include "appinfo.h"
 #include "tempfiles.h"
-#include "analysis/analysis.h"
 #include <functional>
 #include "timers.h"
 #include "utilities/settings.h"
 #include <QApplication>
+#include <QMimeData>
+#include <QAction>
 
-ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
+ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
-/*	JASPTIMER_START(ResultsJsInterface());
-	_mainWindow = dynamic_cast<MainWindow *>(parent);
-	_webViewResults = _mainWindow->getWebViewResults();
-	_webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
-	//_webViewResults->
+	setChannel(new QQmlWebChannel(this));
+	//_analysisMenu = new QMenu(_mainWindow);
+	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
 
-	_channel = new QWebChannel(this);
-	_channel->registerObject(QStringLiteral("jasp"), this);
-	_webViewResults->page()->setWebChannel(_channel);
 
-	_analysisMenu = new QMenu(_mainWindow);
-	connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding);
-
-	JASPTIMER_START(ResultsLaden);
-	_webViewResults->load(QUrl(QString("qrc:///core/index.html")));
-	connect(_webViewResults, &QWebEngineView::loadFinished, this, &ResultsJsInterface::resultsPageLoaded);
-// TODO: This signal does not exist anymore, the WebEngine does not support paintEvent anymore, and WebView used this function
-// to emit the scrollValuesChanged signal.
-//	connect(_webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
-
-	JASPTIMER_FINISH(ResultsJsInterface());*/
-
+	std::cout << "Must be done in QML: connect(_webViewResults, &QWebEngineView::loadFinished, this, &ResultsJsInterface::resultsPageLoaded);" << std::endl;
 }
 
-/*
+
 void ResultsJsInterface::setZoom(double zoom)
 {
+	if(zoom == _webViewZoom)
+		return;
+
 	_webViewZoom = zoom;
+	emit zoomChanged(zoom);
+
 	QString js = "window.setZoom(" + QString::number(zoom) + ")";
-	runJavaScript(js);
+	emit runJavaScript(js);
 }
 
 void ResultsJsInterface::zoomIn()
@@ -85,13 +75,8 @@ void ResultsJsInterface::zoomReset()
 
 void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
-	//Show the mainwindow now!
-	static_cast<MainWindow*>(parent())->show();
-
-	JASPTIMER_FINISH(ResultsLaden);
-
 	// clear history, to prevent backspace from going 'back'
-	_webViewResults->history()->clear();
+	std::cout << "should do in QML I guess? _webViewResults->history()->clear();" << std::endl;
 
 	if (succes)
 	{
@@ -101,11 +86,11 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 		version+="-Debug";
 #endif
 
-		runJavaScript("window.setAppVersion('" + version + "')");
+		emit runJavaScript("window.setAppVersion('" + version + "')");
 
 		setGlobalJsValues();
 
-		runJavaScript("window.getPPI()", std::bind(&ResultsJsInterface::cbSetPPI, this, std::placeholders::_1));
+		emit runJavaScript("window.getPPI()", std::bind(&ResultsJsInterface::cbSetPPI, this, std::placeholders::_1));
 	}
 	else
 	{
@@ -116,6 +101,9 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 
 void ResultsJsInterface::showAnalysesMenu(QString options)
 {
+	std::cout << "showAnalysesMenu must be done in QML" << std::endl;
+
+	/*
 	Json::Value menuOptions;
 
 	Json::Reader parser;
@@ -221,41 +209,41 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 	QPoint point = _webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
 
 	_analysisMenu->move(point);
-	_analysisMenu->show();
+	_analysisMenu->show();*/
 }
 
 void ResultsJsInterface::collapseSelected()
 {
-	runJavaScript("window.collapseMenuClicked();");
+	emit runJavaScript("window.collapseMenuClicked();");
 }
 
 void ResultsJsInterface::removeSelected()
 {
-	runJavaScript("window.removeMenuClicked();");
+	emit runJavaScript("window.removeMenuClicked();");
 }
 
 void ResultsJsInterface::editTitleSelected()
 {
-	runJavaScript("window.editTitleMenuClicked();");
-	_mainWindow->setPackageModified();
+	emit runJavaScript("window.editTitleMenuClicked();");
+	emit packageModified();
 }
 
 void ResultsJsInterface::copySelected()
 {
 	TempFiles::purgeClipboard();
-	runJavaScript("window.copyMenuClicked();");
+	emit runJavaScript("window.copyMenuClicked();");
 }
 
 void ResultsJsInterface::citeSelected()
 {
 	TempFiles::purgeClipboard();
-	runJavaScript("window.citeMenuClicked();");
+	emit runJavaScript("window.citeMenuClicked();");
 }
 
 void ResultsJsInterface::latexCodeSelected()
 {
 	TempFiles::purgeClipboard();
-	runJavaScript("window.latexCodeMenuClicked();");
+	emit runJavaScript("window.latexCodeMenuClicked();");
 }
 
 void ResultsJsInterface::getDefaultPPI()
@@ -265,12 +253,12 @@ void ResultsJsInterface::getDefaultPPI()
 
 void ResultsJsInterface::saveImage()
 {
-	runJavaScript("window.saveImageClicked();");
+	emit runJavaScript("window.saveImageClicked();");
 }
 
 void ResultsJsInterface::editImage()
 {
-    runJavaScript("window.editImageClicked();");
+	emit runJavaScript("window.editImageClicked();");
 }
 
 void ResultsJsInterface::noteSelected()
@@ -278,13 +266,14 @@ void ResultsJsInterface::noteSelected()
 	QAction *action = (QAction *)this->sender();
 	QString call = action->data().toString();
 
-	runJavaScript(call);
-
-	_mainWindow->setPackageModified();
+	emit runJavaScript(call);
+	emit packageModified();
 }
 
-void ResultsJsInterface::simulatedMouseClick(int x, int y, int count) {
-
+void ResultsJsInterface::simulatedMouseClick(int x, int y, int count)
+{
+	std::cout << "We are NOT going to do weird stuff like simulating mouse clicks to operate an internal webbrowser...." << std::endl;
+	/*
 	int diff = count;
 	while (diff >= 2)
 	{
@@ -313,20 +302,15 @@ void ResultsJsInterface::simulatedMouseClick(int x, int y, int count) {
 			Qt::NoModifier   );
 
 		qApp->postEvent((QObject*)_webViewResults,(QEvent *)clickEvent2);
-	}
+	}*/
 }
 
-void ResultsJsInterface::scrollValueChangedHandle()
-{
-	if ( ! _analysisMenu->isHidden())
-		_analysisMenu->hide();
-}
 void ResultsJsInterface::setExactPValuesHandler(bool exact)
 {
 	QString exactPValueString = (exact ? "true" : "false");
 	QString js = "window.globSet.pExact = " + exactPValueString;
 	js += "; window.reRenderAnalyses();";
-	runJavaScript(js);
+	emit runJavaScript(js);
 }
 
 void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
@@ -334,7 +318,7 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 	if (numDecimals == "")
 		numDecimals = "\"\"";
 	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
-	runJavaScript(js);
+	emit runJavaScript(js);
 }
 
 void ResultsJsInterface::setGlobalJsValues()
@@ -347,12 +331,7 @@ void ResultsJsInterface::setGlobalJsValues()
 	QString js = "window.globSet.pExact = " + exactPValueString;
 	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "\"\"" : numDecimals);
 	js += "; window.globSet.tempFolder = \"" + tempFolder + "/\"";
-	runJavaScript(js);
-}
-
-void ResultsJsInterface::analysisUnselected()
-{
-	_mainWindow->analysisUnselectedHandler();
+	emit runJavaScript(js);
 }
 
 void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
@@ -367,7 +346,7 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 	file.close();
 
 	QString eval = QString("window.imageSaved({ id: %1, fullPath: '%2'});").arg(id).arg(fullpath);
-	runJavaScript(eval);
+	emit runJavaScript(eval);
 }
 
 void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
@@ -376,54 +355,14 @@ void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
 	results = "window.modifySelectedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
-	runJavaScript(results);
+	emit runJavaScript(results);
 
     return;
 }
 
 void ResultsJsInterface::menuHidding()
 {
-	runJavaScript("window.analysisMenuHidden();");
-}
-
-void ResultsJsInterface::analysisChangedDownstream(int id, QString options)
-{
-	_mainWindow->analysisChangedDownstreamHandler(id, options);
-}
-
-void ResultsJsInterface::resultsDocumentChanged()
-{
-	_mainWindow->setPackageModified();
-}
-
-void ResultsJsInterface::updateUserData(int id, QString key)
-{
-	_mainWindow->setPackageModified();
-}
-
-void ResultsJsInterface::saveTextToFile(const QString &filename, const QString &data)
-{
-	_mainWindow->saveTextToFileHandler(filename, data);
-}
-
-void ResultsJsInterface::analysisSelected(int id)
-{
-	_mainWindow->analysisSelectedHandler(id);
-}
-
-void ResultsJsInterface::analysisSaveImage(int id, QString options)
-{
-	_mainWindow->analysisSaveImageHandler(id, options);
-}
-
-void ResultsJsInterface::analysisEditImage(int id, QString options)
-{
-	_mainWindow->analysisEditImageHandler(id, options);
-}
-
-void ResultsJsInterface::removeAnalysisRequest(int id)
-{
-	_mainWindow->removeAnalysisRequestHandler(id);
+	emit runJavaScript("window.analysisMenuHidden();");
 }
 
 void ResultsJsInterface::getImageInBase64(int id, const QString &path)
@@ -435,7 +374,7 @@ void ResultsJsInterface::getImageInBase64(int id, const QString &path)
 	QString result = QString(image.toBase64());
 
 	QString eval = QString("window.convertToBase64Done({ id: %1, result: '%2'});").arg(id).arg(result);
-	runJavaScript(eval);
+	emit runJavaScript(eval);
 
 }
 
@@ -489,45 +428,44 @@ void ResultsJsInterface::pushImageToClipboard(const QByteArray &base64, const QS
 
 void ResultsJsInterface::displayMessageFromResults(QString msg)
 {
-	QMessageBox::warning(_mainWindow, "Results Warning", msg);
+	std::cout << "QMessageBox::warning(_mainWindow, \"Results Warning\", msg);" << std::endl;
 }
 
 void ResultsJsInterface::showAnalysis(int id)
 {
-	runJavaScript("window.select(" % QString::number(id) % ")");
+	emit runJavaScript("window.select(" % QString::number(id) % ")");
 }
 
 void ResultsJsInterface::exportSelected(const QString &filename)
 {
-	runJavaScript("window.exportHTML('" + filename + "');");
+	emit runJavaScript("window.exportHTML('" + filename + "');");
 }
 
 void ResultsJsInterface::analysisChanged(Analysis *analysis)
 {
-	Json::Value analysisJson = analysis->asJSON();
-	analysisJson["userdata"] = analysis->userData();
-	QString results = tq(analysisJson.toStyledString());
+	Json::Value analysisJson	= analysis->asJSON();
+	analysisJson["userdata"]	= analysis->userData();
+	QString results				= tq(analysisJson.toStyledString());
+	results						= "window.analysisChanged(JSON.parse('" + escapeJavascriptString(results) + "'));";
 
-	results = escapeJavascriptString(results);
-	results = "window.analysisChanged(JSON.parse('" + results + "'));";
-	runJavaScript(results);
+	emit runJavaScript(results);
 }
 
 void ResultsJsInterface::setResultsMeta(QString str)
 {
 	QString results = escapeJavascriptString(str);
 	results = "window.setResultsMeta(JSON.parse('" + results + "'));";
-	runJavaScript(results);
+	emit runJavaScript(results);
 }
 
 void ResultsJsInterface::unselect()
 {
-	runJavaScript("window.unselect()");
+	emit runJavaScript("window.unselect()");
 }
 
 void ResultsJsInterface::removeAnalysis(Analysis *analysis)
 {
-	runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
+	emit runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
 }
 
 Json::Value &ResultsJsInterface::getResultsMeta()
@@ -554,22 +492,17 @@ QVariant &ResultsJsInterface::getAllUserData()
 
 void ResultsJsInterface::showInstruction()
 {
-	runJavaScript("window.showInstructions()");
+	emit runJavaScript("window.showInstructions()");
 }
 
 void ResultsJsInterface::exportPreviewHTML()
 {
-	runJavaScript("window.exportHTML('%PREVIEW%');");
+	emit runJavaScript("window.exportHTML('%PREVIEW%');");
 }
 
 void ResultsJsInterface::exportHTML()
 {
-	runJavaScript("window.exportHTML('%EXPORT%');");
-}
-
-void ResultsJsInterface::openFileTab()
-{
-	_mainWindow->setCurrentTab("first");
+	emit runJavaScript("window.exportHTML('%EXPORT%');");
 }
 
 QString ResultsJsInterface::escapeJavascriptString(const QString &str)
@@ -607,14 +540,10 @@ QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 	return out;
 }
 
-void ResultsJsInterface::runJavaScript(const QString &str)
-{
-	_webViewResults->page()->runJavaScript(str);
-}
-
 void ResultsJsInterface::runJavaScript(const QString &str, std::function<void(const QVariant&)> cb)
 {
-	_webViewResults->page()->runJavaScript(str,  [cb] (const QVariant &result) { cb(result); });
+	//auto  [cb] (const QVariant &result) { cb(result); });
+	cb(emit runJavaScriptCallback(str));
 }
 
 int ResultsJsInterface::_getPPIFromVariant(const QVariant &vppi, bool& success)
@@ -636,14 +565,15 @@ void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
 	int ppi = _getPPIFromVariant(vppi, success);
 	_webViewZoom = 1;
 
-	_mainWindow->resultsPageLoaded(success, ppi);
+	emit resultsPageLoadedPpi(success, ppi);
 }
 
 void ResultsJsInterface::cbSetPPIAndRefresh(const QVariant &vppi)
 {
 	bool success = false;
 	int ppi = _getPPIFromVariant(vppi, success);
-	_mainWindow->setPPIHandler(ppi);
+	emit ppiChanged(ppi);
+
 }
 
 void ResultsJsInterface::cbSetResultstMeta(const QVariant &vMetaData)
@@ -658,4 +588,27 @@ void ResultsJsInterface::cbSetAllUserData(const QVariant &vAllUserData)
 {
 	_allUserData = vAllUserData;
 	emit getAllUserDataCompleted();
-}*/
+}
+
+void ResultsJsInterface::setChannel(QQmlWebChannel * channel)
+{
+	if (_channel == channel)
+		return;
+
+	_channel = channel;
+
+	if(_channel != nullptr)
+		_channel->registerObject(QStringLiteral("jasp"), this);
+
+	emit channelChanged(_channel);
+}
+
+
+void ResultsJsInterface::setResultsPageUrl(QString resultsPageUrl)
+{
+	if (_resultsPageUrl == resultsPageUrl)
+		return;
+
+	_resultsPageUrl = resultsPageUrl;
+	emit resultsPageUrlChanged(_resultsPageUrl);
+}

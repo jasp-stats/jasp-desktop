@@ -54,6 +54,8 @@ class FileMenu : public QObject
 	Q_PROPERTY(bool computer_button_visible			READ computer_button_visible	WRITE setComputer_button_visible	NOTIFY computer_button_visibleChanged)
 	Q_PROPERTY(bool datalibrary_button_visible		READ datalibrary_button_visible	WRITE setDatalibrary_button_visible NOTIFY datalibrary_button_visibleChanged)
 
+	Q_PROPERTY(bool visible							READ visible					WRITE setVisible					NOTIFY visibleChanged)
+
 public:
 	
 	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, NoFileActions};
@@ -105,6 +107,11 @@ public:
 	bool datalibrary_button_visible()		const	{ return m_datalibrary_button_visible;	}
 
 
+	bool visible() const
+	{
+		return m_visible;
+	}
+
 signals:
 	
 	void enable_currentfile_button_changed();
@@ -125,6 +132,8 @@ signals:
 	void currentfile_button_visibleChanged(bool currentfile_button_visible);
 	void computer_button_visibleChanged(bool computer_button_visible);
 	void datalibrary_button_visibleChanged(bool datalibrary_button_visible);
+
+	void visibleChanged(bool visible);
 
 public slots:
 	//Backstage
@@ -152,6 +161,8 @@ public slots:
 	void setCurrentfile_button_visible(bool currentfile_button_visible);
 	void setComputer_button_visible(bool computer_button_visible);
 	void setDatalibrary_button_visible(bool datalibrary_button_visible);
+	void setVisible(bool visible);
+	void showFileMenu()	{ setVisible(true); }
 
 private slots:
 	void dataSetOpenRequestHandler(QString path);
@@ -192,6 +203,7 @@ private:
 	bool m_currentfile_button_visible;
 	bool m_computer_button_visible;
 	bool m_datalibrary_button_visible;
+	bool m_visible = true;;
 };
 
 #endif // FILEMENU_H

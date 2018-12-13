@@ -65,7 +65,7 @@ MainWindow::MainWindow(QGuiApplication * application) : QObject(application), _a
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
-	//_resultsJsInterface		= new ResultsJsInterface(this);
+	_resultsJsInterface		= new ResultsJsInterface(this);
 	_package				= new DataSetPackage();
 	_odm					= new OnlineDataManager(this);
 	_tableModel				= new DataSetTableModel();
@@ -176,12 +176,24 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
 
+	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			this,					&MainWindow::analysisUnselectedHandler						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
+	connect(_resultsJsInterface,	&ResultsJsInterface::saveTextToFile,				this,					&MainWindow::saveTextToFileHandler							);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				this,					&MainWindow::analysisSelectedHandler						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisEditImage,				this,					&MainWindow::analysisEditImageHandler						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			this,					&MainWindow::removeAnalysisRequestHandler					);
+	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedPpi,			this,					&MainWindow::resultsPageLoaded								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::ppiChanged,					this,					&MainWindow::ppiChangedHandler								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
+
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
-	//connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
+	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 
-	//connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
+	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
@@ -272,14 +284,18 @@ void MainWindow::loadQML()
 {
 	_qml = new QQmlApplicationEngine(this);
 
-	_qml->rootContext()->setContextProperty("mainWindow",					this);
+	_qml->rootContext()->setContextProperty("mainWindow",				this);
 	_qml->rootContext()->setContextProperty("dataSetModel",				_tableModel);
 	_qml->rootContext()->setContextProperty("levelsTableModel",			_levelsTableModel);
 	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel);
 	_qml->rootContext()->setContextProperty("engineSync",				_engineSync);
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel);
-	_qml->rootContext()->setContextProperty("baseBlockDim",				20);
+	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
+	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
+	_qml->rootContext()->setContextProperty("resultJsInterface",		_resultsJsInterface);
+
+	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
 	_qml->rootContext()->setContextProperty("ppiScale",					Settings::value(Settings::UI_SCALE).toFloat());
 
@@ -287,9 +303,6 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
-
-	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
-	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 
 	_qml->addImportPath("qrc:///components");
 
@@ -501,7 +514,7 @@ void MainWindow::zoomInKeysSelected()
 	if (filterShortCut())
 		return;
 
-	std::cout << "_resultsJsInterface->zoomIn(); doesnt work anymore!" << std::endl;
+	_resultsJsInterface->zoomIn();
 }
 
 void MainWindow::zoomOutKeysSelected()
@@ -509,7 +522,7 @@ void MainWindow::zoomOutKeysSelected()
 	if (filterShortCut())
 		return;
 
-	std::cout << "_resultsJsInterface->zoomOut(); doesnt work anymore!" << std::endl;
+	_resultsJsInterface->zoomOut();
 }
 
 void MainWindow::zoomEqualKeysSelected()
@@ -517,7 +530,7 @@ void MainWindow::zoomEqualKeysSelected()
 	if (filterShortCut())
 		return;
 
-	std::cout << "_resultsJsInterface->zoomReset(); doesnt work anymore!" << std::endl;
+	_resultsJsInterface->zoomReset();
 }
 
 
@@ -546,19 +559,13 @@ void MainWindow::illegalOptionStateChanged(AnalysisForm * form)
 
 void MainWindow::packageChanged(DataSetPackage *package)
 {
-	std::cout << "I should be setting the window title to something but I am not!" << std::endl;
-
-	/*
 	QString title = windowTitle();
-	if (package->isModified())
-	{
-		setWindowTitle(title.append("*"));
-	}
-	else
-	{
-		title.chop(1);
-		setWindowTitle(title);
-	}*/
+
+	if (package->isModified())	title += '*';
+	else						title.chop(1);
+
+
+	setWindowTitle(title);
 }
 
 
@@ -675,8 +682,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		if (Settings::value(Settings::INSTRUCTIONS_SHOWN).toBool() == false)
 		{
 			Settings::setValue(Settings::INSTRUCTIONS_SHOWN, true);
-			std::cout << "_resultsJsInterface->showInstruction(); doesnt do anything right now" << std::endl;
-
+			_resultsJsInterface->showInstruction();
 		}
 
 		showInstructions = false;
@@ -693,7 +699,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		setRunButtonEnabled(analysis->status() == Analysis::InitedAndWaiting);
 	}
 
-	std::cout << "_resultsJsInterface->analysisChanged(analysis); isnt happening" << std::endl;
+	_resultsJsInterface->analysisChanged(analysis);
 
 	if (_package->isLoaded())
 		_package->setModified(true);
@@ -994,7 +1000,8 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 			_loader.io(event, _package);
-			showProgress();
+			showProgress();			
+
 		}
 
 		std::cout << "ui->tabBar->setCurrentModuleActive(); isnt happening" << std::endl;
@@ -1006,12 +1013,12 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			_package->setWaitingForReady();
 
 			getAnalysesUserData();
-			std::cout << "_resultsJsInterface->exportPreviewHTML();isnt happening" << std::endl;
+			_resultsJsInterface->exportPreviewHTML();
 
 			Json::Value analysesData(Json::objectValue);
 
 			analysesData["analyses"]	= _analyses->asJson();
-			std::cout << "analysesData[\"meta\"]		= _resultsJsInterface->getResultsMeta();isnt happening" << std::endl;
+			analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
 
 			_package->setAnalysesData(analysesData);
 		}
@@ -1025,7 +1032,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	{
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-		std::cout << "_resultsJsInterface->exportHTML(); isnt happening" << std::endl;
+		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
 		showProgress();
@@ -1115,7 +1122,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			populateUIfromDataSet();
 			QString name = QFileInfo(event->path()).baseName();
-			emit titleChanged(name);
+			setWindowTitle(name);
 			_currentFilePath = event->path();
 
 			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
@@ -1165,7 +1172,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			QString name = QFileInfo(event->path()).baseName();
 
 			_package->setModified(false);
-			emit titleChanged(name);
+			setWindowTitle(name);
 			showAnalysis = true;
 
 			if(testingAndSaving)
@@ -1215,9 +1222,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			//ui->webViewResults->reload();
 			std::cout << "should trigger reload of webengine" << std::endl;
 
-			emit titleChanged("JASP");
-
-
+			setWindowTitle("JASP");
 
 			if (_applicationExiting)
 				QGuiApplication::exit();
@@ -1277,7 +1282,7 @@ void MainWindow::populateUIfromDataSet()
 				if ( ! meta.isNull())
 				{
 					QString results = tq(analysesData["meta"].toStyledString());
-					std::cout << " im not doing:_resultsJsInterface->setResultsMeta(results); " <<std::endl;
+					_resultsJsInterface->setResultsMeta(results);
 				}
 			}
 
@@ -1333,6 +1338,9 @@ void MainWindow::matchComputedColumnsToAnalyses()
 void MainWindow::updateMenuEnabledDisabledStatus()
 {
 	bool loaded = _package->isLoaded();
+#ifdef JASP_DEBUG
+	std::cout << "updateMenuEnabledDisabledStatus is pointless" << std::endl;
+#endif
 
 	// ui->ribbonAnalysis->setDataSetLoaded(loaded);
 	// ui->ribbonSEM->setDataSetLoaded(loaded);
@@ -1517,7 +1525,7 @@ void MainWindow::ribbonEntrySelected(const QString &item)
 void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 {
 	std::cout << "void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry) should be a function of RibbonModel that sends a signal to Analyses" << std::endl;
-	/*try
+	try
 	{
 		_currentAnalysis = _analyses->create(entry);
 
@@ -1534,7 +1542,7 @@ void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 	{
 		_fatalError = tq(e.what());
 		fatalError();
-	}*/
+	}
 }
 
 
@@ -1592,7 +1600,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		_package->setModified(true);
 
 
-	std::cout << "_resultsJsInterface->removeAnalysis(analysis); aint happening" << std::endl;
+	_resultsJsInterface->removeAnalysis(analysis);
 
 	if (selected)
 		std::cout << "should hide options panel now" << std::endl;
@@ -1648,8 +1656,7 @@ void MainWindow::removeAnalysisRequestHandler(int id)
 
 void MainWindow::getAnalysesUserData()
 {
-	std::cout << "_resultsJsInterface->getAllUserData() isnt being called" << std::endl;
-	QVariant userData;;// = _resultsJsInterface->getAllUserData();
+	QVariant userData = _resultsJsInterface->getAllUserData();
 
 	Json::Value data;
 	Json::Reader parser;
@@ -1818,6 +1825,7 @@ void MainWindow::startDataEditor(QString path)
 
 void MainWindow::showProgress()
 {
+	_fileMenu->setVisible(false);
 	setDataPanelVisible(true);
 	setProgressBarVisible(true);
 }
@@ -1891,7 +1899,7 @@ void MainWindow::analysesForComparingDoneAlready()
 
 		if(allCompleted)
 		{
-			std::cout << "Isnt being called: _resultsJsInterface->exportPreviewHTML() so comparing results wont work" << std::endl ;
+			_resultsJsInterface->exportPreviewHTML();
 			resultXmlCompare::compareResults::theOne()->setExportCalled();
 		}
 	}
@@ -1959,4 +1967,68 @@ void MainWindow::showQMLWindow(QString urlQml)
 
 	connect(newQMLWindow->rootObject(), SIGNAL(closeWindow()), newQMLWindow, SLOT(close()));*/
 
+}
+
+void MainWindow::setRunButtonText(QString runButtonText)
+{
+	if (_runButtonText == runButtonText)
+		return;
+
+	_runButtonText = runButtonText;
+	emit runButtonTextChanged(_runButtonText);
+}
+
+void MainWindow::setRunButtonEnabled(bool runButtonEnabled)
+{
+	if (_runButtonEnabled == runButtonEnabled)
+		return;
+
+	_runButtonEnabled = runButtonEnabled;
+	emit runButtonEnabledChanged(_runButtonEnabled);
+}
+
+void MainWindow::setProgressBarVisible(bool progressBarVisible)
+{
+	if (_progressBarVisible == progressBarVisible)
+		return;
+
+	_progressBarVisible = progressBarVisible;
+	emit progressBarVisibleChanged(_progressBarVisible);
+}
+
+void MainWindow::setProgressBarProgress(int progressBarProgress)
+{
+	if (_progressBarProgress == progressBarProgress)
+		return;
+
+	_progressBarProgress = progressBarProgress;
+	emit progressBarProgressChanged(_progressBarProgress);
+}
+
+void MainWindow::setProgressBarStatus(QString progressBarStatus)
+{
+	if (_progressBarStatus == progressBarStatus)
+		return;
+
+	_progressBarStatus = progressBarStatus;
+	emit progressBarStatusChanged(_progressBarStatus);
+}
+
+void MainWindow::setDataPanelVisible(bool dataPanelVisible)
+{
+	if (_dataPanelVisible == dataPanelVisible)
+		return;
+
+	_dataPanelVisible = dataPanelVisible;
+	emit dataPanelVisibleChanged(_dataPanelVisible);
+}
+
+
+void MainWindow::setWindowTitle(QString windowTitle)
+{
+	if (m_windowTitle == windowTitle)
+		return;
+
+	m_windowTitle = windowTitle;
+	emit windowTitleChanged(m_windowTitle);
 }

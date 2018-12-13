@@ -5,27 +5,73 @@ import JASP.Widgets 1.0
 
 Window
 {
-	title:		"JASP"
+	title:		mainWindow.windowTitle
 	visible:	true
-	width:		1900
-	height:		600
+	width:		1800
+	height:		900
 
-	Ribbon
+	Item
 	{
-		id: ribbon
+		id:		ribbon
+		height: ribbonMenu.height
 		anchors
 		{
 			top:	parent.top
 			left:	parent.left
 			right:	parent.right
 		}
+
+		FilterButton
+		{
+			id:		fileMenuOpenButton
+			text:	"File"
+			color:	"blue"
+			width:	height
+
+			onClicked: fileMenuModel.visible = !fileMenuModel.visible
+
+			anchors
+			{
+				top:	parent.top
+				left:	parent.left
+				bottom:	parent.bottom
+			}
+		}
+
+		Ribbon
+		{
+			id: ribbonMenu
+
+			anchors
+			{
+				top:	parent.top
+				right:	modulesPlusButton.left
+				left:	fileMenuOpenButton.right
+			}
+
+		}
+
+		FilterButton
+		{
+			id:			modulesPlusButton
+			iconSource: "qrc:/icons/addition-sign.svg"
+			width:		height
+
+			anchors
+			{
+				top:	parent.top
+				right:	parent.right
+				bottom:	parent.bottom
+			}
+		}
 	}
 
-	FileMenu
+	FileMenu //This should be done differently actually, but now here for testing
 	{
-		id: filemenu
+		id:			filemenu
 
-		width: 600
+		width:		visible ? 600 : 0
+		visible:	fileMenuModel.visible
 
 		anchors
 		{
