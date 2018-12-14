@@ -47,7 +47,7 @@ Popup {
 		width: Math.max(computeColumnIconRow.width, title.width) + 20
 		color: "#EEEEEE"
 		//radius: 20
-		border.color: "black"
+		border.color: Theme.black
 		border.width: 1
 
 		Text
@@ -100,8 +100,8 @@ Popup {
 				anchors.bottom:		parent.bottom
 				anchors.margins:	6 * ppiScale
 
-				color:				"white"
-				border.color:		"black"
+				color:				Theme.white
+				border.color:		Theme.black
 				border.width:		1
 
 				TextEdit
@@ -121,7 +121,7 @@ Popup {
 					}
 					property bool columnNameInUse: lastCheckedColumnNameInUse !== "" && lastCheckedColumnNameInUse === text
 					property bool validEntry: text != defaultText && text.length > 0 && !columnNameInUse
-					color: columnNameInUse ? "red" : "black"
+					color: columnNameInUse ? "red" : Theme.black
 
 					ToolTip.delay: 0
 					ToolTip.timeout: 10000
@@ -223,9 +223,9 @@ Popup {
 					//radius: 10
 
 					property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
-					color: iAmSelected ? "white" : popupIconComputeMouseArea.useThisColor
+					color: iAmSelected ? Theme.white : popupIconComputeMouseArea.useThisColor
 
-					border.color: iAmSelected ? "black" : "lightGray"
+					border.color: iAmSelected ? Theme.black : "lightGray"
 					border.width: 1
 
 					Item
@@ -269,7 +269,7 @@ Popup {
 						hoverEnabled: true
 						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-						property color useThisColor: containsMouse ? "white" : "lightGray"
+						property color useThisColor: containsMouse ? Theme.white : "lightGray"
 
 						onClicked:
 						{

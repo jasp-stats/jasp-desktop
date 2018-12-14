@@ -1243,7 +1243,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 void MainWindow::populateUIfromDataSet()
 {
-	MessageForwarder::showWarning("Nothing WRONG", "populateUIfromDataSet!");
 	setDataSetAndPackageInModels(_package);
 
 	if(_package->dataSet()->rowCount() == 0)

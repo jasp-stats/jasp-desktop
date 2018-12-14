@@ -61,7 +61,7 @@ FocusScope
 	Rectangle {
 		id: rectangle
 		anchors.fill: parent
-		color: "black"
+		color: Theme.black
 		border.width: 1
 		border.color: {
 			if (dropArea.containsDrag) return  "red";

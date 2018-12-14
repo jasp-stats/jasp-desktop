@@ -32,8 +32,8 @@ Item {
 	property Flickable flickable			: null;
 	property int handleSize					: 7;
 	property int minimumLength				: 16
-	property string bkColor					: "white"; //Use JASPTheme when available!
-	property string fgColor					: "black";
+	property string bkColor					: Theme.white; //Use JASPTheme when available!
+	property string fgColor					: Theme.black;
 	property string pressedColor			: "#72a0cc";
 	property bool outerradius				: false;
 	property bool innerradius				: false;
@@ -91,7 +91,7 @@ Item {
 		color: bkColor;
 		border {
 			width: 1;
-			color: "darkgray";
+			color: Theme.grayDarker;
 		}
 		anchors { fill: parent; }
 		
@@ -119,7 +119,7 @@ Item {
 		
 		Text {
 			text:					showarrows ? "Δ" : "";
-			color:					(btnUp.pressed ? "blue" : "black");
+			color:					(btnUp.pressed ? "blue" : Theme.black);
 			rotation:				scrollbar.vertical ? 0 : -90;
 			anchors.centerIn:		parent;
 			horizontalAlignment:	Text.AlignHCenter
@@ -143,7 +143,7 @@ Item {
 		
 		Text {
 			text:					showarrows ? "Δ" : "";
-			color:					(btnDown.pressed ? "blue" : "black");
+			color:					(btnDown.pressed ? "blue" : Theme.black);
 			rotation:				scrollbar.vertical ? -180 : 90;
 			anchors.centerIn:		parent;
 			horizontalAlignment:	Text.AlignHCenter

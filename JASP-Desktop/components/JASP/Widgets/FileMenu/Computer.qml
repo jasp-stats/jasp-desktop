@@ -1,12 +1,13 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
+import JASP.Theme 1.0
 
 Rectangle
 {
 	id:rect
 	objectName: "rect"
-	color: "#ececec"
+	color:		Theme.grayMuchLighter
 	
 	Label
 	{
@@ -22,7 +23,7 @@ Rectangle
 		verticalAlignment: Text.AlignVCenter
 		font.family: "SansSerif"
 		font.pixelSize: 18
-		color: "black"
+		color: Theme.black
 	}
 	
 	Button {
@@ -32,7 +33,7 @@ Rectangle
 			anchors.fill: parent
 			gradient: Gradient {
 				GradientStop { position: 0 ; color:  "#e5e5e5" }
-				GradientStop { position: 1 ; color:  "white" }
+				GradientStop { position: 1 ; color:  Theme.white }
 			}
 			border.color: "gray"
 			border.width: 1

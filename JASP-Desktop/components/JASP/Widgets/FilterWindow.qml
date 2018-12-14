@@ -229,7 +229,7 @@ FocusScope
 
         Rectangle {
 			id: filterEditRectangle
-			color: "white"
+			color: Theme.white
 
             border.width: 1
 			border.color: "lightGrey"

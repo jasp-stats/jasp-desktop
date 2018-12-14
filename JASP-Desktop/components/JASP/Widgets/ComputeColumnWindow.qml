@@ -97,7 +97,7 @@ FocusScope
 
 		Rectangle {
 			id: computeColumnEditRectangle
-			color: "white"
+			color: Theme.white
 
 			border.width: 1
 			border.color: "lightGrey"

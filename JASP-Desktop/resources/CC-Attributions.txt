@@ -3,3 +3,4 @@ Creative Commons requires us to give proper courtesy to the creators of certain 
 
 filter.png and filterConstructorBackground.png: originally from "Font Awesome by Dave Gandy - https://fortawesome.github.com/Font-Awesome"
 columnConstructorBackground.png: 				Originally from "Timur Zima, from the Noun Project"
+exclamation.svg                                 Originally from "Font Awesome by Dave Gandy"

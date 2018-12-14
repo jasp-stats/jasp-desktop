@@ -14,10 +14,10 @@ Rectangle {
 	width :implicitWidth
 	height : implicitHeight
 
-	color: "#ececec"
+	color: Theme.grayMuchLighter
 
 	border.width: 1
-	border.color: "darkgray"
+	border.color: Theme.grayDarker
 
 	Component.onCompleted: {
 		usernameText.focus = true
@@ -40,7 +40,7 @@ Rectangle {
 		text : "Login to the OSF"
 		font.family: "SansSerif"
 		font.pixelSize: 16
-		color: "black"
+		color: Theme.black
 	}
 
 	Label {
@@ -56,7 +56,7 @@ Rectangle {
 		text : "Email"
 		font.family: "SansSerif"
 		font.pixelSize: 14
-		color: "black"
+		color: Theme.black
 		verticalAlignment: Text.AlignVCenter
 	}
 
@@ -72,9 +72,9 @@ Rectangle {
 		height: usernameLabel.height
 		clip: true
 
-		color: "white"
+		color: Theme.white
 		border.width: usernameText.activeFocus ? 5 : 1
-		border.color: usernameText.activeFocus ? Theme.focusBorderColor : "darkgray"
+		border.color: usernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 
 		TextInput {
 
@@ -109,9 +109,8 @@ Rectangle {
 		verticalAlignment: Text.AlignVCenter
 
 		text : "Password"
-		font.family: "SansSerif"
-		font.pixelSize: 14
-		color: "black"
+		font: Theme.font
+		color: Theme.black
 
 	}
 
@@ -127,9 +126,9 @@ Rectangle {
 		height: passwordLabel.height
 		clip: true
 
-		color: "white"
+		color: Theme.white
 		border.width: passwordText.activeFocus ? 5 : 1
-		border.color: passwordText.activeFocus ? Theme.focusBorderColor  : "darkgray"
+		border.color: passwordText.activeFocus ? Theme.focusBorderColor  : Theme.grayDarker
 
 		TextInput {
 			id: passwordText
@@ -175,7 +174,7 @@ Rectangle {
 			anchors.fill: parent
 			gradient: Gradient {
 				GradientStop { position: 0 ; color:  "#e5e5e5" }
-				GradientStop { position: 1 ; color:  "white" }
+				GradientStop { position: 1 ; color:  Theme.white }
 			}
 			border.color: "gray"
 			border.width: 1

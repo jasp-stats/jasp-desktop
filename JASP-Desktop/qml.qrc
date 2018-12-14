@@ -77,20 +77,20 @@
         <file>components/JASP/Controls/PlusMinusCheckButton.qml</file>
         <file>components/JASP/Widgets/MainWindow.qml</file>
         <file>components/JASP/Widgets/MainPage.qml</file>
-        <file>components/JASP/Widgets/BackstageComputer.qml</file>
-        <file>components/JASP/Widgets/BackstageCurrentFile.qml</file>
-        <file>components/JASP/Widgets/BackstageDataLibrary.qml</file>
-        <file>components/JASP/Widgets/BackstageOSF.qml</file>
-        <file>components/JASP/Widgets/BackstageRecentFiles.qml</file>
-        <file>components/JASP/Widgets/ComputerList.qml</file>
-        <file>components/JASP/Widgets/CurrentFileList.qml</file>
-        <file>components/JASP/Widgets/DataLibraryBreadCrumbs.qml</file>
-        <file>components/JASP/Widgets/DataLibraryList.qml</file>
-        <file>components/JASP/Widgets/FileMenu.qml</file>
-        <file>components/JASP/Widgets/OSFList.qml</file>
-        <file>components/JASP/Widgets/OSFLogin.qml</file>
-        <file>components/JASP/Widgets/RecentFilesList.qml</file>
-        <file>components/JASP/Widgets/BreadCrumbs.qml</file>
+        <file>components/JASP/Widgets/FileMenu/Computer.qml</file>
+        <file>components/JASP/Widgets/FileMenu/CurrentFile.qml</file>
+        <file>components/JASP/Widgets/FileMenu/DataLibrary.qml</file>
+        <file>components/JASP/Widgets/FileMenu/OSF.qml</file>
+        <file>components/JASP/Widgets/FileMenu/RecentFiles.qml</file>
+        <file>components/JASP/Widgets/FileMenu/ComputerList.qml</file>
+        <file>components/JASP/Widgets/FileMenu/CurrentFileList.qml</file>
+        <file>components/JASP/Widgets/FileMenu/DataLibraryList.qml</file>
+        <file>components/JASP/Widgets/FileMenu/FileMenu.qml</file>
+        <file>components/JASP/Widgets/FileMenu/OSFList.qml</file>
+        <file>components/JASP/Widgets/FileMenu/OSFLogin.qml</file>
+        <file>components/JASP/Widgets/FileMenu/RecentFilesList.qml</file>
+        <file>components/JASP/Widgets/FileMenu/BreadCrumbs.qml</file>
         <file>components/JASP/Widgets/MessageBox.qml</file>
+        <file>components/JASP/Widgets/Ribbon/RibbonBar.qml</file>
     </qresource>
 </RCC>

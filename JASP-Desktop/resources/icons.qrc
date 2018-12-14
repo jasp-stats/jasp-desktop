@@ -113,5 +113,6 @@
         <file>icons/square_trashcan.png</file>
         <file>icons/columnConstructorBackground.png</file>
         <file>icons/filterConstructorBackground.png</file>
+        <file>icons/exclamation.svg</file>
     </qresource>
 </RCC>

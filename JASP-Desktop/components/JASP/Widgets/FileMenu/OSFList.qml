@@ -1,20 +1,21 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
-ListView  {
+ListView {
 	
-	id : listView
+	id: listView
 	
 	property bool firsttimeclicked: false
 	
 	maximumFlickVelocity: 700
 	
 	clip: true
-			
+		
 	spacing : 10
 	
-	model: fileMenuModel.computer.listModel
+	model: fileMenuModel.osf.listModel
 	
 	delegate: modelDelegate
 	
@@ -22,7 +23,7 @@ ListView  {
 		id: rightscrollbar
 		flickable: parent
 	}
-		
+	
 	Component {
 		
 		id : modelDelegate
@@ -34,8 +35,8 @@ ListView  {
 			width: listView.width
 			height: 40
 			
-			border.color: "darkgray"
-			color: fileEntryMouseArea.containsMouse || (ListView.isCurrentItem && firsttimeclicked ) ?  "#dcdadb" : "#ececec"
+			border.color: Theme.grayDarker
+			color: fileEntryMouseArea.containsMouse || (ListView.isCurrentItem && firsttimeclicked ) ?  "#dcdadb" : Theme.grayMuchLighter
 			border.width: fileEntryMouseArea.containsMouse || ( ListView.isCurrentItem && firsttimeclicked ) ? 1 : 0
 			
 			Image {
@@ -52,19 +53,35 @@ ListView  {
 			}
 			
 			Text {
+				id:textFileName
+				
+				width: parent.width
+				height: parent.height/2
+				anchors.left: fileImage.right
+				anchors.leftMargin: 10
+				anchors.top: parent.top
+				horizontalAlignment: Text.AlignLeft
+				verticalAlignment: Text.AlignVCenter
+				
+				text: model.name
+				font.family: "SansSerif"
+				font.pixelSize: 12
+			}
+			
+			Text {
 				id:textFolder
 				
 				width: parent.width
-				height: parent.height
+				height: parent.height/2
 				anchors.left: fileImage.right
 				anchors.leftMargin: 10
 				anchors.bottom: parent.bottom
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignVCenter
 				
-				text: model.name
+				text: model.dirpath
 				font.family: "SansSerif"
-				font.pixelSize: 12				
+				font.pixelSize: 10				
 			}
 			
 			MouseArea {
@@ -76,16 +93,25 @@ ListView  {
 				onClicked: {
 					listView.currentIndex = index
 					firsttimeclicked = true	
-					backstagecomputer.browsePath(model.path)
+					if (model.type === 3) //Folder type
+						fileMenuModel.osf.listModel.changePath(model.name, model.path);
+					
 				}
-							
+				
+				onDoubleClicked: {
+					firsttimeclicked = false
+					if (model.type !== 3) //Other then folder type
+						fileMenuModel.osf.openFile(model.path)
+				}
+				
 				ToolTip {
 					id: fileToolTip
 					delay: 500
-					text: "Click to open folder and choose file."
+					text: type === 3 ? "Press to navigate to folder" : "Double click to open file"
 					visible: fileEntryMouseArea.containsMouse
-				}					
-			}
-		}				
-	}
+				}				
+			}			
+		}
+	}	
+	
 }

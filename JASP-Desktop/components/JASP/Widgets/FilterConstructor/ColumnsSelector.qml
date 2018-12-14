@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Rectangle
 {
-	color: "white"
+	color: Theme.white
 
 	z: 2
 

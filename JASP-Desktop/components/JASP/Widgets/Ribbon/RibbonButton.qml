@@ -58,7 +58,7 @@ Rectangle {
         anchors.bottom          : parent.bottom
         anchors.topMargin       : 5
 
-        color    : mice.enabled ? "black" : "lightgrey"
+        color    : mice.enabled ? Theme.black : "lightgrey"
         font.bold: false
     }
 

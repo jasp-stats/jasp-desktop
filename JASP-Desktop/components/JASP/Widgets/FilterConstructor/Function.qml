@@ -76,7 +76,7 @@ Item
 		Rectangle
 		{
 
-			color: "black"
+			color: Theme.black
 
 			anchors.left: parent.left
 			anchors.right: parent.right
@@ -169,7 +169,7 @@ Item
 			anchors.margins: 2
 			anchors.horizontalCenter: parent.horizontalCenter
 
-			color: "black"
+			color: Theme.black
 			width: 2
 
 			visible: funcRoot.isAbs
@@ -371,7 +371,7 @@ Item
 			anchors.margins: 2
 			anchors.horizontalCenter: parent.horizontalCenter
 
-			color: "black"
+			color: Theme.black
 			width: 2
 
 			visible: funcRoot.isAbs

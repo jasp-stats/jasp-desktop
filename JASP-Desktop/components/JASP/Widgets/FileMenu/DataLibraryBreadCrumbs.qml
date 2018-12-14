@@ -1,13 +1,15 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
+import JASP.Theme 1.0
 
 ListView
 {
-	id : listView
-		
-	model : breadcrumbsmodel
-			
+	anchors.left:parent.left
+	anchors.right:parent.right
+	
+	model: dataLibraryBreadCrumbsModel
+	
 	orientation: ListView.Horizontal
 	
 	delegate: RowLayout
@@ -22,7 +24,7 @@ ListView
 			
 			Rectangle {
 				id : rectArrow
-				color: "#ececec"
+				color: Theme.grayMuchLighter
 				
 				height: rect.height 
 				width: model.index > 0 ? height   : 0
@@ -41,7 +43,7 @@ ListView
 				id: rectButton
 				height: rect.height
 				width: 100				
-				border.color: "gray"
+				border.color: Theme.gray
 				border.width: 1
 				
 				anchors.left:  model.index > 0 ? rectArrow.right : rect.left
@@ -53,8 +55,8 @@ ListView
 					background: Rectangle {
 						anchors.fill: parent
 						gradient: Gradient {
-							GradientStop { position: 0 ; color:  "#e5e5e5" }
-							GradientStop { position: 1 ; color:  "white" }
+							GradientStop { position: 0 ; color:  Theme.grayMuchLighter }
+							GradientStop { position: 1 ; color:  Theme.white }
 						}
 					}
 					
@@ -65,7 +67,7 @@ ListView
 						anchors.fill: parent
 						cursorShape: Qt.PointingHandCursor 
 						onClicked: {
-							fileMenuModel.osf.breadCrumbs.indexChanged(model.index);
+							dataLibraryListModel.changePath(model.index);
 						}					
 					}
 					

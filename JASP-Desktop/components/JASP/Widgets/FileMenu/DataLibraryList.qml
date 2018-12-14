@@ -1,11 +1,10 @@
-import "qrc:/components/JASP/Widgets/"
-import "qrc:/components/JASP/Controls/"
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Window 2.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 ListView
 {
@@ -52,9 +51,9 @@ ListView
 			width: listView.width - rightscrollbar.width - (rightscrollbar.width > 0 ? listView.spacing : 0)
 			height: rectTitle.height + rectDescription.height + 3
 			border.width: 1
-			border.color: "darkgray"
+			border.color: Theme.grayDarker
 
-			color: "#ececec"
+			color: Theme.grayMuchLighter
 
 			Rectangle {
 
@@ -67,7 +66,7 @@ ListView
 				anchors.top: parent.top
 				anchors.margins: 1
 
-				color: fileEntryMouseArea.containsMouse ?  "darkgray" : "#dcdadb"
+				color: fileEntryMouseArea.containsMouse ?  Theme.grayDarker : "#dcdadb"
 	
 				Image {
 					id : firstFileOrFolderImage
@@ -199,26 +198,25 @@ ListView
 				anchors.top: rectTitle.bottom
 				anchors.margins: 1
 
-				color: "#ececec"
+				color: Theme.grayMuchLighter
 				visible: model.description !== ""
 
 				Text {
-					id:textDescription
+					id:						textDescription
 
-					width: parent.width
-					height: parent.height
-					anchors.left: parent.left
-					anchors.right: parent.right
-					anchors.top: parent.top
-					anchors.leftMargin: 10
-					anchors.topMargin: 10
+					width:					parent.width
+					height:					parent.height
+					anchors.left:			parent.left
+					anchors.right:			parent.right
+					anchors.top:			parent.top
+					anchors.leftMargin:		10
+					anchors.topMargin:		10
 
-					horizontalAlignment: Text.AlignJustify
-					wrapMode: Text.WordWrap
-					font.family: "SansSerif"
-					font.pixelSize: 12
-					textFormat: Text.StyledText
-					text: model.description
+					horizontalAlignment:	Text.AlignJustify
+					wrapMode:				Text.WordWrap
+					font:					Theme.font
+					textFormat:				Text.StyledText
+					text:					model.description
 				}
 			}
 		}

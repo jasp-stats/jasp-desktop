@@ -145,7 +145,7 @@ Item
 		{
 			id: opStripe
 			visible: operator === "/"
-			color: "black"
+			color: Theme.black
 			height: 2
 
 			anchors.left:			parent.left

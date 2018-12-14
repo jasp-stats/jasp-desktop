@@ -6,10 +6,8 @@ import JASP.Widgets 1.0
 
 Rectangle
 {
-	id:rect
-	
-	objectName: "rect"
-	color: "#ececec"
+	id:		rect
+	color:	Theme.grayMuchLighter
 	
 	property bool loggedin:			fileMenuModel.osf.loggedin
 	property bool processing:		fileMenuModel.osf.processing
@@ -20,18 +18,21 @@ Rectangle
 	{
 		id:headLabel
 		
-		width:implicitWidth
-		height:30
-		anchors.top: parent.top
-		anchors.left: parent.left
-		anchors.leftMargin: 12
-		anchors.topMargin: 12
+		width:	implicitWidth
+		height:	30
+		anchors
+		{
+			top:		parent.top
+			left:		parent.left
+			leftMargin: 12
+			topMargin:	12
+			right:		parent.right
+		}
 		verticalAlignment: Text.AlignVCenter
 		
 		text: "Open Science Framework"
-		font.family: "SansSerif"
-		font.pixelSize: 18
-		color: "black"
+		font: Theme.fontLabel
+		color: Theme.black
 	}
 	
 	
@@ -44,7 +45,7 @@ Rectangle
 			anchors.fill: parent
 			gradient: Gradient {
 				GradientStop { position: 0 ; color:  "#e5e5e5" }
-				GradientStop { position: 1 ; color:  "white" }
+				GradientStop { position: 1 ; color:  Theme.white }
 			}
 			border.color: "gray"
 			border.width: 1
@@ -77,6 +78,8 @@ Rectangle
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		anchors.leftMargin:	12  //Position datalibrary breadcrumbs
+
+		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
 	}
 	
 	
@@ -104,35 +107,43 @@ Rectangle
 		Label {
 			id : saveFilenameLabel
 			
-			width: 80
+			width:	80
 			height: 30
-			anchors.top: firstSeparator.bottom
-			anchors.left: parent.left
-			anchors.leftMargin: 12
-			anchors.topMargin: 6
+			anchors
+			{
+				top:		firstSeparator.bottom
+				left:		parent.left
+				leftMargin: 12
+				topMargin:	6
+				right:		parent.right
+			}
 			
-			text : "Filename"
-			font.family: "SansSerif"
+			text :			"Filename"
+			font.family:	"SansSerif"
 			font.pixelSize: 14
-			color: "black"
+			color:			Theme.black
 			verticalAlignment: Text.AlignVCenter
 		}
 		
-		Rectangle{
+		Rectangle
+		{
 			
 			id: saveFilenameInput
 			
-			anchors.left: saveFilenameLabel.right
-			anchors.leftMargin: 6		
-			anchors.top: saveFilenameLabel.top			
-			anchors.right: parent.right
-			anchors.rightMargin: 12
+			anchors
+			{
+				left: saveFilenameLabel.right
+				leftMargin: 6
+				top: saveFilenameLabel.top
+				right: parent.right
+				rightMargin: 12
+			}
 			height: saveFilenameLabel.height
 			clip: true
 			
-			color: "white"			
+			color: Theme.white
 			border.width: filenameText.activeFocus ? 5 : 1
-			border.color: filenameText.activeFocus ? Theme.focusBorderColor : "darkgray"
+			border.color: filenameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 			
 			TextInput {
 				
@@ -160,7 +171,7 @@ Rectangle
 				anchors.fill: parent
 				gradient: Gradient {
 					GradientStop { position: 0 ; color:  "#e5e5e5" }
-					GradientStop { position: 1 ; color:  "white" }
+					GradientStop { position: 1 ; color:  Theme.white }
 				}
 				border.color: "gray"
 				border.width: 1
@@ -186,7 +197,7 @@ Rectangle
 				anchors.fill: parent
 				gradient: Gradient {
 					GradientStop { position: 0 ; color:  "#e5e5e5" }
-					GradientStop { position: 1 ; color:  "white" }
+					GradientStop { position: 1 ; color:  Theme.white }
 				}
 				border.color: "gray"
 				border.width: 1
@@ -224,7 +235,7 @@ Rectangle
 		width: animation.width; 
 		height: animation.height + 8
 		
-		color: "#ececec"
+		color: Theme.grayMuchLighter
 		
 		anchors.horizontalCenter: osfList.horizontalCenter
 		anchors.verticalCenter: osfList.verticalCenter

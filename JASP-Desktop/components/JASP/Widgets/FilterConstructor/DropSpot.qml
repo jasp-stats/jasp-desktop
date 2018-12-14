@@ -164,7 +164,7 @@ DropArea {
 			id: dropTextInput
 
 			text: dropText.text
-			color: errorMarker.visible ? "white" : "black"
+			color: errorMarker.visible ? Theme.white : Theme.black
 			font.pixelSize: filterConstructor.fontPixelSize
 			anchors.top: parent.top
 

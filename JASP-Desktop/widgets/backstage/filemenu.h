@@ -203,7 +203,7 @@ private:
 	bool m_currentfile_button_visible;
 	bool m_computer_button_visible;
 	bool m_datalibrary_button_visible;
-	bool m_visible = true;;
+	bool m_visible = false;
 };
 
 #endif // FILEMENU_H

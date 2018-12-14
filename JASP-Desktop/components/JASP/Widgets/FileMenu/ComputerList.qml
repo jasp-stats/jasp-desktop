@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 ListView  {
 	
@@ -11,10 +12,10 @@ ListView  {
 	maximumFlickVelocity: 700
 	
 	clip: true
-	
+			
 	spacing : 10
 	
-	model: fileMenuModel.recentFiles.listModel
+	model: fileMenuModel.computer.listModel
 	
 	delegate: modelDelegate
 	
@@ -22,7 +23,7 @@ ListView  {
 		id: rightscrollbar
 		flickable: parent
 	}
-	
+		
 	Component {
 		
 		id : modelDelegate
@@ -34,8 +35,8 @@ ListView  {
 			width: listView.width
 			height: 40
 			
-			border.color: "darkgray"
-			color: fileEntryMouseArea.containsMouse || (ListView.isCurrentItem && firsttimeclicked ) ?  "#dcdadb" : "#ececec"
+			border.color: Theme.grayDarker
+			color: fileEntryMouseArea.containsMouse || (ListView.isCurrentItem && firsttimeclicked ) ?  "#dcdadb" : Theme.grayMuchLighter
 			border.width: fileEntryMouseArea.containsMouse || ( ListView.isCurrentItem && firsttimeclicked ) ? 1 : 0
 			
 			Image {
@@ -52,35 +53,18 @@ ListView  {
 			}
 			
 			Text {
-				id:textFileName
-				
-				width: parent.width
-				height: parent.height/2
-				anchors.left: fileImage.right
-				anchors.leftMargin: 10
-				anchors.top: parent.top
-				horizontalAlignment: Text.AlignLeft
-				verticalAlignment: Text.AlignVCenter
-				
-				text: model.name
-				font.family: "SansSerif"
-				font.pixelSize: 12
-			}
-			
-			Text {
 				id:textFolder
 				
 				width: parent.width
-				height: parent.height/2
+				height: parent.height
 				anchors.left: fileImage.right
 				anchors.leftMargin: 10
 				anchors.bottom: parent.bottom
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignVCenter
 				
-				text: model.folder
-				font.family: "SansSerif"
-				font.pixelSize: 10				
+				text: model.name
+				font:	Theme.font
 			}
 			
 			MouseArea {
@@ -91,22 +75,17 @@ ListView  {
 				
 				onClicked: {
 					listView.currentIndex = index
-					firsttimeclicked = true					
+					firsttimeclicked = true	
+					backstagecomputer.browsePath(model.path)
 				}
-				
-				onDoubleClicked: {
-					firsttimeclicked = false
-					if (model.type !== 3) //Other then folder type
-						recentFilesListModel.openFile(model.path)
-				}
-				
+							
 				ToolTip {
 					id: fileToolTip
 					delay: 500
-					text: "Double click to open file"
+					text: "Click to open folder and choose file."
 					visible: fileEntryMouseArea.containsMouse
-				}				
-			}			
-		}
-	}	
+				}					
+			}
+		}				
+	}
 }

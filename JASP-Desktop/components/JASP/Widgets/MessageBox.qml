@@ -1,6 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 //import QtQuick.Dialogs 1.2
+import JASP.Theme 1.0
 
 Popup
 //MessageDialog
@@ -14,33 +15,84 @@ Popup
 	//title: "A Message Box!"
 	//standardButtons: Dialog.NoButton
 
-	implicitWidth:  Math.min(Math.max(400, messageText.contentWidth), mainWindowRoot.width * 0.5)
-	implicitHeight: 200
+	//implicitWidth:  Math.min(Math.max(400, messageText.contentWidth), mainWindowRoot.width * 0.5)
+	//implicitHeight: 200
 
 	//closePolicy:	Popup.CloseOnEscape //tweak this?
 
-	Text
+	height:		Math.max(titleRect.height + messageText.height, 200)
+	width:		Math.min(mainWindowRoot.width * 0.5, Math.max(500, title.width))
+
+	property bool isWarning: false
+	property bool iconVisible: isWarning
+	property real marginIcon:  iconVisible ? Theme.generalAnchorMargin : 0
+
+	Rectangle
 	{
-		id:							title
+		id:				titleRect
+		height:			title.text != "" ? title.height + 2 : 0
+		width:			parent.width - Theme.generalAnchorMargin
+		color:			Theme.blueMuchLighter
+		border.color:	Theme.blue
+		visible:		title.text != ""
 
-		text: "???"
-		horizontalAlignment:		Text.AlignHCenter
+		Text
+		{
+			id:							title
 
-		anchors.horizontalCenter:	parent.horizontalCenter
-		anchors.top:				parent.top
-
-		height:						text !== "" ? implicitHeight : 0
+			text:						"I should be changed, and I will be!"
+			horizontalAlignment:		Text.AlignHCenter
+			anchors.horizontalCenter:	parent.horizontalCenter
+			height:						text !== "" ? implicitHeight : 0
+		}
 	}
 
-	TextArea
-	{
-		id:						messageText
-		text:					"Hello!"
-		readOnly:				true
-		anchors.centerIn:		parent
-		horizontalAlignment:	TextArea.AlignHCenter
-		verticalAlignment:		TextArea.AlignVCenter
 
+	Image
+	{
+		id:			icon
+
+		source:		messageRoot.isWarning ? "qrc:/icons/exclamation.svg" : ""
+		visible:	messageRoot.iconVisible
+
+		//sizes divided by two to account for HiDpi systems
+		width:		messageRoot.iconVisible ? sourceSize.width  / 2 : 0
+		height:		messageRoot.iconVisible ? sourceSize.height / 2 : 0
+
+		sourceSize.width:	160
+		sourceSize.height:	sourceSize.width
+
+		anchors
+		{
+			left:			parent.left
+			leftMargin:		messageRoot.marginIcon
+			verticalCenter:	parent.verticalCenter
+		}
+	}
+
+	Item
+	{
+		anchors
+		{
+			left:			icon.right
+			leftMargin:		messageRoot.marginIcon
+			top:			titleRect.bottom
+			topMargin:		Theme.generalAnchorMargin
+			bottom:			parent.bottom
+			right:			parent.right
+		}
+
+		TextArea
+		{
+			id:						messageText
+			text:					"Hello, I am a title!"
+			readOnly:				true
+			anchors.fill:			parent
+			horizontalAlignment:	TextArea.AlignHCenter
+			verticalAlignment:		TextArea.AlignVCenter
+			wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
+
+		}
 	}
 
 	function showWarning(warningTitle, warningText)
@@ -48,6 +100,7 @@ Popup
 
 		messageText.text	= warningText
 		title.text			= warningTitle
+		isWarning			= true
 
 		open()
 	}

@@ -4,7 +4,7 @@ import QtQuick.Controls 2.2
 Button {
     id: buttonRef
     checkable: true
-    property color color: "black"
+    property color color: Theme.black
 
 
 

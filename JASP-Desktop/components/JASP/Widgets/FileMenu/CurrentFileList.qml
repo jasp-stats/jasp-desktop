@@ -1,7 +1,5 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
-import JASP.Controls 1.0
-
 
 ListView {
 	
@@ -12,35 +10,30 @@ ListView {
 	maximumFlickVelocity: 700
 	
 	clip: true
-		
+	
 	spacing : 10
 	
-	model: fileMenuModel.osf.listModel
+	model: fileMenuModel.currentFile.listModel
 	
-	delegate: modelDelegate
-	
-	JASPScrollBar {
-		id: rightscrollbar
-		flickable: parent
-	}
-	
+	delegate: currentFileDelegate
+		
 	Component {
 		
-		id : modelDelegate
+		id: currentFileDelegate
 		
 		Rectangle {
 			
-			id : rectFileEntry
+			id: rectFileEntry
 			
 			width: listView.width
 			height: 40
 			
-			border.color: "darkgray"
-			color: fileEntryMouseArea.containsMouse || (ListView.isCurrentItem && firsttimeclicked ) ?  "#dcdadb" : "#ececec"
+			border.color: Theme.grayDarker
+			color: fileEntryMouseArea.containsMouse || (ListView.isCurrentItem && firsttimeclicked ) ?  "#dcdadb" : Theme.grayMuchLighter
 			border.width: fileEntryMouseArea.containsMouse || ( ListView.isCurrentItem && firsttimeclicked ) ? 1 : 0
 			
 			Image {
-				id : fileImage
+				id: fileImage
 				
 				height: 0.95 * parent.height
 				width: height
@@ -49,10 +42,11 @@ ListView {
 				anchors.leftMargin: 10
 				
 				fillMode: Image.PreserveAspectFit
-				source: model.iconsource				
+				source: model.iconsource
 			}
 			
-			Text {
+			Text 
+			{
 				id:textFileName
 				
 				width: parent.width
@@ -63,9 +57,8 @@ ListView {
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignVCenter
 				
-				text: model.name
-				font.family: "SansSerif"
-				font.pixelSize: 12
+				text: fileMenuModel.currentFile.getCurrentDataFileName();
+				font:	Theme.font
 			}
 			
 			Text {
@@ -79,39 +72,36 @@ ListView {
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignVCenter
 				
-				text: model.dirpath
-				font.family: "SansSerif"
-				font.pixelSize: 10				
+				text: fileMenuModel.currentFile.getCurrentDataFolder();
+				font: Theme.font
 			}
 			
 			MouseArea {
 				id: fileEntryMouseArea
 				anchors.fill: parent
 				hoverEnabled: true
-				cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 				
 				onClicked: {
 					listView.currentIndex = index
-					firsttimeclicked = true	
-					if (model.type === 3) //Folder type
-						fileMenuModel.osf.listModel.changePath(model.name, model.path);
-					
+					firsttimeclicked = true					
 				}
 				
 				onDoubleClicked: {
-					firsttimeclicked = false
+					listView.currentIndex = index
+					firsttimeclicked = true
 					if (model.type !== 3) //Other then folder type
-						fileMenuModel.osf.openFile(model.path)
+						fileMenuModel.currentFile.listModel.syncFile(fileMenuModel.currentFile.getCurrentDataFilePath())
 				}
 				
 				ToolTip {
 					id: fileToolTip
 					delay: 500
-					text: type === 3 ? "Press to navigate to folder" : "Double click to open file"
+					text: "Double click to sync the data file"
 					visible: fileEntryMouseArea.containsMouse
-				}				
-			}			
-		}
+				}								
+			}									
+		}			
 	}	
-	
 }
+
+

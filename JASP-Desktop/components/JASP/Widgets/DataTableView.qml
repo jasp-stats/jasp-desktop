@@ -11,7 +11,7 @@ FocusScope
 
 	Rectangle
 	{
-		color:			"white"
+		color:			Theme.white
 		anchors.fill:	parent
 		z:				-1
 
