@@ -198,14 +198,16 @@ void FileMenu::sync()
 
 		std::cerr << "QMessageBox msgBox(QMessageBox::Question, QString(\"No associated data file\"), message,  QMessageBox::Yes|QMessageBox::Cancel);" << std::endl;
 
-		return;  /*
+		return;  
+		/*
 		int reply = msgBox.exec();
 		if (reply == QMessageBox::Cancel)
 			return;
 
 		QString caption = "Find Data File";
 		QString filter = "Data File (*.csv *.txt *.sav *.ods)";
-		path = QFileDialog::getOpenFileName(_mainWindow, caption, "", filter); */
+		path = QFileDialog::getOpenFileName(_mainWindow, caption, "", filter); 
+		*/
 	}
 
 	dataSetOpenCurrentRequestHandler(path);
@@ -223,7 +225,6 @@ FileEvent *FileMenu::close()
 void FileMenu::setCurrentActionIndex(int index)
 {
 	_selectedActionIndex = index;
-	//return _buttonGroup->button(index)->setChecked(true);
 }
 
 
@@ -250,8 +251,8 @@ void FileMenu::setCurrentDataFile(const QString &path)
 
 	if (setCurrentPath)
 		_bsCurrentFile->setCurrentDataFilePath(path);
-
-	//_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, enableCurrentTab);
+	
+	set_enable_currentfile_button(enableCurrentTab);
 	
 }
 
@@ -266,7 +267,6 @@ void FileMenu::setDataFileWatcher(bool watch)
 			_watcher.removePath(path);
 	}
 }
-
 
 QString FileMenu::getDefaultOutFileName()
 {
@@ -303,7 +303,6 @@ QString FileMenu::getDefaultOutFileName()
 void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
 	
-
 	//From OpenSaveWidget	
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
@@ -346,9 +345,8 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		_bsCurrentFile->setCurrentFileInfo("", Utils::FileType::unknown, false);
 		clearSyncData();
 	}
-		
-	
-	//From BacksategWidget	
+			
+	//From Backstage
 	if (event->successful())
 	{
 		if (event->operation() == FileEvent::FileOpen)
@@ -404,7 +402,7 @@ void FileMenu::dataSetOpenExampleRequestHandler(QString path)
 }
 
 /// ------- Public Slots ------------
-///From backstage
+/// From backstage
 void FileMenu::analysisAdded(Analysis *analysis)
 {
 	setEnableButton(FileOperation::SaveAs, true);
@@ -427,11 +425,6 @@ void FileMenu::dataAutoSynchronizationChanged(bool on)
 void FileMenu::test()
 {
 	
-	//setEnableButton(Open, !_buttonsenabled[Open]);
-	//setEnableButton(ExportData, !_buttonsenabled[ExportData]);
-
-	//fileMenuProperties.insert("recentfiles_button_visible", QVariant(bool(false)));
-
 }
 
 void FileMenu::fileOperationClicked(const int &action)
@@ -442,7 +435,6 @@ void FileMenu::fileOperationClicked(const int &action)
 	{
 	case FileOperation::Open:  // Open
 		setSaveMode(FileEvent::FileOpen);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::Save:  // Save
@@ -452,38 +444,30 @@ void FileMenu::fileOperationClicked(const int &action)
 		{
 			setCurrentActionIndex(FileOperation::SaveAs);
 			setSaveMode(FileEvent::FileSave);
-			//_tabPages->setCurrentWidget(_openAndSaveWidget);
-			
 		}
 		cancel = true;
 		break;
 
 	case FileOperation::SaveAs:  // Save As
 		setSaveMode(FileEvent::FileSave);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::ExportResults:  // Export Results
 		setSaveMode(FileEvent::FileExportResults);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::ExportData:  // Export Data
 		setSaveMode(FileEvent::FileExportData);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
-		break;
+			break;
 
 	case FileOperation::SyncData:  // Sync Data
 		setSaveMode(FileEvent::FileSyncData);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
-		//_openAndSaveWidget->changeTabIfCurrentFileEmpty();
-		break;
+			break;
 
 	case FileOperation::Close: // Close
 		close();
 		setCurrentActionIndex(FileOperation::Open);
 		setSaveMode(FileEvent::FileOpen);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		cancel = true;
 		break;
 	}
@@ -491,22 +475,6 @@ void FileMenu::fileOperationClicked(const int &action)
 
 void FileMenu::resourceButtonClicked(const int &resource)
 {
-
-	//if (_selectedIndex == id)
-	//	return;
-
-	bool cancel = false;
-	//emit currentChanging(id, cancel);
-
-	if (cancel)
-	{
-		//_buttonGroup->button(_selectedIndex)->setChecked(true);
-	}
-	else
-	{
-		///_selectedIndex = id;
-		//emit currentChanged(id);
-	}
 	
 	//Check the OSF tab
 	if (resource == FileLocation::OSF)
@@ -567,7 +535,7 @@ void FileMenu::clearSyncData()
 {
 	setDataFileWatcher(false); // must be done before setting the current to empty.
 	_bsCurrentFile->setCurrentDataFilePath(QString());
-	//_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
+	set_enable_currentfile_button(false);
 }
 
 bool FileMenu::clearOSFFromRecentList(QString path)

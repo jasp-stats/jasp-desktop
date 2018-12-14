@@ -244,7 +244,7 @@ Rectangle
         border.width: 1
         border.color: "darkgray"
 
-        BackstageRecentFiles{
+        RecentFiles{
             id: recentFiles
 
             anchors.fill: parent
@@ -253,7 +253,7 @@ Rectangle
             visible: true
         }
 
-        BackstageCurrentFile{
+        CurrentFile{
             id: currentFile
 
             anchors.fill: parent
@@ -262,7 +262,7 @@ Rectangle
             visible: false
         }
 
-        BackstageComputer{
+        Computer{
             id: computer
 
             anchors.fill: parent
@@ -271,7 +271,7 @@ Rectangle
             visible: false
         }
 
-        BackstageOSF{
+        OSF{
             id: osf
 
             anchors.fill: parent
@@ -280,7 +280,7 @@ Rectangle
             visible: false
         }
 
-        BackstageDataLibrary{
+        DataLibrary{
 
             id: dataLibrary
 
