@@ -60,6 +60,7 @@ QtObject {
 	readonly property int checkBoxIndicatorLength:		15
 	readonly property int defaultSingleItemListHeight:	45
 
+	readonly property int messageBoxButtonHeight:		40
 
 
 	property font font

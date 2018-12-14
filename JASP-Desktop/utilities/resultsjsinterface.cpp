@@ -19,7 +19,6 @@
 #include "resultsjsinterface.h"
 
 #include <QWebEngineHistory>
-#include <QMessageBox>
 #include <QClipboard>
 #include <QStringBuilder>
 

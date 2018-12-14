@@ -194,7 +194,7 @@ void FileMenu::sync()
 
 	if (path.isEmpty())
 	{
-		QString message = "JASP has no associated data file (csv, sav or ods file) to be synchronized with. Do you want to search for such a data file on your computer?\nNB: You can set this data file also via menu File/Sync Data.";
+		QString message = "JASP has no associated data file (csv, sav or ods file) to be synchronized with. Do you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.";
 
 		std::cerr << "QMessageBox msgBox(QMessageBox::Question, QString(\"No associated data file\"), message,  QMessageBox::Yes|QMessageBox::Cancel);" << std::endl;
 
