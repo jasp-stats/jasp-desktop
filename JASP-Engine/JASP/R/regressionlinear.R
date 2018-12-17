@@ -461,7 +461,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	if (! is.null(independent.variables) && ! is.null(dependent.variable)) {
 	  if (! options$wlsWeights == "") {
 	    covwt <- function(...) return(stats::cov.wt(..., wt=dataset[[.v(options[["wlsWeights"]])]])$cov)
-	    errors <- .hasErrors(dataset[, -which(colnames(dataset) %in% c(.v(options$wlsWeights)))], perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE, 
+	    errors <- .hasErrors(dataset[, -which(colnames(dataset) %in% c(.v(options$wlsWeights)))], perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE,
 	                         varCovData.corFun = covwt)
 	  }
 	  else {
@@ -470,7 +470,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	                         varCovData.corFun = covnwt)
 	  }
 	}
-	
+
 	################################################################################
 	#							 DESCRIPTIVES TABLE								   #
 	################################################################################
@@ -1008,7 +1008,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
 			alpha <- alpha / 100
-			
+
 			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 			empty.line$"Lower Bound" = ""
@@ -1341,35 +1341,35 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		results[["regression"]] <- regression
 
 	}
-	
-	
+
+
 	################################################################################
 	#						   BOOTSTRAPPING MODEL COEFFICIENTS TABLE   						#
 	################################################################################
-	
+
 	if (options$regressionCoefficientsEstimates == TRUE && options$regressionCoefficientsBootstrapping == TRUE) {
 
-	  if (!is.null(state) && ("bootstrap.regression" %in% names(state$results)) && !is.null(diff) && (is.list(diff) && 
+	  if (!is.null(state) && ("bootstrap.regression" %in% names(state$results)) && !is.null(diff) && (is.list(diff) &&
       (diff$regressionCoefficientsBootstrapping == FALSE && diff$regressionCoefficientsBootstrappingReplicates == FALSE &&
        diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE &&
-       diff$regressionCoefficientsEstimates == FALSE && diff$regressionCoefficientsConfidenceIntervalsInterval == FALSE && 
-       diff$regressionCoefficientsConfidenceIntervals == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&  
-       diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && 
+       diff$regressionCoefficientsEstimates == FALSE && diff$regressionCoefficientsConfidenceIntervalsInterval == FALSE &&
+       diff$regressionCoefficientsConfidenceIntervals == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
+       diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE &&
        diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
        diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-	    
+
 	    # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 	    # then, if the requested plot already exists, use it
-	    
+
 	    results[["bootstrap.regression"]] <- state$results$bootstrap.regression
-	    
+
 	  } else {
-	    
+
 	  bootstrap.regression <- list()
 	  bootstrap.regression[["title"]] <- "Bootstrap Coefficients"
-	  
+
 	  footnotes <- .newFootnotes()
-	  
+
 	  # Declare table elements
 	  fields <- list(
 	    list(name = "Model", type = "integer"),
@@ -1386,7 +1386,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Coefficient" = "",
 	    "Standard Error" = "")
 #	    "p" = "")
-	  
+
 	  dotted.line <- list( #for empty tables
 	    "Model" = ".",
 	    "Name" = ".",
@@ -1394,40 +1394,40 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Bias" = ".",
 	    "Standard Error" = ".")
 #	    "p" = ".")
-	  
+
 	  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-	    
+
 	    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
 	    alpha <- alpha / 100
-	    
+
 	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-	    
+
 	    empty.line$"Lower Bound" = ""
 	    empty.line$"Upper Bound" = ""
 	    dotted.line$"Lower Bound" = "."
 	    dotted.line$"Upper Bound" = "."
 	  }
-	  
+
 	  bootstrap.regression[["schema"]] <- list(fields = fields)
-	  
+
 	  bootstrap.regression.result <- list()
-	  
+
 	  if (perform == "run" && length(list.of.errors) == 0) {
-	    
+
 	    for (m in 1:length(lm.model)) {
-	      
+
 	      if ( class(lm.model[[ m ]]$lm.fit) == "lm" && (! (length(lm.model[[m]]$variables) == 0 && options$includeConstant == FALSE))) {
-	        
+
 	        na.estimate.names <- NULL
-	        
+
 	        if(any(is.na(lm.model[[m]]$lm.fit$coefficients))){
-	          
+
 	          #these estimates give back NA
 	          na.estimate.names <- names(lm.model[[m]]$lm.fit$coefficients)[which(is.na(lm.model[[m]]$lm.fit$coefficients))]
 	          # !!!!! if(all(is.na(tmp)))
 	        }
-	        
+
 	        .bootstrapping <- function(data, indices, formula, wlsWeights) {
 	          d <- data[indices, , drop = FALSE] # allows boot to select sample
 	          if (.unv(wlsWeights) == "") {
@@ -1438,7 +1438,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          }
 	          return(coef(fit))
 	        }
-	        
+
 	        bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$regressionCoefficientsBootstrappingReplicates, formula = formula(lm.model[[m]]$lm.fit), wlsWeights = .v(options$wlsWeights))
 	        bootstrap.coef <- bootstrap.summary$t0
 	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
@@ -1446,13 +1446,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	        len.reg <- length(bootstrap.regression.result) + 1
 	        v <- 0
-	        
+
 	        if (options$includeConstant == TRUE) {
-	          
+
 	          if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){
-	            
+
 	            v <- v + 1
-	            
+
 	            bootstrap.regression.result[[ len.reg ]] <- empty.line
 	            bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 	            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
@@ -1460,101 +1460,101 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	            bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v])
 	            bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v])
 	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	            
+
 	            if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 	              bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v)
 	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
 	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
 	            }
-	            
+
 	          } else {
-	            
+
 	            bootstrap.regression.result[[ len.reg ]] <- empty.line
 	            bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 	            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 	            bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- "NA"
 	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	          }
-	          
+
 	          len.reg <- len.reg + 1
 	        }
-	        
+
 	        sd.dep <- sd( dataset[[ dependent.base64 ]] )
-	        
+
 	        if (length(lm.model[[ m ]]$variables) > 0) {
-	          
+
 	          variables.in.model <- lm.model[[ m ]]$variables
-	          
+
 	          for (var in 1:length(variables.in.model)) {
-	            
+
 	            if (!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names) {
-	              
+
 	              v <- v - 1
 	              bootstrap.regression.result[[ len.reg ]] <- empty.line
-	              
+
 	              if (var == 1 && options$includeConstant == FALSE) {
-	                
+
 	                bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 	                bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	              }
-	              
+
 	              if (grepl(":", variables.in.model[var])) {
-	                
+
 	                # if interaction term
-	                
+
 	                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
 	                name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	                
+
 	              } else {
-	                
+
 	                name <- as.character(variables.in.model[ var])
 	              }
-	              
+
 	              bootstrap.regression.result[[ len.reg ]]$"Name" <- name
 	              bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-	              
+
 	              len.reg <- len.reg + 1
-	              
+
 	            } else {
-	              
+
 	              if (grepl(":", variables.in.model[var])) {
-	                
+
 	                # if interaction term
-	                
+
 	                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-	                
+
 	                int.var <- rep(1, nrow(dataset))
-	                
+
 	                for (i in seq_along(vars))
 	                  int.var <- int.var * dataset[[ .v(vars[i]) ]]
-	                
+
 	                sd.ind <- sd(int.var)
-	                
+
 	              } else {
-	                
+
 	                sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
 	              }
-	              
+
 	              bootstrap.regression.result[[ len.reg ]] <- empty.line
-	              
+
 	              if (var == 1 && options$includeConstant == FALSE) {
-	                
+
 	                bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 	                bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	              }
-	              
+
 	              if (grepl(":", variables.in.model[var])) {
-	                
+
 	                # if interaction term
-	                
+
 	                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
 	                name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	                
+
 	              } else {
-	                
+
 	                name <- as.character(variables.in.model[ var])
 	              }
-	              
+
 	              bootstrap.regression.result[[ len.reg ]]$"Name" <- name
 	              bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(bootstrap.coef[v+var])
 	              bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v+var])
@@ -1565,123 +1565,123 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	                bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
 	                bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
 	              }
-	              
+
 	              len.reg <- len.reg + 1
 	            }
 	          }
 	        }
-	        
+
 	      } else {
-	        
+
 	        len.reg <- length(bootstrap.regression.result) + 1
 	        bootstrap.regression.result[[ len.reg ]] <- dotted.line
 	        bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	        
+
 	        if (length(lm.model[[ m ]]$variables) > 0) {
-	          
+
 	          variables.in.model <- lm.model[[ m ]]$variables
-	          
-	          
+
+
 	          if (options$includeConstant == TRUE) {
-	            
+
 	            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 	          }
-	          
+
 	          len.reg <- len.reg + 1
-	          
+
 	          for (var in 1:length(variables.in.model)) {
-	            
+
 	            bootstrap.regression.result[[ len.reg ]] <- dotted.line
-	            
+
 	            if (grepl(":", variables.in.model[var])) {
-	              
+
 	              # if interaction term
-	              
+
 	              vars <- unlist(strsplit(variables.in.model[var], split = ":"))
 	              name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	              
+
 	            } else {
-	              
+
 	              name <- as.character(variables.in.model[ var])
 	            }
-	            
+
 	            bootstrap.regression.result[[ len.reg ]]$"Name" <- name
 	            len.reg <- len.reg + 1
 	          }
 	        }
 	      }
 	    }
-	    
+
 	  } else {
-	    
+
 	    if (length(lm.model) > 0 ) {
-	      
+
 	      for (m in 1:length(lm.model)) {
-	        
+
 	        len.reg <- length(bootstrap.regression.result) + 1
-	        
+
 	        if (options$includeConstant == TRUE) {
-	          
+
 	          bootstrap.regression.result[[ len.reg ]] <- dotted.line
 	          bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 	          bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 	          bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	          len.reg <- len.reg + 1
 	        }
-	        
+
 	        if (length(lm.model[[ m ]]$variables) > 0) {
-	          
+
 	          variables.in.model <- lm.model[[ m ]]$variables
-	          
+
 	          for (var in 1:length(variables.in.model)) {
-	            
+
 	            bootstrap.regression.result[[ len.reg ]] <- dotted.line
 	            bootstrap.regression.result[[ len.reg ]]$"Model" <- ""
-	            
+
 	            if (var == 1 && options$includeConstant == FALSE) {
 	              bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 	              bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	            }
-	            
+
 	            if (grepl(":", variables.in.model[var])) {
-	              
+
 	              # if interaction term
-	              
+
 	              vars <- unlist(strsplit(variables.in.model[var], split = ":"))
 	              name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	              
+
 	            } else {
-	              
+
 	              name <- as.character(variables.in.model[ var])
 	            }
-	            
+
 	            bootstrap.regression.result[[ len.reg ]]$"Name" <- name
 	            len.reg <- len.reg + 1
 	          }
 	        }
 	      }
-	      
+
 	    } else {
-	      
+
 	      len.reg <- length(bootstrap.regression.result) + 1
 	      bootstrap.regression.result[[ len.reg ]] <- dotted.line
 	      bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	      
+
 	      if (options$includeConstant == TRUE) {
-	        
+
 	        bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 	        bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	      }
 	    }
-	    
+
 	    if(length(list.of.errors) > 0){
-	      
+
 	      bootstrap.regression[["error"]] <- list(errorType="badData")
 	    }
 	  }
-	  
+
 	  bootstrap.regression[["data"]] <- bootstrap.regression.result
-	  
+
 	  # Check whether variables in the regression model are redundant
 	  for(i in 1:length(bootstrap.regression$data)) {
 	    if (bootstrap.regression$data[[i]]$Coefficient=="NA") {
@@ -1692,10 +1692,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	      bootstrap.regression$data[[i]]$Name <- paste0(bootstrap.regression$data[[i]]$Name, "\u207A")
 	    }
 	  }
-	  
+
 	  bootstrap.regression[["footnotes"]] <- as.list(footnotes)
 	  results[["bootstrap.regression"]] <- bootstrap.regression
-	  
+
 	  }
 	}
 
@@ -2196,11 +2196,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			lm.fit <- lm.model[[length(lm.model)]]$lm.fit
 
 			if (is.null(lm.fit) || length(options$modelTerms) == 0) {
-			  
+
 			 casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".", cooksD = ".")
-			 
+
 			} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-			  
+
 			  casewiseDiag <- .casewiseDiagnostics(lm.fit = lm.fit, diagnosticsType = options$residualsCasewiseDiagnosticsType, outliersOutside = options$residualsCasewiseDiagnosticsOutliersOutside, cooksDistance = options$residualsCasewiseDiagnosticsCooksDistance)
 				caseNumbers <- casewiseDiag$index
 
@@ -2300,7 +2300,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	plotTypes <- list()
 	plotsResVsCov <- list()
 	plotsParReg <- list()
-	
+
 	if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
 	  lm.model <- lm.model[[length(lm.model)]]
 	}
@@ -2579,72 +2579,72 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 
 	if (options$plotsPartialRegression && length(options$modelTerms) > 0 && dependent.variable != "") {
-	  
+
 	  results[["plotsParReg"]] <- list(title="Partial Regression Plot(s)")
 	  variables.in.model <- variables.in.model.copy
-	  
+
 	  for (var in seq_along(variables.in.model)) {
-	    
+
 	    if (grepl(":", variables.in.model[var])) {
-	      
+
 	      list.of.errors[[ length(list.of.errors) + 1 ]] <- "Partial plots are not supported for models containing interaction terms"
-	      
+
 	    } else {
-	      
+
 	      name <- variables.in.model[var]
 	      nameTitle <- name
 	    }
-	    
+
 	    if (!is.null(state) && paste0("plotsPartialRegression", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
 	      diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
 	      && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-	      
+
 	      # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 	      # then, if the requested plot already exists, use it
-	      
+
 	      stateIndex <- which(state$plotTypes == paste0("plotsPartialRegression", variables.in.model[var]))[1]
-	      
+
 	      plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
 	      plotsParReg[[length(plotsParReg)+1]] <- state$plotsRegression[[stateIndex]]
 	      results[["plotsParReg"]]$collection <- plotsParReg
-	      
+
 	    } else {
-	      
+
 	      plot <- list()
-	      
+
 	      plot[["title"]] <- paste0(dependent.variable," vs. ", nameTitle)
 	      plot[["width"]]  <- 530
 	      plot[["height"]] <- 400
 	      plot[["status"]] <- "waiting"
-	      
+
 	      # image <- .beginSaveImage(530, 400)
 	      # .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
 	      # plot[["data"]] <- .endSaveImage(image)
-	      
+
 	      xlab <- paste0("Residuals ", name)
 	      ylab <- paste0("Residuals ", dependent.variable)
-	      
+
 	      p <- .plotResiduals(xlab = xlab, ylab = ylab, dontPlotData=TRUE, standardizedResiduals = FALSE)
-	      
+
 	      content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 	      plot[["convertible"]] <- TRUE
 	      plot[["obj"]] <- content[["obj"]]
 	      plot[["data"]] <- content[["png"]]
-	      
+
 	      plots.regression[[length(plots.regression)+1]] <- plot
 	      plotsParReg[[length(plotsParReg)+1]] <- plot
 	      results[["plotsParReg"]]$collection <- plotsParReg
-	      
+
 	      if ( ! .shouldContinue(callback(results)))
 	        return()
-	      
+
 	    }
-	    
+
 	    plotTypes[[length(plotTypes)+1]] <- paste0("plotsPartialRegression", variables.in.model[var])
-	    
+
 	  }
 	}
-	
+
 	if (perform == "run") {
 
 		j <- 1
@@ -2734,7 +2734,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 		if (options$plotResidualsCovariates && length(options$modelTerms) > 0 && dependent.variable != "") {
-		  
+
 		  k <- 1
 
 			for (var in seq_along(variables.in.model)) {
@@ -3100,89 +3100,89 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 		}
 
-		
+
 		if (options$plotsPartialRegression && length(options$modelTerms) > 0 && dependent.variable != "") {
-	  
+
 	    k <- 1
-	  
+
 	    for (var in seq_along(variables.in.model)) {
-	    
+
 	      if (!is.null(state) && paste0("plotsPartialRegression", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE
 	                                                                                                                                                   && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE &&
 	                                                                                                                                                   diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE &&
 	                                                                                                                                                   diff$missingValues == FALSE))) {
-	        
+
 	        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 	        # then, if the requested plot already exists, use it
-	      
+
 	        stateIndex <- which(state$plotTypes == paste0("plotsPartialRegression", variables.in.model[var]))[1]
-	      
+
 	        plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
 	        plotsParReg[[k]] <- state$plotsRegression[[stateIndex]]
 	        results[["plotsParReg"]]$collection <- plotsParReg
-	      
+
 	      } else {
-	      
+
 	        xVar <- dataset[[ .v(variables.in.model[var]) ]]
 	        name <- variables.in.model[var]
-	      
+
 	        plots.regression[[j]]$status <- "running"
 	        plotsParReg[[k]] <- plots.regression[[j]]
-	      
+
 	        results[["plotsParReg"]]$collection <- plotsParReg
-	      
+
 	        if ( ! .shouldContinue(callback(results)))
 	          return()
-	      
+
  	        plot <- plots.regression[[j]]
-	      
+
 	        if (length(list.of.errors) > 0) {
-	        
+
 	          plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-	        
+
 	        } else {
-	          
+
 	          plot.data <- .getDataforPartialRegressionPlots(dataset = dataset, dependent.variable = dependent.base64, variables.in.model = variables.in.model.base64, plot.variable = variables.in.model.base64[var], weights = weights)
 	          xVar <- as.numeric(unlist(plot.data["residualsIV"]))
 	          res <- as.numeric(unlist(plot.data["residualsDV"]))
 	          xlab <- paste0("Residuals ", name)
 	          ylab <- paste0("Residuals ", dependent.variable)
-	          
+
 	          p <- try(silent=FALSE, expr= {
-	          
+
 	            # image <- .beginSaveImage(530, 400)
 	            # .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
 	            # plot[["data"]] <- .endSaveImage(image)
-	          
+
 	            p <- .plotResiduals(xVar=xVar, res=res, xlab=xlab, ylab=ylab, regressionLine = TRUE, standardizedResiduals = FALSE)
 
 	            content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 	            plot[["convertible"]] <- TRUE
 	            plot[["obj"]] <- content[["obj"]]
 	            plot[["data"]] <- content[["png"]]
-	          
+
 	          })
-	        
+
 	          if (class(p) == "try-error") {
-	          
+
 	            errorMessage <- .extractErrorMessage(p)
 	            plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 	          }
 	        }
-	      
+
 	        plot[["status"]] <- "complete"
 	        plots.regression[[j]] <- plot
 	        plotsParReg[[k]] <- plot
 	        results[["plotsParReg"]]$collection <- plotsParReg
-	      
+
 	        if ( ! .shouldContinue(callback(results)))
 	          return()
-	      
+
 	      }
-	    
+
 	      j <- j + 1
 	      k <- k + 1
-	    
+
 	    }
 	  }
 	}
@@ -3396,7 +3396,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	# Cook's distance
 	cooksDAll <- cooks.distance(lm.fit)
-	
+
 	stdResiduals <- NA
 	dependent <- NA
 	predictedValues <- NA
@@ -3410,9 +3410,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	} else if (diagnosticsType == "outliersOutside") {
 
 		index <- which(abs(stdResidualsAll) > outliersOutside)
-		
+
 	} else {
-	  
+
 	  index <- seq_along(predictedValuesAll)
 	}
 
@@ -3531,9 +3531,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   if (options$steppingMethodCriteriaType == "useFValue") {
 
     maximumFvalue <- max(fValues)
-    
+
     if (! is.na(maximumFvalue) && maximumFvalue > options$steppingMethodCriteriaFEntry) {
-      
+
       maximumFvalueVariable <- candidate.variables[which.max(fValues)]
       variables.in.model <- c(variables.in.model, maximumFvalueVariable)
       candidate.variables <- candidate.variables[candidate.variables != maximumFvalueVariable]
@@ -3542,9 +3542,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   } else if (options$steppingMethodCriteriaType == "usePValue") {
 
     minimumPvalue <- min(pValues)
-    
+
     if (! is.na(minimumPvalue) && minimumPvalue < options$steppingMethodCriteriaPEntry) {
-      
+
       minimumPvalueVariable <- candidate.variables[which.min(pValues)]
       variables.in.model <- c(variables.in.model, minimumPvalueVariable)
       candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
@@ -3605,7 +3605,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	tValues <- tValues[! (names(tValues) %in% independent.null.variables)]
 	pValues <- pValues[! (names(pValues) %in% independent.null.variables)]
-  
+
 	fValues <- tValues^2
 
 	if (options$steppingMethodCriteriaType == "useFValue") {
@@ -3694,7 +3694,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
     old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
 		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, independent.null.variables, data, options, weights)
-		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables) 
+		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
 
 	}
 
@@ -3835,20 +3835,20 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     if (dontPlotData) {
 
      	dfYr <- data.frame(x = Inf, xend = Inf, y = -2, yend = 2)
-		
-			if(standardizedResiduals){	
+
+			if(standardizedResiduals){
 				p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, force = TRUE, yBreaks = -2:2, xBreaks = 1:5, yLabels = -2:2, xLabels = 1:5,
 				secondaryYaxis = ggplot2::sec_axis(~.+0,breaks = -2:2, name = "Standardize Residuals"))
-				
+
 				p <- p + ggplot2::geom_segment(data = dfYr,
 										mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
 										lwd = .3, position = ggplot2::PositionIdentity,
 										stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
-										
+
 			} else {
 				p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, force = TRUE, yBreaks = -2:2, xBreaks = 1:5, yLabels = -2:2, xLabels = 1:5)
 			}
-			
+
 			p <- JASPgraphs::themeJasp(p)
 
 	    return(p)
@@ -3866,7 +3866,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     yhigh <- max(pretty(res))
 
     yticks <- pretty(c(ylow, yhigh, 0))
-	
+
 		xLabs <- vector("character", length(xticks))
 		for (i in seq_along(xticks)) {
 			if (xticks[i] < 10^6) {
@@ -3886,39 +3886,39 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     }
 
 	if (standardizedResiduals == TRUE) {
-		
+
 	  stAxisTmp <- pretty( yticks / sd(res) )
 	  stAxisOriginalScaleTmp <- stAxisTmp * sd(res)
 	  stAxisOriginalScale <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
 	  stAxis <- stAxisOriginalScale / sd(res)
-		
+
 		dfYr <- data.frame(x = Inf, xend = Inf, y = stAxisOriginalScale[1],
 											 yend = stAxisOriginalScale[length(stAxisOriginalScale)])
-						 
+
 		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
 			secondaryYaxis = ggplot2::sec_axis(~.+0, breaks = stAxisOriginalScale, name = "Standardized Residuals\n",labels = stAxis))
-		
+
 		p <- p + ggplot2::geom_segment(data = dfYr,
 								mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
 								lwd = .3, position = ggplot2::PositionIdentity,
 								stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
-	
+
 	} else {
-		
-		dfYr <- data.frame(x = Inf, xend = Inf, y = yticks[1], yend = yticks[length(yticks)])					 
+
+		dfYr <- data.frame(x = Inf, xend = Inf, y = yticks[1], yend = yticks[length(yticks)])
 		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
-	
+
 	}
-	
+
 	if(regressionLine){
 	  p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
 	}
-	
+
 	p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
-	
+
 	# JASP theme
   p <- JASPgraphs::themeJasp(p)
-	
+
   return(p)
 
 }
@@ -3926,10 +3926,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 .plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
 
     if (dontPlotData) {
-        
+
         p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes())
         p <- JASPgraphs::themeJasp(p,xName = xlab, yName = ylab)
-        
+
         return(p)
     }
 
@@ -3937,11 +3937,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
     h <- hist(res, plot = FALSE)
     dens <- h$density
-    yhigh <- 1.2*max(h$density)
+    #yhigh <- 1.2*max(h$density)
+		dens <- density(res)
+    yhigh <- max(max(h$density), max(dens$y))
     ylow <- 0
     xticks <- base::pretty(c(res, h$breaks), min.n= 3)
 
-	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(ylow, yhigh), force = TRUE, yLabels = NULL, xLabels = xticks)
     p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
                                 binwidth = (h$breaks[2] - h$breaks[1]),
                                 fill = "grey",
@@ -3950,7 +3952,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
                                 center = ((h$breaks[2] - h$breaks[1])/2))
 	p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
 	p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
-	
+
     p <- JASPgraphs::themeJasp(p)
 
     return(p)
@@ -3959,15 +3961,15 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 
 .plotQQresidualsRegression <- function(res=NULL, xlab="Theoretical Quantiles", ylab= "Standardized Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
-	
+
     if (dontPlotData) {
-		
+
 		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab)
-		
+
         p <- JASPgraphs::themeJasp(p)
-        
+
         return(p)
-        
+
     }
 
     d <- data.frame(qqnorm(res, plot.it=FALSE))
@@ -3978,7 +3980,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     xlow <- min(pretty(xVar))
     xhigh <- max(pretty(xVar))
     xticks <- pretty(c(xlow, xhigh))
-	
+
     ylow <- min(pretty(yVar))
     yhigh <- max(pretty(yVar))
     yticks <- pretty(c(ylow, yhigh))
@@ -4000,7 +4002,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, force = TRUE)
 	p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
 	p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
-	
+
 	# JASP theme
     p <- JASPgraphs::themeJasp(p)
 
@@ -4009,13 +4011,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 }
 
 .getDataforPartialRegressionPlots = function(dataset, dependent.variable, variables.in.model, plot.variable, weights) {
-  
+
   if (all(variables.in.model == plot.variable)) {
     independent.variables <- NULL
   } else {
     independent.variables <- subset(variables.in.model, variables.in.model != plot.variable)
   }
-  
+
   # Compute Residuals DV
   dv.formula <- paste0(dependent.variable, " ~ 1")
   if (! is.null(independent.variables)) {
@@ -4026,7 +4028,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   dv.formula <- as.formula(dv.formula)
   resultsDV <- stats::lm(formula = dv.formula, data = dataset, weights = weights)
   residualsDV <- residuals(resultsDV)
-  
+
   # Compute Residuals IV
   iv.formula <- paste0(plot.variable, " ~ 1")
   if (! is.null(independent.variables)) {
@@ -4037,9 +4039,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   iv.formula <- as.formula(iv.formula)
   resultsIV <- stats::lm(formula = iv.formula, data = dataset, weights = weights)
   residualsIV <- residuals(resultsIV)
-  
+
   plot.data <- data.frame(residualsIV, residualsDV)
-  
+
   return(plot.data)
 
 }
