@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGERECENTFILES_H
-#define BACKSTAGERECENTFILES_H
+#ifndef RECENTFILES_H
+#define RECENTFILES_H
 
 #include "backstagepage.h"
 #include "recentfileslistmodel.h"
@@ -25,25 +25,25 @@
 class BackstageRecentFiles : public BackstagePage		
 {
 	Q_OBJECT	
-	Q_PROPERTY(RecentFilesListModel * recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged)
+	Q_PROPERTY(RecentFilesListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
 	explicit BackstageRecentFiles(QObject *parent = nullptr);
 
 	void pushRecentFilePath(const QString & newrecent);
 
-	RecentFilesListModel * recentFiles() const { return _recentFilesListModel; }
+	RecentFilesListModel * listModel() const { return _recentFilesListModel; }
 
 public slots:
 	void openFile(FileEvent *event);
 	
-	void setRecentFiles(RecentFilesListModel * recentFiles);
+	void setListModel(RecentFilesListModel * listModel);
 
 signals:
-	void recentFilesChanged(RecentFilesListModel * recentFiles);
+	void listModelChanged(RecentFilesListModel * listModel);
 
 private:
 	RecentFilesListModel *_recentFilesListModel;
 };
 				
-#endif // BACKSTAGERECENTFILES_H
+#endif // RECENTFILES_H

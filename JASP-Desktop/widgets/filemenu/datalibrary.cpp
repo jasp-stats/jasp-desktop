@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "backstagedatalibrary.h"
+#include "datalibrary.h"
 #include <QDir>
 #include <QQuickWidget>
 #include <QQmlContext>
