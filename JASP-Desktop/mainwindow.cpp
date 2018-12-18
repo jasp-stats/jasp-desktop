@@ -55,7 +55,7 @@
 
 #include "timers.h"
 #include "resultstesting/compareresults.h"
-#include "widgets/backstage/filemenu.h"
+#include "widgets/filemenu/filemenu.h"
 #include "gui/messageforwarder.h"
 
 using namespace std;

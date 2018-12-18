@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "backstagecomputer.h"
+#include "computer.h"
 #include <QDir>
 
 BackstageComputer::BackstageComputer(QObject *parent): BackstagePage(parent)

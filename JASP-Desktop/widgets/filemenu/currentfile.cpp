@@ -1,4 +1,4 @@
-#include "backstagecurrentfile.h"
+#include "currentfile.h"
 #include "ui_backstageform.h"
 #include "utilities/qutils.h"
 #include <QQmlContext>

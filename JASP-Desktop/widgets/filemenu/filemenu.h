@@ -24,11 +24,11 @@
 #include <QFileSystemWatcher>
 #include <QVector>
 
-#include "widgets/backstage/backstagerecentfiles.h"
-#include "widgets/backstage/backstagecurrentfile.h"
-#include "widgets/backstage/backstagecomputer.h"
-#include "widgets/backstage/backstageosf.h"
-#include "widgets/backstage/backstagedatalibrary.h"
+#include "widgets/filemenu/recentfiles.h"
+#include "widgets/filemenu/currentfile.h"
+#include "widgets/filemenu/computer.h"
+#include "widgets/filemenu/osf.h"
+#include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
 #include "filemenulistitem.h"
