@@ -2,6 +2,7 @@ import QtQuick 2.9
 import QtQuick.Controls 1.4 as Old
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
+import JASP.Theme 1.0
 
 FocusScope
 {

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2 as New
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import "FilterConstructor"
+import JASP.Theme 1.0
 
 FocusScope
 {

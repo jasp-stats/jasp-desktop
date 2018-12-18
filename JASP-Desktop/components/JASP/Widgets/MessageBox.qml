@@ -82,7 +82,7 @@ Popup
 			height:		messageRoot.iconVisible ? sourceSize.height / 2 : 0
 
 			sourceSize.width:	160
-			sourceSize.height:	sourceSize.width
+			sourceSize.height:	160
 
 			anchors.centerIn:	parent
 		}

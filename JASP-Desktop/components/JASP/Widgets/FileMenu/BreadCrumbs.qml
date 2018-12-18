@@ -15,7 +15,7 @@ ListView
 		Item
 		{
 			id:		rect
-			height: 20
+			height: rectButton.height
 			width:	rectArrow.width + rectButton.width
 			
 			Item
@@ -29,11 +29,13 @@ ListView
 
 				Image {
 					id:					rightArrow
-					anchors.fill:		parent
-					anchors.margins:	2
+					anchors.centerIn: 	parent
 					source:				"qrc:/icons/right-arrow.png"
 					sourceSize.width:	parent.width * 2
 					sourceSize.height:	parent.height * 2
+
+					height:				parent.height - 4
+					width:				parent.width - 4
 				}
 			}
 			
@@ -47,7 +49,7 @@ ListView
 				
 				anchors.left:	model.index > 0 ? rectArrow.right : rect.left
 				
-				color:			Theme.brokenWhite
+				color:			Theme.whiteBroken
 
 				Text
 				{
@@ -67,11 +69,11 @@ ListView
 					text:				model.name
 					//height:				rect.height
 					//width:				rectButton.width
-					anchors.margins:	4
+					anchors.margins:	6
 					anchors.fill:		parent
 					ToolTip.delay:		500
 					ToolTip.text:		index < count -1 ? "Back to " + model.name : model.name;
-					ToolTip.visible:	count > 1 ? hovered  : false
+					ToolTip.visible:	count > 1 ? crumbbuttonMouseArea.containsMouse  : false
 				}
 			}			
 		}

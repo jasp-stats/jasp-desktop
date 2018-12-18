@@ -192,20 +192,19 @@ ListView
 
 				id: rectDescription
 
-				height : visible ? Math.max(40,textDescription.contentHeight) + 30 : 0
-				anchors.left : parent.left
-				anchors.right : parent.right
-				anchors.top: rectTitle.bottom
-				anchors.margins: 1
+				height:				visible ? Math.max(40,textDescription.contentHeight) + 30 : 0
+				anchors.left:		parent.left
+				anchors.right:		parent.right
+				anchors.top:		rectTitle.bottom
+				anchors.margins:	1
 
-				color: Theme.grayMuchLighter
-				visible: model.description !== ""
+				color:				Theme.grayMuchLighter
+				visible:			model.description !== ""
 
 				Text {
 					id:						textDescription
 
 					width:					parent.width
-					height:					parent.height
 					anchors.left:			parent.left
 					anchors.right:			parent.right
 					anchors.top:			parent.top

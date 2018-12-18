@@ -1,5 +1,5 @@
 import QtQuick 2.9
-
+import JASP.Theme 1.0
 
 Item
 {

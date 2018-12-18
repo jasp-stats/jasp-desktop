@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import JASP.Theme 1.0
 
 ListView {
 	id: listOfStuff

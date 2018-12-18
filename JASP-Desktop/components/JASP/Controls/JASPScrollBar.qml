@@ -19,6 +19,7 @@
 // Code based on http://stackoverflow.com/questions/17833103/how-to-create-scrollbar-in-qtquick-2-0
 
 import QtQuick 2.0;
+import JASP.Theme 1.0
 
 Item {
 	id: scrollbar;
