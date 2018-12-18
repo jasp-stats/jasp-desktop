@@ -18,6 +18,7 @@
 
 #include "backstagecomputer.h"
 #include <QDir>
+#include "gui/messageforwarder.h"
 
 BackstageComputer::BackstageComputer(QObject *parent): BackstagePage(parent)
 {
@@ -36,11 +37,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	if (_mode == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
 
-	QString finalPath = "???";
-
-	std::cerr << "finalPath not being set cause we aint got filedialog: QFileDialog::getOpenFileName(this, \"Open\", browsePath, filter);" << std::endl;
-
-	throw std::runtime_error("AAARGH");
+	QString finalPath = MessageForwarder::openFileBrowse("Open", browsePath, filter);
 
 	FileEvent *event = new FileEvent(this, _mode);
 
@@ -100,12 +97,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 		throw std::runtime_error("Wrong FileEvent type for saving!");
 	}
 
-	QString finalPath = "???";
-
-	std::cerr << "QFileDialog::getSaveFileName(this, caption, browsePath, filter);" << std::endl;;
-
-	throw std::runtime_error("AAARG!");
-
+	QString finalPath = MessageForwarder::saveFileBrowse(caption, browsePath, filter);
 	FileEvent *event = new FileEvent(this, mode);
 
 	if (finalPath != "")

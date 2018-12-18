@@ -717,9 +717,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 	if (analysis->version() != AppInfo::version)
 	{
-		QMessageBox::StandardButton reply = QMessageBox::Ok;// QMessageBox::warning(this, "Version incompatibility", QString("This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"), QMessageBox::Ok|QMessageBox::Cancel);
-		std::cout << "analysisSaveImageHandler should ask shit" << std::endl;
-		if (reply == QMessageBox::Ok)
+		if(MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"))
 			analysis->refresh();
 	}
 	else
@@ -1058,32 +1056,32 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		if (_package->isModified())
 		{
-			QString title = "I CANNOT ACCESS THE TITLE";//windowTitle();
+			QString title = windowTitle();
 			title.chop(1);
-			/*QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title + QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
 
-			if (reply == QMessageBox::Save)
+			switch(MessageForwarder::showSaveDiscardCancel("Save Workspace?", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
 			{
-				//FileEvent *saveEvent = _backStage->save();
-				//event->chain(saveEvent);
-				//connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+			case MessageForwarder::DialogResponse::Save:
+			{
+				FileEvent *saveEvent = _fileMenu->save();
+				event->chain(saveEvent);
+				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-				ui->panel_1_Data->hide();
+				setDataPanelVisible(false);
+				break;
 			}
-			else if (reply == QMessageBox::Cancel)
-			{
+
+			case MessageForwarder::DialogResponse::Cancel:
 				event->setComplete(false);
 				dataSetIOCompleted(event);
-			}
-			else if (reply == QMessageBox::Discard)
-			{
+				break;
+
+			case MessageForwarder::DialogResponse::Discard:
 				event->setComplete(true);
 				dataSetIOCompleted(event);
-				ui->panel_1_Data->hide();
-				setDataPanelVisible(false); ??
-			}*/
-
-			std::cout << "I should show a messagebox with MODIFIED WANNA SAVE?" << std::endl;
+				setDataPanelVisible(false);
+				break;
+			}
 		}
 		else
 		{
@@ -1179,9 +1177,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			std::cout << " SHould show warning that im unable to save file" << std::endl;
-
-			///QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
+			MessageForwarder::showWarning("Save failed", "Unable to save file.\n\n" + event->message());
 
 			if(testingAndSaving)
 				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;
@@ -1397,9 +1393,7 @@ void MainWindow::fatalError()
 	if (exiting == false)
 	{
 		exiting = true;
-		std::cerr << "Should show a message box with a FATAL error saying:\n" <<
-		//QMessageBox::warning(this, "Error",
-							 "JASP has experienced an unexpected internal error.\n\n\"" << _fatalError.toStdString() << "\"\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n" << std::endl;
+		MessageForwarder::showWarning("Error", "JASP has experienced an unexpected internal error.\n\n" + _fatalError.toStdString() + "\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n");
 		QApplication::exit(1);
 	}
 }
@@ -1610,19 +1604,14 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 void MainWindow::removeAllAnalyses()
 {
-	std::cout << "removeAllAnalyses should ask confirmation!" << std::endl;
-	//QMessageBox::StandardButton reply;
-	//reply = QMessageBox::question(this, "Remove All Analyses", " Do you really want to remove all analyses ? ",
-		//						  QMessageBox::Yes|QMessageBox::No,QMessageBox::Yes);
-	//if (reply == QMessageBox::Yes)
-	{
+	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
 			if (analysis == nullptr) continue;
 			removeAnalysis(analysis);
 		}
-	}
+
 }
 
 
@@ -1695,9 +1684,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 void MainWindow::startDataEditorHandler()
 {
-	std::cout << "startDataEditorHandler isnt working right now" << std::endl;
 
-	/*
 	QString path = QString::fromStdString(_package->dataFilePath());
 	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly())
 	{
@@ -1705,22 +1692,22 @@ void MainWindow::startDataEditorHandler()
 		if (path.startsWith("http"))			message = "JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?";
 		else if (_package->dataFileReadOnly())	message = "JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?";
 
-		//QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-		//msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
-		//msgBox.setButtonText(QMessageBox::No, QString("Find Data File"));
-
-		std::cout << "startDataEditorHandler should show a messagebox, but now will just assume you wanna generate a data file" << std::endl;
-
-		int reply = QMessageBox::Yes;// msgBox.exec();
-		if (reply == QMessageBox::Cancel)
-			return;
+		MessageForwarder::DialogResponse choice = MessageForwarder::showYesNoCancel("Start Spreadsheet Editor", message, "Generate Data File", "Find Data File");
 
 		FileEvent *event = nullptr;
-		if (reply == QMessageBox::Yes)
+
+		switch(choice)
 		{
-			QString caption = "Generate Data File as CSV";
-			QString filter = "CSV Files (*.csv)";
-			QString name = "I CANT ACCESS THE TITLE RIGHT NOW";// windowTitle();
+		case MessageForwarder::DialogResponse::Cancel:
+			return;
+
+
+		case MessageForwarder::DialogResponse::Yes:
+		{
+			QString	caption = "Generate Data File as CSV",
+					filter = "CSV Files (*.csv)",
+					name = windowTitle();
+
 			std::cout << "Currently startDataEditorHandler treats title as: " << name.toStdString() << std::endl;
 
 			if (name.endsWith("*"))
@@ -1734,7 +1721,7 @@ void MainWindow::startDataEditorHandler()
 				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
 			}
 
-			path = QFileDialog::getSaveFileName(this, caption, name, filter);
+			path = MessageForwarder::saveFileBrowse(caption, name, filter);
 
 			if (path == "")
 				return;
@@ -1743,27 +1730,31 @@ void MainWindow::startDataEditorHandler()
 				path.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileGenerateData);
+			break;
 		}
-		else
+
+		case MessageForwarder::DialogResponse::No:
 		{
 			QString caption = "Find Data File";
 			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
 
-			path = QFileDialog::getOpenFileName(this, caption, "", filter);
+			path = MessageForwarder::openFileBrowse(caption, "", filter);
 			if (path == "")
 				return;
 
 			event = new FileEvent(this, FileEvent::FileSyncData);
+			break;
 		}
 
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(startDataEditorEventCompleted(FileEvent*)));
+		}
+		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
 		//connect(event, SIGNAL(completed(FileEvent*)), _backStage, SLOT(setSyncFile(FileEvent*)));
 		event->setPath(path);
 		_loader.io(event, _package);
 		showProgress();
 	}
 	else
-		startDataEditor(path);*/
+		startDataEditor(path);
 }
 
 

@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <QDebug>
 #include "utilities/settings.h"
+#include "gui/messageforwarder.h"
 
 using namespace std;
 
@@ -361,9 +362,9 @@ void PreferencesDialog::getSpreadsheetEditor()
 	applicationfolder = "/usr/bin";
 #endif
 
-	/*QString filename = QFileDialog::getOpenFileName(this, "Select a file...", applicationfolder, filter);
-	if (filename != "")
-		ui->spreadsheetEditorName->setText(filename);*/
+	QString filename = MessageForwarder::openFileBrowse("Select a file...", applicationfolder, filter);
+	//if (filename != "")
+	//	ui->spreadsheetEditorName->setText(filename);
 	
 }
 
@@ -376,12 +377,12 @@ void PreferencesDialog::getQMLFile()
 #ifdef __WIN32__
 	folder = "c:\\";
 #elif __APPLE__
-	folder = "~/Documenents";
+	folder = "~/Documents";
 #else
 	folder = "/";
 #endif
 /*
-	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", folder, filter);
+	QString filename = MessageForwarder::openFileBrowse("Select a file...", folder, filter);
 	if (filename != "")
 		ui->testAnalyseQMLName->setText(filename);	*/
 }
@@ -399,7 +400,7 @@ void PreferencesDialog::getRFile()
 	folder = "/";
 #endif
 /*
-	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", folder, filter);
+	QString filename = MessageForwarder::openFileBrowse("Select a file...", folder, filter);
 	if (filename != "")
 		ui->testAnalyseRName->setText(filename);	*/
 }

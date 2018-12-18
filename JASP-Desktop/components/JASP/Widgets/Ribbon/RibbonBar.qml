@@ -48,6 +48,6 @@ FocusScope
 			bottom:	parent.bottom
 		}
 
-		onClicked: msgBox.showYesNo("PLUS", "I am a horrible warning!")
+		//onClicked:
 	}
 }

@@ -48,7 +48,7 @@ Rectangle
 		anchors.topMargin: 10
 		
 		onClicked: {
-			backstagecomputer.browseMostRecent();		
+			fileMenuModel.computer.browseMostRecent();
 		}
 	}
 	

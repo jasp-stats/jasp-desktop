@@ -48,7 +48,7 @@ Window
 		}
 	}
 
-	MessageBox
+	/*MessageBox
 	{
 		id:	msgBox
 		z:	2
@@ -59,5 +59,5 @@ Window
 			onShowWarning:	msgBox.showWarning(title, message)
 		}
 
-	}
+	}*/
 }

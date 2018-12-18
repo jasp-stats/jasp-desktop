@@ -2,7 +2,6 @@
 #define ANALYSISQMLFORM_H
 
 #include <QQuickItem>
-#include <QMessageBox>
 #include <QQuickWidget>
 #include <QFileSystemWatcher>
 

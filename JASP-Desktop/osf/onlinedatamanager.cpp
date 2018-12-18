@@ -25,10 +25,11 @@
 #include "onlinedataconnection.h"
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
-#include <QMessageBox>
+#include "gui/messageforwarder.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/simplecryptkey.h"
 #include "utilities/settings.h"
+
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
@@ -249,10 +250,7 @@ OnlineDataNode *OnlineDataManager::uploadFileAsync(QString nodePath, QString id,
 bool OnlineDataManager::md5UploadFilter(OnlineDataNode *dataNode, OnlineDataNode::ActionFilter *filter)
 {
 	if (dataNode->exists() && dataNode->nodeId() == filter->arg1.toString() && dataNode->md5() != filter->arg2.toString())
-	{
-		int pressed = QMessageBox::warning(NULL, "File Changed", "The online copy of this file has changed since it was opened.\n\nWould you like to override the online file?", QMessageBox::Yes, QMessageBox::No);
-		return pressed == QMessageBox::Yes;
-	}
+		return MessageForwarder::showYesNo("File Changed", "The online copy of this file has changed since it was opened.\n\nWould you like to override the online file?");
 	return true;
 }
 

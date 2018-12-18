@@ -23,7 +23,6 @@
 #include <QDebug>
 
 #include <QQuickWidget>
-#include <QMessageBox>
 
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
