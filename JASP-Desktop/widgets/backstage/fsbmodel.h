@@ -70,7 +70,7 @@ protected:
 	QString _path;
 
 	static FSEntry createEntry(const QString &path, FSEntry::EntryType type = FSEntry::Other);
-	static FSEntry createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type = FSEntry::Other);
+	static FSEntry createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type = FSEntry::Other, const QString &associated_datafile = "");
 
 	FileSystemEntryList _entries;
 

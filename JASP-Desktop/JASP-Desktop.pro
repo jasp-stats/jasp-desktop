@@ -309,7 +309,6 @@ HEADERS += \
     widgets/backstage/datalibrarylistmodel.h \
     widgets/backstage/fsbmcomputer.h \
     widgets/backstage/fsbmcurrent.h \
-    widgets/backstage/fsbmexamples.h \
     widgets/backstage/fsbmodel.h \
     widgets/backstage/fsbmosf.h \
     widgets/backstage/fsbmrecent.h \
@@ -375,7 +374,9 @@ HEADERS += \
     resultstesting/compareresults.h \
     resultstesting/resultscomparetable.h \
     widgets/backstage/filemenu.h \
-    $$PWD/gui/messageforwarder.h
+    $$PWD/gui/messageforwarder.h \
+    widgets/backstage/filemenulistitem.h \
+    widgets/backstage/basiclistmodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -496,7 +497,6 @@ SOURCES += \
     widgets/backstage/datalibrarylistmodel.cpp \
     widgets/backstage/fsbmcomputer.cpp \
     widgets/backstage/fsbmcurrent.cpp \
-    widgets/backstage/fsbmexamples.cpp \
     widgets/backstage/fsbmodel.cpp \
     widgets/backstage/fsbmosf.cpp \
     widgets/backstage/fsbmrecent.cpp \
@@ -558,7 +558,8 @@ SOURCES += \
     resultstesting/compareresults.cpp \
     resultstesting/resultscomparetable.cpp \
     widgets/backstage/filemenu.cpp \
-    $$PWD/gui/messageforwarder.cpp
+    $$PWD/gui/messageforwarder.cpp \
+    widgets/backstage/basiclistmodel.cpp
 
 RESOURCES += \
     html/html.qrc \

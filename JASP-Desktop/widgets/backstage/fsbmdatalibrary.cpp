@@ -33,8 +33,7 @@
 
 const QString FSBMDataLibrary::rootelementname = "Categories";
 
-FSBMDataLibrary::FSBMDataLibrary(QObject *parent, QString root)
-	: FSBModel(parent)
+FSBMDataLibrary::FSBMDataLibrary(QObject *parent, QString root)	: FSBModel(parent)
 {
 	_rootPath = _path = root;
 	_dataLibraryRootPath = "";
@@ -224,20 +223,3 @@ bool FSBMDataLibrary::isFolder(const QString &kind)
 	return (kind.toLower() == "folder" ? true : false);
 }
 
-ExtendedFSEntry FSBMDataLibrary::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type, const QString &associated_datafile)
-{
-	ExtendedFSEntry entry;
-
-	entry.name = name;
-	entry.path = path;
-	entry.description = description;
-	entry.entryType = type;
-	entry.associated_datafile = associated_datafile;
-
-	return entry;
-}
-
-const FSBMDataLibrary::FileSystemExtendedEntryList &FSBMDataLibrary::entries() const
-{
-	return _entries;
-}

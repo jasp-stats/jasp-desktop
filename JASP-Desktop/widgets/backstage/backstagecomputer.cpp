@@ -171,5 +171,8 @@ void BackstageComputer::setListModel(ComputerListModel * listModel)
 		return;
 
 	_computerListModel = listModel;
+
+	connect(_computerListModel, &ComputerListModel::browseOpen, this, &BackstageComputer::browseOpen);
+
 	emit listModelChanged(_computerListModel);
 }

@@ -40,14 +40,19 @@ Rectangle
 		text: fileMenuModel.currentFile.getHeaderText()	//For shorcut key
 	}
 	 
-	CurrentFileList {
-		id: currentFileList
-		anchors.top: headListLabel.bottom
-		anchors.bottom: parent.bottom
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.leftMargin: 12  //Position datalibrary items
-		anchors.topMargin: 6 
-		anchors.bottomMargin: 6
+	FileList {
+		id:			currentFileList
+		cppModel:	fileMenuModel.currentFile.listModel
+
+		anchors
+		{
+			top:			headListLabel.bottom
+			bottom:			parent.bottom
+			left:			parent.left
+			right:			parent.right
+			leftMargin:		12  //Position datalibrary items
+			topMargin:		6
+			bottomMargin:	6
+		}
 	}
 }

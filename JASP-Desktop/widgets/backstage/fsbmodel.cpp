@@ -86,33 +86,36 @@ FSEntry FSBModel::createEntry(const QString &path, FSEntry::EntryType type)
 	entry.entryType = type;
 
 	int index = path.lastIndexOf("/");
-	if (index == -1) {
+	if (index == -1)
 		index = path.lastIndexOf("\\");
-	}
+
 	if (index != -1)
 	{
-		entry.name = path.mid(index + 1);
-		entry.path = path;
-		entry.description = path.mid(0, index);
+		entry.name			= path.mid(index + 1);
+		entry.path			= path;
+		entry.description	= path.mid(0, index);
 	}
 	else
 	{
-		entry.name = path;
-		entry.path = path;
-		entry.description = "";
+		entry.name			= path;
+		entry.path			= path;
+		entry.description	= "";
 	}
+
+	entry.associated_datafile = "";
 
 	return entry;
 }
 
-FSEntry FSBModel::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type)
+FSEntry FSBModel::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type, const QString &associated_datafile)
 {
 	FSEntry entry;
 
-	entry.name = name;
-	entry.path = path;
-	entry.description = description;
-	entry.entryType = type;
+	entry.name					= name;
+	entry.path					= path;
+	entry.description			= description;
+	entry.entryType				= type;
+	entry.associated_datafile	= associated_datafile;
 
 	return entry;
 }

@@ -170,6 +170,7 @@ Popup
 
 	function showWarning(warningTitle, warningText)
 	{
+		console.log("Showing warning with title '" + warningTitle + "' and msg '" + warningText + "'")
 
 		messageText.text	= warningText
 		title.text			= warningTitle
@@ -181,10 +182,11 @@ Popup
 		open()
 	}
 
-	function showMessage(messageTitle, messageText)
+	function showMessage(messageTitle, message)
 	{
+		console.log("Showing message with title '" + messageTitle + "' and msg '" + message + "'")
 
-		messageText.text	= messageText
+		messageText.text	= message
 		title.text			= messageTitle
 		isWarning			= false
 		isYesNo				= false
@@ -195,10 +197,11 @@ Popup
 	}
 
 
-	function showYesNo(messageTitle, messageText)
+	function showYesNo(messageTitle, message)
 	{
+		console.log("Showing messageBox with Yes/No with title '" + messageTitle + "' and msg '" + message + "'")
 
-		messageText.text	= messageText
+		messageText.text	= message
 		title.text			= messageTitle
 		isWarning			= false
 		isYesNo				= true
@@ -208,10 +211,11 @@ Popup
 		open()
 	}
 
-	function showSaveDiscardCancel(messageTitle, messageText)
+	function showSaveDiscardCancel(messageTitle, message)
 	{
+		console.log("Showing messageBox with SaveDiscardCancel with title '" + messageTitle + "' and msg '" + message + "'")
 
-		messageText.text	= messageText
+		messageText.text	= message
 		title.text			= messageTitle
 		isWarning			= false
 		isYesNo				= false

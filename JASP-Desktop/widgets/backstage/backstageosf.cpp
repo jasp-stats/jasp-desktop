@@ -470,6 +470,9 @@ void BackstageOSF::setListModel(OSFListModel * listModel)
 		return;
 
 	_osfListModel = listModel;
+
+	connect(_osfListModel, &OSFListModel::openFileRequest, this, &BackstageOSF::openFileRequest);
+
 	emit listModelChanged(_osfListModel);
 }
 

@@ -4,36 +4,28 @@
 #include <QAbstractListModel>
 #include "data/fileevent.h"
 #include "fsbmrecentfolders.h"
+#include "filemenulistitem.h"
+#include "basiclistmodel.h"
 
-class ComputerListModel : public QAbstractListModel
+class ComputerListModel : public FileMenuBasicListModel
 {
 	Q_OBJECT
-	
-	enum
-	{
-		NameRole = Qt::UserRole,
-		PathRole,
-		FolderRole,
-		TypeRole,
-		IconSourceRole
-	};
-	
+
 public:
 	explicit ComputerListModel(QObject *parent = nullptr);
-	
-	// Basic functionality:
-	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-	
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-	virtual QHash<int, QByteArray> roleNames() const override;
-	
-	QString getMostRecent();
-	void addRecentFolder(const QString &newpath);
-	void refresh();
+
+	QString					getMostRecent();
+	void					addRecentFolder(const QString &newpath);
+	void					refresh();
+
+public slots:
+	void changePath(const QString& name, const QString& path) override { emit browseOpen(path); }
+
+signals:
+	void browseOpen(const QString & path);
 					
 private:
-	FSBMRecentFolders *_fsbmRecentFoilders;
-	QHash<int, QString> _iconsources;
+	FSBMRecentFolders *_fsbmRecentFolders;
 };
 
 #endif // COMPUTERLISTMODEL_H

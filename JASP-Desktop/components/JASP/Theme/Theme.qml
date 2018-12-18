@@ -61,7 +61,7 @@ QtObject {
 	readonly property int defaultSingleItemListHeight:	45
 
 	readonly property int messageBoxButtonHeight:		40
-
+	readonly property int maximumFlickVelocity:			400
 
 	property font font
 	font.bold:		false

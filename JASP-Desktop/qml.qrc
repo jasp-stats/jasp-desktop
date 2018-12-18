@@ -82,15 +82,12 @@
         <file>components/JASP/Widgets/FileMenu/DataLibrary.qml</file>
         <file>components/JASP/Widgets/FileMenu/OSF.qml</file>
         <file>components/JASP/Widgets/FileMenu/RecentFiles.qml</file>
-        <file>components/JASP/Widgets/FileMenu/ComputerList.qml</file>
-        <file>components/JASP/Widgets/FileMenu/CurrentFileList.qml</file>
-        <file>components/JASP/Widgets/FileMenu/DataLibraryList.qml</file>
         <file>components/JASP/Widgets/FileMenu/FileMenu.qml</file>
-        <file>components/JASP/Widgets/FileMenu/OSFList.qml</file>
         <file>components/JASP/Widgets/FileMenu/OSFLogin.qml</file>
-        <file>components/JASP/Widgets/FileMenu/RecentFilesList.qml</file>
         <file>components/JASP/Widgets/FileMenu/BreadCrumbs.qml</file>
         <file>components/JASP/Widgets/MessageBox.qml</file>
         <file>components/JASP/Widgets/Ribbon/RibbonBar.qml</file>
+        <file>components/JASP/Widgets/FileMenu/ListItem.qml</file>
+        <file>components/JASP/Widgets/FileMenu/FileList.qml</file>
     </qresource>
 </RCC>

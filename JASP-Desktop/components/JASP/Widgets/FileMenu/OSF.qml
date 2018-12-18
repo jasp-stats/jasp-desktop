@@ -245,18 +245,21 @@ Rectangle
 		
 	}
 	
-	OSFList {
-		id: osfList
+	FileList {
+		id:			osfList
+		visible:	loggedin && !processing
+		cppModel:	fileMenuModel.osf.listModel
 		
-		visible: loggedin && !processing
-		
-		anchors.top: secondSeparator.bottom
-		anchors.bottom: thirdSeparator.top
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.leftMargin: 12  //Position datalibrary items
-		anchors.topMargin: 6 
-		anchors.bottomMargin: 6
+		anchors
+		{
+			top:			secondSeparator.bottom
+			left:			parent.left
+			right:			parent.right
+			bottom:			thirdSeparator.top
+			leftMargin:		12  //Position datalibrary items
+			topMargin:		6
+			bottomMargin:	6
+		}
 		
 	}
 	

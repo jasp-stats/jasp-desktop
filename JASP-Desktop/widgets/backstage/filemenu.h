@@ -31,7 +31,7 @@
 #include "widgets/backstage/backstagedatalibrary.h"
 
 #include "data/fileevent.h"
-
+#include "filemenulistitem.h"
 
 class MainWindow;
 
@@ -61,6 +61,9 @@ public:
 	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, NoFileActions};
 	Q_ENUM(FileOperation)
 	enum FileLocation {Recent = 0, Current, Computer, OSF, Examples};
+
+
+	Q_ENUM(FileMenuListItemType)
 	
 	explicit FileMenu(QObject *parent = nullptr);
 	virtual ~FileMenu() {}

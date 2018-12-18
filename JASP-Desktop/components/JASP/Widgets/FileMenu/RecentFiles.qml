@@ -32,16 +32,19 @@ Rectangle
 		orientation: Qt.Horizontal
 	}
 
-	RecentFilesList {
-		id: recentFilesList
+	FileList {
+		id:			recentFilesList
+		cppModel:	fileMenuModel.recentFiles.listModel
 
-		anchors.top: firstSeparator.bottom
-		anchors.bottom: parent.bottom
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.leftMargin: 12  //Position datalibrary items
-		anchors.topMargin: 6
-		anchors.bottomMargin: 6
-
+		anchors
+		{
+			top:			firstSeparator.bottom
+			left:			parent.left
+			right:			parent.right
+			bottom:			parent.bottom
+			leftMargin:		12  //Position datalibrary items
+			topMargin:		6
+			bottomMargin:	6
+		}
 	}
 }

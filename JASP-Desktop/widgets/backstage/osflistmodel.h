@@ -1,47 +1,35 @@
 #ifndef OSFLISTMODEL_H
 #define OSFLISTMODEL_H
 
-#include <QAbstractListModel>
+#include "basiclistmodel.h"
 #include "fsbmosf.h"
 #include "osfbreadcrumbslistmodel.h"
+#include "filemenulistitem.h"
 
-class OSFListModel : public QAbstractListModel
+class OSFListModel : public FileMenuBasicListModel
 {
 	Q_OBJECT
 	
 public:
 	explicit OSFListModel(QObject *parent, FSBMOSF * fsbMod, OSFBreadCrumbsListModel * crummyList);
 		
-	enum
-	{
-		NameRole = Qt::UserRole,
-		PathRole,
-		DescriptionRole,
-		TypeRole,
-		IconSourceRole,
-		DirRole
-	};
-		
-	// Basic functionality:
-	int rowCount(const QModelIndex &parent = QModelIndex()) const override;	
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;	
-	virtual QHash<int, QByteArray> roleNames() const override;
-			
+
 	void setFSBModel(FSBMOSF *model);
 	void setBreadCrumbsListModel (OSFBreadCrumbsListModel *osfBreadCrumbsModel);
 	void reload();
 	
 public slots:
-	void changePath(const QString& name, const QString& path);
-	void changePathCrumbIndex(const int& index);
+	void changePath(const QString& name, const QString& path)	override;
+	void changePathCrumbIndex(const int& index)					override;
+	void openFile(const QString& path)							override	{ emit openFileRequest(path); }
 	
 signals:
 	void startProcessing();
+	void openFileRequest(QString path);
 		
 private:
-	FSBMOSF *_fsbmOSF;
-	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel;
-	QHash<int, QString> _iconsources;
+	FSBMOSF					*_fsbmOSF;
+	OSFBreadCrumbsListModel	*_osfBreadCrumbsListModel;
 };
 
 #endif // OSFLISTMODEL_H

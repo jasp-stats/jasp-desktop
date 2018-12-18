@@ -209,7 +209,7 @@ Rectangle
 		anchors.left:	locationMenu.right
 		width:			aButtonVisible && fileMenuModel.visible ? mainWindowRoot.width - (fileMenu.colWidths * 2) : 0
 		height:			parent.height
-		visible:		fileMenuModel.visible || width > 0
+		visible:		fileMenuModel.visible // || width > 0
 
 		border.width: 1
 		border.color: Theme.grayDarker

@@ -9,7 +9,7 @@ ListView {
 	property real maxWidth: 300 * ppiScale
 	property real widthMargin: 10
 	spacing: 4
-	maximumFlickVelocity: 400
+	maximumFlickVelocity: Theme.maximumFlickVelocity
 
 	property int _recalculateWidth: 0 //To trigger a recalculation of the width from the delegates
 

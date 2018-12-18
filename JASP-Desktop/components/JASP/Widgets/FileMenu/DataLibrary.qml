@@ -54,9 +54,10 @@ Rectangle
 		orientation:	Qt.Horizontal
 	}
 	
-	DataLibraryList
+	FileList
 	{
-		id: datalibrarylist
+		id:			datalibrarylist
+		cppModel:	fileMenuModel.datalibrary.listModel
 
 		anchors
 		{

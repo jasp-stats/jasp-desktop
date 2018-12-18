@@ -30,49 +30,35 @@ public:
 
 	FSEntry() { entryType = Other; }
 
-	QString name;
-	QString path;
-	QString description;
+	QString	name,
+			path,
+			description,
+			associated_datafile = "";
+
 	EntryType entryType;
 	
 	static inline EntryType getEntryTypeFromPath(const QString &path)
 	{
 		Utils::FileType basefiletype = Utils::getTypeFromFileName(path.toStdString());
-		EntryType entrytype;
+
 		switch (basefiletype)
 		{
-		 case Utils::FileType::csv:
-			entrytype = FSEntry::CSV;
-			break;
-			
-		case Utils::FileType::jasp:
-			entrytype = FSEntry::JASP;
-			break;
-			
-		case Utils::FileType::sav:
-			entrytype = FSEntry::SPSS;
-			break;
-			
-		case Utils::FileType::unknown:
-			entrytype = FSEntry::NoOfTypes;
-			break;
-			
-		default:
-			entrytype = FSEntry::Other;
-			break;
-			
+		case Utils::FileType::csv:		return FSEntry::CSV;
+		case Utils::FileType::jasp:		return FSEntry::JASP;
+		case Utils::FileType::sav:		return FSEntry::SPSS;
+		case Utils::FileType::unknown:	return FSEntry::NoOfTypes;
+		default:						return FSEntry::Other;
 		}
-		return entrytype;
 	}
 
 	static QHash<int, QString> sourcesIcons()
 	{
 		static QHash<int, QString> icons = {
-			{ FSEntry::JASP,	":/icons/file-jasp.svg"		},
-			{ FSEntry::CSV,		":/icons/spreadsheet.svg"	},
-			{ FSEntry::SPSS,	":/icons/spreadsheet.svg"	},
-			{ FSEntry::Other,	":/icons/spreadsheet.svg"	},
-			{ FSEntry::Folder,	":/icons/folder.svg"		} };
+			{ FSEntry::JASP,	"qrc:/icons/file-jasp.svg"		},
+			{ FSEntry::CSV,		"qrc:/icons/spreadsheet.svg"	},
+			{ FSEntry::SPSS,	"qrc:/icons/spreadsheet.svg"	},
+			{ FSEntry::Other,	"qrc:/icons/spreadsheet.svg"	},
+			{ FSEntry::Folder,	"qrc:/icons/folder.svg"			} };
 
 		return icons;
 	}

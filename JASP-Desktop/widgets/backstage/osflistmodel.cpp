@@ -4,9 +4,8 @@
 #include <QDir>
 
 OSFListModel::OSFListModel(QObject *parent, FSBMOSF * fsbMod, OSFBreadCrumbsListModel * crummyList)
-	: QAbstractListModel(parent)
+	: FileMenuBasicListModel(parent, nullptr)
 {
-	_iconsources = FSEntry::sourcesIcons();	
 
 	setFSBModel(fsbMod);
 	setBreadCrumbsListModel(crummyList);
@@ -17,58 +16,12 @@ void OSFListModel::setBreadCrumbsListModel(OSFBreadCrumbsListModel *osfBreadCrum
 	_osfBreadCrumbsListModel = osfBreadCrumbsListModel;
 }
 
-int OSFListModel::rowCount(const QModelIndex &parent) const
-{
-	// For list models only the root node (an invalid parent) should return the list's size. For all
-	// other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-	if (parent.isValid())
-		return 0;
-	
-	return _fsbmOSF->entries().count();
-}
-
-QVariant OSFListModel::data(const QModelIndex &index, int role) const
-{
-	if (!index.isValid())
-		return QVariant();
-		
-	//Set and fill the FileSystemEntryList
-	FSBMOSF::FileSystemEntryList fileEntryList = _fsbmOSF->entries();
-	
-	//Get the FileEntry
-	FSEntry item = fileEntryList[index.row()];
-	
-	switch (role)
-	{
-	case NameRole:			return QVariant(item.name);
-	case PathRole:			return QVariant(item.path);
-	case DescriptionRole:	return QVariant(item.description);
-	case TypeRole:			return QVariant(item.entryType);
-	case IconSourceRole:	return QVariant("qrc"+_iconsources[item.entryType]);
-	case DirRole:			return QVariant(QFileInfo(item.path).path() + QDir::separator());
-	default:				return QVariant(QStringLiteral("Unknown type"));
-	}
-	
-}
-
-QHash<int, QByteArray> OSFListModel::roleNames() const
-{	
-	static QHash<int, QByteArray> names = {
-		{ NameRole,			"name" },
-		{ DescriptionRole,	"description" },
-		{ PathRole,			"path" },
-		{ TypeRole,			"type" },
-		{ IconSourceRole,	"iconsource" },
-		{ DirRole,			"dirpath" } };
-
-	return names;	
-}
-
 void OSFListModel::setFSBModel(FSBMOSF *model)
 {
 	beginResetModel();
 	
-	_fsbmOSF = model;
+	_model		= model;
+	_fsbmOSF	= model;
 	_fsbmOSF->refresh();
 	
 	endResetModel();

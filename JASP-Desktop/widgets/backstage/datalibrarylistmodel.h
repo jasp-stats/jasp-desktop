@@ -5,55 +5,29 @@
 #include "fsbmdatalibrary.h"
 #include "datalibrarybreadcrumbsmodel.h"
 #include "data/fileevent.h"
+#include "filemenulistitem.h"
+#include "basiclistmodel.h"
 
-class DataLibraryListModel : public QAbstractListModel
+class DataLibraryListModel : public FileMenuBasicListModel
 {
 	Q_OBJECT
 
 public:
-	explicit DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs);
-	
-	enum
-	{
-		NameRole = Qt::UserRole,
-		PathRole,
-		DescriptionRole,
-		TypeRole,
-		AssociatedDataFileRole,
-		IconSourceRole,
-		DataIconSourceRole,
-		DirRole
-	};
-
-	// Basic functionality:
-	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-	// Editable:
-	bool setData(const QModelIndex &index, const QVariant &value,
-				 int role = Qt::EditRole) override;
-
-
-	Qt::ItemFlags flags(const QModelIndex& index) const override;
-
-	virtual QHash<int, QByteArray> roleNames() const override;
-	
+	explicit DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs);	
 	void setBreadCrumbsListModel (DataLibraryBreadCrumbsListModel *dataLibraryBreadCrumbsModel);
 
 signals:
 	void openFile(FileEvent *event);
 
 public slots:
-	void changePath(const QString& name, const QString& path);
-	void changePathCrumbIndex(const int& index);
+	void changePath(const QString& name, const QString& path) override;
+	void changePathCrumbIndex(const int& index) override;
 	
-	void openFile(const QString& path);
+	void openFile(const QString& path) override;
 
 private:
-	FSBMDataLibrary *_fsbmDataLibrary;
+	FSBMDataLibrary					*_fsbmDataLibrary;
 	DataLibraryBreadCrumbsListModel *_dataLibraryBreadCrumbsListModel;
-	QHash<int, QString> _iconsources;
 
 };
 

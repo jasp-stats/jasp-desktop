@@ -22,12 +22,6 @@
 #include "fsbmodel.h"
 #include "common.h"
 
-class ExtendedFSEntry: public FSEntry		
-{
-public:
-	QString associated_datafile = "";	
-};
-
 class FSBMDataLibrary : public FSBModel
 {
 	Q_OBJECT
@@ -36,22 +30,16 @@ public:
 	FSBMDataLibrary(QObject *parent = NULL, QString root = "");
 	~FSBMDataLibrary();
 	void refresh() OVERRIDE;
-	typedef QList<ExtendedFSEntry> FileSystemExtendedEntryList;
 	static const QString rootelementname; //Root element in index.json
-	const FileSystemExtendedEntryList &entries() const;
 	
 private:
-	void loadRootElements();
-	void loadFilesAndFolders(const QString &path);
-	QJsonDocument *getJsonDocument();
-	QJsonDocument *_doc;
-	bool isFolder(const QString &kind);	
-	QString _dataLibraryRootPath;
-	
-	static ExtendedFSEntry createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type = FSEntry::Other, const QString &associated_datafile = "");	
-	FileSystemExtendedEntryList _entries;
+	void			loadRootElements();
+	void			loadFilesAndFolders(const QString &path);
+	QJsonDocument*	getJsonDocument();
+	bool			isFolder(const QString &kind);
 
-protected:
+	QJsonDocument	*_doc;
+	QString			_dataLibraryRootPath;
 	
 	
 };
