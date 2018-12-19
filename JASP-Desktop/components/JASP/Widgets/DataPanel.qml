@@ -9,6 +9,7 @@ Rectangle {
 	id:				rootDataset
 	color:			systemPalette.window
 
+
     ProgressBarHolder
     {
 		id:			progressBarHolder

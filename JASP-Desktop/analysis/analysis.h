@@ -39,8 +39,8 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
 
-	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool fromQML = false, bool useJaspResults = false);
-	Analysis(int id, Modules::AnalysisEntry * analysisEntry);
+	Analysis(size_t id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool fromQML = false, bool useJaspResults = false);
+	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry);
 
 	virtual ~Analysis();
 
@@ -84,7 +84,7 @@ public:
 	const	std::string &title()				const	{ return _title;				}
 	const	std::string &rfile()				const	{ return _rfile;				}
 	const	std::string &module()				const	{ return _module;				}
-			int			id()					const	{ return _id;					}
+			size_t		id()					const	{ return _id;					}
 			bool		isAutorun()				const	{ return _autorun;				}
 			bool		useData()				const	{ return _usedata;				}
 			bool		fromQML()				const	{ return _fromQML;				}
@@ -142,7 +142,7 @@ protected:
 	int						_progress		= -1;
 
 private:
-	int						_id;
+	size_t					_id;
 	std::string				_module			= "dynamic",
 							_name,
 							_title,

@@ -15,18 +15,29 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Theme 1.0
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Theme		1.0
+import JASP.Widgets		1.0
+
+Rectangle
+{
+	id:				form
+	width:			implicitWidth
+	color:			Theme.analysisBackgroundColor
+	border
+	{
+		color:		Theme.buttonBorderColor
+		width:		1
+	}
+
+	implicitWidth:	Theme.formWidth
+	implicitHeight: expanderButton.height + (Theme.formMargin * 2)
+	height:			implicitHeight
 
 
-Rectangle {
-
-	id:		form
-	width:	Theme.formWidth
-	color:	Theme.analysisBackgroundColor
     
 	default property alias	content:			column.children
 			property bool	usesJaspResults:	false
@@ -38,66 +49,156 @@ Rectangle {
     
             property int    plotHeight:         320
             property int    plotWidth:          480
+
+			property bool	expanded:			currentSelected
     
-    function getJASPControls(controls, item) {
-        for (var i = 0; i < item.children.length; ++i) {
+	function getJASPControls(controls, item)
+	{
+		for (var i = 0; i < item.children.length; ++i)
+		{
             var child = item.children[i];
             
-            if (child instanceof ExpanderButton) {
+			if (child instanceof ExpanderButton)
+			{
                 controls.push(child.button);
                 getJASPControls(controls, child.area);
-            } else if (child instanceof JASPControl) {
-                if (child.hasTabFocus) {
+			}
+			else if (child instanceof JASPControl)
+			{
+				if (child.hasTabFocus)
                     controls.push(child);
-                } else {
+				 else
                     getJASPControls(controls, child);
-                }
-            } else {
+
+			}
+			else
                 getJASPControls(controls, child);
-            }
+
         }            
     }        
-     
-    TextField { visible: false; name: "plotWidth"; inputType: "integer"; text: plotHeight }
-    TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth }
+
+	TextField { visible: false; name: "plotWidth";  inputType: "integer"; text: plotHeight }
+	TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth  }
     
-    
-    Flickable {
-        id: flickable
-        anchors.fill: parent
-        anchors.leftMargin: Theme.formMargin
-        anchors.topMargin: Theme.formMargin
-        anchors.bottomMargin: Theme.formMargin
-        // Do not set the rightMargin, but set a contentWidth as if there was a rightMargin:
-        // this space at the right side will be used by the scroller.
-        contentWidth: parent.width - 2 * Theme.formMargin
-        contentHeight: column.childrenRect.height
-        
-        Rectangle {
-            id: errorMessagesBox
-            property alias text: errorMessagesText.text
-            objectName: "errorMessagesBox"
-            visible: false
-            color: Theme.errorMessagesBackgroundColor
-            width: parent.width
-            height: errorMessagesText.height;
-            Text {
-                padding: 5
-                verticalAlignment: Text.AlignVCenter
-                id: errorMessagesText
-            }
-        }
-        
-        ColumnLayout {
-            id: column
-            anchors.top: errorMessagesBox.visible ? errorMessagesBox.bottom : parent.top
-            spacing: 10
-            width: parent.width            
-        }
-        
-        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded}
-    }
-    
+	Item
+	{
+		id:					expanderButton
+		height:				expanderRectangle.height + formContent.height
+
+		anchors.left:		parent.left
+		anchors.right:		parent.right
+		anchors.top:		parent.top
+		anchors.margins:	Theme.formMargin
+
+		function toggleExpander()
+		{
+			if(listView.currentIndex === myIndex)
+				listView.currentIndex = -1
+			else
+			{
+				listView.currentIndex = myIndex
+				formContent.forceActiveFocus()
+			}
+		}
+
+		//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
+
+		Item
+		{
+			id:				expanderRectangle
+			height:			label.contentHeight + (2 * Theme.formExpanderButtonPadding)
+
+			anchors.left:		parent.left
+			anchors.right:		parent.right
+			anchors.top:		parent.top
+
+
+			MouseArea
+			{
+				anchors.fill:	parent
+				onClicked:		expanderButton.toggleExpander();
+				hoverEnabled:	true
+				cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+			}
+
+			Image
+			{
+				id:					icon
+				height:				label.contentHeight
+				width:				label.contentHeight
+				source:				iconsFolder + (expanded ? expandedIcon : contractedIcon)
+				sourceSize.width:	width * 2
+				sourceSize.height:	height * 2
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		6
+					verticalCenter:	parent.verticalCenter
+				}
+
+				readonly property string iconsFolder:	"qrc:/images/"
+				readonly property string expandedIcon:	"expander-arrow-down.png"
+				readonly property string contractedIcon: "expander-arrow-up.png"
+			}
+
+			Text
+			{
+				id:			label
+				text:		analysisTitle
+				font:		Theme.fontLabel
+				anchors
+				{
+					left:			icon.right
+					right:			parent.right
+					margins:		5
+					verticalCenter:	parent.verticalCenter
+				}
+			}
+		}
+
+		FocusScope
+		{
+			id:				formContent
+			anchors.top:	expanderRectangle.bottom
+
+			width:			parent.width
+			height:			!form.expanded ? 0 : errorMessagesBox.height + column.implicitHeight
+
+			clip:			true
+
+			Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
+
+			Rectangle
+			{
+				property alias text:	errorMessagesText.text
+
+				id:				errorMessagesBox
+				objectName:		"errorMessagesBox"
+				visible:		false
+				color:			Theme.errorMessagesBackgroundColor
+				width:			parent.width
+				height:			visible ? errorMessagesText.height : 0
+
+				Text
+				{
+					id:					errorMessagesText
+					anchors.centerIn:	parent
+					padding:			5
+					verticalAlignment:	Text.AlignVCenter
+				}
+			}
+
+			ColumnLayout {
+				id:				column
+				anchors.top:	errorMessagesBox.bottom
+				spacing:		10
+				width:			parent.width
+
+				//visible:		currentSelected
+			}
+		}
+	}
+
     Component.onCompleted: {
         var previousExpander = null;
         getJASPControls(jaspControls, column);

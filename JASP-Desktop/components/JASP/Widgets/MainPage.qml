@@ -9,28 +9,38 @@ import JASP.Widgets 1.0
 
 OLD.SplitView
 {
+	id:				panelSplit
 	orientation:	Qt.Horizontal
 
 	DataPanel
 	{
 		id:						data
-		width:					visible ? 300 : 0
 		Layout.fillWidth:		visible
-		Layout.minimumWidth:	visible ? 200 : 0
 		visible:				mainWindow.dataPanelVisible
+		Layout.minimumWidth:	!visible ? 0 : Theme.minPanelWidth
+		implicitWidth:			!visible ? 0 : Math.max(parent.width - Theme.resultWidth, Theme.formWidth)
 	}
+
+	AnalysisForms
+	{
+		id:						analyses
+		visible:				mainWindow.dataPanelVisible
+		Layout.minimumWidth:	!visible ? 0 : Theme.formWidth
+		implicitWidth:			!visible ? 0 : Theme.formWidth
+		Layout.maximumWidth:	!visible ? 0 : Theme.formWidth
+
+
+	}
+
 
 	WebEngineView
 	{
 		id:						resultsView
 		url:					resultJsInterface.resultsPageUrl
-		Layout.minimumWidth:	100
-		width:					600
+		implicitWidth:			Theme.resultWidth
+		Layout.minimumWidth:	Theme.minPanelWidth
 
 		webChannel:				resultJsInterface.channel
-		//Component.onCompleted:	resultJsInterface.channel = webChannel
-
-		//onUrlChanged:			clear
 
 		Connections {
 			target: resultJsInterface

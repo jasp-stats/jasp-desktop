@@ -9,7 +9,7 @@ Item
 	id:			fileMenu
 
 	width:		slidePart.width
-	height:		Math.min(600, mainWindowRoot.height)
+	height:		600
 	z:			1
 	visible:	actionMenu.x + actionMenu.width > 0
 

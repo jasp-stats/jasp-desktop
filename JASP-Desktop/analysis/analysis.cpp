@@ -29,7 +29,7 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool autorun, bool usedata, bool fromQML, bool useJaspResults)
+Analysis::Analysis(size_t id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool autorun, bool usedata, bool fromQML, bool useJaspResults)
 	: _options(new Options()), _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _fromQML(fromQML), _useJaspResults(useJaspResults), _version(version)
 {
 	if (!fromQML)
@@ -47,7 +47,7 @@ Analysis::Analysis(int id, string module, string name, string title, Json::Value
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(int id, Modules::AnalysisEntry * analysisEntry)
+Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry)
 	: _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()),  _fromQML(true), _useJaspResults(true), _version(AppInfo::version), _moduleData(analysisEntry)
 {
 	bindOptionHandlers();
@@ -124,7 +124,7 @@ Json::Value Analysis::asJSON() const
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
-	analysisAsJson["id"]			= _id;
+	analysisAsJson["id"]			= int(_id);
 	analysisAsJson["name"]			= _name;
 	analysisAsJson["title"]			= _title;
 	analysisAsJson["rfile"]			= _rfile;
@@ -238,7 +238,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 	Json::Value json = Json::Value(Json::objectValue);
 
 	json["typeRequest"]			= engineStateToString(engineState::analysis);
-	json["id"]					= id();
+	json["id"]					= int(id());
 	json["perform"]				= performTypeToString(perform);
 	json["requiresInit"]		= requiresInit();
 	json["revision"]			= revision();

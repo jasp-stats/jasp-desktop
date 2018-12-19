@@ -34,7 +34,6 @@ class DataLibrary : public FileMenuObject
 	Q_PROPERTY(DataLibraryListModel * listModel						READ listModel			WRITE setListModel			NOTIFY listModelChanged)
 	Q_PROPERTY(DataLibraryBreadCrumbsListModel * breadcrumbsmodel	READ breadcrumbsmodel	WRITE setBreadcrumbsmodel	NOTIFY breadcrumbsmodelChanged)
 
-
 public:
 	explicit DataLibrary(QObject *parent = nullptr);
 	~DataLibrary() {}

@@ -113,7 +113,7 @@ private:
 	void setDataSetAndPackageInModels(DataSetPackage *package);
 	bool closeRequestCheck(bool &isSaving);
 
-	AnalysisForm* loadForm(Analysis *analysis);
+	//AnalysisForm* loadForm(Analysis *analysis);
 	AnalysisForm* createAnalysisForm(Analysis *analysis);
 
 	void closeCurrentOptionsWidget();
@@ -168,6 +168,7 @@ signals:
 	void windowTitleChanged(QString windowTitle);
 
 	void showWarning(QString title, QString message);
+	void refreshAllAnalyses();
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -177,8 +178,6 @@ private slots:
 	void analysisImageSavedHandler(Analysis* analysis);
 
 	void removeAllAnalyses();
-	void refreshAllAnalyses();
-	void refreshAnalysesUsingColumn(QString col);
 	void updateShownVariablesModel();
 
 	void helpToggled(bool on);
@@ -256,7 +255,6 @@ private:
 
 	QSettings						_settings;
 
-	analysisFormMap					_analysisFormsMap;
 	TableModelVariablesAvailable	_availableVariablesModel;
 
 	int								_scrollbarWidth = 0,

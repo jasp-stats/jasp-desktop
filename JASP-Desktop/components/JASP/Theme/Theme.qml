@@ -46,8 +46,12 @@ QtObject {
 
 	readonly property color buttonColorHovered:			uiBackground
 	readonly property color buttonBorderColorHovered:	black
+
+	readonly property color buttonColorPressed:			gray
     
-	readonly property int formWidth:			500 * ppiScale
+	readonly property int minPanelWidth:		200
+	readonly property int resultWidth:			500
+	readonly property int formWidth:			600
 	readonly property int formMargin:			10	* ppiScale
     
 	readonly property int columnSpacing:		30 * ppiScale
@@ -71,6 +75,7 @@ QtObject {
 	readonly property int defaultTextAreaHeight:		250 * ppiScale
 	readonly property int radioIndicatorDiameter:		16  * ppiScale
 	readonly property int checkBoxIndicatorLength:		15  * ppiScale
+	readonly property int formExpanderButtonPadding:	ribbonButtonPadding
 	readonly property int defaultSingleItemListHeight:	45  * ppiScale
 
 	readonly property int messageBoxButtonHeight:		40  * ppiScale

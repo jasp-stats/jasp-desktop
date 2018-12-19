@@ -6,9 +6,10 @@ Rectangle
 {
 	id: filterButtonRoot
 
-	color:			(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.buttonColorHovered			: Theme.buttonColor
-	border.color:	(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+	color:			buttonMouseArea.pressed ? Theme.buttonColorPressed :	filterButtonRoot._showHovered ? Theme.buttonColorHovered		: Theme.buttonColor
+	border.color:															filterButtonRoot._showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 	border.width:	1
+
 
 	property string	text:				""
 	property string	toolTip:			""
@@ -20,6 +21,7 @@ Rectangle
 	property bool	showIconAndText:	false
 
 	property real	_scaledDim:			32 * ppiScale
+	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
 
 	implicitWidth:	showIconAndText ? buttonText.width + buttonPadding + _scaledDim + buttonPadding : buttonIcon.visible ? _scaledDim : buttonText.width + buttonPadding
 	implicitHeight: _scaledDim

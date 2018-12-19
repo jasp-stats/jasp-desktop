@@ -24,9 +24,9 @@
 
 #include <QString>
 #include <QMap>
-#include <QObject>
+#include <QAbstractListModel>
 
-class Analyses : public QObject
+class Analyses : public QAbstractListModel
 {
 	Q_OBJECT
 
@@ -36,27 +36,45 @@ class Analyses : public QObject
 	typedef QMap<int, Analysis *> ById;
 public:
 
-				Analyses() {}
+	enum myRoles {	formPathRole = Qt::UserRole + 1,
+					titleRole };
+
+				Analyses(QObject * parent) : QAbstractListModel(parent) {}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, DynamicModules * dynamicModules);
 	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = NULL, Analysis::Status status = Analysis::Empty);
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty);
 
-	Analysis*	create(const QString &module, const QString &name)	{ return create(module, name, _nextId++, AppInfo::version); }
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry)		{ return create(analysisEntry, _nextId++);					}
+	Analysis*	create(const QString &module, const QString &name)	{ return create(module, name, _nextId++, AppInfo::version);		}
+	Analysis*	create(Modules::AnalysisEntry * analysisEntry)		{ return create(analysisEntry, _nextId++);						}
 
-	Analysis*	get(size_t id) const	{ return id < _analyses.size() ? _analyses.at(id) : NULL; }
+	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
 
+	void		setAnalysesUserData(Json::Value userData);
+	void		refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames);
 
-	typedef std::vector<Analysis*>::iterator	iterator;
+	///Applies function to some or all analyses, if applyThis returns false it stops processing.
+	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);
 
-	iterator	begin()		{ return _analyses.begin(); }
-	iterator	end()		{ return _analyses.end(); }
+	///Applies function to all analyses.
+	void		applyToAll(std::function<void(Analysis *analysis)> applyThis);
 
-	int			count() const;
+	size_t		count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
 
 	Json::Value asJson() const;
+
+//AbstractListModel functions
+public:
+	int						rowCount(const QModelIndex & = QModelIndex())				const override { return int(count()); }
+	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+	QHash<int, QByteArray>	roleNames()													const override;
+
+public slots:
+	void removeAnalysisById(size_t id);
+	void removeAnalysis(Analysis *analysis);
+	void refreshAllAnalyses();
+	void refreshAnalysesUsingColumn(QString col);
 
 signals:
 	void analysisAdded(					Analysis *source);
@@ -85,10 +103,10 @@ private:
 	void analysisEditImageHandler(		Analysis *analysis, Json::Value &options);
 
 private:
-	 std::vector<Analysis*> _analyses;
+	 std::map<size_t, Analysis*>	_analysisMap;
+	 std::vector<size_t>			_orderedIds;
 
 	size_t _nextId = 0;
 };
-
 
 #endif // ANALYSES_H

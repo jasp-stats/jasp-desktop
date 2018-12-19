@@ -73,7 +73,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_levelsTableModel		= new LevelsTableModel(this);
 	_labelFilterGenerator	= new labelFilterGenerator(_package, this);
 	_columnsModel			= new ColumnsModel(this);
-	_analyses				= new Analyses();
+	_analyses				= new Analyses(this);
 	_dynamicModules			= new DynamicModules(this);
 	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
@@ -143,6 +143,7 @@ void MainWindow::makeConnections()
 	CONNECT_SHORTCUT("Ctrl+=",		&MainWindow::zoomEqualKeysSelected);*/
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
+	connect(this,					&MainWindow::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 
 	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn				);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
@@ -184,7 +185,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				this,					&MainWindow::analysisSelectedHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisEditImage,				this,					&MainWindow::analysisEditImageHandler						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			this,					&MainWindow::removeAnalysisRequestHandler					);
+	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedPpi,			this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::ppiChanged,					this,					&MainWindow::ppiChangedHandler								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
@@ -213,7 +214,7 @@ void MainWindow::makeConnections()
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(ui->tabBar,				&TabBar::useDefaultPPIHandler,						_resultsJsInterface,	&ResultsJsInterface::getDefaultPPI							);*/
 
-	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					this,					&MainWindow::refreshAllAnalyses								);
+	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _tableModel,			&DataSetTableModel::setColumnsUsedInEasyFilter				);
 	connect(_filterModel,			&FilterModel::filterUpdated,						_tableModel,			&DataSetTableModel::refresh									);
 	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
@@ -294,6 +295,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel);
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
+	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
 	_qml->rootContext()->setContextProperty("resultJsInterface",		_resultsJsInterface);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
@@ -316,7 +318,7 @@ void MainWindow::loadQML()
 	QObject * levelsTableView		= _qml->findChild<QObject*>("levelsTableView");
 
 	connect(DataView,				SIGNAL(dataTableDoubleClicked()),	this,					SLOT(startDataEditorHandler()));
-	connect(levelsTableView,		SIGNAL(columnChanged(QString)),		this,					SLOT(refreshAnalysesUsingColumn(QString)));
+	connect(levelsTableView,		SIGNAL(columnChanged(QString)),		_analyses,				SLOT(refreshAnalysesUsingColumn(QString)));
 }
 
 /*
@@ -583,47 +585,7 @@ void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedCo
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	std::set<Analysis *> analysesToRefresh;
-
-	for (Analysis* analysis : *_analyses)
-	{
-		if (analysis == nullptr) continue;
-
-		std::set<std::string> variables = analysis->usedVariables();
-
-		if (!variables.empty())
-		{
-			std::vector<std::string> interChangecol, interChangename, interMissingcol;
-
-			std::set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(interChangecol));
-			std::set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(interChangename));
-			std::set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(interMissingcol));
-
-			bool	aNameChanged	= interChangename.size() > 0,
-					aColumnRemoved	= interMissingcol.size() > 0,
-					aColumnChanged	= interChangecol.size() > 0;
-
-			if(aNameChanged || aColumnRemoved)
-				analysis->setRefreshBlocked(true);
-
-			if (aColumnRemoved)
-				for (std::string & varname : interMissingcol)
-					analysis->removeUsedVariable(varname);
-
-			if (aNameChanged)
-				for (std::string & varname : interChangename)
-					analysis->replaceVariableName(varname, changeNameColumns[varname]);
-
-			if (aNameChanged || aColumnRemoved || aColumnChanged)
-				analysesToRefresh.insert(analysis);
-		}
-	}
-
-	for (Analysis *analysis : analysesToRefresh)
-	{
-		analysis->setRefreshBlocked(false);
-		analysis->refresh();
-	}
+	_analyses->refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldColumnNames);
 
 	_computedColumnsModel->packageSynchronized(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
@@ -813,7 +775,7 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 }
 
-AnalysisForm* MainWindow::loadForm(Analysis *analysis)
+/*AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
 	if (_analysisFormsMap.count(analysis) == 0)
 	{
@@ -828,7 +790,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	std::cerr << "_analysisFormsMap[analysis]->show(); " << std::endl;
 
 	return _analysisFormsMap[analysis];
-}
+}*/
 
 void MainWindow::updateShownVariablesModel()
 {
@@ -866,10 +828,11 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 
 void MainWindow::showForm(Analysis *analysis)
 {
+	std::cout << "MainWindow::showForm(Analysis *analysis) is being called but it aint doin' much..." << std::endl;
 	//closeCurrentOptionsWidget();
 	//_currentOptionsWidget =
 
-	loadForm(analysis);
+	//loadForm(analysis);
 
 	//if (_currentOptionsWidget != NULL)
 	{
@@ -963,25 +926,6 @@ void MainWindow::helpToggled(bool on)
 		helpWidth = ui->panel_4_Help->width();
 		ui->panel_4_Help->hide();
 	}*/
-}
-
-
-void MainWindow::checkUsedModules()
-{
-	QStringList usedModules;
-	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
-	{
-		Analysis *analysis = *itr;
-		if (analysis != nullptr && analysis->isVisible())
-		{
-			QString moduleName = QString::fromStdString(analysis->module());
-			if (!usedModules.contains(moduleName))
-				usedModules.append(moduleName);
-		}
-	}
-
-	std::cout << "Used modules not being added to plus menu" << std::endl;
-	//ui->tabBar->setModulePlusMenu(usedModules);
 }
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
@@ -1202,12 +1146,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->successful())
 		{
 			closeCurrentOptionsWidget();
-			for (auto &keyvalue : _analysisFormsMap)
-			{
-				AnalysisForm* form = keyvalue.second;
-				delete form;
-			}
-			_analysisFormsMap.clear();
 			_analyses->clear();
 			std::cout << "should hide options panel now" << std::endl;
 			setDataSetAndPackageInModels(nullptr);
@@ -1321,7 +1259,7 @@ void MainWindow::populateUIfromDataSet()
 
 	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
-	checkUsedModules();
+	//checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
 }
 
 void MainWindow::matchComputedColumnsToAnalyses()
@@ -1531,7 +1469,7 @@ void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
-		checkUsedModules();
+		//checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
 	}
 	catch (runtime_error& e)
 	{
@@ -1574,92 +1512,6 @@ void MainWindow::analysisRunned()
 		_currentAnalysis->scheduleRun();
 }
 
-
-void MainWindow::removeAnalysis(Analysis *analysis)
-{
-	bool selected = false;
-	analysis->abort();
-
-/*	if (_currentOptionsWidget != NULL && analysis == _currentAnalysis)
-	{
-		selected = true;
-		closeCurrentOptionsWidget();
-	}*/
-
-	delete _analysisFormsMap[analysis];
-	_analysisFormsMap.erase(analysis);
-
-	analysis->setVisible(false);
-
-	if (_package->isLoaded())
-		_package->setModified(true);
-
-
-	_resultsJsInterface->removeAnalysis(analysis);
-
-	if (selected)
-		std::cout << "should hide options panel now" << std::endl;
-
-	checkUsedModules();
-}
-
-
-void MainWindow::removeAllAnalyses()
-{
-	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
-		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
-		{
-			Analysis *analysis = *itr;
-			if (analysis == nullptr) continue;
-			removeAnalysis(analysis);
-		}
-
-}
-
-
-void MainWindow::refreshAllAnalyses()
-{
-	for (Analyses::iterator it = _analyses->begin(); it != _analyses->end(); ++it)
-	{
-		Analysis *analysis = *it;
-		if (analysis == nullptr) continue;
-		analysis->refresh();
-	}
-}
-
-
-void MainWindow::refreshAnalysesUsingColumn(QString col)
-{
-	std::vector<std::string> changedColumns, missingColumns;
-	std::map<std::string, std::string> changeNameColumns;
-	changedColumns.push_back(col.toStdString());
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, false);
-
-	//_package->setModified(false); //Why would we do this?
-}
-
-void MainWindow::removeAnalysisRequestHandler(int id)
-{
-	Analysis *analysis = _analyses->get(id);
-	removeAnalysis(analysis);
-}
-
-void MainWindow::getAnalysesUserData()
-{
-	QVariant userData = _resultsJsInterface->getAllUserData();
-
-	Json::Value data;
-	Json::Reader parser;
-	parser.parse(fq(userData.toString()), data);
-
-	for (Json::Value &userDataObj  : data)
-	{
-		Analysis *analysis				= _analyses->get(userDataObj["id"].asInt());
-		Json::Value &analysisUserData	= userDataObj["userdata"];
-
-		analysis->setUserData(analysisUserData);
-	}
-}
 
 void MainWindow::setPackageModified()
 {
@@ -1856,8 +1708,8 @@ void MainWindow::analysisFormChangedHandler(Analysis *analysis)
 	//if (_currentOptionsWidget == _analysisFormsMap[analysis])
 	//	closeCurrentOptionsWidget();
 
-	delete _analysisFormsMap[analysis];
-	_analysisFormsMap.erase(analysis);
+	//delete _analysisFormsMap[analysis];
+	//_analysisFormsMap.erase(analysis);
 	showForm(analysis);
 }
 
@@ -1878,9 +1730,15 @@ void MainWindow::analysesForComparingDoneAlready()
 	{
 		bool allCompleted = true;
 
-		for(Analysis * analysis : *_analyses)
-			if(analysis != nullptr && !analysis->isFinished())
+		_analyses->applyToSome([&](Analysis * analysis)
+		{
+			if(!analysis->isFinished())
+			{
 				allCompleted = false;
+				return false;
+			}
+			return true;
+		});
 
 		if(allCompleted)
 		{
@@ -2016,4 +1874,33 @@ void MainWindow::setWindowTitle(QString windowTitle)
 
 	m_windowTitle = windowTitle;
 	emit windowTitleChanged(m_windowTitle);
+}
+
+void MainWindow::removeAnalysis(Analysis *analysis)
+{
+	_analyses->removeAnalysis(analysis);
+
+	if (_package->isLoaded())
+		_package->setModified(true);
+
+	_resultsJsInterface->removeAnalysis(analysis);
+
+	//checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
+}
+
+void MainWindow::removeAllAnalyses()
+{
+	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
+		_analyses->clear();
+}
+
+void MainWindow::getAnalysesUserData()
+{
+	QVariant userData = _resultsJsInterface->getAllUserData();
+
+	Json::Value data;
+	Json::Reader parser;
+	parser.parse(fq(userData.toString()), data);
+
+	_analyses->setAnalysesUserData(data);
 }

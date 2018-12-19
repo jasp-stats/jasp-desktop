@@ -36,7 +36,9 @@ using namespace std;
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicModules * dynamicModules )
 {
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
-	int id						= analysisData["id"].asInt();
+	size_t id					= analysisData["id"].asUInt();
+
+	if(_nextId <= id) _nextId = id + 1;
 
 	Analysis *analysis;
 
@@ -89,13 +91,18 @@ Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, An
 
 void Analyses::storeAnalysis(Analysis* analysis, size_t id)
 {
+	if(_analysisMap.count(id) > 0)
+		throw std::runtime_error("Analysis with id="+std::to_string(id)+" already registered!");
+
 	if (id >= _nextId)
 		_nextId = id + 1;
 
-	while (id >= _analyses.size())
-		_analyses.push_back(NULL);
+	int newRowNum = int(count());
 
-	_analyses[id] = analysis;
+	beginInsertRows(QModelIndex(), newRowNum, newRowNum);
+	_analysisMap[id] = analysis;
+	_orderedIds.push_back(id);
+	endInsertRows();
 }
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
@@ -116,22 +123,15 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 
 void Analyses::clear()
 {
-	for (Analysis *analysis : _analyses)
-		delete analysis;
+	beginResetModel();
+	for (auto idAnalysis : _analysisMap)
+		delete idAnalysis.second;
 
-	_analyses.clear();
-}
+	_analysisMap.clear();
+	_orderedIds.clear();
 
-
-int Analyses::count() const
-{
-	int c = 0;
-
-	for (Analysis *analysis : _analyses)
-		if (analysis != NULL)
-			c++;
-
-	return c;
+	_nextId = 0;
+	endResetModel();
 }
 
 void Analyses::analysisToRefreshHandler(Analysis *analysis)
@@ -158,9 +158,171 @@ Json::Value Analyses::asJson() const
 {
 	Json::Value analysesDataList = Json::arrayValue;
 
-	for (Analysis *analysis : _analyses)
-		if (analysis != NULL && analysis->isVisible())
-			analysesDataList.append(analysis->asJSON());
+	for(auto idAnalysis : _analysisMap)
+			analysesDataList.append(idAnalysis.second->asJSON());
 
 	return analysesDataList;
 }
+
+
+void Analyses::removeAnalysis(Analysis *analysis)
+{
+	size_t id = analysis->id();
+
+	long indexAnalysis = -1;
+	for(size_t i=_orderedIds.size(); i>0; i--)
+		if(_orderedIds[i-1] == id)
+		{
+			indexAnalysis = long(i) - 1;
+			break;
+		}
+
+	beginRemoveRows(QModelIndex(), indexAnalysis, indexAnalysis);
+	analysis->abort();
+	analysis->setVisible(false);
+	_analysisMap.erase(id);
+	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
+	endRemoveRows();
+
+
+}
+
+void Analyses::refreshAllAnalyses()
+{
+	for(auto idAnalysis : _analysisMap)
+		idAnalysis.second->refresh();
+}
+
+
+void Analyses::refreshAnalysesUsingColumn(QString col)
+{
+	std::vector<std::string> changedColumns, missingColumns, oldNames;
+	std::map<std::string, std::string> changeNameColumns;
+	changedColumns.push_back(col.toStdString());
+
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldNames);
+}
+
+void Analyses::removeAnalysisById(size_t id)
+{
+	Analysis *analysis = get(id);
+	removeAnalysis(analysis);
+}
+
+void Analyses::setAnalysesUserData(Json::Value userData)
+{
+	for (Json::Value &userDataObj  : userData)
+	{
+		Analysis *analysis				= get(size_t(userDataObj["id"].asInt()));
+		Json::Value &analysisUserData	= userDataObj["userdata"];
+
+		analysis->setUserData(analysisUserData);
+	}
+}
+
+
+void Analyses::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames)
+{
+	std::set<Analysis *> analysesToRefresh;
+
+	for (auto idAnalysis : _analysisMap)
+	{
+		Analysis * analysis = idAnalysis.second;
+
+		std::set<std::string> variables = analysis->usedVariables();
+
+		if (!variables.empty())
+		{
+			std::vector<std::string> interChangecol, interChangename, interMissingcol;
+
+			std::set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(interChangecol));
+			std::set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(interChangename));
+			std::set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(interMissingcol));
+
+			bool	aNameChanged	= interChangename.size() > 0,
+					aColumnRemoved	= interMissingcol.size() > 0,
+					aColumnChanged	= interChangecol.size() > 0;
+
+			if(aNameChanged || aColumnRemoved)
+				analysis->setRefreshBlocked(true);
+
+			if (aColumnRemoved)
+				for (std::string & varname : interMissingcol)
+					analysis->removeUsedVariable(varname);
+
+			if (aNameChanged)
+				for (std::string & varname : interChangename)
+					analysis->replaceVariableName(varname, changeNameColumns[varname]);
+
+			if (aNameChanged || aColumnRemoved || aColumnChanged)
+				analysesToRefresh.insert(analysis);
+		}
+	}
+
+	for (Analysis *analysis : analysesToRefresh)
+	{
+		analysis->setRefreshBlocked(false);
+		analysis->refresh();
+	}
+}
+
+/* the information about the used modules must be made available to RibbonModel somehow
+void MainWindow::checkUsedModules()
+{
+	QStringList usedModules;
+	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+	{
+		Analysis *analysis = *itr;
+		if (analysis != nullptr && analysis->isVisible())
+		{
+			QString moduleName = QString::fromStdString(analysis->module());
+			if (!usedModules.contains(moduleName))
+				usedModules.append(moduleName);
+		}
+	}
+
+	std::cout << "Used modules not being added to plus menu" << std::endl;
+	//ui->tabBar->setModulePlusMenu(usedModules);
+}
+*/
+
+void Analyses::applyToSome(std::function<bool(Analysis *analysis)> applyThis)
+{
+	for(size_t id : _orderedIds)
+		if(!applyThis(_analysisMap[id]))
+			return;
+}
+
+void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis)
+{
+	for(size_t id : _orderedIds)
+		applyThis(_analysisMap[id]);
+}
+
+QVariant Analyses::data(const QModelIndex &index, int role)	const
+{
+	if(index.row() < 0 || index.row() > rowCount())
+		return QVariant();
+
+	size_t	row = size_t(index.row()),
+			id  = _orderedIds[row];
+
+	Analysis * analysis = _analysisMap.at(id);
+
+	switch(role)
+	{
+	case formPathRole:		return QString::fromStdString(analysis->qmlFormPath());
+	case Qt::DisplayRole:
+	case titleRole:			return QString::fromStdString(analysis->name());
+	default:				return QVariant();
+	}
+}
+
+QHash<int, QByteArray>	Analyses::roleNames() const
+{
+	static const QHash<int, QByteArray> roles = {
+		{ formPathRole, "formPath"	},
+		{ titleRole,	"title"		} };
+
+	return roles;
+};

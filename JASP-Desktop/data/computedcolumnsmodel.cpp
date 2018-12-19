@@ -282,8 +282,7 @@ void ComputedColumnsModel::checkForDependentAnalyses(std::string columnName)
 {
 	assert(_analyses != NULL);
 
-	for(Analysis * analysis : *_analyses)
-		if(analysis != NULL)
+	_analyses->applyToAll([&](Analysis * analysis)
 		{
 			std::set<std::string> usedCols = analysis->usedVariables();
 
@@ -298,7 +297,7 @@ void ComputedColumnsModel::checkForDependentAnalyses(std::string columnName)
 				if(allColsValidated)
 					analysis->refresh();
 			}
-		}
+		});
 }
 
 void ComputedColumnsModel::removeColumn()
@@ -428,9 +427,8 @@ void ComputedColumnsModel::requestComputedColumnDestruction(std::string columnNa
 
 	emit headerDataChanged(Qt::Horizontal, index, _package->dataSet()->columns().columnCount() + 1);
 
-	for(Analysis * analysis : *_analyses)
-		if(analysis != NULL)
-			analysis->removeUsedVariable(columnName);
+	_analyses->applyToAll([&](Analysis * analysis)
+		{ analysis->removeUsedVariable(columnName); } );
 
 	checkForDependentColumnsToBeSent(columnName);
 }

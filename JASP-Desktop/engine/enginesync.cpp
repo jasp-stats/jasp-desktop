@@ -232,13 +232,13 @@ void EngineSync::ProcessAnalysisRequests()
 	for(auto engine : _engines)
 		engine->handleRunningAnalysisStatusChanges();
 
-	for (Analysis *analysis : *_analyses)
+	_analyses->applyToSome([&](Analysis * analysis)
 	{
 		if(!idleEngineAvailable())
-			return;
+			return false;
 
 		if (analysis == NULL || analysis->isWaitingForModule())
-			continue;
+			return true;
 
 		bool canUseFirstEngine	= analysis->isEmpty()	|| analysis->isSaveImg() || analysis->isEditImg();
 		bool needsToRun			= canUseFirstEngine		|| analysis->isInited();
@@ -250,7 +250,11 @@ void EngineSync::ProcessAnalysisRequests()
 					_engines[i]->runAnalysisOnProcess(analysis);
 					break;
 				}
-	}
+
+		return true;
+	});
+
+
 }
 
 QProcess * EngineSync::startSlaveProcess(int no)

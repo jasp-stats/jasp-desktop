@@ -87,9 +87,9 @@ public slots:
 private:
 
 	QString				_currentlySelectedName	= "";
-	ComputedColumns		*_computedColumns		= NULL;
-	DataSetPackage		*_package				= NULL;
-	Analyses			*_analyses				= NULL;
+	ComputedColumns		*_computedColumns		= nullptr;
+	DataSetPackage		*_package				= nullptr;
+	Analyses			*_analyses				= nullptr;
 
 };
 
