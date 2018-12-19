@@ -3,9 +3,9 @@
 
 #include <QAbstractListModel>
 #include "data/fileevent.h"
-#include "fsbmrecentfolders.h"
+#include "computerfilesystem.h"
 #include "filemenulistitem.h"
-#include "basiclistmodel.h"
+#include "filemenubasiclistmodel.h"
 
 class ComputerListModel : public FileMenuBasicListModel
 {
@@ -25,7 +25,7 @@ signals:
 	void browseOpen(const QString & path);
 					
 private:
-	FSBMRecentFolders *_fsbmRecentFolders;
+	ComputerFileSystem *_fsbmRecentFolders;
 };
 
 #endif // COMPUTERLISTMODEL_H

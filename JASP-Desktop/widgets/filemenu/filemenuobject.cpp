@@ -16,25 +16,15 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBROWSERMODELCURRENT_H
-#define FSBROWSERMODELCURRENT_H
+#include "filemenuobject.h"
 
-#include "fsbmodel.h"
-#include "common.h"
-
-class FSBMCurrent : public FSBModel
+FileMenuObject::FileMenuObject(QObject *parent) : QObject(parent)
 {
-public:
-	FSBMCurrent(QObject *parent = NULL);
+	_mode = FileEvent::FileOpen;
+}
 
-	void refresh() OVERRIDE;
+void FileMenuObject::setMode(FileEvent::FileMode mode)
+{
+	_mode = mode;
+}
 
-	void setCurrent(const QString &path);
-	QString getCurrent() const;
-	bool isOnlineFile() const;
-
-private:
-	QString _current;
-};
-
-#endif // FSBROWSERMODELCURRENT_H

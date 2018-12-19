@@ -1,11 +1,11 @@
 #include "datalibrarylistmodel.h"
-#include "fsentry.h"
+#include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
 
-DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : FileMenuBasicListModel(parent, new FSBMDataLibrary(parent,  FSBMDataLibrary::rootelementname )), _dataLibraryBreadCrumbsListModel(crumbs)
+DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : FileMenuBasicListModel(parent, new DataLibraryFileSystem(parent,  DataLibraryFileSystem::rootelementname )), _dataLibraryBreadCrumbsListModel(crumbs)
 {
-	_fsbmDataLibrary = static_cast<FSBMDataLibrary*>(_model);;
+	_fsbmDataLibrary = static_cast<DataLibraryFileSystem*>(_model);;
 	_fsbmDataLibrary->refresh();
 
 	connect(this, SIGNAL(openFile(FileEvent *)), parent, SLOT(openFile(FileEvent *)));	//connect(_dataLibraryBreadCrumbsListModel, SIGNAL(indexChanged(const int &)), this, SLOT(changePath(const int &)));

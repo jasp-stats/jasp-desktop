@@ -1,8 +1,8 @@
 #ifndef OSFLISTMODEL_H
 #define OSFLISTMODEL_H
 
-#include "basiclistmodel.h"
-#include "fsbmosf.h"
+#include "filemenubasiclistmodel.h"
+#include "osffilesystem.h"
 #include "osfbreadcrumbslistmodel.h"
 #include "filemenulistitem.h"
 
@@ -11,10 +11,10 @@ class OSFListModel : public FileMenuBasicListModel
 	Q_OBJECT
 	
 public:
-	explicit OSFListModel(QObject *parent, FSBMOSF * fsbMod, OSFBreadCrumbsListModel * crummyList);
+	explicit OSFListModel(QObject *parent, OSFFileSystem * fsbMod, OSFBreadCrumbsListModel * crummyList);
 		
 
-	void setFSBModel(FSBMOSF *model);
+	void setFSBModel(OSFFileSystem *model);
 	void setBreadCrumbsListModel (OSFBreadCrumbsListModel *osfBreadCrumbsModel);
 	void reload();
 	
@@ -28,7 +28,7 @@ signals:
 	void openFileRequest(QString path);
 		
 private:
-	FSBMOSF					*_fsbmOSF;
+	OSFFileSystem					*_fsbmOSF;
 	OSFBreadCrumbsListModel	*_osfBreadCrumbsListModel;
 };
 

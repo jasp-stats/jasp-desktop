@@ -1,8 +1,8 @@
-#include "basiclistmodel.h"
+#include "filemenubasiclistmodel.h"
 #include <QFileInfo>
 #include <QDir>
 
-FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FSBModel * model) : QAbstractListModel(parent), _model(model)
+FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystemModel * model) : QAbstractListModel(parent), _model(model)
 {
 
 }
@@ -35,8 +35,8 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case DescriptionRole:			return item.description;
 	case TypeRole:					return item.entryType;
 	case AssociatedDataFileRole:	return QFileInfo(item.associated_datafile).fileName();
-	case IconSourceRole:			return FSEntry::sourcesIcons()[item.entryType];
-	case DataIconSourceRole:		return FSEntry::sourcesIcons()[FSEntry::CSV];
+	case IconSourceRole:			return FileSystemEntry::sourcesIcons()[item.entryType];
+	case DataIconSourceRole:		return FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
 	case DirRole:					return QFileInfo (item.associated_datafile).path() + QDir::separator();
 	default:						return QStringLiteral("Me know nothing");
 	}
@@ -58,7 +58,7 @@ bool FileMenuBasicListModel::setData(const QModelIndex &index, const QVariant &v
 		case NameRole:					item.name					= value.toString();									break;
 		case PathRole:					item.path					= value.toString();									break;
 		case DescriptionRole:			item.description			= value.toString();									break;
-		case TypeRole:					item.entryType				= static_cast<FSEntry::EntryType> (value.toInt());	break;
+		case TypeRole:					item.entryType				= static_cast<FileSystemEntry::EntryType> (value.toInt());	break;
 		case AssociatedDataFileRole:	item.associated_datafile	= value.toString();									break;
 		case IconSourceRole:			//Do nothing
 		case DataIconSourceRole:

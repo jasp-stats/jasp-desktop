@@ -1,12 +1,12 @@
 #include "computerlistmodel.h"
-#include "fsentry.h"
+#include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
 
 ComputerListModel::ComputerListModel(QObject *parent)
-	: FileMenuBasicListModel(parent, new FSBMRecentFolders())
+	: FileMenuBasicListModel(parent, new ComputerFileSystem())
 {
-	_fsbmRecentFolders = static_cast<FSBMRecentFolders*>(_model);
+	_fsbmRecentFolders = static_cast<ComputerFileSystem*>(_model);
 	_fsbmRecentFolders->refresh();
 }
 

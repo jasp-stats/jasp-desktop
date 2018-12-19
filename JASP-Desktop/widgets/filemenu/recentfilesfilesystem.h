@@ -16,30 +16,30 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGEPAGE_H
-#define BACKSTAGEPAGE_H
+#ifndef FSBMRECENTFILES_H
+#define FSBMRECENTFILES_H
 
-#include <QObject>
+#include "filesystemmodel.h"
+#include "common.h"
 
-#include "data/fileevent.h"
-
-class BackstagePage : public QObject
+class RecentFilesFileSystem : public FileSystemModel
 {
-	Q_OBJECT
 public:
-	explicit BackstagePage(QObject *parent = 0);
+	RecentFilesFileSystem(QObject *parent = NULL);
 
-	virtual void setMode(FileEvent::FileMode mode);
+	void refresh() OVERRIDE;
 
-signals:
-	void dataSetIORequest(FileEvent *event);
-
-	void closeDataSetSelected();
-	void exportSelected(QString filename);
+	void addRecent(const QString &path);
+	void filter(bool (*filterFunction)(QString));
 
 protected:
-	FileEvent::FileMode _mode;
+	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
+
+private:
+	QStringList load();
+	void populate(const QStringList &paths);
+	bool isUrl(const QString &path) const;
 
 };
 
-#endif // BACKSTAGEPAGE_H
+#endif // FSBMRECENTFILES_H

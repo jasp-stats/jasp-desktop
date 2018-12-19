@@ -25,22 +25,22 @@
 #include "utilities/qutils.h"
 #include "gui/messageforwarder.h"
 
-BackstageOSF::BackstageOSF(QObject *parent): BackstagePage(parent)
+OSF::OSF(QObject *parent): FileMenuObject(parent)
 {				
 	
 	setBreadCrumbs(new OSFBreadCrumbsListModel(this, QChar('/')));
 	
-	_model = new FSBMOSF(parent , FSBMOSF::rootelementname);
+	_model = new OSFFileSystem(parent , OSFFileSystem::rootelementname);
 	
 	setListModel(new OSFListModel(this, _model, _osfBreadCrumbsListModel));
 	
-	connect(_model,						&FSBMOSF::authenticationSuccess,				this,			&BackstageOSF::updateUserDetails);
-	connect(_model,						&FSBMOSF::authenticationClear,					this,			&BackstageOSF::updateUserDetails);
-	connect(_model,						&FSBMOSF::entriesChanged,						this,			&BackstageOSF::resetOSFListModel);
-	connect(_model,						&FSBMOSF::stopProcessing,						this,			&BackstageOSF::stopProcessing);
-	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&BackstageOSF::startProcessing);
+	connect(_model,						&OSFFileSystem::authenticationSuccess,				this,			&OSF::updateUserDetails);
+	connect(_model,						&OSFFileSystem::authenticationClear,					this,			&OSF::updateUserDetails);
+	connect(_model,						&OSFFileSystem::entriesChanged,						this,			&OSF::resetOSFListModel);
+	connect(_model,						&OSFFileSystem::stopProcessing,						this,			&OSF::stopProcessing);
+	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&OSF::startProcessing);
 	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
-	connect(this,						&BackstageOSF::openFileRequest,					this,			&BackstageOSF::notifyDataSetOpened);
+	connect(this,						&OSF::openFileRequest,							this,			&OSF::notifyDataSetOpened);
 
 	/*_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
@@ -51,49 +51,49 @@ BackstageOSF::BackstageOSF(QObject *parent): BackstagePage(parent)
 		
 }
 
-bool BackstageOSF::loggedin()
+bool OSF::loggedin()
 {
 	return _mLoggedin;
 }
 
-bool BackstageOSF::rememberme()
+bool OSF::rememberme()
 {
 	return _mRememberMe;
 }
 
-bool BackstageOSF::processing()
+bool OSF::processing()
 {
 	return _mProcessing;
 }
 
-bool BackstageOSF::showfiledialog()
+bool OSF::showfiledialog()
 {
 	return _mShowFileDialog;
 }
 
-QString BackstageOSF::savefilename()
+QString OSF::savefilename()
 {
 	return _mSaveFileName;
 }
 
-QString BackstageOSF::username()
+QString OSF::username()
 {
 	return _mUserName;
 }
 
-QString BackstageOSF::password()
+QString OSF::password()
 {
 	return _mPassword;
 }
 
-void BackstageOSF::setLoggedin(const bool loggedin)
+void OSF::setLoggedin(const bool loggedin)
 {
 	_mLoggedin =  loggedin;
 	emit loggedinChanged();
 
 }
 
-void BackstageOSF::setRememberme(const bool rememberme)
+void OSF::setRememberme(const bool rememberme)
 {	
 	_mRememberMe =  rememberme;
 	emit remembermeChanged();
@@ -103,25 +103,25 @@ void BackstageOSF::setRememberme(const bool rememberme)
 	
 }
 
-void BackstageOSF::setProcessing(const bool processing)
+void OSF::setProcessing(const bool processing)
 {
 	_mProcessing = processing;
 	emit processingChanged();
 }
 
-void BackstageOSF::setSavefilename(const QString &savefilename)
+void OSF::setSavefilename(const QString &savefilename)
 {
 	_mSaveFileName = savefilename;
 	emit savefilenameChanged();
 }
 
-void BackstageOSF::setShowfiledialog(const bool showdialog)
+void OSF::setShowfiledialog(const bool showdialog)
 {
 	_mShowFileDialog = showdialog;
 	emit showfiledialogChanged();
 }
 
-void BackstageOSF::setUsername(const QString &username)
+void OSF::setUsername(const QString &username)
 {
 
 	_mUserName =  username;
@@ -135,7 +135,7 @@ void BackstageOSF::setUsername(const QString &username)
 	Settings::sync();	
 }
 
-void BackstageOSF::setPassword(const QString &password)
+void OSF::setPassword(const QString &password)
 {		
 	_mPassword =  password;
 	emit passwordChanged();
@@ -153,7 +153,7 @@ void BackstageOSF::setPassword(const QString &password)
 	
 }
 
-void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
+void OSF::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_odm = odm;
 	_model->setOnlineDataManager(_odm);
@@ -162,43 +162,43 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	connect(_odm, SIGNAL(finishedUploading()), this, SLOT(stopProcessing()));
 }
 
-void BackstageOSF::attemptToConnect()
+void OSF::attemptToConnect()
 {
 	setProcessing(true);
 	_model->attemptToConnect();
 	setLoggedin(_model->isAuthenticated());	
 }
 
-void BackstageOSF::setCurrentFileName(QString currentFileName)
+void OSF::setCurrentFileName(QString currentFileName)
 {
 	_currentFileName = currentFileName;
 	setSavefilename(currentFileName);
 }
 
-void BackstageOSF::setMode(FileEvent::FileMode mode)
+void OSF::setMode(FileEvent::FileMode mode)
 {
-	BackstagePage::setMode(mode);
+	FileMenuObject::setMode(mode);
 	bool showfiledialog = (mode == FileEvent::FileExportResults || mode == FileEvent::FileGenerateData || mode == FileEvent::FileExportData || mode == FileEvent::FileSave );
 	setShowfiledialog(showfiledialog);
 }
 
 //private slots
 
-void BackstageOSF::notifyDataSetSelected(QString path)
+void OSF::notifyDataSetSelected(QString path)
 {
 	setSavefilename(QFileInfo(path).fileName());
 }
 
 
-void BackstageOSF::notifyDataSetOpened(QString path)
+void OSF::notifyDataSetOpened(QString path)
 {
-	FSBMOSF::OnlineNodeData nodeData = _model->getNodeData(path);
+	OSFFileSystem::OnlineNodeData nodeData = _model->getNodeData(path);
 	openSaveFile(nodeData.nodePath, nodeData.name);
 }
 
-void BackstageOSF::saveClicked()
+void OSF::saveClicked()
 {
-	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
+	OSFFileSystem::OnlineNodeData currentNodeData = _model->currentNodeData();
 
 	if (currentNodeData.canCreateFiles == false)
 	{
@@ -221,7 +221,7 @@ void BackstageOSF::saveClicked()
 		openSaveFile(currentNodeData.nodePath, filename);
 }
 
-void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename)
+void OSF::openSaveFile(const QString &nodePath, const QString &filename)
 {
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
@@ -249,14 +249,14 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 	emit dataSetIORequest(event);
 }
 
-void BackstageOSF::userDetailsReceived()
+void OSF::userDetailsReceived()
 {
 	OnlineUserNode *userNode = qobject_cast<OnlineUserNode*>(sender());
 
 	userNode->deleteLater();
 }
 
-void BackstageOSF::openSaveCompleted(FileEvent* event)
+void OSF::openSaveCompleted(FileEvent* event)
 {
 
 	if (event->successful())
@@ -268,7 +268,7 @@ void BackstageOSF::openSaveCompleted(FileEvent* event)
 }
 
 
-void BackstageOSF::updateUserDetails()
+void OSF::updateUserDetails()
 {
 	if (_model->isAuthenticated())
 	{
@@ -290,7 +290,7 @@ void BackstageOSF::updateUserDetails()
 	
 }
 
-void BackstageOSF::newFolderCreated()
+void OSF::newFolderCreated()
 {
 	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
 
@@ -301,9 +301,9 @@ void BackstageOSF::newFolderCreated()
 	setProcessing(false);
 }
 
-void BackstageOSF::newFolderClicked()
+void OSF::newFolderClicked()
 {
-	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
+	OSFFileSystem::OnlineNodeData currentNodeData = _model->currentNodeData();
 
 	if (currentNodeData.canCreateFolders == false)
 	{
@@ -340,19 +340,19 @@ void BackstageOSF::newFolderClicked()
 	}
 }
 
-void BackstageOSF::closeFileDialog()
+void OSF::closeFileDialog()
 {
 	setShowfiledialog(false);
 }
 
-void BackstageOSF::resetOSFListModel()
+void OSF::resetOSFListModel()
 {
 	_osfListModel->reload();
 	setProcessing(false);
 }
 
 // public slots
-void BackstageOSF::logoutClicked()
+void OSF::logoutClicked()
 {
 	_model->clearAuthentication();
 	//_logoutButton->hide();	
@@ -363,7 +363,7 @@ void BackstageOSF::logoutClicked()
 	setProcessing(false);
 }
 
-void BackstageOSF::remembermeCheckChanged(bool rememberme)
+void OSF::remembermeCheckChanged(bool rememberme)
 {
 	_mRememberMe = rememberme;
 	
@@ -375,7 +375,7 @@ void BackstageOSF::remembermeCheckChanged(bool rememberme)
 	setRememberme(rememberme);
 }
 
-void BackstageOSF::usernameTextChanged(const QString &username)
+void OSF::usernameTextChanged(const QString &username)
 {
 	_mUserName = username;
 	
@@ -387,7 +387,7 @@ void BackstageOSF::usernameTextChanged(const QString &username)
 	setUsername(username);
 }
 
-void BackstageOSF::passwordTextChanged(const QString &password)
+void OSF::passwordTextChanged(const QString &password)
 {
 	_mPassword = password;
 	
@@ -400,14 +400,14 @@ void BackstageOSF::passwordTextChanged(const QString &password)
 	
 }
 
-void BackstageOSF::updateLoginScreen()
+void OSF::updateLoginScreen()
 {
 	setRememberme(Settings::value(Settings::OSF_REMEMBER_ME).toBool());  
 	setUsername(Settings::value(Settings::OSF_USERNAME).toString());
 	setPassword(decrypt(Settings::value(Settings::OSF_PASSWORD).toString()));
 }
 
-void BackstageOSF::loginRequested(const QString &username, const QString &password)
+void OSF::loginRequested(const QString &username, const QString &password)
 {
 	if  (password == "" || username =="" )
 	{
@@ -419,30 +419,30 @@ void BackstageOSF::loginRequested(const QString &username, const QString &passwo
 	_model->authenticate(username, password);
 }
 
-void BackstageOSF::openFile(const QString &path)
+void OSF::openFile(const QString &path)
 {
 	emit openFileRequest(path);
 }
 
-void BackstageOSF::saveFile(const QString &name)
+void OSF::saveFile(const QString &name)
 {
 	_mSaveFileName = name;
 	saveClicked();
 	
 }
 
-void BackstageOSF::startProcessing()
+void OSF::startProcessing()
 {
 	setProcessing(true);
 }
 
-void BackstageOSF::stopProcessing()
+void OSF::stopProcessing()
 {
 	setProcessing(false);
 }
 
 //private
-bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFullStop)
+bool OSF::checkEntryName(QString name, QString entryTitle, bool allowFullStop)
 {
 	if (name.trimmed() == "")
 	{
@@ -463,19 +463,19 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 }
 
 
-void BackstageOSF::setListModel(OSFListModel * listModel)
+void OSF::setListModel(OSFListModel * listModel)
 {
 	if (_osfListModel == listModel)
 		return;
 
 	_osfListModel = listModel;
 
-	connect(_osfListModel, &OSFListModel::openFileRequest, this, &BackstageOSF::openFileRequest);
+	connect(_osfListModel, &OSFListModel::openFileRequest, this, &OSF::openFileRequest);
 
 	emit listModelChanged(_osfListModel);
 }
 
-void BackstageOSF::setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs)
+void OSF::setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs)
 {
 	if (_osfBreadCrumbsListModel == breadCrumbs)
 		return;

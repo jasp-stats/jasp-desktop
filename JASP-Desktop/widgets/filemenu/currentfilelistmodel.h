@@ -2,10 +2,10 @@
 #define CURRENTFILELISTMODEL_H
 
 #include <QAbstractListModel>
-#include "fsbmcurrentfile.h"
+#include "currentfilefilesystem.h"
 #include "data/fileevent.h"
 #include "filemenulistitem.h"
-#include "basiclistmodel.h"
+#include "filemenubasiclistmodel.h"
 
 class CurrentFileListModel  : public FileMenuBasicListModel
 {
@@ -14,7 +14,7 @@ class CurrentFileListModel  : public FileMenuBasicListModel
 public:
 	explicit CurrentFileListModel(QObject *parent = nullptr);
 	
-	FSBMCurrentFile*		getCurrentFileFSBModel();
+	CurrentFileFileSystem*		getCurrentFileFSBModel();
 	void					setCurrentFilePath(const QString &newcurrent);
 	
 signals:
@@ -25,7 +25,7 @@ public slots:
 	
 	
 private:
-	FSBMCurrentFile			*_fsbmCurrentFile;
+	CurrentFileFileSystem			*_fsbmCurrentFile;
 };
 
 #endif // CURRENTFILELISTMODEL_H

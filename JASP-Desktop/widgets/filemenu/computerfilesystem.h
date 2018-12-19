@@ -16,30 +16,32 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBMRECENTFILES_H
-#define FSBMRECENTFILES_H
+#ifndef COMPUTERFILESYSTEM_H
+#define COMPUTERFILESYSTEM_H
 
-#include "fsbmodel.h"
+#include "filesystemmodel.h"
 #include "common.h"
 
-class FSBMRecentFiles : public FSBModel
+class ComputerFileSystem : public FileSystemModel
 {
 public:
-	FSBMRecentFiles(QObject *parent = NULL);
+	explicit ComputerFileSystem(QObject *parent = NULL);
 
 	void refresh() OVERRIDE;
 
-	void addRecent(const QString &path);
-	void filter(bool (*filterFunction)(QString));
+	QString mostRecent() const;
 
-protected:
-	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
+public slots:
+	void addRecent(QString path);
 
 private:
-	QStringList load();
-	void populate(const QStringList &paths);
-	bool isUrl(const QString &path) const;
 
+	QStringList readRecents();
+	void setRecents(const QStringList &recents);
+	void setAndSaveRecents(const QStringList &recents);
+	void saveRecents();
+
+	QStringList _recents;
 };
 
-#endif // FSBMRECENTFILES_H
+#endif // COMPUTERFILESYSTEM_H

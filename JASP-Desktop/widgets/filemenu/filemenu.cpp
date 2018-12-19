@@ -29,23 +29,23 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_currentFileType = Utils::FileType::unknown;
 	_currentFileReadOnly = false;
 
-	setRecentFiles(	new BackstageRecentFiles(parent)	);
-	setCurrentFile(	new BackstageCurrentFile(parent)	);
-	setComputer(	new BackstageComputer(parent)		);
-	setOsf(			new BackstageOSF(parent)			);
-	setDatalibrary(	new BackstageDataLibrary(parent)	);
+	setRecentFiles(	new RecentFiles(parent)	);
+	setCurrentFile(	new CurrentFile(parent)	);
+	setComputer(	new Computer(parent)		);
+	setOsf(			new OSF(parent)			);
+	setDatalibrary(	new DataLibrary(parent)	);
 	
-	connect(_bsRecentFiles, &BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_bsCurrentFile, &BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_bsComputer,	&BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_bsOSF,			&BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_bsDataLibrary, &BackstagePage::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
+	connect(_RecentFiles, &FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
+	connect(_CurrentFile, &FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
+	connect(_Computer,	&FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
+	connect(_OSF,			&FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
+	connect(_DataLibrary, &FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
 
 	connect(&_watcher,		&QFileSystemWatcher::fileChanged, this, &FileMenu::dataFileModifiedHandler);
 	
 	setFileoperation(Close);
 
-	_buttonsenabled  = QVector<bool> (NoFileActions);
+	_buttonsenabled  = QVector<bool> (CountFileActions);
 	setEnableButton(FileOperation::Open,			true);
 	setEnableButton(FileOperation::Save,			false);
 	setEnableButton(FileOperation::SaveAs,			false);
@@ -101,10 +101,10 @@ void FileMenu::setSaveMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
 
-	_bsComputer->setMode(_mode);
+	_Computer->setMode(_mode);
 	
-	_bsOSF->setMode(_mode);
-	_bsOSF->setCurrentFileName(getDefaultOutFileName());
+	_OSF->setMode(_mode);
+	_OSF->setCurrentFileName(getDefaultOutFileName());
 	
 	setDatalibrary_button_visible(false);
 
@@ -118,7 +118,7 @@ void FileMenu::setSaveMode(FileEvent::FileMode mode)
 	{
 		setCurrentfile_button_visible(true);
 		setRecentfiles_button_visible(false);
-		set_enable_currentfile_button(!_bsCurrentFile->getCurrentDataFilePath().isEmpty());
+		set_enable_currentfile_button(!_CurrentFile->getCurrentDataFilePath().isEmpty());
 	}
 	else
 	{
@@ -150,7 +150,7 @@ bool FileMenu::isCurrentFileReadOnly()
 void FileMenu::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_odm = odm;
-	_bsOSF->setOnlineDataManager(odm);
+	_OSF->setOnlineDataManager(odm);
 }
 
 FileEvent *FileMenu::open(const QString &path)
@@ -168,7 +168,7 @@ FileEvent *FileMenu::save()
 
 	if (_currentFileType != Utils::FileType::jasp || _currentFileReadOnly)
 	{
-		event = _bsComputer->browseSave();
+		event = _Computer->browseSave();
 		if (event->isCompleted())
 			return event;
 	}
@@ -190,7 +190,7 @@ FileEvent *FileMenu::save()
 
 void FileMenu::sync()
 {
-	QString path = _bsCurrentFile->getCurrentDataFilePath();
+	QString path = _CurrentFile->getCurrentDataFilePath();
 
 	if (path.isEmpty())
 	{
@@ -217,13 +217,12 @@ FileEvent *FileMenu::close()
 void FileMenu::setCurrentActionIndex(int index)
 {
 	_selectedActionIndex = index;
-	//return _buttonGroup->button(index)->setChecked(true);
 }
 
 
 void FileMenu::setCurrentDataFile(const QString &path)
 {
-	QString currentPath = _bsCurrentFile->getCurrentDataFilePath();
+	QString currentPath = _CurrentFile->getCurrentDataFilePath();
 	if (!currentPath.isEmpty())
 		_watcher.removePath(currentPath);
 
@@ -243,18 +242,17 @@ void FileMenu::setCurrentDataFile(const QString &path)
 	}
 
 	if (setCurrentPath)
-		_bsCurrentFile->setCurrentDataFilePath(path);
-
-	//_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, enableCurrentTab);
-	
+		_CurrentFile->setCurrentDataFilePath(path);
+		
+	set_enable_currentfile_button(enableCurrentTab);	
 }
 
 void FileMenu::setDataFileWatcher(bool watch)
 {
-	QString path = _bsCurrentFile->getCurrentFilePath();
+	QString path = _CurrentFile->getCurrentFilePath();
 	if (!path.isEmpty())
 	{
-		if (watch && !_bsCurrentFile->isOnlineFile(path))
+		if (watch && !_CurrentFile->isOnlineFile(path))
 			_watcher.addPath(path);
 		else
 			_watcher.removePath(path);
@@ -297,7 +295,6 @@ QString FileMenu::getDefaultOutFileName()
 void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
 	
-
 	//From OpenSaveWidget	
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
@@ -306,8 +303,8 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			//  don't add examples to the recent list
 			if (!event->isReadOnly())
 			{
-				_bsRecentFiles->pushRecentFilePath(event->path());
-				_bsComputer->addRecentFolder(event->path());
+				_RecentFiles->pushRecentFilePath(event->path());
+				_Computer->addRecentFolder(event->path());
 			}
 
 			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
@@ -315,13 +312,13 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
-			_bsComputer->setFileName(info.baseName());
+			_Computer->setFileName(info.baseName());
 
 			_currentFilePath = event->path();
 			_currentFileType = event->type();
 			_currentFileReadOnly = event->isReadOnly();
-			_bsCurrentFile->setCurrentFileInfo(event->path(), event->type(), event->isReadOnly());
-			_bsOSF->setProcessing(false);
+			_CurrentFile->setCurrentFileInfo(event->path(), event->type(), event->isReadOnly());
+			_OSF->setProcessing(false);
 		}
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -333,16 +330,16 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		_bsComputer->clearFileName();
+		_Computer->clearFileName();
 		_currentFilePath = "";
 		_currentFileType = Utils::FileType::unknown;
 		_currentFileReadOnly = false;
-		_bsCurrentFile->setCurrentFileInfo("", Utils::FileType::unknown, false);
+		_CurrentFile->setCurrentFileInfo("", Utils::FileType::unknown, false);
 		clearSyncData();
 	}
 		
 	
-	//From BacksategWidget	
+	//From Backstage	
 	if (event->successful())
 	{
 		if (event->operation() == FileEvent::FileOpen)
@@ -436,7 +433,6 @@ void FileMenu::fileOperationClicked(const int &action)
 	{
 	case FileOperation::Open:  // Open
 		setSaveMode(FileEvent::FileOpen);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::Save:  // Save
@@ -445,39 +441,31 @@ void FileMenu::fileOperationClicked(const int &action)
 		else
 		{
 			setCurrentActionIndex(FileOperation::SaveAs);
-			setSaveMode(FileEvent::FileSave);
-			//_tabPages->setCurrentWidget(_openAndSaveWidget);
-			
+			setSaveMode(FileEvent::FileSave);			
 		}
 		cancel = true;
 		break;
 
 	case FileOperation::SaveAs:  // Save As
 		setSaveMode(FileEvent::FileSave);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::ExportResults:  // Export Results
 		setSaveMode(FileEvent::FileExportResults);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::ExportData:  // Export Data
 		setSaveMode(FileEvent::FileExportData);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
 	case FileOperation::SyncData:  // Sync Data
 		setSaveMode(FileEvent::FileSyncData);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
-		//_openAndSaveWidget->changeTabIfCurrentFileEmpty();
 		break;
 
 	case FileOperation::Close: // Close
 		close();
 		setCurrentActionIndex(FileOperation::Open);
 		setSaveMode(FileEvent::FileOpen);
-		//_tabPages->setCurrentWidget(_openAndSaveWidget);
 		cancel = true;
 		break;
 	}
@@ -485,27 +473,11 @@ void FileMenu::fileOperationClicked(const int &action)
 
 void FileMenu::resourceButtonClicked(const int &resource)
 {
-
-	//if (_selectedIndex == id)
-	//	return;
-
-	bool cancel = false;
-	//emit currentChanging(id, cancel);
-
-	if (cancel)
-	{
-		//_buttonGroup->button(_selectedIndex)->setChecked(true);
-	}
-	else
-	{
-		///_selectedIndex = id;
-		//emit currentChanged(id);
-	}
 	
 	//Check the OSF tab
-	if (resource == FileLocation::OSF)
+	if (resource == FileLocation::Osf)
 	{
-		_bsOSF->attemptToConnect();
+		_OSF->attemptToConnect();
 	}
 }
 
@@ -560,8 +532,8 @@ bool FileMenu::checkSyncFileExists(const QString &path)
 void FileMenu::clearSyncData()
 {
 	setDataFileWatcher(false); // must be done before setting the current to empty.
-	_bsCurrentFile->setCurrentDataFilePath(QString());
-	//_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
+	_CurrentFile->setCurrentDataFilePath(QString());
+	set_enable_currentfile_button(false);
 }
 
 bool FileMenu::clearOSFFromRecentList(QString path)
@@ -575,49 +547,49 @@ void FileMenu::setEnableButton(const int &index, const bool &enable)
 	emit buttonsenabledChanged();
 }
 
-void FileMenu::setDatalibrary(BackstageDataLibrary * datalibrary)
+void FileMenu::setDatalibrary(DataLibrary * datalibrary)
 {
-	if (_bsDataLibrary == datalibrary)
+	if (_DataLibrary == datalibrary)
 		return;
 
-	_bsDataLibrary = datalibrary;
-	emit datalibraryChanged(_bsDataLibrary);
+	_DataLibrary = datalibrary;
+	emit datalibraryChanged(_DataLibrary);
 }
 
-void FileMenu::setCurrentFile(BackstageCurrentFile * currentFile)
+void FileMenu::setCurrentFile(CurrentFile * currentFile)
 {
-	if (_bsCurrentFile == currentFile)
+	if (_CurrentFile == currentFile)
 		return;
 
-	_bsCurrentFile = currentFile;
-	emit currentFileChanged(_bsCurrentFile);
+	_CurrentFile = currentFile;
+	emit currentFileChanged(_CurrentFile);
 }
 
-void FileMenu::setRecentFiles(BackstageRecentFiles * recentFiles)
+void FileMenu::setRecentFiles(RecentFiles * recentFiles)
 {
-	if (_bsRecentFiles == recentFiles)
+	if (_RecentFiles == recentFiles)
 		return;
 
-	_bsRecentFiles = recentFiles;
-	emit recentFilesChanged(_bsRecentFiles);
+	_RecentFiles = recentFiles;
+	emit recentFilesChanged(_RecentFiles);
 }
 
-void FileMenu::setComputer(BackstageComputer * computer)
+void FileMenu::setComputer(Computer * computer)
 {
-	if (_bsComputer == computer)
+	if (_Computer == computer)
 		return;
 
-	_bsComputer = computer;
-	emit computerChanged(_bsComputer);
+	_Computer = computer;
+	emit computerChanged(_Computer);
 }
 
-void FileMenu::setOsf(BackstageOSF * osf)
+void FileMenu::setOsf(OSF * osf)
 {
-	if (_bsOSF == osf)
+	if (_OSF == osf)
 		return;
 
-	_bsOSF = osf;
-	emit osfChanged(_bsOSF);
+	_OSF = osf;
+	emit osfChanged(_OSF);
 }
 
 void FileMenu::setRecentfiles_button_visible(bool recentfiles_button_visible)

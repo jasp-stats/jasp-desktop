@@ -16,19 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSENTRY_H
-#define FSENTRY_H
+#ifndef FILESYSTEMENTRY_H
+#define FILESYSTEMENTRY_H
 
 #include <QString>
 #include "utils.h"
 #include <QHash>
 
-class FSEntry
+class FileSystemEntry
 {
 public:
 	enum EntryType { JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5 };
 
-	FSEntry() { entryType = Other; }
+	FileSystemEntry() { entryType = Other; }
 
 	QString	name,
 			path,
@@ -43,26 +43,26 @@ public:
 
 		switch (basefiletype)
 		{
-		case Utils::FileType::csv:		return FSEntry::CSV;
-		case Utils::FileType::jasp:		return FSEntry::JASP;
-		case Utils::FileType::sav:		return FSEntry::SPSS;
-		case Utils::FileType::unknown:	return FSEntry::NoOfTypes;
-		default:						return FSEntry::Other;
+		case Utils::FileType::csv:		return FileSystemEntry::CSV;
+		case Utils::FileType::jasp:		return FileSystemEntry::JASP;
+		case Utils::FileType::sav:		return FileSystemEntry::SPSS;
+		case Utils::FileType::unknown:	return FileSystemEntry::NoOfTypes;
+		default:						return FileSystemEntry::Other;
 		}
 	}
 
 	static QHash<int, QString> sourcesIcons()
 	{
 		static QHash<int, QString> icons = {
-			{ FSEntry::JASP,	"qrc:/icons/file-jasp.svg"		},
-			{ FSEntry::CSV,		"qrc:/icons/spreadsheet.svg"	},
-			{ FSEntry::SPSS,	"qrc:/icons/spreadsheet.svg"	},
-			{ FSEntry::Other,	"qrc:/icons/spreadsheet.svg"	},
-			{ FSEntry::Folder,	"qrc:/icons/folder.svg"			} };
+			{ FileSystemEntry::JASP,	"qrc:/icons/file-jasp.svg"		},
+			{ FileSystemEntry::CSV,		"qrc:/icons/spreadsheet.svg"	},
+			{ FileSystemEntry::SPSS,	"qrc:/icons/spreadsheet.svg"	},
+			{ FileSystemEntry::Other,	"qrc:/icons/spreadsheet.svg"	},
+			{ FileSystemEntry::Folder,	"qrc:/icons/folder.svg"			} };
 
 		return icons;
 	}
 
 };
 
-#endif // FSENTRY_H
+#endif // FILESYSTEMENTRY_H

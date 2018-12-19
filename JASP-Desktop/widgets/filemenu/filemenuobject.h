@@ -16,44 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmcurrentfile.h"
+#ifndef FILEMENUOBJECT_H
+#define FILEMENUOBJECT_H
 
-#include <QStringList>
-#include <QFileInfo>
-#include <QEvent>
-#include <QDebug>
+#include <QObject>
 
-FSBMCurrentFile::FSBMCurrentFile(QObject *parent)
-	: FSBModel(parent)
+#include "data/fileevent.h"
+
+class FileMenuObject : public QObject
 {
-	parent->installEventFilter(this);
-	_current = QString();
-}
+	Q_OBJECT
+public:
+	explicit FileMenuObject(QObject *parent = 0);
+	virtual void setMode(FileEvent::FileMode mode);
 
-void FSBMCurrentFile::refresh()
-{
-}
+signals:
+	void dataSetIORequest(FileEvent *event);
+	void closeDataSetSelected();
+	void exportSelected(QString filename);
 
-void FSBMCurrentFile::setCurrent(const QString &path)
-{
-	if (path.endsWith(".jasp", Qt::CaseInsensitive))
-		return;
+protected:
+	FileEvent::FileMode _mode;
 
-	_current = path;
+};
 
-	_entries.clear();
-	FSEntry::EntryType entryType = FSEntry::Other;
-	FSEntry entry = createEntry(path, entryType);
-	_entries.append(entry);
-
-	emit entriesChanged();
-}
-
-QString FSBMCurrentFile::getCurrent() const {
-	return _current;
-}
-
-bool FSBMCurrentFile::isOnlineFile() const {
-	return _current.startsWith("http");
-}
-
+#endif // FILEMENUOBJECT_H

@@ -16,24 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBMOSF_H
-#define FSBMOSF_H
+#ifndef OSFFILESYSTEM_H
+#define OSFFILESYSTEM_H
 
 #include <QPushButton>
 #include <QNetworkAccessManager>
 #include <QMap>
 
-#include "fsbmodel.h"
+#include "filesystemmodel.h"
 #include "common.h"
 #include "osf/onlinedatamanager.h"
 
-class FSBMOSF : public FSBModel
+class OSFFileSystem : public FileSystemModel
 {
 	Q_OBJECT
 
 public:
-	FSBMOSF(QObject *parent = NULL, QString root = "");
-	~FSBMOSF() OVERRIDE;
+	OSFFileSystem(QObject *parent = NULL, QString root = "");
+	~OSFFileSystem() OVERRIDE;
 	void refresh() OVERRIDE;
 
 	typedef struct {
@@ -100,4 +100,4 @@ private:
 
 };
 
-#endif // FSBMOSF_H
+#endif // OSFFILESYSTEM_H

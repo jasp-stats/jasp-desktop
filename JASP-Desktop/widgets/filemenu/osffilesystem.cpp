@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmosf.h"
+#include "osffilesystem.h"
 
 #include <QNetworkAccessManager>
 #include <QUrl>
@@ -28,15 +28,15 @@
 #include <QJsonArray>
 #include <QFile>
 
-#include "fsentry.h"
+#include "filesystementry.h"
 #include "osf/onlinedatamanager.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
 
-const QString FSBMOSF::rootelementname = "Projects";
+const QString OSFFileSystem::rootelementname = "Projects";
 
-FSBMOSF::FSBMOSF(QObject *parent, QString root)
-	:FSBModel (parent)
+OSFFileSystem::OSFFileSystem(QObject *parent, QString root)
+	:FileSystemModel (parent)
 {
 	_dataManager = NULL;
 	_manager = NULL;
@@ -44,12 +44,12 @@ FSBMOSF::FSBMOSF(QObject *parent, QString root)
 	_rootPath = _path = root;
 }
 
-FSBMOSF::~FSBMOSF()
+OSFFileSystem::~OSFFileSystem()
 {
 
 }
 
-void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
+void OSFFileSystem::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_dataManager = odm;
 
@@ -57,7 +57,7 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 
 }
 
-void FSBMOSF::attemptToConnect()
+void OSFFileSystem::attemptToConnect()
 {
 	QString password = _dataManager->getPassword(OnlineDataManager::OSF);
 	QString username = _dataManager->getUsername(OnlineDataManager::OSF);
@@ -81,12 +81,12 @@ void FSBMOSF::attemptToConnect()
 }
 
 
-bool FSBMOSF::requiresAuthentication() const
+bool OSFFileSystem::requiresAuthentication() const
 {
 	return true;
 }
 
-void FSBMOSF::authenticate(const QString &username, const QString &password)
+void OSFFileSystem::authenticate(const QString &username, const QString &password)
 {
 	bool success = false;
 
@@ -110,7 +110,7 @@ void FSBMOSF::authenticate(const QString &username, const QString &password)
 	setAuthenticated(success);
 }
 
-void FSBMOSF::setAuthenticated(bool value)
+void OSFFileSystem::setAuthenticated(bool value)
 {
 	if (value)
 	{
@@ -126,12 +126,12 @@ void FSBMOSF::setAuthenticated(bool value)
 	}
 }
 
-bool FSBMOSF::isAuthenticated() const
+bool OSFFileSystem::isAuthenticated() const
 {
 	return _isAuthenticated;
 }
 
-void FSBMOSF::clearAuthentication()
+void OSFFileSystem::clearAuthentication()
 {
 	_isAuthenticated = false;
 	_dataManager->clearAuthentication(OnlineDataManager::OSF);
@@ -142,7 +142,7 @@ void FSBMOSF::clearAuthentication()
 	emit authenticationClear();
 }
 
-void FSBMOSF::refresh()
+void OSFFileSystem::refresh()
 {
 	if (_manager == NULL || _isAuthenticated == false)
 		return;
@@ -162,17 +162,17 @@ void FSBMOSF::refresh()
 	}
 }
 
-FSBMOSF::OnlineNodeData FSBMOSF::currentNodeData()
+OSFFileSystem::OnlineNodeData OSFFileSystem::currentNodeData()
 {
 	return _pathUrls[_path];
 }
 
-void FSBMOSF::loadProjects() {
+void OSFFileSystem::loadProjects() {
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
 	parseProjects(url);
 }
 
-void FSBMOSF::parseProjects(QUrl url, bool recursive) {
+void OSFFileSystem::parseProjects(QUrl url, bool recursive) {
 
 	_isProjectPaginationCall = recursive;
 	QNetworkRequest request(url);
@@ -184,7 +184,7 @@ void FSBMOSF::parseProjects(QUrl url, bool recursive) {
 	connect(reply, SIGNAL(finished()), this, SLOT(gotProjects()));
 }
 
-void FSBMOSF::gotProjects()
+void OSFFileSystem::gotProjects()
 {
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
@@ -228,7 +228,7 @@ void FSBMOSF::gotProjects()
 			nodeData.canCreateFiles = false;
 
 			QString path = _path + "/" + nodeData.name;
-			_entries.append(createEntry(path, FSEntry::Folder));
+			_entries.append(createEntry(path, FileSystemEntry::Folder));
 
 			_pathUrls[path] = nodeData;
 
@@ -248,12 +248,12 @@ void FSBMOSF::gotProjects()
 	reply->deleteLater();
 }
 
-void FSBMOSF::loadFilesAndFolders(QUrl url, int level)
+void OSFFileSystem::loadFilesAndFolders(QUrl url, int level)
 {
 	parseFilesAndFolders(url, level);
 }
 
-void FSBMOSF::parseFilesAndFolders(QUrl url, int level, bool recursive)
+void OSFFileSystem::parseFilesAndFolders(QUrl url, int level, bool recursive)
 {
 	_level = level;
 	_isPaginationCall = recursive;
@@ -267,7 +267,7 @@ void FSBMOSF::parseFilesAndFolders(QUrl url, int level, bool recursive)
 	connect(reply, SIGNAL(finished()), this, SLOT(gotFilesAndFolders()));
 }
 
-void FSBMOSF::gotFilesAndFolders()
+void OSFFileSystem::gotFilesAndFolders()
 {
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
@@ -294,7 +294,7 @@ void FSBMOSF::gotFilesAndFolders()
 
 			nodeData.isComponent = nodeObject.value("type").toString() == "nodes";
 
-			FSEntry::EntryType entryType = FSEntry::Other;
+			FileSystemEntry::EntryType entryType = FileSystemEntry::Other;
 			QJsonObject attrObj = nodeObject.value("attributes").toObject();
 
 			if (nodeData.isComponent == false)
@@ -306,25 +306,25 @@ void FSBMOSF::gotFilesAndFolders()
 				nodeData.name = attrObj.value("name").toString();
 
 				if (kind == "folder")
-					entryType = FSEntry::Folder;
+					entryType = FileSystemEntry::Folder;
 				else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
-					entryType = FSEntry::JASP;
+					entryType = FileSystemEntry::JASP;
 				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive) || nodeData.name.endsWith(".txt", Qt::CaseInsensitive))
-					entryType = FSEntry::CSV;
+					entryType = FileSystemEntry::CSV;
 				else if (nodeData.name.endsWith(".html", Qt::CaseInsensitive) || nodeData.name.endsWith(".pdf", Qt::CaseInsensitive))
-					entryType = FSEntry::Other;
+					entryType = FileSystemEntry::Other;
 				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive) || nodeData.name.endsWith(".sav", Qt::CaseInsensitive))
-					entryType = FSEntry::SPSS;
+					entryType = FileSystemEntry::SPSS;
 				else
 					continue;
 			}
 			else
 			{
-				entryType = FSEntry::Folder;
+				entryType = FileSystemEntry::Folder;
 				nodeData.name = attrObj.value("title").toString();
 			}
 
-			if (entryType == FSEntry::Folder) {
+			if (entryType == FileSystemEntry::Folder) {
 
 				nodeData.contentsPath = getRelationshipUrl(nodeObject, "files");
 				nodeData.childrenPath = getRelationshipUrl(nodeObject, "children");
@@ -385,7 +385,7 @@ void FSBMOSF::gotFilesAndFolders()
 	reply->deleteLater();
 }
 
-QString FSBMOSF::getRelationshipUrl(QJsonObject nodeObject, QString name)
+QString OSFFileSystem::getRelationshipUrl(QJsonObject nodeObject, QString name)
 {
 	QJsonObject relationshipsObj = nodeObject.value("relationships").toObject();
 
@@ -399,7 +399,7 @@ QString FSBMOSF::getRelationshipUrl(QJsonObject nodeObject, QString name)
 	return relatedObj.value("href").toString();
 }
 
-FSBMOSF::OnlineNodeData FSBMOSF::getNodeData(QString key)
+OSFFileSystem::OnlineNodeData OSFFileSystem::getNodeData(QString key)
 {
 	return _pathUrls[key];
 }

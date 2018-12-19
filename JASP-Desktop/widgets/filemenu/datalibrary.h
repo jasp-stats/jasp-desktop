@@ -16,18 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGEDATALIBRARY_H
-#define BACKSTAGEDATALIBRARY_H
+#ifndef DATALIBRARY_H
+#define DATALIBRARY_H
 
-#include "backstagepage.h"
-#include "fsbmdatalibrary.h"
+#include "filemenuobject.h"
+#include "datalibraryfilesystem.h"
 #include "datalibrarylistmodel.h"
 #include "datalibrarybreadcrumbsmodel.h"
 
 
 #include <QQuickWidget>
 
-class BackstageDataLibrary : public BackstagePage
+class DataLibrary : public FileMenuObject
 {
 	
 	Q_OBJECT
@@ -36,8 +36,8 @@ class BackstageDataLibrary : public BackstagePage
 
 
 public:
-	explicit BackstageDataLibrary(QObject *parent = nullptr);
-	~BackstageDataLibrary() {}
+	explicit DataLibrary(QObject *parent = nullptr);
+	~DataLibrary() {}
 
 	DataLibraryListModel *				listModel()			const {	return _dataLibraryListModel; }
 	DataLibraryBreadCrumbsListModel *	breadcrumbsmodel()	const {	return _dataLibraryBreadCrumbsListModel; }
@@ -58,4 +58,4 @@ private:
 
 };
 
-#endif // BACKSTAGEDATALIBRARY_H
+#endif // DATALIBRARY_H

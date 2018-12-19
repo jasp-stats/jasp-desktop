@@ -19,16 +19,16 @@
 #ifndef FSBMDATALIBRARY_H
 #define FSBMDATALIBRARY_H
 
-#include "fsbmodel.h"
+#include "filesystemmodel.h"
 #include "common.h"
 
-class FSBMDataLibrary : public FSBModel
+class DataLibraryFileSystem : public FileSystemModel
 {
 	Q_OBJECT
 
 public:
-	FSBMDataLibrary(QObject *parent = NULL, QString root = "");
-	~FSBMDataLibrary();
+	DataLibraryFileSystem(QObject *parent = NULL, QString root = "");
+	~DataLibraryFileSystem();
 	void refresh() OVERRIDE;
 	static const QString rootelementname; //Root element in index.json
 	

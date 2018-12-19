@@ -43,11 +43,11 @@ class FileMenu : public QObject
 	Q_PROPERTY(	FileOperation fileoperation			READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged)
 	Q_PROPERTY(	QVector<bool> buttonsenabled		READ buttonsenabled				WRITE setButtonsenabled				NOTIFY buttonsenabledChanged)
 
-	Q_PROPERTY(BackstageDataLibrary *  datalibrary	READ datalibrary				WRITE setDatalibrary				NOTIFY datalibraryChanged)
-	Q_PROPERTY(BackstageCurrentFile * currentFile	READ currentFile				WRITE setCurrentFile				NOTIFY currentFileChanged)
-	Q_PROPERTY(BackstageRecentFiles * recentFiles	READ recentFiles				WRITE setRecentFiles				NOTIFY recentFilesChanged)
-	Q_PROPERTY(BackstageComputer * computer			READ computer					WRITE setComputer					NOTIFY computerChanged)
-	Q_PROPERTY(BackstageOSF * osf					READ osf						WRITE setOsf						NOTIFY osfChanged)
+	Q_PROPERTY(DataLibrary *  datalibrary			READ datalibrary				WRITE setDatalibrary				NOTIFY datalibraryChanged)
+	Q_PROPERTY(CurrentFile * currentFile			READ currentFile				WRITE setCurrentFile				NOTIFY currentFileChanged)
+	Q_PROPERTY(RecentFiles * recentFiles	READ recentFiles				WRITE setRecentFiles				NOTIFY recentFilesChanged)
+	Q_PROPERTY(Computer * computer			READ computer					WRITE setComputer					NOTIFY computerChanged)
+	Q_PROPERTY(OSF * osf							READ osf						WRITE setOsf						NOTIFY osfChanged)
 
 	Q_PROPERTY(bool recentfiles_button_visible		READ recentfiles_button_visible	WRITE setRecentfiles_button_visible NOTIFY recentfiles_button_visibleChanged)
 	Q_PROPERTY(bool currentfile_button_visible		READ currentfile_button_visible	WRITE setCurrentfile_button_visible NOTIFY currentfile_button_visibleChanged)
@@ -58,9 +58,9 @@ class FileMenu : public QObject
 
 public:
 	
-	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, NoFileActions};
+	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, CountFileActions};
 	Q_ENUM(FileOperation)
-	enum FileLocation {Recent = 0, Current, Computer, OSF, Examples};
+	enum FileLocation {Recent = 0, Current, ThisComputer, Osf, Examples, CountLocations};
 
 
 	Q_ENUM(FileMenuListItemType)
@@ -98,22 +98,18 @@ public:
 	QString getDefaultOutFileName();
 	bool isCurrentFileReadOnly();
 
-	BackstageDataLibrary * datalibrary()	const	{	return _bsDataLibrary;	}
-	BackstageCurrentFile * currentFile()	const	{	return _bsCurrentFile;	}
-	BackstageRecentFiles * recentFiles()	const	{	return _bsRecentFiles;	}
-	BackstageComputer * computer()			const	{	return _bsComputer;		}
-	BackstageOSF * osf()					const	{	return _bsOSF;			}
+	DataLibrary * datalibrary()			const	{ return _DataLibrary;	}
+	CurrentFile * currentFile()			const	{ return _CurrentFile;	}
+	RecentFiles * recentFiles()			const	{ return _RecentFiles;	}
+	Computer * computer()				const	{ return _Computer;		}
+	OSF * osf()							const	{ return _OSF;			}
+	
+	bool recentfiles_button_visible()	const	{ return m_recentfiles_button_visible;	}
+	bool currentfile_button_visible()	const	{ return m_currentfile_button_visible;	}
+	bool computer_button_visible()		const	{ return m_computer_button_visible;		}
+	bool datalibrary_button_visible()	const	{ return m_datalibrary_button_visible;	}
 
-	bool recentfiles_button_visible()		const	{ return m_recentfiles_button_visible;	}
-	bool currentfile_button_visible()		const	{ return m_currentfile_button_visible;	}
-	bool computer_button_visible()			const	{ return m_computer_button_visible;		}
-	bool datalibrary_button_visible()		const	{ return m_datalibrary_button_visible;	}
-
-
-	bool visible() const
-	{
-		return m_visible;
-	}
+	bool visible()						const	{ return m_visible;}
 
 signals:
 	
@@ -125,11 +121,11 @@ signals:
 	void dataSetIORequest(FileEvent *event);
 	void exportSelected(QString filename);
 
-	void datalibraryChanged(BackstageDataLibrary * datalibrary);
-	void currentFileChanged(BackstageCurrentFile * currentFile);
-	void recentFilesChanged(BackstageRecentFiles * recentFiles);
-	void computerChanged(BackstageComputer * computer);
-	void osfChanged(BackstageOSF * osf);
+	void datalibraryChanged(DataLibrary * datalibrary);
+	void currentFileChanged(CurrentFile * currentFile);
+	void recentFilesChanged(RecentFiles * recentFiles);
+	void computerChanged(Computer * computer);
+	void osfChanged(OSF * osf);
 
 	void recentfiles_button_visibleChanged(bool recentfiles_button_visible);
 	void currentfile_button_visibleChanged(bool currentfile_button_visible);
@@ -154,11 +150,11 @@ public slots:
 	
 	void test();
 
-	void setDatalibrary(BackstageDataLibrary * datalibrary);
-	void setCurrentFile(BackstageCurrentFile * currentFile);
-	void setRecentFiles(BackstageRecentFiles * recentFiles);
-	void setComputer(BackstageComputer * computer);
-	void setOsf(BackstageOSF * osf);
+	void setDatalibrary(DataLibrary * datalibrary);
+	void setCurrentFile(CurrentFile * currentFile);
+	void setRecentFiles(RecentFiles * recentFiles);
+	void setComputer(Computer * computer);
+	void setOsf(OSF * osf);
 
 	void setRecentfiles_button_visible(bool recentfiles_button_visible);
 	void setCurrentfile_button_visible(bool currentfile_button_visible);
@@ -189,11 +185,11 @@ private:
 	int _selectedActionIndex;
 	int _selectedResourceIndex;
 	
-	BackstageCurrentFile	*_bsCurrentFile	= nullptr;
-	BackstageRecentFiles	*_bsRecentFiles	= nullptr;
-	BackstageComputer		*_bsComputer	= nullptr;
-	BackstageOSF			*_bsOSF			= nullptr;
-	BackstageDataLibrary	*_bsDataLibrary	= nullptr;
+	CurrentFile				*_CurrentFile	= nullptr;
+	RecentFiles	*_RecentFiles	= nullptr;
+	Computer		*_Computer		= nullptr;
+	OSF						*_OSF			= nullptr;
+	DataLibrary				*_DataLibrary	= nullptr;
 
 	QFileSystemWatcher _watcher;	
 			

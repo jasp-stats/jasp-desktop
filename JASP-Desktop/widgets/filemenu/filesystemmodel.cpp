@@ -16,19 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmodel.h"
+#include "filesystemmodel.h"
 
-FSBModel::FSBModel(QObject *parent) : QObject(parent)
+FileSystemModel::FileSystemModel(QObject *parent) : QObject(parent)
 {
 
 }
 
-const FSBModel::FileSystemEntryList &FSBModel::entries() const
+const FileSystemModel::FileSystemEntryList &FileSystemModel::entries() const
 {
 	return _entries;
 }
 
-void FSBModel::setPath(QString path)
+void FileSystemModel::setPath(QString path)
 {
 	_path = path;
 
@@ -37,19 +37,19 @@ void FSBModel::setPath(QString path)
 	emit pathChanged(path);
 }
 
-const QString &FSBModel::path() const
+const QString &FileSystemModel::path() const
 {
 	return _path;
 }
 
-const QString &FSBModel::rootPath() const
+const QString &FileSystemModel::rootPath() const
 {
 	return _rootPath;
 }
 
-bool FSBModel::contains(const QString &path) const
+bool FileSystemModel::contains(const QString &path) const
 {
-	for (const FSEntry &entry : _entries)
+	for (const FileSystemEntry &entry : _entries)
 	{
 		if (entry.path == path)
 			return true;
@@ -58,11 +58,11 @@ bool FSBModel::contains(const QString &path) const
 	return false;
 }
 
-bool FSBModel::hasFileEntry(QString name, QString &path)
+bool FileSystemModel::hasFileEntry(QString name, QString &path)
 {
 	for (int i =0; i < _entries.length(); i++)
 	{
-		if (_entries[i].entryType != FSEntry::Folder && _entries[i].name.toLower() == name) {
+		if (_entries[i].entryType != FileSystemEntry::Folder && _entries[i].name.toLower() == name) {
 			path = _entries[i].path;
 			return true;
 		}
@@ -70,19 +70,19 @@ bool FSBModel::hasFileEntry(QString name, QString &path)
 	return false;
 }
 
-bool FSBModel::hasFolderEntry(QString name)
+bool FileSystemModel::hasFolderEntry(QString name)
 {
 	for (int i =0; i < _entries.length(); i++)
 	{
-		if (_entries[i].entryType == FSEntry::Folder && _entries[i].name.toLower() == name)
+		if (_entries[i].entryType == FileSystemEntry::Folder && _entries[i].name.toLower() == name)
 			return true;
 	}
 	return false;
 }
 
-FSEntry FSBModel::createEntry(const QString &path, FSEntry::EntryType type)
+FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntry::EntryType type)
 {
-	FSEntry entry;
+	FileSystemEntry entry;
 	entry.entryType = type;
 
 	int index = path.lastIndexOf("/");
@@ -107,9 +107,9 @@ FSEntry FSBModel::createEntry(const QString &path, FSEntry::EntryType type)
 	return entry;
 }
 
-FSEntry FSBModel::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type, const QString &associated_datafile)
+FileSystemEntry FileSystemModel::createEntry(const QString &path, const QString &name, const QString &description, FileSystemEntry::EntryType type, const QString &associated_datafile)
 {
-	FSEntry entry;
+	FileSystemEntry entry;
 
 	entry.name					= name;
 	entry.path					= path;

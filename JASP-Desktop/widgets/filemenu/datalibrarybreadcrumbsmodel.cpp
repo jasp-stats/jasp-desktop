@@ -1,11 +1,11 @@
 #include "datalibrarybreadcrumbsmodel.h"
-#include "fsbmdatalibrary.h"
+#include "datalibraryfilesystem.h"
 
 DataLibraryBreadCrumbsListModel::DataLibraryBreadCrumbsListModel(QObject *parent, const QChar sep)
 	: QAbstractListModel(parent), _separator(sep)
 {	
-	_crumbNameList.append(FSBMDataLibrary::rootelementname);
-	_physicalPathList.append(FSBMDataLibrary::rootelementname);
+	_crumbNameList.append(DataLibraryFileSystem::rootelementname);
+	_physicalPathList.append(DataLibraryFileSystem::rootelementname);
 }
 
 int DataLibraryBreadCrumbsListModel::rowCount(const QModelIndex &parent) const
