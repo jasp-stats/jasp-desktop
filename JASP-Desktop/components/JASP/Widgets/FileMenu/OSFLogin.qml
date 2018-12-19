@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.2
 import JASP.Controls 1.0
 import JASP.Theme 1.0
-
+import JASP.Widgets 1.0
 
 Rectangle {
 	id : osfLogin
@@ -167,18 +167,8 @@ Rectangle {
 			fileMenuModel.osf.remembermeCheckChanged(checked) }
 	}
 
-	Button {
+	FilterButton {
 		id: loginButton
-
-	/*	background: Rectangle {
-			anchors.fill: parent
-			gradient: Gradient {
-				GradientStop { position: 0 ; color:  "#e5e5e5" }
-				GradientStop { position: 1 ; color:  Theme.white }
-			}
-			border.color: "gray"
-			border.width: 1
-		}*/
 
 		width: 65
 		height: 20

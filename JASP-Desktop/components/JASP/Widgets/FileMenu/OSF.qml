@@ -152,19 +152,9 @@ Item
 			}		
 		}
 		
-		Button {
+		FilterButton {
 			id: newDirectoryButton
-			
-			background: Rectangle {
-				anchors.fill: parent
-				gradient: Gradient {
-					GradientStop { position: 0 ; color:  "#e5e5e5" }
-					GradientStop { position: 1 ; color:  Theme.white }
-				}
-				border.color: "gray"
-				border.width: 1
-			}
-			
+					
 			text: "New Folder"
 			width: 100
 			height: 20
@@ -178,19 +168,9 @@ Item
 			}
 		}
 		
-		Button {
+		FilterButton {
 			id: saveFilenameButton
-			
-			background: Rectangle {
-				anchors.fill: parent
-				gradient: Gradient {
-					GradientStop { position: 0 ; color:  "#e5e5e5" }
-					GradientStop { position: 1 ; color:  Theme.white }
-				}
-				border.color: "gray"
-				border.width: 1
-			}
-			
+
 			text: "Save"
 			width: 80
 			height: 20
