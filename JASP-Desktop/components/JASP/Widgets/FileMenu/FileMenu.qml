@@ -208,6 +208,28 @@ Item
 		focus: true
 		//Keys.onSpacePressed: locationMenu.visible = !locationMenu.visible
 
+		Item
+		{
+			id:			dropShadow
+			y:			0
+			x:			resourceScreen.x + resourceScreen.width
+			height:		resourceScreen.height
+			width:		Theme.shadowRadius
+			visible:	resourceScreen.visible
+
+			Rectangle
+			{
+				anchors.centerIn: parent
+				rotation:	-90
+				gradient:	Gradient {
+					GradientStop { position: 0.0; color: Theme.shadow }
+					GradientStop { position: 1.0; color: "transparent" }
+				}
+				height:		dropShadow.width
+				width:		dropShadow.height
+			}
+		}
+
 		Rectangle
 		{
 			id: resourceScreen

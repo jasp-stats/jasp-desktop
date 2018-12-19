@@ -36,6 +36,7 @@ QtObject {
 	readonly property color green:				"#36CE4C"
 	readonly property color yellowLight:		"#FFFFCA"
 	readonly property color rose:				"#FFC0CB"
+	readonly property color shadow:				"#33000000"
     
 	readonly property int formWidth:			500
 	readonly property int formMargin:			10
@@ -48,6 +49,7 @@ QtObject {
 	readonly property int sliderWidth:					4
 	readonly property int sliderLength:					80
 	readonly property int switchHeight:					15
+	readonly property int shadowRadius:					10
 	readonly property int comboBoxHeight:				22
 	readonly property int textFieldWidth:				40
 	readonly property int textFieldHeight:				20
