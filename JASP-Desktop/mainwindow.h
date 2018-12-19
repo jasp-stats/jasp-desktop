@@ -46,7 +46,7 @@
 #include "modules/ribbonbuttonmodel.h"
 #include "modules/ribbonentry.h"
 #include "data/filtermodel.h"
-#include "widgets/backstage/filemenu.h"
+#include "widgets/filemenu/filemenu.h"
 
 class MainWindow : public QObject
 {

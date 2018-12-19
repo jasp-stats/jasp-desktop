@@ -16,8 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "backstageosf.h"
-#include "ui_backstageform.h"
+#include "osf.h"
 #include <QRegularExpression>
 #include <QQmlEngine>
 #include <QFileInfo>
