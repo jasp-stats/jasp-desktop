@@ -106,7 +106,7 @@ Form {
             GroupBox {
                 title: qsTr("Performance Diagnostics")
                 CheckBox { text: qsTr("Confusion matrix"); name: "confusionMatrixOpt"; id: confusionMatrixOpt }
-                CheckBox { text: qsTr("Proportions"); name: "confusionMatrixProportions"; enabled: confusionMatrixOpt.checked; Layout.leftMargin: 20 }
+                CheckBox { text: qsTr("Proportions"); name: "confusionMatrixProportions"; enabled: confusionMatrixOpt.checked; indent: true }
             }
 
             GroupBox {
@@ -117,7 +117,7 @@ Form {
                 CheckBox { text: qsTr("Confidence intervals")       ; name: "coeffCI" ; id: coeffCI }
                 GroupBox {
                     enabled: coeffCI.checked
-                    Layout.leftMargin: 20
+                    indent: true
                     PercentField { label.text: "Interval"; name: "coeffCIInterval"; defaultValue: 95 }
                     CheckBox { text: qsTr("Odds ratio scale")           ; name: "coeffCIOR" }
                 }
@@ -147,7 +147,7 @@ Form {
                 CheckBox { text: qsTr("Display conditional estimates plots"); name: "estimatesPlotsOpt"; id: estimatesPlotsOpt }
                 GroupBox {
                     enabled: estimatesPlotsOpt.checked
-                    Layout.leftMargin: 20
+                    indent: true
                     PercentField { label.text: qsTr("Confidence interval"); name: "estimatesPlotsCI"; defaultValue: 95 }
                     CheckBox { text: qsTr("Show data points"); name: "showPoints" }
                 }

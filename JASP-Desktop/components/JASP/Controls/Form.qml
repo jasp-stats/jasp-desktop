@@ -277,5 +277,10 @@ Rectangle
 
         if (previousExpander)
             previousExpander.nextExpander = jaspControls[0];
+        
+        for (var i = 0; i < jaspControls.length; i++) {
+            if (jaspControls[i].indent)
+                jaspControls[i].Layout.leftMargin = Theme.indentationLength
+        }        
     }
 }

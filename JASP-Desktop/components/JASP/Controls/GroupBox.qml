@@ -28,6 +28,7 @@ Rectangle {
     property int spacing: Theme.rowSpacing
     property string title: ""
     property bool debug: false
+    property bool indent: false
     property bool alignTextFields: true
     property var childControls: []
     default property alias content: column.children
@@ -35,6 +36,7 @@ Rectangle {
     implicitWidth: column.childrenRect.width + (title ? control.leftPadding : 0)
     
     color: Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
+    Layout.leftMargin: indent ? Theme.indentationLength : 0
     
     Label {
         id: label

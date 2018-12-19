@@ -15,59 +15,44 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
-import JASP.Widgets 1.0
-
 
 Form {
     id: form
-
-    plotHeight: 240
-    plotWidth:  320
-
+    
     VariablesForm {
-        height: 200
         defaultAssignedVariablesList {
-            title: qsTr("Variables")
-            allowedColumns: ["nominal", "ordinal"]
+            allowedColumns: ["ordinal", "nominal"]
         }
     }
 
+    DoubleField { text: qsTr("Test value: ") ; name: "testValue" ; defaultValue: 0.5 ; doubleValidator { top: 1; decimals: 2 } }    
+    
     GridLayout {
-        Label { text: qsTr("Test value:") } TextField { text: "0.5" ; name: "testValue"; inputType: "number" }
-    }
-
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-
-            ButtonGroup {
-                title: qsTr("Hypothesis")               ; name: "hypothesis"
-
-                RadioButton { text: qsTr("≠ Test value"); name: "notEqualToTestValue" ; checked: true }
-                RadioButton { text: qsTr("> Test value"); name: "greaterThanTestValue"                }
-                RadioButton { text: qsTr("< Test value"); name: "lessThanTestValue"                   }
-            }
+        GroupBox {
+            title: qsTr("Additional Statisics")
+            CheckBox { text: qsTr("Confidence interval"); name: "confidenceInterval"; id: confidenceInterval }
+            PercentField { text: qsTr("Interval"); name: "confidenceIntervalInterval"; enabled: confidenceInterval.checked; defaultValue: 95; indent: true }
+            CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
         }
 
-        ColumnLayout {
-            spacing: 15
+        ButtonGroup {
+            title: qsTr("Hypothesis")
+            name: "hypothesis"
+            RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true  }
+            RadioButton { text: qsTr("> Test value") ; name: "greaterThanTestValue"                 }
+            RadioButton { text: qsTr("< Test value") ; name: "lessThanTestValue"                    }
+        }
 
-            GroupBox {
-                title: qsTr("Additional Statistics")
-                CheckBox { text: qsTr("Confidence interval")        ; name: "confidenceInterval"        ; id: confidenceInterval                                                            }
-                PercentField { label.text: qsTr("Interval")         ; name: "confidenceIntervalInterval"; defaultValue: 50     ; Layout.leftMargin: 23; enabled: confidenceInterval.checked }
-                CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR"                                                                                                 }
-            }
-
-            GroupBox {
-                title        : qsTr("Plots")
-                CheckBox     {       text: qsTr("Descriptives plots") ; name: "descriptivesPlots"                  ; id: descriptivePlots                                                       }
-                PercentField { label.text: qsTr("Confidence interval"); name: "descriptivesPlotsConfidenceInterval"; defaultValue: 95; Layout.leftMargin: 23; enabled: descriptivePlots.checked }
-            }
+        GroupBox {
+            title: qsTr("Plots")
+            CheckBox { text: qsTr("Descriptive plots"); name: "descriptivesPlots"; id: descriptivesPlots }
+            PercentField { text: qsTr("Confidence Interval"); name: "descriptivesPlotsConfidenceInterval"; enabled: descriptivesPlots.checked; defaultValue: 95; indent: true }
         }
     }
+
+    CheckBox {text: qsTr("Frequency tables (nominal and ordinal variables)"); name: "frequencyTables"}
+
 }

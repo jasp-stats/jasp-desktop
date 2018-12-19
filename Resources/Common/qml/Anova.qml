@@ -96,7 +96,7 @@ Form {
         CheckBox { text: qsTr("Homogeneity tests")          ; name: "homogeneityTests" }
         CheckBox { text: qsTr("Homogeneity corrections")    ; name: "homogeneityCorrections" ; id: homogeneityCorrections }
         RowLayout {
-            Layout.leftMargin: 20
+            Layout.leftMargin: Theme.indentationLength
             enabled: homogeneityCorrections.checked
             CheckBox { text: qsTr("None")           ; name: "homogeneityNone" ; checked: true }
             CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
@@ -177,7 +177,7 @@ Form {
            ButtonGroup {
                name: "errorBarType"
                RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
-               PercentField { Layout.leftMargin: 15; label.text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
+               PercentField { indent: true; label.text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
                RadioButton { text: qsTr("Standard error"); name: "standardError" }
            }
         }
@@ -194,8 +194,8 @@ Form {
         }
 
         CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-        ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment";
-            label.text: qsTr("Confidence interval adjustment");
+        ComboBox { indent: true; name: "marginalMeansCIAdjustment"; 
+            label.text: qsTr("Confidence interval adjustment"); 
             model: ListModel {
                 ListElement {key: "None"; value: "none"}
                 ListElement {key: "Bonferro"; value: "bonferroni"}
@@ -209,7 +209,7 @@ Form {
             CheckBox { text: qsTr("Descriptive statistics")     ; name: "descriptives" }
             CheckBox { text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"   ; id: effectSizeEstimates }
             Row {
-                Layout.leftMargin: 15
+                Layout.leftMargin: Theme.indentationLength
                 enabled: effectSizeEstimates.checked
                 CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared"; checked: true }
                 CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }

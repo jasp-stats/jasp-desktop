@@ -57,6 +57,7 @@ QtObject {
 
 	readonly property int columnSpacing:		30 * ppiScale
 	readonly property int rowSpacing:			5  * ppiScale
+    readonly property int indentationLength:    20 * ppiScale
 	readonly property int borderRadius:			4  * ppiScale
 	readonly property int generalAnchorMargin:	8  * ppiScale
 

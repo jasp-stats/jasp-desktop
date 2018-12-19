@@ -36,7 +36,7 @@ Form {
             CheckBox {  text: qsTr("McDonald's ω")                      ; name: "mcDonaldScale"; checked: true }
             CheckBox {  text: qsTr("Cronbach's α")                      ; name: "alphaScale"; id: alphaScale }
             ButtonGroup {
-                Layout.leftMargin: 10
+                indent: true
                 enabled: alphaScale.checked
                 name: "alphaScaleStandardized"
                 RadioButton {   text: qsTr("Unstandardized")            ; name: "_1unstandardized"; checked: true   }
@@ -90,9 +90,9 @@ Form {
 
             GroupBox {
                 title: qsTr("Confidence Interval")
-                CheckBox {id: confAlpha; text: qsTr("Cronbach's α analytical")  ; name: "confAlpha" }
-                PercentField {Layout.leftMargin: 25; name: "confAlphaLevel"; defaultValue: 95; label.text: qsTr("Confidence"); with1Decimal: true; enabled: confAlpha.checked }
-            }
+                CheckBox { id: confAlpha; text: qsTr("Cronbach's α analytical")  ; name: "confAlpha" }    
+                PercentField { indent: true; name: "confAlphaLevel"; defaultValue: 95; label.text: qsTr("Confidence"); with1Decimal: true; enabled: confAlpha.checked }
+            }            
         }
 
     }

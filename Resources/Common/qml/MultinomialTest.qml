@@ -70,7 +70,7 @@ Form {
             title: qsTr("Additional Statistics")
             CheckBox { text: qsTr("Descriptives"); name: "descriptives"; id: descriptives}
             RowLayout {
-                Layout.leftMargin: 15
+                Layout.leftMargin: Theme.indentationLength
                 enabled: descriptives.checked
                 CheckBox { text: qsTr("Confidence interval"); name: "confidenceInterval" }
                 PercentField { name: "confidenceIntervalInterval"; value: "95" }

@@ -65,9 +65,9 @@ Form {
                 Row {
                     spacing: 5
                     enabled: wilcoxon.checked
-                    Layout.leftMargin: 25
+                    Layout.leftMargin: Theme.indentationLength
                     Label     { text: qsTr("No. samples") }
-                    TextField { text: "1000"; name: "wilcoxonSamplesNumber"; inputType: "integer"; validator: IntValidator { bottom: 100; top: 10000 } }
+                    IntegerField { defaultValue: 1000; name: "wilcoxonSamplesNumber"; intValidator { bottom: 100; top: 10000 } }
                 }
             }
 
@@ -84,16 +84,16 @@ Form {
                 title: qsTr("Plots")
 
                 CheckBox     { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                   ; id: plotPriorAndPosterior }
-                CheckBox     { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"     ; Layout.leftMargin: 20; checked: true; enabled: plotPriorAndPosterior.checked }
+                CheckBox     { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"     ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
 
                 CheckBox     { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"               ; id: plotBayesFactorRobustness }
-                CheckBox     { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo" ; Layout.leftMargin: 20; checked: true; enabled: plotBayesFactorRobustness.checked }
+                CheckBox     { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo" ; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
 
                 CheckBox     { text: qsTr("Sequential analysis")           ; name: "plotSequentialAnalysis"                  ; id: plotSequentialAnalysis }
-                CheckBox     { text: qsTr("Robustness check")              ; name: "plotSequentialAnalysisRobustness"        ; Layout.leftMargin: 20; enabled: plotSequentialAnalysis.checked }
+                CheckBox     { text: qsTr("Robustness check")              ; name: "plotSequentialAnalysisRobustness"        ; indent: true; enabled: plotSequentialAnalysis.checked }
 
                 CheckBox     { text: qsTr("Descriptives plots")            ; name: "descriptivesPlots"                       ; id: descriptivesPlots }
-                PercentField { label.text: qsTr("Credible interval")       ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; Layout.leftMargin: 20; enabled: descriptivesPlots.checked }
+                PercentField { label.text: qsTr("Credible interval")       ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; indent: true; enabled: descriptivesPlots.checked }
             }
 
             ButtonGroup {

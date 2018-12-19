@@ -13,6 +13,7 @@ FocusScope {
 	property var	controlBackground:		defaultBackground
 	property int	backgroundWidth
 	property int	backgroundHeight
+    property bool   indent:                 false
     
     Rectangle {
         id: defaultBackground
@@ -21,8 +22,6 @@ FocusScope {
         border.width: 0
         border.color: Theme.analysisBackgroundColor
     }
-    
-    readonly property string iconFolder: "qrc:/icons/"
     
     Component.onCompleted: {
         if (typeof(DEBUG_MODE) !== "undefined" && !DEBUG_MODE && debug)
@@ -35,7 +34,7 @@ FocusScope {
                 control.background.width = Qt.binding(function (){ return backgroundWidth; })
             if (backgroundHeight)
                 control.background.height = Qt.binding(function (){ return backgroundHeight; })
-        }
+        }        
     }
     
     states: [

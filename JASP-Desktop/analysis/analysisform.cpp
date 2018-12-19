@@ -28,8 +28,6 @@
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QDebug>
-
-
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmlslider.h"
@@ -77,7 +75,7 @@ QMap<int, QString> AnalysisForm::columnTypeMap {
 	{ Column::ColumnTypeScale		, "scale"}
 };
 
-AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _availableVariablesModel(this), _analysis(analysis), _errorMessagesItem(nullptr)
+AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _analysis(analysis), _errorMessagesItem(nullptr)
 {
 	setObjectName("AnalysisForm");
 	_mainVariables = nullptr;
@@ -127,6 +125,10 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 		if (info == VariableInfo::VariableType)
 		{
 			return _dataSet->column(term.asString()).columnType();
+		}
+		else if (info == VariableInfo::VariableTypeName)
+		{
+			return columnTypeMap[_dataSet->column(term.asString()).columnType()];
 		}
 		else if (info == VariableInfo::Labels)
 		{

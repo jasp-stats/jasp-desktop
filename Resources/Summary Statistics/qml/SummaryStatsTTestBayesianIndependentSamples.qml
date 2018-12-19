@@ -31,8 +31,8 @@ Form {
             spacing: 15
             GridLayout {
                 Label { text: qsTr("t") }             TextField { text: "0" ; name: "tStatistic" ; inputType: "number"  }
-                Label { text: qsTr("Group 1 size") }  TextField { text: ""  ; name: "n1Size"     ; inputType: "integer" }
-                Label { text: qsTr("Group 2 size") }  TextField { text: ""  ; name: "n2Size"     ; inputType: "integer" }
+                Label { text: qsTr("Group 1 size") }  IntegerField { name: "n1Size" }
+                Label { text: qsTr("Group 2 size") }  IntegerField { name: "n2Size" }
             }
         }
     }
@@ -62,10 +62,10 @@ Form {
             GroupBox {
                 title: qsTr("Plots")
                 CheckBox {  text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-                CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; Layout.leftMargin: 20; checked: true; enabled: plotPriorAndPosterior.checked}
+                CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
 
                 CheckBox {  text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; Layout.leftMargin: 20; checked: true; enabled: plotBayesFactorRobustness.checked}
+                CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
             }
         }
     }

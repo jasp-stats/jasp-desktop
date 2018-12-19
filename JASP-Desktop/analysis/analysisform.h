@@ -63,6 +63,11 @@ public:
 				void			illegalValueHandler(Bound *source);
 
 				void			runRScript(QString script, QVariant key = QVariant());
+				
+	static		QString					iconPath;
+	static		QMap<QString, QVariant>	iconFiles;
+	static		QMap<QString, QVariant>	iconInactiveFiles;
+	static		QMap<int, QString>		columnTypeMap;
 	
 public slots:
 				void			runScriptRequestDone(const QString & result, int requestId);

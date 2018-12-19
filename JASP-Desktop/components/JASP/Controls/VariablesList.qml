@@ -57,13 +57,8 @@ JASPControl
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 
-    readonly property int rectangleY: rectangle.y    
-    readonly property string nominalIconFile: "variable-nominal-inactive.svg"
-    readonly property string ordinalIconFile: "variable-ordinal-inactive.svg"
-    readonly property string scaleIconFile: "variable-scale-inactive.svg"
+    readonly property int rectangleY: rectangle.y
 
-
-        
     signal itemDoubleClicked(int index);
     signal itemsDropped(var indexes, var dropList, int dropItemIndex);
     signal removeRowWithControls(int id, string name);
@@ -94,6 +89,9 @@ JASPControl
     DropArea {
         id: dropArea
         anchors.fill: parent
+        
+        property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
+ 
         onPositionChanged: {
             if (variablesList.singleItem || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
             var itemIndex = Math.floor((drag.y - text.height) / listView.cellHeight);
@@ -137,12 +135,11 @@ JASPControl
         width: parent.width
         color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
         border.width: 1
-        border.color: dropArea.containsDrag ? Theme.containsDragBorderColor : Theme.borderColor
-
+        border.color: dropArea.canDrop ? Theme.containsDragBorderColor : Theme.borderColor
         
         states: [
             State {
-                when: dropArea.containsDrag
+                when: dropArea.canDrop
                 PropertyChanges {
                     target: rectangle
                     border.width: 4
@@ -150,52 +147,25 @@ JASPControl
                 }
             }
         ]
-                
-        Image {
-            id: nominalIcon
-            source: iconFolder + nominalIconFile
-            visible: false
-            height: 16
-            width: 16
-            z: 2
+        
+        Repeater {
+            model: suggestedColumns.length
+            Image {
+                source: iconInactiveFiles[suggestedColumns[index]]
+                height: 16
+                width: 16
+                z: 2
+                anchors.bottom: rectangle.bottom;
+                anchors.bottomMargin: 4
+                anchors.right: rectangle.right;
+                anchors.rightMargin: index * 20 + 4
+            }
         }
-        Image {
-            id: ordinalIcon
-            source: iconFolder + ordinalIconFile
-            visible: false
-            height: 16
-            width: 16
-            z: 2
-        }
-        Image {
-            id: scaleIcon
-            source: iconFolder + scaleIconFile
-            visible: false
-            height: 16
-            width: 16
-            z: 2
-        }
+        
         Component.onCompleted: {
             if (suggestedColumns.length === 0)
                 suggestedColumns = allowedColumns
             
-            for (var i = 0; i < suggestedColumns.length; i++) {
-                var icon;
-                if (suggestedColumns[i] === "nominal")
-                    icon = nominalIcon;
-                else if (suggestedColumns[i] === "ordinal")
-                    icon = ordinalIcon;
-                else if (suggestedColumns[i] === "scale")
-                    icon = scaleIcon;
-                if (icon) {
-                    icon.anchors.bottom = rectangle.bottom;
-                    icon.anchors.bottomMargin = 4
-                    icon.anchors.right = rectangle.right;
-                    icon.anchors.rightMargin = i * 20 + 4
-                    icon.visible = true;
-                }
-            }
-
             var previousTitle;
             var length = variablesList.resources.length
             for (var i = length - 1; i >= 0; i--) {
@@ -382,8 +352,10 @@ JASPControl
                 property int rank: index
                 property int uniqueId // Do not set it here to index, but in the onCompleted event 
                 property bool containsDragItem: listView.itemContainingDrag === itemRectangle
-                property bool draggable: !variablesList.dragOnlyVariables || model.type === "variable"
-
+                property bool isVirtual: (typeof model.type !== "undefined") && model.type.includes("virtual")
+                property bool isVariable: (typeof model.type === "undefined") || model.type.includes("variable")
+                property bool draggable: !variablesList.dragOnlyVariables || isVariable
+                property string columnType: isVariable ? model.columnType : ""
                 
                 function setRelative(draggedRect) {
                     x = Qt.binding(function (){ return draggedRect.x + offsetX; })
@@ -429,17 +401,18 @@ JASPControl
                     id: icon
                     height: 15; width: 15
                     anchors.verticalCenter: parent.verticalCenter
-                    source: variablesList.showVariableTypeIcon ? model.type : ""
+                    source: variablesList.showVariableTypeIcon ? iconFiles[model.columnType] : ""
                     visible: variablesList.showVariableTypeIcon
                 }
                 Text {
                     id: colName
-                    x: variablesList.showVariableTypeIcon ? 20 : 4  
+                    x: variablesList.showVariableTypeIcon ? 20 : 4
                     text: model.name
                     width: itemRectangle.width - x
                     elide: Text.ElideRight
                     anchors.verticalCenter: parent.verticalCenter
-                    color: itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black
+                    horizontalAlignment: itemRectangle.isVariable ? undefined : Text.AlignHCenter
+                    color: itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
                 }
                 
                 states: [

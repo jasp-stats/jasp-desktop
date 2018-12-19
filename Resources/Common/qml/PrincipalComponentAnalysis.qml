@@ -49,19 +49,19 @@ Form {
                 name: "eigenValuesBox";
                 value: "1"
                 inputType: "number";
-                Layout.leftMargin: 15;
+                indent: true;
                 enabled: eigenvalues.checked
                 validator: DoubleValidator { bottom: 0; decimals: 1 }
             }
             RadioButton { text: qsTr("Manual"); name: "manual"; id: manual }
-            TextField {
+            IntegerField {
                 label.text: qsTr("Number of Factors")
                 name: "numberOfFactors"
-                value: "1"
-                inputType: "integer"
-                validator: IntValidator { bottom: 1}
-                Layout.leftMargin: 15
-                enabled: manual.checked}
+                defaultValue: 1
+                intValidator.bottom: 1
+                indent: true
+                enabled: manual.checked
+            }
         }
 
         ButtonGroup {

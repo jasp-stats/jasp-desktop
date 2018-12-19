@@ -68,7 +68,7 @@ void QMLListViewDraggable::itemDoubleClickedHandler(int index)
 void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex)
 {
 	QQuickItem* dropList = qobject_cast<QQuickItem*>(vdropList.value<QObject*>());
-	ListModelDraggable* dropModel = NULL;
+	ListModelDraggable* dropModel = nullptr;
 	
 	if (!dropList)
 		dropModel = dynamic_cast<ListModelDraggable*>(_form->getRelatedModel(this));
@@ -107,7 +107,7 @@ void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* t
 	if (targetModel && indexes.size() > 0)
 	{
 		Options* options = _form->getAnalysisOptions();
-		if (options != NULL)
+		if (options != nullptr)
 			options->blockSignals(true);
 		
 		ListModelDraggable* sourceModel = draggableModel();
@@ -116,7 +116,7 @@ void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* t
 		else
 		{
 			bool success = true;		
-			Terms* removedTermsWhenDropping = NULL;
+			Terms* removedTermsWhenDropping = nullptr;
 			if (!sourceModel->copyTermsWhenDropped() && targetModel->removeTermsWhenDragged())
 			{
 				Terms* terms = sourceModel->termsFromIndexes(indexes);
@@ -140,7 +140,7 @@ void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* t
 				sourceModel->refresh();
 		}
 		
-		if (options != NULL)
+		if (options != nullptr)
 			options->blockSignals(false);	
 	}
 	else

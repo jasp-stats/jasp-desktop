@@ -29,7 +29,7 @@ Form {
         ColumnLayout {
             spacing: 15
             GridLayout {
-                Label { text: qsTr("Sample size") } TextField { text: "" ; name: "sampleSize" ; inputType: "integer"; validator: IntValidator { bottom: 3 } }
+                Label { text: qsTr("Sample size") } IntegerField { name: "sampleSize" ; intValidator.bottom: 3 }
             }
         }
     }
@@ -40,7 +40,7 @@ Form {
             GroupBox {
                 title: qsTr("Null model")
                 GridLayout {
-                    Label { text: qsTr("Number of covariates") } TextField { text: "" ; name: "numberOfCovariatesNull" ; inputType: "integer"; validator: IntValidator { bottom: 0 } }
+                    Label { text: qsTr("Number of covariates") } IntegerField { name: "numberOfCovariatesNull" }
                     Label { text: qsTr("R-squared")            } TextField { text: "" ; name: "unadjustedRSquaredNull" ; inputType: "number" ; validator: DoubleValidator { bottom: 0; top: 0.9999 } }
                 }
             }
@@ -50,7 +50,7 @@ Form {
             GroupBox {
                 title: qsTr("Alternative model")
                 GridLayout {
-                    Label { text: qsTr("Number of covariates") } TextField { text: "" ; name: "numberOfCovariatesAlternative" ; inputType: "integer"; validator: IntValidator { bottom: 1 } }
+                    Label { text: qsTr("Number of covariates") } IntegerField { name: "numberOfCovariatesAlternative" ; intValidator.bottom: 1 }
                     Label { text: qsTr("R-squared")            } TextField { text: "" ; name: "unadjustedRSquaredAlternative" ; inputType: "number" ; validator: DoubleValidator { bottom: 0; top: 0.9999 } }
                 }
             }
@@ -72,7 +72,7 @@ Form {
             GroupBox {
                 title: qsTr("Plots")
                 CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; Layout.leftMargin: 20; checked: true; enabled: plotBayesFactorRobustness.checked}
+                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
             }
         }
     }

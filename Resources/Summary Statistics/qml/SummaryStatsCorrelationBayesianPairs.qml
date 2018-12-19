@@ -29,7 +29,7 @@ Form {
         ColumnLayout {
             spacing: 15
             GridLayout {
-                Label { text: qsTr("Sample size") } TextField { text: "" ; name: "sampleSize" ; inputType: "integer"; validator: IntValidator { bottom: 2 } }
+                Label { text: qsTr("Sample size") } IntegerField { name: "sampleSize" ; intValidator.bottom: 2 }
             }
         }
     }
@@ -77,10 +77,10 @@ Form {
             GroupBox {
                 title: qsTr("Plots")
                 CheckBox { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; Layout.leftMargin: 20; checked: true; enabled: plotPriorAndPosterior.checked}
+                CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
 
                 CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; Layout.leftMargin: 20; checked: true; enabled: plotBayesFactorRobustness.checked}
+                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
             }
 
             GroupBox {

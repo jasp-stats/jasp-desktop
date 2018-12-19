@@ -59,18 +59,18 @@ QVariant ListModelFactors::data(const QModelIndex &index, int role) const
 	{
 		QStringList listValues;
 		if (factor.isVirtual)
-			listValues.push_back(tq("Virtual"));
+			listValues.push_back(tq("virtual"));
 		if (factor.isLevel)
 		{
-			listValues.push_back(tq("Level"));
+			listValues.push_back(tq("level"));
 			if (factor.index > 2 && !factor.isVirtual)
-				listValues.push_back(tq("Deletable"));
+				listValues.push_back(tq("deletable"));
 		}
 		else
 		{
-			listValues.push_back(tq("Factor"));
+			listValues.push_back(tq("factor"));
 			if (factor.index > 1 && !factor.isVirtual)
-				listValues.push_back(tq("Deletable"));
+				listValues.push_back(tq("deletable"));
 		}
 		value = listValues.join(',');
 	}

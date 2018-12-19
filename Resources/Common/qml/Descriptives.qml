@@ -41,12 +41,12 @@ Form {
 
         GroupBox {
             CheckBox {  text: qsTr("Distribution plots")    ; name: "plotVariables"; id: plotVariables   }
-            CheckBox {  text: qsTr("Display density")       ; name: "distPlotDensity"; enabled: plotVariables.checked; Layout.leftMargin: 20 }
+            CheckBox {  text: qsTr("Display density")       ; name: "distPlotDensity"; enabled: plotVariables.checked; indent: true }
             CheckBox {  text: qsTr("Correlation plots")     ; name: "plotCorrelationMatrix"       }
             CheckBox {  text: qsTr("Boxplots")              ; name: "splitPlots"; id: splitPlots  }
 
             GroupBox {
-                Layout.leftMargin: 20
+                indent: true
                 enabled: splitPlots.checked
                 CheckBox {  text: qsTr("Label Outliers")    ; name: "splitPlotOutlierLabel"       }
                 CheckBox {  text: qsTr("Color")             ; name: "splitPlotColour"             }

@@ -10,6 +10,7 @@ FactorsList 1.0 FactorsList.qml
 Form 1.0 Form.qml
 GridLayout 1.0 GridLayout.qml
 GroupBox 1.0 GroupBox.qml
+IntegerField 1.0 IntegerField.qml
 JASPControl 1.0 JASPControl.qml
 JASPDataView 1.0 JASPDataView.qml
 JASPScrollBar 1.0 JASPScrollBar.qml

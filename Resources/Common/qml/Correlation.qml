@@ -42,7 +42,7 @@ Form {
                 CheckBox { text: qsTr("Report significance")            ; name: "reportSignificance"; checked: true }
                 CheckBox { text: qsTr("Flag significant correlations")  ; name: "flagSignificant" }
                 CheckBox { text: qsTr("Confidence intervals")           ; name: "confidenceIntervals"; id: confidenceIntervals }
-                PercentField { label.text: qsTr("Interval")             ; name: "confidenceIntervalsInterval"; defaultValue: 95; enabled:  confidenceIntervals.checked; Layout.leftMargin: 20}
+                PercentField { label.text: qsTr("Interval")             ; name: "confidenceIntervalsInterval"; defaultValue: 95; enabled:  confidenceIntervals.checked; indent: true}
                 CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio")    ; name: "VovkSellkeMPR" }
             }
         }
@@ -61,7 +61,7 @@ Form {
                 CheckBox { text: qsTr("Display pairwise table")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
                 GroupBox {
                     enabled: plotCorrelationMatrix.clicked
-                    Layout.leftMargin: 20
+                    indent: true
                     CheckBox { text: qsTr("Densities for variables")    ; name: "plotDensities" }
                     CheckBox { text: qsTr("Statistics")                 ; name: "plotStatistics" }
                 }

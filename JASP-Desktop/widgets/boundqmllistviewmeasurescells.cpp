@@ -32,7 +32,7 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, A
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {
-	_boundTo = NULL;
+	_boundTo = nullptr;
 	_needsSyncModels = true;	
 	_measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
 	

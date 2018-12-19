@@ -33,9 +33,8 @@ Form {
         RadioButton { name: "raw"; text: qsTr("raw"); checked: true }
         RowLayout {
             RadioButton { name: "varcov"; text: qsTr("Variance-covariance matrix"); id: varcovOption}
-            TextField { name: "SampleSize"; label.text: qsTr("Sample Size"); inputType: "integer";
-                value: "0"
-                validator: IntValidator { bottom: 0 }
+            IntegerField { name: "SampleSize"; label.text: qsTr("Sample Size")
+                defaultValue: 0
                 enabled: varcovOption.checked
             }
         }
@@ -57,7 +56,7 @@ Form {
                     text: "1000"
                     validator: IntValidator { bottom: 1 }
                     enabled: boostrapOption.checked
-                    Layout.leftMargin: 20
+                    indent: true
                 }
             }
             
@@ -70,10 +69,10 @@ Form {
                 CheckBox {  text: qsTr("Modification indices")                  ; name: "outputModificationIndices"             ; id: outputModificationIndices }
                 CheckBox {  text: qsTr("Hide low indices")                      ; name: "outputModificationIndicesHideLowIndices"
                             enabled: outputModificationIndices.checked
-                            Layout.leftMargin: 20; id: lowIndices }
+                            indent: true; id: lowIndices }
                 CheckBox {  text: qsTr("Threshold")                             ; name: "outputModificationIndicesHideLowIndicesThreshold"
                             enabled: outputModificationIndices.checked && lowIndices.checked
-                            Layout.leftMargin: 40 }
+                            indent: true }
             }
         }
     }

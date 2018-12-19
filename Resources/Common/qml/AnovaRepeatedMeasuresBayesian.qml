@@ -69,7 +69,7 @@ Form {
             title: qsTr("Output")
             CheckBox { text: qsTr("Effects"); name: "effects"; id: effectsOutput}
             ButtonGroup {
-                Layout.leftMargin: 15
+                indent: true
                 enabled: effectsOutput.checked
                 name: "effectsType"
                 RadioButton { text: qsTr("Across all models"); name: "allModels"; checked: true}
@@ -170,14 +170,12 @@ Form {
                 name: "sampleMode"
                 RadioButton { text: qsTr("Auto"); name: "auto"; checked: true}
                 RadioButton { text: qsTr("Manual"); name: "manual"; id: samplesManual}
-                TextField   {
+                IntegerField   {
                     label.text: qsTr("No. samples")
                     name: "fixedSamplesNumber"
-                    inputType: "integer"
-                    value: "10000"
+                    defaultValue: 10000
                     enabled: samplesManual.checked
-                    Layout.leftMargin: 15
-                    validator: IntValidator {bottom: 0}
+                    indent: true
                 }
             }
         }

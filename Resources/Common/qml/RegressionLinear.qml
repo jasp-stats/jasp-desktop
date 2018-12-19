@@ -99,13 +99,12 @@ Form {
                     CheckBox { text: qsTr("Estimates"); name: "regressionCoefficientsEstimates"; checked: true; id: regressionCoefficientsEstimates }
                     RowLayout {
                         enabled: regressionCoefficientsEstimates.checked
-                        Layout.leftMargin: 15
+                        Layout.leftMargin: Theme.indentationLength
                         CheckBox { text: qsTr("From"); name: "regressionCoefficientsBootstrapping" }
-                        TextField {
-                            inputType: "integer"
+                        IntegerField {
                             name: "regressionCoefficientsBootstrappingReplicates"
-                            value: "5000"
-                            validator: IntValidator { bottom: 100 }
+                            defaultValue: 5000
+                            intValidator.bottom: 100
                             afterLabel.text: qsTr("bootstraps")
                         }
                     }
@@ -134,14 +133,14 @@ Form {
             ButtonGroup {
                 name: "residualsCasewiseDiagnosticsType"
                 enabled: residualsCasewiseDiagnostics.checked
-                Layout.leftMargin: 15
+                indent: true
                 RowLayout {
                     RadioButton { text: qsTr("Standard residual >"); name: "outliersOutside"; checked: true }
-                    TextField { inputType: "integer"; name: "residualsCasewiseDiagnosticsOutliersOutside"; value: "3"; validator: IntValidator { bottom: 0} }
+                    IntegerField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3 }
                 }
                 RowLayout {
                     RadioButton { text: qsTr("Cook's distance >"); name: "cooksDistance" }
-                    TextField { inputType: "integer"; name: "residualsCasewiseDiagnosticsCooksDistance"; value: "0"; validator: IntValidator { bottom: 0} }
+                    IntegerField { name: "residualsCasewiseDiagnosticsCooksDistance"; defaultValue: 0 }
                 }
                 RadioButton { text: qsTr("All"); name: "allCases" }
             }
@@ -160,14 +159,14 @@ Form {
             RadioButton { text: qsTr("Use p value"); name: "usePValue"; checked: true; id: usePValue}
             RowLayout {
                 enabled: usePValue.checked
-                Layout.leftMargin: 20
+                Layout.leftMargin: Theme.indentationLength
                 TextField { label.text: qsTr("Entry"); name: "steppingMethodCriteriaPEntry"; inputType: "number"; value: "0.05"; validator: DoubleValidator { bottom: 0; top: 1; decimals: 3} }
                 TextField { label.text: qsTr("Removal"); name: "steppingMethodCriteriaPRemoval"; inputType: "number"; value: "0.1"; validator: DoubleValidator { bottom: 0; top: 1; decimals: 3} }
             }
             RadioButton { text: qsTr("Use F value"); name: "useFValue"; id: useFValue}
             RowLayout {
                 enabled: useFValue.checked
-                Layout.leftMargin: 20
+                Layout.leftMargin: Theme.indentationLength
                 TextField { label.text: qsTr("Entry"); name: "steppingMethodCriteriaFEntry"; inputType: "number"; value: "3.84"; validator: DoubleValidator { bottom: 0; decimals: 3 } }
                 TextField { label.text: qsTr("Removal"); name: "steppingMethodCriteriaFRemoval"; inputType: "number"; value: "2.71"; validator: DoubleValidator { bottom:0; decimals: 3 } }
             }
@@ -193,7 +192,7 @@ Form {
             CheckBox { text: qsTr("Residuals vs. covariates"); name: "plotResidualsCovariates" }
             CheckBox { text: qsTr("Residuals vs. predicted"); name: "plotResidualsPredicted" }
             CheckBox { text: qsTr("Residuals vs. histogram"); name: "plotResidualsHistogram"; id: plotResidualsHistogram }
-            CheckBox { text: qsTr("Standardized residuals"); name: "plotResidualsHistogramStandardized"; enabled: plotResidualsHistogram.checked; Layout.leftMargin: 20 }
+            CheckBox { text: qsTr("Standardized residuals"); name: "plotResidualsHistogramStandardized"; enabled: plotResidualsHistogram.checked; indent: true }
             CheckBox { text: qsTr("Q-Q plot standardized residuals"); name: "plotResidualsQQ" }
             CheckBox { text: qsTr("Partial plots"); name: "plotsPartialRegression" }
         }

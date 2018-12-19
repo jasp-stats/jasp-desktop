@@ -16,7 +16,7 @@ JASPControl {
 	property alias	label:					label
     property alias	text:					label.text
 	property string	currentText				//Am i empty or what?
-	property string	currentIconPath			//Same here
+	property string	currentColumnType		//Same here
 	property alias	currentIndex:			control.currentIndex
 	property alias	model:					control.model
 	property string	textRole:				"key"
@@ -77,7 +77,7 @@ JASPControl {
                         x: 1
                         height: 15; width: 15
                         anchors.verticalCenter: parent.verticalCenter
-                        source: (visible && comboBox.initialized) ? model.type : ""
+                        source: (visible && comboBox.initialized) ? iconFiles[model.columnType] : ""
                         visible: comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
                     }
                     
@@ -127,8 +127,8 @@ JASPControl {
                     height: 15; width: 15
                     x: 3
                     anchors.verticalCenter: parent.verticalCenter
-                    source: comboBox.currentIconPath
-                    visible: comboBox.showVariableTypeIcon && comboBox.currentIconPath && !control.isEmptyValue
+                    source: iconFiles[comboBox.currentColumnType]
+                    visible: comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
                 }
                 
                 Text {
