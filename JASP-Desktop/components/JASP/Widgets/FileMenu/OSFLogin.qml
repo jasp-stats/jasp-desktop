@@ -170,8 +170,6 @@ Rectangle {
 	FilterButton {
 		id: loginButton
 
-		width: 65
-		height: 20
 		anchors.top: passwordInput.bottom
 		anchors.topMargin: 12
 		anchors.right: parent.right

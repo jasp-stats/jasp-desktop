@@ -29,8 +29,6 @@ Item
 		id: browseButton
 					
 		text: "Browse"
-		width: 80
-		height: 20
 		anchors.left: parent.left
 		anchors.top: headLabel.bottom
 		anchors.leftMargin: 10

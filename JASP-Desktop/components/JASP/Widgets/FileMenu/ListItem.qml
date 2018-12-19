@@ -19,10 +19,13 @@ Rectangle
 	property bool allHovered:	mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
 
 
-	function openStuff()
+	function openStuff(model, wasDoubleClick)
 	{
-		if (model.type === 3)	rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
-		else					rectTitleAndDescripton.cppModel.openFile(model.path)
+		if (model.type === 3 && !wasDoubleClick)
+			rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
+
+		if (model.type !== 3 && wasDoubleClick)
+			rectTitleAndDescripton.cppModel.openFile(model.path)
 	}
 
 	Rectangle {
@@ -43,8 +46,8 @@ Rectangle
 
 			height:				0.95 * parent.height
 			width:				height
-			anchors.left:		model.type	===	3 ? rectTitle.left : undefined
-			anchors.right:		model.type	!==	3 ? associatedDatafileImage.left : undefined
+			anchors.left:		model.type	===	3 ? rectTitle.left					: undefined
+			anchors.right:		model.type	!==	3 ? associatedDatafileImage.left	: undefined
 			anchors.top:		rectTitle.top
 			anchors.leftMargin: 10
 
@@ -58,7 +61,8 @@ Rectangle
 				anchors.fill:		parent
 				hoverEnabled:		true
 				cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-				onDoubleClicked:	openStuff()
+				onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
+				onClicked:			rectTitleAndDescripton.openStuff(model,false)
 
 			}
 
@@ -102,7 +106,7 @@ Rectangle
 		}
 
 		Text {
-			id:				textTitle
+			id:					textTitle
 
 			height:				parent.height
 			anchors.top:		parent.top
@@ -120,7 +124,8 @@ Rectangle
 			id:					fileEntryMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
-			onDoubleClicked:	rectTitleAndDescripton.openStuff();
+			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
+			onClicked:			rectTitleAndDescripton.openStuff(model,false)
 			cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 		}
 
@@ -155,6 +160,7 @@ Rectangle
 				right:			parent.right
 				top:			parent.top
 				leftMargin:		10
+				rightMargin:	10
 				topMargin:		10
 			}
 
@@ -169,7 +175,8 @@ Rectangle
 			id:					descriptionMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
-			onDoubleClicked:	rectTitleAndDescripton.openStuff();
+			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
+			onClicked:			rectTitleAndDescripton.openStuff(model,false)
 			cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 		}
 	}
@@ -179,7 +186,7 @@ Rectangle
 		//model type: JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5
 
 		if (type === 3)
-			return "Double click to navigate to folder"
+			return "Press to navigate to folder"
 
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
 			return "Double click to open JASP file"

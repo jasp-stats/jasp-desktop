@@ -40,12 +40,11 @@ Item
 		visible: loggedin
 				
 		text: "Logout"
-		width: 80
-		height: 20
-		anchors.right: parent.right
-		anchors.top: parent.top
-		anchors.rightMargin: 12
-		anchors.topMargin: 12
+
+		anchors.right:			parent.right
+		anchors.top:			parent.top
+		anchors.rightMargin:	12
+		anchors.topMargin:		12
 		
 		onClicked: {
 			fileMenuModel.osf.logoutClicked();
@@ -153,15 +152,13 @@ Item
 		}
 		
 		FilterButton {
-			id: newDirectoryButton
+			id:						newDirectoryButton
 					
-			text: "New Folder"
-			width: 100
-			height: 20
-			anchors.right: saveFilenameButton.left
-			anchors.top: saveFilenameInput.bottom
-			anchors.rightMargin: 12
-			anchors.topMargin: 12
+			text:					"New Folder"
+			anchors.right:			saveFilenameButton.left
+			anchors.top:			saveFilenameInput.bottom
+			anchors.rightMargin:	12
+			anchors.topMargin:		12
 			
 			onClicked: {
 				fileMenuModel.osf.newFolderClicked()
@@ -169,14 +166,12 @@ Item
 		}
 		
 		FilterButton {
-			id: saveFilenameButton
+			id:						saveFilenameButton
 
-			text: "Save"
-			width: 80
-			height: 20
-			anchors.right: parent.right
-			anchors.top: newDirectoryButton.top
-			anchors.rightMargin: 12
+			text:					"Save"
+			anchors.right:			parent.right
+			anchors.top:			newDirectoryButton.top
+			anchors.rightMargin:	12
 			
 			onClicked: {
 				fileMenuModel.osf.saveFile(filenameText.text)

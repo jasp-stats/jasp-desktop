@@ -210,7 +210,7 @@ Item
 			//anchors.left:	locationMenu.right
 
 			x:				otherColumnsWidth - (aButtonVisible && fileMenuModel.visible ? 0 : width)
-			width:			mainWindowRoot.width - otherColumnsWidth
+			width:			Math.min(mainWindowRoot.width - otherColumnsWidth, 800)
 			height:			parent.height
 			visible:		fileMenuModel.visible || x + width > otherColumnsWidth + 1
 
