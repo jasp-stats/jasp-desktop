@@ -62,6 +62,7 @@ QtObject {
 
 	readonly property int messageBoxButtonHeight:		40
 	readonly property int maximumFlickVelocity:			400
+	readonly property int fileMenuSlideDuration:		200
 
 	property font font
 	font.bold:		false

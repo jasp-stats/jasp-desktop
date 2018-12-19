@@ -5,7 +5,7 @@ import JASP.Theme 1.0
 
 Rectangle
 {
-	id:rect
+	id:			rect
 	objectName: "rect"
 	color:		Theme.grayMuchLighter
 	
