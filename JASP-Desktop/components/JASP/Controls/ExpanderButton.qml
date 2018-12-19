@@ -31,6 +31,7 @@ FocusScope {
 				property alias	area:			expanderArea
 				property alias	spacing:		expanderArea.spacing
 				property alias	text:			label.text
+                property alias  title:          label.text
 				property bool	expanded:		false
 				property alias	debug:			expanderButton.debug
 	readonly	property string iconsFolder:	"qrc:/images/"

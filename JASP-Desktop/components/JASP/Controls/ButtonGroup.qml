@@ -39,17 +39,16 @@ JASPControl {
     implicitHeight: (control.title ? label.height : 0) + (isHorizontal ? row.height : column.height) 
     implicitWidth: (isHorizontal ? row.width : column.width) + (title ? control.leftPadding : 0)
        
-    ButtonGroup {
-        id: buttonGroup
-    }
-
     Label {
         id: label
         text: control.title
         visible: control.title && control.visible ? true : false
         anchors.top: control.top
         anchors.left: control.left
-        anchors.bottomMargin: Theme.rowSpacing
+    }
+    
+    ButtonGroup {
+        id: buttonGroup
     }
 
     Item {
@@ -60,6 +59,7 @@ JASPControl {
     ColumnLayout {
         id: column
         anchors.top: control.title ? label.bottom : control.top
+        anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
         anchors.left: parent.left
         anchors.leftMargin: control.title ? control.leftPadding : 0
         spacing: Theme.rowSpacing
@@ -69,6 +69,7 @@ JASPControl {
     RowLayout {
         id: row
         anchors.top: control.title ? label.bottom : control.top
+        anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
         anchors.left: parent.left
         anchors.leftMargin: control.title ? control.leftPadding : 0
         spacing: Theme.rowSpacing
@@ -104,4 +105,3 @@ JASPControl {
     }
 
 }
-

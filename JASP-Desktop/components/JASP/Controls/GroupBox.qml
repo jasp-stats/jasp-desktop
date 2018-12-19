@@ -32,7 +32,7 @@ Rectangle {
     property bool alignTextFields: true
     property var childControls: []
     default property alias content: column.children
-    implicitHeight: (title ? 20 : 0) + column.childrenRect.height
+    implicitHeight: (title ? (20 + Theme.titleBottomMargin) : 0) + column.childrenRect.height
     implicitWidth: column.childrenRect.width + (title ? control.leftPadding : 0)
     
     color: Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
@@ -49,6 +49,7 @@ Rectangle {
     ColumnLayout {
         id: column
         anchors.top: control.title ? label.bottom : control.top
+        anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
         anchors.left: control.left
         anchors.leftMargin: control.title ? control.leftPadding : 0
         spacing: control.spacing
