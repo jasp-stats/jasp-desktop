@@ -7,7 +7,7 @@
 
 
 
-DataSetView::DataSetView() : _metricsFont(_font)
+DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont(_font)
 {
 	setFlag(QQuickItem::ItemHasContents, true);
 
@@ -34,11 +34,6 @@ DataSetView::DataSetView() : _metricsFont(_font)
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadColumnHeaders);
 
 	setZ(10);
-}
-
-DataSetView::~DataSetView()
-{
-	//everything is cleaned up through QObject tree I think.
 }
 
 void DataSetView::setModel(QAbstractTableModel * model)

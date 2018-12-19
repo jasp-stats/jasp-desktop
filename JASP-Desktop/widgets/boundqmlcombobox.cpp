@@ -17,13 +17,13 @@
 //
 
 #include "boundqmlcombobox.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QAbstractListModel>
 
 
-BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QMLListView(item, form)
 	, BoundQMLItem(item, form)

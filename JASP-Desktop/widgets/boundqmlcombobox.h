@@ -30,7 +30,7 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLComboBox(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 	virtual Option* createOption() OVERRIDE;

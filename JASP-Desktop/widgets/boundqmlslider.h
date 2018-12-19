@@ -10,7 +10,7 @@ class BoundQMLSlider : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLSlider(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLSlider(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 	virtual Option* createOption() OVERRIDE;

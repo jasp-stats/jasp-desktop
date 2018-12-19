@@ -181,7 +181,6 @@ INCLUDEPATH += $$PWD/
 HEADERS += \
     analysis/analysisform.h \
     analysis/analysisqmldefines.h \
-    analysis/analysisqmlform.h \
     analysis/boundqmlitem.h \
     analysis/options/availablefields.h \
     analysis/options/bound.h \
@@ -381,7 +380,6 @@ HEADERS += \
 SOURCES += \
     analysis/analysisform.cpp \
     analysis/analysisqmldefines.cpp \
-    analysis/analysisqmlform.cpp \
     analysis/boundqmlitem.cpp \
     analysis/options/availablefields.cpp \
     analysis/options/option.cpp \

@@ -17,11 +17,11 @@
 //
 
 #include "boundqmlcheckbox.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
-BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
 	, BoundQMLItem(item, form)

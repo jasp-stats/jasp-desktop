@@ -17,7 +17,7 @@
 //
 
 #include "boundqmltextarea.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "qmllistviewtermsavailable.h"
 #include <QQmlProperty>
 #include <QQuickItem>
@@ -25,7 +25,7 @@
 #include <QFontDatabase>
 #include <QDebug>
 
-BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
 	, BoundQMLItem(item, form)

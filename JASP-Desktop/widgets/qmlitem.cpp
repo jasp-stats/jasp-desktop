@@ -17,11 +17,11 @@
 //
 
 #include "qmlitem.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
-QMLItem::QMLItem(QQuickItem *item, AnalysisQMLForm* form)
+QMLItem::QMLItem(QQuickItem *item, AnalysisForm* form)
 	: _item(item), _form(form)
 {
 	_name = QQmlProperty(_item, "name").read().toString();

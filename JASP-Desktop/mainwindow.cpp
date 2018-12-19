@@ -18,7 +18,7 @@
 
 #include "mainwindow.h"
 
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 
 #include <QDir>
 #include <QDebug>
@@ -298,7 +298,9 @@ void MainWindow::loadQML()
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
-	_qml->rootContext()->setContextProperty("ppiScale",					Settings::value(Settings::UI_SCALE).toFloat());
+	_qml->rootContext()->setContextProperty("ppiScale",					1);//Settings::value(Settings::UI_SCALE).toFloat());
+
+	std::cerr << "until preferences return ppiScale is set to 1" << std::endl;
 
 	_qml->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
@@ -848,7 +850,7 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 
 	std::cout << "How to handle loading of a form? We should probably turn Analyses into some king of model and maybe Analysis as well? We could merge those two." << std::endl;
 
-	if (analysis->fromQML())	form = new AnalysisQMLForm(nullptr, analysis);
+	if (analysis->fromQML())	form = new AnalysisForm(nullptr, analysis);
 	else						qDebug() << "MainWindow::loadForm(); form not a QML form! (" << name.c_str() << ")";
 
 	if (form != nullptr)

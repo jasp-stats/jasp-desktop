@@ -10,10 +10,14 @@ Rectangle
 	width:			300 //Should be set from ListView
 	height:			rectTitle.height + rectDescription.height + 3
 	border.width:	1
-	border.color:	Theme.grayDarker
-	color:			Theme.grayMuchLighter
+	border.color:	rectTitleAndDescripton.allHovered ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
+	color:			Theme.uiBackground
 
 	property var cppModel: undefined
+
+	property bool mainHovered:	descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
+	property bool allHovered:	mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
+
 
 	function openStuff()
 	{
@@ -32,7 +36,7 @@ Rectangle
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:	fileEntryMouseArea.containsMouse ?  Theme.grayDarker : "#dcdadb"
+		color:				rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 
 		Image {
 			id :				firstFileOrFolderImage
@@ -118,14 +122,13 @@ Rectangle
 			hoverEnabled:		true
 			onDoubleClicked:	rectTitleAndDescripton.openStuff();
 			cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-
 		}
 
 		ToolTip {
 			id:			commonToolTip
 			delay:		500
 			text:		toolTipText(model.type, model.associated_datafile, "commonMouseArea")
-			visible:	fileEntryMouseArea.containsMouse
+			visible:	rectTitleAndDescripton.mainHovered
 		}
 
 	}
@@ -140,7 +143,7 @@ Rectangle
 		anchors.top:		rectTitle.bottom
 		anchors.margins:	1
 
-		color:				Theme.grayMuchLighter
+		color:				rectTitleAndDescripton.allHovered ? Theme.white : Theme.uiBackground
 		visible:			model.description !== ""
 
 		Text {
@@ -161,6 +164,14 @@ Rectangle
 			textFormat:				Text.StyledText
 			text:					model.description
 		}
+
+		MouseArea {
+			id:					descriptionMouseArea
+			anchors.fill:		parent
+			hoverEnabled:		true
+			onDoubleClicked:	rectTitleAndDescripton.openStuff();
+			cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+		}
 	}
 
 	function toolTipText(type, associated_datafile, mousearea)
@@ -168,7 +179,7 @@ Rectangle
 		//model type: JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5
 
 		if (type === 3)
-			return "Press to navigate to folder"
+			return "Double click to navigate to folder"
 
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
 			return "Double click to open JASP file"

@@ -37,45 +37,56 @@ QtObject {
 	readonly property color yellowLight:		"#FFFFCA"
 	readonly property color rose:				"#FFC0CB"
 	readonly property color shadow:				"#33000000"
-    
-	readonly property int formWidth:			500
-	readonly property int formMargin:			10
-    
-	readonly property int columnSpacing:		30
-	readonly property int rowSpacing:			5
-	readonly property int borderRadius:			4
-	readonly property int generalAnchorMargin:	8
 
-	readonly property int sliderWidth:					4
-	readonly property int sliderLength:					80
-	readonly property int switchHeight:					15
-	readonly property int shadowRadius:					10
-	readonly property int comboBoxHeight:				22
-	readonly property int textFieldWidth:				40
-	readonly property int textFieldHeight:				20
-	readonly property int defaultListHeight:			350
-	readonly property int variablesListTitle:			20
-	readonly property int groupContentPadding:			10
-	readonly property int sliderHandleDiameter:			16
-	readonly property int defaultTextAreaHeight:		250
-	readonly property int radioIndicatorDiameter:		16
-	readonly property int checkBoxIndicatorLength:		15
-	readonly property int defaultSingleItemListHeight:	45
+	readonly property color textEnabled:		black
+	readonly property color textDisabled:		grayDarker
+	readonly property color uiBackground:		grayMuchLighter
+	readonly property color buttonColor:		grayLighter
+	readonly property color buttonBorderColor:	grayLighter
 
-	readonly property int messageBoxButtonHeight:		40
+	readonly property color buttonColorHovered:			uiBackground
+	readonly property color buttonBorderColorHovered:	black
+    
+	readonly property int formWidth:			500 * ppiScale
+	readonly property int formMargin:			10	* ppiScale
+    
+	readonly property int columnSpacing:		30 * ppiScale
+	readonly property int rowSpacing:			5  * ppiScale
+	readonly property int borderRadius:			4  * ppiScale
+	readonly property int generalAnchorMargin:	8  * ppiScale
+
+	readonly property int sliderWidth:					4   * ppiScale
+	readonly property int sliderLength:					80  * ppiScale
+	readonly property int switchHeight:					15  * ppiScale
+	readonly property int shadowRadius:					10  * ppiScale
+	readonly property int comboBoxHeight:				22  * ppiScale
+	readonly property int textFieldWidth:				40  * ppiScale
+	readonly property int textFieldHeight:				20  * ppiScale
+	readonly property int defaultListHeight:			350 * ppiScale
+	readonly property int ribbonButtonHeight:			60  * ppiScale
+	readonly property int ribbonButtonPadding:			10  * ppiScale
+	readonly property int variablesListTitle:			20  * ppiScale
+	readonly property int groupContentPadding:			10  * ppiScale
+	readonly property int sliderHandleDiameter:			16  * ppiScale
+	readonly property int defaultTextAreaHeight:		250 * ppiScale
+	readonly property int radioIndicatorDiameter:		16  * ppiScale
+	readonly property int checkBoxIndicatorLength:		15  * ppiScale
+	readonly property int defaultSingleItemListHeight:	45  * ppiScale
+
+	readonly property int messageBoxButtonHeight:		40  * ppiScale
 	readonly property int maximumFlickVelocity:			400
 	readonly property int fileMenuSlideDuration:		200
 
 	property font font
 	font.bold:		false
 	font.underline:	false
-	font.pixelSize:	14
+	font.pixelSize:	14 * ppiScale
 	font.family:	"SansSerif"
 
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false
-	fontLabel.pixelSize:	18
+	fontLabel.pixelSize:	18 * ppiScale
 	fontLabel.family:		"SansSerif"
     
 	readonly property color borderColor:					gray

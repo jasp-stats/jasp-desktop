@@ -29,7 +29,7 @@ class BoundQMLRadioButtons : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLRadioButtons(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }	

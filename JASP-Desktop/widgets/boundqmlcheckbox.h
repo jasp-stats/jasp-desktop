@@ -28,7 +28,7 @@ class BoundQMLCheckBox : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
 	

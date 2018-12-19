@@ -29,7 +29,7 @@ class BoundQMLListViewMeasuresCells : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() OVERRIDE	{ return _measuresCellsModel; }
 	virtual Option* boundTo() OVERRIDE	{ return _boundTo; }

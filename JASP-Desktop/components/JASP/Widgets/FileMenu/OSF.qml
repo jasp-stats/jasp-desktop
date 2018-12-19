@@ -3,11 +3,9 @@ import QtQuick.Controls 2.2
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
-
-Rectangle
+Item
 {
 	id:		rect
-	color:	Theme.grayMuchLighter
 	
 	property bool loggedin:			fileMenuModel.osf.loggedin
 	property bool processing:		fileMenuModel.osf.processing
@@ -36,21 +34,11 @@ Rectangle
 	}
 	
 	
-	Button {
+	FilterButton {
 		id: logoutButton
 		
 		visible: loggedin
-		
-		background: Rectangle {
-			anchors.fill: parent
-			gradient: Gradient {
-				GradientStop { position: 0 ; color:  "#e5e5e5" }
-				GradientStop { position: 1 ; color:  Theme.white }
-			}
-			border.color: "gray"
-			border.width: 1
-		}
-		
+				
 		text: "Logout"
 		width: 80
 		height: 20
@@ -228,14 +216,12 @@ Rectangle
 		orientation: Qt.Horizontal
 	}
 	
-	Rectangle {
+	Item {
 		
 		visible: processing
 		
 		width: animation.width; 
 		height: animation.height + 8
-		
-		color: Theme.grayMuchLighter
 		
 		anchors.horizontalCenter: osfList.horizontalCenter
 		anchors.verticalCenter: osfList.verticalCenter
@@ -257,8 +243,9 @@ Rectangle
 			right:			parent.right
 			bottom:			thirdSeparator.top
 			leftMargin:		12  //Position datalibrary items
-			topMargin:		6
-			bottomMargin:	6
+			topMargin:		Theme.generalAnchorMargin
+			bottomMargin:	Theme.generalAnchorMargin
+			rightMargin:	Theme.generalAnchorMargin
 		}
 		
 	}
@@ -266,51 +253,51 @@ Rectangle
 	OSFLogin {
 		id: osfLogin
 		
-		visible: !loggedin && !processing		
-		height: 170
+		visible:				!loggedin && !processing
+		height:					170
 		
-		anchors.top: secondSeparator.bottom
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.leftMargin: 12
-		anchors.topMargin: 6
-		anchors.rightMargin: 6
+		anchors.top:			secondSeparator.bottom
+		anchors.left:			parent.left
+		anchors.right:			parent.right
+		anchors.leftMargin:		12
+		anchors.topMargin:		6
+		anchors.rightMargin:	6
 		
 	}
 	
 	ToolSeparator
 	{
-		id: thirdSeparator
+		id:						thirdSeparator
 		
-		anchors.bottom: linkOSF.top
-		width: rect.width
-		orientation: Qt.Horizontal
-		anchors.bottomMargin: 5
+		anchors.bottom:			linkOSF.top
+		width:					rect.width
+		orientation:			Qt.Horizontal
+		anchors.bottomMargin:	5
 	}
 	
 	Text {
-		id: linkOSF
+		id:						linkOSF
 		
-		height: 30
-		width: implicitWidth
-		anchors.left: parent.left
-		anchors.leftMargin: 12
-		anchors.bottom: parent.bottom
-		textFormat: Text.StyledText
+		height:					30
+		width:					implicitWidth
+		anchors.left:			parent.left
+		anchors.leftMargin:		12
+		anchors.bottom:			parent.bottom
+		textFormat:				Text.StyledText
 		
 		text:'<font color="blue"><u>About the OSF</u></font>'
 		MouseArea {
-			anchors.fill: parent
-			hoverEnabled: true
-			cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-			onClicked: Qt.openUrlExternally("http://help.osf.io")
+			anchors.fill:	parent
+			hoverEnabled:	true
+			cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+			onClicked:		Qt.openUrlExternally("http://help.osf.io")
 		}
 	}
 	
 	Text {
-		id: linkRegister
+		id:			linkRegister
 		
-		height: 30
+		height:		30
 		width: implicitWidth
 		anchors.left: linkOSF.right 
 		anchors.leftMargin: 12
@@ -318,6 +305,7 @@ Rectangle
 		textFormat: Text.StyledText
 		
 		text:'<font color="blue"><u>Register</u></font>'
+
 		MouseArea {
 			anchors.fill: parent
 			hoverEnabled: true

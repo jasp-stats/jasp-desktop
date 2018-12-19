@@ -21,7 +21,7 @@
 #include <QQuickItem>
 #include <QQmlProperty>
 
-QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisQMLForm* form)
+QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QMLListViewDraggable(item, form)
 {

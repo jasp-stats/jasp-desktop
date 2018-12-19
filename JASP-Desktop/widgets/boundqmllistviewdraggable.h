@@ -34,7 +34,7 @@ class BoundQMLListViewDraggable : public QMLListViewDraggable, public BoundQMLIt
 	typedef QPair<int, QMap<QString, QQuickItem*> > RowQuickItemType;
 	
 public:
-	BoundQMLListViewDraggable(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
 	virtual void setUp() OVERRIDE;
 	

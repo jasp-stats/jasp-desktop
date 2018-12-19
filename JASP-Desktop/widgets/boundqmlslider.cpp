@@ -17,13 +17,13 @@
 //
 
 #include "boundqmlslider.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QAbstractListModel>
 #include <QTimer>
 
-BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
 	, BoundQMLItem(item, form)

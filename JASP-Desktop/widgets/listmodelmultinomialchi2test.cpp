@@ -21,7 +21,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QSize>
 #include <QDebug>
 #include <QQmlEngine>

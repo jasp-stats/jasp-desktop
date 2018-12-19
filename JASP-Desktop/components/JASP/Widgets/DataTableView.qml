@@ -36,9 +36,10 @@ FocusScope
 			leftTopCornerItem:
 				Rectangle
 				{
-					id: filterToggleButton
-					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-										GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
+					id:		filterToggleButton
+					color:	Theme.uiBackground
+					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
+					//					GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
 
 					ToolTip.text:		filterWindow.opened ? "Hide filter" : "Show filter"
 					ToolTip.timeout:	4500
@@ -77,9 +78,9 @@ FocusScope
 				{
 					id:		addColumnButton
 					width:	40
-
-					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-										GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
+					color:	Theme.uiBackground
+					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
+					//					GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
 
 					ToolTip.text:		"Add computed column"
 					ToolTip.timeout:	4500
@@ -115,9 +116,9 @@ FocusScope
 			rowNumberDelegate:
 				Rectangle
 				{
-					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-										GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-
+					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
+					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
+					color:	Theme.uiBackground
 					Text {
 						text:				rowIndex
 						anchors.centerIn:	parent
@@ -311,9 +312,9 @@ FocusScope
 				}
 
 
-
-				gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-									GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
+				color:	Theme.uiBackground
+				//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
+				//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
 
 
 

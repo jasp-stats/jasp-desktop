@@ -17,7 +17,7 @@
 //
 
 #include "boundqmllistviewdraggable.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "listmodelassignedinterface.h"
 #include "qmllistviewtermsavailable.h"
 #include "analysis/options/optionstable.h"
@@ -31,7 +31,7 @@
 #include <QQmlProperty>
 #include <QDebug>
 
-BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisQMLForm *form)
+BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)
 	: QMLListViewDraggable(item, form)
 	, BoundQMLItem(item, form) 
 {

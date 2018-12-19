@@ -17,13 +17,13 @@
 //
 
 #include "qmllistview.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "listmodel.h"
 
 #include <QQmlProperty>
 #include <QDebug>
 
-QMLListView::QMLListView(QQuickItem *item, AnalysisQMLForm *form) 
+QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form) 
 	: QMLItem(item, form)
 	, QObject(form)
 	, _needsSyncModels(false)

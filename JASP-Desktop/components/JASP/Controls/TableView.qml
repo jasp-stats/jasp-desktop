@@ -69,7 +69,7 @@ JASPControl
 			viewportH: myFlickable.visibleArea.heightRatio * height
             
             columnHeaderDelegate: Rectangle {
-                color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
+				color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
                 Text { text: headerText; anchors.centerIn: parent }
                 MouseArea {
                     anchors.fill: parent

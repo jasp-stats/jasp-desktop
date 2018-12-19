@@ -23,13 +23,13 @@
 #include "widgets/qmlitem.h"
 
 class QQuickItem;
-class AnalysisQMLForm;
+class AnalysisForm;
 
 class BoundQMLItem : public virtual QMLItem, public Bound
 {
 
 public:
-	BoundQMLItem(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLItem(QQuickItem* item, AnalysisForm* form);
 	virtual ~BoundQMLItem();
 	
 	virtual Option* createOption() = 0;

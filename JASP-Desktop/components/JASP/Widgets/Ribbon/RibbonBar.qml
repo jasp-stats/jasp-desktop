@@ -1,6 +1,6 @@
 import QtQuick 2.11
 import JASP.Widgets 1.0
-
+import JASP.Theme 1.0
 FocusScope
 {
 	height: ribbonMenu.height
@@ -49,5 +49,25 @@ FocusScope
 		}
 
 		//onClicked:
+	}
+
+	Rectangle
+	{
+		id:		shadow
+		y:		ribbonMenu.height
+		z:		1
+		height:	Theme.shadowRadius
+
+		anchors {
+			left:	parent.left
+			right:	parent.right
+		}
+
+		gradient:	Gradient {
+			GradientStop { position: 0.0; color: Theme.shadow }
+			GradientStop { position: 1.0; color: "transparent" }
+		}
+
+
 	}
 }

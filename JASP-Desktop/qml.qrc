@@ -89,5 +89,6 @@
         <file>components/JASP/Widgets/Ribbon/RibbonBar.qml</file>
         <file>components/JASP/Widgets/FileMenu/ListItem.qml</file>
         <file>components/JASP/Widgets/FileMenu/FileList.qml</file>
+        <file>components/JASP/Widgets/AnalysisForms.qml</file>
     </qresource>
 </RCC>

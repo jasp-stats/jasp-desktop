@@ -17,7 +17,7 @@
 //
 
 #include "listmodel.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 
 QString ListModel::_iconPath = "qrc:/icons/";
 QMap<int, QString> ListModel::_iconFiles {

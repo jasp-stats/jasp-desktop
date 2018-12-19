@@ -18,7 +18,7 @@
 
 #include "boundqmllistviewterms.h"
 #include "analysis/options/optionvariable.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "listmodeltermsavailable.h"
 #include "analysis/options/optionstable.h"
 
@@ -27,7 +27,7 @@
 
 using namespace std;
 
-BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisQMLForm* form) : QMLItem(item, form), BoundQMLListViewDraggable(item, form)
+BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form) : QMLItem(item, form), BoundQMLListViewDraggable(item, form)
 {
 	_optionsTable = NULL;
 	_optionVariables = NULL;

@@ -11,9 +11,13 @@ Window
 	width:		1800
 	height:		900
 
+	minimumWidth:	640
+	minimumHeight:	480
+
 	RibbonBar
 	{
 		id:		ribbon
+		z:		1
 
 		anchors
 		{
@@ -26,6 +30,7 @@ Window
 	FileMenu
 	{
 		id:			filemenu
+		z:			2
 
 		anchors
 		{
@@ -38,6 +43,7 @@ Window
 	MainPage
 	{
 		id: mainpage
+		z:	0
 
 		anchors
 		{

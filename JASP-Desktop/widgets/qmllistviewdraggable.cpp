@@ -18,12 +18,12 @@
 
 #include "qmllistviewdraggable.h"
 #include "listmodeldraggable.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QQuickItem>
 #include <QQmlProperty>
 #include <QTimer>
 
-QMLListViewDraggable::QMLListViewDraggable(QQuickItem* item, AnalysisQMLForm* form)
+QMLListViewDraggable::QMLListViewDraggable(QQuickItem* item, AnalysisForm* form)
 	: QMLListView(item, form)
 {
 }

@@ -35,7 +35,7 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType };
 	
-	BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;

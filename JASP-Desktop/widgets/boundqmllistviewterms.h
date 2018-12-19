@@ -29,7 +29,7 @@ class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewTerms(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() OVERRIDE	{ return _variablesModel; }
 	virtual Option* boundTo() OVERRIDE

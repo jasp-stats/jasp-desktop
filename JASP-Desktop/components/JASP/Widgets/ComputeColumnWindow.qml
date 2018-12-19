@@ -284,44 +284,44 @@ FocusScope
 
 		FilterButton
 		{
-			id: applycomputeColumn
+			id:				applycomputeColumn
 
-			text: computeColumnEdit.changedSinceLastApply ? "Compute column" : "Column computed"
-			disabled: !computeColumnEdit.changedSinceLastApply
-			anchors.left: showGeneratedRCode.right
-			anchors.right: helpButton.left
-			anchors.bottom: parent.bottom
-			anchors.top: closeColumnEditorButton.top
+			text:			computeColumnEdit.changedSinceLastApply ? "Compute column" : "Column computed"
+			enabled:		computeColumnEdit.changedSinceLastApply
+			anchors.left:	showGeneratedRCode.right
+			anchors.right:	helpButton.left
+			anchors.bottom:	parent.bottom
+			anchors.top:	closeColumnEditorButton.top
 
-			onClicked: computedColumnContainer.applyComputedColumn()
+			onClicked:		computedColumnContainer.applyComputedColumn()
 
-			toolTip: computeColumnEdit.changedSinceLastApply ? "Click to compute column" : "Column (in line to be) computed"
+			toolTip:		computeColumnEdit.changedSinceLastApply ? "Click to compute column" : "Column (in line to be) computed"
 		}
 
 		FilterButton
 		{
-			id: helpButton
-			iconSource: "qrc:/icons/QuestionMark.png"
-			anchors.right: closeColumnEditorButton.left
+			id:				helpButton
+			iconSource:		"qrc:/icons/QuestionMark.png"
+			anchors.right:	closeColumnEditorButton.left
 			anchors.bottom: parent.bottom
-			anchors.top: closeColumnEditorButton.top
+			anchors.top:	closeColumnEditorButton.top
 
-			onClicked: mainWindow.showHelpFromQML("other/ComputedColumns");
+			onClicked:		mainWindow.showHelpFromQML("other/ComputedColumns");
 
-			toolTip: "Open Documentation"
+			toolTip:		"Open Documentation"
 		}
 
 
 		FilterButton
 		{
-			id: closeColumnEditorButton
-			iconSource: "qrc:/images/cross.png"
-			anchors.right: parent.right
+			id:				closeColumnEditorButton
+			iconSource:		"qrc:/images/cross.png"
+			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
 
-			onClicked: computedColumnContainer.askIfChangedOrClose()
+			onClicked:		computedColumnContainer.askIfChangedOrClose()
 
-			toolTip: "Close computed column window"
+			toolTip:		"Close computed column window"
 		}		
 	}
 

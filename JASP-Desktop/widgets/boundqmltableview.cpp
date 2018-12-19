@@ -18,7 +18,7 @@
 
 #include "boundqmltableview.h"
 
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "analysis/options/optiondoublearray.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
@@ -26,7 +26,7 @@
 #include <QQuickItem>
 #include <QTimer>
 
-BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QMLListView(item, form)
 	, BoundQMLItem(item, form)

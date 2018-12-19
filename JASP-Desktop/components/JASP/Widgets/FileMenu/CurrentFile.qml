@@ -2,11 +2,9 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import JASP.Theme 1.0
 
-Rectangle
+Item
 {
 	id:rect
-	objectName: "rect"
-	color: Theme.grayMuchLighter
 		
 	Label
 	{
@@ -51,8 +49,9 @@ Rectangle
 			left:			parent.left
 			right:			parent.right
 			leftMargin:		12  //Position datalibrary items
-			topMargin:		6
-			bottomMargin:	6
+			topMargin:		Theme.generalAnchorMargin
+			bottomMargin:	Theme.generalAnchorMargin
+			rightMargin:	Theme.generalAnchorMargin
 		}
 	}
 }

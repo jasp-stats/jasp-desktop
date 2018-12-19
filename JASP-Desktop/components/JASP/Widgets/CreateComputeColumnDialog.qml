@@ -162,40 +162,40 @@ Popup {
 
 			FilterButton
 			{
-				id: rCodeSelectah
+				id:						rCodeSelectah
 
-				anchors.top: parent.top
-				//anchors.left: parent.left
-				anchors.right: parent.horizontalCenter
-				anchors.bottom: parent.bottom
-				anchors.rightMargin: 5
+				anchors.top:			parent.top
+				//anchors.left:			parent.left
+				anchors.right:			parent.horizontalCenter
+				anchors.bottom:			parent.bottom
+				anchors.rightMargin:	5
 
-				iconSource: "qrc:/icons/R.png"
-				onClicked: popupCreateComputedColumn.computeTypeIsJson = false
-				selected: !popupCreateComputedColumn.computeTypeIsJson
+				iconSource:				"qrc:/icons/R.png"
+				onClicked:				popupCreateComputedColumn.computeTypeIsJson = false
+				selected:				!popupCreateComputedColumn.computeTypeIsJson
 
-				width: height
+				width:					height
 
-				toolTip: "Define column through R code"
+				toolTip:				"Define column through R code"
 			}
 
 			FilterButton
 			{
-				id: jsonSelectah
+				id:					jsonSelectah
 
-				anchors.top: parent.top
-				anchors.left: parent.horizontalCenter
-				//anchors.right: parent.right
-				anchors.bottom: parent.bottom
-				anchors.leftMargin: 5
+				anchors.top:		parent.top
+				anchors.left:		parent.horizontalCenter
+				//anchors.right:	parent.right
+				anchors.bottom:		parent.bottom
+				anchors.leftMargin:	5
 
-				iconSource: "qrc:/icons/NotR.png"
-				onClicked: popupCreateComputedColumn.computeTypeIsJson = true
-				selected: popupCreateComputedColumn.computeTypeIsJson
+				iconSource:			"qrc:/icons/NotR.png"
+				onClicked:			popupCreateComputedColumn.computeTypeIsJson = true
+				selected:			popupCreateComputedColumn.computeTypeIsJson
 
-				width: height
+				width:				height
 
-				toolTip: "Define column through drag and drop formulas"
+				toolTip:			"Define column through drag and drop formulas"
 			}
 
 		}
@@ -212,16 +212,16 @@ Popup {
 			anchors.horizontalCenter:	parent.horizontalCenter
 
 			Repeater{
-				id: iconRepeater
-				model: [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] //these are set in the rootcontext in mainwindow!
+				id:		iconRepeater
+				model:	[columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] //these are set in the rootcontext in mainwindow!
 
 				Rectangle
 				{
-					id: columnTypeChangeIcon
+					id:			columnTypeChangeIcon
 
-					width: iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
-					height:computeColumnIconRow.height
-					//radius: 10
+					width:		iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
+					height:		computeColumnIconRow.height
+					//radius:	10
 
 					property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
 					color: iAmSelected ? Theme.white : popupIconComputeMouseArea.useThisColor
@@ -288,11 +288,11 @@ Popup {
 			anchors.topMargin: 10
 			anchors.horizontalCenter: parent.horizontalCenter
 
-			text: "Create"
-			disabled: !nameEdit.validEntry
-			toolTip: nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
+			text:		"Create"
+			enabled:	nameEdit.validEntry
+			toolTip:	nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
 
-			onClicked: popupCreateComputedColumn.createComputedColumn()
+			onClicked:	popupCreateComputedColumn.createComputedColumn()
 		}
 	}
 }

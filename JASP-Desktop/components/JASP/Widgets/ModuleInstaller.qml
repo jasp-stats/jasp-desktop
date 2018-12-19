@@ -95,7 +95,7 @@ Rectangle
 						border.color:		Theme.grayDarker
 						border.width:		1
 						selected:			folderList.currentlySelectedFilePath !== "" && folderList.currentlySelectedFilePath === filePath
-						disabled:			selected
+						enabled:			!selected
 
 						property int margins: 4
 
@@ -195,7 +195,7 @@ Rectangle
 		disabled:			moduleInstallerRect.currentJSON === null
 
 		text:				"Install"
-		toolTip:			disabled ? "Select a JASP Module to install" : "Press this to install your selected Module"
+		toolTip:			enabled ? "Press this to install your selected Module" : "Select a JASP Module to install"
 
 		onClicked:
 		{

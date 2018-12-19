@@ -6,13 +6,13 @@ Rectangle
 {
 	id: filterButtonRoot
 
-	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.white : Theme.grayLighter
-	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.black : Theme.gray
+	color:			(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.buttonColorHovered			: Theme.buttonColor
+	border.color:	(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 	border.width:	1
 
 	property string	text:				""
-	property string	toolTip:			"This is a button"
-	property bool	disabled:			false
+	property string	toolTip:			""
+	property bool	enabled:			true
 	property bool	selected:			false
 	property string	iconSource:			""
 	property real	buttonPadding:		(buttonIcon.visible ? 4 : 16) * ppiScale
@@ -27,7 +27,7 @@ Rectangle
 
 	ToolTip.delay:		500
 	ToolTip.timeout:	3500
-	ToolTip.visible:	hovered
+	ToolTip.visible:	hovered && toolTip != ""
 	ToolTip.text:		toolTip
 
 	signal clicked()
@@ -38,9 +38,9 @@ Rectangle
 		anchors.fill: parent
 		acceptedButtons: Qt.LeftButton
 		hoverEnabled: true
-		cursorShape: containsMouse && !parent.disabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+		cursorShape: containsMouse && parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-		onClicked: if(!filterButtonRoot.disabled) filterButtonRoot.clicked()
+		onClicked: if(filterButtonRoot.enabled) filterButtonRoot.clicked()
 	}
 
 	Image
@@ -55,8 +55,8 @@ Rectangle
 		sourceSize.width: Math.max(48, width)
 		sourceSize.height: Math.max(48, height)
 
-		visible: filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
-		source: filterButtonRoot.iconSource
+		visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
+		source:		filterButtonRoot.iconSource
 	}
 
 	Text
@@ -65,12 +65,14 @@ Rectangle
 		x:	filterButtonRoot.showIconAndText ? buttonIcon.x + buttonIcon.width + filterButtonRoot.buttonPadding : (parent.width / 2) - (width / 2)
 		y:	(parent.height / 2) - (height / 2)
 
-		text: filterButtonRoot.text
-		visible: filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
+		text:		filterButtonRoot.text
+		visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
+		color:		filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled
 
-		font.pixelSize: Math.max(filterButtonRoot.height * 0.4, Math.min(12 * ppiScale, filterButtonRoot.height - 2))
+		font:	Theme.font
+		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * ppiScale, filterButtonRoot.height - 2))
 
 		height: contentHeight
-		width: contentWidth
+		width:	contentWidth
 	}
 }

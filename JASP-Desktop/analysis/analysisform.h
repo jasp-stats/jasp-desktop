@@ -32,14 +32,31 @@
 #include "analysis/options/variableinfo.h"
 #include "analysis.h"
 
-class AnalysisForm : public QObject, public VariableInfoProvider
+#include <QQuickItem>
+#include <QFileSystemWatcher>
+
+#include "analysis.h"
+#include "boundqmlitem.h"
+#include "widgets/listmodel.h"
+#include "options/variableinfo.h"
+#include "analysisqmldefines.h"
+#include "widgets/listmodeltermsavailable.h"
+#include "gui/messageforwarder.h"
+
+
+
+class ListModelTermsAssigned;
+class BoundQMLItem;
+
+class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT
+	Q_PROPERTY(QQuickItem * formItem READ formItem WRITE setFormItem NOTIFY formItemChanged)
 
 public:
-	explicit					AnalysisForm(QString name, QObject *parent = 0);
-	virtual		void			bindTo(Options *options, DataSet *dataSet) = 0;
-	virtual		void			unbind()	= 0;
+	explicit					AnalysisForm(QQuickItem *parent, Analysis* analysis);
+				void			bindTo(Options *options, DataSet *dataSet);
+				void			unbind();
 
 				bool			hasIllegalValue()		const;
 				const QString	&illegalValueMessage()	const;
@@ -50,16 +67,63 @@ public:
 public slots:
 				void			runScriptRequestDone(const QString & result, int requestId);
 
+				void setFormItem(QQuickItem * formItem)
+				{
+					if (_formItem == formItem)
+						return;
+
+					_formItem = formItem;
+					emit formItemChanged(_formItem);
+				}
+
 signals:
 				void			illegalChanged(AnalysisForm * form);
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
-	
+
+				void formItemChanged(QQuickItem * formItem);
+
 protected:
-	virtual		void			rScriptDoneHandler(QVariant key, const QString & result);
-	virtual		void			setVariablesModel();
+				void			rScriptDoneHandler(QVariant key, const QString & result);
+				void			setVariablesModel();
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
 				bool			runRScriptRequestedForId(int requestId);
+
+public:
+	void		addError(const QString& error);
+
+	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
+	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
+	Options*	getAnalysisOptions()					{ return _analysis->options(); }
+	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
+	DataSet*	getDataSet()							{ return _dataSet; }
+
+	QQuickItem * formItem() const
+	{
+		return _formItem;
+	}
+
+protected:
+	void		_setAllAvailableVariablesModel();
+	QString		_getAnalysisQMLPath();
+
+
+private:
+	void		_parseQML();
+	void		_setUpItems();
+	void		_setErrorMessages();
+
+private slots:
+	void		QMLFileModifiedHandler(QString path);
+	void		RFileModifiedHandler(QString path)						{ qDebug() << "Test R file (" << path << ") modified"; }
+
+protected:
+	Analysis								*_analysis;
+	QMap<QString, QMLItem* >				_controls;
+	QVector<BoundQMLItem*>					_boundItemsOrdered;
+	std::map<QMLListView*, ListModel* >		_relatedModelMap;
+	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
+	std::map<QString, ListModel* >			_modelMap;
 
 
 
@@ -79,7 +143,16 @@ protected:
 	
 	static	int						_scriptRequestCounter;
 	std::map<int, QVariant>			_scriptRequestIdToKey;
-		
+
+private:
+	QFileSystemWatcher						_QMLwatcher;
+	QFileSystemWatcher						_Rwatcher;
+
+	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
+	QQuickItem								*_errorMessagesItem;
+	QList<QString>							_errorMessages;
+
+	QQuickItem * _formItem = nullptr;
 };
 
 #endif // ANALYSISFORM_H

@@ -29,7 +29,7 @@ class BoundQMLFactorsList :  public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLFactorsList(QQuickItem* item, AnalysisQMLForm* form);	
+	BoundQMLFactorsList(QQuickItem* item, AnalysisForm* form);	
 
 	virtual ListModel* model() OVERRIDE		{ return _factorsModel; }
 	virtual Option* boundTo() OVERRIDE		{ return _boundTo; }

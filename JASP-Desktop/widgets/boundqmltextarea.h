@@ -36,7 +36,7 @@ class BoundQMLTextArea : public QObject, public BoundQMLItem
 	
 public:
 	
-	BoundQMLTextArea(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLTextArea(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;

@@ -28,7 +28,7 @@ class QMLListViewTermsAvailable : public QMLListViewDraggable
 {
 Q_OBJECT
 public:
-	QMLListViewTermsAvailable(QQuickItem* item, AnalysisQMLForm* form);
+	QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() OVERRIDE	{ return _availableModel; }
 	virtual void setTermsAreNotVariables() OVERRIDE;

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
+import JASP.Widgets 1.0
 
 Item
 {	
@@ -52,51 +53,21 @@ Item
 
 					model: fileMenu.actionbuttons.length
 
-					Button {
-						id: actionButton
-						text: fileMenu.actionbuttons[index]
+					FilterButton {
+						id:					actionButton
+						text:				fileMenu.actionbuttons[index]
 
-						width:parent.width-6
-						height: action_button_height
+						width:				parent.width-6
+						height:				action_button_height
 						anchors.leftMargin: 3
-						anchors.left: parent.left
-						onClicked: {
-							fileMenuModel.fileOperationClicked(index)
-						}
-						enabled: fileMenuModel.buttonsenabled[index];
+						anchors.left:		parent.left
+						onClicked:			fileMenuModel.fileOperationClicked(index)
+						enabled:			fileMenuModel.buttonsenabled[index];
 					}
 				}
-
-				Button {
-
-					id: actionTest
-					text: "Test"
-					visible: false
-
-					width:parent.width-6
-					anchors.leftMargin: 3
-					anchors.left: parent.left
-
-					onClicked: {
-						for (var i=0; i<fileMenu.actionbuttons.length; i++)
-							console.log(fileMenu.actionbuttons[i])
-
-						for (var prop in fileMenu.attributes)
-							console.log(prop, "=",fileMenu.attributes[prop])
-
-						//var tt = filemenu.fileoperation
-						var tt =  filemenu.Close
-						console.log("Value Enum is =", tt)
-
-						for (var i=0; i<filemenu.buttonsenabled.length ;i++)
-							console.log(filemenu.buttonsenabled[i])
-
-						filemenu.test()
-
-					}
-				}
-			}// Column fileAction
+			}
 		}//Rectangle Action Menu
+
 
 		// Right verical tab : Browse Menu ////////////////////////////////////////////////////////
 		// Location Menu
@@ -123,7 +94,7 @@ Item
 				spacing:					6
 				width:						parent.width - Theme.generalAnchorMargin
 
-				Button {
+				FilterButton {
 					id:					locationRecentFiles
 					text:				fileMenu.resourcesbuttons[0]
 
@@ -138,7 +109,7 @@ Item
 				}
 
 
-				Button {
+				FilterButton {
 					id:					locationCurrentFile
 					text:				fileMenu.resourcesbuttons[1]
 
@@ -153,7 +124,7 @@ Item
 				}
 
 
-				Button {
+				FilterButton {
 					id:				locationComputer
 					text:			fileMenu.resourcesbuttons[2]
 
@@ -168,7 +139,7 @@ Item
 
 				}
 
-				Button {
+				FilterButton {
 					id:		alocationOSF
 					text:	fileMenu.resourcesbuttons[3]
 
@@ -186,7 +157,7 @@ Item
 					}
 				}
 
-				Button {
+				FilterButton {
 					id:			locationDataLibrary
 					text:		fileMenu.resourcesbuttons[4]
 
@@ -200,8 +171,8 @@ Item
 					visible:	fileMenuModel.datalibrary_button_visible
 					onClicked:	resourceScreen.locationSelected = "datalibrary"
 				}
-			} //Column Filelocation
-		}//Rectangle Location Menu
+			}	//Column Filelocation
+		}		//Rectangle Location Menu
 
 
 
@@ -245,6 +216,7 @@ Item
 
 			border.width:	1
 			border.color:	Theme.grayDarker
+			color:			Theme.uiBackground
 			z:				-2
 
 			property bool aButtonVisible:	(recentFiles.visible || currentFile.visible || computer.visible || osf.visible || dataLibrary.visible)
@@ -256,51 +228,41 @@ Item
 
 			onXChanged: if(x + width <= otherColumnsWidth && !fileMenuModel.visible) resourceScreen.locationSelected = ""
 
-			RecentFiles{
-				id: recentFiles
-
-				anchors.fill: parent
-				anchors.margins: 1
-
-				visible: resourceScreen.locationSelected == 'recentfiles'
+			RecentFiles
+			{
+				id:				recentFiles
+				anchors.fill:	parent
+				visible:		resourceScreen.locationSelected == 'recentfiles'
 			}
 
-			CurrentFile{
-				id: currentFile
-
-				anchors.fill: parent
-				anchors.margins: 1
-
-				visible: resourceScreen.locationSelected == 'currentfile'
+			CurrentFile
+			{
+				id:				currentFile
+				anchors.fill:	parent
+				visible:		resourceScreen.locationSelected == 'currentfile'
 			}
 
-			Computer{
-				id: computer
-
-				anchors.fill: parent
-				anchors.margins: 1
-
-				visible: resourceScreen.locationSelected == 'computer'
+			Computer
+			{
+				id:				computer
+				anchors.fill:	parent
+				visible:		resourceScreen.locationSelected == 'computer'
 			}
 
-			OSF{
-				id: osf
-
-				anchors.fill: parent
-				anchors.margins: 1
-
-				visible: resourceScreen.locationSelected == 'osf'
+			OSF
+			{
+				id:				osf
+				anchors.fill:	parent
+				visible:		resourceScreen.locationSelected == 'osf'
 			}
 
-			DataLibrary{
+			DataLibrary
+			{
 
-				id: dataLibrary
-
-				anchors.fill: parent
-				anchors.margins: 1
-
-				visible: resourceScreen.locationSelected == 'datalibrary'
+				id:				dataLibrary
+				anchors.fill:	parent
+				visible:		resourceScreen.locationSelected == 'datalibrary'
 			}
-		}  //Rectangle resourceScreen
+		}
 	}
 }

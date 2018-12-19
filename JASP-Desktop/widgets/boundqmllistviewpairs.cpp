@@ -18,14 +18,14 @@
 
 #include "boundqmllistviewpairs.h"
 #include "listmodelpairsassigned.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "analysis/options/optionvariablesgroups.h"
 
 #include <QQmlProperty>
 
 using namespace std;
 
-BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {

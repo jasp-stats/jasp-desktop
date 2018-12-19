@@ -22,64 +22,73 @@ import QtGraphicalEffects 1.0
 import JASP.Theme 1.0
 
 Rectangle {
-    id                            : ribbonButton
-    width                         : (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + 20 // + 2*tbutton.width
-    height                        : 60  // backgroundImage.height + innerText.height
-    radius                        : 5
-    color                         : "#FFFFFF"
-            property alias text   : innerText.text
-            property alias source : backgroundImage.source
-            property alias enabled: mice.enabled
-    default property var   menu
+	id							: ribbonButton
+	width						: (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
+	height						: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
+	radius						: 5
+	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground //mice.pressed ? Theme.grayLighter : mice.containsMouse ? Theme.white : Theme.uiBackground
+
+	//border.color				: Theme.white
+	//border.width				: !mice.containsMouse ? 0 : 2
+
+			property alias	text		: innerText.text
+			property alias	source		: backgroundImage.source
+			property alias	enabled		: mice.enabled
+	default property var	menu
+			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
 
     signal clicked
 
-    Image {
-        width: 37
-        height: 28
-        id: backgroundImage
+	Item
+	{
+		anchors.centerIn:	parent
+		width:				parent.width
+		height:				parent.height
 
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
-    }
+		scale:				mice.containsMouse && !mice.pressed ? 1.1 : 1
 
-    ColorOverlay {
-        anchors.fill: backgroundImage
-        source      : backgroundImage
-        color       : mice.enabled ? "transparent" : "lightgrey"
-    }
 
-    Text {
-        id: innerText
+		Image
+		{
+			id:			backgroundImage
+			width:		(37 / 28) * height
+			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top             : backgroundImage.bottom
-        anchors.bottom          : parent.bottom
-        anchors.topMargin       : 5
+			anchors.top:				parent.top
+			anchors.topMargin:			Theme.ribbonButtonPadding
+			anchors.horizontalCenter:	parent.horizontalCenter
 
-        color    : mice.enabled ? Theme.black : "lightgrey"
-        font.bold: false
-    }
+			ColorOverlay {
+				anchors.fill: backgroundImage
+				source      : backgroundImage
+				color       : mice.enabled ? "transparent" : Theme.uiBackground
+			}
+		}
 
-    MouseArea {
-        id          : mice
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton
-        onClicked   : {
-            clusterMenu.popup()
-        }
-        onPressed   : ribbonButton.color = Qt.tint("grey", "#EEEEEE")
-        onReleased  : ribbonButton.color = "transparent"
-        onEntered   : ribbonButton.border.color = Qt.tint("grey", "#10FF0000")
-        onExited    : {
-            ribbonButton.border.color = "transparent";
-            ribbonButton.color        = "#FFFFFF";
-        }
 
-        ClusterMenu {
-            id: clusterMenu
-        }
-    }
+
+		Text {
+			id: innerText
+
+			anchors.horizontalCenter: parent.horizontalCenter
+			anchors.top             : backgroundImage.bottom
+			//anchors.bottom          : parent.bottom
+			anchors.topMargin       : 5
+
+			color    : mice.enabled ? Theme.black : Theme.uiBackground
+			font.bold: false
+		}
+
+		MouseArea {
+			id				: mice
+			anchors.fill	: parent
+			hoverEnabled	: true
+			acceptedButtons	: Qt.LeftButton
+			onClicked		: clusterMenu.popup()
+
+			ClusterMenu {
+				id: clusterMenu
+			}
+		}
+	}
 }

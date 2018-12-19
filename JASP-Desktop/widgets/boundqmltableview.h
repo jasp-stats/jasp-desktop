@@ -32,7 +32,7 @@ class BoundQMLTableView : public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLTableView(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLTableView(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	
 	virtual ListModel* model() OVERRIDE		{ return _tableModel; }

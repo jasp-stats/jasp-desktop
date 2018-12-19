@@ -30,7 +30,7 @@ class QMLListView : public QObject, public virtual QMLItem
 Q_OBJECT
 
 public:
-	QMLListView(QQuickItem* item, AnalysisQMLForm* form);
+	QMLListView(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() = 0;
 	virtual void setUp() OVERRIDE;	

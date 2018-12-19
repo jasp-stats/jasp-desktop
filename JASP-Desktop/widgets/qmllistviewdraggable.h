@@ -31,7 +31,7 @@ class QMLListViewDraggable : public QMLListView
 	Q_OBJECT
 
 public:
-	QMLListViewDraggable(QQuickItem* item, AnalysisQMLForm* form);
+	QMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
 	virtual void setUp() OVERRIDE;
 	

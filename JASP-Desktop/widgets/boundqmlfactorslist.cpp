@@ -25,7 +25,7 @@
 
 using namespace std;
 
-BoundQMLFactorsList::BoundQMLFactorsList(QQuickItem *item, AnalysisQMLForm *form)
+BoundQMLFactorsList::BoundQMLFactorsList(QQuickItem *item, AnalysisForm *form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
 	, BoundQMLItem(item, form)

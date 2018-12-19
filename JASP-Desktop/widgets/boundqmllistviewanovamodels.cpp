@@ -17,14 +17,14 @@
 //
 
 #include "boundqmllistviewanovamodels.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
 #include <QQmlProperty>
 
 using namespace std;
 
-BoundQMLListViewAnovaModels::BoundQMLListViewAnovaModels(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLListViewAnovaModels::BoundQMLListViewAnovaModels(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {

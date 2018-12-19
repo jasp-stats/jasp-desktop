@@ -28,7 +28,7 @@ class BoundQMLListViewAnovaModels : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewAnovaModels(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewAnovaModels(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() OVERRIDE		{ return _anovaModel; }
 	virtual Option* boundTo() OVERRIDE		{ return _boundTo; }

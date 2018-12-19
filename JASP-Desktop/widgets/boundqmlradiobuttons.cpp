@@ -23,7 +23,7 @@
 
 using namespace std;
 
-BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisQMLForm* form)
+BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, BoundQMLItem(item, form)
 {

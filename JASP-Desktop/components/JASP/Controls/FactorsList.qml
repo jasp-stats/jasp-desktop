@@ -79,7 +79,7 @@ JASPControl
                 anchors.fill: parent
                 focus: true
                 border.width: 0
-                border.color: Theme.grayLighter
+				border.color: Theme.grayLighter
                 property bool isDeletable: model.type.includes("Deletable")
                 property bool isVirtual: model.type.includes("Virtual")
                 property bool isLevel: model.type.includes("Level")

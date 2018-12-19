@@ -370,7 +370,7 @@ JASPControl
                 width: listView.cellWidth
                 focus: true
                 border.width: containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
-                border.color: containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
+				border.color: containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
 
                 
                 property bool selected: false

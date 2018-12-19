@@ -17,9 +17,9 @@
 //
 
 #include "boundqmlitem.h"
-#include "analysisqmlform.h"
+#include "AnalysisForm.h"
 
-BoundQMLItem::BoundQMLItem(QQuickItem *item, AnalysisQMLForm* form)
+BoundQMLItem::BoundQMLItem(QQuickItem *item, AnalysisForm* form)
 	: QMLItem(item, form)
 {
 }

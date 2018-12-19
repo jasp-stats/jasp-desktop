@@ -23,18 +23,18 @@
 #include <QVector>
 
 class QQuickItem;
-class AnalysisQMLForm;
+class AnalysisForm;
 
 class QMLItem
 {
 
 public:
-	QMLItem(QQuickItem* item, AnalysisQMLForm* form);
+	QMLItem(QQuickItem* item, AnalysisForm* form);
 	virtual ~QMLItem();
 	
 	virtual void setUp() {}
 	const QString& name() { return _name; }
-	AnalysisQMLForm* form() { return _form; }
+	AnalysisForm* form() { return _form; }
 	virtual void resetQMLItem(QQuickItem* item);
 	void addError(const QString& error);
 	bool addDependency(QMLItem* item);
@@ -44,7 +44,7 @@ protected:
 	
 	QQuickItem* _item;
 	QString _name;
-	AnalysisQMLForm* _form;
+	AnalysisForm* _form;
 	QVector<QMLItem*>	_depends;
 };
 

@@ -17,13 +17,13 @@
 //
 
 #include "boundqmltextinput.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
 using namespace std;
 
-BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
 	, BoundQMLItem(item, form)

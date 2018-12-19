@@ -52,8 +52,7 @@ class DataSetView : public QQuickItem
 
 
 public:
-	DataSetView();
-	~DataSetView();
+	DataSetView(QQuickItem *parent = nullptr);
 
 	QAbstractTableModel * model() { return _model; }
 	void setModel(QAbstractTableModel * model);

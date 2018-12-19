@@ -19,7 +19,7 @@
 #include "boundqmllistviewmeasurescells.h"
 #include "listmodelmeasurescellsassigned.h"
 #include "listmodelfactors.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/AnalysisForm.h"
 #include "utilities/qutils.h"
 
 #include <QQmlProperty>
@@ -28,7 +28,7 @@
 using namespace std;
 
 
-BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {

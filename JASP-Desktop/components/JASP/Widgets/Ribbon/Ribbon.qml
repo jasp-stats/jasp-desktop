@@ -18,12 +18,14 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import JASP.Theme 1.0
 
 Rectangle {
 	id        : jaspRibbon
 	objectName: "jaspRibbon"
 	width     : 500
 	height    : 80
+	color	  : Theme.uiBackground
 
 	signal ribbonButtonClicked(variant clusterButton)
 
@@ -41,7 +43,7 @@ Rectangle {
 			id      : tabs
 			model   : ribbonModel.currentButtonModel
 			delegate: Loader {
-				sourceComponent: displayText === "???" ? toolSeparator : ribbonButtonDelegate
+				sourceComponent	: displayText === "???" ? toolSeparator : ribbonButtonDelegate
 
 				Component {
 					id: ribbonButtonDelegate
@@ -54,13 +56,7 @@ Rectangle {
 					}
 				}
 
-				Component {
-					id: toolSeparator
-
-					ToolSeparator {
-						height: jaspRibbon.height
-					}
-				}
+				Component {	id: toolSeparator;	ToolSeparator { height: Theme.ribbonButtonHeight } }
 			}
 		}
 	}
