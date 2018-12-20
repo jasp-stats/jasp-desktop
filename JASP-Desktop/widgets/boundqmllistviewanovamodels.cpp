@@ -17,7 +17,7 @@
 //
 
 #include "boundqmllistviewanovamodels.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
 #include <QQmlProperty>

@@ -19,7 +19,7 @@
 #include "boundqmllistviewmeasurescells.h"
 #include "listmodelmeasurescellsassigned.h"
 #include "listmodelfactors.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
 
 #include <QQmlProperty>

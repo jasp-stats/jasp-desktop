@@ -17,7 +17,7 @@
 //
 
 #include "boundqmlitem.h"
-#include "AnalysisForm.h"
+#include "analysisform.h"
 
 BoundQMLItem::BoundQMLItem(QQuickItem *item, AnalysisForm* form)
 	: QMLItem(item, form)
@@ -25,7 +25,7 @@ BoundQMLItem::BoundQMLItem(QQuickItem *item, AnalysisForm* form)
 }
 
 BoundQMLItem::~BoundQMLItem()
-{	
+{
 }
 
 void BoundQMLItem::runRScript(const QString &script)

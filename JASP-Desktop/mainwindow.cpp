@@ -18,7 +18,7 @@
 
 #include "mainwindow.h"
 
-#include "analysis/AnalysisForm.h"
+#include "analysis/analysisform.h"
 
 #include <QDir>
 #include <QDebug>
@@ -100,7 +100,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	// Set the initial tab on Common.
 	//showMainPage();
-	
+
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
 
 	loadQML();
@@ -1001,7 +1001,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 			_loader.io(event, _package);
-			showProgress();			
+			showProgress();
 
 		}
 

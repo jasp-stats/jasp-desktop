@@ -19,6 +19,8 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
+#include <iostream>
+
 #include <QSettings>
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -244,7 +246,7 @@ private:
 	labelFilterGenerator			*_labelFilterGenerator	= nullptr;
 	ColumnsModel					*_columnsModel			= nullptr;
 	ComputedColumnsModel			*_computedColumnsModel	= nullptr;
-	FilterModel						*_filterModel			= nullptr;	
+	FilterModel						*_filterModel			= nullptr;
 	OnlineDataManager				*_odm					= nullptr;
 	DynamicModules					*_dynamicModules		= nullptr;
 	RibbonModel						*_ribbonModel			= nullptr;

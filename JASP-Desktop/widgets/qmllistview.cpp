@@ -17,7 +17,7 @@
 //
 
 #include "qmllistview.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "listmodel.h"
 
 #include <QQmlProperty>

@@ -17,7 +17,7 @@
 //
 
 #include "boundqmlslider.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QAbstractListModel>

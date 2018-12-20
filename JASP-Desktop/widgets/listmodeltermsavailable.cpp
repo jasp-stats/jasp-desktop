@@ -18,7 +18,7 @@
 
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "qmllistviewtermsavailable.h"
 #include <QQmlProperty>
 

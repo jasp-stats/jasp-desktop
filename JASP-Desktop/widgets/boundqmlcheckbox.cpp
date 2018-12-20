@@ -17,7 +17,7 @@
 //
 
 #include "boundqmlcheckbox.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 

@@ -18,7 +18,7 @@
 
 #include "qmllistviewdraggable.h"
 #include "listmodeldraggable.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include <QQuickItem>
 #include <QQmlProperty>
 #include <QTimer>

@@ -17,7 +17,7 @@
 //
 
 #include "boundqmllistviewdraggable.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "listmodelassignedinterface.h"
 #include "qmllistviewtermsavailable.h"
 #include "analysis/options/optionstable.h"

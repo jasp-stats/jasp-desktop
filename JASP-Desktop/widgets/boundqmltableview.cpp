@@ -18,7 +18,7 @@
 
 #include "boundqmltableview.h"
 
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "analysis/options/optiondoublearray.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"

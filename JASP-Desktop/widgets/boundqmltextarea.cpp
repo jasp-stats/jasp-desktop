@@ -17,7 +17,7 @@
 //
 
 #include "boundqmltextarea.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "qmllistviewtermsavailable.h"
 #include <QQmlProperty>
 #include <QQuickItem>

@@ -18,7 +18,7 @@
 
 #include "boundqmllistviewpairs.h"
 #include "listmodelpairsassigned.h"
-#include "analysis/AnalysisForm.h"
+#include "../analysis/analysisform.h"
 #include "analysis/options/optionvariablesgroups.h"
 
 #include <QQmlProperty>
