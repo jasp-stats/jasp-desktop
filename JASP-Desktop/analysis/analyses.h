@@ -42,7 +42,7 @@ public:
 				Analyses(QObject * parent) : QAbstractListModel(parent) {}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, DynamicModules * dynamicModules);
-	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = NULL, Analysis::Status status = Analysis::Empty);
+	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Empty);
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty);
 
 	Analysis*	create(const QString &module, const QString &name)	{ return create(module, name, _nextId++, AppInfo::version);		}
@@ -75,6 +75,7 @@ public slots:
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
+	void analysisClickedHandler(QString, QString);
 
 signals:
 	void analysisAdded(					Analysis *source);

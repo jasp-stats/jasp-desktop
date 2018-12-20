@@ -29,6 +29,10 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 
 	if	(role == DisplayRole)
 		return QString::fromStdString(entry->title());
+    else if (role == AnalysisFunctionRole)
+        return QString::fromStdString(entry->function());
+//    else if (role == ParentModuleRole)
+//        return QString::fromStdString(entry->dynamicModule()->name());
 
 	return QVariant();
 }
@@ -37,7 +41,8 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 {
 	static const auto roles = QHash<int, QByteArray>{
-		{	DisplayRole,		"displayText"	}
+		{	DisplayRole,            "displayText"	},
+		{	AnalysisFunctionRole,   "analysisEntry"	}
 	};
 
 	return roles;

@@ -34,7 +34,7 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 		std::vector<Modules::RibbonEntry*>	ribbonEntries;
 
 		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
-			ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, NULL));
+			ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, nullptr));
 
 		setRibbonEntries(ribbonEntries);
 	}

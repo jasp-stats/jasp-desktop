@@ -325,4 +325,12 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 		{ titleRole,	"title"		} };
 
 	return roles;
-};
+}
+
+void Analyses::analysisClickedHandler(QString analysisFunction, QString module)
+{
+	Analysis* analysis = create(module, analysisFunction);
+	analysisAdded(analysis);
+
+	emit analysisAdded(analysis);
+}

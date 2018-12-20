@@ -22,7 +22,17 @@ import JASP.Theme 1.0
 
 
 Menu {
+    id: menu
     property alias model: menuRepeater.model
+
+    // TODO: Make the menu more general.
+    //       Make a "CustomMenu" component with the required style.
+
+    function menuItemSelected(analysis) {
+        // TODO: Function should call a parent function which does this.
+        jaspRibbon.dispatchAnalysisClickedSignal(analysis)
+        menu.close()
+    }
 
     width: {
         /*
@@ -46,10 +56,12 @@ Menu {
                 id: analysisDelegate
 
                 MenuItem {
-                    id: menuItem
+                    id          : menuItem
                     text        : displayText
                     height      : Theme.menuItemHeight
                     hoverEnabled: true
+
+                    onTriggered : menuItemSelected(analysisEntry)
 
                     contentItem: Text {
                         text             : menuItem.text
@@ -61,7 +73,7 @@ Menu {
 
                     background: Rectangle {
                         opacity: enabled ? 1 : 0.3
-                        color  : menuItem.hovered ? "#acafac" : "#ffffff"
+                        color  : menuItem.hovered ? "#dcf1fb" : "#ffffff"
                     }
                 }
             }
@@ -70,14 +82,12 @@ Menu {
                 id: menuSeparator
                 MenuSeparator {
                     contentItem: Rectangle {
-                        implicitWidth: 200
+                        implicitWidth : 200
                         implicitHeight: 1
-                        color: "#1E000000"
+                        color         : "#d1d1d1"
                     }
 
-                    background: Rectangle {
-                        border.width: 0
-                    }
+                    background: Rectangle { }
                 }
             }
         }

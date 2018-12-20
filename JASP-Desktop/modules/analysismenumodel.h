@@ -31,7 +31,8 @@ class AnalysisMenuModel : public QAbstractListModel
 
 public:
 	enum {
-		DisplayRole
+		DisplayRole,
+		AnalysisFunctionRole
 	};
 
 	AnalysisMenuModel(QObject *parent) : QAbstractListModel(parent) {}
@@ -42,7 +43,7 @@ public:
 
 	// Utility functions
 	void setAnalysisEntries(std::vector<Modules::AnalysisEntry*> analysisEntries)	{	_analysisEntries = analysisEntries;	}
-	std::vector<Modules::AnalysisEntry*> getAnalysisEntries()                       {	return _analysisEntries;	}
+	std::vector<Modules::AnalysisEntry*> getAnalysisEntries()                       {	return _analysisEntries;			}
 
 
 private:

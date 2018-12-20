@@ -27,10 +27,8 @@ Rectangle {
 	height    : 80
 	color	  : Theme.uiBackground
 
-	signal ribbonButtonClicked(variant clusterButton)
-
-	function dispatchButtonClickSignal(clusterButton) {
-		jaspRibbon.ribbonButtonClicked(clusterButton)
+	function dispatchAnalysisClickedSignal(analysis, module) {
+		ribbonModel.analysisClicked(analysis)
 	}
 
 	Row {

@@ -61,8 +61,11 @@ public:
 	RibbonButtonModel*			currentButtonModel() const							{ return _currentButtonModel; }
 	void						setCurrentButtonModel(RibbonButtonModel* newModel);
 
+	Q_INVOKABLE void			analysisClicked(QString);
+
 signals:
 	void currentButtonModelChanged();
+	void analysisClickedSignal(QString analysis, QString module);
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}

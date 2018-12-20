@@ -53,7 +53,7 @@ private:
 					_function	= "",
 					_qml		= "";
 
-	RibbonEntry*	_ribbonEntry = NULL;
+	RibbonEntry*	_ribbonEntry = nullptr;
 };
 
 typedef std::vector<AnalysisEntry*> AnalysisEntries;

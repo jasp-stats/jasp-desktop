@@ -65,8 +65,6 @@ Rectangle {
 			}
 		}
 
-
-
 		Text {
 			id: innerText
 
@@ -87,8 +85,8 @@ Rectangle {
 			onClicked		: clusterMenu.popup()
 
 			ClusterMenu {
-				model   : ribbonButton.menu
-				id      : clusterMenu
+				id   : clusterMenu
+				model: ribbonButton.menu
 			}
 		}
 	}

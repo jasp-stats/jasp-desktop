@@ -183,7 +183,6 @@ private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
-	void ribbonEntrySelected(const QString &item);
 
 	void startDataEditorHandler();
 	void startDataEditorEventCompleted(FileEvent *event);

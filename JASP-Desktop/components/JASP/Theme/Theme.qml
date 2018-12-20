@@ -54,7 +54,7 @@ QtObject {
 	readonly property int resultWidth:			500
 	readonly property int formWidth:			600
 	readonly property int formMargin:			10	* ppiScale
-    
+
 	readonly property int columnSpacing:		30 * ppiScale
 	readonly property int rowSpacing:			5  * ppiScale
 	readonly property int borderRadius:			4  * ppiScale
@@ -85,7 +85,7 @@ QtObject {
 
 	readonly property real ribbonScaleHovered:			1.1
 
-    readonly property int menuItemHeight:               28  * ppiScale
+	readonly property int menuItemHeight:               30  * ppiScale
 
 	property font font
 	font.bold:		false
@@ -98,7 +98,7 @@ QtObject {
 	fontLabel.underline:	false
 	fontLabel.pixelSize:	18 * ppiScale
 	fontLabel.family:		"SansSerif"
-    
+
 	readonly property color borderColor:					gray
 	readonly property color focusBorderColor:				blueLighter
 	readonly property color containsDragBorderColor:		green
@@ -118,5 +118,5 @@ QtObject {
 	readonly property color sliderPartOn:					blue
 	readonly property color sliderPartOff:					grayDarker
 
-    
+
 }

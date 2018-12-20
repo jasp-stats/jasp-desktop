@@ -224,9 +224,8 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
 
 	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
-
+	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 }
-
 
 /*
 void MainWindow::initQWidgetGUIParts()
@@ -317,8 +316,8 @@ void MainWindow::loadQML()
 	QObject * DataView				= _qml->findChild<QObject*>("dataSetTableView");
 	QObject * levelsTableView		= _qml->findChild<QObject*>("levelsTableView");
 
-	connect(DataView,				SIGNAL(dataTableDoubleClicked()),	this,					SLOT(startDataEditorHandler()));
-	connect(levelsTableView,		SIGNAL(columnChanged(QString)),		_analyses,				SLOT(refreshAnalysesUsingColumn(QString)));
+	connect(DataView,				SIGNAL(dataTableDoubleClicked()),			this,					SLOT(startDataEditorHandler()));
+	connect(levelsTableView,		SIGNAL(columnChanged(QString)),				_analyses,				SLOT(refreshAnalysesUsingColumn(QString)));
 }
 
 /*
@@ -1433,28 +1432,6 @@ void MainWindow::emptyValuesChangedHandler()
 	}
 }
 
-
-void MainWindow::ribbonEntrySelected(const QString &item)
-{
-	std::cout << "void MainWindow::ribbonEntrySelected(const QString &item) should be a function of RibbonModel that sends a signal to Analyses" << std::endl;
-	/*try
-	{
-		QString currentActiveTab	= ui->tabBar->getCurrentActiveTab();
-		_currentAnalysis			= _analyses->create(currentActiveTab, item);
-
-		showForm(_currentAnalysis);
-		_analyses->analysisAdded(_currentAnalysis);
-
-		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
-
-		checkUsedModules();
-	}
-	catch (runtime_error& e)
-	{
-		_fatalError = tq(e.what());
-		fatalError();
-	}*/
-}
 
 void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 {

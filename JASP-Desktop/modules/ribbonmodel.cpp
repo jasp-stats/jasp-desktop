@@ -109,7 +109,7 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	delete _modulesByName[moduleName];
 	_modulesByName.erase(moduleName);
 
-	for(int i=_moduleNames.size() - 1; i>=0; i--)
+	for(int i=_moduleNames.size() - 1; i >= 0; i--)
 		if(_moduleNames[i] == moduleName)
 			_moduleNames.erase(_moduleNames.begin() + i);
 
@@ -123,4 +123,11 @@ void RibbonModel::setCurrentButtonModel(RibbonButtonModel* newModel)
 		_currentButtonModel = newModel;
 		emit currentButtonModelChanged();
 	}
+}
+
+void RibbonModel::analysisClicked(QString analysis)
+{
+    QString module = QString::fromStdString(_currentButtonModel->title());
+
+    emit analysisClickedSignal(analysis, module);
 }
