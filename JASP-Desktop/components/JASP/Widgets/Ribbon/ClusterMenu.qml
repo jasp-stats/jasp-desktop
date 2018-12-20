@@ -18,39 +18,67 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import JASP.Theme 1.0
 
 
 Menu {
+    property alias model: menuRepeater.model
 
-    // width: {
-    //     // https://martin.rpdev.net/2018/03/13/qt-quick-controls-2-automatically-set-the-width-of-menus.html
-    //     var result = 0;
-    //     var padding = 0;
-    //
-    //     for (var i = 0; i < count; ++i) {
-    //         var item = itemAt(i);
-    //         result = Math.max(item.implicitWidth, result);
-    //         padding = Math.max(item.padding, padding);
-    //     }
-    //     return result + padding * 2;
-    // }
+    width: {
+        /*
+         * Automatically set the width of menu
+         */
+        var result = 0;
+        for (var i = 0; i < count; ++i) {
+            result = Math.max(itemAt(i).item.implicitWidth, result);
+        }
+
+        return result;
+    }
 
     Repeater {
-        model   : ribbonButton.menu
+        id      : menuRepeater
 
         delegate: Loader {
             sourceComponent: displayText === "???" ? menuSeparator : analysisDelegate
 
             Component {
                 id: analysisDelegate
+
                 MenuItem {
-                    text: displayText
+                    id: menuItem
+                    text        : displayText
+                    height      : Theme.menuItemHeight
+                    hoverEnabled: true
+
+                    contentItem: Text {
+                        text             : menuItem.text
+                        font             : menuItem.font
+                        opacity          : enabled ? 1.0 : 0.3
+                        verticalAlignment: Text.AlignVCenter
+                        elide            : Text.ElideRight
+                    }
+
+                    background: Rectangle {
+                        opacity: enabled ? 1 : 0.3
+                        color  : menuItem.hovered ? "#acafac" : "#ffffff"
+                    }
                 }
             }
 
             Component {
                 id: menuSeparator
-                MenuSeparator { }
+                MenuSeparator {
+                    contentItem: Rectangle {
+                        implicitWidth: 200
+                        implicitHeight: 1
+                        color: "#1E000000"
+                    }
+
+                    background: Rectangle {
+                        border.width: 0
+                    }
+                }
             }
         }
     }

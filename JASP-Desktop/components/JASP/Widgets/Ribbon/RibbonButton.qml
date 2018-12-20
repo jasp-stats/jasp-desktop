@@ -87,7 +87,8 @@ Rectangle {
 			onClicked		: clusterMenu.popup()
 
 			ClusterMenu {
-				id: clusterMenu
+				model   : ribbonButton.menu
+				id      : clusterMenu
 			}
 		}
 	}

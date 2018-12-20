@@ -40,7 +40,6 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 	}
 	catch(std::exception e)
 	{
-
 		throw std::runtime_error("During the parsing of the description.json of the Module " + _title + " something went wrong: " + e.what());
 	}
 }

@@ -85,6 +85,8 @@ QtObject {
 
 	readonly property real ribbonScaleHovered:			1.1
 
+    readonly property int menuItemHeight:               28  * ppiScale
+
 	property font font
 	font.bold:		false
 	font.underline:	false
