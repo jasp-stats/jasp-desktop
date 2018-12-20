@@ -22,7 +22,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 
-BackstageDataLibrary::BackstageDataLibrary(QObject *parent) : BackstagePage(parent)
+DataLibrary::DataLibrary(QObject *parent) : FileMenuObject(parent)
 {
 	setBreadcrumbsmodel(new DataLibraryBreadCrumbsListModel(this, QDir::separator()));
 	setListModel(new DataLibraryListModel(this, breadcrumbsmodel()));
@@ -30,12 +30,12 @@ BackstageDataLibrary::BackstageDataLibrary(QObject *parent) : BackstagePage(pare
 	connect(_dataLibraryBreadCrumbsListModel, &DataLibraryBreadCrumbsListModel::crumbIndexChanged, _dataLibraryListModel, &DataLibraryListModel::changePathCrumbIndex);
 }
 
-void BackstageDataLibrary::openFile(FileEvent *event)
+void DataLibrary::openFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);
 }
 
-void BackstageDataLibrary::setListModel(DataLibraryListModel * listModel)
+void DataLibrary::setListModel(DataLibraryListModel * listModel)
 {
 	if (_dataLibraryListModel == listModel)
 		return;
@@ -44,7 +44,7 @@ void BackstageDataLibrary::setListModel(DataLibraryListModel * listModel)
 	emit listModelChanged();
 }
 
-void BackstageDataLibrary::setBreadcrumbsmodel(DataLibraryBreadCrumbsListModel * breadcrumbsmodel)
+void DataLibrary::setBreadcrumbsmodel(DataLibraryBreadCrumbsListModel * breadcrumbsmodel)
 {
 	if (_dataLibraryBreadCrumbsListModel == breadcrumbsmodel)
 		return;

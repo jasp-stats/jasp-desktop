@@ -16,20 +16,20 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGECOMPUTER_H
-#define BACKSTAGECOMPUTER_H
+#ifndef COMPUTER_H
+#define COMPUTER_H
 
-#include "backstagepage.h"
+#include "filemenuobject.h"
 #include "computerlistmodel.h"
 #include <QQuickWidget>
 
-class BackstageComputer : public BackstagePage
+class Computer : public FileMenuObject
 {
 	Q_OBJECT
 	Q_PROPERTY(ComputerListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit BackstageComputer(QObject *parent = nullptr);
+	explicit Computer(QObject *parent = nullptr);
 
 	FileEvent *browseOpen(const QString &path = "");
 	FileEvent *browseSave(const QString &path = "", FileEvent::FileMode mode = FileEvent::FileSave);
@@ -60,4 +60,4 @@ private:
 	ComputerListModel *_computerListModel = nullptr;
 };
 
-#endif // BACKSTAGECOMPUTER_H
+#endif // COMPUTER_H

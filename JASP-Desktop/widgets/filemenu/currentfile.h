@@ -17,21 +17,21 @@
 //
 
 
-#ifndef BACKSTAGECURRENTFILE_H
-#define BACKSTAGECURRENTFILE_H
+#ifndef CURRENTFILE_H
+#define CURRENTFILE_H
 
-#include "backstagepage.h"
+#include "filemenuobject.h"
 #include "currentfilelistmodel.h"
 #include <QQuickWidget>
 
-class BackstageCurrentFile : public BackstagePage
+class CurrentFile : public FileMenuObject
 {
 	Q_OBJECT
 	Q_PROPERTY(CurrentFileListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit BackstageCurrentFile(QObject *parent = nullptr);
-	~BackstageCurrentFile();
+	explicit CurrentFile(QObject *parent = nullptr);
+	~CurrentFile();
 	
 	void setCurrentFilePath(const QString &path);
 	void setCurrentDataFilePath(const QString &path);
@@ -71,4 +71,4 @@ private:
 
 };
 
-#endif // BACKSTAGECURRENTFILE_H
+#endif // CURRENTFILE_H

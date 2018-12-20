@@ -1,11 +1,11 @@
 #include "recentfileslistmodel.h"
-#include "fsentry.h"
+#include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
 
-RecentFilesListModel::RecentFilesListModel(QObject *parent)	: FileMenuBasicListModel(parent, new FSBMRecentFiles(parent))
+RecentFilesListModel::RecentFilesListModel(QObject *parent)	: FileMenuBasicListModel(parent, new RecentFilesFileSystem(parent))
 {
-	_fsbmRecentFiles = static_cast<FSBMRecentFiles*>(_model);
+	_fsbmRecentFiles = static_cast<RecentFilesFileSystem*>(_model);
 	_fsbmRecentFiles->refresh();
 
 	connect(this, SIGNAL(openFile(FileEvent *)), parent, SLOT(openFile(FileEvent *)));

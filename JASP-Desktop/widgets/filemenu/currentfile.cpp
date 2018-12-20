@@ -6,7 +6,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-BackstageCurrentFile::BackstageCurrentFile(QObject *parent): BackstagePage(parent)
+CurrentFile::CurrentFile(QObject *parent): FileMenuObject(parent)
 {	
 	setListModel(new CurrentFileListModel(this));
 	
@@ -19,11 +19,11 @@ BackstageCurrentFile::BackstageCurrentFile(QObject *parent): BackstagePage(paren
 	
 }
 
-BackstageCurrentFile::~BackstageCurrentFile()
+CurrentFile::~CurrentFile()
 {
 }
 
-void BackstageCurrentFile::setCurrentFilePath(const QString &path)
+void CurrentFile::setCurrentFilePath(const QString &path)
 {
 	
 	_currentFilePath = path;
@@ -31,37 +31,37 @@ void BackstageCurrentFile::setCurrentFilePath(const QString &path)
 	
 }
 
-void BackstageCurrentFile::setCurrentDataFilePath(const QString &path)
+void CurrentFile::setCurrentDataFilePath(const QString &path)
 {
 	_currentDataFilePath = path;
 }
 
-void BackstageCurrentFile::setCurrentFileType(const Utils::FileType &type)
+void CurrentFile::setCurrentFileType(const Utils::FileType &type)
 {
 	_currentFileType = type;
 }
 
-Utils::FileType BackstageCurrentFile::getCurrentFileType()
+Utils::FileType CurrentFile::getCurrentFileType()
 {
 		return _currentFileType;
 }
 
-void BackstageCurrentFile::setCurrentFileReadOnly(const bool &readonly)
+void CurrentFile::setCurrentFileReadOnly(const bool &readonly)
 {
 	_currentFileReadOnly = readonly;
 }
 
-bool BackstageCurrentFile::isCurrentFileReadOnly()
+bool CurrentFile::isCurrentFileReadOnly()
 {
 	return _currentFileReadOnly;
 }
 
-bool BackstageCurrentFile::isOnlineFile(const QString &path)
+bool CurrentFile::isOnlineFile(const QString &path)
 {
 	return path.startsWith("http");
 }
 
-void BackstageCurrentFile::setCurrentFileInfo(const QString &path, const Utils::FileType &type, const bool &readonly)
+void CurrentFile::setCurrentFileInfo(const QString &path, const Utils::FileType &type, const bool &readonly)
 {
 	_currentFilePath = path;
 	_currentFileType = type;
@@ -69,49 +69,49 @@ void BackstageCurrentFile::setCurrentFileInfo(const QString &path, const Utils::
 	_currentFileListModel->setCurrentFilePath(_currentFilePath);
 }
 
-CurrentFileListModel *BackstageCurrentFile::getCurrentFileListModel()
+CurrentFileListModel *CurrentFile::getCurrentFileListModel()
 {
 	return _currentFileListModel;
 }
 
 // Slots 
 
-QString BackstageCurrentFile::getCurrentFilePath()
+QString CurrentFile::getCurrentFilePath()
 {
 	return _currentFilePath;
 }
 
-QString BackstageCurrentFile::getCurrentDataFilePath()
+QString CurrentFile::getCurrentDataFilePath()
 {
 	return _currentDataFilePath;
 	
 }
 
-QString BackstageCurrentFile::getCurrentDataFileName()
+QString CurrentFile::getCurrentDataFileName()
 {
 	QFileInfo  fi(_currentDataFilePath);
 	return fi.fileName();	
 }
 
-QString BackstageCurrentFile::getCurrentDataFolder()
+QString CurrentFile::getCurrentDataFolder()
 {
 	QFileInfo  fi(_currentDataFilePath);
 	return fi.path() + QDir::separator();
 }
 
-QString BackstageCurrentFile::getHeaderText()
+QString CurrentFile::getHeaderText()
 {
 	return QString("Double-click on the file below to synchronize or use " + getShortCutKey() + "-Y");
 }
 
 
-void BackstageCurrentFile::syncFile(FileEvent *event)
+void CurrentFile::syncFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);
 }
 
 
-void BackstageCurrentFile::setListModel(CurrentFileListModel * listModel)
+void CurrentFile::setListModel(CurrentFileListModel * listModel)
 {
 	if (_currentFileListModel == listModel)
 		return;

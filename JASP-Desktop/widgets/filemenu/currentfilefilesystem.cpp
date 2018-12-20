@@ -16,25 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmcurrent.h"
+#include "currentfilefilesystem.h"
 
 #include <QStringList>
 #include <QFileInfo>
 #include <QEvent>
 #include <QDebug>
 
-FSBMCurrent::FSBMCurrent(QObject *parent)
-	: FSBModel(parent)
+CurrentFileFileSystem::CurrentFileFileSystem(QObject *parent)
+	: FileSystemModel(parent)
 {
 	parent->installEventFilter(this);
 	_current = QString();
 }
 
-void FSBMCurrent::refresh()
+void CurrentFileFileSystem::refresh()
 {
 }
 
-void FSBMCurrent::setCurrent(const QString &path)
+void CurrentFileFileSystem::setCurrent(const QString &path)
 {
 	if (path.endsWith(".jasp", Qt::CaseInsensitive))
 		return;
@@ -42,18 +42,18 @@ void FSBMCurrent::setCurrent(const QString &path)
 	_current = path;
 
 	_entries.clear();
-	FSEntry::EntryType entryType = FSEntry::Other;
-	FSEntry entry = createEntry(path, entryType);
+	FileSystemEntry::EntryType entryType = FileSystemEntry::Other;
+	FileSystemEntry entry = createEntry(path, entryType);
 	_entries.append(entry);
 
 	emit entriesChanged();
 }
 
-QString FSBMCurrent::getCurrent() const {
+QString CurrentFileFileSystem::getCurrent() const {
 	return _current;
 }
 
-bool FSBMCurrent::isOnlineFile() const {
+bool CurrentFileFileSystem::isOnlineFile() const {
 	return _current.startsWith("http");
 }
 

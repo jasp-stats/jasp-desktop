@@ -298,7 +298,7 @@ HEADERS += \
     utilities/simplecryptkey.h \
     variablespage/labelfiltergenerator.h \
     variablespage/levelstablemodel.h \
-    widgets/filemenu/backstagepage.h \
+    widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
     widgets/filemenu/recentfiles.h \
     widgets/filemenu/currentfile.h \
@@ -306,13 +306,10 @@ HEADERS += \
     widgets/filemenu/osf.h \
     widgets/filemenu/datalibrarybreadcrumbsmodel.h \
     widgets/filemenu/datalibrarylistmodel.h \
-    widgets/filemenu/fsbmcomputer.h \
-    widgets/filemenu/fsbmcurrent.h \
-    widgets/filemenu/fsbmodel.h \
-    widgets/filemenu/fsbmosf.h \
-    widgets/filemenu/fsbmrecent.h \
-    widgets/filemenu/fsbmrecentfolders.h \
-    widgets/filemenu/fsentry.h \
+    widgets/filemenu/filesystemmodel.h \
+    widgets/filemenu/osffilesystem.h \
+    widgets/filemenu/computerfilesystem.h \
+    widgets/filemenu/filesystementry.h \
     widgets/boundmodel.h \
     widgets/boundqmlcheckbox.h \
     widgets/boundqmlradiobuttons.h \
@@ -363,10 +360,10 @@ HEADERS += \
     widgets/listmodelmultinomialchi2test.h  \
     data/filtermodel.h \
     widgets/filemenu/recentfileslistmodel.h \
-    widgets/filemenu/fsbmdatalibrary.h \
-    widgets/filemenu/fsbmrecentfiles.h \
+    widgets/filemenu/datalibraryfilesystem.h \
+    widgets/filemenu/recentfilesfilesystem.h \
     widgets/filemenu/currentfilelistmodel.h \
-    widgets/filemenu/fsbmcurrentfile.h \
+    widgets/filemenu/currentfilefilesystem.h \
     widgets/filemenu/computerlistmodel.h \
     widgets/filemenu/osflistmodel.h \
     widgets/filemenu/osfbreadcrumbslistmodel.h \
@@ -375,7 +372,7 @@ HEADERS += \
     widgets/filemenu/filemenu.h \
     $$PWD/gui/messageforwarder.h \
     widgets/filemenu/filemenulistitem.h \
-    widgets/filemenu/basiclistmodel.h
+    widgets/filemenu/filemenubasiclistmodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -485,7 +482,7 @@ SOURCES += \
     utilities/simplecrypt.cpp \
     variablespage/labelfiltergenerator.cpp \
     variablespage/levelstablemodel.cpp \
-    widgets/filemenu/backstagepage.cpp \
+    widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
     widgets/filemenu/recentfiles.cpp \
     widgets/filemenu/currentfile.cpp \
@@ -493,12 +490,9 @@ SOURCES += \
     widgets/filemenu/osf.cpp \
     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp \
     widgets/filemenu/datalibrarylistmodel.cpp \
-    widgets/filemenu/fsbmcomputer.cpp \
-    widgets/filemenu/fsbmcurrent.cpp \
-    widgets/filemenu/fsbmodel.cpp \
-    widgets/filemenu/fsbmosf.cpp \
-    widgets/filemenu/fsbmrecent.cpp \
-    widgets/filemenu/fsbmrecentfolders.cpp \
+    widgets/filemenu/filesystemmodel.cpp \
+    widgets/filemenu/osffilesystem.cpp \
+    widgets/filemenu/computerfilesystem.cpp \
     widgets/boundqmlcheckbox.cpp \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
@@ -546,10 +540,10 @@ SOURCES += \
     widgets/listmodelmultinomialchi2test.cpp \
     data/filtermodel.cpp \
     widgets/filemenu/recentfileslistmodel.cpp \
-    widgets/filemenu/fsbmdatalibrary.cpp \
-    widgets/filemenu/fsbmrecentfiles.cpp \
+    widgets/filemenu/datalibraryfilesystem.cpp \
+    widgets/filemenu/recentfilesfilesystem.cpp \
     widgets/filemenu/currentfilelistmodel.cpp \
-    widgets/filemenu/fsbmcurrentfile.cpp \
+    widgets/filemenu/currentfilefilesystem.cpp \
     widgets/filemenu/computerlistmodel.cpp \
     widgets/filemenu/osflistmodel.cpp \
     widgets/filemenu/osfbreadcrumbslistmodel.cpp \
@@ -557,7 +551,7 @@ SOURCES += \
     resultstesting/resultscomparetable.cpp \
     widgets/filemenu/filemenu.cpp \
     $$PWD/gui/messageforwarder.cpp \
-    widgets/filemenu/basiclistmodel.cpp
+    widgets/filemenu/filemenubasiclistmodel.cpp
 
 RESOURCES += \
     html/html.qrc \

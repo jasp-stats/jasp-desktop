@@ -1,9 +1,9 @@
 #include "osflistmodel.h"
-#include "fsentry.h"
+#include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
 
-OSFListModel::OSFListModel(QObject *parent, FSBMOSF * fsbMod, OSFBreadCrumbsListModel * crummyList)
+OSFListModel::OSFListModel(QObject *parent, OSFFileSystem * fsbMod, OSFBreadCrumbsListModel * crummyList)
 	: FileMenuBasicListModel(parent, nullptr)
 {
 
@@ -16,7 +16,7 @@ void OSFListModel::setBreadCrumbsListModel(OSFBreadCrumbsListModel *osfBreadCrum
 	_osfBreadCrumbsListModel = osfBreadCrumbsListModel;
 }
 
-void OSFListModel::setFSBModel(FSBMOSF *model)
+void OSFListModel::setFSBModel(OSFFileSystem *model)
 {
 	beginResetModel();
 	

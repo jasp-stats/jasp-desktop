@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmdatalibrary.h"
+#include "datalibraryfilesystem.h"
 
 #include <QFile>
 #include <QDir>
@@ -31,9 +31,9 @@
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
 
-const QString FSBMDataLibrary::rootelementname = "Categories";
+const QString DataLibraryFileSystem::rootelementname = "Categories";
 
-FSBMDataLibrary::FSBMDataLibrary(QObject *parent, QString root)	: FSBModel(parent)
+DataLibraryFileSystem::DataLibraryFileSystem(QObject *parent, QString root)	: FileSystemModel(parent)
 {
 	_rootPath = _path = root;
 	_dataLibraryRootPath = "";
@@ -41,13 +41,13 @@ FSBMDataLibrary::FSBMDataLibrary(QObject *parent, QString root)	: FSBModel(paren
 
 }
 
-FSBMDataLibrary::~FSBMDataLibrary()
+DataLibraryFileSystem::~DataLibraryFileSystem()
 {
 	if (_doc)
 		delete _doc;
 }
 
-void FSBMDataLibrary::refresh()
+void DataLibraryFileSystem::refresh()
 {
 
 	if (_doc == NULL)
@@ -57,14 +57,14 @@ void FSBMDataLibrary::refresh()
 
 	_entries.clear();
 
-	if (_path == FSBMDataLibrary::rootelementname)
+	if (_path == DataLibraryFileSystem::rootelementname)
 		loadRootElements();
 	else
 		loadFilesAndFolders(_path);
 
 }
 
-void FSBMDataLibrary::loadRootElements()
+void DataLibraryFileSystem::loadRootElements()
 {
 
 	if (_doc == NULL)
@@ -95,13 +95,13 @@ void FSBMDataLibrary::loadRootElements()
 		if (isFolder(type))
 		{
 			path = _path + QDir::separator()  + path;
-			_entries.append(createEntry(path, name, description, FSEntry::Folder, associated_datafile));
+			_entries.append(createEntry(path, name, description, FileSystemEntry::Folder, associated_datafile));
 		}
 		else
 		{
 			path = _dataLibraryRootPath  + path;
 			if (associated_datafile != "") associated_datafile = _dataLibraryRootPath + associated_datafile;
-			_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path), associated_datafile));
+			_entries.append(createEntry(path, name, description, FileSystemEntry::getEntryTypeFromPath(path), associated_datafile));
 		}
 	}
 
@@ -109,7 +109,7 @@ void FSBMDataLibrary::loadRootElements()
 
 }
 
-void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
+void DataLibraryFileSystem::loadFilesAndFolders(const QString &docpath)
 {
 
 	bool found = false;
@@ -166,13 +166,13 @@ void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
 			if (isFolder(type))
 			{
 				path = _path + QDir::separator()  + path;
-				_entries.append(createEntry(path, name, description, FSEntry::Folder, ""));
+				_entries.append(createEntry(path, name, description, FileSystemEntry::Folder, ""));
 			}
 			else
 			{
 				path = _dataLibraryRootPath + relpath +  QDir::separator() + path;
 				if (associated_datafile != "") associated_datafile = _dataLibraryRootPath + relpath + associated_datafile;
-				_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path), associated_datafile));
+				_entries.append(createEntry(path, name, description, FileSystemEntry::getEntryTypeFromPath(path), associated_datafile));
 			}
 		}
 	}
@@ -181,7 +181,7 @@ void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
 
 }
 
-QJsonDocument *FSBMDataLibrary::getJsonDocument()
+QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 {
 
 	QString filename = "index";
@@ -218,7 +218,7 @@ QJsonDocument *FSBMDataLibrary::getJsonDocument()
 
 }
 
-bool FSBMDataLibrary::isFolder(const QString &kind)
+bool DataLibraryFileSystem::isFolder(const QString &kind)
 {
 	return (kind.toLower() == "folder" ? true : false);
 }

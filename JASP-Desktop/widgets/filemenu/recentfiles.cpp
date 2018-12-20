@@ -3,22 +3,22 @@
 #include <QQmlEngine>
 
 
-BackstageRecentFiles::BackstageRecentFiles(QObject *parent): BackstagePage(parent)
+RecentFiles::RecentFiles(QObject *parent): FileMenuObject(parent)
 {	
 	setListModel(new RecentFilesListModel(this));
 }
 
-void BackstageRecentFiles::pushRecentFilePath(const QString &newrecent)
+void RecentFiles::pushRecentFilePath(const QString &newrecent)
 {
 	_recentFilesListModel->addRecentFilePath(newrecent);
 }
 
-void BackstageRecentFiles::openFile(FileEvent *event)
+void RecentFiles::openFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);
 }
 
-void BackstageRecentFiles::setListModel(RecentFilesListModel * listModel)
+void RecentFiles::setListModel(RecentFilesListModel * listModel)
 {
 	if (_recentFilesListModel == listModel)
 		return;

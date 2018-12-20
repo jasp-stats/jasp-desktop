@@ -3,9 +3,9 @@
 
 #include <QAbstractListModel>
 #include "data/fileevent.h"
-#include "fsbmrecentfiles.h"
+#include "recentfilesfilesystem.h"
 #include "filemenulistitem.h"
-#include "basiclistmodel.h"
+#include "filemenubasiclistmodel.h"
 
 class RecentFilesListModel : public FileMenuBasicListModel
 {
@@ -23,7 +23,7 @@ public slots:
 	void openFile(const QString& path) override;
 
 private:
-	FSBMRecentFiles *_fsbmRecentFiles;
+	RecentFilesFileSystem *_fsbmRecentFiles;
 };
 
 #endif // RECENTFILESLISTMODEL_H

@@ -1,11 +1,11 @@
 #include "osfbreadcrumbslistmodel.h"
-#include "fsbmosf.h"
+#include "osffilesystem.h"
 
 OSFBreadCrumbsListModel::OSFBreadCrumbsListModel(QObject *parent, const QChar separator)
 	: QAbstractListModel(parent), _separator(separator)
 {
-	_crumbNameList.append(FSBMOSF::rootelementname);
-	_physicalPathList.append(FSBMOSF::rootelementname);
+	_crumbNameList.append(OSFFileSystem::rootelementname);
+	_physicalPathList.append(OSFFileSystem::rootelementname);
 }
 
 

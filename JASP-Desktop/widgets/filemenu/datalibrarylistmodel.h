@@ -2,11 +2,11 @@
 #define DATALIBRARYLISTMODEL_H
 
 #include <QAbstractListModel>
-#include "fsbmdatalibrary.h"
+#include "datalibraryfilesystem.h"
 #include "datalibrarybreadcrumbsmodel.h"
 #include "data/fileevent.h"
 #include "filemenulistitem.h"
-#include "basiclistmodel.h"
+#include "filemenubasiclistmodel.h"
 
 class DataLibraryListModel : public FileMenuBasicListModel
 {
@@ -26,7 +26,7 @@ public slots:
 	void openFile(const QString& path) override;
 
 private:
-	FSBMDataLibrary					*_fsbmDataLibrary;
+	DataLibraryFileSystem					*_fsbmDataLibrary;
 	DataLibraryBreadCrumbsListModel *_dataLibraryBreadCrumbsListModel;
 
 };

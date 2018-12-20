@@ -20,12 +20,12 @@
 #include <QDir>
 #include "gui/messageforwarder.h"
 
-BackstageComputer::BackstageComputer(QObject *parent): BackstagePage(parent)
+Computer::Computer(QObject *parent): FileMenuObject(parent)
 {
 	setListModel(new ComputerListModel(this));
 }
 
-FileEvent *BackstageComputer::browseOpen(const QString &path)
+FileEvent *Computer::browseOpen(const QString &path)
 {
 	QString browsePath;
 	if (path == "")
@@ -54,7 +54,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	return event;
 }
 
-FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMode mode)
+FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
@@ -123,18 +123,18 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 
 }
 
-void BackstageComputer::addRecentFolder(const QString &path)
+void Computer::addRecentFolder(const QString &path)
 {
 	_computerListModel->addRecentFolder(path);
 }
 
-void BackstageComputer::setFileName(const QString &filename)
+void Computer::setFileName(const QString &filename)
 {
 	_fileName = filename;
 	_hasFileName = true;
 }
 
-void BackstageComputer::clearFileName()
+void Computer::clearFileName()
 {
 	_fileName = "";
 	_hasFileName = false;
@@ -142,7 +142,7 @@ void BackstageComputer::clearFileName()
 
 
 //Slots
-void BackstageComputer::browsePath(QString path)
+void Computer::browsePath(QString path)
 {
 	if (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData)
 		browseOpen(path);
@@ -150,21 +150,21 @@ void BackstageComputer::browsePath(QString path)
 		browseSave(path, _mode);
 }
 
-void BackstageComputer::browseMostRecent()
+void Computer::browseMostRecent()
 {
 	QString mostrecent = _computerListModel->getMostRecent();
 	browsePath(mostrecent);
 }
 
 
-void BackstageComputer::setListModel(ComputerListModel * listModel)
+void Computer::setListModel(ComputerListModel * listModel)
 {
 	if (_computerListModel == listModel)
 		return;
 
 	_computerListModel = listModel;
 
-	connect(_computerListModel, &ComputerListModel::browseOpen, this, &BackstageComputer::browseOpen);
+	connect(_computerListModel, &ComputerListModel::browseOpen, this, &Computer::browseOpen);
 
 	emit listModelChanged(_computerListModel);
 }

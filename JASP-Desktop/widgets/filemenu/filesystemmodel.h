@@ -23,17 +23,17 @@
 #include <QList>
 #include <QStringList>
 
-#include "fsentry.h"
+#include "filesystementry.h"
 
-class FSBModel : public QObject
+class FileSystemModel : public QObject
 {
 	Q_OBJECT
 
 	friend class FileSystemTableModel;
 
 public:
-	explicit FSBModel(QObject *parent = NULL);
-	typedef QList<FSEntry> FileSystemEntryList;
+	explicit FileSystemModel(QObject *parent = NULL);
+	typedef QList<FileSystemEntry> FileSystemEntryList;
 
 	virtual void refresh() = 0;
 
@@ -69,8 +69,8 @@ protected:
 	QString _rootPath;
 	QString _path;
 
-	static FSEntry createEntry(const QString &path, FSEntry::EntryType type = FSEntry::Other);
-	static FSEntry createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type = FSEntry::Other, const QString &associated_datafile = "");
+	static FileSystemEntry createEntry(const QString &path, FileSystemEntry::EntryType type = FileSystemEntry::Other);
+	static FileSystemEntry createEntry(const QString &path, const QString &name, const QString &description, FileSystemEntry::EntryType type = FileSystemEntry::Other, const QString &associated_datafile = "");
 
 	FileSystemEntryList _entries;
 

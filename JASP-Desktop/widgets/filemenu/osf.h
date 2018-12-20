@@ -16,16 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGEOSF_H
-#define BACKSTAGEOSF_H
+#ifndef OSF_H
+#define OSF_H
 
-#include "backstagepage.h"
+#include "filemenuobject.h"
 #include "osflistmodel.h"
 #include "osfbreadcrumbslistmodel.h"
 
 #include <QQmlContext>
 
-class BackstageOSF: public BackstagePage
+class OSF: public FileMenuObject
 {
 	Q_OBJECT
 	
@@ -42,7 +42,7 @@ class BackstageOSF: public BackstagePage
 
 	
 public:
-	explicit BackstageOSF(QObject *parent = nullptr);
+	explicit OSF(QObject *parent = nullptr);
 	
 	bool loggedin();	
 	bool rememberme();
@@ -69,7 +69,6 @@ public:
 	OSFBreadCrumbsListModel * breadCrumbs() const	{ return _osfBreadCrumbsListModel;	}
 
 signals:
-	//void dataSetOpened(QString path); dead code
 	void newFolderRequested(QString folderName);
 	void loggedinChanged();
 	void remembermeChanged();
@@ -81,7 +80,6 @@ signals:
 	void openFileRequest(QString path);
 
 	void listModelChanged(OSFListModel * listModel);
-
 	void breadCrumbsChanged(OSFBreadCrumbsListModel * breadCrumbs);
 
 private slots:
@@ -95,7 +93,6 @@ private slots:
 	void newFolderCreated();
 	void resetOSFListModel();
 	
-
 public slots:
 	void logoutClicked();
 	void remembermeCheckChanged(bool check);
@@ -119,7 +116,7 @@ private:
 	OnlineDataManager		*_odm						= nullptr;
 	OSFListModel			*_osfListModel				= nullptr;
 	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel	= nullptr;
-	FSBMOSF					*_model						= nullptr;
+	OSFFileSystem					*_model						= nullptr;
 	
 	bool	_mLoggedin,
 			_mRememberMe,
@@ -133,4 +130,4 @@ private:
 };
 
 
-#endif // BACKSTAGEOSF_H
+#endif // OSF_H

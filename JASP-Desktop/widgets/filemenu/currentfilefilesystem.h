@@ -16,32 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBROWSERMODELRECENTFOLDERS_H
-#define FSBROWSERMODELRECENTFOLDERS_H
+#ifndef CURRENTFILEFILESYSTEM_H
+#define CURRENTFILEFILESYSTEM_H
 
-#include "fsbmodel.h"
+#include "filesystemmodel.h"
 #include "common.h"
 
-class FSBMRecentFolders : public FSBModel
+class CurrentFileFileSystem : public FileSystemModel
 {
 public:
-	explicit FSBMRecentFolders(QObject *parent = NULL);
+	CurrentFileFileSystem(QObject *parent = NULL);
 
 	void refresh() OVERRIDE;
 
-	QString mostRecent() const;
-
-public slots:
-	void addRecent(QString path);
+	void setCurrent(const QString &path);
+	QString getCurrent() const;
+	bool isOnlineFile() const;
 
 private:
-
-	QStringList readRecents();
-	void setRecents(const QStringList &recents);
-	void setAndSaveRecents(const QStringList &recents);
-	void saveRecents();
-
-	QStringList _recents;
+	QString _current;
 };
 
-#endif // FSBROWSERMODELRECENTFOLDERS_H
+#endif // CURRENTFILEFILESYSTEM_H

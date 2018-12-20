@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmrecentfolders.h"
+#include "computerfilesystem.h"
 
 #include <QFileInfo>
 #include <QStandardPaths>
@@ -24,18 +24,18 @@
 #include <QDebug>
 #include "utilities/settings.h"
 
-FSBMRecentFolders::FSBMRecentFolders(QObject *parent)
-	: FSBModel(parent)
+ComputerFileSystem::ComputerFileSystem(QObject *parent)
+	: FileSystemModel(parent)
 {
 
 }
 
-void FSBMRecentFolders::refresh()
+void ComputerFileSystem::refresh()
 {
 	setRecents(readRecents());
 }
 
-QString FSBMRecentFolders::mostRecent() const
+QString ComputerFileSystem::mostRecent() const
 {
 	if (_recents.length() > 0)
 		return _recents.first();
@@ -43,7 +43,7 @@ QString FSBMRecentFolders::mostRecent() const
 		return QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
 }
 
-void FSBMRecentFolders::addRecent(QString path)
+void ComputerFileSystem::addRecent(QString path)
 {
 	QStringList recents = readRecents();
 
@@ -55,7 +55,7 @@ void FSBMRecentFolders::addRecent(QString path)
 	setAndSaveRecents(recents);
 }
 
-QStringList FSBMRecentFolders::readRecents()
+QStringList ComputerFileSystem::readRecents()
 {
 	Settings::sync();
 
@@ -93,19 +93,19 @@ QStringList FSBMRecentFolders::readRecents()
 	return recents;
 }
 
-void FSBMRecentFolders::setRecents(const QStringList &recents)
+void ComputerFileSystem::setRecents(const QStringList &recents)
 {
 	_recents = recents;
 
 	_entries.clear();
 
 	for (const QString &path : recents)
-		_entries.append(createEntry(path, FSEntry::Folder));
+		_entries.append(createEntry(path, FileSystemEntry::Folder));
 
 	emit entriesChanged();
 }
 
-void FSBMRecentFolders::setAndSaveRecents(const QStringList &recents)
+void ComputerFileSystem::setAndSaveRecents(const QStringList &recents)
 {
 	if (recents == _recents)
 		return;

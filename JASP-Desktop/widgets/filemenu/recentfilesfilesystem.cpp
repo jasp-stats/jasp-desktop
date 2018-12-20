@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmrecentfiles.h"
+#include "recentfilesfilesystem.h"
 
 #include <QStringList>
 #include <QFileInfo>
@@ -24,18 +24,18 @@
 #include <QDebug>
 #include "utilities/settings.h"
 
-FSBMRecentFiles::FSBMRecentFiles(QObject *parent)
-	: FSBModel(parent)
+RecentFilesFileSystem::RecentFilesFileSystem(QObject *parent)
+	: FileSystemModel(parent)
 {
 	parent->installEventFilter(this);
 }
 
-void FSBMRecentFiles::refresh()
+void RecentFilesFileSystem::refresh()
 {
 	populate(load());
 }
 
-bool FSBMRecentFiles::eventFilter(QObject *object, QEvent *event)
+bool RecentFilesFileSystem::eventFilter(QObject *object, QEvent *event)
 {
 	if (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
 		refresh();
@@ -44,7 +44,7 @@ bool FSBMRecentFiles::eventFilter(QObject *object, QEvent *event)
 }
 
 
-void FSBMRecentFiles::addRecent(const QString &path)
+void RecentFilesFileSystem::addRecent(const QString &path)
 {
 	QStringList recents = load();
 	recents.removeAll(path);
@@ -59,7 +59,7 @@ void FSBMRecentFiles::addRecent(const QString &path)
 	populate(recents);
 }
 
-void FSBMRecentFiles::filter(bool (*filterFunction)(QString))
+void RecentFilesFileSystem::filter(bool (*filterFunction)(QString))
 {
 	QStringList recents = load();
 
@@ -78,7 +78,7 @@ void FSBMRecentFiles::filter(bool (*filterFunction)(QString))
 	populate(recents);
 }
 
-void FSBMRecentFiles::populate(const QStringList &paths)
+void RecentFilesFileSystem::populate(const QStringList &paths)
 {
 	_entries.clear();
 
@@ -86,11 +86,11 @@ void FSBMRecentFiles::populate(const QStringList &paths)
 	{
 		QString path = paths.at(i);
 
-		FSEntry::EntryType entryType = FSEntry::Other;
+		FileSystemEntry::EntryType entryType = FileSystemEntry::Other;
 		if (path.endsWith(".jasp", Qt::CaseInsensitive))
-			entryType = FSEntry::JASP;
+			entryType = FileSystemEntry::JASP;
 
-		FSEntry entry = createEntry(path, entryType);
+		FileSystemEntry entry = createEntry(path, entryType);
 
 		_entries.append(entry);
 	}
@@ -98,11 +98,11 @@ void FSBMRecentFiles::populate(const QStringList &paths)
 	emit entriesChanged();
 }
 
-bool FSBMRecentFiles::isUrl(const QString &path) const {
+bool RecentFilesFileSystem::isUrl(const QString &path) const {
 	return path.startsWith("http");
 }
 
-QStringList FSBMRecentFiles::load()
+QStringList RecentFilesFileSystem::load()
 {
 	Settings::sync();
 

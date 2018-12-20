@@ -1,8 +1,8 @@
-#ifndef BASICLISTMODEL_H
-#define BASICLISTMODEL_H
+#ifndef FILEMENUBASICLISTMODEL_H
+#define FILEMENUBASICLISTMODEL_H
 
 #include <QAbstractListModel>
-#include "fsbmdatalibrary.h"
+#include "datalibraryfilesystem.h"
 #include "datalibrarybreadcrumbsmodel.h"
 #include "data/fileevent.h"
 #include "filemenulistitem.h"
@@ -12,7 +12,7 @@ class FileMenuBasicListModel : public QAbstractListModel
 	Q_OBJECT
 
 public:
-	explicit FileMenuBasicListModel(QObject *parent, FSBModel * model);
+	explicit FileMenuBasicListModel(QObject *parent, FileSystemModel * model);
 	virtual ~FileMenuBasicListModel() {}
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())									const	override;
@@ -27,7 +27,7 @@ public slots:
 	virtual void openFile(const QString& path);
 
 protected:
-	FSBModel *_model = nullptr;
+	FileSystemModel *_model = nullptr;
 };
 
-#endif // BASICLISTMODEL_H
+#endif // FILEMENUBASICLISTMODEL_H

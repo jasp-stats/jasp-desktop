@@ -19,16 +19,16 @@
 #ifndef RECENTFILES_H
 #define RECENTFILES_H
 
-#include "backstagepage.h"
+#include "filemenuobject.h"
 #include "recentfileslistmodel.h"
 
-class BackstageRecentFiles : public BackstagePage		
+class RecentFiles : public FileMenuObject		
 {
 	Q_OBJECT	
 	Q_PROPERTY(RecentFilesListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit BackstageRecentFiles(QObject *parent = nullptr);
+	explicit RecentFiles(QObject *parent = nullptr);
 
 	void pushRecentFilePath(const QString & newrecent);
 
