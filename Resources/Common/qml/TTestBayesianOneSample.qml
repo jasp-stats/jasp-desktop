@@ -38,9 +38,7 @@ Form {
         }
     }
 
-    GridLayout {
-        Label { text: qsTr("Test value:") } TextField { text: "0" ; name: "testValue"; inputType: "number" }
-    }
+    DoubleField { text: qsTr("Test value:") ; defaultValue: 0 ; name: "testValue" ; validation: false }
 
     GridLayout {
         ColumnLayout {
@@ -78,7 +76,7 @@ Form {
                 CheckBox     { text: qsTr("Robustness check")              ; name: "plotSequentialAnalysisRobustness"        ; indent: true; enabled: plotSequentialAnalysis.checked }
 
                 CheckBox     { text: qsTr("Descriptives plots")            ; name: "descriptivesPlots"                       ; id: descriptivesPlots }
-                PercentField { label.text: qsTr("Credible interval")       ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; indent: true; enabled: descriptivesPlots.checked }
+                PercentField { text: qsTr("Credible interval")             ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; indent: true; enabled: descriptivesPlots.checked }
             }
 
             ButtonGroup {

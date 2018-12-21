@@ -33,7 +33,7 @@ Form {
         RadioButton { name: "raw"; text: qsTr("raw"); checked: true }
         RowLayout {
             RadioButton { name: "varcov"; text: qsTr("Variance-covariance matrix"); id: varcovOption}
-            IntegerField { name: "SampleSize"; label.text: qsTr("Sample Size")
+            IntegerField { name: "SampleSize"; text: qsTr("Sample Size")
                 defaultValue: 0
                 enabled: varcovOption.checked
             }
@@ -51,9 +51,9 @@ Form {
                 RadioButton { text: qsTr("Standard")   ; name: "standard" ; checked: true    }
                 RadioButton { text: qsTr("Robust")     ; name: "robust"       }
                 RadioButton { text: qsTr("Bootstrap")  ; name: "bootstrap"; id: boostrapOption  }
-                TextField   { label.text: qsTr("Bootstrap samples") ; name: "errorCalculationBootstrapSamples"
-                    textWidth: 60
-                    text: "1000"
+                IntegerField   { text: qsTr("Bootstrap samples") ; name: "errorCalculationBootstrapSamples"
+                    fieldWidth: 60
+                    defaultValue: 1000
                     validator: IntValidator { bottom: 1 }
                     enabled: boostrapOption.checked
                     indent: true
@@ -118,7 +118,7 @@ Form {
                 CheckBox {  text: qsTr("Fix exogenous covariates")      ; name: "fixExogenousCovariates" ; checked: true }
                 
                 ComboBox {
-                    label.text: qsTr("Factor Scaling")
+                    text: qsTr("Factor Scaling")
                     name: "factorStandardisation"
                     model: ListModel {
                         ListElement { key: "Factor Loadings"    ; value: "factorLoadings" }
@@ -157,7 +157,7 @@ Form {
                 
                 ComboBox {
                     name: "modelName"
-                    label.text: qsTr("Model Name")
+                    text: qsTr("Model Name")
                     model: ["Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7", "Model 8", "Model 8", "Model 9", "Model 10"]
                 }
             }

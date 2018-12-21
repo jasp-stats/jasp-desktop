@@ -63,7 +63,6 @@ Form {
                 title: qsTr("Percentile Values")
 
                 GridLayout {
-                    rowSpacing: 3
                     columnSpacing: 1
                     columns: 3
     

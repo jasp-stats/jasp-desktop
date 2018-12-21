@@ -83,7 +83,7 @@ JASPControl {
                 var intVal = Math.round(value * slider.power);
                 var realVal = intVal / slider.power;
                 
-                if (textField.text != realVal) textField.text = realVal;
+                if (textField.value != realVal) textField.value = realVal;
             }
             
             onValueChanged: {
@@ -96,21 +96,21 @@ JASPControl {
         
         JC.TextField {
             id: textField
-            text: control.value
+            value: control.value
             inputType: "number";
             isBound: false
             Layout.alignment: Qt.AlignCenter
             validator: DoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }
             
             onEditingFinished: {
-                if (control.value != text) {
+                if (control.value != value) {
                     control.value = value;
                     control.moved();
                 }
             }
             onTextEdited: {
-                if (text && !textField.control.acceptableInput)
-                    text = control.value
+                if (value && !textField.control.acceptableInput)
+                    value = control.value
             }
         }
     }    

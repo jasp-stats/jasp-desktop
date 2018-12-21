@@ -353,7 +353,8 @@ JASPControl
                 property int uniqueId // Do not set it here to index, but in the onCompleted event 
                 property bool containsDragItem: listView.itemContainingDrag === itemRectangle
                 property bool isVirtual: (typeof model.type !== "undefined") && model.type.includes("virtual")
-                property bool isVariable: (typeof model.type === "undefined") || model.type.includes("variable")
+                property bool isVariable: (typeof model.type !== "undefined") && model.type.includes("variable")
+                property bool isLayer: (typeof model.type !== "undefined") && model.type.includes("layer")
                 property bool draggable: !variablesList.dragOnlyVariables || isVariable
                 property string columnType: isVariable ? model.columnType : ""
                 
@@ -411,7 +412,7 @@ JASPControl
                     width: itemRectangle.width - x
                     elide: Text.ElideRight
                     anchors.verticalCenter: parent.verticalCenter
-                    horizontalAlignment: itemRectangle.isVariable ? undefined : Text.AlignHCenter
+                    horizontalAlignment: itemRectangle.isLayer ? Text.AlignHCenter : undefined
                     color: itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
                 }
                 

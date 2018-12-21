@@ -9,6 +9,7 @@
         <file>components/JASP/Controls/ButtonGroup.qml</file>
         <file>components/JASP/Controls/CheckBox.qml</file>
         <file>components/JASP/Controls/ComboBox.qml</file>
+        <file>components/JASP/Controls/DoubleField.qml</file>
         <file>components/JASP/Controls/ExpanderButton.qml</file>
         <file>components/JASP/Controls/Form.qml</file>
         <file>components/JASP/Controls/GridLayout.qml</file>

@@ -24,10 +24,10 @@ import JASP.Widgets 1.0
 Form {
     id: form
 
-    TextField { visible: false; name: "plotHeightDescriptivesPlotLegend"; inputType: "integer"; value: "300" }
-    TextField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"; inputType: "integer"; value: "300" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotLegend"; inputType: "integer"; value: "430" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"; inputType: "integer"; value: "350" }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 430 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"    ; defaultValue: 350 }
 
     CheckBox { visible: false; name: "posteriorEstimates";  }
     CheckBox { visible: false; name: "posteriorDistribution";  }
@@ -156,9 +156,9 @@ Form {
         GridLayout {
             GroupBox {
                 title: qsTr("Prior")
-                TextField { label.text: qsTr("r scale fixed effects"); name: "priorFixedEffects"; inputType: "number"; value: "0.5"; validator: DoubleValidator {bottom: 0; top: 2; decimals: 1} }
-                TextField { label.text: qsTr("r scale random effects"); name: "priorRandomEffects"; inputType: "number"; value: "1"; validator: DoubleValidator {bottom: 0; top: 2; decimals: 1} }
-                TextField { label.text: qsTr("r scale covariates"); name: "priorCovariatesEffects"; inputType: "number"; value: "0.354"; validator: DoubleValidator {bottom: 0; top: 2; decimals: 1} }
+                DoubleField { text: qsTr("r scale fixed effects"); name: "priorFixedEffects"; defaultValue: 0.5; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+                DoubleField { text: qsTr("r scale random effects"); name: "priorRandomEffects"; defaultValue: 1; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+                DoubleField { text: qsTr("r scale covariates"); name: "priorCovariatesEffects"; defaultValue: 0.354; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
             }
 
             ButtonGroup {
@@ -166,9 +166,10 @@ Form {
                 RadioButton { text: qsTr("Auto"); name: "auto"; checked: true}
                 RadioButton { text: qsTr("Manual"); name: "manual"; id: samplesManual}
                 IntegerField   {
-                    label.text: qsTr("No. samples")
+                    text: qsTr("No. samples")
                     name: "fixedSamplesNumber"
                     defaultValue: 10000
+                    fieldWidth: 70; 
                     enabled: samplesManual.checked
                     indent: true
                 }

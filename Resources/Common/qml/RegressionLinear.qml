@@ -18,6 +18,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -104,6 +105,7 @@ Form {
                         IntegerField {
                             name: "regressionCoefficientsBootstrappingReplicates"
                             defaultValue: 5000
+                            fieldWidth: 50
                             intValidator.bottom: 100
                             afterLabel.text: qsTr("bootstraps")
                         }
@@ -160,15 +162,15 @@ Form {
             RowLayout {
                 enabled: usePValue.checked
                 Layout.leftMargin: Theme.indentationLength
-                TextField { label.text: qsTr("Entry"); name: "steppingMethodCriteriaPEntry"; inputType: "number"; value: "0.05"; validator: DoubleValidator { bottom: 0; top: 1; decimals: 3} }
-                TextField { label.text: qsTr("Removal"); name: "steppingMethodCriteriaPRemoval"; inputType: "number"; value: "0.1"; validator: DoubleValidator { bottom: 0; top: 1; decimals: 3} }
+                DoubleField { text: qsTr("Entry"); name: "steppingMethodCriteriaPEntry"; defaultValue: 0.05; doubleValidator { top: 1; decimals: 3} }
+                DoubleField { text: qsTr("Removal"); name: "steppingMethodCriteriaPRemoval"; defaultValue: 0.1; doubleValidator { top: 1; decimals: 3} }
             }
             RadioButton { text: qsTr("Use F value"); name: "useFValue"; id: useFValue}
             RowLayout {
                 enabled: useFValue.checked
                 Layout.leftMargin: Theme.indentationLength
-                TextField { label.text: qsTr("Entry"); name: "steppingMethodCriteriaFEntry"; inputType: "number"; value: "3.84"; validator: DoubleValidator { bottom: 0; decimals: 3 } }
-                TextField { label.text: qsTr("Removal"); name: "steppingMethodCriteriaFRemoval"; inputType: "number"; value: "2.71"; validator: DoubleValidator { bottom:0; decimals: 3 } }
+                DoubleField { text: qsTr("Entry"); name: "steppingMethodCriteriaFEntry"; defaultValue: 3.84; doubleValidator.decimals: 3 }
+                DoubleField { text: qsTr("Removal"); name: "steppingMethodCriteriaFRemoval"; defaultValue: 2.71; doubleValidator.decimals: 3 }
             }
         }
 

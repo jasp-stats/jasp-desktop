@@ -44,7 +44,7 @@ public:
 				int					getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 				
 				void				addColumn();
-				void				removeColumn(int col);
+				void				removeColumn(size_t index);
 				void				reset();
 				void				itemChanged(int column, int row, double value);
 				const QVector<QVector<double> >& values() const { return _values; }
@@ -59,15 +59,15 @@ public slots:
 
 
 private:
-	int							_columnCount = 0;
+	size_t						_columnCount = 0;
 	QVector<QString>			_rowNames;
 	QVector<QString>			_colNames;
 	QVector<QVector<double> >	_values;
 	int							_rowSelected = -1;
 	
-	QString	_getColName(int index);
+	QString	_getColName(size_t index);
 	
-	const int	_maxColumn = 10;
+	const size_t	_maxColumn = 10;
 };
 
 #endif // LISTMODELMULTINOMIALCHI2TEST_H

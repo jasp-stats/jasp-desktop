@@ -90,12 +90,12 @@ Rectangle
 			}
 			else
                 getJASPControls(controls, child);
-
-        }
-    }
-
-	TextField { visible: false; name: "plotWidth";  inputType: "integer"; text: plotHeight }
-	TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth  }
+            }
+        }            
+    }        
+     
+    IntegerField { visible: false; name: "plotWidth"; value: plotWidth }
+    IntegerField { visible: false; name: "plotHeight"; value: plotHeight }    
 
 	Item
 	{

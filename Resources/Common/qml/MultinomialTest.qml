@@ -20,6 +20,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -88,7 +89,7 @@ Form {
             GroupBox {
                 title: qsTr("Plots")
                 CheckBox { text: qsTr("Descriptives plot"); name: "descriptivesPlot"; id: descriptivesPlot }
-                PercentField { label.text: qsTr("Confidence interval"); name: "descriptivesPlotConfidenceInterval"; text: "95"; enabled: descriptivesPlot.checked }
+                PercentField { text: qsTr("Confidence interval"); name: "descriptivesPlotConfidenceInterval"; value: "95"; enabled: descriptivesPlot.checked }
             }
         }
     }

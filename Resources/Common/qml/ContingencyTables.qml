@@ -63,7 +63,7 @@ Form {
 
             GroupBox {
                 CheckBox { text: qsTr("Log odds ratio (2x2 only)"); name: "oddsRatio"; id: oddsRatio }
-                PercentField { label.text: qsTr("Confidence interval"); name: "oddsRatioConfidenceIntervalInterval"; enabled: oddsRatio.checked; defaultValue: 95; indent: true }
+                PercentField { text: qsTr("Confidence interval"); name: "oddsRatioConfidenceIntervalInterval"; enabled: oddsRatio.checked; defaultValue: 95; indent: true }
                 CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
             }
 
@@ -94,7 +94,7 @@ Form {
             debug: true
             CheckBox { text: qsTr("Cochran's and Mantel-Haenszel statistics") ; name: "cochransAndMantel"; id: cochransAndMantel }
             IntegerField {
-                label.text: qsTr("Test common odds ratio equals")
+                text: qsTr("Test common odds ratio equals")
                 name: "testOddsRatioEquals"
                 defaultValue: 1
                 enabled: cochransAndMantel.checked
@@ -112,7 +112,7 @@ Form {
                 CheckBox { text: qsTr("Expected"); name: "countsExpected" }
                 CheckBox { text: qsTr("Hide small counts"); name: "hideSmallCounts"; id: hideSmallCounts; debug: true }
                 IntegerField {
-                    label.text: qsTr("Less than")
+                    text: qsTr("Less than")
                     name: "hideSmallCountsLessThan"
                     defaultValue: 5
                     enabled: hideSmallCounts.checked

@@ -67,7 +67,7 @@ Form {
                 title: qsTr("Regression Coefficient")
                 CheckBox { text: qsTr("Estimates")            ; name: "regressionCoefficientsEstimates" }
                 CheckBox { text: qsTr("Confidence intervals") ; name: "regressionCoefficientsConfidenceIntervals"; id: interval }
-                PercentField { label.text: qsTr("Interval")   ; name: "regressionCoefficientsConfidenceIntervalsInterval" ; defaultValue: 95 ; enabled: interval.checked; indent: true }
+                PercentField { text: qsTr("Interval")         ; name: "regressionCoefficientsConfidenceIntervalsInterval" ; defaultValue: 95 ; enabled: interval.checked; indent: true }
             }
             CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio") ; name: "VovkSellkeMPR" }
         }

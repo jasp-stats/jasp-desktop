@@ -24,13 +24,13 @@ Form {
     id: form
 
     CheckBox { visible: false; name: "posteriorEstimates" }
-    PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"; text: "95" }
-    TextField { visible: false; name: "posteriorEstimatesMCMCIterations"; inputType: "number"; text: "1" }
+    PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"   ; defaultValue: 95 }
+    IntegerField { visible: false; name: "posteriorEstimatesMCMCIterations"             ; defaultValue: 1 }
 
-    TextField { visible: false; name: "plotHeightDescriptivesPlotLegend"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotLegend"; inputType: "integer"; text: "450" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"; inputType: "integer"; text: "350" }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"             ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"           ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"              ; defaultValue: 450 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"            ; defaultValue: 350 }
 
 
     VariablesForm {
@@ -148,10 +148,10 @@ Form {
             AssignedVariablesList {         title: qsTr("Separate plots")   ; name: "plotSeparatePlots"     ; singleItem: true }
         }
 
-        TextField { label.text: qsTr("Label y-axis") ; name: "labelYAxis"}
+        TextField { text: qsTr("Label y-axis") ; name: "labelYAxis"}
         RowLayout {
             CheckBox { text: qsTr("Credible interval"); name: "plotCredibleInterval"; id: plotCredibleInterval }
-            PercentField { name: "plotCredibleIntervalInterval"; text: "95"; enabled: plotCredibleInterval.checked}
+            PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95; enabled: plotCredibleInterval.checked}
         }
     }
 
@@ -161,9 +161,9 @@ Form {
         GridLayout {
             GroupBox {
                 title: qsTr("Prior")
-                TextField { label.text: qsTr("r scale fixed effects"); name: "priorFixedEffects"; inputType: "number"; value: "0.5"; validator: DoubleValidator {bottom: 0; top: 2; decimals: 1} }
-                TextField { label.text: qsTr("r scale random effects"); name: "priorRandomEffects"; inputType: "number"; value: "1"; validator: DoubleValidator {bottom: 0; top: 2; decimals: 1} }
-                TextField { label.text: qsTr("r scale covariates"); name: "priorCovariates"; inputType: "number"; value: "0.354"; validator: DoubleValidator {bottom: 0; top: 2; decimals: 1} }
+                DoubleField { text: qsTr("r scale fixed effects"); name: "priorFixedEffects"; defaultValue: 0.5; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+                DoubleField { text: qsTr("r scale random effects"); name: "priorRandomEffects"; defaultValue: 1; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+                DoubleField { text: qsTr("r scale covariates"); name: "priorCovariates"; defaultValue: 0.354; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
             }
 
             ButtonGroup {
@@ -171,9 +171,10 @@ Form {
                 RadioButton { text: qsTr("Auto"); name: "auto"; checked: true}
                 RadioButton { text: qsTr("Manual"); name: "manual"; id: samplesManual}
                 IntegerField   {
-                    label.text: qsTr("No. samples")
+                    text: qsTr("No. samples")
                     name: "fixedSamplesNumber"
                     defaultValue: 10000
+                    fieldWidth: 50
                     enabled: samplesManual.checked
                     indent: true
                 }

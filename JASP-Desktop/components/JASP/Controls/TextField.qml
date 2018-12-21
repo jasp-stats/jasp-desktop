@@ -29,9 +29,9 @@ JASPControl {
     implicitWidth: row.implicitWidth
     controlBackground: useExternalBorder ? externalControlBackround : controlBackground
 
-	property alias	text:				control.text
+	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
-	property int	textWidth:			Theme.textFieldWidth
+	property int	fieldWidth:			Theme.textFieldWidth
 	property int	textHeight:			Theme.textFieldHeight
 	property bool	useExternalBorder:	true
 	property alias	placeholderText:	control.placeholderText
@@ -49,11 +49,14 @@ JASPControl {
     signal pressed()
     signal released()
     
-    Component.onCompleted: {
+    Component.onCompleted: {        
+        if (!beforeLabel.text && textField.text)
+            beforeLabel.text = textField.text;
+
         control.editingFinished.connect(editingFinished);
         control.textEdited.connect(textEdited);
         control.pressed.connect(pressed);
-        control.released.connect(released);
+        control.released.connect(released);        
     }
     
     RowLayout {
@@ -68,8 +71,9 @@ JASPControl {
             id: control
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.preferredWidth: textField.textWidth
+            Layout.preferredWidth: textField.fieldWidth
             Layout.preferredHeight: textField.textHeight
+            text: textField.value
             focus: true
             padding: 1
             rightPadding: 5
@@ -84,7 +88,7 @@ JASPControl {
             Rectangle {
                 id: externalControlBackround
                 height: textField.textHeight + 6
-                width: textField.textWidth + 6
+                width: textField.fieldWidth + 6
                 color: "transparent"
                 border.width: 1
                 border.color: "transparent"

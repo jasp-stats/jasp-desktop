@@ -17,18 +17,19 @@
 //
 
 import QtQuick 2.11
-import QtQuick.Layouts 1.3
+import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-GridLayout {
-    id: gridLayout
-    rowSpacing: Theme.rowGridSpacing
-    columnSpacing: Theme.columnGridSpacing
-    columns: 2
-    Layout.minimumWidth: parent.width
+TextField {
+    property double defaultValue: 0
+    property alias doubleValidator: doubleValidator
+    property bool validation: true
+    
+    inputType: "number"
+    validator: DoubleValidator { id: doubleValidator; bottom: validation ? 0 : -Infinity ; decimals: 3 }
+    value: Number.parseFloat(defaultValue);
     
     Component.onCompleted: {
-        for (var i = 0; i < children.length; i++)
-            children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft
+        console.log("NumberField " + name + ": doubleValue: " + defaultValue + ", value: " + value);
     }
 }

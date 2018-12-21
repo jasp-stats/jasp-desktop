@@ -91,7 +91,7 @@ Form {
             GroupBox {
                 title: qsTr("Confidence Interval")
                 CheckBox { id: confAlpha; text: qsTr("Cronbach's α analytical")  ; name: "confAlpha" }    
-                PercentField { indent: true; name: "confAlphaLevel"; defaultValue: 95; label.text: qsTr("Confidence"); with1Decimal: true; enabled: confAlpha.checked }
+                PercentField { indent: true; name: "confAlphaLevel"; defaultValue: 95; text: qsTr("Confidence"); with1Decimal: true; enabled: confAlpha.checked }
             }            
         }
 

@@ -25,7 +25,7 @@ Rectangle {
     id: control
     
     property int leftPadding: Theme.groupContentPadding
-    property int spacing: Theme.rowSpacing
+    property int spacing: Theme.rowGroupSpacing
     property string title: ""
     property bool debug: false
     property bool indent: false

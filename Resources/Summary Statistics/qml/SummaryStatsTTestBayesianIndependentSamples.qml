@@ -30,7 +30,7 @@ Form {
         ColumnLayout {
             spacing: 15
             GridLayout {
-                Label { text: qsTr("t") }             TextField { text: "0" ; name: "tStatistic" ; inputType: "number"  }
+                Label { text: qsTr("t") }             DoubleField { defaultValue: 0 ; name: "tStatistic" ; validation: false  }
                 Label { text: qsTr("Group 1 size") }  IntegerField { name: "n1Size" }
                 Label { text: qsTr("Group 2 size") }  IntegerField { name: "n2Size" }
             }

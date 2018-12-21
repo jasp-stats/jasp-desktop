@@ -118,7 +118,7 @@ Form {
                 GroupBox {
                     enabled: coeffCI.checked
                     indent: true
-                    PercentField { label.text: "Interval"; name: "coeffCIInterval"; defaultValue: 95 }
+                    PercentField { text: "Interval"; name: "coeffCIInterval"; defaultValue: 95 }
                     CheckBox { text: qsTr("Odds ratio scale")           ; name: "coeffCIOR" }
                 }
                 CheckBox { text: qsTr("Robust standard errors")     ; name: "robustSEOpt" }
@@ -148,7 +148,7 @@ Form {
                 GroupBox {
                     enabled: estimatesPlotsOpt.checked
                     indent: true
-                    PercentField { label.text: qsTr("Confidence interval"); name: "estimatesPlotsCI"; defaultValue: 95 }
+                    PercentField { text: qsTr("Confidence interval"); name: "estimatesPlotsCI"; defaultValue: 95 }
                     CheckBox { text: qsTr("Show data points"); name: "showPoints" }
                 }
             }

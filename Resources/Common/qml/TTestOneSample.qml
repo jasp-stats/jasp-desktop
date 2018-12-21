@@ -19,6 +19,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -40,10 +41,10 @@ Form {
                 CheckBox {  text: qsTr("Wilcoxon signed-rank")      ; name: "mannWhitneyU"  }
                 CheckBox {  text: qsTr("Z Test")                    ; name: "zTest"  ; id: zTest}
             }
-
-            GridLayout {
-                Label { text: qsTr("Test value:") }                             TextField { text: "0" ; name: "testValue"; inputType: "number"}
-                Label { text: qsTr("Std. deviation:"); visible: zTest.checked } TextField { text: "1.0" ; name: "stddev"; inputType: "number"; visible: zTest.checked}
+            
+            GroupBox {
+                DoubleField { text: qsTr("Test value:")    ; defaultValue: 0   ; name: "testValue"; validation: false }
+                DoubleField { text: qsTr("Std. deviation:"); defaultValue: 1.0 ; name: "stddev"; enabled: zTest.checked}                
             }
 
             ButtonGroup {
@@ -80,7 +81,7 @@ Form {
                 }
                 CheckBox {  text: qsTr("Descriptives")                              ; name: "descriptives"                        }
                 CheckBox {  text: qsTr("Descriptives plots")                        ; name: "descriptivesPlots"; id: descriptivePlots  }
-                PercentField { label.text: qsTr("Confidence interval")                   ; name: "descriptivesPlotsConfidenceInterval"; defaultValue: 95; indent: true; enabled: descriptivePlots.checked}
+                PercentField { text: qsTr("Confidence interval")                    ; name: "descriptivesPlotsConfidenceInterval"; defaultValue: 95; indent: true; enabled: descriptivePlots.checked}
                 CheckBox {  text: qsTr("Vovk-Sellke mazimum p-ratio")               ; name: "VovkSellkeMPR"                        }
             }
 

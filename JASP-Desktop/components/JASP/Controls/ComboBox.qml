@@ -127,7 +127,7 @@ JASPControl {
                     height: 15; width: 15
                     x: 3
                     anchors.verticalCenter: parent.verticalCenter
-                    source: iconFiles[comboBox.currentColumnType]
+                    source: visible ? iconFiles[comboBox.currentColumnType] : ""
                     visible: comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
                 }
                 

@@ -38,6 +38,8 @@ JASPControl {
 
     implicitHeight: (control.title ? label.height : 0) + (isHorizontal ? row.height : column.height) 
     implicitWidth: (isHorizontal ? row.width : column.width) + (title ? control.leftPadding : 0)
+    
+    Layout.leftMargin: indent ? Theme.indentationLength : 0
        
     Label {
         id: label
@@ -62,7 +64,7 @@ JASPControl {
         anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
         anchors.left: parent.left
         anchors.leftMargin: control.title ? control.leftPadding : 0
-        spacing: Theme.rowSpacing
+        spacing: Theme.rowGroupSpacing
         visible: isHorizontal && control.visible ? false : true
     }
 
@@ -72,7 +74,7 @@ JASPControl {
         anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
         anchors.left: parent.left
         anchors.leftMargin: control.title ? control.leftPadding : 0
-        spacing: Theme.rowSpacing
+        spacing: Theme.rowGroupSpacing
         visible: isHorizontal && control.visible ? true : false
     }
     

@@ -45,11 +45,11 @@ Form {
 
                 Row {
                     RadioButton { text: qsTr("Pearson's rho") ; name: "pearsonRho"; id: pearsonRho; checked: true}
-                    TextField   { name: "pearsonRhoValue"; inputType: "number"; text: "0"; visible: pearsonRho.checked; validator: DoubleValidator { bottom: -1; top: 1 } }
+                    DoubleField   { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
                 }
                 Row {
                     RadioButton { text: qsTr("Kendall's tau-b") ; name: "kendallTau"; id: kendallTau }
-                    TextField   { name: "kendallTauValue"; inputType: "number"; text: "0"; visible: kendallTau.checked; validator: DoubleValidator { bottom: -1; top: 1 } }
+                    DoubleField   { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
                 }
             }
         }
@@ -86,7 +86,7 @@ Form {
             GroupBox {
                 title: qsTr("Prior")
                 GridLayout {
-                    Label { text: qsTr("Stretched beta prior width") } TextField { text: "1" ; name: "priorWidth" ; inputType: "number"; validator: DoubleValidator {bottom: 0; top: 2} }
+                    Label { text: qsTr("Stretched beta prior width") } DoubleField { defaultValue: 1 ; name: "priorWidth" ; doubleValidator {bottom: 0; top: 2} }
                 }
             }
         }

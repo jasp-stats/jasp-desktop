@@ -15,7 +15,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
@@ -24,7 +23,6 @@ Form {
     id: form
 
     CheckBox { name: "incl_GoF"; checked: true; visible: false }
-    CheckBox { name: "incl_fitIndices"; checked: false; visible: false }
     CheckBox { name: "incl_loadings"; checked: true; visible: false }
     IntegerField { name: "plotHeightPathDiagram"; defaultValue: 0; visible: false }
     IntegerField { name: "plotHeightScreePlot"  ; defaultValue: 300; visible: false }
@@ -47,7 +45,7 @@ Form {
             DoubleField {
                 text: qsTr("Eigenvalues above");
                 name: "eigenValuesBox";
-                defaultValue: 1
+                defaultValue: 0
                 indent: true;
                 enabled: eigenvalues.checked
                 doubleValidator.decimals: 1
@@ -89,6 +87,7 @@ Form {
             GroupBox {
                 title: qsTr("Includes tables")
                 CheckBox { text: qsTr("Factor correlations"); name: "incl_correlations" }
+                CheckBox { text: qsTr("Additional fit indices"); name: "incl_fitIndices" }
                 CheckBox { text: qsTr("Path diagram"); name: "incl_pathDiagram" }
                 CheckBox { text: qsTr("Scree plot"); name: "incl_screePlot" }
             }

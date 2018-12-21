@@ -90,7 +90,7 @@ JASPControl
                     text: itemRectangle.isVirtual ? "" : model.name
                     placeholderText: itemRectangle.isVirtual ? model.name : ""
                     anchors.verticalCenter: parent.verticalCenter
-                    textWidth: parent.width - 6
+                    fieldWidth: parent.width - 6
                     useExternalBorder: false
                     control.horizontalAlignment: itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter 
                     onEditingFinished: itemChanged(index, text)                      

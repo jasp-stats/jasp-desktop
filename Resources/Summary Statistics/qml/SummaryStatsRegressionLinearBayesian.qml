@@ -41,7 +41,7 @@ Form {
                 title: qsTr("Null model")
                 GridLayout {
                     Label { text: qsTr("Number of covariates") } IntegerField { name: "numberOfCovariatesNull" }
-                    Label { text: qsTr("R-squared")            } TextField { text: "" ; name: "unadjustedRSquaredNull" ; inputType: "number" ; validator: DoubleValidator { bottom: 0; top: 0.9999 } }
+                    Label { text: qsTr("R-squared")            } DoubleField { name: "unadjustedRSquaredNull" ; doubleValidator.top: 0.9999 }
                 }
             }
         }
@@ -51,7 +51,7 @@ Form {
                 title: qsTr("Alternative model")
                 GridLayout {
                     Label { text: qsTr("Number of covariates") } IntegerField { name: "numberOfCovariatesAlternative" ; intValidator.bottom: 1 }
-                    Label { text: qsTr("R-squared")            } TextField { text: "" ; name: "unadjustedRSquaredAlternative" ; inputType: "number" ; validator: DoubleValidator { bottom: 0; top: 0.9999 } }
+                    Label { text: qsTr("R-squared")            } DoubleField { name: "unadjustedRSquaredAlternative" ; doubleValidator.top: 0.9999 }
                 }
             }
         }
@@ -83,7 +83,7 @@ Form {
         GroupBox {
             title: qsTr("Prior")
             GridLayout {
-                Label { text: qsTr("r scale covariates") } TextField { text: "0.3536" ; name: "priorWidth" ; inputType: "number"; validator: DoubleValidator {bottom: 0; top: 2} }
+                Label { text: qsTr("r scale covariates") } DoubleField { defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 60; doubleValidator.top: 2 }
             }
         }
     }

@@ -31,7 +31,7 @@ Form {
             GridLayout {
                 Label { text: qsTr("Successes")  } IntegerField { name: "successes" }
                 Label { text: qsTr("Failures")   } IntegerField { name: "failures" }
-                Label { text: qsTr("Test value") } TextField { text: "0.5" ; name: "testValue" ; inputType: "number" ; validator: DoubleValidator { bottom: 0; top: 1 } }
+                Label { text: qsTr("Test value") } DoubleField { defaultValue: 0.5 ; name: "testValue" ; doubleValidator.top: 1 }
             }
         }
     }
@@ -66,8 +66,8 @@ Form {
             GroupBox {
                 title: qsTr("Prior")
                 GridLayout {
-                    Label { text: qsTr("Beta prior: parameter a") } TextField { text: "1" ; name: "betaPriorParamA" ; inputType: "number"; validator: DoubleValidator { bottom: 0 } }
-                    Label { text: qsTr("Beta prior: parameter b") } TextField { text: "1" ; name: "betaPriorParamB" ; inputType: "number"; validator: DoubleValidator { bottom: 0 } }
+                    Label { text: qsTr("Beta prior: parameter a") } DoubleField { defaultValue: 1 ; name: "betaPriorParamA" }
+                    Label { text: qsTr("Beta prior: parameter b") } DoubleField { defaultValue: 1 ; name: "betaPriorParamB" }
                 }
             }
         }
