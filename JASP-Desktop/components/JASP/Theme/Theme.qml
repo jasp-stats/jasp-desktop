@@ -82,6 +82,8 @@ QtObject {
 	readonly property int maximumFlickVelocity:			400
 	readonly property int fileMenuSlideDuration:		200
 
+	readonly property real ribbonScaleHovered:			1.1
+
 	property font font
 	font.bold:		false
 	font.underline:	false

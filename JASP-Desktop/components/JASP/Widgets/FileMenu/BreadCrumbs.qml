@@ -40,7 +40,7 @@ ListView
 				}
 			}
 
-			FilterButton
+			RectangularButton
 			{
 				id:				rectButton
 				anchors.left:	model.index > 0 ? rectArrow.right : rect.left

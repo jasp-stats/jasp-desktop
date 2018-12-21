@@ -69,7 +69,7 @@ FocusScope
 
 		FilterConstructor
 		{
-			anchors.bottom:	closeEasyFilterButton.top
+			anchors.bottom:	closeEasyRectangularButton.top
 			anchors.right:	parent.right
 			anchors.left:	parent.left
 			anchors.top:	parent.top
@@ -162,13 +162,13 @@ FocusScope
 			}
 		}
 
-		FilterButton
+		RectangularButton
 		{
-			id: rFilterButton
+			id: rRectangularButton
 			iconSource: "qrc:/icons/R.png"
 			anchors.left: parent.left
 			anchors.bottom: parent.bottom
-			anchors.top: closeEasyFilterButton.top
+			anchors.top: closeEasyRectangularButton.top
 
 			onClicked: easyFilterConstructor.askIfChanged(function() { filterContainer.showEasyFilter = false } )
 
@@ -179,38 +179,38 @@ FocusScope
 
 		}
 
-		FilterButton
+		RectangularButton
 		{
 			property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
 
 			id:				applyEasyFilter
 			text:			showApplyNotApplied ? "Apply pass-through filter" : "Filter applied"
 			enabled:		easyFilterConstructor.somethingChanged
-			anchors.left:	rFilterButton.right
-			anchors.right:	helpEasyFilterButton.left
+			anchors.left:	rRectangularButton.right
+			anchors.right:	helpEasyRectangularButton.left
 			anchors.bottom: parent.bottom
-			anchors.top:	closeEasyFilterButton.top
+			anchors.top:	closeEasyRectangularButton.top
 
 			onClicked:		easyFilterConstructor.checkAndApplyFilter()
 
 			toolTip:		showApplyNotApplied ? "Click to apply filter" : "Filter is already applied"
 		}
 
-		FilterButton
+		RectangularButton
 		{
-			id:				helpEasyFilterButton
+			id:				helpEasyRectangularButton
 			iconSource:		"qrc:/icons/QuestionMark.png"
-			anchors.right:	closeEasyFilterButton.left
+			anchors.right:	closeEasyRectangularButton.left
 			anchors.bottom:	parent.bottom
-			anchors.top:	closeEasyFilterButton.top
+			anchors.top:	closeEasyRectangularButton.top
 
 			onClicked:		mainWindow.showHelpFromQML("other/EasyFilterConstructor");
 			toolTip:		"Open Documentation"
 		}
 
-		FilterButton
+		RectangularButton
 		{
-			id: closeEasyFilterButton
+			id: closeEasyRectangularButton
 			iconSource: "qrc:/images/cross.png"
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
@@ -300,7 +300,7 @@ FocusScope
 
 					}
 
-					FilterButton
+					RectangularButton
 					{
 						id: resetAllGeneratedFilters
 						anchors.left: parent.left
@@ -452,18 +452,18 @@ FocusScope
 		Item
 		{
 			id: filterButtons
-			height: closeFilterButton.height
+			height: closeRectangularButton.height
 			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
-			FilterButton
+			RectangularButton
 			{
-				id: easyFilterButton
+				id: easyRectangularButton
 				iconSource: "qrc:/icons/NotR.png"
 				anchors.left: parent.left
 				anchors.bottom: parent.bottom
-				anchors.top: closeFilterButton.top
+				anchors.top: closeRectangularButton.top
 
 				onClicked: filterEditRectangle.askIfChanged(function (){ filterContainer.showEasyFilter = true })
 
@@ -473,13 +473,13 @@ FocusScope
 
 			}
 
-			FilterButton
+			RectangularButton
 			{
-				id: clearFilterButton
+				id: clearRectangularButton
 				iconSource: "qrc:/images/eraser.png"
-				anchors.left: easyFilterButton.right
+				anchors.left: easyRectangularButton.right
 				anchors.bottom: parent.bottom
-				anchors.top: closeFilterButton.top
+				anchors.top: closeRectangularButton.top
 
 				onClicked: filterWindow.resetFilter()
 
@@ -490,7 +490,7 @@ FocusScope
 				toolTip: "Reset to default filter"
 			}
 
-			FilterButton
+			RectangularButton
 			{
 				id: applyFilter
 
@@ -498,32 +498,32 @@ FocusScope
 
 				text:			filterEdit.changedSinceLastApply ? "Apply pass-through filter" : filterIsDefault ? "Default filter applied" : "Filter applied"
 				enabled:		filterEdit.changedSinceLastApply
-				anchors.left:	clearFilterButton.right
+				anchors.left:	clearRectangularButton.right
 				anchors.right:	helpButton.left
 				anchors.bottom:	parent.bottom
-				anchors.top:	closeFilterButton.top
+				anchors.top:	closeRectangularButton.top
 
 				onClicked:		filterWindow.applyAndSendFilter(filterEdit.text)
 
 				toolTip:		filterEdit.changedSinceLastApply ? "Click to apply filter" : filterIsDefault ? "Filter is unchanged from default" : "Filter is already applied"
 			}
 
-			FilterButton
+			RectangularButton
 			{
 				id: helpButton
 				iconSource: "qrc:/icons/QuestionMark.png"
-				anchors.right: closeFilterButton.left
+				anchors.right: closeRectangularButton.left
 				anchors.bottom: parent.bottom
-				anchors.top: closeFilterButton.top
+				anchors.top: closeRectangularButton.top
 
 				onClicked: mainWindow.showHelpFromQML("other/RFilterConstructor");
 				toolTip: "Open Documentation"
 			}
 
 
-			FilterButton
+			RectangularButton
 			{
-				id: closeFilterButton
+				id: closeRectangularButton
 				iconSource: "qrc:/images/cross.png"
 				anchors.right: parent.right
 				anchors.bottom: parent.bottom

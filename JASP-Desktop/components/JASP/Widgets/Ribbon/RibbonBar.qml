@@ -1,18 +1,16 @@
 import QtQuick 2.11
 import JASP.Widgets 1.0
 import JASP.Theme 1.0
+
 FocusScope
 {
 	height: ribbonMenu.height
 
-	FilterButton
+	HamburgerButton
 	{
 		id:		fileMenuOpenButton
-		text:	"File"
-		color:	"blue"
-		width:	height
 
-		onClicked: fileMenuModel.visible = !fileMenuModel.visible
+		width:	height
 
 		anchors
 		{
@@ -35,7 +33,7 @@ FocusScope
 
 	}
 
-	FilterButton
+	RectangularButton
 	{
 		id:			modulesPlusButton
 		iconSource: "qrc:/icons/addition-sign.svg"

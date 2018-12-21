@@ -340,7 +340,7 @@ FocusScope {
 					property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
 					property real	buttonHeight:		26 * ppiScale
 
-					FilterButton
+					RectangularButton
                     {
                         //text: "UP"
 						iconSource:		"qrc:/images/arrow-up.png"
@@ -353,7 +353,7 @@ FocusScope {
 						width:			height
                     }
 
-					FilterButton
+					RectangularButton
                     {
                         //text: "DOWN"
 						iconSource:		"qrc:/images/arrow-down.png"
@@ -366,7 +366,7 @@ FocusScope {
 						width:			height
                     }
 
-					FilterButton
+					RectangularButton
 					{
 						//text: "REVERSE"
 						iconSource:		"qrc:/images/arrow-reverse.png"
@@ -379,7 +379,7 @@ FocusScope {
 						width:			height
 					}
 
-					FilterButton
+					RectangularButton
 					{
 						id:				eraseFiltersOnThisColumn
 						iconSource:		"qrc:/images/eraser.png"
@@ -393,7 +393,7 @@ FocusScope {
 						width:			height
 					}
 
-					FilterButton
+					RectangularButton
 					{
 						id:				eraseFiltersOnAllColumns
 						iconSource:		"qrc:/images/eraser_all.png"
@@ -411,7 +411,7 @@ FocusScope {
                         Layout.fillHeight: true
                     }
 
-					FilterButton
+					RectangularButton
                     {
 						id:				variablesWindowCloseButton
 						iconSource:		"qrc:/images/cross.png"

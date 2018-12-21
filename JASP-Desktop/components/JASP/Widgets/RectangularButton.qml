@@ -6,8 +6,8 @@ Rectangle
 {
 	id: filterButtonRoot
 
-	color:			buttonMouseArea.pressed ? Theme.buttonColorPressed :	filterButtonRoot._showHovered ? Theme.buttonColorHovered		: Theme.buttonColor
-	border.color:															filterButtonRoot._showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+	color:			_pressed ? Theme.buttonColorPressed :	_showHovered ? Theme.buttonColorHovered			: Theme.buttonColor
+	border.color:											_showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 	border.width:	1
 
 
@@ -22,6 +22,7 @@ Rectangle
 
 	property real	_scaledDim:			32 * ppiScale
 	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
+	property alias	_pressed:			buttonMouseArea.pressed
 
 	implicitWidth:	showIconAndText ? buttonText.width + buttonPadding + _scaledDim + buttonPadding : buttonIcon.visible ? _scaledDim : buttonText.width + buttonPadding
 	implicitHeight: _scaledDim

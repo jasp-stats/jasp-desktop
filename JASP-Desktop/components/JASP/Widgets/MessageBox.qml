@@ -133,7 +133,7 @@ Popup
 			id:				yesNoButtons
 			anchors.fill:	parent
 
-			FilterButton
+			RectangularButton
 			{
 				id:				yes
 				text:			"Yes"
@@ -149,7 +149,7 @@ Popup
 				onClicked: messageRoot.close()
 			}
 
-			FilterButton
+			RectangularButton
 			{
 				id:				no
 				text:			"No"

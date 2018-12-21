@@ -25,7 +25,7 @@ Item
 		color: Theme.black
 	}
 	
-	FilterButton {
+	RectangularButton {
 		id: browseButton
 					
 		text: "Browse"

@@ -84,7 +84,7 @@ Rectangle
 
 				Component {
 					id: fileDelegate
-					FilterButton
+					RectangularButton
 					{
 						id:					fileDelegateRect
 						height:				32
@@ -185,7 +185,7 @@ Rectangle
 		}
 	}
 
-	FilterButton
+	RectangularButton
 	{
 		id:					installButton
 		anchors.left:		parent.left
@@ -255,7 +255,7 @@ Rectangle
 			}
 		}
 
-		FilterButton
+		RectangularButton
 		{
 			id:					closeButton
 			anchors.left:		parent.left

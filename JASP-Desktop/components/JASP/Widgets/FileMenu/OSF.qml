@@ -34,7 +34,7 @@ Item
 	}
 	
 	
-	FilterButton {
+	RectangularButton {
 		id: logoutButton
 		
 		visible: loggedin
@@ -151,7 +151,7 @@ Item
 			}		
 		}
 		
-		FilterButton {
+		RectangularButton {
 			id:						newDirectoryButton
 					
 			text:					"New Folder"
@@ -165,7 +165,7 @@ Item
 			}
 		}
 		
-		FilterButton {
+		RectangularButton {
 			id:						saveFilenameButton
 
 			text:					"Save"

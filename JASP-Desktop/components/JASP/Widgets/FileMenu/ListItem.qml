@@ -11,7 +11,7 @@ Rectangle
 	height:			rectTitle.height + rectDescription.height + 3
 	border.width:	1
 	border.color:	rectTitleAndDescripton.allHovered ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
-	color:			Theme.uiBackground
+	color:			rectTitle.color
 
 	property var cppModel: undefined
 
@@ -146,7 +146,7 @@ Rectangle
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		anchors.top:		rectTitle.bottom
-		anchors.margins:	1
+		anchors.margins:	height > 0 ? 1 : 0
 
 		color:				rectTitleAndDescripton.allHovered ? Theme.white : Theme.uiBackground
 		visible:			model.description !== ""

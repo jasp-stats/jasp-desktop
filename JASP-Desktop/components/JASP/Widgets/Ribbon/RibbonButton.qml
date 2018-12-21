@@ -45,7 +45,7 @@ Rectangle {
 		width:				parent.width
 		height:				parent.height
 
-		scale:				mice.containsMouse && !mice.pressed ? 1.1 : 1
+		scale:				mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
 
 
 		Image

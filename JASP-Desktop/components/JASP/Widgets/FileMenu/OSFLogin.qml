@@ -167,7 +167,7 @@ Rectangle {
 			fileMenuModel.osf.remembermeCheckChanged(checked) }
 	}
 
-	FilterButton {
+	RectangularButton {
 		id: loginButton
 
 		anchors.top: passwordInput.bottom

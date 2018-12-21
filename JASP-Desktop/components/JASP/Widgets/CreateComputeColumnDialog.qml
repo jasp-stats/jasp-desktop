@@ -160,7 +160,7 @@ Popup {
 			anchors.horizontalCenter:	parent.horizontalCenter
 			height:						45 * ppiScale
 
-			FilterButton
+			RectangularButton
 			{
 				id:						rCodeSelectah
 
@@ -179,7 +179,7 @@ Popup {
 				toolTip:				"Define column through R code"
 			}
 
-			FilterButton
+			RectangularButton
 			{
 				id:					jsonSelectah
 
@@ -282,7 +282,7 @@ Popup {
 			}
 		}
 
-		FilterButton
+		RectangularButton
 		{
 			anchors.top: computeColumnIconRow.bottom
 			anchors.topMargin: 10

@@ -38,7 +38,7 @@
         <file>components/JASP/Widgets/CreateComputeColumnDialog.qml</file>
         <file>components/JASP/Widgets/DataPanel.qml</file>
         <file>components/JASP/Widgets/DataTableView.qml</file>
-        <file>components/JASP/Widgets/FilterButton.qml</file>
+        <file>components/JASP/Widgets/RectangularButton.qml</file>
         <file>components/JASP/Widgets/FilterWindow.qml</file>
         <file>components/JASP/Widgets/JASPDataView.qml</file>
         <file>components/JASP/Widgets/JASPMouseAreaToolTipped.qml</file>
@@ -90,5 +90,7 @@
         <file>components/JASP/Widgets/FileMenu/ListItem.qml</file>
         <file>components/JASP/Widgets/FileMenu/FileList.qml</file>
         <file>components/JASP/Widgets/AnalysisForms.qml</file>
+        <file>components/JASP/Widgets/Ribbon/HamburgerButton.qml</file>
+        <file>components/JASP/Widgets/MenuButton.qml</file>
     </qresource>
 </RCC>

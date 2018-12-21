@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.11
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
@@ -53,7 +53,7 @@ Item
 
 					model: fileMenu.actionbuttons.length
 
-					FilterButton {
+					MenuButton {
 						id:					actionButton
 						text:				fileMenu.actionbuttons[index]
 
@@ -94,7 +94,7 @@ Item
 				spacing:					6
 				width:						parent.width - Theme.generalAnchorMargin
 
-				FilterButton {
+				MenuButton {
 					id:					locationRecentFiles
 					text:				fileMenu.resourcesbuttons[0]
 
@@ -109,7 +109,7 @@ Item
 				}
 
 
-				FilterButton {
+				MenuButton {
 					id:					locationCurrentFile
 					text:				fileMenu.resourcesbuttons[1]
 
@@ -124,7 +124,7 @@ Item
 				}
 
 
-				FilterButton {
+				MenuButton {
 					id:				locationComputer
 					text:			fileMenu.resourcesbuttons[2]
 
@@ -139,7 +139,7 @@ Item
 
 				}
 
-				FilterButton {
+				MenuButton {
 					id:		alocationOSF
 					text:	fileMenu.resourcesbuttons[3]
 
@@ -157,7 +157,7 @@ Item
 					}
 				}
 
-				FilterButton {
+				MenuButton {
 					id:			locationDataLibrary
 					text:		fileMenu.resourcesbuttons[4]
 

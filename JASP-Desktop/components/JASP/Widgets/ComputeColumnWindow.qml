@@ -249,7 +249,7 @@ FocusScope
 		anchors.bottom: parent.bottom
 
 
-		FilterButton
+		RectangularButton
 		{
 			id: removeColumnButton
 			iconSource: "qrc:///icons/square_trashcan.png"
@@ -265,7 +265,7 @@ FocusScope
 			toolTip: "Remove computed column"
 		}
 
-		FilterButton
+		RectangularButton
 		{
 			id:			showGeneratedRCode
 			visible:	!computedColumnsInterface.computeColumnUsesRCode
@@ -282,7 +282,7 @@ FocusScope
 
 		}
 
-		FilterButton
+		RectangularButton
 		{
 			id:				applycomputeColumn
 
@@ -298,7 +298,7 @@ FocusScope
 			toolTip:		computeColumnEdit.changedSinceLastApply ? "Click to compute column" : "Column (in line to be) computed"
 		}
 
-		FilterButton
+		RectangularButton
 		{
 			id:				helpButton
 			iconSource:		"qrc:/icons/QuestionMark.png"
@@ -312,7 +312,7 @@ FocusScope
 		}
 
 
-		FilterButton
+		RectangularButton
 		{
 			id:				closeColumnEditorButton
 			iconSource:		"qrc:/images/cross.png"
