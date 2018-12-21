@@ -33,12 +33,12 @@ Item
 		Rectangle {
 
 			id:				actionMenu
-			color:			"#F4F6F7"
+			color:			Theme.uiBackground
 			anchors.left:	parent.left
 			width:			fileMenu.colWidths //fileMenuModel.visible ?  : 0
 			height:			parent.height
 			border.width:	1
-			border.color:	Theme.grayDarker
+			border.color:	Theme.uiBorder
 
 
 			Column {
@@ -73,7 +73,7 @@ Item
 		// Location Menu
 		Rectangle {
 			id:				locationMenu
-			color:			"#F4F6F7" //Or Theme.whiteBroken?
+			color:			Theme.uiBackground
 
 			width:			fileMenu.colWidths //fileMenuModel.visible ?  : 0
 
@@ -81,7 +81,7 @@ Item
 			height:			parent.height
 
 			border.width:	1
-			border.color:	Theme.grayDarker
+			border.color:	Theme.uiBorder
 
 			//Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.InOutSine  } }
 
@@ -194,8 +194,7 @@ Item
 				rotation:	-90
 				gradient:	Gradient {
 					GradientStop { position: 0.0; color: Theme.shadow }
-					GradientStop { position: 1.0; color: "transparent" }
-				}
+					GradientStop { position: 1.0; color: "transparent" } }
 				height:		dropShadow.width
 				width:		dropShadow.height
 			}

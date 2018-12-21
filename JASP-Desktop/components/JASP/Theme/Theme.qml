@@ -41,6 +41,7 @@ QtObject {
 	readonly property color textEnabled:		black
 	readonly property color textDisabled:		grayDarker
 	readonly property color uiBackground:		grayMuchLighter
+	readonly property color uiBorder:			grayDarker
 	readonly property color buttonColor:		grayLighter
 	readonly property color buttonBorderColor:	grayLighter
 
@@ -48,7 +49,7 @@ QtObject {
 	readonly property color buttonBorderColorHovered:	black
 
 	readonly property color buttonColorPressed:			gray
-    
+
 	readonly property int minPanelWidth:		200
 	readonly property int resultWidth:			500
 	readonly property int formWidth:			600

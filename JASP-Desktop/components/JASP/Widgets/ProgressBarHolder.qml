@@ -1,24 +1,24 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
+import JASP.Theme 1.0
 
-Rectangle
+Item
 {
-    color: systemPalette.midlight
     visible: false
-    anchors.left: rootDataset.left
-    anchors.right: rootDataset.right
-    anchors.top: rootDataset.top
+	anchors.left:	rootDataset.left
+	anchors.right:	rootDataset.right
+	anchors.top:	rootDataset.top
 
     Text
     {
 		id:						loadingText
 		horizontalAlignment:	Text.AlignHCenter
 		text:					mainWindow.progressBarStatus
-		font.pixelSize:			baseFontSize * ppiScale
+		font:					Theme.fontLabel
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
+		anchors.left:	parent.left
+		anchors.right:	parent.right
+		anchors.top:	parent.top
     }
 
 
@@ -30,9 +30,9 @@ Rectangle
 		value:			mainWindow.progressBarProgress
 
 
-        anchors.left: progressBarHolder.left
-        anchors.right: progressBarHolder.right
-        anchors.top: loadingText.top
-        anchors.topMargin: 24
+		anchors.left:		progressBarHolder.left
+		anchors.right:		progressBarHolder.right
+		anchors.top:		loadingText.top
+		anchors.topMargin:	24
     }
 }

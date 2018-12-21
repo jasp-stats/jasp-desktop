@@ -4,7 +4,10 @@ import JASP.Theme 1.0
 
 FocusScope
 {
+	id:		ribbonBar
 	height: ribbonMenu.height
+	y:		ribbonBarContainer.border.width
+
 
 	HamburgerButton
 	{
@@ -63,9 +66,21 @@ FocusScope
 
 		gradient:	Gradient {
 			GradientStop { position: 0.0; color: Theme.shadow }
-			GradientStop { position: 1.0; color: "transparent" }
-		}
+			GradientStop { position: 1.0; color: "transparent" } }
 
+		Rectangle // a line underneath ribbonbar, just like in filemenu
+		{
+			z:		3
+			height:	1
+			color:	Theme.uiBorder
+
+			anchors
+			{
+				top: parent.top
+				left: parent.left
+				right: parent.right
+			}
+		}
 
 	}
 }

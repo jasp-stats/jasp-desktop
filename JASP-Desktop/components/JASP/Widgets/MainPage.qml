@@ -12,24 +12,50 @@ OLD.SplitView
 	id:				panelSplit
 	orientation:	Qt.Horizontal
 
-	DataPanel
+
+	Item
 	{
-		id:						data
-		Layout.fillWidth:		visible
-		visible:				mainWindow.dataPanelVisible
-		Layout.minimumWidth:	!visible ? 0 : Theme.minPanelWidth
-		implicitWidth:			!visible ? 0 : Math.max(parent.width - Theme.resultWidth, Theme.formWidth)
-	}
+		id:						dataAndAnalyses
+		Layout.fillWidth:		true
+		//Layout.minimumWidth:	!visible ? 0 : Theme.formWidth
+		visible:				true //data.visible || analyses.visible
+		width:					implicitWidth
+		implicitWidth:			visible ? panelSplit.width / 2 : 0
+			//analyses.visible ? (!data.visible ? Theme.formWidth :)
 
-	AnalysisForms
-	{
-		id:						analyses
-		visible:				mainWindow.dataPanelVisible
-		Layout.minimumWidth:	!visible ? 0 : Theme.formWidth
-		implicitWidth:			!visible ? 0 : Theme.formWidth
-		Layout.maximumWidth:	!visible ? 0 : Theme.formWidth
+		//color:	"green" //Theme.uiBackground*/
+		z: 1
 
+	/*	onVisibleChanged:
+		{
+			if(visible)
+				width = panelSplit.width / 2
+		}*/
 
+		DataPanel
+		{
+			id:						data
+			visible:				mainWindow.dataPanelVisible
+			anchors.fill:			parent
+			anchors.rightMargin:	analyses.extraSpaceRight
+			z:						1
+		}
+
+		AnalysisForms
+		{
+			id:				analyses
+			visible:		true
+			z:				2
+			//color:			"purple"
+			width:			mainWindow.analysesVisible ? Math.min(parent.width, Theme.formWidth) : extraSpaceRight
+
+			anchors
+			{
+				top:		parent.top
+				right:		parent.right
+				bottom:		parent.bottom
+			}
+		}
 	}
 
 
@@ -39,6 +65,7 @@ OLD.SplitView
 		url:					resultJsInterface.resultsPageUrl
 		implicitWidth:			Theme.resultWidth
 		Layout.minimumWidth:	Theme.minPanelWidth
+	//	Layout.maximumWidth:	dataAndAnalyses.visible ? panelSplit.width / 2 : panelSplit.width
 
 		webChannel:				resultJsInterface.channel
 

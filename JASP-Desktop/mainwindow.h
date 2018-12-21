@@ -59,6 +59,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
 	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
+	Q_PROPERTY(bool		analysesVisible		READ analysesVisible		WRITE setAnalysesVisible		NOTIFY analysesVisibleChanged		)
 	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
 
 	friend class FileMenu;
@@ -79,19 +80,13 @@ public:
 	int		progressBarProgress()	const	{ return _progressBarProgress;	}
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
-	QString	windowTitle()			const	{ return m_windowTitle;			}
+	QString	windowTitle()			const	{ return _windowTitle;			}
+	bool analysesVisible()			const	{ return _analysesVisible;		}
 
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
 	void setImageBackgroundHandler(QString value);
 	void setUIScaleHandler(float scale);
-
-/*protected:
-	void resizeEvent(QResizeEvent *event)		override;
-	void dragEnterEvent(QDragEnterEvent *event) override;
-	void dropEvent(QDropEvent *event)			override;
-	void closeEvent(QCloseEvent *event)			override;*/
-
 	void setRunButtonText(QString runButtonText);
 	void setRunButtonEnabled(bool runButtonEnabled);
 	void setProgressBarVisible(bool progressBarVisible);
@@ -99,6 +94,7 @@ public slots:
 	void setProgressBarStatus(QString progressBarStatus);
 	void setDataPanelVisible(bool dataPanelVisible);
 	void setWindowTitle(QString windowTitle);
+	void setAnalysesVisible(bool analysesVisible);
 
 private:
 	void makeConnections();
@@ -169,6 +165,8 @@ signals:
 
 	void showWarning(QString title, QString message);
 	void refreshAllAnalyses();
+
+	void analysesVisibleChanged(bool analysesVisible);
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -252,6 +250,7 @@ private:
 	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
 	QObject							*qmlProgressBar			= nullptr;
 	QApplication					*_application 			= nullptr;
+	FileMenu						*_fileMenu				= nullptr;
 
 	QSettings						_settings;
 
@@ -266,7 +265,8 @@ private:
 									_fatalError,
 									_currentFilePath,
 									_runButtonText,
-									_progressBarStatus;
+									_progressBarStatus,
+									_windowTitle;
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
@@ -278,11 +278,10 @@ private:
 									_excludeKey				= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
-									_dataPanelVisible		= false;
+									_dataPanelVisible		= true,
+									_analysesVisible		= false;
 
-	FileMenu						*_fileMenu;
 
-	QString m_windowTitle;
 };
 
 #endif // MAINWIDGET_H

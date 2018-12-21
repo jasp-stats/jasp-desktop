@@ -1191,6 +1191,7 @@ void MainWindow::populateUIfromDataSet()
 	}
 
 	hideProgress();
+	setAnalysesVisible(true); // temporarily because this should be triggered from resultsJS
 
 
 	bool errorFound = false;
@@ -1869,11 +1870,11 @@ void MainWindow::setDataPanelVisible(bool dataPanelVisible)
 
 void MainWindow::setWindowTitle(QString windowTitle)
 {
-	if (m_windowTitle == windowTitle)
+	if (_windowTitle == windowTitle)
 		return;
 
-	m_windowTitle = windowTitle;
-	emit windowTitleChanged(m_windowTitle);
+	_windowTitle = windowTitle;
+	emit windowTitleChanged(_windowTitle);
 }
 
 void MainWindow::removeAnalysis(Analysis *analysis)
@@ -1903,4 +1904,13 @@ void MainWindow::getAnalysesUserData()
 	parser.parse(fq(userData.toString()), data);
 
 	_analyses->setAnalysesUserData(data);
+}
+
+void  MainWindow::setAnalysesVisible(bool analysesVisible)
+{
+	if (_analysesVisible == analysesVisible)
+		return;
+
+	_analysesVisible = analysesVisible;
+	emit analysesVisibleChanged(_analysesVisible);
 }

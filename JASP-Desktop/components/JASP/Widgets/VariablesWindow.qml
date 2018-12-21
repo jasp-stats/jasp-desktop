@@ -13,8 +13,8 @@ FocusScope {
 
 
     property var headersGradient: Gradient{
-        GradientStop { position: 0.2; color: systemPalette.midlight }
-        GradientStop { position: 1.0; color: systemPalette.light }
+		GradientStop { position: 0.2; color: Theme.grayLighter }
+		GradientStop { position: 1.0; color: Theme.grayMuchLighter }
     }
 
     property int chosenColumn: -1
@@ -38,9 +38,9 @@ FocusScope {
 
 
     Rectangle {
-        id: levelsTableViewRectangle
-        anchors.fill: parent
-        color: systemPalette.window
+		id:				levelsTableViewRectangle
+		anchors.fill:	parent
+		color:			Theme.uiBackground
 
 
             Text
@@ -204,8 +204,8 @@ FocusScope {
                     {
                         //Two rectangles to show a border of exactly 1px around cells
                         id: headerBorderRectangleVars
-                        color: systemPalette.mid
-                        border.width: 0
+						color:			Theme.grayLighter
+						border.width:	0
                         radius: 0
 						height: headerTextVars.contentHeight + 8
 						//width: headerTextVars.width + 8
@@ -222,10 +222,10 @@ FocusScope {
 
                             Text
                             {
-                                id: headerTextVars
-                                text: styleData.value
-                                color: systemPalette.text
-								font.pixelSize: baseFontSize * ppiScale
+								id:		headerTextVars
+								text:	styleData.value
+								color:	Theme.textEnabled
+								font:	Theme.font
 
 								anchors.verticalCenter: parent.verticalCenter
 								x: 4
@@ -237,7 +237,7 @@ FocusScope {
 
 					itemDelegate: Rectangle
 					{
-						color: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? systemPalette.dark : (styleData.row % 2 == 1 ? systemPalette.midlight : systemPalette.light)
+						color: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? Theme.blue : (styleData.row % 2 == 1 ? Theme.whiteBroken : Theme.grayMuchLighter)
 
 						height: 30 * ppiScale
 

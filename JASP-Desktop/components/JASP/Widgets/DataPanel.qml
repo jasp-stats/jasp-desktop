@@ -4,11 +4,10 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.0
 import JASP.Theme 1.0
 
-Rectangle {
-    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+Rectangle
+{
 	id:				rootDataset
-	color:			systemPalette.window
-
+	color:			Theme.uiBackground
 
     ProgressBarHolder
     {
