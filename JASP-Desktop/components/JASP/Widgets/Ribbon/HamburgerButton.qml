@@ -26,7 +26,7 @@ Rectangle {
 	height						: implicitHeight
 	implicitHeight				: Theme.ribbonButtonHeight
 	implicitWidth				: implicitHeight
-	radius						: 5
+	// radius						: 5
 	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground //mice.pressed ? Theme.grayLighter : mice.containsMouse ? Theme.white : Theme.uiBackground
 
 	signal clicked

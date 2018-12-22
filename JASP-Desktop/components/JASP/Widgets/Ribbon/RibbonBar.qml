@@ -6,7 +6,7 @@ FocusScope
 {
 	id:		ribbonBar
 	height: ribbonMenu.height
-	y:		ribbonBarContainer.border.width
+	y:		ribbonMenu.border.width
 
 
 	HamburgerButton

@@ -37,7 +37,7 @@ Rectangle {
 	default property var	menu
 			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
 
-    signal clicked
+	signal clicked
 
 	Item
 	{
@@ -45,7 +45,7 @@ Rectangle {
 		width:				parent.width
 		height:				parent.height
 
-		scale:				mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
+		scale:				mice.containsMouse && !mice.pressed && !clusterMenu.opened ? Theme.ribbonScaleHovered : 1
 
 
 		Image
@@ -82,12 +82,31 @@ Rectangle {
 			anchors.fill	: parent
 			hoverEnabled	: true
 			acceptedButtons	: Qt.LeftButton
-			onClicked		: clusterMenu.popup()
+			onClicked		: clusterMenu.open()
 
 			ClusterMenu {
 				id   : clusterMenu
 				model: ribbonButton.menu
+				posX : innerText.x
+				posY : ribbonButton.y + (ribbonButton.height)
 			}
+
+			// Rectangle {
+			// 	// bottom shadow
+			// 	width  : clusterMenu.width
+			// 	height : 5
+			//
+			// 	visible: clusterMenu.opened
+			//
+			// 	x : clusterMenu.x
+			// 	y : clusterMenu.y + clusterMenu.height
+			// 	z : clusterMenu.z
+			//
+			// 	gradient:	Gradient {
+			// 		GradientStop { position: 0.0; color: Theme.shadow }
+			// 		GradientStop { position: 1.0; color: "transparent" }
+			// 	}
+			// }
 		}
 	}
 }

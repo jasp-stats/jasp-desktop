@@ -23,7 +23,10 @@ import JASP.Theme 1.0
 
 Menu {
     id: menu
+
     property alias model: menuRepeater.model
+    property alias posX : menu.x
+    property alias posY : menu.y
 
     // TODO: Make the menu more general.
     //       Make a "CustomMenu" component with the required style.

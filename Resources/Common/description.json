@@ -25,16 +25,6 @@
 				{
 					"title":	"Reliability Analysis",
 					"function":	"ReliabilityAnalysis"
-				},
-				{
-				},
-				{
-					"title":	"QML Descriptive Statistics",
-					"function":	"QMLDescriptives"
-				},
-				{
-					"title":	"QML Reliability Analysis",
-					"function":	"QMLReliabilityAnalysis"
 				}
 			]
 		},
@@ -70,34 +60,6 @@
 				{
 					"title":	"Bayesian One Sample T-Test",
 					"function":	"TTestBayesianOneSample"
-				},
-				{
-				},
-				{
-					"title":	"QML Independent Samples T-Test",
-					"function":	"QMLTTestIndependentSamples"
-				},
-				{
-					"title":	"QML Paired Samples T-Test",
-					"function":	"QMLTTestPairedSamples"
-				},
-				{
-					"title":	"QML One Sample T-Test",
-					"function":	"QMLTTestOneSample"
-				},
-				{
-				},
-				{
-					"title":	"QML Bayesian Independent Samples T-Test",
-					"function":	"QMLTTestBayesianIndependentSamples"
-				},
-				{
-					"title":	"QML Bayesian Paired Samples T-Test",
-					"function":	"QMLTTestBayesianPairedSamples"
-				},
-				{
-					"title":	"QML Bayesian One Sample T-Test",
-					"function":	"QMLTTestBayesianOneSample"
 				}
 			]
 		},
@@ -131,34 +93,6 @@
 				{
 					"title":	"Bayesian ANCOVA",
 					"function":	"AncovaBayesian"
-				},
-				{
-				},
-				{
-					"title":	"QML ANOVA",
-					"function":	"QMLAnova"
-				},
-				{
-					"title":	"QML Repeated Measures ANOVA",
-					"function":	"QMLAnovaRepeatedMeasures"
-				},
-				{
-					"title":	"QML ANCOVA",
-					"function":	"QMLAncova"
-				},
-				{
-				},
-				{
-					"title":	"QML Bayesian ANOVA",
-					"function":	"QMLAnovaBayesian"
-				},
-				{
-					"title":	"QML Bayesian Repeated Measures ANOVA",
-					"function":	"QMLAnovaRepeatedMeasuresBayesian"
-				},
-				{
-					"title":	"QML Bayesian ANCOVA",
-					"function":	"QMLAncovaBayesian"
 				}
 			]
 		},
@@ -192,34 +126,6 @@
 				{
 					"title":	"Bayesian Linear Regression",
 					"function":	"RegressionLinearBayesian"
-				},
-				{
-				},
-				{
-					"title":	"QML Correlation Matrix",
-					"function":	"QMLCorrelation"
-				},
-				{
-					"title":	"QML Linear Regression",
-					"function":	"QMLRegressionLinear"
-				},
-				{
-					"title":	"QML Logistic Regression",
-					"function":	"QMLRegressionLogistic"
-				},
-				{
-				},
-				{
-					"title":	"QML Bayesian Correlation Matrix",
-					"function":	"QMLCorrelationBayesian"
-				},
-				{
-					"title":	"QML Bayesian Correlation Pairs",
-					"function":	"QMLCorrelationBayesianPairs"
-				},
-				{
-					"title":	"QML Bayesian Linear Regression",
-					"function":	"QMLRegressionLinearBayesian"
 				}
 			]
 		},
@@ -257,38 +163,6 @@
 				{
 					"title":	"Bayesian Log-Linear Regression",
 					"function":	"RegressionLogLinearBayesian"
-				},
-				{
-				},
-				{
-					"title":	"QML Binomial Test",
-					"function":	"QMLBinomialTest"
-				},
-				{
-					"title":	"QML Multinomial Test",
-					"function":	"QMLMultinomialTest"
-				},
-				{
-					"title":	"QML Contingency Tables",
-					"function":	"QMLContingencyTables"
-				},
-				{
-					"title":	"QML Log-Linear Regression",
-					"function":	"QMLRegressionLogLinear"
-				},
-				{
-				},
-				{
-					"title":	"QML Bayesian Binomial Test",
-					"function":	"QMLBinomialTestBayesian"
-				},
-				{
-					"title":	"QML Bayesian Contingency Tables",
-					"function":	"QMLContingencyTablesBayesian"
-				},
-				{
-					"title":	"QML Bayesian Log-Linear Regression",
-					"function":	"QMLRegressionLogLinearBayesian"
 				}
 			]
 		},
@@ -306,16 +180,6 @@
 				{
 					"title":	"Exploratory Factor Analysis",
 					"function":	"ExploratoryFactorAnalysis"
-				},
-				{
-				},
-				{
-					"title":	"QML Principal Component Analysis",
-					"function":	"QMLPrincipalComponentAnalysis"
-				},
-				{
-					"title":	"QML Exploratory Factor Analysis",
-					"function":	"QMLExploratoryFactorAnalysis"
 				}
 			]
 		}
