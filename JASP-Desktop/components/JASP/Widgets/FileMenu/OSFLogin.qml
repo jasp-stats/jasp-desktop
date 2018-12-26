@@ -11,8 +11,8 @@ Rectangle {
 	property string username : fileMenuModel.osf.username
 	property string password : fileMenuModel.osf.password
 
-	width :implicitWidth
-	height : implicitHeight
+	width : implicitWidth
+	height: implicitHeight
 
 	color: Theme.grayMuchLighter
 

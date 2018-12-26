@@ -40,7 +40,7 @@ Rectangle
 	height:			implicitHeight
 
 
-    
+
 	default property alias	content:			column.children
 			property bool	usesJaspResults:	false
 			property int	majorVersion:		1
@@ -48,7 +48,7 @@ Rectangle
 			property bool	usesVariablesModel: false
 			property int	availableWidth:		form.width - 2 * Theme.formMargin
 			property var	jaspControls:		[]
-    
+
             property int    plotHeight:         320
             property int    plotWidth:          480
 
@@ -68,13 +68,13 @@ Rectangle
 		}
 	}*/
 
-    
+
 	function getJASPControls(controls, item)
 	{
 		for (var i = 0; i < item.children.length; ++i)
 		{
             var child = item.children[i];
-            
+
 			if (child instanceof ExpanderButton)
 			{
                 controls.push(child.button);
@@ -91,12 +91,12 @@ Rectangle
 			else
                 getJASPControls(controls, child);
 
-        }            
-    }        
+        }
+    }
 
 	TextField { visible: false; name: "plotWidth";  inputType: "integer"; text: plotHeight }
 	TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth  }
-    
+
 	Item
 	{
 		id:					expanderButton
@@ -137,6 +137,7 @@ Rectangle
 
 			MouseArea
 			{
+				id:				mouseArea
 				anchors.fill:	parent
 				onClicked:		expanderButton.toggleExpander();
 				hoverEnabled:	true
@@ -171,8 +172,42 @@ Rectangle
 				anchors
 				{
 					left:			icon.right
-					right:			parent.right
+					right:			helpButton.left
 					margins:		5
+					verticalCenter:	parent.verticalCenter
+				}
+			}
+
+			Image
+			{
+				id:					helpButton
+				height:				label.contentHeight
+				width:				label.contentHeight
+				source:				form.expanded ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png"
+				visible:			mouseArea.containsMouse || form.expanded
+				sourceSize.width:	width * 2
+				sourceSize.height:	height * 2
+				anchors
+				{
+					right:			closeButton.left
+					rightMargin:	6
+					verticalCenter:	parent.verticalCenter
+				}
+			}
+
+			Image
+			{
+				id:					closeButton
+				height:				label.contentHeight
+				width:				label.contentHeight
+				source:				form.expanded ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png"
+				visible:			mouseArea.containsMouse || form.expanded
+				sourceSize.width:	width * 2
+				sourceSize.height:	height * 2
+				anchors
+				{
+					right:			parent.right
+					rightMargin:	6
 					verticalCenter:	parent.verticalCenter
 				}
 			}
@@ -234,9 +269,8 @@ Rectangle
                 previousExpander = jaspControls[i];
             }
         }
-        
+
         if (previousExpander)
             previousExpander.nextExpander = jaspControls[0];
     }
 }
-

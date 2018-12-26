@@ -316,7 +316,8 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 	{
 	case formPathRole:		return QString::fromStdString(analysis->qmlFormPath());
 	case Qt::DisplayRole:
-	case titleRole:			return QString::fromStdString(analysis->name());
+	case titleRole:			return QString::fromStdString(analysis->title());
+	case nameRole:			return QString::fromStdString(analysis->name());
 	default:				return QVariant();
 	}
 }
@@ -324,8 +325,9 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 QHash<int, QByteArray>	Analyses::roleNames() const
 {
 	static const QHash<int, QByteArray> roles = {
-		{ formPathRole, "formPath"	},
-		{ titleRole,	"title"		} };
+		{ formPathRole, "formPath"		},
+		{ titleRole,	"displayText"			},
+		{ nameRole,		"name"	} };
 
 	return roles;
 }

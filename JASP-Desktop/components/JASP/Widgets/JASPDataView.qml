@@ -28,7 +28,7 @@ FocusScope
 		anchors.leftMargin: theView.rowNumberWidth
 		anchors.topMargin: theView.headerHeight
 
-		toolTipText: "double-click to edit data"
+		toolTipText: "Double click to edit data"
 
 		acceptedButtons: Qt.NoButton
 
