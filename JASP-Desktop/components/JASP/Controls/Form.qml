@@ -180,10 +180,14 @@ Rectangle
 
 			Image
 			{
+				// TODO: Make this a button.
+				//       Add hover text
+				//       Add action: open corresponding help file
 				id:					helpButton
 				height:				label.contentHeight
 				width:				label.contentHeight
 				source:				form.expanded ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png"
+				// {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
 				visible:			mouseArea.containsMouse || form.expanded
 				sourceSize.width:	width * 2
 				sourceSize.height:	height * 2
@@ -201,6 +205,7 @@ Rectangle
 				height:				label.contentHeight
 				width:				label.contentHeight
 				source:				form.expanded ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png"
+				// {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
 				visible:			mouseArea.containsMouse || form.expanded
 				sourceSize.width:	width * 2
 				sourceSize.height:	height * 2

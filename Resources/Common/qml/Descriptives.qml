@@ -15,6 +15,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
@@ -22,14 +23,14 @@ import JASP.Controls 1.0
 Form {
     id: form
     usesJaspResults: true
-    
+
     VariablesForm {
         defaultAssignedVariablesList.title: qsTr("Variables")
         AssignedVariablesList {
             name: "splitby"
             title: qsTr("Split")
             singleItem: true
-            allowedColumns: ["ordinal", "nominal"]            
+            allowedColumns: ["ordinal", "nominal"]
         }
     }
 
@@ -43,7 +44,7 @@ Form {
             CheckBox {  text: qsTr("Display density")       ; name: "distPlotDensity"; enabled: plotVariables.checked; Layout.leftMargin: 20 }
             CheckBox {  text: qsTr("Correlation plots")     ; name: "plotCorrelationMatrix"       }
             CheckBox {  text: qsTr("Boxplots")              ; name: "splitPlots"; id: splitPlots  }
-            
+
             GroupBox {
                 Layout.leftMargin: 20
                 enabled: splitPlots.checked
@@ -67,13 +68,13 @@ Form {
                     rowSpacing: 3
                     columnSpacing: 1
                     columns: 3
-    
+
                     CheckBox {
                         Layout.columnSpan: 3
                         name: "percentileValuesQuartiles"
                         text: qsTr("Quartiles")
                     }
-    
+
                     CheckBox {
                         id: percentileValuesEqualGroups
                         name: "percentileValuesEqualGroups"
@@ -111,7 +112,7 @@ Form {
                 CheckBox {  text: qsTr("Mode")      ; name: "mode"                }
                 CheckBox {  text: qsTr("Sum")       ; name: "sum"                 }
             }
-            
+
             GroupBox {
                 title: qsTr("Dispersion")
                 CheckBox {  text: qsTr("Std.deviation") ; name: "standardDeviation" ; checked: true }
@@ -127,10 +128,10 @@ Form {
                 CheckBox {  text: qsTr("Kurtosis")      ; name: "kurtosis"                }
             }
         }
-        
+
         CheckBox { text: qsTr("Values are group midpoints"); name: "statisticsValuesAreGroupMidpoints"; debug: true }
     }
-    
+
     ExpanderButton {
         text: qsTr("Charts")
         debug: true
@@ -141,14 +142,14 @@ Form {
                 RadioButton {   text: qsTr("None")          ; name: "_1noCharts"    }
                 RadioButton {   text: qsTr("Bar charts")    ; name: "_2barCharts"   }
                 RadioButton {   text: qsTr("Pie Charts")    ; name: "_3pieCharts"   }
-                RadioButton {   text: qsTr("Histograms")    ; name: "_4histograms"  }                
+                RadioButton {   text: qsTr("Histograms")    ; name: "_4histograms"  }
             }
-            
+
             ButtonGroup {
                 name: "chartValues"
                 title: qsTr("Chart Values")
                 RadioButton {   text: qsTr("Frequencies")   ; name: "_1frequencies" }
-                RadioButton {   text: qsTr("Percentages")   ; name: "_2percentages" }                
+                RadioButton {   text: qsTr("Percentages")   ; name: "_2percentages" }
             }
         }
     }
