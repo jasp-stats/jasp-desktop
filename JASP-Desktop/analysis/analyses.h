@@ -39,7 +39,8 @@ class Analyses : public QAbstractListModel
 public:
 
 	enum myRoles {	formPathRole = Qt::UserRole + 1,
-					titleRole };
+					titleRole,
+					nameRole };
 
 				Analyses(QObject * parent) : QAbstractListModel(parent) {}
 

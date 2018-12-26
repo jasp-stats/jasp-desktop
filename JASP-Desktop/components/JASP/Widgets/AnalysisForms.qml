@@ -115,7 +115,7 @@ FocusScope
 						//property bool	currentSelected:	ListView.isCurrentItem
 						//property Item	listView:			ListView.view
 						property int	myIndex:			index
-						property string	analysisTitle:		title
+						property string	analysisTitle:		name
 					}
 				}
 			}

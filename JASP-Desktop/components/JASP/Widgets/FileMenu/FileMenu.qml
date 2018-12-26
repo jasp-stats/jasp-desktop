@@ -5,7 +5,7 @@ import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
 Item
-{	
+{
 	id:			fileMenu
 
 	width:		slidePart.width
@@ -18,7 +18,7 @@ Item
 	property int action_button_height:		35
 	property int resource_button_height:	1.5 * action_button_height
 	property int colWidths:					150
-  
+
 	Item
 	{
 		id:		slidePart

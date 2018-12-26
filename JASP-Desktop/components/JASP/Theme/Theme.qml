@@ -51,7 +51,7 @@ QtObject {
 	readonly property color buttonColorPressed:			gray
 
 	readonly property int minPanelWidth:		200
-	readonly property int resultWidth:			500
+	readonly property int resultWidth:			600
 	readonly property int formWidth:			600
 	readonly property int formMargin:			10	* ppiScale
 
