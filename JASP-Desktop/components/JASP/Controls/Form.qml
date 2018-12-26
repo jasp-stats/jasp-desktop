@@ -21,11 +21,11 @@ import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
 import JASP.Theme		1.0
 import JASP.Widgets		1.0
+import JASP 1.0
 
+//AnalysisForm
 Rectangle
 {
-	id:				form
-	width:			implicitWidth
 	color:			Theme.analysisBackgroundColor
 	border
 	{
@@ -33,6 +33,8 @@ Rectangle
 		width:		1
 	}
 
+	id:				form
+	width:			implicitWidth
 	implicitWidth:	Theme.formWidth
 	implicitHeight: expanderButton.height + (Theme.formMargin * 2)
 	height:			implicitHeight
@@ -51,6 +53,21 @@ Rectangle
             property int    plotWidth:          480
 
 			property bool	expanded:			currentSelected
+			property bool	currentSelected:	analysesModel.currentAnalysisIndex === myIndex
+
+
+/*	Rectangle
+	{
+		z:				-1
+		anchors.fill:	parent
+		color:			Theme.analysisBackgroundColor
+		border
+		{
+			color:		Theme.buttonBorderColor
+			width:		1
+		}
+	}*/
+
     
 	function getJASPControls(controls, item)
 	{
@@ -92,13 +109,18 @@ Rectangle
 
 		function toggleExpander()
 		{
-			if(listView.currentIndex === myIndex)
+			if(analysesModel.currentAnalysisIndex === myIndex)
+				analysesModel.currentAnalysisIndex = -1;
+			else
+				analysesModel.currentAnalysisIndex = myIndex;
+
+			/*if(listView.currentIndex === myIndex)
 				listView.currentIndex = -1
 			else
 			{
 				listView.currentIndex = myIndex
 				formContent.forceActiveFocus()
-			}
+			}*/
 		}
 
 		//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander

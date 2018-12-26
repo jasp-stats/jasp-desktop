@@ -102,6 +102,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	//showMainPage();
 
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
+	qmlRegisterType<AnalysisForm>("JASP", 1, 0, "AnalysisForm");
 
 	loadQML();
 
@@ -1190,8 +1191,6 @@ void MainWindow::populateUIfromDataSet()
 	}
 
 	hideProgress();
-	setAnalysesVisible(true); // temporarily because this should be triggered from resultsJS
-
 
 	bool errorFound = false;
 	stringstream errorMsg;

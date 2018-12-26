@@ -103,6 +103,8 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id)
 	_analysisMap[id] = analysis;
 	_orderedIds.push_back(id);
 	endInsertRows();
+
+	emit countChanged();
 }
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
@@ -140,6 +142,7 @@ void Analyses::analysisToRefreshHandler(Analysis *analysis)
 	TempFiles::deleteAll(analysis->id());
 	analysisToRefresh(analysis);
 }
+
 void Analyses::analysisSaveImageHandler(Analysis *analysis, Json::Value &options)
 {
 	analysis->setStatus(Analysis::SaveImg);
@@ -184,7 +187,7 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
 	endRemoveRows();
 
-
+	emit countChanged();
 }
 
 void Analyses::refreshAllAnalyses()
@@ -333,4 +336,13 @@ void Analyses::analysisClickedHandler(QString analysisFunction, QString module)
 	analysisAdded(analysis);
 
 	emit analysisAdded(analysis);
+}
+
+void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
+{
+	if (_currentAnalysisIndex == currentAnalysisIndex)
+		return;
+
+	_currentAnalysisIndex = currentAnalysisIndex;
+	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
 }

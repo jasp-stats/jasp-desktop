@@ -229,7 +229,7 @@ QString AnalysisForm::_getAnalysisQMLPath()
 
 void AnalysisForm::_parseQML()
 {
-	QQuickItem *root = _formItem;
+	QQuickItem *root = this;
 
 	_analysis->setUsesJaspResults(QQmlProperty(root, "usesJaspResults").read().toBool());
 

@@ -12,42 +12,57 @@ OLD.SplitView
 	id:				panelSplit
 	orientation:	Qt.Horizontal
 
-
 	Item
 	{
 		id:						dataAndAnalyses
-		Layout.fillWidth:		true
-		//Layout.minimumWidth:	!visible ? 0 : Theme.formWidth
-		visible:				true //data.visible || analyses.visible
+		Layout.fillWidth:		mainWindow.dataPanelVisible
+		Layout.minimumWidth:	analyses.width
+		Layout.maximumWidth:	mainWindow.dataPanelVisible ? panelSplit.width - Theme.minPanelWidth : analyses.width
+		visible:				mainWindow.dataPanelVisible || mainWindow.analysesVisible
 		width:					implicitWidth
 		implicitWidth:			visible ? panelSplit.width / 2 : 0
-			//analyses.visible ? (!data.visible ? Theme.formWidth :)
 
-		//color:	"green" //Theme.uiBackground*/
-		z: 1
-
-	/*	onVisibleChanged:
+		/*Connections
 		{
-			if(visible)
-				width = panelSplit.width / 2
+			target:				mainWindow
+			onDataPanelVisible:	if(mainWindow.dataPanelVisible) { dataAndAnalyses.width = panelSplit.width / 2 }
 		}*/
+
+		z: 1
 
 		DataPanel
 		{
 			id:						data
 			visible:				mainWindow.dataPanelVisible
 			anchors.fill:			parent
-			anchors.rightMargin:	analyses.extraSpaceRight
+			anchors.rightMargin:	analyses.extraSpace
 			z:						1
+		}
+
+		MouseArea
+		{
+			visible:	mainWindow.analysesVisible
+			z:	6
+			anchors
+			{
+				top:	parent.top
+				bottom:	parent.bottom
+				left:	parent.left
+				right:	analyses.left
+			}
+
+			onClicked:
+			{
+				if(mainWindow.analysesVisible)
+					mainWindow.analysesVisible = false
+				mouse.accepted = false
+			}
 		}
 
 		AnalysisForms
 		{
 			id:				analyses
-			visible:		true
 			z:				2
-			//color:			"purple"
-			width:			mainWindow.analysesVisible ? Math.min(parent.width, Theme.formWidth) : extraSpaceRight
 
 			anchors
 			{
@@ -61,6 +76,7 @@ OLD.SplitView
 
 	WebEngineView
 	{
+		z:						3
 		id:						resultsView
 		url:					resultJsInterface.resultsPageUrl
 		implicitWidth:			Theme.resultWidth

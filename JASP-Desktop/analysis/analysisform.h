@@ -51,9 +51,9 @@ class BoundQMLItem;
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT
-	Q_PROPERTY(QQuickItem * formItem READ formItem WRITE setFormItem NOTIFY formItemChanged)
 
 public:
+	explicit					AnalysisForm(QQuickItem * = nullptr) { throw std::runtime_error("Tsja, this doesnt work now does it?"); }
 	explicit					AnalysisForm(QQuickItem *parent, Analysis* analysis);
 				void			bindTo(Options *options, DataSet *dataSet);
 				void			unbind();
@@ -67,21 +67,10 @@ public:
 public slots:
 				void			runScriptRequestDone(const QString & result, int requestId);
 
-				void setFormItem(QQuickItem * formItem)
-				{
-					if (_formItem == formItem)
-						return;
-
-					_formItem = formItem;
-					emit formItemChanged(_formItem);
-				}
-
 signals:
 				void			illegalChanged(AnalysisForm * form);
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
-
-				void formItemChanged(QQuickItem * formItem);
 
 protected:
 				void			rScriptDoneHandler(QVariant key, const QString & result);
@@ -97,11 +86,6 @@ public:
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
-
-	QQuickItem * formItem() const
-	{
-		return _formItem;
-	}
 
 protected:
 	void		_setAllAvailableVariablesModel();
@@ -151,8 +135,6 @@ private:
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
 	QQuickItem								*_errorMessagesItem;
 	QList<QString>							_errorMessages;
-
-	QQuickItem * _formItem = nullptr;
 };
 
 #endif // ANALYSISFORM_H

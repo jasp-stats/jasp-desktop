@@ -81,7 +81,7 @@ public:
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
 	QString	windowTitle()			const	{ return _windowTitle;			}
-	bool analysesVisible()			const	{ return _analysesVisible;		}
+	bool	analysesVisible()		const	{ return _analysesVisible;		}
 
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);

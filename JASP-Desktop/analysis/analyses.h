@@ -29,6 +29,8 @@
 class Analyses : public QAbstractListModel
 {
 	Q_OBJECT
+	Q_PROPERTY(size_t	count					READ count													NOTIFY countChanged)
+	Q_PROPERTY(int		currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
 
 	friend class EngineSync;
 	friend class boost::iterator_core_access;
@@ -66,9 +68,10 @@ public:
 
 //AbstractListModel functions
 public:
-	int						rowCount(const QModelIndex & = QModelIndex())				const override { return int(count()); }
+	int						rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(count()); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
+	int						currentAnalysisIndex()										const			{	return _currentAnalysisIndex;	}
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -76,6 +79,8 @@ public slots:
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
 	void analysisClickedHandler(QString, QString);
+	void setCurrentAnalysisIndex(int currentAnalysisIndex);
+
 
 signals:
 	void analysisAdded(					Analysis *source);
@@ -90,6 +95,9 @@ signals:
 
 	ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis *source);
 	void				requestComputedColumnDestruction(std::string columnName);
+
+	void countChanged();
+	void currentAnalysisIndexChanged(int currentAnalysisIndex);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);
@@ -107,7 +115,8 @@ private:
 	 std::map<size_t, Analysis*>	_analysisMap;
 	 std::vector<size_t>			_orderedIds;
 
-	size_t _nextId = 0;
+	 size_t _nextId					= 0;
+	 int	_currentAnalysisIndex	= -1;
 };
 
 #endif // ANALYSES_H
