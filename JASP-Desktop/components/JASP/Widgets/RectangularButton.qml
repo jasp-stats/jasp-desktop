@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import JASP.Theme 1.0
@@ -13,6 +31,7 @@ Rectangle
 
 	property string	text:				""
 	property string	toolTip:			""
+	property string textColor:			"default"
 	property bool	enabled:			true
 	property bool	selected:			false
 	property string	iconSource:			""
@@ -70,7 +89,12 @@ Rectangle
 
 		text:		filterButtonRoot.text
 		visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-		color:		filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled
+		color:		{
+			if (textColor == "default")
+				return filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled
+			else
+				return textColor
+		}
 
 		font:	Theme.font
 		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * ppiScale, filterButtonRoot.height - 2))

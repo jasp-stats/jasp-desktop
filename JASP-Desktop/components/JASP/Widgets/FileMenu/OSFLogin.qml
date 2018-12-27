@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
 Rectangle {
-	id : osfLogin
+	id: osfLogin
 
 	property bool rememberme: fileMenuModel.osf.rememberme
 	property string username: fileMenuModel.osf.username
@@ -65,16 +65,17 @@ Rectangle {
 		anchors.top: osfLogo.bottom
 		anchors.bottomMargin: 20
 
-		text: "OSF"
-		font: Theme.fontLabel
+		text : "OSF"
 		color: Theme.black
+		font : Theme.fontLabel
 	}
 
-	Label {
+	Text {
 		id: labelExplain
 
-		width : implicitWidth
-		height: 10
+		text : qsTr("Sign in with your OSF account to continue")
+		color: Theme.grayDarker
+		font.pointSize: 9
 
 		verticalAlignment  : Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
@@ -82,10 +83,6 @@ Rectangle {
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top             : labelOSF.bottom
 		anchors.topMargin       : 20
-		anchors.bottomMargin    : 30
-
-		text : qsTr("Sign in with your OSF account to continue")
-		color: Theme.grayDarker
 	}
 
 	Rectangle {
@@ -101,7 +98,7 @@ Rectangle {
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: labelExplain.bottom
-		anchors.topMargin: 30
+		anchors.topMargin: 10
 
 		Rectangle {
 			id: usernameInput
@@ -181,9 +178,10 @@ Rectangle {
 		RectangularButton {
 			id: loginButton
 
-			height: 35
-			text  : qsTr("Sign in")
-			color : "#5cb85c"  // TODO: Move this to Theme.qml
+			height   : 35
+			text     : qsTr("Sign in")
+			color    : "#5cb85c"  // TODO: Move this to Theme.qml
+			textColor: "white"
 
 			anchors.top  : passwordInput.bottom
 			anchors.right: parent.right
@@ -199,7 +197,8 @@ Rectangle {
 		}
 
 		CheckBox {
-			id     : idRememberMe
+			id: idRememberMe
+
 			checked: rememberme
 			text   : qsTr("Remember me")
 
@@ -209,10 +208,62 @@ Rectangle {
 
 			anchors.bottomMargin: 30
 			anchors.leftMargin  : 20
-			anchors.topMargin   : 15
+			anchors.topMargin   : 10
 
 			onClicked: {
 				fileMenuModel.osf.remembermeCheckChanged(checked)
+			}
+		}
+	}
+
+	Rectangle {
+		id: linksBox
+
+		width : osfLoginBox.width
+		height: 30
+		color : "transparent"
+
+		anchors.top             : osfLoginBox.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.topMargin       : 10
+
+		Text {
+			id: linkOSF
+
+			text          :'<font color="#257bb2"><u>About the OSF</u></font>'
+			textFormat    : Text.StyledText
+			font.pointSize: 10
+
+			anchors.left      : parent.left
+			anchors.bottom    : parent.bottom
+			anchors.topMargin : 10
+			anchors.leftMargin: 20
+
+			MouseArea {
+				anchors.fill: parent
+				hoverEnabled: true
+				cursorShape : containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				onClicked   : Qt.openUrlExternally("http://help.osf.io")
+			}
+		}
+
+		Text {
+			id: linkRegister
+
+			text          :'<font color="#257bb2"><u>Register</u></font>'
+			textFormat    : Text.StyledText
+			font.pointSize: 10
+
+			anchors.bottom     : parent.bottom
+			anchors.right      : parent.right
+			anchors.topMargin  : 10
+			anchors.rightMargin: 20
+
+			MouseArea {
+				anchors.fill: parent
+				hoverEnabled: true
+				cursorShape : containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				onClicked   : Qt.openUrlExternally("https://osf.io")
 			}
 		}
 	}

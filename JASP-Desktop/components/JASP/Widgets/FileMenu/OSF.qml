@@ -233,7 +233,7 @@ Item
 			top:			secondSeparator.bottom
 			left:			parent.left
 			right:			parent.right
-			bottom:			thirdSeparator.top
+			bottom:			parent.bottom
 			leftMargin:		12  //Position datalibrary items
 			topMargin:		Theme.generalAnchorMargin
 			bottomMargin:	Theme.generalAnchorMargin
@@ -244,59 +244,10 @@ Item
 	OSFLogin {
 		id: osfLogin
 
-		visible:				!loggedin && !processing
+		visible: !loggedin && !processing
 
 		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top:			secondSeparator.bottom
-		anchors.topMargin: 75
-	}
-
-	ToolSeparator
-	{
-		id:						thirdSeparator
-
-		anchors.bottom:			linkOSF.top
-		width:					rect.width
-		orientation:			Qt.Horizontal
-		anchors.bottomMargin:	5
-	}
-
-	Text {
-		id:						linkOSF
-
-		height:					30
-		width:					implicitWidth
-		anchors.left:			parent.left
-		anchors.leftMargin:		12
-		anchors.bottom:			parent.bottom
-		textFormat:				Text.StyledText
-
-		text:'<font color="blue"><u>About the OSF</u></font>'
-		MouseArea {
-			anchors.fill:	parent
-			hoverEnabled:	true
-			cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-			onClicked:		Qt.openUrlExternally("http://help.osf.io")
-		}
-	}
-
-	Text {
-		id:			linkRegister
-
-		height:		30
-		width: implicitWidth
-		anchors.left: linkOSF.right
-		anchors.leftMargin: 12
-		anchors.bottom: parent.bottom
-		textFormat: Text.StyledText
-
-		text:'<font color="blue"><u>Register</u></font>'
-
-		MouseArea {
-			anchors.fill: parent
-			hoverEnabled: true
-			cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-			onClicked: Qt.openUrlExternally("https://osf.io")
-		}
+		anchors.top             : secondSeparator.bottom
+		anchors.topMargin       : 75
 	}
 }
