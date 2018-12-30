@@ -15,6 +15,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
@@ -37,20 +38,20 @@ Form {
             singleItem: true
             allowedColumns: ["scale"]
         }
-        
+
         AssignedVariablesList {
             name: "fixedFactors"
             title: qsTr("Fixed Factors")
             allowedColumns: ["ordinal", "nominal"]
         }
-        
+
         AssignedVariablesList {
             name: "randomFactors"
             title: qsTr("Random Factors")
             allowedColumns: ["ordinal", "nominal"]
             debug: true
         }
-        
+
         AssignedVariablesList {
             name: "wlsWeights"
             title: qsTr("WLS Weights")
@@ -76,11 +77,11 @@ Form {
                 listViewType: "AssignedAnova"
             }
         }
-        
+
         ComboBox { name: "sumOfSquares"
             currentIndex: 2
             label.text: qsTr("Sum of squares")
-            model: ListModel {    
+            model: ListModel {
                 ListElement { key: "Type \u2160"; value: "type1"}
                 ListElement { key: "Type \u2161"; value: "type2"}
                 ListElement { key: "Type \u2162"; value: "type3"}
@@ -99,28 +100,28 @@ Form {
             enabled: homogeneityCorrections.checked
             CheckBox { text: qsTr("None")           ; name: "homogeneityNone" ; checked: true }
             CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
-            CheckBox { text: qsTr("Welch")          ; name: "homogeneityWelch" ; checked: true }            
+            CheckBox { text: qsTr("Welch")          ; name: "homogeneityWelch" ; checked: true }
         }
         CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
     }
-    
+
     ExpanderButton {
         text: qsTr("Contrasts")
-   
+
         ContrastsList {
             syncModels: ["fixedFactors", "randomFactors"]
         }
-        
+
         CheckBox { text: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance" ; checked: true }
         RowLayout {
             CheckBox { text: qsTr("Confidence intervals") ; name: "confidenceIntervalsContrast"; id: confidenceIntervalsContrast }
-            PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95; enabled: confidenceIntervalsContrast.checked }            
+            PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95; enabled: confidenceIntervalsContrast.checked }
         }
     }
 
     ExpanderButton {
         text: qsTr("Post Hoc Tests")
-        
+
         VariablesForm {
             height: 200
             availableVariablesList {
@@ -131,15 +132,15 @@ Form {
                 name: "postHocTestsVariables"
             }
         }
-        
+
         GridLayout {
             CheckBox { text: qsTr("Effect Size")            ; name: "postHocTestEffectSize"}
-            
+
             RowLayout {
                 CheckBox { text: qsTr("Confidence intervals")   ; name: "confidenceIntervalsPostHoc"; id: confidenceIntervalsPostHoc }
                 PercentField { name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95; enabled: confidenceIntervalsPostHoc.checked }
             }
-            
+
             GroupBox {
                 title: qsTr("Correction")
                 CheckBox { text: qsTr("Tukey")          ; name: "postHocTestsTukey"     ; checked: true }
@@ -147,7 +148,7 @@ Form {
                 CheckBox { text: qsTr("Bonferroni")     ; name: "postHocTestsBonferroni"                }
                 CheckBox { text: qsTr("Holm")           ; name: "postHocTestsHolm"                      }
             }
-            
+
             GroupBox {
                 title: qsTr("Type")
                 CheckBox { text: qsTr("Standard")       ; name: "postHocTestsTypeStandard" ; checked: true }
@@ -168,11 +169,11 @@ Form {
             AssignedVariablesList {         title: qsTr("Separate lines")   ; name: "plotSeparateLines"     ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Separate plots")   ; name: "plotSeparatePlots"     ; singleItem: true }
         }
-        
+
         GroupBox {
             title: qsTr("Display")
             CheckBox { text: qsTr("Display error bars"); name: "plotErrorBars" }
-            
+
            ButtonGroup {
                name: "errorBarType"
                RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
@@ -185,16 +186,16 @@ Form {
     ExpanderButton {
         text: qsTr("Additional Options")
         Label { text: qsTr("Marginal means") }
-            
+
         VariablesForm {
             height: 200
             availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "modelTerms"; showVariableTypeIcon: false }
             defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
         }
-        
+
         CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-        ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment"; 
-            label.text: qsTr("Confidence interval adjustment"); 
+        ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment";
+            label.text: qsTr("Confidence interval adjustment");
             model: ListModel {
                 ListElement {key: "None"; value: "none"}
                 ListElement {key: "Bonferro"; value: "bonferroni"}
@@ -202,7 +203,7 @@ Form {
             }
             enabled: marginalMeansCompareMainEffects.checked
         }
-        
+
         GroupBox {
             title: qsTr("Display")
             CheckBox { text: qsTr("Descriptive statistics")     ; name: "descriptives" }
@@ -214,13 +215,13 @@ Form {
                 CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
                 CheckBox { text: qsTr("ω²")         ; name: "effectSizeOmegaSquared" }
             }
-            CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }            
+            CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
         }
     }
 
     ExpanderButton {
         text: qsTr("Simple Main Effects")
-        
+
         VariablesForm {
             height: 170
             availableVariablesList {        title: qsTr("Factors")              ; name: "effectsVariables"      ; syncModels:  ["fixedFactors", "randomFactors"] }
@@ -232,12 +233,12 @@ Form {
 
     ExpanderButton {
         text: qsTr("Nonparametrics")
-        
+
         VariablesForm {
             height: 200
             availableVariablesList {        title: qsTr("Kruskal-Wallis test")  ; name: "kruskalVariablesAvailable";  syncModels:  ["fixedFactors", "randomFactors"] }
             defaultAssignedVariablesList {  name: "kruskalVariablesAssigned" }
-        }        
+        }
     }
 
 }

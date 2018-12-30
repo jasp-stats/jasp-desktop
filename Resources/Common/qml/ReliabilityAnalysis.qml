@@ -15,17 +15,18 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 
 Form {
     id: form
-    
+
     VariablesForm {
         defaultAssignedVariablesList {
             title: qsTr("Variables")
-            allowedColumns: ["ordinal", "nominal"]            
+            allowedColumns: ["ordinal", "nominal"]
         }
     }
 
@@ -41,7 +42,7 @@ Form {
                 RadioButton {   text: qsTr("Unstandardized")            ; name: "_1unstandardized"; checked: true   }
                 RadioButton {   text: qsTr("Standardized")              ; name: "_2standardized"                    }
             }
-            CheckBox {  text: qsTr("Gutmann's λ6")                      ; name: "gutmannScale"    }            
+            CheckBox {  text: qsTr("Gutmann's λ6")                      ; name: "gutmannScale"    }
             CheckBox {  text: qsTr("Greatest lower bound")              ; name: "glbScale"        }
             CheckBox {  text: qsTr("Average interitem correlation")     ; name: "averageInterItemCor"}
             CheckBox {  text: qsTr("Mean")                              ; name: "meanScale"       }
@@ -85,13 +86,13 @@ Form {
                 name: "missingValues"
                 RadioButton { text: qsTr("Exclude cases listwise")    ; name: "excludeCasesListwise"    ; checked: true }
                 RadioButton { text: qsTr("Exclude cases pairwise")    ; name: "excludeCasesPairwise" }
-            }            
-            
+            }
+
             GroupBox {
                 title: qsTr("Confidence Interval")
-                CheckBox {id: confAlpha; text: qsTr("Cronbach's α analytical")  ; name: "confAlpha" }    
+                CheckBox {id: confAlpha; text: qsTr("Cronbach's α analytical")  ; name: "confAlpha" }
                 PercentField {Layout.leftMargin: 25; name: "confAlphaLevel"; defaultValue: 95; label.text: qsTr("Confidence"); with1Decimal: true; enabled: confAlpha.checked }
-            }            
+            }
         }
 
     }

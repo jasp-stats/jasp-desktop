@@ -16,7 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
@@ -27,8 +26,8 @@ Form {
     id: form
 
     plotHeight: 340
-    plotWidth:  420    
-    
+    plotWidth:  420
+
     VariablesForm {
         height: 200
         defaultAssignedVariablesList {

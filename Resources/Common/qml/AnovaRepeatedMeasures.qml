@@ -15,6 +15,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
@@ -75,7 +76,7 @@ Form {
                 listViewType: "AssignedAnova"
             }
         }
-        
+
         VariablesForm {
             height: 150
             availableVariablesList {
@@ -112,7 +113,7 @@ Form {
             enabled: sphericityCorrections.checked
             CheckBox { text: qsTr("None")               ; name: "sphericityNone"                ; checked: true}
             CheckBox { text: qsTr("Greenhouse-Geisser") ; name: "sphericityGreenhouseGeisser"   ; checked: true}
-            CheckBox { text: qsTr("Huynth-Feidt")       ; name: "sphericityHuynhFeldt"          ; checked: true}            
+            CheckBox { text: qsTr("Huynth-Feidt")       ; name: "sphericityHuynhFeldt"          ; checked: true}
         }
         CheckBox { text: qsTr("Homogeneity Tests")      ; name: "homogeneityTests"}
     }
@@ -121,7 +122,7 @@ Form {
         text: qsTr("Contrasts")
 
         ContrastsList {
-            syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"]            
+            syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"]
         }
     }
 
@@ -167,7 +168,7 @@ Form {
         TextField { label.text: qsTr("Label y-axis") ; name: "labelYAxis"}
         GroupBox {
             title: qsTr("Display")
-            
+
             RowLayout {
                 CheckBox { text: qsTr("Display error bars"); name: "plotErrorBars" }
                 CheckBox { text: qsTr("Pool SE across RM factors"); name: "usePooledStandErrorCI" }
@@ -193,7 +194,7 @@ Form {
                 availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "withinModelTerms"; showVariableTypeIcon: false }
                 defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
             }
-    
+
             CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
             ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment";
                 label.text: qsTr("Confidence interval adjustment");
@@ -231,7 +232,7 @@ Form {
             AssignedVariablesList {         title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"    ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Moderator factor 2")   ; name: "moderatorFactorTwo"    ; singleItem: true }
         }
-        
+
         CheckBox { text: qsTr("Pool error terms"); name: "poolErrorTermSimpleEffects"}
     }
 
