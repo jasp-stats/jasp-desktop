@@ -48,32 +48,11 @@
 #include "dirs.h"
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "mainwindow.h"
 
 using namespace std;
 
 int AnalysisForm::_scriptRequestCounter = 0;
-
-QString AnalysisForm::iconPath = "qrc:/icons/";
-QMap<QString, QVariant> AnalysisForm::iconFiles {
-	{ "nominalText"	, iconPath + "variable-nominal-text.svg" },
-	{ "nominal"		, iconPath + "variable-nominal.svg"},
-	{ "ordinal"		, iconPath + "variable-ordinal.svg"},
-	{ "scale"		, iconPath + "variable-scale.svg"}
-};
-
-QMap<QString, QVariant> AnalysisForm::iconInactiveFiles {
-	{ "nominalText"	, iconPath + "variable-nominal-inactive.svg" },
-	{ "nominal"		, iconPath + "variable-nominal-inactive.svg"},
-	{ "ordinal"		, iconPath + "variable-ordinal-inactive.svg"},
-	{ "scale"		, iconPath + "variable-scale-inactive.svg"}
-};
-
-QMap<int, QString> AnalysisForm::columnTypeMap {
-	{ Column::ColumnTypeNominalText	, "nominalText" },
-	{ Column::ColumnTypeNominal		, "nominal"},
-	{ Column::ColumnTypeOrdinal		, "ordinal"},
-	{ Column::ColumnTypeScale		, "scale"}
-};
 
 AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _analysis(analysis), _errorMessagesItem(nullptr)
 {
@@ -89,12 +68,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(
 //	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisForm::statusChangedWidgetHandler);
 //	connect(_quickWidget,	&QQuickWidget::sceneGraphError,	this,	&AnalysisForm::sceneGraphErrorHandler);
 	connect(&_QMLwatcher,	&QFileSystemWatcher::fileChanged, this, &AnalysisForm::QMLFileModifiedHandler);
-
-	bool debug = false;
-#ifdef JASP_DEBUG
-	debug = true;
-#endif
-
+	
 	QString pathToQMLFile = _getAnalysisQMLPath();
 
 	if (!pathToQMLFile.isEmpty())
@@ -128,7 +102,7 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 		}
 		else if (info == VariableInfo::VariableTypeName)
 		{
-			return columnTypeMap[_dataSet->column(term.asString()).columnType()];
+			return MainWindow::columnTypeMap[_dataSet->column(term.asString()).columnType()];
 		}
 		else if (info == VariableInfo::Labels)
 		{

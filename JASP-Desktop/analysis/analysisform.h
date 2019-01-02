@@ -63,12 +63,7 @@ public:
 				void			illegalValueHandler(Bound *source);
 
 				void			runRScript(QString script, QVariant key = QVariant());
-				
-	static		QString					iconPath;
-	static		QMap<QString, QVariant>	iconFiles;
-	static		QMap<QString, QVariant>	iconInactiveFiles;
-	static		QMap<int, QString>		columnTypeMap;
-	
+					
 public slots:
 				void			runScriptRequestDone(const QString & result, int requestId);
 
@@ -90,13 +85,7 @@ public:
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
-	DataSet*	getDataSet()							{ return _dataSet; }
-	
-	static		QString					iconPath;
-	static		QMap<QString, QVariant>	iconFiles;
-	static		QMap<QString, QVariant>	iconInactiveFiles;
-	static		QMap<int, QString>		columnTypeMap;
-	
+	DataSet*	getDataSet()							{ return _dataSet; }	
 
 protected:
 	void		_setAllAvailableVariablesModel();

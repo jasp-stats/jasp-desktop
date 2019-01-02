@@ -18,7 +18,7 @@
 
 #include "boundqmllistviewlayers.h"
 #include "listmodellayersassigned.h"
-#include "analysis/analysisqmlform.h"
+#include "analysis/analysisform.h"
 #include "utilities/qutils.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
@@ -28,7 +28,7 @@
 using namespace std;
 
 
-BoundQMLListViewLayers::BoundQMLListViewLayers(QQuickItem* item, AnalysisQMLForm* form) 
+BoundQMLListViewLayers::BoundQMLListViewLayers(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {

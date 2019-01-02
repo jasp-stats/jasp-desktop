@@ -90,7 +90,6 @@ Rectangle
 			}
 			else
                 getJASPControls(controls, child);
-            }
         }            
     }        
      

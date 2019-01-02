@@ -60,6 +60,29 @@
 
 using namespace std;
 
+QString MainWindow::iconPath = "qrc:/icons/";
+QMap<QString, QVariant> MainWindow::iconFiles {
+	{ "nominalText"	, iconPath + "variable-nominal-text.svg" },
+	{ "nominal"		, iconPath + "variable-nominal.svg"},
+	{ "ordinal"		, iconPath + "variable-ordinal.svg"},
+	{ "scale"		, iconPath + "variable-scale.svg"}
+};
+
+QMap<QString, QVariant> MainWindow::iconInactiveFiles {
+	{ "nominalText"	, iconPath + "variable-nominal-inactive.svg" },
+	{ "nominal"		, iconPath + "variable-nominal-inactive.svg"},
+	{ "ordinal"		, iconPath + "variable-ordinal-inactive.svg"},
+	{ "scale"		, iconPath + "variable-scale-inactive.svg"}
+};
+
+QMap<int, QString> MainWindow::columnTypeMap {
+	{ Column::ColumnTypeNominalText	, "nominalText" },
+	{ Column::ColumnTypeNominal		, "nominal"},
+	{ Column::ColumnTypeOrdinal		, "ordinal"},
+	{ Column::ColumnTypeScale		, "scale"}
+};
+
+
 MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
 {
 	JASPTIMER_START(MainWindowConstructor);
@@ -308,6 +331,15 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
+	
+	bool debug = false;
+#ifdef JASP_DEBUG
+	debug = true;
+#endif
+	_qml->rootContext()->setContextProperty("DEBUG_MODE", debug);
+	_qml->rootContext()->setContextProperty("iconPath", iconPath);
+	_qml->rootContext()->setContextProperty("iconFiles", iconFiles);
+	_qml->rootContext()->setContextProperty("iconInactiveFiles", iconInactiveFiles);
 
 	_qml->addImportPath("qrc:///components");
 

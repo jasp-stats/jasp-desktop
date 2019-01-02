@@ -28,7 +28,7 @@ class BoundQMLListViewLayers : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewLayers(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewLayers(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() OVERRIDE	{ return _layersModel; }
 	virtual Option* boundTo() OVERRIDE	{ return _boundTo; }
