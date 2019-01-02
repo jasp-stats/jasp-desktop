@@ -89,7 +89,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
-	_resultsJsInterface		= new ResultsJsInterface(this);
+	_resultsJsInterface		= new ResultsJsInterface();
 	_package				= new DataSetPackage();
 	_odm					= new OnlineDataManager(this);
 	_tableModel				= new DataSetTableModel();
@@ -124,8 +124,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	// Set the initial tab on Common.
 	//showMainPage();
 
-	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
-	qmlRegisterType<AnalysisForm>("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<DataSetView>		("JASP", 1, 0, "DataSetView");
+	qmlRegisterType<AnalysisForm>		("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<ResultsJsInterface>	("JASP", 1, 0, "ResultsJsInterface");
 
 	loadQML();
 
@@ -134,6 +135,17 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
 
 	JASPTIMER_FINISH(MainWindowConstructor);
+}
+
+MainWindow::~MainWindow()
+{
+	delete _resultsJsInterface;
+	delete _engineSync;
+	if (_package && _package->dataSet())
+	{
+		_loader.free(_package->dataSet());
+		_package->reset();
+	}
 }
 
 void MainWindow::StartOnlineDataManager()
@@ -319,7 +331,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
-	_qml->rootContext()->setContextProperty("resultJsInterface",		_resultsJsInterface);
+	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
@@ -428,16 +440,6 @@ void MainWindow::open(QString filepath)
 	_openedUsingArgs = true;
 	if (_resultsViewLoaded)	_fileMenu->open(filepath);
 	else					_openOnLoadFilename = filepath;
-}
-
-MainWindow::~MainWindow()
-{
-	delete _engineSync;
-	if (_package && _package->dataSet())
-	{
-		_loader.free(_package->dataSet());
-		_package->reset();
-	}
 }
 
 /*
@@ -860,6 +862,11 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 
 void MainWindow::showForm(Analysis *analysis)
 {
+
+
+	_analyses->selectAnalysis(analysis);
+	setAnalysesVisible(true);
+
 	std::cout << "MainWindow::showForm(Analysis *analysis) is being called but it aint doin' much..." << std::endl;
 	//closeCurrentOptionsWidget();
 	//_currentOptionsWidget =

@@ -31,7 +31,6 @@
 class ResultsJsInterface : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QQmlWebChannel *	channel			READ channel		WRITE setChannel		NOTIFY channelChanged			)
 	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
 	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged)
 
@@ -56,27 +55,41 @@ public:
 	Json::Value &getResultsMeta();
 	QVariant	&getAllUserData();
 
-	QQmlWebChannel*	channel()			const { return _channel;		}
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webViewZoom;	}
+
+//Callable from javascript through resultsJsInterfaceInterface...
+signals:
+	Q_INVOKABLE void openFileTab();
+	Q_INVOKABLE void saveTextToFile(const QString &filename, const QString &data);
+	Q_INVOKABLE void analysisUnselected();
+	Q_INVOKABLE void analysisChangedDownstream(int id, QString options);
+	Q_INVOKABLE void analysisSaveImage(int id, QString options);
+	Q_INVOKABLE void analysisEditImage(int id, QString options);
+	Q_INVOKABLE void analysisSelected(int id);
+	Q_INVOKABLE void removeAnalysisRequest(int id);
+
+public slots:
+	void resultsDocumentChanged()				{ emit packageModified(); }
+	void updateUserData(int id, QString key)	{ emit packageModified(); }
+	void showAnalysesMenu(QString options);
+	void simulatedMouseClick(int x, int y, int count);
+	void saveTempImage(int id, QString path, QByteArray data);
+	void pushImageToClipboard(const QByteArray &base64, const QString &html);
+	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
+	void displayMessageFromResults(QString path);
+	void getImageInBase64(int id, const QString &path);
+//end callables
+
 
 signals:
 	void		getResultsMetaCompleted();
 	void		getAllUserDataCompleted();
-	void		channelChanged(QQmlWebChannel * channel);
 	void		resultsPageUrlChanged(QUrl resultsPageUrl);
 	void		runJavaScript(QString js);
 	QVariant	runJavaScriptCallback(QString js);
 	void		zoomChanged(double zoom);
 	void		packageModified();
-	void		analysisUnselected();
-	void		analysisChangedDownstream(int id, QString options);
-	void		saveTextToFile(const QString &filename, const QString &data);
-	void		analysisSaveImage(int id, QString options);
-	void		analysisEditImage(int id, QString options);
-	void		removeAnalysisRequest(int id);
-	void		analysisSelected(int id);
-	void		openFileTab();
 	void		resultsPageLoadedPpi(bool succes, int ppi);
 	void		ppiChanged(int ppi);
 
@@ -84,18 +97,8 @@ public slots:
 	void setExactPValuesHandler(bool exact);
 	void setFixDecimalsHandler(QString numDecimals);
 	void analysisImageEditedHandler(Analysis *analysis);
-	void showAnalysesMenu(QString options);
-	void simulatedMouseClick(int x, int y, int count);
-	void saveTempImage(int id, QString path, QByteArray data);
-	void resultsDocumentChanged()				{ emit packageModified(); }
-	void updateUserData(int id, QString key)	{ emit packageModified(); }
-	void pushImageToClipboard(const QByteArray &base64, const QString &html);
-	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
-	void displayMessageFromResults(QString path);
 	void exportSelected(const QString &filename);
-	void getImageInBase64(int id, const QString &path);
 	void getDefaultPPI();
-	void setChannel(QQmlWebChannel * channel);
 	void setResultsPageUrl(QString resultsPageUrl);
 
 private:
@@ -124,7 +127,6 @@ private slots:
 	void noteSelected();
 
 private:
-	QQmlWebChannel	*_channel = nullptr;
 	double			_webViewZoom;
 	Json::Value		_resultsMeta;
 	QVariant		_allUserData;

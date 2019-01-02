@@ -192,13 +192,14 @@ Rectangle
 				sourceSize.height:	height * 2
 				anchors
 				{
-					right:			closeButton.left
+					right:			parent.right //closeButton.left
 					rightMargin:	6
 					verticalCenter:	parent.verticalCenter
 				}
 			}
 
-			Image
+			//Having a close button on a title that already closes it is rather pointless isn't it?
+			/*Image
 			{
 				id:					closeButton
 				height:				label.contentHeight
@@ -214,7 +215,7 @@ Rectangle
 					rightMargin:	6
 					verticalCenter:	parent.verticalCenter
 				}
-			}
+			}*/
 		}
 
 		FocusScope

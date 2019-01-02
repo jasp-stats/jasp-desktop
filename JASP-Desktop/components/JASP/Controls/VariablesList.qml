@@ -186,14 +186,14 @@ JASPControl
             }
         }
         
-        GridView {
+		GridView {
             id: listView
             ScrollBar.vertical: ScrollBar {
-                policy: ScrollBar.AlwaysOff
+				policy: ScrollBar.AlwaysOn
 
             }
-            cellHeight: 20
-            cellWidth: width / variablesList.columns
+			cellHeight: 20
+			cellWidth: width / variablesList.columns
             clip: true
             focus: true
             anchors.fill: parent

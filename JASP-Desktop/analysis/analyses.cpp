@@ -348,3 +348,13 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 	_currentAnalysisIndex = currentAnalysisIndex;
 	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
 }
+
+void Analyses::selectAnalysis(Analysis * analysis)
+{
+	for(size_t index=0; index<_orderedIds.size(); index++)
+		if(_analysisMap[_orderedIds[index]] == analysis)
+		{
+			setCurrentAnalysisIndex(int(index));
+			return;
+		}
+}

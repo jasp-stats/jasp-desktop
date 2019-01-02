@@ -35,7 +35,7 @@
 
 ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
-	setChannel(new QQmlWebChannel(this));
+	//setChannel(new QQmlWebChannel(this));
 	//_analysisMenu = new QMenu(_mainWindow);
 	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
 
@@ -589,20 +589,6 @@ void ResultsJsInterface::cbSetAllUserData(const QVariant &vAllUserData)
 	_allUserData = vAllUserData;
 	emit getAllUserDataCompleted();
 }
-
-void ResultsJsInterface::setChannel(QQmlWebChannel * channel)
-{
-	if (_channel == channel)
-		return;
-
-	_channel = channel;
-
-	if(_channel != nullptr)
-		_channel->registerObject(QStringLiteral("jasp"), this);
-
-	emit channelChanged(_channel);
-}
-
 
 void ResultsJsInterface::setResultsPageUrl(QString resultsPageUrl)
 {

@@ -67,6 +67,8 @@ public:
 
 	Json::Value asJson() const;
 
+	void		selectAnalysis(Analysis * analysis);
+
 //AbstractListModel functions
 public:
 	int						rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(count()); }
