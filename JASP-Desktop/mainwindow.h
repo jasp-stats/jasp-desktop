@@ -282,7 +282,7 @@ private:
 									_excludeKey				= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
-									_dataPanelVisible		= true,
+									_dataPanelVisible		= false,
 									_analysesVisible		= false;
 
 

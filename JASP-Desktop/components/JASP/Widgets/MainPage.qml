@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtWebEngine 1.7
 import QtWebChannel 1.0
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.12
 import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
@@ -15,12 +15,32 @@ OLD.SplitView
 	Item
 	{
 		id:						dataAndAnalyses
-		Layout.fillWidth:		mainWindow.dataPanelVisible
+		//Layout.fillWidth:		mainWindow.dataPanelVisible
 		Layout.minimumWidth:	analyses.width
-		Layout.maximumWidth:	mainWindow.dataPanelVisible ? panelSplit.width - Theme.minPanelWidth : analyses.width
-		visible:				mainWindow.dataPanelVisible || mainWindow.analysesVisible
-		width:					implicitWidth
-		implicitWidth:			visible ? panelSplit.width / 2 : 0
+		Layout.maximumWidth:	maxWidth
+		visible:				mainWindow.dataPanelVisible || analyses.visible
+		//width:
+		//implicitWidth:			//mainWindow.dataPanelVisible ?
+			//						panelSplit.width / 2 //: analyses.width
+
+		property real maxWidth: panelSplit.width - Theme.minPanelWidth
+
+		onVisibleChanged:
+		{
+			if(visible)
+			{
+				if(mainWindow.dataPanelVisible) //allowed to be bigger than analyses.width
+				{
+					width = panelSplit.width / 2
+					maxWidth = Qt.binding(function(){ return panelSplit.width - Theme.minPanelWidth } )
+				}
+				else // only analyses (like for summary stats)
+				{
+					width = analyses.width
+					maxWidth = Qt.binding(function(){ return analyses.width })
+				}
+			}
+		}
 
 		/*Connections
 		{
@@ -65,6 +85,7 @@ OLD.SplitView
 		{
 			id:				analyses
 			z:				2
+			visible:		analysesModel.count > 0
 
 			anchors
 			{
@@ -74,9 +95,6 @@ OLD.SplitView
 			}
 		}
 	}
-
-
-
 
 	WebEngineView
 	{

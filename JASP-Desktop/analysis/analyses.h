@@ -29,8 +29,8 @@
 class Analyses : public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(size_t	count					READ count													NOTIFY countChanged)
-	Q_PROPERTY(int		currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
+	Q_PROPERTY(int	count					READ count													NOTIFY countChanged)
+	Q_PROPERTY(int	currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
 
 	friend class EngineSync;
 	friend class boost::iterator_core_access;
@@ -63,7 +63,7 @@ public:
 	///Applies function to all analyses.
 	void		applyToAll(std::function<void(Analysis *analysis)> applyThis);
 
-	size_t		count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
+	int			count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
 
 	Json::Value asJson() const;
 
