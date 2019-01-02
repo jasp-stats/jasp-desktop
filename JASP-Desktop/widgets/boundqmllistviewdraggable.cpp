@@ -38,6 +38,7 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 	_hasExtraControlColumns = QQmlProperty(_item, "hasExtraControlColumns").read().toBool();
 	if (_hasExtraControlColumns)
 	{
+		_extraControlVariableName = QQmlProperty(_item, "extraControlVariableName").read().toString().toStdString();
 		QList<QVariant> extraColumns = QQmlProperty(_item, "controlColumns").read().toList();
 		for (const QVariant& extraColumnVariant : extraColumns)
 		{
@@ -77,7 +78,7 @@ void BoundQMLListViewDraggable::setUp()
 	{
 		// The extra controls are handled completly outside the model
 		// The QML VariableList adds automatically the controls dynamically
-		// This class had to build the right Bound objects and associate them with each control
+		// This class has to build the right Bound objects and associate them with each control
 		// The concrete classes (BoundQMLListViewAnovaModels and BoundQMLListViewTerms) will have to bind the options with the bound objects.
 		QQuickItem::connect(_item, SIGNAL(removeRowWithControls(int, QString)), this, SLOT(removeRowWithControlsHandler(int, QString)));
 		QQuickItem::connect(_item, SIGNAL(addRowWithControls(int, QString, QVariant)), this, SLOT(addRowWithControlsHandler(int, QString, QVariant)));	
@@ -121,7 +122,7 @@ void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 		it.next();
 		const QMap<QString, QString>& properties = it.value();
 		QString type = properties["type"];
-		Option* option = NULL;
+		Option* option = nullptr;
 		if (type == "CheckBox")
 			option = new OptionBoolean();
 		else if (type == "ComboBox")
@@ -138,7 +139,6 @@ void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 
 void BoundQMLListViewDraggable::removeRowWithControlsHandler(int index, QString name)
 {	
-	qDebug() << "Remove index " << index << ", name " << name;
 	if (_rowsWithControls.contains(name))
 	{
 		_cachedRows.insert(name, qMakePair(index, _rowsWithControls[name]));
@@ -151,7 +151,6 @@ void BoundQMLListViewDraggable::removeRowWithControlsHandler(int index, QString 
 
 void BoundQMLListViewDraggable::addRowWithControlsHandler(int index, QString name, QVariant controls)
 {
-	qDebug() << "Add index " << index << ", name " << name;
 	QList<QVariant> controlList = controls.toList();
 	QMap<QString, QQuickItem*> controlItems;
 	
@@ -179,7 +178,6 @@ void BoundQMLListViewDraggable::addRowWithControlsHandler(int index, QString nam
 	
 void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
 {
-	qDebug() << "Map rows with Bound Items";
 	QMap<int, QPair<QString, QMap<QString, QQuickItem*> > > rowsNotFound;
 	
 	// First find the rows in the cache with the same name
@@ -247,7 +245,7 @@ void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
 				continue;
 			}
 			
-			BoundQMLItem* boundQMLItem = NULL;
+			BoundQMLItem* boundQMLItem = nullptr;
 			qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
 	
 			switch(controlType)
@@ -266,7 +264,6 @@ void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
 				boundItemRow[boundQMLItem->name()] = boundQMLItem;
 			}
 		}
-		qDebug() << "A new row has been added " << name;
 		_rowsWithControls[name] = boundItemRow;
 	}
 }

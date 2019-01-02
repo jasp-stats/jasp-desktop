@@ -63,7 +63,7 @@ public:
 				void			illegalValueHandler(Bound *source);
 
 				void			runRScript(QString script, QVariant key = QVariant());
-	
+					
 public slots:
 				void			runScriptRequestDone(const QString & result, int requestId);
 
@@ -85,7 +85,7 @@ public:
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
-	DataSet*	getDataSet()							{ return _dataSet; }
+	DataSet*	getDataSet()							{ return _dataSet; }	
 
 protected:
 	void		_setAllAvailableVariablesModel();
@@ -104,9 +104,8 @@ private slots:
 protected:
 	Analysis								*_analysis;
 	QMap<QString, QMLItem* >				_controls;
-	QVector<BoundQMLItem*>					_boundItemsOrdered;
+	QVector<QMLItem*>						_orderedControls;	
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
-	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
 	std::map<QString, ListModel* >			_modelMap;
 
 

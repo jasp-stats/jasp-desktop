@@ -82,6 +82,11 @@ public:
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
 	QString	windowTitle()			const	{ return _windowTitle;			}
 	bool	analysesVisible()		const	{ return _analysesVisible;		}
+	
+	static QString					iconPath;
+	static QMap<QString, QVariant>	iconFiles;
+	static QMap<QString, QVariant>	iconInactiveFiles;
+	static QMap<int, QString>		columnTypeMap;	
 
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);

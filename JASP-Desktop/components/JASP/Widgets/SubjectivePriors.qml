@@ -39,7 +39,7 @@ ExpanderButton {
                 name: "defaultStandardizedEffectSize"
                 Row {
                     RadioButton {text: qsTr("Cauchy"); name: "cauchy"; checked: true}
-                    TextField {label.text: qsTr("scale"); name: "priorWidth"; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
+                    DoubleField { text: qsTr("scale"); name: "priorWidth"; defaultValue: 0.707; fieldWidth: 50; doubleValidator { top: 2 }}
                 }
             }
 
@@ -51,21 +51,21 @@ ExpanderButton {
                 Row {
                     spacing: 10
                     RadioButton { text: qsTr("Cauchy")  ; name: "cauchy"; checked: true; id: cauchyInformative}
-                    TextField { label.text: qsTr("location:"); name: "informativeCauchyLocation"; visible: cauchyInformative.checked; inputType: "number"; text: "0"; validator: DoubleValidator {bottom: -3; top: -3}}
-                    TextField { label.text: qsTr("scale:"); name: "informativeCauchyScale"; visible: cauchyInformative.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
+                    DoubleField { text: qsTr("location:"); name: "informativeCauchyLocation"; visible: cauchyInformative.checked; defaultValue: 0; doubleValidator {bottom: -3; top: -3}}
+                    DoubleField { text: qsTr("scale:"); name: "informativeCauchyScale"; visible: cauchyInformative.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {top: 2}}
                 }
                 Row {
                     spacing: 10
                     RadioButton { text: qsTr("Normal")  ; name: "normal"; id: normalInformative}
-                    TextField { label.text: qsTr("mean:"); name: "informativeNormalMean"; visible: normalInformative.checked; inputType: "number"; text: "0"; validator: DoubleValidator {bottom: -3; top: -3}}
-                    TextField { label.text: qsTr("std:"); name: "informativeNormalStd"; visible: normalInformative.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
+                    DoubleField { text: qsTr("mean:"); name: "informativeNormalMean"; visible: normalInformative.checked; defaultValue: 0; doubleValidator {bottom: -3; top: -3}}
+                    DoubleField { text: qsTr("std:"); name: "informativeNormalStd"; visible: normalInformative.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {top: 2}}
                 }
                 Row {
                     spacing: 10
                     RadioButton { text: qsTr("t")       ; name: "t"; id: tInformative}
-                    TextField { label.text: qsTr("location:"); name: "informativeTLocation"; visible: tInformative.checked; inputType: "number"; text: "0"; validator: DoubleValidator {bottom: -3; top: -3}}
-                    TextField { label.text: qsTr("scale:"); name: "informativeTScale"; visible: tInformative.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0.001; top: 2}}
-                    TextField { label.text: qsTr("df:"); name: "informativeTDf"; visible: tInformative.checked; inputType: "number"; text: "1"; validator: DoubleValidator {bottom: 1; top: 100}}
+                    DoubleField { text: qsTr("location:"); name: "informativeTLocation"; visible: tInformative.checked; defaultValue: 0; doubleValidator {bottom: -3; top: -3}}
+                    DoubleField { text: qsTr("scale:"); name: "informativeTScale"; visible: tInformative.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {bottom: 0.001; top: 2}}
+                    DoubleField { text: qsTr("df:"); name: "informativeTDf"; visible: tInformative.checked; inputType: "number"; value: "1"; doubleValidator {bottom: 1; top: 100}}
                 }
             }
         }
@@ -79,19 +79,19 @@ ExpanderButton {
             Row {
                 spacing: 10
                 RadioButton { text: qsTr("Uniform"); name: "uniform"; checked: true; id: uniformDienes}
-                TextField { label.text: qsTr("lower bound:"); name: "uniformDienesLowerBound"; visible: uniformDienes.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
-                TextField { label.text: qsTr("upper bound:"); name: "uniformDienesUpperBound"; visible: uniformDienes.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
+                DoubleField { text: qsTr("lower bound:"); name: "uniformDienesLowerBound"; visible: uniformDienes.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {bottom: 0; top: 2}}
+                DoubleField { text: qsTr("upper bound:"); name: "uniformDienesUpperBound"; visible: uniformDienes.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {bottom: 0; top: 2}}
             }
             Row {
                 spacing: 10
                 RadioButton { text: qsTr("Half-normal"); name: "half_normal"; id: halfNormalDienes}
-                TextField { label.text: qsTr("std:"); name: "halfNormalDienesStd"; visible: halfNormalDienes.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
+                DoubleField { text: qsTr("std:"); name: "halfNormalDienesStd"; visible: halfNormalDienes.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {bottom: 0; top: 2}}
             }
             Row {
                 spacing: 10
                 RadioButton { text: qsTr("Normal"); name: "normal"; id: normalDienes}
-                TextField { label.text: qsTr("mean:"); name: "normalDienesMean"; visible: normalDienes.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
-                TextField { label.text: qsTr("std:"); name: "normalDienesStd"; visible: normalDienes.checked; inputType: "number"; text: "0.707"; validator: DoubleValidator {bottom: 0; top: 2}}
+                DoubleField { text: qsTr("mean:"); name: "normalDienesMean"; visible: normalDienes.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {bottom: 0; top: 2}}
+                DoubleField { text: qsTr("std:"); name: "normalDienesStd"; visible: normalDienes.checked; defaultValue: 0.707; fieldWidth: 50; doubleValidator {bottom: 0; top: 2}}
             }
         }
     }

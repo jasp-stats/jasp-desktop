@@ -114,7 +114,7 @@ JASPControl
 
             itemDelegate: Rectangle {
                 TextField {
-                    textWidth: parent.width
+                    fieldWidth: parent.width
                     textHeight: parent.height
                     text: itemText; 
                     inputType: tableView.itemType

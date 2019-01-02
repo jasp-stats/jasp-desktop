@@ -79,10 +79,10 @@ JASPControl
                 anchors.fill: parent
                 focus: true
                 border.width: 0
-				border.color: Theme.grayLighter
-                property bool isDeletable: model.type.includes("Deletable")
-                property bool isVirtual: model.type.includes("Virtual")
-                property bool isLevel: model.type.includes("Level")
+                border.color: Theme.grayLighter
+                property bool isDeletable: model.type.includes("deletable")
+                property bool isVirtual: model.type.includes("virtual")
+                property bool isLevel: model.type.includes("level")
                 
                 TextField {
                     id: colName
@@ -90,14 +90,14 @@ JASPControl
                     text: itemRectangle.isVirtual ? "" : model.name
                     placeholderText: itemRectangle.isVirtual ? model.name : ""
                     anchors.verticalCenter: parent.verticalCenter
-                    textWidth: parent.width - 6
+                    fieldWidth: parent.width - 6
                     useExternalBorder: false
                     control.horizontalAlignment: itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter 
                     onEditingFinished: itemChanged(index, text)                      
                 }
                 
                 Image {
-                    source: iconFolder + deleteIcon
+                    source: iconPath + deleteIcon
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     visible: itemRectangle.isDeletable

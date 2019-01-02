@@ -19,14 +19,6 @@
 #include "listmodel.h"
 #include "../analysis/analysisform.h"
 
-QString ListModel::_iconPath = "qrc:/icons/";
-QMap<int, QString> ListModel::_iconFiles {
-	{ Column::ColumnTypeNominalText	, "variable-nominal-text.svg" },
-	{ Column::ColumnTypeNominal		, "variable-nominal.svg"},
-	{ Column::ColumnTypeOrdinal		, "variable-ordinal.svg"},
-	{ Column::ColumnTypeScale		, "variable-scale.svg"}
-};
-
 ListModel::ListModel(QMLListView* listView) 
 	: QAbstractTableModel(listView)
 	, _listView(listView)
@@ -39,6 +31,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;
 	roles[TypeRole] = "type";
+	roles[ColumnTypeRole] = "columnType";
 	roles[NameRole] = "name";
 	return roles;
 }
@@ -95,17 +88,21 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		Term term = _terms.at(row);
 		return QVariant(term.asQString());
 	}
-	else if (role == ListModel::TypeRole && areTermsVariables())
-	{
-		Term term = _terms.at(row);
-		if (term.size() != 1) return QVariant();
-		
-		int variableType = requestInfo(term, VariableInfo::VariableType).toInt();
-
-		return QVariant(_iconPath + _iconFiles[variableType]);
-	}
-	else
-	{
+	
+	if (!areTermsVariables())
 		return QVariant();
+	
+	Term term = _terms.at(row);
+	if (term.size() != 1)
+		return QVariant();
+	
+	if (role == ListModel::TypeRole)
+		return QVariant("variable");
+	else if (role == ListModel::ColumnTypeRole)
+	{
+		QString variableTypeName = requestInfo(term, VariableInfo::VariableTypeName).toString();
+		return QVariant(variableTypeName);
 	}
+	
+	return QVariant();
 }

@@ -5,11 +5,13 @@ Button 1.0 Button.qml
 ButtonGroup 1.0 ButtonGroup.qml
 CheckBox 1.0 CheckBox.qml
 ComboBox 1.0 ComboBox.qml
+DoubleField 1.0 DoubleField.qml
 ExpanderButton 1.0 ExpanderButton.qml
 FactorsList 1.0 FactorsList.qml
 Form 1.0 Form.qml
 GridLayout 1.0 GridLayout.qml
 GroupBox 1.0 GroupBox.qml
+IntegerField 1.0 IntegerField.qml
 JASPControl 1.0 JASPControl.qml
 JASPDataView 1.0 JASPDataView.qml
 JASPScrollBar 1.0 JASPScrollBar.qml

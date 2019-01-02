@@ -29,7 +29,7 @@ Form {
         ColumnLayout {
             spacing: 15
             GridLayout {
-                Label { text: qsTr("Sample size") } TextField { text: "" ; name: "sampleSize" ; inputType: "integer"; validator: IntValidator { bottom: 2 } }
+                Label { text: qsTr("Sample size") } IntegerField { name: "sampleSize" ; intValidator.bottom: 2 }
             }
         }
     }
@@ -45,11 +45,11 @@ Form {
 
                 Row {
                     RadioButton { text: qsTr("Pearson's rho") ; name: "pearsonRho"; id: pearsonRho; checked: true}
-                    TextField   { name: "pearsonRhoValue"; inputType: "number"; text: "0"; visible: pearsonRho.checked; validator: DoubleValidator { bottom: -1; top: 1 } }
+                    DoubleField   { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
                 }
                 Row {
                     RadioButton { text: qsTr("Kendall's tau-b") ; name: "kendallTau"; id: kendallTau }
-                    TextField   { name: "kendallTauValue"; inputType: "number"; text: "0"; visible: kendallTau.checked; validator: DoubleValidator { bottom: -1; top: 1 } }
+                    DoubleField   { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
                 }
             }
         }
@@ -77,16 +77,16 @@ Form {
             GroupBox {
                 title: qsTr("Plots")
                 CheckBox { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; Layout.leftMargin: 20; checked: true; enabled: plotPriorAndPosterior.checked}
+                CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
 
                 CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; Layout.leftMargin: 20; checked: true; enabled: plotBayesFactorRobustness.checked}
+                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
             }
 
             GroupBox {
                 title: qsTr("Prior")
                 GridLayout {
-                    Label { text: qsTr("Stretched beta prior width") } TextField { text: "1" ; name: "priorWidth" ; inputType: "number"; validator: DoubleValidator {bottom: 0; top: 2} }
+                    Label { text: qsTr("Stretched beta prior width") } DoubleField { defaultValue: 1 ; name: "priorWidth" ; doubleValidator {bottom: 0; top: 2} }
                 }
             }
         }

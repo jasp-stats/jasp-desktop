@@ -22,8 +22,8 @@ import JASP.Theme 1.0
 
 GridLayout {
     id: gridLayout
-    rowSpacing: Theme.rowSpacing
-    columnSpacing: Theme.columnSpacing
+    rowSpacing: Theme.rowGridSpacing
+    columnSpacing: Theme.columnGridSpacing
     columns: 2
     Layout.minimumWidth: parent.width
     

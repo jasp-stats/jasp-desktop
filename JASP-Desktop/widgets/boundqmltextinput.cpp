@@ -28,11 +28,11 @@ BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	, QObject(form)
 	, BoundQMLItem(item, form)
 {
-	_integer = NULL;
-	_integerArray = NULL;
-	_number = NULL;
-	_string = NULL;
-	_option = NULL;
+	_integer = nullptr;
+	_integerArray = nullptr;
+	_number = nullptr;
+	_string = nullptr;
+	_option = nullptr;
 	
 	QString type = QQmlProperty(item, "inputType").read().toString();
 	if (type == "integer")
@@ -56,8 +56,8 @@ QString BoundQMLTextInput::_getPercentValue()
 		doubleValue = doubleValue * 100;
 	// Get only max 1 decimal
 	doubleValue = doubleValue * 10;
-	int intValue = (int)doubleValue;
-	doubleValue = (double)intValue / 10;
+	int intValue = int(doubleValue);
+	doubleValue = double(intValue) / 10;
 	if (doubleValue > 100) doubleValue = 100;
 	else if (doubleValue < 0) doubleValue = 0;
 	return QString::number(doubleValue);
@@ -73,7 +73,7 @@ QString BoundQMLTextInput::_getIntegerArrayValue()
 		if (!first)
 			value += ",";
 		first = false;
-		value += intValue;
+		value += QString::number(intValue);
 	}
 	
 	return value;
@@ -116,13 +116,13 @@ void BoundQMLTextInput::bindTo(Option *option)
 		}
 	}
 
-	_item->setProperty("text", _value);
+	_item->setProperty("value", _value);
 }
 
 Option *BoundQMLTextInput::createOption()
 {
-	Option* option = NULL;
-	_value = QQmlProperty::read(_item, "text").toString();
+	Option* option = nullptr;
+	_value = QQmlProperty::read(_item, "value").toString();
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:		option = new OptionInteger();		break;
@@ -141,7 +141,7 @@ void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	
-	_item->setProperty("text", _value);
+	_item->setProperty("value", _value);
 	QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
 
@@ -187,7 +187,7 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 
 void BoundQMLTextInput::textChangedSlot()
 {
-	_value = QQmlProperty::read(_item, "text").toString();
+	_value = QQmlProperty::read(_item, "value").toString();
 	if (_option)
 		_setOptionValue(_option, _value);
 }

@@ -26,14 +26,14 @@ Form {
     CheckBox { name: "incl_GoF"; checked: true; visible: false }
     CheckBox { name: "incl_fitIndices"; checked: false; visible: false }
     CheckBox { name: "incl_loadings"; checked: true; visible: false }
-    TextField { name: "plotHeightPathDiagram"; value: "0"; inputType: "integer"; visible: false }
-    TextField { name: "plotHeightScreePlot"; value: "300"; inputType: "integer"; visible: false }
-    TextField { name: "plotWidthPathDiagram"; value: "480"; inputType: "integer"; visible: false }
-    TextField { name: "plotWidthScreePlot"; value: "300"; inputType: "integer"; visible: false }
+    IntegerField { name: "plotHeightPathDiagram"; defaultValue: 0; visible: false }
+    IntegerField { name: "plotHeightScreePlot"  ; defaultValue: 300; visible: false }
+    IntegerField { name: "plotWidthPathDiagram" ; defaultValue: 480; visible: false }
+    IntegerField { name: "plotWidthScreePlot"   ; defaultValue: 300; visible: false }
 
     VariablesForm {
         defaultAssignedVariablesList {
-            title: qsTr("Variables")
+            title: qsTr("Included Variables")
             allowedColumns: ["scale"]
         }
     }
@@ -44,24 +44,23 @@ Form {
             name: "factorMethod"
             RadioButton { text: qsTr("Parallel Analysis"); name: "parallelAnalysis"; checked: true }
             RadioButton { text: qsTr("Eigenvalues"); name: "eigenValues"; id: eigenvalues }
-            TextField {
-                label.text: qsTr("Eigenvalues above");
+            DoubleField {
+                text: qsTr("Eigenvalues above");
                 name: "eigenValuesBox";
-                value: "1"
-                inputType: "number";
-                Layout.leftMargin: 15;
+                defaultValue: 1
+                indent: true;
                 enabled: eigenvalues.checked
-                validator: DoubleValidator { bottom: 0; decimals: 1 }
+                doubleValidator.decimals: 1
             }
             RadioButton { text: qsTr("Manual"); name: "manual"; id: manual }
-            TextField {
-                label.text: qsTr("Number of Factors")
+            IntegerField {
+                text: qsTr("Number of Factors")
                 name: "numberOfFactors"
-                value: "1"
-                inputType: "integer"
-                validator: IntValidator { bottom: 1}
-                Layout.leftMargin: 15
-                enabled: manual.checked}
+                defaultValue: 1
+                intValidator.bottom: 1
+                indent: true
+                enabled: manual.checked
+            }
         }
 
         ButtonGroup {

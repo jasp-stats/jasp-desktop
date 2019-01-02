@@ -32,7 +32,8 @@ class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 public:
 	enum ListModelRoles {
         NameRole = Qt::UserRole + 1,
-		TypeRole
+		TypeRole,
+		ColumnTypeRole
     };
 
 	ListModel(QMLListView* listView);
@@ -66,11 +67,7 @@ protected:
 	QMLListView* _listView;
 	QString _itemType;
 	Terms _terms;
-	bool _areTermsVariables;
-	
-	static QString _iconPath;
-	static QMap<int, QString> _iconFiles;
-	
+	bool _areTermsVariables;	
 };
 
 #endif // LISTMODEL_H

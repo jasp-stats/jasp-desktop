@@ -138,7 +138,7 @@ void BoundQMLComboBox::resetQMLItem(QQuickItem *item)
 	QQmlProperty(_item, "model").write(QVariant::fromValue(_model));
 	_item->setProperty("currentIndex", _currentIndex);
 	_item->setProperty("currentText", _currentText);
-	_item->setProperty("currentIconPath", _currentIconPath);
+	_item->setProperty("currentColumnType", _currentColumnType);
 	_item->setProperty("initialized", true);
 	_resetItemWidth();
 	QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
@@ -249,7 +249,7 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 {
 	_currentIndex = index;
 	_currentText.clear();
-	_currentIconPath.clear();
+	_currentColumnType.clear();
 	if (_currentIndex >= 0)
 	{
 		const Terms& terms = _model->terms();
@@ -264,11 +264,11 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 		{
 			_currentText = terms.at(size_t(_currentIndex)).asQString();
 			QModelIndex index(_model->index(_currentIndex, 0));
-			_currentIconPath = _model->data(index, ListModel::TypeRole).toString();			
+			_currentColumnType = _model->data(index, ListModel::ColumnTypeRole).toString();			
 		}
 	}
 	_item->setProperty("currentText", _currentText);
-	_item->setProperty("currentIconPath", _currentIconPath);
+	_item->setProperty("currentColumnType", _currentColumnType);
 	if (setComboBoxIndex)
 		_item->setProperty("currentIndex", _currentIndex);
 	if (setOption && _boundTo)

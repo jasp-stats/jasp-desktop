@@ -28,8 +28,6 @@
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QDebug>
-
-
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmlslider.h"
@@ -50,12 +48,13 @@
 #include "dirs.h"
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "mainwindow.h"
 
 using namespace std;
 
 int AnalysisForm::_scriptRequestCounter = 0;
 
-AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _availableVariablesModel(this), _analysis(analysis), _errorMessagesItem(nullptr)
+AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _analysis(analysis), _errorMessagesItem(nullptr)
 {
 	setObjectName("AnalysisForm");
 	_mainVariables = nullptr;
@@ -69,12 +68,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(
 //	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisForm::statusChangedWidgetHandler);
 //	connect(_quickWidget,	&QQuickWidget::sceneGraphError,	this,	&AnalysisForm::sceneGraphErrorHandler);
 	connect(&_QMLwatcher,	&QFileSystemWatcher::fileChanged, this, &AnalysisForm::QMLFileModifiedHandler);
-
-	bool debug = false;
-#ifdef JASP_DEBUG
-	debug = true;
-#endif
-
+	
 	QString pathToQMLFile = _getAnalysisQMLPath();
 
 	if (!pathToQMLFile.isEmpty())
@@ -105,6 +99,10 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 		if (info == VariableInfo::VariableType)
 		{
 			return _dataSet->column(term.asString()).columnType();
+		}
+		else if (info == VariableInfo::VariableTypeName)
+		{
+			return MainWindow::columnTypeMap[_dataSet->column(term.asString()).columnType()];
 		}
 		else if (info == VariableInfo::Labels)
 		{
@@ -342,8 +340,6 @@ void AnalysisForm::_parseQML()
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
 				listView = availableVariablesListView;
 				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-				_availableVariablesModels.push_back(availableModel);
-
 				if (availableVariablesListView->syncModelsList().isEmpty()) // If there is no syncModels, set all available variables.
 					_allAvailableVariablesModels.push_back(availableModel);
 				break;
@@ -429,17 +425,15 @@ void AnalysisForm::_setUpItems()
 			index++;
 		}
 	}
-	std::sort(controls.begin(), controls.end(),
-			  [](QMLItem* a, QMLItem* b) {
-					return a->depends().length() > b->depends().length();
+	std::sort(controls.begin(), controls.end(), 
+			  [](QMLItem* a, QMLItem* b) { 
+					return a->depends().length() < b->depends().length(); 
 			});
 
 	for (QMLItem* control : controls)
 	{
-		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(control);
-		if (boundItem)
-			_boundItemsOrdered.push_back(boundItem);
-	}
+		_orderedControls.push_back(control);
+	}	
 }
 
 void AnalysisForm::_setErrorMessages()
@@ -485,26 +479,31 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 	_options = options;
 
 	_options->blockSignals(true);
-
-	_setAllAvailableVariablesModel();
-
-	for (BoundQMLItem* item : _boundItemsOrdered)
+	
+	_setAllAvailableVariablesModel();	
+	
+	for (QMLItem* control : _orderedControls)
 	{
-		string name = item->name().toStdString();
-		Option* option = options->get(name);
-		if (!option)
+		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+		if (boundControl)
 		{
-			option = item->createOption();
-			options->add(name, option);
+			std::string name = boundControl->name().toStdString();
+			Option* option = options->get(name);
+			if (!option)
+			{
+				option = boundControl->createOption();
+				options->add(name, option);
+			}
+			boundControl->bindTo(option);
+			boundControl->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}
-		item->bindTo(option);
-		item->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
-	}
-
-	for (ListModelTermsAvailable* availableModel : _availableVariablesModels)
-	{
-		// The availableModel are not bound, but they have to be updated when the form is initialized.
-		availableModel->resetTermsFromSyncModels();
+		else
+		{
+			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
+			// The availableListControl are not bound, but they have to be updated when the form is initialized.
+			if (availableListControl)
+				availableListControl->availableModel()->resetTermsFromSyncModels();
+		}
 	}
 
 	_options->blockSignals(false);
@@ -519,9 +518,13 @@ void AnalysisForm::unbind()
 
 	if (_options == nullptr)
 		return;
-
-	for (BoundQMLItem* item : _boundItemsOrdered)
-		item->unbind();
+	
+	for (QMLItem* control : _orderedControls)
+	{
+		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+		if (boundControl)
+			boundControl->unbind();
+	}
 
 	_options = nullptr;
 }
@@ -554,9 +557,7 @@ void AnalysisForm::QMLFileModifiedHandler(QString path)
 {
 	qDebug() << "Test QML file modified";
 /*	_controls.clear();
-	_boundItemsOrdered.clear();
 	_relatedModelMap.clear();
-	_availableVariablesModels.clear();
 	_modelMap.clear();
 	_allAvailableVariablesModels.clear();
 	_errorMessagesItem = nullptr;

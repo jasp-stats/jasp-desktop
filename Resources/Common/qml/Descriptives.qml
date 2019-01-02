@@ -19,6 +19,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -41,18 +42,22 @@ Form {
 
         GroupBox {
             CheckBox {  text: qsTr("Distribution plots")    ; name: "plotVariables"; id: plotVariables   }
-            CheckBox {  text: qsTr("Display density")       ; name: "distPlotDensity"; enabled: plotVariables.checked; Layout.leftMargin: 20 }
+            CheckBox {  text: qsTr("Display density")       ; name: "distPlotDensity"; enabled: plotVariables.checked; indent: true }
             CheckBox {  text: qsTr("Correlation plots")     ; name: "plotCorrelationMatrix"       }
             CheckBox {  text: qsTr("Boxplots")              ; name: "splitPlots"; id: splitPlots  }
 
             GroupBox {
-                Layout.leftMargin: 20
+                indent: true
                 enabled: splitPlots.checked
                 CheckBox {  text: qsTr("Label Outliers")    ; name: "splitPlotOutlierLabel"       }
                 CheckBox {  text: qsTr("Color")             ; name: "splitPlotColour"             }
-                CheckBox {  text: qsTr("Boxplot Element")   ; name: "splitPlotBoxplot"; checked: true }
-                CheckBox {  text: qsTr("Violin Element")    ; name: "splitPlotViolin"                 }
-                CheckBox {  text: qsTr("Jitter Element")    ; name: "splitPlotJitter"                 }
+                
+                GroupBox {
+                    indent: true
+                    CheckBox {  text: qsTr("Boxplot Element")   ; name: "splitPlotBoxplot"; checked: true }
+                    CheckBox {  text: qsTr("Violin Element")    ; name: "splitPlotViolin"                 }
+                    CheckBox {  text: qsTr("Jitter Element")    ; name: "splitPlotJitter"                 }
+                }
             }
         }
     }
@@ -64,41 +69,24 @@ Form {
             GroupBox {
                 title: qsTr("Percentile Values")
 
+                CheckBox { text: qsTr("Quartiles") ; name: "percentileValuesQuartiles" }
                 GridLayout {
-                    rowSpacing: 3
+                    rowSpacing: Theme.rowGroupSpacing
                     columnSpacing: 1
-                    columns: 3
-
-                    CheckBox {
-                        Layout.columnSpan: 3
-                        name: "percentileValuesQuartiles"
-                        text: qsTr("Quartiles")
-                    }
-
-                    CheckBox {
-                        id: percentileValuesEqualGroups
-                        name: "percentileValuesEqualGroups"
-                        text: qsTr("Cut points for: ")
-                    }
-                    TextField {
-                        name: "percentileValuesEqualGroupsNo"
-                        inputType: "integer"
-                        validator: RegExpValidator {regExp: /[1-9][0-9]?[0]?/}
-                        text: "4"
+    
+                    CheckBox { text: qsTr("Cut points for: ") ; name: "percentileValuesEqualGroups" ; id: percentileValuesEqualGroups }
+                    IntegerField { name: "percentileValuesEqualGroupsNo"
+                        intValidator { bottom: 1; top: 1000 }
+                        defaultValue: 4
                         enabled: percentileValuesEqualGroups.checked
+                        afterLabel.text: qsTr(" equal groups")
                     }
-                    Label {  text: qsTr(" equal groups") }
-                    CheckBox {
-                        id: percentileValuesPercentiles
-                        text: qsTr("Percentiles:")
-                        name: "percentileValuesPercentiles"
-                    }
+                    CheckBox { text: qsTr("Percentiles:") ; name: "percentileValuesPercentiles" ; id: percentileValuesPercentiles }                        
                     TextField {
                         id: percentileValuesPercentilesPercentiles
                         inputType: "integerArray"
-                        Layout.columnSpan: 2
                         name: "percentileValuesPercentilesPercentiles"
-                        width: 100
+                        fieldWidth: 60
                         enabled: percentileValuesPercentiles.checked
                     }
                 }

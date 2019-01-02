@@ -19,6 +19,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -67,21 +68,21 @@ Form {
                 title: qsTr("Additional Statistics")
                 CheckBox {  text: qsTr("Location parameter")                        ; name: "meanDifference"; id: locationParameter }
                 Row {
-                    Layout.leftMargin: 15
+                    Layout.leftMargin: Theme.indentationLength
                     enabled : locationParameter.checked
                     CheckBox {  text: qsTr("Confidence interval")                   ; name: "meanDiffConfidenceIntervalCheckbox"; id: locParConfidenceInterval }
                     PercentField { enabled: locParConfidenceInterval.checked        ; name: "meanDiffConfidenceIntervalPercent"  ; defaultValue: 95 }
                 }
                 CheckBox {  text: qsTr("Effect Size")                               ; name: "effectSize"; id: effectSize }
                 Row {
-                    Layout.leftMargin: 15
+                    Layout.leftMargin: Theme.indentationLength
                     enabled : effectSize.checked
                     CheckBox {  text: qsTr("Confidence interval")                   ; name: "effSizeConfidenceIntervalCheckbox"; id: effectSizeConfidenceInterval }
                     PercentField { enabled: effectSizeConfidenceInterval.checked    ; name: "effSizeConfidenceIntervalPercent" ; defaultValue: 95 }
                 }
                 CheckBox {  text: qsTr("Descriptives")                              ; name: "descriptives"                        }
                 CheckBox {  text: qsTr("Descriptives plots")                        ; name: "descriptivesPlots"; id: descriptivePlots  }
-                PercentField { label.text: qsTr("Confidence interval")                   ; name: "descriptivesPlotsConfidenceInterval"; defaultValue: 95; Layout.leftMargin: 20; enabled: descriptivePlots.checked}
+                PercentField { text: qsTr("Confidence interval")                    ; name: "descriptivesPlotsConfidenceInterval"; defaultValue: 95; indent: true; enabled: descriptivePlots.checked}
                 CheckBox {  text: qsTr("Vovk-Sellke mazimum p-ratio")               ; name: "VovkSellkeMPR"                        }
             }
 

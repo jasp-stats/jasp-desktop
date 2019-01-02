@@ -55,8 +55,10 @@ QtObject {
 	readonly property int formWidth:			600
 	readonly property int formMargin:			10	* ppiScale
 
-	readonly property int columnSpacing:		30 * ppiScale
-	readonly property int rowSpacing:			5  * ppiScale
+    readonly property int rowGridSpacing:       15 * ppiScale
+    readonly property int columnGridSpacing:    30 * ppiScale
+    readonly property int rowGroupSpacing:      5  * ppiScale
+    readonly property int indentationLength:    20 * ppiScale    
 	readonly property int borderRadius:			4  * ppiScale
 	readonly property int generalAnchorMargin:	8  * ppiScale
 

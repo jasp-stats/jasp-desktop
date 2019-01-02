@@ -357,6 +357,8 @@ HEADERS += \
     widgets/boundqmlslider.h \
     widgets/boundqmltextarea.h \
     widgets/boundqmltableview.h \
+    widgets/boundqmllistviewlayers.h \
+    widgets/listmodellayersassigned.h \
     widgets/listmodelmultinomialchi2test.h  \
     data/filtermodel.h \
     widgets/filemenu/recentfileslistmodel.h \
@@ -537,6 +539,8 @@ SOURCES += \
     widgets/boundqmlslider.cpp \
     widgets/boundqmltextarea.cpp \
     widgets/boundqmltableview.cpp \
+    widgets/boundqmllistviewlayers.cpp \
+    widgets/listmodellayersassigned.cpp \
     widgets/listmodelmultinomialchi2test.cpp \
     data/filtermodel.cpp \
     widgets/filemenu/recentfileslistmodel.cpp \

@@ -20,14 +20,16 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP.Theme 1.0
+
 
 Form {
     id: form
 
-    TextField { visible: false; name: "plotHeightDescriptivesPlotLegend"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotLegend"; inputType: "integer"; text: "450" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"; inputType: "integer"; text: "350" }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 450 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"    ; defaultValue: 350 }
 
 
     VariablesForm {
@@ -92,8 +94,8 @@ Form {
         }
 
         ComboBox { name: "sumOfSquares"
-            currentIndex: 0
-            label.text: qsTr("Sum of squares")
+            currentIndex: 2
+            text: qsTr("Sum of squares")
             model: ListModel {
                 ListElement {key: "Type \u2160"; value: "type1"}
                 ListElement {key: "Type \u2161"; value: "type2"}
@@ -109,7 +111,7 @@ Form {
         CheckBox { text: qsTr("Sphericity tests")      ; name: "sphericityTests"}
         CheckBox { text: qsTr("Sphericity corrections")  ; name: "sphericityCorrections"; id: sphericityCorrections}
         RowLayout {
-            Layout.leftMargin: 15
+            Layout.leftMargin: Theme.indentationLength
             enabled: sphericityCorrections.checked
             CheckBox { text: qsTr("None")               ; name: "sphericityNone"                ; checked: true}
             CheckBox { text: qsTr("Greenhouse-Geisser") ; name: "sphericityGreenhouseGeisser"   ; checked: true}
@@ -165,7 +167,7 @@ Form {
             AssignedVariablesList {         title: qsTr("Separate plots")   ; name: "plotSeparatePlots"     ; singleItem: true }
         }
 
-        TextField { label.text: qsTr("Label y-axis") ; name: "labelYAxis"}
+        TextField { text: qsTr("Label y-axis") ; name: "labelYAxis"}
         GroupBox {
             title: qsTr("Display")
 
@@ -177,7 +179,7 @@ Form {
             ButtonGroup {
                 name: "errorBarType"
                 RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
-                PercentField {Layout.leftMargin: 15; label.text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
+                PercentField {indent: true; text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
                 RadioButton { text: qsTr("Standard error"); name: "standardError" }
             }
         }
@@ -196,8 +198,8 @@ Form {
             }
 
             CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-            ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment";
-                label.text: qsTr("Confidence interval adjustment");
+            ComboBox { indent: true; name: "marginalMeansCIAdjustment";
+                text: qsTr("Confidence interval adjustment");
                 model: ListModel {
                     ListElement {key: "None"; value: "none"}
                     ListElement {key: "Bonferro"; value: "bonferroni"}
@@ -212,7 +214,7 @@ Form {
             CheckBox { text: qsTr("Descriptive statistics")     ; name: "descriptives" }
             CheckBox { text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"   ; id: effectSizeEstimates }
             Row {
-                Layout.leftMargin: 15
+                Layout.leftMargin: Theme.indentationLength
                 enabled: effectSizeEstimates.checked
                 CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared"; checked: true }
                 CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }

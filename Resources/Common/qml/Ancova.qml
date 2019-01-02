@@ -20,16 +20,17 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
 
-    TextField { visible: false; name: "plotWidthQQPlot"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotHeightQQPlot"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotHeightDescriptivesPlotLegend"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"; inputType: "integer"; text: "300" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotLegend"; inputType: "integer"; text: "430" }
-    TextField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"; inputType: "integer"; text: "350" }
+    IntegerField { visible: false; name: "plotWidthQQPlot"                      ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotHeightQQPlot"                     ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 430 }
+    IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"    ; defaultValue: 350 }
 
     VariablesForm {
         height: 400
@@ -83,7 +84,7 @@ Form {
 
         ComboBox { name: "sumOfSquares"
             currentIndex: 2
-            label.text: qsTr("Sum of squares")
+            text: qsTr("Sum of squares")
             model: ListModel {
                 ListElement {key: "Type \u2160"; value: "type1"}
                 ListElement {key: "Type \u2161"; value: "type2"}
@@ -109,7 +110,7 @@ Form {
         CheckBox { text: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance"; checked: true}
         RowLayout {
             CheckBox { text: qsTr("Confidence intervals")  ; name: "confidenceIntervalsContrast"; id: confidenceIntervalsContrast }
-            PercentField {Layout.leftMargin: 15; name: "confidenceIntervalIntervalContrast"; defaultValue: 95; enabled: confidenceIntervalsContrast.checked}
+            PercentField { indent: true; name: "confidenceIntervalIntervalContrast"; defaultValue: 95; enabled: confidenceIntervalsContrast.checked}
         }
     }
 
@@ -171,7 +172,7 @@ Form {
            ButtonGroup {
                name: "errorBarType"
                RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
-               PercentField {Layout.leftMargin: 15; label.text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
+               PercentField { indent: true; text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
                RadioButton { text: qsTr("Standard error"); name: "standardError" }
            }
         }
@@ -188,8 +189,8 @@ Form {
         }
 
         CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-        ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment";
-            label.text: qsTr("Confidence interval adjustment");
+        ComboBox { indent: true; name: "marginalMeansCIAdjustment";
+            text: qsTr("Confidence interval adjustment");
             model: ListModel {
                 ListElement {key: "None"; value: "none"}
                 ListElement {key: "Bonferro"; value: "bonferroni"}
@@ -203,7 +204,7 @@ Form {
             CheckBox { text: qsTr("Descriptive statistics")     ; name: "descriptives" }
             CheckBox { text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"   ; id: effectSizeEstimates }
             Row {
-                Layout.leftMargin: 15
+                Layout.leftMargin: Theme.indentationLength
                 enabled: effectSizeEstimates.checked
                 CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared"; checked: true }
                 CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }

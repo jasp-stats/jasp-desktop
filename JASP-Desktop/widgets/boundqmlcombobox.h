@@ -49,7 +49,7 @@ protected:
 	OptionList *_boundTo;
 	int _currentIndex;
 	QString _currentText;
-	QString _currentIconPath;
+	QString _currentColumnType;
 	ListModelTermsAvailable* _model;
 	QMap<QString, QString> _keyToValueMap;
 	QMap<QString, QString> _valueToKeyMap;

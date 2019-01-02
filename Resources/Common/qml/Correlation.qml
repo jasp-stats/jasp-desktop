@@ -19,65 +19,72 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
-import JASP.Widgets 1.0
-
 
 Form {
     id: form
-
-    plotHeight: 240
-    plotWidth:  320
-
+    
     VariablesForm {
-        height: 200
-        defaultAssignedVariablesList {
-            title: qsTr("Variables")
-            allowedColumns: ["scale", "ordinal"]
+        defaultAssignedVariablesList.allowedColumns: ["ordinal", "scale"]
+    }
+
+    GroupBox {
+        title: qsTr("Correlation Coefficients")
+
+        GridLayout {
+            GroupBox {
+                CheckBox { text: qsTr("Pearson"); name: "pearson"; checked: true }
+                CheckBox { text: qsTr("Spearman"); name: "spearman" }
+                CheckBox { text: qsTr("Kendall's tau-b"); name: "kendallsTauB" }
+            }
+
+            GroupBox {
+                CheckBox { text: qsTr("Display pairwise table")         ; name: "displayPairwise" }
+                CheckBox { text: qsTr("Report significance")            ; name: "reportSignificance"; checked: true }
+                CheckBox { text: qsTr("Flag significant correlations")  ; name: "flagSignificant" }
+                CheckBox { text: qsTr("Confidence intervals")           ; name: "confidenceIntervals"; id: confidenceIntervals }
+                PercentField { text: qsTr("Interval")                   ; name: "confidenceIntervalsInterval"; defaultValue: 95; enabled:  confidenceIntervals.checked; indent: true}
+                CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio")    ; name: "VovkSellkeMPR" }
+            }
+        }
+
+        GridLayout {
+            ButtonGroup {
+                title: qsTr("Hypothesis")
+                name: "hypothesis"
+                RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
+                RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
+                RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
+            }
+
+            GroupBox {
+                title: qsTr("Plots")
+                CheckBox { text: qsTr("Display pairwise table")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
+                GroupBox {
+                    enabled: plotCorrelationMatrix.checked
+                    indent: true
+                    CheckBox { text: qsTr("Densities for variables")    ; name: "plotDensities" }
+                    CheckBox { text: qsTr("Statistics")                 ; name: "plotStatistics" }
+                }
+
+            }
         }
     }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
+    ExpanderButton {
+        text: qsTr("Options")
+        debug: true
 
-            GroupBox {
-                title: qsTr("Correlation Coefficients")
-
-                CheckBox { text: qsTr("Pearson")        ; name: "pearson"     ; checked: true }
-                CheckBox { text: qsTr("Spearman")       ; name: "spearman"                    }
-                CheckBox { text: qsTr("Kendall's tau-b"); name: "kendallsTauB"                }
-            }
-
-            ButtonGroup {
-                title: qsTr("Hypothesis")                        ; name: "hypothesis"
-
-                RadioButton { text: qsTr("Correlated")           ; name: "correlated"          ; checked: true }
-                RadioButton { text: qsTr("Correlated positively"); name: "correlatedPositively"                }
-                RadioButton { text: qsTr("Correlated negatively"); name: "correlatedNegatively"                }
-            }
+        GroupBox {
+            title: qsTr("Statistics")
+            CheckBox { text: qsTr("Means and standard deviations")                 ; name: "meansAndStdDev" }
+            CheckBox { text: qsTr("Cross-product deviations and covariances")      ; name: "crossProducts" }
         }
 
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                // title: qsTr("Additional Statistics")
-
-                CheckBox     { text: qsTr("Display pairwise table")       ; name: "displayPairwise"                                                                                                }
-                CheckBox     { text: qsTr("Report significance")          ; name: "reportSignificance"         ; checked: true                                                                     }
-                CheckBox     { text: qsTr("Flag significant correlations"); name: "flagSignificant"                                                                                                }
-                CheckBox     { text: qsTr("Confidence intervals")         ; name: "confidenceIntervals"        ; id: confidenceInterval                                                            }
-                PercentField { label.text: qsTr("Interval")               ; name: "confidenceIntervalsInterval"; defaultValue: 95     ; Layout.leftMargin: 23; enabled: confidenceInterval.checked }
-                CheckBox     { text: qsTr("Vovk-Sellke maximum p-ratio")  ; name: "VovkSellkeMPR"                                                                                                  }
-            }
-
-            GroupBox {
-                title        : qsTr("Plots")
-
-                CheckBox { text: qsTr("Correlation matrix")     ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix                                         }
-                CheckBox { text: qsTr("Densities for variables"); name: "plotDensities"        ; Layout.leftMargin: 20    ; enabled: plotCorrelationMatrix.checked }
-                CheckBox { text: qsTr("Statistics")             ; name: "plotStatistics"       ; Layout.leftMargin: 20    ; enabled: plotCorrelationMatrix.checked }
-            }
+        ButtonGroup {
+            title: qsTr("Missing Values")
+            name: "missingValues"
+            RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }
+            RadioButton { text: qsTr("Exclude cases listwise"); name: "excludeListwise" }
         }
     }
 }

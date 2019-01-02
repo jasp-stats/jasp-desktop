@@ -38,12 +38,14 @@ ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(QMLListView* parent) 
 
 int ListModelMultinomialChi2Test::rowCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
 	return _rowNames.length();
 }
 
 int ListModelMultinomialChi2Test::columnCount(const QModelIndex &parent) const
 {
-	return _columnCount;
+	Q_UNUSED(parent);
+	return int(_columnCount);
 }
 
 QVariant ListModelMultinomialChi2Test::data(const QModelIndex &index, int role) const
@@ -58,7 +60,7 @@ QVariant ListModelMultinomialChi2Test::data(const QModelIndex &index, int role) 
 	{
 		if(role == Qt::DisplayRole)
 			return QVariant(_values[column][row]);
-		else if(role == (int)specialRoles::lines)
+		else if(role == int(specialRoles::lines))
 		{
 			bool	belowMeIsActive = index.row() < rowCount() - 1;
 			
@@ -82,7 +84,7 @@ QVariant ListModelMultinomialChi2Test::data(const QModelIndex &index, int role) 
 
 int ListModelMultinomialChi2Test::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
-	if ((int)columnIndex >= _columnCount) return 0;
+	if (columnIndex >= _columnCount) return 0;
 
 	return 6;
 }
@@ -104,13 +106,13 @@ void ListModelMultinomialChi2Test::addColumn()
 	emit modelChanged();
 }
 
-void ListModelMultinomialChi2Test::removeColumn(int col)
+void ListModelMultinomialChi2Test::removeColumn(size_t col)
 {
 	beginResetModel();
 	
-	if (col >= 0 && col < _columnCount)
+	if (col < _columnCount)
 	{
-		_values.removeAt(col);
+		_values.removeAt(int(col));
 		_colNames.pop_back();
 		_columnCount--;
 	}
@@ -165,22 +167,22 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& co
 	
 	if (values.size() != _columnCount)
 		addError("Wrong number of columns for Chi2 Test!!!");
-	else if (values.size() > 0 && values[0].size() != _rowNames.size())
+	else if (values.size() > 0 && int(values[0].size()) != _rowNames.size())
 		addError("Wrong number of rows for Chi2 Test!!!!");
 		
 	beginResetModel();
 	
-	for (int i = 0; i < values.size(); ++i)
+	for (size_t i = 0; i < values.size(); ++i)
 	{
 		QVector<double> colValues;
 		for (double val : values[i])
 			colValues.push_back(val);
-		for (int j = values[i].size(); j < _rowNames.size(); j++)
+		for (int j = int(values[i].size()); j < _rowNames.size(); j++)
 			colValues.push_back(1);
 		_values.push_back(colValues);
 	}
 	
-	for (int i = values.size(); i < _columnCount; ++i)
+	for (size_t i = values.size(); i < _columnCount; ++i)
 	{
 		QVector<double> extraColumn(_rowNames.length(), 1);
 		_values.push_back(extraColumn);
@@ -221,11 +223,11 @@ void ListModelMultinomialChi2Test::syncTermsChanged(Terms *termsAdded, Terms *te
 	emit modelChanged();
 }
 
-QString ListModelMultinomialChi2Test::_getColName(int index)
+QString ListModelMultinomialChi2Test::_getColName(size_t index)
 {
 	if (index >= _maxColumn)
 		index = _maxColumn - 1;
-	char letter = (char)(97 + index);
+	char letter = char(97 + index);
 	return tq("H₀ (") + letter + tq(")");
 }
 
@@ -242,11 +244,11 @@ QVariant ListModelMultinomialChi2Test::headerData( int section, Qt::Orientation 
 			return QVariant(_rowNames[section]);
 		}
 	}
-	else if (role == (int)specialRoles::maxColString) //A query from DataSetView for the maximumlength string to be expected! This to accomodate columnwidth
+	else if (role == int(specialRoles::maxColString)) //A query from DataSetView for the maximumlength string to be expected! This to accomodate columnwidth
 	{
 		//calculate some maximum string?
 		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX";
-		int colWidth = getMaximumColumnWidthInCharacters(section);
+		int colWidth = getMaximumColumnWidthInCharacters(size_t(section));
 
 		while(colWidth > dummyText.length())
 			dummyText += "X";
@@ -264,14 +266,15 @@ QHash<int, QByteArray> ListModelMultinomialChi2Test::roleNames() const
 	QHash<int, QByteArray> roles = ListModel::roleNames();
 
 
-	roles[(int)specialRoles::active]						= QString("active").toUtf8();
-	roles[(int)specialRoles::lines]							= QString("lines").toUtf8();
-	roles[(int)specialRoles::maxColString]					= QString("maxColString").toUtf8();
+	roles[int(specialRoles::active)]						= QString("active").toUtf8();
+	roles[int(specialRoles::lines)]							= QString("lines").toUtf8();
+	roles[int(specialRoles::maxColString)]					= QString("maxColString").toUtf8();
 
 	return roles;
 }
 
 Qt::ItemFlags ListModelMultinomialChi2Test::flags(const QModelIndex &index) const
 {
+	Q_UNUSED(index);
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }

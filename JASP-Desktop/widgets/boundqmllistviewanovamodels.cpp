@@ -28,7 +28,7 @@ BoundQMLListViewAnovaModels::BoundQMLListViewAnovaModels(QQuickItem* item, Analy
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {
-	_boundTo = NULL;
+	_boundTo = nullptr;
 	_anovaModel = new ListModelAnovaAssigned(this);
 	setTermsAreNotVariables();		
 }
@@ -52,12 +52,25 @@ void BoundQMLListViewAnovaModels::unbind()
 
 Option* BoundQMLListViewAnovaModels::createOption()
 {
-	Options* options = new Options();
-	options->add("components", new OptionTerm());
+	Options* templote = new Options();
+	templote->add("components", new OptionTerm());
 	if (_hasExtraControlColumns)
-		addExtraOptions(options);
+		addExtraOptions(templote);
 	
-	return new OptionsTable(options);	
+	OptionsTable* result = new OptionsTable(templote);
+	
+	std::vector<Options *> values;
+	const Terms& availableTerms = _sourceModel->terms();
+	for (auto availableTerm : availableTerms)
+	{
+		Options *row = static_cast<Options *>(templote->clone());
+		OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
+		termCell->setValue(availableTerm.scomponents());
+		values.push_back(row);
+	}
+	result->setValue(values);
+	
+	return result;
 }
 
 void BoundQMLListViewAnovaModels::modelChangedHandler()

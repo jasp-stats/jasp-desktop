@@ -90,12 +90,11 @@ Rectangle
 			}
 			else
                 getJASPControls(controls, child);
-
-        }
-    }
-
-	TextField { visible: false; name: "plotWidth";  inputType: "integer"; text: plotHeight }
-	TextField { visible: false; name: "plotHeight"; inputType: "integer"; text: plotWidth  }
+        }            
+    }        
+     
+    IntegerField { visible: false; name: "plotWidth"; value: plotWidth }
+    IntegerField { visible: false; name: "plotHeight"; value: plotHeight }    
 
 	Item
 	{
@@ -277,5 +276,10 @@ Rectangle
 
         if (previousExpander)
             previousExpander.nextExpander = jaspControls[0];
+        
+        for (var i = 0; i < jaspControls.length; i++) {
+            if (jaspControls[i].indent)
+                jaspControls[i].Layout.leftMargin = Theme.indentationLength
+        }        
     }
 }
