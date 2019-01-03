@@ -172,3 +172,20 @@ test_that("Analysis handles errors", {
   errorMsg <- results[["results"]][["Counts Table 1"]][["error"]][["errorMessage"]]
   expect_is(errorMsg, "character")
 })
+
+# Below are the unit tests for Andy Field's book
+
+# Chapter 10
+test_that("Fields Book - Chapter 10 results match", {
+  options <- jasptools::analysisOptions("ContingencyTables")
+  options$rows <- "treat"
+  options$columns <- "delivered"
+  options$chiSquared <- FALSE
+  results <- jasptools::run("ContingencyTables", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_10/www/santas_log.sav"), options, view=FALSE, quiet=TRUE)
+  table1 <- results[["results"]][["Counts Table 1"]][["data"]]
+  expect_equal_tables(table1,
+                      list("Count", "% of Total", 28, 150, 178, "0", "TRUE",
+                           "Count", "% of Total", 122, 100, 222, "1",
+                           "Count", "% of Total", 150, 250, 400, "Total", "TRUE")
+  )
+})

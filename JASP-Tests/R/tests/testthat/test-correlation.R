@@ -64,3 +64,17 @@ test_that("Analysis handles errors", {
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })
+
+# Below are the unit tests for Andy Field's book
+
+# Chapter 1
+#test_that("Fields Book - Chapter 1 results match", {
+  #options <- jasptools::analysisOptions("Correlation")
+  #options$variables <- list("Sales", "Adverts", "Airplay", "Image")
+  #options$reportSignificance <- FALSE
+  #options$pearson <- FALSE
+  #options$plotCorrelationMatrix <- TRUE
+  #results <- jasptools::run("Correlation", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_01/www/Album Sales.sav"), options, view=FALSE, quiet=TRUE)
+  #figure2 <- results[["state"]][["correlationPlot"]]
+  #expect_equal_plots(figure2, "?", dir="Correlation") # This command needs to be updated
+#})
