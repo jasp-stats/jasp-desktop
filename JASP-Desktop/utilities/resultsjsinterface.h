@@ -100,6 +100,7 @@ public slots:
 	void exportSelected(const QString &filename);
 	void getDefaultPPI();
 	void setResultsPageUrl(QString resultsPageUrl);
+	void resultsPageLoaded(bool success);
 
 private:
 	void runJavaScript(const QString &str, std::function<void(const QVariant&)> cb);
@@ -114,7 +115,6 @@ private:
 	QString escapeJavascriptString(const QString &str);
 
 private slots:
-	void resultsPageLoaded(bool success);
 	void menuHidding();
 	void removeSelected();
 	void collapseSelected();

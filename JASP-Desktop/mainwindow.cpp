@@ -30,8 +30,6 @@
 #include <QQmlContext>
 #include <QQuickItem>
 
-#include "analysis/analysisloader.h"
-
 #include "utilities/qutils.h"
 #include "utilities/appdirs.h"
 #include "tempfiles.h"
@@ -656,6 +654,7 @@ void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 	_levelsTableModel->setDataSet(dataSet);
 	_columnsModel->setDataSet(dataSet);
 	_computedColumnsModel->setDataSetPackage(package);
+	_analyses->setDataSet(dataSet);
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package,
@@ -685,17 +684,6 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		}
 
 		showInstructions = false;
-	}
-
-	if (analysis->status() == Analysis::Running || (analysis->status() == Analysis::Inited && analysis->isAutorun()))
-	{
-		setRunButtonEnabled(true);
-		setRunButtonText("Stop");
-	}
-	else
-	{
-		setRunButtonText("Run");
-		setRunButtonEnabled(analysis->status() == Analysis::InitedAndWaiting);
 	}
 
 	_resultsJsInterface->analysisChanged(analysis);
@@ -846,15 +834,11 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 
 	std::cout << "How to handle loading of a form? We should probably turn Analyses into some king of model and maybe Analysis as well? We could merge those two." << std::endl;
 
-	if (analysis->fromQML())	form = new AnalysisForm(nullptr, analysis);
-	else						qDebug() << "MainWindow::loadForm(); form not a QML form! (" << name.c_str() << ")";
+	form = new AnalysisForm(nullptr, analysis);
 
-	if (form != nullptr)
-	{
-		connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
-		connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
-		connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::analysisFormChangedHandler);
-	}
+	connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
+	connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
+	connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::analysisFormChangedHandler);
 
 	return form;
 }
@@ -936,9 +920,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 void MainWindow::analysisUnselectedHandler()
 {
-	if (_currentAnalysis->useData())
-		//hideOptionsPanel();
-		std::cout << "should hide options panel now" << std::endl;
+	//hideOptionsPanel();
+	std::cout << "should hide options panel now" << std::endl;
 }
 
 void MainWindow::helpToggled(bool on)
@@ -1524,8 +1507,6 @@ void MainWindow::analysisRunned()
 
 	if (_currentAnalysis->status() == Analysis::Running)
 		_currentAnalysis->abort();
-	else if (_currentAnalysis->status() == Analysis::InitedAndWaiting)
-		_currentAnalysis->scheduleRun();
 }
 
 

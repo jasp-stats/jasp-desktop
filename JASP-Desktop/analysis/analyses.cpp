@@ -18,7 +18,6 @@
 
 #include "analyses.h"
 
-#include "analysisloader.h"
 #include "boost/foreach.hpp"
 #include "utilities/appdirs.h"
 #include "processinfo.h"
@@ -69,8 +68,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 
 Analysis* Analyses::create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options, Analysis::Status status)
 {
-	Analysis *analysis = AnalysisLoader::load(id, module.toStdString(), name.toStdString(), version, options);
-
+	Analysis *analysis = new Analysis(this, id, module.toStdString(), name.toStdString(), version, options);
 	analysis->setStatus(status);
 	storeAnalysis(analysis, id);
 	bindAnalysisHandler(analysis);
@@ -80,7 +78,7 @@ Analysis* Analyses::create(const QString &module, const QString &name, size_t id
 
 Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status)
 {
-	Analysis *analysis = new Analysis(id, analysisEntry);
+	Analysis *analysis = new Analysis(this, id, analysisEntry);
 
 	analysis->setStatus(status);
 	storeAnalysis(analysis, id);
@@ -318,6 +316,7 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 	case Qt::DisplayRole:
 	case titleRole:			return QString::fromStdString(analysis->title());
 	case nameRole:			return QString::fromStdString(analysis->name());
+	case analysisRole:		return QVariant::fromValue(analysis);
 	default:				return QVariant();
 	}
 }
@@ -325,9 +324,10 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 QHash<int, QByteArray>	Analyses::roleNames() const
 {
 	static const QHash<int, QByteArray> roles = {
-		{ formPathRole, "formPath"		},
-		{ titleRole,	"displayText"			},
-		{ nameRole,		"name"	} };
+		{ formPathRole,		"formPath"		},
+		{ titleRole,		"displayText"	},
+		{ analysisRole,		"analysis"	},
+		{ nameRole,			"name"	} };
 
 	return roles;
 }

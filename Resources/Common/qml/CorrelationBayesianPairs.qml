@@ -32,7 +32,7 @@ Form {
     }
 
     GridLayout {
-        GroupBox {
+        ColumnLayout {
             ButtonGroup {
                 name: "corcoefficient"
                 title: qsTr("Correlation Coefficients")
@@ -59,7 +59,7 @@ Form {
 
         }
 
-        GroupBox {
+        ColumnLayout {
 
             GroupBox {
                 CheckBox { text: qsTr("Credible intervals") ; name: "credibleInterval"; id: credibleInterval }

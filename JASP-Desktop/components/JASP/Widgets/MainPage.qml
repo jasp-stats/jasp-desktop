@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtWebEngine 1.7
 import QtWebChannel 1.0
-import QtQuick.Controls 2.12
+import QtQuick.Controls 2.4
 import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
@@ -103,6 +103,7 @@ OLD.SplitView
 		url:					resultsJsInterface.resultsPageUrl
 		implicitWidth:			Theme.resultWidth
 		Layout.minimumWidth:	Theme.minPanelWidth
+		onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
 
 		Connections
 		{

@@ -19,6 +19,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -50,8 +51,8 @@ Form {
 
         GroupBox {
             title: qsTr("Output")
-
             GridLayout {
+                rowSpacing: Theme.rowGroupSpacing                
                 CheckBox { text: qsTr("Posterior summary"); name: "postSummaryTable"; id: postSummaryTable }
                 ComboBox {
                     enabled: postSummaryTable.checked
@@ -164,6 +165,7 @@ Form {
                 RadioButton { text: qsTr("EB-local"); name: "EB-local" }
                 RadioButton { text: qsTr("g-prior"); name: "g-prior" }
                 GridLayout {
+                    rowSpacing: Theme.rowGroupSpacing                    
                     GroupBox {
                         RadioButton { text: qsTr("Hyper-g"); name: "hyper-g"; id: hyperg }
                         RadioButton { text: qsTr("Hyper-g-Laplace"); name: "hyper-g-laplace"; id: hyperglaplace }
@@ -187,11 +189,12 @@ Form {
                 }
             }
 
-            GroupBox {
+            ColumnLayout {
                 ButtonGroup {
                     title: qsTr("Model prior")
                     name: "modelPrior"
                     GridLayout {
+                        rowSpacing: Theme.rowGroupSpacing
                         RadioButton { text: qsTr("Beta binomial"); name: "beta.binomial"; checked: true; id: betabinomial}
                         RowLayout {
                             enabled: betabinomial.checked
@@ -208,6 +211,7 @@ Form {
                     title: qsTr("Sampling method")
                     name: "samplingMethod"
                     GridLayout {
+                        rowSpacing: Theme.rowGroupSpacing
                         RadioButton { text: qsTr("BAS"); name: "BAS"; checked: true; id: bas }
                         IntegerField { text: qsTr("No. models"); defaultValue: 0; name: "numberOfModels"; enabled: bas.checked; intValidator.top: 100000000 }
                         RadioButton { text: qsTr("MCMC"); name: "MCMC"; id: mcmc }

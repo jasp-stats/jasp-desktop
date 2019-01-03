@@ -206,7 +206,6 @@ HEADERS += \
     analysis/options/terms.h \
     analysis/analyses.h \
     analysis/analysis.h \
-    analysis/analysisloader.h \
     data/exporters/dataexporter.h \
     data/exporters/exporter.h \
     data/exporters/jaspexporter.h \
@@ -401,7 +400,6 @@ SOURCES += \
     analysis/options/terms.cpp \
     analysis/analyses.cpp \
     analysis/analysis.cpp \
-    analysis/analysisloader.cpp \
     data/exporters/dataexporter.cpp \
     data/exporters/exporter.cpp \
     data/exporters/jaspexporter.cpp \

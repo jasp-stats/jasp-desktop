@@ -46,27 +46,27 @@ Form {
                 CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio")    ; name: "VovkSellkeMPR" }
             }
         }
+    }
 
-        GridLayout {
-            ButtonGroup {
-                title: qsTr("Hypothesis")
-                name: "hypothesis"
-                RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
-                RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
-                RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
-            }
+    GridLayout {
+        ButtonGroup {
+            title: qsTr("Hypothesis")
+            name: "hypothesis"
+            RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
+            RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
+            RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
+        }
 
+        GroupBox {
+            title: qsTr("Plots")
+            CheckBox { text: qsTr("Display pairwise table")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
             GroupBox {
-                title: qsTr("Plots")
-                CheckBox { text: qsTr("Display pairwise table")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
-                GroupBox {
-                    enabled: plotCorrelationMatrix.checked
-                    indent: true
-                    CheckBox { text: qsTr("Densities for variables")    ; name: "plotDensities" }
-                    CheckBox { text: qsTr("Statistics")                 ; name: "plotStatistics" }
-                }
-
+                enabled: plotCorrelationMatrix.checked
+                indent: true
+                CheckBox { text: qsTr("Densities for variables")    ; name: "plotDensities" }
+                CheckBox { text: qsTr("Statistics")                 ; name: "plotStatistics" }
             }
+
         }
     }
 

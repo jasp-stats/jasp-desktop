@@ -21,6 +21,7 @@
 
 #include "analysis.h"
 #include "appinfo.h"
+#include "dataset.h"
 
 #include <QString>
 #include <QMap>
@@ -39,6 +40,7 @@ class Analyses : public QAbstractListModel
 public:
 
 	enum myRoles {	formPathRole = Qt::UserRole + 1,
+					analysisRole,
 					titleRole,
 					nameRole };
 
@@ -68,6 +70,9 @@ public:
 	Json::Value asJson() const;
 
 	void		selectAnalysis(Analysis * analysis);
+	
+	void		setDataSet(DataSet* dataSet)	{ _dataSet = dataSet; }
+	DataSet*	getDataSet() const				{ return _dataSet; }
 
 //AbstractListModel functions
 public:
@@ -120,6 +125,7 @@ private:
 
 	 size_t _nextId					= 0;
 	 int	_currentAnalysisIndex	= -1;
+	 DataSet* _dataSet				= nullptr;
 };
 
 #endif // ANALYSES_H

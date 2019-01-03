@@ -38,9 +38,6 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	//setChannel(new QQmlWebChannel(this));
 	//_analysisMenu = new QMenu(_mainWindow);
 	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
-
-
-	std::cout << "Must be done in QML: connect(_webViewResults, &QWebEngineView::loadFinished, this, &ResultsJsInterface::resultsPageLoaded);" << std::endl;
 }
 
 

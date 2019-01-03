@@ -4,6 +4,7 @@ AssignedVariablesList 1.0 AssignedVariablesList.qml
 Button 1.0 Button.qml
 ButtonGroup 1.0 ButtonGroup.qml
 CheckBox 1.0 CheckBox.qml
+ColumnLayout 1.0 ColumnLayout.qml
 ComboBox 1.0 ComboBox.qml
 DoubleField 1.0 DoubleField.qml
 ExpanderButton 1.0 ExpanderButton.qml

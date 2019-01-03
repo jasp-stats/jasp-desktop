@@ -27,20 +27,25 @@
 #include "enginedefinitions.h"
 
 #include <set>
+#include <QObject>
 #include "modules/dynamicmodules.h"
 
 class ComputedColumn;
+class Analyses;
+class DataSet;
 
-class Analysis
+class Analysis : public QObject
 {
+	Q_OBJECT
+	
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
 public:
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
 
-	Analysis(size_t id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool fromQML = false, bool useJaspResults = false);
-	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry);
+	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data);
+	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry);
 
 	virtual ~Analysis();
 
@@ -75,19 +80,12 @@ public:
 	//getters
 	const	Json::Value &results()				const	{ return _results;				}
 	const	Json::Value &userData()				const	{ return _userData;				}
-	const	Json::Value &requiresInit()			const	{ return _requiresInit;			}
-	const	Json::Value &dataKey()				const	{ return _dataKey;				}
-	const	Json::Value &stateKey()				const	{ return _stateKey;				}
-	const	Json::Value &resultsMeta()			const	{ return _resultsMeta;			}
 	const	std::string &name()					const	{ return _name;					}
 	const	Version		&version()				const	{ return _version;				}
 	const	std::string &title()				const	{ return _title;				}
 	const	std::string &rfile()				const	{ return _rfile;				}
 	const	std::string &module()				const	{ return _module;				}
 			size_t		id()					const	{ return _id;					}
-			bool		isAutorun()				const	{ return _autorun;				}
-			bool		useData()				const	{ return _usedata;				}
-			bool		fromQML()				const	{ return _fromQML;				}
 			bool		usesJaspResults()		const	{ return _useJaspResults;		}
 			Status		status()				const	{ return _status;				}
 			int			revision()				const	{ return _revision;				}
@@ -95,10 +93,10 @@ public:
 			bool		isRefreshBlocked()		const	{ return _refreshBlocked;		}
 	const	Json::Value	&getSaveImgOptions()	const	{ return _saveImgOptions;		}
 	const	Json::Value	&getImgResults()		const	{ return _imgResults;			}
+			DataSet*	getDataSet()			const;
 
 			void		refresh();
 	virtual void		abort();
-			void		scheduleRun();
 
 			Json::Value asJSON()		const;
 			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
@@ -147,18 +145,12 @@ private:
 							_name,
 							_title,
 							_rfile;
-	Json::Value				_requiresInit	= false,
-							_dataKey		= Json::nullValue,
-							_stateKey		= Json::nullValue,
-							_resultsMeta	= Json::nullValue;
-	bool					_autorun		= true,
-							_usedata		= true,
-							_fromQML		= false,
-							_useJaspResults = false;
+	bool					_useJaspResults = false;
 	Version					_version;
 	int						_revision		= 0;
 
-	Modules::AnalysisEntry	*_moduleData	= nullptr;
+	Modules::AnalysisEntry*	_moduleData		= nullptr;
+	Analyses*				_analyses		= nullptr;
 };
 
 #endif // ANALYSIS_H
