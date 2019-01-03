@@ -67,12 +67,8 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
 	_withinSubjectsTermsModel = new TableModelAnovaModel(this);
-	ui->withinModelTerms->setModel(_withinSubjectsTermsModel);
+    ui->modelTerms->setModel(_withinSubjectsTermsModel);
 	connect(_withinSubjectsTermsModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
-
-	_betweenSubjectsTermsModel = new TableModelAnovaModel(this);
-	ui->betweenModelTerms->setModel(_betweenSubjectsTermsModel);
-	connect(_betweenSubjectsTermsModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
 	_contrastsModel = new TableModelVariablesOptions();
     ui->contrasts->setModel(_contrastsModel);
@@ -84,13 +80,13 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged(bool)), this, SLOT(factorsChanged(bool)));
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
+    connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _withinSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
+    connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_covariatesListModel, SIGNAL(assignmentsChanged(bool)), this, SLOT(factorsChanged(bool)));
-	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addCovariates(Terms)));
-	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
+    connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _withinSubjectsTermsModel, SLOT(addCovariates(Terms)));
+    connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
 	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
@@ -154,20 +150,14 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->containerFriedman->hide();
 
 
-	ui->withinModelTerms->setFactorsLabel("Repeated Measures Components");
-	ui->betweenModelTerms->setFactorsLabel("Between Subjects Components");
+    ui->modelTerms->setFactorsLabel("Components");
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 
-#ifndef JASP_DEBUG
-	ui->groupCompareMainEffects->hide();
+    termsChanged();
 
-#else
-	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
-
-#endif
 }
 
 AnovaRepeatedMeasuresForm::~AnovaRepeatedMeasuresForm()
@@ -189,7 +179,8 @@ void AnovaRepeatedMeasuresForm::bindTo(Options *options, DataSet *dataSet)
 	if (_withinSubjectsTermsModel->terms().size() == 0)
 		_withinSubjectsTermsModel->addFixedFactors(factors);
 
-	_betweenSubjectsTermsModel->setVariables(_betweenSubjectsFactorsListModel->assigned());
+    _withinSubjectsTermsModel->setVariables(_betweenSubjectsFactorsListModel->assigned());
+    termsChanged();
 }
 
 void AnovaRepeatedMeasuresForm::factorsChanging()
@@ -241,8 +232,6 @@ void AnovaRepeatedMeasuresForm::factorsChanged(bool changed)
 void AnovaRepeatedMeasuresForm::termsChanged()
 {
 	Terms terms;
-
-	terms.add(string("~OVERALL"));
 
 	foreach (const Factor &factor, _designTableModel->design())
 		terms.add(factor.first);

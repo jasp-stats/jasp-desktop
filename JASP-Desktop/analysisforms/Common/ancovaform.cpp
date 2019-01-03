@@ -40,14 +40,12 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableVariablesModel);
     _fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-    _fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
-    ui->fixedFactors->setModel(_fixedFactorsListModel);
+	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-    _randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
-    ui->randomFactors->setModel(_randomFactorsListModel);
+	ui->randomFactors->setModel(_randomFactorsListModel);
 
 	_covariatesListModel = new TableModelVariablesAssigned(this);
 	_covariatesListModel->setSource(&_availableVariablesModel);
@@ -95,15 +93,21 @@ AncovaForm::AncovaForm(QWidget *parent) :
 
     _horizontalAxisTableModel = new TableModelVariablesAssigned(this);
     _horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
+    _wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+
 	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
 
     _seperateLinesTableModel = new TableModelVariablesAssigned(this);
     _seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
-	ui->plotSeparateLines->setModel(_seperateLinesTableModel);
+    _seperateLinesTableModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    _seperateLinesTableModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->plotSeparateLines->setModel(_seperateLinesTableModel);
 
     _seperatePlotsTableModel = new TableModelVariablesAssigned(this);
     _seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
-	ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
+    _seperatePlotsTableModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    _seperatePlotsTableModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
 
 	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
 	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
@@ -190,12 +194,17 @@ void AncovaForm::factorsChanging()
 void AncovaForm::factorsChanged()
 {
 	Terms factorsAvailable;
+    Terms variablesAvailable;
 
 	factorsAvailable.add(_fixedFactorsListModel->assigned());
 	factorsAvailable.add(_randomFactorsListModel->assigned());
 
+    variablesAvailable.add(_fixedFactorsListModel->assigned());
+    variablesAvailable.add(_randomFactorsListModel->assigned());
+    variablesAvailable.add(_covariatesListModel->assigned());
+
 	_contrastsModel->setVariables(factorsAvailable);
-	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+    _plotFactorsAvailableTableModel->setVariables(variablesAvailable);
 	_simpleEffectsAvailableTableModel->setVariables(factorsAvailable);
 	_kruskalAvailableTableModel->setVariables(factorsAvailable);
 

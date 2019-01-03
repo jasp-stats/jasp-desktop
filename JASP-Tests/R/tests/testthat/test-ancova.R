@@ -81,42 +81,42 @@ test_that("Contrasts table results match", {
 
   refTables <- list(
     deviation = list("2 - 1, 2, 3, 4, 5", -0.200720248979633, 0.213572066533121, -0.939824445386938,
-                     0.349716429527485, 95, -0.6247726, 0.2233321, "TRUE", "3 - 1, 2, 3, 4, 5", 0.326355030521638,
-                     0.213419672724688, 1.52917032603005, 0.129580520593874, 95, -0.09739473, 0.7501048, "FALSE",
+                     0.349716429527485, "TRUE", "3 - 1, 2, 3, 4, 5", 0.326355030521638,
+                     0.213419672724688, 1.52917032603005, 0.129580520593874, "FALSE",
                      "4 - 1, 2, 3, 4, 5", -0.163006179525351, 0.213771994762986,
-                     -0.762523546202018, 0.447656831363019, 95, -0.5874555, 0.2614431, "FALSE", "5 - 1, 2, 3, 4, 5",
-                     0.17396802464162, 0.214943819683978, 0.809365093155025, 0.42034917204134, 95, -0.252808, 0.600744,
+                     -0.762523546202018, 0.447656831363019, "FALSE", "5 - 1, 2, 3, 4, 5",
+                     0.17396802464162, 0.214943819683978, 0.809365093155025, 0.42034917204134,
                      "FALSE"),
     simple = list("2 - 1", -0.0641236223213591, 0.343277644425165, -0.186798130792167,
-                  0.852221484436515, 95,  -0.7457094,  0.6174622, "TRUE", "3 - 1", 0.462951657179913, 0.342949539026206,
-                  1.34991188060625, 0.180285987179755, 95,  -0.2179827, 1.1438860, "FALSE", "4 - 1", -0.0264095528670768,
-                  0.337118098977225, -0.0783391723766838, 0.937724778659558, 95, -0.6957654, 0.6429463, "FALSE",
+                  0.852221484436515, "TRUE", "3 - 1", 0.462951657179913, 0.342949539026206,
+                  1.34991188060625, 0.180285987179755, "FALSE", "4 - 1", -0.0264095528670768,
+                  0.337118098977225, -0.0783391723766838, 0.937724778659558, "FALSE",
                   "5 - 1", 0.310564651299894, 0.345720813950643, 0.898310540667163,
-                  0.371315247360673, 95,  -0.3758721, 0.9970014, "FALSE"),
+                  0.371315247360673, "FALSE"),
     difference = list("2 - 1", -0.0641236223213588, 0.343277644425165, -0.186798130792167,
-                      0.852221484436515, 95, -0.7457094,  0.6174622, "TRUE", "3 - 1, 2", 0.495013468340592, 0.292959120347178,
-                      1.68970151109808, 0.0943992176806134, 95, -0.08666373, 1.07669067, "FALSE", "4 - 1, 2, 3",
-                      -0.159352231153261, 0.275116843578239, -0.579216557883866, 0.563828556165238, 95, -0.7056032, 0.3868987,
+                      0.852221484436515, "TRUE", "3 - 1, 2", 0.495013468340592, 0.292959120347178,
+                      1.68970151109808, 0.0943992176806134, "FALSE", "4 - 1, 2, 3",
+                      -0.159352231153261, 0.275116843578239, -0.579216557883866, 0.563828556165238,
                       "FALSE", "5 - 1, 2, 3, 4", 0.217460030802025, 0.268679774604972,
-                      0.809365093155025, 0.42034917204134, 95,  -0.31601, 0.75093, "FALSE"),
+                      0.809365093155025, 0.42034917204134, "FALSE"),
     Helmert = list("1 - 2, 3, 4, 5", -0.170745783322843, 0.272701151705157, -0.626127840880747,
-                   0.532748563022963, 95, -0.7122003,  0.3707087, "TRUE", "2 - 3, 4, 5", -0.313159207525603,
-                   0.274645898379152, -1.14022896163293, 0.257087871753455, 95, -0.8584751,  0.2321567, "FALSE",
+                   0.532748563022963, "TRUE", "2 - 3, 4, 5", -0.313159207525603,
+                   0.274645898379152, -1.14022896163293, 0.257087871753455, "FALSE",
                    "3 - 4, 5", 0.320874107963505, 0.291421643235482, 1.10106478160314,
-                   0.273679968781506, 95, -0.2577504,  0.8994986, "FALSE", "4 - 5", -0.336974204166971, 0.340503320254199,
-                   -0.98963558979515, 0.324892868709605, 95, -1.0130515,  0.3391031, "FALSE"),
+                   0.273679968781506, "FALSE", "4 - 5", -0.336974204166971, 0.340503320254199,
+                   -0.98963558979515, 0.324892868709605, "FALSE"),
     repeated = list("1 - 2", 0.0641236223213587, 0.343277644425165, 0.186798130792166,
-                    0.852221484436516, 95,  -0.6174622,  0.7457094, "TRUE", "2 - 3", -0.527075279501272, 0.336088495268646,
-                    -1.56826337979812, 0.120179976824791, 95,  -1.1943869,  0.1402363, "FALSE", "3 - 4", 0.489361210046989,
-                    0.338686060204421, 1.444881462649, 0.151816532688129, 95,  -0.1831079,  1.1618303, "FALSE",
+                    0.852221484436516, "TRUE", "2 - 3", -0.527075279501272, 0.336088495268646,
+                    -1.56826337979812, 0.120179976824791, "FALSE", "3 - 4", 0.489361210046989,
+                    0.338686060204421, 1.444881462649, 0.151816532688129, "FALSE",
                     "4 - 5", -0.336974204166971, 0.340503320254199, -0.98963558979515,
-                    0.324892868709605, 95,  -1.0130515,  0.3391031, "FALSE"),
+                    0.324892868709605, "FALSE"),
     polynomial = list("linear", 0.208344567699659, 0.240588115184784, 0.865980298069335,
-                      0.388705894709638, 95, -0.2693488,  0.6860379, "TRUE", "quadratic", -0.0572582720504826,
-                      0.238398138250912, -0.240179191291413, 0.810714351679878, 95, -0.5306034,  0.4160868, "FALSE",
+                      0.388705894709638, "TRUE", "quadratic", -0.0572582720504826,
+                      0.238398138250912, -0.240179191291413, 0.810714351679878, "FALSE",
                       "cubic", 0.0743566940225005, 0.243521087108506, 0.305339857444745,
-                      0.760782433052004, 95,  -0.4091601,  0.5578735, "FALSE", "quartic", 0.412402551299919, 0.237982457186854,
-                      1.73291156068751, 0.0863908131438485, 95,  -0.0601172, 0.8849223, "FALSE")
+                      0.760782433052004, "FALSE", "quartic", 0.412402551299919, 0.237982457186854,
+                      1.73291156068751, 0.0863908131438485, "FALSE")
   )
 
   contrasts <- c("deviation", "simple", "difference", "Helmert", "repeated", "polynomial")
@@ -143,13 +143,12 @@ test_that("Post Hoc table results match", {
   options$postHocTestsScheffe <- TRUE
   options$postHocTestsTukey <- TRUE
   options$postHocTestsVariables <- "facExperim"
-  options$postHocTestsTypeStandard <- TRUE
   results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table,
     list("control", "experimental", -0.0830902357515323, 0.21391801479091,
          -0.388420937024623, -0.078154288522293197, 0.698555762823947,
-         0.927393971055831, 0.698555762823947, 0.698555762823947, -0.4966168, 0.3501177, "TRUE")
+         0.927393971055831, 0.698555762823947, "", 0.698555762823947, "TRUE")
   )
 })
 
@@ -264,4 +263,130 @@ test_that("Analysis handles errors", {
   results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="Negative WLS weights check")
+})
+
+# Below are the unit tests for Andy Field's book
+
+# Chapter 1
+#test_that("Fields Book - Chapter 1 results match", {
+  #options <- jasptools::analysisOptions("Ancova")
+  #options$dependent <- "Sales"
+  #options$covariates <- "Adverts"
+  #options$modelTerms <- list(
+  #  list(components="Adverts")
+  #)
+  #options$plotHorizontalAxis <- "Adverts"
+  #results <- jasptools::run("Ancova", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_01/www/Album Sales.sav"), options, view=FALSE, quiet=TRUE)
+  #plotUnspecified1 <- results[["state"]][["stateDescriptivesPlot"]][[1]]
+  #expect_equal_plots(plotUnspecified1, "?", dir="Ancova") # This command needs to be updated
+#})
+
+# Chapter 6
+test_that("Fields Book - Chapter 6 results match", {
+  options <- jasptools::analysisOptions("Ancova")
+  options$dependent <- "Happiness"
+  options$fixedFactors <- "Dose"
+  options$covariates <- "Puppy_love"
+  options$modelTerms <- list(
+    list(components="Dose"),
+    list(components="Puppy_love")
+  )
+  options$marginalMeansTerms <- c("Dose")
+  options$marginalMeansBootstrapping <- TRUE
+  options$marginalMeansBootstrappingReplicates <- 1000
+  options$contrasts <- list(list(contrast = "simple", variable = "Dose"))
+  set.seed(1) # For Bootstrapping Unit Tests
+  results <- jasptools::run("Ancova", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_06/www/Puppy Love.sav"), options, view=FALSE, quiet=TRUE)
+  output1 <- results[["results"]][["anova"]][["data"]]
+  expect_equal_tables(output1,
+                      list("Dose", 25.18519, 2, 12.5926, 4.141929, 0.02744654, "TRUE",
+                           "Puppy_love", 15.07575, 1, 15.07575, 4.958681, 0.03483338, "TRUE",
+                           "Residual", 79.04712, 26, 3.040274, "", "", "TRUE")
+  )
+  output2a <- results[["results"]][["marginalMeans"]][["collection"]][[1]][["data"]]
+  expect_equal_tables(output2a,
+                      list(1, 2.92637, 0.5962045, 1.700854, 4.151886, "TRUE",
+                           2, 4.71205, 0.6207971, 3.435984, 5.988117, "FALSE",
+                           3, 5.151251, 0.5026323, 4.118076, 6.184427, "FALSE")
+  )
+  output2b <- results[["results"]][["marginalMeans"]][["collection"]][[2]][["data"]]
+  expect_equal_tables(output2b,
+                      list(1, 2.92637, -0.01753049, 0.4052424, 2.255964, 3.969381, "TRUE",
+                           2, 4.71205, 0.0344565, 0.3758842, 4.069462, 5.576816, "FALSE",
+                           3, 5.151251, 0.01653462, 0.648977, 4.055325, 6.671648, "FALSE")
+  )
+  output3 <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
+  expect_equal_tables(output3,
+                      list("2 - 1", 1.78568, 0.8493553, 2.102395, 0.04535356, "TRUE",
+                           "3 - 1", 2.224881, 0.8028109, 2.771364, 0.01017501, "FALSE")
+  )
+  options <- jasptools::analysisOptions("Ancova")
+  options$dependent <- "Happiness"
+  options$fixedFactors <- "Dose"
+  options$covariates <- "Puppy_love"
+  options$modelTerms <- list(
+    list(components="Dose"),
+    list(components="Puppy_love")
+  )
+  options$contrasts <- list(list(contrast = "none", variable = "Dose"))
+  options$postHocTestsVariables <- c("Dose")
+  options$postHocTestsSidak <- TRUE
+  options$postHocTestsTukey <- FALSE
+  options$kruskalVariablesAssigned <- c("Dose")
+  options$postHocTestBootstrapping <- TRUE
+  options$postHocTestBootstrappingReplicates <- 5000
+  set.seed(1) # For Bootstrapping Unit Tests
+  results <- jasptools::run("Ancova", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_06/www/Puppy Love.sav"), options, view=FALSE, quiet=TRUE)
+  output4a <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
+  expect_equal_tables(output4a,
+                      list(1, 2, -1.78568, 0.8493553, -2.102395, "", "", "", "", 0.1299831, "", "TRUE",
+                           1, 3, -2.224881, 0.8028109, -2.771364, "", "", "", "", 0.0302155, "", "FALSE",
+                           2, 3, -0.4392012, 0.8112214, -0.5414073, "", "", "", "", 0.9324995, "", "FALSE")
+  )
+  output4b <- results[["results"]][["posthocBoots"]][["collection"]][[1]][["data"]]
+  expect_equal_tables(output4b,
+                      list(1, 2, -1.78568, -0.01552806, 0.5088203, -2.82467, -0.7807666, "TRUE",
+                           1, 3, -2.224881, 0.0187791, 0.72639, -3.745609, -0.8706909, "FALSE",
+                           2, 3, -0.4392012, 0.03425721, 0.7239277, -1.989235, 0.8850431, "FALSE")
+  )
+  options <- jasptools::analysisOptions("Ancova")
+  options$dependent <- "Happiness"
+  options$fixedFactors <- c("Dose")
+  options$covariates <- c("Puppy_love")
+  options$modelTerms <- list(
+    list(components="Dose"),
+    list(components="Puppy_love"),
+    list(components=c("Dose", "Puppy_love"))
+  )
+  options$contrasts <- list(list(contrast = "none", variable = "Dose"))
+  options$plotHorizontalAxis <- "Puppy_love"
+  results <- jasptools::run("Ancova", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_06/www/Puppy Love.sav"), options, view=FALSE, quiet=TRUE)
+  unnumberedFigure1 <- results[["state"]][["stateDescriptivesPlot"]][[1]]
+  #expect_equal_plots(unnumberedFigure1, "?", dir="Ancova") # This command needs to be updated
+  output5 <- results[["results"]][["anova"]][["data"]]
+  expect_equal_tables(output5,
+                      list("Dose", 36.55756, 2, 18.27878, 7.483569, 0.002979564, "TRUE",
+                           "Puppy_love", 17.18222, 1, 17.18222, 7.034625, 0.01394746, "FALSE",
+                           "Dose <unicode> Puppy_love", 20.42659, 2, 10.2133, 4.181456, 0.02766711, "FALSE",
+                           "Residual", 58.62052, 24, 2.442522, "", "", "TRUE")
+  )
+  options <- jasptools::analysisOptions("Ancova")
+  options$dependent <- "Happiness"
+  options$fixedFactors <- c("Dose")
+  options$covariates <- c("Puppy_love")
+  options$modelTerms <- list(
+    list(components="Dose"),
+    list(components="Puppy_love"),
+    list(components=c("Dose", "Puppy_love"))
+  )
+  options$contrasts <- list(list(contrast = "none", variable = "Dose"))
+  options$plotHorizontalAxis <- "Puppy_love"
+  options$plotSeparatePlots <- "Dose"
+  results <- jasptools::run("Ancova", dataset = rio::import("~/Dropbox/ej_andy_shared/spss_tutorials/spss_glm_06/www/Puppy Love.sav"), options, view=FALSE, quiet=TRUE)
+  unnumberedFigure2a <- results[["state"]][["stateDescriptivesPlot"]][[1]]
+  #expect_equal_plots(unnumberedFigure2a, "?", dir="Ancova") # This command needs to be updated
+  unnumberedFigure2b <- results[["state"]][["stateDescriptivesPlot"]][[2]]
+  #expect_equal_plots(unnumberedFigure2b, "?", dir="Ancova") # This command needs to be updated
+  unnumberedFigure2c <- results[["state"]][["stateDescriptivesPlot"]][[3]]
+  #expect_equal_plots(unnumberedFigure2c, "?", dir="Ancova") # This command needs to be updated
 })
