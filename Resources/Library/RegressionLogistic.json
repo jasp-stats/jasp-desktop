@@ -50,7 +50,18 @@
 			"type": "Boolean",
 			"default": true
 		},
-		{
+        {
+            "name": "coeffEstimatesBootstrapping",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "coeffEstimatesBootstrappingReplicates",
+            "type": "Integer",
+            "min": 100,
+            "default": 5000
+        },
+        {
 			"name": "coeffCI",
 			"type": "Boolean",
 			"default": false
@@ -87,6 +98,29 @@
 			"type": "Boolean",
 			"default": false
 		},
+        {
+            "name": "casewiseDiagnostics",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "casewiseDiagnosticsType",
+            "type": "List",
+            "default": "residualZ",
+            "options": [ "residualZ", "cooksDistance", "allCases" ]
+        },
+        {
+            "name": "casewiseDiagnosticsResidualZ",
+            "type": "Number",
+            "value": 3,
+            "min": 0
+        },
+        {
+            "name": "casewiseDiagnosticsCooksDistance",
+            "type": "Number",
+            "value": 1,
+            "min": 0
+        },
 		{
 			"name": "confusionMatrixOpt",
 			"type": "Boolean",

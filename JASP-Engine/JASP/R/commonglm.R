@@ -153,9 +153,10 @@
       list(name="dof", title="df", type="integer"),
       list(name="chi", title="\u03A7\u00B2", type="number", format="dp:3"),
       list(name="pvl", title="p", type="number", format="dp:3;p:.001"),
-      list(name="fad", title="McFadden R\u00B2", type="number", format="sf:4;dp:3"),
-      list(name="nag", title="Nagelkerke R\u00B2", type="number", format="sf:4;dp:3"),
-      list(name="tju", title="Tjur R\u00B2", type="number", format="sf:4;dp:3")
+      list(name="fad", title="McFadden R²", type="number", format="sf:4;dp:3"),
+      list(name="nag", title="Nagelkerke R²", type="number", format="sf:4;dp:3"),
+      list(name="tju", title="Tjur R²", type="number", format="sf:4;dp:3"),
+      list(name="cas", title="Cox & Snell R²", type="number", format="sf:4;dp:3")
     )
 
     if (options[["method"]] != "enter") {
@@ -192,7 +193,8 @@
                pvl = .clean(NULL),
                fad = .clean(NULL),
                nag = .clean(NULL),
-               tju = .clean(NULL)),
+               tju = .clean(NULL),
+               cas = .clean(NULL)),
           list(mod = "H\u2081",
                dev = .clean(glmObj[[2]][["deviance"]]),
                aic = .clean(glmObj[[2]][["aic"]]),
@@ -202,7 +204,8 @@
                pvl = .clean(lr[["pval"]]),
                fad = .clean(.mcFadden(glmObj[[2]], glmObj[[1]])),
                nag = .clean(.nagelkerke(glmObj[[2]], glmObj[[1]])),
-               tju = .clean(.tjur(glmObj[[2]])))
+               tju = .clean(.tjur(glmObj[[2]])),
+               cas = .clean(.coxSnell(glmObj[[2]], glmObj[[1]])))
         )
 
       } else {
@@ -216,9 +219,12 @@
                 options[["method"]] == "stepwise") {
               fadden <- .mcFadden(mObj, glmObj[[1]])
               nagel <- .nagelkerke(mObj, glmObj[[1]])
+              coxSn <- .coxSnell(mObj, glmObj[[1]])
+              
             } else {
               fadden <- -1*.mcFadden(glmObj[[1]], mObj)
               nagel <- -1*.nagelkerke(glmObj[[1]], mObj)
+              coxSn <- -1*.coxSnell(glmObj[[1]], mObj)
             }
 
             lr <- .lrtest(glmObj[[midx]], glmObj[[midx-1]])
@@ -232,7 +238,8 @@
               pvl = .clean(lr[["pval"]]),
               fad = .clean(fadden),
               nag = .clean(nagel),
-              tju = .clean(.tjur(mObj))
+              tju = .clean(.tjur(mObj)),
+              cas = .clean(coxSn)
             )
           } else {
             rows[[midx]] <- list(
@@ -245,7 +252,8 @@
               pvl = .clean(NULL),
               fad = .clean(.mcFadden(mObj, mObj)),
               nag = .clean(.nagelkerke(mObj, mObj)),
-              tju = .clean(.tjur(mObj))
+              tju = .clean(.tjur(mObj)),
+              cas = .clean(.coxSnell(mObj, mObj))
             )
           }
         }
@@ -253,8 +261,8 @@
     } else {
       rows <- list(
         list(mod = "H\u2080", dev = ".", fad = .clean(NULL), nag = .clean(NULL),
-             tju = .clean(NULL), aic = "."),
-        list(mod = "H\u2081", dev = ".", fad = ".", nag = ".", tju = ".", aic = ".")
+             tju = .clean(NULL), cas = .clean(NULL), aic = "."),
+        list(mod = "H\u2081", dev = ".", fad = ".", nag = ".", tju = ".", cas = ".", aic = ".")
       )
     }
 
@@ -298,6 +306,8 @@
       list(name="std", title = "Standardized\u207A", type="number", format="dp:3"),
       list(name="or", title = "Odds Ratio", type="number", format="sf:4;dp:3"),
       list(name="zval", title = "z", type="number", format="sf:4;dp:3"),
+      list(name="waldsta", title = "Wald Statistic", type="number", format="sf:4;dp:3", overTitle = "Wald Test"),
+      list(name="walddf", title = "df", type="number", format="sf:4;dp:3", overTitle = "Wald Test"),
       list(name="pval", title = "p", type="number", format="dp:3;p:.001"),
       list(name="vsmpr", title = "VS-MPR\u002A", type="number", format="sf:4;dp:3"),
       list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle=ciTitle),
@@ -307,7 +317,7 @@
 
     # then determine which ones we need
     selectFields <- with(options, c(multimod, TRUE, TRUE, TRUE, stdCoeff,
-                                    oddsRatios, TRUE, TRUE, VovkSellkeMPR,
+                                    oddsRatios, TRUE, TRUE, TRUE, TRUE, TRUE, VovkSellkeMPR,
                                     coeffCI, coeffCI))
 
     out[["schema"]] <- list(fields=fields[selectFields])
@@ -363,6 +373,8 @@
             s[3] <- s[1]/s[2] # new z
             s[4] <- 2*pnorm(-abs(s[3])) # new p
           }
+          waldtest <- mdscore::wald.test(glmObj[[2]], term = 1)
+          
           rows[[1]] <- list(param = .clean(.formatTerm(rn, glmObj[[2]])),
                             est = .clean(s[1]),
                             se = .clean(s[2]),
@@ -370,6 +382,8 @@
                             or = .clean(exp(s[1])),
                             zval = .clean(s[3]),
                             pval = .clean(s[4]),
+                            waldsta = .clean(as.numeric(waldtest$W)),
+                            walddf = .clean(as.numeric(1)),
                             vsmpr = .clean(.VovkSellkeMPR(s[4])),
                             cilo = .clean(expon(s[1] - c * s[2])),
                             ciup = .clean(expon(s[1] + c * s[2])))
@@ -381,6 +395,8 @@
           }
           for (i in seq_along(rn)) {
 
+            waldtest <- mdscore::wald.test(glmObj[[2]], term = i)
+
             rows[[i]] <- list(param = .clean(.formatTerm(rn[i], glmObj[[2]])),
                               est = .clean(s[i,1]),
                               se = .clean(s[i,2]),
@@ -388,6 +404,8 @@
                               or = .clean(exp(s[i,1])),
                               zval = .clean(s[i,3]),
                               pval = .clean(s[i,4]),
+                              waldsta = .clean(as.numeric(waldtest$W)),
+                              walddf = .clean(as.numeric(1)),
                               vsmpr = .clean(.VovkSellkeMPR(s[i,4])),
                               cilo = .clean(expon(s[i,1] - c * s[i,2])),
                               ciup = .clean(expon(s[i,1] + c * s[i,2])))
@@ -418,6 +436,8 @@
               s[3] <- s[1]/s[2] # new z
               s[4] <- 2*pnorm(-abs(s[3])) # new p
             }
+            waldtest <- mdscore::wald.test(mObj, term = 1)
+            
             rows[[length(rows)+1]] <- list(
               model = as.character(midx),
               param = .clean(.formatTerm(rn, mObj)),
@@ -427,6 +447,8 @@
               or = .clean(exp(s[1])),
               zval = .clean(s[3]),
               pval = .clean(s[4]),
+              waldsta = .clean(as.numeric(waldtest$W)),
+              walddf = .clean(as.numeric(1)),
               vsmpr = .clean(.VovkSellkeMPR(s[4])),
               cilo = .clean(expon(s[1] - c * s[2])),
               ciup = .clean(expon(s[1] + c * s[2])),
@@ -439,6 +461,9 @@
               s[,4] <- 2*pnorm(-abs(s[,3])) # new p
             }
             for (i in seq_along(rn)) {
+              
+              waldtest <- mdscore::wald.test(mObj, term = i)
+
               row <- list(
                 model = as.character(midx),
                 param = .clean(.formatTerm(rn[i], mObj)),
@@ -448,6 +473,8 @@
                 or = .clean(exp(s[i,1])),
                 zval = .clean(s[i,3]),
                 pval = .clean(s[i,4]),
+                waldsta = .clean(as.numeric(waldtest$W)),
+                walddf = .clean(as.numeric(1)),
                 vsmpr = .clean(.VovkSellkeMPR(s[i,4])),
                 cilo = .clean(expon(s[i,1] - c * s[i,2])),
                 ciup = .clean(expon(s[i,1] + c * s[i,2]))
@@ -468,7 +495,8 @@
     } else {
       rows <- list(
         list(param = ".", est = ".", se = ".", std = ".", or = ".",
-             zval = ".", pval = ".", vsmpr = ".", cilo = ".", ciup = ".")
+             zval = ".", pval = ".", waldsta = ".", walddf = ".",
+             vsmpr = ".", cilo = ".", ciup = ".")
       )
     }
 
@@ -912,7 +940,21 @@
   # http://dx.doi.org/10.1198/tast.2009.08210
   ps <- predict(glmModel, type = "response")
   ys <- glmModel[["y"]]
-  return(abs(mean(ps[ys])-mean(ps[-ys])))
+  return(max(c(0,mean(ps[ys])-mean(ps[-ys]))))
+}
+
+.coxSnell <- function(glmModel, nullModel) {
+  rightSide <- deparse(glmModel[["formula"]][[3]])
+  if (length(rightSide == 1) && rightSide %in% c("1", "0")) {
+    # intercept-only model needs fix because of computer precision limits
+    return(NULL)
+  } else {
+    l0 <- -0.5*nullModel[["deviance"]]
+    lm <- as.numeric(logLik(glmModel))
+    n <- length(glmModel[["y"]])
+    coxSnell <- 1 - exp(l0 - lm)^(2 / n)
+    return(max(c(0,coxSnell)))
+  }
 }
 
 .bic <- function(glmModel) {
@@ -1126,13 +1168,45 @@
   }
 
   # then perform the theme and return the ggplot object
-  p <- JASPgraphs::themeJasp(p, legend.position = "none")
-  
   p + ggplot2::xlab(var) +
     ggplot2::ylab(ytitle) +
+    ggplot2::theme_bw() +
     custom_x_axis(ribdat) +
-    custom_y_axis() 
-
+    custom_y_axis() +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = 18),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
+      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
+      axis.text.x = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(t = 1, unit = "mm")
+      ),
+      axis.text.y = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(r = 1, unit = "mm")
+      ),
+      panel.background = ggplot2::element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      plot.background = ggplot2::element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      legend.background = ggplot2::element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      panel.border = ggplot2::element_blank(),
+      legend.key = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_line(size = 0.5),
+      axis.ticks.length = grid::unit(2.5, "mm"),
+      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+      legend.position = "none"
+    )
 }
 
 .glmLogRegRibbon <- function(logRes, var, ciInt = 0.95) {
@@ -1293,9 +1367,41 @@
     ggplot2::ylab("Residuals") +
     ggplot2::theme_bw() +
     custom_y_axis(ggdat[["resid"]]) +
-    custom_x_axis(ggdat[["x"]]) 
-
-    p <- JASPgraphs::themeJasp(p, legend.position = "none")
+    custom_x_axis(ggdat[["x"]]) +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = 18),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
+      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
+      axis.text.x = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(t = 1, unit = "mm")
+      ),
+      axis.text.y = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(r = 1, unit = "mm")
+      ),
+      panel.background = ggplot2::element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      plot.background = ggplot2::element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      legend.background = ggplot2::element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      panel.border = ggplot2::element_blank(),
+      legend.key = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_line(size = 0.5),
+      axis.ticks.length = grid::unit(2.5, "mm"),
+      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+      legend.position = "none"
+    )
 
   p
 }
@@ -1334,9 +1440,29 @@
     ggplot2::geom_point(size = 3, colour="black", fill = "grey", pch=21) +
     custom_y_axis(plotDat[["pres"]]) +
     custom_x_axis() +
-    ggplot2::labs(x = "Predicted Probability", y = "Squared Pearson Residual") 
-
-    p <- JASPgraphs::themeJasp(p, legend.position = "none")
+    ggplot2::labs(x = "Predicted Probability", y = "Squared Pearson Residual") +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = 18),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
+      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
+      axis.text.x = ggplot2::element_text(size = 15,
+                                          margin = ggplot2::margin(t = 1,
+                                                                   unit = "mm")),
+      axis.text.y = ggplot2::element_text(size = 15,
+                                          margin = ggplot2::margin(r = 1,
+                                                                   unit = "mm")),
+      panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+      plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+      legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+      panel.border = ggplot2::element_blank(),
+      legend.key = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_line(size = 0.5),
+      axis.ticks.length = grid::unit(2.5, "mm"),
+      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+      legend.position = "none")
 
   return(p)
 }

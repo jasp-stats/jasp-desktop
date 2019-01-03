@@ -72,6 +72,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   lrObj <- # glm object
   modelSummary <- # fit/summary table
   estimatesTable <- # parameter estimates table
+  estimatesTableBootstrapping <- # parameter estimates table bootstrapping
+  casewiseDiagnosticsTable <- # casewise diagnostics table
   confusionMatrix <- # confusion matrix table
   perfMetrics <- # performance metrics of full model
   estimatesPlots <- # plots for estimates
@@ -96,6 +98,16 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
           estimatesTable <<- state[["estimatesTable"]]
         }
 
+        if (!any(coeffEstimatesBootstrapping, coeffEstimatesBootstrappingReplicates)) {
+          # estimates table bootstrapping can be reused
+          estimatesTableBootstrapping <<- state[["estimatesTableBootstrapping"]]
+        }
+        
+        if (!any(casewiseDiagnostics, casewiseDiagnosticsType, casewiseDiagnosticsCooksDistance)) {
+          # estimates table bootstrapping can be reused
+          casewiseDiagnosticsTable <<- state[["casewiseDiagnosticsTable"]]
+        }
+        
         if (!any(confusionMatrixOpt, confusionMatrixProportions)) {
           # confusionMatrix can be reused
           confusionMatrix <<- state[["confusionMatrix"]]
@@ -136,6 +148,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
     lrObj <- state[["lrObj"]]
     modelSummary <- state[["modelSummary"]]
     estimatesTable <- state[["estimatesTable"]]
+    estimatesTableBootstrapping <- state[["estimatesTableBootstrapping"]]
+    casewiseDiagnosticsTable <- state[["casewiseDiagnosticsTable"]]
     confusionMatrix <- state[["confusionMatrix"]]
     perfMetrics <- state[["perfMetrics"]]
     estimatesPlots <- state[["estimatesPlots"]]
@@ -158,7 +172,9 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
 		list(name = "title", type = "title"),
 		list(name = "modelSummary", type = "table"),
 		list(name = "estimatesTable", type = "table"),
-    list(name = "factorDescriptives", type = "table"),
+		list(name = "estimatesTableBootstrapping", type = "table"),
+		list(name = "casewiseDiagnosticsTable", type = "table"),
+		list(name = "factorDescriptives", type = "table"),
 		list(name = "perfDiagnostics", type = "object", meta = .pdMeta),
 		list(name = "estimatesPlots", type = "collection", meta = "image"),
     list(name = "residualsPlots", type = "object", meta = .rpMeta)
@@ -178,6 +194,14 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   if (is.null(estimatesTable) && options[["coeffEstimates"]]) {
     estimatesTable <- .glmEstimatesTable(lrObj, options, perform,
                                          type = "binomial")
+  }
+  
+  if (is.null(estimatesTableBootstrapping) && options[["coeffEstimatesBootstrapping"]]) {
+    estimatesTableBootstrapping <- .estimatesTableBootstrapping(dataset, options, perform)
+  }
+  
+  if (is.null(casewiseDiagnosticsTable) && options[["casewiseDiagnostics"]]) {
+    casewiseDiagnosticsTable <- .casewiseDiagnosticsTable(dataset, lrObj, options)
   }
 
   if (is.null(confusionMatrix) && options[["confusionMatrixOpt"]]) {
@@ -233,6 +257,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   results[["title"]] <- "Logistic Regression"
   results[["modelSummary"]] <- modelSummary
   results[["estimatesTable"]] <- estimatesTable
+  results[["estimatesTableBootstrapping"]] <- estimatesTableBootstrapping
+  results[["casewiseDiagnosticsTable"]] <- casewiseDiagnosticsTable
   results[["perfDiagnostics"]] <- perfDiagnostics
   results[["estimatesPlots"]] <- estimatesPlots
   results[["residualsPlots"]] <- residualsPlots
@@ -251,6 +277,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
     state[["lrObj"]] <- lrObj
     state[["modelSummary"]] <- modelSummary
     state[["estimatesTable"]] <- estimatesTable
+    state[["estimatesTableBootstrapping"]] <- estimatesTableBootstrapping
+    state[["casewiseDiagnosticsTable"]] <- casewiseDiagnosticsTable
     state[["confusionMatrix"]] <- confusionMatrix
     state[["perfMetrics"]] <- perfMetrics
     state[["estimatesPlots"]] <- estimatesPlots
@@ -279,4 +307,213 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
     }
     return(out)
   }
+}
+
+.estimatesTableBootstrapping <- function(dataset, options, perform) {
+  
+  out <- NULL
+  out[["title"]] <- "Bootstrap Coefficients"
+    
+  if (options[["method"]] == "enter") {
+    multimod <- FALSE
+    paramtitle <- ""
+  } else {
+    multimod <- TRUE
+    paramtitle <- "Parameter"
+  }
+  
+  # first define all the fields
+  fields <- list(
+    list(name="model", title = "Model", type="string", combine = TRUE),
+    list(name="param", title = paramtitle, type="string"),
+    list(name="est", title = "Estimate", type="number", format="dp:3"),
+    list(name="bias", title = "Bias", type="number", format="dp:3"),
+    list(name="se", title = "Standard Error", type="number", format="dp:3"),
+    list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle="95 % Confidence interval"),
+    list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle="95 % Confidence interval")
+  )
+  
+  if (! multimod) {
+    fields <- fields[-1]
+  }
+    
+  out[["schema"]] <- list(fields=fields)
+  
+  testResult <- .jaspGlm(dataset, options, perform = perform, type = "binomial")
+  
+  if (perform == "run" && !is.null(testResult)) {
+    
+    rows <- list()
+    
+    for (i in 1:length(testResult)) {
+      
+      if (! multimod && i != 2) {
+        next
+      }
+      
+      rn <- rownames(summary(testResult[[i]])[["coefficients"]])
+      rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
+      
+      .bootstrapping <- function(data, indices, model.formula) {
+        d <- data[indices, , drop = FALSE] # allows boot to select sample
+        result <- glm(model.formula, family = "binomial", data = d)
+        return(coef(result))
+      }
+      
+      bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$coeffEstimatesBootstrappingReplicates, model.formula = formula(testResult[[i]]))
+      bootstrap.coef <- bootstrap.summary$t0
+      bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
+      bootstrap.se <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
+      
+      for (j in seq_along(rn)) {
+        
+        bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = 0.95, index=j)
+        row <- list(
+          model = as.character(i),
+          param = .clean(.formatTerm(rn[j], testResult[[i]])),
+          est = .clean(as.numeric(bootstrap.coef[j])),
+          bias = .clean(as.numeric(bootstrap.bias[j])),
+          se = .clean(as.numeric(bootstrap.se[j])),
+          cilo = .clean(as.numeric(bootstrap.ci$bca[4])),
+          ciup = .clean(as.numeric(bootstrap.ci$bca[5]))
+        )
+        if (j == 1) {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+        
+        rows[[length(rows) + 1]] <- row
+      }
+      
+    }
+      
+  } else {
+    rows <- list(
+      list(model = ".", param = ".", est = ".", bias = ".", se = ".", cilo = ".", ciup = ".")
+    )
+  }
+  
+  out[["data"]] <- rows
+  return(out)
+}
+
+.casewiseDiagnosticsTable <- function(dataset, model, options) {
+  
+  casewiseDiagnostics <- list()
+  casewiseDiagnostics[["title"]] <- "Casewise Diagnostics"
+  
+  # Declare table elements
+  fields <- list(
+    list(name = "caseNumber", title = "Case Number", type="integer"),
+    list(name = "dependentVariable", title = "Observed", type="string"),
+    list(name = "predicted", title = "Predicted", type = "number", format = "sf:4;dp:3"),
+    list(name = "predictedGroup", title = "Predicted Group", type="string"),
+    list(name = "residual", title = "Residual", type = "number", format = "sf:4;dp:3"),
+    list(name = "residualZ", title = "Studentized Residual", type = "number", format = "sf:4;dp:3"),
+    list(name = "cooksD", title = "Cook's Distance", type = "number", format = "sf:4;dp:3")
+  )
+  
+  casewiseDiagnostics[["schema"]] <- list(fields = fields)
+  
+  casewiseDiagnostics.rows <- list()
+  
+  if (perform == "run") {
+    
+    if (is.null(model)) {
+      
+      casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", dependentVariable=".", predicted = ".", predictedGroup = ".", residual = ".", residualZ = ".", cooksD = ".")
+      
+    } else {
+      
+      casewiseDiag <- .casewiseDiagnosticsLogisticRegression(dataset, model, options)
+      caseNumbers <- casewiseDiag$index
+      
+      if (is.na(caseNumbers)) {
+        
+        casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", dependentVariable=".", predicted = ".", predictedGroup = ".", residual = ".", residualZ = ".", cooksD = ".")
+        
+      } else {
+        
+        for (case in seq_along(caseNumbers))
+          casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=caseNumbers[case], 
+                                                                                 dependentVariable=casewiseDiag$dependent[case],
+                                                                                 predicted = casewiseDiag$predicted[case],
+                                                                                 predictedGroup = casewiseDiag$predictedGroup[case],
+                                                                                 residual = casewiseDiag$residual[case],
+                                                                                 residualZ = casewiseDiag$residualZ[case],
+                                                                                 cooksD=casewiseDiag$cooksD[case])
+      }
+    }
+    
+  } else {
+    
+    # init phase
+    casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", dependentVariable=".", predicted = ".", predictedGroup = ".", residual = ".", residualZ = ".", cooksD = ".")
+  }
+  
+  casewiseDiagnostics[["data"]] <- casewiseDiagnostics.rows
+  return(casewiseDiagnostics)
+}
+
+
+.casewiseDiagnosticsLogisticRegression <- function(dataset, model, options) {
+  
+  last <- length(model)
+  
+  # Values for all cases
+  dependentAll <- dataset[[.v(options$dependent)]]
+  dependentAllNumeric <- rep(0, nrow(dataset))
+  dependentAllNumeric[dependentAll == levels(dataset[[.v(options$dependent)]])[2]] <- 1
+  predictedAll <- predict(model[[last]], dataset, type = "response")
+  predictedGroupAll <- rep(levels(dataset[[.v(options$dependent)]])[1], nrow(dataset))
+  predictedGroupAll[predictedAll >= 0.5] <- levels(dataset[[.v(options$dependent)]])[2]
+  residualAll <- resid(model[[last]], type = "response")
+  residualZAll <- resid(model[[last]], type = "pearson")
+  cooksDAll <- cooks.distance(model[[last]])
+  
+  # This will be the variables for the return object
+  dependent <- NA
+  predicted <- NA
+  predictedGroup <- NA
+  residual <- NA
+  residualZ <- NA
+  cooksD <- NA
+  
+  if (options$casewiseDiagnosticsType == "residualZ") {
+    
+    index <- which(abs(residualZAll) > options$casewiseDiagnosticsResidualZ)
+    
+  } else if (options$casewiseDiagnosticsType == "cooksDistance") {
+    
+    index <- which(abs(cooksDAll) > options$casewiseDiagnosticsCooksDistance)
+    
+  } else {
+    
+    index <- seq_along(cooksDAll)
+  }
+  
+  if (length(index) == 0) {
+    
+    index <- NA
+    
+  } else {
+    
+    dependent <- dependentAll[index]
+    predicted <- predictedAll[index]
+    predictedGroup <- predictedGroupAll[index]
+    residual <- residualAll[index]
+    residualZ <- residualZAll[index]
+    cooksD <- cooksDAll[index]
+    
+  }
+  
+  return(list(index=unname(index),
+              dependent=as.character(dependent),
+              predicted=unname(predicted),
+              predictedGroup=as.character(predictedGroup),
+              residual=unname(residual),
+              residualZ=unname(residualZ),
+              cooksD=unname(cooksD))
+  )
 }
