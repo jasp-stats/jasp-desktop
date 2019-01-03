@@ -19,6 +19,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP.Theme 1.0
 
 Form {
     id: form
@@ -45,31 +46,31 @@ Form {
                 PercentField { text: qsTr("Interval")                   ; name: "ciValue"; defaultValue: 95; enabled:  credibleInterval.checked; indent: true}
             }
         }
+    }
 
-        GridLayout {
-            ButtonGroup {
-                title: qsTr("Hypothesis")
-                name: "hypothesis"
-                RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
-                RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
-                RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
-            }
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox { text: qsTr("Correlation matrix")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
-                GroupBox {
-                    enabled: plotCorrelationMatrix.checked
-                    indent: true
-                    CheckBox { text: qsTr("Densities for variables") ; name: "plotDensitiesForVariables" }
-                    CheckBox { text: qsTr("Posteriors under H\u2081")      ; name: "plotPosteriors" }
-                }
-            }
-
-            BayesFactorType {}
-
-            DoubleField { text: qsTr("Stretched beta prior width"); name: "priorWidth"; defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
+    GridLayout {
+        ButtonGroup {
+            title: qsTr("Hypothesis")
+            name: "hypothesis"
+            RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
+            RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
+            RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
         }
+
+        GroupBox {
+            title: qsTr("Plots")
+            CheckBox { text: qsTr("Correlation matrix")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
+            GroupBox {
+                enabled: plotCorrelationMatrix.checked
+                indent: true
+                CheckBox { text: qsTr("Densities for variables") ; name: "plotDensitiesForVariables" }
+                CheckBox { text: qsTr("Posteriors under H\u2081")      ; name: "plotPosteriors" }
+            }
+        }
+
+        BayesFactorType {}
+
+        DoubleField { text: qsTr("Stretched beta prior width"); name: "priorWidth"; defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
     }
 
     ExpanderButton {

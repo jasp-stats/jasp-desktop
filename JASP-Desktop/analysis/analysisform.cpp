@@ -54,6 +54,19 @@ using namespace std;
 
 int AnalysisForm::_scriptRequestCounter = 0;
 
+AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
+{
+	setObjectName("AnalysisForm");
+	_mainVariables = nullptr;
+
+	_options = nullptr;
+	_dataSet = nullptr;
+
+	_hasIllegalValue = false;
+	
+	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler);
+}
+
 AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _analysis(analysis), _errorMessagesItem(nullptr)
 {
 	setObjectName("AnalysisForm");
@@ -67,19 +80,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(
 // Maybe these error should be moved to MainWindow?
 //	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisForm::statusChangedWidgetHandler);
 //	connect(_quickWidget,	&QQuickWidget::sceneGraphError,	this,	&AnalysisForm::sceneGraphErrorHandler);
-	connect(&_QMLwatcher,	&QFileSystemWatcher::fileChanged, this, &AnalysisForm::QMLFileModifiedHandler);
-	
-	QString pathToQMLFile = _getAnalysisQMLPath();
-
-	if (!pathToQMLFile.isEmpty())
-	{
-#ifdef JASP_DEBUG
-		std::cout << "Succesfully loaded QML file path for analysis: " << pathToQMLFile.toStdString() << ", now being set as source of qquickwidget, actually loaded and parsed." << std::endl;
-#endif
-		std::cout << "should do something qml-y" << std::endl;
-		//_quickWidget->setSource(QUrl(pathToQMLFile));
-		_parseQML();
-	}
+//	connect(&_QMLwatcher,	&QFileSystemWatcher::fileChanged, this, &AnalysisForm::QMLFileModifiedHandler);	
 }
 
 bool AnalysisForm::hasIllegalValue() const
@@ -205,26 +206,6 @@ bool AnalysisForm::runRScriptRequestedForId(int requestId)
 	return _scriptRequestIdToKey.count(requestId) > 0; 
 }
 
-
-QString AnalysisForm::_getAnalysisQMLPath()
-{
-	QString path = QString::fromStdString(_analysis->qmlFormPath());
-
-	if (_analysis->isDynamicModule())
-	{
-		QString ospath = path;
-		if (ospath.startsWith("file:"))
-			ospath.remove(0, 5);
-		if (!_QMLwatcher.files().contains(ospath))
-		{
-			if (!_QMLwatcher.addPath(ospath))
-				qDebug() << "Could not add watcher to " << ospath;
-		}
-	}
-
-	return path;
-}
-
 void AnalysisForm::_parseQML()
 {
 	QQuickItem *root = this;
@@ -255,29 +236,22 @@ void AnalysisForm::_parseQML()
 			continue;
 #endif
 
-		bool isVisible = QQmlProperty(quickItem, "visible").read().toBool();
 		QString controlName = QQmlProperty(quickItem, "name").read().toString();
 
-		if (isVisible)
+		if (controlName.isEmpty())
 		{
-			if (controlName.isEmpty())
-			{
-				_errorMessages.append(QString::fromLatin1("A control ") + controlTypeStr + QString::fromLatin1(" has no name"));
-				continue;
-			}
-			if (controlNames.contains(controlName))
-			{
-				_errorMessages.append(QString::fromLatin1("2 controls have the same name: ") + controlName);
-				continue;
-			}
-			controlNames.append(controlName);
+			_errorMessages.append(QString::fromLatin1("A control ") + controlTypeStr + QString::fromLatin1(" has no name"));
+			continue;
 		}
+		if (controlNames.contains(controlName))
+		{
+			_errorMessages.append(QString::fromLatin1("2 controls have the same name: ") + controlName);
+			continue;
+		}
+		controlNames.append(controlName);
 
 		QMLItem *control = nullptr;
 		qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
-
-		if (!isVisible && controlType == qmlControlType::VariablesListView)
-			continue;
 
 		switch(controlType)
 		{
@@ -535,6 +509,20 @@ void AnalysisForm::addError(const QString &error)
 	_setErrorMessages();
 }
 
+void AnalysisForm::formCompletedHandler()
+{	
+	qDebug() << "Component Complete";
+	
+	QVariant analysisVariant = QQmlProperty(this, "analysis").read();
+	if (!analysisVariant.isNull())
+	{
+		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
+		_parseQML();
+		bindTo(_analysis->options(), _analysis->getDataSet());
+	}
+	
+}
+
 /*
 void AnalysisForm::statusChangedWidgetHandler(QQuickWidget::Status status)
 {
@@ -552,18 +540,3 @@ void AnalysisForm::statusChangedWidgetHandler(QQuickWidget::Status status)
 		MessageForwarder::showWarning("Error", "Error when loading analysis form: \n" + message);
 	}
 }*/
-
-void AnalysisForm::QMLFileModifiedHandler(QString path)
-{
-	qDebug() << "Test QML file modified";
-/*	_controls.clear();
-	_relatedModelMap.clear();
-	_modelMap.clear();
-	_allAvailableVariablesModels.clear();
-	_errorMessagesItem = nullptr;
-	_errorMessages.clear();
-*/
-	std::cout << "" << std::endl;
-	emit formChanged(_analysis);
-}
-

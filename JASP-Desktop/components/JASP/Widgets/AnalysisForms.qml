@@ -116,6 +116,7 @@ FocusScope
 						//property Item	listView:			ListView.view
 						property int	myIndex:			index
 						property string	analysisTitle:		name
+                        property var    myAnalysis:         analysis
 					}
 				}
 			}

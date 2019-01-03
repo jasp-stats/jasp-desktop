@@ -53,7 +53,7 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 	Q_OBJECT
 
 public:
-	explicit					AnalysisForm(QQuickItem * = nullptr) { throw std::runtime_error("Tsja, this doesnt work now does it?"); }
+	explicit					AnalysisForm(QQuickItem * = nullptr); //{ throw std::runtime_error("Tsja, this doesnt work now does it?"); }
 	explicit					AnalysisForm(QQuickItem *parent, Analysis* analysis);
 				void			bindTo(Options *options, DataSet *dataSet);
 				void			unbind();
@@ -71,6 +71,7 @@ signals:
 				void			illegalChanged(AnalysisForm * form);
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
+				void			formCompleted();
 
 protected:
 				void			rScriptDoneHandler(QVariant key, const QString & result);
@@ -89,7 +90,6 @@ public:
 
 protected:
 	void		_setAllAvailableVariablesModel();
-	QString		_getAnalysisQMLPath();
 
 
 private:
@@ -98,8 +98,7 @@ private:
 	void		_setErrorMessages();
 
 private slots:
-	void		QMLFileModifiedHandler(QString path);
-	void		RFileModifiedHandler(QString path)						{ qDebug() << "Test R file (" << path << ") modified"; }
+	void		formCompletedHandler();
 
 protected:
 	Analysis								*_analysis;
@@ -128,9 +127,6 @@ protected:
 	std::map<int, QVariant>			_scriptRequestIdToKey;
 
 private:
-	QFileSystemWatcher						_QMLwatcher;
-	QFileSystemWatcher						_Rwatcher;
-
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
 	QQuickItem								*_errorMessagesItem;
 	QList<QString>							_errorMessages;

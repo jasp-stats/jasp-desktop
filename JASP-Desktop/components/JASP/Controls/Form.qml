@@ -23,15 +23,14 @@ import JASP.Theme		1.0
 import JASP.Widgets		1.0
 import JASP 1.0
 
-//AnalysisForm
-Rectangle
+AnalysisForm
 {
-	color:			Theme.analysisBackgroundColor
-	border
-	{
-		color:		Theme.buttonBorderColor
-		width:		1
-	}
+//	color:			Theme.analysisBackgroundColor
+//	border
+//	{
+//		color:		Theme.buttonBorderColor
+//		width:		1
+//	}
 
 	id:				form
 	width:			implicitWidth
@@ -48,15 +47,16 @@ Rectangle
 			property bool	usesVariablesModel: false
 			property int	availableWidth:		form.width - 2 * Theme.formMargin
 			property var	jaspControls:		[]
+            property var    analysis:           myAnalysis
 
             property int    plotHeight:         320
             property int    plotWidth:          480
 
 			property bool	expanded:			currentSelected
 			property bool	currentSelected:	analysesModel.currentAnalysisIndex === myIndex
+    
 
-
-/*	Rectangle
+	Rectangle
 	{
 		z:				-1
 		anchors.fill:	parent
@@ -66,7 +66,7 @@ Rectangle
 			color:		Theme.buttonBorderColor
 			width:		1
 		}
-	}*/
+	}
 
 
 	function getJASPControls(controls, item)
@@ -281,6 +281,8 @@ Rectangle
         for (var i = 0; i < jaspControls.length; i++) {
             if (jaspControls[i].indent)
                 jaspControls[i].Layout.leftMargin = Theme.indentationLength
-        }        
+        }
+        
+        formCompleted();
     }
 }

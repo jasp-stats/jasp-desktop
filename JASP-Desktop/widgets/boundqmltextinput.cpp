@@ -18,6 +18,7 @@
 
 #include "boundqmltextinput.h"
 #include "../analysis/analysisform.h"
+#include "../analysis/options/optiondoublearray.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
@@ -105,7 +106,21 @@ void BoundQMLTextInput::bindTo(Option *option)
 		break;
 		case TextInputType::IntegerArrayInputType:
 		{
-			_option = _integerArray = dynamic_cast<OptionIntegerArray *>(option);
+			_integerArray = dynamic_cast<OptionIntegerArray *>(option);
+			if (!_integerArray)
+			{
+				OptionDoubleArray* doubleArray = dynamic_cast<OptionDoubleArray *>(option);
+				if (doubleArray)
+				{
+					std::vector<int> integerArray;
+					const std::vector<double>& doubles = doubleArray->value();
+					for (double d : doubles)
+						integerArray.push_back(int(d));
+					_integerArray = new OptionIntegerArray();
+					_integerArray->setValue(integerArray);
+				}
+			}
+			_option = _integerArray;
 			_value = _getIntegerArrayValue();
 		}
 		break;

@@ -94,5 +94,6 @@
         <file>components/JASP/Widgets/AnalysisForms.qml</file>
         <file>components/JASP/Widgets/Ribbon/HamburgerButton.qml</file>
         <file>components/JASP/Widgets/MenuButton.qml</file>
+        <file>components/JASP/Controls/ColumnLayout.qml</file>
     </qresource>
 </RCC>

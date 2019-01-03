@@ -211,7 +211,7 @@ Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analys
 	case analysisResultStatus::imageSaved:
 	case analysisResultStatus::imageEdited:
 	case analysisResultStatus::complete:	return Analysis::Complete;
-	case analysisResultStatus::inited:		return analysis->isAutorun() ? Analysis::Inited : Analysis::InitedAndWaiting;
+	case analysisResultStatus::inited:		return Analysis::Inited;
 	case analysisResultStatus::running:		return Analysis::Running;
 	default:								throw std::logic_error("When you define new analysisResultStatuses you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
 	}

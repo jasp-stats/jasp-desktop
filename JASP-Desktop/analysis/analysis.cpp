@@ -24,31 +24,23 @@
 #include "tempfiles.h"
 #include "appinfo.h"
 #include "dirs.h"
+#include "analyses.h"
 
 using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(size_t id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool autorun, bool usedata, bool fromQML, bool useJaspResults)
-	: _options(new Options()), _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _fromQML(fromQML), _useJaspResults(useJaspResults), _version(version)
+Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data)
+	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(name), _version(version), _analyses(analyses)
 {
-	if (!fromQML)
-	{
-		if (optionsJson != Json::nullValue)
-			_options->init(optionsJson);
-		else
-			perror("malformed analysis definition");
-		if (data != NULL)
-			_options->set(*data);
-	}
-	else if (data)
+	if (data)
 		_options->init(*data);
 
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry)
-	: _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()),  _fromQML(true), _useJaspResults(true), _version(AppInfo::version), _moduleData(analysisEntry)
+Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry)
+	: QObject(analyses), _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()), _version(AppInfo::version), _moduleData(analysisEntry), _analyses(analyses)
 {
 	bindOptionHandlers();
 }
@@ -71,14 +63,6 @@ void Analysis::abort()
 	optionsChanged(this);
 }
 
-void Analysis::scheduleRun()
-{
-	if (_autorun)
-		return;
-
-	setStatus(Inited);
-	optionsChanged(this);
-}
 
 void Analysis::setResults(Json::Value results, int progress)
 {
@@ -128,10 +112,6 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["name"]			= _name;
 	analysisAsJson["title"]			= _title;
 	analysisAsJson["rfile"]			= _rfile;
-	analysisAsJson["requiresInit"]	= _requiresInit;
-	analysisAsJson["dataKey"]		= _dataKey;
-	analysisAsJson["stateKey"]		= _stateKey;
-	analysisAsJson["resultsMeta"]	= _resultsMeta;
 	analysisAsJson["module"]		= _module;
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["version"]		= _version.asString();
@@ -154,11 +134,10 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["status"]	= status;
 
-	analysisAsJson["fromQML"]	= fromQML();
-	analysisAsJson["options"]	= fromQML() ? options()->asJSONWithType(true) : options()->asJSON(true);
+	analysisAsJson["options"]	= options()->asJSONWithType(true);
 	analysisAsJson["userdata"]	= userData();
 
-	if(_moduleData != NULL)
+	if(_moduleData != nullptr)
 		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
 
 	return analysisAsJson;
@@ -172,6 +151,11 @@ void Analysis::setStatus(Analysis::Status status)
 		_version = AppInfo::version;
 	}
 	_status = status;
+}
+
+DataSet *Analysis::getDataSet() const
+{
+	return _analyses->getDataSet();
 }
 
 void Analysis::optionsChangedHandler(Option *option)
@@ -240,11 +224,10 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 	json["typeRequest"]			= engineStateToString(engineState::analysis);
 	json["id"]					= int(id());
 	json["perform"]				= performTypeToString(perform);
-	json["requiresInit"]		= requiresInit();
 	json["revision"]			= revision();
-	json["rfile"]				= _moduleData == NULL ? rfile() : "";
+	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["jaspResults"]			= usesJaspResults();
-	json["dynamicModuleCall"]	= _moduleData == NULL ? "" : _moduleData->getFullRCall();
+	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
 
 
 	if (!isAborted())
@@ -258,9 +241,6 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 			json["image"] = getSaveImgOptions();
 		else
 		{
-			json["dataKey"]		= dataKey();
-			json["stateKey"]	= stateKey();
-			json["resultsMeta"]	= resultsMeta();
 			json["options"]		= options()->asJSON();
 		}
 	}

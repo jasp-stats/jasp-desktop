@@ -65,7 +65,6 @@ Form {
         }
     }
 
-
     GridLayout {
         GroupBox {
             title: qsTr("Additional Statistics")
