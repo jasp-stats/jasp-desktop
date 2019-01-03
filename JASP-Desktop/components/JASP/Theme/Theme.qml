@@ -70,6 +70,7 @@ QtObject {
 	readonly property int textFieldWidth:				40  * ppiScale
 	readonly property int textFieldHeight:				20  * ppiScale
 	readonly property int defaultListHeight:			350 * ppiScale
+    readonly property int titleBottomMargin:            5   * ppiScale
 	readonly property int ribbonButtonHeight:			60  * ppiScale
 	readonly property int ribbonButtonPadding:			10  * ppiScale
 	readonly property int variablesListTitle:			20  * ppiScale

@@ -27,9 +27,5 @@ TextField {
     
     inputType: "number"
     validator: DoubleValidator { id: doubleValidator; bottom: validation ? 0 : -Infinity ; decimals: 3 }
-    value: Number.parseFloat(defaultValue);
-    
-    Component.onCompleted: {
-        console.log("NumberField " + name + ": doubleValue: " + defaultValue + ", value: " + value);
-    }
+    value: Number.parseFloat(defaultValue);    
 }
