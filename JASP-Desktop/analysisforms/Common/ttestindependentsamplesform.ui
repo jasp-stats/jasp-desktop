@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>TTestIndependentSamplesForm</class>
  <widget class="QWidget" name="TTestIndependentSamplesForm">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -302,6 +305,19 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
            <property name="sizePolicy">
@@ -327,19 +343,6 @@
             <string>Exclude cases listwise</string>
            </property>
           </widget>
-         </item>
-         <item row="0" column="1">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -528,7 +531,7 @@
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="BoundTextBox" name="descriptivesMeanDiffConfidenceIntervalPercent">
+             <widget class="BoundTextBox" name="meanDiffConfidenceIntervalPercent">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -596,15 +599,21 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="effSizeConfidenceIntervalCheckbox">
+            <item row="0" column="3">
+             <widget class="QLabel" name="label_11">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>Confidence interval</string>
+               <string>%</string>
               </property>
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="BoundTextBox" name="descriptivesEffectSizeConfidenceIntervalPercent">
+             <widget class="BoundTextBox" name="effectSizeConfidenceIntervalPercent">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -619,23 +628,17 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_11">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="effectSizeConfidenceIntervalCheckbox">
               <property name="text">
-               <string>%</string>
+               <string>Confidence interval</string>
               </property>
              </widget>
             </item>
            </layout>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="5" column="0">
           <widget class="BoundCheckBox" name="descriptives">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -648,7 +651,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="6" column="0">
           <widget class="BoundCheckBox" name="descriptivesPlots">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -661,7 +664,7 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="7" column="0">
           <widget class="QWidget" name="widgetDescriptivesPlotsConfidenceInterval" native="true">
            <property name="enabled">
             <bool>false</bool>
@@ -730,7 +733,7 @@
            </layout>
           </widget>
          </item>
-         <item row="7" column="0">
+         <item row="8" column="0">
           <widget class="BoundCheckBox" name="VovkSellkeMPR">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -743,6 +746,63 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="0">
+          <widget class="BoundGroupBox" name="effectSizeSD">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="title">
+            <string>Standard deviation for Cohen’s d and Hedges’ g for Welch test</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="_3effectSizeSDGroup2">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>From Group 2</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2effectSizeSDGroup1">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>From Group 1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1effectSizeSDPooled">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Average of Group 1 and Group 2</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
         <zorder>meanDifference</zorder>
         <zorder>effectSize</zorder>
@@ -752,6 +812,7 @@
         <zorder>VovkSellkeMPR</zorder>
         <zorder>widgetDescriptivesMeanDiffConfidenceInterval</zorder>
         <zorder>widgetDescriptivesEffectSizeConfidenceInterval</zorder>
+        <zorder>effectSizeSD</zorder>
        </widget>
       </item>
      </layout>
@@ -848,12 +909,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>332</x>
-     <y>658</y>
+     <x>596</x>
+     <y>775</y>
     </hint>
     <hint type="destinationlabel">
-     <x>382</x>
-     <y>687</y>
+     <x>587</x>
+     <y>802</y>
     </hint>
    </hints>
   </connection>
@@ -864,12 +925,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>346</x>
-     <y>512</y>
+     <x>596</x>
+     <y>508</y>
     </hint>
     <hint type="destinationlabel">
-     <x>415</x>
-     <y>543</y>
+     <x>587</x>
+     <y>542</y>
     </hint>
    </hints>
   </connection>
@@ -880,12 +941,76 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>324</x>
-     <y>575</y>
+     <x>596</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
-     <x>415</x>
-     <y>606</y>
+     <x>587</x>
+     <y>603</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welchs</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>effectSizeSD</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>563</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>432</x>
+     <y>662</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welchs</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>_1effectSizeSDPooled</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>563</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>648</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welchs</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>_2effectSizeSDGroup1</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>563</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>672</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welchs</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>_3effectSizeSDGroup2</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>563</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>696</y>
     </hint>
    </hints>
   </connection>
