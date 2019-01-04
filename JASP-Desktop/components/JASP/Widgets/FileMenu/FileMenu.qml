@@ -23,7 +23,7 @@ Item
 	{
 		id:		slidePart
 		x:		fileMenuModel.visible ? 0 : -(colWidths * 2)
-		width:	actionMenu.width + locationMenu.width + resourceScreen.width
+		width:	(resourceScreen.x + resourceScreen.width)
 		height:	fileMenu.height
 
 		Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }

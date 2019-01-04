@@ -267,25 +267,6 @@ void Analyses::refreshAnalysesUsingColumns(std::vector<std::string> &changedColu
 	}
 }
 
-/* the information about the used modules must be made available to RibbonModel somehow
-void MainWindow::checkUsedModules()
-{
-	QStringList usedModules;
-	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
-	{
-		Analysis *analysis = *itr;
-		if (analysis != nullptr && analysis->isVisible())
-		{
-			QString moduleName = QString::fromStdString(analysis->module());
-			if (!usedModules.contains(moduleName))
-				usedModules.append(moduleName);
-		}
-	}
-
-	std::cout << "Used modules not being added to plus menu" << std::endl;
-	//ui->tabBar->setModulePlusMenu(usedModules);
-}
-*/
 
 void Analyses::applyToSome(std::function<bool(Analysis *analysis)> applyThis)
 {

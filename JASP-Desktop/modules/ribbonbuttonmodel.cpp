@@ -28,7 +28,7 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
 
 		setRequiresDataset(	moduleDescription.get("requiresDataset",	true).asBool()		);
-		setDynamic(			moduleDescription.get("dynamic",			true).asBool()		);
+		setIsDynamic(		moduleDescription.get("dynamic",			true).asBool()		);
 		setTitle(			moduleDescription.get("title",				"???").asString()	);
 
 		std::vector<Modules::RibbonEntry*>	ribbonEntries;
@@ -42,14 +42,29 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 	{
 		throw std::runtime_error("During the parsing of the description.json of the Module " + _title + " something went wrong: " + e.what());
 	}
+
+	if(title() == "Common")
+		setEnabled(true);
+
+	bindYourself();
 }
 
 RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * module)  : QAbstractListModel(parent)
 {
 	setRibbonEntries(	module->ribbonEntries()		);
 	setTitle(			module->title()				);
-	setDynamic(			true						);
+	setIsDynamic(		true						);
 	setRequiresDataset(	module->requiresDataset()	);
+
+	bindYourself();
+}
+
+void RibbonButtonModel::bindYourself()
+{
+	connect(this, &RibbonButtonModel::enabledChanged,	this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::titleChanged,		this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::isDynamicChanged,	this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::titleChanged,		this, &RibbonButtonModel::somePropertyChanged);
 }
 
 
@@ -66,7 +81,7 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 	case AnalysisMenuRole:      return QVariant::fromValue(menuModel);
 	case DisplayRole:			return QString::fromStdString(entry->title());
 	case IconSourceRole:		return QString::fromStdString(entry->icon());
-	case EnabledRibbonRole:		{std::cout << "EnabledRibbonRole not implemented!" << std::endl; return true; }
+	case EnabledAnalysisRole:	{std::cout << "EnabledAnalysisRole not implemented!" << std::endl; return true; }
 	default:					return QVariant();
 	}
 }
@@ -75,10 +90,10 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> RibbonButtonModel::roleNames() const
 {
 	static const auto roles = QHash<int, QByteArray>{
-		{	AnalysisMenuRole,	"analysisMenu"		},
-		{	DisplayRole,		"displayText"		},
-		{	IconSourceRole,		"iconSource"		},
-		{	EnabledRibbonRole,	"ribbonEnabled"		}
+		{	AnalysisMenuRole,		"analysisMenu"			},
+		{	DisplayRole,			"displayText"			},
+		{	IconSourceRole,			"iconSource"			},
+		{	EnabledAnalysisRole,	"analysisEnabled"		}
 
 	};
 
@@ -95,4 +110,40 @@ void RibbonButtonModel::setRibbonEntries(Modules::RibbonEntries ribbonEntries)
 		model->setAnalysisEntries(ribbonEntry->analysisEntries());
 		_analysisMenuModels.push_back(model);
     }
+}
+
+void RibbonButtonModel::setRequiresDataset(bool requiresDataset)
+{
+	if(_requiresDataset == requiresDataset)
+		return;
+
+	_requiresDataset = requiresDataset;
+	emit requiresDatasetChanged();
+}
+
+void RibbonButtonModel::setTitle(std::string title)
+{
+	if(_title == title)
+		return;
+
+	_title = title;
+	emit titleChanged();
+}
+
+void RibbonButtonModel::setEnabled(bool enabled)
+{
+	if (_enabled == enabled)
+		return;
+
+	_enabled = enabled;
+	emit enabledChanged();
+}
+
+void RibbonButtonModel::setIsDynamic(bool isDynamic)
+{
+	if (_isDynamicModule == isDynamic)
+		return;
+
+	_isDynamicModule = isDynamic;
+	emit isDynamicChanged();
 }

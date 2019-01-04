@@ -7,7 +7,7 @@ import JASP.Theme 1.0
 Rectangle
 {
 	id:				rootDataset
-	color:			Theme.uiBackground
+	color:			Theme.white
 
     ProgressBarHolder
     {
@@ -35,12 +35,6 @@ Rectangle
         VariablesWindow
         {
             id: variablesWindow
-			headersGradient: Gradient{
-				GradientStop { position: 0.0;	color: "#EEEEEE" }
-				GradientStop { position: 0.75;	color: "#EEEEEE" }
-				GradientStop { position: 0.77;	color: "#DDDDDD" }
-				GradientStop { position: 1.0;	color: "#DDDDDD" }
-			}
 
 			Layout.minimumHeight: calculatedMinimumHeight
         }

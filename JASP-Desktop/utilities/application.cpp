@@ -20,7 +20,6 @@
 
 #include <QFileOpenEvent>
 #include <QString>
-
 #include <iostream>
 
 Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save) :

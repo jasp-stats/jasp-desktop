@@ -21,7 +21,6 @@
 
 #include "filemenuobject.h"
 #include "computerlistmodel.h"
-#include <QQuickWidget>
 
 class Computer : public FileMenuObject
 {

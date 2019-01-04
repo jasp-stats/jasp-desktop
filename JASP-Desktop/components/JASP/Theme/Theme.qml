@@ -42,14 +42,16 @@ QtObject {
 	readonly property color textDisabled:		grayDarker
 	readonly property color uiBackground:		grayMuchLighter
 	readonly property color uiBorder:			grayDarker
+
 	readonly property color buttonColor:		grayLighter
 	readonly property color buttonBorderColor:	grayLighter
-
 	readonly property color buttonColorHovered:			uiBackground
 	readonly property color buttonBorderColorHovered:	black
-
 	readonly property color buttonColorPressed:			gray
 
+	readonly property color itemHighlight:				blueMuchLighter
+
+	readonly property int itemPadding:			8 * ppiScale
 	readonly property int minPanelWidth:		200
 	readonly property int resultWidth:			600
 	readonly property int formWidth:			600
@@ -121,5 +123,6 @@ QtObject {
 	readonly property color sliderPartOn:					blue
 	readonly property color sliderPartOff:					grayDarker
 
-
+	readonly property int toolTipDelay:		1500
+	readonly property int toolTipTimeout:	4500
 }

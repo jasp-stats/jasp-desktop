@@ -1,4 +1,4 @@
-import QtQuick 2.11
+import QtQuick 2.12
 import QtWebEngine 1.7
 import QtWebChannel 1.0
 import QtQuick.Controls 2.4
@@ -15,24 +15,20 @@ OLD.SplitView
 	Item
 	{
 		id:						dataAndAnalyses
-		//Layout.fillWidth:		mainWindow.dataPanelVisible
 		Layout.minimumWidth:	analyses.width
 		Layout.maximumWidth:	maxWidth
-		visible:				mainWindow.dataPanelVisible || analyses.visible
-		//width:
-		//implicitWidth:			//mainWindow.dataPanelVisible ?
-			//						panelSplit.width / 2 //: analyses.width
+		visible:				mainWindow.dataPanelVisible || analysesModel.count > 0
 
-		property real maxWidth: panelSplit.width - Theme.minPanelWidth
+		property real maxWidth: panelSplit.width //- Theme.minPanelWidth
 
 		onVisibleChanged:
 		{
 			if(visible)
 			{
-				if(mainWindow.dataPanelVisible) //allowed to be bigger than analyses.width
+				if(mainWindow.dataPanelVisible) //allowed to be bigger than analyses.width (aka you can see the data)
 				{
 					width = panelSplit.width / 2
-					maxWidth = Qt.binding(function(){ return panelSplit.width - Theme.minPanelWidth } )
+					maxWidth = Qt.binding(function(){ return panelSplit.width /*- Theme.minPanelWidth */} )
 				}
 				else // only analyses (like for summary stats)
 				{
@@ -61,7 +57,7 @@ OLD.SplitView
 
 		MouseArea
 		{
-			visible:	mainWindow.analysesVisible || fileMenuModel.visible
+			visible:	mainWindow.analysesVisible
 			z:			6
 
 			anchors
@@ -75,8 +71,6 @@ OLD.SplitView
 			onClicked:
 			{
 				mainWindow.analysesVisible	= false
-				fileMenuModel.visible		= false
-
 				mouse.accepted = false
 			}
 		}
@@ -95,6 +89,7 @@ OLD.SplitView
 			}
 		}
 	}
+
 
 	WebEngineView
 	{
@@ -124,7 +119,7 @@ OLD.SplitView
 			id:				resultsJsInterfaceInterface
 			WebChannel.id:	"jasp"
 
-			//Yeah I know this "resultsJsInterfaceInterface" looks a bit stupid but this honestly seems like the best way to make the current resultsJsInterface functions available to javascript without rewriting (more of) the structure of JASP-Desktop right now.
+			// Yeah I know this "resultsJsInterfaceInterface" looks a bit stupid but this honestly seems like the best way to make the current resultsJsInterface functions available to javascript without rewriting (more of) the structure of JASP-Desktop right now.
 			// It would be much better to have resultsJsInterface be passed irectly though..
 			// It also gives you an overview of the functions used in results html
 

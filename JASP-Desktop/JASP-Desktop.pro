@@ -1,4 +1,4 @@
-QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
+QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
 include(../JASP.pri)
@@ -373,7 +373,8 @@ HEADERS += \
     widgets/filemenu/filemenu.h \
     $$PWD/gui/messageforwarder.h \
     widgets/filemenu/filemenulistitem.h \
-    widgets/filemenu/filemenubasiclistmodel.h
+    widgets/filemenu/filemenubasiclistmodel.h \
+    modules/ribbonmodelfiltered.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -553,7 +554,8 @@ SOURCES += \
     resultstesting/resultscomparetable.cpp \
     widgets/filemenu/filemenu.cpp \
     $$PWD/gui/messageforwarder.cpp \
-    widgets/filemenu/filemenubasiclistmodel.cpp
+    widgets/filemenu/filemenubasiclistmodel.cpp \
+    modules/ribbonmodelfiltered.cpp
 
 RESOURCES += \
     html/html.qrc \

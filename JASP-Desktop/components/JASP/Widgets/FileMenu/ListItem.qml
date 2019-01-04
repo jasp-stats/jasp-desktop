@@ -60,7 +60,7 @@ Rectangle
 				z:					-2
 				anchors.fill:		parent
 				hoverEnabled:		true
-				cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				cursorShape:		Qt.PointingHandCursor
 				onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 				onClicked:			rectTitleAndDescripton.openStuff(model,false)
 
@@ -94,7 +94,7 @@ Rectangle
 				hoverEnabled:	true
 
 				onDoubleClicked:	rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
-				cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				cursorShape:		Qt.PointingHandCursor
 			}
 
 			ToolTip {
@@ -126,7 +126,7 @@ Rectangle
 			hoverEnabled:		true
 			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 			onClicked:			rectTitleAndDescripton.openStuff(model,false)
-			cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+			cursorShape:		Qt.PointingHandCursor
 		}
 
 		ToolTip {
@@ -177,7 +177,7 @@ Rectangle
 			hoverEnabled:		true
 			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 			onClicked:			rectTitleAndDescripton.openStuff(model,false)
-			cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+			cursorShape:		Qt.PointingHandCursor
 		}
 	}
 

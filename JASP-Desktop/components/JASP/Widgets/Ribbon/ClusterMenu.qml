@@ -26,14 +26,16 @@ Menu {
 
     property alias model: menuRepeater.model
     property alias posX : menu.x
-    property alias posY : menu.y
+	property alias posY : menu.y
+
+	property int   ribbonButtonModelIndex : undefined
 
     // TODO: Make the menu more general.
     //       Make a "CustomMenu" component with the required style.
 
-    function menuItemSelected(analysis) {
-        // TODO: Function should call a parent function which does this.
-        jaspRibbon.dispatchAnalysisClickedSignal(analysis)
+	function menuItemSelected(analysis)
+	{
+		ribbonModel.analysisClicked(analysis, ribbonButtonModelIndex)
         menu.close()
     }
 

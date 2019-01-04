@@ -93,7 +93,7 @@ BasicTableViewJasp {
 
     readonly property alias selection: selectionObject
 
-    style: TableViewStyleJasp {}
+	style: TableViewStyleJasp {}
 
     Accessible.role: Accessible.Table
 

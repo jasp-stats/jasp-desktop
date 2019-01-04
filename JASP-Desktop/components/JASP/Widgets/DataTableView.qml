@@ -67,7 +67,7 @@ FocusScope
 						anchors.fill:	parent
 						onClicked:		filterWindow.toggle()
 						hoverEnabled:	true
-						cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						cursorShape:	Qt.PointingHandCursor
 					}
 				}
 
@@ -89,9 +89,9 @@ FocusScope
 
 					Image
 					{
-						source:				"qrc:/icons/addition.png"
-						sourceSize.width:	width
-						sourceSize.height:	height
+						source:				"qrc:/icons/addition-sign.svg"
+						sourceSize.width:	width * 2
+						sourceSize.height:	height * 2
 						width:				height
 
 						anchors.top:				parent.top
@@ -107,7 +107,7 @@ FocusScope
 						anchors.fill:	parent
 						onClicked:		createComputeDialog.open()
 						hoverEnabled:	true
-						cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						cursorShape:	Qt.PointingHandCursor
 					}
 
 
@@ -164,100 +164,123 @@ FocusScope
 					MouseArea
 					{
 						anchors.fill:		parent
-						onClicked:			if(columnIndex > -1) popupIcons.open()
+						onClicked:			if(columnIndex > -1) popupLoader.open()
 
 						hoverEnabled:		true
 						ToolTip.visible:	containsMouse
 						ToolTip.text:		"Click here to change columntype"
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
-						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						cursorShape:		Qt.PointingHandCursor
 
 					}
 
+					Loader
+					{
+						id:								popupLoader
+						property bool columnIsComputed: columnIsComputed
+						visible:						sourceComponent !== null
+						sourceComponent:				null
 
-					Popup {
-						id: popupIcons; modal: true; focus: true;
-						padding: 8
-						spacing: 4
-						y: colIcon.y + colIcon.height
-						x: colIcon.x - (headerRoot.__iconDim * 0.5)
-
-						closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
-
-
-						Column
+						function open()
 						{
-							//width: parent.width
-							spacing: popupIcons.padding / 2
+							sourceComponent = popupIconsComp
+						}
 
-							Repeater{
-								id: iconRepeater
-								model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :
-														  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
+					}
 
-								Rectangle
-								{
-									id:		columnTypeChangeIcon
+					Component
+					{
+						id:		popupIconsComp
 
-									width:	headerRoot.__iconDim + (baseFontSize * 7 * ppiScale)
-									height: headerRoot.__iconDim * 1.5
-									radius: 15
+						Popup {
+							id:			popupIcons
+							modal:		true
+							focus:		true
+							padding:	8
+							spacing:	4
+							x:			colIcon.x - (headerRoot.__iconDim * 0.5)
+							y:			colIcon.y + colIcon.height
 
-									color:	popupIconMouseArea.useThisColor
+							closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
-									Item
+							Component.onCompleted:	popupIcons.open()
+							onClosed:				popupLoader.sourceComponent = null
+
+
+							Column
+							{
+								//width: parent.width
+								spacing: popupIcons.padding / 2
+
+								Repeater{
+									id: iconRepeater
+									model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :
+															  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
+
+									Rectangle
 									{
-										id:						popupLabelIcon
-										width:					(popupIconImage.width + popupText.width)
-										height:					headerRoot.__iconDim
-										anchors.left:			parent.left
-										anchors.leftMargin:		10
-										anchors.verticalCenter: parent.verticalCenter
+										id:		columnTypeChangeIcon
 
-										Image
+										width:	headerRoot.__iconDim + (baseFontSize * 7 * ppiScale)
+										height: headerRoot.__iconDim * 1.5
+										radius: 15
+
+										color:	popupIconMouseArea.useThisColor
+
+										Item
 										{
-											id: popupIconImage
-
-											source:					dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
-											width:					headerRoot.__iconDim
+											id:						popupLabelIcon
+											width:					(popupIconImage.width + popupText.width)
 											height:					headerRoot.__iconDim
-											sourceSize {	width:	width * 2
-															height:	height * 2 }
-
+											anchors.left:			parent.left
+											anchors.leftMargin:		10
 											anchors.verticalCenter: parent.verticalCenter
+
+											Image
+											{
+												id: popupIconImage
+
+												source:					dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
+												width:					headerRoot.__iconDim
+												height:					headerRoot.__iconDim
+												sourceSize {	width:	width * 2
+																height:	height * 2 }
+
+												anchors.verticalCenter: parent.verticalCenter
+											}
+
+											Text
+											{
+												id:		popupText
+												text:	iconRepeater.model[index] === columnTypeScale ?
+															"Scale" : iconRepeater.model[index] === columnTypeOrdinal ?
+																"Ordinal" : iconRepeater.model[index] === columnTypeNominal ?
+																	"Nominal" : "Text"
+
+												anchors.left:		popupIconImage.right
+												anchors.leftMargin: 10
+
+												font:				dataTableView.font
+											}
 										}
 
-										Text
+										MouseArea
 										{
-											id:		popupText
-											text:	iconRepeater.model[index] === columnTypeScale ?
-														"Scale" : iconRepeater.model[index] === columnTypeOrdinal ?
-															"Ordinal" : iconRepeater.model[index] === columnTypeNominal ?
-																"Nominal" : "Text"
+											id:				popupIconMouseArea
+											anchors.fill:	parent
 
-											anchors.left:		popupIconImage.right
-											anchors.leftMargin: 10
+											hoverEnabled:	true
+											cursorShape:	Qt.PointingHandCursor
 
-											font:				dataTableView.font
-										}
-									}
+											property color useThisColor: containsMouse ? "lightGray" : "transparent"
 
-									MouseArea
-									{
-										id:				popupIconMouseArea
-										anchors.fill:	parent
-
-										hoverEnabled:	true
-										cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-										property color useThisColor: containsMouse ? "lightGray" : "transparent"
-
-										onClicked:
-										{
-											var columnType = iconRepeater.model[index]
-											popupIcons.close()
-											colIcon.setColumnType(columnType)
+											onClicked:
+											{
+												var columnType = iconRepeater.model[index]
+												popupIcons.close()
+												colIcon.setColumnType(columnType)
+											}
 										}
 									}
 								}
@@ -293,7 +316,7 @@ FocusScope
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
 
-						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						cursorShape:		Qt.PointingHandCursor
 
 					}
 				}
@@ -361,7 +384,7 @@ FocusScope
 						ToolTip.text:		columnError
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
-						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						cursorShape:		Qt.PointingHandCursor
 
 					}
 

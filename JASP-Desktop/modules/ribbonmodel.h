@@ -29,12 +29,14 @@
 class RibbonModel : public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(RibbonButtonModel *currentButtonModel	READ currentButtonModel WRITE setCurrentButtonModel NOTIFY currentButtonModelChanged)
+	Q_PROPERTY(int highlightedModuleIndex READ highlightedModuleIndex WRITE setHighlightedModuleIndex NOTIFY highlightedModuleIndexChanged)
 
 public:
 	enum {
 		ClusterRole = Qt::UserRole,
-		DisplayRole
+		DisplayRole,
+		RibbonRole,
+		EnabledRole
 	};
 
 	RibbonModel(QObject *parent) : QAbstractListModel(parent) {}
@@ -51,33 +53,41 @@ public:
 	void						removeRibbonButtonModel(std::string moduleName);
 
 	const
-	std::vector<std::string> &	moduleNames()						const	{ return _moduleNames;	}
-
-	bool						isModuleName(std::string name)		const	{ return _modulesByName.count(name) > 0; }
-	RibbonButtonModel*			ribbonButtonModel(std::string);
+	std::vector<std::string> &	moduleNames()										const	{ return _moduleNames;	}
+	bool						isModuleName(std::string name)						const	{ return _modulesByName.count(name) > 0; }
+	QString						moduleName(size_t index)							const	{ return QString::fromStdString(_moduleNames[index]);}
+	RibbonButtonModel*			ribbonButtonModelAt(size_t index)					const	{ return ribbonButtonModel(_moduleNames[index]); }
+	RibbonButtonModel*			ribbonButtonModel(std::string moduleName)			const;
+	int							ribbonButtonModelIndex(RibbonButtonModel * model)	const;
 
 	void						connectToDynamicModules(DynamicModules * dynamicModules);
 
-	RibbonButtonModel*			currentButtonModel() const							{ return _currentButtonModel; }
-	void						setCurrentButtonModel(RibbonButtonModel* newModel);
+	Q_INVOKABLE void			analysisClicked(QString analysisName, int ribbonButtonModelIndex);
+	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 
-	Q_INVOKABLE void			analysisClicked(QString);
+	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
 
 signals:
 	void currentButtonModelChanged();
 	void analysisClickedSignal(QString analysis, QString module);
 
+	void highlightedModuleIndexChanged(int highlightedModuleIndex);
+
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
 	void removeDynamicRibbonButtonModel(std::string moduleName)			{ removeRibbonButtonModel(moduleName);				}
+	void setHighlightedModuleIndex(int highlightedModuleIndex);
+
+private slots:
+	void ribbonButtonModelChanged(RibbonButtonModel* model);
 
 private: // functions
-	void										addRibbonButtonModel(RibbonButtonModel* model);
+	void addRibbonButtonModel(RibbonButtonModel* model);
 
 private: // fields
 	std::map<std::string, RibbonButtonModel*>	_modulesByName;
 	std::vector<std::string>					_moduleNames; //To keep order
-	RibbonButtonModel							*_currentButtonModel = nullptr;
+	int											_highlightedModuleIndex = -1;
 };
 
 

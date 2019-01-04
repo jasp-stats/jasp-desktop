@@ -53,10 +53,14 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 	if (index.row() >= rowCount())
 		return QVariant();
 
+	size_t row = size_t(index.row());
 
 	switch(role)
 	{
-	case DisplayRole:	return QString::fromStdString(_moduleNames.at(index.row()));
+	case DisplayRole:	return QString::fromStdString(_moduleNames.at(row));
+	case RibbonRole:	return QVariant::fromValue(ribbonButtonModelAt(row));
+	case EnabledRole:	return ribbonButtonModelAt(row)->enabled();
+
 	case ClusterRole:	//To Do!
 	default:			return QVariant();
 	}
@@ -66,68 +70,106 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> RibbonModel::roleNames() const
 {
 	static const auto roles = QHash<int, QByteArray>{
-		{ ClusterRole,		"clusterMenu"	},
-		{ DisplayRole,		"displayText"	}
-	};
+		{ ClusterRole,		"clusterMenu"		},
+		{ DisplayRole,		"displayText"		},
+		{ RibbonRole,		"ribbonButtonModel"	},
+		{ EnabledRole,		"ribbonEnabled"		}	};
 
 	return roles;
 }
 
-RibbonButtonModel* RibbonModel::ribbonButtonModel(std::string name)
+RibbonButtonModel* RibbonModel::ribbonButtonModel(std::string name) const
 {
 	if(_modulesByName.count(name) > 0)
-		return _modulesByName[name];
+		return _modulesByName.at(name);
 
-	return NULL;
+	return nullptr;
 }
 
 void RibbonModel::addRibbonButtonModel(RibbonButtonModel* model)
 {
-	//Should also somehow be represented in the plus-button of the tabbar... see void TabBar::addModulesPlusButton(). But maybe this is better to be done in QML
-
 	if(isModuleName(model->title()))
 		removeRibbonButtonModel(model->title());
 
-	emit beginResetModel();
+	emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
 
 	_moduleNames.push_back(model->title());
 	_modulesByName[model->title()] = model;
 
-	emit endResetModel();
+	emit endInsertRows();
 
-	if(_currentButtonModel == nullptr)
-		setCurrentButtonModel(model);
+	connect(model, &RibbonButtonModel::iChanged, this, &RibbonModel::ribbonButtonModelChanged);
 }
 
 void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 {
-	emit beginResetModel();
-
 	if(!isModuleName(moduleName))
 		return;
+
+	int indexRemoved = -1;
+
+	for(int i=_moduleNames.size() - 1; i >= 0; i--)
+		if(_moduleNames[i] == moduleName)
+		{
+			indexRemoved = i;
+			break;
+		}
+
+	emit beginRemoveRows(QModelIndex(), indexRemoved, indexRemoved);
 
 	delete _modulesByName[moduleName];
 	_modulesByName.erase(moduleName);
 
-	for(int i=_moduleNames.size() - 1; i >= 0; i--)
-		if(_moduleNames[i] == moduleName)
-			_moduleNames.erase(_moduleNames.begin() + i);
+	_moduleNames.erase(_moduleNames.begin() + indexRemoved);
 
-	emit endResetModel();
+	emit endRemoveRows();
 }
 
-void RibbonModel::setCurrentButtonModel(RibbonButtonModel* newModel)
-{
-	if(_currentButtonModel != newModel)
-	{
-		_currentButtonModel = newModel;
-		emit currentButtonModelChanged();
-	}
-}
 
-void RibbonModel::analysisClicked(QString analysis)
+void RibbonModel::analysisClicked(QString analysis, int ribbonButtonModelIndex)
 {
-    QString module = QString::fromStdString(_currentButtonModel->title());
+	if(ribbonButtonModelIndex < 0)
+		return;
+
+	QString module = QString::fromStdString(ribbonButtonModelAt(size_t(ribbonButtonModelIndex))->title());
 
     emit analysisClickedSignal(analysis, module);
+}
+
+void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)
+{
+	if (_highlightedModuleIndex == highlightedModuleIndex)
+		return;
+
+	_highlightedModuleIndex = highlightedModuleIndex;
+	emit highlightedModuleIndexChanged(_highlightedModuleIndex);
+}
+
+void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)
+{
+	if(ribbonButtonModelIndex < 0)
+		return;
+
+	RibbonButtonModel * ribbonButtonModel = ribbonButtonModelAt(size_t(ribbonButtonModelIndex));
+
+	ribbonButtonModel->setEnabled(!ribbonButtonModel->enabled());
+
+	emit dataChanged(index(ribbonButtonModelIndex), index(ribbonButtonModelIndex));
+}
+
+int RibbonModel::ribbonButtonModelIndex(RibbonButtonModel * model)	const
+{
+	for(auto & keyval : _modulesByName)
+		if(keyval.second == model)
+			for(size_t i=0; i<_moduleNames.size(); i++)
+				if(_moduleNames[i] == keyval.first)
+					return int(i);
+	return -1;
+}
+
+
+void RibbonModel::ribbonButtonModelChanged(RibbonButtonModel* model)
+{
+	int row = ribbonButtonModelIndex(model);
+	emit dataChanged(index(row), index(row));
 }

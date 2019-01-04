@@ -20,41 +20,102 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-Rectangle {
+Item
+{
 	id        : jaspRibbon
 	objectName: "jaspRibbon"
-	width     : 500
-	height    : 80
-	color	  : Theme.uiBackground
+	width     : ribbonRow.width + ribbonRow.spacing
+	height    : 80 * ppiScale
 
-	function dispatchAnalysisClickedSignal(analysis, module) {
-		ribbonModel.analysisClicked(analysis)
+
+	property var	model:			null
+	property bool	separateMe:		false
+	property bool	ribbonEnabled:	true
+	property bool	highlighted:	false
+
+	Rectangle
+	{
+		id:			highlighter
+
+		z:			-1
+		x:			inBetweenRibbons.visible ? inBetweenRibbons.width + ribbonRow.spacing : 0
+		width:		ribbonRow.width - x
+		height:		parent.height - (ribbonRow.spacing * 2)
+
+		color:		Theme.blueLighter
+		//radius:		20
+		visible:	jaspRibbon.highlighted
+
+		anchors.verticalCenter: parent.verticalCenter
 	}
 
-	Row {
-		id        : ribbonRow
-		objectName: "ribbonRow"
-		padding   : 10
-		spacing   : 10
+	Row
+	{
+		id				: ribbonRow
+		objectName		: "ribbonRow"
+		spacing			: 10 * ppiScale
 
-		Repeater {
+		anchors.verticalCenter: parent.verticalCenter
+
+		ToolSeparator
+		{
+			id:						inBetweenRibbons
+			height:					Theme.ribbonButtonHeight
+			visible:				jaspRibbon.separateMe
+			anchors.verticalCenter: parent.verticalCenter
+
+			MouseArea
+			{
+				z				: 1
+				anchors.fill	: parent
+				hoverEnabled	: true
+				acceptedButtons	: Qt.NoButton
+				cursorShape		: Qt.OpenHandCursor
+			}
+		}
+
+		Repeater
+		{
 			id      : tabs
-			model   : ribbonModel.currentButtonModel
-			delegate: Loader {
-				sourceComponent	: displayText === "???" ? toolSeparator : ribbonButtonDelegate
+			model   : jaspRibbon.model
+			delegate: Loader
+			{
+				anchors.verticalCenter	: parent.verticalCenter
+				sourceComponent			: displayText === "???" ? toolSeparator : ribbonButtonDelegate
 
-				Component {
+				property int ribbonButtonModelIndex: index
+
+				Component
+				{
 					id: ribbonButtonDelegate
 
-					RibbonButton {
+					RibbonButton
+					{
 						text   : displayText
-						source : (ribbonModel.currentButtonModel.isDynamic() ? "file:" : "qrc:/icons/") + iconSource
+						source : (jaspRibbon.model.isDynamic ? "file:" : "qrc:/icons/") + iconSource
 						menu   : analysisMenu
-						enabled: ribbonEnabled
+						enabled: jaspRibbon.model.enabled && (!jaspRibbon.model.requiresDataset || mainWindow.datasetLoaded)
 					}
 				}
 
-				Component {	id: toolSeparator;	ToolSeparator { height: Theme.ribbonButtonHeight } }
+				Component
+				{
+					id: toolSeparator
+
+					ToolSeparator
+					{
+						height: Theme.ribbonButtonHeight
+
+						MouseArea
+						{
+							z				: 0
+							anchors.fill	: parent
+							hoverEnabled	: true
+							acceptedButtons	: Qt.NoButton
+							cursorShape		: Qt.OpenHandCursor
+						}
+					}
+				}
 			}
 		}
 	}

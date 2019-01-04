@@ -31,36 +31,62 @@
 class RibbonButtonModel : public QAbstractListModel
 {
 	Q_OBJECT
+	Q_PROPERTY(bool		enabled			READ enabled			WRITE setEnabled			NOTIFY enabledChanged)
+	Q_PROPERTY(bool		requiresDataset	READ requiresDataset	WRITE setRequiresDataset	NOTIFY requiresDatasetChanged)
+	Q_PROPERTY(bool		isDynamic		READ isDynamic			WRITE setIsDynamic			NOTIFY isDynamicChanged)
+	Q_PROPERTY(QString	title			READ titleQ				WRITE setTitleQ				NOTIFY titleChanged)
 
 public:
 	enum {
 		AnalysisMenuRole = Qt::UserRole,
 		DisplayRole,
 		IconSourceRole,
-		EnabledRibbonRole
+		EnabledAnalysisRole //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/82
 	};
 
-	RibbonButtonModel(QObject *parent, Json::Value description);
-	RibbonButtonModel(QObject *parent, Modules::DynamicModule * module);
+									RibbonButtonModel(QObject *parent, Json::Value description);
+									RibbonButtonModel(QObject *parent, Modules::DynamicModule * module);
 
 	int								rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _ribbonEntries.size();	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual	QHash<int, QByteArray>	roleNames()													const override;
 	// Utility functions
-	void							setRequiresDataset(bool requiresDataset)									{ _requiresDataset = requiresDataset;	}
-	void							setDynamic(bool isDynamicModule)											{ _isDynamicModule = isDynamicModule;	}
-	void							setTitle(std::string title)													{ _title = title;						}
-	Q_INVOKABLE bool				requiresDataset()											const			{ return _requiresDataset;				}
-	Q_INVOKABLE bool				isDynamic()													const			{ return _isDynamicModule;				}
-	std::string						title()														const			{ return _title;						}
+
+	bool							requiresDataset()											const			{ return _requiresDataset;					}
+	bool							isDynamic()													const			{ return _isDynamicModule;					}
+	std::string						title()														const			{ return _title;							}
+	QString							titleQ()													const			{ return QString::fromStdString(_title);	}
 	void							setRibbonEntries(Modules::RibbonEntries ribbonEntries);
+
+	bool enabled() const {		return _enabled;	}
+
+public slots:
+	void setRequiresDataset(bool requiresDataset);
+	void setIsDynamic(bool isDynamicModule);
+	void setTitle(std::string title);
+	void setTitleQ(QString title) { setTitle(title.toStdString()); }
+	void setEnabled(bool enabled);
+
+	void somePropertyChanged() { emit iChanged(this); }
+
+signals:
+	void enabledChanged();
+	void requiresDatasetChanged();
+	void isDynamicChanged();
+	void titleChanged();
+
+	void iChanged(RibbonButtonModel * me);
+
+private:
+	void bindYourself();
 
 private:
 	Modules::RibbonEntries			_ribbonEntries;
 	AnalysisMenuModels				_analysisMenuModels;
 
-	bool							_requiresDataset = true;
-	bool							_isDynamicModule = true;
+	bool							_requiresDataset	= true,
+									_isDynamicModule	= true,
+									_enabled			= false;
 	std::string						_title = "";
 };
 

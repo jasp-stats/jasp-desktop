@@ -24,9 +24,6 @@
 #include "datalibrarylistmodel.h"
 #include "datalibrarybreadcrumbsmodel.h"
 
-
-#include <QQuickWidget>
-
 class DataLibrary : public FileMenuObject
 {
 	

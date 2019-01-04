@@ -21,19 +21,20 @@ import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.0
 import JASP.Theme 1.0
 
-Rectangle {
+Rectangle
+{
 	id							: ribbonButton
 	width						: (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
 	height						: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	radius						: 5
-	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground //mice.pressed ? Theme.grayLighter : mice.containsMouse ? Theme.white : Theme.uiBackground
+	color						: mice.pressed ? Theme.grayLighter : "transparent"
 
 	//border.color				: Theme.white
 	//border.width				: !mice.containsMouse ? 0 : 2
 
 			property alias	text		: innerText.text
 			property alias	source		: backgroundImage.source
-			property alias	enabled		: mice.enabled
+			property bool	enabled		: true
 	default property var	menu
 			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
 
@@ -44,13 +45,12 @@ Rectangle {
 		anchors.centerIn:	parent
 		width:				parent.width
 		height:				parent.height
-
-		scale:				mice.containsMouse && !mice.pressed && !clusterMenu.opened ? Theme.ribbonScaleHovered : 1
-
+		scale:				mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
 
 		Image
 		{
 			id:			backgroundImage
+			z:			1
 			width:		(37 / 28) * height
 			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
 
@@ -58,14 +58,17 @@ Rectangle {
 			anchors.topMargin:			Theme.ribbonButtonPadding
 			anchors.horizontalCenter:	parent.horizontalCenter
 
-			ColorOverlay {
+			ColorOverlay
+			{
 				anchors.fill: backgroundImage
 				source      : backgroundImage
-				color       : mice.enabled ? "transparent" : Theme.uiBackground
+				color       : Theme.gray
+				visible		: !ribbonButton.enabled
 			}
 		}
 
-		Text {
+		Text
+		{
 			id: innerText
 
 			anchors.horizontalCenter: parent.horizontalCenter
@@ -73,22 +76,40 @@ Rectangle {
 			//anchors.bottom          : parent.bottom
 			anchors.topMargin       : 5
 
-			color    : mice.enabled ? Theme.black : Theme.uiBackground
+			color    : ribbonButton.enabled ? Theme.black : Theme.gray
 			font.bold: false
 		}
 
-		MouseArea {
+		MouseArea
+		{
 			id				: mice
 			anchors.fill	: parent
 			hoverEnabled	: true
 			acceptedButtons	: Qt.LeftButton
-			onClicked		: clusterMenu.open()
+			onClicked		: menuLoader.sourceComponent = menuComp
+			cursorShape		: Qt.PointingHandCursor
+			enabled			: ribbonButton.enabled
 
-			ClusterMenu {
-				id   : clusterMenu
-				model: ribbonButton.menu
-				posX : innerText.x
-				posY : ribbonButton.y + (ribbonButton.height)
+			Loader
+			{
+				id:					menuLoader
+				sourceComponent:	null
+			}
+
+			Component
+			{
+				id: menuComp
+
+				ClusterMenu {
+					id   : clusterMenu
+					model: ribbonButton.menu
+					posX : innerText.x
+					posY : ribbonButton.y + (ribbonButton.height)
+
+					ribbonButtonModelIndex:	ribbonButtonModelIndex
+					Component.onCompleted:	clusterMenu.open()
+					onClosed:				menuLoader.sourceComponent = null
+				}
 			}
 
 			// Rectangle {

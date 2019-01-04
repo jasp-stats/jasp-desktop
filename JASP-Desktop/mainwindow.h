@@ -46,6 +46,7 @@
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonmodel.h"
 #include "modules/ribbonbuttonmodel.h"
+#include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonentry.h"
 #include "data/filtermodel.h"
 #include "widgets/filemenu/filemenu.h"
@@ -61,6 +62,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
 	Q_PROPERTY(bool		analysesVisible		READ analysesVisible		WRITE setAnalysesVisible		NOTIFY analysesVisibleChanged		)
 	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
+	Q_PROPERTY(bool		datasetLoaded		READ datasetLoaded											NOTIFY datasetLoadedChanged			)
 
 	friend class FileMenu;
 public:
@@ -82,11 +84,13 @@ public:
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
 	QString	windowTitle()			const	{ return _windowTitle;			}
 	bool	analysesVisible()		const	{ return _analysesVisible;		}
+	bool	datasetLoaded()			const	{ return _datasetLoaded;		}
 	
 	static QString					iconPath;
 	static QMap<QString, QVariant>	iconFiles;
 	static QMap<QString, QVariant>	iconInactiveFiles;
 	static QMap<int, QString>		columnTypeMap;	
+
 
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
@@ -100,6 +104,10 @@ public slots:
 	void setDataPanelVisible(bool dataPanelVisible);
 	void setWindowTitle(QString windowTitle);
 	void setAnalysesVisible(bool analysesVisible);
+	void setDatasetLoaded(bool datasetLoaded);
+
+	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
+
 
 private:
 	void makeConnections();
@@ -148,8 +156,7 @@ private:
 	void loadRibbonQML();
 	void loadQML();
 
-	void			setCurrentTab(QString tabName);
-
+	void setCurrentTab(QString tabName);
 
 	void pauseEngines();
 	void resumeEngines();
@@ -168,10 +175,12 @@ signals:
 	void dataPanelVisibleChanged(bool dataPanelVisible);
 	void windowTitleChanged(QString windowTitle);
 
-	void showWarning(QString title, QString message);
+	//void showWarning(QString title, QString message);
 	void refreshAllAnalyses();
 
 	void analysesVisibleChanged(bool analysesVisible);
+
+	void datasetLoadedChanged(bool datasetLoaded);
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -251,7 +260,7 @@ private:
 	OnlineDataManager				*_odm					= nullptr;
 	DynamicModules					*_dynamicModules		= nullptr;
 	RibbonModel						*_ribbonModel			= nullptr;
-	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
+	RibbonModelFiltered				*_ribbonModelFiltered	= nullptr;
 	QObject							*qmlProgressBar			= nullptr;
 	QApplication					*_application 			= nullptr;
 	FileMenu						*_fileMenu				= nullptr;
@@ -283,9 +292,8 @@ private:
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,
-									_analysesVisible		= false;
-
-
+									_analysesVisible		= false,
+									_datasetLoaded			= false;
 };
 
 #endif // MAINWIDGET_H

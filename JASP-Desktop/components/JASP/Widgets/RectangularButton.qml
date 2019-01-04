@@ -43,26 +43,29 @@ Rectangle
 	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
 	property alias	_pressed:			buttonMouseArea.pressed
 
-	implicitWidth:	showIconAndText ? buttonText.width + buttonPadding + _scaledDim + buttonPadding : buttonIcon.visible ? _scaledDim : buttonText.width + buttonPadding
+	implicitWidth:	showIconAndText ? buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding : buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + buttonPadding
 	implicitHeight: _scaledDim
+	width:			implicitWidth
+	height:			implicitHeight
 
-
-	ToolTip.delay:		500
-	ToolTip.timeout:	3500
-	ToolTip.visible:	hovered && toolTip != ""
-	ToolTip.text:		toolTip
+	ToolTip
+	{
+		delay:		Theme.toolTipDelay
+		timeout:	Theme.toolTipTimeout
+		visible:	hovered && toolTip != ""
+		text:		toolTip
+	}
 
 	signal clicked()
 
 	MouseArea
 	{
-		id: buttonMouseArea
-		anchors.fill: parent
-		acceptedButtons: Qt.LeftButton
-		hoverEnabled: true
-		cursorShape: containsMouse && parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-		onClicked: if(filterButtonRoot.enabled) filterButtonRoot.clicked()
+		id:					buttonMouseArea
+		anchors.fill:		parent
+		acceptedButtons:	Qt.LeftButton
+		hoverEnabled:		true
+		cursorShape:		parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+		onClicked:			if(filterButtonRoot.enabled) filterButtonRoot.clicked()
 	}
 
 	Image
@@ -74,8 +77,8 @@ Rectangle
 		width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
 		height: filterButtonRoot.height - (2 * buttonPadding)
 
-		sourceSize.width: Math.max(48, width)
-		sourceSize.height: Math.max(48, height)
+		sourceSize.width:	Math.max(48, width  * 2)
+		sourceSize.height:	Math.max(48, height * 2)
 
 		visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
 		source:		filterButtonRoot.iconSource
@@ -89,17 +92,16 @@ Rectangle
 
 		text:		filterButtonRoot.text
 		visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-		color:		{
-			if (textColor == "default")
-				return filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled
-			else
-				return textColor
-		}
+		color:		textColor == "default" ? (filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled) : textColor
+
 
 		font:	Theme.font
 		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * ppiScale, filterButtonRoot.height - 2))
 
 		height: contentHeight
-		width:	contentWidth
+		width:	Math.min(implicitWidth, parent.width - ( buttonIcon.visible ? buttonIcon.width + buttonIcon.x : 0 ))
+
+
+		elide:	Text.ElideMiddle
 	}
 }

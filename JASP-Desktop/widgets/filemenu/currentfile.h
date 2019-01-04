@@ -22,7 +22,6 @@
 
 #include "filemenuobject.h"
 #include "currentfilelistmodel.h"
-#include <QQuickWidget>
 
 class CurrentFile : public FileMenuObject
 {

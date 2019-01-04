@@ -43,6 +43,8 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.2
+import JASP.Theme 1.0
+import JASP.Controls 1.0
 
 /*!
     \qmltype BasicTableViewJasp
@@ -52,7 +54,9 @@ import QtQuick.Window 2.2
 */
 
 ScrollView {
-    id: root
+	id: root
+
+	horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
 
     /*! \qmlproperty bool BasicTableViewJasp::alternatingRowColors
 
@@ -365,8 +369,8 @@ ScrollView {
     implicitWidth: 200
     implicitHeight: 150
 
-    frameVisible: true
-    __scrollBarTopMargin: headerVisible && (listView.transientScrollBars || Qt.platform.os === "osx") ? listView.headerItem.height : 0
+	frameVisible: true
+	__scrollBarTopMargin: headerVisible && (listView.transientScrollBars || Qt.platform.os === "osx") ? listView.headerItem.height : 0
 
     /*! \internal
         Use this to display user-friendly messages in TableView and TreeView common functions.
@@ -470,16 +474,11 @@ ScrollView {
                 __verticalScrollBar.value += diff
         }
 
-        SystemPalette {
-            id: palette
-            colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
-        }
-
         Rectangle {
             id: colorRect
             parent: viewport
             anchors.fill: parent
-            color: __style ? __style.backgroundColor : palette.base
+			color: Theme.white
             z: -2
         }
 
@@ -623,7 +622,7 @@ ScrollView {
                     sourceComponent: rowitem.itemModel !== undefined ? root.rowDelegate : null
                     // Row fills the view width regardless of item size
                     // But scrollbar should not adjust to it
-                    height: item ? item.height : 16
+					height: item ? item.height : 30
                     width: parent.width + __horizontalScrollBar.width
                     x: listView.contentX //- root.extraSpaceLeft
                     z: -3
@@ -740,7 +739,7 @@ ScrollView {
                             height:parent.height
                             opacity: (treeViewMovable && index === repeater.targetIndex && repeater.targetIndex !== repeater.dragIndex) ? 0.5 : 0
                             Behavior on opacity { NumberAnimation { duration: 160 } }
-                            color: palette.highlight
+							color: Theme.itemHighlight
                             visible: modelData.movable
                         }
 

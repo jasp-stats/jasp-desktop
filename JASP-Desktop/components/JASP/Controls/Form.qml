@@ -140,7 +140,7 @@ AnalysisForm
 				anchors.fill:	parent
 				onClicked:		expanderButton.toggleExpander();
 				hoverEnabled:	true
-				cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				cursorShape:	Qt.PointingHandCursor
 			}
 
 			Image

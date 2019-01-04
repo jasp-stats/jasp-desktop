@@ -8,12 +8,23 @@ FocusScope
 	height: ribbonMenu.height
 	y:		ribbonMenu.border.width
 
-
-	HamburgerButton
+	Rectangle
 	{
-		id:		fileMenuOpenButton
+		color:			Theme.uiBackground
+		anchors.fill:	parent
+		z:				-1
+	}
 
-		width:	height
+
+	MenuArrowButton
+	{
+		id:			fileMenuOpenButton
+		width:		height
+		showArrow:	fileMenuModel.visible
+		onClicked:	fileMenuModel.visible = !fileMenuModel.visible
+		toolTip:	showArrow ? "Close Menu" : "Open Menu"
+		hamburger:	true
+		z:			2
 
 		anchors
 		{
@@ -21,11 +32,13 @@ FocusScope
 			left:	parent.left
 			bottom:	parent.bottom
 		}
+
 	}
 
-	Ribbon
+	Ribbons
 	{
 		id: ribbonMenu
+		z:	0
 
 		anchors
 		{
@@ -36,11 +49,14 @@ FocusScope
 
 	}
 
-	RectangularButton
+	MenuArrowButton
 	{
 		id:			modulesPlusButton
-		iconSource: "qrc:/icons/addition-sign.svg"
 		width:		height
+		hamburger:	false
+		onClicked:	modulesMenu.opened = !modulesMenu.opened
+		showArrow:	modulesMenu.opened
+		z:			2
 
 		anchors
 		{
@@ -49,7 +65,7 @@ FocusScope
 			bottom:	parent.bottom
 		}
 
-		//onClicked:
+
 	}
 
 	Rectangle

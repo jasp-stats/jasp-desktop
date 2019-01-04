@@ -20,14 +20,27 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-Rectangle {
+Rectangle
+{
 	id							: ribbonButton
 	width						: implicitWidth
 	height						: implicitHeight
-	implicitHeight				: Theme.ribbonButtonHeight
+	implicitHeight				: Theme.ribbonButtonHeight * 0.8
 	implicitWidth				: implicitHeight
-	// radius						: 5
-	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground //mice.pressed ? Theme.grayLighter : mice.containsMouse ? Theme.white : Theme.uiBackground
+	// radius					: 5
+	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground
+
+	property bool	hamburger:	true
+	property bool	showArrow:	false
+	property string	toolTip:	""
+
+	ToolTip
+	{
+		text:		toolTip
+		visible:	mice.containsMouse && toolTip !== ""
+		delay:		Theme.toolTipDelay
+		timeout:	Theme.toolTipTimeout
+	}
 
 	signal clicked
 
@@ -43,14 +56,16 @@ Rectangle {
 		property real	barRadius:		barThickness
 		property real	barWidth:		parent.width / 2
 		property color	barColor:		Theme.grayDarker
-		property real	offsetY:		!fileMenuModel.visible ? 0 : (height / 8) //+ (barThickness / 2)
-		property real	offsetX:		!fileMenuModel.visible ? 0 : width / 4
+		property real	offsetY:		!ribbonButton.showArrow ? 0 : (height / 8) //+ (barThickness / 2)
+		property real	offsetX:		!ribbonButton.showArrow ? 0 : (ribbonButton.hamburger ? 1 : -1) * (width / 4)
 
 		Item
 		{
 			id:		topBar
 			x:		-hamburgerArrow.offsetX
-			y:		Theme.ribbonButtonPadding + hamburgerArrow.offsetY //(parent.height / 3) - (height * 0.5)
+			y:		!(ribbonButton.hamburger || ribbonButton.showArrow) ?
+						(parent.height / 2) - (height / 2) :
+						Theme.ribbonButtonPadding + hamburgerArrow.offsetY //(parent.height / 3) - (height * 0.5)
 			height:	hamburgerArrow.barThickness
 			width:	parent.width
 
@@ -58,8 +73,10 @@ Rectangle {
 			{
 				anchors.centerIn:	parent
 				height:				parent.height
-				width:				!fileMenuModel.visible ? parent.width : parent.width / 1.25
-				rotation:			!fileMenuModel.visible ? 0 : -45
+				width:				!ribbonButton.showArrow ? parent.width : parent.width / 1.25
+				rotation:			!ribbonButton.showArrow ?
+										(ribbonButton.hamburger ?   0 : 90) :
+										(ribbonButton.hamburger ? -45 : 45)
 				radius:				hamburgerArrow.barRadius
 				color:				hamburgerArrow.barColor
 			}
@@ -80,7 +97,9 @@ Rectangle {
 		{
 			id:		bottomBar
 			x:		-hamburgerArrow.offsetX
-			y:		parent.height - Theme.ribbonButtonPadding - height - hamburgerArrow.offsetY //(parent.height / 3)) - (height * 0.5)
+			y:		!(ribbonButton.hamburger || ribbonButton.showArrow) ?
+						(parent.height / 2) - (height / 2) :
+						parent.height - Theme.ribbonButtonPadding - height - hamburgerArrow.offsetY //(parent.height / 3)) - (height * 0.5)
 			height:	hamburgerArrow.barThickness
 			width:	parent.width
 
@@ -88,8 +107,8 @@ Rectangle {
 			{
 				anchors.centerIn:	parent
 				height:				parent.height
-				width:				!fileMenuModel.visible ? parent.width : parent.width / 1.25
-				rotation:			!fileMenuModel.visible ? 0 : 45
+				width:				!ribbonButton.showArrow ? parent.width : parent.width / 1.25
+				rotation:			!ribbonButton.showArrow ? 0 : ribbonButton.hamburger ? 45 : -45
 				radius:				hamburgerArrow.barRadius
 				color:				hamburgerArrow.barColor
 			}
@@ -101,7 +120,8 @@ Rectangle {
 			anchors.fill	: parent
 			hoverEnabled	: true
 			acceptedButtons	: Qt.LeftButton
-			onClicked		: fileMenuModel.visible = !fileMenuModel.visible
+			onClicked		: ribbonButton.clicked()
+			cursorShape		: Qt.PointingHandCursor
 		}
 	}
 }

@@ -29,6 +29,7 @@
 #include <QDesktopServices>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QtWebEngine>
 
 #include "utilities/qutils.h"
 #include "utilities/appdirs.h"
@@ -100,6 +101,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
 	_ribbonModel			= new RibbonModel(this);
+	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 
 	new MessageForwarder(this); //We do not need to store this
@@ -226,6 +228,7 @@ void MainWindow::makeConnections()
 
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
+	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::showForm										);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 
@@ -235,10 +238,6 @@ void MainWindow::makeConnections()
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
-	//connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
-//	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned									);
-	//connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler							);
-	//connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
 	/*connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
 	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
@@ -317,6 +316,8 @@ void MainWindow::initQWidgetGUIParts()
 
 void MainWindow::loadQML()
 {
+	QtWebEngine::initialize();
+
 	_qml = new QQmlApplicationEngine(this);
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this);
@@ -327,6 +328,8 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("engineSync",				_engineSync);
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel);
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
+	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered);
+
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface);
@@ -346,10 +349,11 @@ void MainWindow::loadQML()
 #ifdef JASP_DEBUG
 	debug = true;
 #endif
-	_qml->rootContext()->setContextProperty("DEBUG_MODE", debug);
-	_qml->rootContext()->setContextProperty("iconPath", iconPath);
-	_qml->rootContext()->setContextProperty("iconFiles", iconFiles);
-	_qml->rootContext()->setContextProperty("iconInactiveFiles", iconInactiveFiles);
+
+	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
+	_qml->rootContext()->setContextProperty("iconPath",				iconPath);
+	_qml->rootContext()->setContextProperty("iconFiles",			iconFiles);
+	_qml->rootContext()->setContextProperty("iconInactiveFiles",	iconInactiveFiles);
 
 	_qml->addImportPath("qrc:///components");
 
@@ -655,6 +659,8 @@ void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 	_columnsModel->setDataSet(dataSet);
 	_computedColumnsModel->setDataSetPackage(package);
 	_analyses->setDataSet(dataSet);
+
+	setDatasetLoaded(dataSet != nullptr && dataSet->rowCount() > 0);
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package,
@@ -846,10 +852,8 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 
 void MainWindow::showForm(Analysis *analysis)
 {
-
-
-	_analyses->selectAnalysis(analysis);
 	setAnalysesVisible(true);
+	_analyses->selectAnalysis(analysis);
 
 	std::cout << "MainWindow::showForm(Analysis *analysis) is being called but it aint doin' much..." << std::endl;
 	//closeCurrentOptionsWidget();
@@ -1280,7 +1284,16 @@ void MainWindow::populateUIfromDataSet()
 
 	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
-	//checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
+	checkUsedModules();
+}
+
+void MainWindow::checkUsedModules()
+{
+	_analyses->applyToAll([&](Analysis * analysis)
+	{
+		if(_ribbonModel->isModuleName(analysis->module()))
+			_ribbonModel->ribbonButtonModel(analysis->module())->setEnabled(true);
+	});
 }
 
 void MainWindow::matchComputedColumnsToAnalyses()
@@ -1468,7 +1481,7 @@ void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
-		//checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
+		checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
 	}
 	catch (runtime_error& e)
 	{
@@ -1881,8 +1894,6 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		_package->setModified(true);
 
 	_resultsJsInterface->removeAnalysis(analysis);
-
-	//checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
 }
 
 void MainWindow::removeAllAnalyses()
@@ -1902,11 +1913,20 @@ void MainWindow::getAnalysesUserData()
 	_analyses->setAnalysesUserData(data);
 }
 
-void  MainWindow::setAnalysesVisible(bool analysesVisible)
+void MainWindow::setAnalysesVisible(bool analysesVisible)
 {
 	if (_analysesVisible == analysesVisible)
 		return;
 
 	_analysesVisible = analysesVisible;
 	emit analysesVisibleChanged(_analysesVisible);
+}
+
+void MainWindow::setDatasetLoaded(bool datasetLoaded)
+{
+	if (_datasetLoaded == datasetLoaded)
+		return;
+
+	_datasetLoaded = datasetLoaded;
+	emit datasetLoadedChanged(_datasetLoaded);
 }

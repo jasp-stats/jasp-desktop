@@ -92,8 +92,10 @@
         <file>components/JASP/Widgets/FileMenu/ListItem.qml</file>
         <file>components/JASP/Widgets/FileMenu/FileList.qml</file>
         <file>components/JASP/Widgets/AnalysisForms.qml</file>
-        <file>components/JASP/Widgets/Ribbon/HamburgerButton.qml</file>
         <file>components/JASP/Widgets/MenuButton.qml</file>
         <file>components/JASP/Controls/ColumnLayout.qml</file>
+        <file>components/JASP/Widgets/Ribbon/MenuArrowButton.qml</file>
+        <file>components/JASP/Widgets/ModulesMenu.qml</file>
+        <file>components/JASP/Widgets/Ribbon/Ribbons.qml</file>
     </qresource>
 </RCC>

@@ -8,10 +8,10 @@ Window
 	id:			mainWindowRoot
 	title:		mainWindow.windowTitle
 	visible:	true
-	width:		1800
-	height:		900
+	width:		Theme.formWidth * 2.2
+	height:		768
 
-	minimumWidth:	640
+	minimumWidth:	Theme.formWidth + Theme.minPanelWidth
 	minimumHeight:	480
 
 	RibbonBar
@@ -49,6 +49,44 @@ Window
 		{
 			top:	ribbon.bottom
 			left:	parent.left
+			right:	parent.right
+			bottom:	parent.bottom
+		}
+	}
+
+	MouseArea
+	{
+		visible:		fileMenuModel.visible || modulesMenu.opened
+		z:				5
+		hoverEnabled:	true
+
+		onContainsMouseChanged: if(containsMouse) ribbonModel.highlightedModuleIndex = -1
+
+		anchors
+		{
+			top:	ribbon.bottom
+			left:	filemenu.right
+			right:	modulesMenu.left
+			bottom:	parent.bottom
+		}
+
+		onClicked:
+		{
+			fileMenuModel.visible		= false
+			modulesMenu.opened			= false
+
+			mouse.accepted = false
+		}
+	}
+
+	ModulesMenu
+	{
+		id:			modulesMenu
+		z:			1
+
+		anchors
+		{
+			top:	ribbon.bottom
 			right:	parent.right
 			bottom:	parent.bottom
 		}

@@ -9,7 +9,7 @@ FocusScope
 	id:			analysisFormsFocusScope
 	width:		extraSpace + (mainWindow.analysesVisible ? Theme.formWidth + 1 + (2 * formsBackground.border.width) : 0)
 
-	property int	extraSpace:	openCloseButton.width
+	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
 
 	Behavior on width { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
@@ -75,7 +75,7 @@ FocusScope
 			{
 				anchors.fill:	parent
 				hoverEnabled:	true
-				cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				cursorShape:	Qt.PointingHandCursor
 				onClicked:		mainWindow.analysesVisible = !mainWindow.analysesVisible
 				z:				3
 			}

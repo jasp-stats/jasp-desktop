@@ -27,15 +27,7 @@ FocusScope {
 	height: calculatedMinimumHeight
     visible: opened
 
-	property real calculatedMinimumHeight: buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6
-
-
-
-
-    property var headersGradient: Gradient{
-		GradientStop { position: 0.2; color: Theme.grayLighter }
-		GradientStop { position: 1.0; color: Theme.grayMuchLighter }
-    }
+	property real calculatedMinimumHeight: buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (Theme.generalAnchorMargin * 2)
 
     property int chosenColumn: -1
     readonly property bool opened: chosenColumn != -1
@@ -57,10 +49,12 @@ FocusScope {
     }
 
 
-    Rectangle {
-		id:				levelsTableViewRectangle
-		anchors.fill:	parent
-		color:			Theme.uiBackground
+	Item
+	{
+		id:					levelsTableViewRectangle
+		anchors.fill:		parent
+		anchors.margins:	Theme.generalAnchorMargin
+
 
 
             Text
@@ -72,27 +66,33 @@ FocusScope {
                 anchors.left: parent.left
             }
 
-            Rectangle
+			Item
             {
-                anchors.top: columnNameVariablesWindow.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 6
-                anchors.topMargin: 6
-                color: "transparent"
+				anchors
+				{
+					top:			columnNameVariablesWindow.bottom
+					left:			parent.left
+					right:			parent.right
+					bottom:			parent.bottom
+					bottomMargin:	6
+					topMargin:		6
+				}
+
+				//color: "transparent"
 
 
-				OLD.TableView //Was TableViewJasp but its not necessary I think
+				TableViewJasp
                 {
-                    id: levelsTableView
-                    objectName: "levelsTableView"
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: buttonColumnVariablesWindow.left
-                    anchors.bottom: parent.bottom
-
-					anchors.rightMargin: 2
+					id:				levelsTableView
+					objectName:		"levelsTableView"
+					anchors
+					{
+						top:			parent.top
+						left:			parent.left
+						right:			buttonColumnVariablesWindow.left
+						bottom:			parent.bottom
+						rightMargin:	2
+					}
 
                     signal columnChanged(string columnName)
 
@@ -198,7 +198,7 @@ FocusScope {
                     {
                         id: levelsTableViewFilterColumn
                         title: "Filter"
-						width: 40
+						width: 60
                         role: "filter"
                     }
 
@@ -208,7 +208,7 @@ FocusScope {
                         id: levelsTableViewValueColumn
                         title: "Value"
                         role: "value"
-						width: 100
+						width: 120
 						//width: levelsTableView.width - levelsTableViewLabelColumn.width - 20 - levelsTableViewFilterColumn.width
                     }
 
@@ -217,23 +217,23 @@ FocusScope {
                         id: levelsTableViewLabelColumn
                         title: "Label"
                         role: "label"
-						width: levelsTableView.width - levelsTableViewValueColumn.width - 20 - levelsTableViewFilterColumn.width
+						width: levelsTableView.width - levelsTableViewValueColumn.width - 10 - levelsTableViewFilterColumn.width
                     }
 
                     headerDelegate: Rectangle
                     {
                         //Two rectangles to show a border of exactly 1px around cells
                         id: headerBorderRectangleVars
-						color:			Theme.grayLighter
+						color:			Theme.grayDarker
 						border.width:	0
                         radius: 0
-						height: headerTextVars.contentHeight + 8
+						height: headerTextVars.contentHeight + (Theme.itemPadding * 2)
 						//width: headerTextVars.width + 8
 
                         Rectangle
                         {
                             id: colHeaderVars
-                            gradient: headersGradient
+							color:	Theme.uiBackground
 
                             x: headerBorderRectangleVars.x
                             y: headerBorderRectangleVars.y
@@ -248,18 +248,16 @@ FocusScope {
 								font:	Theme.font
 
 								anchors.verticalCenter: parent.verticalCenter
-								x: 4
+								x:  Theme.itemPadding
                             }
                         }
                     }
 
-					rowDelegate: null
+					rowDelegate: Item { height: (30 * ppiScale)  }
 
 					itemDelegate: Rectangle
 					{
-						color: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? Theme.blue : (styleData.row % 2 == 1 ? Theme.whiteBroken : Theme.grayMuchLighter)
-
-						height: 30 * ppiScale
+						color:			levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? Theme.itemHighlight : "transparent"
 
 						New.Button
 						{
@@ -267,9 +265,13 @@ FocusScope {
 							checkable: true
 							visible: styleData.column === 0
 
-							anchors.top: parent.top
-							anchors.bottom: parent.bottom
-							anchors.horizontalCenter: parent.horizontalCenter
+							anchors
+							{
+								top:				parent.top
+								bottom:				parent.bottom
+								horizontalCenter:	parent.horizontalCenter
+								margins:			4
+							}
 
 							width: height
 
@@ -296,17 +298,18 @@ FocusScope {
 						Text {
 							visible: styleData.column === 1
 
-							color:			systemPalette.text
+							color:			Theme.textEnabled
 							text:			styleData.value
 							elide:			Text.ElideMiddle
 							font.pixelSize: baseFontSize * ppiScale
 							anchors.fill:	parent
+							verticalAlignment: Text.AlignVCenter
 						}
 
 						TextInput {
 							visible:		styleData.column === 2
 
-							color:			systemPalette.text
+							color:			Theme.textEnabled
 
 							text:			styleData.value
 							font.pixelSize: baseFontSize * ppiScale
@@ -315,6 +318,8 @@ FocusScope {
 							autoScroll:		true
 
 							anchors.fill:	parent
+							verticalAlignment: Text.AlignVCenter
+
 							function acceptChanges()
 							{
 								if(styleData.row >= 0 && styleData.column >= 0)
@@ -358,7 +363,7 @@ FocusScope {
 									spacing:			Math.max(1, 2 * ppiScale)
 					property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
 					property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
-					property real	buttonHeight:		26 * ppiScale
+					property real	buttonHeight:		32 * ppiScale
 
 					RectangularButton
                     {

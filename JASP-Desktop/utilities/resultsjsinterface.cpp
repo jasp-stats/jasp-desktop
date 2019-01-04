@@ -18,7 +18,6 @@
 
 #include "resultsjsinterface.h"
 
-#include <QWebEngineHistory>
 #include <QClipboard>
 #include <QStringBuilder>
 
