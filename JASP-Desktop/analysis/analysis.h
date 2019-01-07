@@ -42,7 +42,7 @@ class Analysis : public QObject
 
 public:
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception, Initializing };
 
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data);
 	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry);
@@ -109,6 +109,8 @@ public:
 	bool isEditImg()	const { return status() == EditImg; }
 	bool isInited()		const { return status() == Inited; }
 	bool isFinished()	const { return status() == Complete || status() == Error || status() == Exception; }
+	
+	void initialized();
 
 	performType				desiredPerformTypeFromAnalysisStatus() const;
 	std::string				qmlFormPath() const;
@@ -128,7 +130,7 @@ private:
 	void					requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(columnName); }
 
 protected:
-	Status					_status			= Empty;
+	Status					_status			= Initializing;
 	bool					_visible		= true,
 							_refreshBlocked	= false;
 

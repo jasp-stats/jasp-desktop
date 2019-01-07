@@ -58,8 +58,6 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 	else
 		analysis = create(dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status);
 
-	analysisAdded(analysis);
-
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
 
@@ -315,10 +313,7 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 
 void Analyses::analysisClickedHandler(QString analysisFunction, QString module)
 {
-	Analysis* analysis = create(module, analysisFunction);
-	analysisAdded(analysis);
-
-	emit analysisAdded(analysis);
+	create(module, analysisFunction);
 }
 
 void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)

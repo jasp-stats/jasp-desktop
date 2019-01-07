@@ -69,7 +69,7 @@ Item {
 
         for (var i = 0; i < items.children.length; ++i) {
             var child = items.children[i];
-            if (child.name && child.visible) {
+			if (child.name && (DEBUG_MODE || !child.debug)) {
                 allJASPControls.push(child);
             }
         }
@@ -108,13 +108,13 @@ Item {
             }
         }
 
-        var anchorTop = variablesForm.top;
+		var anchorTop = variablesForm.top;
         for (i = 0; i < allJASPControls.length; ++i) {
             allJASPControls[i].width = Qt.binding(function (){ return variablesForm.listWidth});
             allJASPControls[i].anchors.top = anchorTop;
             allJASPControls[i].anchors.topMargin = i === 0 ? 0 : marginBetweenVariablesLists;
             allJASPControls[i].anchors.right = variablesForm.right;
-            anchorTop = allJASPControls[i].bottom;
+			anchorTop = allJASPControls[i].bottom;
         }
 
         for (i = 0; i < allAssignedVariablesList.length; i++) {
