@@ -18,7 +18,7 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import QtGraphicalEffects 1.12
 import JASP.Theme 1.0
 
 Rectangle
@@ -130,21 +130,29 @@ Rectangle
 				}
 			}
 
-			// Rectangle {
-			// 	// bottom shadow
-			// 	width  : clusterMenu.width
-			// 	height : 5
-			//
-			// 	visible: clusterMenu.opened
-			//
-			// 	x : clusterMenu.x
-			// 	y : clusterMenu.y + clusterMenu.height
-			// 	z : clusterMenu.z
-			//
-			// 	gradient:	Gradient {
-			// 		GradientStop { position: 0.0; color: Theme.shadow }
-			// 		GradientStop { position: 1.0; color: "transparent" }
-			// 	}
+			Rectangle {
+				id		: borderRect
+				width	: clusterMenu.width
+				height	: clusterMenu.height
+				x		: innerText.x
+				y		: ribbonButton.y + (ribbonButton.height)
+				z		: clusterMenu.z + 1
+
+				// visible	: clusterMenu.opened
+
+				border.width: 1
+				border.color: "black"
+			}
+
+			// RectangularGlow
+			// {
+			// 	anchors.fill: clusterMenu
+			// 	glowRadius	: 5
+			// 	spread		: 0.2
+			// 	color		: Theme.grayDarker
+			// 	cornerRadius: clusterMenu.radius + glowRadius
+			// 	z			: clusterMenu.z - 1
+			// 	visible		: clusterMenu.opened
 			// }
 		}
 	}
