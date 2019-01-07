@@ -519,6 +519,7 @@ void AnalysisForm::formCompletedHandler()
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 		_parseQML();
 		bindTo(_analysis->options(), _analysis->getDataSet());
+		_analysis->initialized();
 	}
 	
 }

@@ -101,7 +101,14 @@ Analysis::Status Analysis::parseStatus(string name)
 	else if (name == "SaveImg")		return Analysis::SaveImg;
 	else if (name == "EditImg")		return Analysis::SaveImg;
 	else if (name == "exception")	return Analysis::Exception;
+	else if (name == "initializing") return Analysis::Initializing;
 	else							return Analysis::Error;
+}
+
+void Analysis::initialized()
+{
+	_status = Empty;
+	emit _analyses->analysisAdded(this);
 }
 
 Json::Value Analysis::asJSON() const
@@ -121,15 +128,16 @@ Json::Value Analysis::asJSON() const
 
 	switch (_status)
 	{
-	case Analysis::Empty:		status = "empty";		break;
-	case Analysis::Inited:		status = "waiting";		break;
-	case Analysis::Running:		status = "running";		break;
-	case Analysis::Complete:	status = "complete";	break;
-	case Analysis::Aborted:		status = "aborted";		break;
-	case Analysis::SaveImg:		status = "SaveImg";		break;
-	case Analysis::EditImg:		status = "EditImg";		break;
-	case Analysis::Exception:	status = "exception";	break;
-	default:					status = "error";		break;
+	case Analysis::Empty:			status = "empty";		break;
+	case Analysis::Inited:			status = "waiting";		break;
+	case Analysis::Running:			status = "running";		break;
+	case Analysis::Complete:		status = "complete";	break;
+	case Analysis::Aborted:			status = "aborted";		break;
+	case Analysis::SaveImg:			status = "SaveImg";		break;
+	case Analysis::EditImg:			status = "EditImg";		break;
+	case Analysis::Exception:		status = "exception";	break;
+	case Analysis::Initializing:	status = "initializing"; break;
+	default:						status = "error";		break;
 	}
 
 	analysisAsJson["status"]	= status;
