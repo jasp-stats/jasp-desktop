@@ -108,7 +108,6 @@ Analysis::Status Analysis::parseStatus(string name)
 void Analysis::initialized()
 {
 	_status = Empty;
-	emit _analyses->analysisAdded(this);
 }
 
 Json::Value Analysis::asJSON() const

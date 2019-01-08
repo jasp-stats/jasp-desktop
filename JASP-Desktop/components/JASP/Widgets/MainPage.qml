@@ -39,12 +39,6 @@ OLD.SplitView
 			}
 		}
 
-		/*Connections
-		{
-			target:				mainWindow
-			onDataPanelVisible:	if(mainWindow.dataPanelVisible) { dataAndAnalyses.width = panelSplit.width / 2 }
-		}*/
-
 		z: 1
 
 		DataPanel

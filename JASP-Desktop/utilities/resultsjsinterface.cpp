@@ -71,9 +71,6 @@ void ResultsJsInterface::zoomReset()
 
 void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
-	// clear history, to prevent backspace from going 'back'
-	std::cout << "should do in QML I guess? _webViewResults->history()->clear();" << std::endl;
-
 	if (succes)
 	{
 		QString version = tq(AppInfo::version.asString());
@@ -87,11 +84,6 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 		setGlobalJsValues();
 
 		emit runJavaScript("window.getPPI()");
-	}
-	else
-	{
-		std::cout << "Could not load result page!" << std::endl;
-		std::cout.flush();
 	}
 }
 

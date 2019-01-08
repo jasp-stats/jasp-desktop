@@ -22,10 +22,10 @@ import JASP.Theme 1.0
 
 Item
 {
-	id        : jaspRibbon
-	objectName: "jaspRibbon"
-	width     : ribbonRow.width + ribbonRow.spacing
-	height    : 80 * ppiScale
+	id:				jaspRibbon
+	objectName:		"jaspRibbon"
+	implicitWidth:	ribbonRow.width + ribbonRow.spacing
+	implicitHeight:	60 * ppiScale
 
 
 	property var	model:			null
@@ -40,7 +40,7 @@ Item
 		z:			-1
 		x:			inBetweenRibbons.visible ? inBetweenRibbons.width + ribbonRow.spacing : 0
 		width:		ribbonRow.width - x
-		height:		parent.height - (ribbonRow.spacing * 2)
+		height:		parent.height - (Theme.ribbonButtonPadding)
 
 		color:		Theme.blueLighter
 		//radius:		20

@@ -379,8 +379,9 @@ void FileMenu::dataFileModifiedHandler(QString path)
 
 void FileMenu::dataSetIORequestHandler(FileEvent *event)
 {
-	connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
-	connect(event, SIGNAL(dataFileChanged(QString)), this, SLOT(dataFileModifiedHandler(QString)));
+	connect(event, &FileEvent::completed,		this, &FileMenu::dataSetIOCompleted			);
+	connect(event, &FileEvent::dataFileChanged, this, &FileMenu::dataFileModifiedHandler	);
+
 	emit dataSetIORequest(event);
 	
 }

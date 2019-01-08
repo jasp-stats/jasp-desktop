@@ -49,12 +49,16 @@ Rectangle
 		id:					hamburgerArrow
 		anchors.centerIn:	parent
 		width:				hamburgerArrow.barWidth//parent.width	- (2 * Theme.ribbonButtonPadding)
-		height:				parent.height	- (2 * Theme.ribbonButtonPadding)
-		scale:				mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
+		height:				baseHeight - 20
+		scale:				baseScale * (mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1)
 
-		property real	barThickness:	8;//(Theme.ribbonButtonHeight (2 * Theme.ribbonButtonPadding)) / 7
+
+		property real	baseScale:		0.8 * (height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
+
+		property real	baseHeight:		80
+		property real	barThickness:	8 //(Theme.ribbonButtonHeight (2 * Theme.ribbonButtonPadding)) / 7
 		property real	barRadius:		barThickness
-		property real	barWidth:		parent.width / 2
+		property real	barWidth:		baseHeight / 2
 		property color	barColor:		Theme.grayDarker
 		property real	offsetY:		!ribbonButton.showArrow ? 0 : (height / 8) //+ (barThickness / 2)
 		property real	offsetX:		!ribbonButton.showArrow ? 0 : (ribbonButton.hamburger ? 1 : -1) * (width / 4)
@@ -113,15 +117,15 @@ Rectangle
 				color:				hamburgerArrow.barColor
 			}
 		}
+	}
 
-		MouseArea
-		{
-			id				: mice
-			anchors.fill	: parent
-			hoverEnabled	: true
-			acceptedButtons	: Qt.LeftButton
-			onClicked		: ribbonButton.clicked()
-			cursorShape		: Qt.PointingHandCursor
-		}
+	MouseArea
+	{
+		id				: mice
+		anchors.fill	: parent
+		hoverEnabled	: true
+		acceptedButtons	: Qt.LeftButton
+		onClicked		: ribbonButton.clicked()
+		cursorShape		: Qt.PointingHandCursor
 	}
 }

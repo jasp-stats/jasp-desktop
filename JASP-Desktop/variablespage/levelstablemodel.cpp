@@ -22,6 +22,9 @@ void LevelsTableModel::setColumn(Column *column)
 	_colName = column != NULL ? column->name() : "";
 	endResetModel();
 	emit resizeLabelColumn();
+
+	if(column == NULL)	setChosenColumn(-1);
+	else				setChosenColumn(_dataSet->getColumnIndex(_colName));
 }
 
 void LevelsTableModel::refreshColumn(Column * column)
@@ -291,4 +294,14 @@ int LevelsTableModel::filteredOut()
 			filteredOut++;
 
 	return filteredOut;
+}
+
+
+void LevelsTableModel::setChosenColumn(int chosenColumn)
+{
+	if (_chosenColumn == chosenColumn)
+		return;
+
+	_chosenColumn = chosenColumn;
+	emit chosenColumnChanged(_chosenColumn);
 }

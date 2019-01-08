@@ -47,8 +47,8 @@ public:
 				Analyses(QObject * parent) : QAbstractListModel(parent) {}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, DynamicModules * dynamicModules);
-	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing);
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing);
+	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
+	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
 
 	Analysis*	create(const QString &module, const QString &name)	{ return create(module, name, _nextId++, AppInfo::version);		}
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry)		{ return create(analysisEntry, _nextId++);						}
@@ -109,7 +109,7 @@ signals:
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);
-	void storeAnalysis(Analysis* analysis, size_t id);
+	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);
 
 	void analysisOptionsChangedHandler(	Analysis *analysis)							{ analysisOptionsChanged(analysis); }
 	void analysisImageSavedHandler(		Analysis *analysis)							{ analysisImageSaved(analysis); }
@@ -123,9 +123,9 @@ private:
 	 std::map<size_t, Analysis*>	_analysisMap;
 	 std::vector<size_t>			_orderedIds;
 
-	 size_t _nextId					= 0;
-	 int	_currentAnalysisIndex	= -1;
-	 DataSet* _dataSet				= nullptr;
+	 size_t		_nextId					= 0;
+	 int		_currentAnalysisIndex	= -1;
+	 DataSet*	_dataSet				= nullptr;
 };
 
 #endif // ANALYSES_H

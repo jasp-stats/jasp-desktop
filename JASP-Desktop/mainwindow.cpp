@@ -181,7 +181,6 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 	connect(this,					&MainWindow::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 
-	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn				);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
 	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,			_tableModel,			&DataSetTableModel::refreshColumn							);
@@ -260,59 +259,6 @@ void MainWindow::makeConnections()
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 }
 
-/*
-void MainWindow::initQWidgetGUIParts()
-{
-	JASPTIMER_START(MainWindow::initQWidgetGUIParts());
-	updateMenuEnabledDisabledStatus();
-
-	ui->splitter->setSizes(QList<int>({575}));
-
-	ui->tabBar->init(this, _dynamicModules, _ribbonModel);
-	ui->tabBar->addModuleInstallerEntryToPlusMenu();
-
-#ifdef __APPLE__
-	_scrollbarWidth = 3;
-#else
-	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-#endif
-
-	_buttonPanel		= new QWidget(ui->panel_2_Options);
-	_buttonPanelLayout	= new QVBoxLayout(_buttonPanel);
-	_buttonPanelLayout->setSpacing(6);
-	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top() - 5, _buttonPanelLayout->contentsMargins().right(), 0);
-
-	_buttonPanel->setLayout(_buttonPanelLayout);
-
-	_runButton	= new QPushButton(QString("Run"), _buttonPanel);
-	_okButton	= new QPushButton(QString("OK"), _buttonPanel);
-	_okButton->setDefault(true);
-
-	QMenuBar *_mMenuBar = new QMenuBar(0);
-	QMenu *aboutMenu	= _mMenuBar->addMenu("JASP");
-	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
-	_mMenuBar->addMenu(aboutMenu);
-
-	_buttonPanelLayout->addWidget(_okButton);
-	//_buttonPanelLayout->addWidget(_runButton);
-	//_buttonPanelLayout->addStretch();
-
-	_buttonPanel->resize(_buttonPanel->sizeHint());
-	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
-
-	_tableViewWidthBeforeOptionsMadeVisible = -1;
-
-	ui->webViewHelp->load(QUrl::fromLocalFile(AppDirs::help() + "/index.html"));
-
-	ui->panel_4_Help->hide();
-
-	setAcceptDrops(true);
-
-	ui->panel_1_Data->hide();
-	ui->panel_2_Options->hide();
-
-	JASPTIMER_FINISH(MainWindow::initQWidgetGUIParts());
-}*/
 
 void MainWindow::loadQML()
 {
@@ -406,18 +352,6 @@ void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
 	}
 }
 
-void MainWindow::analysisFormChangedHandler(Analysis *analysis)
-{
-	AnalysisForm* form = _analysisFormsMap[analysis];
-	if (form != nullptr)
-	{
-		if (_currentOptionsWidget == form)
-			closeCurrentOptionsWidget();
-		delete _analysisFormsMap[analysis];
-		_analysisFormsMap.erase(analysis);
-	}
-	showForm(analysis);
-}
 
 void MainWindow::onMenuClicked(QAction *action)
 {
@@ -660,6 +594,7 @@ void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 	_columnsModel->setDataSet(dataSet);
 	_computedColumnsModel->setDataSetPackage(package);
 	_analyses->setDataSet(dataSet);
+	_filterModel->setDataSetPackage(package);
 
 	setDatasetLoaded(dataSet != nullptr && dataSet->rowCount() > 0);
 }
@@ -845,7 +780,7 @@ AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 
 	connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
 	connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
-	connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::analysisFormChangedHandler);
+	connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::showForm);
 
 	return form;
 }
@@ -925,8 +860,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 void MainWindow::analysisUnselectedHandler()
 {
-	//hideOptionsPanel();
-	std::cout << "should hide options panel now" << std::endl;
+	setAnalysesVisible(false);
+	_analyses->setCurrentAnalysisIndex(-1);
 }
 
 void MainWindow::helpToggled(bool on)
@@ -975,8 +910,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			showProgress();
 
 		}
-
-		std::cout << "ui->tabBar->setCurrentModuleActive(); isnt happening" << std::endl;
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
@@ -1034,25 +967,19 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			switch(MessageForwarder::showSaveDiscardCancel("Save Workspace?", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
 			{
-			case MessageForwarder::DialogResponse::Save:
-			{
-				FileEvent *saveEvent = _fileMenu->save();
-				event->chain(saveEvent);
-				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
-
-				setDataPanelVisible(false);
-				break;
-			}
-
 			case MessageForwarder::DialogResponse::Cancel:
 				event->setComplete(false);
 				dataSetIOCompleted(event);
+				return;
+
+			case MessageForwarder::DialogResponse::Save:
+				event->chain(_fileMenu->save());
+				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 				break;
 
 			case MessageForwarder::DialogResponse::Discard:
 				event->setComplete(true);
 				dataSetIOCompleted(event);
-				setDataPanelVisible(false);
 				break;
 			}
 		}
@@ -1060,32 +987,23 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		{
 			event->setComplete();
 			dataSetIOCompleted(event);
-			setDataPanelVisible(false);
 		}
+
+		setDataPanelVisible(false);
+		_resultsJsInterface->resetResults();
 
 		closeVariablesPage();
 	}
 }
 
-void MainWindow::resizeVariablesWindowLabelColumn()
-{
-	std::cout << "resizeVariablesWindowLabelColumn should be triggered by some model in QML" << std::endl;
-	QObject * levelsTableView = _qml->findChild<QObject*>("levelsTableView");
-	QMetaObject::invokeMethod(levelsTableView, "resizeLabelColumn");
-}
 
 void MainWindow::closeVariablesPage()
 {
-	std::cout << "closeVariablesPage should be triggered by some model in QML" << std::endl;
-	QObject * levelsTableView = _qml->findChild<QObject*>("levelsTableView");
-	QMetaObject::invokeMethod(levelsTableView, "closeYourself");
+	_levelsTableModel->setChosenColumn(-1);
 }
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
-	std::cout << "this->analysisOKed();" << std::endl;
-
-	bool showAnalysis = false;
 	hideProgress();
 
 	if (event->operation() == FileEvent::FileOpen)
@@ -1116,9 +1034,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if (resultXmlCompare::compareResults::theOne()->testMode())
 				startComparingResults();
 
-			//ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", true); //Should really call a function or something or set something in a model!
-
-
 		}
 		else
 		{
@@ -1142,7 +1057,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			_package->setModified(false);
 			setWindowTitle(name);
-			showAnalysis = true;
 
 			if(testingAndSaving)
 				std::cerr << "Tested and saved " << event->path().toStdString() << " succesfully!" << std::endl;
@@ -1159,48 +1073,29 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if(testingAndSaving)
 			finishSavingComparedResults();
 	}
-	else if (event->operation() == FileEvent::FileSyncData)
-	{
-		_package->setModified(true);
-		showAnalysis = true;
-	}
-	else if (event->operation() == FileEvent::FileGenerateData || event->operation() == FileEvent::FileExportResults)
-	{
-		showAnalysis = true;
-	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		if (event->successful())
 		{
 			closeCurrentOptionsWidget();
 			_analyses->clear();
-			std::cout << "should hide options panel now" << std::endl;
 			setDataSetAndPackageInModels(nullptr);
 			_loader.free(_package->dataSet());
 			_package->reset();
-			_filterModel->setDataSetPackage(nullptr);
-			updateMenuEnabledDisabledStatus();
-			//ui->webViewResults->reload();
-			std::cout << "should trigger reload of webengine" << std::endl;
+			_resultsJsInterface->resetResults();
 
 			setWindowTitle("JASP");
 
-			if (_applicationExiting)
-				QApplication::exit();
-			else
-				std::cout << " IM not hiding: ui->panel_1_Data->hide();" << std::endl;
+			if (_applicationExiting)	QApplication::exit();
+			else						setDataPanelVisible(false);
 
 		}
+		else if (event->operation() == FileEvent::FileSyncData)
+			_package->setModified(true);
 		else
-		{
 			_applicationExiting = false;
-		}
 	}
 
-	if (showAnalysis)
-	{
-		std::cout << " im not doing: ui->tabBar->setCurrentModuleActive(); " <<std::endl;
-	}
 }
 
 
@@ -1212,7 +1107,6 @@ void MainWindow::populateUIfromDataSet()
 		setDataPanelVisible(false);
 	else
 	{
-		_filterModel->setDataSetPackage(_package);
 		_filterModel->init();
 		setDataPanelVisible(true);
 	}
@@ -1284,7 +1178,6 @@ void MainWindow::populateUIfromDataSet()
 	matchComputedColumnsToAnalyses();
 
 	_package->setLoaded();
-	updateMenuEnabledDisabledStatus();
 	checkUsedModules();
 }
 
@@ -1304,21 +1197,6 @@ void MainWindow::matchComputedColumnsToAnalyses()
 			col->setAnalysis(_analyses->get(col->analysisId()));
 }
 
-
-void MainWindow::updateMenuEnabledDisabledStatus()
-{
-	bool loaded = _package->isLoaded();
-#ifdef JASP_DEBUG
-	std::cout << "updateMenuEnabledDisabledStatus is pointless" << std::endl;
-#endif
-
-	// ui->ribbonAnalysis->setDataSetLoaded(loaded);
-	// ui->ribbonSEM->setDataSetLoaded(loaded);
-	// ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
-	// ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
-	// ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
-///// 5-ribbon updateMenuEnabledDisabledStatus
-}
 
 void MainWindow::resultsPageLoaded(bool success, int ppi)
 {
@@ -1474,12 +1352,8 @@ void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 	try
 	{
 		_currentAnalysis = _analyses->create(entry);
-
-		showForm(_currentAnalysis);
 		_analyses->analysisAdded(_currentAnalysis);
-
 		_currentAnalysis->setResults(entry->getDefaultResults());
-
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
 		checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
@@ -1712,16 +1586,6 @@ void MainWindow::unitTestTimeOut()
 {
 	std::cerr << "Time out for unit test!" << std::endl;
 	_application->exit(2);
-}
-
-void MainWindow::analysisFormChangedHandler(Analysis *analysis)
-{
-	//if (_currentOptionsWidget == _analysisFormsMap[analysis])
-	//	closeCurrentOptionsWidget();
-
-	//delete _analysisFormsMap[analysis];
-	//_analysisFormsMap.erase(analysis);
-	showForm(analysis);
 }
 
 void MainWindow::startComparingResults()

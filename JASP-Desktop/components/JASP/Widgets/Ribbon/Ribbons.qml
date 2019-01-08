@@ -7,7 +7,7 @@ Item
 	id:				jaspRibbons
 	objectName:		"jaspRibbon"
 	width:			500
-	height:			80
+	height:			60 * ppiScale
 
 	ListView
 	{
@@ -15,16 +15,16 @@ Item
 		model:			ribbonModelFiltered
 		orientation:	ListView.Horizontal
 		currentIndex:	ribbonModelFiltered.highlightedModuleIndex
+		height:			parent.height
 
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
 
 		anchors
 		{
-			top:	parent.top
-			left:	fadeOutLeft.right
-			right:	fadeOutRight.left
-			bottom:	parent.bottom
+			left:			fadeOutLeft.right
+			right:			fadeOutRight.left
+			verticalCenter:	parent.verticalCenter
 		}
 
 
@@ -32,6 +32,7 @@ Item
 		{
 			id:				jaspRibbon
 			model:			ribbonButtonModel
+			height:			jaspRibbons.height
 			separateMe:		index > 0
 			highlighted:	ribbonModelFiltered.highlightedModuleIndex === index
 		}

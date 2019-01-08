@@ -53,10 +53,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 		Json::Value &versionJson	= analysisData["version"];
 
 		Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-		analysis					= create(module, name, id, version, &optionsJson, status);
+		analysis					= create(module, name, id, version, &optionsJson, status, false);
 	}
 	else
-		analysis = create(dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status);
+		analysis = create(dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status, false);
 
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
@@ -64,28 +64,28 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 	return analysis;
 }
 
-Analysis* Analyses::create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options, Analysis::Status status)
+Analysis* Analyses::create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
 {
 	Analysis *analysis = new Analysis(this, id, module.toStdString(), name.toStdString(), version, options);
 	analysis->setStatus(status);
-	storeAnalysis(analysis, id);
+	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll)
 {
 	Analysis *analysis = new Analysis(this, id, analysisEntry);
 
 	analysis->setStatus(status);
-	storeAnalysis(analysis, id);
+	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 
 	return analysis;
 }
 
-void Analyses::storeAnalysis(Analysis* analysis, size_t id)
+void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 {
 	if(_analysisMap.count(id) > 0)
 		throw std::runtime_error("Analysis with id="+std::to_string(id)+" already registered!");
@@ -101,6 +101,9 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id)
 	endInsertRows();
 
 	emit countChanged();
+
+	if(notifyAll)
+		emit analysisAdded(analysis);
 }
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)

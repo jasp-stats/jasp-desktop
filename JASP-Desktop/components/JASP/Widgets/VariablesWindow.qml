@@ -29,23 +29,31 @@ FocusScope {
 
 	property real calculatedMinimumHeight: buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (Theme.generalAnchorMargin * 2)
 
-    property int chosenColumn: -1
-    readonly property bool opened: chosenColumn != -1
+	readonly property bool opened: levelsTableModel.chosenColumn != -1
+
+	Connections
+	{
+		target: levelsTableModel
+
+		onChosenColumnChanged:
+		{
+			if(levelsTableModel.chosenColumn > -1)
+			{
+				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
+				levelsTableViewRectangle.focus = true //So we just put it somewhere
+				columnNameVariablesWindow.text = dataSetModel.columnTitle(chosenColumn)
+				levelsTableModel.setColumnFromQML(chosenColumn)
+				levelsTableView.selection.clear()
+			}
+		}
+	}
 
     function chooseColumn(chooseThisColumn)
     {
-        if(chosenColumn == chooseThisColumn)
+		if(levelsTableModel.chosenColumn === chooseThisColumn)
             chooseThisColumn = -1
-        chosenColumn = chooseThisColumn
 
-        if(chosenColumn > -1)
-        {
-            //to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
-            levelsTableViewRectangle.focus = true //So we just put it somewhere
-            columnNameVariablesWindow.text = dataSetModel.columnTitle(chosenColumn)
-            levelsTableModel.setColumnFromQML(chosenColumn)
-            levelsTableView.selection.clear()
-        }
+		levelsTableModel.chosenColumn = chooseThisColumn
     }
 
 
@@ -128,14 +136,13 @@ FocusScope {
 						var title = "Values!"
 						var minimumWidth = calculateMinimumRequiredColumnWidthTitle(1, title, 0, 0)
 						levelsTableViewValueColumn.width = minimumWidth + 10
-
 					}
 
 					function moveUp()
                     {
 						levelsTableViewRectangle.focus = true
                         copySelection()
-                        if(copiedSelection.length > 0 && copiedSelection[0] != 0)
+						if(copiedSelection.length > 0 && copiedSelection[0] !== 0)
                         {
                             levelsTableModel.moveUpFromQML(copiedSelection)
 
@@ -217,7 +224,7 @@ FocusScope {
                         id: levelsTableViewLabelColumn
                         title: "Label"
                         role: "label"
-						width: levelsTableView.width - levelsTableViewValueColumn.width - 10 - levelsTableViewFilterColumn.width
+						width: levelsTableView.width - levelsTableViewValueColumn.width - 20 - levelsTableViewFilterColumn.width
                     }
 
                     headerDelegate: Rectangle

@@ -84,7 +84,7 @@ Item
 						id:					moduleButton
 						text:				displayText
 						textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
-						toolTip:			 "Click to " + (ribbonEnabled ? "disable" : "enable") + " module " + displayText
+						toolTip:			(ribbonEnabled ? "Disable" : "Enable") + " module " + displayText
 
 						onClicked:			ribbonModel.toggleModuleEnabled(index)
 						onHoveredChanged:	if(hovered && enabled) ribbonModel.highlightedModuleIndex = index
@@ -106,6 +106,7 @@ Item
 						iconSource:		"qrc:/icons/subtraction-sign.svg"
 						width:			height
 						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
+						toolTip:		"Uninstall module " + displayText
 						anchors
 						{
 							top:	parent.top

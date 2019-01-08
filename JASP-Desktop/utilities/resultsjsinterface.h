@@ -51,6 +51,7 @@ public:
 	void showInstruction();
 	void exportPreviewHTML();
 	void exportHTML();
+	void resetResults() { emit resultsPageUrlChanged(_resultsPageUrl); }
 
 	Json::Value &getResultsMeta();
 	QVariant	&getAllUserData();

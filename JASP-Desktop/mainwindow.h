@@ -201,10 +201,7 @@ private slots:
 	void startDataEditorHandler();
 	void startDataEditorEventCompleted(FileEvent *event);
 
-	//void analysisOKed();
 	void analysisRunned();
-
-	void updateMenuEnabledDisabledStatus();
 
 	void saveKeysSelected();
 	void openKeysSelected();
@@ -222,7 +219,6 @@ private slots:
 
 	void emptyValuesChangedHandler();
 
-	void resizeVariablesWindowLabelColumn();
 	void closeVariablesPage();
 
 	void showProgress();
@@ -230,7 +226,6 @@ private slots:
 	void setProgressStatus(QString status, int progress);
 
 	void updateExcludeKey();
-	void analysisFormChangedHandler(Analysis *analysis);
 	void dataSetChanged(DataSet * dataSet);
 	void unitTestTimeOut();
 

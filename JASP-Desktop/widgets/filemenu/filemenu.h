@@ -45,8 +45,8 @@ class FileMenu : public QObject
 
 	Q_PROPERTY(DataLibrary *  datalibrary			READ datalibrary				WRITE setDatalibrary				NOTIFY datalibraryChanged)
 	Q_PROPERTY(CurrentFile * currentFile			READ currentFile				WRITE setCurrentFile				NOTIFY currentFileChanged)
-	Q_PROPERTY(RecentFiles * recentFiles	READ recentFiles				WRITE setRecentFiles				NOTIFY recentFilesChanged)
-	Q_PROPERTY(Computer * computer			READ computer					WRITE setComputer					NOTIFY computerChanged)
+	Q_PROPERTY(RecentFiles * recentFiles			READ recentFiles				WRITE setRecentFiles				NOTIFY recentFilesChanged)
+	Q_PROPERTY(Computer * computer					READ computer					WRITE setComputer					NOTIFY computerChanged)
 	Q_PROPERTY(OSF * osf							READ osf						WRITE setOsf						NOTIFY osfChanged)
 
 	Q_PROPERTY(bool recentfiles_button_visible		READ recentfiles_button_visible	WRITE setRecentfiles_button_visible NOTIFY recentfiles_button_visibleChanged)
