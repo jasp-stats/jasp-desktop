@@ -13,6 +13,8 @@ void RibbonModelFiltered::setRibbonModel(RibbonModel * ribbonModel)
 	_ribbonModel = ribbonModel;
 
 	setSourceModel(_ribbonModel);
+
+	connect(ribbonModel, &RibbonModel::highlightedModuleIndexChanged, this, &RibbonModelFiltered::highlightedModuleIndexChanged);
 }
 
 bool RibbonModelFiltered::filterAcceptsRow(int source_row, const QModelIndex &) const
@@ -22,7 +24,7 @@ bool RibbonModelFiltered::filterAcceptsRow(int source_row, const QModelIndex &) 
 	return  _ribbonModel != nullptr && _ribbonModel->ribbonButtonModelAt(size_t(source_row))->enabled();
 }
 
-int RibbonModelFiltered::filteredRowToOriginal(int filteredRow)
+int RibbonModelFiltered::filteredRowToOriginal(int filteredRow) const
 {
 	if(_ribbonModel == nullptr || (filteredRow < 0 && filteredRow > rowCount()))
 		return -1;
@@ -30,7 +32,7 @@ int RibbonModelFiltered::filteredRowToOriginal(int filteredRow)
 	return mapToSource(index(filteredRow, 0)).row();
 }
 
-int RibbonModelFiltered::originalRowToFiltered(int originalRow)
+int RibbonModelFiltered::originalRowToFiltered(int originalRow) const
 {
 	if(_ribbonModel == nullptr || (originalRow < 0 && originalRow > _ribbonModel->rowCount()))
 		return -1;

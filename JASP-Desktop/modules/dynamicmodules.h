@@ -46,7 +46,7 @@ public:
 	std::string moduleDirectory(std::string moduleName)		{ return AppDirs::modulesDir().toStdString() + moduleName + '/'; }
 
 	std::string installModule(std::string moduleZipFilename);
-	void		uninstallModule(std::string modulePath);
+	void		uninstallModule(std::string moduleName);
 
 	std::string	loadModule(std::string moduleName)			{ return loadModuleFromDir(moduleDirectory(moduleName)); }
 	std::string	loadModuleFromDir(std::string moduleDir);
@@ -70,6 +70,7 @@ public:
 	Q_INVOKABLE bool	isFileAnArchive(QString filepath);
 	Q_INVOKABLE QString getDescriptionFromArchive(QString filepath);
 	Q_INVOKABLE void	installJASPModule(QString filepath);
+	Q_INVOKABLE	void	uninstallJASPModule(QString moduleName);
 
 	QString currentInstallMsg()									{ return _currentInstallMsg; }
 	void setCurrentInstallMsg(QString currentInstallMsg)		{ if(_currentInstallMsg != currentInstallMsg) { _currentInstallMsg = currentInstallMsg; emit currentInstallMsgChanged(); } }

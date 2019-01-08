@@ -63,6 +63,7 @@ QtObject {
     readonly property int indentationLength:    20 * ppiScale    
 	readonly property int borderRadius:			4  * ppiScale
 	readonly property int generalAnchorMargin:	8  * ppiScale
+	readonly property int rowSpacing:			6  * ppiScale
 
 	readonly property int sliderWidth:					4   * ppiScale
 	readonly property int sliderLength:					80  * ppiScale

@@ -86,7 +86,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 
 		setGlobalJsValues();
 
-		emit runJavaScript("window.getPPI()", std::bind(&ResultsJsInterface::cbSetPPI, this, std::placeholders::_1));
+		emit runJavaScript("window.getPPI()");
 	}
 	else
 	{
@@ -244,7 +244,7 @@ void ResultsJsInterface::latexCodeSelected()
 
 void ResultsJsInterface::getDefaultPPI()
 {
-	runJavaScript("window.getPPI()", std::bind(&ResultsJsInterface::cbSetPPIAndRefresh, this, std::placeholders::_1));
+	runJavaScript("window.getPPI(true)");
 }
 
 void ResultsJsInterface::saveImage()
@@ -468,8 +468,8 @@ Json::Value &ResultsJsInterface::getResultsMeta()
 {
 	QEventLoop loop;
 
-	runJavaScript("window.getResultsMeta()", std::bind(&ResultsJsInterface::cbSetResultstMeta, this, std::placeholders::_1));
-	connect(this, SIGNAL(getResultsMetaCompleted()), &loop, SLOT(quit()));
+	runJavaScript("window.getResultsMeta()");
+	connect(this, &ResultsJsInterface::getResultsMetaCompleted, &loop, &QEventLoop::quit);
 	loop.exec();
 
 	return _resultsMeta;
@@ -479,8 +479,8 @@ QVariant &ResultsJsInterface::getAllUserData()
 {
 	QEventLoop loop;
 
-	runJavaScript("window.getAllUserData()", std::bind(&ResultsJsInterface::cbSetAllUserData, this, std::placeholders::_1));
-	connect(this, SIGNAL(getAllUserDataCompleted()), &loop, SLOT(quit()));
+	runJavaScript("window.getAllUserData()");
+	connect(this, &ResultsJsInterface::getAllUserDataCompleted, &loop, &QEventLoop::quit);
 	loop.exec();
 
 	return _allUserData;
@@ -536,53 +536,26 @@ QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 	return out;
 }
 
-void ResultsJsInterface::runJavaScript(const QString &str, std::function<void(const QVariant&)> cb)
+void ResultsJsInterface::setPPI(int ppi)
 {
-	//auto  [cb] (const QVariant &result) { cb(result); });
-	cb(emit runJavaScriptCallback(str));
-}
-
-int ResultsJsInterface::_getPPIFromVariant(const QVariant &vppi, bool& success)
-{
-	int ppi = vppi.toInt(&success);
-	if (success == false)
-	{
-		std::cout << "Could not get PPI: " << vppi.toString().toStdString() << "." << std::endl;
-		std::cout.flush();
-		ppi = 96;
-	}
-
-	return ppi;
-}
-
-void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
-{
-	bool success = false;
-	int ppi = _getPPIFromVariant(vppi, success);
 	_webViewZoom = 1;
+	if(!_loadedResultsFirstTime)
+		emit resultsPageLoadedPpi(true, ppi);
 
-	emit resultsPageLoadedPpi(success, ppi);
-}
-
-void ResultsJsInterface::cbSetPPIAndRefresh(const QVariant &vppi)
-{
-	bool success = false;
-	int ppi = _getPPIFromVariant(vppi, success);
 	emit ppiChanged(ppi);
 
+	_loadedResultsFirstTime = true;
 }
 
-void ResultsJsInterface::cbSetResultstMeta(const QVariant &vMetaData)
+void ResultsJsInterface::setResultsMetaFromJavascript(QString json)
 {
-	Json::Reader parser;
-	parser.parse(fq(vMetaData.toString()), _resultsMeta);
-
+	Json::Reader().parse(json.toStdString(), _resultsMeta);
 	emit getResultsMetaCompleted();
 }
 
-void ResultsJsInterface::cbSetAllUserData(const QVariant &vAllUserData)
+void ResultsJsInterface::setAllUserDataFromJavascript(QString json)
 {
-	_allUserData = vAllUserData;
+	_allUserData = json;
 	emit getAllUserDataCompleted();
 }
 

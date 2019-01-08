@@ -17,7 +17,7 @@ Window
 	RibbonBar
 	{
 		id:		ribbon
-		z:		1
+		z:		4
 
 		anchors
 		{
@@ -30,7 +30,7 @@ Window
 	FileMenu
 	{
 		id:			filemenu
-		z:			2
+		z:			3
 
 		anchors
 		{
@@ -57,18 +57,14 @@ Window
 	MouseArea
 	{
 		visible:		fileMenuModel.visible || modulesMenu.opened
-		z:				5
+		z:				1
 		hoverEnabled:	true
 
 		onContainsMouseChanged: if(containsMouse) ribbonModel.highlightedModuleIndex = -1
 
-		anchors
-		{
-			top:	ribbon.bottom
-			left:	filemenu.right
-			right:	modulesMenu.left
-			bottom:	parent.bottom
-		}
+		anchors.fill:	parent
+
+		//Rectangle { id: purpleDebugRect; color: "purple"; anchors.fill: parent }
 
 		onClicked:
 		{
@@ -82,7 +78,7 @@ Window
 	ModulesMenu
 	{
 		id:			modulesMenu
-		z:			1
+		z:			2
 
 		anchors
 		{
@@ -91,6 +87,9 @@ Window
 			bottom:	parent.bottom
 		}
 	}
+
+	CreateComputeColumnDialog	{ id: createComputeDialog	}
+	ModuleInstaller				{ id: moduleInstallerDialog	}
 
 	/*MessageBox
 	{

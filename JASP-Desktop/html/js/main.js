@@ -1,14 +1,17 @@
 
 'use strict'
 
-window.getPPI = function () {
+window.getPPI = function (shouldRefresh)
+{
+	var ppi = 96;
 
-	return 96 * window.devicePixelRatio
+	if(window.devicePixelRatio !== undefined)
+		ppi = ppi * window.devicePixelRatio;
+
+	jasp.setPPI(ppi);
 }
 
-
-var jasp;
-
+var jasp = null;
 $(document).ready(function () {
 	var d = new Date();
 	var month = d.getMonth();
@@ -199,15 +202,17 @@ $(document).ready(function () {
 	}
 
 	window.getAllUserData = function () {
+		console.log("window.getAllUserData was called!")
 		var userData = analyses.getAllUserData();
-		return JSON.stringify(userData)
+
+		jasp.setAllUserDataFromJavascript(JSON.stringify(userData))
 	}
 
 	window.getResultsMeta = function () {
 
 		var meta = analyses.getResultsMeta();
 
-		return JSON.stringify(meta)
+		jasp.setResultsMetaFromJavascript(JSON.stringify(meta))
 	}
 
 	window.setResultsMeta = function (resultsMeta) {

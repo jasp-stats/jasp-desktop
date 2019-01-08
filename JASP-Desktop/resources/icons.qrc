@@ -114,5 +114,6 @@
         <file>icons/columnConstructorBackground.png</file>
         <file>icons/filterConstructorBackground.png</file>
         <file>icons/exclamation.svg</file>
+        <file>icons/subtraction-sign.svg</file>
     </qresource>
 </RCC>

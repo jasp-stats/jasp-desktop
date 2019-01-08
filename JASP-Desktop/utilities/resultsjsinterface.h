@@ -79,6 +79,10 @@ public slots:
 	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
 	void displayMessageFromResults(QString path);
 	void getImageInBase64(int id, const QString &path);
+	void setPPI(int ppi);
+	void setAllUserDataFromJavascript(QString json);
+	void setResultsMetaFromJavascript(QString json);
+
 //end callables
 
 
@@ -87,7 +91,6 @@ signals:
 	void		getAllUserDataCompleted();
 	void		resultsPageUrlChanged(QUrl resultsPageUrl);
 	void		runJavaScript(QString js);
-	QVariant	runJavaScriptCallback(QString js);
 	void		zoomChanged(double zoom);
 	void		packageModified();
 	void		resultsPageLoadedPpi(bool succes, int ppi);
@@ -103,14 +106,8 @@ public slots:
 	void resultsPageLoaded(bool success);
 
 private:
-	void runJavaScript(const QString &str, std::function<void(const QVariant&)> cb);
 	void setGlobalJsValues();
-	void cbSetPPI(const QVariant &vppi);
-	void cbSetPPIAndRefresh(const QVariant &vppi);
-	void cbSetResultstMeta(const QVariant &vMetaData);
-	void cbSetAllUserData(const QVariant &vAllUserData);
 
-	int _getPPIFromVariant(const QVariant &vppi, bool &success);
 
 	QString escapeJavascriptString(const QString &str);
 
@@ -131,6 +128,7 @@ private:
 	Json::Value		_resultsMeta;
 	QVariant		_allUserData;
 	QString			_resultsPageUrl = "qrc:///core/index.html";
+	bool			_loadedResultsFirstTime = false;
 
 };
 

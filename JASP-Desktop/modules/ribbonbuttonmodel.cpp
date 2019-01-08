@@ -28,8 +28,9 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
 
 		setRequiresDataset(	moduleDescription.get("requiresDataset",	true).asBool()		);
-		setIsDynamic(		moduleDescription.get("dynamic",			true).asBool()		);
+		setIsDynamic(		moduleDescription.get("dynamic",			false).asBool()		); //It should never be dynamic here right?
 		setTitle(			moduleDescription.get("title",				"???").asString()	);
+		setModuleName(		titleQ()														);
 
 		std::vector<Modules::RibbonEntry*>	ribbonEntries;
 
@@ -51,20 +52,22 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 
 RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * module)  : QAbstractListModel(parent)
 {
-	setRibbonEntries(	module->ribbonEntries()		);
-	setTitle(			module->title()				);
-	setIsDynamic(		true						);
-	setRequiresDataset(	module->requiresDataset()	);
+	setRibbonEntries(	module->ribbonEntries()					);
+	setTitle(			module->title()							);
+	setIsDynamic(		true									);
+	setRequiresDataset(	module->requiresDataset()				);
+	setModuleName(		QString::fromStdString(module->name())	);
 
 	bindYourself();
 }
 
 void RibbonButtonModel::bindYourself()
 {
-	connect(this, &RibbonButtonModel::enabledChanged,	this, &RibbonButtonModel::somePropertyChanged);
-	connect(this, &RibbonButtonModel::titleChanged,		this, &RibbonButtonModel::somePropertyChanged);
-	connect(this, &RibbonButtonModel::isDynamicChanged,	this, &RibbonButtonModel::somePropertyChanged);
-	connect(this, &RibbonButtonModel::titleChanged,		this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::enabledChanged,		this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::titleChanged,			this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::isDynamicChanged,		this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::titleChanged,			this, &RibbonButtonModel::somePropertyChanged);
+	connect(this, &RibbonButtonModel::moduleNameChanged,	this, &RibbonButtonModel::somePropertyChanged);
 }
 
 
@@ -146,4 +149,14 @@ void RibbonButtonModel::setIsDynamic(bool isDynamic)
 
 	_isDynamicModule = isDynamic;
 	emit isDynamicChanged();
+}
+
+
+void RibbonButtonModel::setModuleName(QString moduleName)
+{
+	if (m_moduleName == moduleName)
+		return;
+
+	m_moduleName = moduleName;
+	emit moduleNameChanged();
 }

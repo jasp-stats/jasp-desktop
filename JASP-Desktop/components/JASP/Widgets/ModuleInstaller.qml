@@ -16,259 +16,284 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import Qt.labs.folderlistmodel 2.11
-import QtQuick.Window 2.3
-import JASP.Theme 1.0
-import "qrc:///qml"
+import QtQuick					2.11
+import QtQuick.Controls			2.4
+import Qt.labs.folderlistmodel	2.11
+//import QtQuick.Window			2.3
+import JASP.Theme				1.0
+import JASP.Widgets				1.0
 
-Rectangle
+Popup
 {
-	id:			moduleInstallerRect
-	objectName: "moduleInstallerRect"
-	color:		Theme.grayDarker
+	id:			moduleInstallerPopup
 
 	width:		900
 	height:		500
 
-	signal closeWindow()
+	modal: true; focus: true;
 
-	property var currentJSON: null
+	y: (parent.height / 2) - (height / 2)
+	x: (parent.width / 2) - (width / 2)
 
-	Item
+	closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+
+	Loader
 	{
-		id:					fileBrowseArea
-		anchors.top:		parent.top
-		anchors.left:		parent.left
-		anchors.right:		parent.right
-		anchors.bottom:		installButton.top
+		visible:			moduleInstallerPopup.opened
+		sourceComponent:	visible ? moduleInstallerComponent : null
+		anchors.fill:		parent
+	}
 
-		onHeightChanged:
-		{
-			if(height <= Theme.generalAnchorMargin * 2)
-				visible = false
-		}
+	Component
+	{
+		id:		moduleInstallerComponent
 
 		Rectangle
 		{
-			id: folderRect
-			anchors.top:		parent.top
-			anchors.left:		parent.left
-			anchors.right:		parent.horizontalCenter
-			anchors.bottom:		parent.bottom
-			anchors.margins:	Theme.generalAnchorMargin
+			id:			moduleInstallerRect
+			color:		Theme.grayDarker
+			property var currentJSON: null
 
-
-
-			color:			Theme.whiteBroken
-			border.color:	Theme.grayLighter
-			border.width:	1
-
-			ListView
+			Item
 			{
-				id:					folderList
-				anchors.fill:		parent
-				anchors.margins:	Theme.generalAnchorMargin
-				clip:				true
-				spacing:			Theme.rowSpacing
+				id:					fileBrowseArea
+				anchors.top:		parent.top
+				anchors.left:		parent.left
+				anchors.right:		parent.right
+				anchors.bottom:		installButton.top
 
-				property string currentlySelectedFilePath: ""
-
-				FolderListModel {
-					id: folderModel
-
-					nameFilters: ["*.jaspMod"]
-					showDotAndDotDot: true
-					showDirs: true
+				onHeightChanged:
+				{
+					if(height <= Theme.generalAnchorMargin * 2)
+						visible = false
 				}
 
-				Component {
-					id: fileDelegate
-					RectangularButton
+				Rectangle
+				{
+					id:					folderRect
+					anchors.top:		parent.top
+					anchors.left:		parent.left
+					anchors.right:		parent.horizontalCenter
+					anchors.bottom:		parent.bottom
+					anchors.margins:	Theme.generalAnchorMargin
+
+
+
+					color:			Theme.whiteBroken
+					border.color:	Theme.grayLighter
+					border.width:	1
+
+					ListView
 					{
-						id:					fileDelegateRect
-						height:				32
-						width:				folderList.width - (Theme.generalAnchorMargin * 2)
-						x:					Theme.generalAnchorMargin
-						showIconAndText:	true
+						id:					folderList
+						anchors.fill:		parent
+						anchors.margins:	Theme.generalAnchorMargin
+						clip:				true
+						spacing:			Theme.rowSpacing
 
-						border.color:		Theme.grayDarker
-						border.width:		1
-						selected:			folderList.currentlySelectedFilePath !== "" && folderList.currentlySelectedFilePath === filePath
-						enabled:			!selected
+						property string currentlySelectedFilePath: ""
 
-						property int margins: 4
-
-
-						iconSource: fileIsDir			? "qrc:///icons/folder.svg"			: "qrc:///icons/JASP_logo_green.svg"
-						toolTip:	selected			? "Currently selected JASP Module"	: fileIsDir	? "a folder, click to enter" : "a JASP Module, click it to see more information"
-						text:		fileName === ".."	? fileName + " (directory up)"		: fileName
-
-
-						onClicked:
+						FolderListModel
 						{
-							folderList.currentlySelectedFilePath = ""
+							id: folderModel
 
-							if(fileIsDir)
-								folderModel.folder = "file:" + filePath
-							else
+							nameFilters:		["*.jaspMod"]
+							showDotAndDotDot:	true
+							showDirs:			true
+						}
+
+						Component
+						{
+							id: fileDelegate
+
+							RectangularButton
 							{
-								if(dynamicModules.isFileAnArchive(filePath))
+								id:					fileDelegateRect
+								height:				32
+								width:				folderList.width - (Theme.generalAnchorMargin * 2)
+								x:					Theme.generalAnchorMargin
+								showIconAndText:	true
+								centerText:			false
+
+								border.color:		Theme.grayDarker
+								border.width:		1
+								selected:			folderList.currentlySelectedFilePath !== "" && folderList.currentlySelectedFilePath === filePath
+								enabled:			!selected
+
+								property int margins: 4
+
+
+								iconSource: fileIsDir			? "qrc:///icons/folder.svg"			: "qrc:///icons/JASP_logo_green.svg"
+								toolTip:	selected			? "Currently selected JASP Module"	: fileIsDir	? "a folder, click to enter" : "a JASP Module, click it to see more information"
+								text:		fileName === ".."	? fileName + " (directory up)"		: fileName
+
+
+								onClicked:
 								{
-									var textJson			= dynamicModules.getDescriptionFromArchive(filePath)
-									descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
+									folderList.currentlySelectedFilePath = ""
 
-									moduleInstallerRect.currentJSON = JSON.parse(textJson)
-
-									var moduleDescription	= moduleInstallerRect.currentJSON.moduleDescription
-
-									var title				= moduleDescription.title
-									var description			= moduleDescription.description
-									var version				= moduleDescription.version
-									var author				= moduleDescription.author
-									var maintainer			= moduleDescription.maintainer
-									var website				= moduleDescription.website
-
-									if(title !== undefined)
+									if(fileIsDir)
+										folderModel.folder = "file:" + filePath
+									else
 									{
-										descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
-										folderList.currentlySelectedFilePath = filePath
+										if(dynamicModules.isFileAnArchive(filePath))
+										{
+											var textJson			= dynamicModules.getDescriptionFromArchive(filePath)
+											descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
+
+											moduleInstallerRect.currentJSON = JSON.parse(textJson)
+
+											var moduleDescription	= moduleInstallerRect.currentJSON.moduleDescription
+
+											var title				= moduleDescription.title
+											var description			= moduleDescription.description
+											var version				= moduleDescription.version
+											var author				= moduleDescription.author
+											var maintainer			= moduleDescription.maintainer
+											var website				= moduleDescription.website
+
+											if(title !== undefined)
+											{
+												descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
+												folderList.currentlySelectedFilePath = filePath
+											}
+
+										}
+										else
+											descriptionViewer.text = filePath + " is not a JASP Module!"
 									}
 
 								}
-								else
-									descriptionViewer.text = filePath + " is not a JASP Module!"
+
 							}
 
 						}
 
+						model:		folderModel
+						delegate:	fileDelegate
 					}
-
 				}
 
-				model:		folderModel
-				delegate:	fileDelegate
-			}
-		}
-
-		Rectangle
-		{
-			anchors.top:		parent.top
-			anchors.left:		folderRect.right
-			anchors.right:		parent.right
-			anchors.bottom:		parent.bottom
-			anchors.margins:	Theme.generalAnchorMargin
-
-			color:				Theme.whiteBroken
-			border.color:		Theme.gray
-			border.width:		1
-
-
-			Text
-			{
-				id: descriptionViewer
-				anchors.fill:		parent
-				anchors.margins:	Theme.generalAnchorMargin
-				text:				"<i>Click a JASP Module to see more information here</i>"
-				textFormat:			Text.StyledText
-				wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
-				onLinkActivated:	Qt.openUrlExternally(link)
-				clip:				true
-
-				MouseArea
+				Rectangle
 				{
-					anchors.fill:		parent
-					acceptedButtons:	Qt.NoButton
-					cursorShape:		descriptionViewer.hoveredLink !== "" ? Qt.PointingHandCursor : Qt.ArrowCursor
+					anchors.top:		parent.top
+					anchors.left:		folderRect.right
+					anchors.right:		parent.right
+					anchors.bottom:		parent.bottom
+					anchors.margins:	Theme.generalAnchorMargin
+
+					color:				Theme.whiteBroken
+					border.color:		Theme.gray
+					border.width:		1
+
+
+					Text
+					{
+						id: descriptionViewer
+						anchors.fill:		parent
+						anchors.margins:	Theme.generalAnchorMargin
+						text:				"<i>Click a JASP Module to see more information here</i>"
+						textFormat:			Text.StyledText
+						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
+						onLinkActivated:	Qt.openUrlExternally(link)
+						clip:				true
+
+						MouseArea
+						{
+							anchors.fill:		parent
+							acceptedButtons:	Qt.NoButton
+							cursorShape:		descriptionViewer.hoveredLink !== "" ? Qt.PointingHandCursor : Qt.ArrowCursor
+						}
+					}
 				}
 			}
-		}
-	}
 
-	RectangularButton
-	{
-		id:					installButton
-		anchors.left:		parent.left
-		anchors.right:		parent.right
-		anchors.bottom:		installProgressItem.top
-		anchors.margins:	Theme.generalAnchorMargin
-		disabled:			moduleInstallerRect.currentJSON === null
-
-		text:				"Install"
-		toolTip:			enabled ? "Press this to install your selected Module" : "Select a JASP Module to install"
-
-		onClicked:
-		{
-			if(moduleInstallerRect.currentJSON !== null)
+			RectangularButton
 			{
-				installProgressItem.height = Qt.binding(function() { return moduleInstallerRect.height - (installButton.height + (Theme.generalAnchorMargin * 2) )})
-
-				installProgressItem.installText = "Installing Module '"+moduleInstallerRect.currentJSON.moduleDescription.title +"'"
-				text							= installProgressItem.installText + "..."
-				disabled						= true
-				selected						= true
-
-
-				dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
-			}
-		}
-	}
-
-	Item
-	{
-		id:				installProgressItem
-
-		anchors.left:	parent.left
-		anchors.right:	parent.right
-		anchors.bottom: parent.bottom
-
-		Behavior on height { PropertyAnimation {} }
-
-		height: 0
-		visible: height > 0
-
-		property string installMsg:		dynamicModules.currentInstallMsg
-		property bool	installDone:	dynamicModules.currentInstallDone
-		property string installText:	""
-
-		onInstallMsgChanged:	if(installMsg != "")	installText += "\n" + installMsg
-		onInstallDoneChanged:	if(installDone)			installText += "\nInstall is finished!"
-
-		Rectangle
-		{
-			anchors.top:		parent.top
-			anchors.left:		parent.left
-			anchors.right:		parent.right
-			anchors.bottom:		closeButton.top
-			anchors.margins:	Theme.generalAnchorMargin
-
-			color:				Theme.whiteBroken
-			border.color:		Theme.grayLighter
-			border.width:		1
-
-			Text
-			{
-				anchors.fill:		parent
+				id:					installButton
+				anchors.left:		parent.left
+				anchors.right:		parent.right
+				anchors.bottom:		installProgressItem.top
 				anchors.margins:	Theme.generalAnchorMargin
-				wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
-				text:				installProgressItem.installText
+				enabled:			moduleInstallerRect.currentJSON !== null
+
+				text:				"Install"
+				toolTip:			enabled ? "Press this to install your selected Module" : "Select a JASP Module to install"
+
+				onClicked:
+				{
+					if(moduleInstallerRect.currentJSON !== null)
+					{
+						installProgressItem.height = Qt.binding(function() { return moduleInstallerRect.height - (installButton.height + (Theme.generalAnchorMargin * 2) )})
+
+						installProgressItem.installText = "Installing Module '"+moduleInstallerRect.currentJSON.moduleDescription.title +"'"
+						text							= installProgressItem.installText + "..."
+						enabled							= false
+						selected						= true
+
+
+						dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
+					}
+				}
 			}
-		}
 
-		RectangularButton
-		{
-			id:					closeButton
-			anchors.left:		parent.left
-			anchors.right:		parent.right
-			anchors.bottom:		parent.bottom
-			anchors.margins:	Theme.generalAnchorMargin
-			visible:			dynamicModules.currentInstallDone
-			height:				dynamicModules.currentInstallDone ? implicitHeight : 0
+			Item
+			{
+				id:				installProgressItem
 
-			text:				"Close"
-			toolTip:			"Close this window"
+				anchors.left:	parent.left
+				anchors.right:	parent.right
+				anchors.bottom: parent.bottom
 
-			onClicked:			moduleInstallerRect.closeWindow();
+				Behavior on height { PropertyAnimation {} }
+
+				height: 0
+				visible: height > 0
+
+				property string installMsg:		dynamicModules.currentInstallMsg
+				property bool	installDone:	dynamicModules.currentInstallDone
+				property string installText:	""
+
+				onInstallMsgChanged:	if(installMsg != "")	installText += "\n" + installMsg
+				onInstallDoneChanged:	if(installDone)			installText += "\nInstall is finished!"
+
+				Rectangle
+				{
+					anchors.top:		parent.top
+					anchors.left:		parent.left
+					anchors.right:		parent.right
+					anchors.bottom:		closeButton.top
+					anchors.margins:	Theme.generalAnchorMargin
+
+					color:				Theme.whiteBroken
+					border.color:		Theme.grayLighter
+					border.width:		1
+
+					Text
+					{
+						anchors.fill:		parent
+						anchors.margins:	Theme.generalAnchorMargin
+						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
+						text:				installProgressItem.installText
+					}
+				}
+
+				RectangularButton
+				{
+					id:					closeButton
+					anchors.left:		parent.left
+					anchors.right:		parent.right
+					anchors.bottom:		parent.bottom
+					anchors.margins:	Theme.generalAnchorMargin
+					visible:			dynamicModules.currentInstallDone
+					height:				dynamicModules.currentInstallDone ? implicitHeight : 0
+
+					text:				"Close"
+					toolTip:			"Close this window"
+
+					onClicked:			moduleInstallerPopup.close();
+				}
+			}
 		}
 	}
 }

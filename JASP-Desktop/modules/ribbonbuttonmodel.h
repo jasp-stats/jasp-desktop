@@ -35,6 +35,7 @@ class RibbonButtonModel : public QAbstractListModel
 	Q_PROPERTY(bool		requiresDataset	READ requiresDataset	WRITE setRequiresDataset	NOTIFY requiresDatasetChanged)
 	Q_PROPERTY(bool		isDynamic		READ isDynamic			WRITE setIsDynamic			NOTIFY isDynamicChanged)
 	Q_PROPERTY(QString	title			READ titleQ				WRITE setTitleQ				NOTIFY titleChanged)
+	Q_PROPERTY(QString	moduleName		READ moduleName										NOTIFY moduleNameChanged)
 
 public:
 	enum {
@@ -56,9 +57,9 @@ public:
 	bool							isDynamic()													const			{ return _isDynamicModule;					}
 	std::string						title()														const			{ return _title;							}
 	QString							titleQ()													const			{ return QString::fromStdString(_title);	}
+	bool							enabled()													const			{ return _enabled;							}
+	QString							moduleName()												const			{ return m_moduleName;						}
 	void							setRibbonEntries(Modules::RibbonEntries ribbonEntries);
-
-	bool enabled() const {		return _enabled;	}
 
 public slots:
 	void setRequiresDataset(bool requiresDataset);
@@ -66,16 +67,20 @@ public slots:
 	void setTitle(std::string title);
 	void setTitleQ(QString title) { setTitle(title.toStdString()); }
 	void setEnabled(bool enabled);
+	void setModuleName(QString moduleName);
 
 	void somePropertyChanged() { emit iChanged(this); }
+
 
 signals:
 	void enabledChanged();
 	void requiresDatasetChanged();
 	void isDynamicChanged();
 	void titleChanged();
+	void moduleNameChanged();
 
 	void iChanged(RibbonButtonModel * me);
+
 
 private:
 	void bindYourself();
@@ -88,6 +93,7 @@ private:
 									_isDynamicModule	= true,
 									_enabled			= false;
 	std::string						_title = "";
+	QString m_moduleName;
 };
 
 

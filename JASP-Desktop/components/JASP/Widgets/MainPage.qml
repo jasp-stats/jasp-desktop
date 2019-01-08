@@ -17,6 +17,7 @@ OLD.SplitView
 		id:						dataAndAnalyses
 		Layout.minimumWidth:	analyses.width
 		Layout.maximumWidth:	maxWidth
+		Layout.fillWidth:		visible
 		visible:				mainWindow.dataPanelVisible || analysesModel.count > 0
 
 		property real maxWidth: panelSplit.width //- Theme.minPanelWidth
@@ -105,11 +106,6 @@ OLD.SplitView
 			target: resultsJsInterface
 
 			onRunJavaScript:			{ resultsView.runJavaScript(js)	}
-			onRunJavaScriptCallback:	{
-				var res = undefined;
-				resultsView.runJavaScript(js, function(result) { console.log(result); res = result; })
-				return res;
-			}
 		}
 
 		webChannel.registeredObjects: [ resultsJsInterfaceInterface ]
@@ -140,6 +136,9 @@ OLD.SplitView
 			function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
 			function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
 			function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
+			function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
+			function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
+			function setPPI(ppi)							{ resultsJsInterface.setPPI(ppi)							}
 		}
 
 

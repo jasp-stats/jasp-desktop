@@ -39,6 +39,32 @@ Item
 				top:				parent.top
 				topMargin:			5
 				horizontalCenter:	parent.horizontalCenter
+				bottom:				parent.bottom
+			}
+
+			property int buttonMargin:	3
+			property int buttonWidth:	width - (buttonMargin * 2)
+			property int buttonHeight:	40
+
+			MenuButton
+			{
+				id:					addModuleButton
+				text:				"Add Dynamic Module"
+				width:				modules.buttonWidth
+				height:				modules.buttonHeight
+				anchors.leftMargin: modules.buttonMargin
+				anchors.left:		parent.left
+				onClicked: 			moduleInstallerDialog.open()
+				iconSource:			"qrc:/icons/addition-sign.svg"
+				showIconAndText:	true
+				toolTip:			"Install a dynamic module"
+			}
+
+			ToolSeparator
+			{
+				orientation:				Qt.Horizontal
+				width:						modules.buttonWidth
+				anchors.horizontalCenter:	parent.horizontalCenter
 			}
 
 			Repeater
@@ -46,25 +72,50 @@ Item
 
 				model: ribbonModel
 
-				MenuButton
+				Item
 				{
-					id:					moduleButton
-					text:				displayText
-
-					width:				parent.width-6
-					height:				40
-					anchors.leftMargin: 3
+					width:				modules.buttonWidth
+					height:				modules.buttonHeight
+					anchors.leftMargin: modules.buttonMargin
 					anchors.left:		parent.left
-					onClicked:			ribbonModel.toggleModuleEnabled(index)
-					//enabled:			modulesMenuModel.buttonsenabled[index];
 
-					onHoveredChanged:	if(hovered) ribbonModel.highlightedModuleIndex = index
+					MenuButton
+					{
+						id:					moduleButton
+						text:				displayText
+						textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
+						toolTip:			 "Click to " + (ribbonEnabled ? "disable" : "enable") + " module " + displayText
 
-					textColor:			ribbonEnabled ? Theme.black : Theme.gray
+						onClicked:			ribbonModel.toggleModuleEnabled(index)
+						onHoveredChanged:	if(hovered && enabled) ribbonModel.highlightedModuleIndex = index
+
+						anchors
+						{
+							top:	parent.top
+							left:	parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
+							right:	parent.right
+							bottom:	parent.bottom
+						}
+					}
+
+					MenuButton
+					{
+						z:				1
+						id:				minusButton
+						visible:		isDynamic
+						iconSource:		"qrc:/icons/subtraction-sign.svg"
+						width:			height
+						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
+						anchors
+						{
+							top:	parent.top
+							left:	parent.left
+							bottom:	parent.bottom
+						}
+					}
 				}
 			}
 		}
-
 
 		focus: true
 		//Keys.onSpacePressed: locationMenu.visible = !locationMenu.visible

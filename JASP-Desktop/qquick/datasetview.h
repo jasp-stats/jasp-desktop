@@ -199,7 +199,7 @@ protected:
 		_previousViewportColMax = -1,
 		_previousViewportRowMin = -1,
 		_previousViewportRowMax = -1,
-		_viewportMargin			= 2,
+		_viewportMargin			= 1,
 		_currentViewportColMin	= -1,
 		_currentViewportColMax	= -1,
 		_currentViewportRowMin	= -1,

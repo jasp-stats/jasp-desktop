@@ -38,12 +38,15 @@ Rectangle
 	property real	buttonPadding:		(buttonIcon.visible ? 4 : 16) * ppiScale
 	property alias	hovered:			buttonMouseArea.containsMouse
 	property bool	showIconAndText:	false
+	property bool	centerText:			true
 
 	property real	_scaledDim:			32 * ppiScale
 	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
 	property alias	_pressed:			buttonMouseArea.pressed
 
-	implicitWidth:	showIconAndText ? buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding : buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + buttonPadding
+	implicitWidth:	showIconAndText ?
+						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
+						buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + buttonPadding
 	implicitHeight: _scaledDim
 	width:			implicitWidth
 	height:			implicitHeight
@@ -87,7 +90,7 @@ Rectangle
 	Text
 	{
 		id: buttonText
-		x:	filterButtonRoot.showIconAndText ? buttonIcon.x + buttonIcon.width + filterButtonRoot.buttonPadding : (parent.width / 2) - (width / 2)
+		x:	filterButtonRoot.centerText ? (parent.width / 2) - (width / 2) : buttonIcon.x + buttonIcon.width + filterButtonRoot.buttonPadding
 		y:	(parent.height / 2) - (height / 2)
 
 		text:		filterButtonRoot.text

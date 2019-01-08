@@ -57,12 +57,13 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 
 	switch(role)
 	{
-	case DisplayRole:	return QString::fromStdString(_moduleNames.at(row));
-	case RibbonRole:	return QVariant::fromValue(ribbonButtonModelAt(row));
-	case EnabledRole:	return ribbonButtonModelAt(row)->enabled();
-
-	case ClusterRole:	//To Do!
-	default:			return QVariant();
+	case DisplayRole:		return ribbonButtonModelAt(row)->titleQ();
+	case RibbonRole:		return QVariant::fromValue(ribbonButtonModelAt(row));
+	case EnabledRole:		return ribbonButtonModelAt(row)->enabled();
+	case DynamicRole:		return ribbonButtonModelAt(row)->isDynamic();
+	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleName();
+	case ClusterRole:		//To Do!
+	default:				return QVariant();
 	}
 }
 
@@ -73,7 +74,9 @@ QHash<int, QByteArray> RibbonModel::roleNames() const
 		{ ClusterRole,		"clusterMenu"		},
 		{ DisplayRole,		"displayText"		},
 		{ RibbonRole,		"ribbonButtonModel"	},
-		{ EnabledRole,		"ribbonEnabled"		}	};
+		{ EnabledRole,		"ribbonEnabled"		},
+		{ DynamicRole,		"isDynamic"			},
+		{ ModuleNameRole,	"moduleName"		} };
 
 	return roles;
 }
@@ -88,13 +91,13 @@ RibbonButtonModel* RibbonModel::ribbonButtonModel(std::string name) const
 
 void RibbonModel::addRibbonButtonModel(RibbonButtonModel* model)
 {
-	if(isModuleName(model->title()))
-		removeRibbonButtonModel(model->title());
+	if(isModuleName(model->moduleName().toStdString()))
+		removeRibbonButtonModel(model->moduleName().toStdString());
 
 	emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
 
-	_moduleNames.push_back(model->title());
-	_modulesByName[model->title()] = model;
+	_moduleNames.push_back(model->moduleName().toStdString());
+	_modulesByName[model->moduleName().toStdString()] = model;
 
 	emit endInsertRows();
 
@@ -131,9 +134,7 @@ void RibbonModel::analysisClicked(QString analysis, int ribbonButtonModelIndex)
 	if(ribbonButtonModelIndex < 0)
 		return;
 
-	QString module = QString::fromStdString(ribbonButtonModelAt(size_t(ribbonButtonModelIndex))->title());
-
-    emit analysisClickedSignal(analysis, module);
+	emit analysisClickedSignal(analysis, ribbonButtonModelAt(size_t(ribbonButtonModelIndex))->moduleName());
 }
 
 void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)

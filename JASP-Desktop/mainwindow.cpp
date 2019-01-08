@@ -329,6 +329,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel);
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered);
+	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules);
 
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);

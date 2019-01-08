@@ -20,11 +20,13 @@ FocusScope
 	property string computeColumnRCode:			computedColumnsInterface.computeColumnRCode
 	property int	minimumHeightTextBoxes:		50 * ppiScale
 	property string selectedColumnNameMirror:	computedColumnsInterface.computeColumnNameSelected
+	property string lastCreatedColumn:			computedColumnsInterface.lastCreatedColumn
 
 	onDataSetLoadedChanged:				if(!dataSetLoaded) close();
 	onSelectedColumnNameMirrorChanged:	if(selectedColumnNameMirror === "") close();
 	onJsonConstructedModelChanged:		computedColumnConstructor.initializeFromJSON(userLikesR ? "{\"formulas\":[]}" : jsonConstructedModel);
 	onComputeColumnRCodeChanged:		computeColumnEdit.text = computeColumnRCode;
+	onLastCreatedColumnChanged:			if(!changed && lastCreatedColumn !== computedColumnsInterface.computeColumnNameSelected) open(lastCreatedColumn)
 
 	function close()
     {

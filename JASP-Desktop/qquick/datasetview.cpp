@@ -233,6 +233,7 @@ void DataSetView::storeOutOfViewItems()
 void DataSetView::buildNewLinesAndCreateNewItems()
 {
 	_lines.clear();
+	_lines.reserve((_currentViewportColMax - _currentViewportColMin) * (_currentViewportRowMax - _currentViewportRowMin) * 4);
 
 	//and now we should create some new ones!
 

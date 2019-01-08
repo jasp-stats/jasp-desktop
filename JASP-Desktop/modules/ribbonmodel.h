@@ -36,7 +36,9 @@ public:
 		ClusterRole = Qt::UserRole,
 		DisplayRole,
 		RibbonRole,
-		EnabledRole
+		EnabledRole,
+		DynamicRole,
+		ModuleNameRole
 	};
 
 	RibbonModel(QObject *parent) : QAbstractListModel(parent) {}

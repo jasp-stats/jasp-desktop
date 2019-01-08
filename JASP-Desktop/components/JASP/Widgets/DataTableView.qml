@@ -71,8 +71,6 @@ FocusScope
 					}
 				}
 
-			CreateComputeColumnDialog { id: createComputeDialog	}
-
 			extraColumnItem:
 				Rectangle
 				{

@@ -6,7 +6,6 @@ FocusScope
 {
 	id:		ribbonBar
 	height: ribbonMenu.height
-	y:		ribbonMenu.border.width
 
 	Rectangle
 	{

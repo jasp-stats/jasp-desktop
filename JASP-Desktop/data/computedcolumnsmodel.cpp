@@ -401,6 +401,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	ComputedColumn  * createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
 	emit refreshData();
 
+	setLastCreatedColumn(name);
+
 	return createdColumn;
 }
 
@@ -431,6 +433,9 @@ void ComputedColumnsModel::requestComputedColumnDestruction(std::string columnNa
 		{ analysis->removeUsedVariable(columnName); } );
 
 	checkForDependentColumnsToBeSent(columnName);
+
+	if(columnName == lastCreatedColumn().toStdString())
+		setLastCreatedColumn("");
 }
 
 bool ComputedColumnsModel::showAnalysisFormForColumn(QString columnName)
@@ -449,4 +454,13 @@ bool ComputedColumnsModel::showAnalysisFormForColumn(QString columnName)
 	catch(...) {}
 
 	return false;
+}
+
+void ComputedColumnsModel::setLastCreatedColumn(QString lastCreatedColumn)
+{
+	if (_lastCreatedColumn == lastCreatedColumn)
+		return;
+
+	_lastCreatedColumn = lastCreatedColumn;
+	emit lastCreatedColumnChanged(_lastCreatedColumn);
 }

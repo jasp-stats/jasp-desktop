@@ -14,7 +14,7 @@ Item
 		z:				0
 		model:			ribbonModelFiltered
 		orientation:	ListView.Horizontal
-		currentIndex:	ribbonModelFiltered.originalRowToFiltered(ribbonModel.highlightedModuleIndex)
+		currentIndex:	ribbonModelFiltered.highlightedModuleIndex
 
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
@@ -33,7 +33,7 @@ Item
 			id:				jaspRibbon
 			model:			ribbonButtonModel
 			separateMe:		index > 0
-			highlighted:	ribbonModelFiltered.originalRowToFiltered(ribbonModel.highlightedModuleIndex) == index
+			highlighted:	ribbonModelFiltered.highlightedModuleIndex === index
 		}
 	}
 

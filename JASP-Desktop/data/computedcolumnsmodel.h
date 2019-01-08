@@ -16,6 +16,7 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(QString	computeColumnNameSelected	READ computeColumnNameSelected		WRITE setComputeColumnNameSelected		NOTIFY computeColumnNameSelectedChanged )
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY datasetLoadedChanged				)
+	Q_PROPERTY(QString lastCreatedColumn			READ lastCreatedColumn														NOTIFY lastCreatedColumnChanged			)
 
 public:
 	explicit	ComputedColumnsModel(Analyses * analyses, QObject * parent);
@@ -26,6 +27,7 @@ public:
 				QString computeColumnError();
 				QString computeColumnNameSelected();
 				QString computeColumnJson();
+				QString lastCreatedColumn() const { return _lastCreatedColumn; }
 				bool	computeColumnUsesRCode();
 
 				void	setComputeColumnRCode(QString newCode);
@@ -51,6 +53,8 @@ public:
 
 	Q_INVOKABLE bool	showAnalysisFormForColumn(QString columnName);
 
+
+
 private:
 				void	validate(QString name);
 				void	setAnalyses(Analyses * analyses)				{ _analyses = analyses; }
@@ -75,6 +79,7 @@ signals:
 				void	dataSetChanged(DataSet * newDataSet);
 				void	refreshData();
 				void	showAnalysisForm(Analysis *analysis);
+				void	lastCreatedColumnChanged(QString lastCreatedColumn);
 
 public slots:
 				void				computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
@@ -83,14 +88,15 @@ public slots:
 				ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis * analysis);
 				void				requestComputedColumnDestruction(std::string columnName);
 				void				recomputeColumn(std::string columnName);
+				void				setLastCreatedColumn(QString lastCreatedColumn);
 
 private:
 
-	QString				_currentlySelectedName	= "";
+	QString				_currentlySelectedName	= "",
+						_lastCreatedColumn		= "";
 	ComputedColumns		*_computedColumns		= nullptr;
 	DataSetPackage		*_package				= nullptr;
 	Analyses			*_analyses				= nullptr;
-
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

@@ -21,7 +21,6 @@
 #include <QFile>
 #include <QTextDocument>
 #include <QPrinter>
-#include <QWebEngineView>
 
 ResultExporter::ResultExporter()
 {

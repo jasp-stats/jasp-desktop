@@ -256,3 +256,8 @@ void DynamicModules::setCurrentInstallDone(bool currentInstallDone)
 			setCurrentInstallName("");
 	}
 }
+
+void DynamicModules::uninstallJASPModule(QString moduleName)
+{
+	uninstallModule(moduleName.toStdString());
+}
