@@ -38,6 +38,7 @@
 #include "widgets/boundqmllistviewanovamodels.h"
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
+#include "widgets/boundqmllistviewlayers.h"
 #include "widgets/boundqmlfactorslist.h"
 #include "widgets/boundqmltableview.h"
 #include "widgets/qmllistviewtermsavailable.h"
@@ -309,6 +310,7 @@ void AnalysisForm::_parseQML()
 			case qmlListViewType::AssignedPairs:		listView = new BoundQMLListViewPairs(quickItem,this); break;
 			case qmlListViewType::AssignedAnova:		listView = new BoundQMLListViewAnovaModels(quickItem, this); break;
 			case qmlListViewType::MeasuresCells:		listView = new BoundQMLListViewMeasuresCells(quickItem, this); break;
+			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this); break;
 			case qmlListViewType::AvailableVariables:
 			{
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
@@ -510,9 +512,12 @@ void AnalysisForm::addError(const QString &error)
 }
 
 void AnalysisForm::formCompletedHandler()
-{	
-	qDebug() << "Component Complete";
-	
+{
+	QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler);	
+}
+
+void AnalysisForm::_formCompletedHandler()
+{		
 	QVariant analysisVariant = QQmlProperty(this, "analysis").read();
 	if (!analysisVariant.isNull())
 	{

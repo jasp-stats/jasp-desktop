@@ -1,6 +1,6 @@
 #include "settings.h"
 
-QSettings* Settings::_settings = NULL;
+QSettings* Settings::_settings = nullptr;
 
 const Settings::Setting Settings::Values[] = {
 	{"numDecimals", ""},

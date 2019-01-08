@@ -20,9 +20,9 @@ private slots:
 	void sliderMovedSlot();
     
 protected:
-	OptionNumber *_boundTo;
-	float _number;
-	static bool _changing;
+	OptionNumber *_boundTo = nullptr;
+	double _number = 0;
+	bool _changing = false;
 	
 private slots:
 	void _changeOptionHandler();

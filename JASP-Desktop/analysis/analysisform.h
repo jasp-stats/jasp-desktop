@@ -99,6 +99,7 @@ private:
 
 private slots:
 	void		formCompletedHandler();
+	void		_formCompletedHandler();
 
 protected:
 	Analysis								*_analysis;

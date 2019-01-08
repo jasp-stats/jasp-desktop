@@ -47,6 +47,7 @@ Item {
         name: showDefaultAssignedVariablesList ? "variables" : ""
         width: listWidth
         visible: showDefaultAssignedVariablesList
+		isBound: showDefaultAssignedVariablesList
     }
 
     Item {

@@ -189,7 +189,7 @@ JASPControl
 		GridView {
             id: listView
             ScrollBar.vertical: ScrollBar {
-				policy: ScrollBar.AlwaysOn
+				policy: ScrollBar.AsNeeded
 
             }
 			cellHeight: 20
