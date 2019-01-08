@@ -28,8 +28,6 @@ BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form)
 	, QObject(form)
 	, BoundQMLItem(item, form)
 {
-	_boundTo = NULL;
-	_number = 0;
 	QQuickItem::connect(item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
 }
 
@@ -52,25 +50,23 @@ void BoundQMLSlider::resetQMLItem(QQuickItem *item)
 
 Option *BoundQMLSlider::createOption()
 {
-	_number = _item->property("value").toFloat();	
+	_number = _item->property("value").toDouble();	
 	OptionNumber* option = new OptionNumber();
 	option->setValue(_number);
 	
 	return option;
 }
 
-bool BoundQMLSlider::_changing = false;
-
 void BoundQMLSlider::sliderMovedSlot()
 {
-	float newValue = QQmlProperty(_item, "value").read().toFloat();
+	double newValue = QQmlProperty(_item, "value").read().toDouble();
 	
 	if (newValue == _number)
 		return;
 	
 	_number = newValue;
 	
-	if (_boundTo != NULL)
+	if (_boundTo != nullptr)
 	{
 		if (_changing)
 			return;

@@ -30,6 +30,7 @@
 #include <QQuickItem>
 #include <QQmlProperty>
 #include <QDebug>
+#include <QTimer>
 
 BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)
 	: QMLListViewDraggable(item, form)
@@ -170,9 +171,7 @@ void BoundQMLListViewDraggable::addRowWithControlsHandler(int index, QString nam
 	if (model()->rowCount() == index + 1)
 	{
 		_rowsWithControls.clear();
-		_mapRowsWithBoundItems();
-		_cachedRows.clear();
-		_addedRows.clear();
+		QTimer::singleShot(0, this, &BoundQMLListViewDraggable::_mapRowsWithBoundItems);
 	}
 }
 	
@@ -182,7 +181,7 @@ void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
 	
 	// First find the rows in the cache with the same name
 	QMapIterator<QString, RowQuickItemType> addedRowsIt(_addedRows);	
-	while(addedRowsIt.hasNext())
+	while (addedRowsIt.hasNext())
 	{
 		addedRowsIt.next();
 		QString name = addedRowsIt.key();
@@ -263,9 +262,12 @@ void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
 				boundQMLItem->setUp();
 				boundItemRow[boundQMLItem->name()] = boundQMLItem;
 			}
+
 		}
 		_rowsWithControls[name] = boundItemRow;
 	}
+	_cachedRows.clear();
+	_addedRows.clear();
 }
 
 void BoundQMLListViewDraggable::_resetQuickItems(const QMap<QString, QQuickItem*>& quickItems, const QMap<QString, BoundQMLItem*>& boundItems)
