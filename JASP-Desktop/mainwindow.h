@@ -119,9 +119,6 @@ private:
 	void setDataSetAndPackageInModels(DataSetPackage *package);
 	bool closeRequestCheck(bool &isSaving);
 
-	//AnalysisForm* loadForm(Analysis *analysis);
-	AnalysisForm* createAnalysisForm(Analysis *analysis);
-
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
 	void addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry);

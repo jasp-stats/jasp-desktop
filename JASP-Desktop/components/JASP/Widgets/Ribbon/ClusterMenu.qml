@@ -28,14 +28,14 @@ Menu {
     property alias posX : menu.x
 	property alias posY : menu.y
 
-	property int   ribbonButtonModelIndex : undefined
+	property string moduleName : "???"
 
     // TODO: Make the menu more general.
     //       Make a "CustomMenu" component with the required style.
 
 	function menuItemSelected(analysis)
 	{
-		ribbonModel.analysisClicked(analysis, ribbonButtonModelIndex)
+		ribbonModel.analysisClickedSignal(analysis, moduleName)
         menu.close()
     }
 

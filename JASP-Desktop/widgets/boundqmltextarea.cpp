@@ -30,9 +30,9 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 	, QObject(form)
 	, BoundQMLItem(item, form)
 {
-	_boundTo = NULL;
-	_lavaanHighlighter = NULL;
-	_allVariablesModel = NULL;
+	_boundTo = nullptr;
+	_lavaanHighlighter = nullptr;
+	_allVariablesModel = nullptr;
 	QString textType = _item->property("textType").toString();
 	if (textType == "lavaan")
 	{
@@ -60,7 +60,7 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 		if (textDocumentQQuick)
 		{
 			QTextDocument* doc = textDocumentQQuick->textDocument();
-			_lavaanHighlighter = new TextModelLavaan::SyntaxHighlighter(doc);
+			_lavaanHighlighter = new LavaanSyntaxHighlighter(doc);
 			//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 			
 		}
@@ -79,7 +79,7 @@ void BoundQMLTextArea::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionString *>(option);
 
-	if (_boundTo != NULL)
+	if (_boundTo != nullptr)
 	{
 		_text = QString::fromStdString(_boundTo->value());
 		_item->setProperty("text", _text);
@@ -142,7 +142,7 @@ void BoundQMLTextArea::checkSyntax()
 	}
 	else
 	{
-		if (_boundTo != NULL)
+		if (_boundTo != nullptr)
 			_boundTo->setValue(_text.toStdString());
 	}
 		
@@ -153,7 +153,7 @@ void BoundQMLTextArea::rScriptDoneHandler(const QString & result)
     if (result.length() == 0) {
 		_item->setProperty("hasScriptError", false);
 		_item->setProperty("infoText", "Model applied");
-		if (_boundTo != NULL)
+		if (_boundTo != nullptr)
 			_boundTo->setValue(_text.toStdString());
 		
 	} else {

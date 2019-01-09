@@ -32,6 +32,7 @@ Item
 	property bool	separateMe:		false
 	property bool	ribbonEnabled:	true
 	property bool	highlighted:	false
+	property string	module:			"???"
 
 	Rectangle
 	{
@@ -83,7 +84,7 @@ Item
 				anchors.verticalCenter	: parent.verticalCenter
 				sourceComponent			: displayText === "???" ? toolSeparator : ribbonButtonDelegate
 
-				property int ribbonButtonModelIndex: index
+				property int ribbonIndex: index
 
 				Component
 				{
@@ -91,10 +92,11 @@ Item
 
 					RibbonButton
 					{
-						text   : displayText
-						source : (jaspRibbon.model.isDynamic ? "file:" : "qrc:/icons/") + iconSource
-						menu   : analysisMenu
-						enabled: jaspRibbon.model.enabled && (!jaspRibbon.model.requiresDataset || mainWindow.datasetLoaded)
+						text   :	displayText
+						source :	(jaspRibbon.model.isDynamic ? "file:" : "qrc:/icons/") + iconSource
+						menu   :	analysisMenu
+						enabled:	jaspRibbon.model.enabled && (!jaspRibbon.model.requiresDataset || mainWindow.datasetLoaded)
+						moduleName: jaspRibbon.module
 					}
 				}
 

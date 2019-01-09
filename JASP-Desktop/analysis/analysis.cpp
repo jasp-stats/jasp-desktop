@@ -25,6 +25,9 @@
 #include "appinfo.h"
 #include "dirs.h"
 #include "analyses.h"
+#include "analysisform.h"
+
+#include <QDebug>
 
 using namespace boost::uuids;
 using namespace boost;
@@ -34,7 +37,13 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(name), _version(version), _analyses(analyses)
 {
 	if (data)
-		_options->init(*data);
+	{
+		qDebug() << "Analysis data: " << QString::fromStdString(data->toStyledString());
+		if (data->type() == Json::arrayValue)
+			_options->init(*data);
+		else
+			_oldVersionOptions = *data;
+	}
 
 	bindOptionHandlers();
 }
@@ -105,8 +114,10 @@ Analysis::Status Analysis::parseStatus(string name)
 	else							return Analysis::Error;
 }
 
-void Analysis::initialized()
+void Analysis::initialized(AnalysisForm* form)
 {
+	_analysisForm = form;
+//		connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::showForm);
 	_status = Empty;
 }
 
@@ -210,6 +221,11 @@ std::string Analysis::qmlFormPath() const
 	return "file:" + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + name() + ".qml");
+}
+
+void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
+{
+	_analysisForm->runScriptRequestDone(result, controlName);
 }
 
 Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackground)

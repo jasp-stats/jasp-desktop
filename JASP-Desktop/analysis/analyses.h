@@ -73,14 +73,14 @@ public:
 	
 	void		setDataSet(DataSet* dataSet)	{ _dataSet = dataSet; }
 	DataSet*	getDataSet() const				{ return _dataSet; }
-
+	
 //AbstractListModel functions
 public:
 	int						rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(count()); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
 	int						currentAnalysisIndex()										const			{	return _currentAnalysisIndex;	}
-
+	
 public slots:
 	void removeAnalysisById(size_t id);
 	void removeAnalysis(Analysis *analysis);
@@ -89,6 +89,10 @@ public slots:
 	void analysisClickedHandler(QString, QString);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 
+	void rCodeReturned(QString result, int requestId);
+	
+private slots:
+	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
 
 signals:
 	void analysisAdded(					Analysis *source);
@@ -108,6 +112,7 @@ signals:
 
 	void countChanged();
 	void currentAnalysisIndexChanged(int currentAnalysisIndex);
+	void sendRScript(QString script, int requestID);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);
@@ -128,6 +133,9 @@ private:
 	 size_t		_nextId					= 0;
 	 int		_currentAnalysisIndex	= -1;
 	 DataSet*	_dataSet				= nullptr;
+	 
+	 static int	_scriptRequestID;
+	 QMap<int, QPair<Analysis*, QString> > _scriptIDMap;
 };
 
 #endif // ANALYSES_H

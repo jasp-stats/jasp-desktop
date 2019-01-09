@@ -60,8 +60,6 @@ signals:
 	void filterUpdated(int requestID);
 	void filterErrorTextChanged(QString error);
 
-	void rCodeReturned(QString result, int requestId);
-
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(QString value);
 	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);

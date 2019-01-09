@@ -375,7 +375,8 @@ HEADERS += \
     widgets/filemenu/filemenulistitem.h \
     widgets/filemenu/filemenubasiclistmodel.h \
     modules/ribbonmodelfiltered.h \
-    utilities/helpmodel.h
+    utilities/helpmodel.h \
+    widgets/lavaansyntaxhighlighter.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -557,7 +558,8 @@ SOURCES += \
     $$PWD/gui/messageforwarder.cpp \
     widgets/filemenu/filemenubasiclistmodel.cpp \
     modules/ribbonmodelfiltered.cpp \
-    utilities/helpmodel.cpp
+    utilities/helpmodel.cpp \
+    widgets/lavaansyntaxhighlighter.cpp
 
 RESOURCES += \
     html/html.qrc \

@@ -22,7 +22,7 @@
 
 #include "analysis/boundqmlitem.h"
 #include "analysis/options/optionstring.h"
-#include "textmodellavaan.h"
+#include "lavaansyntaxhighlighter.h"
 #include "listmodeltermsavailable.h"
 
 #include <QObject>
@@ -58,7 +58,7 @@ protected:
 	TextType _textType;
 	QString _applyScriptInfo;
 	
-	TextModelLavaan::SyntaxHighlighter *_lavaanHighlighter;
+	LavaanSyntaxHighlighter *_lavaanHighlighter;
 	ListModelTermsAvailable* _allVariablesModel;
 };
 
