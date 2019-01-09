@@ -23,49 +23,39 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form {
+Form 
+{
     id: form
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            GridLayout {
-                Label { text: qsTr("t") }           DoubleField { defaultValue: 0 ; name: "tStatistic" ; validation: false }
-                Label { text: qsTr("Group size") }  IntegerField { name: "n1Size" }
-            }
-        }
-    }
+	GroupBox 
+	{
+		DoubleField  { text: qsTr("t");				name: "tStatistic" ; validation: false  }
+		IntegerField { text: qsTr("Group size");	name: "n1Size" }
+	}
 
     Divider { }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
+    GridLayout 
+	{
+		ButtonGroup 
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			RadioButton { text: qsTr("\u2260 Test value") ; name: "notEqualToTestValue" ; checked: true }
+			RadioButton { text: qsTr("> Test value")      ; name: "greaterThanTestValue"                }
+			RadioButton { text: qsTr("< Test value")      ; name: "lessThanTestValue"                   }
+		}
 
-            ButtonGroup {
-                title: qsTr("Hypothesis")
-                name: "hypothesis"
-
-                RadioButton { text: qsTr("\u2260 Test value") ; name: "notEqualToTestValue" ; checked: true }
-                RadioButton { text: qsTr("> Test value")      ; name: "greaterThanTestValue"                }
-                RadioButton { text: qsTr("< Test value")      ; name: "lessThanTestValue"                   }
-            }
-
-            BayesFactorType { }
-        }
-
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox {  text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-                CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
-
-                CheckBox {  text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
-            }
-        }
+		GroupBox 
+		{
+			title: qsTr("Plots")
+			CheckBox {  text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
+			CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
+			CheckBox {  text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
+			CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+		}
+		
+		BayesFactorType { }
     }
 
     SubjectivePriors { }

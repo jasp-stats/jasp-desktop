@@ -22,73 +22,56 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form {
+Form 
+{
     id: form
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            GridLayout {
-                Label { text: qsTr("Sample size") } IntegerField { name: "sampleSize" ; intValidator.bottom: 2 }
-            }
-        }
-    }
+	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; intValidator.bottom: 2 }
 
     Divider { }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
+    GridLayout 
+	{
+		ButtonGroup 
+		{
+			title: qsTr("Correlation Coefficient") ; name: "correlationCoefficient"
+			Layout.columnSpan: 2
+			Row 
+			{
+				RadioButton { text: qsTr("Pearson's rho") ; name: "pearsonRho"; id: pearsonRho; checked: true}
+				DoubleField   { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
+			}
+			Row 
+			{
+				RadioButton { text: qsTr("Kendall's tau-b") ; name: "kendallTau"; id: kendallTau }
+				DoubleField   { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
+			}
+		}
+		
+		ButtonGroup 
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			RadioButton { text: qsTr("Correlated")            ; name: "correlated" ; checked: true }
+			RadioButton { text: qsTr("Correlated positively") ; name: "correlatedPositively"       }
+			RadioButton { text: qsTr("Correlated negatively") ; name: "correlatedNegatively"       }
+		}
 
-            ButtonGroup {
-                title: qsTr("Correlation Coefficient") ; name: "correlationCoefficient"
+		GroupBox 
+		{
+			title: qsTr("Plots")
+			CheckBox { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
+			CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
+			CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
+			CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+		}
+		
+        BayesFactorType { }
 
-                Row {
-                    RadioButton { text: qsTr("Pearson's rho") ; name: "pearsonRho"; id: pearsonRho; checked: true}
-                    DoubleField   { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
-                }
-                Row {
-                    RadioButton { text: qsTr("Kendall's tau-b") ; name: "kendallTau"; id: kendallTau }
-                    DoubleField   { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
-                }
-            }
-        }
-    }
-
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-
-            ButtonGroup {
-                title: qsTr("Hypothesis")
-                name: "hypothesis"
-
-                RadioButton { text: qsTr("Correlated")            ; name: "correlated" ; checked: true }
-                RadioButton { text: qsTr("Correlated positively") ; name: "correlatedPositively"       }
-                RadioButton { text: qsTr("Correlated negatively") ; name: "correlatedNegatively"       }
-            }
-
-            BayesFactorType { }
-        }
-
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
-
-                CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
-            }
-
-            GroupBox {
-                title: qsTr("Prior")
-                GridLayout {
-                    Label { text: qsTr("Stretched beta prior width") } DoubleField { defaultValue: 1 ; name: "priorWidth" ; doubleValidator {bottom: 0; top: 2} }
-                }
-            }
-        }
+		GroupBox 
+		{
+			title: qsTr("Prior")
+			DoubleField { text: qsTr("Stretched beta prior width"); defaultValue: 1 ; name: "priorWidth" ; doubleValidator {bottom: 0; top: 2} }
+		}
     }
 }

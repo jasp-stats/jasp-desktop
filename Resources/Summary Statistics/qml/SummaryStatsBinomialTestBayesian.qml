@@ -22,54 +22,47 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form {
+Form 
+{
     id: form
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            GridLayout {
-                Label { text: qsTr("Successes")  } IntegerField { name: "successes" }
-                Label { text: qsTr("Failures")   } IntegerField { name: "failures" }
-                Label { text: qsTr("Test value") } DoubleField { defaultValue: 0.5 ; name: "testValue" ; doubleValidator.top: 1 }
-            }
-        }
+    GroupBox 
+	{
+		IntegerField { text: qsTr("Successes"); name: "successes" }
+		IntegerField { text: qsTr("Failures") ; name: "failures" }
+		DoubleField  { text: qsTr("Test value"); name: "testValue" ; defaultValue: 0.5 ; doubleValidator.top: 1 }
     }
 
     Divider { }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
+    GridLayout 
+	{
+		ButtonGroup 
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			RadioButton { text: qsTr("\u2260 Test value") ; name: "notEqualToTestValue" ; checked: true }
+			RadioButton { text: qsTr("> Test value")      ; name: "greaterThanTestValue"                }
+			RadioButton { text: qsTr("< Test value")      ; name: "lessThanTestValue"                   }
+		}
 
-            ButtonGroup {
-                title: qsTr("Hypothesis")
-                name: "hypothesis"
+		GroupBox 
+		{
+			title: qsTr("Plots")
+			CheckBox { text: qsTr("Prior and posterior") ; name: "plotPriorAndPosterior"               ; id: plotPriorAndPosterior }
+			CheckBox { text: qsTr("Additional info")     ; name: "plotPriorAndPosteriorAdditionalInfo" ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
+		}
+		
+		BayesFactorType { }
 
-                RadioButton { text: qsTr("\u2260 Test value") ; name: "notEqualToTestValue" ; checked: true }
-                RadioButton { text: qsTr("> Test value")      ; name: "greaterThanTestValue"                }
-                RadioButton { text: qsTr("< Test value")      ; name: "lessThanTestValue"                   }
-            }
 
-            BayesFactorType { }
-        }
-
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox { text: qsTr("Prior and posterior") ; name: "plotPriorAndPosterior"               ; id: plotPriorAndPosterior }
-                CheckBox { text: qsTr("Additional info")     ; name: "plotPriorAndPosteriorAdditionalInfo" ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
-            }
-
-            GroupBox {
-                title: qsTr("Prior")
-                GridLayout {
-                    Label { text: qsTr("Beta prior: parameter a") } DoubleField { defaultValue: 1 ; name: "betaPriorParamA" }
-                    Label { text: qsTr("Beta prior: parameter b") } DoubleField { defaultValue: 1 ; name: "betaPriorParamB" }
-                }
-            }
-        }
+		GroupBox 
+		{
+			title: qsTr("Prior")
+			GridLayout {
+				Label { text: qsTr("Beta prior: parameter a") } DoubleField { defaultValue: 1 ; name: "betaPriorParamA" }
+				Label { text: qsTr("Beta prior: parameter b") } DoubleField { defaultValue: 1 ; name: "betaPriorParamB" }
+			}
+		}
     }
 }
