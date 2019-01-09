@@ -41,6 +41,7 @@ Item
 	FileList {
 		id:			currentFileList
 		cppModel:	fileMenuModel.currentFile.listModel
+		hasBreadCrumbs: false
 
 		anchors
 		{

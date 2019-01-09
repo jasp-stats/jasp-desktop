@@ -7,11 +7,11 @@ import JASP.Widgets 1.0
 Item
 {
 	id:rect
-	
+
 	Label
 	{
 		id:headLabel
-		
+
 		width:implicitWidth
 		height:30
 		anchors.top: parent.top
@@ -24,34 +24,35 @@ Item
 		font.pixelSize: 18
 		color: Theme.black
 	}
-	
+
 	RectangularButton {
 		id: browseButton
-					
+
 		text: "Browse"
 		anchors.left: parent.left
 		anchors.top: headLabel.bottom
 		anchors.leftMargin: 10
 		anchors.topMargin: 10
-		
+
 		onClicked: {
 			fileMenuModel.computer.browseMostRecent();
 		}
 	}
-	
+
 	ToolSeparator
 	{
 		id: firstSeparator
-		
+
 		anchors.top: browseButton.bottom
 		anchors.topMargin: 10
 		width: rect.width
 		orientation: Qt.Horizontal
 	}
-	
+
 	FileList {
 		id:			computerList
 		cppModel:	fileMenuModel.computer.listModel
+		hasBreadCrumbs: false
 
 		anchors
 		{
@@ -64,7 +65,7 @@ Item
 			bottomMargin:	Theme.generalAnchorMargin
 			rightMargin:	Theme.generalAnchorMargin
 		}
-		
+
 	}
-	
+
 }

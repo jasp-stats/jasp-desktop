@@ -56,6 +56,7 @@ Item
 	{
 		id:			datalibrarylist
 		cppModel:	fileMenuModel.datalibrary.listModel
+		hasBreadCrumbs : true
 
 		anchors
 		{

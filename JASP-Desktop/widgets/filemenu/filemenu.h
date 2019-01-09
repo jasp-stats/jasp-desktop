@@ -148,7 +148,6 @@ public slots:
 	void fileOperationClicked(const int &action);
 	void resourceButtonClicked(const int &resource);
 	
-	void test();
 
 	void setDatalibrary(DataLibrary * datalibrary);
 	void setCurrentFile(CurrentFile * currentFile);

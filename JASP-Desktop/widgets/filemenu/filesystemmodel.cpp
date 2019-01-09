@@ -99,9 +99,9 @@ FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntr
 	{
 		entry.name			= path;
 		entry.path			= path;
-		entry.description	= "";
 	}
 
+	entry.description	= "";
 	entry.associated_datafile = "";
 
 	return entry;

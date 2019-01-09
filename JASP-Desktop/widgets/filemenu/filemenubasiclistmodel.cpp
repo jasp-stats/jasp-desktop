@@ -37,7 +37,8 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case AssociatedDataFileRole:	return QFileInfo(item.associated_datafile).fileName();
 	case IconSourceRole:			return FileSystemEntry::sourcesIcons()[item.entryType];
 	case DataIconSourceRole:		return FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
-	case DirRole:					return QFileInfo (item.associated_datafile).path() + QDir::separator();
+	//case DirRole:					return QFileInfo (item.associated_datafile).path() + QDir::separator();
+	case DirRole:					return QFileInfo (item.path).path() + QDir::separator();
 	default:						return QStringLiteral("Me know nothing");
 	}
 
