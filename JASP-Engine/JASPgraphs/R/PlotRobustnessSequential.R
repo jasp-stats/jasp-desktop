@@ -309,7 +309,7 @@ PlotRobustnessSequential <- function(
 #' @return a ggproto object.
 #'
 #' @export
-makeGridLines <- function(x, xend, y, size = 1.05, ...) {
+makeGridLines <- function(x, xend, y, size = 0.85, ...) {
 
   return(
     ggplot2::geom_segment(

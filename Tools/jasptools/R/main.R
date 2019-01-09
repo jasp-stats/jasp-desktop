@@ -255,14 +255,14 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
         .libPaths(libPaths)
       if (quiet)
         suppressWarnings(sink(NULL))
-    }, add = TRUE)
+    })
   } else { # no side effects, but we still need on.exit
     on.exit({
       .removeS3Methods()
       .resetInternals()
       if (quiet)
         suppressWarnings(sink(NULL))
-    }, add = TRUE)
+    })
   }
 
   .initRunEnvironment(envir = envir, dataset = dataset, perform = perform)
@@ -306,19 +306,6 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     envir[["createJaspTable"]]     <- jaspResults::createJaspTable
     envir[["createJaspHtml"]]      <- jaspResults::createJaspHtml
     envir[["createJaspState"]]     <- jaspResults::createJaspState
-    
-    # this needs to be global otherwise the functions inside jaspResults cannot find it
-    if (".fromRCPP" %in% ls(all.names = TRUE)) {
-      old.fromRCPP <- get(".fromRCPP", envir = .GlobalEnv)
-      on.exit({assign(".fromRCPP", old.fromRCPP, envir = .GlobalEnv)}, add = TRUE)
-    }
-    assign(".fromRCPP", envir[[".fromRCPP"]], .GlobalEnv)
-    
-    if ("tryToWriteImageJaspResults" %in% ls(all.names = TRUE)) {
-      old.tryToWriteImageJaspResults <- get("tryToWriteImageJaspResults", envir = .GlobalEnv)
-      on.exit({assign("tryToWriteImageJaspResults", old.tryToWriteImageJaspResults, envir = .GlobalEnv)}, add = TRUE)
-    }
-    assign("tryToWriteImageJaspResults", jaspResults::tryToWriteImageJaspResults, .GlobalEnv)
 
   } else {
     runFun <- "run"

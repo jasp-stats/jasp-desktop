@@ -147,25 +147,7 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
     jaspPlotObj$errorMessage  <- errorMessage
   }
 
-#<<<<<<< HEAD
-#  jaspPlotObj$plotObject <- plot
-#=======
-  if(!is.null(plot))
-	{
-
-		jaspPlotObj$plotObject <- plot
-		
-		writtenImage <- tryToWriteImageJaspResults(width = width, height = height, plot = plot)
-		
-		if(!is.null(writtenImage$error)) {
-			jaspPlotObj$error <- writtenImage$error
-		} else if (!is.null(writtenImage$png)) {
-			jaspPlotObj$filePathPng <- writtenImage[["png"]]
-		} else {
-			jaspPlotObj$error <- "An internal error occured. No plot was created."
-		}
-  }
-#>>>>>>> more tweaks to plots
+  jaspPlotObj$plotObject <- plot
 
   if(!is.null(dependencies))
     jaspPlotObj$dependOnOptions(dependencies)

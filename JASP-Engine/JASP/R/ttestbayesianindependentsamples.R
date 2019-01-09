@@ -25,19 +25,18 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
   } else {
     jaspResults$title <- "Bayesian Independent Samples T-Test"
   }
-	options <- .ttestBayesianInitOptions(jaspResults, options, "independent")
-	dataset <- .ttestBayesianReadData(dataset, options[["variables"]],
-	                                  options[["groupingVariable"]], options[["missingValues"]])
-	errors  <- .ttestBayesianGetErrorsPerVariable(options = options, dataset = dataset)
+	spec    <- .ttestBayesianInitOptions(jaspResults, options, "independent")
+	dataset <- .ttestBayesianReadData(dataset, spec[["variables"]], spec[["groupingVariable"]], spec[["missingValues"]])
+	errors  <- .ttestBayesianGetErrorsPerVariable(spec, dataset)
 
 	# Main analysis
-	ttestResults <- .ttestBISTTest(jaspResults, dataset, options, errors)
+	ttestResults <- .ttestBISTTest(jaspResults, dataset, spec, errors)
 
 	# create descriptives table and plots
-  .ttestBayesianDescriptives(jaspResults, dataset, options, errors)
+  .ttestBayesianDescriptives(jaspResults, dataset, spec, errors)
 
   # create inferential plots
-	.ttestBayesianInferentialPlots(jaspResults, dataset, options, ttestResults, errors)
+	.ttestBayesianInferentialPlots(jaspResults, dataset, spec, ttestResults, errors)
 
 	return()
 }
@@ -61,11 +60,10 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 	levels <- base::levels(dataset[[.v(grouping)]])
 	g1 <- levels[1L]
 	g2 <- levels[2L]
-
+	
   # does all addcolumninfo etc.
 	.ttestBISTTestMarkup(ttestTable, options, g1, g2)
   ttestResults <- .ttestBayesianEmptyObject(options)
-
 	if (!options[["canDoAnalysis"]]) {
 
 		# user provided no grouping variable or empty columns
@@ -77,6 +75,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 	}
 
   # we can do the analysis
+  .ttestBayesianInitBayesFactorPackageOptions()
   # get state
   ttestState <- jaspResults[["stateTTestResults"]]$object
   ttestRows <- ttestState$ttestRows
@@ -86,8 +85,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
   BFH1H0 <- !options$bayesFactorType == "BF01"
 
   oneSided <- options[["oneSided"]]
-
-  if (options$wilcoxTest) {
+  if (options[["wilcoxTest"]]) {
 
   	# all variables - the ones we sampled before
   	todo <- nvar
@@ -141,7 +139,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
   			ttestResults$n1[var] <- length(group1)
   			ttestResults$n2[var] <- length(group2)
 
-  			if (!options$wilcoxTest) {
+  			if (!options[["wilcoxTest"]]) {
 
   				r <- try (silent = FALSE, expr =
   					.generalTtestBF(x = group1, y = group2, paired = FALSE, oneSided = oneSided, options = options)
@@ -247,13 +245,13 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 
 .ttestBISTTestMarkup <- function(jaspTable, options, g1 = NULL, g2 = NULL) {
 
-	jaspTable$title <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
-		if (options$effectSizeStandardized == "default" & !options$wilcoxTest) {
+	jaspTable$title <- ifelse(options[["wilcoxTest"]], "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
+		if (options$effectSizeStandardized == "default" & !options[["wilcoxTest"]]) {
 			citations <- list(
 				"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 				"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237."
 			)
-		} else if (options$wilcoxTest) {
+		} else if (options[["wilcoxTest"]]) {
 			citations <- list(
 				"van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2018). Bayesian Latent-Normal Inference for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1703.01805"
 			)

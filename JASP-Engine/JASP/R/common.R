@@ -2183,12 +2183,12 @@ as.list.footnotes <- function(footnotes) {
     return(TRUE)
   }
 
-  if (! is.null(subset)) {
-    changed <- changed[names(changed) %in% subset]
-    if (length(changed) == 0) {
-      stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
-    }
-  }
+	if (! is.null(subset)) {
+	  changed <- changed[names(changed) %in% subset]
+	  if (length(changed) == 0) {
+	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
+	  }
+	}
 
   if (sum(sapply(changed, isTRUE)) > 0) {
     return(TRUE)
@@ -2208,7 +2208,7 @@ as.list.footnotes <- function(footnotes) {
   result <- list()
   for (item in names(state)) {
 
-    if (item %in% names(key) == FALSE) {
+		if (item %in% names(key) == FALSE) {
       result[[item]] <- state[[item]]
       next
     }
@@ -2216,13 +2216,13 @@ as.list.footnotes <- function(footnotes) {
     change <- .optionsChanged(state$options, options, key[[item]])
     if (change == FALSE) {
       result[[item]] <- state[[item]]
-    }
+		}
 
   }
 
-  if (length(names(result)) > 0) {
-    return(result)
-  }
+	if (length(names(result)) > 0) {
+		return(result)
+	}
 
   return(NULL)
 }
@@ -2812,8 +2812,7 @@ editImage <- function(plotName, type, height, width) {
 	# bfOld: the current value of the Bayes factor
 	# newBFtype: the new type of Bayes factor, e.g., BF10, BF01,
 	# oldBFtype: the current type of the Bayes factor, e.g., BF10, BF01,
-	#
-	# note: log(BF10) is the 'else' type, it is not explicitly checked.
+
 	newBFtype <- match.arg(newBFtype)
 	oldBFtype <- match.arg(oldBFtype)
 
@@ -2961,4 +2960,3 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL, position=N
 
   return(stateObj)
 }
-

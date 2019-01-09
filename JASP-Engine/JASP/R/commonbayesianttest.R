@@ -125,13 +125,13 @@
   # in addition:
   #
   # - unifies the hypothesis type (larger, smaller or equal) inside options[["oneSided"]]
-  # - defines the dependencies for all objects and adds this to options[["stateKey"]]
-  #
+  # - defines the dependencies for all objects and puts this inside options[["stateKey"]]
+
 
   analysis <- match.arg(analysis)
   options[["ttestType"]] <- analysis
 
-  	# dependencies specified here to pass as depends
+  # dependencies specified here to pass as depends
 	defaults <- c(
 	  "effectSizeStandardized", "groupingVariable", "hypothesis",
 	  "informativeCauchyLocation", "informativeCauchyScale", "informativeNormalMean",
@@ -154,7 +154,6 @@
 	  dependents <- unlist(options[["variables"]])
 
 	  options[["canDoAnalysis"]] <- length(dependents) > 0 && options$groupingVariable != ""
-	  # options is updated to avoid computing these in multiple functions
 	  options[["wilcoxTest"]] <- options$testStatistic ==  "Wilcoxon"
 	  options[["oneSided"]] <- switch(options[["hypothesis"]],
 	                                  "groupOneGreater" = "right",
@@ -228,8 +227,6 @@
 	idx <- !(dependents %in% oldDependents)
 	options[["anyNewVariables"]] <- any(idx)
 	options[["newVariables"]] <- dependents[idx]
-
-	.ttestBayesianInitBayesFactorPackageOptions()
 
   return(options)
 
@@ -985,7 +982,7 @@
 	    "ultrawide" = sqrt(2)
 	  ))
 	} else {
-		.quitInternal(message = sprintf("Expected numeric or character rscale but got %s.", class(rscale)))
+		.quitAnalysis(message = sprintf("Expected numeric or character rscale but got %s.", class(rscale)))
 	}
 }
 

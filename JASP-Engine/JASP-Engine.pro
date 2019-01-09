@@ -88,8 +88,8 @@ exists(/app/lib/*) {
     InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASP
     InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASPgraphs
 } else {
-  InstallJASPRPackage.commands        = "\"$$R_EXE\" CMD INSTALL --no-multiarch --no-docs --fake --library=$$OUT_PWD/../R/library $$PWD/JASP"
-  InstallJASPgraphsRPackage.commands  = "\"$$R_EXE\" CMD INSTALL --no-multiarch --no-docs --fake --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs"
+    InstallJASPRPackage.commands        = "\"$$R_EXE\" CMD INSTALL --no-multiarch --no-docs --fake --library=$$OUT_PWD/../R/library $$PWD/JASP"
+    InstallJASPgraphsRPackage.commands  = "\"$$R_EXE\" CMD INSTALL --no-multiarch --no-docs --fake --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs"
 }
 
 QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage

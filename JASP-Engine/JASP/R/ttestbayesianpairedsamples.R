@@ -21,19 +21,18 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
 
   # initialize
   jaspResults$title <- "Bayesian Paired Samples T-Test"
-  options <- .ttestBayesianInitOptions(jaspResults, options, "paired")
-  dataset <- .ttestBayesianReadData(dataset, options[["pairs"]], missing = options[["missingValues"]])
-  errors  <- .ttestBayesianGetErrorsPerVariable(options, dataset)
-  .ttestBayesianInitBayesFactorPackageOptions()
+  spec    <- .ttestBayesianInitOptions(jaspResults, options, "paired")
+  dataset <- .ttestBayesianReadData(dataset, spec[["pairs"]], missing = spec[["missingValues"]])
+  errors  <- .ttestBayesianGetErrorsPerVariable(spec, dataset)
 
   # do t-test and create main table
-  ttestResults <- .ttestBPSTTest(jaspResults, dataset, options, errors)
+  ttestResults <- .ttestBPSTTest(jaspResults, dataset, spec, errors)
 
   # create descriptives table and plots
-  .ttestBayesianDescriptives(jaspResults, dataset, options, errors)
+  .ttestBayesianDescriptives(jaspResults, dataset, spec, errors)
 
   # create inferential plots
-  .ttestBayesianInferentialPlots(jaspResults, dataset, options, ttestResults, errors)
+  .ttestBayesianInferentialPlots(jaspResults, dataset, spec, ttestResults, errors)
 
   return()
 
@@ -60,6 +59,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
       ttestTable$addRows(list(variable1 = pair[[1L]], .separator = "-", variable2 = pair[[2L]]))
     }
   } else {
+    .ttestBayesianInitBayesFactorPackageOptions()
     ttestState <- jaspResults[["stateTTestResults"]]$object # is there useable data?
     ttestRows <- ttestState$ttestRows
 

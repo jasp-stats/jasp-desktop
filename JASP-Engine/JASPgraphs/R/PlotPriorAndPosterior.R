@@ -271,7 +271,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
 
     g <- g + ggplot2::geom_errorbarh(
       data = dfCI, ggplot2::aes(y = y, xmin = xmin, xmax = xmax), inherit.aes = FALSE,
-      size = 1.25, height = maxheight)
+      size = 1.0, height = maxheight)
     #maxheight / 8
     #)
     if (drawCRItxt) {
@@ -327,7 +327,6 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
     layout <- matrix(1:3, 1, 3)
     layout[idx] <- NA_integer_
     layout <- rbind(layout, 4)
-# browser()
     f <- tempfile()
     png(f)
     plot <- arrangeGrob(
@@ -336,7 +335,6 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
       layout_matrix = layout,
       widths        = c(.4, .2, .4)
     )
-    # grid.arrange(plot)
     dev.off()
     if (file.exists(f)) file.remove(f)
 

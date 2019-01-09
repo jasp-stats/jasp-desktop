@@ -21,18 +21,18 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
   # initialize
   jaspResults$title <- "Bayesian One Sample T-Test"
-  options <- .ttestBayesianInitOptions(jaspResults, options, "one-sample")
-  dataset <- .ttestBayesianReadData(dataset, options[["variables"]], missing = options[["missingValues"]])
-  errors  <- .ttestBayesianGetErrorsPerVariable(options, dataset)
-  .ttestBayesianInitBayesFactorPackageOptions()
+  spec    <- .ttestBayesianInitOptions(jaspResults, options, "one-sample")
+  dataset <- .ttestBayesianReadData(dataset, spec[["variables"]], missing = spec[["missingValues"]])
+  errors  <- .ttestBayesianGetErrorsPerVariable(spec, dataset)
+
   # do t-test and create main table
-	ttestResults <- .ttestBOSTTest(jaspResults, dataset, options, errors)
+	ttestResults <- .ttestBOSTTest(jaspResults, dataset, spec, errors)
 
 	# create descriptives table and plots
-  .ttestBayesianDescriptives(jaspResults, dataset, options, errors)
+  .ttestBayesianDescriptives(jaspResults, dataset, spec, errors)
 
   # create inferential plots
-	.ttestBayesianInferentialPlots(jaspResults, dataset, options, ttestResults, errors)
+	.ttestBayesianInferentialPlots(jaspResults, dataset, spec, ttestResults, errors)
 
 	return()
 
@@ -52,6 +52,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 	if (!options[["canDoAnalysis"]])
 	  return(NULL)
 
+  .ttestBayesianInitBayesFactorPackageOptions()
   ttestState <- jaspResults[["stateTTestResults"]]$object # is there useable data?
   ttestRows <- ttestState$ttestRows
 
