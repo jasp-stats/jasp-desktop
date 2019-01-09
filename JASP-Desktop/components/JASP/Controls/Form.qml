@@ -25,13 +25,6 @@ import JASP 1.0
 
 AnalysisForm
 {
-//	color:			Theme.analysisBackgroundColor
-//	border
-//	{
-//		color:		Theme.buttonBorderColor
-//		width:		1
-//	}
-
 	id:				form
 	width:			implicitWidth
 	implicitWidth:	Theme.formWidth
@@ -190,16 +183,24 @@ AnalysisForm
 				visible:			mouseArea.containsMouse || form.expanded
 				sourceSize.width:	width * 2
 				sourceSize.height:	height * 2
+
 				anchors
 				{
-					right:			parent.right //closeButton.left
+					right:			closeButton.left
 					rightMargin:	6
 					verticalCenter:	parent.verticalCenter
 				}
+
+				MouseArea
+				{
+					anchors.fill:	parent
+					hoverEnabled:	true
+					cursorShape:	Qt.PointingHandCursor
+					onClicked:		helpModel.showOrTogglePage("analyses/" + form.analysis.name)
+				}
 			}
 
-			//Having a close button on a title that already closes it is rather pointless isn't it?
-			/*Image
+			Image
 			{
 				id:					closeButton
 				height:				label.contentHeight
@@ -209,13 +210,22 @@ AnalysisForm
 				visible:			mouseArea.containsMouse || form.expanded
 				sourceSize.width:	width * 2
 				sourceSize.height:	height * 2
+
 				anchors
 				{
 					right:			parent.right
 					rightMargin:	6
 					verticalCenter:	parent.verticalCenter
 				}
-			}*/
+
+				MouseArea
+				{
+					anchors.fill:	parent
+					hoverEnabled:	true
+					cursorShape:	Qt.PointingHandCursor
+					onClicked:		analysesModel.removeAnalysis(form.analysis)
+				}
+			}
 		}
 
 		FocusScope

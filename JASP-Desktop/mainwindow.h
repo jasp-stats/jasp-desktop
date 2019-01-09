@@ -25,30 +25,28 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 
-#include "dataset.h"
-
-#include "data/datasettablemodel.h"
-#include "variablespage/levelstablemodel.h"
-#include "variablespage/labelfiltergenerator.h"
-
-#include "engine/enginesync.h"
 #include "analysis/analyses.h"
-
 #include "analysis/analysisform.h"
+
+#include "dataset.h"
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
-#include "data/fileevent.h"
-#include "utilities/resultsjsinterface.h"
 #include "data/columnsmodel.h"
-#include "utilities/jsonutilities.h"
 #include "data/computedcolumnsmodel.h"
-
+#include "data/datasettablemodel.h"
+#include "data/fileevent.h"
+#include "data/filtermodel.h"
+#include "engine/enginesync.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonmodel.h"
 #include "modules/ribbonbuttonmodel.h"
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonentry.h"
-#include "data/filtermodel.h"
+#include "utilities/resultsjsinterface.h"
+#include "utilities/jsonutilities.h"
+#include "utilities/helpmodel.h"
+#include "variablespage/levelstablemodel.h"
+#include "variablespage/labelfiltergenerator.h"
 #include "widgets/filemenu/filemenu.h"
 
 class MainWindow : public QObject
@@ -73,8 +71,6 @@ public:
 	~MainWindow() override;
 
 	EngineSync* _engineSync;
-
-	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
 	QString	runButtonText()			const	{ return _runButtonText;		}
 	bool	runButtonEnabled()		const	{ return _runButtonEnabled;		}
@@ -105,6 +101,7 @@ public slots:
 	void setWindowTitle(QString windowTitle);
 	void setAnalysesVisible(bool analysesVisible);
 	void setDatasetLoaded(bool datasetLoaded);
+	void startDataEditorHandler();
 
 	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
 
@@ -192,13 +189,11 @@ private slots:
 	void removeAllAnalyses();
 	void updateShownVariablesModel();
 
-	void helpToggled(bool on);
-
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
 
-	void startDataEditorHandler();
+
 	void startDataEditorEventCompleted(FileEvent *event);
 
 	void analysisRunned();
@@ -213,9 +208,6 @@ private slots:
 
 	//void illegalOptionStateChanged(AnalysisForm * form);
 	void fatalError();
-
-	void helpFirstLoaded(bool ok);
-	void requestHelpPage(const QString &pageName);
 
 	void emptyValuesChangedHandler();
 
@@ -259,6 +251,7 @@ private:
 	QObject							*qmlProgressBar			= nullptr;
 	QApplication					*_application 			= nullptr;
 	FileMenu						*_fileMenu				= nullptr;
+	HelpModel						*_helpModel				= nullptr;
 
 	QSettings						_settings;
 

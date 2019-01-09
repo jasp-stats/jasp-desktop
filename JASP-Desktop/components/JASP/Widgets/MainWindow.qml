@@ -14,6 +14,8 @@ Window
 	minimumWidth:	Theme.formWidth + Theme.minPanelWidth
 	minimumHeight:	480
 
+	onVisibleChanged: if(!visible) helpModel.visible = false
+
 	RibbonBar
 	{
 		id:		ribbon

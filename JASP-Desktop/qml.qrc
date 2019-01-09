@@ -97,5 +97,6 @@
         <file>components/JASP/Widgets/Ribbon/MenuArrowButton.qml</file>
         <file>components/JASP/Widgets/ModulesMenu.qml</file>
         <file>components/JASP/Widgets/Ribbon/Ribbons.qml</file>
+        <file>components/JASP/Widgets/HelpWindow.qml</file>
     </qresource>
 </RCC>

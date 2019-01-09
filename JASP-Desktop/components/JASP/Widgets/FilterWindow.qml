@@ -204,7 +204,7 @@ FocusScope
 			anchors.bottom:	parent.bottom
 			anchors.top:	closeEasyRectangularButton.top
 
-			onClicked:		mainWindow.showHelpFromQML("other/EasyFilterConstructor");
+			onClicked:		helpModel.showOrTogglePage("other/EasyFilterConstructor");
 			toolTip:		"Open Documentation"
 		}
 
@@ -510,26 +510,26 @@ FocusScope
 
 			RectangularButton
 			{
-				id: helpButton
-				iconSource: "qrc:/icons/QuestionMark.png"
-				anchors.right: closeRectangularButton.left
+				id:				helpButton
+				iconSource:		"qrc:/icons/QuestionMark.png"
+				anchors.right:	closeRectangularButton.left
 				anchors.bottom: parent.bottom
-				anchors.top: closeRectangularButton.top
+				anchors.top:	closeRectangularButton.top
 
-				onClicked: mainWindow.showHelpFromQML("other/RFilterConstructor");
-				toolTip: "Open Documentation"
+				onClicked:		helpModel.showOrTogglePage("other/RFilterConstructor");
+				toolTip:		"Open Documentation"
 			}
 
 
 			RectangularButton
 			{
-				id: closeRectangularButton
-				iconSource: "qrc:/images/cross.png"
-				anchors.right: parent.right
+				id:				closeRectangularButton
+				iconSource:		"qrc:/images/cross.png"
+				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
 
-				onClicked: filterEditRectangle.askIfChanged(function (){ filterWindow.toggle() })
-				toolTip: "Hide filter"
+				onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.toggle() })
+				toolTip:		"Hide filter"
 			}
 		}
     }

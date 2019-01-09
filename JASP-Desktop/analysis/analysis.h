@@ -37,6 +37,7 @@ class DataSet;
 class Analysis : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(QString name READ nameQ NOTIFY nameChanged)
 	
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
@@ -78,21 +79,22 @@ public:
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;		}
 	
 	//getters
-	const	Json::Value &results()				const	{ return _results;				}
-	const	Json::Value &userData()				const	{ return _userData;				}
-	const	std::string &name()					const	{ return _name;					}
-	const	Version		&version()				const	{ return _version;				}
-	const	std::string &title()				const	{ return _title;				}
-	const	std::string &rfile()				const	{ return _rfile;				}
-	const	std::string &module()				const	{ return _module;				}
-			size_t		id()					const	{ return _id;					}
-			bool		usesJaspResults()		const	{ return _useJaspResults;		}
-			Status		status()				const	{ return _status;				}
-			int			revision()				const	{ return _revision;				}
-			bool		isVisible()				const	{ return _visible;				}
-			bool		isRefreshBlocked()		const	{ return _refreshBlocked;		}
-	const	Json::Value	&getSaveImgOptions()	const	{ return _saveImgOptions;		}
-	const	Json::Value	&getImgResults()		const	{ return _imgResults;			}
+	const	Json::Value &results()				const	{ return _results;						}
+	const	Json::Value &userData()				const	{ return _userData;						}
+	const	std::string &name()					const	{ return _name;							}
+	const	QString		nameQ()					const	{ return QString::fromStdString(_name);	}
+	const	Version		&version()				const	{ return _version;						}
+	const	std::string &title()				const	{ return _title;						}
+	const	std::string &rfile()				const	{ return _rfile;						}
+	const	std::string &module()				const	{ return _module;						}
+			size_t		id()					const	{ return _id;							}
+			bool		usesJaspResults()		const	{ return _useJaspResults;				}
+			Status		status()				const	{ return _status;						}
+			int			revision()				const	{ return _revision;						}
+			bool		isVisible()				const	{ return _visible;						}
+			bool		isRefreshBlocked()		const	{ return _refreshBlocked;				}
+	const	Json::Value	&getSaveImgOptions()	const	{ return _saveImgOptions;				}
+	const	Json::Value	&getImgResults()		const	{ return _imgResults;					}
 			DataSet*	getDataSet()			const;
 
 			void		refresh();
@@ -119,6 +121,14 @@ public:
 	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();				}
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
+
+public slots:
+	void setName(std::string name);
+	void setNameQ(QString name) { setName(name.toStdString()); }
+
+
+signals:
+	void nameChanged();
 
 protected:
 	int						callback(Json::Value results);

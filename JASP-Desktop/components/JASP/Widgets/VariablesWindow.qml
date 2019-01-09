@@ -102,7 +102,10 @@ FocusScope {
 						rightMargin:	2
 					}
 
-                    signal columnChanged(string columnName)
+					function columnChanged(columnName)
+					{
+						analyses.refreshAnalysesUsingColumn(columnName)
+					}
 
                     model: levelsTableModel
 

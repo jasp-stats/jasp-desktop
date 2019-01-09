@@ -88,18 +88,19 @@ OLD.SplitView
 
 	WebEngineView
 	{
-		z:						3
 		id:						resultsView
-		url:					resultsJsInterface.resultsPageUrl
 		implicitWidth:			Theme.resultWidth
 		Layout.minimumWidth:	Theme.minPanelWidth
+		z:						3
+		url:					resultsJsInterface.resultsPageUrl
+
 		onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
+		onContextMenuRequested: request.accepted = true
 
 		Connections
 		{
-			target: resultsJsInterface
-
-			onRunJavaScript:			{ resultsView.runJavaScript(js)	}
+			target:				resultsJsInterface
+			onRunJavaScript:	resultsView.runJavaScript(js)
 		}
 
 		webChannel.registeredObjects: [ resultsJsInterfaceInterface ]
@@ -134,7 +135,5 @@ OLD.SplitView
 			function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
 			function setPPI(ppi)							{ resultsJsInterface.setPPI(ppi)							}
 		}
-
-
 	}
 }

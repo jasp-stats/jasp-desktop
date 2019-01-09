@@ -294,9 +294,7 @@ FocusScope
 			anchors.right:	helpButton.left
 			anchors.bottom:	parent.bottom
 			anchors.top:	closeColumnEditorButton.top
-
 			onClicked:		computedColumnContainer.applyComputedColumn()
-
 			toolTip:		computeColumnEdit.changedSinceLastApply ? "Click to compute column" : "Column (in line to be) computed"
 		}
 
@@ -307,9 +305,7 @@ FocusScope
 			anchors.right:	closeColumnEditorButton.left
 			anchors.bottom: parent.bottom
 			anchors.top:	closeColumnEditorButton.top
-
-			onClicked:		mainWindow.showHelpFromQML("other/ComputedColumns");
-
+			onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
 			toolTip:		"Open Documentation"
 		}
 
@@ -320,9 +316,7 @@ FocusScope
 			iconSource:		"qrc:/images/cross.png"
 			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
-
 			onClicked:		computedColumnContainer.askIfChangedOrClose()
-
 			toolTip:		"Close computed column window"
 		}		
 	}

@@ -34,34 +34,30 @@ Rectangle
 
         VariablesWindow
         {
-            id: variablesWindow
-
-			Layout.minimumHeight: calculatedMinimumHeight
+			id:						variablesWindow
+			Layout.minimumHeight:	calculatedMinimumHeight
         }
 
         FilterWindow
         {
-            id: filterWindow
-            objectName: "filterWindow"
+			id:						filterWindow
+			objectName:				"filterWindow"
 
-			Layout.maximumHeight: rootDataset.height * 0.8
+			Layout.maximumHeight:	rootDataset.height * 0.8
         }
 
 		ComputeColumnWindow
 		{
-			id: computeColumnWindow
-			objectName: "computeColumnWindow"
-			Layout.maximumHeight: rootDataset.height * 0.8
+			id:						computeColumnWindow
+			objectName:				"computeColumnWindow"
+			Layout.maximumHeight:	rootDataset.height * 0.8
 		}
 
 		DataTableView
 		{
-			objectName: "dataSetTableView"
-			Layout.fillHeight: true
-
-			signal dataTableDoubleClicked()
-
-			onDoubleClicked: dataTableDoubleClicked()
+			objectName:			"dataSetTableView"
+			Layout.fillHeight:	true
+			onDoubleClicked:	mainWindow.startDataEditorHandler()
         }
 	}
 }

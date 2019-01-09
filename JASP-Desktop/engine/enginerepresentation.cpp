@@ -321,6 +321,10 @@ void EngineRepresentation::resumeEngine()
 #endif
 
 	sendString(json.toStyledString());
+
+#ifdef JASP_DEBUG //FINDING CRASH
+	std::cout << "informed engine that it may resume" << std::endl;
+#endif
 }
 
 void EngineRepresentation::processEnginePausedReply()
@@ -333,6 +337,10 @@ void EngineRepresentation::processEnginePausedReply()
 
 void EngineRepresentation::processEngineResumedReply()
 {
+#ifdef JASP_DEBUG //FINDING CRASH
+	std::cout << "engine resumed" << std::endl;
+#endif
+
 	if(_engineState != engineState::resuming)
 		throw std::runtime_error("Received an unexpected engine paused reply!");
 

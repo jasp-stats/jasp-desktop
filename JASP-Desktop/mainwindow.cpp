@@ -103,6 +103,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_ribbonModel			= new RibbonModel(this);
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
+	_helpModel				= new HelpModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -230,6 +231,8 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::showForm										);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
+	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
+	connect(_analyses,				&Analyses::analysisSelected,						_helpModel,				&HelpModel::setAnalysisPagename								);
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -280,6 +283,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface);
+	_qml->rootContext()->setContextProperty("helpModel",				_helpModel);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
@@ -304,70 +308,9 @@ void MainWindow::loadQML()
 
 	_qml->addImportPath("qrc:///components");
 
+	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
-
-	std::cout << "Dataview and levelstableview should have their signals connected INSIDE QML" << std::endl;
-	QObject * DataView				= _qml->findChild<QObject*>("dataSetTableView");
-	QObject * levelsTableView		= _qml->findChild<QObject*>("levelsTableView");
-
-	connect(DataView,				SIGNAL(dataTableDoubleClicked()),			this,					SLOT(startDataEditorHandler()));
-	connect(levelsTableView,		SIGNAL(columnChanged(QString)),				_analyses,				SLOT(refreshAnalysesUsingColumn(QString)));
 }
-
-/*
-void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
-{
-	// NOTE: Workaround for now. This will be replaced when mainwindow is made in QML
-
-	AnalysisMenuModel* model			= qvariant_cast<AnalysisMenuModel*>(analysisMenuModel);
-	Modules::AnalysisEntries entries	= model->getAnalysisEntries();
-
-	if(entries.size() == 1)
-	{
-		QAction *action = new QAction();
-		action->setText(QString::fromStdString(entries[0]->title()));
-		action->setData(QString::fromStdString(entries[0]->buttonMenuString()));
-		onMenuClicked(action);
-	}
-	else
-	{
-
-		QMenu *menu = new QMenu(this); //Who cleans this up?
-		connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onMenuClicked(QAction *)));
-
-		for (auto * i : entries) {
-
-			if (i->title() == "???") {
-				menu->addSeparator();
-				continue;
-			}
-
-			QAction *action = new QAction();
-			action->setText(QString::fromStdString(i->title()));
-			action->setData(QString::fromStdString(i->buttonMenuString()));
-			menu->addAction(action);
-		}
-
-		menu->exec(QCursor::pos());
-	}
-}
-
-
-void MainWindow::onMenuClicked(QAction *action)
-{
-	std::string possiblyCodedReference = action->data().toString().toStdString();
-
-	try
-	{
-		addAnalysisFromDynamicModule(_dynamicModules->retrieveCorrespondingAnalysisEntry(possiblyCodedReference));
-	}
-	catch(Modules::ModuleException &)
-	{
-		// It probably is a "normal entry"
-		ribbonEntrySelected(action->data().toString());
-	}
-}
-*/
 
 void MainWindow::open(QString filepath)
 {
@@ -790,57 +733,12 @@ void MainWindow::showForm(Analysis *analysis)
 {
 	setAnalysesVisible(true);
 	_analyses->selectAnalysis(analysis);
-
-	std::cout << "MainWindow::showForm(Analysis *analysis) is being called but it aint doin' much..." << std::endl;
-	//closeCurrentOptionsWidget();
-	//_currentOptionsWidget =
-
-	//loadForm(analysis);
-
-	//if (_currentOptionsWidget != NULL)
-	{
-	/*	QWidget *theWidget = _currentOptionsWidget->getWidget();
-
-		int requiredSize		= theWidget->sizeHint().width();
-		int currentOptionSpace	= ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
-
-		if (requiredSize > currentOptionSpace)
-		{
-			ui->panel_2_Options->setMinimumWidth(requiredSize + _scrollbarWidth);
-			_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
-		}
-
-		theWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
-		theWidget->show();
-
-		ui->scrollArea->setVerticalScrollBarPolicy(analysis->fromQML() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAlwaysOn);
-		ui->optionsContentAreaLayout->addWidget(theWidget);//, 0, 0, Qt::AlignRight | Qt::AlignTop);
-
-		if (ui->panel_2_Options->isVisible() == false)
-			showOptionsPanel();
-
-		_okButton->setVisible(_currentAnalysis->useData());
-		_runButton->setVisible(_currentAnalysis->isAutorun() == false);
-		_runButton->setEnabled(_currentAnalysis->status() == Analysis::InitedAndWaiting);
-		_buttonPanel->raise();
-		_buttonPanel->show();*/
-
-		QString helpPage = QString("analyses/") + tq(analysis->name()).toLower();
-		requestHelpPage(helpPage);
-	}
 }
 
 
 void MainWindow::closeCurrentOptionsWidget()
 {
-	std::cout << "void MainWindow::closeCurrentOptionsWidget() doesnt do anything" << std::endl;
-
-	//if (_currentOptionsWidget != NULL)
-	{
-		//no need to disconnect illegalChanged and illegalOptionStateChanged, options shouldn't change if the form isn't visible right?
-		//_currentOptionsWidget->getWidget()->hide();
-		//_currentOptionsWidget = NULL;
-	}
+	setAnalysesVisible(false);
 }
 
 
@@ -849,12 +747,7 @@ void MainWindow::analysisSelectedHandler(int id)
 	_currentAnalysis = _analyses->get(id);
 
 	if (_currentAnalysis != nullptr)
-	{
 		showForm(_currentAnalysis);
-		//ui->tabBar->setCurrentTab(QString::fromStdString(_currentAnalysis->module()));
-
-		std::cout << "analysisSelectedHandler is not choosing a tabbar, should be done from analyses model or something" << std::endl;
-	}
 }
 
 
@@ -862,32 +755,6 @@ void MainWindow::analysisUnselectedHandler()
 {
 	setAnalysesVisible(false);
 	_analyses->setCurrentAnalysisIndex(-1);
-}
-
-void MainWindow::helpToggled(bool on)
-{
-/*	static int helpWidth = 0;
-
-	if (on)
-	{
-		if (helpWidth < 400)
-			helpWidth = 400;
-
-		QList<int> sizes = ui->splitter->sizes();
-
-		int resultsWidth = sizes.at(2) - ui->splitter->handleWidth() - 2 - helpWidth;
-
-		sizes[2] = resultsWidth;
-		sizes[3] = helpWidth;
-
-		ui->panel_4_Help->show();
-		ui->splitter->setSizes(sizes);
-	}
-	else
-	{
-		helpWidth = ui->panel_4_Help->width();
-		ui->panel_4_Help->hide();
-	}*/
 }
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
@@ -1249,67 +1116,6 @@ void MainWindow::fatalError()
 		MessageForwarder::showWarning("Error", "JASP has experienced an unexpected internal error.\n\n" + _fatalError.toStdString() + "\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n");
 		QApplication::exit(1);
 	}
-}
-
-
-void MainWindow::helpFirstLoaded(bool ok)
-{
-	if (ok)
-		requestHelpPage("index");
-}
-
-void MainWindow::showHelpFromQML(QString pageName)
-{
-	std::cout << "showHelpFromQML is ignoring visibility of help panel" << std::endl;
-	if(_lastRequestedHelpPage == pageName)//&& ui->panel_4_Help->isVisible())
-	{
-		helpToggled(false);
-	}
-	else
-	{
-	//	if(!ui->panel_4_Help->isVisible())
-			helpToggled(true);
-
-		requestHelpPage(pageName);
-	}
-}
-
-void MainWindow::requestHelpPage(const QString &pageName)
-{
-	QFile fileMD(AppDirs::help() + "/" + pageName + ".md"), fileHTML(AppDirs::help() + "/" + pageName + ".html");
-
-	QString content, renderFunc = "window.render";
-
-
-	if (fileHTML.exists())
-	{
-		fileHTML.open(QFile::ReadOnly);
-		content = QString::fromUtf8(fileHTML.readAll());
-		fileHTML.close();
-
-		renderFunc = "window.renderHtml";
-
-	}
-	else if (fileMD.exists())
-	{
-		fileMD.open(QFile::ReadOnly);
-		content = QString::fromUtf8(fileMD.readAll());
-		fileMD.close();
-	}
-	else
-		content = "Coming Soon!\n========\n\nThere is currently no help available for this analysis.\n\nAdditional documentation will be available in future releases of JASP.";
-
-	content.replace("\"", "\\\"");
-	content.replace("\r\n", "\\n");
-	content.replace("\r", "\\n");
-	content.replace("\n", "\\n");
-
-	QString JS = renderFunc + "(\"" + content + "\")";
-
-	std::cout << "Am not running JS: " << JS.toStdString() << std::endl;
-	//ui->webViewHelp->page()->runJavaScript(JS);
-
-	_lastRequestedHelpPage = pageName;
 }
 
 

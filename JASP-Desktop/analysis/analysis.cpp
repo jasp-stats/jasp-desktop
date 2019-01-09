@@ -254,3 +254,12 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 
 	return json;
 }
+
+void Analysis::setName(std::string name)
+{
+	if (_name == name)
+		return;
+
+	_name = name;
+	emit nameChanged();
+}

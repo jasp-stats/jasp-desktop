@@ -47,7 +47,6 @@ public:
 	void analysisChanged(Analysis *analysis);
 	void setResultsMeta(QString str);
 	void unselect();
-	void removeAnalysis(Analysis *analysis);
 	void showInstruction();
 	void exportPreviewHTML();
 	void exportHTML();
@@ -83,19 +82,19 @@ public slots:
 	void setPPI(int ppi);
 	void setAllUserDataFromJavascript(QString json);
 	void setResultsMetaFromJavascript(QString json);
-
+	void removeAnalysis(Analysis *analysis);
 //end callables
 
 
 signals:
-	void		getResultsMetaCompleted();
-	void		getAllUserDataCompleted();
-	void		resultsPageUrlChanged(QUrl resultsPageUrl);
-	void		runJavaScript(QString js);
-	void		zoomChanged(double zoom);
-	void		packageModified();
-	void		resultsPageLoadedPpi(bool succes, int ppi);
-	void		ppiChanged(int ppi);
+	void getResultsMetaCompleted();
+	void getAllUserDataCompleted();
+	void resultsPageUrlChanged(QUrl resultsPageUrl);
+	void runJavaScript(QString js);
+	void zoomChanged(double zoom);
+	void packageModified();
+	void resultsPageLoadedPpi(bool succes, int ppi);
+	void ppiChanged(int ppi);
 
 public slots:
 	void setExactPValuesHandler(bool exact);

@@ -374,7 +374,8 @@ HEADERS += \
     $$PWD/gui/messageforwarder.h \
     widgets/filemenu/filemenulistitem.h \
     widgets/filemenu/filemenubasiclistmodel.h \
-    modules/ribbonmodelfiltered.h
+    modules/ribbonmodelfiltered.h \
+    utilities/helpmodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -555,7 +556,8 @@ SOURCES += \
     widgets/filemenu/filemenu.cpp \
     $$PWD/gui/messageforwarder.cpp \
     widgets/filemenu/filemenubasiclistmodel.cpp \
-    modules/ribbonmodelfiltered.cpp
+    modules/ribbonmodelfiltered.cpp \
+    utilities/helpmodel.cpp
 
 RESOURCES += \
     html/html.qrc \

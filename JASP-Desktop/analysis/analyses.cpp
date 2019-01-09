@@ -187,6 +187,9 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	endRemoveRows();
 
 	emit countChanged();
+	emit analysisRemoved(analysis);
+
+	delete analysis;
 }
 
 void Analyses::refreshAllAnalyses()
@@ -326,6 +329,9 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 
 	_currentAnalysisIndex = currentAnalysisIndex;
 	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
+
+	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
+		emit analysisSelected(QString::fromStdString(get(_orderedIds[_currentAnalysisIndex])->name()));
 }
 
 void Analyses::selectAnalysis(Analysis * analysis)

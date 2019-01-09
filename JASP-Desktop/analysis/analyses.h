@@ -92,6 +92,7 @@ public slots:
 
 signals:
 	void analysisAdded(					Analysis *source);
+	void analysisRemoved(				Analysis *source);
 	void analysisEditImage(				Analysis *source);
 	void analysisSaveImage(				Analysis *source);
 	void analysisToRefresh(				Analysis *source);
@@ -100,6 +101,7 @@ signals:
 	void analysisImageEdited(			Analysis *source);
 	void analysisResultsChanged(		Analysis *source);
 	void analysisOptionsChanged(		Analysis *source);
+	void analysisSelected(				QString name);
 
 	ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis *source);
 	void				requestComputedColumnDestruction(std::string columnName);
