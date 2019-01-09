@@ -22,12 +22,6 @@
 				{
 					"title":	"Lavaan",
 					"function":	"SEMSimple"
-				},
-				{
-				},
-				{
-					"title":	"QML Lavaan",
-					"function":	"QMLSEMSimple"
 				}
 			]
 		}

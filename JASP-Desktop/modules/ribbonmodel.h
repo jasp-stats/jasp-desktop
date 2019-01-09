@@ -63,15 +63,14 @@ public:
 	int							ribbonButtonModelIndex(RibbonButtonModel * model)	const;
 
 	void						connectToDynamicModules(DynamicModules * dynamicModules);
-
-	Q_INVOKABLE void			analysisClicked(QString analysisName, int ribbonButtonModelIndex);
+	
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 
 	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
 
 signals:
 	void currentButtonModelChanged();
-	void analysisClickedSignal(QString analysis, QString module);
+	Q_INVOKABLE void analysisClickedSignal(QString analysis, QString module);
 
 	void highlightedModuleIndexChanged(int highlightedModuleIndex);
 

@@ -55,17 +55,17 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr); //{ throw std::runtime_error("Tsja, this doesnt work now does it?"); }
 	explicit					AnalysisForm(QQuickItem *parent, Analysis* analysis);
-				void			bindTo(Options *options, DataSet *dataSet);
+				void			bindTo(Options *options, DataSet *dataSet, const Json::Value& oldVersionOptions);
 				void			unbind();
 
 				bool			hasIllegalValue()		const;
 				const QString	&illegalValueMessage()	const;
 				void			illegalValueHandler(Bound *source);
 
-				void			runRScript(QString script, QVariant key = QVariant());
+				void			runRScript(QString script, QString controlName);
 					
 public slots:
-				void			runScriptRequestDone(const QString & result, int requestId);
+				void			runScriptRequestDone(const QString& result, const QString& requestId);
 
 signals:
 				void			illegalChanged(AnalysisForm * form);
@@ -74,10 +74,8 @@ signals:
 				void			formCompleted();
 
 protected:
-				void			rScriptDoneHandler(QVariant key, const QString & result);
 				void			setVariablesModel();
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
-				bool			runRScriptRequestedForId(int requestId);
 
 public:
 	void		addError(const QString& error);
@@ -124,9 +122,6 @@ protected:
 	bool							_hasIllegalValue;
 	QString							_illegalMessage;
 	
-	static	int						_scriptRequestCounter;
-	std::map<int, QVariant>			_scriptRequestIdToKey;
-
 private:
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
 	QQuickItem								*_errorMessagesItem;

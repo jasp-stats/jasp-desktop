@@ -33,6 +33,7 @@
 class ComputedColumn;
 class Analyses;
 class DataSet;
+class AnalysisForm;
 
 class Analysis : public QObject
 {
@@ -51,6 +52,7 @@ public:
 	virtual ~Analysis();
 
 	Options *options() const { return _options; }
+	const Json::Value&	oldVersionOptions() const { return _oldVersionOptions; }
 
 	boost::signals2::signal<void (Analysis *source)>						optionsChanged;
 	boost::signals2::signal<void (Analysis *source)>						toRefresh;
@@ -112,7 +114,7 @@ public:
 	bool isInited()		const { return status() == Inited; }
 	bool isFinished()	const { return status() == Complete || status() == Error || status() == Exception; }
 	
-	void initialized();
+	void initialized(AnalysisForm* form);
 
 	performType				desiredPerformTypeFromAnalysisStatus() const;
 	std::string				qmlFormPath() const;
@@ -120,16 +122,17 @@ public:
 	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
 	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();				}
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
-	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
+	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
+	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
 public slots:
-	void setName(std::string name);
-	void setNameQ(QString name) { setName(name.toStdString()); }
-
+	void					setName(std::string name);
+	void					setNameQ(QString name) { setName(name.toStdString()); }
 
 signals:
-	void nameChanged();
-
+	void					nameChanged();
+	void					sendRScript(Analysis* analysis, QString script, QString controlName);	
+	
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
@@ -145,6 +148,7 @@ protected:
 							_refreshBlocked	= false;
 
 	Options*				_options;
+	Json::Value				_oldVersionOptions = Json::nullValue;		// For backward compatibility: options coming form old JASP file.
 	Json::Value				_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
@@ -163,6 +167,7 @@ private:
 
 	Modules::AnalysisEntry*	_moduleData		= nullptr;
 	Analyses*				_analyses		= nullptr;
+	AnalysisForm*			_analysisForm	= nullptr;	
 };
 
 #endif // ANALYSIS_H

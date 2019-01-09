@@ -128,15 +128,6 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	emit endRemoveRows();
 }
 
-
-void RibbonModel::analysisClicked(QString analysis, int ribbonButtonModelIndex)
-{
-	if(ribbonButtonModelIndex < 0)
-		return;
-
-	emit analysisClickedSignal(analysis, ribbonButtonModelAt(size_t(ribbonButtonModelIndex))->moduleName());
-}
-
 void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)
 {
 	if (_highlightedModuleIndex == highlightedModuleIndex)

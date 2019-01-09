@@ -58,7 +58,7 @@ void Options::init(const Json::Value &array)
 
 		Option *option = createOption(type);
 
-		if (option != NULL)
+		if (option != nullptr)
 		{
 			Json::Value &val = value["value"];
 			if (val != Json::nullValue)
@@ -92,7 +92,7 @@ Option* Options::createOption(string typeString)
 	else if (typeString == "ComputedColumn")	return new OptionComputedColumn();
 	else if (typeString == "VariablesGroups")	return new OptionVariablesGroups();
 
-	return NULL;
+	return nullptr;
 }
 
 string Options::getType(Option* option) const
@@ -230,7 +230,7 @@ Option *Options::get(string name) const
 			return p.second;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 

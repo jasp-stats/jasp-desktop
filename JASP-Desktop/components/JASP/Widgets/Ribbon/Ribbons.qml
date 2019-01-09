@@ -35,6 +35,7 @@ Item
 			height:			jaspRibbons.height
 			separateMe:		index > 0
 			highlighted:	ribbonModelFiltered.highlightedModuleIndex === index
+			module:			moduleName
 		}
 	}
 

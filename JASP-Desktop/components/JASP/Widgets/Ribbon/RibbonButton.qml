@@ -35,9 +35,11 @@ Rectangle
 			property alias	text		: innerText.text
 			property alias	source		: backgroundImage.source
 			property bool	enabled		: true
+			property string moduleName	: "???"
 	default property var	menu
 			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
 
+	
 	signal clicked
 
 	Item
@@ -106,7 +108,7 @@ Rectangle
 					posX : innerText.x
 					posY : ribbonButton.y + (ribbonButton.height)
 
-					ribbonButtonModelIndex:	ribbonButtonModelIndex
+					moduleName:				ribbonButton.moduleName
 					Component.onCompleted:	clusterMenu.open()
 					onClosed:				menuLoader.sourceComponent = null
 				}

@@ -682,23 +682,6 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 }
 
-/*AnalysisForm* MainWindow::loadForm(Analysis *analysis)
-{
-	if (_analysisFormsMap.count(analysis) == 0)
-	{
-		AnalysisForm * formCreated	= createAnalysisForm(analysis);
-		_analysisFormsMap[analysis] = formCreated;
-		Options *options			= analysis->options();
-		DataSet *dataSet			= _package->dataSet();
-
-		formCreated->bindTo(options, dataSet);
-	}
-
-	std::cerr << "_analysisFormsMap[analysis]->show(); " << std::endl;
-
-	return _analysisFormsMap[analysis];
-}*/
-
 void MainWindow::updateShownVariablesModel()
 {
 	//if(_currentOptionsWidget != nullptr)
@@ -708,26 +691,6 @@ void MainWindow::updateShownVariablesModel()
 	std::cout << "void MainWindow::updateShownVariablesModel() does not do anything anymore because connectToAvailableVariablesModel is gone, this however is no problem if any new added columns show up in you analysisform. If they do It is probably also nice to remove this warning and function etc!" << std::endl;
 #endif
 }
-
-AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
-{
-	const string name = analysis->name();
-
-	qDebug() << "Form " << QString::fromStdString(name) << " loaded";
-	AnalysisForm *form = nullptr;
-
-
-	std::cout << "How to handle loading of a form? We should probably turn Analyses into some king of model and maybe Analysis as well? We could merge those two." << std::endl;
-
-	form = new AnalysisForm(nullptr, analysis);
-
-	connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
-	connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
-	connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::showForm);
-
-	return form;
-}
-
 
 void MainWindow::showForm(Analysis *analysis)
 {

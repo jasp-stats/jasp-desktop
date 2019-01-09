@@ -53,8 +53,6 @@
 
 using namespace std;
 
-int AnalysisForm::_scriptRequestCounter = 0;
-
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
@@ -172,39 +170,21 @@ void AnalysisForm::illegalValueHandler(Bound *source)
 	updateIllegalStatus();
 }
 
-void AnalysisForm::runRScript(QString script, QVariant key)
+void AnalysisForm::runRScript(QString script, QString controlName)
 {
-	int newRequestId = _scriptRequestCounter++;
-	_scriptRequestIdToKey[newRequestId] = key;
-	
-	emit sendRScript(script, newRequestId);
+	emit _analysis->sendRScript(_analysis, script, controlName);
 }
 
-void AnalysisForm::runScriptRequestDone(const QString & result, int requestId)
-{
-	if(!runRScriptRequestedForId(requestId)) return;	
-
-	QVariant key = _scriptRequestIdToKey[requestId];
-	_scriptRequestIdToKey.erase(requestId);
-	
-	rScriptDoneHandler(key, result);
-}
-
-void AnalysisForm::rScriptDoneHandler(QVariant key, const QString &result)
-{
-	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(key.toString()));
+void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
+{	
+	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
 	if (item)
 		item->rScriptDoneHandler(result);
 #ifdef JASP_DEBUG
 	else
-		std::cout << "Unknown item " << key.toString().toStdString() << std::endl;
+		std::cout << "Unknown item " << controlName.toStdString() << std::endl;
 #endif
 
-}
-
-bool AnalysisForm::runRScriptRequestedForId(int requestId) 
-{ 
-	return _scriptRequestIdToKey.count(requestId) > 0; 
 }
 
 void AnalysisForm::_parseQML()
@@ -446,7 +426,7 @@ void AnalysisForm::_setAllAvailableVariablesModel()
 		model->initTerms(columnNames);
 }
 
-void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
+void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value& oldVersionOptions)
 {
 	if (_options != nullptr)
 		unbind();
@@ -468,6 +448,11 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 			if (!option)
 			{
 				option = boundControl->createOption();
+				if (oldVersionOptions != Json::nullValue)
+				{
+					if (oldVersionOptions[name] != Json::nullValue)
+						option->set(oldVersionOptions[name]);
+				}
 				options->add(name, option);
 			}
 			boundControl->bindTo(option);
@@ -523,8 +508,8 @@ void AnalysisForm::_formCompletedHandler()
 	{
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 		_parseQML();
-		bindTo(_analysis->options(), _analysis->getDataSet());
-		_analysis->initialized();
+		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->oldVersionOptions());
+		_analysis->initialized(this);		
 	}
 	
 }

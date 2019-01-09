@@ -24,6 +24,7 @@
 
 #include <QFile>
 #include <QTimer>
+#include <QDebug>
 
 #include "utils.h"
 #include "tempfiles.h"
@@ -46,9 +47,6 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 		QString name				= QString::fromStdString(analysisData["name"].asString());
 		QString module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
 
-		bool fromQML				= analysisData.get("fromQML", false).asBool();
-		if (fromQML)
-			name = QString::fromLatin1("QML") + name; // temporary hack: remove this when everything is build with QML
 		Json::Value &optionsJson	= analysisData["options"];
 		Json::Value &versionJson	= analysisData["version"];
 
@@ -117,6 +115,8 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	analysis->resultsChanged.connect(					boost::bind( &Analyses::analysisResultsChangedHandler,		this, _1	 ));
 	analysis->requestComputedColumnCreation.connect(	boost::bind( &Analyses::requestComputedColumnCreation,		this, _1, _2 ));
 	analysis->requestComputedColumnDestruction.connect(	boost::bind( &Analyses::requestComputedColumnDestruction,	this, _1	 ));
+	
+	connect(analysis, &Analysis::sendRScript, this, &Analyses::sendRScriptHandler);
 
 //	Send the analysesAdded signal afterwards: the analysis may need extra settings after creation
 //	analysisAdded(analysis);
@@ -332,6 +332,26 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 
 	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
 		emit analysisSelected(QString::fromStdString(get(_orderedIds[_currentAnalysisIndex])->name()));
+}
+
+int Analyses::_scriptRequestID = 0;
+
+void Analyses::rCodeReturned(QString result, int requestId)
+{
+	if (_scriptIDMap.contains(requestId))
+	{
+		const QPair<Analysis*, QString>& pair = _scriptIDMap[requestId];
+		pair.first->runScriptRequestDone(result, pair.second);
+	}
+	else
+		qDebug() << "Unkown Returned Rcode request ID " << requestId;
+}
+
+void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName)
+{
+	_scriptIDMap[_scriptRequestID] = qMakePair(analysis, controlName);
+	
+	emit sendRScript(script, _scriptRequestID++);
 }
 
 void Analyses::selectAnalysis(Analysis * analysis)
