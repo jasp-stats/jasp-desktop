@@ -79,21 +79,23 @@ ListView {
 			//anchors.centerIn: parent
 			x: isColumn ? listOfStuff.widthMargin / 2 : (parent.width - width) - (listOfStuff.widthMargin / 2)
 
-			sourceComponent: type === "operator" ?
-								 operatorComp :
-								 type === "operatorvert" ?
-									 operatorvertComp :
-									 type === "function" ?
-										 functionComp :
-										 type === "number" ?
-											 numberComp :
-											 type === "string" ?
-												 stringComp :
-												 type === "column" ?
-													 columnComp :
-													 type === "separator" ?
-														 separatorComp :
-														 defaultComp
+			sourceComponent: type === undefined ?
+								defaultComp :
+								type === "operator" ?
+									 operatorComp :
+									 type === "operatorvert" ?
+										 operatorvertComp :
+										 type === "function" ?
+											 functionComp :
+											 type === "number" ?
+												 numberComp :
+												 type === "string" ?
+													 stringComp :
+													 type === "column" ?
+														 columnComp :
+														 type === "separator" ?
+															 separatorComp :
+															 defaultComp
 
 			function calcWidth()
 			{

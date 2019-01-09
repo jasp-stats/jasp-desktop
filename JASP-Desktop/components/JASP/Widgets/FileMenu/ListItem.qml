@@ -19,12 +19,13 @@ Rectangle
 	property bool allHovered:	mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
 	property bool hasBreadCrumbs: false
 
-	function openStuff(model, wasDoubleClick)
+	function openStuff(model)//, wasDoubleClick)
 	{
-		if (model.type === 3 && !wasDoubleClick)
+		if (model.type === 3)// && !wasDoubleClick)
 			rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
 
-		if (model.type !== 3 && wasDoubleClick)
+		//if (model.type !== 3)// && wasDoubleClick)
+		else
 			rectTitleAndDescripton.cppModel.openFile(model.path)
 	}
 
@@ -60,8 +61,8 @@ Rectangle
 				anchors.fill:		parent
 				hoverEnabled:		true
 				cursorShape:		Qt.PointingHandCursor
-				onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
-				onClicked:			rectTitleAndDescripton.openStuff(model,false)
+				//onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
+				onClicked:			rectTitleAndDescripton.openStuff(model)
 
 			}
 
@@ -136,11 +137,9 @@ Rectangle
 			id:					fileEntryMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
-			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
+			//onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 			cursorShape:		Qt.PointingHandCursor
-			onClicked:			{
-				rectTitleAndDescripton.openStuff(model,false)
-			}
+			onClicked:			rectTitleAndDescripton.openStuff(model)
 		}
 
 		ToolTip {
@@ -189,8 +188,8 @@ Rectangle
 			id:					descriptionMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
-			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
-			onClicked:			rectTitleAndDescripton.openStuff(model,false)
+			//onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
+			onClicked:			rectTitleAndDescripton.openStuff(model)
 			cursorShape:		Qt.PointingHandCursor
 		}
 	}
@@ -200,12 +199,12 @@ Rectangle
 		//model type: JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5
 
 		if (type === 3)
-			return "Press to navigate to folder"
+			return "Navigate to folder"
 
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
-			return "Double click to open JASP file"
+			return "Open JASP file"
 
-		return "Double click to open data file"
+		return "Open data file"
 
 	}
 }

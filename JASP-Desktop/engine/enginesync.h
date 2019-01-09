@@ -52,6 +52,7 @@ public slots:
 	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
 	void pause();
 	void resume();
+
 	
 signals:
 	void processNewFilterResult(std::vector<bool> filterResult, int requestID);

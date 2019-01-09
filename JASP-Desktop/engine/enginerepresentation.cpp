@@ -217,6 +217,15 @@ Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analys
 	}
 }
 
+void EngineRepresentation::analysisRemoved(Analysis * analysis)
+{
+	if(_engineState != engineState::analysis || _analysisInProgress != analysis)
+		return;
+
+	runAnalysisOnProcess(analysis); //should abort
+	clearAnalysisInProgress();
+}
+
 void EngineRepresentation::processAnalysisReply(Json::Value json)
 {
 	if(_engineState == engineState::paused || _engineState == engineState::resuming || _engineState == engineState::idle)
@@ -229,12 +238,13 @@ void EngineRepresentation::processAnalysisReply(Json::Value json)
 	std::cout << "Analysis reply: " << json.toStyledString() << std::endl;
 #endif
 
-	Analysis *analysis			= _analysisInProgress;
-	int id						= json.get("id", -1).asInt();
-	int revision				= json.get("revision", -1).asInt();
-	int progress				= json.get("progress", -1).asInt();
-	Json::Value results			= json.get("results", Json::nullValue);
+	int id						= json.get("id",		-1).asInt();
+	int revision				= json.get("revision",	-1).asInt();
+	int progress				= json.get("progress",	-1).asInt();
+	Json::Value results			= json.get("results",	Json::nullValue);
+
 	analysisResultStatus status	= analysisResultStatusFromString(json.get("status", "error").asString());
+	Analysis *analysis			= _analysisInProgress;
 
 	if (analysis->id() != id || analysis->revision() < revision)
 		throw std::runtime_error("Received results for wrong analysis!");
@@ -321,10 +331,6 @@ void EngineRepresentation::resumeEngine()
 #endif
 
 	sendString(json.toStyledString());
-
-#ifdef JASP_DEBUG //FINDING CRASH
-	std::cout << "informed engine that it may resume" << std::endl;
-#endif
 }
 
 void EngineRepresentation::processEnginePausedReply()
@@ -337,10 +343,6 @@ void EngineRepresentation::processEnginePausedReply()
 
 void EngineRepresentation::processEngineResumedReply()
 {
-#ifdef JASP_DEBUG //FINDING CRASH
-	std::cout << "engine resumed" << std::endl;
-#endif
-
 	if(_engineState != engineState::resuming)
 		throw std::runtime_error("Received an unexpected engine paused reply!");
 

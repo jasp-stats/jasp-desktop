@@ -380,7 +380,11 @@ void Engine::runAnalysis()
 	if (_analysisStatus == editImg)	{ editImage(); return; }
 
 	if (_analysisStatus == empty || _analysisStatus == aborted)
+	{
+		_analysisStatus								= empty;
+		_currentEngineState							= engineState::idle;
 		return;
+	}
 
 	if (_analysisStatus == toInit && !_analysisJaspResults)	_analysisStatus = initing;
 	else											_analysisStatus = running;

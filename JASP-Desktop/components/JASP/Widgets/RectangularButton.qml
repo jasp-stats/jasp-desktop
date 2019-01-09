@@ -65,11 +65,12 @@ Rectangle
 	{
 		id:							buttonMouseArea
 		anchors.fill:				parent
-		acceptedButtons:			Qt.LeftButton
+		acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
 		hoverEnabled:				true
 		cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-		onClicked:					if(filterButtonRoot.enabled) filterButtonRoot.clicked(); else mouse.accepted = false;
-		propagateComposedEvents:	true
+		onClicked:					if(filterButtonRoot.enabled) filterButtonRoot.clicked(); //else mouse.accepted = false;
+		visible:					filterButtonRoot.enabled
+		//propagateComposedEvents:	true
 	}
 
 	Image

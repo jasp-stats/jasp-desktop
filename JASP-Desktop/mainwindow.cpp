@@ -192,7 +192,7 @@ void MainWindow::makeConnections()
 	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_levelsTableModel,		&LevelsTableModel::refresh,									Qt::QueuedConnection);
 	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh,									Qt::QueuedConnection);
 	connect(_tableModel,			&DataSetTableModel::headerDataChanged,				_columnsModel,			&ColumnsModel::datasetHeaderDataChanged						);
-	connect(_tableModel,			&DataSetTableModel::modelReset,						_columnsModel,			&ColumnsModel::refresh										);
+	connect(_tableModel,			&DataSetTableModel::modelReset,						_columnsModel,			&ColumnsModel::refresh,										Qt::QueuedConnection);
 	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
@@ -203,9 +203,9 @@ void MainWindow::makeConnections()
 	qRegisterMetaType<Column::ColumnType>();
 
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_tableModel,			&DataSetTableModel::refreshColumn,							Qt::QueuedConnection);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn,							Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::headerDataChanged,			_tableModel,			&DataSetTableModel::headerDataChanged,						Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn,							Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataSetChanged,				_tableModel,			&DataSetTableModel::dataSetChanged							);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh,								Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
@@ -532,12 +532,13 @@ void MainWindow::setUIScaleHandler(float scale)
 void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 {
 	DataSet * dataSet = package == nullptr ? nullptr : package->dataSet();
-	_tableModel->setDataSetPackage(package);
-	_levelsTableModel->setDataSet(dataSet);
-	_columnsModel->setDataSet(dataSet);
-	_computedColumnsModel->setDataSetPackage(package);
-	_analyses->setDataSet(dataSet);
-	_filterModel->setDataSetPackage(package);
+
+	_tableModel				-> setDataSetPackage(package);
+	_levelsTableModel		-> setDataSet(dataSet);
+	_columnsModel			-> setDataSet(dataSet);
+	_computedColumnsModel	-> setDataSetPackage(package);
+	_analyses				-> setDataSet(dataSet);
+	_filterModel			-> setDataSetPackage(package);
 
 	setDatasetLoaded(dataSet != nullptr && dataSet->rowCount() > 0);
 }
@@ -552,6 +553,7 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 
 	_labelFilterGenerator->regenerateFilter();
 	_filterModel->checkForSendFilter();
+
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
 

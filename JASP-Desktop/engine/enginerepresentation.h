@@ -43,7 +43,6 @@ public:
 
 	void runModuleRequestOnProcess(Json::Value request);
 
-
 	void process();
 	void processRCodeReply(			Json::Value json);
 	void processFilterReply(		Json::Value json);
@@ -67,6 +66,11 @@ public:
 	}
 
 	int engineChannelID()							{ return _channel->channelNumber(); }
+
+public slots:
+	void ppiChanged(int newPPI)					{ _ppi = newPPI; }
+	void imageBackgroundChanged(QString value)	{ _imageBackground = value; }
+	void analysisRemoved(Analysis * analysis);
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
@@ -94,10 +98,6 @@ signals:
 	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
 	void moduleLoadingSucceeded(		std::string moduleName, int channelID);
 	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage, int channelID);
-
-public slots:
-	void ppiChanged(int newPPI)					{ _ppi = newPPI; }
-	void imageBackgroundChanged(QString value)	{ _imageBackground = value; }
 };
 
 #endif // ENGINEREPRESENTATION_H

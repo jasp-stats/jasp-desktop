@@ -29,6 +29,14 @@ Item
 
 		Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
+
+		MouseArea
+		{
+			id:				gottaCatchEmAll //Clicks that is
+			anchors.fill:	parent
+			z:				-6
+		}
+
 		Column
 		{
 			id:			modules

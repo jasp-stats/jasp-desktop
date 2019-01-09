@@ -2,7 +2,8 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import JASP.Theme 1.0
 
-Popup {
+Popup
+{
 	id: popupCreateComputedColumn;
 	modal: true; focus: true;
 
@@ -44,13 +45,13 @@ Popup {
 			border.color: Theme.black
 			border.width: 1
 
-			Component.onCompleted: reset()
+		/*	Component.onCompleted: reset()
 
 			function reset()
 			{
 				rootCreateComputedColumn.selectedColumnType = columnTypeScale
 				nameEdit.reset()
-			}
+			}*/
 
 			function createComputedColumn()
 			{
@@ -126,8 +127,8 @@ Popup {
 						anchors.fill: parent
 						anchors.margins: 2
 
-						text: defaultText
-						font.pixelSize: baseFontSize * ppiScale
+						text:				defaultText
+						font.pixelSize:		baseFontSize * ppiScale
 						onActiveFocusChanged:
 						{
 							if(activeFocus && text === defaultText) text = ""
@@ -218,7 +219,7 @@ Popup {
 			{
 				id:			computeColumnIconRow
 				height:		25 * ppiScale
-				spacing:	2
+				spacing:	Theme.generalAnchorMargin
 
 				anchors.top:				computeTypeSelector.bottom
 				anchors.topMargin:			10
@@ -297,15 +298,34 @@ Popup {
 
 			RectangularButton
 			{
-				anchors.top: computeColumnIconRow.bottom
-				anchors.topMargin: 10
-				anchors.horizontalCenter: parent.horizontalCenter
-
-				text:		"Create"
+				id:							createButton
+				anchors
+				{
+					top:		computeColumnIconRow.bottom
+					margins:	Theme.generalAnchorMargin
+					left:		parent.left
+					right:		closeButtonCross.left
+				}
+				text:		"Create Column"
 				enabled:	nameEdit.validEntry
 				toolTip:	nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
 
 				onClicked:	rootCreateComputedColumn.createComputedColumn()
+			}
+
+			RectangularButton
+			{
+				id:				closeButtonCross
+				iconSource:		"qrc:/images/cross.png"
+				width:			height
+				height:			createButton.height
+				anchors
+				{
+					right:		parent.right
+					top:		computeColumnIconRow.bottom
+					margins:	Theme.generalAnchorMargin
+				}
+				onClicked:	popupCreateComputedColumn.close()
 			}
 		}
 	}

@@ -51,13 +51,12 @@ bool Application::notify(QObject *receiver, QEvent *event)
 {
 	try
 	{
+		//qDebug() << "Application::notify: " << receiver->objectName() << " with event: " << event << "\n";
 		return QApplication::notify(receiver, event);
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "Error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << "\n";
-		std::cout.flush();
-
+		std::cout << "Error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << std::endl;
 		throw e;
 	}
 }

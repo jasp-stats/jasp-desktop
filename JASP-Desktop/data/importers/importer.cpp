@@ -11,6 +11,8 @@ Importer::~Importer() {}
 
 void Importer::loadDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
 {
+	_packageData->pauseEngines();
+
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
 	int columnCount = importDataSet->columnCount();
@@ -31,6 +33,7 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 	}
 
 	delete importDataSet;
+	_packageData->resumeEngines();
 }
 
 void Importer::syncDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progress)
@@ -239,7 +242,6 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 	} while (success == false);
 }
 
-
 void Importer::_syncPackage(
 		ImportDataSet								*syncDataSet,
 		std::vector<std::pair<std::string, int>>	&newColumns,
@@ -261,7 +263,9 @@ void Importer::_syncPackage(
 		std::string newColName	= changeNameColumnIt.first;
 		Column *changedCol		= changeNameColumnIt.second;
 		missingColumns.erase(changedCol->name());
+#ifdef JASP_DEBUG
 		std::cout << "Column name changed, from: " << changedCol->name() << " to " << newColName << std::endl;
+#endif
 		_changeNameColumns[changedCol->name()] = newColName;
 		changedCol->setName(newColName);
 	}
@@ -279,7 +283,9 @@ void Importer::_syncPackage(
 	{
 		for (auto indexColChanged : changedColumns)
 		{
+#ifdef JASP_DEBUG
 			std::cout << "Column changed " << indexColChanged.first << std::endl;
+#endif
 			//Column &column		= _packageData->dataSet()->column(indexColChanged.first);
 			std::string colName	= tempChangedNameList[indexColChanged.first];//indexColChanged.second->name();
 			_changedColumns.push_back(colName);
@@ -295,8 +301,9 @@ void Importer::_syncPackage(
 		for (auto it = newColumns.begin(); it != newColumns.end(); ++it, ++colNo)
 		{
 			increaseDataSetColCount(syncDataSet->rowCount());
-
+#ifdef JASP_DEBUG
 			std::cout << "New column " << it->first << std::endl;
+#endif
 			initColumn(_packageData->dataSet()->columnCount() - 1, syncDataSet->getColumn(it->first));
 		}
 	}
@@ -310,13 +317,14 @@ void Importer::_syncPackage(
 
 			if(!_packageData->isColumnComputed(columnName))
 			{
+#ifdef JASP_DEBUG
 				std::cout << "Column deleted " << columnName << std::endl;
+#endif
 				_missingColumns.push_back(columnName);
 				_packageData->removeColumn(columnName);
 			}
 		}
 	}
-
 
 	_packageData->dataSet()->setSynchingData(false);
 	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);

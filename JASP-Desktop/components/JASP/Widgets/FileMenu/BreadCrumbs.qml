@@ -25,8 +25,8 @@ ListView
 				//color:	Theme.grayMuchLighter
 				
 				height:		rect.height
-				width:		model.index > 0 ? height   : 0
-				visible:	model.index > 0
+				width:		index > 0 ? height   : 0
+				visible:	index > 0
 
 				Image {
 					id:					rightArrow
@@ -43,11 +43,11 @@ ListView
 			RectangularButton
 			{
 				id:				rectButton
-				anchors.left:	model.index > 0 ? rectArrow.right : rect.left
-				text:			model.name
+				anchors.left:	index > 0 ? rectArrow.right : rect.left
+				text:			name
 				enabled:		index < count - 1
-				toolTip:		index < count - 1 ? "Back to " + model.name : "You are here"
-				onClicked:		listView.crumbButtonClicked(model.index)
+				toolTip:		index < count - 1 ? "Back to " + name : "You are here"
+				onClicked:		listView.crumbButtonClicked(index)
 			}
 		}
 }

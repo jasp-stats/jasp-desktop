@@ -49,7 +49,7 @@ void DataSetView::setModel(QAbstractTableModel * model)
 
 		setRolenames();
 
-		QSizeF calcedSizeRowNumber = _metricsFont.size(Qt::TextSingleLine, QString::fromStdString(std::to_string(_model->rowCount()) + "XX"));
+		QSizeF calcedSizeRowNumber = _metricsFont.size(Qt::TextSingleLine, QString::fromStdString(std::to_string(_model->rowCount()) + "XXX"));
 		setRowNumberWidth(calcedSizeRowNumber.width() + 30);
 
 		//recalculateCellSizes = true;

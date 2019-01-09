@@ -211,10 +211,13 @@ Popup
 			RectangularButton
 			{
 				id:					installButton
-				anchors.left:		parent.left
-				anchors.right:		parent.right
-				anchors.bottom:		installProgressItem.top
-				anchors.margins:	Theme.generalAnchorMargin
+				anchors
+				{
+					left:		parent.left
+					right:		closeButtonCross.left
+					bottom:		installProgressItem.top
+					margins:	Theme.generalAnchorMargin
+				}
 				enabled:			moduleInstallerRect.currentJSON !== null
 
 				text:				"Install"
@@ -235,6 +238,21 @@ Popup
 						dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
 					}
 				}
+			}
+
+			RectangularButton
+			{
+				id:				closeButtonCross
+				iconSource:		"qrc:/images/cross.png"
+				width:			height
+				height:			installButton.height
+				anchors
+				{
+					right:		parent.right
+					bottom:		installProgressItem.top
+					margins:	Theme.generalAnchorMargin
+				}
+				onClicked:	moduleInstallerPopup.close()
 			}
 
 			Item
@@ -287,6 +305,9 @@ Popup
 					anchors.margins:	Theme.generalAnchorMargin
 					visible:			dynamicModules.currentInstallDone
 					height:				dynamicModules.currentInstallDone ? implicitHeight : 0
+					iconSource:			"qrc:/images/cross.png"
+					showIconAndText:	true
+					centerText:			true
 
 					text:				"Close"
 					toolTip:			"Close this window"

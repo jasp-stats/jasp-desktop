@@ -7,7 +7,7 @@ import JASP.Theme 1.0
 Rectangle
 {
 	id:				rootDataset
-	color:			Theme.white
+	color:			Theme.uiBackground
 
     ProgressBarHolder
     {

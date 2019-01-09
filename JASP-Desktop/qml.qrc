@@ -71,7 +71,6 @@
         <file>components/JASP/Widgets/FilterConstructor/OperatorVerticalDrag.qml</file>
         <file>components/JASP/Widgets/FilterConstructor/String.qml</file>
         <file>components/JASP/Widgets/FilterConstructor/StringDrag.qml</file>
-        <file>components/JASP/Widgets/FilterConstructor/VariablesList.qml</file>
         <file>components/JASP/Widgets/Ribbon/Ribbon.qml</file>
         <file>components/JASP/Widgets/Ribbon/RibbonButton.qml</file>
         <file>components/JASP/Widgets/Ribbon/ClusterMenu.qml</file>
