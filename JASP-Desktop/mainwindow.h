@@ -156,8 +156,6 @@ private:
 	void loadRibbonQML();
 	void loadQML();
 
-	void setCurrentTab(QString tabName);
-
 	void pauseEngines();
 	void resumeEngines();
 

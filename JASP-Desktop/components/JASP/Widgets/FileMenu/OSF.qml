@@ -227,7 +227,7 @@ Item
 		id:			osfList
 		visible:	loggedin && !processing
 		cppModel:	fileMenuModel.osf.listModel
-
+		hasBreadCrumbs : true
 		anchors
 		{
 			top:			secondSeparator.bottom

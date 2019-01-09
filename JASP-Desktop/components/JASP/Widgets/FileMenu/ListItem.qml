@@ -17,7 +17,7 @@ Rectangle
 
 	property bool mainHovered:	descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
 	property bool allHovered:	mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
-
+	property bool hasBreadCrumbs: false
 
 	function openStuff(model, wasDoubleClick)
 	{
@@ -46,8 +46,7 @@ Rectangle
 
 			height:				0.95 * parent.height
 			width:				height
-			anchors.left:		model.type	===	3 ? rectTitle.left					: undefined
-			anchors.right:		model.type	!==	3 ? associatedDatafileImage.left	: undefined
+			anchors.left:		rectTitle.left
 			anchors.top:		rectTitle.top
 			anchors.leftMargin: 10
 
@@ -79,7 +78,7 @@ Rectangle
 
 			height:			0.95 * parent.height
 			width:			model.associated_datafile === "" ? 0 : height
-			anchors.right:	parent.right
+			anchors.left:	firstFileOrFolderImage.right
 			anchors.top:	rectTitle.top
 
 
@@ -108,9 +107,9 @@ Rectangle
 		Text {
 			id:					textTitle
 
-			height:				parent.height
+			height:				hasBreadCrumbs ?  parent.height : parent.height / 2
 			anchors.top:		parent.top
-			anchors.left:		model.type === 3 ? firstFileOrFolderImage.right : parent.left
+			anchors.left:		associatedDatafileImage.right
 			anchors.right:		parent.right
 			anchors.leftMargin:	10
 
@@ -118,15 +117,30 @@ Rectangle
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
 		}
+		Text {
+			id:					textFolder
+			visible: !hasBreadCrumbs
 
+			height:				hasBreadCrumbs ?  parent.height :parent.height / 2
+			anchors.top:		textTitle.bottom
+			anchors.left:		associatedDatafileImage.right
+			anchors.right:		parent.right
+			anchors.leftMargin:	10
+			text:					model.dirpath  //i.e. title
+			horizontalAlignment:	Text.AlignLeft
+			verticalAlignment:		Text.AlignVCenter
+			font.pixelSize: 10
+		}
 		MouseArea {
 			z:					-1
 			id:					fileEntryMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
 			onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
-			onClicked:			rectTitleAndDescripton.openStuff(model,false)
 			cursorShape:		Qt.PointingHandCursor
+			onClicked:			{
+				rectTitleAndDescripton.openStuff(model,false)
+			}
 		}
 
 		ToolTip {

@@ -416,16 +416,6 @@ void FileMenu::dataAutoSynchronizationChanged(bool on)
 	setDataFileWatcher(on);
 }
 
-void FileMenu::test()
-{
-	
-	//setEnableButton(Open, !_buttonsenabled[Open]);
-	//setEnableButton(ExportData, !_buttonsenabled[ExportData]);
-
-	//fileMenuProperties.insert("recentfiles_button_visible", QVariant(bool(false)));
-
-}
-
 void FileMenu::fileOperationClicked(const int &action)
 {
 	bool cancel;

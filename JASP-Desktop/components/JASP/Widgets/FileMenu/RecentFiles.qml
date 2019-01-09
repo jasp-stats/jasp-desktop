@@ -33,6 +33,7 @@ Item
 	FileList {
 		id:			recentFilesList
 		cppModel:	fileMenuModel.recentFiles.listModel
+		hasBreadCrumbs : false
 
 		anchors
 		{
