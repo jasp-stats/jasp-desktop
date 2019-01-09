@@ -170,62 +170,44 @@ AnalysisForm
 				}
 			}
 
-			Image
+			MenuButton
 			{
-				// TODO: Make this a button.
-				//       Add hover text
-				//       Add action: open corresponding help file
 				id:					helpButton
-				height:				label.contentHeight
-				width:				label.contentHeight
-				source:				form.expanded ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png"
-				// {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-				visible:			mouseArea.containsMouse || form.expanded
-				sourceSize.width:	width * 2
-				sourceSize.height:	height * 2
-
+				width:				height
+				iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+				//visible:			form.expanded || hovered || mouseArea.containsMouse
+				enabled:			form.expanded
+				onClicked:			helpModel.showOrTogglePage("analyses/" + form.analysis.name)
+				toolTip:			"Show info for analysis"
+				radius:				height
 				anchors
 				{
-					right:			closeButton.left
-					rightMargin:	6
-					verticalCenter:	parent.verticalCenter
-				}
-
-				MouseArea
-				{
-					anchors.fill:	parent
-					hoverEnabled:	true
-					cursorShape:	Qt.PointingHandCursor
-					onClicked:		helpModel.showOrTogglePage("analyses/" + form.analysis.name)
+					top:		parent.top
+					right:		closeButton.left
+					bottom:		parent.bottom
+					margins:	6
 				}
 			}
 
-			Image
+			MenuButton
 			{
 				id:					closeButton
-				height:				label.contentHeight
-				width:				label.contentHeight
-				source:				form.expanded ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png"
-				// {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
-				visible:			mouseArea.containsMouse || form.expanded
-				sourceSize.width:	width * 2
-				sourceSize.height:	height * 2
-
+				width:				height
+				iconSource:			enabled ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
+				//visible:			form.expanded || hovered || mouseArea.containsMouse
+				enabled:			form.expanded
+				onClicked:			analysesModel.removeAnalysis(form.analysis)
+				toolTip:			"Remove analysis"
+				radius:				height
 				anchors
 				{
-					right:			parent.right
-					rightMargin:	6
-					verticalCenter:	parent.verticalCenter
-				}
-
-				MouseArea
-				{
-					anchors.fill:	parent
-					hoverEnabled:	true
-					cursorShape:	Qt.PointingHandCursor
-					onClicked:		analysesModel.removeAnalysis(form.analysis)
+					top:		parent.top
+					right:		parent.right
+					bottom:		parent.bottom
+					margins:	6
 				}
 			}
+
 		}
 
 		FocusScope
