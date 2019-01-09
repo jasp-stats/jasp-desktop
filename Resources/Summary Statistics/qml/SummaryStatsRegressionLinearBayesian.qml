@@ -22,69 +22,51 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form {
+Form 
+{
     id: form
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            GridLayout {
-                Label { text: qsTr("Sample size") } IntegerField { name: "sampleSize" ; intValidator.bottom: 3 }
-            }
-        }
-    }
+	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; intValidator.bottom: 3 }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            GroupBox {
-                title: qsTr("Null model")
-                GridLayout {
-                    Label { text: qsTr("Number of covariates") } IntegerField { name: "numberOfCovariatesNull" }
-                    Label { text: qsTr("R-squared")            } DoubleField { name: "unadjustedRSquaredNull" ; doubleValidator.top: 0.9999 }
-                }
-            }
+    GridLayout 
+	{
+		GroupBox 
+		{
+			title: qsTr("Null model")
+			IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesNull" }
+			DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredNull" ; doubleValidator.top: 0.9999 }
         }
-        ColumnLayout {
-            spacing: 15
-            GroupBox {
-                title: qsTr("Alternative model")
-                GridLayout {
-                    Label { text: qsTr("Number of covariates") } IntegerField { name: "numberOfCovariatesAlternative" ; intValidator.bottom: 1 }
-                    Label { text: qsTr("R-squared")            } DoubleField { name: "unadjustedRSquaredAlternative" ; doubleValidator.top: 0.9999 }
-                }
-            }
-        }
-
+		
+		GroupBox 
+		{
+			title: qsTr("Alternative model")
+			IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; intValidator.bottom: 1 }
+			DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; doubleValidator.top: 0.9999 }
+		}
     }
 
     Divider { }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            BayesFactorType { }
-        }
-
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
-            }
-        }
+    GridLayout 
+	{
+		BayesFactorType { }
+ 
+		GroupBox 
+		{
+			title: qsTr("Plots")
+			CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
+			CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+		}
     }
 
-    ExpanderButton {
+    ExpanderButton 
+	{
         text: qsTr("Advanced Options")
 
-        GroupBox {
+        GroupBox 
+		{
             title: qsTr("Prior")
-            GridLayout {
-                Label { text: qsTr("r scale covariates") } DoubleField { defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 60; doubleValidator.top: 2 }
-            }
+            DoubleField { text: qsTr("r scale covariates"); defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 60; doubleValidator.top: 2 }
         }
     }
 }

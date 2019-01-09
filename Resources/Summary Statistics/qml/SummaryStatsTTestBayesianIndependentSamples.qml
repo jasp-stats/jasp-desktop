@@ -23,52 +23,42 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form {
+Form 
+{
     id: form
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-            GridLayout {
-                Label { text: qsTr("t") }             DoubleField { defaultValue: 0 ; name: "tStatistic" ; validation: false  }
-                Label { text: qsTr("Group 1 size") }  IntegerField { name: "n1Size" }
-                Label { text: qsTr("Group 2 size") }  IntegerField { name: "n2Size" }
-            }
-        }
+    GroupBox 
+	{
+		DoubleField  { text: qsTr("t");				name: "tStatistic" ; validation: false  }
+		IntegerField { text: qsTr("Group 1 size");	name: "n1Size" }
+		IntegerField { text: qsTr("Group 2 size");	name: "n2Size" }
     }
 
     Divider { }
 
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
+    GridLayout 
+	{
+		ButtonGroup 
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			RadioButton { text: qsTr("Group 1 \u2260 Group 2") ; name: "groupsNotEqual" ; checked: true }
+			RadioButton { text: qsTr("Group 1 > Group 2")      ; name: "groupOneGreater"                }
+			RadioButton { text: qsTr("Group 1 < Group 2")      ; name: "groupTwoGreater"                }
+		}
 
-            ButtonGroup {
-                title: qsTr("Hypothesis")
-                name: "hypothesis"
+		GroupBox 
+		{
+			title: qsTr("Plots")
+			CheckBox {  text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
+			CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
+			CheckBox {  text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
+			CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+		}
+		
+		BayesFactorType { }
 
-                RadioButton { text: qsTr("Group 1 \u2260 Group 2") ; name: "groupsNotEqual" ; checked: true }
-                RadioButton { text: qsTr("Group 1 > Group 2")      ; name: "groupOneGreater"                }
-                RadioButton { text: qsTr("Group 1 < Group 2")      ; name: "groupTwoGreater"                }
-            }
-
-            BayesFactorType { }
-
-        }
-
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox {  text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-                CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
-
-                CheckBox {  text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-                CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
-            }
-        }
-    }
+	}
 
     SubjectivePriors { }
 }
