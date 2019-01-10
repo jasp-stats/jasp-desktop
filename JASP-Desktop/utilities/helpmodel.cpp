@@ -14,6 +14,8 @@ void HelpModel::setVisible(bool visible)
 
 void HelpModel::setPageName(QString pageName)
 {
+	pageName = pageName.toLower(); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
+
 	if (_pageName == pageName)
 		return;
 
