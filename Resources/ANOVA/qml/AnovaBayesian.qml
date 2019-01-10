@@ -56,15 +56,14 @@ Form
 				RadioButton { value: "matchedModels";	label: qsTr("Across matched models")				}
 			}
 		}
-		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
-	}
 
-	RadioButtonGroup
-	{
-		title: qsTr("Order")
-		name: "bayesFactorOrder"
-		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model"); checked: true	}
-		RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model")				}
+        GroupBox
+        {
+            title: qsTr("Plots")
+            CheckBox { text: qsTr("Model averaged posteriors"); name: "modelAveragedPosteriors"}
+            CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
+            //CheckBox { text: qsTr("Effects"); name: "effects"; id: effectsOutput}
+        }
 	}
 	
 	Section
