@@ -126,20 +126,6 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 }
 
-void AnalysisForm::setVariablesModel()
-{
-	vector<string> columnNames;
-
-	if (_dataSet != nullptr)
-	{
-		for (Column &column: _dataSet->columns())
-			columnNames.push_back(column.name());
-	}
-
-	_availableVariablesModel.setInfoProvider(this);
-	_availableVariablesModel.setVariables(columnNames);
-}
-
 void AnalysisForm::updateIllegalStatus()
 {
 	QString message;

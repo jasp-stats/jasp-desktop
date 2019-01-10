@@ -250,8 +250,6 @@ private:
 
 	QSettings						_settings;
 
-	TableModelVariablesAvailable	_availableVariablesModel;
-
 	int								_scrollbarWidth = 0,
 									_tableViewWidthBeforeOptionsMadeVisible,
 									_progressBarProgress;

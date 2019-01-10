@@ -25,9 +25,7 @@
 #include "options/bound.h"
 #include "options/options.h"
 #include "options/optionvariables.h"
-
 #include "options/availablefields.h"
-#include "widgets/tablemodelvariablesavailable.h"
 
 #include "analysis/options/variableinfo.h"
 #include "analysis.h"
@@ -74,7 +72,6 @@ signals:
 				void			formCompleted();
 
 protected:
-				void			setVariablesModel();
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
 
 public:
@@ -111,8 +108,6 @@ protected:
 protected:
 	DataSet							*_dataSet;
 	Options							*_options;
-
-	TableModelVariablesAvailable	_availableVariablesModel;
 
 	OptionVariables					*_mainVariables;
 
