@@ -182,7 +182,6 @@ HEADERS += \
     analysis/analysisform.h \
     analysis/analysisqmldefines.h \
     analysis/boundqmlitem.h \
-    analysis/options/availablefields.h \
     analysis/options/bound.h \
     analysis/options/option.h \
     analysis/options/optionboolean.h \
@@ -314,27 +313,12 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
-    widgets/draganddrop.h \
-    widgets/droptarget.h \
-    widgets/enhanceddroptarget.h \
     widgets/listmodelanovaassigned.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
     gui/preferencesdialog.h \
     widgets/tablemodel.h \
-    widgets/tablemodelanovadesign.h \
-    widgets/tablemodelanovamodel.h \
-    widgets/tablemodelanovamodelnuisancefactors.h \
-    widgets/tablemodelanovawithinsubjectcells.h \
-    widgets/tablemodelcontrasts.h \
-    widgets/tablemodelpairsassigned.h \
-    widgets/tablemodelvariables.h \
-    widgets/tablemodelvariablesassigned.h \
-    widgets/tablemodelvariablesavailable.h \
-    widgets/tablemodelvariableslevels.h \
-    widgets/tablemodelvariablesoptions.h \
-    widgets/textmodellavaan.h \
     mainwindow.h \
     utilities/extractarchive.h \
     widgets/boundqmlfactorslist.h \
@@ -382,7 +366,6 @@ SOURCES += \
     analysis/analysisform.cpp \
     analysis/analysisqmldefines.cpp \
     analysis/boundqmlitem.cpp \
-    analysis/options/availablefields.cpp \
     analysis/options/option.cpp \
     analysis/options/optionboolean.cpp \
     analysis/options/optioncomputedcolumn.cpp \
@@ -500,24 +483,11 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
-    widgets/draganddrop.cpp \
     widgets/listmodelanovaassigned.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
     gui/preferencesdialog.cpp \
-    widgets/tablemodelanovadesign.cpp \
-    widgets/tablemodelanovamodel.cpp \
-    widgets/tablemodelanovamodelnuisancefactors.cpp \
-    widgets/tablemodelanovawithinsubjectcells.cpp \
-    widgets/tablemodelcontrasts.cpp \
-    widgets/tablemodelpairsassigned.cpp \
-    widgets/tablemodelvariables.cpp \
-    widgets/tablemodelvariablesassigned.cpp \
-    widgets/tablemodelvariablesavailable.cpp \
-    widgets/tablemodelvariableslevels.cpp \
-    widgets/tablemodelvariablesoptions.cpp \
-    widgets/textmodellavaan.cpp \
     main.cpp \
     mainwindow.cpp \
     utilities/extractarchive.cpp \
