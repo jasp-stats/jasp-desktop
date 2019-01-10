@@ -25,7 +25,6 @@
 #include "options/bound.h"
 #include "options/options.h"
 #include "options/optionvariables.h"
-#include "options/availablefields.h"
 
 #include "analysis/options/variableinfo.h"
 #include "analysis.h"

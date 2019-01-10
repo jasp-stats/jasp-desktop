@@ -318,7 +318,6 @@ HEADERS += \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
     gui/preferencesdialog.h \
-    widgets/tablemodel.h \
     mainwindow.h \
     utilities/extractarchive.h \
     widgets/boundqmlfactorslist.h \
