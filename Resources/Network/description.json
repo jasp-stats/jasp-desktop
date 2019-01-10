@@ -22,12 +22,6 @@
 				{
 					"title":	"Network",
 					"function":	"NetworkAnalysis"
-				},
-				{
-				},
-				{
-					"title":	"QML Network",
-					"function":	"QMLNetworkAnalysis"
 				}
 			]
 		}
