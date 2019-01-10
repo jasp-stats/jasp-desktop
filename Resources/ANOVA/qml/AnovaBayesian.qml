@@ -94,6 +94,13 @@ Form
 			}
 		}
 	}
+
+    ExpanderButton
+    {
+        text: qsTr("Assumption Checks")
+
+        CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
+    }
 	
 	Section
 	{
