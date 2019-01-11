@@ -2,6 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets 1.0
 import JASP.Theme 1.0
+import QtQuick.Dialogs 1.2
 
 
 FocusScope
@@ -23,6 +24,18 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
+		Item
+		{
+			anchors.centerIn: parent
+			width: messageDialog.width
+			height: messageDialog.height
+			MessageDialog
+			{
+				id: messageDialog
+				title: "Error"
+			}
+		}
+	
 		Item
 		{
 			id:				dropShadow
@@ -109,6 +122,7 @@ FocusScope
 
 					delegate: Loader
 					{
+						id: loader
 						source:			formPath
 						asynchronous:	true
 
@@ -117,6 +131,13 @@ FocusScope
 						property int	myIndex:			index
 						property string	analysisTitle:		name
                         property var    myAnalysis:         analysis
+						
+						onStatusChanged :
+							if (loader.status == Loader.Error)
+							{
+								messageDialog.text = sourceComponent.errorString();
+								messageDialog.visible = true;
+							}
 					}
 				}
 			}
