@@ -32,7 +32,7 @@ Form {
     DoubleField { text: qsTr("Test value: "); name: "testValue"; defaultValue: 0.5 ; doubleValidator { top: 1; decimals: 2 } }
 
     GridLayout {
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Hypothesis")
             name: "hypothesis"
             RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true  }

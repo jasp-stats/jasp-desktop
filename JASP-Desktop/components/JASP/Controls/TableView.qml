@@ -25,7 +25,8 @@ JASPControl
     signal reset();
     signal itemChanged(int col, int row, string value)
     
-    function removeAColumn() {
+    function removeAColumn()
+	{
         if (colSelected >= 0)
             removeColumn(colSelected);
     }    
@@ -34,7 +35,8 @@ JASPControl
     property int columnCount: 0
     property int rowCount: 0
     
-    Rectangle {
+    Rectangle
+	{
         id: rectangleBorder
         anchors.centerIn: parent
         width: parent.width
@@ -68,7 +70,8 @@ JASPControl
 			viewportW: myFlickable.visibleArea.widthRatio * width
 			viewportH: myFlickable.visibleArea.heightRatio * height
             
-            columnHeaderDelegate: Rectangle {
+            columnHeaderDelegate: Rectangle
+			{
 				color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
                 Text { text: headerText; anchors.centerIn: parent }
                 MouseArea {
@@ -81,9 +84,11 @@ JASPControl
                 }
             }
 
-            rowNumberDelegate: Rectangle {
+            rowNumberDelegate: Rectangle
+			{
                 color: Theme.analysisBackgroundColor
-                Text { 
+                Text
+				{ 
                     text: headerText; 
                     anchors.centerIn: parent;
                     horizontalAlignment: Text.AlignHCenter
@@ -101,7 +106,8 @@ JASPControl
                         color: Theme.tooltipBackgroundColor
                         height: 25
                 }
-                MouseArea {
+                MouseArea
+				{
                     id: mouseAreaItem
                     hoverEnabled: true
                     anchors.fill: parent
@@ -112,18 +118,20 @@ JASPControl
             DoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
             RegExpValidator { id: stringValidator }
 
-            itemDelegate: Rectangle {
-                TextField {
+            itemDelegate: Rectangle 
+			{
+                TextField
+				{
                     fieldWidth: parent.width
                     textHeight: parent.height
-                    text: itemText; 
+                    value: itemText; 
                     inputType: tableView.itemType
                     useExternalBorder: false
                     isBound: false
                     validator: tableView.validator
                     
                     onPressed: tableView.colSelected = columnIndex
-                    onEditingFinished: tableView.itemChanged(columnIndex, rowIndex, text)
+                    onEditingFinished: tableView.itemChanged(columnIndex, rowIndex, value)
                 }
             }
             
@@ -131,7 +139,7 @@ JASPControl
 
 		}
 
-		ScrollBar.vertical: ScrollBar   { z: 0; stepSize: 0.025 }
-		ScrollBar.horizontal: ScrollBar { z: 0; stepSize: 0.025	}
+		ScrollBar.vertical:		ScrollBar   { z: 0; stepSize: 0.025 }
+		ScrollBar.horizontal:	ScrollBar	{ z: 0; stepSize: 0.025	}
 	}
 }

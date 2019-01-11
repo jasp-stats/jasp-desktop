@@ -37,7 +37,7 @@ Form
 
     GridLayout 
 	{
-		ButtonGroup 
+		RadioButtonGroup 
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"

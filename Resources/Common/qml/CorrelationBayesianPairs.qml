@@ -33,14 +33,14 @@ Form {
 
     GridLayout {
         ColumnLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 name: "corcoefficient"
                 title: qsTr("Correlation Coefficients")
                 RadioButton { text: qsTr("Pearson's rho")  ; name: "Pearson" ; checked: true }
                 RadioButton { text: qsTr("Kendall's tau-b"); name: "Kendall" }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Hypothesis")
                 name: "hypothesis"
                 RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
@@ -50,7 +50,7 @@ Form {
 
             BayesFactorType {}
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")
                 name: "missingValues"
                 RadioButton { text: qsTr("Exclude cases analysis by analysis")  ; name: "excludeAnalysisByAnalysis"; checked: true }

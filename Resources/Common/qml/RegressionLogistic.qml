@@ -82,7 +82,7 @@ Form {
             AssignedVariablesList {
                 name: "modelTerms"
                 title: qsTr("Model terms")
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
 
                 ExtraControlColumn {
                     type: "CheckBox"
@@ -160,7 +160,7 @@ Form {
                 CheckBox { text: qsTr("Squared Pearson residuals plot") ; name: "squaredPearsonPlotOpt" }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Residual type")
                 name: "residualType"
                 RadioButton { text: qsTr("Deviance")   ; name: "deviance" ; checked: true   }

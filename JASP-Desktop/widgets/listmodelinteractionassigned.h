@@ -16,22 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELANOVAASSIGNED_H
-#define LISTMODELANOVAASSIGNED_H
+#ifndef LISTMODELINTERACTIONASSIGNED_H
+#define LISTMODELINTERACTIONASSIGNED_H
 
 #include "listmodelassignedinterface.h"
 #include "listmodelavailableinterface.h"
 #include "analysis/options/options.h"
 #include "analysis/options/optionterm.h"
 
-class ListModelAnovaAssigned : public ListModelAssignedInterface
+class ListModelInteractionAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
 	
 	enum AssignType { Cross = 0, MainEffects, Interaction, All2Way, All3Way, All4Way, All5Way };
 	
 public:
-	ListModelAnovaAssigned(QMLListView* listView);
+	ListModelInteractionAssigned(QMLListView* listView);
 
 	void initTermsWithTemplate(const std::vector<Options*> &terms, Options* rowTemplate);
 	
@@ -74,8 +74,8 @@ protected:
 	Terms _fixedFactors;
 	Terms _randomFactors;
 	
-	Terms _anovaTerms;	
+	Terms _interactionTerms;	
 };
 
 
-#endif // LISTMODELANOVAASSIGNED_H
+#endif // LISTMODELINTERACTIONASSIGNED_H

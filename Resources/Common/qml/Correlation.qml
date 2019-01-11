@@ -49,7 +49,7 @@ Form {
     }
 
     GridLayout {
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Hypothesis")
             name: "hypothesis"
             RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
@@ -80,7 +80,7 @@ Form {
             CheckBox { text: qsTr("Cross-product deviations and covariances")      ; name: "crossProducts" }
         }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Missing Values")
             name: "missingValues"
             RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }

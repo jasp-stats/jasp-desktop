@@ -16,21 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLLISTVIEWANOVAMODELS_H
-#define BOUNDQMLLISTVIEWANOVAMODELS_H
+#ifndef BOUNDQMLLISTVIEWINTERACTION_H
+#define BOUNDQMLLISTVIEWINTERACTION_H
 
 #include "boundqmllistviewdraggable.h"
 #include "analysis/options/optionstable.h"
-#include "listmodelanovaassigned.h"
+#include "listmodelinteractionassigned.h"
 
-class BoundQMLListViewAnovaModels : public BoundQMLListViewDraggable
+class BoundQMLListViewInteraction : public BoundQMLListViewDraggable
 {
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewAnovaModels(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewInteraction(QQuickItem* item, AnalysisForm* form);
 	
-	virtual ListModel* model() OVERRIDE		{ return _anovaModel; }
+	virtual ListModel* model() OVERRIDE		{ return _interactionModel; }
 	virtual Option* boundTo() OVERRIDE		{ return _boundTo; }
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
@@ -41,8 +41,8 @@ protected slots:
 	
 private:
 	OptionsTable* _boundTo;
-	ListModelAnovaAssigned* _anovaModel;
+	ListModelInteractionAssigned* _interactionModel;
 	
 };
 
-#endif // BOUNDQMLLISTVIEWANOVAMODELS_H
+#endif // BOUNDQMLLISTVIEWINTERACTION_H

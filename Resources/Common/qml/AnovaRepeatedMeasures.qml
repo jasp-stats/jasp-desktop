@@ -75,7 +75,7 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "withinModelTerms"
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
             }
         }
 
@@ -89,7 +89,7 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "betweenModelTerms"
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
             }
         }
 
@@ -176,7 +176,7 @@ Form {
                 CheckBox { text: qsTr("Pool SE across RM factors"); name: "usePooledStandErrorCI" }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 name: "errorBarType"
                 RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
                 PercentField {indent: true; text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}

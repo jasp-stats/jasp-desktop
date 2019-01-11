@@ -49,7 +49,7 @@ Form {
     }
 
     GridLayout {
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Hypothesis")
             name: "hypothesis"
             RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
@@ -76,7 +76,7 @@ Form {
     ExpanderButton {
         text: qsTr("Options")
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Missing Values")
             name: "missingValues"
             RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }

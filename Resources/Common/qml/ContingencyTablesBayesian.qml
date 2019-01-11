@@ -72,7 +72,7 @@ Form {
         text: qsTr("Statistics")
 
         GridLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Sample")
                 name: "samplingModel"
                 RadioButton { text: qsTr("Poisson")                         ; name: "poisson" }
@@ -90,7 +90,7 @@ Form {
                 PercentField { text: qsTr("Credible interval") ; name: "effectSizeCredibleIntervalInterval"; defaultValue: 95; enabled: effectSize.checked; indent: true ; debug: true }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Hypothesis")
                 name: "hypothesis"
                 enabled: !hypergeometric.checked
@@ -119,13 +119,13 @@ Form {
         text: qsTr("Options")
 
         GridLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Row Order")
                 name: "rowOrder"
                 RadioButton { text: qsTr("Ascending"); name: "ascending"; checked: true }
                 RadioButton { text: qsTr("Descending"); name: "descending" }
             }
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Column Order")
                 name: "columnOrder"
                 RadioButton { text: qsTr("Ascending"); name: "ascending"; checked: true }

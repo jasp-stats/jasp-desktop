@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodelanovaassigned.h"
+#include "listmodelinteractionassigned.h"
 #include "utilities/qutils.h"
 #include "analysis/options/optionterm.h"
 #include "analysis/options/optionboolean.h"
@@ -25,13 +25,13 @@
 
 using namespace std;
 
-ListModelAnovaAssigned::ListModelAnovaAssigned(QMLListView* listView)
+ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView)
 	: ListModelAssignedInterface(listView)
 {
 	_copyTermsWhenDropped = true;
 }
 
-void ListModelAnovaAssigned::initTermsWithTemplate(const std::vector<Options *> &terms, Options* rowTemplate)
+void ListModelInteractionAssigned::initTermsWithTemplate(const std::vector<Options *> &terms, Options* rowTemplate)
 {
 	beginResetModel();
 	
@@ -41,15 +41,15 @@ void ListModelAnovaAssigned::initTermsWithTemplate(const std::vector<Options *> 
 	_covariates.clear();
 	_fixedFactors.clear();
 	_randomFactors.clear();
-	_anovaTerms.clear();
-	_anovaTerms.removeParent();
+	_interactionTerms.clear();
+	_interactionTerms.removeParent();
 
 	for (Options *row : _rows)
 	{
 		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
 		vector<string> term = nameOption->term();
 
-		_anovaTerms.add(Term(term));
+		_interactionTerms.add(Term(term));
 	}
 	
 	endResetModel();
@@ -57,7 +57,7 @@ void ListModelAnovaAssigned::initTermsWithTemplate(const std::vector<Options *> 
 
 
 
-QVariant ListModelAnovaAssigned::data(const QModelIndex &index, int role) const
+QVariant ListModelInteractionAssigned::data(const QModelIndex &index, int role) const
 {
 	if (index.isValid() == false)
 		return QVariant();
@@ -79,19 +79,19 @@ QVariant ListModelAnovaAssigned::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-int ListModelAnovaAssigned::rowCount(const QModelIndex &) const
+int ListModelInteractionAssigned::rowCount(const QModelIndex &) const
 {
 	return _rows.size();
 }
 
 
-void ListModelAnovaAssigned::setSource(ListModelAvailableInterface *source)
+void ListModelInteractionAssigned::setSource(ListModelAvailableInterface *source)
 {
 	ListModelAssignedInterface::setSource(source);
-	_anovaTerms.setSortParent(source->allTerms());
+	_interactionTerms.setSortParent(source->allTerms());
 }
 
-void ListModelAnovaAssigned::removeTerms(const QList<int> &indices)
+void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 {
 	// sort indices, and delete from end to beginning
 
@@ -100,7 +100,7 @@ void ListModelAnovaAssigned::removeTerms(const QList<int> &indices)
 
 	int lastRowDeleted = -1;
 
-	Terms terms = _anovaTerms;
+	Terms terms = _interactionTerms;
 	Terms toRemove;
 
 	for (const int &index : sorted)
@@ -132,7 +132,7 @@ void ListModelAnovaAssigned::removeTerms(const QList<int> &indices)
 	setTerms(terms);
 }
 
-Terms *ListModelAnovaAssigned::termsFromIndexes(const QList<int> &indexes) const
+Terms *ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms* terms = new Terms;
 	for (const int &index : indexes)
@@ -153,17 +153,17 @@ Terms *ListModelAnovaAssigned::termsFromIndexes(const QList<int> &indexes) const
 	return terms;
 }
 
-const Terms &ListModelAnovaAssigned::terms() const
+const Terms &ListModelInteractionAssigned::terms() const
 {
-	return _anovaTerms;
+	return _interactionTerms;
 }
 
-const vector<Options *>& ListModelAnovaAssigned::rows() const
+const vector<Options *>& ListModelInteractionAssigned::rows() const
 {
 	return _rows;
 }
 
-void ListModelAnovaAssigned::availableTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModelInteractionAssigned::availableTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
 	if (termsAdded && termsAdded->size() > 0)
 	{
@@ -195,13 +195,13 @@ void ListModelAnovaAssigned::availableTermsChanged(Terms *termsAdded, Terms *ter
 		removeVariables(*termsRemoved);
 }
 
-void ListModelAnovaAssigned::addFixedFactors(const Terms &terms)
+void ListModelInteractionAssigned::addFixedFactors(const Terms &terms)
 {
 	_fixedFactors.add(terms);
 
-	Terms existingTerms = _anovaTerms;
+	Terms existingTerms = _interactionTerms;
 
-	Terms newTerms = _anovaTerms;
+	Terms newTerms = _interactionTerms;
 	newTerms.discardWhatDoesContainTheseComponents(_randomFactors);
 	newTerms.discardWhatDoesContainTheseComponents(_covariates);
 	existingTerms.add(newTerms.ffCombinations(terms));
@@ -210,42 +210,42 @@ void ListModelAnovaAssigned::addFixedFactors(const Terms &terms)
 
 }
 
-void ListModelAnovaAssigned::addRandomFactors(const Terms &terms)
+void ListModelInteractionAssigned::addRandomFactors(const Terms &terms)
 {
 	_randomFactors.add(terms);
 
-	Terms newTerms = _anovaTerms;
+	Terms newTerms = _interactionTerms;
 	newTerms.add(terms);
 
 	setTerms(newTerms, true);
 
 }
 
-void ListModelAnovaAssigned::addCovariates(const Terms &terms)
+void ListModelInteractionAssigned::addCovariates(const Terms &terms)
 {
 	_covariates.add(terms);
 
-	Terms newTerms = _anovaTerms;
+	Terms newTerms = _interactionTerms;
 	newTerms.add(terms);
 
 	setTerms(newTerms);
 
 }
 
-void ListModelAnovaAssigned::removeVariables(const Terms &terms)
+void ListModelInteractionAssigned::removeVariables(const Terms &terms)
 {
 	_fixedFactors.remove(terms);
 	_randomFactors.remove(terms);
 	_covariates.remove(terms);
 
-	Terms newTerms = _anovaTerms;
+	Terms newTerms = _interactionTerms;
 	newTerms.discardWhatDoesContainTheseComponents(terms);
 
 	setTerms(newTerms);
 	
 }
 
-QString ListModelAnovaAssigned::getItemType(const Term &term)
+QString ListModelInteractionAssigned::getItemType(const Term &term)
 {
 	QString type;
 	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(source());	
@@ -260,14 +260,14 @@ QString ListModelAnovaAssigned::getItemType(const Term &term)
 	return type;
 }
 
-bool ListModelAnovaAssigned::canAddTerms(Terms *terms) const
+bool ListModelInteractionAssigned::canAddTerms(Terms *terms) const
 {
 	Q_UNUSED(terms);
 
 	return true;
 }
 
-Terms* ListModelAnovaAssigned::_addTerms(Terms *terms, int assignType)
+Terms* ListModelInteractionAssigned::_addTerms(Terms *terms, int assignType)
 {
 	Terms dropped;
 	dropped.setSortParent(source()->allTerms());
@@ -302,28 +302,28 @@ Terms* ListModelAnovaAssigned::_addTerms(Terms *terms, int assignType)
 		(void)newTerms;
 	}
 
-	Terms allTerms = _anovaTerms;
+	Terms allTerms = _interactionTerms;
 	allTerms.add(newTerms);
 	setTerms(allTerms);
 	
-	return NULL;
+	return nullptr;
 }
 
-Terms* ListModelAnovaAssigned::addTerms(Terms *terms, int dropItemIndex)
+Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex)
 {
 	Q_UNUSED(dropItemIndex);
 	return _addTerms(terms, Cross);
 }
 
-OptionTerm *ListModelAnovaAssigned::termOptionFromRow(Options *row)
+OptionTerm *ListModelInteractionAssigned::termOptionFromRow(Options *row)
 {
 	return static_cast<OptionTerm *>(row->get(0));
 }
 
-void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisance)
+void ListModelInteractionAssigned::setTerms(const Terms &terms, bool newTermsAreNuisance)
 {	
 	beginResetModel();
-	_anovaTerms.set(terms);
+	_interactionTerms.set(terms);
 
 	_rows.erase(
 		std::remove_if(
@@ -408,7 +408,7 @@ void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisan
 	emit modelChanged();
 }
 
-void ListModelAnovaAssigned::updateNuisances(bool checked)
+void ListModelInteractionAssigned::updateNuisances(bool checked)
 {
 	if (_rows.size() > 0)
 	{

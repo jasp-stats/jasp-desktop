@@ -52,7 +52,7 @@ Form {
                 CheckBox {  text: qsTr("Mann-Whitney")              ; name: "mannWhitneyU"  }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Alt. Hypothesis")
                 name: "hypothesis"
                 RadioButton {   text: qsTr("Group 1 ≠ Group 2") ; name: "groupsNotEqual"       ; checked: true}
@@ -91,7 +91,7 @@ Form {
                 CheckBox {  text: qsTr("Vovk-Sellke mazimum p-ratio")               ; name: "VovkSellkeMPR"                        }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")
                 name: "missingValues"
                 RadioButton {   text: qsTr("Exclude cases analysis by analysis")    ; name: "excludeAnalysisByAnalysis" ; checked: true }

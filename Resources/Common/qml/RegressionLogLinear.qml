@@ -54,7 +54,7 @@ Form {
             defaultAssignedVariablesList {
                 name: "modelTerms"
                 title: qsTr("Model terms")
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
             }
         }
     }

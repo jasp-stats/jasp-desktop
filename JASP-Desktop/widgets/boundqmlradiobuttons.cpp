@@ -27,8 +27,8 @@ BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, BoundQMLItem(item, form)
 {
-	_boundTo = NULL;
-	_checkedButton = NULL;
+	_boundTo = nullptr;
+	_checkedButton = nullptr;
 	
 	QList<QQuickItem* > buttons;
 	_getRadioButtons(item, buttons);
@@ -37,7 +37,7 @@ BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
 	{	
 		QString controlName = QQmlProperty(button, "name").read().toString();
 		if (controlName.isEmpty())
-			addError(QString::fromLatin1("A RadioButton inside ButtonGroup element (name: ") + name() + QString::fromLatin1(") does not have any name"));
+			addError(QString::fromLatin1("A RadioButton inside RadioButtonGroup element (name: ") + name() + QString::fromLatin1(") does not have any name"));
 		else
 		{
 			_buttons[controlName] = button;
@@ -56,7 +56,7 @@ void BoundQMLRadioButtons::_getRadioButtons(QQuickItem* item, QList<QQuickItem* 
 		QString controlType = QQmlProperty(child, "controlType").read().toString();
 		if (controlType == "RadioButton")
 			buttons.append(child);
-		else if (controlType != "ButtonGroup")
+		else if (controlType != "RadioButtonGroup")
 			_getRadioButtons(child, buttons);
 	}	
 }
@@ -65,7 +65,7 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionList *>(option);
 
-	if (_boundTo == NULL)
+	if (_boundTo == nullptr)
 	{
 		qDebug() << "could not bind to OptionList in BoundQuickRadioButtons";
 		return;

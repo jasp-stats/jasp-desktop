@@ -35,7 +35,7 @@
 #include "widgets/boundqmltextarea.h"
 #include "widgets/boundqmlradiobuttons.h"
 #include "widgets/boundqmllistviewpairs.h"
-#include "widgets/boundqmllistviewanovamodels.h"
+#include "widgets/boundqmllistviewinteraction.h"
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
@@ -225,7 +225,7 @@ void AnalysisForm::_parseQML()
 		case qmlControlType::CheckBox:			//fallthrough:
 		case qmlControlType::Switch:			control = new BoundQMLCheckBox(quickItem,		this);	break;
 		case qmlControlType::TextField:			control = new BoundQMLTextInput(quickItem,		this);	break;
-		case qmlControlType::ButtonGroup:		control = new BoundQMLRadioButtons(quickItem,	this);	break;
+		case qmlControlType::RadioButtonGroup:	control = new BoundQMLRadioButtons(quickItem,	this);	break;
 		case qmlControlType::Slider:			control = new BoundQMLSlider(quickItem,			this);	break;
 		case qmlControlType::TextArea:
 		{
@@ -274,7 +274,7 @@ void AnalysisForm::_parseQML()
 			{
 			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this); break;
 			case qmlListViewType::AssignedPairs:		listView = new BoundQMLListViewPairs(quickItem,this); break;
-			case qmlListViewType::AssignedAnova:		listView = new BoundQMLListViewAnovaModels(quickItem, this); break;
+			case qmlListViewType::Interaction:			listView = new BoundQMLListViewInteraction(quickItem, this); break;
 			case qmlListViewType::MeasuresCells:		listView = new BoundQMLListViewMeasuresCells(quickItem, this); break;
 			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this); break;
 			case qmlListViewType::AvailableVariables:
