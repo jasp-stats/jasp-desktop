@@ -47,7 +47,7 @@ Form {
                 DoubleField { text: qsTr("Std. deviation:"); defaultValue: 1.0 ; name: "stddev"; enabled: zTest.checked}                
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Alt. Hypothesis")
                 name: "hypothesis"
                 RadioButton {   text: qsTr("≠ Test value") ; name: "notEqualToTestValue"       ; checked: true}
@@ -85,7 +85,7 @@ Form {
                 CheckBox {  text: qsTr("Vovk-Sellke mazimum p-ratio")               ; name: "VovkSellkeMPR"                        }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")
                 name: "missingValues"
                 RadioButton {   text: qsTr("Exclude cases analysis by analysis")    ; name: "excludeAnalysisByAnalysis" ; checked: true }

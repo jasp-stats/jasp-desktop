@@ -50,7 +50,7 @@ Form {
         }
     }
 
-    ButtonGroup {
+    RadioButtonGroup {
         id: hypothesisGroup
         title: qsTr("Alt. Hypothesis")
         name: "hypothesis"
@@ -78,7 +78,7 @@ Form {
             CheckBox { text: qsTr("Vovk-Dellke maximum p-ratio"); name: "VovkSellkeMPR" }
         }
         ColumnLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 name: "countProp"
                 title: qsTr("Display")
                 RadioButton { text: qsTr("Counts"); name: "descCounts"; checked: true }

@@ -25,7 +25,7 @@ import JASP.Theme 1.0
 
 JASPControl {
     id: control
-    controlType: "ButtonGroup"
+    controlType: "RadioButtonGroup"
     hasTabFocus: false
 
     default property alias content: items.children
@@ -87,7 +87,7 @@ JASPControl {
                 if (child.controlType === "RadioButton") {
                     child.buttonGroup = buttonGroup;
                 }
-                else if (child.controlType !== "ButtonGroup") {
+                else if (child.controlType !== "RadioButtonGroup") {
                     linkRadioButtons(child);
                 }
             } else {

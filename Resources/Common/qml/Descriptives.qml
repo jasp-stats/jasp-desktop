@@ -97,7 +97,6 @@ Form {
 					CheckBox { text: qsTr("Percentiles:"); name: "percentileValuesPercentiles"; id: percentileValuesPercentiles }
 					TextField 
 					{
-						id: percentileValuesPercentilesPercentiles
 						inputType: "integerArray"
 						name: "percentileValuesPercentilesPercentiles"
 						fieldWidth: 60
@@ -142,7 +141,7 @@ Form {
 		debug: true
 		GridLayout 
 		{
-			ButtonGroup 
+			RadioButtonGroup 
 			{ 
 				name: "chartType";
 				title: qsTr("Chart Type")
@@ -152,7 +151,7 @@ Form {
 				RadioButton { text: qsTr("Histograms");	name: "_4histograms"	}
 			}
 			
-			ButtonGroup 
+			RadioButtonGroup 
 			{
 				name: "chartValues"
 				title: qsTr("Chart Values")

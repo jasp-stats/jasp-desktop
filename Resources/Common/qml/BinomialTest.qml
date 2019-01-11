@@ -36,7 +36,7 @@ Form {
             CheckBox     { text: qsTr("Vovk-Sellke maximum p-ratio");   name: "VovkSellkeMPR" }
         }
 
-        ButtonGroup 
+        RadioButtonGroup 
         {
             title: qsTr("Hypothesis")
             name: "hypothesis"

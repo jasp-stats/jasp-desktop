@@ -63,7 +63,7 @@ Form {
         GroupBox {
             title: qsTr("Output")
             CheckBox { text: qsTr("Effects"); name: "effects"; id: effectsOutput}
-            ButtonGroup {
+            RadioButtonGroup {
                 indent: true
                 enabled: effectsOutput.checked
                 name: "effectsType"
@@ -73,7 +73,7 @@ Form {
             CheckBox { text: qsTr("Descriptives"); name: "descriptives"}
         }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Order")
             name: "bayesFactorOrder"
             RadioButton { text: qsTr("Compare to null model"); name: "nullModelTop"; checked: true}
@@ -98,7 +98,7 @@ Form {
             AssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "modelTerms"
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
 
                 ExtraControlColumn {
                     type: "CheckBox"
@@ -161,7 +161,7 @@ Form {
                 DoubleField { text: qsTr("r scale covariates"); name: "priorCovariatesEffects"; defaultValue: 0.354; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 name: "sampleMode"
                 RadioButton { text: qsTr("Auto"); name: "auto"; checked: true}
                 RadioButton { text: qsTr("Manual"); name: "manual"; id: samplesManual}

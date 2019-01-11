@@ -313,7 +313,6 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
-    widgets/listmodelanovaassigned.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -335,7 +334,6 @@ HEADERS += \
     widgets/listmodelmeasurescellsassigned.h \
     widgets/qmllistviewtermsavailable.h \
     widgets/boundqmllistviewterms.h \
-    widgets/boundqmllistviewanovamodels.h \
     widgets/boundqmlslider.h \
     widgets/boundqmltextarea.h \
     widgets/boundqmltableview.h \
@@ -359,7 +357,9 @@ HEADERS += \
     widgets/filemenu/filemenubasiclistmodel.h \
     modules/ribbonmodelfiltered.h \
     utilities/helpmodel.h \
-    widgets/lavaansyntaxhighlighter.h
+    widgets/lavaansyntaxhighlighter.h \
+    widgets/boundqmllistviewinteraction.h \
+    widgets/listmodelinteractionassigned.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -482,7 +482,6 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
-    widgets/listmodelanovaassigned.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
@@ -505,7 +504,6 @@ SOURCES += \
     widgets/listmodelmeasurescellsassigned.cpp \
     widgets/qmllistviewtermsavailable.cpp \
     widgets/boundqmllistviewterms.cpp \
-    widgets/boundqmllistviewanovamodels.cpp \
     widgets/boundqmlslider.cpp \
     widgets/boundqmltextarea.cpp \
     widgets/boundqmltableview.cpp \
@@ -528,7 +526,9 @@ SOURCES += \
     widgets/filemenu/filemenubasiclistmodel.cpp \
     modules/ribbonmodelfiltered.cpp \
     utilities/helpmodel.cpp \
-    widgets/lavaansyntaxhighlighter.cpp
+    widgets/lavaansyntaxhighlighter.cpp \
+    widgets/boundqmllistviewinteraction.cpp \
+    widgets/listmodelinteractionassigned.cpp
 
 RESOURCES += \
     html/html.qrc \

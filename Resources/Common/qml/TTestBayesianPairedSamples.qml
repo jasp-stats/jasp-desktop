@@ -42,7 +42,7 @@ Form {
         ColumnLayout {
             spacing: 15
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Hypothesis")                         ; name: "hypothesis"
 
                 RadioButton { text: qsTr("Measure 1 ≠ Measure 2") ; name: "groupsNotEqual" ; checked: true }
@@ -52,7 +52,7 @@ Form {
 
             BayesFactorType { }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Tests")                     ; name: "testStatistic"
 
                 RadioButton { text: qsTr("Student")      ; name: "Student" ; checked: true }
@@ -92,7 +92,7 @@ Form {
                 PercentField { text: qsTr("Credible interval")             ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; indent: true; enabled: descriptivesPlots.checked }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")                                  ; name: "missingValues"
 
                 RadioButton { text: qsTr("Exclude cases analysis by analysis") ; name: "excludeAnalysisByAnalysis" ; checked: true }

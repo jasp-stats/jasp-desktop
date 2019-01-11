@@ -78,7 +78,7 @@ Form {
             AssignedVariablesList {
                 name: "modelTerms"
                 title: qsTr("Model terms")
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
                 ExtraControlColumn {
                     type: "CheckBox"
                     name: "isNuisance"
@@ -132,7 +132,7 @@ Form {
             title: qsTr("Residuals")
             CheckBox { text: qsTr("Dublin-Watson"); name: "residualsDurbinWatson" }
             CheckBox { text: qsTr("Casewise diagnostics"); name: "residualsCasewiseDiagnostics"; id: residualsCasewiseDiagnostics }
-            ButtonGroup {
+            RadioButtonGroup {
                 name: "residualsCasewiseDiagnosticsType"
                 enabled: residualsCasewiseDiagnostics.checked
                 indent: true
@@ -155,7 +155,7 @@ Form {
 
         CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Stepping Method Criteria")
             name: "steppingMethodCriteriaType"
             RadioButton { text: qsTr("Use p value"); name: "usePValue"; checked: true; id: usePValue}
@@ -176,7 +176,7 @@ Form {
 
         CheckBox { text: qsTr("Include constant in equation"); name: "includeConstant"; checked: true }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Missing Values")
             debug: true
             name: "missingValues"

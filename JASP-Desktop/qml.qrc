@@ -6,7 +6,6 @@
         <file>components/JASP/Controls/AssignButton.qml</file>
         <file>components/JASP/Controls/AssignedVariablesList.qml</file>
         <file>components/JASP/Controls/Button.qml</file>
-        <file>components/JASP/Controls/ButtonGroup.qml</file>
         <file>components/JASP/Controls/CheckBox.qml</file>
         <file>components/JASP/Controls/ComboBox.qml</file>
         <file>components/JASP/Controls/DoubleField.qml</file>
@@ -97,5 +96,6 @@
         <file>components/JASP/Widgets/ModulesMenu.qml</file>
         <file>components/JASP/Widgets/Ribbon/Ribbons.qml</file>
         <file>components/JASP/Widgets/HelpWindow.qml</file>
+        <file>components/JASP/Controls/RadioButtonGroup.qml</file>
     </qresource>
 </RCC>

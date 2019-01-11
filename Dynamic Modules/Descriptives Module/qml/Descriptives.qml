@@ -131,7 +131,7 @@ Form {
         text: qsTr("Charts")
         debug: true
         GridLayout {
-            ButtonGroup {
+			RadioButtonGroup {
                 name: "chartType"
                 title: qsTr("Chart Type")
                 RadioButton {   text: qsTr("None")          ; name: "_1noCharts"    }
@@ -140,7 +140,7 @@ Form {
                 RadioButton {   text: qsTr("Histograms")    ; name: "_4histograms"  }                
             }
             
-            ButtonGroup {
+			RadioButtonGroup {
                 name: "chartValues"
                 title: qsTr("Chart Values")
                 RadioButton {   text: qsTr("Frequencies")   ; name: "_1frequencies" }

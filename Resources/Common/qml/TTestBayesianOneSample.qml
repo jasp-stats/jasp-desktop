@@ -44,7 +44,7 @@ Form {
         ColumnLayout {
             spacing: 15
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Hypothesis")                ; name: "hypothesis"
 
                 RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true }
@@ -79,7 +79,7 @@ Form {
                 PercentField { text: qsTr("Credible interval")             ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; indent: true; enabled: descriptivesPlots.checked }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")                                  ; name: "missingValues"
 
                 RadioButton { text: qsTr("Exclude cases analysis by analysis") ; name: "excludeAnalysisByAnalysis" ; checked: true }

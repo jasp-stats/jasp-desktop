@@ -76,14 +76,14 @@ Form {
             }
         }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Order")
             name: "bayesFactorOrder"
             RadioButton { text: qsTr("Compare to best model"); name: "bestModelTop"; checked: true }
             RadioButton { text: qsTr("Compare to null model"); name: "nullModelTop" }
         }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Limit no. models shown")
             name: "shownModels"
             RadioButton { text: qsTr("No"); name: "limited" }
@@ -116,7 +116,7 @@ Form {
             AssignedVariablesList {
                 name: "modelTerms"
                 title: qsTr("Model terms")
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
                 ExtraControlColumn {
                     type: "CheckBox"
                     name: "isNuisance"
@@ -155,7 +155,7 @@ Form {
         text: qsTr("Advanced Options")
 
         GridLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Prior")
                 name: "priorRegressionCoefficients"
 
@@ -190,7 +190,7 @@ Form {
             }
 
             ColumnLayout {
-                ButtonGroup {
+                RadioButtonGroup {
                     title: qsTr("Model prior")
                     name: "modelPrior"
                     GridLayout {
@@ -207,7 +207,7 @@ Form {
                     RadioButton { text: qsTr("Uniform"); name: "uniform" }
                 }
 
-                ButtonGroup {
+                RadioButtonGroup {
                     title: qsTr("Sampling method")
                     name: "samplingMethod"
                     GridLayout {

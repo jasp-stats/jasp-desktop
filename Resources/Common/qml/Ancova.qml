@@ -78,7 +78,7 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "modelTerms"
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
             }
         }
 
@@ -169,7 +169,7 @@ Form {
             title: qsTr("Display")
             CheckBox { text: qsTr("Display error bars"); name: "plotErrorBars" }
 
-           ButtonGroup {
+           RadioButtonGroup {
                name: "errorBarType"
                RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
                PercentField { indent: true; text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}

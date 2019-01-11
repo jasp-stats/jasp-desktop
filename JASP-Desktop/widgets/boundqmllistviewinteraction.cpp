@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "boundqmllistviewanovamodels.h"
+#include "boundqmllistviewinteraction.h"
 #include "../analysis/analysisform.h"
 #include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
@@ -24,16 +24,16 @@
 
 using namespace std;
 
-BoundQMLListViewAnovaModels::BoundQMLListViewAnovaModels(QQuickItem* item, AnalysisForm* form) 
+BoundQMLListViewInteraction::BoundQMLListViewInteraction(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
 {
 	_boundTo = nullptr;
-	_anovaModel = new ListModelAnovaAssigned(this);
+	_interactionModel = new ListModelInteractionAssigned(this);
 	setTermsAreNotVariables();		
 }
 
-void BoundQMLListViewAnovaModels::bindTo(Option *option)
+void BoundQMLListViewInteraction::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 	Options* options = new Options();
@@ -42,15 +42,15 @@ void BoundQMLListViewAnovaModels::bindTo(Option *option)
 		addExtraOptions(options);
 	_boundTo->setTemplate(options);
 	
-	_anovaModel->initTermsWithTemplate(_boundTo->value(), _boundTo->rowTemplate());
+	_interactionModel->initTermsWithTemplate(_boundTo->value(), _boundTo->rowTemplate());
 }
 
-void BoundQMLListViewAnovaModels::unbind()
+void BoundQMLListViewInteraction::unbind()
 {
 	
 }
 
-Option* BoundQMLListViewAnovaModels::createOption()
+Option* BoundQMLListViewInteraction::createOption()
 {
 	Options* templote = new Options();
 	templote->add("components", new OptionTerm());
@@ -73,9 +73,9 @@ Option* BoundQMLListViewAnovaModels::createOption()
 	return result;
 }
 
-void BoundQMLListViewAnovaModels::modelChangedHandler()
+void BoundQMLListViewInteraction::modelChangedHandler()
 {
-	const std::vector<Options *>& rows = _anovaModel->rows();
+	const std::vector<Options *>& rows = _interactionModel->rows();
 	
 	if (_hasExtraControlColumns)
 	{

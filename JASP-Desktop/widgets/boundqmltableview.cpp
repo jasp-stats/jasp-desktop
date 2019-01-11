@@ -31,7 +31,7 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	, QMLListView(item, form)
 	, BoundQMLItem(item, form)
 {
-	_boundTo = NULL;
+	_boundTo = nullptr;
 	QString modelType = _item->property("modelType").toString();
 	
 	if (modelType == "MultinomialChi2Model")
@@ -49,7 +49,7 @@ void BoundQMLTableView::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
-	if (_boundTo != NULL)
+	if (_boundTo != nullptr)
 	{
 		Options* templote = new Options();
 		templote->add("name", new OptionString());
@@ -125,8 +125,8 @@ void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)
 	{
 		bool ok = false;
 		double val = value.toDouble(&ok);
-		if (val)
-			_multinomialChi2TestModel->itemChanged(col, row, value.toDouble());
+		if (ok)
+			_multinomialChi2TestModel->itemChanged(col, row, val);
 		else
 			QTimer::singleShot(0, _multinomialChi2TestModel, SLOT(refreshModel()));
 	}

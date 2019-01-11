@@ -35,7 +35,7 @@ Form {
             title: qsTr("Scale Statistics")
             CheckBox {  text: qsTr("McDonald's ω")                      ; name: "mcDonaldScale"; checked: true }
             CheckBox {  text: qsTr("Cronbach's α")                      ; name: "alphaScale"; id: alphaScale }
-            ButtonGroup {
+            RadioButtonGroup {
                 indent: true
                 enabled: alphaScale.checked
                 name: "alphaScaleStandardized"
@@ -81,7 +81,7 @@ Form {
         text: qsTr("Advanced Options")
 
         GridLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")
                 name: "missingValues"
                 RadioButton { text: qsTr("Exclude cases listwise")    ; name: "excludeCasesListwise"    ; checked: true }

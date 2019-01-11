@@ -48,7 +48,7 @@ Form {
                 CheckBox {  text: qsTr("Wilcoxon signed-rank")      ; name: "wilcoxonSignedRank"  }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Alt. Hypothesis")
                 name: "hypothesis"
                 RadioButton {   text: qsTr("Measure 1 ≠ Measure 2") ; name: "groupsNotEqual"       ; checked: true}
@@ -86,7 +86,7 @@ Form {
                 CheckBox {  text: qsTr("Vovk-Sellke mazimum p-ratio")               ; name: "VovkSellkeMPR"                        }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing Values")
                 name: "missingValues"
                 RadioButton {   text: qsTr("Exclude cases analysis by analysis")    ; name: "excludeAnalysisByAnalysis" ; checked: true }

@@ -72,7 +72,7 @@ Form {
             defaultAssignedVariablesList {
                 name: "modelTerms"
                 title: qsTr("Model terms")
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
             }
         }
     }
@@ -113,7 +113,7 @@ Form {
     ExpanderButton {
         text: qsTr("Advanced")
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Samples")
             name: "sampleMode"
             RadioButton { text: qsTr("Auto") ; name: "auto" ; checked: true }

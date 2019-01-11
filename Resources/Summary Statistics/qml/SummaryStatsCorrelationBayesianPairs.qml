@@ -32,7 +32,7 @@ Form
 
     GridLayout 
 	{
-		ButtonGroup 
+		RadioButtonGroup 
 		{
 			title: qsTr("Correlation Coefficient") ; name: "correlationCoefficient"
 			Layout.columnSpan: 2
@@ -48,7 +48,7 @@ Form
 			}
 		}
 		
-		ButtonGroup 
+		RadioButtonGroup 
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"

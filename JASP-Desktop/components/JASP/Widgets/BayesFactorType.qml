@@ -21,7 +21,7 @@ import QtQuick 2.8
 import JASP.Controls 1.0
 
 
-ButtonGroup {
+RadioButtonGroup {
     title: qsTr("Bayes Factor")                     ; name: "bayesFactorType"
 
     RadioButton { text: qsTr("BF\u2081\u2080")      ; name: "BF10"; checked: true }

@@ -149,13 +149,13 @@ Form {
         text: qsTr("Options")
 
         GridLayout {
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Row Order")
                 name: "rowOrder"
                 RadioButton { text: qsTr("Ascending"); name: "ascending"; checked: true }
                 RadioButton { text: qsTr("Descending"); name: "descending" }
             }
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Column Order")
                 name: "columnOrder"
                 RadioButton { text: qsTr("Ascending"); name: "ascending"; checked: true }

@@ -98,7 +98,7 @@ Form
 		title: qsTr("Analysis Options")
 		GridLayout
 		{
-			ButtonGroup
+			RadioButtonGroup
 			{
 				title: qsTr("Correlation method")
 				name: "correlationMethod"
@@ -108,7 +108,7 @@ Form
 				RadioButton { text: qsTr("Npn");	name: "npn" }
 			}
 
-			ButtonGroup
+			RadioButtonGroup
 			{
 				title: qsTr("Centrality measures")
 				name: "normalizeCentrality"
@@ -124,7 +124,7 @@ Form
 				CheckBox { text: qsTr("Signed");	name: "signedNetwork";	 checked: true }
 			}
 
-			ButtonGroup
+			RadioButtonGroup
 			{
 				title: qsTr("Missing values")
 				name: "missingValues"
@@ -132,7 +132,7 @@ Form
 				RadioButton { text: qsTr("Exclude listwise"); name: "listwise" }
 			}
 
-			ButtonGroup
+			RadioButtonGroup
 			{
 				title: qsTr("Sample size")
 				name: "sampleSize"
@@ -171,7 +171,7 @@ Form
 				}
 			}
 			
-			ButtonGroup
+			RadioButtonGroup
 			{
 				title: qsTr("Bootstrap type")
 				name: "BootstrapType"
@@ -267,7 +267,7 @@ Form
 
 			}
 
-			ButtonGroup 
+			RadioButtonGroup 
 			{ 
 				name: "graphSize";
 				title: qsTr("Network size")
@@ -275,7 +275,7 @@ Form
 				RadioButton { text: qsTr("Free");		name: "graphSizeFree"					}
 			}
 			
-			ButtonGroup
+			RadioButtonGroup
 			{
 				name: "showVariableNames";
 				title: qsTr("Show variable names")
@@ -283,7 +283,7 @@ Form
 				RadioButton { text: qsTr("In legend");	name: "In legend"				}
 			}
 
-			ButtonGroup
+			RadioButtonGroup
 			{
 				name: "showLegend"
 				title: qsTr("Legend")
@@ -296,7 +296,7 @@ Form
 				}
 			}
 
-			ButtonGroup
+			RadioButtonGroup
 			{
 				name: "layout"
 				title: qsTr("Layout")

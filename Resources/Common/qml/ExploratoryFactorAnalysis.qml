@@ -37,7 +37,7 @@ Form {
     }
 
     GridLayout {
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Number of Factors")
             name: "factorMethod"
             RadioButton { text: qsTr("Parallel Analysis"); name: "parallelAnalysis"; checked: true }
@@ -61,7 +61,7 @@ Form {
             }
         }
 
-        ButtonGroup {
+        RadioButtonGroup {
             title: qsTr("Rotation")
             name: "rotationMethod"
             RadioButton { text: qsTr("Orthogonal"); name: "orthogonal"; id: rotationOrthogonal}
@@ -92,7 +92,7 @@ Form {
                 CheckBox { text: qsTr("Scree plot"); name: "incl_screePlot" }
             }
 
-            ButtonGroup {
+            RadioButtonGroup {
                 title: qsTr("Missing values")
                 name: "missingValues"
                 RadioButton { text: qsTr("Exclude cases pairwise"); name: "pairwise"; checked: true }

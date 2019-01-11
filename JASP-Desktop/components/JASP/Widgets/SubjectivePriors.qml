@@ -25,15 +25,15 @@ import JASP.Controls 1.0
 ExpanderButton {
     text: qsTr("Prior")
 
-    ButtonGroup {
+    RadioButtonGroup {
         name: "effectSize"
         RadioButton {text: qsTr("Standardized effect size"); name: "standardized"; checked: true; debug: true; id: standardized}
-        ButtonGroup {
+        RadioButtonGroup {
             Layout.leftMargin: DEBUG_MODE ? 25 : 0
             enabled: standardized.checked
             name: "effectSizeStandardized"
             RadioButton {text: qsTr("Default"); name: "default"; checked: true; id: defaultEffect}
-            ButtonGroup {
+            RadioButtonGroup {
                 Layout.leftMargin: 25
                 enabled: defaultEffect.checked
                 name: "defaultStandardizedEffectSize"
@@ -44,7 +44,7 @@ ExpanderButton {
             }
 
             RadioButton {text: qsTr("Informed"); name: "informative"; id: informative}
-            ButtonGroup {
+            RadioButtonGroup {
                 enabled: informative.checked
                 Layout.leftMargin: 25
                 name: "informativeStandardizedEffectSize"
@@ -71,7 +71,7 @@ ExpanderButton {
         }
 
         RadioButton {text: qsTr("Raw effect size (Dienes)"); name: "dienes"; debug: true; id: dienes}
-        ButtonGroup {
+        RadioButtonGroup {
             enabled: dienes.checked
             Layout.leftMargin: 25
             debug: true
