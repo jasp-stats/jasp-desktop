@@ -19,57 +19,43 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 
-Form {
-    id: form
-    
-    VariablesForm {
-        showDefaultAssignedVariablesList: false
-
-        AssignedVariablesList {
-            title: qsTr("Counts (optional)")
-            name: "counts"
-            singleItem: true
-        }
-        AssignedVariablesList {
-            title: qsTr("Factors")
-            name: "factors"
-            itemType: "fixedFactors"
-            allowedColumns: ["ordinal", "nominal"]
-        }
-    }
-
-    ExpanderButton {
-        title: qsTr("Model")
-
-        VariablesForm {
-            height: 200
-            listWidth: parent.width * 5 / 9
-
-            availableVariablesList {
-                name: "availableTerms"
-                title: qsTr("Components")
-                width: parent.width / 4
-                syncModels: ['factors']
-            }
-            defaultAssignedVariablesList {
-                name: "modelTerms"
-                title: qsTr("Model terms")
-                listViewType: "Interaction"
-            }
-        }
-    }
-
-    ExpanderButton {
-        text: qsTr("Statistics")
-
-        GridLayout {
-            GroupBox {
-                title: qsTr("Regression Coefficient")
-                CheckBox { text: qsTr("Estimates")            ; name: "regressionCoefficientsEstimates" }
-                CheckBox { text: qsTr("Confidence intervals") ; name: "regressionCoefficientsConfidenceIntervals"; id: interval }
-                PercentField { text: qsTr("Interval")         ; name: "regressionCoefficientsConfidenceIntervalsInterval" ; defaultValue: 95 ; enabled: interval.checked; indent: true }
-            }
-            CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio") ; name: "VovkSellkeMPR" }
-        }
-    }
+Form
+{
+	id: form
+	
+	VariablesForm
+	{
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleItem: true	}
+		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }			
+	}
+	
+	ExpanderButton
+	{
+		title: qsTr("Model")
+		
+		VariablesForm
+		{
+			height: 200
+			listWidth: parent.width * 5 / 9
+			availableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; syncModels: ['factors'] }
+			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); listViewType: "Interaction" }
+		}
+	}
+	
+	ExpanderButton
+	{
+		text: qsTr("Statistics")
+		
+		GridLayout
+		{
+			GroupBox
+			{
+				title: qsTr("Regression Coefficient")
+				CheckBox { text: qsTr("Estimates")            ; name: "regressionCoefficientsEstimates" }
+				CheckBox { text: qsTr("Confidence intervals") ; name: "regressionCoefficientsConfidenceIntervals"; id: interval }
+				PercentField { text: qsTr("Interval")         ; name: "regressionCoefficientsConfidenceIntervalsInterval" ; defaultValue: 95 ; enabled: interval.checked; indent: true }
+			}
+			CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio") ; name: "VovkSellkeMPR" }
+		}
+	}
 }

@@ -24,8 +24,12 @@ Form {
     usesJaspResults: true
     
     VariablesForm {
-        defaultAssignedVariablesList.title: qsTr("Variables")
-        AssignedVariablesList {
+		AssignedVariablesList
+		{
+			name: "variables"
+			title: qsTr("Variables")
+		}
+		AssignedVariablesList {
             name: "splitby"
             title: qsTr("Split")
             singleItem: true

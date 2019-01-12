@@ -22,74 +22,69 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
-Form {
-    id: form
-
-    CheckBox { name: "simulatepval"; checked: false; visible: false }
-
-    VariablesForm {
-        height: 170
-        marginBetweenVariablesLists: 15
-        defaultAssignedVariablesList {
-            name: "factor"
-            title: qsTr("Factor")
-            singleItem: true
-            allowedColumns: ["ordinal", "nominal"]
-        }
-        AssignedVariablesList {
-            name: "counts"
-            title: qsTr("Counts")
-            singleItem: true
-            allowedColumns: ["ordinal", "scale"]
-        }
-        AssignedVariablesList {
-            name: "exProbVar"
-            title: qsTr("Expected Counts")
-            singleItem: true
-            allowedColumns: ["ordinal", "scale"]
-        }
-    }
-
-    RadioButtonGroup {
-        id: hypothesisGroup
-        title: qsTr("Alt. Hypothesis")
-        name: "hypothesis"
-        RadioButton { text: qsTr("Multinomial test"); name: "multinomialTest"; checked: true }
-        RadioButton { text: qsTr("χ² test"); name: "expectedProbs"; id: expectedProbs }
-
-        Chi2TestTableView {
-            name: "tableWidget"
-            width: form.availableWidth - hypothesisGroup.leftPadding
-            visible: expectedProbs.checked
-            syncModels: "factor"
-        }
-    }
-
-    GridLayout {
-        GroupBox {
-            title: qsTr("Additional Statistics")
-            CheckBox { text: qsTr("Descriptives"); name: "descriptives"; id: descriptives}
-            RowLayout {
-                Layout.leftMargin: Theme.indentationLength
-                enabled: descriptives.checked
-                CheckBox { text: qsTr("Confidence interval"); name: "confidenceInterval" }
-                PercentField { name: "confidenceIntervalInterval"; value: "95" }
-            }
-            CheckBox { text: qsTr("Vovk-Dellke maximum p-ratio"); name: "VovkSellkeMPR" }
-        }
-        ColumnLayout {
-            RadioButtonGroup {
-                name: "countProp"
-                title: qsTr("Display")
-                RadioButton { text: qsTr("Counts"); name: "descCounts"; checked: true }
-                RadioButton { text: qsTr("Proportions"); name: "descProps" }
-            }
-
-            GroupBox {
-                title: qsTr("Plots")
-                CheckBox { text: qsTr("Descriptives plot"); name: "descriptivesPlot"; id: descriptivesPlot }
-                PercentField { text: qsTr("Confidence interval"); name: "descriptivesPlotConfidenceInterval"; value: "95"; enabled: descriptivesPlot.checked }
-            }
-        }
-    }
+Form
+{
+	id: form
+	
+	CheckBox { name: "simulatepval"; checked: false; visible: false }
+	
+	VariablesForm
+	{
+		height: 170
+		marginBetweenVariablesLists: 15
+		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleItem: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleItem: true; allowedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList { name: "exProbVar";	title: qsTr("Expected Counts"); singleItem: true; allowedColumns: ["ordinal", "scale"] }
+	}
+	
+	RadioButtonGroup
+	{
+		id: hypothesisGroup
+		title: qsTr("Alt. Hypothesis")
+		name: "hypothesis"
+		RadioButton { text: qsTr("Multinomial test");	name: "multinomialTest"; checked: true }
+		RadioButton { text: qsTr("χ² test");				name: "expectedProbs"; id: expectedProbs }
+		
+		Chi2TestTableView
+		{
+			name: "tableWidget"
+			width: form.availableWidth - hypothesisGroup.leftPadding
+			visible: expectedProbs.checked
+			syncModels: "factor"
+		}
+	}
+	
+	GridLayout
+	{
+		GroupBox
+		{
+			title: qsTr("Additional Statistics")
+			CheckBox { text: qsTr("Descriptives"); name: "descriptives"; id: descriptives}
+			RowLayout
+			{
+				Layout.leftMargin: Theme.indentationLength
+				enabled: descriptives.checked
+				CheckBox { text: qsTr("Confidence interval"); name: "confidenceInterval" }
+				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95 }
+			}
+			CheckBox { text: qsTr("Vovk-Dellke maximum p-ratio"); name: "VovkSellkeMPR" }
+		}
+		ColumnLayout
+		{
+			RadioButtonGroup
+			{
+				name: "countProp"
+				title: qsTr("Display")
+				RadioButton { text: qsTr("Counts"); name: "descCounts"; checked: true }
+				RadioButton { text: qsTr("Proportions"); name: "descProps" }
+			}
+			
+			GroupBox
+			{
+				title: qsTr("Plots")
+				CheckBox { text: qsTr("Descriptives plot"); name: "descriptivesPlot"; id: descriptivesPlot }
+				PercentField { text: qsTr("Confidence interval"); name: "descriptivesPlotConfidenceInterval"; defaultValue: 95; enabled: descriptivesPlot.checked }
+			}
+		}
+	}
 }

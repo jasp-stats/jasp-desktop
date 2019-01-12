@@ -28,10 +28,8 @@ Item {
     default property alias content: items.children
     property int listWidth: parent.width * 2 / 5
     property alias availableVariablesList: availableVariablesList
-    property alias defaultAssignedVariablesList: defaultAssignedVariablesList
 
     property int marginBetweenVariablesLists: 8
-    property bool showDefaultAssignedVariablesList: true
 
     VariablesList {
         id: availableVariablesList
@@ -40,14 +38,6 @@ Item {
         height: parent.height
         anchors.top: parent.top
         anchors.left: parent.left
-    }
-
-    AssignedVariablesList {
-        id: defaultAssignedVariablesList
-        name: showDefaultAssignedVariablesList ? "variables" : ""
-        width: listWidth
-        visible: showDefaultAssignedVariablesList
-		isBound: showDefaultAssignedVariablesList
     }
 
     Item {
@@ -64,9 +54,7 @@ Item {
         
         var titleHeight = Theme.variablesListTitle;
 
-        if (availableVariablesList.title && !defaultAssignedVariablesList.title)
-            defaultAssignedVariablesList.title = " "; // Add a space as title so that the assignedList aligns with the availableList
-        var allJASPControls = showDefaultAssignedVariablesList ? [defaultAssignedVariablesList] : []
+        var allJASPControls = []
 
         for (var i = 0; i < items.children.length; ++i) {
             var child = items.children[i];

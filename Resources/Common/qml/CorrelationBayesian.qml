@@ -21,66 +21,78 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
-Form {
-    id: form
-    
-    VariablesForm {
-        defaultAssignedVariablesList.allowedColumns: ["ordinal", "scale"]
-    }
-
-    GroupBox {
-        title: qsTr("Correlation Coefficients")
-        spacing: Theme.rowGridSpacing
-
-        GridLayout {
-            GroupBox {
-                CheckBox { text: qsTr("Pearson's rho")  ; name: "pearson" ; checked: true }
-                CheckBox { text: qsTr("Spearman")       ; name: "spearman" ; debug: true }
-                CheckBox { text: qsTr("Kendall's tau-b"); name: "kendallsTauB" }
-            }
-
-            GroupBox {
-                CheckBox { text: qsTr("Report Bayes factors")           ; name: "reportBayesFactors"; checked: true }
-                CheckBox { text: qsTr("Flag supported correlations")    ; name: "flagSupported" }
-                CheckBox { text: qsTr("Credible intervals")             ; name: "credibleInterval"; id: credibleInterval }
-                PercentField { text: qsTr("Interval")                   ; name: "ciValue"; defaultValue: 95; enabled:  credibleInterval.checked; indent: true}
-            }
-        }
-    }
-
-    GridLayout {
-        RadioButtonGroup {
-            title: qsTr("Hypothesis")
-            name: "hypothesis"
-            RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
-            RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
-            RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
-        }
-
-        GroupBox {
-            title: qsTr("Plots")
-            CheckBox { text: qsTr("Correlation matrix")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
-            GroupBox {
-                enabled: plotCorrelationMatrix.checked
-                indent: true
-                CheckBox { text: qsTr("Densities for variables") ; name: "plotDensitiesForVariables" }
-                CheckBox { text: qsTr("Posteriors under H\u2081")      ; name: "plotPosteriors" }
-            }
-        }
-
-        BayesFactorType {}
-
-        DoubleField { text: qsTr("Stretched beta prior width"); name: "priorWidth"; defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
-    }
-
-    ExpanderButton {
-        text: qsTr("Options")
-
-        RadioButtonGroup {
-            title: qsTr("Missing Values")
-            name: "missingValues"
-            RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }
-            RadioButton { text: qsTr("Exclude cases listwise"); name: "excludeListwise" }
-        }
-    }
+Form
+{
+	id: form
+	
+	VariablesForm
+	{
+		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
+	}
+	
+	GroupBox
+	{
+		title: qsTr("Correlation Coefficients")
+		spacing: Theme.rowGridSpacing
+		
+		GridLayout
+		{
+			GroupBox
+			{
+				CheckBox { text: qsTr("Pearson's rho")  ; name: "pearson" ; checked: true }
+				CheckBox { text: qsTr("Spearman")       ; name: "spearman" ; debug: true }
+				CheckBox { text: qsTr("Kendall's tau-b"); name: "kendallsTauB" }
+			}
+			
+			GroupBox
+			{
+				CheckBox { text: qsTr("Report Bayes factors")           ; name: "reportBayesFactors"; checked: true }
+				CheckBox { text: qsTr("Flag supported correlations")    ; name: "flagSupported" }
+				CheckBox { text: qsTr("Credible intervals")             ; name: "credibleInterval"; id: credibleInterval }
+				PercentField { text: qsTr("Interval")                   ; name: "ciValue"; defaultValue: 95; enabled:  credibleInterval.checked; indent: true}
+			}
+		}
+	}
+	
+	GridLayout
+	{
+		RadioButtonGroup
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
+			RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
+			RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
+		}
+		
+		GroupBox
+		{
+			title: qsTr("Plots")
+			CheckBox { text: qsTr("Correlation matrix")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
+			GroupBox
+			{
+				enabled: plotCorrelationMatrix.checked
+				indent: true
+				CheckBox { text: qsTr("Densities for variables") ; name: "plotDensitiesForVariables" }
+				CheckBox { text: qsTr("Posteriors under H\u2081")      ; name: "plotPosteriors" }
+			}
+		}
+		
+		BayesFactorType {}
+		
+		DoubleField { text: qsTr("Stretched beta prior width"); name: "priorWidth"; defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
+	}
+	
+	ExpanderButton
+	{
+		text: qsTr("Options")
+		
+		RadioButtonGroup
+		{
+			title: qsTr("Missing Values")
+			name: "missingValues"
+			RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }
+			RadioButton { text: qsTr("Exclude cases listwise"); name: "excludeListwise" }
+		}
+	}
 }

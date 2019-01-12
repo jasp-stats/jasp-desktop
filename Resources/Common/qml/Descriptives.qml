@@ -21,20 +21,16 @@ import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-Form {
+// All Analysis forms must be built with the From QML item
+Form 
+{
 	id: form
 	usesJaspResults: true
 	
 	VariablesForm 
 	{
-		defaultAssignedVariablesList.title: qsTr("Variables")
-		AssignedVariablesList 
-		{
-			name: "splitby"
-			title: qsTr("Split")
-			singleItem: true
-			allowedColumns: ["ordinal", "nominal"]
-		}
+		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
+		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
 	CheckBox { text: qsTr("Frequency tables (nominal and ordinal variables)"); name: "frequencyTables" }

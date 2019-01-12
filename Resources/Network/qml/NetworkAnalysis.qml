@@ -25,7 +25,7 @@ Form
 {
 	id: form
 	usesJaspResults: false
-
+	
 	TextField	 { name: "isingEstimator";			value: "pseudoLikelihood"; visible: false }
 	TextField	 { name: "layoutX";					value: "";			visible: false }
 	TextField	 { name: "layoutY";					value: "";			visible: false }
@@ -47,20 +47,14 @@ Form
 	TextField	 { name: "thresholdBox";			value: "value";		visible: false }
 	TextField	 { name: "thresholdString";			value: "sig";		visible: false }
 	DoubleField	 { name: "thresholdValue";			defaultValue: 0;	visible: false }
-
+	
 	
 	VariablesForm 
 	{
-		defaultAssignedVariablesList.title: qsTr("Dependent Variables")
-		AssignedVariablesList 
-		{
-			name: "groupingVariable"
-			title: qsTr("Split")
-			singleItem: true
-			allowedColumns: ["ordinal", "nominal"]
-		}
+		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables") }
+		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
 	}
-
+	
 	GridLayout
 	{
 		ColumnLayout
@@ -71,7 +65,7 @@ Form
 				name: "estimator"
 				model: ["EBICglasso", "cor", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm"]
 			}
-
+			
 			GroupBox
 			{
 				title: qsTr("Plots")
@@ -80,7 +74,7 @@ Form
 				CheckBox { text: qsTr("Clustering plot");	name: "plotClustering" }
 			}
 		}
-
+		
 		GroupBox
 		{
 			title: qsTr("Tables")
@@ -91,7 +85,7 @@ Form
 			CheckBox { text: qsTr("Show variable names");	name: "tableLayoutValuesOnly"; enabled: tableLayout.checked; indent: true }
 		}
 	}
-
+	
 	
 	ExpanderButton 
 	{
@@ -107,7 +101,7 @@ Form
 				RadioButton { text: qsTr("Cov");	name: "cov" }
 				RadioButton { text: qsTr("Npn");	name: "npn" }
 			}
-
+			
 			RadioButtonGroup
 			{
 				title: qsTr("Centrality measures")
@@ -116,14 +110,14 @@ Form
 				RadioButton { text: qsTr("Relative");	name: "relative" }
 				RadioButton { text: qsTr("Raw");		name: "raw" }
 			}
-
+			
 			GroupBox
 			{
 				title: qsTr("Network")
 				CheckBox { text: qsTr("Weighted");	name: "weightedNetwork"; checked: true }
 				CheckBox { text: qsTr("Signed");	name: "signedNetwork";	 checked: true }
 			}
-
+			
 			RadioButtonGroup
 			{
 				title: qsTr("Missing values")
@@ -131,7 +125,7 @@ Form
 				RadioButton { text: qsTr("Exclude pairwise"); name: "pairwise"; checked: true }
 				RadioButton { text: qsTr("Exclude listwise"); name: "listwise" }
 			}
-
+			
 			RadioButtonGroup
 			{
 				title: qsTr("Sample size")
@@ -139,7 +133,7 @@ Form
 				RadioButton { text: qsTr("Maximum"); name: "maximum"; checked: true }
 				RadioButton { text: qsTr("Minimum"); name: "minimim" }
 			}
-
+			
 			GroupBox
 			{ 
 				title: qsTr("Tuning parameters")
@@ -162,7 +156,7 @@ Form
 					CheckBox	 { text: qsTr("Bootstrap network");		name: "bootstrapOnOff" }
 					IntegerField { text: qsTr("Number of bootstraps");	name: "numberOfBootstraps"; defaultValue: 0; intValidator.top: 100000}
 				}
-
+				
 				GroupBox
 				{
 					title: qsTr("Statistics")
@@ -188,23 +182,14 @@ Form
 	ExpanderButton 
 	{
 		text: qsTr("Graphical Options")
-
+		
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList
-			{
-				name: "variablesForColor"
-				title: qsTr("Nodes")
-			}
-			defaultAssignedVariablesList
-			{
-				title: qsTr("Color nodes by")
-				name: "colorNodesBy"
-				singleItem: true
-			}
+			availableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
+			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color nodes by"); singleItem: true }
 		}
-
+		
 		GridLayout 
 		{
 			GroupBox
@@ -226,7 +211,7 @@ Form
 					}
 				}
 			}
-
+			
 			GroupBox
 			{
 				title: qsTr("Edges")
@@ -250,10 +235,10 @@ Form
 						ListElement { key: qsTr("Reddit");		value: "Reddit"		}
 						ListElement { key: qsTr("Fried");		value: "Fried"		}
 					}
-
+					
 				}
 			}
-
+			
 			GroupBox
 			{
 				title: qsTr("Labels")
@@ -264,9 +249,9 @@ Form
 					CheckBox { text: qsTr("Abbreviate labels to "); name: "abbreviateLabels"; id: abbreviateLabels }
 					IntegerField { name: "abbreviateNoChars"; enabled: abbreviateLabels.checked; defaultValue: 4; intValidator.top: 100000 }
 				}
-
+				
 			}
-
+			
 			RadioButtonGroup 
 			{ 
 				name: "graphSize";
@@ -282,7 +267,7 @@ Form
 				RadioButton { text: qsTr("In nodes");	name: "In nodes"; checked: true	}
 				RadioButton { text: qsTr("In legend");	name: "In legend"				}
 			}
-
+			
 			RadioButtonGroup
 			{
 				name: "showLegend"
@@ -295,7 +280,7 @@ Form
 					IntegerField { name: "legendNumber"; defaultValue: 1 }
 				}
 			}
-
+			
 			RadioButtonGroup
 			{
 				name: "layout"
