@@ -20,39 +20,42 @@ import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
-Form {
-    id: form
-    
-    VariablesForm {
-        defaultAssignedVariablesList {
-            allowedColumns: ["ordinal", "nominal"]
-        }
-    }
-
-    DoubleField { text: qsTr("Test value: "); name: "testValue"; defaultValue: 0.5 ; doubleValidator { top: 1; decimals: 2 } }
-
-    GridLayout {
-        RadioButtonGroup {
-            title: qsTr("Hypothesis")
-            name: "hypothesis"
-            RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true  }
-            RadioButton { text: qsTr("> Test value") ; name: "greaterThanTestValue"                 }
-            RadioButton { text: qsTr("< Test value") ; name: "lessThanTestValue"                    }
-        }
-
-        GroupBox {
-            title: qsTr("Plots")
-            CheckBox { text: qsTr("Prior and posterior"); name: "plotPriorAndPosterior"; id: plotPriorAndPosterior }
-            CheckBox { text: qsTr("Additional info"); name: "plotPriorAndPosteriorAdditionalInfo"; checked: true; enabled: plotPriorAndPosterior.checked; indent: true }
-            CheckBox { text: qsTr("Sequential analysis"); name: "plotSequentialAnalysis" }
-        }
-
-        BayesFactorType {}
-
-        GroupBox {
-            title: qsTr("Prior")
-            DoubleField { text: qsTr("Beta prior: parameter a"); name: "priorA"; defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
-            DoubleField { text: qsTr("Beta prior: parameter b"); name: "priorB"; defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
-        }
-    }
+Form
+{
+	id: form
+	
+	VariablesForm
+	{
+		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
+	}
+	
+	DoubleField { text: qsTr("Test value: "); name: "testValue"; defaultValue: 0.5 ; doubleValidator { top: 1; decimals: 2 } }
+	
+	GridLayout
+	{
+		RadioButtonGroup
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true  }
+			RadioButton { text: qsTr("> Test value") ; name: "greaterThanTestValue"                 }
+			RadioButton { text: qsTr("< Test value") ; name: "lessThanTestValue"                    }
+		}
+		
+		GroupBox {
+			title: qsTr("Plots")
+			CheckBox { text: qsTr("Prior and posterior"); name: "plotPriorAndPosterior"; id: plotPriorAndPosterior }
+			CheckBox { text: qsTr("Additional info"); name: "plotPriorAndPosteriorAdditionalInfo"; checked: true; enabled: plotPriorAndPosterior.checked; indent: true }
+			CheckBox { text: qsTr("Sequential analysis"); name: "plotSequentialAnalysis" }
+		}
+		
+		BayesFactorType {}
+		
+		GroupBox
+		{
+			title: qsTr("Prior")
+			DoubleField { text: qsTr("Beta prior: parameter a"); name: "priorA"; defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
+			DoubleField { text: qsTr("Beta prior: parameter b"); name: "priorB"; defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
+		}
+	}
 }

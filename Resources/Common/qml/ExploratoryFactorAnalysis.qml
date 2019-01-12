@@ -19,7 +19,8 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 
-Form {
+Form
+{
     id: form
 
     CheckBox { name: "incl_GoF"; checked: true; visible: false }
@@ -29,20 +30,21 @@ Form {
     IntegerField { name: "plotWidthPathDiagram" ; defaultValue: 480; visible: false }
     IntegerField { name: "plotWidthScreePlot"   ; defaultValue: 300; visible: false }
 
-    VariablesForm {
-        defaultAssignedVariablesList {
-            title: qsTr("Included Variables")
-            allowedColumns: ["scale"]
-        }
+    VariablesForm
+	{
+		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); allowedColumns: ["scale"] }
     }
 
-    GridLayout {
-        RadioButtonGroup {
+    GridLayout
+	{
+        RadioButtonGroup
+		{
             title: qsTr("Number of Factors")
             name: "factorMethod"
             RadioButton { text: qsTr("Parallel Analysis"); name: "parallelAnalysis"; checked: true }
             RadioButton { text: qsTr("Eigenvalues"); name: "eigenValues"; id: eigenvalues }
-            DoubleField {
+            DoubleField
+			{
                 text: qsTr("Eigenvalues above");
                 name: "eigenValuesBox";
                 defaultValue: 0
@@ -51,7 +53,8 @@ Form {
                 doubleValidator.decimals: 1
             }
             RadioButton { text: qsTr("Manual"); name: "manual"; id: manual }
-            IntegerField {
+            IntegerField
+			{
                 text: qsTr("Number of Factors")
                 name: "numberOfFactors"
                 defaultValue: 1
@@ -61,7 +64,8 @@ Form {
             }
         }
 
-        RadioButtonGroup {
+        RadioButtonGroup
+		{
             title: qsTr("Rotation")
             name: "rotationMethod"
             RadioButton { text: qsTr("Orthogonal"); name: "orthogonal"; id: rotationOrthogonal}
@@ -71,10 +75,12 @@ Form {
         }
     }
 
-    ExpanderButton {
+    ExpanderButton
+	{
         text: qsTr("Output Options")
 
-        GridLayout {
+        GridLayout
+		{
             Slider {
                 title: "Highlight"
                 name: "highlightText"
@@ -84,7 +90,8 @@ Form {
                 orientation: Qt.Vertical
             }
 
-            GroupBox {
+            GroupBox
+			{
                 title: qsTr("Includes tables")
                 CheckBox { text: qsTr("Factor correlations"); name: "incl_correlations" }
                 CheckBox { text: qsTr("Additional fit indices"); name: "incl_fitIndices" }
@@ -92,7 +99,8 @@ Form {
                 CheckBox { text: qsTr("Scree plot"); name: "incl_screePlot" }
             }
 
-            RadioButtonGroup {
+            RadioButtonGroup
+			{
                 title: qsTr("Missing values")
                 name: "missingValues"
                 RadioButton { text: qsTr("Exclude cases pairwise"); name: "pairwise"; checked: true }
