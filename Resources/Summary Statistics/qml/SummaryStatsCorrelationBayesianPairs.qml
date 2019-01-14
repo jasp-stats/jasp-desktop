@@ -24,7 +24,7 @@ import JASP.Widgets 1.0
 
 Form 
 {
-    id: form
+	usesJaspResults: false
 
 	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; intValidator.bottom: 2 }
 

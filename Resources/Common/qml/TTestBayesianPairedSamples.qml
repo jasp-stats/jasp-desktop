@@ -23,8 +23,7 @@ import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
 Form {
-	id: form
-	
+	usesJaspResults: false
 	plotHeight: 340
 	plotWidth:  420
 	

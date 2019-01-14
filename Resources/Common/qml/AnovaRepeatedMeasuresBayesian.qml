@@ -22,7 +22,7 @@ import JASP.Widgets 1.0
 
 Form
 {
-	id: form
+	usesJaspResults: false
 	
 	CheckBox { visible: false; name: "posteriorEstimates" }
 	PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"   ; defaultValue: 95 }

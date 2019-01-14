@@ -24,7 +24,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	id: form
+	usesJaspResults: false
 	
 	CheckBox { name: "simulatepval"; checked: false; visible: false }
 	

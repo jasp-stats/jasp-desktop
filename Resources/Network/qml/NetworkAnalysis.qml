@@ -23,7 +23,6 @@ import JASP.Theme 1.0
 
 Form
 {
-	id: form
 	usesJaspResults: false
 	
 	TextField	 { name: "isingEstimator";			value: "pseudoLikelihood"; visible: false }

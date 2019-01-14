@@ -25,7 +25,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	id: form
+	usesJaspResults: false
 	
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
