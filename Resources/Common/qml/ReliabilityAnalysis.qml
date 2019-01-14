@@ -34,65 +34,65 @@ Form
 		GroupBox
 		{
 			title: qsTr("Scale Statistics")
-			CheckBox {  text: qsTr("McDonald's ω")                      ; name: "mcDonaldScale"; checked: true }
-			CheckBox {  text: qsTr("Cronbach's α")                      ; name: "alphaScale"; id: alphaScale }
+			CheckBox { name: "mcDonaldScale";					text: qsTr("McDonald's ω");	checked: true	}
+			CheckBox { name: "alphaScale";						text: qsTr("Cronbach's α");	id: alphaScale	}
 			RadioButtonGroup
 			{
+				name: "alphaScaleStandardized"
 				indent: true
 				enabled: alphaScale.checked
-				name: "alphaScaleStandardized"
-				RadioButton {   text: qsTr("Unstandardized")            ; name: "_1unstandardized"; checked: true   }
-				RadioButton {   text: qsTr("Standardized")              ; name: "_2standardized"                    }
+				RadioButton { value: "_1unstandardized";		text: qsTr("Unstandardized");	checked: true }
+				RadioButton { value: "_2standardized";			text: qsTr("Standardized")					}
 			}
-			CheckBox {  text: qsTr("Gutmann's λ6")                      ; name: "gutmannScale"    }
-			CheckBox {  text: qsTr("Greatest lower bound")              ; name: "glbScale"        }
-			CheckBox {  text: qsTr("Average interitem correlation")     ; name: "averageInterItemCor"}
-			CheckBox {  text: qsTr("Mean")                              ; name: "meanScale"       }
-			CheckBox {  text: qsTr("Standard deviation")                ;  name: "sdScale"        }
+			CheckBox { name: "gutmannScale";					text: qsTr("Gutmann's λ6")					}
+			CheckBox { name: "glbScale";						text: qsTr("Greatest lower bound")			}
+			CheckBox { name: "averageInterItemCor";				text: qsTr("Average interitem correlation")	}
+			CheckBox { name: "meanScale";						text: qsTr("Mean")							}
+			CheckBox { name: "sdScale";							text: qsTr("Standard deviation")			}
 		}
 		
 		GroupBox
 		{
 			title: qsTr("Individual Item Statistics")
-			CheckBox {  text: qsTr("McDonald's ω  (if item dropped)")   ; name: "mcDonaldItem"    }
-			CheckBox {  text: qsTr("Cronbach's α (if item dropped)")    ; name: "alphaItem"       }
-			CheckBox {  text: qsTr("Gutmann's λ6 (if item dropped)")    ; name: "gutmannItem"     }
-			CheckBox {  text: qsTr("Mean")                              ; name: "meanItem"        }
-			CheckBox {  text: qsTr("Standard deviation")                ; name: "sdItem"          }
-			CheckBox {  text: qsTr("Item-rest correlation")             ; name: "itemRestCor"     }
+			CheckBox { name: "mcDonaldItem";					text: qsTr("McDonald's ω  (if item dropped)")	}
+			CheckBox { name: "alphaItem";						text: qsTr("Cronbach's α (if item dropped)")	}
+			CheckBox { name: "gutmannItem";						text: qsTr("Gutmann's λ6 (if item dropped)")	}
+			CheckBox { name: "meanItem";						text: qsTr("Mean")								}
+			CheckBox { name: "sdItem";							text: qsTr("Standard deviation")				}
+			CheckBox { name: "itemRestCor";						text: qsTr("Item-rest correlation")				}
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Reverse-Scaled Items")
+		title: qsTr("Reverse-Scaled Items")
 		
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "normalScaledItems";	title: qsTr("Normal-Scaled Items"); syncModels: "variables" }
+			availableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); syncModels: "variables" }
 			AssignedVariablesList {  name: "reverseScaledItems"; title: qsTr("Reverse-Scaled Items") }
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Advanced Options")
+		title: qsTr("Advanced Options")
 		
 		GridLayout
 		{
 			RadioButtonGroup {
 				title: qsTr("Missing Values")
 				name: "missingValues"
-				RadioButton { text: qsTr("Exclude cases listwise"); name: "excludeCasesListwise"; checked: true }
-				RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludeCasesPairwise" }
+				RadioButton { value: "excludeCasesListwise"; text: qsTr("Exclude cases listwise"); checked: true	}
+				RadioButton { value: "excludeCasesPairwise"; text: qsTr("Exclude cases pairwise")					}
 			}
 			
 			GroupBox
 			{
 				title: qsTr("Confidence Interval")
-				CheckBox { id: confAlpha; text: qsTr("Cronbach's α analytical"); name: "confAlpha" }    
-				PercentField { indent: true; name: "confAlphaLevel"; defaultValue: 95; text: qsTr("Confidence"); with1Decimal: true; enabled: confAlpha.checked }
+				CheckBox {		name: "confAlpha";		text: qsTr("Cronbach's α analytical"); id: confAlpha }    
+				PercentField {	name: "confAlphaLevel"; text: qsTr("Confidence"); defaultValue: 95; with1Decimal: true; indent: true; enabled: confAlpha.checked }
 			}            
 		}
 	}

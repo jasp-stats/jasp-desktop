@@ -37,27 +37,27 @@ Form
 			{
 				name: "corcoefficient"
 				title: qsTr("Correlation Coefficients")
-				RadioButton { text: qsTr("Pearson's rho")  ; name: "Pearson" ; checked: true }
-				RadioButton { text: qsTr("Kendall's tau-b"); name: "Kendall" }
+				RadioButton { value: "Pearson";	text: qsTr("Pearson's rho"); checked: true	}
+				RadioButton { value: "Kendall";	text: qsTr("Kendall's tau-b")				}
 			}
 			
 			RadioButtonGroup
 			{
-				title: qsTr("Hypothesis")
 				name: "hypothesis"
-				RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
-				RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
-				RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
+				title: qsTr("Hypothesis")
+				RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
+				RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
+				RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
 			}
 			
 			BayesFactorType {}
 			
 			RadioButtonGroup
 			{
-				title: qsTr("Missing Values")
 				name: "missingValues"
-				RadioButton { text: qsTr("Exclude cases analysis by analysis")  ; name: "excludeAnalysisByAnalysis"; checked: true }
-				RadioButton { text: qsTr("Exclude cases listwise")              ; name: "excludeListwise" }
+				title: qsTr("Missing Values")
+				RadioButton { value: "excludeAnalysisByAnalysis";	text: qsTr("Exclude cases analysis by analysis"); checked: true	}
+				RadioButton { value: "excludeListwise";				text: qsTr("Exclude cases listwise")							}
 			}
 			
 		}
@@ -66,26 +66,26 @@ Form
 		{
 			GroupBox
 			{
-				CheckBox { text: qsTr("Credible intervals") ; name: "credibleInterval"; id: credibleInterval }
-				PercentField { text: qsTr("Interval") ; name: "ciValue"; defaultValue: 95; enabled:  credibleInterval.checked; indent: true; debug: true}
+				CheckBox { name: "credibleInterval";	text: qsTr("Credible intervals") ;  id: credibleInterval }
+				PercentField { name: "ciValue";			text: qsTr("Interval"); defaultValue: 95; enabled: credibleInterval.checked; indent: true; debug: true }
 			}
 			
 			GroupBox
 			{
 				title: qsTr("Plots")
-				CheckBox { text: qsTr("Scatterplot")          ; name: "plotScatter" }
-				CheckBox { text: qsTr("Prior and posterior")  ; name: "plotPriorAndPosterior"; id: plotPriorAndPosterior }
-				CheckBox { text: qsTr("Additional info")      ; name: "plotPriorAndPosteriorAdditionalInfo"; enabled: plotPriorAndPosterior.checked; indent: true }
-				CheckBox { text: qsTr("Bayes factor robustness check")  ; name: "plotBayesFactorRobustness"; id: plotBayesFactorRobustness }
-				CheckBox { text: qsTr("Additional info")      ; name: "plotBayesFactorRobustnessAdditionalInfo"; enabled: plotBayesFactorRobustness.checked; indent: true }
-				CheckBox { text: qsTr("Sequential analysis")  ; name: "plotSequentialAnalysis"; id: plotSequentialAnalysis }
-				CheckBox { text: qsTr("Robustness check")     ; name: "plotSequentialAnalysisRobustness"; enabled: plotSequentialAnalysis.checked; indent: true; debug: true }
+				CheckBox { name: "plotScatter";							text: qsTr("Scatterplot")										}
+				CheckBox { name: "plotPriorAndPosterior";				text: qsTr("Prior and posterior"); id: plotPriorAndPosterior	}
+				CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	text: qsTr("Additional info"); enabled: plotPriorAndPosterior.checked; indent: true }
+				CheckBox { name: "plotBayesFactorRobustness";			text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
+				CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; text: qsTr("Additional info"); enabled: plotBayesFactorRobustness.checked; indent: true }
+				CheckBox { name: "plotSequentialAnalysis";				text: qsTr("Sequential analysis"); id: plotSequentialAnalysis }
+				CheckBox { name: "plotSequentialAnalysisRobustness";	text: qsTr("Robustness check"); enabled: plotSequentialAnalysis.checked; indent: true; debug: true }
 			}
 			
 			GroupBox
 			{
 				title: qsTr("Prior")
-				DoubleField { text: qsTr("Stretched beta prior width"); name: "priorWidth"; defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
+				DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
 			}
 		}
 		

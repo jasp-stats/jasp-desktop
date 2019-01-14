@@ -21,6 +21,7 @@ import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 JASPControl {
+	id: radioButton
 	controlType:			"RadioButton"
 	isBound:				false
 	useDefaultBackground:	true
@@ -29,6 +30,7 @@ JASPControl {
 
 	property alias text:	control.text
     property alias checked: control.checked
+	property alias value:	radioButton.name
     property var buttonGroup
 
     RadioButton {

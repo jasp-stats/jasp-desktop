@@ -37,16 +37,16 @@ Form
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"
-			RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true  }
-			RadioButton { text: qsTr("> Test value") ; name: "greaterThanTestValue"                 }
-			RadioButton { text: qsTr("< Test value") ; name: "lessThanTestValue"                    }
+			RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
+			RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")					}
+			RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")					}
 		}
 		
 		GroupBox {
 			title: qsTr("Plots")
-			CheckBox { text: qsTr("Prior and posterior"); name: "plotPriorAndPosterior"; id: plotPriorAndPosterior }
-			CheckBox { text: qsTr("Additional info"); name: "plotPriorAndPosteriorAdditionalInfo"; checked: true; enabled: plotPriorAndPosterior.checked; indent: true }
-			CheckBox { text: qsTr("Sequential analysis"); name: "plotSequentialAnalysis" }
+			CheckBox { name: "plotPriorAndPosterior";				text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; text: qsTr("Additional info"); checked: true; enabled: plotPriorAndPosterior.checked; indent: true }
+			CheckBox { name: "plotSequentialAnalysis";				text: qsTr("Sequential analysis") }
 		}
 		
 		BayesFactorType {}
@@ -54,8 +54,8 @@ Form
 		GroupBox
 		{
 			title: qsTr("Prior")
-			DoubleField { text: qsTr("Beta prior: parameter a"); name: "priorA"; defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
-			DoubleField { text: qsTr("Beta prior: parameter b"); name: "priorB"; defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
+			DoubleField { name: "priorA"; text: qsTr("Beta prior: parameter a"); defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
+			DoubleField { name: "priorB"; text: qsTr("Beta prior: parameter b"); defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
 		}
 	}
 }

@@ -44,18 +44,18 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Statistics")
+		title: qsTr("Statistics")
 		
 		GridLayout
 		{
 			GroupBox
 			{
 				title: qsTr("Regression Coefficient")
-				CheckBox { text: qsTr("Estimates")            ; name: "regressionCoefficientsEstimates" }
-				CheckBox { text: qsTr("Confidence intervals") ; name: "regressionCoefficientsConfidenceIntervals"; id: interval }
-				PercentField { text: qsTr("Interval")         ; name: "regressionCoefficientsConfidenceIntervalsInterval" ; defaultValue: 95 ; enabled: interval.checked; indent: true }
+				CheckBox { name: "regressionCoefficientsEstimates";							text: qsTr("Estimates") }
+				CheckBox { name: "regressionCoefficientsConfidenceIntervals";				text: qsTr("Confidence intervals");  id: interval }
+				PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval";	text: qsTr("Interval"); defaultValue: 95 ; enabled: interval.checked; indent: true }
 			}
-			CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio") ; name: "VovkSellkeMPR" }
+			CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
 	}
 }

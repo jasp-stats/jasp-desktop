@@ -29,6 +29,6 @@ VariablesList {
     ExtraControlColumn {
         type: "ComboBox"
         name: "contrast"
-        model: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+        values: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
     }
 }

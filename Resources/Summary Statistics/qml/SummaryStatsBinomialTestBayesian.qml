@@ -28,9 +28,9 @@ Form
 
     GroupBox 
 	{
-		IntegerField { text: qsTr("Successes"); name: "successes" }
-		IntegerField { text: qsTr("Failures") ; name: "failures" }
-		DoubleField  { text: qsTr("Test value"); name: "testValue" ; defaultValue: 0.5 ; doubleValidator.top: 1 }
+		IntegerField { name: "successes";	text: qsTr("Successes")	}
+		IntegerField { name: "failures";	text: qsTr("Failures")	}
+		DoubleField  { name: "testValue";	text: qsTr("Test value"); defaultValue: 0.5 ; doubleValidator.top: 1 }
     }
 
     Divider { }
@@ -41,16 +41,16 @@ Form
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"
-			RadioButton { text: qsTr("\u2260 Test value") ; name: "notEqualToTestValue" ; checked: true }
-			RadioButton { text: qsTr("> Test value")      ; name: "greaterThanTestValue"                }
-			RadioButton { text: qsTr("< Test value")      ; name: "lessThanTestValue"                   }
+			RadioButton { value: "notEqualToTestValue";		text: qsTr("\u2260 Test value"); checked: true	}
+			RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")						}
+			RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")						}
 		}
 
 		GroupBox 
 		{
 			title: qsTr("Plots")
-			CheckBox { text: qsTr("Prior and posterior") ; name: "plotPriorAndPosterior"               ; id: plotPriorAndPosterior }
-			CheckBox { text: qsTr("Additional info")     ; name: "plotPriorAndPosteriorAdditionalInfo" ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
+			CheckBox { name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
 		}
 		
 		BayesFactorType { }
@@ -60,8 +60,8 @@ Form
 		{
 			title: qsTr("Prior")
 			GridLayout {
-				Label { text: qsTr("Beta prior: parameter a") } DoubleField { defaultValue: 1 ; name: "betaPriorParamA" }
-				Label { text: qsTr("Beta prior: parameter b") } DoubleField { defaultValue: 1 ; name: "betaPriorParamB" }
+				Label { text: qsTr("Beta prior: parameter a") } DoubleField { name: "betaPriorParamA"; defaultValue: 1 }
+				Label { text: qsTr("Beta prior: parameter b") } DoubleField { name: "betaPriorParamB"; defaultValue: 1 }
 			}
 		}
     }

@@ -32,50 +32,50 @@ Form
 	}
 	
 	ExpanderButton {
-		text: qsTr("Statistics")
+		title: qsTr("Statistics")
 		
 		GridLayout {
 			GroupBox {
-				CheckBox { text: qsTr("χ²"); name: "chiSquared"; checked: true }
-				CheckBox { text: qsTr("χ² continuity correction"); name: "chiSquaredContinuityCorrection" }
-				CheckBox { text: qsTr("Likelihood ratio"); name: "likelihoodRatio" }
+				CheckBox { name: "chiSquared";						text: qsTr("χ²"); checked: true			}
+				CheckBox { name: "chiSquaredContinuityCorrection";	text: qsTr("χ² continuity correction")	}
+				CheckBox { name: "likelihoodRatio";					text: qsTr("Likelihood ratio")			}
 			}
 			
 			GroupBox {
-				CheckBox { text: qsTr("Log odds ratio (2x2 only)"); name: "oddsRatio"; id: oddsRatio }
-				PercentField { text: qsTr("Confidence interval"); name: "oddsRatioConfidenceIntervalInterval"; enabled: oddsRatio.checked; defaultValue: 95; indent: true }
-				CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
+				CheckBox { name: "oddsRatio"; text: qsTr("Log odds ratio (2x2 only)"); id: oddsRatio }
+				PercentField { name: "oddsRatioConfidenceIntervalInterval"; text: qsTr("Confidence interval"); enabled: oddsRatio.checked; defaultValue: 95; indent: true }
+				CheckBox { name: "VovkSellkeMPR";	text: qsTr("Vovk-Sellke maximum p-ratio") }
 			}
 			
 			GroupBox {
 				title: qsTr("Nominal")
-				CheckBox { text: qsTr("Contingency coefficient") ; name: "contingencyCoefficient" }
-				CheckBox { text: qsTr("Phi and Cramer's V")      ; name: "phiAndCramersV" }
-				CheckBox { text: qsTr("Lambda")                  ; name: "lambda" ; debug: true }
-				CheckBox { text: qsTr("Uncertainty coefficient") ; name: "uncertaintyCoefficient" ; debug: true }
+				CheckBox { name: "contingencyCoefficient" ; text: qsTr("Contingency coefficient")				}
+				CheckBox { name: "phiAndCramersV";			text: qsTr("Phi and Cramer's V")					}
+				CheckBox { name: "lambda";					text: qsTr("Lambda");					debug: true }
+				CheckBox { name: "uncertaintyCoefficient";	text: qsTr("Uncertainty coefficient");	debug: true }
 			}
 			
 			GroupBox {
 				title: qsTr("Ordinal")
-				CheckBox { text: qsTr("Gamma")           ; name: "gamma" }
-				CheckBox { text: qsTr("Somers' d")       ; name: "somersD" ; debug: true }
-				CheckBox { text: qsTr("Kendall's tau-b") ; name: "kendallsTauB" }
-				CheckBox { text: qsTr("Kendall's tau-c") ; name: "kendallsTauC" ; debug: true }
+				CheckBox { name: "gamma";			text: qsTr("Gamma")						}
+				CheckBox { name: "somersD";			text: qsTr("Somers' d"); debug: true	}
+				CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")			}
+				CheckBox { name: "kendallsTauC";	text: qsTr("Kendall's tau-c"); debug: true }
 			}
 		}
 		
 		GroupBox {
 			debug: true
 			title: qsTr("Nominal by interval")
-			CheckBox { text: qsTr("Eta") ; name: "byIntervalEta"}
+			CheckBox { name: "byIntervalEta"; text: qsTr("Eta") }
 		}
 		
 		GroupBox {
 			debug: true
-			CheckBox { text: qsTr("Cochran's and Mantel-Haenszel statistics") ; name: "cochransAndMantel"; id: cochransAndMantel }
+			CheckBox { name: "cochransAndMantel"; text: qsTr("Cochran's and Mantel-Haenszel statistics"); id: cochransAndMantel }
 			IntegerField {
-				text: qsTr("Test common odds ratio equals")
 				name: "testOddsRatioEquals"
+				text: qsTr("Test common odds ratio equals")
 				defaultValue: 1
 				enabled: cochransAndMantel.checked
 				indent: true
@@ -84,16 +84,16 @@ Form
 	}
 	
 	ExpanderButton {
-		text: qsTr("Cells")
+		title: qsTr("Cells")
 		
 		GridLayout {
 			GroupBox {
 				title: qsTr("Counts")
-				CheckBox { text: qsTr("Expected"); name: "countsExpected" }
-				CheckBox { text: qsTr("Hide small counts"); name: "hideSmallCounts"; id: hideSmallCounts; debug: true }
+				CheckBox { name: "countsExpected";	text: qsTr("Expected")												}
+				CheckBox { name: "hideSmallCounts"; text: qsTr("Hide small counts"); id: hideSmallCounts; debug: true	}
 				IntegerField {
-					text: qsTr("Less than")
 					name: "hideSmallCountsLessThan"
+					text: qsTr("Less than")
 					defaultValue: 5
 					enabled: hideSmallCounts.checked
 					indent: true
@@ -104,42 +104,42 @@ Form
 			GroupBox {
 				title: qsTr("Z-Test")
 				debug: true
-				CheckBox { text: qsTr("Compare column proportions") ; name: "zTestCompareColumns"; id: zTestCompareColumns }
-				CheckBox { text: qsTr("Adjust p-values"); name: "zTestAdjustPValues"; enabled: zTestCompareColumns.checked; indent: true }
+				CheckBox { name: "zTestCompareColumns"; text: qsTr("Compare column proportions"); id: zTestCompareColumns }
+				CheckBox { name: "zTestAdjustPValues";	text: qsTr("Adjust p-values"); enabled: zTestCompareColumns.checked; indent: true }
 			}
 			
 			GroupBox {
 				title: qsTr("Percentages")
-				CheckBox { text: qsTr("Row") ; name: "percentagesRow" }
-				CheckBox { text: qsTr("Column") ; name: "percentagesColumn" }
-				CheckBox { text: qsTr("Total") ; name: "percentagesTotal" }
+				CheckBox { name: "percentagesRow";		text: qsTr("Row")		}
+				CheckBox { name: "percentagesColumn";	text: qsTr("Column")	}
+				CheckBox { name: "percentagesTotal";	text: qsTr("Total")		}
 			}
 			
 			GroupBox {
 				title: qsTr("Residuals")
 				debug: true
-				CheckBox { text: qsTr("Unstandardized") ; name: "residualsUnstandardized" }
-				CheckBox { text: qsTr("Standardized") ; name: "residualsStandardized" }
-				CheckBox { text: qsTr("Adjusted Standardized") ; name: "residualsAdjustedStandardized" }
+				CheckBox { name: "residualsUnstandardized"; text: qsTr("Unstandardized")				}
+				CheckBox { name: "residualsStandardized"; text: qsTr("Standardized")					}
+				CheckBox { name: "residualsAdjustedStandardized"; text: qsTr("Adjusted Standardized")	}
 			}
 		}
 	}
 	
 	ExpanderButton {
-		text: qsTr("Options")
+		title: qsTr("Options")
 		
 		GridLayout {
 			RadioButtonGroup {
-				title: qsTr("Row Order")
 				name: "rowOrder"
-				RadioButton { text: qsTr("Ascending"); name: "ascending"; checked: true }
-				RadioButton { text: qsTr("Descending"); name: "descending" }
+				title: qsTr("Row Order")
+				RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
+				RadioButton { value: "descending";	text: qsTr("Descending")				}
 			}
 			RadioButtonGroup {
-				title: qsTr("Column Order")
 				name: "columnOrder"
-				RadioButton { text: qsTr("Ascending"); name: "ascending"; checked: true }
-				RadioButton { text: qsTr("Descending"); name: "descending" }
+				title: qsTr("Column Order")
+				RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
+				RadioButton { value: "descending";	text: qsTr("Descending")				}
 			}
 		}
 	}

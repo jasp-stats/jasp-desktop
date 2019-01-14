@@ -45,7 +45,7 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Model")
+		title: qsTr("Model")
 		
 		VariablesForm
 		{
@@ -54,16 +54,16 @@ Form
 			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
-		ComboBox
+		DropDown
 		{
 			name: "sumOfSquares"
-			currentIndex: 2
+			indexDefaultValue: 2
 			text: qsTr("Sum of squares")
 			model: ListModel
 			{    
-				ListElement { key: "Type \u2160"; value: "type1"}
-				ListElement { key: "Type \u2161"; value: "type2"}
-				ListElement { key: "Type \u2162"; value: "type3"}
+				ListElement { title: "Type \u2160"; value: "type1"}
+				ListElement { title: "Type \u2161"; value: "type2"}
+				ListElement { title: "Type \u2162"; value: "type3"}
 			}
 		}
 		
@@ -71,24 +71,24 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Assumption Checks")
+		title: qsTr("Assumption Checks")
 		
-		CheckBox { text: qsTr("Homogeneity tests")          ; name: "homogeneityTests" }
-		CheckBox { text: qsTr("Homogeneity corrections")    ; name: "homogeneityCorrections" ; id: homogeneityCorrections }
+		CheckBox { name: "homogeneityTests";		text: qsTr("Homogeneity tests")										}
+		CheckBox { name: "homogeneityCorrections";	text: qsTr("Homogeneity corrections"); id: homogeneityCorrections	}
 		RowLayout
 		{
 			Layout.leftMargin: Theme.indentationLength
 			enabled: homogeneityCorrections.checked
-			CheckBox { text: qsTr("None")           ; name: "homogeneityNone" ; checked: true }
-			CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
-			CheckBox { text: qsTr("Welch")          ; name: "homogeneityWelch" ; checked: true }
+			CheckBox { name: "homogeneityNone";		text: qsTr("None")           ; checked: true }
+			CheckBox { name: "homogeneityBrown";	text: qsTr("Brown-Forsythe") ; checked: true }
+			CheckBox { name: "homogeneityWelch";	text: qsTr("Welch")          ; checked: true }
 		}
-		CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
+		CheckBox { name: "qqPlot"; text: qsTr("Q-Q plot of residuals") }
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Contrasts")
+		title: qsTr("Contrasts")
 		
 		ContrastsList { syncModels: ["fixedFactors", "randomFactors"] }
 		
@@ -102,7 +102,7 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Post Hoc Tests")
+		title: qsTr("Post Hoc Tests")
 		
 		VariablesForm
 		{
@@ -124,26 +124,26 @@ Form
 			GroupBox
 			{
 				title: qsTr("Correction")
-				CheckBox { text: qsTr("Tukey")          ; name: "postHocTestsTukey"     ; checked: true }
-				CheckBox { text: qsTr("Scheffe")        ; name: "postHocTestsScheffe"                   }
-				CheckBox { text: qsTr("Bonferroni")     ; name: "postHocTestsBonferroni"                }
-				CheckBox { text: qsTr("Holm")           ; name: "postHocTestsHolm"                      }
+				CheckBox { name: "postHocTestsTukey";		text: qsTr("Tukey"); checked: true	}
+				CheckBox { name: "postHocTestsScheffe";		text: qsTr("Scheffe")				}
+				CheckBox { name: "postHocTestsBonferroni";	text: qsTr("Bonferroni")			}
+				CheckBox { name: "postHocTestsHolm";		text: qsTr("Holm")					}
 			}
 			
 			GroupBox
 			{
 				title: qsTr("Type")
-				CheckBox { text: qsTr("Standard")       ; name: "postHocTestsTypeStandard" ; checked: true }
-				CheckBox { text: qsTr("Games-Howell")   ; name: "postHocTestsTypeGames"                 }
-				CheckBox { text: qsTr("Dunnett")        ; name: "postHocTestsTypeDunnett"               }
-				CheckBox { text: qsTr("Dunn")           ; name: "postHocTestsTypeDunn"                  }
+				CheckBox { name: "postHocTestsTypeStandard";	text: qsTr("Standard"); checked: true	}
+				CheckBox { name: "postHocTestsTypeGames";		text: qsTr("Games-Howell")				}
+				CheckBox { name: "postHocTestsTypeDunnett";		text: qsTr("Dunnett")					}
+				CheckBox { name: "postHocTestsTypeDunn";		text: qsTr("Dunn")						}
 			}
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Descriptives Plots")
+		title: qsTr("Descriptives Plots")
 		
 		VariablesForm
 		{
@@ -157,23 +157,23 @@ Form
 		GroupBox
 		{
 			title: qsTr("Display")
-			CheckBox { text: qsTr("Display error bars"); name: "plotErrorBars" }
+			CheckBox { name: "plotErrorBars"; text: qsTr("Display error bars") }
 			
 			RadioButtonGroup
 			{
 				name: "errorBarType"
-				RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
-				PercentField { indent: true; text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
-				RadioButton { text: qsTr("Standard error"); name: "standardError" }
+				RadioButton { value: "confidenceInterval";			text: qsTr("Confidence Interval"); checked: true; id: confidenceInterval }
+				PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95; indent: true; enabled: confidenceInterval.checked}
+				RadioButton { value: "standardError";				text: qsTr("Standard error") }
 			}
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Additional Options")
-		Label { text: qsTr("Marginal means") }
+		title: qsTr("Additional Options")
 		
+		Label { text: qsTr("Marginal means") }
 		VariablesForm
 		{
 			height: 200
@@ -181,17 +181,17 @@ Form
 			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 		}
 		
-		CheckBox { text: qsTr("Compare marginal means to 0"); name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-		ComboBox
+		CheckBox { name: "marginalMeansCompareMainEffects"; text: qsTr("Compare marginal means to 0"); id: marginalMeansCompareMainEffects }
+		DropDown
 		{
 			name: "marginalMeansCIAdjustment"
 			indent: true
 			text: qsTr("Confidence interval adjustment")
 			model: ListModel
 			{
-				ListElement {key: "None"; value: "none"}
-				ListElement {key: "Bonferro"; value: "bonferroni"}
-				ListElement {key: "Sidak"; value: "sidak"}
+				ListElement { title: "None";		value: "none"		}
+				ListElement { title: "Bonferro";	value: "bonferroni"	}
+				ListElement { title: "Sidak";		value: "sidak"		}
 			}
 			enabled: marginalMeansCompareMainEffects.checked
 		}
@@ -199,23 +199,23 @@ Form
 		GroupBox
 		{
 			title: qsTr("Display")
-			CheckBox { text: qsTr("Descriptive statistics")     ; name: "descriptives" }
-			CheckBox { text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"   ; id: effectSizeEstimates }
+			CheckBox { name: "descriptives";		text: qsTr("Descriptive statistics")							}
+			CheckBox { name: "effectSizeEstimates";	text: qsTr("Estimates of effect size"); id: effectSizeEstimates	}
 			Row
 			{
 				Layout.leftMargin: Theme.indentationLength
 				enabled: effectSizeEstimates.checked
-				CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared"; checked: true }
-				CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
-				CheckBox { text: qsTr("ω²")         ; name: "effectSizeOmegaSquared" }
+				CheckBox { name: "effectSizeEtaSquared";		text: qsTr("η²"); checked: true	}
+				CheckBox { name: "effectSizePartialEtaSquared";	text: qsTr("partial η²")		}
+				CheckBox { name: "effectSizeOmegaSquared";		text: qsTr("ω²")				}
 			}
-			CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
+			CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Simple Main Effects")
+		title: qsTr("Simple Main Effects")
 		
 		VariablesForm
 		{
@@ -229,7 +229,7 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Nonparametrics")
+		title: qsTr("Nonparametrics")
 		
 		VariablesForm
 		{

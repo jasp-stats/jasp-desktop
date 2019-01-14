@@ -74,31 +74,31 @@ Form
 		GroupBox
 		{
 			title: qsTr("Output")
-			CheckBox { text: qsTr("Effects"); name: "effects"; id: effectsOutput}
+			CheckBox { name: "effects"; text: qsTr("Effects"); id: effectsOutput}
 			RadioButtonGroup
 			{
 				indent: true
 				enabled: effectsOutput.checked
 				name: "effectsType"
-				RadioButton { text: qsTr("Across all models"); name: "allModels"; checked: true}
-				RadioButton { text: qsTr("Across matched models"); name: "matchedModels"}
+				RadioButton { value: "allModels";		text: qsTr("Across all models"); checked: true	}
+				RadioButton { value: "matchedModels";	text: qsTr("Across matched models")				}
 			}
-			CheckBox { text: qsTr("Descriptives"); name: "descriptives"}
+			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
 		}
 		
 		RadioButtonGroup
 		{
 			title: qsTr("Order")
 			name: "bayesFactorOrder"
-			RadioButton { text: qsTr("Compare to null model"); name: "nullModelTop"; checked: true}
-			RadioButton { text: qsTr("Compare to best model"); name: "bestModelTop"}
+			RadioButton { value: "nullModelTop";	text: qsTr("Compare to null model"); checked: true	}
+			RadioButton { value: "bestModelTop";	text: qsTr("Compare to best model")					}
 		}
 	}
 	
 	
 	ExpanderButton
 	{
-		text: qsTr("Model")
+		title: qsTr("Model")
 		
 		VariablesForm
 		{
@@ -107,15 +107,15 @@ Form
 			
 			availableVariablesList
 			{
-				title: qsTr("Components")
 				name: "components"
+				title: qsTr("Components")
 				syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]
 				width: parent.width / 4
 			}
 			AssignedVariablesList
 			{
-				title: qsTr("Model terms")
 				name: "modelTerms"
+				title: qsTr("Model terms")
 				listViewType: "Interaction"
 				
 				ExtraControlColumn {
@@ -130,7 +130,7 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Post Hoc Tests")
+		title: qsTr("Post Hoc Tests")
 		
 		VariablesForm
 		{
@@ -142,13 +142,13 @@ Form
 		GroupBox
 		{
 			title: qsTr("Correction")
-			CheckBox { text: qsTr("Null control"); name: "postHocTestsNullControl"; checked: true }
+			CheckBox { name: "postHocTestsNullControl"; text: qsTr("Null control"); checked: true }
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Descriptives Plots")
+		title: qsTr("Descriptives Plots")
 		
 		VariablesForm
 		{
@@ -159,37 +159,37 @@ Form
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }
 		}
 		
-		TextField { text: qsTr("Label y-axis") ; name: "labelYAxis"}
+		TextField { name: "labelYAxis"; text: qsTr("Label y-axis") }
 		RowLayout
 		{
-			CheckBox { text: qsTr("Credible interval"); name: "plotCredibleInterval"; id: plotCredibleInterval }
-			PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95; enabled: plotCredibleInterval.checked}
+			CheckBox { name: "plotCredibleInterval"; text: qsTr("Credible interval"); id: plotCredibleInterval }
+			PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95; enabled: plotCredibleInterval.checked }
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Additional Options")
+		title: qsTr("Additional Options")
 		
 		GridLayout
 		{
 			GroupBox
 			{
 				title: qsTr("Prior")
-				DoubleField { text: qsTr("r scale fixed effects"); name: "priorFixedEffects"; defaultValue: 0.5; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
-				DoubleField { text: qsTr("r scale random effects"); name: "priorRandomEffects"; defaultValue: 1; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
-				DoubleField { text: qsTr("r scale covariates"); name: "priorCovariates"; defaultValue: 0.354; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+				DoubleField { name: "priorFixedEffects";	text: qsTr("r scale fixed effects"); defaultValue: 0.5; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+				DoubleField { name: "priorRandomEffects";	text: qsTr("r scale random effects"); defaultValue: 1; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
+				DoubleField { name: "priorCovariates";		text: qsTr("r scale covariates"); defaultValue: 0.354; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
 			}
 			
 			RadioButtonGroup
 			{
 				name: "sampleMode"
-				RadioButton { text: qsTr("Auto"); name: "auto"; checked: true }
-				RadioButton { text: qsTr("Manual"); name: "manual"; id: samplesManual }
+				RadioButton { value: "auto";	text: qsTr("Auto"); checked: true		}
+				RadioButton { value: "manual";	text: qsTr("Manual"); id: samplesManual	}
 				IntegerField
 				{
-					text: qsTr("No. samples")
 					name: "fixedSamplesNumber"
+					text: qsTr("No. samples")
 					defaultValue: 10000
 					fieldWidth: 50
 					enabled: samplesManual.checked
