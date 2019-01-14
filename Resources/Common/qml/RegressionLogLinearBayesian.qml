@@ -38,15 +38,15 @@ Form
 		GroupBox
 		{
 			title: qsTr("Prior")
-			DoubleField { text: qsTr("Shape") ; name: "priorShape" ; defaultValue: -1 ; doubleValidator.bottom: -1 }
-			DoubleField { text: qsTr("Scale") ; name: "priorScale" ; defaultValue: 0 }
+			DoubleField { name: "priorShape"; text: qsTr("Shape"); defaultValue: -1 ; doubleValidator.bottom: -1 }
+			DoubleField { name: "priorScale"; text: qsTr("Scale"); defaultValue: 0 }
 		}
 		
 		GroupBox
 		{
 			title: qsTr("Model cut-offs")
-			IntegerField { text: qsTr("Display best") ; name: "maxModels"; defaultValue: 2; afterLabel.text: qsTr("models"); intValidator.bottom: 2 }
-			DoubleField { text: qsTr("Posterior prob.") ; name: "posteriorProbabilityCutOff" ; defaultValue: 0.1 ; doubleValidator.top: 0.5 }
+			IntegerField { name: "maxModels";					text: qsTr("Display best") ;  defaultValue: 2; afterLabel.text: qsTr("models"); intValidator.bottom: 2 }
+			DoubleField { name: "posteriorProbabilityCutOff";	text: qsTr("Posterior prob."); defaultValue: 0.1 ; doubleValidator.top: 0.5 }
 		}
 	}
 	
@@ -66,15 +66,15 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Statistics")
+		title: qsTr("Statistics")
 		
 		GridLayout
 		{
 			GroupBox
 			{
 				title: qsTr("Regression Coefficients")
-				CheckBox { text: qsTr("Estimates") ; name: "regressionCoefficientsEstimates" }
-				CheckBox { text: qsTr("Credible intervals") ; name: "regressionCoefficientsCredibleIntervals" ; id: interval }
+				CheckBox { name: "regressionCoefficientsEstimates";			text: qsTr("Estimates")							}
+				CheckBox { name: "regressionCoefficientsCredibleIntervals";	text: qsTr("Credible intervals"); id: interval	}
 				PercentField
 				{
 					name: "regressionCoefficientsCredibleIntervalsInterval"
@@ -90,7 +90,7 @@ Form
 			{
 				Row
 				{
-					CheckBox { text: qsTr("Submodel") ; name: "regressionCoefficientsSubmodel"; id: regressionCoefficientsSubmodel }
+					CheckBox { name: "regressionCoefficientsSubmodel"; text: qsTr("Submodel") ; id: regressionCoefficientsSubmodel }
 					IntegerField { name: "regressionCoefficientsSubmodelNo"; defaultValue: 1 ; intValidator.bottom: 1; enabled: regressionCoefficientsSubmodel.checked }
 				}
 				
@@ -98,9 +98,9 @@ Form
 				{
 					indent: true;
 					enabled: regressionCoefficientsSubmodel.checked
-					CheckBox { text: qsTr("Estimates") ; name: "regressionCoefficientsSubmodelEstimates" }
-					CheckBox { text: qsTr("Credible intervals") ; name: "regressionCoefficientsSubmodelCredibleIntervals" ; id: submodelCredibleIntervals }
-					PercentField { text: qsTr("Interval") ; name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; defaultValue: 95 ; enabled: submodelCredibleIntervals.checked ; indent: true }
+					CheckBox { name: "regressionCoefficientsSubmodelEstimates"; text: qsTr("Estimates") }
+					CheckBox { name: "regressionCoefficientsSubmodelCredibleIntervals"; text: qsTr("Credible intervals"); id: submodelCredibleIntervals }
+					PercentField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95 ; enabled: submodelCredibleIntervals.checked ; indent: true }
 				}
 			}
 		}
@@ -108,15 +108,15 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Advanced")
+		title: qsTr("Advanced")
 		
 		RadioButtonGroup
 		{
 			title: qsTr("Samples")
 			name: "sampleMode"
-			RadioButton { text: qsTr("Auto") ; name: "auto" ; checked: true }
-			RadioButton { text: qsTr("Manual") ; name: "manual" ; id: manual }
-			IntegerField { text: qsTr("No. samples") ; name: "fixedSamplesNumber" ; defaultValue: 10000 ; fieldWidth: 60 ; enabled: manual.checked ; indent: true }
+			RadioButton { value: "auto";	text: qsTr("Auto");  checked: true	}
+			RadioButton { value: "manual";	text: qsTr("Manual"); id: manual	}
+			IntegerField { name: "fixedSamplesNumber"; text: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 60; enabled: manual.checked; indent: true }
 		}
 	}
 }

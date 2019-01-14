@@ -18,8 +18,10 @@ JASPControl {
 	property string	currentText				//Am i empty or what?
 	property string	currentColumnType		//Same here
 	property alias	currentIndex:			control.currentIndex
+	property alias	indexDefaultValue:		control.currentIndex
 	property alias	model:					control.model
-	property string	textRole:				"key"
+	property alias	values:					control.model
+	property string	textRole:				"title"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
 	property var	syncModels				//defaults would be nice

@@ -39,17 +39,17 @@ Form
 		{
 			GroupBox
 			{
-				CheckBox { text: qsTr("Pearson's rho")  ; name: "pearson" ; checked: true }
-				CheckBox { text: qsTr("Spearman")       ; name: "spearman" ; debug: true }
-				CheckBox { text: qsTr("Kendall's tau-b"); name: "kendallsTauB" }
+				CheckBox { name: "pearson";			text: qsTr("Pearson's rho"); checked: true	}
+				CheckBox { name: "spearman";		text: qsTr("Spearman"); debug: true			}
+				CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")				}
 			}
 			
 			GroupBox
 			{
-				CheckBox { text: qsTr("Report Bayes factors")           ; name: "reportBayesFactors"; checked: true }
-				CheckBox { text: qsTr("Flag supported correlations")    ; name: "flagSupported" }
-				CheckBox { text: qsTr("Credible intervals")             ; name: "credibleInterval"; id: credibleInterval }
-				PercentField { text: qsTr("Interval")                   ; name: "ciValue"; defaultValue: 95; enabled:  credibleInterval.checked; indent: true}
+				CheckBox { name: "reportBayesFactors";	text: qsTr("Report Bayes factors"); checked: true		}
+				CheckBox { name: "flagSupported";		text: qsTr("Flag supported correlations")				}
+				CheckBox { name: "credibleInterval";	text: qsTr("Credible intervals"); id: credibleInterval	}
+				PercentField { name: "ciValue";			text: qsTr("Interval"); defaultValue: 95; enabled: credibleInterval.checked; indent: true }
 			}
 		}
 	}
@@ -58,41 +58,41 @@ Form
 	{
 		RadioButtonGroup
 		{
-			title: qsTr("Hypothesis")
 			name: "hypothesis"
-			RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
-			RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
-			RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
+			title: qsTr("Hypothesis")
+			RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
+			RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
+			RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
 		}
 		
 		GroupBox
 		{
 			title: qsTr("Plots")
-			CheckBox { text: qsTr("Correlation matrix")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
+			CheckBox { name: "plotCorrelationMatrix"; text: qsTr("Correlation matrix"); id: plotCorrelationMatrix }
 			GroupBox
 			{
 				enabled: plotCorrelationMatrix.checked
 				indent: true
-				CheckBox { text: qsTr("Densities for variables") ; name: "plotDensitiesForVariables" }
-				CheckBox { text: qsTr("Posteriors under H\u2081")      ; name: "plotPosteriors" }
+				CheckBox { name: "plotDensitiesForVariables";	text: qsTr("Densities for variables")	}
+				CheckBox { name: "plotPosteriors";				text: qsTr("Posteriors under H\u2081")	}
 			}
 		}
 		
 		BayesFactorType {}
 		
-		DoubleField { text: qsTr("Stretched beta prior width"); name: "priorWidth"; defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
+		DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1.0; doubleValidator { top: 2; decimals: 1 } }
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Options")
+		title: qsTr("Options")
 		
 		RadioButtonGroup
 		{
-			title: qsTr("Missing Values")
 			name: "missingValues"
-			RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }
-			RadioButton { text: qsTr("Exclude cases listwise"); name: "excludeListwise" }
+			title: qsTr("Missing Values")
+			RadioButton { value: "excludePairwise"; text: qsTr("Exclude cases pairwise"); checked: true	}
+			RadioButton { value: "excludeListwise"; text: qsTr("Exclude cases listwise")				}
 		}
 	}
 }

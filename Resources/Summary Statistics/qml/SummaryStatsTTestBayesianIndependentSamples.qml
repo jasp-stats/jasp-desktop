@@ -29,9 +29,9 @@ Form
 
     GroupBox 
 	{
-		DoubleField  { text: qsTr("t");				name: "tStatistic" ; validation: false  }
-		IntegerField { text: qsTr("Group 1 size");	name: "n1Size" }
-		IntegerField { text: qsTr("Group 2 size");	name: "n2Size" }
+		DoubleField  { name: "tStatistic";	text: qsTr("t"); validation: false	}
+		IntegerField { name: "n1Size";		text: qsTr("Group 1 size")			}
+		IntegerField { name: "n2Size";		text: qsTr("Group 2 size")			}
     }
 
     Divider { }
@@ -42,18 +42,18 @@ Form
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"
-			RadioButton { text: qsTr("Group 1 \u2260 Group 2") ; name: "groupsNotEqual" ; checked: true }
-			RadioButton { text: qsTr("Group 1 > Group 2")      ; name: "groupOneGreater"                }
-			RadioButton { text: qsTr("Group 1 < Group 2")      ; name: "groupTwoGreater"                }
+			RadioButton { value: "groupsNotEqual";	text: qsTr("Group 1 \u2260 Group 2"); checked: true	}
+			RadioButton { value: "groupOneGreater";	text: qsTr("Group 1 > Group 2")						}
+			RadioButton { value: "groupTwoGreater";	text: qsTr("Group 1 < Group 2")						}
 		}
 
 		GroupBox 
 		{
 			title: qsTr("Plots")
-			CheckBox {  text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-			CheckBox {  text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
-			CheckBox {  text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-			CheckBox {  text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+			CheckBox { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
+			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
 		}
 		
 		BayesFactorType { }

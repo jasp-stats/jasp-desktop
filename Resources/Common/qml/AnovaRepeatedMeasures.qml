@@ -64,7 +64,7 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Model")
+		title: qsTr("Model")
 		
 		VariablesForm
 		{
@@ -80,16 +80,16 @@ Form
 			AssignedVariablesList {  name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
-		ComboBox
+		DropDown
 		{
 			name: "sumOfSquares"
-			currentIndex: 2
+			indexDefaultValue: 2
 			text: qsTr("Sum of squares")
 			model: ListModel
 			{
-				ListElement {key: "Type \u2160"; value: "type1"}
-				ListElement {key: "Type \u2161"; value: "type2"}
-				ListElement {key: "Type \u2162"; value: "type3"}
+				ListElement { title: "Type \u2160"; value: "type1" }
+				ListElement { title: "Type \u2161"; value: "type2" }
+				ListElement { title: "Type \u2162"; value: "type3" }
 			}
 		}
 		
@@ -97,30 +97,30 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Assumption Checks")
+		title: qsTr("Assumption Checks")
 		
-		CheckBox { text: qsTr("Sphericity tests")		; name: "sphericityTests"}
-		CheckBox { text: qsTr("Sphericity corrections")	; name: "sphericityCorrections"; id: sphericityCorrections }
+		CheckBox { name: "sphericityTests";			text: qsTr("Sphericity tests")									}
+		CheckBox { name: "sphericityCorrections";	text: qsTr("Sphericity corrections"); id: sphericityCorrections }
 		RowLayout
 		{
 			Layout.leftMargin: Theme.indentationLength
 			enabled: sphericityCorrections.checked
-			CheckBox { text: qsTr("None")				; name: "sphericityNone"				; checked: true }
-			CheckBox { text: qsTr("Greenhouse-Geisser")	; name: "sphericityGreenhouseGeisser"	; checked: true }
-			CheckBox { text: qsTr("Huynth-Feidt")		; name: "sphericityHuynhFeldt"			; checked: true }
+			CheckBox { name: "sphericityNone";				text: qsTr("None");					checked: true }
+			CheckBox { name: "sphericityGreenhouseGeisser";	text: qsTr("Greenhouse-Geisser");	checked: true }
+			CheckBox { name: "sphericityHuynhFeldt";		text: qsTr("Huynth-Feidt");			checked: true }
 		}
-		CheckBox { text: qsTr("Homogeneity Tests")		; name: "homogeneityTests" }
+		CheckBox { name: "homogeneityTests"; text: qsTr("Homogeneity Tests") }
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Contrasts")
+		title: qsTr("Contrasts")
 		ContrastsList { syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Post Hoc Tests")
+		title: qsTr("Post Hoc Tests")
 		
 		VariablesForm
 		{
@@ -131,23 +131,23 @@ Form
 		
 		RowLayout
 		{
-			CheckBox { text: qsTr("Effect Size");						name: "postHocTestEffectSize" }
-			CheckBox { text: qsTr("Pool error term for RM factors");	name: "postHocTestPooledError" }
+			CheckBox { name: "postHocTestEffectSize";	text: qsTr("Effect Size")						}
+			CheckBox { name: "postHocTestPooledError";	text: qsTr("Pool error term for RM factors")	}
 		}
 		
 		GroupBox
 		{
 			title: qsTr("Correction")
-			CheckBox { text: qsTr("Tukey")          ; name: "postHocTestsTukey"     ; checked: true }
-			CheckBox { text: qsTr("Scheffe")        ; name: "postHocTestsScheffe"                   }
-			CheckBox { text: qsTr("Bonferroni")     ; name: "postHocTestsBonferroni"                }
-			CheckBox { text: qsTr("Holm")           ; name: "postHocTestsHolm"                      }
+			CheckBox { name: "postHocTestsTukey";		text: qsTr("Tukey"); checked: true	}
+			CheckBox { name: "postHocTestsScheffe";		text: qsTr("Scheffe")				}
+			CheckBox { name: "postHocTestsBonferroni";	text: qsTr("Bonferroni")			}
+			CheckBox { name: "postHocTestsHolm";		text: qsTr("Holm")					}
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Descriptives Plots")
+		title: qsTr("Descriptives Plots")
 		
 		VariablesForm
 		{
@@ -158,30 +158,30 @@ Form
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }
 		}
 		
-		TextField { text: qsTr("Label y-axis") ; name: "labelYAxis"}
+		TextField { name: "labelYAxis"; text: qsTr("Label y-axis") }
 		GroupBox
 		{
 			title: qsTr("Display")
 			
 			RowLayout
 			{
-				CheckBox { text: qsTr("Display error bars"); name: "plotErrorBars" }
-				CheckBox { text: qsTr("Pool SE across RM factors"); name: "usePooledStandErrorCI" }
+				CheckBox { name: "plotErrorBars";			text: qsTr("Display error bars")		}
+				CheckBox { name: "usePooledStandErrorCI";	text: qsTr("Pool SE across RM factors")	}
 			}
 			
 			RadioButtonGroup
 			{
 				name: "errorBarType"
-				RadioButton { text: qsTr("Confidence Interval"); name: "confidenceInterval"; checked: true; id: confidenceInterval }
-				PercentField {indent: true; text: qsTr("Interval"); name: "confidenceIntervalInterval"; defaultValue: 95; enabled: confidenceInterval.checked}
-				RadioButton { text: qsTr("Standard error"); name: "standardError" }
+				RadioButton { value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true; id: confidenceInterval }
+				PercentField { indent: true; name: "confidenceIntervalInterval"; text: qsTr("Interval"); defaultValue: 95; enabled: confidenceInterval.checked}
+				RadioButton { value: "standardError"; text: qsTr("Standard error") }
 			}
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Additional Options")
+		title: qsTr("Additional Options")
 		GroupBox
 		{
 			title: qsTr("Marginal means")
@@ -194,17 +194,17 @@ Form
 				AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 			}
 			
-			CheckBox { text: qsTr("Compare marginal means to 0"); name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-			ComboBox
+			CheckBox { name: "marginalMeansCompareMainEffects"; text: qsTr("Compare marginal means to 0"); id: marginalMeansCompareMainEffects }
+			DropDown
 			{
 				name: "marginalMeansCIAdjustment"
 				indent: true
 				text: qsTr("Confidence interval adjustment")
 				model: ListModel
 				{
-					ListElement {key: "None"; value: "none"}
-					ListElement {key: "Bonferro"; value: "bonferroni"}
-					ListElement {key: "Sidak"; value: "sidak"}
+					ListElement { title: "None";		value: "none"		}
+					ListElement { title: "Bonferro";	value: "bonferroni"	}
+					ListElement { title: "Sidak";		value: "sidak"		}
 				}
 				enabled: marginalMeansCompareMainEffects.checked
 			}
@@ -213,23 +213,23 @@ Form
 		GroupBox
 		{
 			title: qsTr("Display")
-			CheckBox { text: qsTr("Descriptive statistics")     ; name: "descriptives" }
-			CheckBox { text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"   ; id: effectSizeEstimates }
+			CheckBox { name: "descriptives";		text: qsTr("Descriptive statistics")							}
+			CheckBox { name: "effectSizeEstimates";	text: qsTr("Estimates of effect size"); id: effectSizeEstimates }
 			Row
 			{
 				Layout.leftMargin: Theme.indentationLength
 				enabled: effectSizeEstimates.checked
-				CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared"; checked: true }
-				CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
-				CheckBox { text: qsTr("ω²")         ; name: "effectSizeOmegaSquared" }
+				CheckBox { name: "effectSizeEtaSquared";		text: qsTr("η²")         ; checked: true	}
+				CheckBox { name: "effectSizePartialEtaSquared";	text: qsTr("partial η²")					}
+				CheckBox { name: "effectSizeOmegaSquared";		text: qsTr("ω²")							}
 			}
-			CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
+			CheckBox { name: "VovkSellkeMPR";					text: qsTr("Vovk-Sellke maximum p-ratio")	}
 		}
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Simple Main Effects")
+		title: qsTr("Simple Main Effects")
 		
 		VariablesForm
 		{
@@ -240,12 +240,12 @@ Form
 			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2");		singleItem: true }
 		}
 		
-		CheckBox { text: qsTr("Pool error terms"); name: "poolErrorTermSimpleEffects"}
+		CheckBox { name: "poolErrorTermSimpleEffects"; text: qsTr("Pool error terms") }
 	}
 	
 	ExpanderButton
 	{
-		text: qsTr("Nonparametrics")
+		title: qsTr("Nonparametrics")
 		
 		VariablesForm
 		{
@@ -255,6 +255,6 @@ Form
 			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional grouping factor"); singleItem: true }
 		}
 		
-		CheckBox { text: qsTr("Connover's post hoc tests") ; name: "connoverTest"}
+		CheckBox { name: "connoverTest"; text: qsTr("Connover's post hoc tests") }
 	}
 }

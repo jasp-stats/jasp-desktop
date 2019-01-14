@@ -43,23 +43,23 @@ Form
 			GroupBox
 			{
 				title: qsTr("Tests")
-				CheckBox {  text: qsTr("Student")                   ; name: "students"          ; checked: true}
-				CheckBox {  text: qsTr("Wilcoxon signed-rank")      ; name: "wilcoxonSignedRank"  }
+				CheckBox { name: "students";			text: qsTr("Student"); checked: true	}
+				CheckBox { name: "wilcoxonSignedRank";	text: qsTr("Wilcoxon signed-rank")		}
 			}
 			
 			RadioButtonGroup
 			{
 				name: "hypothesis"
 				title: qsTr("Alt. Hypothesis")
-				RadioButton {   text: qsTr("Measure 1 ≠ Measure 2") ; name: "groupsNotEqual"       ; checked: true}
-				RadioButton {   text: qsTr("Measure 1 > Measure 2") ; name: "groupOneGreater"    }
-				RadioButton {   text: qsTr("Measure 1 < Measure 2") ; name: "groupTwoGreater"    }
+				RadioButton { value: "groupsNotEqual";	text: qsTr("Measure 1 ≠ Measure 2"); checked: true	}
+				RadioButton { value: "groupOneGreater";	text: qsTr("Measure 1 > Measure 2");				}
+				RadioButton { value: "groupTwoGreater";	text: qsTr("Measure 1 < Measure 2");				}
 			}
 			
 			GroupBox
 			{
 				title: qsTr("Assumption checks")
-				CheckBox {  text: qsTr("Normality")                 ; name: "normalityTests"   }
+				CheckBox { name: "normalityTests";		text: qsTr("Normality") }
 			}
 		}
 		
@@ -69,34 +69,34 @@ Form
 			GroupBox
 			{
 				title: qsTr("Additional Statistics")
-				CheckBox {  text: qsTr("Location parameter")                        ; name: "meanDifference"; id: locationParameter }
+				CheckBox { name: "meanDifference";	text: qsTr("Location parameter"); id: locationParameter }
 				Row
 				{
 					Layout.leftMargin: Theme.indentationLength
 					enabled : locationParameter.checked
-					CheckBox {  text: qsTr("Confidence interval")                   ; name: "meanDiffConfidenceIntervalCheckbox"; id: locParConfidenceInterval }
-					PercentField { enabled: locParConfidenceInterval.checked        ; name: "meanDiffConfidenceIntervalPercent"  ; defaultValue: 95 }
+					CheckBox { name: "meanDiffConfidenceIntervalCheckbox";	text: qsTr("Confidence interval"); id: locParConfidenceInterval	}
+					PercentField { name: "meanDiffConfidenceIntervalPercent"; enabled: locParConfidenceInterval.checked; defaultValue: 95	}
 				}
-				CheckBox {  text: qsTr("Effect Size")                               ; name: "effectSize"; id: effectSize }
+				CheckBox { name: "effectSize";								text: qsTr("Effect Size"); id: effectSize						}
 				Row
 				{
 					Layout.leftMargin: Theme.indentationLength
 					enabled : effectSize.checked
-					CheckBox {  text: qsTr("Confidence interval")                   ; name: "effSizeConfidenceIntervalCheckbox"; id: effectSizeConfidenceInterval }
-					PercentField { enabled: effectSizeConfidenceInterval.checked    ; name: "effSizeConfidenceIntervalPercent" ; defaultValue: 95 }
+					CheckBox { name: "effSizeConfidenceIntervalCheckbox";	text: qsTr("Confidence interval"); id: effectSizeConfidenceInterval }
+					PercentField { name: "effSizeConfidenceIntervalPercent"; enabled: effectSizeConfidenceInterval.checked; defaultValue: 95	}
 				}
-				CheckBox {  text: qsTr("Descriptives")                              ; name: "descriptives"                        }
-				CheckBox {  text: qsTr("Descriptives plots")                        ; name: "descriptivesPlots"; id: descriptivePlots  }
-				PercentField { text: qsTr("Confidence interval")                    ; name: "descriptivesPlotsConfidenceInterval"; defaultValue: 95; indent: true; enabled: descriptivePlots.checked}
-				CheckBox {  text: qsTr("Vovk-Sellke mazimum p-ratio")               ; name: "VovkSellkeMPR"                        }
+				CheckBox { name: "descriptives";							text: qsTr("Descriptives")											}
+				CheckBox { name: "descriptivesPlots";						text: qsTr("Descriptives plots"); id: descriptivePlots				}
+				PercentField { name: "descriptivesPlotsConfidenceInterval";	text: qsTr("Confidence interval"); defaultValue: 95; indent: true; enabled: descriptivePlots.checked}
+				CheckBox { name: "VovkSellkeMPR";							text: qsTr("Vovk-Sellke mazimum p-ratio")							}
 			}
 			
 			RadioButtonGroup
 			{
-				title: qsTr("Missing Values")
 				name: "missingValues"
-				RadioButton {   text: qsTr("Exclude cases analysis by analysis")    ; name: "excludeAnalysisByAnalysis" ; checked: true }
-				RadioButton {   text: qsTr("Exclude cases listwise")                ; name: "excludeListwise"    }
+				title: qsTr("Missing Values")
+				RadioButton { value: "excludeAnalysisByAnalysis";			text: qsTr("Exclude cases analysis by analysis"); checked: true		}
+				RadioButton { value: "excludeListwise";						text: qsTr("Exclude cases listwise")								}
 			}
 		}
 	}

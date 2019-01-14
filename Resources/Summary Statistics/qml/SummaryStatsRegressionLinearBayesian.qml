@@ -54,14 +54,14 @@ Form
 		GroupBox 
 		{
 			title: qsTr("Plots")
-			CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-			CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
 		}
     }
 
     ExpanderButton 
 	{
-        text: qsTr("Advanced Options")
+        title: qsTr("Advanced Options")
 
         GroupBox 
 		{

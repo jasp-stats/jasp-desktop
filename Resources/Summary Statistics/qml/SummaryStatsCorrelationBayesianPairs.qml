@@ -26,7 +26,7 @@ Form
 {
 	usesJaspResults: false
 
-	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; intValidator.bottom: 2 }
+	IntegerField { name: "sampleSize"; text: qsTr("Sample size"); intValidator.bottom: 2 }
 
     Divider { }
 
@@ -34,17 +34,18 @@ Form
 	{
 		RadioButtonGroup 
 		{
-			title: qsTr("Correlation Coefficient") ; name: "correlationCoefficient"
+			name: "correlationCoefficient"
+			title: qsTr("Correlation Coefficient")
 			Layout.columnSpan: 2
 			Row 
 			{
-				RadioButton { text: qsTr("Pearson's rho") ; name: "pearsonRho"; id: pearsonRho; checked: true}
-				DoubleField   { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
+				RadioButton { value: "pearsonRho"; text: qsTr("Pearson's rho") ; id: pearsonRho; checked: true}
+				DoubleField { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
 			}
 			Row 
 			{
-				RadioButton { text: qsTr("Kendall's tau-b") ; name: "kendallTau"; id: kendallTau }
-				DoubleField   { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
+				RadioButton { value: "kendallTau"; text: qsTr("Kendall's tau-b"); id: kendallTau }
+				DoubleField { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
 			}
 		}
 		
@@ -52,18 +53,18 @@ Form
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"
-			RadioButton { text: qsTr("Correlated")            ; name: "correlated" ; checked: true }
-			RadioButton { text: qsTr("Correlated positively") ; name: "correlatedPositively"       }
-			RadioButton { text: qsTr("Correlated negatively") ; name: "correlatedNegatively"       }
+			RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
+			RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
+			RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
 		}
 
 		GroupBox 
 		{
 			title: qsTr("Plots")
-			CheckBox { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                  ; id: plotPriorAndPosterior }
-			CheckBox { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"    ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked}
-			CheckBox { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"              ; id: plotBayesFactorRobustness }
-			CheckBox { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo"; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked}
+			CheckBox { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
+			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
 		}
 		
         BayesFactorType { }
@@ -71,7 +72,7 @@ Form
 		GroupBox 
 		{
 			title: qsTr("Prior")
-			DoubleField { text: qsTr("Stretched beta prior width"); defaultValue: 1 ; name: "priorWidth" ; doubleValidator {bottom: 0; top: 2} }
+			DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1; doubleValidator {bottom: 0; top: 2} }
 		}
     }
 }

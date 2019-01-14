@@ -37,19 +37,19 @@ Form
 		{
 			GroupBox
 			{
-				CheckBox { text: qsTr("Pearson"); name: "pearson"; checked: true }
-				CheckBox { text: qsTr("Spearman"); name: "spearman" }
-				CheckBox { text: qsTr("Kendall's tau-b"); name: "kendallsTauB" }
+				CheckBox { name: "pearson";			text: qsTr("Pearson"); checked: true	}
+				CheckBox { name: "spearman";		text: qsTr("Spearman")					}
+				CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")			}
 			}
 			
 			GroupBox
 			{
-				CheckBox { text: qsTr("Display pairwise table")         ; name: "displayPairwise" }
-				CheckBox { text: qsTr("Report significance")            ; name: "reportSignificance"; checked: true }
-				CheckBox { text: qsTr("Flag significant correlations")  ; name: "flagSignificant" }
-				CheckBox { text: qsTr("Confidence intervals")           ; name: "confidenceIntervals"; id: confidenceIntervals }
-				PercentField { text: qsTr("Interval")                   ; name: "confidenceIntervalsInterval"; defaultValue: 95; enabled:  confidenceIntervals.checked; indent: true}
-				CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio")    ; name: "VovkSellkeMPR" }
+				CheckBox { name: "displayPairwise";		text: qsTr("Display pairwise table")						}
+				CheckBox { name: "reportSignificance";	text: qsTr("Report significance"); checked: true			}
+				CheckBox { name: "flagSignificant";		text: qsTr("Flag significant correlations")					}
+				CheckBox { name: "confidenceIntervals"; text: qsTr("Confidence intervals"); id: confidenceIntervals	}
+				PercentField { name: "confidenceIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95; enabled:  confidenceIntervals.checked; indent: true}
+				CheckBox { name: "VovkSellkeMPR";		text: qsTr("Vovk-Sellke maximum p-ratio")					}
 			}
 		}
 	}
@@ -60,21 +60,21 @@ Form
 		{
 			title: qsTr("Hypothesis")
 			name: "hypothesis"
-			RadioButton { text: qsTr("Correlated")  ; name: "correlated" ; checked: true }
-			RadioButton { text: qsTr("Correlated positively")  ; name: "correlatedPositively" }
-			RadioButton { text: qsTr("Correlated negatively")  ; name: "correlatedNegatively" }
+			RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
+			RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
+			RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
 		}
 		
 		GroupBox
 		{
 			title: qsTr("Plots")
-			CheckBox { text: qsTr("Display pairwise table")         ; name: "plotCorrelationMatrix"; id: plotCorrelationMatrix }
+			CheckBox { name: "plotCorrelationMatrix";		text: qsTr("Display pairwise table"); id: plotCorrelationMatrix }
 			GroupBox
 			{
 				enabled: plotCorrelationMatrix.checked
 				indent: true
-				CheckBox { text: qsTr("Densities for variables")    ; name: "plotDensities" }
-				CheckBox { text: qsTr("Statistics")                 ; name: "plotStatistics" }
+				CheckBox { name: "plotDensities";			text: qsTr("Densities for variables")	}
+				CheckBox { name: "plotStatistics";			text: qsTr("Statistics")				}
 			}
 			
 		}
@@ -82,22 +82,22 @@ Form
 	
 	ExpanderButton
 	{
-		text: qsTr("Options")
+		title: qsTr("Options")
 		debug: true
 		
 		GroupBox
 		{
 			title: qsTr("Statistics")
-			CheckBox { text: qsTr("Means and standard deviations")                 ; name: "meansAndStdDev" }
-			CheckBox { text: qsTr("Cross-product deviations and covariances")      ; name: "crossProducts" }
+			CheckBox { name: "meansAndStdDev";	text: qsTr("Means and standard deviations")				}
+			CheckBox { name: "crossProducts";	text: qsTr("Cross-product deviations and covariances")	}
 		}
 		
 		RadioButtonGroup
 		{
-			title: qsTr("Missing Values")
 			name: "missingValues"
-			RadioButton { text: qsTr("Exclude cases pairwise"); name: "excludePairwise"; checked: true }
-			RadioButton { text: qsTr("Exclude cases listwise"); name: "excludeListwise" }
+			title: qsTr("Missing Values")
+			RadioButton { value: "excludePairwise"; text: qsTr("Exclude cases pairwise"); checked: true	}
+			RadioButton { value: "excludeListwise"; text: qsTr("Exclude cases listwise")				}
 		}
 	}
 }
