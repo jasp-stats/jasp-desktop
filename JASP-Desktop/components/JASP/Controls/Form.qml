@@ -31,10 +31,9 @@ AnalysisForm
 	implicitHeight: expanderButton.height + (Theme.formMargin * 2)
 	height:			implicitHeight
 
-
-
 	default property alias	content:			column.children
-			property bool	usesJaspResults:	false
+			property alias	form:				form
+			property bool	usesJaspResults:	true
 			property int	majorVersion:		1
 			property int	minorVersion:		0
 			property bool	usesVariablesModel: false

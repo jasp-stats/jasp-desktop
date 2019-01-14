@@ -22,7 +22,7 @@ import JASP.Widgets 1.0
 
 Form
 {
-	id: form
+	usesJaspResults: false
 	
 	VariablesForm
 	{

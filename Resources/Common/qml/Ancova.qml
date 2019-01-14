@@ -24,7 +24,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	id: form
+	usesJaspResults: false
 	
 	IntegerField { visible: false; name: "plotWidthQQPlot"                      ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightQQPlot"                     ; defaultValue: 300 }

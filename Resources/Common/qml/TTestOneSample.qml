@@ -23,8 +23,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	id: form
-	
+	usesJaspResults: false
 	VariablesForm
 	{
 		height: 200
