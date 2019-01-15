@@ -6,11 +6,11 @@ import JASP.Theme 1.0
 
 Window
 {
-	width:		400
-	height:		700
-	visible:	helpModel.visible
-
-	onVisibleChanged: helpModel.visible = visible
+	width:				400
+	height:				700
+	visible:			helpModel.visible
+	onVisibleChanged:	helpModel.visible = visible
+	title:				"JASP Help"
 
 	WebEngineView
 	{

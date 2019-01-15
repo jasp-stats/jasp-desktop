@@ -25,8 +25,7 @@ public:
 		PPI_CUSTOM_VALUE,
 		UI_SCALE,
 		IMAGE_BACKGROUND,
-		TEST_ANALYSIS_QML,
-		TEST_ANALYSIS_R
+		FIXED_DECIMALS
 	};
 
 	static QVariant value(Settings::Type key);

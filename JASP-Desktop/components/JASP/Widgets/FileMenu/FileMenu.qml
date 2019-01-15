@@ -13,7 +13,7 @@ Item
 	z:			1
 	visible:	actionMenu.x + actionMenu.width > 0
 
-	property variant actionbuttons:			["Open", "Save","Save As", "Export Results", "Export Data","Sync Data", "Close"]
+
 	property variant resourcesbuttons:		["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
 	property int action_button_height:		35
 	property int resource_button_height:	1.5 * action_button_height
@@ -58,18 +58,18 @@ Item
 
 				Repeater {
 
-					model: fileMenu.actionbuttons.length
+					model: fileMenuModel.actionButtons
 
 					MenuButton {
 						id:					actionButton
-						text:				fileMenu.actionbuttons[index]
+						text:				nameRole
 
 						width:				parent.width-6
 						height:				action_button_height
 						anchors.leftMargin: 3
 						anchors.left:		parent.left
-						onClicked:			fileMenuModel.fileOperationClicked(index)
-						enabled:			fileMenuModel.buttonsenabled[index];
+						onClicked:			fileMenuModel.actionButtons.buttonClicked(typeRole)
+						enabled:			enabledRole
 					}
 				}
 			}
@@ -101,90 +101,29 @@ Item
 				spacing:					6
 				width:						parent.width - Theme.generalAnchorMargin
 
-				MenuButton {
-					id:					locationRecentFiles
-					text:				fileMenu.resourcesbuttons[0]
+				Repeater
+				{
+					model: fileMenuModel.resourceButtons
 
-					width:				parent.width-6
-					height:				resource_button_height
-					anchors.leftMargin: 3
-					anchors.left:		parent.left
+					MenuButton {
+						id:					resourceButton
+						text:				nameRole
 
-					enabled:			true
-					visible:			fileMenuModel.recentfiles_button_visible
-					onClicked:			resourceScreen.locationSelected = "recentfiles"
-				}
-
-
-				MenuButton {
-					id:					locationCurrentFile
-					text:				fileMenu.resourcesbuttons[1]
-
-					width:				parent.width-6
-					height:				resource_button_height
-					anchors.leftMargin: 3
-					anchors.left:		parent.left
-
-					enabled:		true
-					visible:		fileMenuModel.currentfile_button_visible
-					onClicked:		resourceScreen.locationSelected = "currentfile"
-				}
-
-
-				MenuButton {
-					id:				locationComputer
-					text:			fileMenu.resourcesbuttons[2]
-
-					width:			parent.width-6
-					height:			resource_button_height
-
-					enabled:		true
-					onClicked:		resourceScreen.locationSelected = "computer"
-
-					anchors.leftMargin: 3
-					anchors.left:		parent.left
-
-				}
-
-				MenuButton {
-					id:		alocationOSF
-					text:	fileMenu.resourcesbuttons[3]
-
-					width:	parent.width-6
-					height: resource_button_height
-
-					anchors.leftMargin:	3
-					anchors.left:		parent.left
-
-					enabled: true
-					onClicked: {
-
-						resourceScreen.locationSelected = "osf"
-						fileMenuModel.resourceButtonClicked(3)
+						width:				parent.width-6
+						height:				resource_button_height
+						anchors.leftMargin: 3
+						anchors.left:		parent.left
+						onClicked:
+						{
+							resourceScreen.locationSelected = qmlRole
+							fileMenuModel.resourceButtons.clicked(typeRole)
+						}
 					}
 				}
-
-				MenuButton {
-					id:			locationDataLibrary
-					text:		fileMenu.resourcesbuttons[4]
-
-					width:		parent.width-6
-					height:		resource_button_height
-
-					anchors.leftMargin: 3
-					anchors.left:		parent.left
-
-					enabled:	true
-					visible:	fileMenuModel.datalibrary_button_visible
-					onClicked:	resourceScreen.locationSelected = "datalibrary"
-				}
-			}	//Column Filelocation
-		}		//Rectangle Location Menu
-
-
+			}
+		}
 
 		focus: true
-		//Keys.onSpacePressed: locationMenu.visible = !locationMenu.visible
 
 		Item
 		{
@@ -225,7 +164,7 @@ Item
 			color:			Theme.uiBackground
 			z:				-2
 
-			property bool aButtonVisible:	(recentFiles.visible || currentFile.visible || computer.visible || osf.visible || dataLibrary.visible)
+			property bool aButtonVisible:	locationSelected !== ''
 
 			//Wouldn't it be better to do this with some kind of bitflag? Or an enum in FileMenu.h or anything except for a random string...
 			property string locationSelected: ""
@@ -234,40 +173,11 @@ Item
 
 			onXChanged: if(x + width <= otherColumnsWidth && !fileMenuModel.visible) resourceScreen.locationSelected = ""
 
-			RecentFiles
+			Loader
 			{
-				id:				recentFiles
-				anchors.fill:	parent
-				visible:		resourceScreen.locationSelected == 'recentfiles'
-			}
-
-			CurrentFile
-			{
-				id:				currentFile
-				anchors.fill:	parent
-				visible:		resourceScreen.locationSelected == 'currentfile'
-			}
-
-			Computer
-			{
-				id:				computer
-				anchors.fill:	parent
-				visible:		resourceScreen.locationSelected == 'computer'
-			}
-
-			OSF
-			{
-				id:				osf
-				anchors.fill:	parent
-				visible:		resourceScreen.locationSelected == 'osf'
-			}
-
-			DataLibrary
-			{
-
-				id:				dataLibrary
-				anchors.fill:	parent
-				visible:		resourceScreen.locationSelected == 'datalibrary'
+				id:					showSelectedSubScreen
+				anchors.fill:		parent
+				source:				resourceScreen.locationSelected
 			}
 		}
 	}

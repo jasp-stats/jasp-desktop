@@ -44,9 +44,9 @@ public:
 					titleRole,
 					nameRole };
 
-				Analyses(QObject * parent) : QAbstractListModel(parent) {}
+				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules) {}
 
-	Analysis*	createFromJaspFileEntry(Json::Value analysisData, DynamicModules * dynamicModules);
+	Analysis*	createFromJaspFileEntry(Json::Value analysisData);
 	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
 
@@ -86,7 +86,7 @@ public slots:
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
-	void analysisClickedHandler(QString, QString);
+	void analysisClickedHandler(QString analysis, QString ribbon, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 
 	void rCodeReturned(QString result, int requestId);
@@ -130,11 +130,12 @@ private:
 	 std::map<size_t, Analysis*>	_analysisMap;
 	 std::vector<size_t>			_orderedIds;
 
-	 size_t		_nextId					= 0;
-	 int		_currentAnalysisIndex	= -1;
-	 DataSet*	_dataSet				= nullptr;
-	 
-	 static int	_scriptRequestID;
+	 size_t							_nextId					= 0;
+	 int							_currentAnalysisIndex	= -1;
+	 DataSet*						_dataSet				= nullptr;
+	 DynamicModules*				_dynamicModules			= nullptr;
+
+	 static int								_scriptRequestID;
 	 QMap<int, QPair<Analysis*, QString> > _scriptIDMap;
 };
 

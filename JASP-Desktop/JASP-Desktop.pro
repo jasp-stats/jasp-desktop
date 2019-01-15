@@ -316,7 +316,6 @@ HEADERS += \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
-    gui/preferencesdialog.h \
     mainwindow.h \
     utilities/extractarchive.h \
     widgets/boundqmlfactorslist.h \
@@ -359,7 +358,11 @@ HEADERS += \
     utilities/helpmodel.h \
     widgets/lavaansyntaxhighlighter.h \
     widgets/boundqmllistviewinteraction.h \
-    widgets/listmodelinteractionassigned.h
+    widgets/listmodelinteractionassigned.h \
+    gui/preferencesmodel.h \
+    widgets/filemenu/actionbuttons.h \
+    widgets/filemenu/resourcebuttons.h \
+    widgets/filemenu/resourcebuttonsvisible.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -485,7 +488,6 @@ SOURCES += \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
-    gui/preferencesdialog.cpp \
     main.cpp \
     mainwindow.cpp \
     utilities/extractarchive.cpp \
@@ -528,7 +530,11 @@ SOURCES += \
     utilities/helpmodel.cpp \
     widgets/lavaansyntaxhighlighter.cpp \
     widgets/boundqmllistviewinteraction.cpp \
-    widgets/listmodelinteractionassigned.cpp
+    widgets/listmodelinteractionassigned.cpp \
+    gui/preferencesmodel.cpp \
+    widgets/filemenu/actionbuttons.cpp \
+    widgets/filemenu/resourcebuttons.cpp \
+    widgets/filemenu/resourcebuttonsvisible.cpp
 
 RESOURCES += \
     html/html.qrc \

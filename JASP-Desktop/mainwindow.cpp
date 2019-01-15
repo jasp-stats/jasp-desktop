@@ -38,7 +38,7 @@
 #include "appinfo.h"
 
 #include "gui/aboutdialog.h"
-#include "gui/preferencesdialog.h"
+#include "gui/preferencesmodel.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
 #include "utilities/qutils.h"
@@ -95,8 +95,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_levelsTableModel		= new LevelsTableModel(this);
 	_labelFilterGenerator	= new labelFilterGenerator(_package, this);
 	_columnsModel			= new ColumnsModel(this);
-	_analyses				= new Analyses(this);
 	_dynamicModules			= new DynamicModules(this);
+	_analyses				= new Analyses(this, _dynamicModules);
 	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
@@ -104,6 +104,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
+	_preferences			= new PreferencesModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -232,7 +233,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
-	connect(_analyses,				&Analyses::analysisSelected,						_helpModel,				&HelpModel::setAnalysisPagename								);
+	//connect(_analyses,				&Analyses::analysisSelected,						_helpModel,				&HelpModel::setAnalysisPagename								); //The user can click the info-button if they want to see some documentation
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -284,6 +285,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel);
+	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
@@ -977,7 +979,7 @@ void MainWindow::populateUIfromDataSet()
 			{
 				try
 				{
-					_analyses->createFromJaspFileEntry(analysisData, _dynamicModules);
+					_analyses->createFromJaspFileEntry(analysisData);
 				}
 				catch (Modules::ModuleException modProb)
 				{

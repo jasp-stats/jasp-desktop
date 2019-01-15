@@ -55,7 +55,7 @@ AnalysisEntry* RibbonEntry::retrieveCorrespondingAnalysisEntry(const Json::Value
 AnalysisEntry* RibbonEntry::analysisEntry(const std::string & analysisTitle) const
 {
 	for(AnalysisEntry * entry : _analysisEntries)
-		if(entry->title() == analysisTitle)
+		if(entry->title() == analysisTitle || entry->function() == analysisTitle)
 			return entry;
 
 	throw ModuleException(dynamicModule()->name(), "Couldn't find AnalysisEntry " + analysisTitle);

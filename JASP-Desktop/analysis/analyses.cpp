@@ -33,7 +33,7 @@
 using namespace std;
 
 
-Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicModules * dynamicModules )
+Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData)
 {
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 	size_t id					= analysisData["id"].asUInt();
@@ -54,7 +54,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 		analysis					= create(module, name, id, version, &optionsJson, status, false);
 	}
 	else
-		analysis = create(dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status, false);
+		analysis = create(_dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status, false);
 
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
@@ -133,6 +133,7 @@ void Analyses::clear()
 
 	_nextId = 0;
 	endResetModel();
+	emit countChanged();
 }
 
 void Analyses::analysisToRefreshHandler(Analysis *analysis)
@@ -317,9 +318,14 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisFunction, QString module)
+void Analyses::analysisClickedHandler(QString analysisTitle, QString ribbonTitle, QString module)
 {
-	create(module, analysisFunction);
+	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
+
+	if(dynamicModule != nullptr)
+		create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisTitle.toStdString()));
+	else
+		create(module, analysisTitle);
 }
 
 void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)

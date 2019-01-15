@@ -32,11 +32,11 @@ Item
 
 	Label
 	{
-		id:headLabel
+		id:		headLabel
 
-		width:	implicitWidth
-		height:	30
-		visible: !osfLogin.visible
+		width:		implicitWidth
+		height:		30
+		visible:	!osfLogin.visible
 		anchors
 		{
 			top:		parent.top

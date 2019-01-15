@@ -76,6 +76,8 @@ void HelpModel::setHelpJS(QString helpJS)
 
 void HelpModel::showOrTogglePage(QString pageName)
 {
+	pageName = pageName.toLower();
+
 	if(pageName == _pageName && _visible)
 		setVisible(false);
 	else

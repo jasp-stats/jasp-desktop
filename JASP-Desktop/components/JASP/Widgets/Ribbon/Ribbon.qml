@@ -92,11 +92,12 @@ Item
 
 					RibbonButton
 					{
-						text   :	displayText
-						source :	(jaspRibbon.model.isDynamic ? "file:" : "qrc:/icons/") + iconSource
-						menu   :	analysisMenu
-						enabled:	jaspRibbon.model.enabled && (!jaspRibbon.model.requiresDataset || mainWindow.datasetLoaded)
-						moduleName: jaspRibbon.module
+						text:			displayText
+						source:			(jaspRibbon.model.isDynamic ? "file:" : "qrc:/icons/") + iconSource
+						menu:			analysisMenu
+						enabled:		jaspRibbon.model.enabled && (!jaspRibbon.model.requiresDataset || mainWindow.datasetLoaded)
+						moduleName:		jaspRibbon.module
+						ribbonTitle:	displayText
 					}
 				}
 

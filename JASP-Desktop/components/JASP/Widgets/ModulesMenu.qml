@@ -63,7 +63,7 @@ Item
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
 				onClicked: 			moduleInstallerDialog.open()
-				iconSource:			"qrc:/icons/addition-sign.svg"
+				iconSource:			"qrc:/icons/addition-sign-small.svg"
 				showIconAndText:	true
 				toolTip:			"Install a dynamic module"
 			}
@@ -111,7 +111,7 @@ Item
 						z:				1
 						id:				minusButton
 						visible:		isDynamic
-						iconSource:		"qrc:/icons/subtraction-sign.svg"
+						iconSource:		"qrc:/icons/subtraction-sign-small.svg"
 						width:			height
 						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
 						toolTip:		"Uninstall module " + displayText

@@ -3,25 +3,24 @@
 QSettings* Settings::_settings = nullptr;
 
 const Settings::Setting Settings::Values[] = {
-	{"numDecimals", ""},
-	{"exactPVals", 0},
-	{"dataAutoSynchronization", 1},
-	{"useDefaultSpreadsheetEditor", 1},
-	{"spreadsheetEditorName", ""},
-	{"MissingValueList", ""},
-	{"instructionsShown", false},
-	{"recentFolders", ""},
-	{"recentItems", ""},
-	{"OSFUsername", ""},
-	{"OSFPassword", ""},
-	{"OSFEncryption", 0},
-	{"OSFRememberMe", false},
-	{"PPIUseDefault", false},
-	{"PPICustomValue", 300},
-	{"UIScale", 0.7f},
-	{"ImageBackground", "white"},
-	{"testAnalysisQML", ""},
-	{"testAnalysisR", ""}
+	{"numDecimals",					3},
+	{"exactPVals",					0},
+	{"dataAutoSynchronization",		1},
+	{"useDefaultSpreadsheetEditor",	1},
+	{"spreadsheetEditorName",		""},
+	{"MissingValueList",			""},
+	{"instructionsShown",			false},
+	{"recentFolders",				""},
+	{"recentItems",					""},
+	{"OSFUsername",					""},
+	{"OSFPassword",					""},
+	{"OSFEncryption",				0},
+	{"OSFRememberMe",				false},
+	{"PPIUseDefault",				false},
+	{"PPICustomValue",				300},
+	{"UIScale",						0.7f},
+	{"ImageBackground",				"white"},
+	{"fixedDecimals",				false}
 };
 
 QVariant Settings::value(Settings::Type key)

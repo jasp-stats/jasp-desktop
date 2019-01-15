@@ -298,19 +298,34 @@ Popup
 
 			RectangularButton
 			{
-				id:							createButton
+				id:				helpButton
+				iconSource:		"qrc:/icons/QuestionMark.png"
+				width:			height
+				height:			createButton.height
+				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
+				toolTip:		"Open Documentation"
+				anchors
+				{
+					left:		parent.left
+					top:		computeColumnIconRow.bottom
+					margins:	Theme.generalAnchorMargin
+				}
+			}
+
+			RectangularButton
+			{
+				id:			createButton
+				text:		"Create Column"
+				enabled:	nameEdit.validEntry
+				toolTip:	nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
+				onClicked:	rootCreateComputedColumn.createComputedColumn()
 				anchors
 				{
 					top:		computeColumnIconRow.bottom
 					margins:	Theme.generalAnchorMargin
-					left:		parent.left
+					left:		helpButton.right
 					right:		closeButtonCross.left
 				}
-				text:		"Create Column"
-				enabled:	nameEdit.validEntry
-				toolTip:	nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
-
-				onClicked:	rootCreateComputedColumn.createComputedColumn()
 			}
 
 			RectangularButton
@@ -319,13 +334,14 @@ Popup
 				iconSource:		"qrc:/images/cross.png"
 				width:			height
 				height:			createButton.height
+				onClicked:		popupCreateComputedColumn.close()
+				toolTip:		"Close without creating a computed column"
 				anchors
 				{
 					right:		parent.right
 					top:		computeColumnIconRow.bottom
 					margins:	Theme.generalAnchorMargin
 				}
-				onClicked:	popupCreateComputedColumn.close()
 			}
 		}
 	}

@@ -24,77 +24,92 @@
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {
-	
-	_mode = FileEvent::FileOpen;
-	_currentFileType = Utils::FileType::unknown;
-	_currentFileReadOnly = false;
+
+	_mode					= FileEvent::FileOpen;
+	_currentFileType		= Utils::FileType::unknown;
+	_currentFileReadOnly	= false;
 
 	setRecentFiles(	new RecentFiles(parent)	);
 	setCurrentFile(	new CurrentFile(parent)	);
-	setComputer(	new Computer(parent)		);
+	setComputer(	new Computer(parent)	);
 	setOsf(			new OSF(parent)			);
 	setDatalibrary(	new DataLibrary(parent)	);
+
+	_actionButtons			= new ActionButtons(this);
+	_resourceButtons		= new ResourceButtons(this);
+	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
+
+	connect(_RecentFiles,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_CurrentFile,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_Computer,			&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_OSF,				&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_DataLibrary,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_actionButtons,		&ActionButtons::buttonClickedSignal,	this, &FileMenu::fileOperationClicked);
+	connect(&_watcher,			&QFileSystemWatcher::fileChanged,		this, &FileMenu::dataFileModifiedHandler);
+	connect(_resourceButtons,	&ResourceButtons::clicked,				this, &FileMenu::resourceButtonClicked);
+	setFileoperation(ActionButtons::Close);
+
+
+	_actionButtons->setEnabled(ActionButtons::Open,				true);
+	_actionButtons->setEnabled(ActionButtons::Save,				false);
+	_actionButtons->setEnabled(ActionButtons::SaveAs,			false);
+	_actionButtons->setEnabled(ActionButtons::ExportResults,	false);
+	_actionButtons->setEnabled(ActionButtons::ExportData,		false);
+	_actionButtons->setEnabled(ActionButtons::SyncData,			false);
+	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	
-	connect(_RecentFiles, &FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_CurrentFile, &FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_Computer,	&FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_OSF,			&FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
-	connect(_DataLibrary, &FileMenuObject::dataSetIORequest, this, &FileMenu::dataSetIORequestHandler);
 
-	connect(&_watcher,		&QFileSystemWatcher::fileChanged, this, &FileMenu::dataFileModifiedHandler);
-	
-	setFileoperation(Close);
-
-	_buttonsenabled  = QVector<bool> (CountFileActions);
-	setEnableButton(FileOperation::Open,			true);
-	setEnableButton(FileOperation::Save,			false);
-	setEnableButton(FileOperation::SaveAs,			false);
-	setEnableButton(FileOperation::ExportResults,	false);
-	setEnableButton(FileOperation::ExportData,		false);
-	setEnableButton(FileOperation::SyncData,		false);
-	setEnableButton(FileOperation::Close,			false);
-	
-	setRecentfiles_button_visible(	true);
-	setCurrentfile_button_visible(	false);
-	set_enable_currentfile_button(	false);
-	setComputer_button_visible(		true);
-	setDatalibrary_button_visible(	true);
+	_resourceButtons->setVisible(ResourceButtons::RecentFiles, 	true);
+	_resourceButtons->setVisible(ResourceButtons::OSF,			true);
+	_resourceButtons->setVisible(ResourceButtons::CurrentFile, 	false);
+	_resourceButtons->setVisible(ResourceButtons::Computer, 	true);
+	_resourceButtons->setVisible(ResourceButtons::DataLibrary, 	true);
 }
 
-//Properties
-bool FileMenu::enable_currentfile_button()
-{
-	return _enable_currentfile_button;
-}
-
-void FileMenu::set_enable_currentfile_button(const bool enable)
-{
-	if (_enable_currentfile_button == enable)
-		return;
-	_enable_currentfile_button = enable;
-	emit enable_currentfile_button_changed();
-}
-
-FileMenu::FileOperation FileMenu::fileoperation()
-{
-	return _fileoperation;
-}
-
-void FileMenu::setFileoperation(FileMenu::FileOperation fo)
+void FileMenu::setFileoperation(FileOperation fo)
 {
 	_fileoperation = fo;
 	emit fileoperationChanged();
-}
 
-QVector<bool> FileMenu::buttonsenabled()
-{
-	return _buttonsenabled;
-}
+	/*switch (fo)
+	{
+	case FileOperation::Open:
+		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF});
+		break;
 
-void FileMenu::setButtonsenabled(const QVector<bool> &enable)
-{
-	_buttonsenabled = enable;
-	emit buttonsenabledChanged();
+	case FileOperation::SyncData:
+		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF});
+		break;
+
+	case FileOperation::SaveAs:
+	case FileOperation::ExportData:
+	case FileOperation::ExportResults:
+		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::Computer, ResourceButtons::OSF});
+
+	}
+
+
+
+	if (_mode == FileEvent::FileOpen)
+	{
+		_resourceButtons->setVisible(ResourceButtons::CurrentFile,	false);
+		_resourceButtons->setVisible(ResourceButtons::RecentFiles,	true);
+		_resourceButtons->setVisible(ResourceButtons::DataLibrary,	true);
+		_resourceButtons->setVisible(ResourceButtons::OSF,			true);
+	}
+	else if (_mode == FileEvent::FileSyncData)
+	{
+		_resourceButtons->setVisible(ResourceButtons::CurrentFile,	true);
+		_resourceButtons->setVisible(ResourceButtons::RecentFiles,	false);
+		_resourceButtons->setVisible(ResourceButtons::OSF,			true);
+		std::cout << "set_enable_currentfile_button(!_CurrentFile->getCurrentDataFilePath().isEmpty());" << std::endl; // What was this for anyway?
+	}
+	else
+	{
+		_resourceButtons->setVisible(ResourceButtons::CurrentFile, false);
+		_resourceButtons->setVisible(ResourceButtons::RecentFiles, false);
+		_resourceButtons->setVisible(ResourceButtons::OSF,			true);
+	}*/
 }
 
 void FileMenu::setSaveMode(FileEvent::FileMode mode)
@@ -106,24 +121,27 @@ void FileMenu::setSaveMode(FileEvent::FileMode mode)
 	_OSF->setMode(_mode);
 	_OSF->setCurrentFileName(getDefaultOutFileName());
 	
-	setDatalibrary_button_visible(false);
+	_resourceButtons->setVisible(ResourceButtons::DataLibrary, false);
 
 	if (_mode == FileEvent::FileOpen)
 	{
-		setCurrentfile_button_visible(false);
-		setRecentfiles_button_visible(true);
-		setDatalibrary_button_visible(true);
+		_resourceButtons->setVisible(ResourceButtons::CurrentFile,	false);
+		_resourceButtons->setVisible(ResourceButtons::RecentFiles,	true);
+		_resourceButtons->setVisible(ResourceButtons::DataLibrary,	true);
+		_resourceButtons->setVisible(ResourceButtons::OSF,			true);
 	}
 	else if (_mode == FileEvent::FileSyncData)
 	{
-		setCurrentfile_button_visible(true);
-		setRecentfiles_button_visible(false);
-		set_enable_currentfile_button(!_CurrentFile->getCurrentDataFilePath().isEmpty());
+		_resourceButtons->setVisible(ResourceButtons::CurrentFile,	true);
+		_resourceButtons->setVisible(ResourceButtons::RecentFiles,	false);
+		_resourceButtons->setVisible(ResourceButtons::OSF,			true);
+		std::cout << "set_enable_currentfile_button(!_CurrentFile->getCurrentDataFilePath().isEmpty());" << std::endl; // What was this for anyway?
 	}
 	else
 	{
-		setCurrentfile_button_visible(false);
-		setRecentfiles_button_visible(false);
+		_resourceButtons->setVisible(ResourceButtons::CurrentFile, false);
+		_resourceButtons->setVisible(ResourceButtons::RecentFiles, false);
+		_resourceButtons->setVisible(ResourceButtons::OSF,			true);
 	}
 }
 
@@ -214,12 +232,6 @@ FileEvent *FileMenu::close()
 	return event;
 }
 
-void FileMenu::setCurrentActionIndex(int index)
-{
-	_selectedActionIndex = index;
-}
-
-
 void FileMenu::setCurrentDataFile(const QString &path)
 {
 	QString currentPath = _CurrentFile->getCurrentDataFilePath();
@@ -244,7 +256,7 @@ void FileMenu::setCurrentDataFile(const QString &path)
 	if (setCurrentPath)
 		_CurrentFile->setCurrentDataFilePath(path);
 		
-	set_enable_currentfile_button(enableCurrentTab);	
+	std::cout << "set_enable_currentfile_button(enableCurrentTab);	" << std::endl;
 }
 
 void FileMenu::setDataFileWatcher(bool watch)
@@ -345,25 +357,25 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		if (event->operation() == FileEvent::FileOpen)
 		{
 			
-			setEnableButton(FileOperation::Save, event->type() == Utils::FileType::jasp);
-			setEnableButton(FileOperation::SaveAs, true);
-			setEnableButton(FileOperation::ExportResults, true);
-			setEnableButton(FileOperation::ExportData, true);
-			setEnableButton(FileOperation::SyncData, true);
-			setEnableButton(FileOperation::Close, true);
+			_actionButtons->setEnabled(ActionButtons::Save, event->type() == Utils::FileType::jasp);
+			_actionButtons->setEnabled(ActionButtons::SaveAs, true);
+			_actionButtons->setEnabled(ActionButtons::ExportResults, true);
+			_actionButtons->setEnabled(ActionButtons::ExportData, true);
+			_actionButtons->setEnabled(ActionButtons::SyncData, true);
+			_actionButtons->setEnabled(ActionButtons::Close, true);
 		}
 		else if (event->operation() == FileEvent::FileSave)
 		{
-			setEnableButton(FileOperation::Save, true);
+			_actionButtons->setEnabled(ActionButtons::Save, true);
 		}
 		else if (event->operation() == FileEvent::FileClose)
 		{
-			setEnableButton(FileOperation::Save, false);
-			setEnableButton(FileOperation::SaveAs, false);
-			setEnableButton(FileOperation::ExportResults, false);
-			setEnableButton(FileOperation::ExportData, false);
-			setEnableButton(FileOperation::SyncData, false);
-			setEnableButton(FileOperation::Close, false);			
+			_actionButtons->setEnabled(ActionButtons::Save, false);
+			_actionButtons->setEnabled(ActionButtons::SaveAs, false);
+			_actionButtons->setEnabled(ActionButtons::ExportResults, false);
+			_actionButtons->setEnabled(ActionButtons::ExportData, false);
+			_actionButtons->setEnabled(ActionButtons::SyncData, false);
+			_actionButtons->setEnabled(ActionButtons::Close, false);
 		}
 	}
 }
@@ -399,8 +411,8 @@ void FileMenu::dataSetOpenExampleRequestHandler(QString path)
 ///From backstage
 void FileMenu::analysisAdded(Analysis *analysis)
 {
-	setEnableButton(FileOperation::SaveAs, true);
-	setEnableButton(FileOperation::ExportResults, true);
+	_actionButtons->setEnabled(ActionButtons::SaveAs, true);
+	_actionButtons->setEnabled(ActionButtons::ExportResults, true);
 }
 
 void FileMenu::setSyncFile(FileEvent *event)
@@ -416,7 +428,7 @@ void FileMenu::dataAutoSynchronizationChanged(bool on)
 	setDataFileWatcher(on);
 }
 
-void FileMenu::fileOperationClicked(const int &action)
+void FileMenu::fileOperationClicked(const FileOperation action)
 {
 	bool cancel;
 	
@@ -430,10 +442,8 @@ void FileMenu::fileOperationClicked(const int &action)
 		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
 			save();
 		else
-		{
-			setCurrentActionIndex(FileOperation::SaveAs);
 			setSaveMode(FileEvent::FileSave);			
-		}
+
 		cancel = true;
 		break;
 
@@ -455,21 +465,16 @@ void FileMenu::fileOperationClicked(const int &action)
 
 	case FileOperation::Close: // Close
 		close();
-		setCurrentActionIndex(FileOperation::Open);
 		setSaveMode(FileEvent::FileOpen);
 		cancel = true;
 		break;
 	}
 }
 
-void FileMenu::resourceButtonClicked(const int &resource)
+void FileMenu::resourceButtonClicked(const int buttonType)
 {
-	
-	//Check the OSF tab
-	if (resource == FileLocation::Osf)
-	{
+	if (buttonType == ResourceButtons::OSF)
 		_OSF->attemptToConnect();
-	}
 }
 
 void FileMenu::dataSetOpenRequestHandler(QString path)
@@ -511,8 +516,9 @@ bool FileMenu::checkSyncFileExists(const QString &path)
     }
     if (!exists)
     {
+#ifdef JASP_DEBUG
         std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
-        std::cout.flush();
+#endif
 		clearSyncData();
 	}
 
@@ -524,18 +530,11 @@ void FileMenu::clearSyncData()
 {
 	setDataFileWatcher(false); // must be done before setting the current to empty.
 	_CurrentFile->setCurrentDataFilePath(QString());
-	set_enable_currentfile_button(false);
 }
 
 bool FileMenu::clearOSFFromRecentList(QString path)
 {
 	return OnlineDataManager::determineProvider(path) != OnlineDataManager::OSF;
-}
-
-void FileMenu::setEnableButton(const int &index, const bool &enable)
-{
-	_buttonsenabled[index] = enable;
-	emit buttonsenabledChanged();
 }
 
 void FileMenu::setDatalibrary(DataLibrary * datalibrary)
@@ -583,47 +582,11 @@ void FileMenu::setOsf(OSF * osf)
 	emit osfChanged(_OSF);
 }
 
-void FileMenu::setRecentfiles_button_visible(bool recentfiles_button_visible)
-{
-	if (m_recentfiles_button_visible == recentfiles_button_visible)
-		return;
-
-	m_recentfiles_button_visible = recentfiles_button_visible;
-	emit recentfiles_button_visibleChanged(m_recentfiles_button_visible);
-}
-
-void FileMenu::setCurrentfile_button_visible(bool currentfile_button_visible)
-{
-	if (m_currentfile_button_visible == currentfile_button_visible)
-		return;
-
-	m_currentfile_button_visible = currentfile_button_visible;
-	emit currentfile_button_visibleChanged(m_currentfile_button_visible);
-}
-
-void FileMenu::setComputer_button_visible(bool computer_button_visible)
-{
-	if (m_computer_button_visible == computer_button_visible)
-		return;
-
-	m_computer_button_visible = computer_button_visible;
-	emit computer_button_visibleChanged(m_computer_button_visible);
-}
-
-void FileMenu::setDatalibrary_button_visible(bool datalibrary_button_visible)
-{
-	if (m_datalibrary_button_visible == datalibrary_button_visible)
-		return;
-
-	m_datalibrary_button_visible = datalibrary_button_visible;
-	emit datalibrary_button_visibleChanged(m_datalibrary_button_visible);
-}
-
 void FileMenu::setVisible(bool visible)
 {
-	if (m_visible == visible)
+	if (_visible == visible)
 		return;
 
-	m_visible = visible;
-	emit visibleChanged(m_visible);
+	_visible = visible;
+	emit visibleChanged(_visible);
 }

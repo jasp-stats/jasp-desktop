@@ -115,5 +115,7 @@
         <file>icons/filterConstructorBackground.png</file>
         <file>icons/exclamation.svg</file>
         <file>icons/subtraction-sign.svg</file>
+        <file>icons/addition-sign-small.svg</file>
+        <file>icons/subtraction-sign-small.svg</file>
     </qresource>
 </RCC>

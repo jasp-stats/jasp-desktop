@@ -70,7 +70,7 @@ public:
 
 signals:
 	void currentButtonModelChanged();
-	Q_INVOKABLE void analysisClickedSignal(QString analysis, QString module);
+	Q_INVOKABLE void analysisClickedSignal(QString analysis, QString ribbonTitle, QString module);
 
 	void highlightedModuleIndexChanged(int highlightedModuleIndex);
 

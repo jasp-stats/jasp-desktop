@@ -61,7 +61,7 @@ public:
 	void setPassword(const QString &password);	
 		
 	void setOnlineDataManager(OnlineDataManager *odm);
-	void attemptToConnect();
+	Q_INVOKABLE void attemptToConnect();
 	void setCurrentFileName(QString currentFileName);
 	void setMode(FileEvent::FileMode mode) OVERRIDE;
 
@@ -116,7 +116,7 @@ private:
 	OnlineDataManager		*_odm						= nullptr;
 	OSFListModel			*_osfListModel				= nullptr;
 	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel	= nullptr;
-	OSFFileSystem					*_model						= nullptr;
+	OSFFileSystem			*_model						= nullptr;
 	
 	bool	_mLoggedin,
 			_mRememberMe,

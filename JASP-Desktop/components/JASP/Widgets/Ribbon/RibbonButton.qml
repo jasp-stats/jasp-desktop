@@ -36,6 +36,7 @@ Rectangle
 			property alias	source		: backgroundImage.source
 			property bool	enabled		: true
 			property string moduleName	: "???"
+			property string ribbonTitle : "???"
 	default property var	menu
 			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
 
@@ -109,6 +110,7 @@ Rectangle
 					posY : ribbonButton.y + (ribbonButton.height)
 
 					moduleName:				ribbonButton.moduleName
+					ribbonTitle:			ribbonButton.ribbonTitle
 					Component.onCompleted:	clusterMenu.open()
 					onClosed:				menuLoader.sourceComponent = null
 				}

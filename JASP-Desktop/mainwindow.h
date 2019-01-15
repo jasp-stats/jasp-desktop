@@ -42,6 +42,7 @@
 #include "modules/ribbonbuttonmodel.h"
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonentry.h"
+#include "gui/preferencesmodel.h"
 #include "utilities/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
@@ -247,6 +248,7 @@ private:
 	QApplication					*_application 			= nullptr;
 	FileMenu						*_fileMenu				= nullptr;
 	HelpModel						*_helpModel				= nullptr;
+	PreferencesModel				*_preferences			= nullptr;
 
 	QSettings						_settings;
 

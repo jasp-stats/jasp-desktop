@@ -32,6 +32,10 @@ Popup
 
 	modal: true; focus: true;
 
+	background: Rectangle { color: Theme.uiBackground }
+
+
+
 	y: (parent.height / 2) - (height / 2)
 	x: (parent.width / 2) - (width / 2)
 
@@ -48,10 +52,11 @@ Popup
 	{
 		id:		moduleInstallerComponent
 
-		Rectangle
+		Item
 		{
 			id:			moduleInstallerRect
-			color:		Theme.grayDarker
+
+
 			property var currentJSON: null
 
 			Item
@@ -277,10 +282,7 @@ Popup
 
 				Rectangle
 				{
-					anchors.top:		parent.top
-					anchors.left:		parent.left
-					anchors.right:		parent.right
-					anchors.bottom:		closeButton.top
+					anchors.fill:		parent
 					anchors.margins:	Theme.generalAnchorMargin
 
 					color:				Theme.whiteBroken
@@ -294,25 +296,6 @@ Popup
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
 						text:				installProgressItem.installText
 					}
-				}
-
-				RectangularButton
-				{
-					id:					closeButton
-					anchors.left:		parent.left
-					anchors.right:		parent.right
-					anchors.bottom:		parent.bottom
-					anchors.margins:	Theme.generalAnchorMargin
-					visible:			dynamicModules.currentInstallDone
-					height:				dynamicModules.currentInstallDone ? implicitHeight : 0
-					iconSource:			"qrc:/images/cross.png"
-					showIconAndText:	true
-					centerText:			true
-
-					text:				"Close"
-					toolTip:			"Close this window"
-
-					onClicked:			moduleInstallerPopup.close();
 				}
 			}
 		}
