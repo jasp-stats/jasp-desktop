@@ -137,6 +137,8 @@ Form
 			height: 200
 			availableVariablesList { name: "postHocTestsAvailable"; syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
+                width: parent.width / 4
+                listViewType: "AssignedAnova"
 		}
 		
 		GroupBox
