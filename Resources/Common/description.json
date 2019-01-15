@@ -182,6 +182,19 @@
 					"function":	"ExploratoryFactorAnalysis"
 				}
 			]
+		},
+		{
+		},
+		{
+			"title":	"Mixed Models",
+			"icon":		"analysis-classical-sem.svg",
+			"analyses":
+			[
+				{
+					"title":	"Linear Mixed Models",
+					"function":	"LinearMixedModels"
+				}
+			]
 		}
 	]
 }

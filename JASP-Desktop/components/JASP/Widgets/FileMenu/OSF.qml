@@ -248,6 +248,6 @@ Item
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top             : secondSeparator.bottom
-		anchors.topMargin       : 75
+        anchors.topMargin       : 40
 	}
 }
