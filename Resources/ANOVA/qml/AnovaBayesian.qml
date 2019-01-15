@@ -23,7 +23,7 @@ import JASP.Widgets 1.0
 Form
 {
 	usesJaspResults: false
-	
+
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"         ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"       ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"          ; defaultValue: 430 }
@@ -32,7 +32,7 @@ Form
 	DoubleField  { visible: false; name: "posteriorEstimatesMCMCIterations"          ; defaultValue: 10000 }
 	CheckBox     { visible: false; name: "posteriorEstimates"  }
 	CheckBox     { visible: false; name: "posteriorDistribution"  }
-	
+
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
@@ -64,6 +64,7 @@ Form
             CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
             //CheckBox { text: qsTr("Effects"); name: "effects"; id: effectsOutput}
         }
+
 	}
 	
 	Section
@@ -94,13 +95,56 @@ Form
 		}
 	}
 
-    ExpanderButton
+    Section
     {
-        text: qsTr("Assumption Checks")
+        text: qsTr("Single Model Inference")
 
-        CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
+        GridLayout
+        {
+
+            GroupBox
+            {
+                title: qsTr("Tables")
+                CheckBox { text: qsTr("Effects"); name: "singleModelEffects"}
+            }
+
+            GroupBox
+            {
+                title: qsTr("Plots")
+                CheckBox { text: qsTr("Marginal posteriors"); name: "singleModelPosteriors"}
+                CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "singleModelqqPlot" }
+            }
+
+        }
+
+        VariablesForm
+        {
+            height: 200
+            //showDefaultAssignedVariablesList: false // Cannot use defaultAssignedVariablesList with an ExtraControlColumn
+            listWidth: parent.width * 5 / 9
+
+            availableVariablesList
+            {
+                title: qsTr("Components")
+                name: "components2"
+                syncModels: ["fixedFactors", "randomFactors"]
+                width: parent.width / 4
+            }
+            AssignedVariablesList
+            {
+                title: qsTr("Specific model terms")
+                name: "singleModelTerms"
+                listViewType: "Interaction"
+
+//                ExtraControlColumn {
+//                    type: "CheckBox"
+//                    name: "inModel"
+//                    title: "Add to model shown"
+//                }
+
+            }
+        }
     }
-	
 	Section
 	{
 		title: qsTr("Post Hoc Tests")

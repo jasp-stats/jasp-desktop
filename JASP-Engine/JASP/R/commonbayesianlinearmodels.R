@@ -238,6 +238,29 @@
 	return(results)
 }
 
+.theBayesianLinearModelsGetModelFormula <- function(dependent, modelTerms) {
+  
+  model.formula <- paste (.v (dependent), " ~ ", sep = "")
+	neverExclude <- NULL
+	effects <- NULL
+	for (term in modelTerms) {
+		if (is.null (effects) & is.null (neverExclude)){
+			model.formula <- paste (model.formula,
+				paste (.v (term$components), collapse = ":"), sep = "")
+		} else {
+			model.formula <- paste (model.formula, " + ",
+				paste (.v (term$components), collapse = ":"), sep = "")
+		}
+		if (!is.null(term$isNuisance) && term$isNuisance) {
+			neverExclude <- c (neverExclude, paste (.v (term$components), collapse = ":"))
+		} else {
+			effects <- c (effects, paste (.v (term$components), collapse = ":"))
+		}
+	}
+	model.formula <- formula (model.formula)
+  return(list(model.formula = model.formula, neverExclude = neverExclude, effects = effects))
+}
+
 .theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init",
 									  status = list (), .callbackBayesianLinearModels,
 									  .callbackBFpackage, results = list(),
@@ -274,24 +297,10 @@
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
 	#Extract the model components and nuisance terms
-	model.formula <- paste (.v (options$dependent), " ~ ", sep = "")
-	neverExclude <- NULL
-	effects <- NULL
-	for (term in options$modelTerms) {
-		if (is.null (effects) & is.null (neverExclude)){
-			model.formula <- paste (model.formula,
-				paste (.v (term$components), collapse = ":"), sep = "")
-		} else {
-			model.formula <- paste (model.formula, " + ",
-				paste (.v (term$components), collapse = ":"), sep = "")
-		}
-		if (term$isNuisance) {
-			neverExclude <- c (neverExclude, paste (.v (term$components), collapse = ":"))
-		} else {
-			effects <- c (effects, paste (.v (term$components), collapse = ":"))
-		}
-	}
-	model.formula <- formula (model.formula)
+	tmp <- .theBayesianLinearModelsGetModelFormula(options$dependent, options$modelTerms)
+	model.formula <- tmp$model.formula
+	neverExclude  <- tmp$neverExclude
+	effects       <- tmp$effects
 
 	#Make a list of models to compare
 	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula,

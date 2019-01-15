@@ -101,6 +101,14 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
 			)
 	}
+  meta[[9]] <- list(
+    name = "Single Model Inference", type = "object",
+    meta = list(
+      list(name = "Analysis of effects",      type = "table"), 
+      list(name = "Posterior Distributions",  type = "collection", meta = "image"),
+      list(name = "Q-Q plot",                 type = "image")
+    )
+  )
 
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian ANOVA"
@@ -144,11 +152,17 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 ## Post Hoc Table
 	results[["posthoc"]] <- .anovaNullControlPostHocTable(dataset, options, perform, status, analysisType = "ANOVA")
 
+	save(model = model, options = options, perform = perform, file = "C:/Users/donvd/Desktop/jasp.rda")
 ## Q-Q plot
-	results[["Q-Q plot"]] <- .AnovaBayesianQQplot(model, options, perform)
+	results[["Q-Q plot"]] <- .AnovaBayesianQQplot(model, perform, options[["qqPlot"]])
 
 ## Plots of model averaged posteriors
-	results[["Model Averaged Posteriors"]] <- .AnovaBayesianModelAveragedPosteriorPlot(model, options, perform)
+	results[["Model Averaged Posteriors"]] <- .AnovaBayesianWrapperPosteriorPlot(
+	  model = model, perform = perform, optsCheck = options[["modelAveragedPosteriors"]]
+	)
+	
+## Single model effects
+  results[["Single Model Inference"]] <- .AnovaBayesianSMI(model, options, perform)
 
 ## Descriptives Table
 	descriptivesTable <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable = NULL)[["result"]]
@@ -180,8 +194,12 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
 	}
 
-	keepDescriptivesPlot <- lapply(descriptivesPlot, function(x) x$data)
-	keep <- c(results[["Q-Q plot"]]$data, keepDescriptivesPlot)
+	keepDescriptivesPlot <- unlist(lapply(descriptivesPlot, `[[`, "data"))
+	keepSMI <- c(
+	  unlist(lapply(results[["Single Model Inference"]][["Posterior Distributions"]], `[[`, "data")),
+	  results[["Single Model Inference"]][["Q-Q plot"]]$data
+	)
+	keep <- c(results[["Q-Q plot"]]$data, keepDescriptivesPlot, keepSMI)
 
 	new.state <- list(options = options, model = model, status = status, keep = keep)
 
@@ -192,10 +210,10 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 	}
 }
 
-.AnovaBayesianQQplot <- function(model, options, perform = "run") {
+.AnovaBayesianQQplot <- function(model, perform = "run", modelIndex = "modelAveraged", optsCheck = FALSE) {
 
   # meta wrapper for Q-Q plots
-  if (!options[["qqPlot"]])
+  if (!optsCheck)
     return()
 
   output <- list(
@@ -210,7 +228,7 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
   if (perform == "run" && length(model$posteriors) >= 1L) {
 
-    p <- .AnovaBayesianPlotPosteriors(model, modelIndex = "modelAveraged", parameterIndex = "residual")
+    p <- .AnovaBayesianPlotPosteriors(model, modelIndex = modelIndex, parameterIndex = "residual")
 
     content <- .writeImage(
       width  = output$width,
@@ -232,7 +250,9 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
   # TODO: does not updates when model different models are added to the NULL-model
   # sample from all models considered in
-  if (perform != "run" || !is.null(model$posteriors) || !(options[["qqPlot"]] || options[["modelAveragedPosteriors"]])) {
+  if (perform != "run" || !is.null(model$posteriors) || !any(unlist(options[c(
+        "qqPlot", "modelAveragedPosteriors", "singleModelPosteriors", "singleModelqqPlot"
+  )]))) {
     # if it already exists, reuse it. else if no options needs it, return whatever there currently is.
     return(model$posteriors)
   }
@@ -303,18 +323,18 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
 }
 
-.AnovaBayesianModelAveragedPosteriorPlot <- function(model, options, perform = "run") {
+.AnovaBayesianWrapperPosteriorPlot <- function(model, perform = "run", modelIndex = "modelAveraged", optsCheck) {
 
-  # meta wrapper for model averaged posterior plots
+  # meta wrapper for model averaged posterior plots, single model posterior plots, and Q-Q plots
 
   nmodels <- length(model$posteriors)
-  if (!options[["modelAveragedPosteriors"]] || perform != "run" || nmodels < 1L)
+  if (!optsCheck || perform != "run" || nmodels < 1L)
     return()
 
   singlePlot <- list(
-    title  = "Q-Q Plot",
-    width  = options[["plotWidthDescriptivesPlotLegend"]],
-    height = options[["plotHeightDescriptivesPlotLegend"]],
+    title  = "Posterior Distribution",
+    width  = 400,
+    height = 400,
     custom = list(
       width  = "plotWidthDescriptivesPlotLegend",
       height = "plotHeightDescriptivesPlotLegend"
@@ -325,27 +345,28 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
   idx <- which(allParamNames == "sig2")
   allParamNames <- allParamNames[-c(1, idx[length(idx)]:length(allParamNames))]
   
-  output <- list()
+  output <- list(title = "Posterior Distributiosn")
   for (name in allParamNames) {
 
-    p <- .AnovaBayesianPlotPosteriors(model, modelIndex = "modelAveraged", parameterIndex = name)
+    p <- .AnovaBayesianPlotPosteriors(model, modelIndex = modelIndex, parameterIndex = name)
 
-    title <- .unv(strsplit(name, "-")[[1]][1])
     content <- .writeImage(
-      title  = title,
       width  = singlePlot$width,
       height = singlePlot$height,
       plot   = p$plotList$residual,
       obj    = TRUE
     )
 
+    title <- .unv(strsplit(name, "-")[[1]][1])
+    
     thisPlot                  <- singlePlot
+    thisPlot[["title"]]       <- title
     thisPlot[["data"]]        <- content[["png"]]
     thisPlot[["obj"]]         <- content[["obj"]]
     thisPlot[["convertible"]] <- TRUE
     thisPlot[["status"]]      <- "complete"
 
-    output[[name]] <- thisPlot
+    output[["collection"]][[name]] <- thisPlot
 
   }
 
@@ -404,7 +425,7 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
       } else {
 
-        tmp <- .AnovaBayesianGetResidPredict(posteriors, modelIndex)
+        tmp <- .AnovaBayesianGetResidPredict(posteriors[[modelIndex]])
 
         # temporary function to summarize by mean, sd, median, and cri
         foo <- function(x) {
@@ -464,7 +485,9 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
       xName <- strsplit(p, "-")[[1]]
       xName <- paste0(.unv(xName[1]), ": ", xName[2])
       
-      plotList[[p]] <- JASPgraphs::PlotPriorAndPosterior(dfLines = df, xName = xName)
+      # plotList[[p]] <- JASPgraphs::PlotPriorAndPosterior(dfLines = df, xName = xName)
+      plotList[[p]] <- JASPgraphs::themeJasp(ggplot2::ggplot(data = df, ggplot2::aes(x = x, y = y)) + 
+        ggplot2::geom_line() + ggplot2::xlab(xName) + ggplot2::ylab("Density"))
     }
   }
 
@@ -547,3 +570,56 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
 }
 
+# Single Model Inference (SMI)
+.AnovaBayesianSMI <- function(model, options, perform) {
+  
+  nmodels <- length(model$models)
+  if (perform != "run" || nmodels == 0 || length(options$singleModelTerms) == 0)
+    return()
+  
+  modelIndex <- .AnovaBayesianSMIgetModelIndex(model, options)
+  
+  output <- list(
+    title = "Single Model Inference",
+    "Analysis of effects"     = .AnovaBayesianSMIEffects(
+      model = model, options = options, modelIndex = modelIndex
+    ),
+    "Posterior Distributions" = .AnovaBayesianWrapperPosteriorPlot(
+      model = model, modelIndex = modelIndex, optsCheck = options[["singleModelPosteriors"]]#, 
+      # title = "Posteriors of Single Model"
+    ), 
+    "Q-Q plot"                = .AnovaBayesianQQplot(
+      model = model, modelIndex = modelIndex, optsCheck = options[["singleModelqqPlot"]]
+    )
+  )
+  return(output)
+}
+
+.AnovaBayesianSMIEffects <- function(model, options, modelIndex) {
+  
+  if (!options[["singleModelEffects"]])
+    return()
+  
+}
+
+.AnovaBayesianSMIgetModelIndex <- function(model, options) {
+  
+  targetFormula <- .theBayesianLinearModelsGetModelFormula(options$dependent, options$modelTerms)$model.formula
+  smiTerms <- colnames(attr(terms(formula(targetFormula)), "factors"))
+  # smiTerms <- sapply(options$singleModelTerms, `[[`, "components")
+  tmpFun <- function(x, smiTerms) {
+    # get the names of variables used in a specific BayesFactor object
+    nms <- colnames(attr(terms(as.formula((x$bf@numerator[[1]]@identifier$formula))), "factors"))
+    # check if the lengths are equal and only then if the contents match
+    return(length(nms) == length(smiTerms) && all(smiTerms %in% nms)) 
+  }
+  for (i in seq_along(model$models)) {
+    check <- tmpFun(model$models[[i]], smiTerms)
+    if (check) # exit loop on match
+      break
+  }
+  if (!check)
+    .quitAnalysis("Internal error in single model inference.")
+  
+  return(i)
+}
