@@ -21,6 +21,10 @@
 #include <QClipboard>
 #include <QStringBuilder>
 
+#ifdef __WIN32__
+#include <QPainter>
+#endif
+
 #include "utilities/qutils.h"
 #include "appinfo.h"
 #include "tempfiles.h"
