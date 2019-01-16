@@ -33,7 +33,7 @@ Rectangle
 
 		id:					rectTitle
 
-		height:				40
+		height:				40 * preferencesModel.uiScale
 		width:				parent.width
 		anchors.left:		parent.left
 		anchors.right:		parent.right
@@ -49,7 +49,7 @@ Rectangle
 			width:				height
 			anchors.left:		rectTitle.left
 			anchors.top:		rectTitle.top
-			anchors.leftMargin: 10
+			anchors.leftMargin: 10 * preferencesModel.uiScale
 
 			fillMode:	Image.PreserveAspectFit
 			source:		model.iconsource
@@ -71,6 +71,7 @@ Rectangle
 				delay:		500
 				text:		commonToolTip.text
 				visible:	firstFileOrFolderMouseArea.containsMouse
+				font:		Theme.font
 			}
 		}
 
@@ -102,6 +103,7 @@ Rectangle
 				delay:		500
 				text:		toolTipText(model.type, model.associated_datafile, "datafileMouseArea")
 				visible:	datafileMouseArea.containsMouse
+				font:		Theme.font
 			}
 		}
 
@@ -112,27 +114,32 @@ Rectangle
 			anchors.top:		parent.top
 			anchors.left:		associatedDatafileImage.right
 			anchors.right:		parent.right
-			anchors.leftMargin:	10
+			anchors.leftMargin:	10 * preferencesModel.uiScale
 
 			text:					model.name  //i.e. title
+			font:					Theme.font
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
 		}
-		Text {
-			id:					textFolder
-			visible: !hasBreadCrumbs
 
-			height:				hasBreadCrumbs ?  parent.height :parent.height / 2
-			anchors.top:		textTitle.bottom
-			anchors.left:		associatedDatafileImage.right
-			anchors.right:		parent.right
-			anchors.leftMargin:	10
+		Text
+		{
+			id:						textFolder
+			visible:				!hasBreadCrumbs
+
+			height:					hasBreadCrumbs ?  parent.height :parent.height / 2
+			anchors.top:			textTitle.bottom
+			anchors.left:			associatedDatafileImage.right
+			anchors.right:			parent.right
+			anchors.leftMargin:		10 * preferencesModel.uiScale
 			text:					model.dirpath  //i.e. title
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
-			font.pixelSize: 10
+			font:					Theme.font
 		}
-		MouseArea {
+
+		MouseArea
+		{
 			z:					-1
 			id:					fileEntryMouseArea
 			anchors.fill:		parent
@@ -142,17 +149,19 @@ Rectangle
 			onClicked:			rectTitleAndDescripton.openStuff(model)
 		}
 
-		ToolTip {
+		ToolTip
+		{
 			id:			commonToolTip
 			delay:		500
 			text:		toolTipText(model.type, model.associated_datafile, "commonMouseArea")
 			visible:	rectTitleAndDescripton.mainHovered
+			font:		Theme.font
 		}
 
 	}
 
-	Rectangle {
-
+	Rectangle
+	{
 		id: rectDescription
 
 		height:				visible ? Math.max(40,textDescription.contentHeight) + 30 : 0
@@ -164,7 +173,8 @@ Rectangle
 		color:				rectTitleAndDescripton.allHovered ? Theme.white : Theme.uiBackground
 		visible:			model.description !== ""
 
-		Text {
+		Text
+		{
 			id:	textDescription
 
 			anchors
@@ -172,9 +182,9 @@ Rectangle
 				left:			parent.left
 				right:			parent.right
 				top:			parent.top
-				leftMargin:		10
-				rightMargin:	10
-				topMargin:		10
+				leftMargin:		10 * preferencesModel.uiScale
+				rightMargin:	10 * preferencesModel.uiScale
+				topMargin:		10 * preferencesModel.uiScale
 			}
 
 			horizontalAlignment:	Text.AlignJustify

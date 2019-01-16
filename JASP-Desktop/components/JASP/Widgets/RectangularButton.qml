@@ -57,6 +57,7 @@ Rectangle
 		timeout:	Theme.toolTipTimeout
 		visible:	hovered && toolTip != ""
 		text:		toolTip
+		font:		Theme.font
 	}
 
 	signal clicked()
