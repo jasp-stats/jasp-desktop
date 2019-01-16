@@ -22,7 +22,8 @@ import JASP.Controls 1.0
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
-Rectangle {
+Rectangle
+{
 	id: osfLogin
 
 	property bool rememberme: fileMenuModel.osf.rememberme
@@ -31,14 +32,16 @@ Rectangle {
 
 	color: Theme.grayMuchLighter
 
-	Component.onCompleted: {
+	Component.onCompleted:
+	{
 		usernameText.focus = true
 		fileMenuModel.osf.updateLoginScreen()
 		usernameText.text = username
 		passwordText.text = password
 	}
 
-	Image {
+	Image
+	{
 		id: osfLogo
 
 		height: 100
@@ -52,7 +55,8 @@ Rectangle {
 		anchors.bottomMargin    : 20
 	}
 
-	Label {
+	Label
+	{
 		id: labelOSF
 
 		width : osfLoginBox.width
@@ -70,7 +74,8 @@ Rectangle {
 		font : Theme.fontLabel
 	}
 
-	Text {
+	Text
+	{
 		id: labelExplain
 
 		text : qsTr("Sign in with your OSF account to continue")
@@ -85,7 +90,8 @@ Rectangle {
 		anchors.topMargin       : 20
 	}
 
-	Rectangle {
+	Rectangle
+	{
 		id: osfLoginBox
 
 		// TODO: Should be in Theme?
@@ -100,7 +106,8 @@ Rectangle {
 		anchors.top: labelExplain.bottom
 		anchors.topMargin: 10
 
-		Rectangle {
+		Rectangle
+		{
 			id: usernameInput
 
 			anchors.left : parent.left
@@ -118,7 +125,8 @@ Rectangle {
 			border.width: usernameText.activeFocus ? 3 : 1
 			border.color: usernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 
-			TextInput {
+			TextInput
+			{
 				id: usernameText
 
 				anchors.fill      : parent
@@ -134,10 +142,13 @@ Rectangle {
 				onAccepted: {
 					passwordText.focus = true
 				}
+				KeyNavigation.down		: passwordText
+				KeyNavigation.tab		: passwordText
 			}
 		}
 
-		Rectangle {
+		Rectangle
+		{
 			id: passwordInput
 
 			anchors.left  : parent.left
@@ -156,7 +167,8 @@ Rectangle {
 			border.width: passwordText.activeFocus ? 3 : 1
 			border.color: passwordText.activeFocus ? Theme.focusBorderColor  : Theme.grayDarker
 
-			TextInput {
+			TextInput
+			{
 				id: passwordText
 
 				anchors.fill      : parent
@@ -172,15 +184,25 @@ Rectangle {
 				onAccepted: {
 					fileMenuModel.osf.loginRequested(username, password)
 				}
+
+				KeyNavigation.up		: usernameText
+				KeyNavigation.backtab	: usernameText
+				KeyNavigation.down		: loginButton
+				KeyNavigation.tab		: loginButton
+
 			}
 		}
 
-		RectangularButton {
+		RectangularButton
+		{
 			id: loginButton
 
 			height   : 35
 			text     : qsTr("Sign in")
 			color    : "#5cb85c"  // TODO: Move this to Theme.qml
+			border.width: loginButton.activeFocus ? 3 : 1
+			border.color: loginButton.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+
 			textColor: "white"
 
 			anchors.top  : passwordInput.bottom
@@ -191,12 +213,19 @@ Rectangle {
 			anchors.rightMargin: 20
 			anchors.leftMargin : 20
 
-			onClicked: {
+			onClicked:
+			{
 				fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, password)
 			}
+
+			KeyNavigation.up		: passwordText
+			KeyNavigation.backtab	: passwordText
+			KeyNavigation.down		: idRememberMe
+			KeyNavigation.tab		: idRememberMe
 		}
 
-		CheckBox {
+		CheckBox
+		{
 			id: idRememberMe
 
 			checked: rememberme
@@ -213,10 +242,13 @@ Rectangle {
 			onClicked: {
 				fileMenuModel.osf.remembermeCheckChanged(checked)
 			}
+			KeyNavigation.up		: loginButton
+			KeyNavigation.backtab	: loginButton
 		}
 	}
 
-	Rectangle {
+	Rectangle
+	{
 		id: linksBox
 
 		width : osfLoginBox.width
@@ -247,7 +279,8 @@ Rectangle {
 			}
 		}
 
-		Text {
+		Text
+		{
 			id: linkRegister
 
 			text          :'<font color="#257bb2"><u>Register</u></font>'
@@ -267,89 +300,4 @@ Rectangle {
 			}
 		}
 	}
-
-	// TODO: Shadows don't look good when they overlap at the corners.
-	// Item {
-	// 	id    : dropShadowRight
-	// 	y     : osfLoginBox.y - Theme.shadowRadius
-	// 	x     : osfLoginBox.x + osfLoginBox.width
-	// 	z     : -1
-	// 	height: osfLoginBox.height + 2 * Theme.shadowRadius
-	// 	width : Theme.shadowRadius
-	//
-	// 	Rectangle {
-	//
-	// 		anchors.centerIn: parent
-	// 		rotation: -90
-	// 		gradient: Gradient {
-	// 			GradientStop { position: 0.0; color: Theme.shadow }
-	// 			GradientStop { position: 1.0; color: "transparent" }
-	// 		}
-	// 		height  : dropShadowRight.width
-	// 		width   : dropShadowRight.height
-	// 	}
-	// }
-	//
-	// Item {
-	// 	id    : dropShadowLeft
-	// 	y     : osfLoginBox.y - Theme.shadowRadius
-	// 	x     : osfLoginBox.x - width
-	// 	z     : -1
-	// 	height: osfLoginBox.height + 2 * Theme.shadowRadius
-	// 	width : Theme.shadowRadius
-	//
-	// 	Rectangle {
-	//
-	// 		anchors.centerIn: parent
-	// 		rotation: -90
-	// 		gradient: Gradient {
-	// 			GradientStop { position: 1.0; color: Theme.shadow }
-	// 			GradientStop { position: 0.0; color: "transparent" }
-	// 		}
-	// 		height  : dropShadowLeft.width
-	// 		width   : dropShadowLeft.height
-	// 	}
-	// }
-	//
-	// Item {
-	// 	id    : dropShadowTop
-	// 	x     : osfLoginBox.x - Theme.shadowRadius
-	// 	y     : osfLoginBox.y - Theme.shadowRadius
-	// 	z     : -2
-	//
-	// 	height: Theme.shadowRadius
-	// 	width : osfLoginBox.width + 2 * Theme.shadowRadius
-	//
-	// 	Rectangle {
-	// 		anchors.centerIn: parent
-	// 		// rotation: -90
-	// 		gradient:	Gradient {
-	// 			GradientStop { position: 1.0; color: Theme.shadow }
-	// 			GradientStop { position: 0.0; color: "transparent" }
-	// 		}
-	// 		height:		dropShadowTop.height
-	// 		width:		dropShadowTop.width
-	// 	}
-	// }
-	//
-	// Item {
-	// 	id    : dropShadowBottom
-	// 	x     : osfLoginBox.x - Theme.shadowRadius
-	// 	y     : osfLoginBox.y + osfLoginBox.height
-	// 	z     : -2
-	//
-	// 	height: Theme.shadowRadius
-	// 	width : osfLoginBox.width + 2 * Theme.shadowRadius
-	//
-	// 	Rectangle {
-	// 		anchors.centerIn: parent
-	//
-	// 		gradient:	Gradient {
-	// 			GradientStop { position: 0.0; color: Theme.shadow }
-	// 			GradientStop { position: 1.0; color: "transparent" }
-	// 		}
-	// 		height:		dropShadowBottom.height
-	// 		width:		dropShadowBottom.width
-	// 	}
-	// }
 }
