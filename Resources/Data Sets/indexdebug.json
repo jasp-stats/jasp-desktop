@@ -1,8 +1,8 @@
 {
-  "name": "Categories",
-  "path": "Data Library",
-  "description": "General Examples",
-  "kind": "folder",
+  "name": ["Categories"],
+  "path": ["Data Library"],
+  "description": ["General Examples"],
+  "kind": ["folder"],
   "children": [
     {
       "name": "Books",
@@ -617,6 +617,13 @@
           "associated_datafile": "Presidents' Height.csv"
         }
       ]
+    },
+    {
+      "name": "Debug Dataset (JASP Team, 2017)",
+      "path": "../debug.csv",
+      "description": "For testing. Readme: is.gd/jaspdata",
+      "kind": "file",
+      "children": ["NULL"]
     }
   ]
 }

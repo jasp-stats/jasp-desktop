@@ -2,7 +2,7 @@ Bayesian Binomial Test
 ==========================
 The Bayesian binomial test allows you to test whether a proportion of a dichotomous variable is equal to a test value (presumed population value).
 
-Assumption(s)
+Assumptions
 ----------
 - The test variable should be a dichotomous scale.
 - Observations should be independent
