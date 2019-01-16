@@ -57,7 +57,7 @@ FocusScope
 		Rectangle
 		{
 			id:				openCloseButton
-			width:			20 * ppiScale
+			width:			20 * preferencesModel.uiScale
 			color:			Theme.uiBackground
 			border.color:	Theme.uiBorder
 			border.width:	1

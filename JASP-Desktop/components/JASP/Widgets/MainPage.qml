@@ -139,7 +139,6 @@ OLD.SplitView
 				function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
 				function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
 				function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
-				function setPPI(ppi)							{ resultsJsInterface.setPPI(ppi)							}
 			}
 		}
 	}

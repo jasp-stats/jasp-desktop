@@ -6,8 +6,8 @@ Item {
 								id:						filterConstructor
 								objectName:				"filterConstructor"
 				property string __debugName:			"FilterConstructor"
-				property real	fontPixelSize:			baseFontSize * ppiScale
-				property real	blockDim:				baseBlockDim * ppiScale
+				property real	fontPixelSize:			baseFontSize * preferencesModel.uiScale
+				property real	blockDim:				baseBlockDim * preferencesModel.uiScale
 				property var	allKeys:				["number", "boolean", "string", "variable"]
 	readonly	property real	desiredMinimumHeight:	columnsRow.height + hints.height + applyFilter.height + (blockDim * 3)
 				property real	extraSpaceUnderColumns:	0
@@ -220,7 +220,7 @@ Item {
 				anchors.bottom: parent.bottom
 				anchors.right: parent.right
 
-				height: Math.min(60 * ppiScale, scrollScriptColumn.height)
+				height: Math.min(60 * preferencesModel.uiScale, scrollScriptColumn.height)
 			}
 
 
@@ -269,7 +269,7 @@ Item {
 			anchors.margins: 2
 			anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 
-			width: 80 * ppiScale
+			width: 80 * preferencesModel.uiScale
 		}
 	}
 

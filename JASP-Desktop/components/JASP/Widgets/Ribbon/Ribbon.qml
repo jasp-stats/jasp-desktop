@@ -25,7 +25,7 @@ Item
 	id:				jaspRibbon
 	objectName:		"jaspRibbon"
 	implicitWidth:	ribbonRow.width + ribbonRow.spacing
-	implicitHeight:	60 * ppiScale
+	implicitHeight:	60 * preferencesModel.uiScale
 
 
 	property var	model:			null
@@ -54,7 +54,7 @@ Item
 	{
 		id				: ribbonRow
 		objectName		: "ribbonRow"
-		spacing			: 10 * ppiScale
+		spacing			: 10 * preferencesModel.uiScale
 
 		anchors.verticalCenter: parent.verticalCenter
 

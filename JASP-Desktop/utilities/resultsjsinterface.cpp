@@ -87,7 +87,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 
 		setGlobalJsValues();
 
-		emit runJavaScript("window.getPPI()");
+		emit resultsPageLoadedSignal();
 	}
 }
 
@@ -238,11 +238,6 @@ void ResultsJsInterface::latexCodeSelected()
 	emit runJavaScript("window.latexCodeMenuClicked();");
 }
 
-void ResultsJsInterface::getDefaultPPI()
-{
-	runJavaScript("window.getPPI(true)");
-}
-
 void ResultsJsInterface::saveImage()
 {
 	emit runJavaScript("window.saveImageClicked();");
@@ -264,7 +259,10 @@ void ResultsJsInterface::noteSelected()
 
 void ResultsJsInterface::simulatedMouseClick(int x, int y, int count)
 {
+#ifdef JASP_DEBUG
 	std::cout << "We are NOT going to do weird stuff like simulating mouse clicks to operate an internal webbrowser...." << std::endl;
+#endif
+
 	/*
 	int diff = count;
 	while (diff >= 2)
@@ -299,10 +297,7 @@ void ResultsJsInterface::simulatedMouseClick(int x, int y, int count)
 
 void ResultsJsInterface::setExactPValuesHandler(bool exact)
 {
-	QString exactPValueString = (exact ? "true" : "false");
-	QString js = "window.globSet.pExact = " + exactPValueString;
-	js += "; window.reRenderAnalyses();";
-	emit runJavaScript(js);
+	emit runJavaScript("window.globSet.pExact = " + QString(exact ? "true" : "false") + "; window.reRenderAnalyses();");
 }
 
 void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
@@ -532,16 +527,6 @@ QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 	return out;
 }
 
-void ResultsJsInterface::setPPI(int ppi)
-{
-	_webViewZoom = 1;
-	if(!_loadedResultsFirstTime)
-		emit resultsPageLoadedPpi(true, ppi);
-
-	emit ppiChanged(ppi);
-
-	_loadedResultsFirstTime = true;
-}
 
 void ResultsJsInterface::setResultsMetaFromJavascript(QString json)
 {

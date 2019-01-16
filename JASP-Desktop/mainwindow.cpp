@@ -212,7 +212,6 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showForm										);
 
-	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
@@ -223,8 +222,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisEditImage,				this,					&MainWindow::analysisEditImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedPpi,			this,					&MainWindow::resultsPageLoaded								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::ppiChanged,					this,					&MainWindow::ppiChangedHandler								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
 
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -242,24 +240,24 @@ void MainWindow::makeConnections()
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
 
-	/*connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
-	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
-	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
-	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
-	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
-	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
-	connect(ui->tabBar,				&TabBar::useDefaultPPIHandler,						_resultsJsInterface,	&ResultsJsInterface::getDefaultPPI							);*/
+	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
+	connect(_preferences,			&PreferencesModel::plotPPIChanged,					_engineSync,			&EngineSync::ppiChanged										);
+	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::ppiChangedHandler,								Qt::QueuedConnection); //Then we know for sure that EngineSync::ppiChanged has run first
+	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
+	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
+	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
+	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
+	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _tableModel,			&DataSetTableModel::setColumnsUsedInEasyFilter				);
 	connect(_filterModel,			&FilterModel::filterUpdated,						_tableModel,			&DataSetTableModel::refresh									);
 	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
-
 	connect(_filterModel,			&FilterModel::updateGeneratedFilterWithR,			_labelFilterGenerator,	&labelFilterGenerator::easyFilterConstructorRCodeChanged	);
+
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
 
-	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 }
 
@@ -289,9 +287,6 @@ void MainWindow::loadQML()
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
-	_qml->rootContext()->setContextProperty("ppiScale",					1);//Settings::value(Settings::UI_SCALE).toFloat());
-
-	std::cerr << "until preferences return ppiScale is set to 1" << std::endl;
 
 	_qml->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
@@ -512,12 +507,10 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 	setDataSetAndPackageInModels(_package);
 }
 
-void MainWindow::setPPIHandler(int ppi, bool refreshAllAnalyses)
-{
-	emit ppiChanged(ppi);
 
-	if(refreshAllAnalyses)
-		MainWindow::refreshAllAnalyses();
+void MainWindow::ppiChangedHandler(int newDefaultPPI)
+{
+	MainWindow::refreshAllAnalyses();
 }
 
 void MainWindow::setImageBackgroundHandler(QString value)
@@ -526,10 +519,6 @@ void MainWindow::setImageBackgroundHandler(QString value)
 	refreshAllAnalyses();
 }
 
-void MainWindow::setUIScaleHandler(float scale)
-{
-	_qml->rootContext()->setContextProperty("ppiScale",	scale);
-}
 
 void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 {
@@ -1032,10 +1021,9 @@ void MainWindow::matchComputedColumnsToAnalyses()
 }
 
 
-void MainWindow::resultsPageLoaded(bool success, int ppi)
+void MainWindow::resultsPageLoaded()
 {
-	if (success)
-	{
+	std::cout << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
 // #ifdef __WIN32__
 // 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
 // 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
@@ -1047,29 +1035,17 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 // 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
 // #endif
 
-		if (_openOnLoadFilename != "")
-		{
-			_fileMenu->open(_openOnLoadFilename);
-			_openOnLoadFilename = "";
-		}
-
-		_resultsViewLoaded = true;
-	}
-
-	if (_engineSync->engineStarted() == false)
-		_engineSync->start();
-
-	//PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
-	//rd->setDefaultPPI(ppi);
-
-	bool useDefaultPPI = Settings::value(Settings::PPI_USE_DEFAULT).toBool();
-	if (!useDefaultPPI)
+	if (_openOnLoadFilename != "")
 	{
-		int customPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toInt();
-		ppi = customPPI;
+		_fileMenu->open(_openOnLoadFilename);
+		_openOnLoadFilename = "";
 	}
 
-	setPPIHandler(ppi, false);
+	_resultsViewLoaded = true;
+
+
+	if (!_engineSync->engineStarted())
+		_engineSync->start();
 }
 
 
@@ -1094,6 +1070,9 @@ void MainWindow::emptyValuesChangedHandler()
 		vector<string> missingColumns;
 		map<string, string> changeNameColumns;
 
+		_package->pauseEngines();
+		_package->dataSet()->setSynchingData(true);
+
 		try
 		{
 			colChanged = _package->dataSet()->resetEmptyValues(_package->emptyValuesMap());
@@ -1113,6 +1092,8 @@ void MainWindow::emptyValuesChangedHandler()
 		catch (exception e)	{	cout << "MainWindow::emptyValuesChangedHandler n " << e.what() << std::endl; 	}
 		catch (...)			{	cout << "MainWindow::emptyValuesChangedHandler something when wrong...\n" << std::endl; }
 
+		_package->dataSet()->setSynchingData(false);
+		_package->resumeEngines();
 		_package->setModified(true);
 		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false);
 	}
@@ -1121,7 +1102,7 @@ void MainWindow::emptyValuesChangedHandler()
 
 void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 {
-	std::cout << "void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry) should be a function of RibbonModel that sends a signal to Analyses" << std::endl;
+	std::cout << "void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry) should be a function of RibbonModel that sends a signal to Analyses (or something)" << std::endl;
 	try
 	{
 		_currentAnalysis = _analyses->create(entry);
@@ -1443,23 +1424,6 @@ void MainWindow::resumeEngines()
 	_engineSync->resume();
 }
 
-void MainWindow::showQMLWindow(QString urlQml)
-{
-	std::cerr << "showing some qml in a separate window, should be *ALL* QML!" << std::endl;
-/*
-	QQuickView * newQMLWindow = new QQuickView;
-
-	newQMLWindow->engine()->addImportPath("qrc:///components");
-	newQMLWindow->rootContext()->setContextProperty("dynamicModules", _dynamicModules);
-	newQMLWindow->rootContext()->setContextProperty("ppiScale", 1);
-	newQMLWindow->setSource(urlQml);
-	newQMLWindow->setResizeMode(QQuickView::SizeRootObjectToView);
-	newQMLWindow->show();
-
-	connect(newQMLWindow->rootObject(), SIGNAL(closeWindow()), newQMLWindow, SLOT(close()));*/
-
-}
-
 void MainWindow::setRunButtonText(QString runButtonText)
 {
 	if (_runButtonText == runButtonText)
@@ -1567,4 +1531,13 @@ void MainWindow::setDatasetLoaded(bool datasetLoaded)
 
 	_datasetLoaded = datasetLoaded;
 	emit datasetLoadedChanged(_datasetLoaded);
+}
+
+void MainWindow::setScreenPPI(int screenPPI)
+{
+	if (_screenPPI == screenPPI)
+		return;
+
+	_screenPPI = screenPPI;
+	emit screenPPIChanged(_screenPPI);
 }

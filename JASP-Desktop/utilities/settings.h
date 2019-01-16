@@ -33,6 +33,7 @@ public:
 	static void sync();
 	static void remove(Settings::Type key);
 	static QSettings* getSettings();
+	static const char *	defaultMissingValues;
 
 private:
 	struct Setting {

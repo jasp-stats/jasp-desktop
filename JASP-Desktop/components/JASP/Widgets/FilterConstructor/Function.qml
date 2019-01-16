@@ -29,7 +29,7 @@ Item
 	readonly property bool drawMeanSpecial: false
 	readonly property bool showParentheses: !drawMeanSpecial && (parameterNames.length > 1 || isAbs || functionImageSource === "")
 
-	property real extraMeanWidth: (drawMeanSpecial ? 10 * ppiScale : 0)
+	property real extraMeanWidth: (drawMeanSpecial ? 10 * preferencesModel.uiScale : 0)
 
 	property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "round", "median"]
 	property string extraParameterCode: addNARMFunctions.indexOf(functionName) >= 0 ? ", na.rm=TRUE" : ""
@@ -67,7 +67,7 @@ Item
 	{
 		id: meanBar
 		visible: funcRoot.drawMeanSpecial || funcRoot.isRoot
-		height: visible ? 6 * ppiScale : 0
+		height: visible ? 6 * preferencesModel.uiScale : 0
 
 		anchors.left: funcRoot.isRoot ? functionDef.right : parent.left
 		anchors.right: parent.right
@@ -81,9 +81,9 @@ Item
 			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.top: parent.top
-			anchors.topMargin: funcRoot.isRoot ? 0 : Math.max(1, 3 * ppiScale)
+			anchors.topMargin: funcRoot.isRoot ? 0 : Math.max(1, 3 * preferencesModel.uiScale)
 
-			height: Math.max(1, 3 * ppiScale)
+			height: Math.max(1, 3 * preferencesModel.uiScale)
 		}
 	}
 

@@ -1,16 +1,6 @@
 
 'use strict'
 
-window.getPPI = function (shouldRefresh)
-{
-	var ppi = 96;
-
-	if(window.devicePixelRatio !== undefined)
-		ppi = ppi * window.devicePixelRatio;
-
-	jasp.setPPI(ppi);
-}
-
 var jasp = null;
 $(document).ready(function () {
 	var d = new Date();

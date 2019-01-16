@@ -8,7 +8,7 @@ Item
 	property string columnName:		"?"
 	property string columnIcon:		""
 
-	property real	maxSize:		baseFontSize * 10 * ppiScale
+	property real	maxSize:		baseFontSize * 10 * preferencesModel.uiScale
 					height:			filterConstructor.blockDim
 					width:			colIcon.width + colName.width
 	property bool	isNumerical:	columnIcon.indexOf("scale") >= 0
@@ -32,7 +32,7 @@ Item
 			top:		parent.top
 			left:		parent.left
 			bottom:		parent.bottom
-			margins:	4 * ppiScale
+			margins:	4 * preferencesModel.uiScale
 		}
 	}
 
@@ -54,7 +54,7 @@ Item
 		}
 
 		width:			Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize)
-		font.pixelSize: baseFontSize * ppiScale
+		font.pixelSize: baseFontSize * preferencesModel.uiScale
 
 		leftPadding:	2
 

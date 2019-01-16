@@ -70,7 +70,7 @@ Popup
 				id:					title
 				text:				"Create Computed Column"
 				font.bold:			true
-				font.pixelSize:		20 * ppiScale
+				font.pixelSize:		20 * preferencesModel.uiScale
 				verticalAlignment:	Text.AlignVCenter
 				anchors
 				{
@@ -83,8 +83,8 @@ Popup
 			Item
 			{
 				id:		nameItem
-				property real marge: 10 * ppiScale
-				height:	marge * 2 + (baseFontSize * 1.5 * ppiScale)
+				property real marge: 10 * preferencesModel.uiScale
+				height:	marge * 2 + (baseFontSize * 1.5 * preferencesModel.uiScale)
 
 				anchors
 				{
@@ -113,7 +113,7 @@ Popup
 					anchors.left:		nameLabel.right
 					anchors.right:		parent.right
 					anchors.bottom:		parent.bottom
-					anchors.margins:	6 * ppiScale
+					anchors.margins:	6 * preferencesModel.uiScale
 
 					color:				Theme.white
 					border.color:		Theme.black
@@ -128,7 +128,7 @@ Popup
 						anchors.margins: 2
 
 						text:				defaultText
-						font.pixelSize:		baseFontSize * ppiScale
+						font.pixelSize:		baseFontSize * preferencesModel.uiScale
 						onActiveFocusChanged:
 						{
 							if(activeFocus && text === defaultText) text = ""
@@ -172,7 +172,7 @@ Popup
 				anchors.top:				nameItem.bottom
 				anchors.topMargin:			10
 				anchors.horizontalCenter:	parent.horizontalCenter
-				height:						45 * ppiScale
+				height:						45 * preferencesModel.uiScale
 
 				RectangularButton
 				{
@@ -218,7 +218,7 @@ Popup
 			Row
 			{
 				id:			computeColumnIconRow
-				height:		25 * ppiScale
+				height:		25 * preferencesModel.uiScale
 				spacing:	Theme.generalAnchorMargin
 
 				anchors.top:				computeTypeSelector.bottom

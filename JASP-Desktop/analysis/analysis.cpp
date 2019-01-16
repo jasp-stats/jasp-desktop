@@ -102,16 +102,16 @@ void Analysis::refresh()
 
 Analysis::Status Analysis::parseStatus(string name)
 {
-	if (name == "empty")			return Analysis::Empty;
-	else if (name == "waiting")		return Analysis::Inited;
-	else if (name == "running")		return Analysis::Running;
-	else if (name == "complete")	return Analysis::Complete;
-	else if (name == "aborted")		return Analysis::Aborted;
-	else if (name == "SaveImg")		return Analysis::SaveImg;
-	else if (name == "EditImg")		return Analysis::SaveImg;
-	else if (name == "exception")	return Analysis::Exception;
-	else if (name == "initializing") return Analysis::Initializing;
-	else							return Analysis::Error;
+	if (name == "empty")				return Analysis::Empty;
+	else if (name == "waiting")			return Analysis::Inited;
+	else if (name == "running")			return Analysis::Running;
+	else if (name == "complete")		return Analysis::Complete;
+	else if (name == "aborted")			return Analysis::Aborted;
+	else if (name == "SaveImg")			return Analysis::SaveImg;
+	else if (name == "EditImg")			return Analysis::EditImg;
+	else if (name == "exception")		return Analysis::Exception;
+	else if (name == "initializing")	return Analysis::Initializing;
+	else								return Analysis::Error;
 }
 
 void Analysis::initialized(AnalysisForm* form)

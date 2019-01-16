@@ -97,5 +97,9 @@
         <file>components/JASP/Widgets/Ribbon/Ribbons.qml</file>
         <file>components/JASP/Widgets/HelpWindow.qml</file>
         <file>components/JASP/Controls/RadioButtonGroup.qml</file>
+        <file>components/JASP/Widgets/FileMenu/PrefsData.qml</file>
+        <file>components/JASP/Widgets/FileMenu/PrefsResults.qml</file>
+        <file>components/JASP/Widgets/FileMenu/PrefsAdvanced.qml</file>
+        <file>components/JASP/Widgets/FileMenu/PrefsMissingValues.qml</file>
     </qresource>
 </RCC>

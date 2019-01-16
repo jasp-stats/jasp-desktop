@@ -18,7 +18,7 @@ FocusScope
 	property bool	dataSetLoaded:				computedColumnsInterface.datasetLoaded
 	property string jsonConstructedModel:		computedColumnsInterface.computeColumnJson
 	property string computeColumnRCode:			computedColumnsInterface.computeColumnRCode
-	property int	minimumHeightTextBoxes:		50 * ppiScale
+	property int	minimumHeightTextBoxes:		50 * preferencesModel.uiScale
 	property string selectedColumnNameMirror:	computedColumnsInterface.computeColumnNameSelected
 	property string lastCreatedColumn:			computedColumnsInterface.lastCreatedColumn
 
@@ -82,7 +82,7 @@ FocusScope
 		anchors.horizontalCenter: parent.horizontalCenter
 
 		horizontalAlignment: Text.AlignHCenter
-		font.pixelSize: (baseFontSize + 4) * ppiScale
+		font.pixelSize: (baseFontSize + 4) * preferencesModel.uiScale
 		font.bold: true
 
 	}
@@ -125,7 +125,7 @@ FocusScope
 				property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 
 				font.family: "Courier"
-				font.pixelSize: baseFontSize * ppiScale
+				font.pixelSize: baseFontSize * preferencesModel.uiScale
 				wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
 
 				property bool changed: text != computedColumnsInterface.computeColumnRCode
@@ -237,7 +237,7 @@ FocusScope
 			onActiveFocusChanged: if(!activeFocus) deselect()
 
 			font.family: "Courier"
-			font.pixelSize: baseFontSize * ppiScale
+			font.pixelSize: baseFontSize * preferencesModel.uiScale
 			height: text.length === 0 ? 0 : computeColumnError.contentHeight
 		}
 	}

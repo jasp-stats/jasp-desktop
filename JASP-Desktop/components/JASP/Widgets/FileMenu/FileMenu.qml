@@ -15,9 +15,9 @@ Item
 
 
 	property variant resourcesbuttons:		["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
-	property int action_button_height:		35
+	property int action_button_height:		35 * preferencesModel.uiScale
 	property int resource_button_height:	1.5 * action_button_height
-	property int colWidths:					150
+	property int colWidths:					150 * preferencesModel.uiScale
 
 	Item
 	{
@@ -35,9 +35,8 @@ Item
 			z:				-6
 		}
 
-
-		// Left verical tab : Action Menu
-		Rectangle {
+		Rectangle
+		{
 
 			id:				actionMenu
 			color:			Theme.uiBackground
@@ -48,22 +47,29 @@ Item
 			border.color:	Theme.uiBorder
 
 
-			Column {
-				id: fileAction
-				anchors.top: parent.top
-				anchors.topMargin: 5
-				anchors.horizontalCenter: parent.horizontalCenter
-				spacing:	4
-				width:		parent.width - Theme.generalAnchorMargin
+			Column
+			{
+				id:					fileAction
+				spacing:			4
+				width:				parent.width - Theme.generalAnchorMargin
 
-				Repeater {
+				anchors
+				{
+					top:				parent.top
+					topMargin:			5
+					horizontalCenter:	parent.horizontalCenter
+				}
 
-					model: fileMenuModel.actionButtons
+				Repeater
+				{
 
-					MenuButton {
+					model:					fileMenuModel.actionButtons
+
+					MenuButton
+					{
 						id:					actionButton
 						text:				nameRole
-
+						selected:			fileMenuModel.fileoperation === typeRole
 						width:				parent.width-6
 						height:				action_button_height
 						anchors.leftMargin: 3
@@ -73,16 +79,14 @@ Item
 					}
 				}
 			}
-		}//Rectangle Action Menu
+		}
 
-
-		// Right verical tab : Browse Menu ////////////////////////////////////////////////////////
-		// Location Menu
-		Rectangle {
+		Rectangle
+		{
 			id:				locationMenu
 			color:			Theme.uiBackground
 
-			width:			fileMenu.colWidths //fileMenuModel.visible ?  : 0
+			width:			fileMenu.colWidths
 
 			anchors.left:	actionMenu.right
 			height:			parent.height
@@ -92,7 +96,8 @@ Item
 
 			//Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.InOutSine  } }
 
-			Column {
+			Column
+			{
 				id: fileLocation
 
 				anchors.top:				parent.top
@@ -103,21 +108,18 @@ Item
 
 				Repeater
 				{
-					model: fileMenuModel.resourceButtons
+					model:					fileMenuModel.resourceButtonsVisible
 
-					MenuButton {
+					MenuButton
+					{
 						id:					resourceButton
 						text:				nameRole
-
 						width:				parent.width-6
 						height:				resource_button_height
 						anchors.leftMargin: 3
 						anchors.left:		parent.left
-						onClicked:
-						{
-							resourceScreen.locationSelected = qmlRole
-							fileMenuModel.resourceButtons.clicked(typeRole)
-						}
+						selected:			qmlRole === fileMenuModel.resourceButtons.currentQML
+						onClicked:			fileMenuModel.resourceButtonsVisible.clicked(typeRole)
 					}
 				}
 			}
@@ -164,20 +166,17 @@ Item
 			color:			Theme.uiBackground
 			z:				-2
 
-			property bool aButtonVisible:	locationSelected !== ''
-
-			//Wouldn't it be better to do this with some kind of bitflag? Or an enum in FileMenu.h or anything except for a random string...
-			property string locationSelected: ""
+			property bool aButtonVisible:	fileMenuModel.resourceButtons.currentQML !== ''
 
 			Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
-			onXChanged: if(x + width <= otherColumnsWidth && !fileMenuModel.visible) resourceScreen.locationSelected = ""
+			onXChanged: if(x + width <= otherColumnsWidth && !fileMenuModel.visible) fileMenuModel.resourceButtons.currentQML = ""
 
 			Loader
 			{
 				id:					showSelectedSubScreen
 				anchors.fill:		parent
-				source:				resourceScreen.locationSelected
+				source:				fileMenuModel.resourceButtons.currentQML
 			}
 		}
 	}

@@ -35,12 +35,12 @@ Rectangle
 	property bool	enabled:			true
 	property bool	selected:			false
 	property string	iconSource:			""
-	property real	buttonPadding:		(buttonIcon.visible ? 4 : 16) * ppiScale
+	property real	buttonPadding:		(buttonIcon.visible ? 4 : 16) * preferencesModel.uiScale
 	property alias	hovered:			buttonMouseArea.containsMouse
 	property bool	showIconAndText:	false
 	property bool	centerText:			true
 
-	property real	_scaledDim:			32 * ppiScale
+	property real	_scaledDim:			32 * preferencesModel.uiScale
 	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
 	property alias	_pressed:			buttonMouseArea.pressed
 
@@ -92,7 +92,7 @@ Rectangle
 	Text
 	{
 		id: buttonText
-		x:	filterButtonRoot.centerText ? (parent.width / 2) - (width / 2) : buttonIcon.x + buttonIcon.width + filterButtonRoot.buttonPadding
+		x:	filterButtonRoot.centerText ? (parent.width / 2) - (width / 2) : (buttonIcon.visible ? buttonIcon.x + buttonIcon.width : 0) + (filterButtonRoot.buttonPadding / 2)
 		y:	(parent.height / 2) - (height / 2)
 
 		text:		filterButtonRoot.text
@@ -101,7 +101,7 @@ Rectangle
 
 
 		font:	Theme.font
-		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * ppiScale, filterButtonRoot.height - 2))
+		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
 
 		height: contentHeight
 		width:	Math.min(implicitWidth, parent.width - ( buttonIcon.visible ? buttonIcon.width + buttonIcon.x : 0 ))

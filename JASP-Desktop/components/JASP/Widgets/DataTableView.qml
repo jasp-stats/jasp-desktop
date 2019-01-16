@@ -26,7 +26,7 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.bottom:		dataStatusBar.top
 
-			font.pixelSize:		baseFontSize * ppiScale
+			font.pixelSize:		baseFontSize * preferencesModel.uiScale
 
 			//headersGradient: myHeadersGradient
 			model:				dataSetModel
@@ -129,7 +129,7 @@ FocusScope
 			{
 				id: headerRoot
 							property real	iconTextPadding:	10
-				readonly	property int	__iconDim:			baseBlockDim * ppiScale
+				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
 				Image
 				{
@@ -220,7 +220,7 @@ FocusScope
 									{
 										id:		columnTypeChangeIcon
 
-										width:	headerRoot.__iconDim + (baseFontSize * 7 * ppiScale)
+										width:	headerRoot.__iconDim + (baseFontSize * 7 * preferencesModel.uiScale)
 										height: headerRoot.__iconDim * 1.5
 										radius: 15
 

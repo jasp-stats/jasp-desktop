@@ -74,13 +74,11 @@ Rectangle
 		{
 			id: innerText
 
-			anchors.horizontalCenter: parent.horizontalCenter
-			anchors.top             : backgroundImage.bottom
-			//anchors.bottom          : parent.bottom
-			anchors.topMargin       : 5
-
-			color    : ribbonButton.enabled ? Theme.black : Theme.gray
-			font.bold: false
+			anchors.horizontalCenter:	parent.horizontalCenter
+			anchors.top:				backgroundImage.bottom
+			anchors.topMargin:			5
+			color:						ribbonButton.enabled ? Theme.black : Theme.gray
+			font:						Theme.font
 		}
 
 		MouseArea

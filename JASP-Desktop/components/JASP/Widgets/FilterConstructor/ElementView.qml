@@ -6,7 +6,7 @@ ListView {
 	property string __debugName: "ElementView"
 	//clip: true
 
-	property real maxWidth: 300 * ppiScale
+	property real maxWidth: 300 * preferencesModel.uiScale
 	property real widthMargin: 10
 	spacing: 4
 	maximumFlickVelocity: Theme.maximumFlickVelocity

@@ -216,11 +216,6 @@ Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	return dynamicModule(moduleName)->retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
 }
 
-void DynamicModules::openModuleInstallerWindow()
-{
-	emit showModuleInstallerWindow("qrc:///components/JASP/Widgets/ModuleInstaller.qml");
-}
-
 bool DynamicModules::isFileAnArchive(QString filepath)
 {
 	return ExtractArchive::isFileAnArchive(filepath.toStdString());

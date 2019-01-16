@@ -10,9 +10,10 @@
 class ResourceButtons : public QAbstractListModel
 {
 	Q_OBJECT
+	Q_PROPERTY(QString currentQML READ currentQML WRITE setCurrentQML NOTIFY currentQMLChanged)
 public:
 	//["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
-	enum ButtonType {RecentFiles, CurrentFile, Computer, OSF, DataLibrary};
+	enum ButtonType {RecentFiles, CurrentFile, Computer, OSF, DataLibrary, PrefsData, PrefsResults, PrefsAdvanced};
 
 	struct DataRow { ButtonType button; QString name; bool visible; QString qml; };
 
@@ -28,15 +29,24 @@ public:
 
 	void					setOnlyTheseButtonsVisible(std::set<ButtonType> buttons = {});
 
+	QString					qml(ResourceButtons::ButtonType button);
+
+	QString					currentQML() const	{ return _currentQML; }
+
 signals:
 	Q_INVOKABLE void clicked(int buttonType);
 
+	void currentQMLChanged(QString currentQML);
+
 public slots:
 	void setVisible(ResourceButtons::ButtonType button, bool visibility);
+	void setCurrentQML(QString currentQML);
+	void clickedHandler(int buttonType) { setCurrentQML(qml(static_cast<ButtonType>(buttonType))); }
 
 private:
-	std::vector<DataRow>	_data;
-	std::map<ButtonType, size_t>		_buttonToIndex;
+	std::vector<DataRow>			_data;
+	std::map<ButtonType, size_t>	_buttonToIndex;
+	QString							_currentQML;
 };
 
 #endif // ResourceButtons_H

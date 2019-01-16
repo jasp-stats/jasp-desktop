@@ -9,7 +9,7 @@ using namespace std;
 PreferencesModel::PreferencesModel(QObject *parent) :
 	QObject(parent)
 {
-	fillMissingValueList(Utils::getEmptyValues());
+	connect(this, &PreferencesModel::missingValuesChanged, this, &PreferencesModel::updateUtilsMissingValues);
 }
 
 PreferencesModel::~PreferencesModel()
@@ -47,174 +47,6 @@ void PreferencesModel::sliderUIScaleChanged(int)
 }
 */
 
-std::vector<std::string> PreferencesModel::getStdVectorFromEmptyValueList()
-{
-	std::vector<std::string> result;
-/*	QListWidgetItem *itm;
-	unsigned int count = ui->missingValuesList->count();
-	QString s;
-	
-	//Strip leading " and use template name for white spaces
-	for (unsigned int i=0; i<count; ++i)
-	{
-		itm = ui->missingValuesList->item(i);
-		s = itm->text();
-		s = stripFirstAndLastChar(s, "\"");
-		s = s.trimmed();
-		if (!s.isEmpty())
-			result.push_back(s.toStdString());
-	}*/
-	
-	return result;
-}
-
-QString PreferencesModel::getTokenStringFromEmptyValueList()
-{
-	QString result;
-	/*QListWidgetItem *itm;
-	unsigned int count = ui->missingValuesList->count();
-	
-	//No stripping is done
-	for (unsigned int i=0; i<count; ++i)
-	{
-		itm = ui->missingValuesList->item(i);
-		QString itemtoadd = itm->text();
-		result += itemtoadd;
-		if (i<count-1) result += "|";
-	}
-	*/
-	return result;
-	
-}
-
-bool PreferencesModel::addStringToEmptyValueList(const QString &in)
-{
-	bool itemexist = false;
-/*
-	QString prepare = in.trimmed();
-	prepare = stripFirstAndLastChar(prepare, "\"");
-	prepare = prepare.trimmed();
-
-	if (!prepare.isEmpty())
-	{
-		for (int i=0; i<ui->missingValuesList->count(); ++i)
-		{
-			if (ui->missingValuesList->item(i)->text() == prepare)
-			{
-				itemexist = true;
-				break;
-			}
-		}
-
-		if (!itemexist)
-		{
-			ui->missingValuesList->addItem(prepare);
-			ui->itemEdit->setText("");
-		}
-	}
-	*/
-	return itemexist;
-}
-
-void PreferencesModel::checkEmptyValueList()
-{
-/*	// Forgot to save something?
-	if (ui->itemEdit->text() != "")
-	{
-		QMessageBox::StandardButton reply;
-		reply = QMessageBox::question(this, "", "Still one item to add to Missing Value List. Add ?",
-									  QMessageBox::Yes|QMessageBox::No);
-		if (reply == QMessageBox::Yes) 
-			addStringToEmptyValueList(ui->itemEdit->text());
-	}
-		
-	std::vector<std::string> missingvalues;
-	QString settingmissingvalues;
-	const std::vector<std::string> &org_missingvalues = Utils::getEmptyValues();
-
-	settingmissingvalues = getTokenStringFromEmptyValueList();;
-	missingvalues = getStdVectorFromEmptyValueList();
-	
-	if (settingmissingvalues != "" && missingvalues != org_missingvalues)
-	{
-		Settings::setValue(Settings::MISSING_VALUES_LIST, settingmissingvalues);
-		Utils::setEmptyValues(missingvalues);
-		emit _tabBar->emptyValuesChanged();
-	}*/
-}
-
-void PreferencesModel::savePreferences()
-{
-/*	// Check empty value list
-	checkEmptyValueList();
-
-	//Auto Sync Switch
-	int checked = (ui->syncAutoCheckBox->checkState()==Qt::Checked) ? 1 : 0;
-	int dataAutoSynchronization = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
-	Settings::setValue(Settings::DATA_AUTO_SYNCHRONIZATION, checked);
-	if (checked != dataAutoSynchronization)
-		emit _tabBar->dataAutoSynchronizationChanged(checked);
-	
-	//Use Default Editor Switch
-	checked = (ui->useDefaultSpreadsheetEditor->checkState()==Qt::Checked) ? 1 : 0;
-	Settings::setValue(Settings::USE_DEFAULT_SPREADSHEET_EDITOR, checked);
-
-	Settings::setValue(Settings::SPREADSHEET_EDITOR_NAME, ui->spreadsheetEditorName->text());
-			
-	//Exact p values
-	checked = (ui->displayExactPVals->checkState()==Qt::Checked) ? 1 : 0;
-	int displayExactPVals = Settings::value(Settings::EXACT_PVALUES).toInt();
-	Settings::setValue(Settings::EXACT_PVALUES, checked);
-	if (checked != displayExactPVals)
-		_tabBar->setExactPValues(checked);
-
-	//Fix decimals
-	checked = (ui->fixDecimals->checkState()==Qt::Checked) ? 1 : 0;	
-	QString numDecimals = (checked == 0) ? "" : ui->numDecimals->cleanText();
-	QString savedNumDecimals = Settings::value(Settings::NUM_DECIMALS).toString();
-	Settings::setValue(Settings::NUM_DECIMALS, numDecimals);
-	if (numDecimals != savedNumDecimals)
-        _tabBar->setFixDecimals(numDecimals);
-
-	//PPI
-	checked = (ui->useDefaultPPI->checkState()==Qt::Checked) ? 1 : 0;
-	int previousChecked = Settings::value(Settings::PPI_USE_DEFAULT).toInt();
-	Settings::setValue(Settings::PPI_USE_DEFAULT, checked);
-	if (checked)
-	{
-		if (checked != previousChecked)
-			_tabBar->useDefaultPPI();
-	}
-	else
-	{
-		int customPPI = ui->customPPI->text().toInt();
-		int previousCustomPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toInt();
-		Settings::setValue(Settings::PPI_CUSTOM_VALUE, customPPI);
-		if (checked != previousChecked || customPPI != previousCustomPPI)
-			_tabBar->setPPI(customPPI);
-	}
-
-	//ImageBackground
-	QAbstractButton* imageBackgroundButton = _imageBackgroundGroup->checkedButton();
-	QString imageBackgroundValue = imageBackgroundButton->objectName().remove("Background");
-	QString currentImageBackgroundValue = Settings::value(Settings::IMAGE_BACKGROUND).toString();
-	if (imageBackgroundValue != currentImageBackgroundValue)
-	{
-		Settings::setValue(Settings::IMAGE_BACKGROUND, imageBackgroundValue);
-		_tabBar->setImageBackground(imageBackgroundValue);
-	}
-
-
-	Settings::setValue(Settings::TEST_ANALYSIS_QML, ui->testAnalyseQMLName->text());
-	Settings::setValue(Settings::TEST_ANALYSIS_R, ui->testAnalyseRName->text());
-
-	//Done
-	Settings::sync();
-
-	this->close();*/
-	
-}
-
 void PreferencesModel::browseSpreadsheetEditor()
 {
 	
@@ -236,19 +68,6 @@ void PreferencesModel::browseSpreadsheetEditor()
 	
 }
 
-
-void PreferencesModel::fillMissingValueList(const vector<string> &emptyValues)
-{
-/*	ui->missingValuesList->clear();
-	std::string s;
-
-	for (unsigned int t=0; t<emptyValues.size() ; ++t)
-	{
-		s = emptyValues.at(t);
-		ui->missingValuesList->addItem(s.c_str());
-	}*/
-}
-
 bool	PreferencesModel::fixedDecimals()			const { return Settings::value(Settings::FIXED_DECIMALS					).toBool();					}
 int		PreferencesModel::numDecimals()				const { return Settings::value(Settings::NUM_DECIMALS					).toInt();					}
 bool	PreferencesModel::exactPValues()			const { return Settings::value(Settings::EXACT_PVALUES					).toBool();					}
@@ -260,6 +79,21 @@ int		PreferencesModel::customPPI()				const { return Settings::value(Settings::P
 bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND				).toString() == "white";	}
 double	PreferencesModel::uiScale()					const { return Settings::value(Settings::UI_SCALE						).toDouble();				}
 
+QStringList PreferencesModel::missingValues()		const
+{
+	QStringList items = Settings::value(Settings::MISSING_VALUES_LIST).toString().split("|");
+
+	return items;
+}
+
+QString PreferencesModel::fixedDecimalsForJS() const
+{
+	if(!fixedDecimals())
+		return "\"\"";
+
+	return QString::fromStdString(std::to_string(numDecimals()));
+}
+
 void PreferencesModel::setFixedDecimals(bool newFixedDecimals)
 {
 	if (fixedDecimals() == newFixedDecimals)
@@ -268,6 +102,7 @@ void PreferencesModel::setFixedDecimals(bool newFixedDecimals)
 	Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals);
 
 	emit fixedDecimalsChanged(newFixedDecimals);
+	emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
 
 void PreferencesModel::setNumDecimals(int newNumDecimals)
@@ -278,6 +113,9 @@ void PreferencesModel::setNumDecimals(int newNumDecimals)
 	Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals);
 
 	emit numDecimalsChanged(newNumDecimals);
+
+	if(fixedDecimals())
+		emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
 
 
@@ -327,6 +165,10 @@ void PreferencesModel::setUseDefaultPPI(bool newUseDefaultPPI)
 
 	Settings::setValue(Settings::PPI_USE_DEFAULT, newUseDefaultPPI);
 	emit useDefaultPPIChanged(newUseDefaultPPI);
+
+	if(customPPI() != defaultPPI())
+		emit plotPPIChanged(defaultPPI());
+
 }
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
@@ -336,6 +178,7 @@ void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 
 	Settings::setValue(Settings::IMAGE_BACKGROUND, newWhiteBackground ? "white" : "transparent");
 	emit whiteBackgroundChanged(newWhiteBackground);
+	emit plotBackgroundChanged(Settings::value(Settings::IMAGE_BACKGROUND).toString());
 }
 
 void PreferencesModel::setUiScale(double newUiScale)
@@ -354,5 +197,68 @@ void PreferencesModel::setCustomPPI(int newCustomPPI)
 
 	Settings::setValue(Settings::PPI_CUSTOM_VALUE, newCustomPPI);
 	emit customPPIChanged(newCustomPPI);
+
+	if(!useDefaultPPI())
+		emit plotPPIChanged(customPPI());
 }
 
+void PreferencesModel::setDefaultPPI(int defaultPPI)
+{
+	if (_defaultPPI == defaultPPI)
+		return;
+
+	_defaultPPI = defaultPPI;
+	emit defaultPPIChanged(_defaultPPI);
+
+	if(useDefaultPPI())
+		emit plotPPIChanged(_defaultPPI);
+}
+
+void PreferencesModel::removeMissingValue(QString value)
+{
+	QStringList currentValues = missingValues();
+	if(currentValues.contains(value))
+	{
+		currentValues.removeAll(value);
+		Settings::setValue(Settings::MISSING_VALUES_LIST, currentValues.join("|"));
+		emit missingValuesChanged();
+	}
+}
+
+void PreferencesModel::addMissingValue(QString value)
+{
+	{
+		QStringList currentValues = missingValues();
+		if(!currentValues.contains(value))
+		{
+			currentValues.append(value);
+			Settings::setValue(Settings::MISSING_VALUES_LIST, currentValues.join("|"));
+			emit missingValuesChanged();
+		}
+	}
+}
+
+void PreferencesModel::resetMissingValues()
+{
+	QStringList currentValues = missingValues();
+	Settings::setValue(Settings::MISSING_VALUES_LIST, Settings::defaultMissingValues);
+
+	if(missingValues() != currentValues)
+		emit missingValuesChanged();
+}
+
+void PreferencesModel::updateUtilsMissingValues()
+{
+	missingValuesToStdVector(Utils::_currentEmptyValues);
+	Utils::processEmptyValues();
+}
+
+void PreferencesModel::missingValuesToStdVector(std::vector<std::string> & out)	const
+{
+	QStringList currentValues = missingValues();
+
+	out.resize(size_t(currentValues.size()));
+
+	for(size_t i=0; i<out.size(); i++)
+		out[i] = currentValues[int(i)].toStdString();
+}

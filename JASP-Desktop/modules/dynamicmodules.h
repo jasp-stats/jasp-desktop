@@ -90,7 +90,6 @@ public:
 
 
 signals:
-	void showModuleInstallerWindow(QString url);
 	void currentInstallMsgChanged();
 	void currentInstallNameChanged();
 	void currentInstallDoneChanged();
@@ -107,7 +106,7 @@ public slots:
 	void installationPackagesFailed(	std::string moduleName, std::string errorMessage);
 	void loadingSucceeded(				std::string moduleName);
 	void loadingFailed(					std::string moduleName, std::string errorMessage);
-	void openModuleInstallerWindow();
+
 
 private:
 	std::vector<std::string>						_moduleNames;

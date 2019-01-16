@@ -10,6 +10,7 @@ ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
 		{FileOperation::ExportResults,	"Export Results",	false},
 		{FileOperation::ExportData,		"Export Data",		false},
 		{FileOperation::SyncData,		"Sync Data",		false},
+		{FileOperation::Preferences,	"Preferences",		true},
 		{FileOperation::Close,			"Close",			false}
 	})
 {

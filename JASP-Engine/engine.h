@@ -25,19 +25,7 @@
 #include "jsonredirect.h"
 
 /* The Engine represents the background processes.
- * It's job is pretty straight forward; it reads analysis
- * requests from shared memory (a semaphore is set when there
- * is a new message), and runs the analysis.
- * If an analysis is running when a new request is received,
- * and it is the same analysis (analysisId's match), then the
- * analysis is notified of the change (probably to one of its
- * options).
- * If the analysisId's don't match, then the old analysis is
- * aborted, and the new one is set running.
- *
- * Additionally: an engine can run a filter and return the result of that to the dataset.
- *
- * Since 2018-06 (JCG): This is getting less and less accurate of a description but i am not about to change it right now.
+ * It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
  */
 
 class Engine

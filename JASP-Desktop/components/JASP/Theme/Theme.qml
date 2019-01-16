@@ -21,6 +21,8 @@ pragma Singleton
 import QtQuick 2.8
 
 QtObject {
+	readonly property real uiScale:				preferencesModel.uiScale
+
 	readonly property color white:				"white"
 	readonly property color whiteBroken:		"#F5F5F5"
 	readonly property color black:				"black"
@@ -51,58 +53,59 @@ QtObject {
 
 	readonly property color itemHighlight:				blueMuchLighter
 
-	readonly property int itemPadding:			8 * ppiScale
+	readonly property int itemPadding:			8 * uiScale
 	readonly property int minPanelWidth:		200
 	readonly property int resultWidth:			600
 	readonly property int formWidth:			600
-	readonly property int formMargin:			10	* ppiScale
+	readonly property int formMargin:			10	* uiScale
 
-    readonly property int rowGridSpacing:       15 * ppiScale
-    readonly property int columnGridSpacing:    30 * ppiScale
-    readonly property int rowGroupSpacing:      5  * ppiScale
-    readonly property int indentationLength:    20 * ppiScale    
-	readonly property int borderRadius:			4  * ppiScale
-	readonly property int generalAnchorMargin:	8  * ppiScale
-	readonly property int rowSpacing:			6  * ppiScale
+	readonly property int rowGridSpacing:       15 * uiScale
+	readonly property int columnGridSpacing:    30 * uiScale
+	readonly property int rowGroupSpacing:      5  * uiScale
+	readonly property int indentationLength:    20 * uiScale
+	readonly property int borderRadius:			4  * uiScale
+	readonly property int generalAnchorMargin:	8  * uiScale
+	readonly property int rowSpacing:			6  * uiScale
+	readonly property int subOptionOffset:		40 * uiScale
 
-	readonly property int sliderWidth:					4   * ppiScale
-	readonly property int sliderLength:					80  * ppiScale
-	readonly property int switchHeight:					15  * ppiScale
-	readonly property int shadowRadius:					10  * ppiScale
-	readonly property int comboBoxHeight:				22  * ppiScale
-	readonly property int textFieldWidth:				40  * ppiScale
-	readonly property int textFieldHeight:				20  * ppiScale
-	readonly property int defaultListHeight:			350 * ppiScale
-    readonly property int titleBottomMargin:            5   * ppiScale
-	readonly property int ribbonButtonHeight:			60  * ppiScale
-	readonly property int ribbonButtonPadding:			10  * ppiScale
-	readonly property int variablesListTitle:			20  * ppiScale
-	readonly property int groupContentPadding:			10  * ppiScale
-	readonly property int sliderHandleDiameter:			16  * ppiScale
-	readonly property int defaultTextAreaHeight:		250 * ppiScale
-	readonly property int radioIndicatorDiameter:		16  * ppiScale
-	readonly property int checkBoxIndicatorLength:		15  * ppiScale
+	readonly property int sliderWidth:					4   * uiScale
+	readonly property int sliderLength:					80  * uiScale
+	readonly property int switchHeight:					15  * uiScale
+	readonly property int shadowRadius:					10  * uiScale
+	readonly property int comboBoxHeight:				22  * uiScale
+	readonly property int textFieldWidth:				40  * uiScale
+	readonly property int textFieldHeight:				20  * uiScale
+	readonly property int defaultListHeight:			350 * uiScale
+	readonly property int titleBottomMargin:            5   * uiScale
+	readonly property int ribbonButtonHeight:			60  * uiScale
+	readonly property int ribbonButtonPadding:			10  * uiScale
+	readonly property int variablesListTitle:			20  * uiScale
+	readonly property int groupContentPadding:			10  * uiScale
+	readonly property int sliderHandleDiameter:			16  * uiScale
+	readonly property int defaultTextAreaHeight:		250 * uiScale
+	readonly property int radioIndicatorDiameter:		16  * uiScale
+	readonly property int checkBoxIndicatorLength:		15  * uiScale
 	readonly property int formExpanderButtonPadding:	ribbonButtonPadding
-	readonly property int defaultSingleItemListHeight:	45  * ppiScale
+	readonly property int defaultSingleItemListHeight:	45  * uiScale
 
-	readonly property int messageBoxButtonHeight:		40  * ppiScale
+	readonly property int messageBoxButtonHeight:		40  * uiScale
 	readonly property int maximumFlickVelocity:			400
 	readonly property int fileMenuSlideDuration:		200
 
 	readonly property real ribbonScaleHovered:			1.1
 
-	readonly property int menuItemHeight:               30  * ppiScale
+	readonly property int menuItemHeight:               30  * uiScale
 
 	property font font
 	font.bold:		false
 	font.underline:	false
-	font.pixelSize:	14 * ppiScale
+	font.pixelSize:	14 * uiScale
 	font.family:	"SansSerif"
 
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false
-	fontLabel.pixelSize:	18 * ppiScale
+	fontLabel.pixelSize:	18 * uiScale
 	fontLabel.family:		"SansSerif"
 
 	readonly property color borderColor:					gray

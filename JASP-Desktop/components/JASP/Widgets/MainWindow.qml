@@ -16,6 +16,10 @@ Window
 
 	onVisibleChanged: if(!visible) helpModel.visible = false
 
+	property real devicePixelRatio: Screen.devicePixelRatio
+
+	onDevicePixelRatioChanged: if(devicePixelRatio > 0) mainWindow.screenPPI = devicePixelRatio * 96
+
 	RibbonBar
 	{
 		id:		ribbon

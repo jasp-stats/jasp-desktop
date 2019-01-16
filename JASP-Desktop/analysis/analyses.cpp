@@ -199,6 +199,8 @@ void Analyses::refreshAllAnalyses()
 		idAnalysis.second->refresh();
 }
 
+//void refreshAllPlots();
+
 
 void Analyses::refreshAnalysesUsingColumn(QString col)
 {

@@ -15,7 +15,7 @@ Item
 		anchors.left: parent.left  //Position Recent Files label
 		anchors.leftMargin: 12
 		anchors.topMargin: 12
-		text: "Current data file for sycnchronization"
+		text: "Current data file for synchronization"
 		font.family: "SansSerif"
 		font.pixelSize: 18
 		color: Theme.black

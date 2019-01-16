@@ -85,6 +85,7 @@ public slots:
 	void removeAnalysisById(size_t id);
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
+	//void refreshAllPlots();
 	void refreshAnalysesUsingColumn(QString col);
 	void analysisClickedHandler(QString analysis, QString ribbon, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);

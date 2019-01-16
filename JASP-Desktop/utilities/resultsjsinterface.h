@@ -79,7 +79,6 @@ public slots:
 	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
 	void displayMessageFromResults(QString path);
 	void getImageInBase64(int id, const QString &path);
-	void setPPI(int ppi);
 	void setAllUserDataFromJavascript(QString json);
 	void setResultsMetaFromJavascript(QString json);
 	void removeAnalysis(Analysis *analysis);
@@ -93,15 +92,13 @@ signals:
 	void runJavaScript(QString js);
 	void zoomChanged(double zoom);
 	void packageModified();
-	void resultsPageLoadedPpi(bool succes, int ppi);
-	void ppiChanged(int ppi);
+	void resultsPageLoadedSignal();
 
 public slots:
 	void setExactPValuesHandler(bool exact);
 	void setFixDecimalsHandler(QString numDecimals);
 	void analysisImageEditedHandler(Analysis *analysis);
 	void exportSelected(const QString &filename);
-	void getDefaultPPI();
 	void setResultsPageUrl(QString resultsPageUrl);
 	void resultsPageLoaded(bool success);
 
@@ -124,12 +121,10 @@ private slots:
 	void noteSelected();
 
 private:
-	double			_webViewZoom;
+	double			_webViewZoom = 1.0;
 	Json::Value		_resultsMeta;
 	QVariant		_allUserData;
 	QString			_resultsPageUrl = "qrc:///core/index.html";
-	bool			_loadedResultsFirstTime = false;
-
 };
 
 

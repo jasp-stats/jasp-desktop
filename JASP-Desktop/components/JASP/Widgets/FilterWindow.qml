@@ -15,7 +15,7 @@ FocusScope
 
 
     property bool opened: false
-	property int minimumHeightTextBoxes: 50 * ppiScale
+	property int minimumHeightTextBoxes: 50 * preferencesModel.uiScale
 	property bool showEasyFilter: true
 
 	onShowEasyFilterChanged: if(!showEasyFilter) absorbModelRFilter()
@@ -295,7 +295,7 @@ FocusScope
 						onActiveFocusChanged: if(!activeFocus) deselect()
 
 						font.family: "Courier"
-						font.pixelSize: baseFontSize * ppiScale
+						font.pixelSize: baseFontSize * preferencesModel.uiScale
 						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
 
 					}
@@ -341,7 +341,7 @@ FocusScope
 						property bool changedSinceLastApply: text !== filterModel.rFilter
 
 						font.family: "Courier"
-						font.pixelSize: baseFontSize * ppiScale
+						font.pixelSize: baseFontSize * preferencesModel.uiScale
 						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
 					}
 				}
@@ -431,7 +431,7 @@ FocusScope
 				onActiveFocusChanged: if(!activeFocus) deselect()
 
 				font.family: "Courier"
-				font.pixelSize: baseFontSize * ppiScale
+				font.pixelSize: baseFontSize * preferencesModel.uiScale
 
 				states: [
 					State {

@@ -26,6 +26,8 @@
 class Utils
 {
 public:
+	friend class PreferencesModel;
+
 	enum FileType { jasp = 0, html, csv, txt, sav, ods, pdf, empty, unknown };
 	typedef std::vector<Utils::FileType> FileTypeVector;
 
@@ -47,20 +49,20 @@ public:
 	static void sleep(int ms);
 
 	static const std::string emptyValue;
-	static const std::vector<std::string>& getEmptyValues() {return _currentEmptyValues;}
-	static const std::vector<std::string>& getDefaultEmptyValues() {return _defaultEmptyValues;}
-	static const std::vector<double>& getDoubleEmptyValues() {return _currentDoubleEmptyValues;}
+	static const std::vector<std::string>& getEmptyValues()			{ return _currentEmptyValues;		}
+	static const std::vector<std::string>& getDefaultEmptyValues()	{ return _defaultEmptyValues;		}
+	static const std::vector<double>& getDoubleEmptyValues()		{ return _currentDoubleEmptyValues;	}
 	static void setEmptyValues(const std::vector<std::string>& emptyvalues);
+	static void processEmptyValues();
 
 	static bool getIntValue(const std::string& value, int& intValue);
 	static bool getIntValue(const double& value, int& intValue);
 	static bool getDoubleValue(const std::string& value, double& doubleValue);
 
-
 private:
-	static std::vector<std::string> _currentEmptyValues;
-	static const std::vector<std::string> _defaultEmptyValues;
-	static std::vector<double> _currentDoubleEmptyValues;
+	static std::vector<std::string>			_currentEmptyValues;
+	static const std::vector<std::string>	_defaultEmptyValues;
+	static std::vector<double>				_currentDoubleEmptyValues;
 };
 
 #endif // UTILS_H

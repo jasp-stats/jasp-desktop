@@ -265,6 +265,11 @@ vector<string> Utils::_currentEmptyValues = Utils::_defaultEmptyValues;
 void Utils::setEmptyValues(const vector<string> &emptyvalues)
 {
 	_currentEmptyValues = emptyvalues;
+	processEmptyValues();
+}
+
+void Utils::processEmptyValues()
+{
 	_currentDoubleEmptyValues.clear();
 
 	for (vector<string>::const_iterator it = _currentEmptyValues.begin(); it != _currentEmptyValues.end(); ++it)

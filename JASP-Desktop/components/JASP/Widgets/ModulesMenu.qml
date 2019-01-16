@@ -21,7 +21,7 @@ Item
 	{
 		id:				slidePart
 		x:				modulesMenu.opened ? 0 : width
-		width:			340
+		width:			340 * preferencesModel.uiScale
 		height:			modulesMenu.height
 		color:			Theme.uiBackground
 		border.width:	1
@@ -40,7 +40,7 @@ Item
 		Column
 		{
 			id:			modules
-			spacing:	4
+			spacing:	4  * preferencesModel.uiScale
 			width:		parent.width - Theme.generalAnchorMargin
 			anchors
 			{
@@ -50,9 +50,9 @@ Item
 				bottom:				parent.bottom
 			}
 
-			property int buttonMargin:	3
+			property int buttonMargin:	3  * preferencesModel.uiScale
 			property int buttonWidth:	width - (buttonMargin * 2)
-			property int buttonHeight:	40
+			property int buttonHeight:	40  * preferencesModel.uiScale
 
 			MenuButton
 			{

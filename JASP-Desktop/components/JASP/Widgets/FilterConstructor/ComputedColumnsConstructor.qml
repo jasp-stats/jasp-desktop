@@ -6,8 +6,8 @@ Item {
 								id:						filterConstructor
 								objectName:				"computedColumnsConstructor"
 				property string	__debugName:			"filterConstructorComputedColumns"
-				property real	fontPixelSize:			baseFontSize * ppiScale
-				property real	blockDim:				baseBlockDim * ppiScale
+				property real	fontPixelSize:			baseFontSize * preferencesModel.uiScale
+				property real	blockDim:				baseBlockDim * preferencesModel.uiScale
 				property var	allKeys:				["number", "boolean", "string", "variable"]
 	readonly	property real	desiredMinimumHeight:	columnsRow.height + hints.height + (blockDim * 3) + generatedRCodeBox.height
 				property real	extraSpaceUnderColumns: 0

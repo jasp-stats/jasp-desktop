@@ -62,6 +62,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		analysesVisible		READ analysesVisible		WRITE setAnalysesVisible		NOTIFY analysesVisibleChanged		)
 	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
 	Q_PROPERTY(bool		datasetLoaded		READ datasetLoaded											NOTIFY datasetLoadedChanged			)
+	Q_PROPERTY(int screenPPI READ screenPPI WRITE setScreenPPI NOTIFY screenPPIChanged)
 
 	friend class FileMenu;
 public:
@@ -82,6 +83,7 @@ public:
 	QString	windowTitle()			const	{ return _windowTitle;			}
 	bool	analysesVisible()		const	{ return _analysesVisible;		}
 	bool	datasetLoaded()			const	{ return _datasetLoaded;		}
+	int		screenPPI()				const	{ return _screenPPI;			}
 	
 	static QString					iconPath;
 	static QMap<QString, QVariant>	iconFiles;
@@ -89,23 +91,22 @@ public:
 	static QMap<int, QString>		columnTypeMap;	
 
 
+
 public slots:
-	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
-	void setImageBackgroundHandler(QString value);
-	void setUIScaleHandler(float scale);
 	void setRunButtonText(QString runButtonText);
+	void setImageBackgroundHandler(QString value);
 	void setRunButtonEnabled(bool runButtonEnabled);
 	void setProgressBarVisible(bool progressBarVisible);
 	void setProgressBarProgress(int progressBarProgress);
 	void setProgressBarStatus(QString progressBarStatus);
 	void setDataPanelVisible(bool dataPanelVisible);
-	void setWindowTitle(QString windowTitle);
 	void setAnalysesVisible(bool analysesVisible);
 	void setDatasetLoaded(bool datasetLoaded);
+	void setWindowTitle(QString windowTitle);
+	void setScreenPPI(int screenPPI);
+
 	void startDataEditorHandler();
-
 	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
-
 
 private:
 	void makeConnections();
@@ -130,7 +131,6 @@ private:
 
 	void startDataEditor(QString path);
 	void checkUsedModules();
-	void resultsPageLoaded(bool success, int ppi);
 	void analysisUnselectedHandler();
 	void setPackageModified();
 	void analysisSelectedHandler(int id);
@@ -155,30 +155,25 @@ private:
 	void resumeEngines();
 
 signals:
-	void updateAnalysesUserData(QString userData);
-	void ppiChanged(int newPPI);
-	void imageBackgroundChanged(QString value);
 	void saveJaspFile();
-
+	void imageBackgroundChanged(QString value);
+	void updateAnalysesUserData(QString userData);
 	void runButtonTextChanged(QString runButtonText);
 	void runButtonEnabledChanged(bool runButtonEnabled);
 	void progressBarVisibleChanged(bool progressBarVisible);
 	void progressBarProgressChanged(int progressBarProgress);
 	void progressBarStatusChanged(QString progressBarStatus);
 	void dataPanelVisibleChanged(bool dataPanelVisible);
+	void analysesVisibleChanged(bool analysesVisible);
 	void windowTitleChanged(QString windowTitle);
+	void screenPPIChanged(int screenPPI);
 
 	//void showWarning(QString title, QString message);
 	void refreshAllAnalyses();
-
-	void analysesVisibleChanged(bool analysesVisible);
-
 	void datasetLoadedChanged(bool datasetLoaded);
 
 private slots:
 	void showForm(Analysis *analysis);
-	void showQMLWindow(QString urlQml);
-
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
@@ -188,7 +183,6 @@ private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
-
 
 	void startDataEditorEventCompleted(FileEvent *event);
 
@@ -202,7 +196,6 @@ private slots:
 	void zoomOutKeysSelected();
 	void zoomEqualKeysSelected();
 
-	//void illegalOptionStateChanged(AnalysisForm * form);
 	void fatalError();
 
 	void emptyValuesChangedHandler();
@@ -218,10 +211,8 @@ private slots:
 	void unitTestTimeOut();
 
 	void saveJaspFileHandler();
-	//void handleRibbonButtonClicked(QVariant);
-
-
-	void ppiChangedHandler(int ppi) { setPPIHandler(ppi); }
+	void ppiChangedHandler(int ppi);
+	void resultsPageLoaded();
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
@@ -276,7 +267,8 @@ private:
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,
 									_analysesVisible		= false,
-									_datasetLoaded			= false;
+	_datasetLoaded			= false;
+	int _screenPPI;
 };
 
 #endif // MAINWIDGET_H

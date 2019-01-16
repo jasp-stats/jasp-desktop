@@ -41,20 +41,16 @@ class FileMenu : public QObject
 {
 	Q_OBJECT
 
-	typedef ActionButtons::FileOperation FileOperation;
-	
-	Q_PROPERTY(FileOperation fileoperation				READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged)
-
-	Q_PROPERTY(DataLibrary *  datalibrary				READ datalibrary				WRITE setDatalibrary				NOTIFY datalibraryChanged)
-	Q_PROPERTY(CurrentFile * currentFile				READ currentFile				WRITE setCurrentFile				NOTIFY currentFileChanged)
-	Q_PROPERTY(RecentFiles * recentFiles				READ recentFiles				WRITE setRecentFiles				NOTIFY recentFilesChanged)
-	Q_PROPERTY(Computer * computer						READ computer					WRITE setComputer					NOTIFY computerChanged)
-	Q_PROPERTY(OSF * osf								READ osf						WRITE setOsf						NOTIFY osfChanged)
-
-	Q_PROPERTY(bool visible								READ visible					WRITE setVisible					NOTIFY visibleChanged)
-
-	Q_PROPERTY(ActionButtons * actionButtons			READ actionButtons													NOTIFY actionButtonsChanged)
-	Q_PROPERTY(ResourceButtonsVisible * resourceButtons	READ resourceButtons												NOTIFY resourceButtonsChanged)
+	Q_PROPERTY(ActionButtons::FileOperation fileoperation		READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged		)
+	Q_PROPERTY(DataLibrary *  datalibrary						READ datalibrary													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(CurrentFile * currentFile						READ currentFile													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(RecentFiles * recentFiles						READ recentFiles													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(Computer * computer								READ computer														NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(OSF * osf										READ osf															NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(bool visible										READ visible					WRITE setVisible					NOTIFY visibleChanged			)
+	Q_PROPERTY(ActionButtons * actionButtons					READ actionButtons													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(ResourceButtons * resourceButtons				READ resourceButtons												NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(ResourceButtonsVisible * resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		)
 
 public:
 	enum FileLocation { Recent = 0, Current, ThisComputer, Osf, Examples, CountLocations };
@@ -64,7 +60,7 @@ public:
 	explicit FileMenu(QObject *parent = nullptr);
 	virtual ~FileMenu() {}
 	
-	void			setFileoperation(const FileOperation fo);
+	void		setFileoperation(const ActionButtons::FileOperation fo);
 
 	void		setOnlineDataManager(OnlineDataManager *odm);
 	FileEvent *	open(const QString &filepath);
@@ -76,52 +72,42 @@ public:
 	void			setDataFileWatcher(bool watch);
 	
 	void			setSaveMode(FileEvent::FileMode mode);
-	Utils::FileType getCurrentFileType();
-	QString			getCurrentFilePath();
+	Utils::FileType getCurrentFileType() const { return _currentFileType; }
+	QString			getCurrentFilePath() const { return _currentFilePath; }
 	QString			getDefaultOutFileName();
-	bool			isCurrentFileReadOnly();
+	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
-	FileOperation				fileoperation()			const	{ return _fileoperation;			}
-	DataLibrary *				datalibrary()			const	{ return _DataLibrary;				}
-	CurrentFile *				currentFile()			const	{ return _CurrentFile;				}
-	RecentFiles *				recentFiles()			const	{ return _RecentFiles;				}
-	Computer *					computer()				const	{ return _Computer;					}
-	OSF *						osf()					const	{ return _OSF;						}
-	bool						visible()				const	{ return _visible;					}
-	ActionButtons *				actionButtons()			const	{ return _actionButtons;			}
-	ResourceButtonsVisible *	resourceButtons()		const	{ return _resourceButtonsVisible;	}
+	ActionButtons::FileOperation	fileoperation()				const	{ return _fileoperation;			}
+	DataLibrary					*	datalibrary()				const	{ return _DataLibrary;				}
+	CurrentFile					*	currentFile()				const	{ return _CurrentFile;				}
+	RecentFiles					*	recentFiles()				const	{ return _RecentFiles;				}
+	Computer					*	computer()					const	{ return _Computer;					}
+	OSF							*	osf()						const	{ return _OSF;						}
+	bool							visible()					const	{ return _visible;					}
+	ActionButtons				*	actionButtons()				const	{ return _actionButtons;			}
+	ResourceButtons				*	resourceButtons()			const	{ return _resourceButtons;			}
+	ResourceButtonsVisible		*	resourceButtonsVisible()	const	{ return _resourceButtonsVisible;	}
 
 signals:
 	void fileoperationChanged();
 	void dataSetIORequest(FileEvent *event);
 	void exportSelected(QString filename);
-	void datalibraryChanged(DataLibrary * datalibrary);
-	void currentFileChanged(CurrentFile * currentFile);
-	void recentFilesChanged(RecentFiles * recentFiles);
-	void computerChanged(Computer * computer);
-	void osfChanged(OSF * osf);
 	void visibleChanged(bool visible);
-	void actionButtonsChanged(ActionButtons * actionButtons);
-	void resourceButtonsChanged(ResourceButtonsVisible * resourceButtons);
+	void dummyChangedNotifier();
 
 public slots:
 	void analysisAdded(Analysis *analysis);
 	void setSyncFile(FileEvent *event);
-	void dataAutoSynchronizationChanged(bool on);
+	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
 	void dataSetIOCompleted(FileEvent *event);
 	void dataFileModifiedHandler(QString path);
-	void fileOperationClicked(const FileOperation action);
-	void setDatalibrary(DataLibrary * datalibrary);
-	void setCurrentFile(CurrentFile * currentFile);
-	void setRecentFiles(RecentFiles * recentFiles);
-	void setComputer(Computer * computer);
-	void setOsf(OSF * osf);
+	void fileOperationClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
-	void showFileMenu()	{ setVisible(true); }
+	void showFileMenu();
 	void resourceButtonClicked(const int buttonType);
 
 private slots:
-	void dataSetOpenRequestHandler(QString path);
+	void dataSetOpenRequestHandler(QString path) { open(path); }
 	void dataSetOpenCurrentRequestHandler(QString path);
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetOpenExampleRequestHandler(QString path);
@@ -132,23 +118,23 @@ private:
 	static	bool clearOSFFromRecentList(QString path);
 
 private:
-	OnlineDataManager		*_odm						= nullptr;
-	CurrentFile				*_CurrentFile				= nullptr;
-	RecentFiles				*_RecentFiles				= nullptr;
-	Computer				*_Computer					= nullptr;
-	OSF						*_OSF						= nullptr;
-	DataLibrary				*_DataLibrary				= nullptr;
-	ActionButtons			*_actionButtons				= nullptr;
-	ResourceButtons			*_resourceButtons			= nullptr;
-	ResourceButtonsVisible	*_resourceButtonsVisible	= nullptr;
+	OnlineDataManager			*	_odm						= nullptr;
+	CurrentFile					*	_CurrentFile				= nullptr;
+	RecentFiles					*	_RecentFiles				= nullptr;
+	Computer					*	_Computer					= nullptr;
+	OSF							*	_OSF						= nullptr;
+	DataLibrary					*	_DataLibrary				= nullptr;
+	ActionButtons				*	_actionButtons				= nullptr;
+	ResourceButtons				*	_resourceButtons			= nullptr;
+	ResourceButtonsVisible		*	_resourceButtonsVisible		= nullptr;
 
-	FileEvent::FileMode _mode;
-	QString				_currentFilePath;
-	Utils::FileType		_currentFileType;
-	bool				_currentFileReadOnly;
-	QFileSystemWatcher	_watcher;
-	bool				_visible = false;
-	FileOperation		_fileoperation = ActionButtons::Open;
+	QFileSystemWatcher				_watcher;
+	FileEvent::FileMode				_mode						= FileEvent::FileOpen;
+	QString							_currentFilePath;
+	Utils::FileType					_currentFileType			= Utils::FileType::unknown;
+	bool							_currentFileReadOnly		= false,
+									_visible					= false;
+	ActionButtons::FileOperation	_fileoperation				= ActionButtons::Open;
 };
 
 #endif // FILEMENU_H

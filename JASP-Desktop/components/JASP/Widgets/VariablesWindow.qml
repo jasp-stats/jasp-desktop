@@ -263,7 +263,7 @@ FocusScope {
                         }
                     }
 
-					rowDelegate: Item { height: (30 * ppiScale)  }
+					rowDelegate: Item { height: (30 * preferencesModel.uiScale)  }
 
 					itemDelegate: Rectangle
 					{
@@ -311,7 +311,7 @@ FocusScope {
 							color:			Theme.textEnabled
 							text:			styleData.value
 							elide:			Text.ElideMiddle
-							font.pixelSize: baseFontSize * ppiScale
+							font.pixelSize: baseFontSize * preferencesModel.uiScale
 							anchors.fill:	parent
 							verticalAlignment: Text.AlignVCenter
 						}
@@ -322,7 +322,7 @@ FocusScope {
 							color:			Theme.textEnabled
 
 							text:			styleData.value
-							font.pixelSize: baseFontSize * ppiScale
+							font.pixelSize: baseFontSize * preferencesModel.uiScale
 							clip:			true
 							selectByMouse:	true
 							autoScroll:		true
@@ -370,10 +370,10 @@ FocusScope {
 									anchors.top:		parent.top
 									anchors.right:		parent.right
 									anchors.bottom:		parent.bottom
-									spacing:			Math.max(1, 2 * ppiScale)
+									spacing:			Math.max(1, 2 * preferencesModel.uiScale)
 					property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
 					property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
-					property real	buttonHeight:		32 * ppiScale
+					property real	buttonHeight:		32 * preferencesModel.uiScale
 
 					RectangularButton
                     {

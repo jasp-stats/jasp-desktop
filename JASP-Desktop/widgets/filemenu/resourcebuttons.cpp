@@ -2,15 +2,20 @@
 
 ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 	_data({
-		{ButtonType::RecentFiles,	"Recent Files",	false,	"./RecentFiles.qml"	},
-		{ButtonType::CurrentFile,	"Current File",	false,	"./CurrentFile.qml"	},
-		{ButtonType::Computer,		"Computer",		false,	"./Computer.qml"	},
-		{ButtonType::OSF,			"OSF",			true,	"./OSF.qml"			},
-		{ButtonType::DataLibrary,	"Data Library",	false,	"./DataLibrary.qml"	}
+		{ButtonType::RecentFiles,	"Recent Files",	false,	"./RecentFiles.qml"		},
+		{ButtonType::CurrentFile,	"Current File",	false,	"./CurrentFile.qml"		},
+		{ButtonType::Computer,		"Computer",		false,	"./Computer.qml"		},
+		{ButtonType::OSF,			"OSF",			false,	"./OSF.qml"				},
+		{ButtonType::DataLibrary,	"Data Library",	false,	"./DataLibrary.qml"		},
+		{ButtonType::PrefsData,		"Data",			false,	"./PrefsData.qml"		},
+		{ButtonType::PrefsResults,	"Results",		false,	"./PrefsResults.qml"	},
+		{ButtonType::PrefsAdvanced,	"Advanced",		false,	"./PrefsAdvanced.qml"	}
 	})
 {
 	for(size_t i=0; i<_data.size(); i++)
 		_buttonToIndex[_data[i].button] = i;
+
+	connect(this, &ResourceButtons::clicked, this, &ResourceButtons::clickedHandler);
 }
 //ameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole };
 
@@ -63,9 +68,31 @@ void ResourceButtons::setVisible(ButtonType button, bool visibility)
 	setData(index(int(_buttonToIndex[button]), 0), visibility, VisibleRole);
 }
 
+QString ResourceButtons::qml(ResourceButtons::ButtonType button)
+{
+	size_t index = _buttonToIndex[button];
+	if(index < 0 || index >= _data.size())
+		return "";
+
+	return _data[index].qml;
+}
+
 void ResourceButtons::setOnlyTheseButtonsVisible(std::set<ButtonType> buttons)
 {
 	for(const DataRow & row : _data)
+	{
 		setVisible(row.button, buttons.count(row.button) > 0);
+		if(row.qml == currentQML() && !row.visible)
+			setCurrentQML("");
+	}
 }
 
+
+void ResourceButtons::setCurrentQML(QString currentQML)
+{
+	if (_currentQML == currentQML)
+		return;
+
+	_currentQML = currentQML;
+	emit currentQMLChanged(_currentQML);
+}

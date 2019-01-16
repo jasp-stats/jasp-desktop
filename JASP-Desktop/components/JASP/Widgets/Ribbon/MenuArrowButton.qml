@@ -53,29 +53,30 @@ Rectangle
 		scale:				baseScale * (mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1)
 
 
-		property real	baseScale:		0.8 * (height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
+		property real	baseScale:		0.8 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
 
 		property real	baseHeight:		80
 		property real	barThickness:	8 //(Theme.ribbonButtonHeight (2 * Theme.ribbonButtonPadding)) / 7
 		property real	barRadius:		barThickness
 		property real	barWidth:		baseHeight / 2
 		property color	barColor:		Theme.grayDarker
-		property real	offsetY:		!ribbonButton.showArrow ? 0 : (height / 8) //+ (barThickness / 2)
-		property real	offsetX:		!ribbonButton.showArrow ? 0 : (ribbonButton.hamburger ? 1 : -1) * (width / 4)
 
 		Item
 		{
-			id:		topBar
-			x:		-hamburgerArrow.offsetX
-			y:		!(ribbonButton.hamburger || ribbonButton.showArrow) ?
-						(parent.height / 2) - (height / 2) :
-						Theme.ribbonButtonPadding + hamburgerArrow.offsetY //(parent.height / 3) - (height * 0.5)
-			height:	hamburgerArrow.barThickness
-			width:	parent.width
+			id:					topBar
+			anchors.centerIn:	parent
+			height:				hamburgerArrow.barThickness
+			width:				parent.width
 
 			Rectangle
 			{
-				anchors.centerIn:	parent
+				anchors.centerIn:	ribbonButton.showArrow  ||  ribbonButton.hamburger ? undefined		: parent
+				anchors.left:		!ribbonButton.showArrow || !ribbonButton.hamburger ? undefined	: parent.left
+				anchors.right:		!ribbonButton.showArrow ||  ribbonButton.hamburger ? undefined	: parent.right
+				transformOrigin:	!ribbonButton.showArrow ? Item.Center	: ribbonButton.hamburger ? Item.Left	: Item.Right
+
+				y:					ribbonButton.showArrow ? height * 0.25 : ribbonButton.hamburger ? hamburgerArrow.barThickness * 2 : 0
+
 				height:				parent.height
 				width:				!ribbonButton.showArrow ? parent.width : parent.width / 1.25
 				rotation:			!ribbonButton.showArrow ?
@@ -99,22 +100,26 @@ Rectangle
 
 		Item
 		{
-			id:		bottomBar
-			x:		-hamburgerArrow.offsetX
-			y:		!(ribbonButton.hamburger || ribbonButton.showArrow) ?
-						(parent.height / 2) - (height / 2) :
-						parent.height - Theme.ribbonButtonPadding - height - hamburgerArrow.offsetY //(parent.height / 3)) - (height * 0.5)
-			height:	hamburgerArrow.barThickness
-			width:	parent.width
+			id:					bottomBar
+			anchors.centerIn:	parent
+			height:				hamburgerArrow.barThickness
+			width:				parent.width
 
 			Rectangle
 			{
-				anchors.centerIn:	parent
+				anchors.centerIn:	ribbonButton.showArrow ||   ribbonButton.hamburger	? undefined		: parent
+				anchors.left:		!ribbonButton.showArrow || !ribbonButton.hamburger	? undefined		: parent.left
+				anchors.right:		!ribbonButton.showArrow ||  ribbonButton.hamburger	? undefined		: parent.right
+				transformOrigin:	!ribbonButton.showArrow								? Item.Center	: ribbonButton.hamburger ? Item.Left	: Item.Right
+
+				y:					ribbonButton.showArrow ? -height * 0.25 : ribbonButton.hamburger ? -hamburgerArrow.barThickness * 2 : 0
+
 				height:				parent.height
 				width:				!ribbonButton.showArrow ? parent.width : parent.width / 1.25
 				rotation:			!ribbonButton.showArrow ? 0 : ribbonButton.hamburger ? 45 : -45
 				radius:				hamburgerArrow.barRadius
 				color:				hamburgerArrow.barColor
+
 			}
 		}
 	}

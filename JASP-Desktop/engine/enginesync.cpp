@@ -311,22 +311,16 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	env.insert("R_PROFILE",			"something-which-doesnt-exist");
 	env.insert("R_PROFILE_USER",	"something-which-doesnt-exist");
 	env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
-	env.insert("R_LIBS_SITE",		"something-which-doesnt-exist");
-	env.insert("R_LIBS_USER",		"something-which-doesnt-exist");
 
 #elif __APPLE__
 
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
 
-	std::cout << "YOU SHOULD PROBABLY TAKE A LOOK AT THE ENVIRONMENT VARS OF LINUX AND WINDOWS AS WELL??? maybe make this dir: " << AppDirs::userRLibrary().toStdString().c_str() << std::endl;
-
 	//env.insert("R_ENVIRON",			"something-which-doesnt-exist");
 	//env.insert("R_PROFILE",			"something-which-doesnt-exist");
 	//env.insert("R_PROFILE_USER",	"something-which-doesnt-exist");
 	//env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
-	env.insert("R_LIBS_SITE",		"");
-	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
 #else  // linux
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
@@ -334,6 +328,9 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
 #endif
+
+	env.insert("R_LIBS_SITE",		"");
+	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);

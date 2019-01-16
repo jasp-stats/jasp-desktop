@@ -7,7 +7,7 @@ Item
 	id:				jaspRibbons
 	objectName:		"jaspRibbon"
 	width:			500
-	height:			60 * ppiScale
+	height:			60 * preferencesModel.uiScale
 
 	ListView
 	{
