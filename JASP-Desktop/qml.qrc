@@ -36,6 +36,8 @@
         <file>components/JASP/Widgets/BasicTableViewJasp.qml</file>
         <file>components/JASP/Widgets/ComputeColumnWindow.qml</file>
         <file>components/JASP/Widgets/CreateComputeColumnDialog.qml</file>
+        <file>components/JASP/Widgets/CustomMenu.qml</file>
+        <file>components/JASP/Widgets/ColumnTypeModel.qml</file>
         <file>components/JASP/Widgets/DataPanel.qml</file>
         <file>components/JASP/Widgets/DataTableView.qml</file>
         <file>components/JASP/Widgets/RectangularButton.qml</file>
@@ -71,7 +73,6 @@
         <file>components/JASP/Widgets/FilterConstructor/StringDrag.qml</file>
         <file>components/JASP/Widgets/Ribbon/Ribbon.qml</file>
         <file>components/JASP/Widgets/Ribbon/RibbonButton.qml</file>
-        <file>components/JASP/Widgets/Ribbon/ClusterMenu.qml</file>
         <file>components/JASP/Controls/JASPScrollBar.qml</file>
         <file>components/JASP/Controls/PlusMinusCheckButton.qml</file>
         <file>components/JASP/Widgets/MainWindow.qml</file>

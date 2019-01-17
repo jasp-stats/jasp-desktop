@@ -82,6 +82,7 @@ Item
 			model   : jaspRibbon.model
 			delegate: Loader
 			{
+				id						: loader
 				anchors.verticalCenter	: parent.verticalCenter
 				sourceComponent			: displayText === "???" ? toolSeparator : ribbonButtonDelegate
 

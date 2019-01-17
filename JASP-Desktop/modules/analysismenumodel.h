@@ -32,20 +32,21 @@ class AnalysisMenuModel : public QAbstractListModel
 public:
 	enum {
 		DisplayRole,
-		AnalysisFunctionRole
+		AnalysisFunctionRole,
+		MenuImageSourceRole
 	};
 
 	AnalysisMenuModel(QObject *parent) : QAbstractListModel(parent) {}
 
-	int								rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _analysisEntries.size();	}
-	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
-	virtual QHash<int, QByteArray>	roleNames()													const override;
+	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _analysisEntries.size();	}
+	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+	virtual QHash<int, QByteArray>			roleNames()													const override;
 
-	// Utility functions
-	void setAnalysisEntries(std::vector<Modules::AnalysisEntry*> analysisEntries)	{	_analysisEntries = analysisEntries;	}
-	std::vector<Modules::AnalysisEntry*> getAnalysisEntries()                       {	return _analysisEntries;			}
+	void 									setAnalysisEntries(std::vector<Modules::AnalysisEntry*> analysisEntries)	{	_analysisEntries = analysisEntries;	}
+	std::vector<Modules::AnalysisEntry*>	getAnalysisEntries()														{	return _analysisEntries;			}
 
-	Q_INVOKABLE QString getFirstAnalysisEntry() { return data(index(0), AnalysisFunctionRole).toString(); }
+	Q_INVOKABLE QString						getFirstAnalysisEntry()														{	return data(index(0), AnalysisFunctionRole).toString();	}
+	Q_INVOKABLE QString						getFunctionName(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
 
 private:
 	Modules::AnalysisEntries _analysisEntries;
