@@ -21,27 +21,22 @@ import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.12
 import JASP.Theme 1.0
 
+
 Rectangle
 {
-	id							: ribbonButton
-	width						: (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
-	height						: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
-	//radius						: 5
-	color						: mice.pressed ? Theme.grayLighter : "transparent"
-
-	//border.color				: Theme.white
-	//border.width				: !mice.containsMouse ? 0 : 2
+	id		: ribbonButton
+	width	: (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
+	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
+	color	: mice.pressed ? Theme.grayLighter : "transparent"
 
 			property alias	text		: innerText.text
 			property alias	source		: backgroundImage.source
 			property bool	enabled		: true
 			property string moduleName	: "???"
 			property string moduleTitle : "???"
-			property string ribbonTitle : "???"
+			property string ribbonTitle	: "???"
 	default property var	menu
-			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
 
-	
 	signal clicked
 
 	Item
@@ -53,23 +48,23 @@ Rectangle
 
 		Image
 		{
-			id:			backgroundImage
-			z:			1
-			width:		(37 / 28) * height
-			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
+			id		: backgroundImage
+			z		: 1
+			width	: (37 / 28) * height
+			height	: Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
 			visible:	ribbonButton.enabled
 
-			anchors.top:				parent.top
-			anchors.topMargin:			Theme.ribbonButtonPadding
-			anchors.horizontalCenter:	parent.horizontalCenter
+			anchors.top					: parent.top
+			anchors.topMargin			: Theme.ribbonButtonPadding
+			anchors.horizontalCenter	: parent.horizontalCenter
 		}
 
 		Desaturate
 		{
 			z:				2
-			anchors.fill:	backgroundImage
-			source:			backgroundImage
-			visible:		!ribbonButton.enabled
+				anchors.fill	: backgroundImage
+				source			: backgroundImage
+				visible			: !ribbonButton.enabled
 			desaturation:	0.95
 		}
 
@@ -108,8 +103,8 @@ Rectangle
 
 			Loader
 			{
-				id:					menuLoader
-				sourceComponent:	null
+				id				: menuLoader
+				sourceComponent	: null
 			}
 
 			Component
@@ -118,31 +113,32 @@ Rectangle
 
 				ClusterMenu
 				{
-					id   : clusterMenu
-					model: ribbonButton.menu
-					posX : innerText.x
-					posY : ribbonButton.y + (ribbonButton.height)
+					id		: clusterMenu
+					model	: ribbonButton.menu
+					posX	: innerText.x
+					posY	: ribbonButton.y + (ribbonButton.height)
 
-					moduleName:				ribbonButton.moduleName
-					ribbonTitle:			ribbonButton.ribbonTitle
-					Component.onCompleted:	clusterMenu.open()
-					onClosed:				menuLoader.sourceComponent = null
+					moduleName				: ribbonButton.moduleName
+					ribbonTitle				: ribbonButton.ribbonTitle
+					Component.onCompleted	: clusterMenu.open()
+					onClosed				: menuLoader.sourceComponent = null
 				}
 			}
 
-			Rectangle {
-				id		: borderRect
-				width	: clusterMenu.width
-				height	: clusterMenu.height
-				x		: innerText.x
-				y		: ribbonButton.y + (ribbonButton.height)
-				z		: clusterMenu.z + 1
-
-				// visible	: clusterMenu.opened
-
-				border.width: 1
-				border.color: "black"
-			}
+			// Rectangle
+			// {
+			// 	id		: borderRect
+			// 	// width	: clusterMenu.width
+			// 	// height	: clusterMenu.height
+			// 	x		: innerText.x
+			// 	y		: ribbonButton.y + (ribbonButton.height)
+			// 	// z		: clusterMenu.z + 1
+			//
+			// 	// visible	: clusterMenu.opened
+			//
+			// 	border.width: 1
+			// 	border.color: "black"
+			// }
 
 			// RectangularGlow
 			// {

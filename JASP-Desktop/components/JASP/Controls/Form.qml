@@ -61,11 +61,11 @@ AnalysisForm
 			}
 			else
                 getJASPControls(controls, child);
-        }            
-    }        
-     
+        }
+    }
+
 	IntegerField { visible: false; name: "plotWidth";  value: plotWidth }
-    IntegerField { visible: false; name: "plotHeight"; value: plotHeight }    
+    IntegerField { visible: false; name: "plotHeight"; value: plotHeight }
 
 
 	FocusScope

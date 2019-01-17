@@ -29,14 +29,14 @@ JASPControl
 	useDefaultBackground:	true
 	implicitWidth:			parent.width
 	implicitHeight:			Theme.defaultListHeight
-    
+
 				property var	model
 				property string title
 	readonly	property string deleteIcon: "dialog-close.png"
-    
-    signal itemChanged(int index, var name);
-    signal itemRemoved(int index);
-        
+
+	signal itemChanged(int index, var name);
+	signal itemRemoved(int index);
+
 	Text
 	{
 		id:				text
@@ -45,8 +45,8 @@ JASPControl
 		text:			repeatedMeasuresFactorsList.title
 		height:			repeatedMeasuresFactorsList.title ? 20 * preferencesModel.uiScale : 0
 		font:			Theme.font
-    }    
-    
+	}
+
 	Rectangle
 	{
 		id:				rectangle
@@ -57,7 +57,7 @@ JASPControl
 		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
 		border.width:	1
 		border.color:	Theme.borderColor
-        
+
 		GridView
 		{
 			id:					listView
@@ -69,17 +69,17 @@ JASPControl
 			anchors.margins:	4 * preferencesModel.uiScale
 			model:				repeatedMeasuresFactorsList.model
 			delegate:			itemComponent
-        }
-    }
-    
+		}
+	}
+
 	Component
 	{
-        id: itemComponent
+		id: itemComponent
 
 		FocusScope
 		{
 			id:		itemWrapper
-            height: listView.cellHeight
+			height: listView.cellHeight
 			width:	listView.cellWidth
 
 			Rectangle
@@ -93,7 +93,7 @@ JASPControl
 				property bool isDeletable:	model.type.includes("deletable")
 				property bool isVirtual:	model.type.includes("virtual")
 				property bool isLevel:		model.type.includes("level")
-                
+
 				TextField
 				{
 					id:								colName
@@ -104,8 +104,8 @@ JASPControl
 					useExternalBorder:				false
 					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
 					onEditingFinished:				itemChanged(index, value)
-                }
-                
+				}
+
 				Image
 				{
 					source:					iconPath + deleteIcon
@@ -118,11 +118,11 @@ JASPControl
 
 					MouseArea
 					{
-                        anchors.fill: parent
-                        onClicked: itemRemoved(index)
-                    }
-                }
-            }
-        }
-    }
+						anchors.fill: parent
+						onClicked: itemRemoved(index)
+					}
+				}
+			}
+		}
+	}
 }

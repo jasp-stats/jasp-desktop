@@ -23,17 +23,17 @@ import JASP.Widgets 1.0
 Form
 {
 	usesJaspResults: false
-	
+
 	CheckBox { visible: false; name: "posteriorEstimates" }
 	PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"   ; defaultValue: 95 }
 	IntegerField { visible: false; name: "posteriorEstimatesMCMCIterations"             ; defaultValue: 1 }
-	
+
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"             ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"           ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"              ; defaultValue: 450 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"            ; defaultValue: 350 }
-	
-	
+
+
 	VariablesForm
 	{
 		height: 520
@@ -66,11 +66,11 @@ Form
 			allowedColumns: ["scale"]
 		}
 	}
-	
+
 	GridLayout
 	{
 		BayesFactorType {}
-		
+
 		GroupBox
 		{
 			title: qsTr("Output")
@@ -85,7 +85,7 @@ Form
 			}
 			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
 		}
-		
+
 		RadioButtonGroup
 		{
 			title: qsTr("Order")
@@ -94,17 +94,17 @@ Form
 			RadioButton { value: "bestModelTop";	text: qsTr("Compare to best model")					}
 		}
 	}
-	
-	
+
+
 	ExpanderButton
 	{
 		title: qsTr("Model")
-		
+
 		VariablesForm
 		{
 			height: 200
 			listWidth: parent.width * 5 / 9
-			
+
 			availableVariablesList
 			{
 				name: "components"
@@ -117,41 +117,41 @@ Form
 				name: "modelTerms"
 				title: qsTr("Model terms")
 				listViewType: "Interaction"
-				
+
 				ExtraControlColumn {
 					type: "CheckBox"
 					name: "isNuisance"
 					title: "Add to null model"
-				}				
+				}
 			}
 		}
 	}
-	
-	
+
+
 	ExpanderButton
 	{
 		title: qsTr("Post Hoc Tests")
-		
+
 		VariablesForm
 		{
 			height: 200
 			availableVariablesList { name: "postHocTestsAvailable"; syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
                 width: parent.width / 4
-                listViewType: "AssignedAnova"
+                listViewType: "Interaction"
 		}
-		
+
 		GroupBox
 		{
 			title: qsTr("Correction")
 			CheckBox { name: "postHocTestsNullControl"; text: qsTr("Null control"); checked: true }
 		}
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Descriptives Plots")
-		
+
 		VariablesForm
 		{
 			height: 150
@@ -160,7 +160,7 @@ Form
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleItem: true }
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }
 		}
-		
+
 		TextField { name: "labelYAxis"; text: qsTr("Label y-axis") }
 		RowLayout
 		{
@@ -168,11 +168,11 @@ Form
 			PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95; enabled: plotCredibleInterval.checked }
 		}
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Additional Options")
-		
+
 		GridLayout
 		{
 			GroupBox
@@ -182,7 +182,7 @@ Form
 				DoubleField { name: "priorRandomEffects";	text: qsTr("r scale random effects"); defaultValue: 1; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
 				DoubleField { name: "priorCovariates";		text: qsTr("r scale covariates"); defaultValue: 0.354; fieldWidth: 50; doubleValidator {top: 2; decimals: 1} }
 			}
-			
+
 			RadioButtonGroup
 			{
 				name: "sampleMode"

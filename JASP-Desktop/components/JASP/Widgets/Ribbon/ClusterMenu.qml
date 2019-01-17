@@ -21,81 +21,91 @@ import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 
-Menu {
-    id: menu
+Menu
+{
+	id: menu
 
-    property alias model: menuRepeater.model
-    property alias posX : menu.x
+	property alias model: menuRepeater.model
+	property alias posX : menu.x
 	property alias posY : menu.y
 
 	property string moduleName : "???"
 	property string ribbonTitle: "???"
 
-    // TODO: Make the menu more general.
-    //       Make a "CustomMenu" component with the required style.
+	// TODO: Make the menu more general.
+	//       Make a "CustomMenu" component with the required style.
 
 	function menuItemSelected(analysis)
 	{
 		ribbonModel.analysisClickedSignal(analysis, ribbonTitle, moduleName)
-        menu.close()
-    }
+		menu.close()
+	}
 
-    width: {
-        /*
-         * Automatically set the width of menu
-         */
-        var result = 0;
-        for (var i = 0; i < count; ++i) {
-            result = Math.max(itemAt(i).item.implicitWidth, result);
-        }
+	width: {
+		/*
+		 * Automatically set the width of menu
+		 */
+		var result = 0;
+		for (var i = 0; i < count; ++i) {
+			result = Math.max(itemAt(i).item.implicitWidth, result);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    Repeater {
-        id      : menuRepeater
+	Repeater
+	{
+		id      : menuRepeater
 
-        delegate: Loader {
-            sourceComponent: displayText === "???" ? menuSeparator : analysisDelegate
+		delegate: Loader
+		{
+			sourceComponent: displayText === "???" ? menuSeparator : analysisDelegate
 
-            Component {
-                id: analysisDelegate
+			Component
+			{
+				id: analysisDelegate
 
-                MenuItem {
-                    id          : menuItem
-                    text        : displayText
-                    height      : Theme.menuItemHeight
-                    hoverEnabled: true
+				MenuItem
+				{
+					id          : menuItem
+					text        : displayText
+					height      : Theme.menuItemHeight
+					hoverEnabled: true
 
-                    onTriggered : menuItemSelected(analysisEntry)
+					onTriggered : menuItemSelected(analysisEntry)
 
-                    contentItem: Text {
-                        text             : menuItem.text
-                        font             : menuItem.font
-                        opacity          : enabled ? 1.0 : 0.3
-                        verticalAlignment: Text.AlignVCenter
-                        elide            : Text.ElideRight
-                    }
+					contentItem: Text
+					{
+						text             : menuItem.text
+						font             : menuItem.font
+						opacity          : enabled ? 1.0 : 0.3
+						verticalAlignment: Text.AlignVCenter
+						elide            : Text.ElideRight
+					}
 
-                    background: Rectangle {
-                        opacity: enabled ? 1 : 0.3
-                        color  : menuItem.hovered ? "#dcf1fb" : "#ffffff"
-                    }
-                }
-            }
+					background: Rectangle
+					{
+						opacity: enabled ? 1 : 0.3
+						color  : menuItem.hovered ? "#dcf1fb" : "#ffffff"
+					}
+				}
+			}
 
-            Component {
-                id: menuSeparator
-                MenuSeparator {
-                    contentItem: Rectangle {
-                        implicitWidth : 200
-                        implicitHeight: 1
-                        color         : "#d1d1d1"
-                    }
+			Component
+			{
+				id: menuSeparator
+				MenuSeparator
+				{
+					contentItem: Rectangle
+					{
+						implicitWidth : 200
+						implicitHeight: 1
+						color         : "#d1d1d1"
+					}
 
-                    background: Rectangle { }
-                }
-            }
-        }
-    }
+					background: Rectangle { }
+				}
+			}
+		}
+	}
 }
