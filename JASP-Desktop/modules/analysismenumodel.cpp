@@ -29,10 +29,10 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 
 	if	(role == DisplayRole)
 		return QString::fromStdString(entry->title());
-    else if (role == AnalysisFunctionRole)
-        return QString::fromStdString(entry->function());
-//    else if (role == ParentModuleRole)
-//        return QString::fromStdString(entry->dynamicModule()->name());
+	else if (role == AnalysisFunctionRole)
+		return QString::fromStdString(entry->function());
+	else if (role == MenuImageSourceRole)
+		return "";  // We don't need image for analysis menu. TODO: Move this to (parent) MenuModel
 
 	return QVariant();
 }
@@ -41,8 +41,9 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 {
 	static const auto roles = QHash<int, QByteArray>{
-		{	DisplayRole,            "displayText"	},
-		{	AnalysisFunctionRole,   "analysisEntry"	}
+		{	DisplayRole,            "displayText"		},
+		{	AnalysisFunctionRole,   "analysisEntry"		},
+		{	MenuImageSourceRole,    "menuImageSource"	}
 	};
 
 	return roles;

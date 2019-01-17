@@ -41,10 +41,10 @@ Rectangle
 
 	Item
 	{
-		anchors.centerIn:	parent
-		width:				parent.width
-		height:				parent.height
-		scale:				mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
+		anchors.centerIn	: parent
+		width				: parent.width
+		height				: parent.height
+		scale				: mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
 
 		Image
 		{
@@ -52,7 +52,7 @@ Rectangle
 			z		: 1
 			width	: (37 / 28) * height
 			height	: Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
-			visible:	ribbonButton.enabled
+			visible	: ribbonButton.enabled
 
 			anchors.top					: parent.top
 			anchors.topMargin			: Theme.ribbonButtonPadding
@@ -62,21 +62,21 @@ Rectangle
 		Desaturate
 		{
 			z:				2
-				anchors.fill	: backgroundImage
-				source			: backgroundImage
-				visible			: !ribbonButton.enabled
-			desaturation:	0.95
+			anchors.fill	: backgroundImage
+			source			: backgroundImage
+			visible			: !ribbonButton.enabled
+			desaturation	:0.95
 		}
 
 		Text
 		{
-			id: innerText
+			id	: innerText
 
-			anchors.horizontalCenter:	parent.horizontalCenter
-			anchors.top:				backgroundImage.bottom
+			anchors.horizontalCenter	: parent.horizontalCenter
+			anchors.top					: backgroundImage.bottom
 			anchors.topMargin:			5 * preferencesModel.uiScale
-			color:						ribbonButton.enabled ? Theme.black : Theme.gray
-			font:						Theme.font
+			color						: ribbonButton.enabled ? Theme.black : Theme.gray
+			font						: Theme.font
 		}
 
 		MouseArea
@@ -90,66 +90,19 @@ Rectangle
 
 			onClicked		:
 			{
-				//It would be nice to check here if the menu only has one entry, if so just open that instead of the menu
 
 				if(fileMenuModel.visible) fileMenuModel.visible = false
 				if(modulesMenu.opened)		modulesMenu.opened  = false
 
-				if(ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
-				else
-					menuLoader.sourceComponent = menuComp
+				customMenu.functionCall = function menuItemClicked(index)
+					{
+						var analysis = customMenu.model.getFunctionName(index);
+						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						customMenu.visible = false;
+					}
+
+				customMenu.showMenu(ribbonButton, ribbonButton.menu);
 			}
-
-			Loader
-			{
-				id				: menuLoader
-				sourceComponent	: null
-			}
-
-			Component
-			{
-				id: menuComp
-
-				ClusterMenu
-				{
-					id		: clusterMenu
-					model	: ribbonButton.menu
-					posX	: innerText.x
-					posY	: ribbonButton.y + (ribbonButton.height)
-
-					moduleName				: ribbonButton.moduleName
-					ribbonTitle				: ribbonButton.ribbonTitle
-					Component.onCompleted	: clusterMenu.open()
-					onClosed				: menuLoader.sourceComponent = null
-				}
-			}
-
-			// Rectangle
-			// {
-			// 	id		: borderRect
-			// 	// width	: clusterMenu.width
-			// 	// height	: clusterMenu.height
-			// 	x		: innerText.x
-			// 	y		: ribbonButton.y + (ribbonButton.height)
-			// 	// z		: clusterMenu.z + 1
-			//
-			// 	// visible	: clusterMenu.opened
-			//
-			// 	border.width: 1
-			// 	border.color: "black"
-			// }
-
-			// RectangularGlow
-			// {
-			// 	anchors.fill: clusterMenu
-			// 	glowRadius	: 5
-			// 	spread		: 0.2
-			// 	color		: Theme.grayDarker
-			// 	cornerRadius: clusterMenu.radius + glowRadius
-			// 	z			: clusterMenu.z - 1
-			// 	visible		: clusterMenu.opened
-			// }
 		}
 	}
 

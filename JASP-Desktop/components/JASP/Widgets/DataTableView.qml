@@ -6,7 +6,7 @@ import JASP.Theme 1.0
 
 FocusScope
 {
-    id: __myRoot
+	id: __myRoot
 
 	signal doubleClicked()
 
@@ -152,19 +152,36 @@ FocusScope
 
 					function setColumnType(columnType)
 					{
-						//colIcon.myColumnType =
 						dataSetModel.setColumnTypeFromQML(columnIndex, columnType)
 
 						if(variablesWindow.chosenColumn === columnIndex && colIcon.myColumnType() === columnTypeScale)
 							variablesWindow.chooseColumn(-1)
+					}
 
-
+					ColumnTypeModel {
+						id: columnTypeModel
 					}
 
 					MouseArea
 					{
 						anchors.fill:		parent
-						onClicked:			if(columnIndex > -1) popupLoader.open()
+						onClicked:
+						{
+							// if(columnIndex > -1)
+							// 	popupLoader.open()
+
+							customMenu.functionCall = function menuItemClicked(index)
+							{
+								// FIXME:
+								var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
+
+								if (columnType !== undefined)
+									colIcon.setColumnType(columnType);
+								customMenu.visible = false;
+							}
+
+							customMenu.showMenu(colIcon, columnTypeModel);
+						}
 
 						hoverEnabled:		true
 						ToolTip.visible:	containsMouse
@@ -172,120 +189,6 @@ FocusScope
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
 						cursorShape:		Qt.PointingHandCursor
-
-					}
-
-					Loader
-					{
-						id:								popupLoader
-						property bool columnIsComputed: columnIsComputed
-						visible:						sourceComponent !== null
-						sourceComponent:				null
-
-						function open()
-						{
-							sourceComponent = popupIconsComp
-						}
-
-					}
-
-					Component
-					{
-						id:		popupIconsComp
-
-						Popup {
-							id:			popupIcons
-							modal:		true
-							focus:		true
-							padding:	8
-							spacing:	4
-							x:			colIcon.x - (headerRoot.__iconDim * 0.5)
-							y:			colIcon.y + colIcon.height
-
-							closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
-
-							Component.onCompleted:	popupIcons.open()
-							onClosed:				popupLoader.sourceComponent = null
-
-
-							Column
-							{
-								//width: parent.width
-								spacing: popupIcons.padding / 2
-
-								Repeater{
-									id: iconRepeater
-									model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :
-															  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
-
-									Rectangle
-									{
-										id:		columnTypeChangeIcon
-
-										width:	headerRoot.__iconDim + (baseFontSize * 7 * preferencesModel.uiScale)
-										height: headerRoot.__iconDim * 1.5
-										radius: 15
-
-										color:	popupIconMouseArea.useThisColor
-
-										Item
-										{
-											id:						popupLabelIcon
-											width:					(popupIconImage.width + popupText.width)
-											height:					headerRoot.__iconDim
-											anchors.left:			parent.left
-											anchors.leftMargin:		10
-											anchors.verticalCenter: parent.verticalCenter
-
-											Image
-											{
-												id: popupIconImage
-
-												source:					dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
-												width:					headerRoot.__iconDim
-												height:					headerRoot.__iconDim
-												sourceSize {	width:	width * 2
-																height:	height * 2 }
-
-												anchors.verticalCenter: parent.verticalCenter
-											}
-
-											Text
-											{
-												id:		popupText
-												text:	iconRepeater.model[index] === columnTypeScale ?
-															"Scale" : iconRepeater.model[index] === columnTypeOrdinal ?
-																"Ordinal" : iconRepeater.model[index] === columnTypeNominal ?
-																	"Nominal" : "Text"
-
-												anchors.left:		popupIconImage.right
-												anchors.leftMargin: 10
-
-												font:				dataTableView.font
-											}
-										}
-
-										MouseArea
-										{
-											id:				popupIconMouseArea
-											anchors.fill:	parent
-
-											hoverEnabled:	true
-											cursorShape:	Qt.PointingHandCursor
-
-											property color useThisColor: containsMouse ? "lightGray" : "transparent"
-
-											onClicked:
-											{
-												var columnType = iconRepeater.model[index]
-												popupIcons.close()
-												colIcon.setColumnType(columnType)
-											}
-										}
-									}
-								}
-							}
-						}
 					}
 				}
 
