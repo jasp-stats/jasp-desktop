@@ -23,7 +23,7 @@ import JASP.Widgets 1.0
 Form
 {
 	usesJaspResults: false
-
+	
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"         ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"       ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"          ; defaultValue: 430 }
@@ -32,7 +32,7 @@ Form
 	DoubleField  { visible: false; name: "posteriorEstimatesMCMCIterations"          ; defaultValue: 10000 }
 	CheckBox     { visible: false; name: "posteriorEstimates"  }
 	CheckBox     { visible: false; name: "posteriorDistribution"  }
-
+	
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
@@ -61,8 +61,8 @@ Form
         {
             title: qsTr("Plots")
             CheckBox { text: qsTr("Model averaged posteriors"); name: "modelAveragedPosteriors"}
-            CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
-            //CheckBox { text: qsTr("Effects"); name: "effects"; id: effectsOutput}
+            CheckBox { text: qsTr("Q-Q plot of residuals") ;    name: "qqPlot" }
+            CheckBox { text: qsTr("Posterior R\u00B2") ;        name: "rsqPlot"}
         }
 
 	}
@@ -111,8 +111,9 @@ Form
             GroupBox
             {
                 title: qsTr("Plots")
-                CheckBox { text: qsTr("Marginal posteriors"); name: "singleModelPosteriors"}
-                CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "singleModelqqPlot" }
+                CheckBox { text: qsTr("Marginal posteriors");    name: "singleModelPosteriors"}
+                CheckBox { text: qsTr("Q-Q plot of residuals");  name: "singleModelqqPlot" }
+                CheckBox { text: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
         }
@@ -120,7 +121,6 @@ Form
         VariablesForm
         {
             height: 200
-            //showDefaultAssignedVariablesList: false // Cannot use defaultAssignedVariablesList with an ExtraControlColumn
             listWidth: parent.width * 5 / 9
 
             availableVariablesList
@@ -135,13 +135,6 @@ Form
                 title: qsTr("Specific model terms")
                 name: "singleModelTerms"
                 listViewType: "Interaction"
-
-//                ExtraControlColumn {
-//                    type: "CheckBox"
-//                    name: "inModel"
-//                    title: "Add to model shown"
-//                }
-
             }
         }
     }

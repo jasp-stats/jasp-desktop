@@ -17,18 +17,7 @@
 
 AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
 ##PREAMBLE
-	if (is.null(base::options()$BFMaxModels))
-		base::options(BFMaxModels = 50000)
-	if (is.null(base::options()$BFpretestIterations))
-		base::options(BFpretestIterations = 100)
-	if (is.null(base::options()$BFapproxOptimizer))
-		base::options(BFapproxOptimizer = "optim")
-	if (is.null(base::options()$BFapproxLimits))
-		base::options(BFapproxLimits = c(-15, 15))
-	if (is.null(base::options()$BFprogress))
-		base::options(BFprogress = interactive())
-	if (is.null(base::options()$BFfactorsMax))
-		base::options(BFfactorsMax = 5)
+	.theBayesianLinearModelsInitBayesFactor()
 
 	env <- environment()
 
