@@ -52,6 +52,7 @@ public:
 	std::string	loadModuleFromDir(std::string moduleDir);
 	void		unloadModule(std::string moduleName);
 	void		loadInstalledModules();
+	void		scanInstalledModules();
 
 	bool		moduleIsLoaded(std::string moduleName)		{ return _modules.count(moduleName) > 0;													}
 	bool		moduleIsInstalled(std::string moduleName)	{ return boost::filesystem::exists(moduleDirectory(moduleName)); }
@@ -95,7 +96,9 @@ signals:
 	void currentInstallDoneChanged();
 
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
-	void dynamicModuleRemoved(std::string moduleName);
+	void dynamicModuleUninstalled(std::string moduleName);
+	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
+	void registerModuleInDir(std::string modulePath);
 
 private:
 	Modules::DynamicModule* requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);

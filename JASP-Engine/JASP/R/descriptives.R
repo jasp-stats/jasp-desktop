@@ -242,9 +242,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   if(shouldAddModeMoreThanOnceFootnote)
     stats$addFootnote(message="More than one mode exists, only the first is reported", col_names="Mode")
 
-  stats$print()
-  print(stats$toHtml())
-
   return(stats)
 }
 

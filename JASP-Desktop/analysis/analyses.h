@@ -102,6 +102,7 @@ public slots:
 	void rCodeReturned(QString result, int requestId);
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
+	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 
 
 private slots:

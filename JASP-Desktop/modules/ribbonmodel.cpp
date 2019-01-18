@@ -21,8 +21,8 @@
 
 void RibbonModel::connectToDynamicModules(DynamicModules * dynamicModules)
 {
-	connect(dynamicModules, &DynamicModules::dynamicModuleAdded,	this, &RibbonModel::addDynamicRibbonButtonModel);
-	connect(dynamicModules, &DynamicModules::dynamicModuleRemoved,	this, &RibbonModel::removeDynamicRibbonButtonModel);
+	connect(dynamicModules, &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
+	connect(dynamicModules, &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
 
 	for(const std::string & modName : dynamicModules->moduleNames())
 		addRibbonButtonModelFromDynamicModule((*dynamicModules)[modName]);

@@ -47,7 +47,6 @@ public:
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>	roleNames()													const override;
 
-	// custom functions
 
 	void						addRibbonButtonModelFromModulePath(QFileInfo modulePath);
 	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module) { addRibbonButtonModel(new RibbonButtonModel(this, module)); }

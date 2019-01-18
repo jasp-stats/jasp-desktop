@@ -30,6 +30,18 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 	loadInstalledModules();
 }
 
+void DynamicModules::scanInstalledModules()
+{
+	boost::system::error_code error;
+	for (boost::filesystem::directory_iterator itr(_modulesInstallDirectory, error); !error && itr != boost::filesystem::directory_iterator(); itr++)
+	{
+		std::string path = itr->path().generic_string();
+		std::string name = itr->path().filename().generic_string();
+		if(name.size() > 0 && name[0] != '.')
+			registerModuleInDir(path);
+	}
+}
+
 void DynamicModules::loadInstalledModules()
 {
 	boost::system::error_code error;
@@ -49,10 +61,16 @@ void DynamicModules::uninstallModule(std::string moduleName)
 	if(moduleIsLoaded(moduleName))
 		unloadModule(moduleName);
 
-	if(boost::filesystem::exists(modulePath))
-		boost::filesystem::remove_all(modulePath);
+	try
+	{
+		if(boost::filesystem::exists(modulePath))
+			boost::filesystem::remove_all(modulePath);
 
-	emit dynamicModuleRemoved(moduleName);
+	} catch (boost::filesystem::filesystem_error & e) {
+		std::cerr << "Something went wrong removing files for module " << moduleName << " at path '" << modulePath << "' and the error was: " << e.what() << std::endl;
+	}
+
+	emit dynamicModuleUninstalled(moduleName);
 }
 
 std::string DynamicModules::installModule(std::string moduleZipFilename)
@@ -87,8 +105,10 @@ void DynamicModules::unloadModule(std::string moduleName)
 
 	if(_modules.count(moduleName) > 0)
 	{
+		emit dynamicModuleUnloadBegin(_modules[moduleName]);
+
 		delete _modules[moduleName];
-		for(int i=_moduleNames.size() - 1; i>=0; i--)
+		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
 			if(_moduleNames[size_t(i)] == moduleName)
 				_moduleNames.erase(_moduleNames.begin() + i);
 	}
@@ -160,7 +180,8 @@ void DynamicModules::installationPackagesFailed(std::string moduleName, std::str
 		setCurrentInstallDone(true);
 	}
 
-	_modules[moduleName]->setInstalled(false);
+	if(_modules.count(moduleName) > 0)
+		_modules[moduleName]->setInstalled(false);
 
 }
 

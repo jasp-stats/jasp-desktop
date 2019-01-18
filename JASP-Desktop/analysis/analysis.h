@@ -65,8 +65,8 @@ public:
 	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
 	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
 
-	bool isWaitingForModule() { return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
-	bool isDynamicModule() { return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
+	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
+	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
@@ -81,23 +81,24 @@ public:
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;		}
 	
 	//getters
-	const	Json::Value &results()				const	{ return _results;						}
-	const	Json::Value &userData()				const	{ return _userData;						}
-	const	std::string &name()					const	{ return _name;							}
-	const	QString		nameQ()					const	{ return QString::fromStdString(_name);	}
-	const	Version		&version()				const	{ return _version;						}
-	const	std::string &title()				const	{ return _title;						}
-	const	std::string &rfile()				const	{ return _rfile;						}
-	const	std::string &module()				const	{ return _module;						}
-			size_t		id()					const	{ return _id;							}
-			bool		usesJaspResults()		const	{ return _useJaspResults;				}
-			Status		status()				const	{ return _status;						}
-			int			revision()				const	{ return _revision;						}
-			bool		isVisible()				const	{ return _visible;						}
-			bool		isRefreshBlocked()		const	{ return _refreshBlocked;				}
-	const	Json::Value	&getSaveImgOptions()	const	{ return _saveImgOptions;				}
-	const	Json::Value	&getImgResults()		const	{ return _imgResults;					}
-			DataSet*	getDataSet()			const;
+	const	Json::Value		&	results()			const	{ return _results;						}
+	const	Json::Value		&	userData()			const	{ return _userData;						}
+	const	std::string		&	name()				const	{ return _name;							}
+	const	QString				nameQ()				const	{ return QString::fromStdString(_name);	}
+	const	Version			&	version()			const	{ return _version;						}
+	const	std::string		&	title()				const	{ return _title;						}
+	const	std::string		&	rfile()				const	{ return _rfile;						}
+	const	std::string		&	module()			const	{ return _module;						}
+			size_t				id()				const	{ return _id;							}
+			bool				usesJaspResults()	const	{ return _useJaspResults;				}
+			Status				status()			const	{ return _status;						}
+			int					revision()			const	{ return _revision;						}
+			bool				isVisible()			const	{ return _visible;						}
+			bool				isRefreshBlocked()	const	{ return _refreshBlocked;				}
+	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;				}
+	const	Json::Value		&	getImgResults()		const	{ return _imgResults;					}
+			DataSet			*	getDataSet()		const;
+	Modules::DynamicModule	*	dynamicModule()		const	{ return _moduleData == nullptr ? nullptr : _moduleData->dynamicModule(); }
 
 			void		refresh();
 	virtual void		abort();

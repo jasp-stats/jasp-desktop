@@ -198,6 +198,18 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	delete analysis;
 }
 
+
+void Analyses::removeAnalysesOfDynamicModule(Modules::DynamicModule * module)
+{
+	std::set<int> removeIds;
+	for(auto & keyval : _analysisMap)
+		if(keyval.second->dynamicModule() == module)
+			removeIds.insert(keyval.first);
+
+	for(const int & id : removeIds)
+		removeAnalysisById(size_t(id));
+}
+
 void Analyses::refreshAllAnalyses()
 {
 	for(auto idAnalysis : _analysisMap)
@@ -435,3 +447,4 @@ void Analyses::setVisible(bool visible)
 	_visible = visible;
 	emit visibleChanged(_visible);
 }
+
