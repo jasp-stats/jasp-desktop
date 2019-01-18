@@ -35,4 +35,18 @@ geom_point <- function(mapping = NULL, data = NULL, stat = "identity", position 
 				position = position, show.legend = show.legend, inherit.aes = inherit.aes,
 				params = list(na.rm = na.rm, ...))
 }
+#' @export
+jaspGeomLine <- ggplot2::ggproto(
+	`_class`    = "jaspGeomLine",
+	`_inherit`  = ggplot2::GeomLine,
+	default_aes = aes(size = 1.00, colour = "black", linetype = 1, alpha = NA)
+)
 
+#' @export
+geom_line <- function(mapping = NULL, data = NULL, stat = "identity", position = "identity",
+    ..., na.rm = FALSE, show.legend = NA, inherit.aes = TRUE) {
+
+	layer(data = data, mapping = mapping, stat = stat, geom = jaspGeomLine,
+				position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+				params = list(na.rm = na.rm, ...))
+}

@@ -465,7 +465,7 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
   dev.off()
   if (file.exists(f))
     try(file.remove(f))
-  class(totalGraph) <- c(class(totalGraph), "ggMatrixplot", "JASPgraphs")
+  class(totalGraph) <- c("JASPgraphs", class(totalGraph), "ggMatrixplot")
 
   return(totalGraph)
 

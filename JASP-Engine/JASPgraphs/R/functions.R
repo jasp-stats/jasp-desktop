@@ -451,7 +451,7 @@ drawSmooth <- function(graph = NULL, dat = NULL, mapping = NULL, size = 2, metho
 
 #' @export
 drawViolin <- function(graph = drawAxis(), dat = NULL, mapping = NULL, size = 2,
-                       show.legend = FALSE) {
+                       show.legend = FALSE, ...) {
 
     if (is.null(mapping)) {
 
@@ -549,7 +549,7 @@ understandGraphType <- function(graphType) {
         # get the function from namespace to avoid any mixups
         if (substr(allGraphs[choice], 1, 4) == "draw") {
 
-            graphFun <- getFromNamespace(x = allGraphs[choice], ns = "JASPgraphs")
+            graphFun <- utils::getFromNamespace(x = allGraphs[choice], ns = "JASPgraphs")
 
         } else {
 
@@ -641,7 +641,7 @@ colorGradientJasp = function(n) {
 
     gradient = grDevices::colorRamp(c("#00a9e6", "#00ba63", "#fb8b00", "#c75327", "#909090"))(n)
     # convert rgb to hex
-    gradient = apply(gradient, 1, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+    gradient = apply(gradient, 1, function(x) grDevices::rgb(x[1], x[2], x[3], maxColorValue = 255))
     return(gradient)
 
 }

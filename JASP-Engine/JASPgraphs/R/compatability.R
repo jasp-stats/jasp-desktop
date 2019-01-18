@@ -2,9 +2,12 @@
 # it also imports some functions from ggplot
 
 # cat(paste0(sort(strsplit(..., " ")[[1]]), collapse = " "))
+#' @importFrom ggplot2 ggplot theme element_blank element_rect element_text element_line unit
 #' @importFrom ggplot2 aes continuous_scale element_blank ggproto layer ScaleContinuousPosition sec_axis
 #' @importFrom ggplot2 waiver xlab ylab
+#' @importFrom grDevices dev.off png rgb
 #' @importFrom scales censor
+#' @importFrom gridExtra arrangeGrob grid.arrange
 
 #' @export
 getAxisBreaks <- function(x) {

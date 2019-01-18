@@ -25,7 +25,7 @@ scale_x_continuous <- function(name = waiver(), breaks = axesBreaks, minor_break
 
 #' @export
 scale_y_continuous <- function(name = waiver(), breaks = axesBreaks, minor_breaks = waiver(),
-                               labels = axesLabeller, limits = NULL, expand = waiver(), oob = censor,
+                               labels = axesLabeller, limits = "JASP", expand = waiver(), oob = censor,
                                na.value = NA_real_, trans = "identity", position = "left",
                                sec.axis = waiver()) {
 
@@ -56,6 +56,7 @@ jaspLimits <- function(..., self = self) {
   if (self$is_empty())
     return(c(0, 1))
   if (identical(self$limits, "JASP")) {
+    # ensures that outer breakpoints are always included in plot
     range(axesBreaks(self$range$range))
   } else if (!is.null(self$limits)) {
     ifelse(!is.na(self$limits), self$limits, self$range$range)

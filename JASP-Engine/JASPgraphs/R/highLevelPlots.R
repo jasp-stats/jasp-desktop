@@ -1,6 +1,6 @@
-#' @export
 priorPosteriorPlot <- function(dat, xName, yName = "Density") {
 
+    stop("Deprecated")
     stopifnot(length(dat) == 3)
     nms1 <- names(dat[[1]])
     nms2 <- names(dat[[2]])
@@ -51,26 +51,26 @@ JASPQQplot <- function(x, y = NULL, xName = "", yName = "", ...) {
     mapping <- aes(x = x, y = y)
     xBreaks <- getPrettyAxisBreaks(dat$x)
     yBreaks <- getPrettyAxisBreaks(dat$y)
-    
+
     datLine <- data.frame(
-        x = c(max(yBreaks[1], xBreaks[1]), 
+        x = c(max(yBreaks[1], xBreaks[1]),
               min(yBreaks[length(yBreaks)], xBreaks[length(xBreaks)])),
-        y = c(max(yBreaks[1], xBreaks[1]), 
+        y = c(max(yBreaks[1], xBreaks[1]),
               min(yBreaks[length(yBreaks)], xBreaks[length(xBreaks)]))
     )
     mapLine <- aes(x = x, y = y)
-    
+
     graph <- ggplot2::ggplot() +
         ggplot2::geom_line(data = datLine, mapping = mapLine, size = 1, col = "darkred") +
-        ggplot2::geom_point(data = dat, mapping = mapping, inherit.aes = FALSE, 
+        ggplot2::geom_point(data = dat, mapping = mapping, inherit.aes = FALSE,
                             size = 3, fill = "grey", col = "black", stroke = .5, shape = 21) +
         ggplot2::scale_x_continuous(name = xName, breaks = xBreaks) +
         ggplot2::scale_y_continuous(name = yName, breaks = yBreaks)
     graph <- themeJasp(graph, ...)
-    
+
     return(graph)
 }
 
-# p <- JASPgraphs::JASPQQplot(standResid, 
+# p <- JASPgraphs::JASPQQplot(standResid,
 #                             xName = "Theoretical Quantiles",
 #                             yName = "Standardized Residuals")
