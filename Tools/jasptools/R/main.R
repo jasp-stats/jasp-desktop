@@ -231,6 +231,7 @@ view <- function(results) {
 #'
 #' @export run
 run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, sideEffects = FALSE) {
+
   if (missing(name)) {
     name <- attr(options, "analysisName")
     if (is.null(name))
@@ -253,6 +254,8 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
         .restoreOptions(opts)
       if (! "libpaths" %in% sideEffects || identical(sideEffects, FALSE))
         .libPaths(libPaths)
+      # if (! "loadedPkgs" %in% sideEffects || identical(sideEffects, FALSE))
+      #   .restoreNamespaces(loadedPkgs)
       if (quiet)
         suppressWarnings(sink(NULL))
     })
@@ -264,30 +267,27 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
         suppressWarnings(sink(NULL))
     })
   }
-
+  
+  usesJaspResults <- .usesJaspResults(name)
   .initRunEnvironment(envir = envir, dataset = dataset, perform = perform)
-
-  config <- .getJSON(name, "title", "dataset", "results", "state", "init", "jaspResults") # use '=>' for nested objects
-  title <- jsonlite::fromJSON(config[["title"]])
-  options <- jsonlite::toJSON(options)
-  requiresInit <- jsonlite::fromJSON(config[["init"]])
+  
   possibleArgs <- list(
     name = name,
-    title = title,
-    requiresInit = ifelse(is.null(requiresInit) || requiresInit, TRUE, FALSE),
-    options.as.json.string = options, # backwards compatibility
-    options = options,
-    dataKey = config[["dataset"]],
-    resultsMeta = config[["results"]],
-    stateKey = config[["state"]],
+    title = "",
+    requiresInit = TRUE,
+    options = jsonlite::toJSON(options),
+    dataKey = "null",
+    resultsMeta = "null",
+    stateKey = "null",
     perform = perform
   )
 
-  usesJaspResults <- identical(config[["jaspResults"]], structure("[true]", class = "json"))
+  usesJaspResults <- .usesJaspResults(name)
   if (usesJaspResults) {
     loadNamespace("jaspResults")
+    suppressMessages(jaspResults::initJaspResults())
+    
     runFun <- "runJaspResults"
-    utils::capture.output(jaspResults::initJaspResults())
 
     # this list is a stand in for the 'jaspResultsModule' inside runJaspResults()
     ns <- "jaspResults"
@@ -314,16 +314,18 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   argNames <- intersect(names(possibleArgs), names(runArgs))
   args <- possibleArgs[argNames]
 
-  if (quiet)
+  if (quiet) {
     sink(tempfile())
-
-  results <- do.call(envir[[runFun]], args, envir=envir)
-
-  if (usesJaspResults)
-    results <- jaspResults$getResults()
-
-  if (quiet)
+    results <- suppressWarnings(do.call(envir[[runFun]], args, envir=envir))
     sink(NULL)
+  } else {
+    results <- do.call(envir[[runFun]], args, envir=envir)
+  }
+
+  if (usesJaspResults) {
+    results <- jaspResults$getResults()
+    .transferPlotsFromjaspResults()
+  }
 
   if (view)
     view(results)

@@ -48,18 +48,17 @@ testAll <- function() {
 #' folder and used as a reference for future tests.
 #' @examples
 #'
-#' # jasptools::inspectTestPlots("Anova")
+#' # jasptools::manageTestPlots("Anova")
 #'
-#' @export inspectTestPlots
-inspectTestPlots <- function(analysis = NULL) {
-  .Deprecated(msg = "'inspectTestPlots' is deprecated.\nCreate tests for ggplot objects directly with testthat.")
-  # if (! is.null(analysis)) {
-  #   analysis <- .validateAnalysis(analysis)
-  #   analysis <- paste0("^", analysis, "$")
-  # }
-  # testDir <- .getPkgOption("tests.dir")
-  # on.exit(unloadNamespace("SomePkg")) # unload fake pkg in JASP unit tests, which is needed to run vdiffr
-  # vdiffr::manage_cases(testDir, analysis)
+#' @export manageTestPlots
+manageTestPlots <- function(analysis = NULL) {
+  if (! is.null(analysis)) {
+    analysis <- .validateAnalysis(analysis)
+    analysis <- paste0("^", analysis, "$")
+  }
+  testDir <- .getPkgOption("tests.dir")
+  on.exit(unloadNamespace("SomePkg")) # unload fake pkg in JASP unit tests, which is needed to run vdiffr
+  vdiffr::manage_cases(testDir, analysis)
 }
 
 

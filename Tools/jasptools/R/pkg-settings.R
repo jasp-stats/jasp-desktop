@@ -3,6 +3,7 @@
   r.dir = file.path("..", "JASP-Engine", "JASP", "R"),
   html.dir = file.path("..", "JASP-Desktop", "html"),
   json.dir = file.path("..", "Resources", "Library"),
+  qml.dir = file.path("..", "Resources", "Common", "qml"),
   data.dir = file.path("..", "Resources", "Data Sets"),
   pkgs.dir = "",
   tests.dir = file.path("..", "JASP-Tests", "R", "tests", "testthat"),
