@@ -3927,8 +3927,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
     if (dontPlotData) {
         
-        p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes())
-        p <- JASPgraphs::themeJasp(p,xName = xlab, yName = ylab)
+        p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes()) +
+          ggplot2::xlab(xlab) + ggplot2::ylab(ylab)
+        p <- JASPgraphs::themeJasp(p)
         
         return(p)
     }
