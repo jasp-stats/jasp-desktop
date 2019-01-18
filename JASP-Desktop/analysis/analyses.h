@@ -156,7 +156,7 @@ private:
 	 bool							_visible				= false;
 
 	 static int								_scriptRequestID;
-	 QMap<int, QPair<Analysis*, QString> > _scriptIDMap;
+	 QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;
 
 };
 

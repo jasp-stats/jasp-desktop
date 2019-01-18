@@ -120,7 +120,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	analysis->resultsChanged.connect(					boost::bind( &Analyses::analysisResultsChangedHandler,		this, _1	 ));
 	analysis->requestComputedColumnCreation.connect(	boost::bind( &Analyses::requestComputedColumnCreation,		this, _1, _2 ));
 	analysis->requestComputedColumnDestruction.connect(	boost::bind( &Analyses::requestComputedColumnDestruction,	this, _1	 ));
-	
+
 	connect(analysis, &Analysis::sendRScript, this, &Analyses::sendRScriptHandler);
 
 //	Send the analysesAdded signal afterwards: the analysis may need extra settings after creation
@@ -157,9 +157,9 @@ void Analyses::analysisSaveImageHandler(Analysis *analysis, Json::Value &options
 
 void Analyses::analysisEditImageHandler(Analysis *analysis, Json::Value &options)
 {
-    analysis->setStatus(Analysis::EditImg);
-    analysis->setSaveImgOptions(options); // options from saveImage are fine
-    analysisEditImage(analysis);
+	analysis->setStatus(Analysis::EditImg);
+	analysis->setSaveImgOptions(options); // options from saveImage are fine
+	analysisEditImage(analysis);
 }
 
 Json::Value Analyses::asJson() const
@@ -354,7 +354,7 @@ void Analyses::rCodeReturned(QString result, int requestId)
 void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName)
 {
 	_scriptIDMap[_scriptRequestID] = qMakePair(analysis, controlName);
-	
+
 	emit sendRScript(script, _scriptRequestID++);
 }
 
@@ -415,4 +415,23 @@ void Analyses::unselectAnalysis()
 {
 	setCurrentAnalysisIndex(-1);
 	emit unselectAnalysisInResults();
+}
+
+
+void Analyses::setCurrentFormHeight(double currentFormHeight)
+{
+	if (qFuzzyCompare(_currentFormHeight, currentFormHeight))
+		return;
+
+	_currentFormHeight = currentFormHeight;
+	emit currentFormHeightChanged(_currentFormHeight);
+}
+
+void Analyses::setVisible(bool visible)
+{
+	if (_visible == visible)
+		return;
+
+	_visible = visible;
+	emit visibleChanged(_visible);
 }
