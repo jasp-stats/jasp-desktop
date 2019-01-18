@@ -53,20 +53,21 @@ QtObject {
 
 	readonly property color itemHighlight:				blueMuchLighter
 
-	readonly property int itemPadding:			8 * uiScale
-	readonly property int minPanelWidth:		200
-	readonly property int resultWidth:			600
-	readonly property int formWidth:			600
-	readonly property int formMargin:			10	* uiScale
+	readonly property int itemPadding:					8	* uiScale
+	readonly property int minPanelWidth:				200 * uiScale
+	readonly property int resultWidth:					600	* uiScale
+	readonly property int formWidth:					600	* uiScale
+	readonly property int formMargin:					10	* uiScale
+	readonly property int formExpanderHeaderHeight:		40  * uiScale
 
-	readonly property int rowGridSpacing:       15 * uiScale
-	readonly property int columnGridSpacing:    30 * uiScale
-	readonly property int rowGroupSpacing:      5  * uiScale
-	readonly property int indentationLength:    20 * uiScale
-	readonly property int borderRadius:			4  * uiScale
-	readonly property int generalAnchorMargin:	8  * uiScale
-	readonly property int rowSpacing:			6  * uiScale
-	readonly property int subOptionOffset:		40 * uiScale
+	readonly property int rowGridSpacing:				15 * uiScale
+	readonly property int columnGridSpacing:			30 * uiScale
+	readonly property int rowGroupSpacing:				5  * uiScale
+	readonly property int indentationLength:			20 * uiScale
+	readonly property int borderRadius:					4  * uiScale
+	readonly property int generalAnchorMargin:			8  * uiScale
+	readonly property int rowSpacing:					6  * uiScale
+	readonly property int subOptionOffset:				40 * uiScale
 
 	readonly property int sliderWidth:					4   * uiScale
 	readonly property int sliderLength:					80  * uiScale
@@ -85,7 +86,7 @@ QtObject {
 	readonly property int defaultTextAreaHeight:		250 * uiScale
 	readonly property int radioIndicatorDiameter:		16  * uiScale
 	readonly property int checkBoxIndicatorLength:		15  * uiScale
-	readonly property int formExpanderButtonPadding:	ribbonButtonPadding
+
 	readonly property int defaultSingleItemListHeight:	45  * uiScale
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale

@@ -24,7 +24,8 @@ import JASP.Theme 1.0
 Item {
 	id: scrollbar;
 
-	property real breadth: visible ? (handleSize + 2 * (backScrollbar.border.width +1)) : 0
+	readonly property real visibleBreadth:	(handleSize + 2 * (backScrollbar.border.width +1))
+	property real breadth: visible ? visibleBreadth : 0
 	width:  vertical ? breadth   : undefined;
 	height: vertical ? undefined : breadth;
 
@@ -45,14 +46,14 @@ Item {
 	visible: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0;
 
 	anchors {
-		top:			manualAnchor ? 0 : vertical ? flickable.top : undefined;
-		left:			manualAnchor ? 0 : vertical ? undefined	 :	flickable.left;
-		right:			manualAnchor ? 0 : flickable.right;
-		bottom:			manualAnchor ? 0 : flickable.bottom;
-		topMargin:		manualAnchor ? 0 : vertical ? extraMarginLeftOrTop		: 0
-		leftMargin:		manualAnchor ? 0 : vertical ? 0						: extraMarginLeftOrTop
-		rightMargin:	manualAnchor ? 0 : vertical ? 0						: extraMarginRightOrBottom
-		bottomMargin:	manualAnchor ? 0 : vertical ? extraMarginRightOrBottom	: 0
+		right:			manualAnchor ? undefined : flickable.right;
+		bottom:			manualAnchor ? undefined : flickable.bottom;
+		top:			manualAnchor ? undefined : vertical	? flickable.top				: undefined;
+		left:			manualAnchor ? undefined : vertical	? undefined					: flickable.left;
+		topMargin:		manualAnchor ? undefined : vertical ? extraMarginLeftOrTop		: undefined
+		leftMargin:		manualAnchor ? undefined : vertical ? undefined					: extraMarginLeftOrTop
+		rightMargin:	manualAnchor ? undefined : vertical ? undefined					: extraMarginRightOrBottom
+		bottomMargin:	manualAnchor ? undefined : vertical ? extraMarginRightOrBottom	: undefined
 	}
 
 	
@@ -67,118 +68,132 @@ Item {
 	function scrollDown() { scroll( 0.25); }
 	function scrollUp ()  { scroll(-0.25); }
 	
-	Binding {
-		target: handle;
-		property: scrollbar.vertical ? "y" : "x";
-		value: scrollbar.vertical ?
-					(flickable.contentY * clicker.drag.maximumY / (flickable.contentHeight - flickable.height)):
-					(flickable.contentX * clicker.drag.maximumX / (flickable.contentWidth  - flickable.width));
-		when: (!clicker.drag.active);
+	Binding
+	{
+		target:		handle;
+		property:	scrollbar.vertical ? "y" : "x"
+		when:		!clicker.drag.active
+		value:		scrollbar.vertical ?
+						(flickable.contentY * clicker.drag.maximumY / (flickable.contentHeight - flickable.height)) :
+						(flickable.contentX * clicker.drag.maximumX / (flickable.contentWidth  - flickable.width))  ;
 	}
 
-	Binding {
-		target: flickable;
-		property: scrollbar.vertical ? "contentY" : "contentX";
-		value: scrollbar.vertical ?
-					(handle.y * (flickable.contentHeight - flickable.height) / clicker.drag.maximumY):
-					(handle.x * (flickable.contentWidth  - flickable.width)  / clicker.drag.maximumX);
-		when: (clicker.drag.active || clicker.pressed);
+	Binding
+	{
+		target:		flickable
+		property:	scrollbar.vertical ? "contentY" : "contentX"
+		when:		(clicker.drag.active || clicker.pressed)
+		value:		scrollbar.vertical ?
+						(handle.y * (flickable.contentHeight - flickable.height) / clicker.drag.maximumY) :
+						(handle.x * (flickable.contentWidth  - flickable.width)  / clicker.drag.maximumX) ;
 	}
 
-	Rectangle {
-		id: backScrollbar;
-		radius: outerradius ? width/2 : 0;
-		antialiasing: true;
-		color: bkColor;
-		border {
-			width: 1;
-			color: Theme.grayDarker;
+	Rectangle
+	{
+		id:				backScrollbar
+		radius:			outerradius ? width/2 : 0
+		antialiasing:	true
+		color:			bkColor
+		anchors.fill:	parent
+		border
+		{
+			width:		1
+			color:		Theme.grayDarker
 		}
-		anchors { fill: parent; }
 		
-		MouseArea {
+		MouseArea
+		{
 			anchors.fill: parent;
 			onClicked: { }
 		}
 	}
 
-	MouseArea {
-		id: btnUp;
-		property real size: !showarrows ? 0 : scrollbar.vertical ? scrollbar.width : scrollbar.height;
-		height: size
-		width:  size
+	MouseArea
+	{
+		id:			btnUp
+		height:		size
+		width:		size
 
-		anchors {
-			top:	parent.top;
-			left:	parent.left;
-			right:	scrollbar.vertical ? parent.right : undefined;
-			bottom:	scrollbar.vertical ? undefined    : parent.bottom;
+		property real size: !showarrows ? 0 : scrollbar.vertical ? scrollbar.width : scrollbar.height
 
-			margins: (backScrollbar.border.width +1);
+		anchors
+		{
+			top:		parent.top;
+			left:		parent.left;
+			right:		scrollbar.vertical ? parent.right : undefined;
+			bottom:		scrollbar.vertical ? undefined    : parent.bottom;
+
+			margins:	backScrollbar.border.width + 1
 		}
 		onClicked: { scrollUp (); }
 		
-		Text {
-			text:					showarrows ? "Δ" : "";
-			color:					(btnUp.pressed ? "blue" : Theme.black);
-			rotation:				scrollbar.vertical ? 0 : -90;
-			anchors.centerIn:		parent;
-			horizontalAlignment:	Text.AlignHCenter
-			font.pixelSize:			btnUp.size
+		Image
+		{
+			source:					scrollbar.vertical ? "qrc:/images/arrow-up.png" : "qrc:/images/arrow-left.png"
+			visible:				showarrows
+			anchors.fill:			parent
+			sourceSize.width:		width * 2
+			sourceSize.height:		height * 2
 		}
 	}
 
 	MouseArea {
-		id: btnDown;
-		height: btnUp.size;
-		width:	btnUp.size;
+		id:		btnDown
+		height: btnUp.size
+		width:	btnUp.size
 
-		anchors {
-			top:	scrollbar.vertical ? undefined   : parent.top;
-			left:	scrollbar.vertical ? parent.left : undefined;
-			right:	parent.right;
-			bottom: parent.bottom;
-			margins: (backScrollbar.border.width +1);
+		anchors
+		{
+			top:		scrollbar.vertical ? undefined   : parent.top
+			left:		scrollbar.vertical ? parent.left : undefined
+			right:		parent.right
+			bottom:		parent.bottom
+			margins:	backScrollbar.border.width + 1
 		}
 		onClicked: { scrollDown (); }
 		
-		Text {
-			text:					showarrows ? "Δ" : "";
-			color:					(btnDown.pressed ? "blue" : Theme.black);
-			rotation:				scrollbar.vertical ? -180 : 90;
-			anchors.centerIn:		parent;
-			horizontalAlignment:	Text.AlignHCenter
-			font.pixelSize:			btnUp.size
+		Image
+		{
+			source:					scrollbar.vertical ? "qrc:/images/arrow-down.png" : "qrc:/images/arrow-right.png"
+			visible:				showarrows
+			anchors.fill:			parent
+			sourceSize.width:		width * 2
+			sourceSize.height:		height * 2
 		}
 	}
 
-	Item {
-		id: groove;
-		clip: true;
+	Item
+	{
+		id:		groove
+		clip:	true
 		property real basicMargin:			  backScrollbar.border.width + 1
 		property real extraVerticalMargin:	  scrollbar.vertical ? btnUp.size + 1 : 0
 		property real extraHorizontalMargin: !scrollbar.vertical ? btnUp.size + 1 : 0
 
-		anchors {
-			fill: parent;
+		anchors
+		{
+			fill:			parent
 			topMargin:		basicMargin + extraVerticalMargin
 			leftMargin:		basicMargin + extraHorizontalMargin
 			rightMargin:	basicMargin + extraHorizontalMargin
 			bottomMargin:	basicMargin + extraVerticalMargin
 		}
 		
-		MouseArea {
-			id: clicker;
-			drag {
-				target: handle;
-				minimumY: !scrollbar.vertical ? 0 : 0;
-				maximumY: !scrollbar.vertical ? 0 : (groove.height - handle.height);
-				axis: Drag.XAndYAxis
-				minimumX: scrollbar.vertical ? 0 : 0;
-				maximumX: scrollbar.vertical ? 0 : (groove.width - handle.width);
+		MouseArea
+		{
+			id:				clicker
+			anchors.fill:	parent
+			drag
+			{
+				target:		handle;
+				minimumY:	!scrollbar.vertical ? 0 : 0
+				maximumY:	!scrollbar.vertical ? 0 : (groove.height - handle.height)
+				axis:		Drag.XAndYAxis
+				minimumX:	scrollbar.vertical  ? 0 : 0
+				maximumX:	scrollbar.vertical  ? 0 : (groove.width - handle.width)
 
 			}
-			anchors { fill: parent; }
+
 			onClicked:
 			{
 				if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height));
@@ -186,18 +201,21 @@ Item {
 			}
 		}
 
-		Item {
-			id: handle;
+		Item
+		{
+			id:		handle;
 			height: !scrollbar.vertical ? parent.height : Math.max (scrollbar.minimumLength, (flickable.visibleArea.heightRatio * groove.height))
 			width:   scrollbar.vertical ? parent.width	: Math.max (scrollbar.minimumLength, (flickable.visibleArea.widthRatio  * groove.width))
-			anchors {
+			anchors
+			{
 				top:	scrollbar.vertical ? undefined		: parent.top
 				left:	scrollbar.vertical ? parent.left	: undefined
 				right:	scrollbar.vertical ? parent.right	: undefined
 				bottom:	scrollbar.vertical ? undefined		: parent.bottom
 			}
 			
-			Rectangle {
+			Rectangle
+			{
 				id:			backHandle;
 				radius:		innerradius ? width/2 : 0;
 				color:		(clicker.pressed ? pressedColor : fgColor);

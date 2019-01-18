@@ -28,8 +28,8 @@ AnalysisForm
 	id:				form
 	width:			implicitWidth
 	implicitWidth:	Theme.formWidth
-	implicitHeight: expanderButton.height + (Theme.formMargin * 2)
-	height:			implicitHeight
+	implicitHeight: expanderButton.implicitHeight + (Theme.formMargin * 2)
+	height:			expanderButton.height + (Theme.formMargin * 2)
 
 	default property alias	content:			column.children
 			property alias	form:				form
@@ -45,8 +45,11 @@ AnalysisForm
             property int    plotWidth:          480
 
 			property bool	expanded:			currentSelected
-			property bool	currentSelected:	analysesModel.currentAnalysisIndex === myIndex
-    
+			property bool	currentSelected:	analysesModel.currentAnalysisIndex === myIndex  
+
+	readonly property int	expanderButtonMinHeight:	expanderRectangle.height
+
+	onCurrentSelectedChanged: if(currentSelected) analysesModel.currentFormHeight = implicitHeight
 
 	Rectangle
 	{
@@ -92,6 +95,7 @@ AnalysisForm
 	{
 		id:					expanderButton
 		height:				expanderRectangle.height + formContent.height
+		implicitHeight:		expanderRectangle.height + formContent.implicitHeight
 
 		anchors.left:		parent.left
 		anchors.right:		parent.right
@@ -100,18 +104,9 @@ AnalysisForm
 
 		function toggleExpander()
 		{
-			if(analysesModel.currentAnalysisIndex === myIndex)
-				analysesModel.currentAnalysisIndex = -1;
-			else
-				analysesModel.currentAnalysisIndex = myIndex;
+			if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()
+			else												analysesModel.selectAnalysisAtRow(myIndex);
 
-			/*if(listView.currentIndex === myIndex)
-				listView.currentIndex = -1
-			else
-			{
-				listView.currentIndex = myIndex
-				formContent.forceActiveFocus()
-			}*/
 		}
 
 		//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
@@ -119,7 +114,7 @@ AnalysisForm
 		Item
 		{
 			id:				expanderRectangle
-			height:			label.contentHeight + (2 * Theme.formExpanderButtonPadding)
+			height:			Theme.formExpanderHeaderHeight  //label.contentHeight
 
 			anchors.left:		parent.left
 			anchors.right:		parent.right
@@ -138,15 +133,15 @@ AnalysisForm
 			Image
 			{
 				id:					icon
-				height:				label.contentHeight
-				width:				label.contentHeight
+				height:				expanderRectangle.height
+				width:				height
 				source:				iconsFolder + (expanded ? expandedIcon : contractedIcon)
 				sourceSize.width:	width * 2
 				sourceSize.height:	height * 2
 				anchors
 				{
 					left:			parent.left
-					leftMargin:		6
+					leftMargin:		6 * preferencesModel.uiScale
 					verticalCenter:	parent.verticalCenter
 				}
 
@@ -164,7 +159,7 @@ AnalysisForm
 				{
 					left:			icon.right
 					right:			helpButton.left
-					margins:		5
+					margins:		5 * preferencesModel.uiScale
 					verticalCenter:	parent.verticalCenter
 				}
 			}
@@ -184,7 +179,7 @@ AnalysisForm
 					top:		parent.top
 					right:		closeButton.left
 					bottom:		parent.bottom
-					margins:	6
+					margins:	6 * preferencesModel.uiScale
 				}
 			}
 
@@ -203,7 +198,7 @@ AnalysisForm
 					top:		parent.top
 					right:		parent.right
 					bottom:		parent.bottom
-					margins:	6
+					margins:	6 * preferencesModel.uiScale
 				}
 			}
 
@@ -215,7 +210,8 @@ AnalysisForm
 			anchors.top:	expanderRectangle.bottom
 
 			width:			parent.width
-			height:			!form.expanded ? 0 : errorMessagesBox.height + column.implicitHeight
+			height:			!form.expanded ? 0 : implicitHeight
+			implicitHeight: errorMessagesBox.height + column.implicitHeight
 
 			clip:			true
 
@@ -252,28 +248,39 @@ AnalysisForm
 		}
 	}
 
-    Component.onCompleted: {
-        var previousExpander = null;
-        getJASPControls(jaspControls, column);
-        for (var i = 0; i < jaspControls.length; i++) {
-            var next = i >= (jaspControls.length-1) ? 0 : i+1;
-            if (jaspControls[i].controlType !== "Expander")
-                jaspControls[i].KeyNavigation.tab = jaspControls[next];
-            else {
-                if (previousExpander)
-                    previousExpander.nextExpander = jaspControls[i];
-                previousExpander = jaspControls[i];
-            }
-        }
+	Timer
+	{
+		id:				bindingTimer
+		running:		false
+		repeat:			false
+		interval:		0
+		onTriggered:
+		{
+			var previousExpander = null;
+			getJASPControls(jaspControls, column);
+			for (var i = 0; i < jaspControls.length; i++) {
+				var next = i >= (jaspControls.length-1) ? 0 : i+1;
+				if (jaspControls[i].controlType !== "Expander")
+					jaspControls[i].KeyNavigation.tab = jaspControls[next];
+				else {
+					if (previousExpander)
+						previousExpander.nextExpander = jaspControls[i];
+					previousExpander = jaspControls[i];
+				}
+			}
 
-        if (previousExpander)
-            previousExpander.nextExpander = jaspControls[0];
-        
-        for (var i = 0; i < jaspControls.length; i++) {
-            if (jaspControls[i].indent)
-                jaspControls[i].Layout.leftMargin = Theme.indentationLength
-        }
-        
-        formCompleted();
-    }
+			if (previousExpander)
+				previousExpander.nextExpander = jaspControls[0];
+
+			for (var i = 0; i < jaspControls.length; i++) {
+				if (jaspControls[i].indent)
+					jaspControls[i].Layout.leftMargin = Theme.indentationLength
+			}
+
+			formCompleted();
+		}
+	}
+
+	Component.onCompleted:	bindingTimer.start()
+
 }

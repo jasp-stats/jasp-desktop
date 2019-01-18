@@ -104,8 +104,6 @@ public slots:
 
 private:
 	void setGlobalJsValues();
-
-
 	QString escapeJavascriptString(const QString &str);
 
 private slots:

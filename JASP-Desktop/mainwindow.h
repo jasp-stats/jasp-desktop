@@ -53,16 +53,13 @@
 class MainWindow : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString	runButtonText		READ runButtonText			WRITE setRunButtonText			NOTIFY runButtonTextChanged			)
-	Q_PROPERTY(bool		runButtonEnabled	READ runButtonEnabled		WRITE setRunButtonEnabled		NOTIFY runButtonEnabledChanged		)
 	Q_PROPERTY(bool		progressBarVisible	READ progressBarVisible		WRITE setProgressBarVisible		NOTIFY progressBarVisibleChanged	)
 	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
 	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
-	Q_PROPERTY(bool		analysesVisible		READ analysesVisible		WRITE setAnalysesVisible		NOTIFY analysesVisibleChanged		)
 	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
 	Q_PROPERTY(bool		datasetLoaded		READ datasetLoaded											NOTIFY datasetLoadedChanged			)
-	Q_PROPERTY(int screenPPI READ screenPPI WRITE setScreenPPI NOTIFY screenPPIChanged)
+	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
 
 	friend class FileMenu;
 public:
@@ -72,10 +69,6 @@ public:
 
 	~MainWindow() override;
 
-	EngineSync* _engineSync;
-
-	QString	runButtonText()			const	{ return _runButtonText;		}
-	bool	runButtonEnabled()		const	{ return _runButtonEnabled;		}
 	bool	progressBarVisible()	const	{ return _progressBarVisible;	}
 	int		progressBarProgress()	const	{ return _progressBarProgress;	}
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
@@ -85,17 +78,10 @@ public:
 	bool	datasetLoaded()			const	{ return _datasetLoaded;		}
 	int		screenPPI()				const	{ return _screenPPI;			}
 	
-	static QString					iconPath;
-	static QMap<QString, QVariant>	iconFiles;
-	static QMap<QString, QVariant>	iconInactiveFiles;
-	static QMap<int, QString>		columnTypeMap;	
-
-
+	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
 public slots:
-	void setRunButtonText(QString runButtonText);
 	void setImageBackgroundHandler(QString value);
-	void setRunButtonEnabled(bool runButtonEnabled);
 	void setProgressBarVisible(bool progressBarVisible);
 	void setProgressBarProgress(int progressBarProgress);
 	void setProgressBarStatus(QString progressBarStatus);
@@ -121,19 +107,15 @@ private:
 	void setDataSetAndPackageInModels(DataSetPackage *package);
 	bool closeRequestCheck(bool &isSaving);
 
-	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
 	void addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry);
 
-	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
 	Json::Value getResultsMeta();
 
 	void startDataEditor(QString path);
 	void checkUsedModules();
-	void analysisUnselectedHandler();
 	void setPackageModified();
-	void analysisSelectedHandler(int id);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 	void analysisSaveImageHandler(int id, QString options);
@@ -173,7 +155,6 @@ signals:
 	void datasetLoadedChanged(bool datasetLoaded);
 
 private slots:
-	void showForm(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
@@ -185,9 +166,6 @@ private slots:
 	void populateUIfromDataSet();
 
 	void startDataEditorEventCompleted(FileEvent *event);
-
-	void analysisRunned();
-
 	void saveKeysSelected();
 	void openKeysSelected();
 	void syncKeysSelected();
@@ -220,46 +198,41 @@ private:
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
 
-	QQmlApplicationEngine			*_qml					= nullptr;
-	Analyses						*_analyses				= nullptr;
-	ResultsJsInterface				*_resultsJsInterface	= nullptr;
-	DataSetPackage					*_package				= nullptr;
-	DataSetTableModel				*_tableModel			= nullptr;
-	LevelsTableModel				*_levelsTableModel		= nullptr;
-	Analysis						*_currentAnalysis		= nullptr;
-	labelFilterGenerator			*_labelFilterGenerator	= nullptr;
-	ColumnsModel					*_columnsModel			= nullptr;
-	ComputedColumnsModel			*_computedColumnsModel	= nullptr;
-	FilterModel						*_filterModel			= nullptr;
-	OnlineDataManager				*_odm					= nullptr;
-	DynamicModules					*_dynamicModules		= nullptr;
-	RibbonModel						*_ribbonModel			= nullptr;
-	RibbonModelFiltered				*_ribbonModelFiltered	= nullptr;
-	QObject							*qmlProgressBar			= nullptr;
-	QApplication					*_application 			= nullptr;
-	FileMenu						*_fileMenu				= nullptr;
-	HelpModel						*_helpModel				= nullptr;
-	PreferencesModel				*_preferences			= nullptr;
+	EngineSync					*	_engineSync				= nullptr;
+	QQmlApplicationEngine		*	_qml					= nullptr;
+	Analyses					*	_analyses				= nullptr;
+	ResultsJsInterface			*	_resultsJsInterface		= nullptr;
+	DataSetPackage				*	_package				= nullptr;
+	DataSetTableModel			*	_tableModel				= nullptr;
+	LevelsTableModel			*	_levelsTableModel		= nullptr;
+	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
+	ColumnsModel				*	_columnsModel			= nullptr;
+	ComputedColumnsModel		*	_computedColumnsModel	= nullptr;
+	FilterModel					*	_filterModel			= nullptr;
+	OnlineDataManager			*	_odm					= nullptr;
+	DynamicModules				*	_dynamicModules			= nullptr;
+	RibbonModel					*	_ribbonModel			= nullptr;
+	RibbonModelFiltered			*	_ribbonModelFiltered	= nullptr;
+	QApplication				*	_application 			= nullptr;
+	FileMenu					*	_fileMenu				= nullptr;
+	HelpModel					*	_helpModel				= nullptr;
+	PreferencesModel			*	_preferences			= nullptr;
 
 	QSettings						_settings;
 
-	int								_scrollbarWidth = 0,
-									_tableViewWidthBeforeOptionsMadeVisible,
-									_progressBarProgress;
+	int								_progressBarProgress,
+									_screenPPI		= 1;
 
-	QString							_lastRequestedHelpPage,
-									_openOnLoadFilename,
+	QString							_openOnLoadFilename,
 									_fatalError,
 									_currentFilePath,
-									_runButtonText,
 									_progressBarStatus,
 									_windowTitle;
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
 
-	bool							_inited,
-									_applicationExiting		= false,
+	bool							_applicationExiting		= false,
 									_resultsViewLoaded		= false,
 									_openedUsingArgs		= false,
 									_excludeKey				= false,
@@ -267,8 +240,13 @@ private:
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,
 									_analysesVisible		= false,
-	_datasetLoaded			= false;
-	int _screenPPI;
+									_datasetLoaded			= false;
+
+	static QString					_iconPath;
+	static QMap<QString, QVariant>	_iconFiles;
+	static QMap<QString, QVariant>	_iconInactiveFiles;
+	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
+
 };
 
 #endif // MAINWIDGET_H

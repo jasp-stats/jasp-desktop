@@ -95,23 +95,19 @@ const QString &AnalysisForm::illegalValueMessage() const
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
 	try {
-
-		if (info == VariableInfo::VariableType)
+		switch(info)
 		{
-			return _dataSet->column(term.asString()).columnType();
-		}
-		else if (info == VariableInfo::VariableTypeName)
-		{
-			return MainWindow::columnTypeMap[_dataSet->column(term.asString()).columnType()];
-		}
-		else if (info == VariableInfo::Labels)
+		case VariableInfo::VariableType:		return _dataSet->column(term.asString()).columnType();
+		case VariableInfo::VariableTypeName:	return MainWindow::columnTypeToString(_dataSet->column(term.asString()).columnType());
+		case VariableInfo::Labels:
 		{
 			QStringList values;
 			Labels &labels = _dataSet->column(term.asString()).labels();
-			for (Labels::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
-				values.append(tq(label_it->text()));
+			for (const auto & label : labels)
+				values.append(tq(label.text()));
 
 			return values;
+		}
 		}
 	}
 	catch(columnNotFound e) {} //just return an empty QVariant right?

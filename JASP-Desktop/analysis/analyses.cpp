@@ -77,6 +77,7 @@ Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, An
 	Analysis *analysis = new Analysis(this, id, analysisEntry);
 
 	analysis->setStatus(status);
+	analysis->setResults(analysisEntry->getDefaultResults());
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 
@@ -101,7 +102,11 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 	emit countChanged();
 
 	if(notifyAll)
+	{
 		emit analysisAdded(analysis);
+		setCurrentAnalysisIndex(_orderedIds.size() - 1);
+		showAnalysisInResults(id);
+	}
 }
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
@@ -305,6 +310,7 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 	case titleRole:			return QString::fromStdString(analysis->title());
 	case nameRole:			return QString::fromStdString(analysis->name());
 	case analysisRole:		return QVariant::fromValue(analysis);
+	case idRole:			return int(analysis->id());
 	default:				return QVariant();
 	}
 }
@@ -314,8 +320,9 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	static const QHash<int, QByteArray> roles = {
 		{ formPathRole,		"formPath"		},
 		{ titleRole,		"displayText"	},
-		{ analysisRole,		"analysis"	},
-		{ nameRole,			"name"	} };
+		{ analysisRole,		"analysis"		},
+		{ nameRole,			"name"			},
+		{ idRole,			"analysisID"	} };
 
 	return roles;
 }
@@ -330,17 +337,6 @@ void Analyses::analysisClickedHandler(QString analysisTitle, QString ribbonTitle
 		create(module, analysisTitle);
 }
 
-void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
-{
-	if (_currentAnalysisIndex == currentAnalysisIndex)
-		return;
-
-	_currentAnalysisIndex = currentAnalysisIndex;
-	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
-
-	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
-		emit analysisSelected(QString::fromStdString(get(_orderedIds[_currentAnalysisIndex])->name()));
-}
 
 int Analyses::_scriptRequestID = 0;
 
@@ -368,6 +364,55 @@ void Analyses::selectAnalysis(Analysis * analysis)
 		if(_analysisMap[_orderedIds[index]] == analysis)
 		{
 			setCurrentAnalysisIndex(int(index));
+			emit showAnalysisInResults(analysis->id());
 			return;
 		}
+}
+
+
+void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
+{
+	if (_currentAnalysisIndex == currentAnalysisIndex)
+		return;
+
+	_currentAnalysisIndex = currentAnalysisIndex;
+	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
+
+	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
+	{
+		int id = _orderedIds[_currentAnalysisIndex];
+		emit analysisNameSelected(QString::fromStdString(get(id)->name()));
+		setVisible(true);
+	}
+	else
+		emit analysesUnselected();
+}
+
+void Analyses::analysisIdSelectedInResults(int id)
+{
+	for(size_t i=0; i<_orderedIds.size(); i++)
+		if(_orderedIds[i] == id)
+		{
+			setCurrentAnalysisIndex(int(i));
+			emit analysisSelectedIndexResults(int(i)); //Picked up in QML
+			return;
+		}
+}
+
+void Analyses::analysesUnselectedInResults()
+{
+	setCurrentAnalysisIndex(-1);
+}
+
+void Analyses::selectAnalysisAtRow(int row)
+{
+	setCurrentAnalysisIndex(row);
+	if(row > -1)
+		emit showAnalysisInResults(_orderedIds[row]);
+}
+
+void Analyses::unselectAnalysis()
+{
+	setCurrentAnalysisIndex(-1);
+	emit unselectAnalysisInResults();
 }

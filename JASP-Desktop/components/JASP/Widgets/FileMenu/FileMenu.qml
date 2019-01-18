@@ -157,7 +157,7 @@ FocusScope
 			//anchors.left:	locationMenu.right
 
 			x:				otherColumnsWidth - (aButtonVisible && fileMenuModel.visible ? 0 : width)
-			width:			Math.min(mainWindowRoot.width - otherColumnsWidth, 800)
+            width:			Math.min(mainWindowRoot.width - otherColumnsWidth, 800 * preferencesModel.uiScale)
 			height:			parent.height
 			visible:		fileMenuModel.visible || x + width > otherColumnsWidth + 1
 

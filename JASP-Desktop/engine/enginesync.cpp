@@ -68,7 +68,7 @@ EngineSync::~EngineSync()
 	shared_memory_object::remove(_memoryName.c_str());
 }
 
-void EngineSync::start()
+void EngineSync::start(int ppi)
 {
 	if (_engineStarted)
 		return;
@@ -119,6 +119,8 @@ void EngineSync::start()
 
 	timerProcess->start(50);
 	timerBeat->start(30000);
+
+	emit ppiChanged(ppi);
 }
 
 void EngineSync::process()

@@ -43,7 +43,7 @@ public:
 	EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent);
 	~EngineSync();
 
-	void start();
+	void start(int ppi);
 	bool engineStarted()			{ return _engineStarted; }
 
 public slots:

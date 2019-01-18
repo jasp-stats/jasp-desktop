@@ -21,6 +21,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
+	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIChanged					)
 
 
 public:
@@ -30,6 +31,7 @@ public:
 	int			customPPI()					const;
 	int			numDecimals()				const;
 	int			defaultPPI()				const	{ return _defaultPPI; }
+	int			plotPPI()					const	{ return useDefaultPPI() ? defaultPPI() : customPPI();	}
 	bool		fixedDecimals()				const;
 	bool		exactPValues()				const;
 	bool		dataAutoSynchronization()	const;
@@ -41,6 +43,8 @@ public:
 	QString		fixedDecimalsForJS()		const;
 	QStringList	missingValues()				const;
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
+
+
 
 public slots:
 	void setUiScale(double uiScale);

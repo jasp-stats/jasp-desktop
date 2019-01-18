@@ -66,6 +66,8 @@ $(document).ready(function () {
 			selectedAnalysis = jaspWidget;
 			selectedAnalysis.select();
 			$("body").addClass("selected")
+
+            window.scrollToTopView(selectedAnalysis.$el);
 		}
 	}
 

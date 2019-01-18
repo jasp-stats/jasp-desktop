@@ -68,7 +68,7 @@ public:
 	int engineChannelID()							{ return _channel->channelNumber(); }
 
 public slots:
-	void ppiChanged(int newPPI)					{ _ppi = newPPI; }
+	void ppiChanged(int newPPI)					{ _ppi = newPPI;  std::cout << "ppi for engineRep set to: " << _ppi << std::endl;}
 	void imageBackgroundChanged(QString value)	{ _imageBackground = value; }
 	void analysisRemoved(Analysis * analysis);
 

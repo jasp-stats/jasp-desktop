@@ -1,14 +1,13 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import JASP.Widgets 1.0
-import JASP.Theme 1.0
-import QtQuick.Dialogs 1.2
-
+import QtQuick			2.11
+import QtQuick.Controls	2.4
+import JASP.Widgets		1.0
+import JASP.Controls	1.0
+import JASP.Theme		1.0
 
 FocusScope
 {
 	id:			analysisFormsFocusScope
-	width:		extraSpace + (mainWindow.analysesVisible ? Theme.formWidth + 1 + (2 * formsBackground.border.width) : 0)
+	width:		extraSpace + (analysesModel.visible ? Theme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.width : 0)
 
 	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
 
@@ -24,18 +23,18 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
-		Item
+		/*Item
 		{
-			anchors.centerIn: parent
-			width: messageDialog.width
-			height: messageDialog.height
+			anchors.centerIn:	parent
+			width:				messageDialog.width
+			height:				messageDialog.height
 			MessageDialog
 			{
 				id: messageDialog
 				title: "Error"
 			}
-		}
-	
+		}*/
+
 		Item
 		{
 			id:				dropShadow
@@ -46,11 +45,11 @@ FocusScope
 
 			Rectangle
 			{
-				anchors.centerIn: parent
-				rotation:	90
-				gradient:	Gradient {	GradientStop { position: 0.0; color: Theme.shadow }	GradientStop { position: 1.0; color: "transparent" } }
-				height:		dropShadow.width
-				width:		dropShadow.height
+				anchors.centerIn:	parent
+				rotation:			90
+				gradient:			Gradient {	GradientStop { position: 0.0; color: Theme.shadow }	GradientStop { position: 1.0; color: "transparent" } }
+				height:				dropShadow.width
+				width:				dropShadow.height
 			}
 		}
 
@@ -63,9 +62,9 @@ FocusScope
 			border.width:	1
 			anchors
 			{
-				top:	parent.top
-				left:	parent.left
-				bottom:	parent.bottom
+				top:		parent.top
+				left:		parent.left
+				bottom:		parent.bottom
 			}
 
 			Image
@@ -75,7 +74,7 @@ FocusScope
 				readonly property string expandedIcon:		"arrow-right.png"
 				readonly property string contractedIcon:	"arrow-left.png"
 
-				source:				iconsFolder + (mainWindow.analysesVisible ? expandedIcon : contractedIcon)
+				source:				iconsFolder + (analysesModel.visible ? expandedIcon : contractedIcon)
 				width:				parent.width - 4
 				height:				width
 				sourceSize.width:	width * 2;
@@ -89,16 +88,16 @@ FocusScope
 				anchors.fill:	parent
 				hoverEnabled:	true
 				cursorShape:	Qt.PointingHandCursor
-				onClicked:		mainWindow.analysesVisible = !mainWindow.analysesVisible
+				onClicked:		analysesModel.visible = !analysesModel.visible
 				z:				3
 			}
 		}
 
-
-		ScrollView
+		Item
 		{
-			z:								2
-			visible:						analysisFormsFocusScope.width > analysisFormsFocusScope.extraSpace
+			id:				scrollAnalyses
+			visible:		analysisFormsFocusScope.width > analysisFormsFocusScope.extraSpace
+			z:				2
 
 			anchors
 			{
@@ -109,38 +108,82 @@ FocusScope
 				margins:	parent.border.width
 			}
 
-			Column
+			JASPScrollBar
 			{
-				width:			Theme.formWidth
-				spacing:		1
-
-
-				Repeater
+				id:				verticalScrollbar
+				vertical:		true
+				flickable:		analysesFlickable
+				manualAnchor:	true
+				anchors
 				{
-					model:							analysesModel
-					//highlightFollowsCurrentItem:	true
+					top:		parent.top
+					right:		parent.right
+					bottom:		parent.bottom
+				}
+			}
 
-					delegate: Loader
+			Flickable
+			{
+				id:				analysesFlickable
+				contentWidth:	analysesColumn.width
+				contentHeight:	analysesColumn.height
+
+				anchors
+				{
+					fill:			parent
+					rightMargin:	verticalScrollbar.width
+				}
+
+
+
+				Connections
+				{
+					target:							analysesModel
+					onAnalysisSelectedIndexResults:
+						if(row > -1)
+						{
+							var heightImplodedButton		= (Theme.formExpanderHeaderHeight + analysesColumn.spacing + (Theme.formMargin * 2))
+							var previousChildBottomButton	= row <= 0 ? 0 : row * heightImplodedButton
+
+							analysesFlickable.contentY =  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
+						}
+
+				}
+
+				Column
+				{
+					id:				analysesColumn
+					width:			analysesFlickable.width
+					spacing:		1
+
+					Repeater
 					{
-						id: loader
-						source:			formPath
-						asynchronous:	true
+						model:		analysesModel
 
-						//property bool	currentSelected:	ListView.isCurrentItem
-						//property Item	listView:			ListView.view
-						property int	myIndex:			index
-						property string	analysisTitle:		name
-                        property var    myAnalysis:         analysis
-						
-						onStatusChanged :
-							if (loader.status == Loader.Error)
-							{
-								messageDialog.text = sourceComponent.errorString();
-								messageDialog.visible = true;
-							}
+						delegate: Loader
+						{
+							id:					loader
+							source:				formPath
+							asynchronous:		false
+							onStatusChanged:	if (loader.status == Loader.Error)	mainWindow.showWarning("Error",  sourceComponent.errorString())
+
+
+							property int		myIndex:			index
+							property int		myID:				analysisID
+							property string		analysisTitle:		name
+							property var		myAnalysis:         analysis
+						}
 					}
 				}
 			}
 		}
+	}
+
+	MouseArea
+	{
+		id:				catchMouseEvents
+		z:				-10
+		onWheel:		wheel.accepted = true
+		anchors.fill:	parent
 	}
 }

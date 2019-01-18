@@ -21,16 +21,60 @@ FocusScope
 
 	JASPMouseAreaToolTipped
 	{
-		z: -10
+		id:					datasetMouseArea
+		z:					2
+		anchors.fill:		parent
+		anchors.leftMargin:	theView.rowNumberWidth
+		anchors.topMargin:	theView.headerHeight
+
+		toolTipText:		"Double click to edit data"
+
+		acceptedButtons:	Qt.LeftButton
+		dragging:			myFlickable.dragging
+
+		property real	lastTimeClicked:	-1
+		property real	doubleClickTime:	400
+
+		onPressed:
+		{
+			var curTime = new Date().getTime()
+
+			if(lastTimeClicked === -1 || curTime - lastTimeClicked > doubleClickTime)
+			{
+				lastTimeClicked = curTime
+				mouse.accepted = false
+
+			}
+			else
+			{
+				lastTimeClicked = -1
+				__JASPDataViewRoot.doubleClicked()
+			}
+		}
+
+		onWheel:
+		{
+			//console.log("wheel.angleDelta ",wheel.angleDelta)
 
 
-		anchors.fill: parent
-		anchors.leftMargin: theView.rowNumberWidth
-		anchors.topMargin: theView.headerHeight
+			if(wheel.angleDelta.y == 120)
+			{
+				if(wheel.modifiers & Qt.ShiftModifier)
+					horiScroller.scrollUp()
+				else
+					vertiScroller.scrollUp()
+			}
+			else if(wheel.angleDelta.y == -120)
+			{
+				if(wheel.modifiers & Qt.ShiftModifier)
+					horiScroller.scrollDown()
+				else
+					vertiScroller.scrollDown()
+			}
+			else
+				wheel.accepted = false
+		}
 
-		toolTipText: "Double click to edit data"
-
-		acceptedButtons: Qt.NoButton
 
 	}
 
@@ -63,57 +107,6 @@ FocusScope
 			viewportY:	myFlickable.visibleArea.yPosition * height
 			viewportW:	myFlickable.visibleArea.widthRatio * width
 			viewportH:	myFlickable.visibleArea.heightRatio * height
-
-			MouseArea
-			{
-				id: datasetMouseArea
-				z: -10
-				property real lastTimeClicked: -1
-				property real doubleClickTime: 500
-
-				anchors.fill: parent
-
-				onReleased:
-				{
-					var curTime = new Date().getTime()
-
-					if(lastTimeClicked === -1)
-					{
-						lastTimeClicked = curTime
-					}
-					else if(curTime - lastTimeClicked < doubleClickTime)
-					{
-						lastTimeClicked = -1
-						__JASPDataViewRoot.doubleClicked()
-					}
-					else
-						lastTimeClicked = -1
-				}
-
-				onWheel:
-				{
-					//console.log("wheel.angleDelta ",wheel.angleDelta)
-
-
-					if(wheel.angleDelta.y == 120)
-					{
-						if(wheel.modifiers & Qt.ShiftModifier)
-							horiScroller.scrollUp()
-						else
-							vertiScroller.scrollUp()
-					}
-					else if(wheel.angleDelta.y == -120)
-					{
-						if(wheel.modifiers & Qt.ShiftModifier)
-							horiScroller.scrollDown()
-						else
-							vertiScroller.scrollDown()
-					}
-					else
-						wheel.accepted = false
-				}
-			}
-
 		}
 	}
 
@@ -122,15 +115,9 @@ FocusScope
 	{
 		id:				vertiScroller;
 		flickable:		myFlickable
-
-		//extraMarginRightOrBottom:	horiScroller.height
-		//extraMarginLeftOrTop:		theView.headerHeight
-
 		anchors.top:	parent.top
 		anchors.right:	parent.right
-		anchors.bottom: parent.bottom
-
-		anchors.bottomMargin: horiScroller.height
+		anchors.bottom: horiScroller.top
 	}
 
 	JASPScrollBar
@@ -138,17 +125,8 @@ FocusScope
 		id:				horiScroller;
 		flickable:		myFlickable
 		vertical:		false
-
-		//extraMarginRightOrBottom:	vertiScroller.width
-		//extraMarginLeftOrTop:		theView.rowNumberWidth
-
 		anchors.left:	parent.left
-		anchors.right:	parent.right
+		anchors.right:	vertiScroller.left
 		anchors.bottom: parent.bottom
-
-		anchors.rightMargin: vertiScroller.width
 	}
-
-
-
 }

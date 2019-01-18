@@ -59,22 +59,23 @@
 
 using namespace std;
 
-QString MainWindow::iconPath = "qrc:/icons/";
-QMap<QString, QVariant> MainWindow::iconFiles {
-	{ "nominalText"	, iconPath + "variable-nominal-text.svg" },
-	{ "nominal"		, iconPath + "variable-nominal.svg"},
-	{ "ordinal"		, iconPath + "variable-ordinal.svg"},
-	{ "scale"		, iconPath + "variable-scale.svg"}
+QString MainWindow::_iconPath = "qrc:/icons/";
+
+QMap<QString, QVariant> MainWindow::_iconFiles {
+	{ "nominalText"	, _iconPath + "variable-nominal-text.svg" },
+	{ "nominal"		, _iconPath + "variable-nominal.svg"},
+	{ "ordinal"		, _iconPath + "variable-ordinal.svg"},
+	{ "scale"		, _iconPath + "variable-scale.svg"}
 };
 
-QMap<QString, QVariant> MainWindow::iconInactiveFiles {
-	{ "nominalText"	, iconPath + "variable-nominal-inactive.svg" },
-	{ "nominal"		, iconPath + "variable-nominal-inactive.svg"},
-	{ "ordinal"		, iconPath + "variable-ordinal-inactive.svg"},
-	{ "scale"		, iconPath + "variable-scale-inactive.svg"}
+QMap<QString, QVariant> MainWindow::_iconInactiveFiles {
+	{ "nominalText"	, _iconPath + "variable-nominal-inactive.svg" },
+	{ "nominal"		, _iconPath + "variable-nominal-inactive.svg"},
+	{ "ordinal"		, _iconPath + "variable-ordinal-inactive.svg"},
+	{ "scale"		, _iconPath + "variable-scale-inactive.svg"}
 };
 
-QMap<int, QString> MainWindow::columnTypeMap {
+QMap<int, QString> MainWindow::_columnTypeMap {
 	{ Column::ColumnTypeNominalText	, "nominalText" },
 	{ Column::ColumnTypeNominal		, "nominal"},
 	{ Column::ColumnTypeOrdinal		, "ordinal"},
@@ -210,28 +211,29 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataSetChanged,				_tableModel,			&DataSetTableModel::dataSetChanged							);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh,								Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showForm										);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
 
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			this,					&MainWindow::analysisUnselectedHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
 	connect(_resultsJsInterface,	&ResultsJsInterface::saveTextToFile,				this,					&MainWindow::saveTextToFileHandler							);
-	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				this,					&MainWindow::analysisSelectedHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisEditImage,				this,					&MainWindow::analysisEditImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
 
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
-	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::showForm										);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
+	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
+	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
-	//connect(_analyses,				&Analyses::analysisSelected,						_helpModel,				&HelpModel::setAnalysisPagename								); //The user can click the info-button if they want to see some documentation
+	//connect(_analyses,				&Analyses::analysisNameSelected,					_helpModel,				&HelpModel::setAnalysisPagename								); //The user can click the info-button if they want to see some documentation
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -299,9 +301,9 @@ void MainWindow::loadQML()
 #endif
 
 	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
-	_qml->rootContext()->setContextProperty("iconPath",				iconPath);
-	_qml->rootContext()->setContextProperty("iconFiles",			iconFiles);
-	_qml->rootContext()->setContextProperty("iconInactiveFiles",	iconInactiveFiles);
+	_qml->rootContext()->setContextProperty("iconPath",				_iconPath);
+	_qml->rootContext()->setContextProperty("iconFiles",			_iconFiles);
+	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
 
 	_qml->addImportPath("qrc:///components");
 
@@ -685,34 +687,6 @@ void MainWindow::updateShownVariablesModel()
 #endif
 }
 
-void MainWindow::showForm(Analysis *analysis)
-{
-	setAnalysesVisible(true);
-	_analyses->selectAnalysis(analysis);
-}
-
-
-void MainWindow::closeCurrentOptionsWidget()
-{
-	setAnalysesVisible(false);
-}
-
-
-void MainWindow::analysisSelectedHandler(int id)
-{
-	_currentAnalysis = _analyses->get(id);
-
-	if (_currentAnalysis != nullptr)
-		showForm(_currentAnalysis);
-}
-
-
-void MainWindow::analysisUnselectedHandler()
-{
-	setAnalysesVisible(false);
-	_analyses->setCurrentAnalysisIndex(-1);
-}
-
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
@@ -900,7 +874,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
-			closeCurrentOptionsWidget();
+			_analyses->setVisible(false);
 			_analyses->clear();
 			setDataSetAndPackageInModels(nullptr);
 			_loader.free(_package->dataSet());
@@ -1045,7 +1019,7 @@ void MainWindow::resultsPageLoaded()
 
 
 	if (!_engineSync->engineStarted())
-		_engineSync->start();
+		_engineSync->start(_preferences->plotPPI());
 }
 
 
@@ -1105,11 +1079,7 @@ void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
 	std::cout << "void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry) should be a function of RibbonModel that sends a signal to Analyses (or something)" << std::endl;
 	try
 	{
-		_currentAnalysis = _analyses->create(entry);
-		_analyses->analysisAdded(_currentAnalysis);
-		_currentAnalysis->setResults(entry->getDefaultResults());
-		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
-
+		_analyses->create(entry);
 		checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
 	}
 	catch (runtime_error& e)
@@ -1141,16 +1111,6 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 		file.close();
 	}
 }
-
-void MainWindow::analysisRunned()
-{
-	if (_currentAnalysis == nullptr)
-		return;
-
-	if (_currentAnalysis->status() == Analysis::Running)
-		_currentAnalysis->abort();
-}
-
 
 void MainWindow::setPackageModified()
 {
@@ -1422,24 +1382,6 @@ void MainWindow::pauseEngines()
 void MainWindow::resumeEngines()
 {
 	_engineSync->resume();
-}
-
-void MainWindow::setRunButtonText(QString runButtonText)
-{
-	if (_runButtonText == runButtonText)
-		return;
-
-	_runButtonText = runButtonText;
-	emit runButtonTextChanged(_runButtonText);
-}
-
-void MainWindow::setRunButtonEnabled(bool runButtonEnabled)
-{
-	if (_runButtonEnabled == runButtonEnabled)
-		return;
-
-	_runButtonEnabled = runButtonEnabled;
-	emit runButtonEnabledChanged(_runButtonEnabled);
 }
 
 void MainWindow::setProgressBarVisible(bool progressBarVisible)

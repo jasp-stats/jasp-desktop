@@ -87,9 +87,16 @@ Rectangle
 			anchors.fill	: parent
 			hoverEnabled	: true
 			acceptedButtons	: Qt.LeftButton
-			onClicked		: menuLoader.sourceComponent = menuComp
 			cursorShape		: Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
+
+			onClicked		:
+			{
+				//It would be nice to check here if the menu only has one entry, if so just open that instead of the menu
+				if(fileMenuModel.visible) fileMenuModel.visible = false
+				if(modulesMenu.visible)		modulesMenu.visible = false
+				menuLoader.sourceComponent = menuComp
+			}
 
 			Loader
 			{

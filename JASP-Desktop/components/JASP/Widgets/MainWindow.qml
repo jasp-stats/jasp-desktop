@@ -8,10 +8,10 @@ Window
 	id:			mainWindowRoot
 	title:		mainWindow.windowTitle
 	visible:	true
-	width:		Theme.formWidth * 2.2
+	width:		1024
 	height:		768
 
-	minimumWidth:	Theme.formWidth + Theme.minPanelWidth
+	minimumWidth:	640
 	minimumHeight:	480
 
 	onVisibleChanged: if(!visible) helpModel.visible = false

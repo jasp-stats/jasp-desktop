@@ -30,8 +30,11 @@
 class Analyses : public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(int	count					READ count													NOTIFY countChanged)
-	Q_PROPERTY(int	currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
+	Q_PROPERTY(int		count					READ count													NOTIFY countChanged)
+	Q_PROPERTY(int		currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
+	Q_PROPERTY(double	currentFormHeight		READ currentFormHeight		WRITE setCurrentFormHeight		NOTIFY currentFormHeightChanged)
+	Q_PROPERTY(bool		visible					READ visible				WRITE setVisible				NOTIFY visibleChanged)
+
 
 	friend class EngineSync;
 	friend class boost::iterator_core_access;
@@ -42,7 +45,8 @@ public:
 	enum myRoles {	formPathRole = Qt::UserRole + 1,
 					analysisRole,
 					titleRole,
-					nameRole };
+					nameRole,
+					idRole};
 
 				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules) {}
 
@@ -76,11 +80,13 @@ public:
 	
 //AbstractListModel functions
 public:
-	int						rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(count()); }
+	int						rowCount(const QModelIndex & = QModelIndex())				const override	{ return int(count()); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
-	int						currentAnalysisIndex()										const			{	return _currentAnalysisIndex;	}
-	
+	int						currentAnalysisIndex()										const			{ return _currentAnalysisIndex;	}
+	double					currentFormHeight()											const			{ return _currentFormHeight;	}
+	bool					visible()													const			{ return _visible;				}
+
 public slots:
 	void removeAnalysisById(size_t id);
 	void removeAnalysis(Analysis *analysis);
@@ -89,31 +95,42 @@ public slots:
 	void refreshAnalysesUsingColumn(QString col);
 	void analysisClickedHandler(QString analysis, QString ribbon, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
-
+	void analysisIdSelectedInResults(int id);
+	void analysesUnselectedInResults();
+	void selectAnalysisAtRow(int row);
+	void unselectAnalysis();
 	void rCodeReturned(QString result, int requestId);
-	
+	void setCurrentFormHeight(double currentFormHeight);
+	void setVisible(bool visible);
+
+
 private slots:
 	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
 
 signals:
-	void analysisAdded(					Analysis *source);
-	void analysisRemoved(				Analysis *source);
-	void analysisEditImage(				Analysis *source);
-	void analysisSaveImage(				Analysis *source);
-	void analysisToRefresh(				Analysis *source);
-	void analysisImageSaved(			Analysis *source);
-	void analysisInitialised(			Analysis *source);
-	void analysisImageEdited(			Analysis *source);
-	void analysisResultsChanged(		Analysis *source);
-	void analysisOptionsChanged(		Analysis *source);
-	void analysisSelected(				QString name);
-
-	ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis *source);
-	void				requestComputedColumnDestruction(std::string columnName);
-
+	void analysisAdded(					Analysis *	source);
+	void analysisRemoved(				Analysis *	source);
+	void analysisEditImage(				Analysis *	source);
+	void analysisSaveImage(				Analysis *	source);
+	void analysisToRefresh(				Analysis *	source);
+	void analysisImageSaved(			Analysis *	source);
+	void analysisInitialised(			Analysis *	source);
+	void analysisImageEdited(			Analysis *	source);
+	void analysisResultsChanged(		Analysis *	source);
+	void analysisOptionsChanged(		Analysis *	source);
+	void analysisNameSelected(			QString		name);
+	void analysesUnselected();
+	void analysisSelectedIndexResults(	int			row);
+	void showAnalysisInResults(			int			id);
+	void unselectAnalysisInResults();
 	void countChanged();
 	void currentAnalysisIndexChanged(int currentAnalysisIndex);
 	void sendRScript(QString script, int requestID);
+	void currentFormHeightChanged(double currentFormHeight);
+	void visibleChanged(bool visible);
+
+	ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis *source);
+	void				requestComputedColumnDestruction(std::string columnName);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);
@@ -135,9 +152,12 @@ private:
 	 int							_currentAnalysisIndex	= -1;
 	 DataSet*						_dataSet				= nullptr;
 	 DynamicModules*				_dynamicModules			= nullptr;
+	 double							_currentFormHeight		= 0;
+	 bool							_visible				= false;
 
 	 static int								_scriptRequestID;
 	 QMap<int, QPair<Analysis*, QString> > _scriptIDMap;
+
 };
 
 #endif // ANALYSES_H

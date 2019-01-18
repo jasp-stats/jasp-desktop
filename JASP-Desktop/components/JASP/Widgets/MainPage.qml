@@ -52,7 +52,7 @@ OLD.SplitView
 
 		MouseArea
 		{
-			visible:	mainWindow.analysesVisible
+			visible:	analysesModel.visible
 			z:			6
 
 			anchors
@@ -65,7 +65,7 @@ OLD.SplitView
 
 			onClicked:
 			{
-				mainWindow.analysesVisible	= false
+				analysesModel.visible = false
 				mouse.accepted = false
 			}
 		}

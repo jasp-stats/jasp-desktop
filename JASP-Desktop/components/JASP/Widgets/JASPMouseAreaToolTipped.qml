@@ -8,7 +8,7 @@ MouseArea
 	anchors.fill:	parent
 	hoverEnabled:	true
 
-	cursorShape:	myFlickable.dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+	cursorShape:	dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
 	property int toolTipDelay:		500
 	property int toolTipTimeOut:	4000
@@ -17,6 +17,7 @@ MouseArea
 	property bool _toolTipVisible:	false
 	property int _oldMouseX:		-1
 	property int _oldMouseY:		-1
+	property bool dragging:			false
 
 
 	ToolTip

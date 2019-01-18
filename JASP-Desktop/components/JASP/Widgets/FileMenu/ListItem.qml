@@ -13,26 +13,21 @@ Rectangle
 	border.color:	rectTitleAndDescripton.allHovered ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
 	color:			rectTitle.color
 
-	property var cppModel: undefined
+	property var cppModel:			undefined
 
-	property bool mainHovered:	descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
-	property bool allHovered:	mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
-	property bool hasBreadCrumbs: false
+	property bool mainHovered:		descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
+	property bool allHovered:		mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
+	property bool hasBreadCrumbs:	false
 
-	function openStuff(model)//, wasDoubleClick)
+	function openStuff(model)
 	{
-		if (model.type === 3)// && !wasDoubleClick)
-			rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
-
-		//if (model.type !== 3)// && wasDoubleClick)
-		else
-			rectTitleAndDescripton.cppModel.openFile(model.path)
+		if (model.type === 3)	rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
+		else					rectTitleAndDescripton.cppModel.openFile(model.path)
 	}
 
-	Rectangle {
-
+	Rectangle
+	{
 		id:					rectTitle
-
 		height:				40 * preferencesModel.uiScale
 		width:				parent.width
 		anchors.left:		parent.left
@@ -42,7 +37,8 @@ Rectangle
 
 		color:				rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 
-		Image {
+		Image
+		{
 			id :				firstFileOrFolderImage
 
 			height:				0.95 * parent.height
@@ -61,12 +57,12 @@ Rectangle
 				anchors.fill:		parent
 				hoverEnabled:		true
 				cursorShape:		Qt.PointingHandCursor
-				//onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 				onClicked:			rectTitleAndDescripton.openStuff(model)
 
 			}
 
-			ToolTip {
+			ToolTip
+			{
 				id:			firstFileOrFolderTooltip
 				delay:		500
 				text:		commonToolTip.text
@@ -75,7 +71,8 @@ Rectangle
 			}
 		}
 
-		Image {
+		Image
+		{
 			id :			associatedDatafileImage
 
 			height:			0.95 * parent.height
@@ -88,17 +85,19 @@ Rectangle
 			source:			model.dataiconsource
 			visible :		model.associated_datafile !== ""
 
-			MouseArea {
-				z:-2
+			MouseArea
+			{
 				id:				datafileMouseArea
+				z:				-2
 				anchors.fill:	parent
 				hoverEnabled:	true
 
-				onDoubleClicked:	rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
-				cursorShape:		Qt.PointingHandCursor
+				onClicked:		rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
+				cursorShape:	Qt.PointingHandCursor
 			}
 
-			ToolTip {
+			ToolTip
+			{
 				id:			datafileToolTip
 				delay:		500
 				text:		toolTipText(model.type, model.associated_datafile, "datafileMouseArea")
@@ -107,7 +106,8 @@ Rectangle
 			}
 		}
 
-		Text {
+		Text
+		{
 			id:					textTitle
 
 			height:				hasBreadCrumbs ?  parent.height : parent.height / 2
@@ -144,7 +144,6 @@ Rectangle
 			id:					fileEntryMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
-			//onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 			cursorShape:		Qt.PointingHandCursor
 			onClicked:			rectTitleAndDescripton.openStuff(model)
 		}
@@ -194,11 +193,11 @@ Rectangle
 			text:					model.description
 		}
 
-		MouseArea {
+		MouseArea
+		{
 			id:					descriptionMouseArea
 			anchors.fill:		parent
 			hoverEnabled:		true
-			//onDoubleClicked:	rectTitleAndDescripton.openStuff(model,true)
 			onClicked:			rectTitleAndDescripton.openStuff(model)
 			cursorShape:		Qt.PointingHandCursor
 		}
