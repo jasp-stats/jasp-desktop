@@ -27,6 +27,8 @@ print.JASPgraphs <- function(x, ...) {
     ggplot2:::print.ggplot(x, ...)
   } else if (inherits(x, c("gtable", "gTree", "grob", "gDesc"))) {
     gridExtra::grid.arrange(x, ...)
+  } else if (length(class(x)) > 1L) {
+    NextMethod()
   } else {
     stop(sprintf(
       "unsupported plot object of class: %s",

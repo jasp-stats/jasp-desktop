@@ -534,9 +534,9 @@
           CRI          = CRI,
           testValueOpt = testValueOpt
         ))
-				plot <- .addPlotToJaspObj0(var, var, obj)
+				plot <- createJaspPlot(title = var, width = 530, height = 400, plot = obj)
 			} else {
-				plot <- .addPlotToJaspObj0(var, var, NULL, errors[[var]][["message"]])
+				plot <- createJaspPlot(title = var, width = 530, height = 400, error = errors[[var]][["message"]])
 			}
   	  if (paired) {
   	    plot$setOptionMustContainDependency("pairs", pairs[[var]])
@@ -666,14 +666,14 @@
           ...
         )
 
-        plot <- .addPlotToJaspObj0(title, var, obj)
+        plot <- createJaspPlot(title = var, width = 530, height = 400, plot = obj)
       } else {
         if (!isFALSE(errors[[var]])) {
           err <- errors[[var]][["message"]]
         } else {
           err <- plottingError[[var]]
         }
-        plot <- .addPlotToJaspObj0(title, var, NULL, err)
+        plot <- createJaspPlot(title = var, width = 530, height = 400, error = err)
       }
       if (paired) {
         plot$setOptionMustContainDependency("pairs", pairs[[var]])
@@ -746,9 +746,9 @@
           ...
         )
 
-        plot <- .addPlotToJaspObj0(title, var, obj)
+        plot <- createJaspPlot(title = var, width = 530, height = 400, plot = obj)
       } else {
-        plot <- .addPlotToJaspObj0(title, var, NULL, error[[var]][["message"]])
+        plot <- createJaspPlot(title = var, width = 530, height = 400, error = error[[var]][["message"]])
       }
       if (paired) {
         plot$setOptionMustContainDependency("pairs", pairs[[var]])
@@ -828,9 +828,9 @@
           ...
         )
 
-        plot <- .addPlotToJaspObj0(title, var, obj)
+        plot <- createJaspPlot(title = var, width = 530, height = 400, plot = obj)
       } else {
-        plot <- .addPlotToJaspObj0(title, var, NULL, error[[var]][["message"]])
+        plot <- createJaspPlot(title = var, width = 530, height = 400, error = error[[var]][["message"]])
       }
 
       if (paired) {
@@ -846,23 +846,6 @@
 }
 
 # plot functions  ----
-.addPlotToJaspObj0 <- function(title, var, obj = NULL, errors = "",  w = 530, h = 400) {
-
-	# convenience function
-	if (is.null(obj)) {
-		plot <- createJaspPlot(title = title, width = w, height = h,
-													 error = "badData", errorMessage = errors)
-	} else if (identical(obj, "empty")) {
-		plot <- createJaspPlot(title = title, width = w, height = h)
-	} else if (isTryError(obj)) {
-		plot <- createJaspPlot(title = title, width = w, height = h,
-													 error = "badData", errorMessage = .extractErrorMessage(obj))
-	} else {
-		plot <- createJaspPlot(title = title, width = w, height = h, plot = obj)
-	}
-	return(plot)
-}
-
 .ttestBayesianPlotKGroupMeans <- function(data, var, grouping = NULL,
 																					groupNames = NULL, CRI = .95,
 																					testValueOpt = NULL, paired = FALSE) {

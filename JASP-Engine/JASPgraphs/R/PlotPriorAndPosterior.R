@@ -46,7 +46,7 @@ getEmptyPlot <- function(axes = FALSE) {
 
 }
 
-draw2Lines <- function(l, x = 0.5, parse = isParsed(l), align = c("center", "left", "right"), scaleFont = 0.35) {
+draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", "left", "right"), scaleFont = 0.35) {
 
   if (is.numeric(align)) {
     hjust <- align
@@ -112,7 +112,7 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
   } else {
     l <- unique(groupingVariable)
   }
-  parse <- isParsed(groupingVariable)
+  parse <- needsParsing(groupingVariable)
 
   if (type == "point") {
 

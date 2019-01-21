@@ -22,73 +22,77 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form {
-    id: form
-    usesJaspResults: true
-
-    plotHeight: 240
-    plotWidth:  320
-
-    CheckBox { name: "standardizedEffectSize"; checked: true; visible: false }
-
-    VariablesForm {
-        height: 200
-        defaultAssignedVariablesList {
-            title: qsTr("Variables")
-            allowedColumns: ["scale"]
-        }
-    }
-
-    DoubleField { text: qsTr("Test value:") ; defaultValue: 0 ; name: "testValue" ; validation: false }
-
-    GridLayout {
-        ColumnLayout {
-            spacing: 15
-
-            ButtonGroup {
-                title: qsTr("Hypothesis")                ; name: "hypothesis"
-
-                RadioButton { text: qsTr("≠ Test value") ; name: "notEqualToTestValue" ; checked: true }
-                RadioButton { text: qsTr("> Test value") ; name: "greaterThanTestValue"                }
-                RadioButton { text: qsTr("< Test value") ; name: "lessThanTestValue"                   }
-            }
-
-            BayesFactorType { }
-
-            GroupBox {
-                title: qsTr("Additional Statistics")
-                CheckBox { text: qsTr("Descriptives") ; name: "descriptives" }
-            }
-        }
-
-        ColumnLayout {
-            spacing: 15
-
-            GroupBox {
-                title: qsTr("Plots")
-
-                CheckBox     { text: qsTr("Prior and posterior")           ; name: "plotPriorAndPosterior"                   ; id: plotPriorAndPosterior }
-                CheckBox     { text: qsTr("Additional info")               ; name: "plotPriorAndPosteriorAdditionalInfo"     ; indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
-
-                CheckBox     { text: qsTr("Bayes factor robustness check") ; name: "plotBayesFactorRobustness"               ; id: plotBayesFactorRobustness }
-                CheckBox     { text: qsTr("Additional info")               ; name: "plotBayesFactorRobustnessAdditionalInfo" ; indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
-
-                CheckBox     { text: qsTr("Sequential analysis")           ; name: "plotSequentialAnalysis"                  ; id: plotSequentialAnalysis }
-                CheckBox     { text: qsTr("Robustness check")              ; name: "plotSequentialAnalysisRobustness"        ; indent: true; enabled: plotSequentialAnalysis.checked }
-
-                CheckBox     { text: qsTr("Descriptives plots")            ; name: "descriptivesPlots"                       ; id: descriptivesPlots }
-                PercentField { text: qsTr("Credible interval")             ; name: "descriptivesPlotsCredibleInterval"       ; defaultValue: 95; indent: true; enabled: descriptivesPlots.checked }
-            }
-
-            ButtonGroup {
-                title: qsTr("Missing Values")                                  ; name: "missingValues"
-
-                RadioButton { text: qsTr("Exclude cases analysis by analysis") ; name: "excludeAnalysisByAnalysis" ; checked: true }
-                RadioButton { text: qsTr("Exclude cases listwise")             ; name: "excludeListwise"                           }
-            }
-        }
-    }
-
-    SubjectivePriors { }
-
+Form
+{
+	usesJaspResults: true
+	plotHeight: 240
+	plotWidth:  320
+	
+	CheckBox { name: "standardizedEffectSize"; checked: true; visible: false }
+	
+	VariablesForm
+	{
+		height: 200
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["scale"] }
+	}
+	
+	DoubleField { name: "testValue"; text: qsTr("Test value:"); defaultValue: 0; validation: false }
+	
+	GridLayout
+	{
+		ColumnLayout
+		{
+			spacing: 15
+			
+			RadioButtonGroup
+			{
+				name: "hypothesis"
+				title: qsTr("Hypothesis")
+				RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
+				RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value");					}
+				RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value");					}
+			}
+			
+			BayesFactorType { }
+			
+			GroupBox
+			{
+				title: qsTr("Additional Statistics")
+				CheckBox { name: "descriptives";	text: qsTr("Descriptives") }
+			}
+		}
+		
+		ColumnLayout
+		{
+			spacing: 15
+			
+			GroupBox
+			{
+				title: qsTr("Plots")
+				
+				CheckBox     { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior										}
+				CheckBox     { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked	}
+				
+				CheckBox     { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness							}
+				CheckBox     { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
+				
+				CheckBox     { name: "plotSequentialAnalysis";					text: qsTr("Sequential analysis"); id: plotSequentialAnalysis										}
+				CheckBox     { name: "plotSequentialAnalysisRobustness";		text: qsTr("Robustness check"); indent: true; enabled: plotSequentialAnalysis.checked				}
+				
+				CheckBox     { name: "descriptivesPlots";						text: qsTr("Descriptives plots"); id: descriptivesPlots												}
+				PercentField { name: "descriptivesPlotsCredibleInterval";		text: qsTr("Credible interval"); defaultValue: 95; indent: true; enabled: descriptivesPlots.checked	}
+			}
+			
+			RadioButtonGroup
+			{
+				name: "missingValues"
+				title: qsTr("Missing Values")
+				RadioButton { value: "excludeAnalysisByAnalysis";	text: qsTr("Exclude cases analysis by analysis"); checked: true	}
+				RadioButton { value: "excludeListwise";				text: qsTr("Exclude cases listwise")							}
+			}
+		}
+	}
+	
+	SubjectivePriors { }
+	
 }
