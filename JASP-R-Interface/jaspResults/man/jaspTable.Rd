@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{jaspTable}
+\alias{createJaspTable}
 
 \title{Class "jaspTable"}
 \description{

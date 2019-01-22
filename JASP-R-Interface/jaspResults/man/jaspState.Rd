@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{jaspState}
+\alias{createJaspState}
 
 \title{Class "jaspState"}
 \description{

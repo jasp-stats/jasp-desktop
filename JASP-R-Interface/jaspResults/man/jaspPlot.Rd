@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{jaspPlot}
+\alias{createJaspPlot}
 
 \title{Class "jaspPlot"}
 \description{
