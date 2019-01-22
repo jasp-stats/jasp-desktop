@@ -229,7 +229,13 @@ void jaspResults::addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, 
 	{
 		jaspPlot * plot = (jaspPlot*)obj;
 		if(plot->_filePathPng != "")
-			pngImgObj[plot->_filePathPng] = plot->getPlotObject();
+		{
+			Rcpp::List pngImg;
+			pngImg["obj"] = plot->getPlotObject();
+			pngImg["width"] = plot->_width;
+			pngImg["height"] = plot->_height;
+			pngImgObj[plot->_filePathPng] = pngImg;
+		}
 	}
 
 	for(auto c : obj->getChildren())

@@ -2256,7 +2256,7 @@ as.list.footnotes <- function(footnotes) {
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
-    pngMultip <- .fromRCPP(".ppi") / 96
+    pngMultip <- ppi / 96
     ggplot2::ggsave(
     	filename  = relativePathpng,
     	plot      = plot,
@@ -2420,7 +2420,12 @@ saveImage <- function(plotName, format, height, width)
 
 	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
 		# Found a figure, add to the list!
-		result[[lst[["data"]]]] <- lst[["obj"]]
+    name <- lst[["data"]]
+    result[[name]] <- list(
+      obj = lst[["obj"]],
+      width = lst[["width"]],
+      height = lst[["height"]]
+    )
 		return(result)
 	}
 
@@ -2647,6 +2652,30 @@ if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
 
 }
 
+rewriteImages <- function() {
+  state <- .retrieveState()
+  oldPlots <- state[["figures"]]
+  
+  if (length(oldPlots) == 0) {
+    return(NULL)
+  }
+  
+  for (i in 1:length(oldPlots)) {
+    try({
+      plotName <- names(oldPlots)[i]
+      oldPlot <- oldPlots[[i]]
+      width <- oldPlot[["width"]]
+      height <- oldPlot[["height"]]
+      plot <- oldPlot[["obj"]]
+      invisible(.writeImage(width = width, height = height,
+                            plot = plot, obj = FALSE,
+                            relativePathpng = plotName))
+    })
+  }
+  
+  return(NULL)
+}
+
 # not .editImage() because RInside (interface to CPP) cannot handle that
 editImage <- function(plotName, type, height, width) {
 
@@ -2654,7 +2683,7 @@ editImage <- function(plotName, type, height, width) {
 
 	results <- NULL
 	state <- .retrieveState()
-	oldPlot <- state[["figures"]][[plotName]]
+	oldPlot <- state[["figures"]][[plotName]][["obj"]]
 
   isGgplot <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
 	requireResize <- type == "resize"
@@ -2718,7 +2747,11 @@ editImage <- function(plotName, type, height, width) {
 		response[["results"]][["error"]] <- TRUE
 	} else {
 		# adjust the state of the analysis and save it
-		state[["figures"]][[plotName]] <- results[["obj"]]
+		state[["figures"]][[plotName]] <- list(
+		  obj = results[["obj"]],
+		  width = results[["width"]],
+		  height = results[["height"]]
+		)
 		# store the stateKey (which gets removed by .modifyStateFigures)
 		key <- attr(x = state, which = "key")
 		state <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
