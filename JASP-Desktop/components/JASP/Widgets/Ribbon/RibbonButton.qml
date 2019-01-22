@@ -56,18 +56,20 @@ Rectangle
 			z:			1
 			width:		(37 / 28) * height
 			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
+			visible:	ribbonButton.enabled
 
 			anchors.top:				parent.top
 			anchors.topMargin:			Theme.ribbonButtonPadding
 			anchors.horizontalCenter:	parent.horizontalCenter
+		}
 
-			ColorOverlay
-			{
-				anchors.fill: backgroundImage
-				source      : backgroundImage
-				color       : Theme.gray
-				visible		: !ribbonButton.enabled
-			}
+		Desaturate
+		{
+			z:				2
+			anchors.fill:	backgroundImage
+			source:			backgroundImage
+			visible:		!ribbonButton.enabled
+			desaturation:	0.95
 		}
 
 		Text

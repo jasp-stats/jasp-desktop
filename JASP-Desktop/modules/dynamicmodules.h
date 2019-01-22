@@ -45,14 +45,13 @@ public:
 
 	std::string moduleDirectory(std::string moduleName)		{ return AppDirs::modulesDir().toStdString() + moduleName + '/'; }
 
-	std::string installModule(std::string moduleZipFilename);
+	bool		installModule(std::string moduleZipFilename);
 	void		uninstallModule(std::string moduleName);
 
-	std::string	loadModule(std::string moduleName)			{ return loadModuleFromDir(moduleDirectory(moduleName)); }
-	std::string	loadModuleFromDir(std::string moduleDir);
+	std::string	loadModule(std::string moduleName);
+	bool		initializeModuleFromDir(std::string moduleDir);
 	void		unloadModule(std::string moduleName);
-	void		loadInstalledModules();
-	void		scanInstalledModules();
+	void		initializeInstalledModules();
 
 	bool		moduleIsLoaded(std::string moduleName)		{ return _modules.count(moduleName) > 0;													}
 	bool		moduleIsInstalled(std::string moduleName)	{ return boost::filesystem::exists(moduleDirectory(moduleName)); }
@@ -98,7 +97,6 @@ signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
 	void dynamicModuleUninstalled(std::string moduleName);
 	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
-	void registerModuleInDir(std::string modulePath);
 
 private:
 	Modules::DynamicModule* requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);

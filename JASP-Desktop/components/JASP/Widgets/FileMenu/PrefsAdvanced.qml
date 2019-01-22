@@ -23,6 +23,7 @@ Column
 			checked:			preferencesModel.useDefaultPPI
 			onCheckedChanged:	preferencesModel.useDefaultPPI = checked
 			font:				Theme.font
+			height:				implicitHeight * preferencesModel.uiScale
 		}
 
 		Item
@@ -53,6 +54,7 @@ Column
 				stepSize:			16
 				editable:			true
 				font:				Theme.font
+				height:				implicitHeight * preferencesModel.uiScale
 
 				anchors
 				{
@@ -65,32 +67,45 @@ Column
 
 	Item
 	{
-		height:		uiScaleSlider.y + uiScaleSlider.height
-		width:		parent.width
+		height:		uiScaleSlider.height
+		width:		uiScaleSlider.x + uiScaleSlider.width
 
 		Text
 		{
-			id:					uiScaleLabel
-			text:				"User Interface Scaling"
-			font:				Theme.font
-			color:				Theme.textEnabled
+			id:							uiScaleLabel
+			text:						"User Interface Scaling: "
+			font:						Theme.font
+			color:						Theme.textEnabled
+			anchors.verticalCenter:		parent.verticalCenter
 		}
 
-		Slider
+		SpinBox
 		{
 			id:					uiScaleSlider
-			value:				preferencesModel.uiScale
-			onValueChanged:		preferencesModel.uiScale = value
-			from:				0.1
-			to:					3
-			stepSize:			0.01
+			value:				preferencesModel.uiScale * _mult
+			onValueChanged:		preferencesModel.uiScale = value / _mult
+			from:				0.01	* _mult
+			to:					3		* _mult
+			stepSize:			0.1		* _mult
+			font:				Theme.font
+			height:				implicitHeight * preferencesModel.uiScale
+
+			property real	_mult:		Math.pow(10, decimals)
+			property int	decimals:	2
+			property real	realValue:	value / _mult
+
+			validator: DoubleValidator {
+			  bottom:	Math.min(uiScaleSlider.from, uiScaleSlider.to)
+			  top:		Math.max(uiScaleSlider.from, uiScaleSlider.to)
+			}
+
+			textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSlider.decimals)	}
+			valueFromText: function(text, locale)	{  return Number.fromLocaleString("en-US", text) * 100								}
 
 			anchors
 			{
-				top:		uiScaleLabel.bottom
 				margins:	Theme.generalAnchorMargin
-				left:		parent.left
-				right:		parent.right
+				left:		uiScaleLabel.right
 			}
 		}
 	}

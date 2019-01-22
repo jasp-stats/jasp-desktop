@@ -41,7 +41,7 @@ public:
 		ModuleNameRole
 	};
 
-	RibbonModel(QObject *parent) : QAbstractListModel(parent) {}
+	RibbonModel(DynamicModules * dynamicModules, std::vector<std::string> staticModulesToLoad = {});
 
 	int								rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(_moduleNames.size());	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -49,20 +49,16 @@ public:
 
 
 	void						addRibbonButtonModelFromModulePath(QFileInfo modulePath);
-	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module) { addRibbonButtonModel(new RibbonButtonModel(this, module)); }
+	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
 
 	void						removeRibbonButtonModel(std::string moduleName);
 
-	const
-	std::vector<std::string> &	moduleNames()										const	{ return _moduleNames;	}
-	bool						isModuleName(std::string name)						const	{ return _modulesByName.count(name) > 0; }
+	bool						isModuleName(std::string name)						const	{ return _buttonModelsByName.count(name) > 0; }
 	QString						moduleName(size_t index)							const	{ return QString::fromStdString(_moduleNames[index]);}
 	RibbonButtonModel*			ribbonButtonModelAt(size_t index)					const	{ return ribbonButtonModel(_moduleNames[index]); }
 	RibbonButtonModel*			ribbonButtonModel(std::string moduleName)			const;
 	int							ribbonButtonModelIndex(RibbonButtonModel * model)	const;
 
-	void						connectToDynamicModules(DynamicModules * dynamicModules);
-	
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 
 	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
@@ -85,9 +81,10 @@ private: // functions
 	void addRibbonButtonModel(RibbonButtonModel* model);
 
 private: // fields
-	std::map<std::string, RibbonButtonModel*>	_modulesByName;
-	std::vector<std::string>					_moduleNames; //To keep order
-	int											_highlightedModuleIndex = -1;
+	std::map<std::string, RibbonButtonModel*>		_buttonModelsByName;
+	std::vector<std::string>						_moduleNames;
+	int												_highlightedModuleIndex = -1;
+	DynamicModules								*	_dynamicModules = nullptr;
 };
 
 

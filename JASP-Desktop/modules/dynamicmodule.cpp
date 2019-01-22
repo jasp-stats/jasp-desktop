@@ -274,6 +274,22 @@ std::string DynamicModule::generateModuleLoadingR()
 	return out.str();
 }
 
+
+
+std::string DynamicModule::generateModuleUnloadingR()
+{
+	std::stringstream out;
+
+	out << _name << " <- NULL; gc(); return('succes!')";
+
+
+#ifdef JASP_DEBUG
+	std::cout << "DynamicModule(" << _name << ")::generateModuleUnloadingR() generated:\n" << out.str() << std::endl;
+#endif
+
+	return out.str();
+}
+
 std::string	DynamicModule::qmlFilePath(std::string qmlFileName)	const
 {
 	return _moduleFolder.absolutePath().toStdString() + "/qml/" + qmlFileName;

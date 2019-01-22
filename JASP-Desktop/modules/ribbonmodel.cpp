@@ -18,16 +18,25 @@
 
 #include <QDebug>
 #include "ribbonmodel.h"
+#include "dirs.h"
 
-void RibbonModel::connectToDynamicModules(DynamicModules * dynamicModules)
+RibbonModel::RibbonModel(DynamicModules * dynamicModules, std::vector<std::string> staticModulesToLoad)
+	: QAbstractListModel(dynamicModules), _dynamicModules(dynamicModules)
 {
-	connect(dynamicModules, &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
-	connect(dynamicModules, &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
+	for(const std::string & moduleName : staticModulesToLoad)
+		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")));
 
-	for(const std::string & modName : dynamicModules->moduleNames())
-		addRibbonButtonModelFromDynamicModule((*dynamicModules)[modName]);
+	connect(_dynamicModules, &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
+	connect(_dynamicModules, &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
+
+	for(const std::string & modName : _dynamicModules->moduleNames())
+		addRibbonButtonModelFromDynamicModule((*_dynamicModules)[modName]);
 }
 
+void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
+{
+	addRibbonButtonModel(new RibbonButtonModel(this, module));
+}
 
 void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath)
 {
@@ -47,6 +56,22 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath)
 		addRibbonButtonModel(new RibbonButtonModel(this, descriptionJson));
 }
 
+void RibbonModel::addRibbonButtonModel(RibbonButtonModel* model)
+{
+	model->setDynamicModules(_dynamicModules);
+
+	if(isModuleName(model->moduleName()))
+		removeRibbonButtonModel(model->moduleName());
+
+	emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
+
+	_moduleNames.push_back(model->moduleName());
+	_buttonModelsByName[model->moduleName()] = model;
+
+	emit endInsertRows();
+
+	connect(model, &RibbonButtonModel::iChanged, this, &RibbonModel::ribbonButtonModelChanged);
+}
 
 QVariant RibbonModel::data(const QModelIndex &index, int role) const
 {
@@ -61,7 +86,7 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 	case RibbonRole:		return QVariant::fromValue(ribbonButtonModelAt(row));
 	case EnabledRole:		return ribbonButtonModelAt(row)->enabled();
 	case DynamicRole:		return ribbonButtonModelAt(row)->isDynamic();
-	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleName();
+	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleNameQ();
 	case ClusterRole:		//To Do!
 	default:				return QVariant();
 	}
@@ -83,25 +108,10 @@ QHash<int, QByteArray> RibbonModel::roleNames() const
 
 RibbonButtonModel* RibbonModel::ribbonButtonModel(std::string name) const
 {
-	if(_modulesByName.count(name) > 0)
-		return _modulesByName.at(name);
+	if(_buttonModelsByName.count(name) > 0)
+		return _buttonModelsByName.at(name);
 
 	return nullptr;
-}
-
-void RibbonModel::addRibbonButtonModel(RibbonButtonModel* model)
-{
-	if(isModuleName(model->moduleName().toStdString()))
-		removeRibbonButtonModel(model->moduleName().toStdString());
-
-	emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
-
-	_moduleNames.push_back(model->moduleName().toStdString());
-	_modulesByName[model->moduleName().toStdString()] = model;
-
-	emit endInsertRows();
-
-	connect(model, &RibbonButtonModel::iChanged, this, &RibbonModel::ribbonButtonModelChanged);
 }
 
 void RibbonModel::removeRibbonButtonModel(std::string moduleName)
@@ -120,8 +130,8 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 
 	emit beginRemoveRows(QModelIndex(), indexRemoved, indexRemoved);
 
-	delete _modulesByName[moduleName];
-	_modulesByName.erase(moduleName);
+	delete _buttonModelsByName[moduleName];
+	_buttonModelsByName.erase(moduleName);
 
 	_moduleNames.erase(_moduleNames.begin() + indexRemoved);
 
@@ -151,7 +161,7 @@ void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)
 
 int RibbonModel::ribbonButtonModelIndex(RibbonButtonModel * model)	const
 {
-	for(auto & keyval : _modulesByName)
+	for(auto & keyval : _buttonModelsByName)
 		if(keyval.second == model)
 			for(size_t i=0; i<_moduleNames.size(); i++)
 				if(_moduleNames[i] == keyval.first)

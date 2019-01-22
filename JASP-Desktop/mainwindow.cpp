@@ -101,7 +101,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
-	_ribbonModel			= new RibbonModel(this);
+	_ribbonModel			= new RibbonModel(_dynamicModules, { "Common", "Network", "Meta Analysis", "SEM", "Summary Statistics" });
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
@@ -111,21 +111,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	StartOnlineDataManager();
 
-	// Add static modules
-	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Common/"	)));
-	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Summary Statistics/" )));
-	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Network/"			)));
-	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "Meta Analysis/"		)));
-	setupRibbonModels(QFileInfo(tq(Dirs::resourcesDir() + "SEM/"				)));
-
-	// Add dynamic modules and connect signals to slots
-	_ribbonModel->connectToDynamicModules(_dynamicModules);
-
-	//initQWidgetGUIParts();
 	makeConnections();
-
-	// Set the initial tab on Common.
-	//showMainPage();
 
 	qmlRegisterType<DataSetView>		("JASP", 1, 0, "DataSetView");
 	qmlRegisterType<AnalysisForm>		("JASP", 1, 0, "AnalysisForm");

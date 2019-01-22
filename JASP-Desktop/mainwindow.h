@@ -129,7 +129,6 @@ private:
 	void finishSavingComparedResults();
 
 	bool filterShortCut();
-	void setupRibbonModels(QFileInfo modulePath) { _ribbonModel->addRibbonButtonModelFromModulePath(modulePath); }
 	void loadRibbonQML();
 	void loadQML();
 

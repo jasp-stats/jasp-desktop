@@ -30,7 +30,7 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 		setRequiresDataset(	moduleDescription.get("requiresDataset",	true).asBool()		);
 		setIsDynamic(		moduleDescription.get("dynamic",			false).asBool()		); //It should never be dynamic here right?
 		setTitle(			moduleDescription.get("title",				"???").asString()	);
-		setModuleName(		titleQ()														);
+		setModuleName(		title()															);
 
 		std::vector<Modules::RibbonEntry*>	ribbonEntries;
 
@@ -52,11 +52,11 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 
 RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * module)  : QAbstractListModel(parent)
 {
-	setRibbonEntries(	module->ribbonEntries()					);
-	setTitle(			module->title()							);
-	setIsDynamic(		true									);
-	setRequiresDataset(	module->requiresDataset()				);
-	setModuleName(		QString::fromStdString(module->name())	);
+	setRibbonEntries(	module->ribbonEntries()		);
+	setTitle(			module->title()				);
+	setIsDynamic(		true						);
+	setRequiresDataset(	module->requiresDataset()	);
+	setModuleName(		module->name()				);
 
 	bindYourself();
 }
@@ -140,6 +140,13 @@ void RibbonButtonModel::setEnabled(bool enabled)
 
 	_enabled = enabled;
 	emit enabledChanged();
+
+	if(isDynamic())
+	{
+		if(enabled)	_dynamicModules->loadModule(moduleName());
+		else		_dynamicModules->unloadModule(moduleName());
+
+	}
 }
 
 void RibbonButtonModel::setIsDynamic(bool isDynamic)
@@ -151,12 +158,11 @@ void RibbonButtonModel::setIsDynamic(bool isDynamic)
 	emit isDynamicChanged();
 }
 
-
-void RibbonButtonModel::setModuleName(QString moduleName)
+void RibbonButtonModel::setModuleName(std::string moduleName)
 {
-	if (m_moduleName == moduleName)
+	if (_moduleName == moduleName)
 		return;
 
-	m_moduleName = moduleName;
+	_moduleName = moduleName;
 	emit moduleNameChanged();
 }

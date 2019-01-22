@@ -102,6 +102,7 @@ private:
 	void		generateRPackage();
 	void		createRLibraryFolder();
 	std::string generateModuleLoadingR();
+	std::string generateModuleUnloadingR();
 	std::string generateModuleInstallingR();
 	std::string generateNamespaceFileForRPackage();
 	std::string generateDescriptionFileForRPackage();

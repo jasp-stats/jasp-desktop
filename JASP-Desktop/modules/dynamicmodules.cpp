@@ -27,10 +27,10 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
 		boost::filesystem::create_directories(_modulesInstallDirectory);
 
-	loadInstalledModules();
+	initializeInstalledModules();
 }
 
-void DynamicModules::scanInstalledModules()
+void DynamicModules::initializeInstalledModules()
 {
 	boost::system::error_code error;
 	for (boost::filesystem::directory_iterator itr(_modulesInstallDirectory, error); !error && itr != boost::filesystem::directory_iterator(); itr++)
@@ -38,42 +38,78 @@ void DynamicModules::scanInstalledModules()
 		std::string path = itr->path().generic_string();
 		std::string name = itr->path().filename().generic_string();
 		if(name.size() > 0 && name[0] != '.')
-			registerModuleInDir(path);
+			initializeModuleFromDir(path);
 	}
 }
 
-void DynamicModules::loadInstalledModules()
+bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
 {
-	boost::system::error_code error;
-	for (boost::filesystem::directory_iterator itr(_modulesInstallDirectory, error); !error && itr != boost::filesystem::directory_iterator(); itr++)
-	{
-		std::string path = itr->path().generic_string();
-		std::string name = itr->path().filename().generic_string();
-		if(name.size() > 0 && name[0] != '.')
-			loadModuleFromDir(path);
-	}
-}
-
-void DynamicModules::uninstallModule(std::string moduleName)
-{
-	std::string modulePath	= moduleDirectory(moduleName);
-
-	if(moduleIsLoaded(moduleName))
-		unloadModule(moduleName);
-
 	try
 	{
-		if(boost::filesystem::exists(modulePath))
-			boost::filesystem::remove_all(modulePath);
+		if(moduleDir.size() == 0)
+			throw std::runtime_error("Empty path was supplied to DynamicsModules::loadModule..");
 
-	} catch (boost::filesystem::filesystem_error & e) {
-		std::cerr << "Something went wrong removing files for module " << moduleName << " at path '" << modulePath << "' and the error was: " << e.what() << std::endl;
+		if(moduleDir[moduleDir.size() - 1] != '/')
+			moduleDir += '/';
+
+		Modules::DynamicModule	*newMod	= new Modules::DynamicModule(QString::fromStdString(moduleDir), this);
+		std::string				modName = newMod->name();
+
+		if(moduleIsLoaded(modName))
+			unloadModule(modName);
+
+		_modules[modName] = newMod;
+		_moduleNames.push_back(modName);
+
+		emit dynamicModuleAdded(newMod);
+
+		return true;
 	}
-
-	emit dynamicModuleUninstalled(moduleName);
+	catch(std::runtime_error & e)
+	{
+		std::cerr << "An error occured trying to initialize a module from dir " << moduleDir << ", the error was: " << e.what();
+		return false;
+	}
 }
 
-std::string DynamicModules::installModule(std::string moduleZipFilename)
+std::string DynamicModules::loadModule(std::string moduleName)
+{
+	try
+	{
+		if(_modules.count(moduleName) == 0 && !initializeModuleFromDir(moduleDirectory(moduleName)))
+			throw std::runtime_error("Couldn't load (and initialize) module " + moduleName);
+
+
+		Modules::DynamicModule	*loadMe	= _modules[moduleName];
+
+		if(loadMe->installNeeded() && _currentInstallName.toStdString() == moduleName && loadMe->requiredPackages().size() > 0)
+		{
+			std::string newMsg("");
+			for(Json::Value & packageEntry : loadMe->requiredPackages())
+				newMsg+= (newMsg.size() > 0 ? ", " : "") + packageEntry["package"].asString();
+
+			newMsg += (newMsg.size() > 0 ? " and " : "") + loadMe->generatedPackageName();
+
+			setCurrentInstallMsg(QString::fromStdString("Installing required package(s) for module: " + newMsg));
+		}
+
+		if(moduleIsLoaded(moduleName))
+			unloadModule(moduleName);
+
+		if(loadMe->installNeeded())			_modulesInstallPackagesNeeded.insert(moduleName);
+		else if(loadMe->loadingNeeded())	_modulesToBeLoaded.insert(moduleName);
+		else								throw std::runtime_error("A module("+ loadMe->name() +") that does not require installing or loading was \"loaded\" into JASP, this can't be right.");
+
+		return moduleName;
+	}
+	catch(std::runtime_error & e)
+	{
+		std::cerr << "An error occured trying to load module " << moduleName << ", the error was: " << e.what();
+		return "";
+	}
+}
+
+bool DynamicModules::installModule(std::string moduleZipFilename)
 {
 	if(!QFile(QString::fromStdString(moduleZipFilename)).exists())
 	{
@@ -95,7 +131,7 @@ std::string DynamicModules::installModule(std::string moduleZipFilename)
 		setCurrentInstallDone(true);
 	}
 
-	return loadModule(moduleName);
+	return initializeModuleFromDir(modulePath);
 }
 
 void DynamicModules::unloadModule(std::string moduleName)
@@ -104,61 +140,36 @@ void DynamicModules::unloadModule(std::string moduleName)
 	_modulesToBeLoaded.erase(moduleName);
 
 	if(_modules.count(moduleName) > 0)
-	{
 		emit dynamicModuleUnloadBegin(_modules[moduleName]);
+}
 
-		delete _modules[moduleName];
+void DynamicModules::uninstallModule(std::string moduleName)
+{
+	std::string modulePath	= moduleDirectory(moduleName);
+
+	if(moduleIsLoaded(moduleName))
+		unloadModule(moduleName);
+
+	if(_modules.count(moduleName) > 0)
+	{
 		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
 			if(_moduleNames[size_t(i)] == moduleName)
 				_moduleNames.erase(_moduleNames.begin() + i);
-	}
-	_modules.erase(moduleName);
-}
 
-std::string DynamicModules::loadModuleFromDir(std::string moduleDir)
-{
+		delete _modules[moduleName];
+		_modules.erase(moduleName);
+	}
+
 	try
 	{
-		if(moduleDir.size() == 0)
-			throw std::runtime_error("Empty path was supplied to DynamicsModules::loadModule..");
+		if(boost::filesystem::exists(modulePath))
+			boost::filesystem::remove_all(modulePath);
 
-		if(moduleDir[moduleDir.size() - 1] != '/')
-			moduleDir += '/';
-
-		Modules::DynamicModule	*newMod	= new Modules::DynamicModule(QString::fromStdString(moduleDir), this);
-		std::string				modName = newMod->name();
-
-
-		if(newMod->installNeeded() && _currentInstallName.toStdString() == modName && newMod->requiredPackages().size() > 0)
-		{
-			std::string newMsg("");
-			for(Json::Value & packageEntry : newMod->requiredPackages())
-				newMsg+= (newMsg.size() > 0 ? ", " : "") + packageEntry["package"].asString();
-
-			newMsg += (newMsg.size() > 0 ? " and " : "") + newMod->generatedPackageName();
-
-			setCurrentInstallMsg(QString::fromStdString("Installing required package(s) for module: " + newMsg));
-		}
-
-		if(moduleIsLoaded(modName))
-			unloadModule(modName);
-
-		_modules[modName] = newMod;
-		_moduleNames.push_back(modName);
-
-		if(newMod->installNeeded())			_modulesInstallPackagesNeeded.insert(modName);
-		else if(newMod->loadingNeeded())	_modulesToBeLoaded.insert(modName);
-		else								throw std::runtime_error("A module("+ newMod->name() +") that does not require installing or loading was \"loaded\" into JASP, this can't be right.");
-
-		emit dynamicModuleAdded(newMod);
-
-		return modName;
+	} catch (boost::filesystem::filesystem_error & e) {
+		std::cerr << "Something went wrong removing files for module " << moduleName << " at path '" << modulePath << "' and the error was: " << e.what() << std::endl;
 	}
-	catch(std::runtime_error & e)
-	{
-		std::cerr << "An error occured trying to load a module from dir " << moduleDir << ", the error was: " << e.what();
-		return "";
-	}
+
+	emit dynamicModuleUninstalled(moduleName);
 }
 
 Modules::DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
