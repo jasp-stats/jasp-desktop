@@ -21,13 +21,6 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 	.theBayesianLinearModelsInitBayesFactor()
 	env <- environment()
 
-	.callbackBFpackage <- function(...) {
-		response <- .callbackBayesianLinearModels()
-		if(response$status == "ok")
-			return(as.integer(0))
-		return(as.integer(1))
-	}
-
 	.callbackBayesianLinearModels <- function (results = NULL, progress = NULL) {
 		response <- callback(results, progress)
 		if (response$status == "changed") {
@@ -66,7 +59,6 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 			perform <- "run"
 		}
 	}
-
 
 ## META
 	results <- list()
@@ -203,10 +195,7 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 	  results[["rsquared plot"]]$data
 	)
 	new.state <- list(options = options, model = model, status = status, keep = keep)
-print("names(results)")
-print(names(results))
 
-	
 	if (perform == "run" || ! status$ready || ! is.null(state)) {
 		return(list(results = results, status = "complete", state = new.state, keep = keep))
 	} else {
@@ -450,7 +439,7 @@ print(names(results))
     content <- .writeImage(
       width  = singlePlot$width,
       height = singlePlot$height,
-      plot   = p$plotlist[[name]],
+      plot   = p$plotList[[1L]],
       obj    = TRUE
     )
 
@@ -629,19 +618,19 @@ print(names(results))
 
       if (modelIndex == "modelAveraged") {
 
-        # get model weights
-        postProbs <- .AnovaBayesianGetPostProbs(model)
-        
+        # get model weights - omit first model weight (the null-model)
+        postProbs <- .AnovaBayesianGetPostProbs(model)[-1L]
+
         # get all posterior samples
         allSamps <- lapply(posteriors, function(x, p) if (p %in% colnames(x)) x[, p], p)
         
         # compute BMA density
         dd <- .AnovaBayesianGetBMAdensity(allSamps, postProbs)
-        
+  
         # compute weighted CRI
         densCRI <- Hmisc::wtd.quantile(
           x       = unlist(allSamps), 
-          weights = rep(postProbs, each = lengths(allSamps)), 
+          weights = rep(postProbs, lengths(allSamps)), 
           probs   = c(0.025, 0.975)
         )
         

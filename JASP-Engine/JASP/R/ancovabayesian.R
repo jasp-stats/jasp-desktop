@@ -21,13 +21,6 @@ AncovaBayesian	 <- function(dataset = NULL, options, perform = "run", callback =
 		
 	env <- environment()
 
-	.callbackBFpackage <- function(...) {
-		response <- .callbackBayesianLinearModels()
-		if(response$status == "ok")
-			return(as.integer(0))
-		return(as.integer(1))
-	}
-
 	.callbackBayesianLinearModels <- function (results = NULL, progress = NULL) {
 		response <- callback(results, progress)
 		if (response$status == "changed") {

@@ -1171,3 +1171,12 @@
 
 	return(list(collection = posthoc.tables, title = title))
 }
+
+.callbackBFpackage <- function(...) {
+  
+  # defined inside ANOVA/ ANCOVA/ RM-ANOVA
+  response <- .callbackBayesianLinearModels()
+		if(response$status == "ok")
+			return(0L)
+		return(1L)
+}

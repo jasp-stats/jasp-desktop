@@ -21,16 +21,6 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 
 	env <- environment()
 
-	.callbackBFpackage <- function(...) {
-
-		response <- .callbackBayesianLinearModels()
-
-		if(response$status == "ok")
-			return(as.integer(0))
-
-		return(as.integer(1))
-	}
-
 	.callbackBayesianLinearModels <- function(results = NULL, progress = NULL) {
 
 		response <- callback(results, progress)
