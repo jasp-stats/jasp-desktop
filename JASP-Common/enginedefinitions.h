@@ -3,7 +3,7 @@
 
 #include "enumutilities.h"
 
-DECLARE_ENUM(engineState,			idle, analysis, filter, rCode, computeColumn, moduleRequest, paused, resuming);
+DECLARE_ENUM(engineState,			idle, analysis, filter, rCode, computeColumn, moduleRequest, pauseRequested, paused, resuming);
 DECLARE_ENUM(performType,			init, run, abort, saveImg, editImg);
 DECLARE_ENUM(analysisResultStatus,	error, exception, imageSaved, imageEdited, complete, inited, running, changed, waiting);
 DECLARE_ENUM(moduleStatus,			installNeeded, loadingNeeded, readyForUse, error);

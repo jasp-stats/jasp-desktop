@@ -136,7 +136,7 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::filter:			receiveFilterMessage(jsonRequest);			break;
 		case engineState::rCode:			receiveRCodeMessage(jsonRequest);			break;
 		case engineState::computeColumn:	receiveComputeColumnMessage(jsonRequest);	break;
-		case engineState::paused:			pauseEngine();								break;
+		case engineState::pauseRequested:	pauseEngine();								break;
 		case engineState::resuming:			resumeEngine();								break;
 		case engineState::moduleRequest:	receiveModuleRequestMessage(jsonRequest);	break;
 		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState to it!");

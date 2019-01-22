@@ -38,7 +38,7 @@ public:
 
 	void pauseEngine();
 	void resumeEngine();
-	bool paused()  const { return _engineState == engineState::paused && _enginePaused;							}
+	bool paused()  const { return _engineState == engineState::paused;											}
 	bool resumed() const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
 
 	void runModuleRequestOnProcess(Json::Value request);
@@ -73,6 +73,9 @@ public slots:
 	void analysisRemoved(Analysis * analysis);
 
 private:
+	void sendPauseEngine();
+
+private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
 
 	QProcess*	_slaveProcess		= NULL;
@@ -81,7 +84,7 @@ private:
 	engineState	_engineState		= engineState::idle;
 	int			_ppi				= 96;
 	QString		_imageBackground	= "white";
-	bool		_enginePaused		= false;
+	bool		_pauseRequested		= false;
 
 signals:
 	void engineTerminated();

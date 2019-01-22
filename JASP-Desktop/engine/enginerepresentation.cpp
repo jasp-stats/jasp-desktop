@@ -40,7 +40,10 @@ void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 void EngineRepresentation::process()
 {
 	if (_engineState == engineState::idle)
+	{
+		if(_pauseRequested)	sendPauseEngine();
 		return;
+	}
 
 	std::string data;
 
@@ -304,8 +307,13 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 
 void EngineRepresentation::pauseEngine()
 {
+	_pauseRequested = true;
+}
+
+void EngineRepresentation::sendPauseEngine()
+{
 	Json::Value json		= Json::Value(Json::objectValue);
-	_engineState			= engineState::paused;
+	_engineState			= engineState::pauseRequested;
 	json["typeRequest"]		= engineStateToString(_engineState);
 
 #ifdef JASP_DEBUG
@@ -313,15 +321,14 @@ void EngineRepresentation::pauseEngine()
 #endif
 
 	sendString(json.toStyledString());
-
-	_enginePaused = false;
 }
 
 void EngineRepresentation::resumeEngine()
 {
-	if(_engineState != engineState::paused && !_enginePaused)
+	if(_engineState != engineState::paused)
 		throw std::runtime_error("Attempt to resume engine made but it isn't paused");
 
+	_pauseRequested			= false;
 	_engineState			= engineState::resuming;
 	Json::Value json		= Json::Value(Json::objectValue);
 	json["typeRequest"]		= engineStateToString(_engineState);
@@ -335,16 +342,16 @@ void EngineRepresentation::resumeEngine()
 
 void EngineRepresentation::processEnginePausedReply()
 {
-	if(_engineState != engineState::paused)
-		throw std::runtime_error("Received an unexpected engine resumed reply!");
+	if(_engineState != engineState::pauseRequested)
+		throw std::runtime_error("Received an unexpected engine paused reply!");
 
-	_enginePaused = true;
+	_engineState = engineState::paused;
 }
 
 void EngineRepresentation::processEngineResumedReply()
 {
 	if(_engineState != engineState::resuming)
-		throw std::runtime_error("Received an unexpected engine paused reply!");
+		throw std::runtime_error("Received an unexpected engine resumed reply!");
 
 	_engineState = engineState::idle;
 }
