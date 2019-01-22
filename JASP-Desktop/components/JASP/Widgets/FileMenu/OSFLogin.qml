@@ -26,18 +26,11 @@ Rectangle
 {
 	id: osfLogin
 
-	property bool rememberme: fileMenuModel.osf.rememberme
-	property string username: fileMenuModel.osf.username
-	property string password: fileMenuModel.osf.password
-
 	color: Theme.grayMuchLighter
 
 	Component.onCompleted:
 	{
 		usernameText.focus = true
-		fileMenuModel.osf.updateLoginScreen()
-		usernameText.text = username
-		passwordText.text = password
 	}
 
 	Image
@@ -69,7 +62,7 @@ Rectangle
 		anchors.top: osfLogo.bottom
 		anchors.bottomMargin: 20
 
-		text : "OSF"
+		text : qsTr("OSF")
 		color: Theme.black
 		font : Theme.fontLabel
 	}
@@ -79,8 +72,8 @@ Rectangle
 		id: labelExplain
 
 		text : qsTr("Sign in with your OSF account to continue")
-		color: Theme.grayDarker
-		font.pointSize: 9
+		color:Theme.black
+		font.pointSize: 11
 
 		verticalAlignment  : Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
@@ -129,6 +122,8 @@ Rectangle
 			{
 				id: usernameText
 
+				text:fileMenuModel.osf.username
+
 				anchors.fill      : parent
 				anchors.leftMargin: 10
 				selectByMouse     : true
@@ -136,10 +131,12 @@ Rectangle
 				verticalAlignment : Text.AlignVCenter
 				font.pixelSize    : 14
 
-				onTextChanged: {
-					fileMenuModel.osf.username = usernameText.text
+				onTextChanged:
+				{
+					fileMenuModel.osf.username = text
 				}
-				onAccepted: {
+				onAccepted:
+				{
 					passwordText.focus = true
 				}
 				KeyNavigation.down		: passwordText
@@ -171,6 +168,8 @@ Rectangle
 			{
 				id: passwordText
 
+				text:fileMenuModel.osf.password
+
 				anchors.fill      : parent
 				anchors.leftMargin: 10
 				verticalAlignment : Text.AlignVCenter
@@ -178,11 +177,14 @@ Rectangle
 				selectByMouse     : true
 				font.pixelSize    : 14
 
-				onTextChanged: {
+
+				onTextChanged:
+				{
 					fileMenuModel.osf.password = text;
 				}
-				onAccepted: {
-					fileMenuModel.osf.loginRequested(username, password)
+				onAccepted:
+				{
+					fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
 				}
 
 				KeyNavigation.up		: usernameText
@@ -215,7 +217,7 @@ Rectangle
 
 			onClicked:
 			{
-				fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, password)
+				fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
 			}
 
 			KeyNavigation.up		: passwordText
@@ -228,7 +230,7 @@ Rectangle
 		{
 			id: idRememberMe
 
-			checked: rememberme
+			checked: fileMenuModel.osf.rememberme
 			text   : qsTr("Remember me")
 
 			anchors.left  : parent.left
@@ -239,9 +241,11 @@ Rectangle
 			anchors.leftMargin  : 20
 			anchors.topMargin   : 10
 
-			onClicked: {
-				fileMenuModel.osf.remembermeCheckChanged(checked)
+			onCheckedChanged:
+			{
+				fileMenuModel.osf.rememberme = checked
 			}
+
 			KeyNavigation.up		: loginButton
 			KeyNavigation.backtab	: loginButton
 		}
@@ -257,21 +261,21 @@ Rectangle
 
 		anchors.top             : osfLoginBox.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.topMargin       : 10
+		anchors.topMargin       : 5
 
 		Text {
 			id: linkOSF
 
 			text          :'<font color="#257bb2"><u>About the OSF</u></font>'
 			textFormat    : Text.StyledText
-			font.pointSize: 10
+			font.pointSize: 11
 
 			anchors.left      : parent.left
 			anchors.bottom    : parent.bottom
-			anchors.topMargin : 10
-			anchors.leftMargin: 20
+			anchors.leftMargin: 5
 
-			MouseArea {
+			MouseArea
+			{
 				anchors.fill: parent
 				hoverEnabled: true
 				cursorShape : Qt.PointingHandCursor
@@ -285,14 +289,14 @@ Rectangle
 
 			text          :'<font color="#257bb2"><u>Register</u></font>'
 			textFormat    : Text.StyledText
-			font.pointSize: 10
+			font.pointSize: 11
 
 			anchors.bottom     : parent.bottom
 			anchors.right      : parent.right
-			anchors.topMargin  : 10
-			anchors.rightMargin: 20
+			anchors.rightMargin: 5
 
-			MouseArea {
+			MouseArea
+			{
 				anchors.fill: parent
 				hoverEnabled: true
 				cursorShape : Qt.PointingHandCursor

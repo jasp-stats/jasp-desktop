@@ -85,6 +85,7 @@ signals:
 private slots:
 	void notifyDataSetSelected(QString path);
 	void notifyDataSetOpened(QString path);
+	void authenticationeFailed(QString message);
 	void saveClicked();
 	void openSaveFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
@@ -95,10 +96,6 @@ private slots:
 	
 public slots:
 	void logoutClicked();
-	void remembermeCheckChanged(bool check);
-	void usernameTextChanged(const QString &username);
-	void passwordTextChanged(const QString &password);
-	void updateLoginScreen();
 	void loginRequested(const QString &username, const QString &password);
 	void openFile(const QString &name);
 	void saveFile(const QString &name);

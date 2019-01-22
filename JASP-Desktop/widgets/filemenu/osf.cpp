@@ -34,21 +34,19 @@ OSF::OSF(QObject *parent): FileMenuObject(parent)
 	
 	setListModel(new OSFListModel(this, _model, _osfBreadCrumbsListModel));
 	
-	connect(_model,						&OSFFileSystem::authenticationSuccess,				this,			&OSF::updateUserDetails);
-	connect(_model,						&OSFFileSystem::authenticationClear,					this,			&OSF::updateUserDetails);
-	connect(_model,						&OSFFileSystem::entriesChanged,						this,			&OSF::resetOSFListModel);
-	connect(_model,						&OSFFileSystem::stopProcessing,						this,			&OSF::stopProcessing);
+	connect(_model,						&OSFFileSystem::authenticationSuccess,			this,			&OSF::updateUserDetails);
+	connect(_model,						&OSFFileSystem::authenticationFail,				this,			&OSF::authenticationeFailed);
+	connect(_model,						&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
+	connect(_model,						&OSFFileSystem::entriesChanged,					this,			&OSF::resetOSFListModel);
+	connect(_model,						&OSFFileSystem::stopProcessing,					this,			&OSF::stopProcessing);
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&OSF::startProcessing);
 	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
 	connect(this,						&OSF::openFileRequest,							this,			&OSF::notifyDataSetOpened);
-
-	/*_fsBrowser = new FSBrowser(this);
-	_fsBrowser->setViewType(FSBrowser::ListView);
-	_fsBrowser->setFSModel(_model);
-	_fsBrowser->hide();*/
 	
+	_mRememberMe = Settings::value(Settings::OSF_REMEMBER_ME).toBool();
+	_mUserName = Settings::value(Settings::OSF_USERNAME).toString();
+	_mPassword = decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
 	setShowfiledialog(false);
-		
 }
 
 bool OSF::loggedin()
@@ -93,16 +91,6 @@ void OSF::setLoggedin(const bool loggedin)
 
 }
 
-void OSF::setRememberme(const bool rememberme)
-{	
-	_mRememberMe =  rememberme;
-	emit remembermeChanged();
-	
-	Settings::setValue(Settings::OSF_REMEMBER_ME, _mRememberMe);
-	Settings::sync();
-	
-}
-
 void OSF::setProcessing(const bool processing)
 {
 	_mProcessing = processing;
@@ -121,13 +109,44 @@ void OSF::setShowfiledialog(const bool showdialog)
 	emit showfiledialogChanged();
 }
 
+void OSF::setRememberme(const bool rememberme)
+{
+	if (_mRememberMe ==  rememberme)
+		return;
+
+	_mRememberMe = rememberme;
+
+	emit remembermeChanged();
+
+	Settings::setValue(Settings::OSF_REMEMBER_ME, _mRememberMe);
+
+	if (!_mRememberMe)
+	{
+		Settings::remove(Settings::OSF_USERNAME);
+		Settings::remove(Settings::OSF_PASSWORD);
+	}
+	else
+	{
+		Settings::setValue(Settings::OSF_USERNAME, _mUserName);
+		//Save password encrypted in settings
+		Settings::setValue(Settings::OSF_PASSWORD, encrypt(_mPassword));
+		Settings::setValue(Settings::OSF_ENCRYPTION, SimpleCryptEncryption);
+	}
+
+	Settings::sync();
+
+}
+
 void OSF::setUsername(const QString &username)
 {
 
-	_mUserName =  username;
+	if (_mUserName == username)
+		return;
+
+	_mUserName = username;
 	emit usernameChanged();
 	
-	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
+	if (_mRememberMe)
 		Settings::setValue(Settings::OSF_USERNAME, _mUserName);
 	else
 		Settings::remove(Settings::OSF_USERNAME);
@@ -137,17 +156,20 @@ void OSF::setUsername(const QString &username)
 
 void OSF::setPassword(const QString &password)
 {		
-	_mPassword =  password;
+	if (_mPassword == password)
+		return;
+
+	_mPassword = password;
 	emit passwordChanged();
 		
-	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
+	if (_mRememberMe)
 	{
 		//Save password encrypted in settings
 		Settings::setValue(Settings::OSF_PASSWORD, encrypt(password));
 		Settings::setValue(Settings::OSF_ENCRYPTION, SimpleCryptEncryption);
 	}
 	else
-		Settings::remove(Settings::OSF_USERNAME);
+		Settings::remove(Settings::OSF_PASSWORD);
 
 	Settings::sync();	
 	
@@ -194,6 +216,12 @@ void OSF::notifyDataSetOpened(QString path)
 {
 	OSFFileSystem::OnlineNodeData nodeData = _model->getNodeData(path);
 	openSaveFile(nodeData.nodePath, nodeData.name);
+}
+
+void OSF::authenticationeFailed(QString message)
+{
+	MessageForwarder::showWarning("Login", message);
+
 }
 
 void OSF::saveClicked()
@@ -363,50 +391,6 @@ void OSF::logoutClicked()
 	setProcessing(false);
 }
 
-void OSF::remembermeCheckChanged(bool rememberme)
-{
-	_mRememberMe = rememberme;
-	
-	if (_mRememberMe)
-		Settings::setValue(Settings::OSF_REMEMBER_ME, rememberme);
-	else
-		Settings::remove(Settings::OSF_REMEMBER_ME);
-	
-	setRememberme(rememberme);
-}
-
-void OSF::usernameTextChanged(const QString &username)
-{
-	_mUserName = username;
-	
-	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
-		Settings::setValue(Settings::OSF_USERNAME, _mUserName);
-	else
-		Settings::remove(Settings::OSF_USERNAME);
-	
-	setUsername(username);
-}
-
-void OSF::passwordTextChanged(const QString &password)
-{
-	_mPassword = password;
-	
-	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
-		Settings::setValue(Settings::OSF_PASSWORD, encrypt(_mPassword));
-	else
-		Settings::remove(Settings::OSF_PASSWORD);
-	
-	setPassword(password);
-	
-}
-
-void OSF::updateLoginScreen()
-{
-	setRememberme(Settings::value(Settings::OSF_REMEMBER_ME).toBool());  
-	setUsername(Settings::value(Settings::OSF_USERNAME).toString());
-	setPassword(decrypt(Settings::value(Settings::OSF_PASSWORD).toString()));
-}
-
 void OSF::loginRequested(const QString &username, const QString &password)
 {
 	if  (password == "" || username =="" )
@@ -417,6 +401,7 @@ void OSF::loginRequested(const QString &username, const QString &password)
 	
 	setProcessing(true);
 	_model->authenticate(username, password);
+
 }
 
 void OSF::openFile(const QString &path)
