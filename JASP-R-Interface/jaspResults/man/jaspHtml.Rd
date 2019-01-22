@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{jaspHtml}
+\alias{createJaspHtml}
 
 \title{Class "jaspHtml"}
 \description{
