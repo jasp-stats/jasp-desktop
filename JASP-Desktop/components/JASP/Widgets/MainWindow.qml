@@ -11,6 +11,7 @@ Window
 	width:		1024
 	height:		768
 
+
 	minimumWidth:	640
 	minimumHeight:	480
 
@@ -20,93 +21,115 @@ Window
 
 	onDevicePixelRatioChanged: if(devicePixelRatio > 0) mainWindow.screenPPI = devicePixelRatio * 96
 
-	RibbonBar
+	Item
 	{
-		id:		ribbon
-		z:		4
+		anchors.fill: parent
 
-		anchors
+		focus:	true
+		Keys.onPressed:
 		{
-			top:	parent.top
-			left:	parent.left
-			right:	parent.right
+			if((event.modifiers & Qt.ControlModifier) > 0)
+				switch(event.key)
+				{
+				case Qt.Key_S:			mainWindow.saveKeysSelected();		return;
+				case Qt.Key_O:			mainWindow.openKeysSelected();		return;
+				case Qt.Key_Y:			mainWindow.syncKeysSelected();		return;
+				case Qt.Key_T:			mainWindow.refreshKeysSelected();	return;
+				case Qt.Key_Plus:		mainWindow.zoomInKeysSelected();	return;
+				case Qt.Key_Minus:		mainWindow.zoomOutKeysSelected();	return;
+				case Qt.Key_Equal:		mainWindow.zoomEqualKeysSelected();	return;
+				}
 		}
+
+
+		RibbonBar
+		{
+			id:		ribbon
+			z:		4
+
+			anchors
+			{
+				top:	parent.top
+				left:	parent.left
+				right:	parent.right
+			}
+		}
+
+		FileMenu
+		{
+			id:			filemenu
+			z:			3
+
+			anchors
+			{
+				top:	ribbon.bottom
+				left:	parent.left
+				bottom:	parent.bottom
+			}
+		}
+
+		MainPage
+		{
+			id: mainpage
+			z:	0
+
+			anchors
+			{
+				top:	ribbon.bottom
+				left:	parent.left
+				right:	parent.right
+				bottom:	parent.bottom
+			}
+		}
+
+		MouseArea
+		{
+			visible:		fileMenuModel.visible || modulesMenu.opened
+			z:				1
+			hoverEnabled:	true
+
+			onContainsMouseChanged: if(containsMouse) ribbonModel.highlightedModuleIndex = -1
+
+			anchors.fill:	parent
+
+			//Rectangle { id: purpleDebugRect; color: "purple"; anchors.fill: parent }
+
+			onClicked:
+			{
+				fileMenuModel.visible		= false
+				modulesMenu.opened			= false
+
+				mouse.accepted = false
+			}
+		}
+
+		ModulesMenu
+		{
+			id:			modulesMenu
+			z:			2
+
+			anchors
+			{
+				top:	ribbon.bottom
+				right:	parent.right
+				bottom:	parent.bottom
+			}
+		}
+
+		CreateComputeColumnDialog	{ id: createComputeDialog	}
+		ModuleInstaller				{ id: moduleInstallerDialog	}
+
+		/*MessageBox
+		{
+			id:	msgBox
+			z:	2
+
+			Connections
+			{
+				target:			mainWindow
+				onShowWarning:	msgBox.showWarning(title, message)
+			}
+
+		}*/
 	}
-
-	FileMenu
-	{
-		id:			filemenu
-		z:			3
-
-		anchors
-		{
-			top:	ribbon.bottom
-			left:	parent.left
-			bottom:	parent.bottom
-		}
-	}
-
-	MainPage
-	{
-		id: mainpage
-		z:	0
-
-		anchors
-		{
-			top:	ribbon.bottom
-			left:	parent.left
-			right:	parent.right
-			bottom:	parent.bottom
-		}
-	}
-
-	MouseArea
-	{
-		visible:		fileMenuModel.visible || modulesMenu.opened
-		z:				1
-		hoverEnabled:	true
-
-		onContainsMouseChanged: if(containsMouse) ribbonModel.highlightedModuleIndex = -1
-
-		anchors.fill:	parent
-
-		//Rectangle { id: purpleDebugRect; color: "purple"; anchors.fill: parent }
-
-		onClicked:
-		{
-			fileMenuModel.visible		= false
-			modulesMenu.opened			= false
-
-			mouse.accepted = false
-		}
-	}
-
-	ModulesMenu
-	{
-		id:			modulesMenu
-		z:			2
-
-		anchors
-		{
-			top:	ribbon.bottom
-			right:	parent.right
-			bottom:	parent.bottom
-		}
-	}
-
-	CreateComputeColumnDialog	{ id: createComputeDialog	}
-	ModuleInstaller				{ id: moduleInstallerDialog	}
-
-	/*MessageBox
-	{
-		id:	msgBox
-		z:	2
-
-		Connections
-		{
-			target:			mainWindow
-			onShowWarning:	msgBox.showWarning(title, message)
-		}
-
-	}*/
 }

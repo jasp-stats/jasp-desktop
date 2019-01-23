@@ -94,6 +94,15 @@ public slots:
 	void startDataEditorHandler();
 	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
 
+	void saveKeysSelected();
+	void openKeysSelected();
+	void syncKeysSelected();
+	void refreshKeysSelected();
+	void zoomInKeysSelected();
+	void zoomOutKeysSelected();
+	void zoomEqualKeysSelected();
+
+
 private:
 	void makeConnections();
 	void initQWidgetGUIParts();
@@ -165,13 +174,6 @@ private slots:
 	void populateUIfromDataSet();
 
 	void startDataEditorEventCompleted(FileEvent *event);
-	void saveKeysSelected();
-	void openKeysSelected();
-	void syncKeysSelected();
-	void refreshKeysSelected();
-	void zoomInKeysSelected();
-	void zoomOutKeysSelected();
-	void zoomEqualKeysSelected();
 
 	void fatalError();
 

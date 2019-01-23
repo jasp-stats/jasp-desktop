@@ -159,13 +159,7 @@ void MainWindow::makeConnections()
 	_package->resumeEngines.connect(	boost::bind(&MainWindow::resumeEngines,			this));
 
 
-	/*CONNECT_SHORTCUT("Ctrl+S",		&MainWindow::saveKeysSelected);
-	CONNECT_SHORTCUT("Ctrl+O",		&MainWindow::openKeysSelected);
-	CONNECT_SHORTCUT("Ctrl+Y",		&MainWindow::syncKeysSelected);
-	CONNECT_SHORTCUT("Ctrl+T",		&MainWindow::refreshKeysSelected);
-	CONNECT_SHORTCUT("Ctrl++",		&MainWindow::zoomInKeysSelected);
-	CONNECT_SHORTCUT("Ctrl+-",		&MainWindow::zoomOutKeysSelected);
-	CONNECT_SHORTCUT("Ctrl+=",		&MainWindow::zoomEqualKeysSelected);*/
+
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 	connect(this,					&MainWindow::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);

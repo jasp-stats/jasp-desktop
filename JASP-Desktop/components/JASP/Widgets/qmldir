@@ -27,3 +27,5 @@ MainWindow                  1.0 MainWindow.qml
 MainPage                    1.0 MainPage.qml
 FileMenu                    1.0 FileMenu/FileMenu.qml
 MessageBox                  1.0 MessageBox.qml
+AnalysisForms               1.0 AnalysisForms.qml
+AnalysisFormExpander        1.0 AnalysisFormExpander.qml
