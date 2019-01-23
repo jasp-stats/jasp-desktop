@@ -225,7 +225,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   }
 
   if (!is.null(errors) && errors == "No variables") {
-    .binomEmptyMainTable(binomialTable)
+    binomialTable$setExpectedRows(1)
     return()
   }
 
@@ -249,10 +249,6 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   )
 
   binomialTable$addFootnote(message = message, symbol = "<em>Note.</em>")
-}
-
-.binomEmptyMainTable <- function(tab) {
-  tab$addRows(rep(".", 9))
 }
 
 .binomContainerPlots <- function(jaspResults, dataset, options, binomResults, errors) {
