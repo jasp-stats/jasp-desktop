@@ -452,7 +452,7 @@ RegressionLinearBayesian <- function (
 	footnoteInteraction <- NULL
 	pInteraction <- 0.5 # probability of model inclusion conditional on inclusion parents
 	if (options$modelPrior == "beta.binomial") {
-		modelPrior <- BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
+		modelPrior <- BAS::beta.binomial(as.numeric(options$betaBinomialParamA), as.numeric(options$betaBinomialParamB))
 		if (hasInteraction) {
 			footnoteInteraction <- paste("Prior model probabilities for models with interaction effects",
 																	 "are obtained from a Bernoulli (p = 0.5) prior.",

@@ -13,7 +13,7 @@ test_that("Main tables' results match", {
   options$highlightText <- 0
   options$rotationMethod <- "oblique"
   options$obliqueSelector <- "oblimin"
-  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
 
   table <- results[["results"]][["factorLoadings"]][["data"]]
   expect_equal_tables(table,
@@ -30,20 +30,20 @@ test_that("Main tables' results match", {
   )
 })
 
-# test_that("Path diagram matches", {
-#   options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
-#   options$variables <- list("contWide", "contcor1", "facFifty", "contExpon")
-#   options$incl_pathDiagram <- TRUE
-#   results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "path-diagram", dir="ExploratoryFactorAnalysis")
-# })
+test_that("Path diagram matches", {
+  options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
+  options$variables <- list("contWide", "contcor1", "facFifty", "contExpon")
+  options$incl_pathDiagram <- TRUE
+  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+  expect_equal_plots(testPlot, "path-diagram", dir="ExploratoryFactorAnalysis")
+})
 
 test_that("Scree plot option creates .png", {
   options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
   options$variables <- list("contNormal", "contGamma")
   options$incl_screePlot <- TRUE
-  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
   expect_match(results[["results"]][["screePlot"]][["data"]], ".*\\.png")
 })
 
@@ -51,7 +51,7 @@ test_that("Factor correlation table matches", {
   options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
   options$variables <- list("contWide", "contcor1", "facFifty", "contExpon")
   options$incl_correlations <- TRUE
-  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
   table <- results[["results"]][["factorCorrelations"]][["data"]]
   expect_equal_tables(table, list("RC 1", 1))
 })
@@ -62,12 +62,12 @@ test_that("Missing values works", {
 	options$incl_correlations <- TRUE
 
 	options$missingValues <- "pairwise"
-	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 1.42781053334818, 2L, 0.489727939944839), label = "pairwise")
 
 	options$missingValues <- "listwise"
-	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 0.491396758561133, 2L, 0.782158104440787), label = "listwise")
 })

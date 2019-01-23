@@ -237,6 +237,12 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     if (is.null(name))
       stop("please supply an analysis name")
   }
+  
+  if (.insideTestEnvironment()) {
+    view <- FALSE
+    quiet <- TRUE
+  }
+  
   envir <- .GlobalEnv
   if (! isTRUE(sideEffects)) {
     if (! is.logical(sideEffects)) # users can supply a character vector
@@ -249,7 +255,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     libPaths <- .libPaths()
     on.exit({
       .removeS3Methods()
-      .resetInternals()
+      .resetRunTimeInternals()
       if (! "options" %in% sideEffects || identical(sideEffects, FALSE))
         .restoreOptions(opts)
       if (! "libpaths" %in% sideEffects || identical(sideEffects, FALSE))
@@ -262,7 +268,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   } else { # no side effects, but we still need on.exit
     on.exit({
       .removeS3Methods()
-      .resetInternals()
+      .resetRunTimeInternals()
       if (quiet)
         suppressWarnings(sink(NULL))
     })
@@ -326,6 +332,9 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     results <- jaspResults$getResults()
     .transferPlotsFromjaspResults()
   }
+  
+  if (.insideTestEnvironment())
+    .setInternal("lastResults", results)
 
   if (view)
     view(results)

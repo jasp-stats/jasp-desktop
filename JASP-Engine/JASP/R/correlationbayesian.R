@@ -2571,7 +2571,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 			variable2check <- na.omit(dataset[[.v(variables)[i]]])
 			d[i] <- class(variable2check)
-			sdCheck[i] <- sd(variable2check) > 0
+			sdCheck[i] <- length(variable2check) > 1 && sd(variable2check) > 0
 			infCheck[i] <- all(is.finite(variable2check))
 		}
 

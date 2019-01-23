@@ -13,7 +13,7 @@ test_that("Main table results match", {
   options$flagSupported <- TRUE
   options$credibleInterval <- TRUE
   options$priorWidth <- 1.5
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   table <- results[["results"]][["correlations"]][["data"]]
   expect_equal_tables(table,
     list("Pearson's r", "<unicode>", "", "BF<unicode><unicode>", "<unicode>",
@@ -30,32 +30,32 @@ test_that("Main table results match", {
   )
 })
 
-# test_that("Correlation plot matches", {
-#   options <- jasptools::analysisOptions("CorrelationBayesian")
-#   options$variables <- c("contcor1", "contcor2")
-#   options$plotCorrelationMatrix <- TRUE
-#   options$plotDensitiesForVariables <- TRUE
-#   options$plotPosteriors <- TRUE
-#   results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "correlation", dir="CorrelationBayesian")
-# })
+test_that("Correlation plot matches", {
+  options <- jasptools::analysisOptions("CorrelationBayesian")
+  options$variables <- c("contcor1", "contcor2")
+  options$plotCorrelationMatrix <- TRUE
+  options$plotDensitiesForVariables <- TRUE
+  options$plotPosteriors <- TRUE
+  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+  expect_equal_plots(testPlot, "correlation", dir="CorrelationBayesian")
+})
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("CorrelationBayesian")
 
   options$variables <- c("contNormal", "debInf")
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- c("contNormal", "debSame")
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- c("contNormal", "debMiss99")
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

@@ -227,7 +227,12 @@
 
 collapseTable <- function(rows) {
   if (! is.list(rows) || length(rows) == 0) {
-    stop("expecting input to be a list with table rows")
+    if (.insideTestEnvironment()) {
+      errorMsg <- .getErrorMsgFromLastResults()
+      stop(paste("Tried retrieving table rows from results, but last run of jasptools exited with an error:", errorMsg))
+    } else {
+      stop("expecting input to be a list (with a list for each JASP table row)")
+    }
   }
 
   x <- unname(unlist(rows))
@@ -249,4 +254,30 @@ collapseTable <- function(rows) {
   }
 
   return(analysis)
+}
+
+.insideTestEnvironment <- function() {
+  testthat <- vapply(sys.frames(), 
+    function(frame) 
+      methods::getPackageName(frame) == "testthat", 
+    logical(1))
+  if (any(testthat)) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+.getErrorMsgFromLastResults <- function() {
+  errorMsg <- NULL
+  lastResults <- .getInternal("lastResults")
+  if (jsonlite::validate(lastResults))
+    lastResults <- jsonlite::fromJSON(lastResults)
+    
+  if (is.null(lastResults) || !is.list(lastResults) || is.null(names(lastResults)))
+    return(errorMsg)
+  
+  if (lastResults[["status"]] == "exception" && is.list(lastResults[["results"]]))
+    errorMsg <- lastResults$results$errorMessage
+  
+  return(errorMsg)
 }

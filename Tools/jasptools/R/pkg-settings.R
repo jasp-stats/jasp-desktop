@@ -83,7 +83,7 @@ setPkgOption <- function(name, value) {
   return(.internal[[name]])
 }
 
-.resetInternals <- function() {
+.resetRunTimeInternals <- function() {
   .setInternal("state", NULL)
   .setInternal("dataset", NULL)
   .setInternal("s3Methods", NULL)

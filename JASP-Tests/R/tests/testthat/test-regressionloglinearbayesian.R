@@ -24,7 +24,7 @@ test_that("Main table results match", {
   options$priorShape <- 0
   options$maxModels <- 2
   options$posteriorProbabilityCutOff <- 0.001
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
   table <- results[["results"]][["posteriorTable"]][["data"]]
   expect_equal_tables(table,
     list(1, "contBinom + facGender", 0.963333333333333, 1, 2,
@@ -45,7 +45,7 @@ test_that("General summary statistics table matches", {
   options$regressionCoefficientsEstimates <- TRUE
   options$regressionCoefficientsCredibleIntervals <- TRUE
   options$regressionCoefficientsCredibleIntervalsInterval <- 0.90
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
   table <- results[["results"]][["Bayesianlogregression"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 1, 2.28941355597128, 0.0114477565469203, 2.12177466183418,
@@ -81,7 +81,7 @@ test_that("Submodel summary statistics table matches", {
   options$regressionCoefficientsSubmodelCredibleIntervals <- TRUE
   options$regressionCoefficientsSubmodelEstimates <- TRUE
   options$regressionCoefficientsSubmodelNo <- 2
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
   table <- results[["results"]][["BayesianSublogregression"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 2.29560729883006, 0.00945972825329099, 2.12809954463567,

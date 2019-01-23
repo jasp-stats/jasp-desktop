@@ -1,5 +1,5 @@
 language: r
-r: "3.4.3"
+r: 3.5.2
 cache: packages
 
 matrix:
@@ -19,3 +19,8 @@ matrix:
       script:
         - cd JASP-Tests/R/tests/
         - R < testthat.R --no-save
+
+env:
+  global:
+    - R_REMOTES_NO_ERRORS_FROM_WARNINGS=true
+    - VDIFFR_RUN_TESTS=false

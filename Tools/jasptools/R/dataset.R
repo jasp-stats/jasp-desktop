@@ -35,8 +35,7 @@
   # and first look in the most likely location;
   # this means tests.data.dir if we're in a testthat context and otherwise data.dir
   locOrder <- c(.getPkgOption("data.dir"), .getPkgOption("tests.data.dir"))
-  testthat <- vapply(sys.frames(), function(frame) methods::getPackageName(frame) == "testthat", logical(1))
-  if (any(testthat)) {
+  if (.insideTestEnvironment()) {
     locOrder <- rev(locOrder)
   }
   return(locOrder)

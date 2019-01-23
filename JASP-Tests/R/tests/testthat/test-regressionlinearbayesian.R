@@ -4,6 +4,7 @@ context("Bayesian Linear Regression")
 # - plots (will/ should be updated in the future)
 
 test_that("Main tables results match", {
+    set.seed(1)
     options <- jasptools::analysisOptions("RegressionLinearBayesian")
     options$dependent <- "contNormal"
     options$covariates <- "contGamma"
@@ -14,7 +15,7 @@ test_that("Main tables results match", {
     options$postSummaryTable <- TRUE
     options$descriptives <- TRUE
     
-    results <- jasptools::run("RegressionLinearBayesian", "test.csv", options, view=FALSE)#, quiet=TRUE)
+    results <- jasptools::run("RegressionLinearBayesian", "test.csv", options)
     table <- results[["results"]][["regressionTable"]][["data"]]
     expect_equal_tables(
         table,
@@ -23,12 +24,14 @@ test_that("Main tables results match", {
              1.55940279678024e-06, 0.5), 
         label = "regressionTable"
     )
-    
+
     table <- results[["results"]][["posteriorSummary"]][["posteriorSummaryTable"]][["data"]]
     expect_equal_tables(
         table,
-        list("Intercept", -0.255843391953333, 0.098887098249712, 1, 1, 1, -0.452056848593604,
-              -0.0596299353130632), 
+        list("Intercept", -0.255843391953333, 0.0989748100578513, 1, 1, 1,
+             -0.47763974261721, -0.0887658028069459, "contGamma", -0.000116767975422579,
+             0.0241168865879483, 0.173953879458502, 0.5, 0.210586158729818,
+             -0.0551020698857689, 0.0781883358646909), 
         label = "posteriorSummaryTable"
     )
     

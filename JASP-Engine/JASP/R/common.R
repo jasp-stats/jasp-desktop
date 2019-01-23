@@ -1638,7 +1638,8 @@ isTryError <- function(obj){
 	base::Encoding(relativePath) <- "UTF-8"
 
 	try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
-
+  
+	return(list(relativePath = relativePath))
 }
 
 .retrieveState <- function() {

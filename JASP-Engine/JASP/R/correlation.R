@@ -493,10 +493,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     for (i in seq_along(variables)) {
       variable.statuses[[i]]$unplotable <- FALSE
       variable.statuses[[i]]$plottingError <- NULL
-
-      errors <- .hasErrors(dataset, perform, type=c("infinity", "variance", "observations", "observationsPairwise"),
-                           all.target=variables[i], message="short", observations.amount="< 3",
-                           observationsPairwise.amount=2)
+      errors <- .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
+                           all.target=variables[i], message="short", observations.amount="< 3")
       
       if (! identical(errors, FALSE)) {
         variable.statuses[[i]]$unplotable <- TRUE
