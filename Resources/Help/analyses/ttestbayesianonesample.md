@@ -44,7 +44,7 @@ Test value specified in the null hypothesis
 
 #### Plots:
 - *Prior and posterior*: Displays the prior and posterior density of the effect size under the alternative hypothesis
-  - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior density of the effect size
+  - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior density of the effect size
 - *Bayes factor robustness check*: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The scale of the Cauchy prior is varied between 0 and 1.5, creating progressively more uninformative priors
 - *Sequential analysis*: Displays the development of the Bayes factor as the data come in using the user-defined prior
   - Robustness check: Adds the results of the sequential analysis using the wide (scale=1) and ultrawide prior (scale=sqrt(2))
@@ -70,9 +70,9 @@ Test value specified in the null hypothesis
 
 #### Plots:
 - *Prior and posterior*: Displays the prior (dashed line) and posterior (solid line) density of the effect size under the alternative hypothesis; the gray circles represent the height of the prior and the posterior density at effect size delta = 0. The horizontal solid line represents the width of the 95% credible interval of the posterior
-  - Additional info: Displays the Bayes factor computed with the user-defined prior; displays a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density
+  - Additional info: Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density
 - *Bayes factor robustness check*: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The black circle represents the Bayes factor computed with a wide prior; the white circle represents the Bayes factor computed with an ultrawide prior; the gray circle represents the Bayes factor computed with the user-defined prior
-- *Sequential analysis*: Displays the development of the Bayes factor as a function of the number of data points (n) using the user-defined prior; displays the Bayes factor computed with the user-defined prior; displays a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density; shows the decisiveness of the evidence in terms of Jeffreys' (1961) evidence categories
+- *Sequential analysis*: Displays the development of the Bayes factor as a function of the number of data points (n) using the user-defined prior; displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density; shows the decisiveness of the evidence in terms of Jeffreys' (1961) evidence categories
   - Robustness check: Displays the development of the Bayes factor as a function of the number of data points (n) using the wide and ultrawide prior. The black circle represents the Bayes factor computed with a wide prior; the white circle represents the Bayes factor computed with an ultrawide prior; the gray circle represents the Bayes factor computed with the user-defined prior
 - *Descriptives plots*
   - Credible interval: Default is 95%

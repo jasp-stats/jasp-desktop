@@ -22,7 +22,7 @@ The Bayesian Correlation Pairs allows you to test the null hypothesis that the p
 
 #### Plots
 - *Prior and posterior*: Displays the prior (dashed line) and posterior (solid line) density of the correlation under the alternative hypothesis; the gray circles represent the height of the prior and the posterior density at 0. The horizontal solid line represents the width of the 95% credible interval of the posterior
-  - Additional info: Displays the Bayes factor; displays a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density
+  - Additional info: Displays the Bayes factor; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density
 - *Bayes factor robustness plot*: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The scale of the Cauchy prior is varied between 0 and 1.5 (between 0 and 2 if user prior width is greater than 1.5), creating progressively more uninformative priors.
 
 #### Prior

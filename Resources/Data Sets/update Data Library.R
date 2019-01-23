@@ -109,22 +109,22 @@ createEntries <- function(folder){
     description <- paste(description, "<br><br>")
     
     # load analysis 
-    analysis <- descriptions[match(name, descriptions$Chapter), "Analysis"]
+    analysis<- descriptions[match(name, descriptions$Chapter), "Analysis2"]
     analysis <- paste("The example JASP file demonstrates the use of ", analysis,".<br><br>", sep = "")
-    
+  
     # load the source information
     origin <- descriptions[match(name, descriptions$Chapter), "Origin"]
     origin <- paste0("<i>", origin, "</i>")
+  
     
-    # create jasp files
-    jaspfiles <- data.frame(
-      name = gsub(".jasp", "", jaspfiles),
-      path = jaspfiles,
-      description = paste(description, analysis, origin),
-      kind = "file",
-      stringsAsFactors = FALSE
-    )
-    
+      jaspfiles <- data.frame(
+        name = gsub(".jasp", "", jaspfiles),
+        path = jaspfiles,
+        description = paste(description, analysis, origin),
+        kind = "file",
+        stringsAsFactors = FALSE
+        )
+
     # associate jasp files with csv files
     csvfiles <- data.frame(
       name = gsub(".csv", "", csvfiles),

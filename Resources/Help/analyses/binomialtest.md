@@ -3,12 +3,12 @@ Binomial Test
 The binomial test allows you to test whether a proportion of a dichotomous variable is equal to a test value (=presumed population value).
 Assumptions
 -------
-- The test variable should be a dichotomous scale.
+- The variable should be a dichotomous scale.
 - Observations should be independent
 
 Options
 -----------
-Test value: The proportion of the test variable under the null hypothesis.
+Test value: The proportion of the variable under the null hypothesis.
 ### Hypothesis
 - *&ne; Test value*: Two-sided alternative hypothesis that the proportion is not equal to test value
 - *&gt; Test value*: One-sided alternative hypothesis that the proportion is larger than the test value
