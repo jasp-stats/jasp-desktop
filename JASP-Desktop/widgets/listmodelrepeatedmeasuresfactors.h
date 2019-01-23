@@ -16,17 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELMEASURESFACTORS_H
-#define LISTMODELMEASURESFACTORS_H
+#ifndef LISTMODELREPEATEDMEASURESFACTORS_H
+#define LISTMODELREPEATEDMEASURESFACTORS_H
 
 #include "listmodel.h"
 
-class ListModelFactors : public ListModel
+class ListModelRepeatedMeasuresFactors : public ListModel
 {
 	Q_OBJECT
 public:
 	
-	ListModelFactors(QMLListView* listView);
+	ListModelRepeatedMeasuresFactors(QMLListView* listView);
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 	
@@ -55,4 +55,4 @@ protected:
 	void _setAllLevelsCombinations();
 };
 
-#endif // LISTMODELMEASURESFACTORS_H
+#endif // LISTMODELREPEATEDMEASURESFACTORS_H

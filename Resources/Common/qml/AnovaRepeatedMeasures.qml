@@ -36,7 +36,7 @@ Form
 	VariablesForm
 	{
 		height: 520
-		FactorsList { name: "repeatedMeasuresFactors"; title: qsTr("Repeated Measures Factors"); height: 180 }
+		RepeatedMeasuresFactorsList { name: "repeatedMeasuresFactors"; title: qsTr("Repeated Measures Factors"); height: 180 }
 		AssignedVariablesList
 		{
 			name: "repeatedMeasuresCells"

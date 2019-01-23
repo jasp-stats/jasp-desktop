@@ -44,8 +44,8 @@ public:
     
 protected:
 	OptionsTable *_boundTo;
-	ListModel *_tableModel = NULL;
-	ListModelMultinomialChi2Test *_multinomialChi2TestModel = NULL;
+	ListModel *_tableModel = nullptr;
+	ListModelMultinomialChi2Test *_multinomialChi2TestModel = nullptr;
 	
 private slots:
 	void addColumnSlot();

@@ -30,9 +30,6 @@ class BoundQMLListViewDraggable : public QMLListViewDraggable, public BoundQMLIt
 {
 	Q_OBJECT
 	
-	typedef QPair<int, QMap<QString, BoundQMLItem*> > RowBoundItemType;
-	typedef QPair<int, QMap<QString, QQuickItem*> > RowQuickItemType;
-	
 public:
 	BoundQMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
@@ -42,24 +39,15 @@ protected:
 	ListModelAvailableInterface* _sourceModel;
 	ListModelAssignedInterface* assignedModel();
 	
-	bool _hasExtraControlColumns;
 	std::string _extraControlVariableName;
-	QMap<QString, QMap<QString, QString> > _extraControlColumns;
-	QMap<QString, QMap<QString, BoundQMLItem*> > _rowsWithControls;
+	bool _hasExtraControls	= false;
 	
 	void addExtraOptions(Options* options);
 	
-protected slots:
-	void removeRowWithControlsHandler(int index, QString name);
-	void addRowWithControlsHandler(int index, QString name, QVariant controls);
-
 private:
 	Terms _tempTerms;
-	QMap<QString, RowBoundItemType> _cachedRows;
-	QMap<QString, RowQuickItemType> _addedRows;
+	QVector<QMap<QString, QVariant> > _extraControlColumns;
 	
-	void _mapRowsWithBoundItems();
-	void _resetQuickItems(const QMap<QString, QQuickItem*>& quickItems, const QMap<QString, BoundQMLItem*>& boundItems);
 };
 
 #endif // BOUNDQMLLISTVIEWDRAGGABLE_H

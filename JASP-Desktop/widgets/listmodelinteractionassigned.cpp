@@ -76,7 +76,7 @@ QVariant ListModelInteractionAssigned::data(const QModelIndex &index, int role) 
 		}
 	}
 
-	return QVariant();
+	return ListModelAssignedInterface::data(index, role);
 }
 
 int ListModelInteractionAssigned::rowCount(const QModelIndex &) const

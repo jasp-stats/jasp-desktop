@@ -52,7 +52,7 @@ public:
 	virtual ~Analysis();
 
 	Options *options() const { return _options; }
-	const Json::Value&	oldVersionOptions() const { return _oldVersionOptions; }
+	const Json::Value&	optionsFromJASPFile() const { return _optionsFromJASPFile; }
 
 	boost::signals2::signal<void (Analysis *source)>						optionsChanged;
 	boost::signals2::signal<void (Analysis *source)>						toRefresh;
@@ -149,7 +149,7 @@ protected:
 							_refreshBlocked	= false;
 
 	Options*				_options;
-	Json::Value				_oldVersionOptions = Json::nullValue;		// For backward compatibility: options coming form old JASP file.
+	Json::Value				_optionsFromJASPFile = Json::nullValue;		// For backward compatibility: options coming form old JASP file.
 	Json::Value				_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,

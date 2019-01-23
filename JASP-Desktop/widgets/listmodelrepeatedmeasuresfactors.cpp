@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodelfactors.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 #include "analysis/options/options.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
@@ -26,19 +26,19 @@
 
 using namespace std;
 
-ListModelFactors::ListModelFactors(QMLListView* listView)
+ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(QMLListView* listView)
 	: ListModel(listView)
 {
 	_itemType = "fixedFactors";
 }
 
-int ListModelFactors::rowCount(const QModelIndex &parent) const
+int ListModelRepeatedMeasuresFactors::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 	return _factors.length();
 }
 
-QVariant ListModelFactors::data(const QModelIndex &index, int role) const
+QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
 	
@@ -51,11 +51,11 @@ QVariant ListModelFactors::data(const QModelIndex &index, int role) const
 	const Factor& factor = _factors.at(row);
 	
 	QString value;
-	if (role == Qt::DisplayRole || role == ListModelFactors::NameRole)
+	if (role == Qt::DisplayRole || role == ListModelRepeatedMeasuresFactors::NameRole)
 	{
 		value = factor.value;
 	}
-	else if (role == ListModelFactors::TypeRole)
+	else if (role == ListModelRepeatedMeasuresFactors::TypeRole)
 	{
 		QStringList listValues;
 		if (factor.isVirtual)
@@ -78,7 +78,7 @@ QVariant ListModelFactors::data(const QModelIndex &index, int role) const
 	return QVariant(value);	
 }
 
-void ListModelFactors::initFactors(const vector<pair<string, vector<string> > > &factors)
+void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vector<string> > > &factors)
 {
 	beginResetModel();
 	
@@ -110,7 +110,7 @@ void ListModelFactors::initFactors(const vector<pair<string, vector<string> > > 
 	_setAllLevelsCombinations();	
 }
 
-vector<pair<string, vector<string> > > ListModelFactors::getFactors() const
+vector<pair<string, vector<string> > > ListModelRepeatedMeasuresFactors::getFactors() const
 {
 	vector<pair<string, vector<string> > > result;
 	string currentFactorName;
@@ -136,17 +136,17 @@ vector<pair<string, vector<string> > > ListModelFactors::getFactors() const
 	return result;
 }
 
-const Terms &ListModelFactors::getLevels() const
+const Terms &ListModelRepeatedMeasuresFactors::getLevels() const
 {
 	return _allLevelsCombinations;
 }
 
-const Terms& ListModelFactors::terms() const
+const Terms& ListModelRepeatedMeasuresFactors::terms() const
 {
 	return _terms;
 }
 
-void ListModelFactors::_setAllLevelsCombinations()
+void ListModelRepeatedMeasuresFactors::_setAllLevelsCombinations()
 {
 	vector<vector<string> > allLevelsCombinations;
 	_terms.set(_factorTitles);
@@ -190,7 +190,7 @@ void ListModelFactors::_setAllLevelsCombinations()
 	_allLevelsCombinations.set(allLevelsCombinations);
 }
 
-void ListModelFactors::itemChanged(int row, QVariant value)
+void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 {
 	if (row >= _factors.length())
 	{
@@ -266,7 +266,7 @@ void ListModelFactors::itemChanged(int row, QVariant value)
 	emit modelChanged();
 }
 
-void ListModelFactors::itemRemoved(int row)
+void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 {
 	if (row >= _factors.length())
 	{

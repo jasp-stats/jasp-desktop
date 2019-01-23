@@ -17,7 +17,7 @@
 //
 
 #include "listmodelmeasurescellsassigned.h"
-#include "listmodelfactors.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 #include "boundqmllistviewmeasurescells.h"
 
 #include <QDebug>
@@ -200,9 +200,7 @@ QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role
 			result = "level";
 	}
 	else
-	{
-		qDebug() << "Unused Role: " << role;
-	}
+		return ListModelAssignedInterface::data(index, role);
 
 	return result;
 }

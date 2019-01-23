@@ -316,8 +316,6 @@ HEADERS += \
     widgets/listmodeltermsavailable.h \
     mainwindow.h \
     utilities/extractarchive.h \
-    widgets/boundqmlfactorslist.h \
-    widgets/listmodelfactors.h \
     widgets/listmodel.h \
     widgets/qmllistview.h \
     widgets/qmlitem.h \
@@ -360,7 +358,10 @@ HEADERS += \
     gui/preferencesmodel.h \
     widgets/filemenu/actionbuttons.h \
     widgets/filemenu/resourcebuttons.h \
-    widgets/filemenu/resourcebuttonsvisible.h
+    widgets/filemenu/resourcebuttonsvisible.h \
+    widgets/boundqmlrepeatedmeasuresfactors.h \
+    widgets/listmodelrepeatedmeasuresfactors.h \
+    widgets/listmodelextracontrols.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -489,8 +490,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     utilities/extractarchive.cpp \
-    widgets/boundqmlfactorslist.cpp \
-    widgets/listmodelfactors.cpp \
     widgets/listmodel.cpp \
     widgets/qmllistview.cpp \
     widgets/qmlitem.cpp \
@@ -532,7 +531,10 @@ SOURCES += \
     gui/preferencesmodel.cpp \
     widgets/filemenu/actionbuttons.cpp \
     widgets/filemenu/resourcebuttons.cpp \
-    widgets/filemenu/resourcebuttonsvisible.cpp
+    widgets/filemenu/resourcebuttonsvisible.cpp \
+    widgets/boundqmlrepeatedmeasuresfactors.cpp \
+    widgets/listmodelrepeatedmeasuresfactors.cpp \
+    widgets/listmodelextracontrols.cpp
 
 RESOURCES += \
     html/html.qrc \

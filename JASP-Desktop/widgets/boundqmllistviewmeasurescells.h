@@ -21,7 +21,7 @@
 
 #include "boundqmllistviewdraggable.h"
 #include "listmodelmeasurescellsassigned.h"
-#include "listmodelfactors.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 #include "analysis/options/optionvariables.h"
 
 class BoundQMLListViewMeasuresCells : public BoundQMLListViewDraggable
@@ -46,7 +46,7 @@ protected slots:
 private:
 	OptionVariables* _boundTo;
 	ListModelMeasuresCellsAssigned* _measuresCellsModel;
-	QList<ListModelFactors*> _syncFactorsModels;
+	QList<ListModelRepeatedMeasuresFactors*> _syncFactorsModels;
 	
 	Terms _tempTerms;
 	

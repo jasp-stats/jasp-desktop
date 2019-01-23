@@ -34,7 +34,7 @@ public:
 	virtual ListModel* model() OVERRIDE	{ return _variablesModel; }
 	virtual Option* boundTo() OVERRIDE
 	{
-		if (_hasExtraControlColumns)
+		if (_hasExtraControls)
 			return _optionsTable;
 		else
 			return _optionVariables; 
@@ -47,16 +47,14 @@ public:
 	
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;
-	
-	void _bindExtraControls();
+	void bindExtraControlOptions();
 
 private:
 	OptionVariables* _optionVariables;
 	OptionsTable* _optionsTable;
 	ListModelTermsAssigned* _variablesModel;
-	bool _singleItem;
+	bool _singleItem		= false;
 	
-	void _connectExtraControlOptions();		
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

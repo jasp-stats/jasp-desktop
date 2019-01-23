@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "boundqmlfactorslist.h"
+#include "boundqmlrepeatedmeasuresfactors.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 
@@ -25,19 +25,19 @@
 
 using namespace std;
 
-BoundQMLFactorsList::BoundQMLFactorsList(QQuickItem *item, AnalysisForm *form)
+BoundQMLRepeatedMeasuresFactors::BoundQMLRepeatedMeasuresFactors(QQuickItem *item, AnalysisForm *form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
 	, BoundQMLItem(item, form)
 {
-	_factorsModel = new ListModelFactors(this);
+	_factorsModel = new ListModelRepeatedMeasuresFactors(this);
 	setTermsAreNotVariables();
 	
 	QQuickItem::connect(_item, SIGNAL(itemChanged(int, QVariant)), _factorsModel, SLOT(itemChanged(int, QVariant)));	
 	QQuickItem::connect(_item, SIGNAL(itemRemoved(int)), _factorsModel, SLOT(itemRemoved(int)));		
 }
 
-void BoundQMLFactorsList::bindTo(Option *option)
+void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
@@ -60,11 +60,11 @@ void BoundQMLFactorsList::bindTo(Option *option)
 	_factorsModel->initFactors(factors);
 }
 
-void BoundQMLFactorsList::unbind()
+void BoundQMLRepeatedMeasuresFactors::unbind()
 {
 }
 
-Option* BoundQMLFactorsList::createOption()
+Option* BoundQMLRepeatedMeasuresFactors::createOption()
 {
 	
 	Options* templote = new Options();
@@ -89,7 +89,7 @@ Option* BoundQMLFactorsList::createOption()
 	return optionsTable;
 }
 
-void BoundQMLFactorsList::modelChangedHandler()
+void BoundQMLRepeatedMeasuresFactors::modelChangedHandler()
 {
 	const vector<pair<string, vector<string> > > &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;

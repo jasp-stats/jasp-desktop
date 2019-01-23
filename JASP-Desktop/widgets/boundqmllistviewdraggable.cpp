@@ -22,10 +22,9 @@
 #include "qmllistviewtermsavailable.h"
 #include "analysis/options/optionstable.h"
 #include "analysis/options/optionvariable.h"
-
-#include "boundqmlcheckbox.h"
-#include "boundqmlcombobox.h"
-#include "boundqmltextinput.h"
+#include "analysis/options/optionboolean.h"
+#include "analysis/options/optionlist.h"
+#include "analysis/options/optionstring.h"
 
 #include <QQuickItem>
 #include <QQmlProperty>
@@ -36,38 +35,50 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 	: QMLListViewDraggable(item, form)
 	, BoundQMLItem(item, form) 
 {
-	_hasExtraControlColumns = QQmlProperty(_item, "hasExtraControlColumns").read().toBool();
-	if (_hasExtraControlColumns)
+	_extraControlVariableName = QQmlProperty(_item, "extraControlVariableName").read().toString().toStdString();
+	QStringList extraControlTitles;
+	
+	QList<QVariant> extraControlColumnsVariants = QQmlProperty(_item, "extraControlColumns").read().toList();
+	for (const QVariant& extraControlColumnVariant : extraControlColumnsVariants)
 	{
-		_extraControlVariableName = QQmlProperty(_item, "extraControlVariableName").read().toString().toStdString();
-		QList<QVariant> extraColumns = QQmlProperty(_item, "controlColumns").read().toList();
-		for (const QVariant& extraColumnVariant : extraColumns)
-		{
-			QMap<QString, QString> properties;
-			QString columnName;
-			
-			QObject* extraColumnObject = extraColumnVariant.value<QObject*>();
-			const QMetaObject *meta = extraColumnObject->metaObject();
-			int propertyCount = meta->propertyCount();
-			for (int i = 0; i < propertyCount; ++i)
-			{
-				QMetaProperty property = meta->property(i);
-				QString key = QString::fromLatin1(property.name());
-				QString value = property.read(extraColumnObject).toString();
-				if (key == "name")
-					columnName = value;
-				else
-					properties[key] = value;
-			}
-					
-			if (columnName.isEmpty())
-				addError(QString::fromLatin1("An Extra column in ") + name() + QString::fromLatin1(" has no name"));
-			else if (!properties.contains("type"))
-				addError(QString::fromLatin1("An Extra column in ") + name() + QString::fromLatin1(" has no type"));
-			else
-				_extraControlColumns[columnName] = properties;
-		}
+		QMap<QString, QVariant> properties;
 		
+		QObject* extraControlColumnObject = extraControlColumnVariant.value<QObject*>();
+		const QMetaObject *meta = extraControlColumnObject->metaObject();
+		int propertyCount = meta->propertyCount();
+		for (int i = 0; i < propertyCount; ++i)
+		{
+			QMetaProperty property = meta->property(i);
+			QString key = QString::fromLatin1(property.name());
+			QVariant value = property.read(extraControlColumnObject);
+			bool addValue = true;
+			switch (QMetaType::Type(property.type()))
+			{
+			case QMetaType::Int:
+				if (value.toInt() == 0) addValue = false;
+				break;
+			case QMetaType::QString:
+				if (value.toString().isEmpty()) addValue = false;
+				if (key == "title")
+				{
+					extraControlTitles.push_back(value.toString());
+					addValue = false;
+				}
+				break;
+			default:
+				addValue = true;
+			}
+			if (addValue)
+				properties[key] = value;
+		}
+
+		_extraControlColumns.push_back(properties);
+	}
+	
+	if (_extraControlColumns.length() > 0)
+	{
+		_item->setProperty("extraControlTitles", extraControlTitles);
+		_hasExtraControls = true;
 	}
 }
 
@@ -75,16 +86,9 @@ void BoundQMLListViewDraggable::setUp()
 {	
 	QMLListViewDraggable::setUp();
 	
-	if (_hasExtraControlColumns)
-	{
-		// The extra controls are handled completly outside the model
-		// The QML VariableList adds automatically the controls dynamically
-		// This class has to build the right Bound objects and associate them with each control
-		// The concrete classes (BoundQMLListViewAnovaModels and BoundQMLListViewTerms) will have to bind the options with the bound objects.
-		QQuickItem::connect(_item, SIGNAL(removeRowWithControls(int, QString)), this, SLOT(removeRowWithControlsHandler(int, QString)));
-		QQuickItem::connect(_item, SIGNAL(addRowWithControls(int, QString, QVariant)), this, SLOT(addRowWithControlsHandler(int, QString, QVariant)));	
-	}
 	ListModel* sourceModel = _form->getRelatedModel(this);
+	ListModelAssignedInterface* _assignedModel = assignedModel();
+	
 	if (!sourceModel)
 	{
 		if (syncModels().empty())
@@ -93,7 +97,6 @@ void BoundQMLListViewDraggable::setUp()
 	else
 	{
 		_sourceModel = dynamic_cast<ListModelAvailableInterface*>(sourceModel);
-		ListModelAssignedInterface* _assignedModel = assignedModel();
 		if (!_sourceModel)
 			addError(QString::fromLatin1("Wrong kind of source ListView for item ") + name());
 		else
@@ -108,6 +111,9 @@ void BoundQMLListViewDraggable::setUp()
 			connect(_sourceModel, &ListModelAvailableInterface::modelChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);			
 		}
 	}
+	
+	_assignedModel->addExtraControls(_extraControlColumns);
+	
 }
 
 ListModelAssignedInterface* BoundQMLListViewDraggable::assignedModel()
@@ -117,12 +123,9 @@ ListModelAssignedInterface* BoundQMLListViewDraggable::assignedModel()
 
 void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 {
-	QMapIterator<QString, QMap<QString, QString> > it(_extraControlColumns);
-	while (it.hasNext())
+	for (const QMap<QString, QVariant>& properties : _extraControlColumns)
 	{
-		it.next();
-		const QMap<QString, QString>& properties = it.value();
-		QString type = properties["type"];
+		QString type = properties["type"].toString();
 		Option* option = nullptr;
 		if (type == "CheckBox")
 			option = new OptionBoolean();
@@ -131,154 +134,9 @@ void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 		else if (type == "TextField")
 			option = new OptionString();
 		if (option)
-			options->add(it.key().toStdString(), option);
+			options->add(properties["name"].toString().toStdString(), option);
 		else
 			addError(QString::fromLatin1("Extra column in ") + name() + " has an unsupported type: " + type);
 	}
 	
-}
-
-void BoundQMLListViewDraggable::removeRowWithControlsHandler(int index, QString name)
-{	
-	if (_rowsWithControls.contains(name))
-	{
-		_cachedRows.insert(name, qMakePair(index, _rowsWithControls[name]));
-		_rowsWithControls.remove(name);
-		_addedRows.remove(name);
-	}
-	else
-		qDebug() << "removeRowWithControlsHandler: Row " << name << " is unknown!!!";	
-}
-
-void BoundQMLListViewDraggable::addRowWithControlsHandler(int index, QString name, QVariant controls)
-{
-	QList<QVariant> controlList = controls.toList();
-	QMap<QString, QQuickItem*> controlItems;
-	
-	for (const QVariant& controlVariant : controlList)
-	{
-		QQuickItem* controlItem = qvariant_cast<QQuickItem *>(controlVariant);
-		QString controlName = controlItem->property("name").toString();
-		if (controlName.isEmpty())
-			addError(QString::fromLatin1("An Extra control Column in ") + this->name() + QString::fromLatin1(" has no name"));
-		else
-			controlItems[controlName] = controlItem;
-	}
-
-	_addedRows.insert(name, qMakePair(index, controlItems));
-
-	// When all rows have been added in QML, map them with the right BoundItems
-	if (model()->rowCount() == index + 1)
-	{
-		_rowsWithControls.clear();
-		QTimer::singleShot(0, this, &BoundQMLListViewDraggable::_mapRowsWithBoundItems);
-	}
-}
-	
-void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
-{
-	QMap<int, QPair<QString, QMap<QString, QQuickItem*> > > rowsNotFound;
-	
-	// First find the rows in the cache with the same name
-	QMapIterator<QString, RowQuickItemType> addedRowsIt(_addedRows);	
-	while (addedRowsIt.hasNext())
-	{
-		addedRowsIt.next();
-		QString name = addedRowsIt.key();
-		const RowQuickItemType& row = addedRowsIt.value();
-		int index = row.first;
-		const QMap<QString, QQuickItem*>& quickItems = row.second;
-		
-		if (_cachedRows.contains(name))
-		{
-			qDebug() << "A cached row had been found for " << name;
-			QMap<QString, BoundQMLItem*>& cachedRow = _cachedRows[name].second;
-			_resetQuickItems(quickItems, cachedRow);
-			_rowsWithControls[name] = cachedRow;
-			_cachedRows.remove(name);
-		}
-		else
-			rowsNotFound[index] = qMakePair(name, quickItems);
-	}
-	
-	// It there are some rows not found via the name of the variable,
-	// Check if there is a cached row having the same index
-	if (rowsNotFound.size() > 0 && _cachedRows.size() > 0)
-	{
-		QMap<int, QMap<QString, BoundQMLItem*> > remainingCachedRows;
-		QMapIterator<QString, RowBoundItemType> cachedRowsIt(_cachedRows);
-		while (cachedRowsIt.hasNext())
-		{
-			cachedRowsIt.next();
-			const RowBoundItemType& cachedRow = cachedRowsIt.value();
-			remainingCachedRows[cachedRow.first] = cachedRow.second;
-		}
-		
-		QMapIterator<int, QMap<QString, BoundQMLItem*> > remainingCachedRowsIt(remainingCachedRows);
-		while (remainingCachedRowsIt.hasNext())
-		{
-			remainingCachedRowsIt.next();
-			int index = remainingCachedRowsIt.key();
-			if (rowsNotFound.contains(index))
-			{
-				qDebug() << "Rows index " << index << " has apparently a new name: " << rowsNotFound[index].first;
-				const QMap<QString, BoundQMLItem*>& cachedRow = remainingCachedRowsIt.value();
-				_resetQuickItems(rowsNotFound[index].second, cachedRow);
-				_rowsWithControls[rowsNotFound[index].first] = cachedRow;
-				rowsNotFound.remove(index);
-			}
-		}
-	}
-	
-	// If there are still some rows not found in the cache: build the BoundItem
-	for (const QPair<QString, QMap<QString, QQuickItem*> >& quickItemRow : rowsNotFound.values())
-	{	
-		QString name = quickItemRow.first;
-		QMap<QString, BoundQMLItem*> boundItemRow;
-		for (QQuickItem* controlItem : quickItemRow.second.values())
-		{
-			QString controlTypeStr = QQmlProperty(controlItem, "controlType").read().toString();
-			if (controlTypeStr.isEmpty())
-			{
-				qDebug() << "Control Type undefined in TableView!!";
-				continue;
-			}
-			
-			BoundQMLItem* boundQMLItem = nullptr;
-			qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
-	
-			switch(controlType)
-			{
-			case qmlControlType::CheckBox:		//fallthrough:
-			case qmlControlType::Switch:		boundQMLItem = new BoundQMLCheckBox(controlItem,	form());	break;
-			case qmlControlType::TextField:		boundQMLItem = new BoundQMLTextInput(controlItem,	form());	break;
-			case qmlControlType::ComboBox:		boundQMLItem = new BoundQMLComboBox(controlItem,	form());	break;
-			default:
-				qDebug() << "Control type " << controlTypeStr << " not supported in TableView";
-			}
-			
-			if (boundQMLItem)
-			{
-				boundQMLItem->setUp();
-				boundItemRow[boundQMLItem->name()] = boundQMLItem;
-			}
-
-		}
-		_rowsWithControls[name] = boundItemRow;
-	}
-	_cachedRows.clear();
-	_addedRows.clear();
-}
-
-void BoundQMLListViewDraggable::_resetQuickItems(const QMap<QString, QQuickItem*>& quickItems, const QMap<QString, BoundQMLItem*>& boundItems)
-{
-	QMapIterator<QString, QQuickItem*> quickItemsIt(quickItems);
-	while (quickItemsIt.hasNext()) {
-		quickItemsIt.next();
-		BoundQMLItem* boundItem = boundItems[quickItemsIt.key()];
-		if (!boundItem)
-			qDebug() << "Cached Row does not have " << quickItemsIt.key();
-		else
-			boundItem->resetQMLItem(quickItemsIt.value());
-	}
 }

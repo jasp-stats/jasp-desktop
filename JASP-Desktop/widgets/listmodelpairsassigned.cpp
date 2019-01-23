@@ -59,9 +59,7 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 			qDebug() << "ListModelPairsAssigned: row " << realRow << " out of range " << _terms.size();
 	}
 	else
-	{
-		qDebug() << "Unused Role: " << role;
-	}
+		return ListModelAssignedInterface::data(index, role);
 
 	return QVariant();
 }
