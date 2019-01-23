@@ -95,9 +95,14 @@ Rectangle
 			onClicked		:
 			{
 				//It would be nice to check here if the menu only has one entry, if so just open that instead of the menu
+
 				if(fileMenuModel.visible) fileMenuModel.visible = false
 				if(modulesMenu.opened)		modulesMenu.opened  = false
-				menuLoader.sourceComponent = menuComp
+
+				if(ribbonButton.menu.rowCount() === 1)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+				else
+					menuLoader.sourceComponent = menuComp
 			}
 
 			Loader
@@ -110,7 +115,8 @@ Rectangle
 			{
 				id: menuComp
 
-				ClusterMenu {
+				ClusterMenu
+				{
 					id   : clusterMenu
 					model: ribbonButton.menu
 					posX : innerText.x

@@ -26,7 +26,7 @@ import JASP				1.0
 AnalysisForm
 {
 	id:				form
-	width:			Theme.formWidth
+	width:			Theme.formWidth - ( 2 * Theme.formMargin )
 	height:			formContent.height + (Theme.formMargin * 2)
 
 	default property alias	content:			column.children
@@ -73,7 +73,6 @@ AnalysisForm
 		id:				formContent
 		width:			parent.width
 		height:			errorMessagesBox.height + column.implicitHeight
-		clip:			true
 		anchors
 		{
 			top:		form.top

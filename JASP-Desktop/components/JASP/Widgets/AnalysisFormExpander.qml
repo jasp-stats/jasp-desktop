@@ -7,7 +7,8 @@ Rectangle
 {
 	id:					expanderButton
 	height:				loader.y + (expanderButton.expanded ?  loader.height : 0)
-	width:				loader.width
+	width:				loader.width + ( 2 * Theme.formMargin )
+	clip:				true
 
 	color:				Theme.uiBackground
 	border.color:		Theme.buttonBorderColor
@@ -19,13 +20,15 @@ Rectangle
 	property alias		myAnalysis:         loader.myAnalysis
 	property string		formQmlUrl:			undefined
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
+	property bool		imploded:			height == loader.y
 
 	function toggleExpander()
 	{
 		if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()
 		else												analysesModel.selectAnalysisAtRow(myIndex);
-
 	}
+
+	Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; } }
 
 	//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
 
@@ -126,12 +129,16 @@ Rectangle
 	Loader
 	{
 		id:					loader
-		source:				expanderButton.expanded ? formQmlUrl : ""
+		source:				!expanderButton.imploded || expanderButton.expanded ? formQmlUrl : ""
 		asynchronous:		false // makes it slow
 		onStatusChanged:	if (loader.status == Loader.Error)	mainWindow.showWarning("Error",  sourceComponent.errorString())
 
-		anchors.top:		expanderRectangle.bottom
-		anchors.topMargin:	Theme.formMargin
+		anchors
+		{
+			top:				expanderRectangle.bottom
+			horizontalCenter:	expanderButton.horizontalCenter
+			margins:			Theme.formMargin
+		}
 
 		property int		myIndex:			-1
 		property int		myID:				-1

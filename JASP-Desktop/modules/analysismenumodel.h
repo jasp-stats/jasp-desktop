@@ -45,6 +45,7 @@ public:
 	void setAnalysisEntries(std::vector<Modules::AnalysisEntry*> analysisEntries)	{	_analysisEntries = analysisEntries;	}
 	std::vector<Modules::AnalysisEntry*> getAnalysisEntries()                       {	return _analysisEntries;			}
 
+	Q_INVOKABLE QString getFirstAnalysisEntry() { return data(index(0), AnalysisFunctionRole).toString(); }
 
 private:
 	Modules::AnalysisEntries _analysisEntries;
