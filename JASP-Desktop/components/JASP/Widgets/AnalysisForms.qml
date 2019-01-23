@@ -160,18 +160,13 @@ FocusScope
 					{
 						model:		analysesModel
 
-						delegate: Loader
+						delegate: AnalysisFormExpander
 						{
-							id:					loader
-							source:				formPath
-							asynchronous:		false
-							onStatusChanged:	if (loader.status == Loader.Error)	mainWindow.showWarning("Error",  sourceComponent.errorString())
-
-
-							property int		myIndex:			index
-							property int		myID:				analysisID
-							property string		analysisTitle:		name
-							property var		myAnalysis:         analysis
+							myIndex:			index
+							myID:				analysisID
+							analysisTitle:		name
+							myAnalysis:         analysis
+							formQmlUrl:			formPath
 						}
 					}
 				}

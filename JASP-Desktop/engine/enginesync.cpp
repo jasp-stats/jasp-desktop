@@ -100,6 +100,7 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler		);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed			);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded		);
+			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler		);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged				);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged	);
 			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved			);
@@ -202,17 +203,20 @@ void EngineSync::processScriptQueue()
 
 void EngineSync::processDynamicModules()
 {
-	if(!amICastingAModuleRequestWide() && _dynamicModules->aModuleNeedsToBeLoadedInR())
+	if(!amICastingAModuleRequestWide() && (_dynamicModules->aModuleNeedsToBeLoadedInR() || _dynamicModules->aModuleNeedsToBeUnloadedInR()))
 	{
 		resetModuleWideCastVars();
-		_requestWideCastModuleJson	= _dynamicModules->requestJsonForPackageLoadingRequest();
-		_requestWideCastModuleName			= _requestWideCastModuleJson["moduleName"].asString();
+
+		if(_dynamicModules->aModuleNeedsToBeLoadedInR())		_requestWideCastModuleJson	= _dynamicModules->requestJsonForPackageLoadingRequest();
+		else if(_dynamicModules->aModuleNeedsToBeUnloadedInR())	_requestWideCastModuleJson	= _dynamicModules->requestJsonForPackageUnloadingRequest();
+
+		_requestWideCastModuleName = _requestWideCastModuleJson["moduleName"].asString();
 	}
 
 	for(auto engine : _engines)
 		if(engine->isIdle())
 		{
-			if		(_dynamicModules->aModuleNeedsPackagesInstalled())												engine->runModuleRequestOnProcess(_dynamicModules->requestJsonForPackageInstallationRequest());
+			if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->requestJsonForPackageInstallationRequest());
 			else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
 		}
 }
@@ -482,27 +486,44 @@ void EngineSync::moduleLoadingSucceededHandler(std::string moduleName, int chann
 	checkModuleWideCastDone();
 }
 
+void EngineSync::moduleUnloadingFinishedHandler(std::string moduleName, int channelID)
+{
+#ifdef JASP_DEBUG
+	std::cout << "Received EngineSync::moduleUnloadingFinishedHandler(" << moduleName << ", " << channelID << ")" << std::endl;
+#endif
+
+	if(_requestWideCastModuleName != moduleName)
+		throw std::runtime_error("Unexpected module received in EngineSync::moduleUnloadingFinishedHandler, expected: " + _requestWideCastModuleName + ", but got: " + moduleName);
+
+	_requestWideCastModuleResults[channelID] = "I am an inconsequential message";
+
+	checkModuleWideCastDone();
+}
+
 
 void EngineSync::checkModuleWideCastDone()
 {
 	if(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.size() == _engines.size())
 	{
-		std::string compoundedError = "";
-		int failed = 0;
-
-		for(auto * engine : _engines)
+		if(moduleStatusFromString(_requestWideCastModuleJson["moduleRequest"].asString()) == moduleStatus::loadingNeeded)
 		{
-			auto res = _requestWideCastModuleResults[engine->channelNumber()];
-			if(res != "succes")
+			std::string compoundedError = "";
+			int failed = 0;
+
+			for(auto * engine : _engines)
 			{
-				failed ++;
-				compoundedError += std::string(compoundedError != "" ? "\n" : "") + "engine " + std::to_string(engine->channelNumber()) + " reported error: " + res;
+				auto res = _requestWideCastModuleResults[engine->channelNumber()];
+				if(res != "succes")
+				{
+					failed ++;
+					compoundedError += std::string(compoundedError != "" ? "\n" : "") + "engine " + std::to_string(engine->channelNumber()) + " reported error: " + res;
+				}
 			}
+
+
+			if(failed == 0)	emit moduleLoadingSucceeded(_requestWideCastModuleName);
+			else			emit moduleLoadingFailed(_requestWideCastModuleName, compoundedError);
 		}
-
-
-		if(failed == 0)	emit moduleLoadingSucceeded(_requestWideCastModuleName);
-		else			emit moduleLoadingFailed(_requestWideCastModuleName, compoundedError);
 
 		resetModuleWideCastVars();
 	}
@@ -511,6 +532,6 @@ void EngineSync::checkModuleWideCastDone()
 void EngineSync::resetModuleWideCastVars()
 {
 	_requestWideCastModuleName			= "";
-	_requestWideCastModuleJson	= Json::nullValue;
+	_requestWideCastModuleJson			= Json::nullValue;
 	_requestWideCastModuleResults.clear();
 }

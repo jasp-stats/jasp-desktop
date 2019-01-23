@@ -387,6 +387,10 @@ void EngineRepresentation::processModuleRequestReply(Json::Value json)
 		else		emit moduleLoadingFailed(moduleName, getError(), channelNumber());
 		break;
 
+	case moduleStatus::unloadingNeeded:
+		emit moduleUnloadingFinished(moduleName, channelNumber());
+		break;
+
 	default:
 		throw std::runtime_error("Unsupported module request reply to EngineRepresentation::processModuleRequestReply!");
 	}

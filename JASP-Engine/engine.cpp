@@ -305,13 +305,13 @@ void Engine::receiveModuleRequestMessage(Json::Value jsonRequest)
 	std::string		moduleName		= jsonRequest["moduleName"].asString();
 
 	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str());
-	bool			fail			= result == "null";
+	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()
 
 	Json::Value		jsonAnswer		= Json::objectValue;
 
 	jsonAnswer["moduleRequest"]		= moduleRequest;
 	jsonAnswer["moduleName"]		= moduleName;
-	jsonAnswer["succes"]			= !fail;
+	jsonAnswer["succes"]			= succes;
 	jsonAnswer["error"]				= jaspRCPP_getLastErrorMsg();
 	jsonAnswer["typeRequest"]		= engineStateToString(engineState::moduleRequest);
 

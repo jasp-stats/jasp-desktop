@@ -101,6 +101,7 @@ signals:
 	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
 	void moduleLoadingSucceeded(		std::string moduleName, int channelID);
 	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage, int channelID);
+	void moduleUnloadingFinished(		std::string moduleName, int channelID);
 };
 
 #endif // ENGINEREPRESENTATION_H

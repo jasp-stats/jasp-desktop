@@ -27,7 +27,6 @@ const char * standardRIndent = "  ";
 bool DynamicModule::loadModule()
 {
 	//Check some stuff
-
 	_moduleFolder.makeAbsolute();
 	QDir moduleDir(_moduleFolder.absoluteDir());
 
@@ -41,10 +40,21 @@ bool DynamicModule::loadModule()
 	auto checkForExistence = [&](std::string name, bool isFile = false)
 	{
 		QFileInfo checkInfo(_moduleFolder.absolutePath() + "/" + QString::fromStdString(name));
-		if(!checkInfo.exists())	throw std::runtime_error(name + " is missing from " + _moduleFolder.absolutePath().toStdString());
 
-		if(!isFile	&& !checkInfo.isDir())	throw std::runtime_error(name + " is not, as expected, a directory");
-		if(isFile	&& !checkInfo.isFile())	throw std::runtime_error(name + " is not, as expected, a file");
+		std::string errorMsg = "";
+
+		if(!checkInfo.exists())	errorMsg = name + " is missing from " + _moduleFolder.absolutePath().toStdString();
+
+		if(errorMsg == "" && !isFile	&& !checkInfo.isDir())	errorMsg = name + " is not, as expected, a directory";
+		if(errorMsg == "" &&  isFile	&& !checkInfo.isFile())	errorMsg = name + " is not, as expected, a file";
+
+		if(errorMsg != "")
+		{
+/*#ifdef JASP_DEBUG
+			std::cout << "Checking module folder gave error: " << errorMsg << " but this is not necessarily a problem, so dont worry." << std::endl;
+#endif*/
+			throw std::runtime_error(errorMsg);
+		}
 
 		return checkInfo;
 	};
@@ -92,6 +102,12 @@ bool DynamicModule::loadModule()
 	try { checkForExistence(generatedPackageName());	} catch(...) {	generateRPackage();		shouldInstall = true; }
 
 	return shouldInstall;
+}
+
+void DynamicModule::unloadModule()
+{
+	if(_status != moduleStatus::installNeeded)
+		_status = moduleStatus::loadingNeeded;
 }
 
 void DynamicModule::createRLibraryFolder()
@@ -207,6 +223,17 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 	return requestJson;
 }
 
+Json::Value	DynamicModule::requestJsonForPackageUnloadingRequest()
+{
+	Json::Value requestJson(Json::objectValue);
+
+	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::unloadingNeeded);
+	requestJson["moduleName"]		= _name;
+	requestJson["moduleCode"]		= generateModuleUnloadingR();
+
+	return requestJson;
+}
+
 std::string DynamicModule::generateModuleInstallingR()
 {
 
@@ -243,7 +270,7 @@ std::string DynamicModule::generateModuleInstallingR()
 				out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "devtools::install_version(repos='https://cloud.r-project.org', type='binary', Ncpus=4, package='" << pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"')" << (useWithLibPaths ? ")" : "") <<  ";\n";
 
 	out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "");
-	out << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source')" << (useWithLibPaths ? ")" : "") <<  ";" "\n" "}\n" "return('succes!')";
+	out << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source')" << (useWithLibPaths ? ")" : "") <<  ";" "\n" "}\n" "return('"+succesResultString()+"')";
 
 #ifdef JASP_DEBUG
 	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << out.str() << std::endl;
@@ -257,14 +284,12 @@ std::string DynamicModule::generateModuleLoadingR()
 	std::stringstream out;
 
 	out << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
-	//out << standardRIndent << "attach(loadNamespace('JASP'));\n";
-
 	out << standardRIndent << "import('" << generatedPackageName() << "');\n\n";
 
 	for(RibbonEntry * ribbon : _ribbonEntries)
 		for(const AnalysisEntry * analysis : ribbon->analysisEntries())
 			out << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
-	out << "})\n" "return('succes!')";
+	out << "})\n" "return('"+succesResultString()+"')";
 
 
 #ifdef JASP_DEBUG
@@ -280,7 +305,7 @@ std::string DynamicModule::generateModuleUnloadingR()
 {
 	std::stringstream out;
 
-	out << _name << " <- NULL; gc(); return('succes!')";
+	out << _name << " <- NULL; gc(); return('"+succesResultString()+"')";
 
 
 #ifdef JASP_DEBUG

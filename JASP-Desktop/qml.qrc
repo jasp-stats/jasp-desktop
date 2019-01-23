@@ -101,5 +101,6 @@
         <file>components/JASP/Widgets/FileMenu/PrefsResults.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsAdvanced.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsMissingValues.qml</file>
+        <file>components/JASP/Widgets/AnalysisFormExpander.qml</file>
     </qresource>
 </RCC>

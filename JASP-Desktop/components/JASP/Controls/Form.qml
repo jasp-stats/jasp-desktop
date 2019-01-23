@@ -21,15 +21,13 @@ import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
 import JASP.Theme		1.0
 import JASP.Widgets		1.0
-import JASP 1.0
+import JASP				1.0
 
 AnalysisForm
 {
 	id:				form
-	width:			implicitWidth
-	implicitWidth:	Theme.formWidth
-	implicitHeight: expanderButton.implicitHeight + (Theme.formMargin * 2)
-	height:			expanderButton.height + (Theme.formMargin * 2)
+	width:			Theme.formWidth
+	height:			formContent.height + (Theme.formMargin * 2)
 
 	default property alias	content:			column.children
 			property alias	form:				form
@@ -44,26 +42,6 @@ AnalysisForm
             property int    plotHeight:         320
             property int    plotWidth:          480
 
-			property bool	expanded:			currentSelected
-			property bool	currentSelected:	analysesModel.currentAnalysisIndex === myIndex  
-
-	readonly property int	expanderButtonMinHeight:	expanderRectangle.height
-
-	onCurrentSelectedChanged: if(currentSelected) analysesModel.currentFormHeight = implicitHeight
-
-	Rectangle
-	{
-		z:				-1
-		anchors.fill:	parent
-		color:			Theme.analysisBackgroundColor
-		border
-		{
-			color:		Theme.buttonBorderColor
-			width:		1
-		}
-	}
-
-
 	function getJASPControls(controls, item)
 	{
 		for (var i = 0; i < item.children.length; ++i)
@@ -77,10 +55,8 @@ AnalysisForm
 			}
 			else if (child instanceof JASPControl)
 			{
-				if (child.hasTabFocus)
-                    controls.push(child);
-				 else
-                    getJASPControls(controls, child);
+				if (child.hasTabFocus)	controls.push(child);
+				 else					getJASPControls(controls, child);
 
 			}
 			else
@@ -88,165 +64,55 @@ AnalysisForm
         }            
     }        
      
-    IntegerField { visible: false; name: "plotWidth"; value: plotWidth }
+	IntegerField { visible: false; name: "plotWidth";  value: plotWidth }
     IntegerField { visible: false; name: "plotHeight"; value: plotHeight }    
 
-	Item
+
+	FocusScope
 	{
-		id:					expanderButton
-		height:				expanderRectangle.height + formContent.height
-		implicitHeight:		expanderRectangle.height + formContent.implicitHeight
-
-		anchors.left:		parent.left
-		anchors.right:		parent.right
-		anchors.top:		parent.top
-		anchors.margins:	Theme.formMargin
-
-		function toggleExpander()
+		id:				formContent
+		width:			parent.width
+		height:			errorMessagesBox.height + column.implicitHeight
+		clip:			true
+		anchors
 		{
-			if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()
-			else												analysesModel.selectAnalysisAtRow(myIndex);
-
+			top:		form.top
+			left:		form.left
 		}
 
-		//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
+		Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
 
-		Item
+		Rectangle
 		{
-			id:				expanderRectangle
-			height:			Theme.formExpanderHeaderHeight  //label.contentHeight
+			property alias text:	errorMessagesText.text
 
-			anchors.left:		parent.left
-			anchors.right:		parent.right
-			anchors.top:		parent.top
-
-
-			MouseArea
-			{
-				id:				mouseArea
-				anchors.fill:	parent
-				onClicked:		expanderButton.toggleExpander();
-				hoverEnabled:	true
-				cursorShape:	Qt.PointingHandCursor
-			}
-
-			Image
-			{
-				id:					icon
-				height:				expanderRectangle.height
-				width:				height
-				source:				iconsFolder + (expanded ? expandedIcon : contractedIcon)
-				sourceSize.width:	width * 2
-				sourceSize.height:	height * 2
-				anchors
-				{
-					left:			parent.left
-					leftMargin:		6 * preferencesModel.uiScale
-					verticalCenter:	parent.verticalCenter
-				}
-
-				readonly property string iconsFolder:	"qrc:/images/"
-				readonly property string expandedIcon:	"expander-arrow-down.png"
-				readonly property string contractedIcon: "expander-arrow-up.png"
-			}
+			id:				errorMessagesBox
+			objectName:		"errorMessagesBox"
+			visible:		false
+			color:			Theme.errorMessagesBackgroundColor
+			width:			parent.width
+			height:			visible ? errorMessagesText.height : 0
 
 			Text
 			{
-				id:			label
-				text:		analysisTitle
-				font:		Theme.fontLabel
-				anchors
-				{
-					left:			icon.right
-					right:			helpButton.left
-					margins:		5 * preferencesModel.uiScale
-					verticalCenter:	parent.verticalCenter
-				}
+				id:					errorMessagesText
+				anchors.centerIn:	parent
+				padding:			5
+				verticalAlignment:	Text.AlignVCenter
 			}
-
-			MenuButton
-			{
-				id:					helpButton
-				width:				height
-				iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-				//visible:			form.expanded || hovered || mouseArea.containsMouse
-				enabled:			form.expanded
-				onClicked:			helpModel.showOrTogglePage("analyses/" + form.analysis.name)
-				toolTip:			"Show info for analysis"
-				radius:				height
-				anchors
-				{
-					top:		parent.top
-					right:		closeButton.left
-					bottom:		parent.bottom
-					margins:	6 * preferencesModel.uiScale
-				}
-			}
-
-			MenuButton
-			{
-				id:					closeButton
-				width:				height
-				iconSource:			enabled ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
-				//visible:			form.expanded || hovered || mouseArea.containsMouse
-				enabled:			form.expanded
-				onClicked:			analysesModel.removeAnalysis(form.analysis)
-				toolTip:			"Remove analysis"
-				radius:				height
-				anchors
-				{
-					top:		parent.top
-					right:		parent.right
-					bottom:		parent.bottom
-					margins:	6 * preferencesModel.uiScale
-				}
-			}
-
 		}
 
-		FocusScope
+		ColumnLayout
 		{
-			id:				formContent
-			anchors.top:	expanderRectangle.bottom
-
+			id:				column
+			anchors.top:	errorMessagesBox.bottom
+			spacing:		10
 			width:			parent.width
-			height:			!form.expanded ? 0 : implicitHeight
-			implicitHeight: errorMessagesBox.height + column.implicitHeight
 
-			clip:			true
-
-			Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
-
-			Rectangle
-			{
-				property alias text:	errorMessagesText.text
-
-				id:				errorMessagesBox
-				objectName:		"errorMessagesBox"
-				visible:		false
-				color:			Theme.errorMessagesBackgroundColor
-				width:			parent.width
-				height:			visible ? errorMessagesText.height : 0
-
-				Text
-				{
-					id:					errorMessagesText
-					anchors.centerIn:	parent
-					padding:			5
-					verticalAlignment:	Text.AlignVCenter
-				}
-			}
-
-			ColumnLayout {
-				id:				column
-				anchors.top:	errorMessagesBox.bottom
-				spacing:		10
-				width:			parent.width
-
-				//visible:		currentSelected
-			}
+			//visible:		currentSelected
 		}
 	}
+
 
 	Timer
 	{
@@ -282,5 +148,4 @@ AnalysisForm
 	}
 
 	Component.onCompleted:	bindingTimer.start()
-
 }

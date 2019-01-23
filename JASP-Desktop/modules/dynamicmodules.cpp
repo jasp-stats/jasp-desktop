@@ -52,16 +52,22 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
 		if(moduleDir[moduleDir.size() - 1] != '/')
 			moduleDir += '/';
 
-		Modules::DynamicModule	*newMod	= new Modules::DynamicModule(QString::fromStdString(moduleDir), this);
-		std::string				modName = newMod->name();
+		Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this);
+		std::string				moduleName	= newMod->name();
 
-		if(moduleIsLoaded(modName))
-			unloadModule(modName);
+		if(moduleIsInitialized(moduleName))
+			throw std::runtime_error("Module "+ moduleName +" already initialized!");
 
-		_modules[modName] = newMod;
-		_moduleNames.push_back(modName);
+		_modules[moduleName] = newMod;
+		_moduleNames.push_back(moduleName);
 
 		emit dynamicModuleAdded(newMod);
+
+		if(newMod->installNeeded())
+		{
+			checkForInstallMsg(newMod);
+			_modulesInstallPackagesNeeded.insert(moduleName);
+		}
 
 		return true;
 	}
@@ -69,6 +75,20 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
 	{
 		std::cerr << "An error occured trying to initialize a module from dir " << moduleDir << ", the error was: " << e.what();
 		return false;
+	}
+}
+
+void DynamicModules::checkForInstallMsg(Modules::DynamicModule	* currentModule)
+{
+	if(currentModule->installNeeded() && _currentInstallName.toStdString() == currentModule->name() && currentModule->requiredPackages().size() > 0)
+	{
+		std::string newMsg("");
+		for(Json::Value & packageEntry : currentModule->requiredPackages())
+			newMsg+= (newMsg.size() > 0 ? ", " : "") + packageEntry["package"].asString();
+
+		newMsg += (newMsg.size() > 0 ? " and " : "") + currentModule->generatedPackageName();
+
+		setCurrentInstallMsg(QString::fromStdString("Installing required package(s) for module: " + newMsg + (currentModule->requiredPackages().size() > 0  ? " (this might take a while)" : "")));
 	}
 }
 
@@ -82,22 +102,8 @@ std::string DynamicModules::loadModule(std::string moduleName)
 
 		Modules::DynamicModule	*loadMe	= _modules[moduleName];
 
-		if(loadMe->installNeeded() && _currentInstallName.toStdString() == moduleName && loadMe->requiredPackages().size() > 0)
-		{
-			std::string newMsg("");
-			for(Json::Value & packageEntry : loadMe->requiredPackages())
-				newMsg+= (newMsg.size() > 0 ? ", " : "") + packageEntry["package"].asString();
-
-			newMsg += (newMsg.size() > 0 ? " and " : "") + loadMe->generatedPackageName();
-
-			setCurrentInstallMsg(QString::fromStdString("Installing required package(s) for module: " + newMsg));
-		}
-
-		if(moduleIsLoaded(moduleName))
-			unloadModule(moduleName);
-
-		if(loadMe->installNeeded())			_modulesInstallPackagesNeeded.insert(moduleName);
-		else if(loadMe->loadingNeeded())	_modulesToBeLoaded.insert(moduleName);
+		if(loadMe->installNeeded())			{ checkForInstallMsg(loadMe); _modulesInstallPackagesNeeded.insert(moduleName);}
+		else if(loadMe->loadingNeeded())	registerForLoading(moduleName);
 		else								throw std::runtime_error("A module("+ loadMe->name() +") that does not require installing or loading was \"loaded\" into JASP, this can't be right.");
 
 		return moduleName;
@@ -107,6 +113,12 @@ std::string DynamicModules::loadModule(std::string moduleName)
 		std::cerr << "An error occured trying to load module " << moduleName << ", the error was: " << e.what();
 		return "";
 	}
+}
+
+void DynamicModules::registerForLoading(std::string moduleName)
+{
+	_modulesToBeUnloaded.erase(moduleName);
+	_modulesToBeLoaded.insert(moduleName);
 }
 
 bool DynamicModules::installModule(std::string moduleZipFilename)
@@ -140,14 +152,21 @@ void DynamicModules::unloadModule(std::string moduleName)
 	_modulesToBeLoaded.erase(moduleName);
 
 	if(_modules.count(moduleName) > 0)
-		emit dynamicModuleUnloadBegin(_modules[moduleName]);
+	{
+		Modules::DynamicModule * dynMod		= _modules[moduleName];
+		_modulesToBeUnloaded[moduleName]	= dynMod->requestJsonForPackageUnloadingRequest();
+
+		dynMod->unloadModule();
+
+		emit dynamicModuleUnloadBegin(dynMod);
+	}
 }
 
 void DynamicModules::uninstallModule(std::string moduleName)
 {
 	std::string modulePath	= moduleDirectory(moduleName);
 
-	if(moduleIsLoaded(moduleName))
+	if(moduleIsInitialized(moduleName))
 		unloadModule(moduleName);
 
 	if(_modules.count(moduleName) > 0)
@@ -183,6 +202,16 @@ Modules::DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std
 	return _modules[installMe];
 }
 
+Json::Value DynamicModules::requestJsonForPackageUnloadingRequest()
+{
+	std::string firstModule		= _modulesToBeUnloaded.begin()->first;
+	Json::Value	unloadRequest	= _modulesToBeUnloaded[firstModule];
+
+	_modulesToBeUnloaded.erase(firstModule);
+
+	return unloadRequest;
+}
+
 void DynamicModules::installationPackagesFailed(std::string moduleName, std::string errorMessage)
 {
 	if(moduleName == currentInstallName().toStdString())
@@ -207,7 +236,7 @@ void DynamicModules::installationPackagesSucceeded(std::string moduleName)
 	std::cout << "Installing packages for module (" << moduleName<< ") succeeded!" << std::endl;
 	_modules[moduleName]->setInstalled(true);
 
-	if(_modules[moduleName]->loadingNeeded())	_modulesToBeLoaded.insert(moduleName);
+	if(_modules[moduleName]->loadingNeeded())	registerForLoading(moduleName);
 	else										throw std::runtime_error("Unexpected! Module "+moduleName+" was just installed but doesn't want to be loaded..");
 }
 
@@ -288,3 +317,6 @@ void DynamicModules::uninstallJASPModule(QString moduleName)
 {
 	uninstallModule(moduleName.toStdString());
 }
+
+
+/*<< " <- NULL; gc(); return('succes!')";*/

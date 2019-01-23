@@ -268,11 +268,11 @@ void AnalysisForm::_parseQML()
 
 			switch(listViewType)
 			{
-			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this); break;
-			case qmlListViewType::AssignedPairs:		listView = new BoundQMLListViewPairs(quickItem,this); break;
-			case qmlListViewType::Interaction:			listView = new BoundQMLListViewInteraction(quickItem, this); break;
-			case qmlListViewType::MeasuresCells:		listView = new BoundQMLListViewMeasuresCells(quickItem, this); break;
-			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this); break;
+			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this);			break;
+			case qmlListViewType::AssignedPairs:		listView = new BoundQMLListViewPairs(quickItem,this);			break;
+			case qmlListViewType::Interaction:			listView = new BoundQMLListViewInteraction(quickItem, this);	break;
+			case qmlListViewType::MeasuresCells:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);	break;
+			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);			break;
 			case qmlListViewType::AvailableVariables:
 			{
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);

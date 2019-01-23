@@ -81,10 +81,12 @@ public:
 	std::string			rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
 
 	Json::Value			requestJsonForPackageLoadingRequest();
+	Json::Value			requestJsonForPackageUnloadingRequest();
 	Json::Value			requestJsonForPackageInstallationRequest();
 
 	void				setInstalled(bool succes)	{ _status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error; }
 	void				setLoaded(bool succes)		{ _status = succes ? moduleStatus::readyForUse		: moduleStatus::error; }
+	void				unloadModule();
 
 	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
 
@@ -95,6 +97,8 @@ public:
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const;
 
 	static std::string	moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
+
+	static std::string	succesResultString() { return "succes!"; }
 
 
 private:

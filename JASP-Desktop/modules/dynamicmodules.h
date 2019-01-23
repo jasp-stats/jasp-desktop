@@ -49,17 +49,20 @@ public:
 	void		uninstallModule(std::string moduleName);
 
 	std::string	loadModule(std::string moduleName);
+	void		registerForLoading(std::string moduleName);
 	bool		initializeModuleFromDir(std::string moduleDir);
 	void		unloadModule(std::string moduleName);
 	void		initializeInstalledModules();
 
-	bool		moduleIsLoaded(std::string moduleName)		{ return _modules.count(moduleName) > 0;													}
-	bool		moduleIsInstalled(std::string moduleName)	{ return boost::filesystem::exists(moduleDirectory(moduleName)); }
+	bool		moduleIsInitialized(std::string moduleName)	{ return _modules.count(moduleName) > 0;							}
+	bool		moduleIsInstalled(std::string moduleName)	{ return boost::filesystem::exists(moduleDirectory(moduleName));	}
 
-	bool		aModuleNeedsToBeLoadedInR()					{ return _modulesToBeLoaded.size() > 0; }
-	bool		aModuleNeedsPackagesInstalled()				{ return _modulesInstallPackagesNeeded.size() > 0; }
-	Json::Value	requestJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest(); }
-	Json::Value	requestJsonForPackageInstallationRequest()	{ return requestModuleForSomethingAndRemoveIt(_modulesInstallPackagesNeeded)->requestJsonForPackageInstallationRequest(); }
+	bool		aModuleNeedsToBeLoadedInR()					{ return _modulesToBeLoaded.size() > 0;				}
+	bool		aModuleNeedsToBeUnloadedInR()				{ return _modulesToBeUnloaded.size() > 0;			}
+	bool		aModuleNeedsPackagesInstalled()				{ return _modulesInstallPackagesNeeded.size() > 0;	}
+	Json::Value	requestJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
+	Json::Value requestJsonForPackageUnloadingRequest();
+	Json::Value	requestJsonForPackageInstallationRequest()	{ return requestModuleForSomethingAndRemoveIt(_modulesInstallPackagesNeeded)->requestJsonForPackageInstallationRequest();	}
 
 	Modules::DynamicModule*	dynamicModule(const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
 	Modules::DynamicModule*	operator[](const std::string & moduleName)		const { return dynamicModule(moduleName); }
@@ -100,6 +103,7 @@ signals:
 
 private:
 	Modules::DynamicModule* requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
+	void					checkForInstallMsg(Modules::DynamicModule	* currentModule);
 
 
 public slots:
@@ -114,6 +118,7 @@ private:
 	std::map<std::string, Modules::DynamicModule*>	_modules;
 	std::set<std::string>							_modulesInstallPackagesNeeded,
 													_modulesToBeLoaded;
+	std::map<std::string, Json::Value>				_modulesToBeUnloaded;
 	boost::filesystem::path							_modulesInstallDirectory;
 	QString											_currentInstallMsg = "",
 													_currentInstallName = "";

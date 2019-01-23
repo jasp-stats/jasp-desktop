@@ -97,6 +97,7 @@ private slots:
 
 	void moduleLoadingFailedHandler(		std::string moduleName, std::string errorMessage, int channelID);
 	void moduleLoadingSucceededHandler(		std::string moduleName, int channelID);
+	void moduleUnloadingFinishedHandler(	std::string moduleName, int channelID);
 
 private:
 	Analyses		*_analyses;
