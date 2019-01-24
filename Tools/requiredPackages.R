@@ -2,6 +2,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 install <- FALSE
 travis <- FALSE
+showlist <- FALSE
 if (length(args) == 0) {
   stop(paste0(
     "\nRequired arguments:\n",
@@ -18,6 +19,11 @@ if (length(args) == 0) {
   lib <- args[1]
   install <- ifelse(tolower(args[2]) == "true", TRUE, FALSE)
   travis <- ifelse(tolower(args[3]) == "true", TRUE, FALSE)
+} else if (length(args) == 4) {
+  lib <- args[1]
+  install <- ifelse(tolower(args[2]) == "true", TRUE, FALSE)
+  travis <- ifelse(tolower(args[3]) == "true", TRUE, FALSE)
+  showlist <- ifelse(tolower(args[4]) == "true", TRUE, FALSE)
 } else {
   stop(paste0(
     sprintf("\nExpected one, two or three arguments, got %d arguments.\n", length(args)),
@@ -97,13 +103,10 @@ if (dir.exists(lib)) {
 }
 
 
-
-pkgs <- c("stringr", "testthat")
+pkgs <- c("stringr") # Needed to generate the required packages list more easy
 for (pkg in pkgs[! pkgs %in% installed]) {
   install.packages(pkg)
 }
-
-library(stringr)
 
 basePkgs <- installed.packages(priority="high")
 basePkgs <- basePkgs[basePkgs[, "Priority"] == "base", 1]
@@ -125,12 +128,9 @@ for (file in files) {
 
 # for some reason, RcppArmadillo is not picked up as dependency
 # but it definitely needs to be installed before other packages.
-if (! "RcppArmadillo" %in% installed) {
-  install.packages("RcppArmadillo", INSTALL_opts = INSTALL_opts)
-}
 
 # Temporarly add the GPArotation manually (incorrectly marked as "Suggest' in psych)
-reqPkgs <- c(reqPkgs, "GPArotation")
+reqPkgs <- c(reqPkgs, "GPArotation","RcppArmadillo","testthat")
 reqPkgs <- reqPkgs[!reqPkgs %in% 'JASPgraphs']
 # Exclude jasptools manually (should not be shipped)
 basePkgs <- c(basePkgs, "jasptools")
@@ -161,12 +161,14 @@ if (install) {
 
   cat("\nInstall string:\n")
   cat(installString)
-  cat("\n\nRequired packages:\n")
-  cat(paste0(reqPkgs, collapse="\n"), "\n")
-  cat("\nDependencies of required packages [Imports, Depends]:\n")
-  cat(paste0(depPkgs, collapse="\n"), "\n")
-  cat("\nFull list of packages:\n")
-  cat(paste0(allPkgs, collapse="\n"), "\n")
+  if (showlist) {
+    cat("\n\nRequired packages:\n")
+    cat(paste0(reqPkgs, collapse="\n"), "\n")
+    cat("\nDependencies of required packages [Imports, Depends]:\n")
+    cat(paste0(depPkgs, collapse="\n"), "\n")
+    cat("\nFull list of packages:\n")
+    cat(paste0(allPkgs, collapse="\n"), "\n")
+    }
 }
 
 if (travis) {
@@ -178,6 +180,9 @@ if (travis) {
   toShow <- cbind(toShow, rep(c("Cache", "Installed"), c(nrow(old), sum(diffPkg))))
   colnames(toShow) <- c("Version", "From")
 
-	msg <- cat("\nAVAILABLE PACKAGES\n")
-	print(toShow)
+        msg <- cat("\nAVAILABLE PACKAGES\n")
+        print(toShow)
 }
+
+
+
