@@ -60,6 +60,8 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
 	Q_PROPERTY(bool		datasetLoaded		READ datasetLoaded											NOTIFY datasetLoadedChanged			)
 	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
+	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
+	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 
 	friend class FileMenu;
 public:
@@ -77,8 +79,11 @@ public:
 	bool	analysesVisible()		const	{ return _analysesVisible;		}
 	bool	datasetLoaded()			const	{ return _datasetLoaded;		}
 	int		screenPPI()				const	{ return _screenPPI;			}
+	bool	dataAvailable()			const	{ return _dataAvailable;		}
+	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
 	
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
+
 
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -90,6 +95,8 @@ public slots:
 	void setDatasetLoaded(bool datasetLoaded);
 	void setWindowTitle(QString windowTitle);
 	void setScreenPPI(int screenPPI);
+	void setDataAvailable(bool dataAvailable);
+	void setAnalysesAvailable(bool analysesAvailable);
 
 	void startDataEditorHandler();
 	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
@@ -101,7 +108,6 @@ public slots:
 	void zoomInKeysSelected();
 	void zoomOutKeysSelected();
 	void zoomEqualKeysSelected();
-
 
 private:
 	void makeConnections();
@@ -137,12 +143,13 @@ private:
 	void finishComparingResults();
 	void finishSavingComparedResults();
 
-	bool filterShortCut();
 	void loadRibbonQML();
 	void loadQML();
 
 	void pauseEngines();
 	void resumeEngines();
+
+	void analysesCountChangedHandler()		{ setAnalysesAvailable(_analyses->count() > 0); }
 
 signals:
 	void saveJaspFile();
@@ -161,6 +168,10 @@ signals:
 	//void showWarning(QString title, QString message);
 	void refreshAllAnalyses();
 	void datasetLoadedChanged(bool datasetLoaded);
+
+	void dataAvailableChanged(bool dataAvailable);
+
+	void analysesAvailableChanged(bool analysesAvailable);
 
 private slots:
 	void analysisResultsChangedHandler(Analysis* analysis);
@@ -241,13 +252,14 @@ private:
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,
 									_analysesVisible		= false,
-									_datasetLoaded			= false;
+									_datasetLoaded			= false,
+									_dataAvailable			= false,
+									_analysesAvailable		= false;
 
 	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles;
 	static QMap<QString, QVariant>	_iconInactiveFiles;
 	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
-
 };
 
 #endif // MAINWIDGET_H

@@ -152,14 +152,14 @@ JASPControl
 	
 	Rectangle
 	{
-		id: rectangle
-		anchors.top: text.bottom
-		anchors.left: parent.left
-		height: variablesList.height - text.height
-		width: parent.width
-		color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
-		border.width: 1
-		border.color: dropArea.canDrop ? Theme.containsDragBorderColor : Theme.borderColor
+		id:				rectangle
+		anchors.top:	text.bottom
+		anchors.left:	parent.left
+		height:			variablesList.height - text.height
+		width:			parent.width
+		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		border.width:	1
+		border.color:	dropArea.canDrop ? Theme.containsDragBorderColor : Theme.borderColor
 		
 		states: [
 			State
@@ -167,9 +167,9 @@ JASPControl
 				when: dropArea.canDrop
 				PropertyChanges
 				{
-					target: rectangle
-					border.width: 4
-					radius: 3
+					target:			rectangle
+					border.width:	4  * preferencesModel.uiScale
+					radius:			3 * preferencesModel.uiScale
 				}
 			}
 		]
@@ -180,13 +180,16 @@ JASPControl
 			Image
 			{
 				source: iconInactiveFiles[suggestedColumns[index]]
-				height: 16
-				width: 16
-				z: 2
-				anchors.bottom: rectangle.bottom;
-				anchors.bottomMargin: 4
-				anchors.right: rectangle.right;
-				anchors.rightMargin: index * 20 + 4
+				height: 16 * preferencesModel.uiScale
+				width:	16 * preferencesModel.uiScale
+				z:		2
+				anchors
+				{
+					bottom:			rectangle.bottom;
+					bottomMargin:	4  * preferencesModel.uiScale
+					right:			rectangle.right;
+					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale
+				}
 			}
 		}
 		
@@ -211,12 +214,12 @@ JASPControl
 			{
 				policy: ScrollBar.AsNeeded
 			}
-			cellHeight: 20
+			cellHeight: 20  * preferencesModel.uiScale
 			cellWidth: width / variablesList.columns
 			clip: true
 			focus: true
 			anchors.fill: parent
-			anchors.margins: 4
+			anchors.margins: 4  * preferencesModel.uiScale
 			model: variablesList.model
 			delegate: itemComponent
 			
@@ -389,16 +392,16 @@ JASPControl
 				property bool selected: false
 				property bool dragging: false
 				property bool clearOtherSelectedItemsWhenClicked: false
-				property int offsetX: 0
-				property int offsetY: 0
-				property int rank: index
-				property bool containsDragItem: listView.itemContainingDrag === itemRectangle
-				property bool isVirtual: (typeof model.type !== "undefined") && model.type.includes("virtual")
-				property bool isVariable: (typeof model.type !== "undefined") && model.type.includes("variable")
-				property bool isLayer: (typeof model.type !== "undefined") && model.type.includes("layer")
-				property bool draggable: !variablesList.dragOnlyVariables || isVariable
-				property string columnType: isVariable ? model.columnType : ""
-				property var extraColumnsModel: model.extraColumns
+				property int offsetX:				0
+				property int offsetY:				0
+				property int rank:					index
+				property bool containsDragItem:		listView.itemContainingDrag === itemRectangle
+				property bool isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
+				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
+				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
+				property bool draggable:			!variablesList.dragOnlyVariables || isVariable
+				property string columnType:			isVariable ? model.columnType : ""
+				property var extraColumnsModel:		model.extraColumns
 				
 				function setRelative(draggedRect)
 				{
@@ -408,21 +411,16 @@ JASPControl
 				
 				color:
 				{
-					if (!itemRectangle.draggable)
-						return Theme.controlBackgroundColor;
-					else if (itemRectangle.selected)
-						return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
-					else if (itemRectangle.containsDragItem && variablesList.dropModeReplace)
-						return Theme.itemSelectedColor;
-					
-					else if (mouseArea.containsMouse)
-						return Theme.itemHoverColor;
-					return Theme.controlBackgroundColor;
+					if (!itemRectangle.draggable)												return Theme.controlBackgroundColor;
+					else if (itemRectangle.selected)											return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
+					else if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return Theme.itemSelectedColor;
+					else if (mouseArea.containsMouse)											return Theme.itemHoverColor;
+					else																		return Theme.controlBackgroundColor;
 				}
-				Drag.keys: [variablesList.name]
-				Drag.active: mouseArea.drag.active
-				Drag.hotSpot.x: itemRectangle.width / 2
-				Drag.hotSpot.y: itemRectangle.height / 2
+				Drag.keys:		[variablesList.name]
+				Drag.active:	mouseArea.drag.active
+				Drag.hotSpot.x:	itemRectangle.width / 2
+				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
 				ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
@@ -431,9 +429,8 @@ JASPControl
 				ToolTip.text: model.name
 				ToolTip.toolTip.background: Rectangle
 				{
-					id: tooltipRectangle
-					color: Theme.tooltipBackgroundColor
-					height: 25
+					id:		tooltipRectangle
+					color:	Theme.tooltipBackgroundColor
 				}
 				
 				Rectangle
@@ -446,30 +443,32 @@ JASPControl
 				
 				Image
 				{
-					id: icon
-					height: 15; width: 15
-					anchors.verticalCenter: parent.verticalCenter
-					source: variablesList.showVariableTypeIcon && itemRectangle.isVariable ? iconFiles[model.columnType] : ""
-					visible: variablesList.showVariableTypeIcon && itemRectangle.isVariable
+					id:						icon
+					height:					15 * preferencesModel.uiScale
+					width:					15 * preferencesModel.uiScale
+					anchors.verticalCenter:	parent.verticalCenter
+					source:					variablesList.showVariableTypeIcon && itemRectangle.isVariable ? iconFiles[model.columnType] : ""
+					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
 				}
 				Text
 				{
-					id: colName
-					x: variablesList.showVariableTypeIcon ? 20 : 4
-					text: model.name
-					width: itemRectangle.width - x
-					elide: Text.ElideRight
-					anchors.verticalCenter: parent.verticalCenter
-					horizontalAlignment: itemRectangle.isLayer ? Text.AlignHCenter : undefined
-					color: itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
+					id:						colName
+					x:						variablesList.showVariableTypeIcon ? 20 : 4
+					text:					model.name
+					width:					itemRectangle.width - x
+					elide:					Text.ElideRight
+					anchors.verticalCenter:	parent.verticalCenter
+					horizontalAlignment:	itemRectangle.isLayer ? Text.AlignHCenter : undefined
+					color:					itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
+					font:					Theme.font
 				}
 				
 				Row
 				{
-					anchors.fill:	parent
-					anchors.rightMargin: 10
-					spacing:		1
-					z:				10
+					anchors.fill:			parent
+					anchors.rightMargin:	10  * preferencesModel.uiScale
+					spacing:				1
+					z:						10 * preferencesModel.uiScale
 					
 					layoutDirection: Qt.RightToLeft
 					

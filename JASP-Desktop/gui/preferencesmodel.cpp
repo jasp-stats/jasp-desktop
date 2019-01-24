@@ -190,6 +190,23 @@ void PreferencesModel::setUiScale(double newUiScale)
 	emit uiScaleChanged(newUiScale);
 }
 
+
+void PreferencesModel::zoomIn()
+{
+	setUiScale(uiScale() + 0.1);
+}
+
+void PreferencesModel::zoomOut()
+{
+	if (uiScale() >= 0.2)
+		setUiScale(uiScale() - 0.1);
+}
+
+void PreferencesModel::zoomReset()
+{
+	setUiScale(1.0);
+}
+
 void PreferencesModel::setCustomPPI(int newCustomPPI)
 {
 	if (customPPI() == newCustomPPI)

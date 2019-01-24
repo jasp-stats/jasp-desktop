@@ -44,7 +44,9 @@ public:
 	QStringList	missingValues()				const;
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 
-
+	void		zoomIn();
+	void		zoomOut();
+	void		zoomReset();
 
 public slots:
 	void setUiScale(double uiScale);

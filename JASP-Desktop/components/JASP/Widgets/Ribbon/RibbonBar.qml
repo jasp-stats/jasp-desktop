@@ -45,7 +45,6 @@ FocusScope
 			right:	modulesPlusButton.left
 			left:	fileMenuOpenButton.right
 		}
-
 	}
 
 	MenuArrowButton

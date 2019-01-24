@@ -237,6 +237,9 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 	//and now we should create some new ones!
 
+	float	maxXForVerticalLine	= _viewportX + _viewportW - extraColumnWidth(), //To avoid seeing lines through add computed column button
+			maxYForVerticalLine = _viewportY + _dataRowsMaxHeight;
+
 	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
 		for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 		{
@@ -245,6 +248,11 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 			int lineFlags = _model->data(_model->index(row, col), _roleNameToRole["lines"]).toInt();
 
+			/*
+			 *			---------- up ----------
+			 *			|left|            |right|
+			 *			--------- down ---------
+			 */
 			bool	left	= (lineFlags & 1) > 0	&& pos0.x()  > _rowNumberMaxWidth + _viewportX,
 					right	= (lineFlags & 2) > 0	&& pos1.x()  > _rowNumberMaxWidth + _viewportX,
 					up		= (lineFlags & 4) > 0	&& pos0.y()  > _dataRowsMaxHeight + _viewportY,
@@ -253,11 +261,21 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 			createTextItem(row, col);
 
 
-			if(left)	_lines.push_back(std::make_pair(QVector2D(pos0.x(),	pos1.y()),	pos0));
 			if(up)		_lines.push_back(std::make_pair(QVector2D(pos1.x(),	pos0.y()),	pos0));
-			if(right)	_lines.push_back(std::make_pair(QVector2D(pos1.x(),	pos0.y()),	pos1));
 			if(down)	_lines.push_back(std::make_pair(QVector2D(pos0.x(),	pos1.y()),	pos1));
 
+
+			if(left)
+			{
+				if(pos0.x() > maxXForVerticalLine)	_lines.push_back(std::make_pair(QVector2D(pos0.x(),	std::max(pos1.y(), maxYForVerticalLine)),	QVector2D(pos0.x(),	std::max(pos0.y(), maxYForVerticalLine))));
+				else								_lines.push_back(std::make_pair(QVector2D(pos0.x(),	pos1.y()),									pos0));
+			}
+
+			if(right)
+			{
+				if(pos1.x() > maxXForVerticalLine)	_lines.push_back(std::make_pair(QVector2D(pos1.x(),	std::max(pos0.y(), maxYForVerticalLine)),	QVector2D(pos1.x(),	std::max(pos1.y(), maxYForVerticalLine))));
+				else								_lines.push_back(std::make_pair(QVector2D(pos1.x(),	pos0.y()),									pos1));
+			}
 		}
 
 	_lines.push_back(std::make_pair(QVector2D(_viewportX + 0.5f,				_viewportY),						QVector2D(_viewportX + 0.5f,				_viewportY + _viewportH)));
@@ -267,7 +285,10 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + _dataRowsMaxHeight),	QVector2D(_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight)));
 
 	if(_extraColumnItem != NULL)
-		_lines.push_back(std::make_pair(QVector2D(_dataWidth + extraColumnWidth(), _viewportY), QVector2D(_dataWidth + extraColumnWidth(), _viewportY + _dataRowsMaxHeight)));
+	{
+		_lines.push_back(std::make_pair(QVector2D(_viewportX + _viewportW - extraColumnWidth(), _viewportY),		QVector2D(_viewportX + _viewportW - extraColumnWidth(), _viewportY + _dataRowsMaxHeight)));
+		_lines.push_back(std::make_pair(QVector2D(_viewportX + _viewportW, _viewportY),								QVector2D(_viewportX + _viewportW, _viewportY + _dataRowsMaxHeight)));
+	}
 
 
 	for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
@@ -293,11 +314,11 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 		QVector2D pos0(_colXPositions[col],					_viewportY);
 		QVector2D pos1(pos0.x() + _dataColsMaxWidth[col],	pos0.y() + _dataRowsMaxHeight);
 
-		if(pos0.x()  > _rowNumberMaxWidth + _viewportX)
+		if(pos0.x()  > _rowNumberMaxWidth + _viewportX && pos0.x() < maxXForVerticalLine)
 			_lines.push_back(std::make_pair(QVector2D(pos0.x(), pos0.y()), QVector2D(pos0.x(), pos1.y())));
 
 
-		if(col == _model->columnCount() - 1 && pos1.x()  > _rowNumberMaxWidth + _viewportX)
+		if(col == _model->columnCount() - 1 && pos1.x()  > _rowNumberMaxWidth + _viewportX && pos1.x() < maxXForVerticalLine)
 			_lines.push_back(std::make_pair(QVector2D(pos1.x(), pos0.y()), QVector2D(pos1.x(), pos1.y())));
 	}
 
@@ -624,7 +645,7 @@ void DataSetView::updateExtraColumnItem()
 		return;
 
 	_extraColumnItem->setHeight(_dataRowsMaxHeight);
-	_extraColumnItem->setX(_dataWidth);
+	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width());
 	_extraColumnItem->setY(_viewportY);
 }
 

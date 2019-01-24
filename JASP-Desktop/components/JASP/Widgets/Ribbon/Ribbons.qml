@@ -7,7 +7,7 @@ Item
 	id:				jaspRibbons
 	objectName:		"jaspRibbon"
 	width:			500
-	height:			60 * preferencesModel.uiScale
+	height:			Theme.ribbonButtonHeight
 
 	ListView
 	{
@@ -36,6 +36,7 @@ Item
 			separateMe:		index > 0
 			highlighted:	ribbonModelFiltered.highlightedModuleIndex === index
 			module:			moduleName
+			moduleTitle:	ribbonButtonModel.title
 		}
 	}
 

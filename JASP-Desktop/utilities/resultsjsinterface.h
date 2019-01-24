@@ -38,10 +38,6 @@ class ResultsJsInterface : public QObject
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
-	void setZoom(double zoom);
-	void zoomIn();
-	void zoomOut();
-	void zoomReset();
 
 	void showAnalysis(int id);
 	void analysisChanged(Analysis *analysis);
@@ -70,6 +66,7 @@ signals:
 	Q_INVOKABLE void removeAnalysisRequest(int id);
 
 public slots:
+	void setZoom(double zoom);
 	void resultsDocumentChanged()				{ emit packageModified(); }
 	void updateUserData(int id, QString key)	{ emit packageModified(); }
 	void showAnalysesMenu(QString options);

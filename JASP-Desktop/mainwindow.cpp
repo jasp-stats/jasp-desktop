@@ -206,6 +206,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
 
+	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
@@ -222,6 +223,7 @@ void MainWindow::makeConnections()
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
 
+
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					_engineSync,			&EngineSync::ppiChanged										);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::ppiChangedHandler,								Qt::QueuedConnection); //Then we know for sure that EngineSync::ppiChanged has run first
@@ -230,6 +232,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
+	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _tableModel,			&DataSetTableModel::setColumnsUsedInEasyFilter				);
@@ -368,77 +371,41 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (rd) rd->close();
 }*/
 
-bool MainWindow::filterShortCut()
-{
-	bool exclude = _excludeKey;
-#ifdef __APPLE__
-	if (exclude)
-		qDebug() << "KEY EXCLUDED!";
-	// This is a workaround for Qt Bug https://bugreports.qt.io/browse/QTBUG-67016
-	// When we move to a Qt version (probably 5.11) where this bug is solved, we have to remove this workaround!
-	_excludeKey = true;
-	QTimer *timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(updateExcludeKey()));
-	timer->start(100);
-#endif
-
-	return exclude;
-}
-
 void MainWindow::saveKeysSelected()
 {
-	if (filterShortCut())
-		return;
-
 	if (_package->isModified()) _fileMenu->save();
 }
 
 
 void MainWindow::openKeysSelected()
 {
-	if (filterShortCut())
-		return;
+	std::cout << "openKeysSelected does nothing..."<< std::endl;
 }
 
 
 void MainWindow::refreshKeysSelected()
 {
-	if (filterShortCut())
-		return;
-
 	refreshAllAnalyses();
 }
 
 void MainWindow::zoomInKeysSelected()
 {
-	if (filterShortCut())
-		return;
-
-	_resultsJsInterface->zoomIn();
+	_preferences->zoomIn();
 }
 
 void MainWindow::zoomOutKeysSelected()
 {
-	if (filterShortCut())
-		return;
-
-	_resultsJsInterface->zoomOut();
+	_preferences->zoomOut();
 }
 
 void MainWindow::zoomEqualKeysSelected()
 {
-	if (filterShortCut())
-		return;
-
-	_resultsJsInterface->zoomReset();
+	_preferences->zoomReset();
 }
 
 
 void MainWindow::syncKeysSelected()
 {
-	if (filterShortCut())
-		return;
-
 	_fileMenu->sync();
 }
 
@@ -769,6 +736,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 
 		setDataPanelVisible(false);
+		setDataAvailable(false);
 		_resultsJsInterface->resetResults();
 
 		closeVariablesPage();
@@ -866,7 +834,11 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setWindowTitle("JASP");
 
 			if (_applicationExiting)	QApplication::exit();
-			else						setDataPanelVisible(false);
+			else
+			{
+				setDataPanelVisible(false);
+				setDataAvailable(false);
+			}
 
 		}
 		else if (event->operation() == FileEvent::FileSyncData)
@@ -883,11 +855,15 @@ void MainWindow::populateUIfromDataSet()
 	setDataSetAndPackageInModels(_package);
 
 	if(_package->dataSet()->rowCount() == 0)
+	{
 		setDataPanelVisible(false);
+		setDataAvailable(false);
+	}
 	else
 	{
 		_filterModel->init();
 		setDataPanelVisible(true);
+		setDataAvailable(true);
 	}
 
 	hideProgress();
@@ -1464,4 +1440,27 @@ void MainWindow::setScreenPPI(int screenPPI)
 
 	_screenPPI = screenPPI;
 	emit screenPPIChanged(_screenPPI);
+}
+
+
+void MainWindow::setDataAvailable(bool dataAvailable)
+{
+	if (_dataAvailable == dataAvailable)
+		return;
+
+	_dataAvailable = dataAvailable;
+	emit dataAvailableChanged(_dataAvailable);
+}
+
+void MainWindow::setAnalysesAvailable(bool analysesAvailable)
+{
+#ifdef JASP_DEBUG
+	std::cout << "MainWindow::setAnalysesAvailable(" << (analysesAvailable ? "true" : "false") << ")" << std::endl;
+#endif
+
+	if (_analysesAvailable == analysesAvailable)
+		return;
+
+	_analysesAvailable = analysesAvailable;
+	emit analysesAvailableChanged(_analysesAvailable);
 }

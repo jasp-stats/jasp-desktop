@@ -56,22 +56,6 @@ void ResultsJsInterface::setZoom(double zoom)
 	emit runJavaScript(js);
 }
 
-void ResultsJsInterface::zoomIn()
-{
-	setZoom(_webViewZoom + 0.2);
-}
-
-void ResultsJsInterface::zoomOut()
-{
-	if (_webViewZoom >= 0.4)
-		setZoom(_webViewZoom - 0.2);
-}
-
-void ResultsJsInterface::zoomReset()
-{
-	setZoom(1);
-}
-
 
 void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
@@ -88,6 +72,8 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 		setGlobalJsValues();
 
 		emit resultsPageLoadedSignal();
+
+		setZoom(Settings::value(Settings::UI_SCALE).toDouble());
 	}
 }
 

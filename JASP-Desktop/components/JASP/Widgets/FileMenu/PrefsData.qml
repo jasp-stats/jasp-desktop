@@ -19,6 +19,7 @@ ScrollView
 			text:				"Synchronize automatically on data file save"
 			checked:			preferencesModel.dataAutoSynchronization
 			onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
+			font:				Theme.font
 		}
 
 		Item

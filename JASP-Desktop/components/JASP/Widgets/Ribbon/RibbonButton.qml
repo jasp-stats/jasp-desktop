@@ -26,7 +26,7 @@ Rectangle
 	id							: ribbonButton
 	width						: (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
 	height						: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
-	radius						: 5
+	//radius						: 5
 	color						: mice.pressed ? Theme.grayLighter : "transparent"
 
 	//border.color				: Theme.white
@@ -36,6 +36,7 @@ Rectangle
 			property alias	source		: backgroundImage.source
 			property bool	enabled		: true
 			property string moduleName	: "???"
+			property string moduleTitle : "???"
 			property string ribbonTitle : "???"
 	default property var	menu
 			//property int	localPadding: mice.containsMouse ? Theme.ribbonButtonPadding * 0.8 : Theme.ribbonButtonPadding
@@ -78,7 +79,7 @@ Rectangle
 
 			anchors.horizontalCenter:	parent.horizontalCenter
 			anchors.top:				backgroundImage.bottom
-			anchors.topMargin:			5
+			anchors.topMargin:			5 * preferencesModel.uiScale
 			color:						ribbonButton.enabled ? Theme.black : Theme.gray
 			font:						Theme.font
 		}
@@ -147,4 +148,25 @@ Rectangle
 			// }
 		}
 	}
+
+	Rectangle
+	{
+		anchors.top:				parent.bottom
+		anchors.horizontalCenter:	parent.horizontalCenter
+		border.color:				Theme.uiBorder
+		border.width:				1
+		color:						Theme.uiBackground
+		visible:					mice.containsMouse
+		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
+		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
+
+		Text
+		{
+			id:						moduleNameText
+			anchors.centerIn:		parent
+			font:					Theme.fontLabel
+			text:					ribbonButton.moduleTitle
+		}
+	}
+
 }

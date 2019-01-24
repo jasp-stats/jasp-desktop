@@ -35,35 +35,17 @@ FocusScope
 			}
 		}*/
 
-		Item
-		{
-			id:				dropShadow
-			x:				1 - width
-			z:				-1
-			height:			parent.height
-			width:			Theme.shadowRadius
-
-			Rectangle
-			{
-				anchors.centerIn:	parent
-				rotation:			90
-				gradient:			Gradient {	GradientStop { position: 0.0; color: Theme.shadow }	GradientStop { position: 1.0; color: "transparent" } }
-				height:				dropShadow.width
-				width:				dropShadow.height
-			}
-		}
-
 		Rectangle
 		{
 			id:				openCloseButton
-			width:			20 * preferencesModel.uiScale
-			color:			Theme.uiBackground
+			width:			Theme.splitHandleWidth
+			color:			mouseArea.containsMouse ? Theme.grayLighter : Theme.uiBackground
 			border.color:	Theme.uiBorder
 			border.width:	1
 			anchors
 			{
 				top:		parent.top
-				left:		parent.left
+				right:		parent.right
 				bottom:		parent.bottom
 			}
 
@@ -71,8 +53,8 @@ FocusScope
 			{
 
 				readonly property string iconsFolder:		"qrc:/images/"
-				readonly property string expandedIcon:		"arrow-right.png"
-				readonly property string contractedIcon:	"arrow-left.png"
+				readonly property string expandedIcon:		"arrow-left.png"
+				readonly property string contractedIcon:	"arrow-right.png"
 
 				source:				iconsFolder + (analysesModel.visible ? expandedIcon : contractedIcon)
 				width:				parent.width - 4
@@ -81,10 +63,18 @@ FocusScope
 				sourceSize.height:	height * 2;
 
 				anchors.centerIn:	parent
+
+				ToolTip.text:				(analysesModel.visible ? "Hide " : "Show ") + "analysis options"
+				ToolTip.timeout:			Theme.toolTipTimeout
+				ToolTip.delay:				Theme.toolTipDelay
+				ToolTip.toolTip.font:		Theme.font
+				ToolTip.visible:			mouseArea.containsMouse
+				ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor }
 			}
 
 			MouseArea
 			{
+				id:				mouseArea
 				anchors.fill:	parent
 				hoverEnabled:	true
 				cursorShape:	Qt.PointingHandCursor
@@ -102,8 +92,8 @@ FocusScope
 			anchors
 			{
 				top:		parent.top
-				left:		openCloseButton.right
-				right:		parent.right
+				left:		parent.left
+				right:		openCloseButton.left
 				bottom:		parent.bottom
 				margins:	parent.border.width
 			}
@@ -144,8 +134,7 @@ FocusScope
 						{
 							var heightImplodedButton		= (Theme.formExpanderHeaderHeight + analysesColumn.spacing + (Theme.formMargin * 2))
 							var previousChildBottomButton	= row <= 0 ? 0 : row * heightImplodedButton
-
-							analysesFlickable.contentY =  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
+							analysesFlickable.contentY		=  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
 						}
 
 				}

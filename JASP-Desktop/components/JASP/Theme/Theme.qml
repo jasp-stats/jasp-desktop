@@ -40,13 +40,13 @@ QtObject {
 	readonly property color rose:				"#FFC0CB"
 	readonly property color shadow:				"#33000000"
 
-	readonly property color textEnabled:		black
-	readonly property color textDisabled:		grayDarker
-	readonly property color uiBackground:		grayMuchLighter
-	readonly property color uiBorder:			grayDarker
+	readonly property color textEnabled:				black
+	readonly property color textDisabled:				grayDarker
+	readonly property color uiBackground:				grayMuchLighter
+	readonly property color uiBorder:					grayDarker
 
-	readonly property color buttonColor:		grayLighter
-	readonly property color buttonBorderColor:	grayLighter
+	readonly property color buttonColor:				grayLighter
+	readonly property color buttonBorderColor:			grayLighter
 	readonly property color buttonColorHovered:			uiBackground
 	readonly property color buttonBorderColorHovered:	black
 	readonly property color buttonColorPressed:			gray
@@ -76,9 +76,10 @@ QtObject {
 	readonly property int comboBoxHeight:				22  * uiScale
 	readonly property int textFieldWidth:				40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
+	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
-	readonly property int ribbonButtonHeight:			60  * uiScale
+	readonly property int ribbonButtonHeight:			72  * uiScale
 	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
@@ -106,7 +107,7 @@ QtObject {
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false
-	fontLabel.pixelSize:	18 * uiScale
+	fontLabel.pixelSize:	16 * uiScale
 	fontLabel.family:		"SansSerif"
 
 	readonly property color borderColor:					gray

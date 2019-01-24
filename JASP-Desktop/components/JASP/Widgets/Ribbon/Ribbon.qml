@@ -25,7 +25,7 @@ Item
 	id:				jaspRibbon
 	objectName:		"jaspRibbon"
 	implicitWidth:	ribbonRow.width + ribbonRow.spacing
-	implicitHeight:	60 * preferencesModel.uiScale
+	implicitHeight:	Theme.ribbonButtonHeight
 
 
 	property var	model:			null
@@ -33,6 +33,7 @@ Item
 	property bool	ribbonEnabled:	true
 	property bool	highlighted:	false
 	property string	module:			"???"
+	property string moduleTitle:	"???"
 
 	Rectangle
 	{
@@ -98,6 +99,7 @@ Item
 						enabled:		jaspRibbon.model.enabled && (!jaspRibbon.model.requiresDataset || mainWindow.datasetLoaded)
 						moduleName:		jaspRibbon.module
 						ribbonTitle:	displayText
+						moduleTitle:	jaspRibbon.moduleTitle
 					}
 				}
 

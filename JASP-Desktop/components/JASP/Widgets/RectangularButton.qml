@@ -17,7 +17,7 @@
 //
 
 import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 Rectangle
@@ -51,14 +51,15 @@ Rectangle
 	width:			implicitWidth
 	height:			implicitHeight
 
-	ToolTip
-	{
-		delay:		Theme.toolTipDelay
-		timeout:	Theme.toolTipTimeout
-		visible:	hovered && toolTip != ""
-		text:		toolTip
-		font:		Theme.font
-	}
+
+	ToolTip.text:				toolTip
+	ToolTip.timeout:			Theme.toolTipTimeout
+	ToolTip.delay:				Theme.toolTipDelay
+	ToolTip.toolTip.font:		Theme.font
+	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
+	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after?
+
+
 
 	signal clicked()
 

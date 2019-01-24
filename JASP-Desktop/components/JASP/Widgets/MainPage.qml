@@ -1,105 +1,102 @@
-import QtQuick 2.11
-import QtWebEngine 1.7
-import QtWebChannel 1.0
+import QtQuick			2.11
+import QtWebEngine		1.7
+import QtWebChannel		1.0
 import QtQuick.Controls 2.4
 import QtQuick.Controls 1.4 as OLD
-import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
-import JASP.Widgets 1.0
+import QtQuick.Layouts	1.3
+import JASP.Theme		1.0
+import JASP.Widgets		1.0
 
 OLD.SplitView
 {
 	id:				panelSplit
 	orientation:	Qt.Horizontal
 
-	Item
+	property bool shouldShowInputOutput: !mainWindow.dataAvailable || mainWindow.analysesAvailable
+
+	onWidthChanged:
 	{
-		id:						dataAndAnalyses
-		Layout.minimumWidth:	analyses.width
-		Layout.maximumWidth:	maxWidth
-		Layout.fillWidth:		visible
-		visible:				mainWindow.dataPanelVisible || analysesModel.count > 0
+		if(!panelSplit.shouldShowInputOutput)
+			data.width = panelSplit.width
+	}
 
-		property real maxWidth: panelSplit.width //- Theme.minPanelWidth
+	DataPanel
+	{
+		id:						data
+		visible:				mainWindow.dataAvailable //|| analysesModel.count > 0
+		z:						1
+		property real maxWidth: panelSplit.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
 
-		onVisibleChanged:
+		onWidthChanged:
 		{
-			if(visible)
-			{
-				if(mainWindow.dataPanelVisible) //allowed to be bigger than analyses.width (aka you can see the data)
-				{
-					width = panelSplit.width / 2
-					maxWidth = Qt.binding(function(){ return panelSplit.width /*- Theme.minPanelWidth */} )
-				}
-				else // only analyses (like for summary stats)
-				{
-					width = analyses.width
-					maxWidth = Qt.binding(function(){ return analyses.width })
-				}
-			}
+			var iAmBig = width > 0;
+			if(iAmBig !== mainWindow.dataPanelVisible)
+				mainWindow.dataPanelVisible = iAmBig
 		}
 
-		z: 1
-
-		DataPanel
+		function maximizeData()
 		{
-			id:						data
-			visible:				mainWindow.dataPanelVisible
-			anchors.fill:			parent
-			anchors.rightMargin:	analyses.extraSpace
-			z:						1
+			data.width = data.maxWidth
 		}
 
-		MouseArea
+		Connections
 		{
-			visible:	analysesModel.visible
-			z:			6
-
-			anchors
-			{
-				top:	parent.top
-				bottom:	parent.bottom
-				left:	parent.left
-				right:	analyses.left
-			}
-
-			onClicked:
-			{
-				analysesModel.visible = false
-				mouse.accepted = false
-			}
+			target:						mainWindow
+			onDataPanelVisibleChanged:	if(mainWindow.dataPanelVisible)		data.maximizeData(); else data.width = 0
 		}
+	}
 
-		AnalysisForms
-		{
-			id:				analyses
-			z:				2
-			visible:		analysesModel.count > 0
 
-			anchors
-			{
-				top:		parent.top
-				right:		parent.right
-				bottom:		parent.bottom
-			}
-		}
+	handleDelegate: SplitHandle
+	{
+		onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
+		pointingLeft:	mainWindow.dataPanelVisible
+		showArrow:		true
+		toolTipArrow:	mainWindow.dataPanelVisible ? "Hide data"   : "Maximize data"
+		toolTipDrag:	mainWindow.dataPanelVisible ? "Resize data" : "Drag to show data"
 	}
 
 
 	Item
 	{
-		//This item is here to make sure that the results don't look weird when you try to go beyond the minimumWidth.
-
+		id:						inputOutput
 		implicitWidth:			Theme.resultWidth
-		Layout.minimumWidth:	Theme.minPanelWidth
+		//Layout.minimumWidth:	Math.max(Theme.minPanelWidth, analyses.width)
+		Layout.fillWidth:		true
 		z:						3
+		visible:				panelSplit.shouldShowInputOutput
+
+		onVisibleChanged:		if(visible) width = Theme.resultWidth; else data.maximizeData()
+
+		property int minimumFullWidth: Theme.resultWidth + Theme.formWidth
+
+		Connections
+		{
+			target:				analysesModel
+			onAnalysisAdded:	if(inputOutput.width <= 10)									mainWindow.dataPanelVisible = false;
+								else if(inputOutput.width < inputOutput.minimumFullWidth)	inputOutput.width			= inputOutput.minimumFullWidth
+		}
+
+		AnalysisForms
+		{
+			id:				analyses
+			z:				-1
+			visible:		mainWindow.analysesAvailable
+
+			anchors
+			{
+				top:		parent.top
+				left:		parent.left
+				bottom:		parent.bottom
+			}
+		}
 
 		WebEngineView
 		{
 			id:						resultsView
 			anchors.fill:			parent
+			anchors.leftMargin:		analyses.width
 			url:					resultsJsInterface.resultsPageUrl
-
 			onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
 			onContextMenuRequested: request.accepted = true
 
@@ -142,4 +139,5 @@ OLD.SplitView
 			}
 		}
 	}
+
 }

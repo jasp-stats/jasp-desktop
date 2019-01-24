@@ -29,3 +29,4 @@ FileMenu                    1.0 FileMenu/FileMenu.qml
 MessageBox                  1.0 MessageBox.qml
 AnalysisForms               1.0 AnalysisForms.qml
 AnalysisFormExpander        1.0 AnalysisFormExpander.qml
+SplitHandle                 1.0 SplitHandle.qml

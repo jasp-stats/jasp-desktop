@@ -102,5 +102,6 @@
         <file>components/JASP/Widgets/FileMenu/PrefsMissingValues.qml</file>
         <file>components/JASP/Widgets/AnalysisFormExpander.qml</file>
         <file>components/JASP/Controls/RepeatedMeasuresFactorsList.qml</file>
+        <file>components/JASP/Widgets/SplitHandle.qml</file>
     </qresource>
 </RCC>

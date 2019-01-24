@@ -7,7 +7,6 @@ import JASP.Widgets 1.0
 RectangularButton
 {
 	color:			_pressed ? Theme.buttonColorPressed :	_showHovered ? Theme.gray						: "transparent"
-	//border.color:											_showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 	border.width:	0
-	//radius:			height
+	centerText:		false
 }

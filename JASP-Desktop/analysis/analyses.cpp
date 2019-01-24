@@ -446,5 +446,8 @@ void Analyses::setVisible(bool visible)
 
 	_visible = visible;
 	emit visibleChanged(_visible);
+
+	if(!_visible)
+		unselectAnalysis();
 }
 
