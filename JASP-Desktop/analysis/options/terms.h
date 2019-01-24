@@ -32,12 +32,12 @@
 class Terms
 {
 public:
-	Terms(const QList<QList<QString> > &terms, Terms *parent = NULL);
-	Terms(const QList<QString> &terms, Terms *parent = NULL);
-	Terms(const std::vector<std::vector<std::string> > &terms, Terms *parent = NULL);
-	Terms(const std::vector<std::string> &terms, Terms *parent = NULL);
-	Terms(const QList<Term> &terms, Terms *parent = NULL);
-	Terms(Terms *parent = NULL);
+	Terms(const QList<QList<QString> > &terms, Terms *parent = nullptr);
+	Terms(const QList<QString> &terms, Terms *parent = nullptr);
+	Terms(const std::vector<std::vector<std::string> > &terms, Terms *parent = nullptr);
+	Terms(const std::vector<std::string> &terms, Terms *parent = nullptr);
+	Terms(const QList<Term> &terms, Terms *parent = nullptr);
+	Terms(Terms *parent = nullptr);
 
 	void set(const QList<QList<QString> > &terms);
 	void set(const QList<QString> &terms);
@@ -71,7 +71,7 @@ public:
 	void remove(size_t pos, size_t n = 1);
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(const Terms &terms);
-	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = NULL);
+	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = nullptr);
 
 	void clear();
 

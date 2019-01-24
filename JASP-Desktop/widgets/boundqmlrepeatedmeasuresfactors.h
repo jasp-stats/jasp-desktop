@@ -16,20 +16,20 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLFACTORSLIST_H
-#define BOUNDQMLFACTORSLIST_H
+#ifndef BOUNDQMLREPEATEDMEASURESFACTORS_H
+#define BOUNDQMLREPEATEDMEASURESFACTORS_H
 
 #include "analysis/boundqmlitem.h"
-#include "listmodelfactors.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 #include "qmllistview.h"
 #include "analysis/options/optionstable.h"
 
-class BoundQMLFactorsList :  public QMLListView, public BoundQMLItem
+class BoundQMLRepeatedMeasuresFactors :  public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	BoundQMLFactorsList(QQuickItem* item, AnalysisForm* form);	
+	BoundQMLRepeatedMeasuresFactors(QQuickItem* item, AnalysisForm* form);	
 
 	virtual ListModel* model() OVERRIDE		{ return _factorsModel; }
 	virtual Option* boundTo() OVERRIDE		{ return _boundTo; }
@@ -42,9 +42,9 @@ protected slots:
 	virtual void modelChangedHandler() OVERRIDE;
 	
 private:
-	ListModelFactors* _factorsModel;
+	ListModelRepeatedMeasuresFactors* _factorsModel;
 	OptionsTable* _boundTo;
 	
 };
 
-#endif // BOUNDQMLFACTORSLIST_H
+#endif // BOUNDQMLREPEATEDMEASURESFACTORS_H

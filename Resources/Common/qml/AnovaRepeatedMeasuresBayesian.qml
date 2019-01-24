@@ -37,7 +37,7 @@ Form
 	VariablesForm
 	{
 		height: 520
-		FactorsList
+		RepeatedMeasuresFactorsList
 		{
 			name: "repeatedMeasuresFactors"
 			title: qsTr("Repeated Measures Factors")

@@ -20,6 +20,7 @@
 #include "../analysis/analysisform.h"
 #include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
+#include "listmodelextracontrols.h"
 #include <QQmlProperty>
 
 using namespace std;
@@ -30,7 +31,7 @@ BoundQMLListViewInteraction::BoundQMLListViewInteraction(QQuickItem* item, Analy
 {
 	_boundTo = nullptr;
 	_interactionModel = new ListModelInteractionAssigned(this);
-	setTermsAreNotVariables();		
+	setTermsAreNotVariables();	
 }
 
 void BoundQMLListViewInteraction::bindTo(Option *option)
@@ -38,7 +39,7 @@ void BoundQMLListViewInteraction::bindTo(Option *option)
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 	Options* options = new Options();
 	options->add("components", new OptionTerm());
-	if (_hasExtraControlColumns)
+	if (_hasExtraControls)
 		addExtraOptions(options);
 	_boundTo->setTemplate(options);
 	
@@ -54,7 +55,7 @@ Option* BoundQMLListViewInteraction::createOption()
 {
 	Options* templote = new Options();
 	templote->add("components", new OptionTerm());
-	if (_hasExtraControlColumns)
+	if (_hasExtraControls)
 		addExtraOptions(templote);
 	
 	OptionsTable* result = new OptionsTable(templote);
@@ -75,16 +76,19 @@ Option* BoundQMLListViewInteraction::createOption()
 
 void BoundQMLListViewInteraction::modelChangedHandler()
 {
+	qDebug("Model Changed handler");
 	const std::vector<Options *>& rows = _interactionModel->rows();
 	
-	if (_hasExtraControlColumns)
+	if (_hasExtraControls)
 	{
 		for (Options* row : rows)
 		{
 			OptionTerms *termOption = static_cast<OptionTerms *>(row->get(0));
 			Term t(termOption->value().front());
 			QString termStr = t.asQString();
-			const QMap<QString, BoundQMLItem*>& controlMap = _rowsWithControls[termStr];
+			ListModelExtraControls* extraControlModel = _interactionModel->getExtraControlModel(termStr);
+			
+			const QMap<QString, BoundQMLItem*>& controlMap = extraControlModel->getBoundItems();
 			QMapIterator<QString, BoundQMLItem*> it(controlMap);
 			while (it.hasNext())
 			{

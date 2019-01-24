@@ -20,27 +20,41 @@
 #define LISTMODELASSIGNEDINTERFACE_H
 
 #include "listmodeldraggable.h"
-
 #include "listmodelavailableinterface.h"
+
+class ListModelExtraControls;
 
 class ListModelAssignedInterface : public ListModelDraggable
 {
 	Q_OBJECT
 public:
-	ListModelAssignedInterface(QMLListView* listView) 
-		: ListModelDraggable(listView)
-		, _source(NULL) 
-	{}
+	ListModelAssignedInterface(QMLListView* listView);
 	
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
+		
 	virtual void setSource(ListModelAvailableInterface *source);
+	ListModelAvailableInterface* source()												{ return _source; }
+	void addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
+	ListModelExtraControls* getExtraControlModel(QString colName)						{ return _extraControlsModels[colName]; }
+	void controlLoaded(const QString& colName, const QString& controlName);
 	
-	ListModelAvailableInterface* source()									{ return _source; }
-
 public slots:
 	virtual void availableTermsChanged(Terms *termsAdded, Terms *termsRemoved) {}
 	
+signals:
+	void allExtraControlsLoaded();
+	
 protected:
-	ListModelAvailableInterface* _source;
+	void modelResetHandler();
+	
+	ListModelAvailableInterface*			_source;
+	QVector<QMap<QString, QVariant> >		_extraControlsDefinitions;
+	QMap<QString, bool>						_extraControlsNames;
+	QMap<QString, ListModelExtraControls* > _extraControlsModels;
+	QMap<int, QString>						_rows;
+	QMap<QString, ListModelExtraControls* > _modelCache;
+	bool									_allExtraControlsLoaded = true;
+	QMap<QString, QMap<QString, bool> >		_extraControlsLoadedIndicator;
 };
 
 #endif // LISTMODELASSIGNEDINTERFACE_H

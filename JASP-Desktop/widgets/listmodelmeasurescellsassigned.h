@@ -21,7 +21,7 @@
 
 #include "listmodelassignedinterface.h"
 
-class ListModelFactors;
+class ListModelRepeatedMeasuresFactors;
 
 class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 {

@@ -92,6 +92,7 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 		}
 	}
 	
+	_resetItemWidth();
 	QQuickItem::connect(item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 

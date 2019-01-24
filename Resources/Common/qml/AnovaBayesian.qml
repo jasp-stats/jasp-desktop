@@ -156,7 +156,7 @@ Form
 			{
 				name: "sampleMode"
 				RadioButton { value: "auto";	text: qsTr("Auto"); checked: true		}
-				RadioButton { value: "manual";	text: qsTr("Manual"); id: samplesManua	}
+				RadioButton { value: "manual";	text: qsTr("Manual"); id: samplesManual	}
 				IntegerField
 				{
 					name: "fixedSamplesNumber"

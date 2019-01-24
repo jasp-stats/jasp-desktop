@@ -33,6 +33,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	roles[TypeRole] = "type";
 	roles[ColumnTypeRole] = "columnType";
 	roles[NameRole] = "name";
+	roles[ExtraColumnsRole] = "extraColumns";
 	return roles;
 }
 

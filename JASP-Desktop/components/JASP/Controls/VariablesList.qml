@@ -30,9 +30,9 @@ JASPControl
 	implicitWidth:		parent.width
 	height:				singleItem ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height
-    
+	
 	property var	model
-    property string title
+	property string title
 	property int	columns:			1
 	property string itemType:			"variables"
 	property alias	dropKeys:			dropArea.keys
@@ -40,9 +40,7 @@ JASPControl
 	property bool	draggable:			true
 	property var	syncModels
 	property bool	singleItem:			false
-	property var	components:			[]
 	property string listViewType:		"AvailableVariables"
-	property var	controlColumns:		[]
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
@@ -50,509 +48,583 @@ JASPControl
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
-
 	property bool	showVariableTypeIcon:	true
-	property bool	hasExtraControlColumns:	false
-    property string extraControlVariableName: "variable"
-
+	
+	property var	extraControlColumns:		[]
+	property string extraControlVariableName:	"variable"
+	property alias	extraControlTitles:	titles.model
+	
 	property int	indexInDroppedListViewOfDraggedItem:	-1
-
-    readonly property int rectangleY: rectangle.y
-
-    signal itemDoubleClicked(int index);
-    signal itemsDropped(var indexes, var dropList, int dropItemIndex);
-    signal removeRowWithControls(int id, string name);
-    signal addRowWithControls(int id, string name, var columns);    
-        
-    function selectedItemsChanged() {
-        hasSelectedItems = (listView.selectedItems.length > 0);
-    }
-    
-    function moveSelectedItems(target) {
-        if (!hasSelectedItems) {
-            return;
-        }
-
-        var selectedIndexes = [];
-        for (var i = 0; i < listView.selectedItems.length; i++) {
-            var selectedItem = listView.selectedItems[i];            
-            selectedIndexes.push(selectedItem.rank);
-        }
-        
-        // itemsDropped will change the listView, and that may call the onCurrentItemChanged
-        // So we have to clear the selected items list before.
-        listView.clearSelectedItems();
-        itemsDropped(selectedIndexes, target, -1);
-
-    }    
-    
-    DropArea {
-        id: dropArea
-        anchors.fill: parent
-        
-        property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
- 
-        onPositionChanged: {
-            if (variablesList.singleItem || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
-            var itemIndex = Math.floor((drag.y - text.height) / listView.cellHeight);
-            if (variablesList.columns > 1) {
-                itemIndex = itemIndex * 2 + Math.floor(drag.x / listView.cellWidth);
-            }
-
-            if (itemIndex >= 0 && itemIndex < listView.contentItem.children.length) {
-                var item = listView.contentItem.children[itemIndex].children[0];
-                if (item && item.objectName === "itemRectangle") {
-                    listView.itemContainingDrag = item
-                    variablesList.indexInDroppedListViewOfDraggedItem = itemIndex
-                } else {
-                    console.log("dropArea: could not find child!")
-                }
-            } else {
-                listView.itemContainingDrag = null
-                variablesList.indexInDroppedListViewOfDraggedItem = -1
-            }
-        }
-        onExited: {
-            listView.itemContainingDrag = null
-            variablesList.indexInDroppedListViewOfDraggedItem = -1
-        }
-    }
-    
-    Text {
-        id: text
-        anchors.top: parent.top
-        anchors.left: parent.left
-        text: title
-        height: title ? Theme.variablesListTitle : 0
-
-    }    
-    
-    Rectangle {
-        id: rectangle
-        anchors.top: text.bottom
-        anchors.left: parent.left
-        height: variablesList.height - text.height
-        width: parent.width
-        color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
-        border.width: 1
-        border.color: dropArea.canDrop ? Theme.containsDragBorderColor : Theme.borderColor
-        
-        states: [
-            State {
-                when: dropArea.canDrop
-                PropertyChanges {
-                    target: rectangle
-                    border.width: 4
-                    radius: 3
-                }
-            }
-        ]
-        
-        Repeater {
-            model: suggestedColumns.length
-            Image {
-                source: iconInactiveFiles[suggestedColumns[index]]
-                height: 16
-                width: 16
-                z: 2
-                anchors.bottom: rectangle.bottom;
-                anchors.bottomMargin: 4
-                anchors.right: rectangle.right;
-                anchors.rightMargin: index * 20 + 4
-            }
-        }
-        
-        Component.onCompleted: {
-            if (suggestedColumns.length === 0)
-                suggestedColumns = allowedColumns
-            
-            var previousTitle;
-            var length = variablesList.resources.length
-            for (var i = length - 1; i >= 0; i--) {
-                var column = variablesList.resources[i];
-                if (column instanceof ExtraControlColumn) {
-                    variablesList.hasExtraControlColumns = true;
-                    variablesList.controlColumns.push(column)
-                    var columnType = column.type
-                    var component = Qt.createComponent(columnType + ".qml");
-                    var labelComponent = Qt.createComponent("Label.qml");
-                    components.push(component);
-                    if (column.title) {
-                        var extraTitle = labelComponent.createObject(variablesList, {text: column.title});
-                        extraTitle.anchors.right = previousTitle ? previousTitle.left : variablesList.right;
-                        extraTitle.anchors.top = variablesList.top;
-                    }
-                }
-            }
-        }
-        
-		GridView {
-            id: listView
-            ScrollBar.vertical: ScrollBar {
+	
+	readonly property int rectangleY: rectangle.y
+	
+	signal itemDoubleClicked(int index);
+	signal itemsDropped(var indexes, var dropList, int dropItemIndex);
+	signal removeRowWithControls(int id, string name);
+	signal addRowWithControls(int id, string name, var columns);
+	
+	function selectedItemsChanged()
+	{
+		hasSelectedItems = (listView.selectedItems.length > 0);
+	}
+	
+	function moveSelectedItems(target)
+	{
+		if (!hasSelectedItems) return;
+		
+		var selectedIndexes = [];
+		for (var i = 0; i < listView.selectedItems.length; i++)
+		{
+			var selectedItem = listView.selectedItems[i];            
+			selectedIndexes.push(selectedItem.rank);
+		}
+		
+		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
+		// So we have to clear the selected items list before.
+		listView.clearSelectedItems();
+		itemsDropped(selectedIndexes, target, -1);
+		
+	}    
+	
+	DropArea
+	{
+		id: dropArea
+		anchors.fill: parent
+		
+		property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
+		
+		onPositionChanged:
+		{
+			if (variablesList.singleItem || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+			var itemIndex = Math.floor((drag.y - text.height) / listView.cellHeight);
+			if (variablesList.columns > 1)
+			{
+				itemIndex = itemIndex * 2 + Math.floor(drag.x / listView.cellWidth);
+			}
+			
+			if (itemIndex >= 0 && itemIndex < listView.contentItem.children.length)
+			{
+				var item = listView.contentItem.children[itemIndex].children[0];
+				if (item && item.objectName === "itemRectangle") {
+					listView.itemContainingDrag = item
+					variablesList.indexInDroppedListViewOfDraggedItem = itemIndex
+				}
+				else
+				{
+					console.log("dropArea: could not find child!")
+				}
+			}
+			else
+			{
+				listView.itemContainingDrag = null
+				variablesList.indexInDroppedListViewOfDraggedItem = -1
+			}
+		}
+		onExited:
+		{
+			listView.itemContainingDrag = null
+			variablesList.indexInDroppedListViewOfDraggedItem = -1
+		}
+	}
+	
+	Text
+	{
+		id: text
+		anchors.top: parent.top
+		anchors.left: parent.left
+		text: title
+		height: title ? Theme.variablesListTitle : 0
+		
+	}
+	
+	Row
+	{
+		width:				parent.width
+		anchors.top:		variablesList.top;
+		spacing:			1
+		layoutDirection:	Qt.RightToLeft
+		Repeater
+		{
+			id: titles;
+			Label { text: modelData }
+		}
+	}
+	
+	Rectangle
+	{
+		id: rectangle
+		anchors.top: text.bottom
+		anchors.left: parent.left
+		height: variablesList.height - text.height
+		width: parent.width
+		color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		border.width: 1
+		border.color: dropArea.canDrop ? Theme.containsDragBorderColor : Theme.borderColor
+		
+		states: [
+			State
+			{
+				when: dropArea.canDrop
+				PropertyChanges
+				{
+					target: rectangle
+					border.width: 4
+					radius: 3
+				}
+			}
+		]
+		
+		Repeater
+		{
+			model: suggestedColumns.length
+			Image
+			{
+				source: iconInactiveFiles[suggestedColumns[index]]
+				height: 16
+				width: 16
+				z: 2
+				anchors.bottom: rectangle.bottom;
+				anchors.bottomMargin: 4
+				anchors.right: rectangle.right;
+				anchors.rightMargin: index * 20 + 4
+			}
+		}
+		
+		Component.onCompleted:
+		{
+			if (suggestedColumns.length === 0)
+				suggestedColumns = allowedColumns
+			
+			var length = variablesList.resources.length
+			for (var i = length - 1; i >= 0; i--)
+			{
+				var column = variablesList.resources[i];
+				if (column instanceof ExtraControlColumn)
+					variablesList.extraControlColumns.push(column);
+			}
+		}
+		
+		GridView
+		{
+			id: listView
+			ScrollBar.vertical: ScrollBar
+			{
 				policy: ScrollBar.AsNeeded
-
-            }
+			}
 			cellHeight: 20
 			cellWidth: width / variablesList.columns
-            clip: true
-            focus: true
-            anchors.fill: parent
-            anchors.margins: 4
-            model: variablesList.model
-            delegate: itemComponent
-            
-            property int startShiftSelected: 0;
-            property int endShiftSelected: -1;
-            property var selectedItems: [];
-            property bool mousePressed: false;
-            property bool shiftPressed: false;
-            property var itemContainingDrag
-            
-            onCurrentItemChanged: {
-                if (shiftPressed) {
-                    if (endShiftSelected >= 0)
-                        selectShiftItems(false);
-                    endShiftSelected = listView.currentIndex;
-                    selectShiftItems(true);
-                } else if (!mousePressed) {
-                    var itemWrapper = listView.currentItem;
-                    if (itemWrapper) {
-                        var itemRectangle = itemWrapper.children[0];
-                        itemWrapper.forceActiveFocus();
-                        listView.clearSelectedItems();
-                        listView.selectItem(itemRectangle, true);
-                        listView.startShiftSelected = listView.currentIndex;
-                        listView.endShiftSelected = -1;
-                    }
-                }
-            }
-            
-            Keys.onPressed: {
-                if (event.modifiers & Qt.ShiftModifier) {
-                    shiftPressed = true;
-                } else {
-                    shiftPressed = false;
-                }
-            }
-            
-            Keys.onReleased: {
-                if (event.modifiers & Qt.ShiftModifier) {
+			clip: true
+			focus: true
+			anchors.fill: parent
+			anchors.margins: 4
+			model: variablesList.model
+			delegate: itemComponent
+			
+			property int startShiftSelected: 0;
+			property int endShiftSelected: -1;
+			property var selectedItems: [];
+			property bool mousePressed: false;
+			property bool shiftPressed: false;
+			property var itemContainingDrag
+			
+			onCurrentItemChanged:
+			{
+				if (shiftPressed)
+				{
+					if (endShiftSelected >= 0)
+						selectShiftItems(false);
+					endShiftSelected = listView.currentIndex;
+					selectShiftItems(true);
+				}
+				else if (!mousePressed)
+				{
+					var itemWrapper = listView.currentItem;
+					if (itemWrapper)
+					{
+						var itemRectangle = itemWrapper.children[0];
+						itemWrapper.forceActiveFocus();
+						listView.clearSelectedItems();
+						listView.selectItem(itemRectangle, true);
+						listView.startShiftSelected = listView.currentIndex;
+						listView.endShiftSelected = -1;
+					}
+				}
+			}
+			
+			Keys.onPressed:
+			{
+				if (event.modifiers & Qt.ShiftModifier)
+					shiftPressed = true;
+				else
 					shiftPressed = false;
-                }
-            }
-            
-            Keys.onSpacePressed: {
-                moveSelectedItems()
-            }
-            Keys.onReturnPressed: {
-                moveSelectedItems()
-            }
-            
-            function addSelectedItem(item) {
-                if (!item || item.objectName !== "itemRectangle") {
-                    console.log("item is not an itemRectangle!!!!")
-                    return;
-                }
-                if (!item.draggable)
-                    return;
-
-                item.selected = true;
-                if (selectedItems.find(function(elt) {return elt.rank === item.rank}))
-                    return;
-                    
-                var added = false;
-                for (var i = 0; i < selectedItems.length; i++) {
-                    if (item.rank < selectedItems[i].rank) {
-                        selectedItems.splice(i, 0, item);
-                        added = true;
-                        break;
-                    }
-                }
-                if (!added)
-                    selectedItems.push(item);
-
+			}
+			
+			Keys.onReleased:
+			{
+				if (event.modifiers & Qt.ShiftModifier)
+					shiftPressed = false;
+			}
+			
+			Keys.onSpacePressed:
+			{
+				moveSelectedItems()
+			}
+			Keys.onReturnPressed:
+			{
+				moveSelectedItems()
+			}
+			
+			function addSelectedItem(item)
+			{
+				if (!item || item.objectName !== "itemRectangle")
+				{
+					console.log("item is not an itemRectangle!!!!")
+					return;
+				}
+				if (!item.draggable)
+					return;
+				
+				item.selected = true;
+				if (selectedItems.find(function(elt) {return elt.rank === item.rank}))
+					return;
+				
+				var added = false;
+				for (var i = 0; i < selectedItems.length; i++)
+				{
+					if (item.rank < selectedItems[i].rank)
+					{
+						selectedItems.splice(i, 0, item);
+						added = true;
+						break;
+					}
+				}
+				if (!added)
+					selectedItems.push(item);
+				
 				variablesList.selectedItemsChanged();
-            }
-            
-            function removeSelectedItem(item) {
-
-                if (!item || item.objectName !== "itemRectangle")
-                    return;
-
-                item.selected = false;
-                for (var i = 0; i < selectedItems.length; i++) {
-                    if (item.rank === selectedItems[i].rank) {
-                        selectedItems.splice(i, 1);
-                        break;
-                    }
-                }
-                variablesList.selectedItemsChanged();
-            }
-            
-            function selectItem(item, selected) {
-                if (selected)
-                    listView.addSelectedItem(item);
-                else
-                    listView.removeSelectedItem(item);
-            }        
-            
-            function clearSelectedItems() {
-                for (var i = 0; i < selectedItems.length; i++) {
-                    selectedItems[i].selected = false;
-                }
-                selectedItems = [];
-                variablesList.selectedItemsChanged();
-            }
-            
-            function selectShiftItems(selected) {
-                var startIndex = listView.startShiftSelected;
-                var endIndex = listView.endShiftSelected;
-                if (startIndex > endIndex) {
-                    var temp = startIndex;
-                    startIndex = endIndex;
-                    endIndex = temp;
-                }
-                for (var i = startIndex; i <= endIndex; i++) {
-                    var item = listView.contentItem.children[i];
-                    if (item)
-                        listView.selectItem(item.children[0], selected);
-                    else
-                        console.log(variablesList.name + ": Unknown item at index " + i);
-                }
-            }
-        }
-    }
-    
-    Component {
-        id: itemComponent
-        FocusScope {
-            id: itemWrapper
-            height: listView.cellHeight
-            width: listView.cellWidth
-            
-            Rectangle {
-                id: itemRectangle
-                objectName: "itemRectangle"
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                // the height & width of itemWrapper & itemRectangle must be set independently of each other:
-                // when the rectangle is dragged, it gets another parent but it must keep the same size,                
-                height: listView.cellHeight
-                width: listView.cellWidth
-                focus: true
-                border.width: containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
+			}
+			
+			function removeSelectedItem(item)
+			{
+				
+				if (!item || item.objectName !== "itemRectangle")
+					return;
+				
+				item.selected = false;
+				for (var i = 0; i < selectedItems.length; i++)
+				{
+					if (item.rank === selectedItems[i].rank)
+					{
+						selectedItems.splice(i, 1);
+						break;
+					}
+				}
+				variablesList.selectedItemsChanged();
+			}
+			
+			function selectItem(item, selected)
+			{
+				if (selected)
+					listView.addSelectedItem(item);
+				else
+					listView.removeSelectedItem(item);
+			}        
+			
+			function clearSelectedItems()
+			{
+				for (var i = 0; i < selectedItems.length; i++)
+				{
+					selectedItems[i].selected = false;
+				}
+				selectedItems = [];
+				variablesList.selectedItemsChanged();
+			}
+			
+			function selectShiftItems(selected)
+			{
+				var startIndex = listView.startShiftSelected;
+				var endIndex = listView.endShiftSelected;
+				if (startIndex > endIndex)
+				{
+					var temp = startIndex;
+					startIndex = endIndex;
+					endIndex = temp;
+				}
+				for (var i = startIndex; i <= endIndex; i++)
+				{
+					var item = listView.contentItem.children[i];
+					if (item)
+						listView.selectItem(item.children[0], selected);
+					else
+						console.log(variablesList.name + ": Unknown item at index " + i);
+				}
+			}
+		}
+	}
+	
+	Component
+	{
+		id: itemComponent
+		FocusScope
+		{
+			id: itemWrapper
+			height: listView.cellHeight
+			width: listView.cellWidth
+			
+			Rectangle
+			{
+				id: itemRectangle
+				objectName: "itemRectangle"
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.verticalCenter: parent.verticalCenter
+				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
+				// when the rectangle is dragged, it gets another parent but it must keep the same size,                
+				height: listView.cellHeight
+				width: listView.cellWidth
+				focus: true
+				border.width: containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
 				border.color: containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
-
-                
-                property bool selected: false
-                property bool dragging: false
-                property bool clearOtherSelectedItemsWhenClicked: false
-                property int offsetX: 0
-                property int offsetY: 0
-                property int rank: index
-                property int uniqueId // Do not set it here to index, but in the onCompleted event 
-                property bool containsDragItem: listView.itemContainingDrag === itemRectangle
-                property bool isVirtual: (typeof model.type !== "undefined") && model.type.includes("virtual")
-                property bool isVariable: (typeof model.type !== "undefined") && model.type.includes("variable")
-                property bool isLayer: (typeof model.type !== "undefined") && model.type.includes("layer")
-                property bool draggable: !variablesList.dragOnlyVariables || isVariable
-                property string columnType: isVariable ? model.columnType : ""
-                
-                function setRelative(draggedRect) {
-                    x = Qt.binding(function (){ return draggedRect.x + offsetX; })
-                    y = Qt.binding(function (){ return draggedRect.y + offsetY; })
-                }
-                
-                color: {
-                    if (!itemRectangle.draggable)
-                        return Theme.controlBackgroundColor;
-                    else if (itemRectangle.selected)
-                        return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
-                    else if (itemRectangle.containsDragItem && variablesList.dropModeReplace)
-                        return Theme.itemSelectedColor;
-
-                    else if (mouseArea.containsMouse)
-                        return Theme.itemHoverColor;
-                    return Theme.controlBackgroundColor;
-                }
-                Drag.keys: [variablesList.name]
-                Drag.active: mouseArea.drag.active
-                Drag.hotSpot.x: itemRectangle.width / 2
-                Drag.hotSpot.y: itemRectangle.height / 2
-                
-                // Use the ToolTip Attached property to avoid creating ToolTip object for each item
-                ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
-
-                ToolTip.delay: 300
-                ToolTip.text: model.name
-                ToolTip.toolTip.background: Rectangle {
-                        id: tooltipRectangle
-                        color: Theme.tooltipBackgroundColor
-                        height: 25
-                }
-
-                Rectangle {
-                    height: 2
-                    width: parent.width
-                    color: Theme.red
-                    visible: itemRectangle.containsDragItem && variablesList.dropModeInsert
-                }
-              
-                Image {
-                    id: icon
-                    height: 15; width: 15
-                    anchors.verticalCenter: parent.verticalCenter
-                    source: variablesList.showVariableTypeIcon ? iconFiles[model.columnType] : ""
-                    visible: variablesList.showVariableTypeIcon
-                }
-                Text {
-                    id: colName
-                    x: variablesList.showVariableTypeIcon ? 20 : 4
-                    text: model.name
-                    width: itemRectangle.width - x
-                    elide: Text.ElideRight
-                    anchors.verticalCenter: parent.verticalCenter
-                    horizontalAlignment: itemRectangle.isLayer ? Text.AlignHCenter : undefined
-                    color: itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
-                }
-                
-                states: [
-                    State {
-                        when: itemRectangle.dragging
-                        ParentChange {
-                            target: itemRectangle
-                            parent: form
-                        }
-                        AnchorChanges {
-                            target: itemRectangle
-                            anchors.horizontalCenter: undefined
-                            anchors.verticalCenter: undefined
-                        }
-                        PropertyChanges {
-                            target: itemRectangle
-                            opacity: 0.4
-                        }
-                    }
-                ]
-
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    drag.target: parent
-                    hoverEnabled: true
-                    
-                    onDoubleClicked: {
-                        listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
-                        itemDoubleClicked(index);
-                    }
-                    
-                    onClicked: {
-                        if (itemRectangle.clearOtherSelectedItemsWhenClicked) {
-                            listView.clearSelectedItems();
-                            listView.selectItem(itemRectangle, true);
-                        }
-                    }
-                    
-                    onPressed: {
-                        listView.mousePressed = true;
-                        listView.currentIndex = index;
-                        itemRectangle.clearOtherSelectedItemsWhenClicked = false;
-                        if (mouse.modifiers & Qt.ControlModifier) {
-                            listView.selectItem(itemRectangle, !itemRectangle.selected);
-                            listView.startShiftSelected = index;
-                            listView.endShiftSelected = -1;
-                        } else if (mouse.modifiers & Qt.ShiftModifier) {
-                            if (listView.endShiftSelected >= 0)
-                                listView.selectShiftItems(false)
-                            listView.endShiftSelected = index;
-                            listView.selectShiftItems(true);
-                        } else {
-                            itemWrapper.forceActiveFocus();
-                            if (!itemRectangle.selected) {
-                                listView.clearSelectedItems();
-                                listView.selectItem(itemRectangle, true);
-                            } else {
-                                itemRectangle.clearOtherSelectedItemsWhenClicked = true;
-                            }
-
-                            listView.startShiftSelected = index;
-                            listView.endShiftSelected = -1;
-                        }                        
-                    }
-                    onReleased: {
-                        listView.mousePressed = false;
-                    }
-                    
-                    drag.onActiveChanged: {
-                        if (drag.active) {
-                            if (itemRectangle.selected) {
-                                itemRectangle.dragging = true;
-                                for (var i = 0; i < listView.selectedItems.length; i++) {
-                                    var selectedItem = listView.selectedItems[i];
-                                    if (selectedItem.objectName !== "itemRectangle") {
-                                        console.log("This is not an itemRectangle!")
-                                        continue;
-                                    }
-
-                                    if (selectedItem.rank !== index) {
-                                        selectedItem.dragging = true;
-                                        selectedItem.offsetX = selectedItem.x - itemRectangle.x;
-                                        selectedItem.offsetY = selectedItem.y - itemRectangle.y;
-                                        selectedItem.setRelative(itemRectangle);                                
-                                    }
-                                }
-                            }
-                           
-                        } else {
-                            var selectedIndexes = [];
-                            for (var i = 0; i < listView.selectedItems.length; i++) {
-                                var selectedItem = listView.selectedItems[i];
-                                selectedIndexes.push(selectedItem.rank);
-                                selectedItem.dragging = false;
-                                selectedItem.x = selectedItem.x; // break bindings
-                                selectedItem.y = selectedItem.y;
-                            }
-                            if (itemRectangle.Drag.target) {
-                                var dropTarget = itemRectangle.Drag.target.parent
-                                if (dropTarget.singleItem && listView.selectedItems.length > 1)
-                                    return;                                
-                                    
-                                listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
-                                var variablesListName = variablesList.name
-                                itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);                               
-                            }
-                        }
-                    }
-                }
-            }
-            
-            Component.onDestruction: {
-                if (variablesList.hasExtraControlColumns)
-                    removeRowWithControls(itemRectangle.uniqueId, colName.text);
-            }
-            
-            Component.onCompleted: {
-                itemRectangle.uniqueId = index; // this is done here so that uniqueId is not bound to index
-                if (variablesList.hasExtraControlColumns) {
-                    var length = variablesList.controlColumns.length;
-                    var previousColumn;
-                    var controls = [];
-                    for (var i = 0; i < length; i++) {
-                        var newControl = components[i].createObject(itemRectangle, variablesList.controlColumns[i]);
-                        newControl.isBound = false;
-                        newControl.anchors.right = previousColumn ? previousColumn.left : itemRectangle.right;
-                        newControl.anchors.top = itemRectangle.top;
-                        newControl.height = parent.height;
-                        if (!variablesList.controlColumns[i].width)
-                            newControl.width = newControl.implicitWidth;
-                        colName.width -= newControl.width;
-                        controls.push(newControl);
-                        previousColumn = newControl;
-                    }
-                    
-                    addRowWithControls(itemRectangle.uniqueId, colName.text, controls);
-                }
-            }
-        }
-    }    
+				
+				
+				property bool selected: false
+				property bool dragging: false
+				property bool clearOtherSelectedItemsWhenClicked: false
+				property int offsetX: 0
+				property int offsetY: 0
+				property int rank: index
+				property bool containsDragItem: listView.itemContainingDrag === itemRectangle
+				property bool isVirtual: (typeof model.type !== "undefined") && model.type.includes("virtual")
+				property bool isVariable: (typeof model.type !== "undefined") && model.type.includes("variable")
+				property bool isLayer: (typeof model.type !== "undefined") && model.type.includes("layer")
+				property bool draggable: !variablesList.dragOnlyVariables || isVariable
+				property string columnType: isVariable ? model.columnType : ""
+				property var extraColumnsModel: model.extraColumns
+				
+				function setRelative(draggedRect)
+				{
+					x = Qt.binding(function (){ return draggedRect.x + offsetX; })
+					y = Qt.binding(function (){ return draggedRect.y + offsetY; })
+				}
+				
+				color:
+				{
+					if (!itemRectangle.draggable)
+						return Theme.controlBackgroundColor;
+					else if (itemRectangle.selected)
+						return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
+					else if (itemRectangle.containsDragItem && variablesList.dropModeReplace)
+						return Theme.itemSelectedColor;
+					
+					else if (mouseArea.containsMouse)
+						return Theme.itemHoverColor;
+					return Theme.controlBackgroundColor;
+				}
+				Drag.keys: [variablesList.name]
+				Drag.active: mouseArea.drag.active
+				Drag.hotSpot.x: itemRectangle.width / 2
+				Drag.hotSpot.y: itemRectangle.height / 2
+				
+				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
+				ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
+				
+				ToolTip.delay: 300
+				ToolTip.text: model.name
+				ToolTip.toolTip.background: Rectangle
+				{
+					id: tooltipRectangle
+					color: Theme.tooltipBackgroundColor
+					height: 25
+				}
+				
+				Rectangle
+				{
+					height: 2
+					width: parent.width
+					color: Theme.red
+					visible: itemRectangle.containsDragItem && variablesList.dropModeInsert
+				}
+				
+				Image
+				{
+					id: icon
+					height: 15; width: 15
+					anchors.verticalCenter: parent.verticalCenter
+					source: variablesList.showVariableTypeIcon && itemRectangle.isVariable ? iconFiles[model.columnType] : ""
+					visible: variablesList.showVariableTypeIcon && itemRectangle.isVariable
+				}
+				Text
+				{
+					id: colName
+					x: variablesList.showVariableTypeIcon ? 20 : 4
+					text: model.name
+					width: itemRectangle.width - x
+					elide: Text.ElideRight
+					anchors.verticalCenter: parent.verticalCenter
+					horizontalAlignment: itemRectangle.isLayer ? Text.AlignHCenter : undefined
+					color: itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
+				}
+				
+				Row
+				{
+					anchors.fill:	parent
+					anchors.rightMargin: 10
+					spacing:		1
+					z:				10
+					
+					layoutDirection: Qt.RightToLeft
+					
+					Repeater
+					{
+						model: itemRectangle.extraColumnsModel
+						
+						delegate: Loader
+						{
+							source:			model.path
+							asynchronous:	false
+							
+							onLoaded:		itemRectangle.extraColumnsModel.controlLoaded(model.name, item)
+						}
+					}
+				}
+				
+				states: [
+					State
+					{
+						when: itemRectangle.dragging
+						ParentChange
+						{
+							target: itemRectangle
+							parent: form
+						}
+						AnchorChanges
+						{
+							target: itemRectangle
+							anchors.horizontalCenter: undefined
+							anchors.verticalCenter: undefined
+						}
+						PropertyChanges
+						{
+							target: itemRectangle
+							opacity: 0.4
+						}
+					}
+				]
+				
+				MouseArea
+				{
+					id: mouseArea
+					anchors.fill: parent
+					drag.target: parent
+					hoverEnabled: true
+					
+					onDoubleClicked:
+					{
+						listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+						itemDoubleClicked(index);
+					}
+					
+					onClicked:
+					{
+						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
+						{
+							listView.clearSelectedItems();
+							listView.selectItem(itemRectangle, true);
+						}
+					}
+					
+					onPressed:
+					{
+						listView.mousePressed = true;
+						listView.currentIndex = index;
+						itemRectangle.clearOtherSelectedItemsWhenClicked = false;
+						if (mouse.modifiers & Qt.ControlModifier)
+						{
+							listView.selectItem(itemRectangle, !itemRectangle.selected);
+							listView.startShiftSelected = index;
+							listView.endShiftSelected = -1;
+						}
+						else if (mouse.modifiers & Qt.ShiftModifier)
+						{
+							if (listView.endShiftSelected >= 0)
+								listView.selectShiftItems(false)
+							listView.endShiftSelected = index;
+							listView.selectShiftItems(true);
+						}
+						else
+						{
+							itemWrapper.forceActiveFocus();
+							if (!itemRectangle.selected)
+							{
+								listView.clearSelectedItems();
+								listView.selectItem(itemRectangle, true);
+							}
+							else
+							{
+								itemRectangle.clearOtherSelectedItemsWhenClicked = true;
+							}
+							
+							listView.startShiftSelected = index;
+							listView.endShiftSelected = -1;
+						}                        
+					}
+					onReleased:
+					{
+						listView.mousePressed = false;
+					}
+					
+					drag.onActiveChanged:
+					{
+						if (drag.active)
+						{
+							if (itemRectangle.selected)
+							{
+								itemRectangle.dragging = true;
+								for (var i = 0; i < listView.selectedItems.length; i++)
+								{
+									var selectedItem = listView.selectedItems[i];
+									if (selectedItem.objectName !== "itemRectangle")
+									{
+										console.log("This is not an itemRectangle!")
+										continue;
+									}
+									
+									if (selectedItem.rank !== index)
+									{
+										selectedItem.dragging = true;
+										selectedItem.offsetX = selectedItem.x - itemRectangle.x;
+										selectedItem.offsetY = selectedItem.y - itemRectangle.y;
+										selectedItem.setRelative(itemRectangle);                                
+									}
+								}
+							}
+							
+						}
+						else
+						{
+							var selectedIndexes = [];
+							for (var i = 0; i < listView.selectedItems.length; i++)
+							{
+								var selectedItem = listView.selectedItems[i];
+								selectedIndexes.push(selectedItem.rank);
+								selectedItem.dragging = false;
+								selectedItem.x = selectedItem.x; // break bindings
+								selectedItem.y = selectedItem.y;
+							}
+							if (itemRectangle.Drag.target)
+							{
+								var dropTarget = itemRectangle.Drag.target.parent
+								if (dropTarget.singleItem && listView.selectedItems.length > 1)
+									return;                                
+								
+								listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
+								var variablesListName = variablesList.name
+								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);                               
+							}
+						}
+					}
+				}
+			}			
+		}
+	}
+	
 }

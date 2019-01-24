@@ -6,6 +6,6 @@ QtObject {
     property string title
     property var model
 	property var values
-    property int width
-    property string text
+	property int width 
+    property string value
 }

@@ -35,7 +35,7 @@ void ListModelTermsAssigned::initTerms(const Terms &terms)
 	_terms.set(terms);
 	endResetModel();
 	
-	if (source() != NULL)
+	if (source() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
 			source()->removeAssignedTerms(_terms);
@@ -53,7 +53,7 @@ void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* ter
 		_terms.remove(*termsRemoved);
 		endResetModel();
 		_tempTermsToRemove.set(termsRemoved);
-		emit modelChanged(NULL, &_tempTermsToRemove);
+		emit modelChanged(nullptr, &_tempTermsToRemove);
 	}	
 }
 
@@ -111,5 +111,5 @@ void ListModelTermsAssigned::removeTerms(const QList<int> &indices)
 	_terms.remove(_tempTermsToRemove);
 	endResetModel();	
 
-	emit modelChanged(NULL, &_tempTermsToRemove);	
+	emit modelChanged(nullptr, &_tempTermsToRemove);	
 }

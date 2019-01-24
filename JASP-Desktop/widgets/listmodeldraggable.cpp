@@ -89,7 +89,7 @@ Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex)
 		endResetModel();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool ListModelDraggable::canAddTerms(Terms *terms) const

@@ -33,7 +33,8 @@ public:
 	enum ListModelRoles {
         NameRole = Qt::UserRole + 1,
 		TypeRole,
-		ColumnTypeRole
+		ColumnTypeRole,
+		ExtraColumnsRole
     };
 
 	ListModel(QMLListView* listView);

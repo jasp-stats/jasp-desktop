@@ -24,8 +24,7 @@
 #include <QDebug>
 
 QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form) 
-	: QMLItem(item, form)
-	, QObject(form)
+	: QObject(form)
 	, _needsSyncModels(false)
 	  
 {

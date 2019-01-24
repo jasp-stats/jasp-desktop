@@ -18,7 +18,7 @@
 
 #include "boundqmllistviewmeasurescells.h"
 #include "listmodelmeasurescellsassigned.h"
-#include "listmodelfactors.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
 
@@ -52,7 +52,7 @@ void BoundQMLListViewMeasuresCells::bindTo(Option *option)
 const Terms& BoundQMLListViewMeasuresCells::getLevels()
 {
 	_tempTerms.clear();
-	for (ListModelFactors* factorsModel : _syncFactorsModels)
+	for (ListModelRepeatedMeasuresFactors* factorsModel : _syncFactorsModels)
 	{
 		const Terms& terms = factorsModel->getLevels();
 		_tempTerms.add(terms);
@@ -78,7 +78,7 @@ void BoundQMLListViewMeasuresCells::setUp()
 	
 	for (ListModel* model : _syncModels)
 	{
-		ListModelFactors* factorsModel = dynamic_cast<ListModelFactors*>(model);
+		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(model);
 		if (!factorsModel)
 			addError(tq("Sync model of ") + name() + tq(" must be from a Factor List"));
 		addDependency(factorsModel->listView());

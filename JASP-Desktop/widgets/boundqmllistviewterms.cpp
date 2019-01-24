@@ -21,6 +21,7 @@
 #include "../analysis/analysisform.h"
 #include "listmodeltermsavailable.h"
 #include "analysis/options/optionstable.h"
+#include "listmodelextracontrols.h"
 
 #include <QQmlProperty>
 #include <QTimer>
@@ -29,15 +30,17 @@ using namespace std;
 
 BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form) : QMLItem(item, form), BoundQMLListViewDraggable(item, form)
 {
-	_optionsTable = NULL;
-	_optionVariables = NULL;
+	_optionsTable = nullptr;
+	_optionVariables = nullptr;
 	_singleItem = QQmlProperty(_item, "singleItem").read().toBool();
 	_variablesModel = new ListModelTermsAssigned(this, _singleItem);
+	
+	connect(_variablesModel, &ListModelAssignedInterface::allExtraControlsLoaded, this, &BoundQMLListViewTerms::bindExtraControlOptions);
 }
 
 void BoundQMLListViewTerms::bindTo(Option *option)
 {	
-	if (_hasExtraControlColumns)
+	if (_hasExtraControls)
 	{
 		_optionsTable = dynamic_cast<OptionsTable *>(option);
 		if (!_optionsTable)
@@ -59,9 +62,8 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 				terms.add(variableOption->variable());
 		}
 		
-		// This will draw the table, and call addRowWithControlsHandler that will make the right Bound objects
+		// This will create the rows in QML, with their extra controls, and this will call the bindExtraControlOptions
 		_variablesModel->initTerms(terms);
-		QTimer::singleShot(0, this, SLOT(_bindExtraControls()));
 	}
 	else
 	{
@@ -73,41 +75,6 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 	}
 }
 
-void BoundQMLListViewTerms::_bindExtraControls()
-{
-	qDebug() << "Bind extra controls";
-	std::vector<Options*> optionsList = _optionsTable->value();
-	for (Options* options : optionsList)
-	{
-		OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(0));
-		if (!variableOption)
-		{
-			qDebug() << "_bindExtraControls: Could not find variable option in rows!!!";
-			continue;
-		}
-		QString variable = QString::fromStdString(variableOption->variable());
-		if (!_rowsWithControls.contains(variable))
-		{
-			qDebug() << "_bindExtraControls: Could not find variable " << variable << " in rows!!!";
-			continue;
-		}
-		const QMap<QString, BoundQMLItem*>& row = _rowsWithControls[variable];
-		QMapIterator<QString, BoundQMLItem*> it(row);
-		while (it.hasNext())
-		{
-			it.next();
-			std::string name = it.key().toStdString();
-			BoundQMLItem* boundItem = it.value();
-			Option* option = options->get(name);
-			if (!option)
-				option = boundItem->createOption();
-			boundItem->bindTo(option);
-		}
-	}
-	
-	_optionsTable->connectOptions(optionsList);
-}
-
 void BoundQMLListViewTerms::unbind()
 {
 }
@@ -115,9 +82,10 @@ void BoundQMLListViewTerms::unbind()
 Option* BoundQMLListViewTerms::createOption()
 {
 	Option* result;
-	if (_hasExtraControlColumns)
+	if (_hasExtraControls)
 	{
 		Options* templote = new Options();
+		templote->add(_extraControlVariableName, new OptionVariable());
 		addExtraOptions(templote);
 		OptionsTable* optionsTable = new OptionsTable(templote);
 		
@@ -131,7 +99,7 @@ Option* BoundQMLListViewTerms::createOption()
 			options->add(_extraControlVariableName, optionVariable);
 			allOptions.push_back(options);
 		}
-		optionsTable->connectOptions(allOptions);
+		optionsTable->setValue(allOptions);
 		result = optionsTable;
 	}
 	else
@@ -142,45 +110,64 @@ Option* BoundQMLListViewTerms::createOption()
 
 void BoundQMLListViewTerms::modelChangedHandler()
 {
-	if (_hasExtraControlColumns)
-		_connectExtraControlOptions();
-	else
+	if (!_hasExtraControls)
 		_optionVariables->setValue(_variablesModel->terms().asVectorOfVectors());
 }
 
-void BoundQMLListViewTerms::_connectExtraControlOptions()
+void BoundQMLListViewTerms::bindExtraControlOptions()
 {
-	qDebug() << "Connect extra control options";
 	const Terms& terms = _variablesModel->terms();
-	if ((int)(terms.size()) != _rowsWithControls.size())
-		qDebug() << "Number of terms " << terms.size() << " is not the same as the number of rows " << _rowsWithControls.size();
 	
 	std::vector<Options*> newOptionsList;
+	std::vector<Options*> oldOptionsList = _optionsTable->value();
+	QMap<std::string, Options*> oldOptionsMap;
+	
+	for (Options* options : oldOptionsList)
+	{
+		OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(0));
+		if (!variableOption)
+		{
+			qDebug() << "_bindExtraControls: Could not find variable option in rows!!!";
+			continue;
+		}
+		oldOptionsMap[variableOption->variable()] = options;
+	}	
 	
 	for (const Term& term : terms)
 	{
 		QString termQStr = term.asQString();
 		std::string termStr = termQStr.toStdString();
-		if (!_rowsWithControls.contains(termQStr))
+		ListModelExtraControls* extraControlModel = _variablesModel->getExtraControlModel(termQStr);
+		if (!extraControlModel)
 		{
-			qDebug() << "_connectControlOptions: Could not find " << termQStr << " in rows!!!";
+			qDebug() << "connectExtraControlOptions: Could not find " << termQStr << " in rows!!!";
 			continue;
 		}
 		
-		Options* options = new Options();
-		OptionVariable* optionVariable = new OptionVariable();
-		optionVariable->setValue(termStr);
-		options->add(_extraControlVariableName, optionVariable);
+		Options* options = oldOptionsMap[termStr];
+		if (!options)
+		{
+			options = new Options();
+			OptionVariable* optionVariable = new OptionVariable();
+			optionVariable->setValue(termStr);
+			options->add(_extraControlVariableName, optionVariable);
+		}
 		
-		QMap<QString, BoundQMLItem* > row = _rowsWithControls[termQStr];
+		QMap<QString, BoundQMLItem* > row = extraControlModel->getBoundItems();
 		QMapIterator<QString, BoundQMLItem*> it(row);
 		while (it.hasNext())
 		{
 			it.next();
 			std::string name = it.key().toStdString();
 			BoundQMLItem* boundItem = it.value();
-			Option* option = boundItem->createOption();
-			options->add(name, option);				
+			Option* option = options->get(name);
+			if (!option)
+			{
+				option = boundItem->boundTo();
+				if (!option)
+					option = boundItem->createOption();
+				options->add(name, option);
+			}
 			boundItem->bindTo(option);
 		}
 		newOptionsList.push_back(options);

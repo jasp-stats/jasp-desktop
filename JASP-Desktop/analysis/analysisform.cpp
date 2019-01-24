@@ -39,7 +39,7 @@
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
-#include "widgets/boundqmlfactorslist.h"
+#include "widgets/boundqmlrepeatedmeasuresfactors.h"
 #include "widgets/boundqmltableview.h"
 #include "widgets/qmllistviewtermsavailable.h"
 #include "widgets/listmodeltermsavailable.h"
@@ -244,9 +244,9 @@ void AnalysisForm::_parseQML()
 			}
 			break;
 		}
-		case qmlControlType::FactorsList:
+		case qmlControlType::RepeatedMeasuresFactorsList:
 		{
-			BoundQMLFactorsList* factorList = new BoundQMLFactorsList(quickItem, this);
+			BoundQMLRepeatedMeasuresFactors* factorList = new BoundQMLRepeatedMeasuresFactors(quickItem, this);
 			control = factorList;
 			_modelMap[controlName] = factorList->model();
 			break;
@@ -408,7 +408,7 @@ void AnalysisForm::_setAllAvailableVariablesModel()
 		model->initTerms(columnNames);
 }
 
-void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value& oldVersionOptions)
+void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value& optionsFromJASPFile)
 {
 	if (_options != nullptr)
 		unbind();
@@ -430,10 +430,10 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 			if (!option)
 			{
 				option = boundControl->createOption();
-				if (oldVersionOptions != Json::nullValue)
+				if (optionsFromJASPFile != Json::nullValue)
 				{
-					if (oldVersionOptions[name] != Json::nullValue)
-						option->set(oldVersionOptions[name]);
+					if (optionsFromJASPFile[name] != Json::nullValue)
+						option->set(optionsFromJASPFile[name]);
 				}
 				options->add(name, option);
 			}
@@ -490,7 +490,7 @@ void AnalysisForm::_formCompletedHandler()
 	{
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 		_parseQML();
-		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->oldVersionOptions());
+		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->optionsFromJASPFile());
 		_analysis->initialized(this);		
 	}
 	

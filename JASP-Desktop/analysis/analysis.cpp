@@ -42,7 +42,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 		if (data->type() == Json::arrayValue)
 			_options->init(*data);
 		else
-			_oldVersionOptions = *data;
+			_optionsFromJASPFile = *data;
 	}
 
 	bindOptionHandlers();
@@ -152,7 +152,7 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["status"]	= status;
 
-	analysisAsJson["options"]	= options()->asJSONWithType(true);
+	analysisAsJson["options"]	= options()->asJSON();
 	analysisAsJson["userdata"]	= userData();
 
 	if(_moduleData != nullptr)

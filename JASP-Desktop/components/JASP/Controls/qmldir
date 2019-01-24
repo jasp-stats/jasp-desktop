@@ -8,7 +8,6 @@ ComboBox              1.0 ComboBox.qml
 DoubleField           1.0 DoubleField.qml
 DropDown              1.0 ComboBox.qml
 ExpanderButton        1.0 ExpanderButton.qml
-FactorsList           1.0 FactorsList.qml
 Form                  1.0 Form.qml
 GridLayout            1.0 GridLayout.qml
 GroupBox              1.0 GroupBox.qml
@@ -21,6 +20,7 @@ PercentField          1.0 PercentField.qml
 PlusMinusCheckButton  1.0 PlusMinusCheckButton.qml
 RadioButton           1.0 RadioButton.qml
 RadioButtonGroup      1.0 RadioButtonGroup.qml
+RepeatedMeasuresFactorsList 1.0 RepeatedMeasuresFactorsList.qml
 Slider                1.0 Slider.qml
 Switch                1.0 Switch.qml
 TableView             1.0 TableView.qml

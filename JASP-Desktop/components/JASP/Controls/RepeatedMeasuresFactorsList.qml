@@ -24,8 +24,8 @@ import JASP.Theme 1.0
 
 JASPControl
 {
-    id: factorsList
-    controlType: "FactorsList"
+    id: repeatedMeasuresFactorsList
+    controlType: "RepeatedMeasuresFactorsList"
     useDefaultBackground: true
     implicitWidth: parent.width
     implicitHeight: Theme.defaultListHeight
@@ -41,15 +41,15 @@ JASPControl
         id: text
         anchors.top: parent.top
         anchors.left: parent.left
-        text: factorsList.title
-        height: factorsList.title ? 20 : 0
+        text: repeatedMeasuresFactorsList.title
+        height: repeatedMeasuresFactorsList.title ? 20 : 0
     }    
     
     Rectangle {
         id: rectangle
         anchors.top: text.bottom
         anchors.left: parent.left
-        height: factorsList.height - text.height
+        height: repeatedMeasuresFactorsList.height - text.height
         width: parent.width
         color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
         border.width: 1
@@ -63,7 +63,7 @@ JASPControl
             focus: true
             anchors.fill: parent
             anchors.margins: 4
-            model: factorsList.model
+            model: repeatedMeasuresFactorsList.model
             delegate: itemComponent
         }
     }
