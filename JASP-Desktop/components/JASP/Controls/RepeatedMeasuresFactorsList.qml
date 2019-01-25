@@ -24,87 +24,100 @@ import JASP.Theme 1.0
 
 JASPControl
 {
-    id: repeatedMeasuresFactorsList
-    controlType: "RepeatedMeasuresFactorsList"
-    useDefaultBackground: true
-    implicitWidth: parent.width
-    implicitHeight: Theme.defaultListHeight
+	id:						repeatedMeasuresFactorsList
+	controlType:			"RepeatedMeasuresFactorsList"
+	useDefaultBackground:	true
+	implicitWidth:			parent.width
+	implicitHeight:			Theme.defaultListHeight
     
-    property var model
-    property string title
-    readonly property string deleteIcon: "dialog-close.png"    
+				property var	model
+				property string title
+	readonly	property string deleteIcon: "dialog-close.png"
     
     signal itemChanged(int index, var name);
     signal itemRemoved(int index);
         
-    Text {
-        id: text
-        anchors.top: parent.top
-        anchors.left: parent.left
-        text: repeatedMeasuresFactorsList.title
-        height: repeatedMeasuresFactorsList.title ? 20 : 0
+	Text
+	{
+		id:				text
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		text:			repeatedMeasuresFactorsList.title
+		height:			repeatedMeasuresFactorsList.title ? 20 * preferencesModel.uiScale : 0
+		font:			Theme.font
     }    
     
-    Rectangle {
-        id: rectangle
-        anchors.top: text.bottom
-        anchors.left: parent.left
-        height: repeatedMeasuresFactorsList.height - text.height
-        width: parent.width
-        color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
-        border.width: 1
-        border.color: Theme.borderColor
+	Rectangle
+	{
+		id:				rectangle
+		anchors.top:	text.bottom
+		anchors.left:	parent.left
+		height:			repeatedMeasuresFactorsList.height - text.height
+		width:			parent.width
+		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		border.width:	1
+		border.color:	Theme.borderColor
         
-        GridView {
-            id: listView
-            cellHeight: 20
-            cellWidth: width
-            clip: true
-            focus: true
-            anchors.fill: parent
-            anchors.margins: 4
-            model: repeatedMeasuresFactorsList.model
-            delegate: itemComponent
+		GridView
+		{
+			id:					listView
+			cellHeight:			20 * preferencesModel.uiScale
+			cellWidth:			width
+			clip:				true
+
+			anchors.fill:		parent
+			anchors.margins:	4 * preferencesModel.uiScale
+			model:				repeatedMeasuresFactorsList.model
+			delegate:			itemComponent
         }
     }
     
-    Component {
+	Component
+	{
         id: itemComponent
-        FocusScope {
-            id: itemWrapper
+
+		FocusScope
+		{
+			id:		itemWrapper
             height: listView.cellHeight
-            width: listView.cellWidth
-            Rectangle {
-                id: itemRectangle
-                anchors.fill: parent
-                focus: true
-                border.width: 0
-                border.color: Theme.grayLighter
-                property bool isDeletable: model.type.includes("deletable")
-                property bool isVirtual: model.type.includes("virtual")
-                property bool isLevel: model.type.includes("level")
+			width:	listView.cellWidth
+
+			Rectangle
+			{
+				id:				itemRectangle
+				anchors.fill:	parent
+				focus:			true
+				border.width:	0
+				border.color:	Theme.grayLighter
+
+				property bool isDeletable:	model.type.includes("deletable")
+				property bool isVirtual:	model.type.includes("virtual")
+				property bool isLevel:		model.type.includes("level")
                 
-                TextField {
-                    id: colName
-                    focus: true
-                    value: itemRectangle.isVirtual ? "" : model.name
-                    placeholderText: itemRectangle.isVirtual ? model.name : ""
-                    anchors.verticalCenter: parent.verticalCenter
-                    fieldWidth: parent.width - 6
-                    useExternalBorder: false
-                    control.horizontalAlignment: itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter 
-                    onEditingFinished: itemChanged(index, value)  					
+				TextField
+				{
+					id:								colName
+					value:							itemRectangle.isVirtual ? "" : model.name
+					placeholderText:				itemRectangle.isVirtual ? model.name : ""
+					anchors.verticalCenter:			parent.verticalCenter
+					fieldWidth:						parent.width - (6 * preferencesModel.uiScale)
+					useExternalBorder:				false
+					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
+					onEditingFinished:				itemChanged(index, value)
                 }
                 
-                Image {
-                    source: iconPath + deleteIcon
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: itemRectangle.isDeletable
-                    height: 16
-                    width: 16
-                    z: 2
-                    MouseArea {
+				Image
+				{
+					source:					iconPath + deleteIcon
+					anchors.right:			parent.right
+					anchors.verticalCenter:	parent.verticalCenter
+					visible:				itemRectangle.isDeletable
+					height:					16 * preferencesModel.uiScale
+					width:					16 * preferencesModel.uiScale
+					z:						2
+
+					MouseArea
+					{
                         anchors.fill: parent
                         onClicked: itemRemoved(index)
                     }

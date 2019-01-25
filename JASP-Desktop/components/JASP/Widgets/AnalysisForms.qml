@@ -39,6 +39,7 @@ FocusScope
 		{
 			id:				openCloseButton
 			width:			Theme.splitHandleWidth
+			height:			parent.height + 1
 			color:			mouseArea.containsMouse ? Theme.grayLighter : Theme.uiBackground
 			border.color:	Theme.uiBorder
 			border.width:	1
@@ -46,7 +47,6 @@ FocusScope
 			{
 				top:		parent.top
 				right:		parent.right
-				bottom:		parent.bottom
 			}
 
 			Image

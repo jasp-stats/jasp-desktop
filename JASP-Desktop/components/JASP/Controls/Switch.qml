@@ -16,59 +16,69 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4
-import JASP.Theme 1.0
+import JASP.Theme		1.0
 
-JASPControl {
-    controlType: "Switch"
-    implicitWidth: control.width; implicitHeight: control.height
+JASPControl
+{
+	controlType:			"Switch"
+	implicitWidth:			control.width
+	implicitHeight:			control.height
 
-    useDefaultBackground: true
+	useDefaultBackground:	true
 
-    property alias text: control.text
-    property alias checked: control.checked
+	property alias text:	control.text
+	property alias checked:	control.checked
     signal clicked();
     
-    Component.onCompleted: {
-        control.clicked.connect(clicked);
-    }
+	Component.onCompleted: control.clicked.connect(clicked);
     
-    Switch {
-        id: control
-        height: control.indicator.height + 4
-        width: control.indicator.width + label.implicitWidth + control.spacing + 6
-        focus: true
-        indicator: Rectangle {
-            id: switchHandle
-            width: Theme.switchHeight * 2.2
-            height: Theme.switchHeight
-            anchors.left: control.left
-            anchors.leftMargin: 2
-            anchors.top: control.top
-            anchors.topMargin: 2            
-            radius: Theme.switchHeight / 2
-            color: Theme.light
-            border.color: Theme.borderColor
+	Switch
+	{
+		id:			control
+		height:		control.indicator.height + (4 * preferencesModel.uiScale)
+		width:		control.indicator.width + label.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
+
+		indicator:	Rectangle
+		{
+			id:				switchHandle
+			width:			Theme.switchHeight * 2.2
+			height:			Theme.switchHeight
+			radius:			Theme.switchHeight / 2
+			color:			Theme.light
+			border.color:	Theme.borderColor
+			anchors
+			{
+				left:		control.left
+				leftMargin: 2 * preferencesModel.uiScale
+				top:		control.top
+				topMargin:	2 * preferencesModel.uiScale
+			}
     
-            Rectangle {
-                id: rectangle
-    
-                width: Theme.switchHeight
-                height: Theme.switchHeight
-                radius: Theme.switchHeight / 2
-                color: Theme.light
-                border.color: Theme.borderColor
+			Rectangle
+			{
+				id:				rectangle
+				width:			Theme.switchHeight
+				height:			Theme.switchHeight
+				radius:			Theme.switchHeight / 2
+				color:			Theme.light
+				border.color:	Theme.borderColor
             }
         }
         
-        contentItem: Label {
-            id: label
-            anchors.left: control.indicator.right
-            anchors.leftMargin: control.spacing
-            anchors.top: control.top
-            anchors.topMargin: 2
-            text: control.text
+		contentItem: Label
+		{
+			id:				label
+			text:			control.text
+			font:			Theme.font
+			anchors
+			{
+				left:		control.indicator.right
+				leftMargin: control.spacing
+				top:		control.top
+				topMargin:	2 * preferencesModel.uiScale
+			}
         }
     }
 }

@@ -2,6 +2,7 @@ import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
+import JASP.Controls	1.0
 
 Column
 {
@@ -14,7 +15,7 @@ Column
 		text:				"Display exact p-values"
 		checked:			preferencesModel.exactPValues
 		onCheckedChanged:	preferencesModel.exactPValues = checked
-		font:				Theme.font
+		//font:				Theme.font
 	}
 
 	Item
@@ -28,7 +29,7 @@ Column
 			text:				"Fix the number of decimals"
 			checked:			preferencesModel.fixedDecimals
 			onCheckedChanged:	preferencesModel.fixedDecimals = checked
-			font:				Theme.font
+			//font:				Theme.font
 		}
 
 		SpinBox

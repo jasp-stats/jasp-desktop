@@ -18,7 +18,8 @@
 
 pragma Singleton
 
-import QtQuick 2.8
+import QtQuick			2.11
+import QtQuick.Controls 2.4
 
 QtObject {
 	readonly property real uiScale:				preferencesModel.uiScale
@@ -79,15 +80,14 @@ QtObject {
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
+	readonly property int jaspControlPadding:			2   * jaspControlHighlightWidth
 	readonly property int ribbonButtonHeight:			72  * uiScale
 	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
 	readonly property int sliderHandleDiameter:			16  * uiScale
 	readonly property int defaultTextAreaHeight:		250 * uiScale
-	readonly property int radioIndicatorDiameter:		16  * uiScale
-	readonly property int checkBoxIndicatorLength:		15  * uiScale
-
+	readonly property int jaspControlHighlightWidth:	Math.max(1, 3 * uiScale)
 	readonly property int defaultSingleItemListHeight:	45  * uiScale
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
@@ -131,4 +131,11 @@ QtObject {
 
 	readonly property int toolTipDelay:		1500
 	readonly property int toolTipTimeout:	4500
+
+	readonly property Item _toolTipOverrideItem: Item
+	{
+		//These properties override those for ALL attached ToolTips in the application
+		ToolTip.toolTip.background: Rectangle { color: tooltipBackgroundColor }
+		ToolTip.toolTip.font:		font
+	}
 }

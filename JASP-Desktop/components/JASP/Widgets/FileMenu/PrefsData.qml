@@ -2,6 +2,7 @@ import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
+import JASP.Controls	1.0
 
 ScrollView
 {
@@ -19,7 +20,7 @@ ScrollView
 			text:				"Synchronize automatically on data file save"
 			checked:			preferencesModel.dataAutoSynchronization
 			onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-			font:				Theme.font
+			//font:				Theme.font
 		}
 
 		Item
@@ -33,7 +34,7 @@ ScrollView
 				text:				"Use default spreadsheet editor"
 				checked:			preferencesModel.useDefaultEditor
 				onCheckedChanged:	preferencesModel.useDefaultEditor = checked
-				font:				Theme.font
+				//font:				Theme.font
 			}
 
 			Item

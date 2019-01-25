@@ -20,12 +20,13 @@ import QtQuick 2.11
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-TextField {
-    property double defaultValue: 0
-    property alias doubleValidator: doubleValidator
-    property bool validation: true
+TextField
+{
+	property double defaultValue:		0
+	property alias	doubleValidator:	doubleValidator
+	property bool	validation:			true
     
-    inputType: "number"
-    validator: DoubleValidator { id: doubleValidator; bottom: validation ? 0 : -Infinity ; decimals: 3 }
-    value: Number.parseFloat(defaultValue);    
+					inputType:			"number"
+					validator:			DoubleValidator { id: doubleValidator; bottom: validation ? 0 : -Infinity ; decimals: 3 }
+					value:				Number.parseFloat(defaultValue);
 }

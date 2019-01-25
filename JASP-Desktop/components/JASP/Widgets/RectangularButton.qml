@@ -35,10 +35,11 @@ Rectangle
 	property bool	enabled:			true
 	property bool	selected:			false
 	property string	iconSource:			""
-	property real	buttonPadding:		(buttonIcon.visible ? 4 : 16) * preferencesModel.uiScale
+	property real	buttonPadding:		6 * preferencesModel.uiScale
 	property alias	hovered:			buttonMouseArea.containsMouse
 	property bool	showIconAndText:	false
 	property bool	centerText:			true
+	property bool	iconLeft:			true
 
 	property real	_scaledDim:			32 * preferencesModel.uiScale
 	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
@@ -46,7 +47,7 @@ Rectangle
 
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
-						buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + buttonPadding
+						buttonIcon.visible ? _scaledDim : buttonText.implicitWidth + ( 2 * buttonPadding)
 	implicitHeight: _scaledDim
 	width:			implicitWidth
 	height:			implicitHeight
@@ -57,7 +58,7 @@ Rectangle
 	ToolTip.delay:				Theme.toolTipDelay
 	ToolTip.toolTip.font:		Theme.font
 	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after?
+	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
 
 
@@ -78,7 +79,12 @@ Rectangle
 	Image
 	{
 		id: buttonIcon
-		x:	filterButtonRoot.showIconAndText ? filterButtonRoot.buttonPadding : (parent.width / 2) - (width / 2)
+		x:	!filterButtonRoot.showIconAndText ?
+				(parent.width / 2) - (width / 2) :
+				filterButtonRoot.iconLeft ?
+					filterButtonRoot.buttonPadding :
+					parent.width - (width + filterButtonRoot.buttonPadding)
+
 		y:	(parent.height / 2) - (height / 2)
 
 		width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
@@ -94,7 +100,13 @@ Rectangle
 	Text
 	{
 		id: buttonText
-		x:	filterButtonRoot.centerText ? (parent.width / 2) - (width / 2) : (buttonIcon.visible ? buttonIcon.x + buttonIcon.width : 0) + (filterButtonRoot.buttonPadding / 2)
+		x:	filterButtonRoot.centerText ?
+				(parent.width / 2) - (width / 2) :
+				!buttonIcon.visible || !filterButtonRoot.iconLeft ?
+					filterButtonRoot.buttonPadding :
+					buttonIcon.x + buttonIcon.width
+
+
 		y:	(parent.height / 2) - (height / 2)
 
 		text:		filterButtonRoot.text
@@ -106,7 +118,7 @@ Rectangle
 		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
 
 		height: contentHeight
-		width:	Math.min(implicitWidth, parent.width - ( buttonIcon.visible ? buttonIcon.width + buttonIcon.x : 0 ))
+		width:	Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
 
 
 		elide:	Text.ElideMiddle

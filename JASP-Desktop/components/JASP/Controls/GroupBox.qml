@@ -22,61 +22,66 @@ import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 Rectangle {
-    id: control
+	id:					control
+	implicitHeight:		(title ? ((20 * preferencesModel.uiScale) + Theme.titleBottomMargin) : 0) + column.childrenRect.height
+	implicitWidth:		column.childrenRect.width + (title ? control.leftPadding : 0)
+
+	color:				Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
+	Layout.leftMargin:	indent ? Theme.indentationLength : 0
+
     
-    property int leftPadding: Theme.groupContentPadding
-    property int spacing: Theme.rowGroupSpacing
-    property string title: ""
-    property bool debug: false
-    property bool indent: false
-    property bool alignTextFields: true
-    property var childControls: []
-    default property alias content: column.children
-    implicitHeight: (title ? (20 + Theme.titleBottomMargin) : 0) + column.childrenRect.height
-    implicitWidth: column.childrenRect.width + (title ? control.leftPadding : 0)
-    
-    color: Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
-    Layout.leftMargin: indent ? Theme.indentationLength : 0
-    
-    Label {
-        id: label
-        anchors.top: control.top
-        anchors.left: control.left
-        text: control.title
-        visible: control.title ? true : false
+			property int	leftPadding:		Theme.groupContentPadding
+			property int	spacing:			Theme.rowGroupSpacing
+			property string title:				""
+			property bool	debug:				false
+			property bool	indent:				false
+			property bool	alignTextFields:	true
+			property var	childControls:		[]
+	default property alias	content:			column.children
+
+	Label
+	{
+		id:				label
+		anchors.top:	control.top
+		anchors.left:	control.left
+		text:			control.title
+		visible:		control.title ? true : false
     }
     
-    ColumnLayout {
-        id: column
-        anchors.top: control.title ? label.bottom : control.top
-        anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
-        anchors.left: control.left
+	ColumnLayout
+	{
+		id:					column
+		anchors.top:		control.title ? label.bottom : control.top
+		anchors.topMargin:	control.title ? Theme.titleBottomMargin : 0
+		anchors.left:		control.left
         anchors.leftMargin: control.title ? control.leftPadding : 0
-        spacing: control.spacing
+		spacing:			control.spacing
     }
     
-    Component.onCompleted: {
+	Component.onCompleted:
+	{
         form.getJASPControls(childControls, column)
-        for (var i = 0; i < childControls.length; i++) {
+		for (var i = 0; i < childControls.length; i++)
             if (control.debug)
                 childControls[i].debug = true;
-        }
+
         
-        if (alignTextFields) {
+		if (alignTextFields)
+		{
             var textFieldsControls = [];
             var maxX = 0;
-            for (var i = 0; i < column.children.length; i++) {
+			for (var i = 0; i < column.children.length; i++)
+			{
                 var child = column.children[i];
-                if (child.hasOwnProperty('controlType') && child.controlType === 'TextField') {
+				if (child.hasOwnProperty('controlType') && child.controlType === 'TextField')
+				{
                     textFieldsControls.push(child);
                     if (maxX < child.control.x) maxX = child.control.x;
                 }
             }
             
-            for (i = 0; i < textFieldsControls.length; i++) {
+			for (i = 0; i < textFieldsControls.length; i++)
                 textFieldsControls[i].control.Layout.leftMargin = maxX - textFieldsControls[i].control.x;
-            }
         }
     }
-    
 }

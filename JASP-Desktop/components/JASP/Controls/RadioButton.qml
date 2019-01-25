@@ -16,56 +16,60 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import JASP.Theme 1.0
+import QtQuick			2.11
+import QtQuick.Controls	2.4
+import JASP.Theme		1.0
 
-JASPControl {
-	id: radioButton
-	controlType:			"RadioButton"
-	isBound:				false
-	useDefaultBackground:	true
-	implicitHeight:			control.height
-	implicitWidth:			control.width
+JASPControl
+{
+	id:							radioButton
+	controlType:				"RadioButton"
+	isBound:					false
+	useDefaultBackground:		true
+	implicitHeight:				control.height
+	implicitWidth:				control.width
 
-	property alias text:	control.text
-    property alias checked: control.checked
-	property alias value:	radioButton.name
-    property var buttonGroup
+	property alias	text:		control.text
+	property alias	checked:	control.checked
+	property alias	value:		radioButton.name
+	property var	buttonGroup
 
-    RadioButton {
-        id: control
-        height: Theme.radioIndicatorDiameter + 4
-        width: Theme.radioIndicatorDiameter + label.implicitWidth + control.spacing + 6
-        focus: true
-        ButtonGroup.group: buttonGroup
-        indicator: Rectangle {
-            width: Theme.radioIndicatorDiameter
-            height: Theme.radioIndicatorDiameter
-            anchors.left: control.left
-            anchors.leftMargin: 2
-            anchors.top: control.top
-            anchors.topMargin: 2
-            radius: Theme.radioIndicatorDiameter / 2
-            color: control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
-            border.color: control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor) : Theme.disableControlBackgroundColor
-            border.width: 1
-            Rectangle {
-                anchors.centerIn: parent
-                implicitWidth: Theme.radioIndicatorDiameter / 2
-                implicitHeight: Theme.radioIndicatorDiameter / 2
-                radius: Theme.radioIndicatorDiameter / 4
-                visible: control.checked
-                color: Theme.controlBackgroundColor
+	RadioButton
+	{
+		id:					control
+		ButtonGroup.group:	buttonGroup
+		padding:			Theme.jaspControlPadding
+
+		indicator: Rectangle
+		{
+			id:				radioIndicator
+			width:			height
+			height:			label.height
+			x:				control.padding
+			y:				control.padding
+
+			radius:			width
+			color:			control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
+			border.color:	control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor)					: Theme.disableControlBackgroundColor
+			border.width:	1
+
+			Rectangle
+			{
+				anchors.centerIn:	parent
+				width:				parent.width / 2
+				height:				parent.height / 2
+				radius:				width
+				visible:			control.checked
+				color:				Theme.controlBackgroundColor
             }
         }
-        contentItem: Label {
-            id: label
-            anchors.left: control.indicator.right
-            anchors.leftMargin: control.spacing
-            anchors.top: control.top
-            anchors.topMargin: 2
-            text: control.text
+
+		contentItem: Label
+		{
+			id:				label
+			text:			control.text
+			leftPadding:	label.height + control.padding
+			font:			Theme.font
         }
     }
 }

@@ -147,6 +147,20 @@ void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)
 	emit highlightedModuleIndexChanged(_highlightedModuleIndex);
 }
 
+void RibbonModel::setModuleEnabled(int ribbonButtonModelIndex, bool enabled)
+{
+	if(ribbonButtonModelIndex < 0)
+		return;
+
+	RibbonButtonModel * ribbonButtonModel = ribbonButtonModelAt(size_t(ribbonButtonModelIndex));
+
+	if(ribbonButtonModel->enabled() != enabled)
+	{
+		ribbonButtonModel->setEnabled(enabled);
+		emit dataChanged(index(ribbonButtonModelIndex), index(ribbonButtonModelIndex));
+	}
+}
+
 void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)
 {
 	if(ribbonButtonModelIndex < 0)

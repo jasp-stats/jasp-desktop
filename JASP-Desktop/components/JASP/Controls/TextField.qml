@@ -21,13 +21,15 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
-JASPControl {
-    id: textField
-    controlType: "TextField"
+JASPControl
+{
+	id:					textField
+	controlType:		"TextField"
 
-    implicitHeight: row.implicitHeight
-    implicitWidth: row.implicitWidth
-    controlBackground: useExternalBorder ? externalControlBackround : controlBackground
+	implicitHeight:		row.implicitHeight
+	implicitWidth:		row.implicitWidth
+	controlBackground:	useExternalBorder ? externalControlBackround : controlBackground
+	cursorShape:		Qt.IBeamCursor
 
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
@@ -49,7 +51,8 @@ JASPControl {
     signal pressed()
     signal released()
     
-    Component.onCompleted: {        
+	Component.onCompleted:
+	{
         if (!beforeLabel.text && textField.text)
             beforeLabel.text = textField.text;
 
@@ -59,37 +62,45 @@ JASPControl {
         control.released.connect(released);        
     }
     
-    RowLayout {
-        id: row
-        spacing: labelSpacing
-        Label {
-            id: beforeLabel
-            visible: beforeLabel.text && textField.visible ? true : false
+	RowLayout
+	{
+		id:			row
+		spacing:	labelSpacing
+
+		Label
+		{
+			id:			beforeLabel
+			visible:	beforeLabel.text && textField.visible ? true : false
+			font:		Theme.font
         }
         
-        TextField {
-            id: control
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.preferredWidth: textField.fieldWidth
-            Layout.preferredHeight: textField.textHeight
-            text: textField.value
-            focus: true
-            padding: 1
-            rightPadding: 5
-            selectByMouse: true
-            background: Rectangle {
-                id: controlBackground
-                color: Theme.controlBackgroundColor
-                border.width: textField.useExternalBorder && !control.activeFocus ? 1 : 0
-                border.color: textField.useExternalBorder ? Theme.borderColor : "transparent"
+		TextField
+		{
+			id:						control
+			Layout.fillWidth:		true
+			Layout.fillHeight:		true
+			Layout.preferredWidth:	textField.fieldWidth
+			Layout.preferredHeight:	textField.textHeight
+			text:					textField.value
+			font:					Theme.font
+
+			padding:				1
+			rightPadding:			5
+			selectByMouse:			true
+			background: Rectangle
+			{
+				id:				controlBackground
+				color:			Theme.controlBackgroundColor
+				border.width:	textField.useExternalBorder && !control.activeFocus ? 1					: 0
+				border.color:	textField.useExternalBorder							? Theme.borderColor : "transparent"
             }
             
-            Rectangle {
-                id: externalControlBackround
-                height: textField.textHeight + 6
-                width: textField.fieldWidth + 6
-                color: "transparent"
+			Rectangle
+			{
+				id:					externalControlBackround
+				height:				textField.textHeight + 6
+				width:				textField.fieldWidth + 6
+				color:				"transparent"
                 border.width: 1
                 border.color: "transparent"
                 anchors.centerIn: parent
@@ -97,9 +108,11 @@ JASPControl {
             }
         }
 
-        Label {
-            id: afterLabel
-            visible: afterLabel.text && textField.visible ? true : false
+		Label
+		{
+			id:			afterLabel
+			visible:	afterLabel.text && textField.visible ? true : false
+			font:		Theme.font
         }
     }
 }

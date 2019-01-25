@@ -12,7 +12,7 @@ JASPControl {
 	controlBackground:	comboBoxBackground
 
     
-	property int	labelSpacing:			4
+	property int	labelSpacing:			4 * preferencesModel.uiScale
 	property alias	label:					label
     property alias	text:					label.text
 	property string	currentText				//Am i empty or what?
@@ -32,24 +32,26 @@ JASPControl {
     
     signal activated(int index);
     
-    function resetWidth(value) {
+	function resetWidth(value)
+	{
         textMetrics.font = control.font
         textMetrics.text = value
-        var newWidth = textMetrics.width + (comboBox.showVariableTypeIcon ? 20 : 4);
-        if (newWidth > control.modelWidth) {
+		var newWidth = textMetrics.width + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
+		if (newWidth > control.modelWidth)
+		{
             control.modelWidth = newWidth;
             comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
         }
     }
     
-    Component.onCompleted: {
-        control.activated.connect(activated);
-    }
+	Component.onCompleted: control.activated.connect(activated);
     
-    RowLayout {
+	RowLayout
+	{
         spacing: label.visible ? labelSpacing : 0
         
-        Label {
+		Label
+		{
             id: label
             visible: label.text && comboBox.visible ? true : false
         }
@@ -57,61 +59,70 @@ JASPControl {
         ComboBox {
 							id:				control
 							focus:			true
-							spacing:		5
+							spacing:		5 * preferencesModel.uiScale
 							height:			Theme.comboBoxHeight
-			property int	modelWidth:		30
+			property int	modelWidth:		30 * preferencesModel.uiScale
 			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
 							implicitWidth:	modelWidth + leftPadding + rightPadding + canvas.width
 							textRole:		comboBox.textRole
             
-            TextMetrics {
-                id: textMetrics
-            }
+			TextMetrics { id: textMetrics }
 
-            delegate: ItemDelegate {
-                height: control.height
-                contentItem: Rectangle {
-                    id: itemRectangle
-                    anchors.fill: parent
-                    property bool isEmptyValue: comboBox.addEmptyValue && index == 0
-                    Image {
-                        id: delegateIcon
-                        x: 1
-                        height: 15; width: 15
-                        anchors.verticalCenter: parent.verticalCenter
-                        source: (visible && comboBox.initialized) ? iconFiles[model.columnType] : ""
-                        visible: comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
+			delegate: ItemDelegate
+			{
+				height:								control.height
+				highlighted:						control.highlightedIndex === index
+
+				contentItem:	Rectangle
+				{
+					id:								itemRectangle
+					anchors.fill:					parent
+
+					property bool isEmptyValue:		comboBox.addEmptyValue && index == 0
+
+					Image
+					{
+						id:							delegateIcon
+						x:							1 * preferencesModel.uiScale
+						height:						15 * preferencesModel.uiScale
+						width:						15 * preferencesModel.uiScale
+						source:						(visible && comboBox.initialized) ? iconFiles[model.columnType] : ""
+						visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
+
+						anchors.verticalCenter:		parent.verticalCenter
                     }
                     
                     Text {
-                        x: delegateIcon.visible ? 20 : 4                          
-                        text: comboBox.initialized ? model.name : ""
-                        font: control.font
-                        color: itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.horizontalCenter: itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
+						x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
+						text:						comboBox.initialized ? model.name : ""
+						font:						control.font
+						color:						itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
+						verticalAlignment:			Text.AlignVCenter
+						anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
                     }
 
                 }
 
-                highlighted: control.highlightedIndex === index
+
             }
             
             
-            indicator: Canvas {
-                id: canvas
-                x: control.width - width - control.spacing
-                y: control.topPadding + (control.availableHeight - height) / 2
-                width: 12
-                height: 8
-                contextType: "2d"
+			indicator: Canvas
+			{
+				id:				canvas
+				x:				control.width - width - control.spacing
+				y:				control.topPadding + (control.availableHeight - height) / 2
+				width:			12 * preferencesModel.uiScale
+				height:			8  * preferencesModel.uiScale
+				contextType:	"2d"
         
                 Connections {
-                    target: control
-                    onPressedChanged: canvas.requestPaint()
+					target:				control
+					onPressedChanged:	canvas.requestPaint()
                 }
         
-                onPaint: {
+				onPaint: //Is this really the best way to do whatever it is that is being done here? Maybe we can make a custom QuickItem.
+				{
                     context.reset();
                     context.moveTo(0, 0);
                     context.lineTo(width, 0);
@@ -123,54 +134,60 @@ JASPControl {
             }
         
 
-            contentItem: Item {
-                Image {
-                    id: contentIcon
-                    height: 15; width: 15
-                    x: 3
+			contentItem: Item
+			{
+				Image
+				{
+					id:						contentIcon
+					height:					15 * preferencesModel.uiScale
+					width:					15 * preferencesModel.uiScale
+					x:						3  * preferencesModel.uiScale
                     anchors.verticalCenter: parent.verticalCenter
-                    source: visible ? iconFiles[comboBox.currentColumnType] : ""
-                    visible: comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
+					source:					visible ? iconFiles[comboBox.currentColumnType] : ""
+					visible:				comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
                 }
                 
-                Text {
-                    x: contentIcon.visible ? 23 : 4
-                    text: comboBox.currentText
-                    font: control.font
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: control.isEmptyValue ? parent.horizontalCenter : undefined
-                    color: (!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
+				Text
+				{
+					x:							(contentIcon.visible ? 23 : 4) * preferencesModel.uiScale
+					text:						comboBox.currentText
+					font:						control.font
+					anchors.verticalCenter:		parent.verticalCenter
+					anchors.horizontalCenter:	control.isEmptyValue ? parent.horizontalCenter : undefined
+					color:						(!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
                 }
             }
 
-            background: Rectangle {
-                id: comboBoxBackground
+			background: Rectangle
+			{
+				id:				comboBoxBackground
                 implicitHeight: control.height
-                border.color: Theme.borderColor
-                border.width: 1
-                radius: 2
-                color: enabled ? Theme.controlBackgroundColor : Theme.disableControlBackgroundColor
+				border.color:	Theme.borderColor
+				border.width:	1
+				radius:			2
+				color:			enabled ? Theme.controlBackgroundColor : Theme.disableControlBackgroundColor
             }
         
-            popup: Popup {
-                y: control.height - 1
-                width: control.width
-                implicitHeight: contentItem.implicitHeight
-                padding: 1
+			popup: Popup
+			{
+				y:				control.height - 1
+				width:			control.width
+				implicitHeight:	contentItem.implicitHeight
+				padding:		1
         
-                enter: Transition {
-                        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 }
-                    }
-                contentItem: ListView {
-                    clip: true
-                    implicitHeight: contentHeight
-                    model: control.popup.visible ? control.delegateModel : null
-                    currentIndex: control.highlightedIndex        
+				enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } }
+				contentItem: ListView
+				{
+					clip:			true
+					implicitHeight:	contentHeight
+					model:			control.popup.visible ? control.delegateModel : null
+					currentIndex:	control.highlightedIndex
                 }
         
-                background: Rectangle {
-                    border.color: Theme.borderColor
-                    radius: 2
+				background: Rectangle
+				{
+					border.color:	Theme.borderColor
+					radius:			2
                 }
             }
         }

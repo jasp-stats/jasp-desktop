@@ -20,11 +20,13 @@ import QtQuick 2.11
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
-FocusScope {
+FocusScope
+{
 	id:					expanderWrapper
-	implicitHeight:		expanderButton.height + (expanded ? 15 + expanderArea.height : 0)
+	implicitHeight:		expanderButton.height + (expanded ? expanderArea.anchors.topMargin + expanderArea.height : 0)
 	implicitWidth:		parent.width
-	anchors.topMargin:	15
+	anchors.topMargin:	15 * preferencesModel.uiScale
+	clip:				true
 
 	default		property alias	content:		expanderArea.children
 				property alias	button:			expanderButton
@@ -39,36 +41,28 @@ FocusScope {
 	readonly	property string	contractedIcon: "expander-arrow-up.png"
 				property var	childControls:	[]
 
-    clip: true
-    Behavior on implicitHeight {
-		PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3}
-    }
+	Behavior on implicitHeight { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
   
 
-    JASPControl {
-		id:					expanderButton
-		controlType:		"Expander"
-		isBound:			false
-		controlBackground:	expanderRectangle
-		width:				parent.width
-		height:				22
+	JASPControl
+	{
+		id:						expanderButton
+		controlType:			"Expander"
+		isBound:				false
+		controlBackground:		expanderRectangle
+		width:					parent.width
+		height:					22 * preferencesModel.uiScale
+		Keys.onSpacePressed:	toggleExpander()
+		Keys.onReturnPressed:   toggleExpander()
+		KeyNavigation.tab:		expanderWrapper.expanded ? childControls[0] : nextExpander
         
         property var nextExpander: null
         
-        function toggleExpander() {
-            expanderWrapper.expanded = !expanderWrapper.expanded;            
-        } 
+		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded; }
         
-        Keys.onSpacePressed: {
-            toggleExpander()
-        }
-        Keys.onReturnPressed: {
-            toggleExpander()
-        }
-        
-        KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
 
-        MouseArea {
+		MouseArea
+		{
             anchors.fill: parent
             onClicked: {
                 expanderButton.toggleExpander();
@@ -76,48 +70,60 @@ FocusScope {
             }
         }
         
-        Rectangle {
-            id: expanderRectangle
-            anchors.fill: parent
-            border.width: 1
-            border.color: Theme.borderColor
-            radius: Theme.borderRadius
-            color: debug ? Theme.debugBackgroundColor : Theme.white
+		Rectangle
+		{
+			id:				expanderRectangle
+			anchors.fill:	parent
+			border.width:	1
+			border.color:	Theme.borderColor
+			radius:			Theme.borderRadius
+			color:			debug ? Theme.debugBackgroundColor : Theme.white
             
-            Image {
-                id: icon
-                height: 15; width: 15
-                anchors.left: parent.left
-                anchors.leftMargin: 6
+			Image
+			{
+				id:						icon
+				height:					15 * preferencesModel.uiScale
+				width:					15 * preferencesModel.uiScale
+				anchors.left:			parent.left
+				anchors.leftMargin:		6 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
-                source: iconsFolder + (expanded ? expandedIcon : contractedIcon)
+				source:					iconsFolder + (expanded ? expandedIcon : contractedIcon)
             }
-            Text {
-                id: label
-                anchors.left: icon.right
-                anchors.leftMargin: 5
+
+			Text
+			{
+				id:						label
+				anchors.left:			icon.right
+				anchors.leftMargin:		5 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
+				font:					Theme.font
             }
         }
     }
 
-    ColumnLayout {
-        id: expanderArea
-        spacing: 10
-        anchors.leftMargin: 5 
-        anchors.top: expanderButton.bottom
-        anchors.topMargin: 15
-        anchors.bottomMargin: 20
-        width: parent.width
+	ColumnLayout
+	{
+		id:						expanderArea
+		spacing:				10 * preferencesModel.uiScale
+		anchors.leftMargin:		5  * preferencesModel.uiScale
+		anchors.top:			expanderButton.bottom
+		anchors.topMargin:		15 * preferencesModel.uiScale
+		anchors.bottomMargin:	20 * preferencesModel.uiScale
+		width:					parent.width
     }
+
+	Rectangle
+	{
+		z:				-1
+		anchors.fill:	parent
+		color:			Theme.analysisBackgroundColor
+	}
     
-    Component.onCompleted: {
+	Component.onCompleted:
+	{
         form.getJASPControls(childControls, expanderArea)
-        if (debug) {
-            for (var i = 0; i < childControls.length; i++) {
+		if (debug)
+			for (var i = 0; i < childControls.length; i++)
                 childControls[i].debug = true;
-            }
-        }
     }
-
 }

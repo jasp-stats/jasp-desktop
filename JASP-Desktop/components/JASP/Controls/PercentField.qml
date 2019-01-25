@@ -20,18 +20,20 @@ import QtQuick 2.11
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-TextField {
-    id: textField
-    property int defaultValue: 50
-    property bool showPercent: true
-    property bool with1Decimal: false
+TextField
+{
+	property int	defaultValue:	50
+	property bool	showPercent:	true
+	property bool	with1Decimal:	false
     
-    property var intVal: IntValidator {bottom: 0; top: 100}
-    property var doubleVal: DoubleValidator {bottom: 0; top: 100; decimals: 1}
+	property var	intVal:			IntValidator	{ bottom: 0; top: 100}
+	property var	doubleVal:		DoubleValidator { bottom: 0; top: 100; decimals: 1 }
     
-    inputType: "percent"
-    control.width: Theme.font.pixelSize * (with1Decimal ? 3 : 2)
-    validator: with1Decimal ? doubleVal : intVal
-    value: Number.parseInt(defaultValue);
-    afterLabel.text: showPercent ? "%" : ""
+	id:					textField
+	inputType:			"percent"
+	control.width:		Theme.font.pixelSize * (with1Decimal ? 3 : 2)
+	validator:			with1Decimal ? doubleVal : intVal
+	value:				Number.parseInt(defaultValue);
+	afterLabel.text:	showPercent ? "%" : ""
+	cursorShape:		Qt.IBeamCursor
 }

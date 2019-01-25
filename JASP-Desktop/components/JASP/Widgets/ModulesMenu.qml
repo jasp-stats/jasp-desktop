@@ -1,8 +1,9 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.11
+import QtQuick.Controls	2.2
+import QtQuick.Layouts	1.3
+import JASP.Theme		1.0
+import JASP.Widgets		1.0
+import JASP.Controls	1.0
 
 Item
 {
@@ -65,6 +66,7 @@ Item
 				onClicked: 			moduleInstallerDialog.open()
 				iconSource:			"qrc:/icons/addition-sign-small.svg"
 				showIconAndText:	true
+				iconLeft:			false
 				toolTip:			"Install a dynamic module"
 			}
 
@@ -87,21 +89,23 @@ Item
 					anchors.leftMargin: modules.buttonMargin
 					anchors.left:		parent.left
 
-					MenuButton
+					CheckBox
 					{
 						id:					moduleButton
 						text:				displayText
-						textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
-						toolTip:			(ribbonEnabled ? "Disable" : "Enable") + " module " + displayText
+						checked:			ribbonEnabled
+						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
 
-						onClicked:			ribbonModel.toggleModuleEnabled(index)
-						onHoveredChanged:	if(hovered && enabled) ribbonModel.highlightedModuleIndex = index
+						//textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
+						//toolTip:			(ribbonEnabled ? "Disable" : "Enable") + " module " + displayText
+						//onClicked:			ribbonModel.toggleModuleEnabled(index)
+						//onHoveredChanged:	if(hovered && enabled) ribbonModel.highlightedModuleIndex = index
 
 						anchors
 						{
 							top:	parent.top
 							left:	parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
-							right:	parent.right
+							right:	minusButton.left
 							bottom:	parent.bottom
 						}
 					}
@@ -112,13 +116,13 @@ Item
 						id:				minusButton
 						visible:		isDynamic
 						iconSource:		"qrc:/icons/subtraction-sign-small.svg"
-						width:			height
+						width:			visible ? height : 0
 						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
 						toolTip:		"Uninstall module " + displayText
 						anchors
 						{
 							top:	parent.top
-							left:	parent.left
+							right:	parent.right
 							bottom:	parent.bottom
 						}
 					}

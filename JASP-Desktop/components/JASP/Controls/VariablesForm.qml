@@ -19,32 +19,32 @@
 import QtQuick 2.11
 import JASP.Theme 1.0
 
-Item {
-    id: variablesForm
-    implicitWidth: parent.width
-    height: Theme.defaultListHeight
+Item
+{
+	id:				variablesForm
+	implicitWidth:	parent.width
+	height:			Theme.defaultListHeight
     implicitHeight: height
 
-    default property alias content: items.children
-    property int listWidth: parent.width * 2 / 5
-    property alias availableVariablesList: availableVariablesList
+	default property alias	content:						items.children
+			property int	listWidth:						parent.width * 2 / 5
+			property alias	availableVariablesList:			availableVariablesList
+			property int	marginBetweenVariablesLists:	8 * preferencesModel.uiScale
 
-    property int marginBetweenVariablesLists: 8
-
-    VariablesList {
-        id: availableVariablesList
-        name: "allAvailableVariables"
-        width: listWidth
-        height: parent.height
-        anchors.top: parent.top
-        anchors.left: parent.left
+	VariablesList
+	{
+		id:				availableVariablesList
+		name:			"allAvailableVariables"
+		width:			listWidth
+		height:			parent.height
+		anchors.top:	parent.top
+		anchors.left:	parent.left
     }
 
-    Item {
-        id: items
-    }
+	Item { id: items }
     
-    Component.onCompleted: {
+	Component.onCompleted:
+	{
         var assignButtonComponent = Qt.createComponent("AssignButton.qml");
         
         if (assignButtonComponent.status === Component.Error) {
@@ -88,6 +88,7 @@ Item {
 
         // Set the height of controls (that have not singleItem set or where the height is already specifically set)
         // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
+		// To Do: Should be a binding of some kind to avoid problems with resizing after changing preferencesModel.uiScale
         if (changeableHeightControls.length > 0) {
             var controlHeight = (availableVariablesList.height - minHeight) / changeableHeightControls.length;
             if (controlHeight < 25)

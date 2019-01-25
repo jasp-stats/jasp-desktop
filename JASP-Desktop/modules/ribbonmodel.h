@@ -60,6 +60,7 @@ public:
 	int							ribbonButtonModelIndex(RibbonButtonModel * model)	const;
 
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
+	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);
 
 	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
 

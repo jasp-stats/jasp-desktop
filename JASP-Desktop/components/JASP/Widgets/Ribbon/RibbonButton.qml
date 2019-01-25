@@ -156,7 +156,7 @@ Rectangle
 		border.color:				Theme.uiBorder
 		border.width:				1
 		color:						Theme.uiBackground
-		visible:					mice.containsMouse
+		visible:					mice.containsMouse && !mice.pressed
 		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
 		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
 

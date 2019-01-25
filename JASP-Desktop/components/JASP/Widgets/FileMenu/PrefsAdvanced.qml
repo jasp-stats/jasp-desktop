@@ -3,6 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
+import JASP.Controls	1.0
 
 Column
 {
@@ -22,7 +23,7 @@ Column
 			text:				"Use default PPI (Pixels per Inch) in plots: " + preferencesModel.defaultPPI
 			checked:			preferencesModel.useDefaultPPI
 			onCheckedChanged:	preferencesModel.useDefaultPPI = checked
-			font:				Theme.font
+			//font:				Theme.font
 			height:				implicitHeight * preferencesModel.uiScale
 		}
 
@@ -111,18 +112,13 @@ Column
 	}
 
 
-	ColumnLayout
+	RadioButtonGroup
 	{
-		Text
-		{
-			font:	Theme.font
-			text:	qsTr("Image Background Color")
-			color:	Theme.textEnabled
-		}
+		title: qsTr("Image Background Color")
 
 		RadioButton
 		{
-			font:				Theme.font
+			//font:				Theme.font
 			text:				qsTr("White")
 			checked:			preferencesModel.whiteBackground
 			onCheckedChanged:	preferencesModel.whiteBackground = checked
@@ -130,7 +126,7 @@ Column
 
 		RadioButton
 		{
-			font:				Theme.font
+			//font:				Theme.font
 			text:				qsTr("Transparent")
 			checked:			!preferencesModel.whiteBackground
 			onCheckedChanged:	preferencesModel.whiteBackground = !checked

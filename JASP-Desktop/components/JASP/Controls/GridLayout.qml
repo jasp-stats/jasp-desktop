@@ -21,14 +21,11 @@ import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 GridLayout {
-    id: gridLayout
-    rowSpacing: Theme.rowGridSpacing
-    columnSpacing: Theme.columnGridSpacing
-    columns: 2
-    Layout.minimumWidth: parent.width
+	id:						gridLayout
+	rowSpacing:				Theme.rowGridSpacing
+	columnSpacing:			Theme.columnGridSpacing
+	columns:				2
+	Layout.minimumWidth:	parent.width
     
-    Component.onCompleted: {
-        for (var i = 0; i < children.length; i++)
-            children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft
-    }
+	Component.onCompleted: { for (var i = 0; i < children.length; i++) children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft }
 }

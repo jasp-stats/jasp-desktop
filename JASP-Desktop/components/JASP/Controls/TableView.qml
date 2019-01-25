@@ -8,17 +8,21 @@ import JASP 1.0
 
 JASPControl
 {
-	id: tableView
+	id:				tableView
     
-    controlType: "TableView"
-    hasTabFocus: false
+	controlType:	"TableView"
+	hasTabFocus:	false
     
-    property var syncModels
+	property var	syncModels
     property string modelType
-    property string itemType: "string"
+	property string itemType:	"string"
+	property alias	model:		theView.model
+	property var	validator:	(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
+	property int	colSelected: -1
+	property int	columnCount: 0
+	property int	rowCount: 0
+
     
-	property alias model: theView.model
-    property var validator: (itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
 
     signal addColumn();
     signal removeColumn(int col);
@@ -31,39 +35,33 @@ JASPControl
             removeColumn(colSelected);
     }    
     
-    property int colSelected: -1
-    property int columnCount: 0
-    property int rowCount: 0
-    
     Rectangle
 	{
-        id: rectangleBorder
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
-        border.width: 1
-        border.color: Theme.borderColor
-        color: Theme.white
+		id:					rectangleBorder
+		anchors.centerIn:	parent
+		width:				parent.width
+		height:				parent.height
+		border.width:		1
+		border.color:		Theme.borderColor
+		color:				Theme.white
     }
 
 	Flickable
 	{
-		id: myFlickable
+		id:				myFlickable
+		anchors.fill:	parent
+		contentWidth:	theView.width
+		contentHeight:	theView.height
+		clip:			true
 
-		anchors.fill: parent
-
-		contentWidth: theView.width
-		contentHeight: theView.height
-
-		clip: true
 
 		DataSetView
 		{
-			z: -1
-			id: theView
-			model: null
-            itemHorizontalPadding: 0
-            itemVerticalPadding: 8
+			z:						-1
+			id:						theView
+			model:					null
+			itemHorizontalPadding:	0
+			itemVerticalPadding:	8 * preferencesModel.uiScale
             
             viewportX: myFlickable.visibleArea.xPosition * width
 			viewportY: myFlickable.visibleArea.yPosition * height
@@ -74,7 +72,8 @@ JASPControl
 			{
 				color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
                 Text { text: headerText; anchors.centerIn: parent }
-                MouseArea {
+				MouseArea
+				{
                     anchors.fill: parent
                     onClicked: {
                         if (tableView.colSelected === columnIndex)
@@ -89,32 +88,30 @@ JASPControl
                 color: Theme.analysisBackgroundColor
                 Text
 				{ 
-                    text: headerText; 
-                    anchors.centerIn: parent;
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    leftPadding: 3
-                    elide: Text.ElideRight; 
-                    width: parent.width
-                    height: parent.width
+					text:					headerText;
+					anchors.centerIn:		parent;
+					horizontalAlignment:	Text.AlignHCenter
+					verticalAlignment:		Text.AlignVCenter
+					leftPadding:			3 * preferencesModel.uiScale
+					elide:					Text.ElideRight;
+					width:					parent.width
+					height:					parent.width
                 }
-                ToolTip.visible: mouseAreaItem.containsMouse
-                ToolTip.delay: 300
-                ToolTip.text: headerText
-                ToolTip.toolTip.background: Rectangle {
-                        id: tooltipRectangle
-                        color: Theme.tooltipBackgroundColor
-                        height: 25
-                }
+
+				ToolTip.visible:			mouseAreaItem.containsMouse
+				ToolTip.delay:				Theme.toolTipDelay
+				ToolTip.timeout:			Theme.toolTipTimeout
+				ToolTip.text:				headerText
+
                 MouseArea
 				{
-                    id: mouseAreaItem
-                    hoverEnabled: true
-                    anchors.fill: parent
+					id:				mouseAreaItem
+					hoverEnabled:	true
+					anchors.fill:	parent
                 }
             }
             
-            IntValidator { id: intValidator; bottom: 0 }
+			IntValidator	{ id: intValidator; bottom: 0 }
             DoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
             RegExpValidator { id: stringValidator }
 
@@ -122,16 +119,15 @@ JASPControl
 			{
                 TextField
 				{
-                    fieldWidth: parent.width
-                    textHeight: parent.height
-                    value: itemText; 
-                    inputType: tableView.itemType
-                    useExternalBorder: false
-                    isBound: false
-                    validator: tableView.validator
-                    
-                    onPressed: tableView.colSelected = columnIndex
-                    onEditingFinished: tableView.itemChanged(columnIndex, rowIndex, value)
+					fieldWidth:			parent.width
+					textHeight:			parent.height
+					value:				itemText;
+					inputType:			tableView.itemType
+					useExternalBorder:	false
+					isBound:			false
+					validator:			tableView.validator
+					onPressed:			tableView.colSelected = columnIndex
+					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
                 }
             }
             

@@ -17,93 +17,101 @@
 //
 
 
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4
+import QtQuick.Layouts	1.3
+import JASP.Theme		1.0
 
-import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+JASPControl
+{
+	id:				control
+	controlType:	"RadioButtonGroup"
+	hasTabFocus:	false
 
-JASPControl {
-    id: control
-    controlType: "RadioButtonGroup"
-    hasTabFocus: false
-
-    default property alias content: items.children
-    property alias buttons: buttonGroup.buttons
-    property bool isHorizontal: false
-    property string title: ""
-    property int leftPadding: Theme.groupContentPadding
+	default property alias	content:		items.children
+			property alias	buttons:		buttonGroup.buttons
+			property bool	isHorizontal:	false
+			property string title:			""
+			property int	leftPadding:	Theme.groupContentPadding
 
     signal clicked(var item)
 
-    implicitHeight: (control.title ? label.height : 0) + (isHorizontal ? row.height : column.height) 
-    implicitWidth: (isHorizontal ? row.width : column.width) + (title ? control.leftPadding : 0)
+	implicitHeight:		(control.title ? label.height : 0) + (isHorizontal ? row.height : column.height)
+	implicitWidth:		(isHorizontal ? row.width : column.width) + (title ? control.leftPadding : 0)
     
-    Layout.leftMargin: indent ? Theme.indentationLength : 0
+	Layout.leftMargin:	indent ? Theme.indentationLength : 0
        
-    Label {
-        id: label
-        text: control.title
-        visible: control.title && control.visible ? true : false
-        anchors.top: control.top
-        anchors.left: control.left
+	Label
+	{
+		id:				label
+		text:			control.title
+		visible:		control.title && control.visible ? true : false
+		anchors.top:	control.top
+		anchors.left:	control.left
+		font:			Theme.font
     }
     
-    ButtonGroup {
-        id: buttonGroup
+	ButtonGroup { id: buttonGroup			}
+	Item		{ id: items; visible: false	}
+
+	ColumnLayout
+	{
+		id:				column
+		spacing:		Theme.rowGroupSpacing
+		visible:		isHorizontal && control.visible ? false : true
+		anchors
+		{
+			top:		control.title ? label.bottom : control.top
+			topMargin:	control.title ? Theme.titleBottomMargin : 0
+			left:		parent.left
+			leftMargin:	control.title ? control.leftPadding : 0
+		}
     }
 
-    Item {
-        id: items
-        visible: false
-    }
-
-    ColumnLayout {
-        id: column
-        anchors.top: control.title ? label.bottom : control.top
-        anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
-        anchors.left: parent.left
-        anchors.leftMargin: control.title ? control.leftPadding : 0
-        spacing: Theme.rowGroupSpacing
-        visible: isHorizontal && control.visible ? false : true
-    }
-
-    RowLayout {
-        id: row
-        anchors.top: control.title ? label.bottom : control.top
-        anchors.topMargin: control.title ? Theme.titleBottomMargin : 0
-        anchors.left: parent.left
-        anchors.leftMargin: control.title ? control.leftPadding : 0
-        spacing: Theme.rowGroupSpacing
-        visible: isHorizontal && control.visible ? true : false
+	RowLayout
+	{
+		id:				row
+		spacing:		Theme.rowGroupSpacing
+		visible:		isHorizontal && control.visible ? true : false
+		anchors
+		{
+			top:		control.title ? label.bottom : control.top
+			topMargin:	control.title ? Theme.titleBottomMargin : 0
+			left:		parent.left
+			leftMargin:	control.title ? control.leftPadding : 0
+		}
     }
     
-    function linkRadioButtons(item) {
-        for (var i = 0; i < item.children.length; ++i) {
+	function linkRadioButtons(item)
+	{
+		for (var i = 0; i < item.children.length; ++i)
+		{
             var child = item.children[i];
-            if (child instanceof JASPControl) {
-                if (control.debug)
-                    child.debug = true;
-                if (child.controlType === "RadioButton") {
-                    child.buttonGroup = buttonGroup;
+			if (child instanceof JASPControl)
+			{
+				if (control.debug)
+					child.debug = true;
+
+				switch(child.controlType)
+				{
+				case "RadioButton":			child.buttonGroup = buttonGroup;	break;
+				case "RadioButtonGroup":										break;
+				default:					linkRadioButtons(child);			break;
                 }
-                else if (child.controlType !== "RadioButtonGroup") {
-                    linkRadioButtons(child);
-                }
-            } else {
+			} else
                 linkRadioButtons(child)
-            }
         }        
     }
 
-    Component.onCompleted: {
+	Component.onCompleted:
+	{
         buttonGroup.clicked.connect(clicked);
         linkRadioButtons(items);
         var elt = isHorizontal ? row : column;
-        while (items.children.length > 0) {
-            var child = items.children[0];
-            child.parent = elt;
-        }
+
+		while (items.children.length > 0)
+			items.children[0].parent = elt
+
     }
 
 }

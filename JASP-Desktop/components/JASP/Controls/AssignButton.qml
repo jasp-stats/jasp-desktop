@@ -17,55 +17,42 @@
 //
 
 
-import QtQuick 2.11
-import JASP.Theme 1.0
+import QtQuick		2.11
+import JASP.Theme	1.0
 
-Button {
-    id: button
+Button
+{
+	id:				button
+	hasTabFocus:	false
+
+				property var	leftSource;
+				property var	rightSource;
+				property bool	leftToRight:	true
+
+				property var	source:			leftToRight ? leftSource : rightSource;
+				property var	target:			leftToRight ? rightSource : leftSource;
+
+	readonly	property string iconToLeft:		"qrc:/images/arrow-left.png"
+	readonly	property string iconToRight:	"qrc:/images/arrow-right.png"
+	text:			""
+
+	image.source:	leftToRight ? iconToRight : iconToLeft
     
-    hasTabFocus: false    
-
-    property var leftSource;
-    property var rightSource;
-    property bool leftToRight: true
-
-    property var source: leftToRight ? leftSource : rightSource;
-    property var target: leftToRight ? rightSource : leftSource;
-
-    readonly property string iconToLeft: "qrc:/images/arrow-left.png"
-    readonly property string iconToRight: "qrc:/images/arrow-right.png"
-    text: ""
-    width: 40
-    height: 20
-
-    image.source: leftToRight ? iconToRight : iconToLeft
+	control.width:	40 * preferencesModel.uiScale
+	control.height: 20 * preferencesModel.uiScale
+	width:			control.width
+	height:			control.height
     
-    control.width: 40
-    control.height: 20
-    
-    x: (rightSource.x + leftSource.width - control.width) / 2
-    y: rightSource.y + rightSource.rectangleY
+	x:				(rightSource.x + leftSource.width - control.width) / 2
+	y:				rightSource.y + rightSource.rectangleY
 
-    onClicked: source.moveSelectedItems(target)
+	onClicked:		source.moveSelectedItems(target)
 
-    function setIconToRight() {
-        if (leftSource.activeFocus)
-            leftToRight = true;
-    }
+	function setIconToRight()	{ if (leftSource.activeFocus)	 leftToRight = true;	}
+	function setIconToLeft()	{ if (rightSource.activeFocus) leftToRight = false;		}
+	function setDisabledState() { state = source.hasSelectedItems ? "" : "disabled"		}
 
-    function setIconToLeft() {
-        if (rightSource.activeFocus)
-            leftToRight = false;
-    }
-
-    function setDisabledState() {
-        if (source.hasSelectedItems)
-            state = "";
-        else
-            state = "disabled";
-    }
-
-    onSourceChanged: setDisabledState()
+	onSourceChanged:	setDisabledState()
 
     Component.onCompleted: {
         rightSource.activeFocusChanged.connect(setIconToLeft);

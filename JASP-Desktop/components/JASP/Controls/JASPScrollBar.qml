@@ -32,8 +32,8 @@ Item {
 	property real extraMarginRightOrBottom	: 0
 	property real extraMarginLeftOrTop		: 0
 	property Flickable flickable			: null;
-	property int handleSize					: 7;
-	property int minimumLength				: 16
+	property int handleSize					: 7  * preferencesModel.uiScale
+	property int minimumLength				: 16 * preferencesModel.uiScale
 	property string bkColor					: Theme.white; //Use JASPTheme when available!
 	property string fgColor					: Theme.black;
 	property string pressedColor			: "#72a0cc";

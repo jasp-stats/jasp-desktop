@@ -15,6 +15,8 @@ FocusScope
 		color:			Theme.white
 		anchors.fill:	parent
 		z:				-1
+		border.width:	1
+		border.color:	Theme.uiBorder
 
 		JASPDataView
 		{

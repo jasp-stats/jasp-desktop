@@ -389,9 +389,9 @@ JASPControl
 				border.color: containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
 				
 				
-				property bool selected: false
-				property bool dragging: false
 				property bool clearOtherSelectedItemsWhenClicked: false
+				property bool selected:				false
+				property bool dragging:				false
 				property int offsetX:				0
 				property int offsetY:				0
 				property int rank:					index

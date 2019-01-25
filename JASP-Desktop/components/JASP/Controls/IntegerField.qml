@@ -20,12 +20,14 @@ import QtQuick 2.11
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-TextField {
-    id: textField
-    property int defaultValue: 0
-    property alias intValidator: intValidator
+TextField
+{
+					id:				textField
+	property int	defaultValue:	0
+	property alias	intValidator:	intValidator
     
-    inputType: "integer"
-    validator: IntValidator { id: intValidator; bottom: 0 }
-    value: Number.parseInt(defaultValue);
+					inputType:		"integer"
+					validator:		IntValidator { id: intValidator; bottom: 0 }
+					value:			Number.parseInt(defaultValue);
+					cursorShape:	Qt.IBeamCursor
 }

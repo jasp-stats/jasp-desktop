@@ -20,9 +20,11 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-JASPControl {
+JASPControl
+{
 	controlType:			"CheckBox"
-	implicitWidth:			control.width; implicitHeight: control.height
+	implicitWidth:			control.implicitWidth
+	implicitHeight:			control.implicitHeight
 	useDefaultBackground:	true
 	property alias text:	control.text
     property alias checked: control.checked
@@ -30,44 +32,43 @@ JASPControl {
 
     signal clicked();
     
-    Component.onCompleted: {
-        control.clicked.connect(clicked);
-    }
+	Component.onCompleted: control.clicked.connect(clicked);
     
-    CheckBox {
-        id: control
-        height: Theme.checkBoxIndicatorLength + 4
+	CheckBox
+	{
+		id:			control
+		padding:	Theme.jaspControlPadding
 
-        width: Theme.checkBoxIndicatorLength + 4 + (label.implicitWidth ? label.implicitWidth + control.spacing + 2 : 0)
-        focus: true        
+		indicator: Rectangle
+		{
+			id:		checkIndicator
+			width:	height
+			height:	label.height
+			y:		control.padding
+			x:		control.padding
 
-        indicator: Rectangle {
-            width: Theme.checkBoxIndicatorLength
-            height: Theme.checkBoxIndicatorLength
-            anchors.left: control.left
-            anchors.leftMargin: 2
-            anchors.top: control.top
-            anchors.topMargin: 2
-            color: control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
-            border.color: control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor) : Theme.disableControlBackgroundColor
-            border.width: 1
-            radius: Theme.borderRadius
+			color:			control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
+			border.color:	control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor)					: Theme.disableControlBackgroundColor
+			border.width:	1
+			radius:			Theme.borderRadius
             
-            Text {
-                visible: control.checked ? true : false
-                color: Theme.white
-                text: "\u2713"
-                anchors.horizontalCenter: parent.horizontalCenter
+			Text
+			{
+				visible:					control.checked ? true : false
+				color:						Theme.white
+				text:						"\u2713"
+				font:						Theme.font
+				anchors.horizontalCenter:	parent.horizontalCenter
             }
         }
         
-        contentItem: Label {
-            id: label
-            anchors.left: control.indicator.right
-            anchors.leftMargin: control.spacing
-            anchors.top: control.top
-            anchors.topMargin: 2
-            text: control.text
+		contentItem: Label
+		{
+			id:					label
+			text:				control.text
+			font:				Theme.font
+			leftPadding:		checkIndicator.width + control.spacing
+			verticalAlignment:	Text.AlignVCenter
         }
     }
 }

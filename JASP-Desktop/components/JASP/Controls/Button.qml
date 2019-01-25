@@ -20,47 +20,46 @@ import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 
-JASPControl {
-    id: button
-    controlType: "Button"
-    implicitHeight: control.implicitHeight
-    implicitWidth: control.implicitWidth
-    controlBackground: rectangle
-    isBound: false
+JASPControl
+{
+	id:					button
+	controlType:		"Button"
+	implicitHeight:		control.implicitHeight
+	implicitWidth:		control.implicitWidth
+	controlBackground:	rectangle
+	isBound:			false
+
     property alias control: control
     property alias text: control.text
     property alias image: image
     
     signal clicked()
     
-    Component.onCompleted: {
-        control.clicked.connect(clicked);
-    }
+	Component.onCompleted: control.clicked.connect(clicked);
 
-    Button {
-        id: control
+	Button
+	{
+		id:	control
         
-        Image {
-            id: image
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: parent
-            sourceSize.height: rectangle.height - 6
-            height: sourceSize.height
-            visible: source ? true : false
+		Image
+		{
+			id:					image
+			fillMode:			Image.PreserveAspectFit
+			anchors.centerIn:	parent
+			sourceSize.height:	rectangle.height - (6 * preferencesModel.uiScale)
+			height:				sourceSize.height
+			visible:			source ? true : false
         }
     
-        background: Rectangle {
-            id: rectangle
-            border.width: 1
-            border.color: Theme.borderColor
-            radius: Theme.borderRadius
-            color: control.down ? Theme.gray : Theme.controlBackgroundColor
+		background: Rectangle
+		{
+			id:				rectangle
+			border.width:	1
+			border.color:	Theme.borderColor
+			radius:			Theme.borderRadius
+			color:			control.down ? Theme.gray : Theme.controlBackgroundColor
             
-            Behavior on color {
-                ColorAnimation {
-                    duration: 100
-                }
-            }
+			Behavior on color { ColorAnimation { duration: 100 } }
         }
         
         states: [
