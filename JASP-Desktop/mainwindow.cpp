@@ -967,6 +967,10 @@ void MainWindow::resultsPageLoaded()
 // 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
 // #endif
 
+
+	if (!_engineSync->engineStarted())
+		_engineSync->start(_preferences->plotPPI());
+
 	if (_openOnLoadFilename != "")
 	{
 		_fileMenu->open(_openOnLoadFilename);
@@ -974,10 +978,6 @@ void MainWindow::resultsPageLoaded()
 	}
 
 	_resultsViewLoaded = true;
-
-
-	if (!_engineSync->engineStarted())
-		_engineSync->start(_preferences->plotPPI());
 }
 
 
