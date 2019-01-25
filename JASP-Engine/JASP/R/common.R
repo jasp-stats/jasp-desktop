@@ -2854,3 +2854,37 @@ editImage <- function(plotName, type, height, width) {
 
   return(v)
 }
+
+.recodeBFtype <- function(bfOld, newBFtype = c("BF10", "BF01", "LogBF10"), oldBFtype = c("BF10", "BF01", "LogBF10")) {
+
+	# Arguments:
+	# bfOld: the current value of the Bayes factor
+	# newBFtype: the new type of Bayes factor, e.g., BF10, BF01,
+	# oldBFtype: the current type of the Bayes factor, e.g., BF10, BF01,
+
+	newBFtype <- match.arg(newBFtype)
+	oldBFtype <- match.arg(oldBFtype)
+
+	if (oldBFtype == newBFtype)
+		return(bfOld)
+
+	if (oldBFtype == "BF10") {
+		if (newBFtype == "BF01") {
+			return(1 / bfOld)
+		} else {
+			return(log(bfOld))
+		}
+	} else if (oldBFtype == "BF01") {
+		if (newBFtype == "BF10") {
+			return(1 / bfOld)
+		} else {
+			return(log(1 / bfOld))
+		}
+	} else { # log(BF10)
+		if (newBFtype == "BF10") {
+			return(exp(bfOld))
+		} else {
+			return(1 / exp(bfOld))
+		}
+	}
+}

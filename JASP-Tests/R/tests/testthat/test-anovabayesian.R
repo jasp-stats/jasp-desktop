@@ -28,28 +28,26 @@ test_that("Main table results match", {
   )
 
   refTables <- list(
-    nullModelTop = list("Null model (incl. facExperim)", 0.2, -0.594672751877366, 0.134816578924395,
-                        0, "", "facGender", 0.2, -0.28722095052267, 0.630131621377202,
-                        0.307451801354696, 13.7355911669398, "facFive", 0.2, -1.24424524718345,
-                        -0.61670420719205, -0.649572495306089, 12.4382643482459, "facGender + facFive",
-                        0.2, -0.997414136054835, -0.349308383227457, -0.40274138417747,
-                        9.31843477413068, "facGender + facFive + facGender<unicode><unicode><unicode>facFive",
-                        0.2, -1.14281197270266, -0.508311164396966, -0.548139220825293,
-                        27.3699066120848),
-    bestModelTop = list("facGender", 0.2, -0.224979999753508, 0.77036505277832, 0, "",
-                        "Null model (incl. facExperim)", 0.2, -0.63697968879273, 0.0789763886292554,
-                        -0.411999689039223, 20.3818205689136, "facGender + facFive",
-                        0.2, -1.06635989051332, -0.42532677067774, -0.84137989075981,
-                        21.4710504386678, "facFive", 0.2, -1.33455292282619, -0.711911214299153,
-                        -1.10957292307269, 21.0528996183343, "facGender + facFive + facGender<unicode><unicode><unicode>facFive",
-                        0.2, -1.3818577904349, -0.761385841073298, -1.1568777906814,
-                        21.731493430306)
+    nullModelTop = list(2.03396231183419, 4.36594897914025, "facGender", 0.2, 0.521871337014648,
+                        0.969106320600043, 1, 1.38052893828542, "Null model (incl. facExperim)",
+                        0.2, 0.256578666172056, 0.432501410293758, 0.499288951910149,
+                        "facGender + facFive", 0.2, 0.110970634970706, 1.41647769133671,
+                        0.21724304954363, 0.236121101672541, "facGender + facFive + facGender<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facFive",
+                        0.2, 0.0557399318870544, 1.83775875304445, 0.213733397143635,
+                        0.232085136403676, "facFive", 0.2, 0.0548394299555363, 1.04177436451923),
+    bestModelTop = list(1, 4.18686558133661, "facGender", 0.2, 0.511412522868496, 0.510943003733483,
+                        1.41493752908138, "Null model (incl. facExperim)", 0.2, 0.261302650581348,
+                        2.3021061884882, 0.223966148027088, 0.517421342346211, "facGender + facFive",
+                        0.2, 0.114539092799672, 4.15307380646848, 0.111744890960883,
+                        0.242446197872535, "facFive", 0.2, 0.0571477366039704, 2.59068727917517,
+                        0.108714579053848, 0.235484452504449, "facGender + facFive + facGender<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facFive",
+                        0.2, 0.0555979971465146, 3.03025679917061)
   )
 
   for (order in c("nullModelTop", "bestModelTop")) {
     options$bayesFactorOrder <- order
     results <- jasptools::run("AnovaBayesian", "test.csv", options)
-    table <- results[["results"]][["model comparison"]][["data"]]
+    table <- results[["results"]][["tableModelComparison"]][["data"]]
     expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
   }
 })
@@ -67,18 +65,18 @@ test_that("Effects table results match", {
   )
 
   refTables <- list(
-    allModels = list("facFive", 0.6, 0.130329318915725, 0.0999070274533764, "contBinom",
-                     0.6, 0.215198578129195, 0.182805120830189, "facFive<unicode><unicode><unicode>contBinom",
-                     0.2, 0.00408798728805838, 0.0164190701020926),
-    matchedModels = list("facFive", 0.4, 0.125726268310478, 0.144492921488286, "contBinom",
-                         0.4, 0.210639434646256, 0.26825960145967, "facFive<unicode><unicode><unicode>contBinom",
-                         0.2, 0.0041531263651184, 0.182973144016417)
+    allModels = list(0.101833665496691, "facFive", 0.6, 0.132509592038855, 0.184940107557576,
+                     "contBinom", 0.6, 0.217166083167955, 0.0176366361186621, "facFive<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
+                     0.2, 0.0043898036871001),
+    matchedModels = list(0.146995523754444, "facFive", 0.4, 0.127601379108464, 0.271032837792626,
+                         "contBinom", 0.4, 0.2123137507459, 0.174704371549221, "facFive<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
+                         0.2, 0.00433559523354601)
   )
 
   for (effectsType in c("allModels", "matchedModels")) {
     options$effectsType <- effectsType
     results <- jasptools::run("AnovaBayesian", "test.csv", options)
-    table <- results[["results"]][["effects"]][["data"]]
+    table <- results[["results"]][["tableEffects"]][["data"]]
     expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
   }
 })
@@ -92,23 +90,24 @@ test_that("Post-hoc Comparisons table results match", {
   )
   options$postHocTestsNullControl <- TRUE
   options$postHocTestsVariables <- "facFive"
+
   results <- jasptools::run("AnovaBayesian", "test.csv", options)
-  table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
+  table <- results[["results"]][["collectionPosthoc"]][["collection"]][["collectionPosthoc_postHoc_facFive"]][["data"]]
   expect_equal_tables(table,
-    list(1, 2, 0.319507910772894, 0.0997312866070229, -0.505650193633655,
-         0.00713501139221108, "TRUE", 1, 3, 0.319507910772894, 0.260338331517325,
-         -0.0889434982573415, 0.00346528957238797, "FALSE", 1, 4, 0.319507910772894,
-         0.0988240290518637, -0.509619059344969, 0.0071287698725277,
-         "FALSE", 1, 5, 0.319507910772894, 0.139031227413715, -0.361369258553702,
-         0.00848479926592481, "FALSE", 2, 3, 0.319507910772894, 0.30046754229221,
-         -0.0266840507861397, 0.00368467308944596, "FALSE", 2, 4, 0.319507910772894,
-         0.0989443005428758, -0.509090832692873, 0.00712946511175494,
-         "FALSE", 2, 5, 0.319507910772894, 0.151606948038875, -0.323762510268505,
-         0.00859149880568525, "FALSE", 3, 4, 0.319507910772894, 0.23744955199206,
-         -0.12891026091494, 0.0042533257083258, "FALSE", 3, 5, 0.319507910772894,
-         0.104702418542221, -0.484524901778361, 0.00721167204576887,
-         "FALSE", 4, 5, 0.319507910772894, 0.138002738227672, -0.364593911742112,
-         0.00846064110496598, "FALSE")
+    list(1, 2, 0.312140273352768, 0.099731286607023, 0.319507910772894,
+         0.00713501145651816, 1, 3, 0.814810284000699, 0.260338331517332,
+         0.319507910772894, 0.00346528957422733, 1, 4, 0.309300726898471,
+         0.0988240290518682, 0.319507910772894, 0.00712877021506968,
+         1, 5, 0.435141737421767, 0.139031227413716, 0.319507910772894,
+         0.0084847992806719, 2, 3, 0.940407207963574, 0.300467542292212,
+         0.319507910772894, 0.00368467308971747, 2, 4, 0.309677154169755,
+         0.0989443005428739, 0.319507910772894, 0.00712946546406268,
+         2, 5, 0.47450139081732, 0.151606948038875, 0.319507910772894,
+         0.00859149881710335, 3, 4, 0.743172685201022, 0.23744955199206,
+         0.319507910772894, 0.00425332570766848, 3, 5, 0.327698986510047,
+         0.10470241854222, 0.319507910772894, 0.00721167205986274, 4,
+         5, 0.431922758637939, 0.138002738227673, 0.319507910772894,
+         0.00846064111128918)
   )
 })
 
@@ -118,21 +117,19 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive", isNuisance=FALSE))
   results <- jasptools::run("AnovaBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                   label="Inf check")
+  expect_true(results[["results"]][["error"]], label = "Inf check")
 
   options$dependent <- "contNormal"
   options$fixedFactors <- "debSame"
   options$modelTerms <- list(list(components="debSame", isNuisance=FALSE))
   results <- jasptools::run("AnovaBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                   label="1-level factor check")
+  expect_true(results[["results"]][["error"]], label = "1-level factor check")
 
   options$dependent <- "contNormal"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive", isNuisance=TRUE))
   results <- jasptools::run("AnovaBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
+  expect_identical(results[["results"]][["tableModelComparison"]][["error"]][["type"]], "badData",
                    label="All nuisance check")
 
   # options$dependent <- "debSame"
@@ -146,6 +143,5 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive", isNuisance=FALSE))
   results <- jasptools::run("AnovaBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                 label="Too few obs check")
+  expect_true(results[["results"]][["error"]], label = "Too few obs check")
 })

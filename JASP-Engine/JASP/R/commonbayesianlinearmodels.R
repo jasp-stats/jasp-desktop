@@ -257,10 +257,10 @@
 .theBayesianLinearModelsGetModelFormula <- function(dependent, modelTerms) {
   
   model.formula <- paste (.v (dependent), " ~ ", sep = "")
-	neverExclude <- NULL
+	nuisance <- NULL
 	effects <- NULL
 	for (term in modelTerms) {
-		if (is.null (effects) & is.null (neverExclude)){
+		if (is.null (effects) & is.null (nuisance)){
 			model.formula <- paste (model.formula,
 				paste (.v (term$components), collapse = ":"), sep = "")
 		} else {
@@ -268,13 +268,13 @@
 				paste (.v (term$components), collapse = ":"), sep = "")
 		}
 		if (!is.null(term$isNuisance) && term$isNuisance) {
-			neverExclude <- c (neverExclude, paste (.v (term$components), collapse = ":"))
+			nuisance <- c (nuisance, paste (.v (term$components), collapse = ":"))
 		} else {
 			effects <- c (effects, paste (.v (term$components), collapse = ":"))
 		}
 	}
 	model.formula <- formula (model.formula)
-  return(list(model.formula = model.formula, neverExclude = neverExclude, effects = effects))
+  return(list(model.formula = model.formula, nuisance = nuisance, effects = effects))
 }
 
 .theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init",
@@ -315,7 +315,7 @@
 	#Extract the model components and nuisance terms
 	tmp <- .theBayesianLinearModelsGetModelFormula(options$dependent, options$modelTerms)
 	model.formula <- tmp$model.formula
-	neverExclude  <- tmp$neverExclude
+	neverExclude  <- tmp$nuisance
 	effects       <- tmp$effects
 
 	#Make a list of models to compare
@@ -448,8 +448,8 @@
 		}
 
 		#Now compute Bayes Factors for each model in the list, and populate the tables accordingly
-		for(m in 1:no.models) {
-			if (perform == "run" && status$ready) {
+		if (perform == "run" && status$ready) {
+		  for(m in 1:no.models) {
 				bf <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
 					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage,
@@ -487,42 +487,52 @@
 		effects.matrix <- rbind(rep(0, no.effects), effects.matrix)
 		row.names(effects.matrix)[1] <- "Null model"
 
-		if (options$posteriorEstimates && perform == "run" && status$ready) {
-			complexity <- rowSums (effects.matrix)
-			m <- which (complexity == max (complexity))
-			chains <- try (BayesFactor::lmBF (model.list [[m]],
-					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-					progress = FALSE, posterior = TRUE, callback = .callbackBFpackage,
-					iterations = options$posteriorEstimatesMCMCIterations,
-					rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
-					iterations = iter))
+		# if (options$posteriorEstimates && perform == "run" && status$ready) {
+		# 	complexity <- rowSums (effects.matrix)
+		# 	m <- which (complexity == max (complexity))
+		# 	chains <- try (BayesFactor::lmBF (model.list [[m]],
+		# 			data = dataset, whichRandom = .v (unlist (options$randomFactors)),
+		# 			progress = FALSE, posterior = TRUE, callback = .callbackBFpackage,
+		# 			iterations = options$posteriorEstimatesMCMCIterations,
+		# 			rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
+		# 			iterations = iter))
+		# 
+		# 	if (inherits (bf, "try-error")) {
+		# 		message <- .extractErrorMessage (bf)
+		# 		if (message == "Operation cancelled by callback function.")
+		# 			return()
+		# 		model.object [[m]]$error.message <- "Posterior could not be computed"
+		# 		return (list (model =  list (models = model.object, effects = effects.matrix,
+		# 			interactions.matrix = interactions.matrix, nuisance = neverExclude,
+		# 			null.model = null.model), status = status))
+		# 	}
+		# 
+		# 	model.object [[m]]$chains <- chains
+		# 	return (list (model =  list (models = model.object, effects = effects.matrix,
+		# 		interactions.matrix = interactions.matrix, nuisance = neverExclude,
+		# 		null.model = null.model), status = status))
+		# }
 
-			if (inherits (bf, "try-error")) {
-				message <- .extractErrorMessage (bf)
-				if (message == "Operation cancelled by callback function.")
-					return()
-				model.object [[m]]$error.message <- "Posterior could not be computed"
-				return (list (model =  list (models = model.object, effects = effects.matrix,
-					interactions.matrix = interactions.matrix, nuisance = neverExclude,
-					null.model = null.model), status = status))
-			}
-
-			model.object [[m]]$chains <- chains
-			return (list (model =  list (models = model.object, effects = effects.matrix,
-				interactions.matrix = interactions.matrix, nuisance = neverExclude,
-				null.model = null.model), status = status))
-		}
-		return (list (model = list (models = model.object, effects = effects.matrix,
-			interactions.matrix = interactions.matrix, nuisance = neverExclude,
-			null.model = null.model), status = status))
+		model <- list(models = model.object, effects = effects.matrix, interactions.matrix = interactions.matrix, 
+		              nuisance = neverExclude, null.model = null.model)
+		# calculate posteriors
+	  model$posteriors <- .AnovaBayesianSamplePosteriors(model, options, perform)
+	  model$modelIndex <- .AnovaBayesianSMIgetModelIndex(model, options, perform)
+	  
+	  # if necessary, pre-calculate ggplots for residuals/ R-squared
+    model$BMASMIPlot <- .AnovaBayesianComputePlots(model, options, perform)
+		
+		return(list(model = model, status = status))
 	}
 
+	# vandenman 24/01/19: as far as I understood this function, if this point is every reached the analysis is broken
 	if (! status$error) {
 			status$ready <- FALSE
 			status$error <- TRUE
 			status$error.message <- "An unknown error occured. Please contact the authors."
 	}
-	return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL,
+
+	return(list(model = list(models = NULL, effects = NULL, interactions.matrix = NULL,
 		nuisance = neverExclude, null.model = NULL), status = status))
 }
 
@@ -699,17 +709,17 @@
 		modelTable [["title"]] <- paste ("Model Comparison - ", options$dependent, sep = "")
 	}
 	modelTable [["data"]] <- rows
-	modelTable [["footnotes"]] <- as.list (footnotes)
+	modelTable [["footnotes"]] <- as.list(footnotes)
 
 	if (status$error)
-		modelTable [["error"]] <- list (errorType = "badData", errorMessage = status$error.message)
+		modelTable [["error"]] <- list(errorType = "badData", errorMessage = status$error.message)
 	
 	# do this once and not again in every subfunction
 	base64map <- unique(unlist(lapply(options$modelTerms, `[[`, "components")))
   names(base64map) <- .v(base64map)
   model$base64map <- base64map
 
-	return (list (modelTable = modelTable, model = model))
+	return(list(modelTable = modelTable, model = model))
 }
 
 .theBayesianLinearModelsEffects <- function(model = NULL, options = list(), perform = "init", status = list(), populate = TRUE) {
