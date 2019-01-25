@@ -196,7 +196,6 @@ private slots:
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
-	void updateExcludeKey();
 	void dataSetChanged(DataSet * dataSet);
 	void unitTestTimeOut();
 
@@ -247,7 +246,6 @@ private:
 	bool							_applicationExiting		= false,
 									_resultsViewLoaded		= false,
 									_openedUsingArgs		= false,
-									_excludeKey				= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,

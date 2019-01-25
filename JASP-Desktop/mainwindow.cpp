@@ -1221,6 +1221,7 @@ void MainWindow::showProgress()
 {
 	_fileMenu->setVisible(false);
 	setDataPanelVisible(true);
+	setDataAvailable(true);
 	setProgressBarVisible(true);
 }
 
@@ -1235,13 +1236,6 @@ void MainWindow::setProgressStatus(QString status, int progress)
 	setProgressBarStatus(status);
 	setProgressBarProgress(progress);
 }
-
-
-void MainWindow::updateExcludeKey()
-{
-	_excludeKey = false;
-}
-
 
 void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 {
