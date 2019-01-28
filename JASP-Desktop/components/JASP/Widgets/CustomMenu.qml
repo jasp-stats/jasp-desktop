@@ -83,18 +83,18 @@ Item
 						id		: menuItem
 						width	: menuItemImage.width + menuItemText.implicitWidth + 16 * Theme.uiScale
 								// 16 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
-						height	: 20
+						height	: Theme.menuItemHeight
 						color	: mouseArea.pressed ? Theme.blueMuchLighter : mouseArea.containsMouse ? Theme.grayLighter : Theme.white
 
 						Rectangle
 						{
 							id		: menuItemImage
-							height	: menuItem.height - 5  // 5 = smallerBy
-							width	: menuItem.height - 5
+							height	: menuItem.height - 5 * Theme.uiScale // 5 = smallerBy
+							width	: menuItem.height - 5 * Theme.uiScale
 							color	: menuItem.color
 
 							anchors.left		: parent.left
-							anchors.leftMargin	: 3
+							anchors.leftMargin	: 3 * Theme.uiScale
 
 							Image
 							{
@@ -109,11 +109,13 @@ Item
 							id					: menuItemText
 							text				: displayText
 							height				: menuItem.height
+							font				: Theme.font
+							verticalAlignment	: Text.AlignVCenter
 
 							anchors.left		: menuItemImage.right
-							anchors.leftMargin	: 5
+							anchors.leftMargin	: 5 * Theme.uiScale
 							anchors.right		: parent.right
-							anchors.rightMargin	: 3
+							anchors.rightMargin	: 3 * Theme.uiScale
 						}
 
 						MouseArea
