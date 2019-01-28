@@ -117,5 +117,8 @@
         <file>icons/subtraction-sign.svg</file>
         <file>icons/addition-sign-small.svg</file>
         <file>icons/subtraction-sign-small.svg</file>
+        <file>icons/install_icon.png</file>
+        <file>icons/delete_icon.png</file>
+        <file>icons/delete_icon_gray.png</file>
     </qresource>
 </RCC>

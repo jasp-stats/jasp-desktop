@@ -58,13 +58,13 @@ Item
 			MenuButton
 			{
 				id:					addModuleButton
-				text:				"Add Dynamic Module"
+				text:				"Install Module"
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
 				onClicked: 			moduleInstallerDialog.open()
-				iconSource:			"qrc:/icons/addition-sign-small.svg"
+				iconSource:			"qrc:/icons/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 				showIconAndText:	true
 				iconLeft:			false
 				toolTip:			"Install a dynamic module"
@@ -103,10 +103,9 @@ Item
 
 						anchors
 						{
-							top:	parent.top
-							left:	parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
-							right:	minusButton.left
-							bottom:	parent.bottom
+							left			: parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
+							right			: minusButton.left
+							verticalCenter	: parent.verticalCenter
 						}
 					}
 
@@ -115,15 +114,14 @@ Item
 						z:				1
 						id:				minusButton
 						visible:		isDynamic
-						iconSource:		"qrc:/icons/subtraction-sign-small.svg"
+						iconSource:		hovered ? "qrc:/icons/delete_icon.png" : "qrc:/icons/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
 						width:			visible ? height : 0
 						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
 						toolTip:		"Uninstall module " + displayText
 						anchors
 						{
-							top:	parent.top
-							right:	parent.right
-							bottom:	parent.bottom
+							right			: parent.right
+							verticalCenter	: parent.verticalCenter
 						}
 					}
 				}
