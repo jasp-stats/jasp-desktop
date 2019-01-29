@@ -68,15 +68,36 @@ void PreferencesModel::browseSpreadsheetEditor()
 	
 }
 
+void PreferencesModel::browseDeveloperFolder()
+{
+	QString defaultfolder;
+
+#ifdef __WIN32__
+	defaultfolder = "c:\\";
+#elif __APPLE__
+	defaultfolder = "~";
+#else
+	defaultfolder = "~";
+#endif
+
+	QString folder = MessageForwarder::openFolderBrowse("Select a folder...", defaultfolder);
+
+	if (folder != "")
+		setDeveloperFolder(folder);
+		
+}
+
 bool	PreferencesModel::fixedDecimals()			const { return Settings::value(Settings::FIXED_DECIMALS					).toBool();					}
 int		PreferencesModel::numDecimals()				const { return Settings::value(Settings::NUM_DECIMALS					).toInt();					}
 bool	PreferencesModel::exactPValues()			const { return Settings::value(Settings::EXACT_PVALUES					).toBool();					}
 bool	PreferencesModel::dataAutoSynchronization()	const { return Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION		).toBool();					}
 bool	PreferencesModel::useDefaultEditor()		const { return Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR	).toBool();					}
 QString	PreferencesModel::customEditor()			const { return Settings::value(Settings::SPREADSHEET_EDITOR_NAME		).toString();				}
+QString PreferencesModel::developerFolder()			const {	return Settings::value(Settings::DEVELEPER_FOLDER				).toString();				}
 bool	PreferencesModel::useDefaultPPI()			const { return Settings::value(Settings::PPI_USE_DEFAULT				).toBool();					}
 int		PreferencesModel::customPPI()				const { return Settings::value(Settings::PPI_CUSTOM_VALUE				).toInt();					}
 bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND				).toString() == "white";	}
+bool	PreferencesModel::developerMode()			const { return Settings::value(Settings::DEVELOPER_MODE					).toBool();					}
 double	PreferencesModel::uiScale()					const { return Settings::value(Settings::UI_SCALE						).toDouble();				}
 
 QStringList PreferencesModel::missingValues()		const
@@ -168,7 +189,17 @@ void PreferencesModel::setUseDefaultPPI(bool newUseDefaultPPI)
 
 	if(customPPI() != defaultPPI())
 		emit plotPPIChanged(plotPPI());
+	
+}
 
+void PreferencesModel::setDeveloperMode(bool newDeveloperMode)
+{
+	if (developerMode() == newDeveloperMode)
+		return;
+
+	Settings::setValue(Settings::DEVELOPER_MODE, newDeveloperMode);
+	emit developerModeChanged(newDeveloperMode);
+	
 }
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
@@ -179,6 +210,15 @@ void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 	Settings::setValue(Settings::IMAGE_BACKGROUND, newWhiteBackground ? "white" : "transparent");
 	emit whiteBackgroundChanged(newWhiteBackground);
 	emit plotBackgroundChanged(Settings::value(Settings::IMAGE_BACKGROUND).toString());
+}
+
+void PreferencesModel::setDeveloperFolder(QString newDeveloperFolder)
+{
+	if (developerFolder() == newDeveloperFolder)
+		return;
+
+	Settings::setValue(Settings::DEVELEPER_FOLDER, newDeveloperFolder);
+	emit developerFolderChanged(newDeveloperFolder);
 }
 
 void PreferencesModel::setUiScale(double newUiScale)

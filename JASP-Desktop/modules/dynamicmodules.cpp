@@ -19,6 +19,7 @@
 
 #include "dynamicmodules.h"
 #include "utilities/extractarchive.h"
+#include "utilities/settings.h"
 
 DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 {
@@ -316,6 +317,23 @@ void DynamicModules::setCurrentInstallDone(bool currentInstallDone)
 void DynamicModules::uninstallJASPModule(QString moduleName)
 {
 	uninstallModule(moduleName.toStdString());
+}
+
+void DynamicModules::installJASPDeveloperModule()
+{
+	std::string path	= Settings::value(Settings::DEVELEPER_FOLDER).toString().toStdString();
+	size_t slash		= path.find_last_of('/');
+	std::string name	= Modules::DynamicModule::moduleNameFromFolder(path.substr(slash == std::string::npos ? 0 : slash + 1));
+
+	setCurrentInstallMsg(QString(""));
+	setCurrentInstallDone(false);
+	setCurrentInstallName(QString::fromStdString(name));
+
+	if(moduleIsInstalled(name))
+		uninstallModule(name);
+
+	initializeModuleFromDir(path);
+	
 }
 
 

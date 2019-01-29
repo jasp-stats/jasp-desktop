@@ -24,7 +24,6 @@
 #include "options/bound.h"
 #include "utilities/qutils.h"
 
-#include <QQmlEngine>
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QDebug>
@@ -79,7 +78,6 @@ AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(
 // Maybe these error should be moved to MainWindow?
 //	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisForm::statusChangedWidgetHandler);
 //	connect(_quickWidget,	&QQuickWidget::sceneGraphError,	this,	&AnalysisForm::sceneGraphErrorHandler);
-//	connect(&_QMLwatcher,	&QFileSystemWatcher::fileChanged, this, &AnalysisForm::QMLFileModifiedHandler);	
 }
 
 bool AnalysisForm::hasIllegalValue() const
@@ -484,7 +482,7 @@ void AnalysisForm::formCompletedHandler()
 }
 
 void AnalysisForm::_formCompletedHandler()
-{		
+{
 	QVariant analysisVariant = QQmlProperty(this, "analysis").read();
 	if (!analysisVariant.isNull())
 	{
@@ -492,24 +490,16 @@ void AnalysisForm::_formCompletedHandler()
 		_parseQML();
 		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->optionsFromJASPFile());
 		_analysis->initialized(this);		
-	}
 	
-}
-
-/*
-void AnalysisForm::statusChangedWidgetHandler(QQuickWidget::Status status)
-{
-	if (status == QQuickWidget::Error)
-	{
-		QQuickWidget* widget = qobject_cast<QQuickWidget*>(sender());
-		QString message;
-		for (QQmlError error : widget->errors())
+		if (Settings::value(Settings::DEVELOPER_MODE).toBool() && _analysis->isDynamicModule())
 		{
-			if (!message.isEmpty())
-				message += '\n';
-			message += error.toString();
+			QQmlContext* context = QQmlEngine::contextForObject(this);
+			if (context)
+			{
+				QQmlEngine* engine = context->engine();
+				if (engine)
+					engine->clearComponentCache();
+			}
 		}
-
-		MessageForwarder::showWarning("Error", "Error when loading analysis form: \n" + message);
 	}
-}*/
+}

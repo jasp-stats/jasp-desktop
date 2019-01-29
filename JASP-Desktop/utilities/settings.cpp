@@ -22,7 +22,9 @@ const Settings::Setting Settings::Values[] = {
 	{"PPICustomValue",				300},
 	{"UIScaleQML",					1.0f},
 	{"ImageBackground",				"white"},
-	{"fixedDecimals",				false}
+	{"fixedDecimals",				false},
+	{"developerMode",				false},
+	{"developerFolder",				""}
 };
 
 QVariant Settings::value(Settings::Type key)

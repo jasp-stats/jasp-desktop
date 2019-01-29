@@ -74,6 +74,7 @@ public:
 	Q_INVOKABLE QString getDescriptionFromArchive(QString filepath);
 	Q_INVOKABLE void	installJASPModule(QString filepath);
 	Q_INVOKABLE	void	uninstallJASPModule(QString moduleName);
+	Q_INVOKABLE void	installJASPDeveloperModule();
 
 	QString currentInstallMsg()									{ return _currentInstallMsg; }
 	void setCurrentInstallMsg(QString currentInstallMsg)		{ if(_currentInstallMsg != currentInstallMsg) { _currentInstallMsg = currentInstallMsg; emit currentInstallMsgChanged(); } }

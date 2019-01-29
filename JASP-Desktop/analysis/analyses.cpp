@@ -25,6 +25,8 @@
 #include <QFile>
 #include <QTimer>
 #include <QDebug>
+#include <QQmlContext>
+#include <QQmlEngine>
 
 #include "utils.h"
 #include "tempfiles.h"
@@ -122,6 +124,20 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	analysis->requestComputedColumnDestruction.connect(	boost::bind( &Analyses::requestComputedColumnDestruction,	this, _1	 ));
 
 	connect(analysis, &Analysis::sendRScript, this, &Analyses::sendRScriptHandler);
+	
+	if (analysis->isDynamicModule())
+	{
+		QString filePath = QString::fromStdString(analysis->qmlFormPath());
+		if (filePath.startsWith("file:"))
+			filePath.remove(0,5);
+		if (!_QMLFileWatcher.files().contains(filePath))
+		{
+			if (!_QMLFileWatcher.addPath(filePath))
+				qDebug() << "Could not watch: " << filePath;
+		}
+		connect(&_QMLFileWatcher, &QFileSystemWatcher::fileChanged, [=] () { this->_analysisQMLFileChanged(analysis); });
+		
+	}
 
 //	Send the analysesAdded signal afterwards: the analysis may need extra settings after creation
 //	analysisAdded(analysis);
@@ -160,6 +176,13 @@ void Analyses::analysisEditImageHandler(Analysis *analysis, Json::Value &options
 	analysis->setStatus(Analysis::EditImg);
 	analysis->setSaveImgOptions(options); // options from saveImage are fine
 	analysisEditImage(analysis);
+}
+
+void Analyses::_analysisQMLFileChanged(Analysis *analysis)
+{
+	beginResetModel();
+	endResetModel();
+	selectAnalysis(analysis);
 }
 
 Json::Value Analyses::asJson() const

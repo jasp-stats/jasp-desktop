@@ -54,7 +54,7 @@ Item
 			property int buttonMargin:	3  * preferencesModel.uiScale
 			property int buttonWidth:	width - (buttonMargin * 2)
 			property int buttonHeight:	40  * preferencesModel.uiScale
-
+			
 			MenuButton
 			{
 				id:					addModuleButton
@@ -76,6 +76,27 @@ Item
 				width:						modules.buttonWidth
 				anchors.horizontalCenter:	parent.horizontalCenter
 			}
+			
+			MenuButton
+			{
+				id:					addDeveloperModuleButton
+				text:				"Add Developer Module"
+				width:				modules.buttonWidth
+				height:				modules.buttonHeight
+				anchors.leftMargin: modules.buttonMargin
+				anchors.left:		parent.left
+				onClicked: 			dynamicModules.installJASPDeveloperModule()
+				toolTip:			"Install the developer module"
+				visible:			preferencesModel.developerMode				
+			}
+			
+			ToolSeparator
+			{
+				orientation:				Qt.Horizontal
+				width:						modules.buttonWidth
+				anchors.horizontalCenter:	parent.horizontalCenter
+				visible:					preferencesModel.developerMode
+			}			
 
 			Repeater
 			{

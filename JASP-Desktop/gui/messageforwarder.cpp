@@ -61,3 +61,8 @@ QString MessageForwarder::saveFileBrowse(QString caption, QString browsePath, QS
 {
 	return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
 }
+
+QString MessageForwarder::openFolderBrowse(QString caption, QString browsePath)
+{
+	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+}

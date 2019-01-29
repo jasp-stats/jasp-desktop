@@ -29,6 +29,7 @@ public:
 
 	static QString openFileBrowse(QString caption, QString browsePath, QString filter);
 	static QString saveFileBrowse(QString caption, QString browsePath, QString filter, QString * selectedFilter = nullptr);
+	static QString openFolderBrowse(QString caption, QString browsePath);
 
 
 signals:
