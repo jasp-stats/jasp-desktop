@@ -447,7 +447,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 		}
 	}
 
-	_options->blockSignals(false);
+	_options->blockSignals(false, false);
 
 	updateIllegalStatus();
 }
@@ -488,8 +488,10 @@ void AnalysisForm::_formCompletedHandler()
 	{
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 		_parseQML();
+		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
 		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->optionsFromJASPFile());
-		_analysis->initialized(this);		
+		_analysis->resetOptionsFromJASPFile();
+		_analysis->initialized(this, isNewAnalysis);
 	
 		if (Settings::value(Settings::DEVELOPER_MODE).toBool() && _analysis->isDynamicModule())
 		{

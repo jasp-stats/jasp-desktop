@@ -114,11 +114,11 @@ Analysis::Status Analysis::parseStatus(string name)
 	else								return Analysis::Error;
 }
 
-void Analysis::initialized(AnalysisForm* form)
+void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 {
 	_analysisForm = form;
 //		connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::showForm);
-	_status = Empty;
+	_status = isNewAnalysis ? Empty : Complete;
 }
 
 Json::Value Analysis::asJSON() const

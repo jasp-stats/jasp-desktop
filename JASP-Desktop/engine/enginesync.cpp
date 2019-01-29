@@ -246,7 +246,7 @@ void EngineSync::ProcessAnalysisRequests()
 		if(!idleEngineAvailable())
 			return false;
 
-		if (analysis == NULL || analysis->isWaitingForModule())
+		if (analysis == nullptr || analysis->isWaitingForModule())
 			return true;
 
 		bool canUseFirstEngine	= analysis->isEmpty()	|| analysis->isSaveImg() || analysis->isEditImg();
