@@ -22,6 +22,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIChanged					)
+	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
+	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
 
 
 public:
@@ -38,8 +40,10 @@ public:
 	bool		useDefaultEditor()			const;
 	bool		useDefaultPPI()				const;
 	bool		whiteBackground()			const;
+	bool		developerMode()				const;
 	double		uiScale()					const;
 	QString		customEditor()				const;
+	QString		developerFolder()			const;
 	QString		fixedDecimalsForJS()		const;
 	QStringList	missingValues()				const;
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
@@ -57,11 +61,14 @@ public slots:
 	void setCustomEditor(QString customEditor);
 	void setFixedDecimals(bool fixedDecimals);
 	void setUseDefaultPPI(bool useDefaultPPI);
+	void setDeveloperMode(bool developerMode);
 	void setWhiteBackground(bool whiteBackground);
+	void setDeveloperFolder(QString developerFolder);
 	void setUseDefaultEditor(bool useDefaultEditor);
 	void setDataAutoSynchronization(bool dataAutoSynchronization);
 
 	void browseSpreadsheetEditor();
+	void browseDeveloperFolder();
 	void updateUtilsMissingValues();
 	void removeMissingValue(QString value);
 	void addMissingValue(QString value);
@@ -81,6 +88,8 @@ signals:
 	void customPPIChanged(int customPPI);
 	void defaultPPIChanged(int defaultPPI);
 	void missingValuesChanged();
+	void developerModeChanged(bool developerMode);
+	void developerFolderChanged(QString developerFolder);
 
 	void plotPPIChanged(int ppiForPlot);
 	void plotBackgroundChanged(QString background);

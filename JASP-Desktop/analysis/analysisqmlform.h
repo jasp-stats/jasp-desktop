@@ -64,10 +64,7 @@ protected:
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::map<QString, ListModel* >			_modelMap;
 
-private:
-	QFileSystemWatcher						_QMLwatcher;
-	QFileSystemWatcher						_Rwatcher;
-	
+private:	
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
 	QQuickItem								*_errorMessagesItem;
 	QList<QString>							_errorMessages;	

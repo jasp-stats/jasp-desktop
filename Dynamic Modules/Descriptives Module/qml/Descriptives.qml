@@ -15,140 +15,144 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
-Form {
-    usesJaspResults: true
-    
-    VariablesForm {
-		AssignedVariablesList
+// All Analysis forms must be built with the Form QML item
+Form
+{
+	usesJaspResults: true
+
+	VariablesForm
+	{
+		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
+		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
+	}
+
+	CheckBox { name: "frequencyTables"; text: qsTr("Frequency tables (nominal and ordinal variables)") }
+
+	ExpanderButton
+	{
+		title: qsTr("Plots")
+
+		GroupBox
 		{
-			name: "variables"
-			title: qsTr("Variables")
+			CheckBox { name: "plotVariables";			text: qsTr("Distribution plots"); id: plotVariables							}
+			CheckBox { name: "distPlotDensity";			text: qsTr("Display density"); enabled: plotVariables.checked; indent: true	}
+			CheckBox { name: "plotCorrelationMatrix";	text: qsTr("Correlation plots")												}
+			CheckBox { name: "splitPlots";				text: qsTr("Boxplots");	id: splitPlots										}
+
+			GroupBox
+			{
+				indent: true
+				enabled: splitPlots.checked
+
+				CheckBox { name: "splitPlotOutlierLabel";	text: qsTr("Label Outliers")	}
+				CheckBox { name: "splitPlotColour";			text: qsTr("Color")				}
+
+				GroupBox
+				{
+					indent: true;
+					CheckBox { name: "splitPlotBoxplot";	text: qsTr("Boxplot Element"); checked: true	}
+					CheckBox { name: "splitPlotViolin";		text: qsTr("Violin Element")					}
+					CheckBox { name: "splitPlotJitter";		text: qsTr("Jitter Element")					}
+				}
+			}
 		}
-		AssignedVariablesList {
-            name: "splitby"
-            title: qsTr("Split")
-            singleItem: true
-            allowedColumns: ["ordinal", "nominal"]            
-        }
-    }
+	}
 
-    CheckBox {text: qsTr("Frequency tables (nominal and ordinal variables)"); name: "frequencyTables"}
+	ExpanderButton
+	{
+		title: qsTr("Statistics")
 
-    ExpanderButton {
-        text: qsTr("Plots")
+		GridLayout
+		{
+			GroupBox
+			{
+				title: qsTr("Percentile Values")
 
-        GroupBox {
-            CheckBox {  text: qsTr("Distribution plots")    ; name: "plotVariables"               }
-            CheckBox {  text: qsTr("Correlation plots")     ; name: "plotCorrelationMatrix"       }
-            CheckBox {  text: qsTr("Boxplots")              ; name: "splitPlots"; id: splitPlots  }
-            
-            GroupBox {
-                Layout.leftMargin: 20
-                enabled: splitPlots.checked
-                CheckBox {  text: qsTr("Label Outliers")    ; name: "splitPlotOutlierLabel"       }
-                CheckBox {  text: qsTr("Color")             ; name: "splitPlotColour"             }
-                CheckBox {  text: qsTr("Boxplot Element")   ; name: "splitPlotBoxplot"; checked: true }
-                CheckBox {  text: qsTr("Violin Element")    ; name: "splitPlotViolin"                 }
-                CheckBox {  text: qsTr("Jitter Element")    ; name: "splitPlotJitter"                 }
-            }
-        }
-    }
+				CheckBox { name: "percentileValuesQuartiles";	text: qsTr("Quartiles") }
+				GridLayout
+				{
+					rowSpacing: Theme.rowGroupSpacing
+					columnSpacing: 1
 
-    ExpanderButton {
-        text: qsTr("Statistics")
+					CheckBox { name: "percentileValuesEqualGroups"; text: qsTr("Cut points for: "); id: percentileValuesEqualGroups }
+					IntegerField
+					{
+						name: "percentileValuesEqualGroupsNo"
+						intValidator { bottom: 1; top: 1000 }
+						defaultValue: 4
+						enabled: percentileValuesEqualGroups.checked
+						afterLabel.text: qsTr(" equal groups")
+					}
+					CheckBox { name: "percentileValuesPercentiles"; text: qsTr("Percentiles:"); id: percentileValuesPercentiles }
+					TextField
+					{
+						inputType: "integerArray"
+						name: "percentileValuesPercentilesPercentiles"
+						fieldWidth: 60
+						enabled: percentileValuesPercentiles.checked
+					}
+				}
+			}
 
-        GridLayout {
-            GroupBox {
-                title: qsTr("Percentile Values")
+			GroupBox
+			{
+				title: qsTr("Central Tendency")
+				CheckBox { name: "mean";			text: qsTr("Mean");		checked: true	}
+				CheckBox { name: "median";			text: qsTr("Median")					}
+				CheckBox { name: "mode";			text: qsTr("Mode");						}
+				CheckBox { name: "sum";				text: qsTr("Sum");						}
+			}
 
-                GridLayout {
-                    columnSpacing: 1
-                    columns: 3
-    
-                    CheckBox {
-                        Layout.columnSpan: 3
-                        name: "percentileValuesQuartiles"
-                        text: qsTr("Quartiles")
-                    }
-    
-                    CheckBox {
-                        id: percentileValuesEqualGroups
-                        name: "percentileValuesEqualGroups"
-                        text: qsTr("Cut points for: ")
-                    }
-                    TextField {
-                        name: "percentileValuesEqualGroupsNo"
-                        inputType: "integer"
-                        validator: RegExpValidator {regExp: /[1-9][0-9]?[0]?/}
-                        text: "4"
-                        enabled: percentileValuesEqualGroups.checked
-                    }
-                    Label {  text: qsTr(" equal groups") }
-                    CheckBox {
-                        id: percentileValuesPercentiles
-                        text: qsTr("Percentiles:")
-                        name: "percentileValuesPercentiles"
-                    }
-                    TextField {
-                        id: percentileValuesPercentilesPercentiles
-                        inputType: "integerArray"
-                        Layout.columnSpan: 2
-                        name: "percentileValuesPercentilesPercentiles"
-                        width: 100
-                        enabled: percentileValuesPercentiles.checked
-                    }
-                }
-            }
+			GroupBox
+			{
+				title: qsTr("Dispersion")
+				CheckBox { name: "standardDeviation";	text: qsTr("Std.deviation"); checked: true	}
+				CheckBox { name: "minimum";				text: qsTr("Minimum");		checked: true	}
+				CheckBox { name: "maximum";				text: qsTr("Maximum");		checked: true	}
+				CheckBox { name: "variance";			text: qsTr("Variance")						}
+				CheckBox { name: "range";				text: qsTr("Range")							}
+				CheckBox { name: "standardErrorMean";	text: qsTr("S. E. mean")					}
+			}
+			GroupBox
+			{
+				title: qsTr("Distribution")
+				CheckBox { name: "skewness";			text: qsTr("Skewness")						}
+				CheckBox { name: "kurtosis";			text: qsTr("Kurtosis")						}
+			}
+		}
 
-            GroupBox {
-                title: qsTr("Central Tendency")
+		CheckBox { name: "statisticsValuesAreGroupMidpoints"; text: qsTr("Values are group midpoints"); debug: true }
+	}
 
-                CheckBox {  text: qsTr("Mean")      ; name: "mean";  checked: true}
-                CheckBox {  text: qsTr("Median")    ; name: "median"              }
-                CheckBox {  text: qsTr("Mode")      ; name: "mode"                }
-                CheckBox {  text: qsTr("Sum")       ; name: "sum"                 }
-            }
-            
-            GroupBox {
-                title: qsTr("Dispersion")
-                CheckBox {  text: qsTr("Std.deviation") ; name: "standardDeviation"       }
-                CheckBox {  text: qsTr("Minimum")       ; name: "minimum"; checked: true  }
-                CheckBox {  text: qsTr("Variance")      ; name: "variance"                }
-                CheckBox {  text: qsTr("Maximum")       ; name: "maximum"                 }
-                CheckBox {  text: qsTr("Range")         ; name: "range"                   }
-                CheckBox {  text: qsTr("S. E. mean")    ; name: "standardErrorMean"       }
-            }
-            GroupBox {
-                title: qsTr("Distribution")
-                CheckBox {  text: qsTr("Skewness")      ; name: "skewness"                }
-                CheckBox {  text: qsTr("Kurtosis")      ; name: "kurtosis"                }
-            }
-        }
-    }
-    
-    ExpanderButton {
-        text: qsTr("Charts")
-        debug: true
-        GridLayout {
-			RadioButtonGroup {
-                name: "chartType"
-                title: qsTr("Chart Type")
-                RadioButton {   text: qsTr("None")          ; name: "_1noCharts"    }
-                RadioButton {   text: qsTr("Bar charts")    ; name: "_2barCharts"   }
-                RadioButton {   text: qsTr("Pie Charts")    ; name: "_3pieCharts"   }
-                RadioButton {   text: qsTr("Histograms")    ; name: "_4histograms"  }                
-            }
-            
-			RadioButtonGroup {
-                name: "chartValues"
-                title: qsTr("Chart Values")
-                RadioButton {   text: qsTr("Frequencies")   ; name: "_1frequencies" }
-                RadioButton {   text: qsTr("Percentages")   ; name: "_2percentages" }                
-            }
-        }
-    }
+	ExpanderButton
+	{
+		title: qsTr("Charts")
+		debug: true
+		GridLayout
+		{
+			RadioButtonGroup
+			{
+				name: "chartType";
+				title: qsTr("Chart Type")
+				RadioButton { value: "_1noCharts";		text: qsTr("None")			}
+				RadioButton { value: "_2barCharts";		text: qsTr("Bar charts")	}
+				RadioButton { value: "_3pieCharts";		text: qsTr("Pie Charts")	}
+				RadioButton { value: "_4histograms";	text: qsTr("Histograms")	}
+			}
+
+			RadioButtonGroup
+			{
+				name: "chartValues"
+				title: qsTr("Chart Values")
+				RadioButton { value: "_1frequencies";	text: qsTr("Frequencies")	}
+				RadioButton { value: "_2percentages";	text: qsTr("Percentages")	}
+			}
+		}
+	}
 }

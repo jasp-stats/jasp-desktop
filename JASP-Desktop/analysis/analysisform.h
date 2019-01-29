@@ -30,7 +30,6 @@
 #include "analysis.h"
 
 #include <QQuickItem>
-#include <QFileSystemWatcher>
 
 #include "analysis.h"
 #include "boundqmlitem.h"

@@ -26,6 +26,7 @@
 #include <QString>
 #include <QMap>
 #include <QAbstractListModel>
+#include <QFileSystemWatcher>
 
 class Analyses : public QAbstractListModel
 {
@@ -158,6 +159,11 @@ private:
 
 	 static int								_scriptRequestID;
 	 QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;
+	 
+	 QFileSystemWatcher				_QMLFileWatcher;
+	 
+	 void							_analysisQMLFileChanged(Analysis* analysis);
+	 
 
 };
 

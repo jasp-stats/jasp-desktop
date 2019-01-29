@@ -132,4 +132,78 @@ Column
 			onCheckedChanged:	preferencesModel.whiteBackground = !checked
 		}
 	}
+	
+	Item
+	{
+		height:	developerMode.height + (editDeveloperFolder.visible ? editDeveloperFolder.height : 0)
+		width:	parent.width - Theme.generalAnchorMargin
+
+		CheckBox
+		{
+			id:					developerMode
+			text:				qsTr("Developer mode")
+			checked:			preferencesModel.developerMode
+			onCheckedChanged:	preferencesModel.developerMode = checked
+		}
+		
+		Item
+		{
+			id:					editDeveloperFolder
+			visible:			preferencesModel.developerMode
+			width:				parent.width
+			height:				browseDeveloperFolderButton.height
+			anchors.top:		developerMode.bottom
+
+
+			RectangularButton
+			{
+				id:					browseDeveloperFolderButton
+				text:				qsTr("Select developer folder")
+				onClicked:			preferencesModel.browseDeveloperFolder()
+				anchors.left:		parent.left
+				anchors.leftMargin: Theme.subOptionOffset
+			}
+
+			Rectangle
+			{
+				anchors
+				{
+					left:			browseDeveloperFolderButton.right
+					right:			parent.right
+					top:			parent.top
+					bottom:			parent.bottom
+				}
+
+				height:				browseDeveloperFolderButton.height
+				color:				Theme.white
+				border.color:		Theme.buttonBorderColor
+				border.width:		1
+
+				TextInput
+				{
+					id:					developerFolderText
+					text:				preferencesModel.developerFolder
+					clip:				true
+					font:				Theme.font
+					onTextChanged:		preferencesModel.developerFolder = text
+					color:				Theme.textEnabled
+
+					anchors
+					{
+						left:			parent.left
+						right:			parent.right
+						verticalCenter:	parent.verticalCenter
+						margins:		Theme.generalAnchorMargin
+					}
+
+					Connections
+					{
+						target:					preferencesModel
+						onCustomEditorChanged:	developerFolderText = preferencesModel.developerFolder
+					}
+
+				}
+			}
+		}
+	}	
 }
