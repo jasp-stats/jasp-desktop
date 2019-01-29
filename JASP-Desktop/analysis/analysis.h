@@ -53,6 +53,7 @@ public:
 
 	Options *options() const { return _options; }
 	const Json::Value&	optionsFromJASPFile() const { return _optionsFromJASPFile; }
+	void				resetOptionsFromJASPFile()	{ _optionsFromJASPFile.clear(); }
 
 	boost::signals2::signal<void (Analysis *source)>						optionsChanged;
 	boost::signals2::signal<void (Analysis *source)>						toRefresh;
@@ -115,7 +116,7 @@ public:
 	bool isInited()		const { return status() == Inited; }
 	bool isFinished()	const { return status() == Complete || status() == Error || status() == Exception; }
 	
-	void initialized(AnalysisForm* form);
+	void initialized(AnalysisForm* form, bool isNewAnalysis);
 
 	performType				desiredPerformTypeFromAnalysisStatus() const;
 	std::string				qmlFormPath() const;
