@@ -40,6 +40,7 @@ JASPControl
 			id:			label
 			visible:	label.text && slider.visible ? true : false
 			font:		Theme.font
+			color:		enabled ? Theme.textEnabled : Theme.textDisabled
         }
         
 		Slider

@@ -75,6 +75,13 @@ QMap<QString, QVariant> MainWindow::_iconInactiveFiles {
 	{ "scale"		, _iconPath + "variable-scale-inactive.svg"}
 };
 
+QMap<QString, QVariant> MainWindow::_iconDisabledFiles {
+	{ "nominalText"	, _iconPath + "variable-nominal-disabled.svg" },
+	{ "nominal"		, _iconPath + "variable-nominal-disabled.svg"},
+	{ "ordinal"		, _iconPath + "variable-ordinal-disabled.svg"},
+	{ "scale"		, _iconPath + "variable-scale-disabled.svg"}
+};
+
 QMap<int, QString> MainWindow::_columnTypeMap {
 	{ Column::ColumnTypeNominalText	, "nominalText" },
 	{ Column::ColumnTypeNominal		, "nominal"},
@@ -289,6 +296,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("iconPath",				_iconPath);
 	_qml->rootContext()->setContextProperty("iconFiles",			_iconFiles);
 	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
+	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
 
 	_qml->addImportPath("qrc:///components");
 

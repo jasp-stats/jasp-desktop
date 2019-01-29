@@ -72,6 +72,7 @@ JASPControl
 			id:			beforeLabel
 			visible:	beforeLabel.text && textField.visible ? true : false
 			font:		Theme.font
+			color:		enabled ? Theme.textEnabled : Theme.textDisabled
         }
         
 		TextField
@@ -83,6 +84,7 @@ JASPControl
 			Layout.preferredHeight:	textField.textHeight
 			text:					textField.value
 			font:					Theme.font
+			color:					enabled ? Theme.textEnabled : Theme.textDisabled
 
 			padding:				1
 			rightPadding:			5
@@ -113,6 +115,7 @@ JASPControl
 			id:			afterLabel
 			visible:	afterLabel.text && textField.visible ? true : false
 			font:		Theme.font
+			color:		enabled ? Theme.textEnabled : Theme.textDisabled
         }
     }
 }

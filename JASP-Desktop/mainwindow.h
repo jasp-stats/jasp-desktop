@@ -255,8 +255,9 @@ private:
 									_analysesAvailable		= false;
 
 	static QString					_iconPath;
-	static QMap<QString, QVariant>	_iconFiles;
-	static QMap<QString, QVariant>	_iconInactiveFiles;
+	static QMap<QString, QVariant>	_iconFiles,
+									_iconInactiveFiles,
+									_iconDisabledFiles;
 	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
 };
 

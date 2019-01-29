@@ -70,6 +70,7 @@ JASPControl
 			text:			control.text
 			leftPadding:	label.height + control.padding
 			font:			Theme.font
+			color:			enabled ? Theme.textEnabled : Theme.textDisabled
         }
     }
 }

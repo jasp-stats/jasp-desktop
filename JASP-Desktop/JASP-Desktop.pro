@@ -176,6 +176,11 @@ linux {
 
 INCLUDEPATH += $$PWD/
 
+# Is this truly necessary? It does make the files show up nicely in the project structure, but the actual installing is done by the copyres a little I figure?
+Resources.path = $$INSTALLPATH
+Resources.files = ../Resources
+INSTALLS += Resources
+
 HEADERS += \
     analysis/analysisform.h \
     analysis/analysisqmldefines.h \

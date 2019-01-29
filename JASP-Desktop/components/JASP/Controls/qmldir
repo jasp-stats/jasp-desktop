@@ -17,7 +17,6 @@ JASPDataView          1.0 JASPDataView.qml
 JASPScrollBar         1.0 JASPScrollBar.qml
 Label                 1.0 Label.qml
 PercentField          1.0 PercentField.qml
-PlusMinusCheckButton  1.0 PlusMinusCheckButton.qml
 RadioButton           1.0 RadioButton.qml
 RadioButtonGroup      1.0 RadioButtonGroup.qml
 RepeatedMeasuresFactorsList 1.0 RepeatedMeasuresFactorsList.qml

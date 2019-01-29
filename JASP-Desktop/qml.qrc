@@ -74,7 +74,6 @@
         <file>components/JASP/Widgets/Ribbon/Ribbon.qml</file>
         <file>components/JASP/Widgets/Ribbon/RibbonButton.qml</file>
         <file>components/JASP/Controls/JASPScrollBar.qml</file>
-        <file>components/JASP/Controls/PlusMinusCheckButton.qml</file>
         <file>components/JASP/Widgets/MainWindow.qml</file>
         <file>components/JASP/Widgets/MainPage.qml</file>
         <file>components/JASP/Widgets/FileMenu/Computer.qml</file>

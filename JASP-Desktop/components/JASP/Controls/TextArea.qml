@@ -33,11 +33,14 @@ JASPControl {
 			id:				control
 			selectByMouse:	true
 			font:			Theme.font
+			color:			enabled ? Theme.textEnabled : Theme.textDisabled
 			wrapMode:		TextArea.Wrap
+
 			background:		Rectangle
 			{
-                border.width: 1
-                border.color: Theme.borderColor
+				border.width:	1
+				border.color:	Theme.borderColor
+				color:			enabled ? Theme.White : Theme.whiteBroken
                 
 				Text
 				{
@@ -54,7 +57,7 @@ JASPControl {
 					font:					Theme.font
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
-					color:					textArea.hasScriptError ? Theme.black : Theme.grayDarker
+					color:					!enabled ? Theme.textDisabled : textArea.hasScriptError ? Theme.textEnabled : Theme.grayDarker
                 }
                 
 				Rectangle

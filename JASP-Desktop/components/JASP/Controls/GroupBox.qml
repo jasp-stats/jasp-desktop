@@ -45,6 +45,8 @@ Rectangle {
 		anchors.top:	control.top
 		anchors.left:	control.left
 		text:			control.title
+		color:			enabled ? Theme.textEnabled : Theme.textDisabled
+		font:			Theme.font
 		visible:		control.title ? true : false
     }
     

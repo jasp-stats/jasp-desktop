@@ -1,10 +1,10 @@
-import QtQuick			2.11
-import JASP.Theme		1.0
-import QtQuick.Controls 2.4
+import QtQuick				2.11
+import JASP.Theme			1.0
+import QtQuick.Controls		2.4
 
 FocusScope
 {
-    id: jaspControl
+	id: jaspControl
 
 	property string	controlType:			"JASPControl"
 	property string name:					""
@@ -15,9 +15,10 @@ FocusScope
 	property var	controlBackground:		defaultBackground
 	property int	backgroundWidth
 	property int	backgroundHeight
-    property bool   indent:                 false
+	property bool   indent:                 false
 	property alias	cursorShape:			controlMouseArea.cursorShape
 	property alias	hovered:				controlMouseArea.containsMouse
+
 
 	Rectangle
 	{
@@ -28,35 +29,35 @@ FocusScope
 		border.width:	0
 		border.color:	"transparent"
 	}
-    
+
 	Component.onCompleted:
 	{
 		if (typeof(DEBUG_MODE) !== "undefined" && !DEBUG_MODE && debug)
 			visible = false;
 
-        if (typeof(control) !== "undefined")
-        {
+		if (typeof(control) !== "undefined")
+		{
 			if (useDefaultBackground)	control.background			= defaultBackground
 			if (backgroundWidth)		control.background.width	= Qt.binding(function (){ return backgroundWidth;  })
 			if (backgroundHeight)		control.background.height	= Qt.binding(function (){ return backgroundHeight; })
-        }        
-    }
-    
-    states: [
+		}
+	}
+
+	states: [
 		State
 		{
-            when: jaspControl.activeFocus && jaspControl.hasTabFocus
+			when: jaspControl.activeFocus && jaspControl.hasTabFocus
 			PropertyChanges
 			{
 				target:			controlBackground
 				border.color:	Theme.focusBorderColor
 				border.width:	Theme.jaspControlHighlightWidth
 				radius:			Theme.jaspControlPadding
-            }
-        }
-    ]
-    
-    transitions: [
+			}
+		}
+	]
+
+	transitions: [
 		Transition
 		{
 			ParallelAnimation
@@ -68,15 +69,15 @@ FocusScope
 					duration:			800;
 					easing.type:		Easing.OutElastic;
 					easing.amplitude:	1.5;
-                }
+				}
 
 				ColorAnimation
 				{
 					target:		controlBackground
 					duration:	100
-                }
-            }
-        }
+				}
+			}
+		}
 	]
 
 	property string	toolTip:				""
@@ -97,5 +98,4 @@ FocusScope
 		acceptedButtons:	Qt.NoButton
 		cursorShape:		Qt.PointingHandCursor
 	}
-
 }

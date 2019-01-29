@@ -45,6 +45,7 @@ JASPControl
 		text:			repeatedMeasuresFactorsList.title
 		height:			repeatedMeasuresFactorsList.title ? 20 * preferencesModel.uiScale : 0
 		font:			Theme.font
+		color:			enabled ? Theme.textEnabled : Theme.textDisabled
 	}
 
 	Rectangle

@@ -65,7 +65,7 @@ Rectangle
 			anchors.fill	: backgroundImage
 			source			: backgroundImage
 			visible			: !ribbonButton.enabled
-			desaturation	:0.95
+			desaturation	: 0.95
 		}
 
 		Text
@@ -94,14 +94,19 @@ Rectangle
 				if(fileMenuModel.visible) fileMenuModel.visible = false
 				if(modulesMenu.opened)		modulesMenu.opened  = false
 
-				customMenu.functionCall = function menuItemClicked(index)
-					{
-						var analysis = customMenu.model.getFunctionName(index);
-						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
-						customMenu.visible = false;
-					}
+				if(ribbonButton.menu.rowCount() === 1)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+				else
+				{
+					customMenu.functionCall = function menuItemClicked(index)
+						{
+							var analysis = customMenu.model.getFunctionName(index);
+							ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+							customMenu.visible = false;
+						}
 
-				customMenu.showMenu(ribbonButton, ribbonButton.menu);
+					customMenu.showMenu(ribbonButton, ribbonButton.menu);
+				}
 			}
 		}
 	}

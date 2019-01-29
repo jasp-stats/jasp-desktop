@@ -49,6 +49,7 @@ JASPControl
 		anchors.top:	control.top
 		anchors.left:	control.left
 		font:			Theme.font
+		color:			enabled ? Theme.textEnabled : Theme.textDisabled
     }
     
 	ButtonGroup { id: buttonGroup			}

@@ -97,6 +97,7 @@ FocusScope
 				anchors.leftMargin:		5 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
 				font:					Theme.font
+				color:					enabled ? Theme.textEnabled : Theme.textDisabled
             }
         }
     }

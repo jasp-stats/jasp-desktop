@@ -86,7 +86,7 @@ JASPControl {
 						x:							1 * preferencesModel.uiScale
 						height:						15 * preferencesModel.uiScale
 						width:						15 * preferencesModel.uiScale
-						source:						(visible && comboBox.initialized) ? iconFiles[model.columnType] : ""
+						source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
 						visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 						anchors.verticalCenter:		parent.verticalCenter
@@ -143,7 +143,7 @@ JASPControl {
 					width:					15 * preferencesModel.uiScale
 					x:						3  * preferencesModel.uiScale
                     anchors.verticalCenter: parent.verticalCenter
-					source:					visible ? iconFiles[comboBox.currentColumnType] : ""
+					source:					!visible ? "" : enabled ? iconFiles[comboBox.currentColumnType] : iconDisabledFiles[comboBox.currentColumnType]
 					visible:				comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
                 }
                 

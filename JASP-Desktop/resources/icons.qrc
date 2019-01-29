@@ -120,5 +120,8 @@
         <file>icons/install_icon.png</file>
         <file>icons/delete_icon.png</file>
         <file>icons/delete_icon_gray.png</file>
+        <file>icons/variable-nominal-disabled.svg</file>
+        <file>icons/variable-ordinal-disabled.svg</file>
+        <file>icons/variable-scale-disabled.svg</file>
     </qresource>
 </RCC>

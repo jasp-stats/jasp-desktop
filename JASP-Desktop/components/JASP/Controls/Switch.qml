@@ -72,6 +72,7 @@ JASPControl
 			id:				label
 			text:			control.text
 			font:			Theme.font
+			color:			enabled ? Theme.textEnabled : Theme.textDisabled
 			anchors
 			{
 				left:		control.indicator.right

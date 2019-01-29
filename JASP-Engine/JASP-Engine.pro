@@ -18,11 +18,6 @@ TEMPLATE = app
 target.path = $$INSTALLPATH
 INSTALLS += target
 
-analysis_jsons.path = $$INSTALLPATH
-analysis_jsons.files = ../Resources
-INSTALLS += analysis_jsons
-
-
 DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common
 

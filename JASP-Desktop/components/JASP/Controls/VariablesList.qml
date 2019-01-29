@@ -129,11 +129,13 @@ JASPControl
 	
 	Text
 	{
-		id: text
-		anchors.top: parent.top
-		anchors.left: parent.left
-		text: title
-		height: title ? Theme.variablesListTitle : 0
+		id:				text
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		text:			title
+		height:			title ? Theme.variablesListTitle : 0
+		font:			Theme.font
+		color:			enabled ? Theme.textEnabled : Theme.textDisabled
 		
 	}
 	
@@ -177,9 +179,11 @@ JASPControl
 		Repeater
 		{
 			model: suggestedColumns.length
+
+
 			Image
 			{
-				source: iconInactiveFiles[suggestedColumns[index]]
+				source: enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]]
 				height: 16 * preferencesModel.uiScale
 				width:	16 * preferencesModel.uiScale
 				z:		2
@@ -191,6 +195,8 @@ JASPControl
 					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale
 				}
 			}
+
+
 		}
 		
 		Component.onCompleted:
@@ -206,22 +212,34 @@ JASPControl
 					variablesList.extraControlColumns.push(column);
 			}
 		}
+
+		JASPScrollBar
+		{
+			id:				scrollBar
+			flickable:		listView
+			manualAnchor:	true
+			vertical:		true
+
+			anchors
+			{
+				top:		parent.top
+				right:		parent.right
+				bottom:		parent.bottom
+			}
+		}
 		
 		GridView
 		{
-			id: listView
-			ScrollBar.vertical: ScrollBar
-			{
-				policy: ScrollBar.AsNeeded
-			}
-			cellHeight: 20  * preferencesModel.uiScale
-			cellWidth: width / variablesList.columns
-			clip: true
-			focus: true
-			anchors.fill: parent
-			anchors.margins: 4  * preferencesModel.uiScale
-			model: variablesList.model
-			delegate: itemComponent
+			id:						listView
+			cellHeight:				20  * preferencesModel.uiScale
+			cellWidth:				width / variablesList.columns
+			clip:					true
+			focus:					true
+			anchors.fill:			parent
+			anchors.margins:		4  * preferencesModel.uiScale
+			anchors.rightMargin:	scrollBar.width + anchors.margins
+			model:					variablesList.model
+			delegate:				itemComponent
 			
 			property int startShiftSelected: 0;
 			property int endShiftSelected: -1;
@@ -370,23 +388,23 @@ JASPControl
 		id: itemComponent
 		FocusScope
 		{
-			id: itemWrapper
-			height: listView.cellHeight
-			width: listView.cellWidth
+			id:			itemWrapper
+			height:		listView.cellHeight
+			width:		listView.cellWidth
 			
 			Rectangle
 			{
-				id: itemRectangle
-				objectName: "itemRectangle"
-				anchors.horizontalCenter: parent.horizontalCenter
-				anchors.verticalCenter: parent.verticalCenter
+				id:							itemRectangle
+				objectName:					"itemRectangle"
+				anchors.horizontalCenter:	parent.horizontalCenter
+				anchors.verticalCenter:		parent.verticalCenter
 				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
 				// when the rectangle is dragged, it gets another parent but it must keep the same size,                
-				height: listView.cellHeight
-				width: listView.cellWidth
-				focus: true
-				border.width: containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
-				border.color: containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
+				height:			listView.cellHeight
+				width:			listView.cellWidth
+				focus:			true
+				border.width:	containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
+				border.color:	containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
 				
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
@@ -435,10 +453,10 @@ JASPControl
 				
 				Rectangle
 				{
-					height: 2
-					width: parent.width
-					color: Theme.red
-					visible: itemRectangle.containsDragItem && variablesList.dropModeInsert
+					height:		2
+					width:		parent.width
+					color:		Theme.red
+					visible:	itemRectangle.containsDragItem && variablesList.dropModeInsert
 				}
 				
 				Image
@@ -447,7 +465,7 @@ JASPControl
 					height:					15 * preferencesModel.uiScale
 					width:					15 * preferencesModel.uiScale
 					anchors.verticalCenter:	parent.verticalCenter
-					source:					variablesList.showVariableTypeIcon && itemRectangle.isVariable ? iconFiles[model.columnType] : ""
+					source:					!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) ? "" : enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]
 					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
 				}
 				Text
@@ -459,7 +477,7 @@ JASPControl
 					elide:					Text.ElideRight
 					anchors.verticalCenter:	parent.verticalCenter
 					horizontalAlignment:	itemRectangle.isLayer ? Text.AlignHCenter : undefined
-					color:					itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
+					color:					!enabled ? Theme.textDisabled : itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
 					font:					Theme.font
 				}
 				
