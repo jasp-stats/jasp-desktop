@@ -307,12 +307,12 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 {
 	RInside &rInside = rinside->instance();
 
-	rInside["plotName"]	= name;
-	rInside["format"]	= type;
+	rInside["plotName"]			= name;
+	rInside["format"]			= type;
 
-	rInside["height"]	= height;
-	rInside["width"]	= width;
-	rInside[".ppi"]		= ppi;
+	rInside["height"]			= height;
+	rInside["width"]			= width;
+	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = rinside->parseEvalNT("saveImage(plotName,format,height,width)");
@@ -321,15 +321,17 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 	return staticResult.c_str();
 }
 
-const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi) {
-	
+const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
+{
+
 	RInside &rInside = rinside->instance();
 
-	rInside["plotName"] = name;
-	rInside["type"] = type;
-	rInside["height"] = height;
-	rInside["width"] = width;
-	rInside[".ppi"] = ppi;
+	rInside["plotName"]			= name;
+	rInside["type"]				= type;
+	rInside["height"]			= height;
+	rInside["width"]			= width;
+	rInside[".ppi"]				= ppi;
+	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = rinside->parseEvalNT("editImage(plotName,type,height,width)");
 	static std::string staticResult;
@@ -337,6 +339,17 @@ const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const
 
 	return staticResult.c_str();
 
+}
+
+
+void STDCALL jaspRCPP_rewriteImages(const int ppi, const char* imageBackground) {
+
+	RInside &rInside = rinside->instance();
+
+	rInside[".ppi"]				= ppi;
+	rInside[".imageBackground"] = imageBackground;
+
+	rinside->parseEvalNT("rewriteImages()");
 }
 
 

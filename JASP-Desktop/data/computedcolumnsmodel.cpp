@@ -5,13 +5,13 @@
 ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent)
 	: QObject(parent), _analyses(analyses)
 {
-	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnJsonChanged			);
-	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnRCodeChanged			);
-	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnErrorChanged			);
-	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnUsesRCodeChanged		);
-	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnNameSelectedChanged	);
-	connect(_analyses,	&Analyses::requestComputedColumnCreation,		this,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
-	connect(_analyses,	&Analyses::requestComputedColumnDestruction,	this,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
+	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnJsonChanged			);
+	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnRCodeChanged			);
+	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnErrorChanged			);
+	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnUsesRCodeChanged		);
+	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnNameSelectedChanged	);
+	connect(_analyses,	&Analyses::requestComputedColumnCreation,		this, &ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
+	connect(_analyses,	&Analyses::requestComputedColumnDestruction,	this, &ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 
 }
 
@@ -305,7 +305,7 @@ void ComputedColumnsModel::removeColumn()
 	if(_currentlySelectedName == "")
 		return;
 
-	requestComputedColumnDestruction(_currentlySelectedName.toStdString());
+	requestComputedColumnDestruction(_currentlySelectedName);
 
 	setComputeColumnNameSelected("");
 }
@@ -406,22 +406,24 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	return createdColumn;
 }
 
-ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(std::string columnName, Analysis * analysis)
+ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(QString columnName, Analysis * analysis)
 {
-	if(!_package->isColumnNameFree(columnName))
+	if(!_package->isColumnNameFree(columnName.toStdString()))
 		return NULL;
 
-	ComputedColumn * result = createComputedColumn(QString::fromStdString(columnName), (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis);
+	ComputedColumn * result = createComputedColumn(columnName, (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis);
 	result->setAnalysis(analysis);
 
 	return result;
 }
 
 
-void ComputedColumnsModel::requestComputedColumnDestruction(std::string columnName)
+void ComputedColumnsModel::requestComputedColumnDestruction(QString columnNameQ)
 {
-	if(columnName == "")
+	if(columnNameQ == "")
 		return;
+
+	std::string columnName = columnNameQ.toStdString();
 
 	int index = _package->dataSet()->getColumnIndex(columnName);
 
@@ -434,7 +436,7 @@ void ComputedColumnsModel::requestComputedColumnDestruction(std::string columnNa
 
 	checkForDependentColumnsToBeSent(columnName);
 
-	if(columnName == lastCreatedColumn().toStdString())
+	if(columnNameQ == lastCreatedColumn())
 		setLastCreatedColumn("");
 }
 

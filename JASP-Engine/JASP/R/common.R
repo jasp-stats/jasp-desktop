@@ -2653,23 +2653,17 @@ if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
 }
 
 rewriteImages <- function() {
-  state <- .retrieveState()
+  state    <- .retrieveState()
   oldPlots <- state[["figures"]]
   
-  if (length(oldPlots) == 0) {
-    return(NULL)
-  }
-  
-  for (i in 1:length(oldPlots)) {
+  for (i in seq_along(oldPlots)) {
     try({
       plotName <- names(oldPlots)[i]
-      oldPlot <- oldPlots[[i]]
-      width <- oldPlot[["width"]]
-      height <- oldPlot[["height"]]
-      plot <- oldPlot[["obj"]]
-      invisible(.writeImage(width = width, height = height,
-                            plot = plot, obj = FALSE,
-                            relativePathpng = plotName))
+      oldPlot  <- oldPlots[[i]]
+      width    <- oldPlot[["width"]]
+      height   <- oldPlot[["height"]]
+      plot     <- oldPlot[["obj"]]
+      invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathpng = plotName))
     })
   }
   
@@ -2679,87 +2673,70 @@ rewriteImages <- function() {
 # not .editImage() because RInside (interface to CPP) cannot handle that
 editImage <- function(plotName, type, height, width) {
 
-	# assumption: state[["figures"]][[plotName]] is either of class "ggplot2" or "recordedPlot"
+  # assumption: state[["figures"]][[plotName]] is either of class "ggplot2" or "recordedPlot"
 
-	results <- NULL
-	state <- .retrieveState()
-	oldPlot <- state[["figures"]][[plotName]][["obj"]]
+  results       <- NULL
+  state         <- .retrieveState()
+  oldPlot       <- state[["figures"]][[plotName]][["obj"]]
+  isGgplot      <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
+  requireResize <- type == "resize"
 
-  isGgplot <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
-	requireResize <- type == "resize"
+  if (!is.null(oldPlot)) {
+  # this try is required because resizing and editing may fail for various reasons.
+  # An example is the "figure margins too large" error when the plot area is too small.
+  # if something fails, the default behaviour is to use the old plot and do nothing.
+    results <- try({
+      # copy plot and check if we edit it
+      plot <- oldPlot
+      #if (type == "interactive" && isGgplot) {
+      if (FALSE && type == "interactive" && isGgplot) {
+        editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
+        plot <- editedPlot[["UpdatedPlots"]][[1]]
+      }
 
-	if (!is.null(oldPlot)) {
+      # nothing was modified in ggedit, or editing was cancelled
+      if (identical(plot, oldPlot) && !requireResize)
+        return(oldPlot)
 
-		# this try is required because resizing and editing may fail for various reasons.
-		# An example is the "figure margins too large" error when the plot area is too small.
-		# if something fails, the default behaviour is to use the old plot and do nothing.
-		results <- try({
+      # plot is modified or needs to be resized, let's save the new plot
+      newPlot <- list()
+      content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName)
 
-			# copy plot and check if we edit it
-			plot <- oldPlot
-			#if (type == "interactive" && isGgplot) {
-			if (FALSE && type == "interactive" && isGgplot) {
-			  editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
-				plot <- editedPlot[["UpdatedPlots"]][[1]]
-			}
+      newPlot[["data"]]   <- content[["png"]]
+      newPlot[["width"]]  <- width
+      newPlot[["height"]] <- height
 
-			# nothing was modified in ggedit, or editing was cancelled
-			if (identical(plot, oldPlot) && !requireResize)
-				return(oldPlot)
+      # no new recorded plot is created in .writeImage so we recycle the old one
+      # we can only resize recordedPlots anyway
+      if (isGgplot) newPlot[["obj"]] <- content[["obj"]]
+      else          newPlot[["obj"]] <- plot
 
-			# plot is modified or needs to be resized, let's save the new plot
-			newPlot <- list()
-			content <- .writeImage(width = width, height = height,
-			                       plot = plot, obj = TRUE,
-			                       relativePathpng = plotName)
+      newPlot # results == newPlot
+    })
+  }
 
-			newPlot[["data"]] <- content[["png"]]
-			newPlot[["width"]] <- width
-			newPlot[["height"]] <- height
+  # plotName <- base::normalizePath(plotName)
+  # plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
 
-			# no new recorded plot is created in .writeImage so we recycle the old one
-			# we can only resize recordedPlots anyway
-			if (isGgplot)
-						newPlot[["obj"]] <- content[["obj"]]
-			else newPlot[["obj"]] <- plot
+  # create json list for QT
+  response <- list(
+    status="imageEdited",
+    results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE)
+  )
 
-			newPlot # results == newPlot
-		})
-	}
+  # error checks
+  if (isTryError(results) || is.null(results))
+    response[["results"]][["error"]] <- TRUE
+  else {
+    # adjust the state of the analysis and save it
+    state[["figures"]][[plotName]]  <- list(obj=results[["obj"]], width=results[["width"]], height=results[["height"]])
+    key                             <- attr(x = state, which = "key")
+    state                           <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
+    attr(state, "key") <- key
+    .saveState(state)
+  }
 
-	# plotName <- base::normalizePath(plotName)
-	# plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
-
-	# create json list for QT
-	response <- list(
-		status = "imageEdited",
-		results = list(
-			name = plotName,
-			resized = requireResize,
-			height = height,
-			width = width,
-			error = FALSE
-		)
-	)
-
-	# error checks
-	if (isTryError(results) || is.null(results)) {
-		response[["results"]][["error"]] <- TRUE
-	} else {
-		# adjust the state of the analysis and save it
-		state[["figures"]][[plotName]] <- list(
-		  obj = results[["obj"]],
-		  width = results[["width"]],
-		  height = results[["height"]]
-		)
-		# store the stateKey (which gets removed by .modifyStateFigures)
-		key <- attr(x = state, which = "key")
-		state <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
-		attr(state, "key") <- key
-		.saveState(state)
-	}
-
-	toJSON(response)
+  toJSON(response)
 }
 
 .modifyStateFigures <- function(x, identifier, replacement, completeObject = TRUE) {

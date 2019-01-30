@@ -166,7 +166,6 @@ signals:
 	void screenPPIChanged(int screenPPI);
 
 	//void showWarning(QString title, QString message);
-	void refreshAllAnalyses();
 	void datasetLoadedChanged(bool datasetLoaded);
 
 	void dataAvailableChanged(bool dataAvailable);
@@ -200,7 +199,6 @@ private slots:
 	void unitTestTimeOut();
 
 	void saveJaspFileHandler();
-	void ppiChangedHandler(int ppi);
 	void resultsPageLoaded();
 
 private:

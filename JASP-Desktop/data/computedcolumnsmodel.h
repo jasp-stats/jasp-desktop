@@ -85,8 +85,8 @@ public slots:
 				void				computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 				void				computeColumnFailed(std::string columnName, std::string error);
 				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
-				ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis * analysis);
-				void				requestComputedColumnDestruction(std::string columnName);
+				ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis * analysis);
+				void				requestComputedColumnDestruction(QString columnName);
 				void				recomputeColumn(std::string columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);
 

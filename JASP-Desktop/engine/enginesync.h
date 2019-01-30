@@ -52,6 +52,7 @@ public slots:
 	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
 	void pause();
 	void resume();
+	void refreshAllPlots(int = 0);
 
 	
 signals:
@@ -70,6 +71,8 @@ signals:
 	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
 	void moduleLoadingSucceeded(		std::string moduleName);
 	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage);
+
+	void refreshAllPlotsExcept(std::set<Analysis*> inProgress);
 
 private:
 	bool		idleEngineAvailable();

@@ -46,6 +46,7 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModul
 	connect(_analyses,	&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests	);
 	connect(_analyses,	&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests	);
 	connect(_analyses,	&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests	);
+	connect(_analyses,	&Analyses::analysisRewriteImages,					this,					&EngineSync::ProcessAnalysisRequests	);
 	connect(_analyses,	&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests	);
 	connect(_analyses,	&Analyses::sendRScript,								this,					&EngineSync::sendRCode					);
 	connect(this,		&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed			);
@@ -90,20 +91,21 @@ void EngineSync::start(int ppi)
 		{
 			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
-			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated					);
-			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					_analyses,		&Analyses::rCodeReturned						);
-			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult				);
-			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg				);
-			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded				);
-			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed				);
-			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailedHandler			);
-			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler		);
-			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed			);
-			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded		);
-			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler		);
-			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged				);
-			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged	);
-			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved			);
+			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					_analyses,		&Analyses::rCodeReturned												);
+			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated											);
+			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult										);
+			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg										);
+			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded										);
+			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed										);
+			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailedHandler									);
+			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler								);
+			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed									);
+			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded								);
+			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler								);
+			connect(this,			&EngineSync::ppiChanged,								this,			&EngineSync::refreshAllPlots,					Qt::QueuedConnection	);
+			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
+			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
+			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved									);
 
 		}
 	}
@@ -249,7 +251,7 @@ void EngineSync::ProcessAnalysisRequests()
 		if (analysis == nullptr || analysis->isWaitingForModule())
 			return true;
 
-		bool canUseFirstEngine	= analysis->isEmpty()	|| analysis->isSaveImg() || analysis->isEditImg();
+		bool canUseFirstEngine	= analysis->isEmpty()	|| analysis->isSaveImg() || analysis->isEditImg() || analysis->isRewriteImgs();
 		bool needsToRun			= canUseFirstEngine		|| analysis->isInited();
 
 		if(needsToRun)
@@ -534,4 +536,14 @@ void EngineSync::resetModuleWideCastVars()
 	_requestWideCastModuleName			= "";
 	_requestWideCastModuleJson			= Json::nullValue;
 	_requestWideCastModuleResults.clear();
+}
+
+void EngineSync::refreshAllPlots(int)
+{
+	std::set<Analysis*> inProgress;
+	for(EngineRepresentation * engine : _engines)
+		if(engine->analysisInProgress() != nullptr)
+			inProgress.insert(engine->analysisInProgress());
+
+	emit refreshAllPlotsExcept(inProgress);
 }

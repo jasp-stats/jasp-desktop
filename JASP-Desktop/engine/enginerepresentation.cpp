@@ -188,7 +188,7 @@ void EngineRepresentation::processComputeColumnReply(Json::Value json)
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 {
 #ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "send " << analysis->id() << " to process " << channelNumber() << std::endl;
+	std::cout << "send request for analysis-id #" << analysis->id() << " to jaspEngine on channel #" << channelNumber() << std::endl;
 #endif
 
 	setAnalysisInProgress(analysis);
@@ -209,14 +209,15 @@ Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analys
 {
 	switch(result)
 	{
-	case analysisResultStatus::error:		return Analysis::Error;
-	case analysisResultStatus::exception:	return Analysis::Exception;
+	case analysisResultStatus::error:			return Analysis::Error;
+	case analysisResultStatus::exception:		return Analysis::Exception;
 	case analysisResultStatus::imageSaved:
 	case analysisResultStatus::imageEdited:
-	case analysisResultStatus::complete:	return Analysis::Complete;
-	case analysisResultStatus::inited:		return Analysis::Inited;
-	case analysisResultStatus::running:		return Analysis::Running;
-	default:								throw std::logic_error("When you define new analysisResultStatuses you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
+	case analysisResultStatus::imagesRewritten:
+	case analysisResultStatus::complete:		return Analysis::Complete;
+	case analysisResultStatus::inited:			return Analysis::Inited;
+	case analysisResultStatus::running:			return Analysis::Running;
+	default:									throw std::logic_error("When you define new analysisResultStatuses you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
 	}
 }
 
@@ -260,13 +261,18 @@ void EngineRepresentation::processAnalysisReply(Json::Value json)
 	switch(status)
 	{
 	case analysisResultStatus::imageSaved:
-		analysis->setImageResults(results);
+		analysis->imageSaved(results);
 		clearAnalysisInProgress();
 		break;
 
 
 	case analysisResultStatus::imageEdited:
-		analysis->setImageEdited(results);
+		analysis->imageEdited(results);
+		clearAnalysisInProgress();
+		break;
+
+	case analysisResultStatus::imagesRewritten:
+		analysis->imagesRewritten();
 		clearAnalysisInProgress();
 		break;
 
@@ -394,4 +400,25 @@ void EngineRepresentation::processModuleRequestReply(Json::Value json)
 	default:
 		throw std::runtime_error("Unsupported module request reply to EngineRepresentation::processModuleRequestReply!");
 	}
+}
+
+void EngineRepresentation::ppiChanged(int newPPI)
+{
+	_ppi = newPPI;
+	std::cout << "ppi for engineRep set to: " << _ppi << std::endl;
+
+	rerunRunningAnalysis();
+}
+
+void EngineRepresentation::imageBackgroundChanged(QString value)
+{
+	_imageBackground = value;
+
+	rerunRunningAnalysis();
+}
+
+void  EngineRepresentation::rerunRunningAnalysis()
+{
+	if(_engineState == engineState::analysis && _analysisInProgress != nullptr)
+		_analysisInProgress->refresh();
 }

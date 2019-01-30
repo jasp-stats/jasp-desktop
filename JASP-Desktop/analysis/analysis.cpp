@@ -42,7 +42,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 		if (data->type() == Json::arrayValue)
 			_options->init(*data);
 		else
-			_optionsFromJASPFile = *data;
+			_optionsDotJASP = *data;
 	}
 
 	bindOptionHandlers();
@@ -68,57 +68,83 @@ void Analysis::bindOptionHandlers()
 
 void Analysis::abort()
 {
-	_status = Aborting;
-	optionsChanged(this);
+	setStatus(Aborting);
+	emit optionsChanged(this);
 }
 
 
-void Analysis::setResults(Json::Value results, int progress)
+void Analysis::setResults(const Json::Value & results, int progress)
 {
 	_results = results;
 	_progress = progress;
-	resultsChanged(this);
+	emit resultsChangedSignal(this);
 }
 
-void Analysis::setImageResults(Json::Value results)
+void Analysis::imageSaved(const Json::Value & results)
 {
 	_imgResults = results;
-	imageSaved(this);
+	emit imageSavedSignal(this);
 }
 
-void Analysis::setImageEdited(Json::Value results)
+void Analysis::imageEdited(const Json::Value & results)
 {
     _imgResults = results;
-    imageEdited(this);
+	emit imageEditedSignal(this);
 }
 
 
 void Analysis::refresh()
 {
-	_status = Empty;
+	setStatus(Empty);
 	_revision++;
-	toRefresh(this);
+	TempFiles::deleteAll(_id);
+	emit toRefreshSignal(this);
+}
+
+void Analysis::saveImage(const Json::Value &options)
+{
+	setStatus(Analysis::SaveImg);
+	_saveImgOptions = options;
+	emit saveImageSignal(this);
+}
+
+void Analysis::editImage(const Json::Value &options)
+{
+	setStatus(Analysis::EditImg);
+	_saveImgOptions = options;
+	emit editImageSignal(this);
+}
+
+void Analysis::rewriteImages()
+{
+	setStatus(Analysis::RewriteImgs);
+	emit rewriteImagesSignal(this);
+}
+
+void Analysis::imagesRewritten()
+{
+	emit resultsChangedSignal(this);
 }
 
 Analysis::Status Analysis::parseStatus(string name)
 {
-	if (name == "empty")				return Analysis::Empty;
+	if		(name == "empty")			return Analysis::Empty;
 	else if (name == "waiting")			return Analysis::Inited;
 	else if (name == "running")			return Analysis::Running;
 	else if (name == "complete")		return Analysis::Complete;
+	else if (name == "initializing")	return Analysis::Initializing;
+	else if (name == "RewriteImgs")		return Analysis::RewriteImgs;
+	else if (name == "exception")		return Analysis::Exception;
 	else if (name == "aborted")			return Analysis::Aborted;
 	else if (name == "SaveImg")			return Analysis::SaveImg;
 	else if (name == "EditImg")			return Analysis::EditImg;
-	else if (name == "exception")		return Analysis::Exception;
-	else if (name == "initializing")	return Analysis::Initializing;
 	else								return Analysis::Error;
 }
 
 void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 {
-	_analysisForm = form;
-//		connect(form,			&AnalysisForm::formChanged, this,			&MainWindow::showForm);
-	_status = isNewAnalysis ? Empty : Complete;
+	_analysisForm	= form;
+	_status			= isNewAnalysis ? Empty : Complete;
 }
 
 Json::Value Analysis::asJSON() const
@@ -138,20 +164,20 @@ Json::Value Analysis::asJSON() const
 
 	switch (_status)
 	{
-	case Analysis::Empty:			status = "empty";		break;
-	case Analysis::Inited:			status = "waiting";		break;
-	case Analysis::Running:			status = "running";		break;
-	case Analysis::Complete:		status = "complete";	break;
-	case Analysis::Aborted:			status = "aborted";		break;
-	case Analysis::SaveImg:			status = "SaveImg";		break;
-	case Analysis::EditImg:			status = "EditImg";		break;
-	case Analysis::Exception:		status = "exception";	break;
-	case Analysis::Initializing:	status = "initializing"; break;
-	default:						status = "error";		break;
+	case Analysis::Empty:			status = "empty";			break;
+	case Analysis::Inited:			status = "waiting";			break;
+	case Analysis::Running:			status = "running";			break;
+	case Analysis::Complete:		status = "complete";		break;
+	case Analysis::Aborted:			status = "aborted";			break;
+	case Analysis::SaveImg:			status = "SaveImg";			break;
+	case Analysis::EditImg:			status = "EditImg";			break;
+	case Analysis::RewriteImgs:		status = "RewriteImgs";		break;
+	case Analysis::Exception:		status = "exception";		break;
+	case Analysis::Initializing:	status = "initializing";	break;
+	default:						status = "error";			break;
 	}
 
 	analysisAsJson["status"]	= status;
-
 	analysisAsJson["options"]	= options()->asJSON();
 	analysisAsJson["userdata"]	= userData();
 
@@ -194,7 +220,7 @@ int Analysis::callback(Json::Value results)
 		if (results != Json::nullValue)
 		{
 			_results = results;
-			resultsChanged(this);
+			resultsChangedSignal(this);
 		}
 		return 0;
 	}
@@ -211,6 +237,7 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	case Analysis::Empty:		return(usesJaspResults() ? performType::run : performType::init);
 	case Analysis::SaveImg:		return(performType::saveImg);
 	case Analysis::EditImg:		return(performType::editImg);
+	case Analysis::RewriteImgs:	return(performType::rewriteImgs);
 	case Analysis::Aborting:	return(performType::abort);
 	default:					return(performType::run);
 	}
@@ -234,12 +261,13 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 
 	switch(perform)
 	{
-	case performType::init:		setStatus(Analysis::Initing);	break;
-	case performType::abort:	setStatus(Analysis::Aborted);	break;
+	case performType::init:			setStatus(Analysis::Initing);	break;
+	case performType::abort:		setStatus(Analysis::Aborted);	break;
 	case performType::run:
 	case performType::saveImg:
-	case performType::editImg:	setStatus(Analysis::Running);	break;
-	default:													break;
+	case performType::editImg:
+	case performType::rewriteImgs:	setStatus(Analysis::Running);	break;
+	default:														break;
 	}
 
 	Json::Value json = Json::Value(Json::objectValue);

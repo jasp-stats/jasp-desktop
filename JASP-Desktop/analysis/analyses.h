@@ -78,9 +78,7 @@ public:
 	
 	void		setDataSet(DataSet* dataSet)	{ _dataSet = dataSet; }
 	DataSet*	getDataSet() const				{ return _dataSet; }
-	
-//AbstractListModel functions
-public:
+
 	int						rowCount(const QModelIndex & = QModelIndex())				const override	{ return int(count()); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
@@ -92,7 +90,7 @@ public slots:
 	void removeAnalysisById(size_t id);
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
-	//void refreshAllPlots();
+	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
 	void refreshAnalysesUsingColumn(QString col);
 	void analysisClickedHandler(QString analysis, QString ribbon, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
@@ -106,45 +104,38 @@ public slots:
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 
 
-private slots:
-	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
-
 signals:
+	void analysesUnselected();
+	void unselectAnalysisInResults();
+	void countChanged();
 	void analysisAdded(					Analysis *	source);
 	void analysisRemoved(				Analysis *	source);
 	void analysisEditImage(				Analysis *	source);
 	void analysisSaveImage(				Analysis *	source);
 	void analysisToRefresh(				Analysis *	source);
 	void analysisImageSaved(			Analysis *	source);
-	void analysisInitialised(			Analysis *	source);
 	void analysisImageEdited(			Analysis *	source);
+	void analysisRewriteImages(			Analysis *	source);
 	void analysisResultsChanged(		Analysis *	source);
 	void analysisOptionsChanged(		Analysis *	source);
 	void analysisNameSelected(			QString		name);
-	void analysesUnselected();
+	void sendRScript(					QString		script, int requestID);
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);
-	void unselectAnalysisInResults();
-	void countChanged();
-	void currentAnalysisIndexChanged(int currentAnalysisIndex);
-	void sendRScript(QString script, int requestID);
-	void currentFormHeightChanged(double currentFormHeight);
-	void visibleChanged(bool visible);
+	void currentAnalysisIndexChanged(	int			currentAnalysisIndex);
+	void currentFormHeightChanged(		double		currentFormHeight);
+	void visibleChanged(				bool		visible);
 
-	ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis *source);
-	void				requestComputedColumnDestruction(std::string columnName);
+	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
+	void				requestComputedColumnDestruction(QString columnName);
+
+
+private slots:
+	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);
 	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);
-
-	void analysisOptionsChangedHandler(	Analysis *analysis)							{ analysisOptionsChanged(analysis); }
-	void analysisImageSavedHandler(		Analysis *analysis)							{ analysisImageSaved(analysis); }
-	void analysisImageEditedHandler(	Analysis *analysis)							{ analysisImageEdited(analysis); }
-	void analysisResultsChangedHandler(	Analysis *analysis)							{ analysisResultsChanged(analysis); }
-	void analysisToRefreshHandler(		Analysis *analysis);
-	void analysisSaveImageHandler(		Analysis *analysis, Json::Value &options);
-	void analysisEditImageHandler(		Analysis *analysis, Json::Value &options);
 
 private:
 	 std::map<size_t, Analysis*>	_analysisMap;

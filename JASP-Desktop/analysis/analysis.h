@@ -44,41 +44,49 @@ class Analysis : public QObject
 
 public:
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception, Initializing };
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, RewriteImgs, Exception, Initializing };
+	void setStatus(Status status);
 
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data);
 	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry);
 
 	virtual ~Analysis();
 
-	Options *options() const { return _options; }
-	const Json::Value&	optionsFromJASPFile() const { return _optionsFromJASPFile; }
-	void				resetOptionsFromJASPFile()	{ _optionsFromJASPFile.clear(); }
+	void				resetOptionsFromJASPFile()			{ _optionsDotJASP.clear();	}
+	Options				*options()					const	{ return _options;			}
+	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
-	boost::signals2::signal<void (Analysis *source)>						optionsChanged;
-	boost::signals2::signal<void (Analysis *source)>						toRefresh;
-	boost::signals2::signal<void (Analysis *source, Json::Value &options)>	saveImage;
-	boost::signals2::signal<void (Analysis *source)>						imageSaved;
-	boost::signals2::signal<void (Analysis *source, Json::Value &options)>	editImage;
-	boost::signals2::signal<void (Analysis *source)>						imageEdited;
-	boost::signals2::signal<void (Analysis *source)>						resultsChanged;
+signals:
+	void				nameChanged();
+	void				sendRScript(			Analysis * analysis, QString script, QString controlName);
+	void				optionsChanged(			Analysis * analysis);
+	void				saveImageSignal(		Analysis * analysis);
+	void				editImageSignal(		Analysis * analysis);
+	void				toRefreshSignal(		Analysis * analysis);
+	void				imageSavedSignal(		Analysis * analysis);
+	void				imageEditedSignal(		Analysis * analysis);
+	void				rewriteImagesSignal(	Analysis * analysis);
+	void				resultsChangedSignal(	Analysis * analysis);
 
-	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
-	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
+	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
+	void				requestComputedColumnDestruction(	QString columnName);
 
+public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
 	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
 
-	void setResults(Json::Value results, int progress = -1);
-	void setImageResults(Json::Value results);
-	void setImageEdited(Json::Value results);
-	void setStatus(Status status);
+	void setResults(	const Json::Value & results, int progress = -1);
+	void imageSaved(	const Json::Value & results);
+	void saveImage(		const Json::Value & options);
+	void editImage(		const Json::Value & options);
+	void imageEdited(	const Json::Value & results);
+	void rewriteImages();
+	void imagesRewritten();
 
 	void setRFile(const std::string &file)				{ _rfile = file;							}
 	void setVisible(bool visible)						{ _visible = visible;						}
 	void setUserData(Json::Value userData)				{ _userData = userData;						}
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;					}
-	void setSaveImgOptions(Json::Value &options)		{ _saveImgOptions = options;				}
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;		}
 	
 	//getters
@@ -109,12 +117,13 @@ public:
 
 	static	Status		parseStatus(std::string name);
 
-	bool isEmpty()		const { return status() == Empty; }
-	bool isAborted()	const { return status() == Aborted; }
-	bool isSaveImg()	const { return status() == SaveImg; }
-	bool isEditImg()	const { return status() == EditImg; }
-	bool isInited()		const { return status() == Inited; }
-	bool isFinished()	const { return status() == Complete || status() == Error || status() == Exception; }
+	bool isEmpty()			const { return status() == Empty;		}
+	bool isAborted()		const { return status() == Aborted;		}
+	bool isSaveImg()		const { return status() == SaveImg;		}
+	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
+	bool isEditImg()		const { return status() == EditImg;		}
+	bool isInited()			const { return status() == Inited;		}
+	bool isFinished()		const { return status() == Complete || status() == Error || status() == Exception; }
 	
 	void initialized(AnalysisForm* form, bool isNewAnalysis);
 
@@ -131,9 +140,7 @@ public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
 
-signals:
-	void					nameChanged();
-	void					sendRScript(Analysis* analysis, QString script, QString controlName);	
+
 	
 protected:
 	int						callback(Json::Value results);
@@ -141,8 +148,8 @@ protected:
 
 private:
 	void					optionsChangedHandler(Option *option);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(columnName, this); }
-	void					requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(columnName); }
+	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
+	void					requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(QString::fromStdString(columnName)); }
 
 protected:
 	Status					_status			= Initializing;
@@ -150,8 +157,10 @@ protected:
 							_refreshBlocked	= false;
 
 	Options*				_options;
-	Json::Value				_optionsFromJASPFile = Json::nullValue;		// For backward compatibility: options coming form old JASP file.
-	Json::Value				_results		= Json::nullValue,
+
+	///For backward compatibility: options coming form old JASP file.
+	Json::Value				_optionsDotJASP = Json::nullValue, ///
+							_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
 							_saveImgOptions	= Json::nullValue;

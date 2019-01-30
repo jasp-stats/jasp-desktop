@@ -40,7 +40,7 @@ public:
 	void setSlaveNo(int no);
 	void sendString(std::string message) { _channel->send(message); }
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, synchingData } Status;
+	typedef engineAnalysisStatus Status;
 	Status getStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
@@ -77,6 +77,7 @@ private: // Methods:
 
 	void saveImage();
     void editImage();
+	void rewriteImages();
 	void removeNonKeepFiles(	Json::Value filesToKeepValue);
 
 	void sendAnalysisResults();
@@ -96,7 +97,7 @@ private: // Methods:
 private: // Data:
 	static Engine * _EngineInstance;
 
-	Status _analysisStatus = empty;
+	Status _analysisStatus = Status::empty;
 
 	int			_analysisId,
 				_analysisRevision,

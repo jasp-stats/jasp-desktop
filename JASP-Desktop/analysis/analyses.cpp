@@ -113,17 +113,17 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
-	analysis->toRefresh.connect(						boost::bind( &Analyses::analysisToRefreshHandler,			this, _1	 ));
-	analysis->saveImage.connect(						boost::bind( &Analyses::analysisSaveImageHandler,			this, _1, _2 ));
-	analysis->editImage.connect(						boost::bind( &Analyses::analysisEditImageHandler,			this, _1, _2 ));
-	analysis->imageSaved.connect(						boost::bind( &Analyses::analysisImageSavedHandler,			this, _1	 ));
-	analysis->imageEdited.connect(						boost::bind( &Analyses::analysisImageEditedHandler,			this, _1	 ));
-	analysis->optionsChanged.connect(					boost::bind( &Analyses::analysisOptionsChangedHandler,		this, _1	 ));
-	analysis->resultsChanged.connect(					boost::bind( &Analyses::analysisResultsChangedHandler,		this, _1	 ));
-	analysis->requestComputedColumnCreation.connect(	boost::bind( &Analyses::requestComputedColumnCreation,		this, _1, _2 ));
-	analysis->requestComputedColumnDestruction.connect(	boost::bind( &Analyses::requestComputedColumnDestruction,	this, _1	 ));
-
-	connect(analysis, &Analysis::sendRScript, this, &Analyses::sendRScriptHandler);
+	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
+	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
+	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
+	connect(analysis, &Analysis::saveImageSignal,					this, &Analyses::analysisSaveImage					);
+	connect(analysis, &Analysis::editImageSignal,					this, &Analyses::analysisEditImage					);
+	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
+	connect(analysis, &Analysis::rewriteImagesSignal,				this, &Analyses::analysisRewriteImages				);
+	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
+	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
+	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
+	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
 	
 	if (analysis->isDynamicModule())
 	{
@@ -138,9 +138,6 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 		connect(&_QMLFileWatcher, &QFileSystemWatcher::fileChanged, [=] () { this->_analysisQMLFileChanged(analysis); });
 		
 	}
-
-//	Send the analysesAdded signal afterwards: the analysis may need extra settings after creation
-//	analysisAdded(analysis);
 }
 
 void Analyses::clear()
@@ -155,27 +152,6 @@ void Analyses::clear()
 	_nextId = 0;
 	endResetModel();
 	emit countChanged();
-}
-
-void Analyses::analysisToRefreshHandler(Analysis *analysis)
-{
-	analysis->setStatus(Analysis::Empty);
-	TempFiles::deleteAll(analysis->id());
-	analysisToRefresh(analysis);
-}
-
-void Analyses::analysisSaveImageHandler(Analysis *analysis, Json::Value &options)
-{
-	analysis->setStatus(Analysis::SaveImg);
-	analysis->setSaveImgOptions(options);
-	analysisSaveImage(analysis);
-}
-
-void Analyses::analysisEditImageHandler(Analysis *analysis, Json::Value &options)
-{
-	analysis->setStatus(Analysis::EditImg);
-	analysis->setSaveImgOptions(options); // options from saveImage are fine
-	analysisEditImage(analysis);
 }
 
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
@@ -239,7 +215,12 @@ void Analyses::refreshAllAnalyses()
 		idAnalysis.second->refresh();
 }
 
-//void refreshAllPlots();
+void Analyses::refreshAllPlots(std::set<Analysis*> exceptThese)
+{
+	for(auto idAnalysis : _analysisMap)
+		if(exceptThese.count(idAnalysis.second) == 0)
+			idAnalysis.second->rewriteImages();
+}
 
 
 void Analyses::refreshAnalysesUsingColumn(QString col)

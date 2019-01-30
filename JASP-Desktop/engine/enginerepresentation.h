@@ -21,10 +21,12 @@ class EngineRepresentation : public QObject
 	Q_OBJECT
 
 public:
-	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = NULL);
+	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = nullptr);
 	~EngineRepresentation();
-	void clearAnalysisInProgress();
-	void setAnalysisInProgress(Analysis* analysis);
+
+	void		clearAnalysisInProgress();
+	void		setAnalysisInProgress(Analysis* analysis);
+	Analysis *	analysisInProgress() const { return _analysisInProgress; }
 
 	bool isIdle() { return _engineState == engineState::idle; }
 
@@ -68,19 +70,20 @@ public:
 	int engineChannelID()							{ return _channel->channelNumber(); }
 
 public slots:
-	void ppiChanged(int newPPI)					{ _ppi = newPPI;  std::cout << "ppi for engineRep set to: " << _ppi << std::endl;}
-	void imageBackgroundChanged(QString value)	{ _imageBackground = value; }
+	void ppiChanged(int newPPI);
+	void imageBackgroundChanged(QString value);
 	void analysisRemoved(Analysis * analysis);
 
 private:
 	void sendPauseEngine();
+	void rerunRunningAnalysis();
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
 
-	QProcess*	_slaveProcess		= NULL;
-	IPCChannel*	_channel			= NULL;
-	Analysis*	_analysisInProgress = NULL;
+	QProcess*	_slaveProcess		= nullptr;
+	IPCChannel*	_channel			= nullptr;
+	Analysis*	_analysisInProgress = nullptr;
 	engineState	_engineState		= engineState::idle;
 	int			_ppi				= 96;
 	QString		_imageBackground	= "white";

@@ -169,7 +169,6 @@ void MainWindow::makeConnections()
 
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
-	connect(this,					&MainWindow::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
@@ -188,6 +187,7 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
 	connect(_engineSync,			&EngineSync::processNewFilterResult,				_filterModel,			&FilterModel::processFilterResult							);
 	connect(_engineSync,			&EngineSync::processFilterErrorMsg,					_filterModel,			&FilterModel::processFilterErrorMsg							);
+	connect(_engineSync,			&EngineSync::refreshAllPlotsExcept,					_analyses,				&Analyses::refreshAllPlots									);
 
 	qRegisterMetaType<Column::ColumnType>();
 
@@ -233,7 +233,6 @@ void MainWindow::makeConnections()
 
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					_engineSync,			&EngineSync::ppiChanged										);
-	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::ppiChangedHandler,								Qt::QueuedConnection); //Then we know for sure that EngineSync::ppiChanged has run first
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
@@ -393,7 +392,7 @@ void MainWindow::openKeysSelected()
 
 void MainWindow::refreshKeysSelected()
 {
-	refreshAllAnalyses();
+	_analyses->refreshAllAnalyses();
 }
 
 void MainWindow::zoomInKeysSelected()
@@ -467,15 +466,11 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 }
 
 
-void MainWindow::ppiChangedHandler(int newDefaultPPI)
-{
-	MainWindow::refreshAllAnalyses();
-}
 
 void MainWindow::setImageBackgroundHandler(QString value)
 {
 	emit imageBackgroundChanged(value);
-	refreshAllAnalyses();
+	_engineSync->refreshAllPlots();
 }
 
 
@@ -554,32 +549,21 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	QString caption = "Save JASP Image";
-	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)";
 	QString selectedFilter;
-
-	std::cout << "Replace savefiledialog in _analysisSaveImageHandler" << std::endl;
-	QString finalPath = "THIS ISNT WORKING"; //QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	QString finalPath = MessageForwarder::saveFileBrowse("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
 
 	if (!finalPath.isEmpty())
 	{
-		if (selectedFilter == "Encapsulated PostScript (*.eps)")
+		root["type"] = "png";
+
+		if (selectedFilter == "Encapsulated PostScript (*.eps)")			root["type"] = "eps";
+		else if (selectedFilter == "Portable Document Format (*.pdf)")		root["type"] = "pdf";
+		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")	root["type"] = "tiff";
+
+		if(root["type"].asString() != "png")
 		{
-			root["type"] = "eps";
 			root["finalPath"] = finalPath.toStdString();
-			analysis->saveImage(analysis, root);
-		}
-		else if (selectedFilter == "Portable Document Format (*.pdf)")
-		{
-			root["type"] = "pdf";
-			root["finalPath"] = finalPath.toStdString();
-			analysis->saveImage(analysis, root);
-		}
-		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")
-		{
-			root["type"] = "tiff";
-			root["finalPath"] = finalPath.toStdString();
-			analysis->saveImage(analysis, root);
+			analysis->saveImage(root);
 		}
 		else
 		{
@@ -599,19 +583,19 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 	Json::Value results = analysis->getImgResults();
 	if (results.isNull())
 		return;
-	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
 
-	QString imagePath = QString::fromStdString(TempFiles::sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
-	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+	Json::Value inputOptions	= results.get("inputOptions", Json::nullValue);
+	QString		imagePath		= QString::fromStdString(TempFiles::sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString(),
+				finalPath		= QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
 
 	if (!finalPath.isEmpty())
 	{
+#ifdef JASP_DEBUG
 		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
-		std::cout.flush();
+#endif
+
 		if (QFile::exists(finalPath))
-		{
 			QFile::remove(finalPath);
-		}
 		QFile::copy(imagePath, finalPath);
 	}
 }
@@ -625,10 +609,9 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
     string utf8 = fq(options);
     Json::Value root;
-    Json::Reader parser;
-    parser.parse(utf8, root);
+	Json::Reader().parse(utf8, root);
 
-    analysis->editImage(analysis, root);
+	analysis->editImage(root);
 
     return;
 
@@ -1266,7 +1249,7 @@ void MainWindow::startComparingResults()
 {
 	if (resultXmlCompare::compareResults::theOne()->testMode())
 	{
-		refreshAllAnalyses();
+		_analyses->refreshAllAnalyses();
 		resultXmlCompare::compareResults::theOne()->setRefreshCalled();
 	}
 }
