@@ -50,7 +50,7 @@ Form
 			name: "tableWidget"
 			width: form.availableWidth - hypothesisGroup.leftPadding
 			visible: expectedProbs.checked
-			syncModels: "factor"
+			source: "factor"
 		}
 	}
 	

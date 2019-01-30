@@ -94,6 +94,11 @@ Option *BoundQMLTextArea::createOption()
 	return new OptionString(text);
 }
 
+bool BoundQMLTextArea::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionString*>(option) != nullptr;
+}
+
 void BoundQMLTextArea::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);

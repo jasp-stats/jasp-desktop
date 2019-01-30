@@ -13,7 +13,8 @@ JASPControl
 	controlType:	"TableView"
 	hasTabFocus:	false
     
-	property var	syncModels
+	property var	source
+	property alias	syncModels:	tableView.source
     property string modelType
 	property string itemType:	"string"
 	property alias	model:		theView.model

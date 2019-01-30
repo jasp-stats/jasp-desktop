@@ -44,9 +44,9 @@ void BoundQMLCheckBox::bindTo(Option *option)
 		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
 }
 
-void BoundQMLCheckBox::unbind()
+bool BoundQMLCheckBox::isOptionValid(Option* option)
 {
-	
+	return dynamic_cast<OptionBoolean*>(option) != nullptr;
 }
 
 Option *BoundQMLCheckBox::createOption()

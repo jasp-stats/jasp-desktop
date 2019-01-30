@@ -33,7 +33,7 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, A
 	, BoundQMLListViewDraggable(item, form)
 {
 	_boundTo = nullptr;
-	_needsSyncModels = true;	
+	_needsSourceModels = true;	
 	_measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
 	
 	setDropMode(qmlDropMode::Replace);
@@ -52,7 +52,7 @@ void BoundQMLListViewMeasuresCells::bindTo(Option *option)
 const Terms& BoundQMLListViewMeasuresCells::getLevels()
 {
 	_tempTerms.clear();
-	for (ListModelRepeatedMeasuresFactors* factorsModel : _syncFactorsModels)
+	for (ListModelRepeatedMeasuresFactors* factorsModel : _sourceFactorsModels)
 	{
 		const Terms& terms = factorsModel->getLevels();
 		_tempTerms.add(terms);
@@ -72,17 +72,23 @@ Option* BoundQMLListViewMeasuresCells::createOption()
 	return result;
 }
 
+bool BoundQMLListViewMeasuresCells::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionVariables*>(option) != nullptr;
+}
+
+
 void BoundQMLListViewMeasuresCells::setUp()
 {
 	BoundQMLListViewDraggable::setUp();
 	
-	for (ListModel* model : _syncModels)
+	for (ListModel* model : _sourceModels)
 	{
 		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(model);
 		if (!factorsModel)
-			addError(tq("Sync model of ") + name() + tq(" must be from a Factor List"));
+			addError(tq("Source model of ") + name() + tq(" must be from a Factor List"));
 		addDependency(factorsModel->listView());
-		_syncFactorsModels.push_back(factorsModel);
+		_sourceFactorsModels.push_back(factorsModel);
 	}
 }
 

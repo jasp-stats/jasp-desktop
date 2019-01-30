@@ -34,13 +34,13 @@ public:
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	
-	virtual void resetTermsFromSyncModels();
-	virtual ListModel* getSyncModelOfTerm(const Term& term);
+	virtual void resetTermsFromSourceModels();
+	virtual ListModel* getSourceModelOfTerm(const Term& term);
 	
 	void setEmptyValue(QString emptyValue)	{ _addEmptyValue = true; _emptyValue = emptyValue; }	
 
 public slots:
-	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;
+	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;
 	
 private:
 	void _setChangedTerms(const Terms& newTerms);

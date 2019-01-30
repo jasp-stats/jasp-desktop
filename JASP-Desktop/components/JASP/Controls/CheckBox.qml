@@ -18,21 +18,25 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import QtQuick.Layouts	1.3
 import JASP.Theme 1.0
 
 JASPControl
 {
+	id: checkBox
 	controlType:			"CheckBox"
 	implicitWidth:			control.implicitWidth
-	implicitHeight:			control.implicitHeight
+	implicitHeight:			row.visible ? row.implicitHeight : (control.implicitHeight + (column.visible ? column.implicitHeight : 0))
 	useDefaultBackground:	true
+	
 	property alias text:	control.text
     property alias checked: control.checked
     property alias control: control
-
+	property bool placeChildrenOnSameRow:	false
+	property int columns:	1
+	default	property alias content: items.children
+	
     signal clicked();
-    
-	Component.onCompleted: control.clicked.connect(clicked);
     
 	CheckBox
 	{
@@ -71,4 +75,51 @@ JASPControl
 			verticalAlignment:	Text.AlignVCenter
         }
     }
+	
+	Item { id: items; visible: false }
+	
+	GridLayout
+	{
+		id:				column
+		columns:		checkBox.columns
+		visible:		!placeChildrenOnSameRow && control.visible ? true : false
+		enabled:		control.checked
+		anchors
+		{
+			top:		control.bottom
+			topMargin:	Theme.rowGroupSpacing
+			left:		control.left
+			leftMargin:	Theme.indentationLength
+		}
+    }
+
+	RowLayout
+	{
+		id:				row
+		spacing:		Theme.rowGroupSpacing
+		visible:		placeChildrenOnSameRow && control.visible ? true : false
+		enabled:		control.checked
+		x:				control.implicitWidth + Theme.rowGroupSpacing
+    }
+	
+	Component.onCompleted:
+	{
+		control.clicked.connect(clicked);
+
+		if (items.children.length === 0)
+		{
+			row.visible = false;
+			column.visible = false;
+		}
+		else
+		{
+			var elt = placeChildrenOnSameRow ? row : column;
+	
+			while (items.children.length > 0)
+				items.children[0].parent = elt
+		}
+		
+	}
+	
+	
 }

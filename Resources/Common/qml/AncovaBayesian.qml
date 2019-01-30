@@ -83,7 +83,7 @@ Form
 			{
 				name: "components"
 				title: qsTr("Components")
-				syncModels: ["fixedFactors", "randomFactors", "covariates"]
+				source: ["fixedFactors", "randomFactors", "covariates"]
 				width: parent.width / 4
 			}
 			AssignedVariablesList
@@ -110,7 +110,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "postHocTestsAvailable"; syncModels: "fixedFactors" }
+			availableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
@@ -128,7 +128,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors")          ; syncModels: "fixedFactors" }
+			availableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors")          ; source: "fixedFactors" }
 			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis")  ; singleItem: true }
 			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines")	; singleItem: true }
 			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots")   ; singleItem: true }

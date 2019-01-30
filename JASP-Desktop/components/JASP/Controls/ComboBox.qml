@@ -24,7 +24,8 @@ JASPControl {
 	property string	textRole:				"title"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
-	property var	syncModels				//defaults would be nice
+	property var	source					//defaults would be nice
+	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
 	property string	emptyValue:				qsTr("<no choice>")
 	property alias	control:				control

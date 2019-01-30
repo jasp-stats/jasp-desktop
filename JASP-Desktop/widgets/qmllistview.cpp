@@ -25,11 +25,11 @@
 
 QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form) 
 	: QObject(form)
-	, _needsSyncModels(false)
+	, _needsSourceModels(false)
 	  
 {
 	_setAllowedVariables();	
-	_syncModelsList = QQmlProperty(_item, "syncModels").read().toStringList();	
+	_sourceModelsList = QQmlProperty(_item, "source").read().toStringList();	
 }
 
 void QMLListView::setUp()
@@ -40,27 +40,27 @@ void QMLListView::setUp()
 	if (!listModel)
 		return;
 	
-	if (_syncModelsList.isEmpty())
+	if (_sourceModelsList.isEmpty())
 	{
-		if (_needsSyncModels)
-			addError(QString::fromLatin1("Needs sync model for VariablesList ") + name());
+		if (_needsSourceModels)
+			addError(QString::fromLatin1("Needs source model for VariablesList ") + name());
 	}
 	else
 	{
 		bool areTermsVariables = true;
-		for (const QString& syncModelName : _syncModelsList)
+		for (const QString& sourceModelName : _sourceModelsList)
 		{
-			ListModel* syncModel = _form->getModel(syncModelName);
-			if (syncModel)
+			ListModel* sourceModel = _form->getModel(sourceModelName);
+			if (sourceModel)
 			{
-				if (!syncModel->areTermsVariables())
+				if (!sourceModel->areTermsVariables())
 					areTermsVariables = false;
-				_syncModels.push_back(syncModel);
-				addDependency(syncModel->listView());
-				connect(syncModel, &ListModel::modelChanged, listModel, &ListModel::syncTermsChanged);
+				_sourceModels.push_back(sourceModel);
+				addDependency(sourceModel->listView());
+				connect(sourceModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
 			}
 			else
-				addError(QString::fromLatin1("Unknown sync model ") + syncModelName + QString::fromLatin1(" for ModelVIew ") + name());
+				addError(QString::fromLatin1("Unknown source model ") + sourceModelName + QString::fromLatin1(" for ModelVIew ") + name());
 		}
 		
 		if (!areTermsVariables)

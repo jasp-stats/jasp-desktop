@@ -38,27 +38,20 @@ Form
 	{
 		title: qsTr("Plots")
 		
-		GroupBox 
+		Group 
 		{
 			CheckBox { name: "plotVariables";			text: qsTr("Distribution plots"); id: plotVariables							}
 			CheckBox { name: "distPlotDensity";			text: qsTr("Display density"); enabled: plotVariables.checked; indent: true	}
 			CheckBox { name: "plotCorrelationMatrix";	text: qsTr("Correlation plots")												}
-			CheckBox { name: "splitPlots";				text: qsTr("Boxplots");	id: splitPlots										}
-			
-			GroupBox 
-			{ 
-				indent: true
-				enabled: splitPlots.checked
-				
+			CheckBox { name: "splitPlots";				text: qsTr("Boxplots")
 				CheckBox { name: "splitPlotOutlierLabel";	text: qsTr("Label Outliers")	}
-				CheckBox { name: "splitPlotColour";			text: qsTr("Color")				}
-				
-				GroupBox 
-				{
-					indent: true;
-					CheckBox { name: "splitPlotBoxplot";	text: qsTr("Boxplot Element"); checked: true	}
-					CheckBox { name: "splitPlotViolin";		text: qsTr("Violin Element")					}
-					CheckBox { name: "splitPlotJitter";		text: qsTr("Jitter Element")					}
+				CheckBox { name: "splitPlotColour";			text: qsTr("Color")
+					Group
+					{
+						CheckBox { name: "splitPlotBoxplot";	text: qsTr("Boxplot Element"); checked: true	}
+						CheckBox { name: "splitPlotViolin";		text: qsTr("Violin Element")					}
+						CheckBox { name: "splitPlotJitter";		text: qsTr("Jitter Element")					}
+					}
 				}
 			}
 		}

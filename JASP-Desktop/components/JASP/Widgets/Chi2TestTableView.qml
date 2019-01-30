@@ -10,7 +10,7 @@ Item {
     implicitHeight: height
     
     property alias name: tableView.name
-    property alias syncModels: tableView.syncModels
+    property alias source: tableView.source
     property alias tableView: tableView
         
     RowLayout {

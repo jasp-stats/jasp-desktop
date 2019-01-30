@@ -43,7 +43,7 @@ Form
 			title: qsTr("Repeated Measures Cells")
 			allowedColumns: ["scale"]
 			listViewType: "MeasuresCells"
-			syncModels: "repeatedMeasuresFactors"
+			source: "repeatedMeasuresFactors"
 			height: 140
 		}
 		AssignedVariablesList
@@ -69,14 +69,14 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "withinComponents"; title: qsTr("Repeated Measures Components"); syncModels: ["repeatedMeasuresFactors"] }
+			availableVariablesList { name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
 			AssignedVariablesList {  name: "withinModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "betweenComponents"; title: qsTr("Between Subjects Components"); syncModels: ["betweenSubjectFactors", "covariates"] }
+			availableVariablesList { name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
 			AssignedVariablesList {  name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
@@ -115,7 +115,7 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Contrasts")
-		ContrastsList { syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+		ContrastsList { source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 	}
 	
 	ExpanderButton
@@ -125,7 +125,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "postHocTestsAvailable"; syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			availableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
@@ -152,7 +152,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");			syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");			source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis"); singleItem: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleItem: true }
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }
@@ -190,7 +190,7 @@ Form
 			VariablesForm
 			{
 				height: 150
-				availableVariablesList { name: "marginalMeansTermsAvailable" ; syncModels: "withinModelTerms"; showVariableTypeIcon: false }
+				availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "withinModelTerms"; showVariableTypeIcon: false }
 				AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 			}
 			
@@ -234,7 +234,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "effectsVariables";	title: qsTr("Factors"); syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			availableVariablesList { name: "effectsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple effect factor");	singleItem: true }
 			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator factor 1");		singleItem: true }
 			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2");		singleItem: true }
@@ -250,7 +250,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Factors"); syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			availableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "friedmanWithinFactor";		title: qsTr("RM Factor") }
 			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional grouping factor"); singleItem: true }
 		}

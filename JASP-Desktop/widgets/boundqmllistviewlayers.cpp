@@ -70,6 +70,11 @@ Option* BoundQMLListViewLayers::createOption()
 	return optionsTable;
 }
 
+bool BoundQMLListViewLayers::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionsTable*>(option) != nullptr;
+}
+
 void BoundQMLListViewLayers::modelChangedHandler()
 {
 	vector<pair<string, vector<string> > > layers = _layersModel->getLayers();

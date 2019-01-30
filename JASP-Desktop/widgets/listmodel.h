@@ -56,13 +56,13 @@ public:
 
 	virtual void refresh();
 	virtual void initTerms(const Terms &terms);
-	virtual Terms getSyncTerms();
+	virtual Terms getSourceTerms();
 
 signals:
 	void modelChanged(Terms* added = NULL, Terms* removed = NULL);
 
 public slots:	
-	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved);
+	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 protected:
 	QMLListView* _listView;

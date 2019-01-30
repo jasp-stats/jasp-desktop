@@ -10,6 +10,7 @@ DropDown              1.0 ComboBox.qml
 ExpanderButton        1.0 ExpanderButton.qml
 Form                  1.0 Form.qml
 GridLayout            1.0 GridLayout.qml
+Group	              1.0 GroupBox.qml
 GroupBox              1.0 GroupBox.qml
 IntegerField          1.0 IntegerField.qml
 JASPControl           1.0 JASPControl.qml

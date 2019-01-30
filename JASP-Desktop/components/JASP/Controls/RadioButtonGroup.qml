@@ -59,7 +59,7 @@ JASPControl
 	{
 		id:				column
 		spacing:		Theme.rowGroupSpacing
-		visible:		isHorizontal && control.visible ? false : true
+		visible:		!isHorizontal && control.visible ? true : false
 		anchors
 		{
 			top:		control.title ? label.bottom : control.top

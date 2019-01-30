@@ -85,9 +85,9 @@ int ListModelInteractionAssigned::rowCount(const QModelIndex &) const
 }
 
 
-void ListModelInteractionAssigned::setSource(ListModelAvailableInterface *source)
+void ListModelInteractionAssigned::setAvailableModel(ListModelAvailableInterface *source)
 {
-	ListModelAssignedInterface::setSource(source);
+	ListModelAssignedInterface::setAvailableModel(source);
 	_interactionTerms.setSortParent(source->allTerms());
 }
 
@@ -249,7 +249,7 @@ QString ListModelInteractionAssigned::getItemType(const Term &term)
 {
 	QString type;
 	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(source());	
-	ListModel* model = _source->getSyncModelOfTerm(term);
+	ListModel* model = _source->getSourceModelOfTerm(term);
 	if (model)
 	{
 		type = model->getItemType();

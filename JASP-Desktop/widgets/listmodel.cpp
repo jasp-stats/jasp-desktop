@@ -54,23 +54,23 @@ void ListModel::initTerms(const Terms &terms)
 	endResetModel();
 }
 
-Terms ListModel::getSyncTerms()
+Terms ListModel::getSourceTerms()
 {
-	const QList<ListModel*>& syncModels = listView()->syncModels();
+	const QList<ListModel*>& sourceModels = listView()->sourceModels();
 	
 	Terms result;
-	for (ListModel* syncModel : syncModels)
+	for (ListModel* sourceModel : sourceModels)
 	{
-		const Terms& terms = syncModel->terms();
+		const Terms& terms = sourceModel->terms();
 		result.add(terms);
 	}
 	
 	return result;
 }
 
-void ListModel::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
-	initTerms(getSyncTerms());
+	initTerms(getSourceTerms());
 	
 	emit modelChanged(termsAdded, termsRemoved);
 }

@@ -70,7 +70,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); syncModels: "variables" }
+			availableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); source: "variables" }
 			AssignedVariablesList {  name: "reverseScaledItems"; title: qsTr("Reverse-Scaled Items") }
 		}
 	}

@@ -131,7 +131,14 @@ Rectangle
 		id:					loader
 		source:				!expanderButton.imploded || expanderButton.expanded ? formQmlUrl : ""
 		asynchronous:		false // makes it slow
-		onStatusChanged:	if (loader.status == Loader.Error)	mainWindow.showWarning("Error",  sourceComponent.errorString())
+		onStatusChanged:	
+		{
+			if (loader.status == Loader.Error)
+			{
+				mainWindow.showWarning("Error",  sourceComponent.errorString());
+				myAnalysis.resetAnalysis();
+			}
+		}
 
 		anchors
 		{

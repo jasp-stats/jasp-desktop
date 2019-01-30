@@ -51,6 +51,11 @@ Option* BoundQMLListViewPairs::createOption()
 	return result;
 }
 
+bool BoundQMLListViewPairs::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
+}
+
 void BoundQMLListViewPairs::modelChangedHandler()
 {
 	vector<vector<string> > pairs;

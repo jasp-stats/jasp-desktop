@@ -90,7 +90,7 @@ Option* BoundQMLListViewTerms::createOption()
 		OptionsTable* optionsTable = new OptionsTable(templote);
 		
 		std::vector<Options*> allOptions;
-		Terms terms = model()->getSyncTerms();
+		Terms terms = model()->getSourceTerms();
 		for (const Term& term : terms)
 		{
 			Options* options = new Options();
@@ -106,6 +106,16 @@ Option* BoundQMLListViewTerms::createOption()
 		result = _singleItem ? new OptionVariable() : new OptionVariables();
 	
 	return result;
+}
+
+bool BoundQMLListViewTerms::isOptionValid(Option *option)
+{
+	if (_hasExtraControls)
+		return dynamic_cast<OptionsTable*>(option) != nullptr;
+	else if (_singleItem)
+		return dynamic_cast<OptionVariable*>(option) != nullptr;
+	else	
+		return dynamic_cast<OptionVariables*>(option) != nullptr;
 }
 
 void BoundQMLListViewTerms::modelChangedHandler()

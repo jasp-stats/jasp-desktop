@@ -35,7 +35,7 @@ public:
 	virtual void removeAssignedTerms(const Terms& terms);
 
 protected:
-	std::map<QString, ListModel*> _termSyncModelMap;
+	std::map<QString, ListModel*> _termSourceModelMap;
 	Terms _allTerms;
 };
 

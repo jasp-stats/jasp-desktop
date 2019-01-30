@@ -65,21 +65,6 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler);
 }
 
-AnalysisForm::AnalysisForm(QQuickItem *parent, Analysis* analysis)	: QQuickItem(parent), _analysis(analysis), _errorMessagesItem(nullptr)
-{
-	setObjectName("AnalysisForm");
-	_mainVariables = nullptr;
-
-	_options = nullptr;
-	_dataSet = nullptr;
-
-	_hasIllegalValue = false;
-
-// Maybe these error should be moved to MainWindow?
-//	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisForm::statusChangedWidgetHandler);
-//	connect(_quickWidget,	&QQuickWidget::sceneGraphError,	this,	&AnalysisForm::sceneGraphErrorHandler);
-}
-
 bool AnalysisForm::hasIllegalValue() const
 {
 	return _hasIllegalValue;
@@ -276,7 +261,7 @@ void AnalysisForm::_parseQML()
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
 				listView = availableVariablesListView;
 				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-				if (availableVariablesListView->syncModelsList().isEmpty()) // If there is no syncModels, set all available variables.
+				if (availableVariablesListView->sourceModelsList().isEmpty()) // If there is no sourceModels, set all available variables.
 					_allAvailableVariablesModels.push_back(availableModel);
 				break;
 			}
@@ -425,6 +410,11 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 		{
 			std::string name = boundControl->name().toStdString();
 			Option* option = options->get(name);
+			if (option && !boundControl->isOptionValid(option))
+			{
+				option = nullptr;
+				addError(tq("Item " + name + " was loaded with a wrong kind of value." + (optionsFromJASPFile != Json::nullValue ? ". Probably the file comes from an older version of JASP." : "")));
+			}
 			if (!option)
 			{
 				option = boundControl->createOption();
@@ -443,7 +433,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
 			// The availableListControl are not bound, but they have to be updated when the form is initialized.
 			if (availableListControl)
-				availableListControl->availableModel()->resetTermsFromSyncModels();
+				availableListControl->availableModel()->resetTermsFromSourceModels();
 		}
 	}
 
@@ -478,7 +468,7 @@ void AnalysisForm::addError(const QString &error)
 
 void AnalysisForm::formCompletedHandler()
 {
-	QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler);	
+	QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler);
 }
 
 void AnalysisForm::_formCompletedHandler()
@@ -494,14 +484,13 @@ void AnalysisForm::_formCompletedHandler()
 		_analysis->initialized(this, isNewAnalysis);
 	
 		if (Settings::value(Settings::DEVELOPER_MODE).toBool() && _analysis->isDynamicModule())
-		{
-			QQmlContext* context = QQmlEngine::contextForObject(this);
-			if (context)
-			{
-				QQmlEngine* engine = context->engine();
-				if (engine)
-					engine->clearComponentCache();
-			}
-		}
+			clearQMLCache();
 	}
+}
+
+void AnalysisForm::clearQMLCache()
+{
+	QQmlEngine* engine = qmlEngine(this);
+	if (engine)
+		engine->clearComponentCache();
 }

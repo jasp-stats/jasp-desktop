@@ -79,7 +79,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "components"; title: qsTr("Components"); syncModels: ["fixedFactors", "randomFactors", "covariates"] }
+			availableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", "covariates"] }
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
@@ -128,7 +128,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "postHocTestsAvailable"; syncModels: "fixedFactors" }
+			availableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
@@ -169,7 +169,7 @@ Form
 		
 		VariablesForm {
 			height: 200
-			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); syncModels: "fixedFactors"	}
+			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: "fixedFactors"	}
 			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleItem: true	}
 			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate lines"); singleItem: true		}
 			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots"); singleItem: true		}
@@ -198,7 +198,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "marginalMeansTermsAvailable" ; syncModels: "modelTerms"; showVariableTypeIcon: false }
+			availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
 			AssignedVariablesList {	 name: "marginalMeansTerms"; showVariableTypeIcon: false }
 		}
 		
@@ -241,7 +241,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "effectsVariables";	title: qsTr("Factors");	syncModels: "fixedFactors" }
+			availableVariablesList { name: "effectsVariables";	title: qsTr("Factors");	source: "fixedFactors" }
 			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple effect factor"); singleItem: true }
 			AssignedVariablesList {	name: "moderatorFactorOne";	title: qsTr("Moderator factor 1"); singleItem: true }
 			AssignedVariablesList {	name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2"); singleItem: true }
@@ -255,7 +255,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis test"); syncModels: "fixedFactors" }
+			availableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis test"); source: "fixedFactors" }
 			AssignedVariablesList {	name: "kruskalVariablesAssigned" }
 		}
 		

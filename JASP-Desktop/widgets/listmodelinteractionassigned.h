@@ -37,7 +37,7 @@ public:
 	
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;	
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
-	virtual void setSource(ListModelAvailableInterface *source) OVERRIDE;
+	virtual void setAvailableModel(ListModelAvailableInterface *source) OVERRIDE;
 	
 	virtual Terms *termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
 	virtual bool canAddTerms(Terms *terms) const OVERRIDE;

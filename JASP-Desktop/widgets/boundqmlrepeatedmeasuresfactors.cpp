@@ -60,10 +60,6 @@ void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 	_factorsModel->initFactors(factors);
 }
 
-void BoundQMLRepeatedMeasuresFactors::unbind()
-{
-}
-
 Option* BoundQMLRepeatedMeasuresFactors::createOption()
 {
 	
@@ -87,6 +83,11 @@ Option* BoundQMLRepeatedMeasuresFactors::createOption()
 	optionsTable->connectOptions(allOptions);
 	
 	return optionsTable;
+}
+
+bool BoundQMLRepeatedMeasuresFactors::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionsTable*>(option) != nullptr;
 }
 
 void BoundQMLRepeatedMeasuresFactors::modelChangedHandler()

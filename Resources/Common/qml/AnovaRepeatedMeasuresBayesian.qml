@@ -49,7 +49,7 @@ Form
 			title: qsTr("Repeated Measures Cells")
 			allowedColumns: ["scale"]
 			listViewType: "MeasuresCells"
-			syncModels: "repeatedMeasuresFactors"
+			source: "repeatedMeasuresFactors"
 			height: 140
 		}
 		AssignedVariablesList
@@ -109,7 +109,7 @@ Form
 			{
 				name: "components"
 				title: qsTr("Components")
-				syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]
+				source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]
 				width: parent.width / 4
 			}
 			AssignedVariablesList
@@ -135,7 +135,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "postHocTestsAvailable"; syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			availableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
                 width: parent.width / 4
                 listViewType: "Interaction"
@@ -155,7 +155,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			availableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis");	singleItem: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleItem: true }
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }

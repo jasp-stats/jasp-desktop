@@ -36,7 +36,7 @@ public:
 	virtual void setUp() OVERRIDE;
 	
 protected:
-	ListModelAvailableInterface* _sourceModel;
+	ListModelAvailableInterface* _availableModel;
 	ListModelAssignedInterface* assignedModel();
 	
 	std::string _extraControlVariableName;

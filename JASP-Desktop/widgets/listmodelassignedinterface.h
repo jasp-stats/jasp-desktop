@@ -32,7 +32,7 @@ public:
 	
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
 		
-	virtual void setSource(ListModelAvailableInterface *source);
+	virtual void setAvailableModel(ListModelAvailableInterface *source);
 	ListModelAvailableInterface* source()												{ return _source; }
 	void addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
 	ListModelExtraControls* getExtraControlModel(QString colName)						{ return _extraControlsModels[colName]; }

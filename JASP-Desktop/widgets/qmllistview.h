@@ -39,16 +39,16 @@ public:
 	
 	int variableTypesAllowed() const				{ return _variableTypesAllowed; }
 	int variableTypesSuggested() const				{ return _variableTypesSuggested; }	
-	const QList<ListModel*>& syncModels() const		{ return _syncModels; }
-	const QStringList& syncModelsList() const		{ return _syncModelsList; }
+	const QList<ListModel*>& sourceModels() const		{ return _sourceModels; }
+	const QStringList& sourceModelsList() const		{ return _sourceModelsList; }
 
 protected slots:
 	virtual void modelChangedHandler() {} // Model has changed: change the options
 
 protected:
-	QStringList _syncModelsList;
-	QList<ListModel*> _syncModels;
-	bool _needsSyncModels;
+	QStringList _sourceModelsList;
+	QList<ListModel*> _sourceModels;
+	bool _needsSourceModels;
 	int _variableTypesAllowed;
 	int _variableTypesSuggested;
 	

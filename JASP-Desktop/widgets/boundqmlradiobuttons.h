@@ -35,6 +35,7 @@ public:
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }	
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual bool isOptionValid(Option* option) OVERRIDE;	
 
 signals:
 	

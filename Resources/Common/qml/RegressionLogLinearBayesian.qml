@@ -59,7 +59,7 @@ Form
 			height: 200
 			listWidth: parent.width * 5 / 9
 			
-			availableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; syncModels: ['factors'] }
+			availableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
 			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 	}
