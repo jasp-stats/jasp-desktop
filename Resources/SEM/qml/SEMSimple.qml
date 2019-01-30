@@ -98,7 +98,7 @@ Form
 			GroupBox
 			{
 				title: qsTr("Grouping variable")
-				DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or syncModels: it takes all variables per default
+				DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or source: it takes all variables per default
 				GroupBox
 				{
 					title: qsTr("Equality Constraits")					

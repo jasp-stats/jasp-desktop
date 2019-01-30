@@ -49,8 +49,7 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 	Q_OBJECT
 
 public:
-	explicit					AnalysisForm(QQuickItem * = nullptr); //{ throw std::runtime_error("Tsja, this doesnt work now does it?"); }
-	explicit					AnalysisForm(QQuickItem *parent, Analysis* analysis);
+	explicit					AnalysisForm(QQuickItem * = nullptr);
 				void			bindTo(Options *options, DataSet *dataSet, const Json::Value& oldVersionOptions);
 				void			unbind();
 
@@ -79,7 +78,8 @@ public:
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
-	DataSet*	getDataSet()							{ return _dataSet; }	
+	DataSet*	getDataSet()							{ return _dataSet; }
+	void		clearQMLCache();
 
 protected:
 	void		_setAllAvailableVariablesModel();

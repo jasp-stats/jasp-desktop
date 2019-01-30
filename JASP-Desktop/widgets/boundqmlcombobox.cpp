@@ -45,7 +45,7 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	QVariant model = QQmlProperty(item, "model").read();
 	if (model.isNull())
 	{
-		if (syncModelsList().isEmpty())
+		if (sourceModelsList().isEmpty())
 			hasAllVariablesModel = true;
 	}
 	else
@@ -175,6 +175,11 @@ Option *BoundQMLComboBox::createOption()
 		selected = options[size_t(index)];
 	
 	return new OptionList(options, selected);
+}
+
+bool BoundQMLComboBox::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionList*>(option) != nullptr;
 }
 
 void BoundQMLComboBox::setUp()

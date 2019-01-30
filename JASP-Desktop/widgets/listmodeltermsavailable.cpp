@@ -77,12 +77,12 @@ QVariant ListModelTermsAvailable::data(const QModelIndex &index, int role) const
 		return ListModelAvailableInterface::data(index, role);
 }
 
-void ListModelTermsAvailable::syncTermsChanged(Terms* termsAdded, Terms* termsRemoved)
+void ListModelTermsAvailable::sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)
 {
 	Q_UNUSED(termsAdded);
 	Q_UNUSED(termsRemoved);
 	
-	resetTermsFromSyncModels();
+	resetTermsFromSourceModels();
 	emit modelChanged(&_tempAddedTerms, &_tempRemovedTerms);	
 }
 
@@ -103,20 +103,20 @@ void ListModelTermsAvailable::_setChangedTerms(const Terms &newTerms)
 	}
 }
 
-void ListModelTermsAvailable::resetTermsFromSyncModels()
+void ListModelTermsAvailable::resetTermsFromSourceModels()
 {
-	const QList<ListModel*>& syncModels = listView()->syncModels();
-	if (syncModels.size() == 0)
+	const QList<ListModel*>& sourceModels = listView()->sourceModels();
+	if (sourceModels.size() == 0)
 		return;
 	
 	beginResetModel();
 	Terms termsAvailable;
-	_termSyncModelMap.empty();
-	for (ListModel* syncModel : syncModels)
+	_termSourceModelMap.empty();
+	for (ListModel* sourceModel : sourceModels)
 	{
-		const Terms& terms = syncModel->terms();
+		const Terms& terms = sourceModel->terms();
 		for (const Term& term : terms)
-			_termSyncModelMap[term.asQString()] = syncModel;
+			_termSourceModelMap[term.asQString()] = sourceModel;
 		termsAvailable.add(terms);
 	}
 	
@@ -136,7 +136,7 @@ void ListModelTermsAvailable::resetTermsFromSyncModels()
 	endResetModel();
 }
 
-ListModel *ListModelTermsAvailable::getSyncModelOfTerm(const Term &term)
+ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)
 {
-	return _termSyncModelMap[term.asQString()];
+	return _termSourceModelMap[term.asQString()];
 }

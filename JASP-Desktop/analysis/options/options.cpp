@@ -120,10 +120,22 @@ string Options::getType(Option* option) const
 
 void Options::add(string name, Option *option)
 {
+	remove(name);
 	_options.push_back(OptionNamed(name, option));
 	option->changed.connect(							boost::bind( &Options::optionsChanged,							this, _1));
 	option->requestComputedColumnCreation.connect(		boost::bind( &Option::notifyRequestComputedColumnCreation,		this, _1));
 	option->requestComputedColumnDestruction.connect(	boost::bind( &Option::notifyRequestComputedColumnDestruction,	this, _1));
+}
+
+void Options::remove(string name)
+{
+	_options.erase(
+				remove_if(
+					_options.begin(),
+					_options.end(),
+					[name](const OptionNamed& p) { return p.first == name; }),
+				_options.end()
+	);
 }
 
 void Options::optionsChanged(Option *)
@@ -135,7 +147,7 @@ Json::Value Options::asJSONWithType(bool includeTransient) const
 {
 	Json::Value top = Json::arrayValue;
 
-	for(OptionNamed item : _options)
+	for (const OptionNamed& item : _options)
 	{
 		if (includeTransient == false && item.second->isTransient())
 			continue;
@@ -159,7 +171,7 @@ Json::Value Options::asJSON(bool includeTransient) const
 {
 	Json::Value top = Json::objectValue;
 
-	for(OptionNamed item : _options)
+	for (const OptionNamed& item : _options)
 	{
 		if (includeTransient == false && item.second->isTransient())
 			continue;
@@ -174,7 +186,7 @@ Json::Value Options::asJSON(bool includeTransient) const
 
 void Options::set(const Json::Value &json)
 {
-	for(OptionNamed item : _options)
+	for (const OptionNamed& item : _options)
 	{
 		string		name = item.first;
 		Json::Value value;
@@ -224,7 +236,7 @@ bool Options::extractValue(const string &name, const Json::Value &root, Json::Va
 
 Option *Options::get(string name) const
 {
-	for(OptionNamed p : _options)
+	for (const OptionNamed& p : _options)
 	{
 		if (p.first == name)
 			return p.second;
@@ -236,7 +248,7 @@ Option *Options::get(string name) const
 
 void Options::get(int index, string &name, Option *&option)
 {
-	OptionNamed optionWithName = _options.at(index);
+	const OptionNamed& optionWithName = _options.at(index);
 
 	name	= optionWithName.first;
 	option	= optionWithName.second;
@@ -260,7 +272,7 @@ std::set<std::string> Options::usedVariables()
 {
 	std::set<std::string> combined;
 
-	for(OptionNamed option : _options)
+	for (const OptionNamed& option : _options)
 	{
 		std::set<std::string> cols = option.second->usedVariables();
 		combined.insert(cols.begin(), cols.end());
@@ -273,7 +285,7 @@ std::set<std::string> Options::columnsCreated()
 {
 	std::set<std::string> combined;
 
-	for(OptionNamed option : _options)
+	for (const OptionNamed& option : _options)
 	{
 		std::set<std::string> cols = option.second->columnsCreated();
 		combined.insert(cols.begin(), cols.end());
@@ -284,7 +296,7 @@ std::set<std::string> Options::columnsCreated()
 
 void Options::removeUsedVariable(std::string var)
 {
-	for(OptionNamed option : _options)
+	for (const OptionNamed& option : _options)
 		option.second->removeUsedVariable(var);
 
 	notifyChanged();
@@ -292,7 +304,7 @@ void Options::removeUsedVariable(std::string var)
 
 void Options::replaceVariableName(std::string oldName, std::string newName)
 {
-	for(OptionNamed option : _options)
+	for (const OptionNamed& option : _options)
 		option.second->replaceVariableName(oldName, newName);
 
 	notifyChanged();

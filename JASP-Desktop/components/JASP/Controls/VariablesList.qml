@@ -33,12 +33,14 @@ JASPControl
 	
 	property var	model
 	property string title
+	property alias	count:				listView.count	
 	property int	columns:			1
 	property string itemType:			"variables"
 	property alias	dropKeys:			dropArea.keys
 	property string	dropMode:			"None"
 	property bool	draggable:			true
-	property var	syncModels
+	property var	source
+	property alias	syncModels:			variablesList.source
 	property bool	singleItem:			false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]

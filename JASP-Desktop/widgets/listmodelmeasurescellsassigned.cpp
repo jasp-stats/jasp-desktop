@@ -59,7 +59,7 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 	endResetModel();
 }
 
-void ListModelMeasuresCellsAssigned::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModelMeasuresCellsAssigned::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
 	BoundQMLListViewMeasuresCells* measureCellsListView = dynamic_cast<BoundQMLListViewMeasuresCells*>(listView());
 	initLevels(measureCellsListView->getLevels());

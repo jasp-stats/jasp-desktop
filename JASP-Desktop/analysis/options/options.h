@@ -43,6 +43,7 @@ public:
 	Json::Value asJSONWithType(bool includeTransient)	const;
 
 	void		add(std::string name, Option *option);
+	void		remove(std::string name);
 	size_t		size()									const				{ return _options.size(); }
 
 	Option*		get(std::string name)					const;

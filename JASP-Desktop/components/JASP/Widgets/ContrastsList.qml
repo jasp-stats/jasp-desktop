@@ -20,7 +20,7 @@ import JASP.Controls 1.0
 
 VariablesList {
     title: qsTr("Factors")
-    syncModels: "fixedFactors"
+    source: "fixedFactors"
     name: "contrasts"
     listViewType: "AssignedVariables"
     height: 200

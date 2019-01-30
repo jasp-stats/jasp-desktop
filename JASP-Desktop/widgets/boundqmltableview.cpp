@@ -94,6 +94,11 @@ Option *BoundQMLTableView::createOption()
 	return new OptionsTable(templote);
 }
 
+bool BoundQMLTableView::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionsTable*>(option) != nullptr;
+}
+
 void BoundQMLTableView::setUp()
 {
 	QMLListView::setUp();

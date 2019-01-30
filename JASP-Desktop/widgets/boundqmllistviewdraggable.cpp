@@ -86,29 +86,29 @@ void BoundQMLListViewDraggable::setUp()
 {	
 	QMLListViewDraggable::setUp();
 	
-	ListModel* sourceModel = _form->getRelatedModel(this);
+	ListModel* availableModel = _form->getRelatedModel(this);
 	ListModelAssignedInterface* _assignedModel = assignedModel();
 	
-	if (!sourceModel)
+	if (!availableModel)
 	{
-		if (syncModels().empty())
+		if (sourceModels().empty())
 			addError(QString::fromLatin1("Cannot find source ListView for item ") + name());
 	}
 	else
 	{
-		_sourceModel = dynamic_cast<ListModelAvailableInterface*>(sourceModel);
-		if (!_sourceModel)
+		_availableModel = dynamic_cast<ListModelAvailableInterface*>(availableModel);
+		if (!_availableModel)
 			addError(QString::fromLatin1("Wrong kind of source ListView for item ") + name());
 		else
 		{
-			_assignedModel->setSource(_sourceModel);
-			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(_sourceModel->listView());
+			_assignedModel->setAvailableModel(_availableModel);
+			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(_availableModel->listView());
 			if (qmlAvailableListView)
 			{
 				qmlAvailableListView->addAssignedModel(_assignedModel);
 				addDependency(qmlAvailableListView);
 			}
-			connect(_sourceModel, &ListModelAvailableInterface::modelChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);			
+			connect(_availableModel, &ListModelAvailableInterface::modelChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);			
 		}
 	}
 	

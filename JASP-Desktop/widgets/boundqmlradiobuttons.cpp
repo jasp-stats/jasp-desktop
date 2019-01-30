@@ -101,6 +101,11 @@ Option *BoundQMLRadioButtons::createOption()
 	return new OptionList(options, defaultValue.toStdString());
 }
 
+bool BoundQMLRadioButtons::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionList*>(option) != nullptr;
+}
+
 void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 {
 	QObject* objButton = button.value<QObject*>();

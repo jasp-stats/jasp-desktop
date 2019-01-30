@@ -46,11 +46,6 @@ void BoundQMLListViewInteraction::bindTo(Option *option)
 	_interactionModel->initTermsWithTemplate(_boundTo->value(), _boundTo->rowTemplate());
 }
 
-void BoundQMLListViewInteraction::unbind()
-{
-	
-}
-
 Option* BoundQMLListViewInteraction::createOption()
 {
 	Options* templote = new Options();
@@ -61,7 +56,7 @@ Option* BoundQMLListViewInteraction::createOption()
 	OptionsTable* result = new OptionsTable(templote);
 	
 	std::vector<Options *> values;
-	const Terms& availableTerms = _sourceModel->terms();
+	const Terms& availableTerms = _availableModel->terms();
 	for (auto availableTerm : availableTerms)
 	{
 		Options *row = static_cast<Options *>(templote->clone());
@@ -72,6 +67,11 @@ Option* BoundQMLListViewInteraction::createOption()
 	result->setValue(values);
 	
 	return result;
+}
+
+bool BoundQMLListViewInteraction::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionsTable*>(option) != nullptr;
 }
 
 void BoundQMLListViewInteraction::modelChangedHandler()

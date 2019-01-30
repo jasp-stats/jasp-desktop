@@ -152,6 +152,21 @@ Option *BoundQMLTextInput::createOption()
 	return option;
 }
 
+bool BoundQMLTextInput::isOptionValid(Option *option)
+{
+	bool valid = false;
+	switch (_inputType)
+	{
+	case TextInputType::IntegerInputType:		valid = dynamic_cast<OptionInteger*>(option) != nullptr;		break;
+	case TextInputType::NumberInputType:		valid = dynamic_cast<OptionNumber*>(option) != nullptr;			break;
+	case TextInputType::PercentIntputType:		valid = dynamic_cast<OptionNumber*>(option) != nullptr;			break;
+	case TextInputType::IntegerArrayInputType:	valid = dynamic_cast<OptionIntegerArray*>(option) != nullptr;	break;
+	case TextInputType::StringInputType:
+	default:									valid = dynamic_cast<OptionString*>(option) != nullptr;			break;
+	}
+	return valid;	
+}
+
 void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);

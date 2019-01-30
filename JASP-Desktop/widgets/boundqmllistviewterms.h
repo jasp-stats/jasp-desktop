@@ -44,6 +44,7 @@ public:
 	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual bool isOptionValid(Option* option) OVERRIDE;	
 	
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;

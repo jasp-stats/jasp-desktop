@@ -24,7 +24,6 @@
 #include "../analysis/analysisform.h"
 #include <QSize>
 #include <QDebug>
-#include <QQmlEngine>
 
 #include "utilities/qutils.h"
 
@@ -192,7 +191,7 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& co
 }
 
 
-void ListModelMultinomialChi2Test::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
 	Q_UNUSED(termsRemoved);
 	

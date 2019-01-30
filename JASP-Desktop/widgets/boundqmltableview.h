@@ -38,6 +38,7 @@ public:
 	virtual ListModel* model() OVERRIDE		{ return _tableModel; }
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual bool isOptionValid(Option* option) OVERRIDE;	
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }
 	virtual void setUp() OVERRIDE;
 

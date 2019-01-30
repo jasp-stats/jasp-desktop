@@ -108,6 +108,7 @@ public:
 	const	Json::Value		&	getImgResults()		const	{ return _imgResults;					}
 			DataSet			*	getDataSet()		const;
 	Modules::DynamicModule	*	dynamicModule()		const	{ return _moduleData == nullptr ? nullptr : _moduleData->dynamicModule(); }
+			AnalysisForm	*	form()				const	{ return _analysisForm;					}
 
 			void		refresh();
 	virtual void		abort();
@@ -135,6 +136,8 @@ public:
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
+	
+	Q_INVOKABLE				void resetAnalysis();
 
 public slots:
 	void					setName(std::string name);

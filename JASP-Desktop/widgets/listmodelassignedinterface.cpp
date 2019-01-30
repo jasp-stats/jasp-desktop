@@ -67,7 +67,7 @@ void ListModelAssignedInterface::modelResetHandler()
 	}
 }
 
-void ListModelAssignedInterface::setSource(ListModelAvailableInterface *source)
+void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *source)
 {
 	_source = source;
 }

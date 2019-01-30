@@ -57,6 +57,11 @@ Option *BoundQMLSlider::createOption()
 	return option;
 }
 
+bool BoundQMLSlider::isOptionValid(Option *option)
+{
+	return dynamic_cast<OptionNumber*>(option) != nullptr;
+}
+
 void BoundQMLSlider::sliderMovedSlot()
 {
 	double newValue = QQmlProperty(_item, "value").read().toDouble();

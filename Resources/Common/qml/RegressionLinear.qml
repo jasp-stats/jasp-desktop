@@ -58,7 +58,7 @@ Form
 				name: "availableTerms"
 				title: qsTr("Components")
 				width: parent.width / 4
-				syncModels: ['covariates', 'factors']
+				source: ['covariates', 'factors']
 			}
 			AssignedVariablesList
 			{

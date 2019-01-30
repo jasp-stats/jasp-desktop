@@ -42,7 +42,7 @@ public:
 	const QList<QString>& variables() const { return _variables; }	
 
 public slots:	
-	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;	
+	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;	
 	
 private:
 	QList<QString> _levels;

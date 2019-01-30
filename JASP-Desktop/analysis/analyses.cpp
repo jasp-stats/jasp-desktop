@@ -25,8 +25,6 @@
 #include <QFile>
 #include <QTimer>
 #include <QDebug>
-#include <QQmlContext>
-#include <QQmlEngine>
 
 #include "utils.h"
 #include "tempfiles.h"

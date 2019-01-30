@@ -36,6 +36,7 @@ public:
 	
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
+	virtual bool isOptionValid(Option* option) OVERRIDE;			
 	virtual void setUp() OVERRIDE;
 	
 	const Terms& getLevels();
@@ -46,7 +47,7 @@ protected slots:
 private:
 	OptionVariables* _boundTo;
 	ListModelMeasuresCellsAssigned* _measuresCellsModel;
-	QList<ListModelRepeatedMeasuresFactors*> _syncFactorsModels;
+	QList<ListModelRepeatedMeasuresFactors*> _sourceFactorsModels;
 	
 	Terms _tempTerms;
 	

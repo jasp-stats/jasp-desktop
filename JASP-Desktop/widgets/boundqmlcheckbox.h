@@ -30,10 +30,10 @@ class BoundQMLCheckBox : public QObject, public BoundQMLItem
 public:
 	BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }
+	virtual bool isOptionValid(Option* option) OVERRIDE;
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 
 signals:
