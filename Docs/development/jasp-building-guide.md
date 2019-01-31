@@ -38,10 +38,9 @@ Windows
 
 Building JASP under windows is the most temperamental but should pose no large problems. Beside the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described more specific: 
 
-•	[Qt 5.12] (https://www.qt.io/download) Download the Open Source version.
-•	[Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download the community version
-•	[R Tools 35] (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
-
+	- [Qt 5.12] (https://www.qt.io/download) Download the Open Source version.
+	- [Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download the community version
+	- [R Tools 35] (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
 Besides this one needs to make a new kit in Qt Creator to be able to build JASP-R-Interface. 
 To Do: Write a nice guide here that explains how to do it!
