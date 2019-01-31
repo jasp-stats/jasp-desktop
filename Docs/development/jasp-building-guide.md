@@ -36,10 +36,12 @@ Simply clone the git repository next to your jasp-desktop folder as follows:
 Windows
 -------
 
-Building JASP under windows is the most temperamental but should pose no large problems. After cloning the jasp-desktop and jasp-required-files repositories you must however install the following software:
+Building JASP under windows is the most temperamental but should pose no large problems. Beside the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described more specific: 
 
- - [Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download community version
- - [R Tools 34] (https://cran.r-project.org/bin/windows/Rtools/Rtools34.exe)
+•	Qt 5.12  (https://www.qt.io/download) Download the Open Source version.
+•	[Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download the community version
+•	[R Tools 35] (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
+
 
 Besides this one needs to make a new kit in Qt Creator to be able to build JASP-R-Interface. 
 To Do: Write a nice guide here that explains how to do it!
