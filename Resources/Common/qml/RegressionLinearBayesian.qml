@@ -149,7 +149,8 @@ Form {
 			GroupBox
 			{
 				title: qsTr("Residuals")
-				CheckBox { name: "plotResidualsVsFitted";	text: qsTr("Residuals vs. fitted")				}
+				CheckBox { name: "plotResidualsVsFitted";	text: qsTr("Residuals vs. fitted")				  }
+                CheckBox { name: "plotQQplot";	            text: qsTr("Q-Q plot of model averaged residuals")}
 			}
 		}
 	}
