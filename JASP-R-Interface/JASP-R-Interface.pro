@@ -79,6 +79,7 @@ windows{
 
 ### making sure that writeImage.R is available to jaspEngine:
 SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/writeImage.R
+SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/zzzWrappers.R
 DEST_WRITE_IMAGE = $$OUT_PWD/$$DESTDIR/
 
 auxillaryRFiles.path = $$INSTALLPATH
