@@ -41,7 +41,8 @@ RegressionLinearBayesian <- function (
 		plotResidualsVsFitted = c(modelOpts, "plotResidualsVsFitted"),
 		plotModelProbabilities = c(modelOpts, "plotModelProbabilities"),
 		plotModelComplexity = c(modelOpts, "plotModelComplexity"),
-		plotInclusionProbabilities = c(modelOpts, "plotInclusionProbabilities")
+		plotInclusionProbabilities = c(modelOpts, "plotInclusionProbabilities"),
+		plotQQplot = c(modelOpts, "plotQQplot")
 	)
 
 	# Initialize the variables
@@ -56,6 +57,7 @@ RegressionLinearBayesian <- function (
 	plotModelProbabilities <- state$plotModelProbabilities
 	plotModelComplexity <- state$plotModelComplexity
 	plotInclusionProbabilities <- state$plotInclusionProbabilities
+	plotQQplot <- state$plotQQplot
 	status <- state$status
 
 	# Read the selected columns
@@ -160,6 +162,12 @@ RegressionLinearBayesian <- function (
 			bas_obj = bas_obj, status = status, perform = perform, which = 4
 		)
 	}
+	
+	if (options$plotQQplot && is.null(plotQQplot)) {
+		plotQQplot <- .plotDiagnostics.basReg(
+			bas_obj = bas_obj, status = status, perform = perform, which = 5
+		)
+	}
 
 	# Assign to results
 	results <- list()
@@ -181,7 +189,7 @@ RegressionLinearBayesian <- function (
 
 	if (options$plotLogPosteriorOdds || options$plotCoefficientsPosterior ||
 		options$plotResidualsVsFitted || options$plotModelProbabilities ||
-		options$plotModelComplexity || options$plotInclusionProbabilities) {
+		options$plotModelComplexity || options$plotInclusionProbabilities || options$plotQQplot) {
 
 		results[["inferentialPlots"]] <-
 			list(
@@ -191,6 +199,7 @@ RegressionLinearBayesian <- function (
 				ModelProbabilitiesPlot = plotModelProbabilities,
 				ModelComplexityPlot = plotModelComplexity,
 				InclusionProbabilitiesPlot = plotInclusionProbabilities,
+				plotQQplot = plotQQplot,
 				coefficentsPlots =
 					list(
 						title = "Coefficent plots",
@@ -213,7 +222,8 @@ RegressionLinearBayesian <- function (
 			plotModelProbabilities$data,
 			plotModelComplexity$data,
 			plotInclusionProbabilities$data,
-			postSummaryPlot$data
+			postSummaryPlot$data,
+			plotQQplot$data
 		)
 
 		state <- list(
@@ -229,6 +239,7 @@ RegressionLinearBayesian <- function (
 			plotModelProbabilities = plotModelProbabilities,
 			plotModelComplexity = plotModelComplexity,
 			plotInclusionProbabilities = plotInclusionProbabilities,
+			plotQQplot = plotQQplot,
 			status = status,
 			keep = keep
 		)
@@ -272,6 +283,7 @@ RegressionLinearBayesian <- function (
 			list(name = "ModelProbabilitiesPlot", type = "image"),
 			list(name = "ModelComplexityPlot", type = "image"),
 			list(name = "InclusionProbabilitiesPlot", type = "image"),
+			list(name = "plotQQplot", type = "image"),
 			list(
 				name = "coefficentsPlots",
 				type = "collection",
@@ -1286,7 +1298,7 @@ RegressionLinearBayesian <- function (
 	show <- rep(FALSE, 4)
 	show[which] <- TRUE
 	iid <- 1:id.n
-	if (show[1]) {
+	if (show[1] || show[5]) {
 		yhat = fitted(x, estimator = "BMA")
 		r = x$Y - yhat
 		n <- length(r)
@@ -1418,6 +1430,9 @@ RegressionLinearBayesian <- function (
 		
 		return(g)
 
+	}
+	if (show[5]) {
+	  return(JASPgraphs::plotQQnorm(r))
 	}
 }
 
