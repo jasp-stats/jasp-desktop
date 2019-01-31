@@ -118,6 +118,15 @@ destroyAllAllocatedRObjects <- function() {
 	}
 }
 
+jaspResultsCalledFromJasp <- function() {
+  # a variety of tests to check if a createJasp*() function is called from JASP
+  return(
+    exists("jaspResultsModule", mode = "S4") && 
+      inherits(jaspResultsModule, "Module") && 
+      identical(slotNames(jaspResultsModule), ".xData")
+  )
+}
+
 ###########################
 ## JASP Results Wrappers ##
 ###########################
@@ -129,9 +138,15 @@ destroyAllAllocatedRObjects <- function() {
 # aspectRatio of > 0 sets height to width * aspectRatio.
 createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, errorMessage="", dependencies=NULL, position=NULL)
 {
-  checkForJaspResultsInit()
-
-  jaspPlotObj  <- create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
+  if (jaspResultsCalledFromJasp()) 
+  {
+    jaspPlotObj <- jaspResultsModule$create_cpp_jaspPlot(title)
+  } 
+  else 
+  {
+    checkForJaspResultsInit()
+    jaspPlotObj  <- create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
+  }
 
   if(aspectRatio > 0 && !is.null(width) && width != 0)  height = aspectRatio * width
   else if(aspectRatio > 0)                              width = height / aspectRatio;
@@ -160,9 +175,15 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
 
 createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
 {
-  checkForJaspResultsInit()
-
-  container <- create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
+  if (jaspResultsCalledFromJasp()) 
+  {
+    container <- jaspResultsModule$create_cpp_jaspContainer(title)
+  } 
+  else 
+  {
+    checkForJaspResultsInit()
+    container <- create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
+  }
 
   if(!is.null(dependencies))
     container$dependOnOptions(dependencies)
@@ -175,10 +196,16 @@ createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
 
 createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
 {
-  checkForJaspResultsInit()
-
-  jaspObj <- create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
-  jaspObj <- as(jaspObj, "jaspTableExtended") #We extend it so we may use addColumnInfo and addFootnote. Sadly enough this breaks for tables coming from a container.. This does however work in JASP but I cant get it to work in stand-alone. (This might be fixed by DvB)
+  if (jaspResultsCalledFromJasp()) 
+  {
+    jaspObj <- jaspResultsModule$create_cpp_jaspTable(title)
+  } 
+  else 
+  {
+    checkForJaspResultsInit()
+    jaspObj <- create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
+    jaspObj <- as(jaspObj, "jaspTableExtended") #We extend it so we may use addColumnInfo and addFootnote. Sadly enough this breaks for tables coming from a container.. This does however work in JASP but I cant get it to work in stand-alone. (This might be fixed by DvB)
+  }
 
   if(!is.null(data))
     jaspObj$setData(data)
@@ -212,7 +239,15 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
 
 createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL) # if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
 {
-  checkForJaspResultsInit()
+  if (jaspResultsCalledFromJasp()) 
+  {
+    htmlObj <- jaspResultsModule$create_cpp_jaspHtml(title)
+  } 
+  else 
+  {
+    checkForJaspResultsInit()
+    htmlObj             <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  }
 
   htmlObj             <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
   htmlObj$elementType <- elementType
@@ -232,9 +267,15 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
 
 createJaspState <- function(object=NULL, title="", dependencies=NULL, position=NULL)
 {
-  checkForJaspResultsInit()
-
-  stateObj <- create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  if (jaspResultsCalledFromJasp()) 
+  {
+    stateObj <- jaspResultsModule$create_cpp_jaspState(title)
+  } 
+  else 
+  {
+    checkForJaspResultsInit()
+    stateObj <- create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  }
 
   stateObj$object <- object
 
