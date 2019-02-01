@@ -77,31 +77,35 @@ windows{
   QMAKE_POST_LINK     += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 }
 
-### making sure that writeImage.R is available to jaspEngine:
+### making sure that writeImage.R and zzzWrappers.R are available to jaspEngine:
 SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/writeImage.R
-SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/zzzWrappers.R
-DEST_WRITE_IMAGE = $$OUT_PWD/$$DESTDIR/
+SRC_WRAPPERS    = $${PWD}/jaspResults/R/zzzWrappers.R
+DEST_DIR_AUX_R  = $$OUT_PWD/$$DESTDIR/
 
 auxillaryRFiles.path = $$INSTALLPATH
 auxillaryRFiles.files = $${PWD}/jaspResults/R/writeImage.R
+auxillaryRFiles.files += $${PWD}/jaspResults/R/zzzWrappers.R
 INSTALLS += auxillaryRFiles
 
 win32 {
     SRC_WRITE_IMAGE ~= s,/,\\,g
-    DEST_WRITE_IMAGE ~= s,/,\\,g
+	SRC_WRAPPERS ~= s,/,\\,g
+    DEST_DIR_AUX_R ~= s,/,\\,g
 
-    copyWriteImg.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRITE_IMAGE} $${DEST_WRITE_IMAGE})
+    copyRFiles.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRITE_IMAGE} $${DEST_DIR_AUX_R}*) $$escape_expand(\n\t)
+    copyRFiles.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R}*)
 }
 
 unix {
-    copyWriteImg.commands += $(MKDIR) $$DEST_WRITE_IMAGE ;
-    copyWriteImg.commands += cp $$SRC_WRITE_IMAGE $$DEST_WRITE_IMAGE ;
+    copyRFiles.commands += $(MKDIR) $$DEST_DIR_AUX_R ;
+    copyRFiles.commands += cp $$SRC_WRITE_IMAGE $$DEST_DIR_AUX_R ;
+    copyRFiles.commands += cp $$SRC_WRAPPERS $$DEST_DIR_AUX_R ;
 }
 
 
 ! equals(PWD, $${OUT_PWD}) {
-    QMAKE_EXTRA_TARGETS += copyWriteImg
-    POST_TARGETDEPS     += copyWriteImg
+    QMAKE_EXTRA_TARGETS += copyRFiles
+    POST_TARGETDEPS     += copyRFiles
 }
 
 DISTFILES += \
