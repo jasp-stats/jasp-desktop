@@ -18,6 +18,9 @@ FocusScope
 	property bool   indent:                 false
 	property alias	cursorShape:			controlMouseArea.cursorShape
 	property alias	hovered:				controlMouseArea.containsMouse
+	property bool	useControlMouseArea:	true
+	property var	subControls:			null
+	property bool	subControlsHasFocus:	false
 
 
 	Rectangle
@@ -41,12 +44,23 @@ FocusScope
 			if (backgroundWidth)		control.background.width	= Qt.binding(function (){ return backgroundWidth;  })
 			if (backgroundHeight)		control.background.height	= Qt.binding(function (){ return backgroundHeight; })
 		}
+		
+		if (subControls)
+		{
+			subControlsHasFocus = Qt.binding(function() {
+				var result = false;
+				for (var i = 0; i < subControls.children.length; i++)
+					if (subControls.children[i].activeFocus)
+						result = true;
+				return result;
+			})
+		}
 	}
-
+	
 	states: [
 		State
 		{
-			when: jaspControl.activeFocus && jaspControl.hasTabFocus
+			when: jaspControl.activeFocus && jaspControl.hasTabFocus && !jaspControl.subControlsHasFocus
 			PropertyChanges
 			{
 				target:			controlBackground
@@ -92,7 +106,7 @@ FocusScope
 	MouseArea
 	{
 		z:					5
-		anchors.fill:		parent
+		anchors.fill:		useControlMouseArea ? parent : undefined
 		id:					controlMouseArea
 		hoverEnabled:		true
 		acceptedButtons:	Qt.NoButton

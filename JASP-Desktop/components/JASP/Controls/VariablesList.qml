@@ -30,6 +30,7 @@ JASPControl
 	implicitWidth:		parent.width
 	height:				singleItem ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height
+	useControlMouseArea:	false
 	
 	property var	model
 	property string title
@@ -532,9 +533,10 @@ JASPControl
 				MouseArea
 				{
 					id: mouseArea
-					anchors.fill: parent
-					drag.target: parent
-					hoverEnabled: true
+					anchors.fill:	parent
+					drag.target:	parent
+					hoverEnabled:	true
+					cursorShape:	Qt.PointingHandCursor					
 					
 					onDoubleClicked:
 					{

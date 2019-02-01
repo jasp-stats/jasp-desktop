@@ -31,7 +31,7 @@ FocusScope
 	default		property alias	content:		expanderArea.children
 				property alias	button:			expanderButton
 				property alias	area:			expanderArea
-				property alias	spacing:		expanderArea.spacing
+				property alias	spacing:		expanderArea.rowSpacing
 				property alias	text:			label.text
                 property alias  title:          label.text
 				property bool	expanded:		false
@@ -40,6 +40,7 @@ FocusScope
 	readonly	property string	expandedIcon:	"expander-arrow-down.png"
 	readonly	property string	contractedIcon: "expander-arrow-up.png"
 				property var	childControls:	[]
+				property alias	columns:		expanderArea.columns
 
 	Behavior on implicitHeight { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
   
@@ -54,7 +55,7 @@ FocusScope
 		height:					22 * preferencesModel.uiScale
 		Keys.onSpacePressed:	toggleExpander()
 		Keys.onReturnPressed:   toggleExpander()
-		KeyNavigation.tab:		expanderWrapper.expanded ? childControls[0] : nextExpander
+		KeyNavigation.tab:		expanderWrapper.expanded && childControls.length > 0 ? childControls[0] : nextExpander
         
         property var nextExpander: null
         
@@ -102,15 +103,17 @@ FocusScope
         }
     }
 
-	ColumnLayout
+	GridLayout
 	{
 		id:						expanderArea
-		spacing:				10 * preferencesModel.uiScale
+		rowSpacing:				Theme.rowGridSpacing
+		columnSpacing:			Theme.columnGridSpacing
 		anchors.leftMargin:		5  * preferencesModel.uiScale
 		anchors.top:			expanderButton.bottom
 		anchors.topMargin:		15 * preferencesModel.uiScale
 		anchors.bottomMargin:	20 * preferencesModel.uiScale
 		width:					parent.width
+		columns:				1
     }
 
 	Rectangle
@@ -122,9 +125,12 @@ FocusScope
     
 	Component.onCompleted:
 	{
+		for (var i = 0; i < expanderArea.children.length; i++)
+			expanderArea.children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft;
+
         form.getJASPControls(childControls, expanderArea)
 		if (debug)
-			for (var i = 0; i < childControls.length; i++)
-                childControls[i].debug = true;
+			for (i = 0; i < childControls.length; i++)
+                childControls[i].debug = true;	
     }
 }

@@ -28,46 +28,52 @@ AnalysisForm
 	id:				form
 	width:			Theme.formWidth - ( 2 * Theme.formMargin )
 	height:			formContent.height + (Theme.formMargin * 2)
-
+	
 	default property alias	content:			column.children
-			property alias	form:				form
-			property bool	usesJaspResults:	true
-			property int	majorVersion:		1
-			property int	minorVersion:		0
-			property bool	usesVariablesModel: false
-			property int	availableWidth:		form.width - 2 * Theme.formMargin
-			property var	jaspControls:		[]
-            property var    analysis:           myAnalysis
-
-            property int    plotHeight:         320
-            property int    plotWidth:          480
-
+	property alias	form:				form
+	property bool	usesJaspResults:	true
+	property int	majorVersion:		1
+	property int	minorVersion:		0
+	property bool	usesVariablesModel: false
+	property int	availableWidth:		form.width - 2 * Theme.formMargin
+	property var	jaspControls:		[]
+	property var    analysis:           myAnalysis
+	
+	property int    plotHeight:         320
+	property int    plotWidth:          480
+	
 	function getJASPControls(controls, item)
 	{
 		for (var i = 0; i < item.children.length; ++i)
 		{
-            var child = item.children[i];
-
+			var child = item.children[i];
+			
 			if (child instanceof ExpanderButton)
 			{
-                controls.push(child.button);
-                getJASPControls(controls, child.area);
+				controls.push(child.button);
+				getJASPControls(controls, child.area);
 			}
 			else if (child instanceof JASPControl)
 			{
-				if (child.hasTabFocus)	controls.push(child);
-				 else					getJASPControls(controls, child);
-
+				if (child.hasTabFocus)
+				{
+					controls.push(child);
+					if (child.subControls)
+						getJASPControls(controls, child.subControls);
+				}
+				else
+					getJASPControls(controls, child);
+				
 			}
 			else
-                getJASPControls(controls, child);
-        }
-    }
-
+				getJASPControls(controls, child);
+		}
+	}
+	
 	IntegerField { visible: false; name: "plotWidth";  value: plotWidth }
-    IntegerField { visible: false; name: "plotHeight"; value: plotHeight }
-
-
+	IntegerField { visible: false; name: "plotHeight"; value: plotHeight }
+	
+	
 	FocusScope
 	{
 		id:				formContent
@@ -78,20 +84,20 @@ AnalysisForm
 			top:		form.top
 			left:		form.left
 		}
-
+		
 		Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
-
+		
 		Rectangle
 		{
 			property alias text:	errorMessagesText.text
-
+			
 			id:				errorMessagesBox
 			objectName:		"errorMessagesBox"
 			visible:		false
 			color:			Theme.errorMessagesBackgroundColor
 			width:			parent.width
 			height:			visible ? errorMessagesText.height : 0
-
+			
 			Text
 			{
 				id:					errorMessagesText
@@ -100,19 +106,19 @@ AnalysisForm
 				verticalAlignment:	Text.AlignVCenter
 			}
 		}
-
+		
 		ColumnLayout
 		{
 			id:				column
 			anchors.top:	errorMessagesBox.bottom
 			spacing:		10
 			width:			parent.width
-
+			
 			//visible:		currentSelected
 		}
 	}
-
-
+	
+	
 	Timer
 	{
 		id:				bindingTimer
@@ -133,18 +139,18 @@ AnalysisForm
 					previousExpander = jaspControls[i];
 				}
 			}
-
+			
 			if (previousExpander)
 				previousExpander.nextExpander = jaspControls[0];
-
+			
 			for (var i = 0; i < jaspControls.length; i++) {
 				if (jaspControls[i].indent)
 					jaspControls[i].Layout.leftMargin = Theme.indentationLength
 			}
-
+			
 			formCompleted();
 		}
 	}
-
+	
 	Component.onCompleted:	bindingTimer.start()
 }
