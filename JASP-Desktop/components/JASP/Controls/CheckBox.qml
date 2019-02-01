@@ -25,23 +25,30 @@ JASPControl
 {
 	id: checkBox
 	controlType:			"CheckBox"
-	implicitWidth:			control.implicitWidth
-	implicitHeight:			row.visible ? row.implicitHeight : (control.implicitHeight + (column.visible ? column.implicitHeight : 0))
+	implicitWidth:			placeChildrenOnSameRow
+								? control.implicitWidth + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitWidth : 0)
+								: Math.max(control.implicitWidth, childControls.implicitWidth)
+	implicitHeight:			placeChildrenOnSameRow
+								? Math.max(control.implicitHeight, childControls.implicitHeight)
+								: control.implicitHeight + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitHeight : 0)
 	useDefaultBackground:	true
+	subControls:			childControls.children.length > 0 ? childControls : null
 	
-	property alias text:	control.text
-    property alias checked: control.checked
-    property alias control: control
-	property bool placeChildrenOnSameRow:	false
-	property int columns:	1
-	default	property alias content: items.children
+	default property alias	content:				childControls.children
+			property alias	text:					control.text
+			property alias	checked:				control.checked
+			property alias	control:				control
+			property bool	placeChildrenOnSameRow:	false
+			property alias	columns:				childControls.columns
+			property bool	enableChildrenOnChecked: true
 	
     signal clicked();
-    
+	    
 	CheckBox
 	{
 		id:			control
 		padding:	Theme.jaspControlPadding
+		focus:		true
 
 		indicator: Rectangle
 		{
@@ -75,48 +82,34 @@ JASPControl
 			verticalAlignment:	Text.AlignVCenter
         }
     }
-	
-	Item { id: items; visible: false }
-	
-	GridLayout
+		
+	Grid
 	{
-		id:				column
-		columns:		checkBox.columns
-		visible:		!placeChildrenOnSameRow && control.visible ? true : false
-		enabled:		control.checked
-		anchors
-		{
-			top:		control.bottom
-			topMargin:	Theme.rowGroupSpacing
-			left:		control.left
-			leftMargin:	Theme.indentationLength
-		}
+		id:				childControls
+		enabled:		enableChildrenOnChecked ? control.checked : true
+		visible:		children.length > 0
+		columns:		placeChildrenOnSameRow ? children.length : 1
+		rowSpacing:		Theme.rowGroupSpacing
+		columnSpacing:	Theme.columnGridSpacing
     }
 
-	RowLayout
-	{
-		id:				row
-		spacing:		Theme.rowGroupSpacing
-		visible:		placeChildrenOnSameRow && control.visible ? true : false
-		enabled:		control.checked
-		x:				control.implicitWidth + Theme.rowGroupSpacing
-    }
-	
 	Component.onCompleted:
 	{
 		control.clicked.connect(clicked);
 
-		if (items.children.length === 0)
+		if (childControls.children.length > 0)
 		{
-			row.visible = false;
-			column.visible = false;
-		}
-		else
-		{
-			var elt = placeChildrenOnSameRow ? row : column;
-	
-			while (items.children.length > 0)
-				items.children[0].parent = elt
+			if (placeChildrenOnSameRow)
+			{
+				childControls.x = control.implicitWidth + Theme.rowGroupSpacing
+			}
+			else
+			{
+				childControls.anchors.top = control.bottom
+				childControls.anchors.topMargin = Theme.rowGroupSpacing
+				childControls.anchors.left = control.left
+				childControls.anchors.leftMargin = Theme.indentationLength				
+			}				
 		}
 		
 	}

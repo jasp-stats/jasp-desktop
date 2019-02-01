@@ -26,6 +26,10 @@ GridLayout {
 	columnSpacing:			Theme.columnGridSpacing
 	columns:				2
 	Layout.minimumWidth:	parent.width
-    
-	Component.onCompleted: { for (var i = 0; i < children.length; i++) children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft }
+	
+	Component.onCompleted: 
+	{
+		for (var i = 0; i < children.length; i++)
+			children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft;
+	}
 }
