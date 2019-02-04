@@ -42,17 +42,19 @@ using namespace boost::interprocess;
 EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent = 0)
 	: QObject(parent), _analyses(analyses), _package(package), _dynamicModules(dynamicModules)
 {
-	connect(_analyses,	&Analyses::analysisAdded,							this,					&EngineSync::ProcessAnalysisRequests	);
-	connect(_analyses,	&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests	);
-	connect(_analyses,	&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests	);
-	connect(_analyses,	&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests	);
-	connect(_analyses,	&Analyses::analysisRewriteImages,					this,					&EngineSync::ProcessAnalysisRequests	);
-	connect(_analyses,	&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests	);
-	connect(_analyses,	&Analyses::sendRScript,								this,					&EngineSync::sendRCode					);
-	connect(this,		&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed			);
-	connect(this,		&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded		);
-	connect(this,		&EngineSync::moduleInstallationFailed,				_dynamicModules,		&DynamicModules::installationPackagesFailed		);
-	connect(this,		&EngineSync::moduleInstallationSucceeded,			_dynamicModules,		&DynamicModules::installationPackagesSucceeded	);
+	connect(_analyses,			&Analyses::analysisAdded,							this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::analysisRewriteImages,					this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::sendRScript,								this,					&EngineSync::sendRCode							);
+	connect(this,				&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed					);
+	connect(this,				&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded				);
+	connect(this,				&EngineSync::moduleInstallationFailed,				_dynamicModules,		&DynamicModules::installationPackagesFailed		);
+	connect(this,				&EngineSync::moduleInstallationSucceeded,			_dynamicModules,		&DynamicModules::installationPackagesSucceeded	);
+	connect(_dynamicModules,	&DynamicModules::stopEngines,						this,					&EngineSync::stopEngines						);
+	connect(_dynamicModules,	&DynamicModules::restartEngines,					this,					&EngineSync::restartEngines						);
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
@@ -62,11 +64,10 @@ EngineSync::~EngineSync()
 {
 	if (_engineStarted)
 	{		
+		stopEngines();
 		_engines.clear();
 		TempFiles::deleteAll();
 	}
-
-	shared_memory_object::remove(_memoryName.c_str());
 }
 
 void EngineSync::start(int ppi)
@@ -102,6 +103,7 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed									);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded								);
 			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler								);
+			connect(_engines[i],	&EngineRepresentation::moduleUninstallingFinished,		this,			&EngineSync::moduleUninstallingFinished									);
 			connect(this,			&EngineSync::ppiChanged,								this,			&EngineSync::refreshAllPlots,					Qt::QueuedConnection	);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
@@ -126,6 +128,26 @@ void EngineSync::start(int ppi)
 	emit ppiChanged(ppi);
 }
 
+void EngineSync::restartEngines()
+{
+	if(_engineStarted)
+		return;
+
+#ifdef JASP_DEBUG
+	std::cout << "restarting engines!" << std::endl;
+#endif
+
+	for(size_t i=0; i<_engines.size(); i++)
+	{
+		_engines[i]->restartEngine(startSlaveProcess(i));
+		std::cout << "restarted engine " << i << " but should still reload any active (dynamic) modules!"<< std::endl;
+	}
+
+	setModuleWideCastVars(_dynamicModules->getJsonForReloadingActiveModules());
+
+	_engineStarted = true;
+}
+
 void EngineSync::process()
 {
 	for (auto engine : _engines)
@@ -136,7 +158,7 @@ void EngineSync::process()
 	ProcessAnalysisRequests();
 }
 
-void EngineSync::sendFilter(QString generatedFilter, QString filter, int requestID)
+void EngineSync::sendFilter(const QString & generatedFilter, const QString & filter, int requestID)
 {
 	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
 	{
@@ -148,12 +170,12 @@ void EngineSync::sendFilter(QString generatedFilter, QString filter, int request
 	}
 }
 
-void EngineSync::sendRCode(QString rCode, int requestId)
+void EngineSync::sendRCode(const QString & rCode, int requestId)
 {
 	_waitingScripts.push(new RScriptStore(requestId, rCode));
 }
 
-void EngineSync::computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType)
+void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, Column::ColumnType columnType)
 {
 	//first we remove the previously sent requests!
 	std::queue<RScriptStore*> copiedWaiting(_waitingScripts);
@@ -205,20 +227,16 @@ void EngineSync::processScriptQueue()
 
 void EngineSync::processDynamicModules()
 {
-	if(!amICastingAModuleRequestWide() && (_dynamicModules->aModuleNeedsToBeLoadedInR() || _dynamicModules->aModuleNeedsToBeUnloadedInR()))
+	if(!amICastingAModuleRequestWide() && (_dynamicModules->aModuleNeedsToBeLoadedInR() || _dynamicModules->aModuleNeedsToBeUnloadedFromR()))
 	{
-		resetModuleWideCastVars();
-
-		if(_dynamicModules->aModuleNeedsToBeLoadedInR())		_requestWideCastModuleJson	= _dynamicModules->requestJsonForPackageLoadingRequest();
-		else if(_dynamicModules->aModuleNeedsToBeUnloadedInR())	_requestWideCastModuleJson	= _dynamicModules->requestJsonForPackageUnloadingRequest();
-
-		_requestWideCastModuleName = _requestWideCastModuleJson["moduleName"].asString();
+		if(_dynamicModules->aModuleNeedsToBeLoadedInR())			setModuleWideCastVars(_dynamicModules->getJsonForPackageLoadingRequest());
+		else if(_dynamicModules->aModuleNeedsToBeUnloadedFromR())	setModuleWideCastVars(_dynamicModules->getJsonForPackageUnloadingRequest());
 	}
 
 	for(auto engine : _engines)
 		if(engine->isIdle())
 		{
-			if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->requestJsonForPackageInstallationRequest());
+			if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->getJsonForPackageInstallationRequest());
 			else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
 		}
 }
@@ -413,11 +431,59 @@ void EngineSync::subProcessError(QProcess::ProcessError error)
 	qDebug() << "subprocess error" << error;
 }
 
-void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus)
+void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	emit engineTerminated();
+	if(exitCode != 0 || exitStatus == QProcess::ExitStatus::CrashExit)
+	{
+		emit engineTerminated();
 
-	qDebug() << "subprocess finished" << exitCode;
+		qDebug() << "subprocess finished" << exitCode;
+	}
+}
+
+void EngineSync::stopEngines()
+{
+	auto timeout = QDateTime::currentSecsSinceEpoch() + 60; //shouldnt take more than a minute
+
+	//make sure we process any received messages first.
+	for(auto engine : _engines)
+		engine->process();
+
+	for(EngineRepresentation * e : _engines)
+		e->stopEngine();
+
+	while(!allEnginesStopped())
+		if(timeout < QDateTime::currentSecsSinceEpoch())
+		{
+			std::cerr << "Waiting for engine to reply stopRequest took longer than timeout.." << std::endl;
+			return;
+		}
+		else
+		for (auto * engine : _engines)
+			engine->process();
+
+	bool stillRunning;
+
+	do
+	{
+		QApplication::processEvents(); //Otherwise we will not get feedback from QProcess (aka finished)
+
+		stillRunning = false;
+
+		for (auto * engine : _engines)
+			if(engine->jaspEngineStillRunning())
+				stillRunning = true;
+	}
+	while(stillRunning && timeout > QDateTime::currentSecsSinceEpoch()); //Let's give good old jaspEngines some time to shutdown gracefully
+
+	if(stillRunning)
+		std::cout << "Waiting for engine to stop took longer than timeout.." << std::endl;
+#ifdef JASP_DEBUG
+	else
+		std::cout << "Engines stopped" << std::endl;
+#endif
+
+	_engineStarted = false;
 }
 
 void EngineSync::pause()
@@ -430,7 +496,7 @@ void EngineSync::pause()
 		e->pauseEngine();
 
 	while(!allEnginesPaused())
-		for (auto engine : _engines)
+		for (auto * engine : _engines)
 			engine->process();
 }
 
@@ -442,6 +508,14 @@ void EngineSync::resume()
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
 			engine->process();
+}
+
+bool EngineSync::allEnginesStopped()
+{
+	for(auto * engine : _engines)
+		if(!engine->stopped())
+			return false;
+	return true;
 }
 
 bool EngineSync::allEnginesPaused()
@@ -460,7 +534,7 @@ bool EngineSync::allEnginesResumed()
 	return true;
 }
 
-void EngineSync::moduleLoadingFailedHandler(std::string moduleName, std::string errorMessage, int channelID)
+void EngineSync::moduleLoadingFailedHandler(const std::string & moduleName, const std::string & errorMessage, int channelID)
 {
 #ifdef JASP_DEBUG
 	std::cout << "Received EngineSync::moduleLoadingFailedHandler(" << moduleName << ", " << errorMessage << ", " << channelID << ")" << std::endl;
@@ -474,7 +548,7 @@ void EngineSync::moduleLoadingFailedHandler(std::string moduleName, std::string 
 	checkModuleWideCastDone();
 }
 
-void EngineSync::moduleLoadingSucceededHandler(std::string moduleName, int channelID)
+void EngineSync::moduleLoadingSucceededHandler(const std::string & moduleName, int channelID)
 {
 #ifdef JASP_DEBUG
 	std::cout << "Received EngineSync::moduleLoadingSucceededHandler(" << moduleName << ", " << channelID << ")" << std::endl;
@@ -488,7 +562,7 @@ void EngineSync::moduleLoadingSucceededHandler(std::string moduleName, int chann
 	checkModuleWideCastDone();
 }
 
-void EngineSync::moduleUnloadingFinishedHandler(std::string moduleName, int channelID)
+void EngineSync::moduleUnloadingFinishedHandler(const std::string & moduleName, int channelID)
 {
 #ifdef JASP_DEBUG
 	std::cout << "Received EngineSync::moduleUnloadingFinishedHandler(" << moduleName << ", " << channelID << ")" << std::endl;
@@ -536,6 +610,14 @@ void EngineSync::resetModuleWideCastVars()
 	_requestWideCastModuleName			= "";
 	_requestWideCastModuleJson			= Json::nullValue;
 	_requestWideCastModuleResults.clear();
+}
+
+void EngineSync::setModuleWideCastVars(Json::Value newVars)
+{
+	resetModuleWideCastVars();
+
+	_requestWideCastModuleName			= newVars["moduleName"].asString();
+	_requestWideCastModuleJson			= newVars;
 }
 
 void EngineSync::refreshAllPlots(int)

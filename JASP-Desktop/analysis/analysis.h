@@ -161,7 +161,7 @@ protected:
 
 	Options*				_options;
 
-	///For backward compatibility: options coming form old JASP file.
+	///For backward compatibility: options coming from old JASP file.
 	Json::Value				_optionsDotJASP = Json::nullValue, ///
 							_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,

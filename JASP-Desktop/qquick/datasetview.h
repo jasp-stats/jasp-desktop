@@ -160,7 +160,7 @@ protected:
 
 
 protected:
-	QAbstractTableModel * _model = NULL;
+	QAbstractTableModel *								_model = NULL;
 
 	std::vector<QSizeF>									_cellSizes; //[col]
 	std::vector<float>									_colXPositions; //[col][row]
@@ -199,7 +199,7 @@ protected:
 		_previousViewportColMax = -1,
 		_previousViewportRowMin = -1,
 		_previousViewportRowMax = -1,
-		_viewportMargin			= 1,
+		_viewportMargin			= 3,
 		_currentViewportColMin	= -1,
 		_currentViewportColMax	= -1,
 		_currentViewportRowMin	= -1,

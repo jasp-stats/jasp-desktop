@@ -52,7 +52,7 @@ void jaspResults::complete()
 {
 	completeChildren();
 
-	if(getStatus() == "running")
+	if(getStatus() == "running" || getStatus() == "waiting")
 		setStatus("complete");
 
 	send();

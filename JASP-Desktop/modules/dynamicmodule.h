@@ -37,19 +37,22 @@ namespace Modules
 
 struct ModuleException : public std::runtime_error
 {
-	ModuleException(std::string moduleName, std::string problemDescription) : std::runtime_error("Module " + moduleName + " had a problem: " + problemDescription) {}
+	ModuleException(std::string moduleName, std::string problemDescription);
 };
 
 class DynamicModule : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(QString installLog	READ installLog WRITE setInstallLog NOTIFY installLogChanged	)
+	Q_PROPERTY(QString loadLog		READ loadLog	WRITE setLoadLog	NOTIFY loadLogChanged		)
+
 public:
 	explicit DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
 	{
-		_status = loadModule() ? moduleStatus::installNeeded : moduleStatus::loadingNeeded;
+		_status = initialize() ? moduleStatus::installNeeded : moduleStatus::loadingNeeded;
 	}
 
-	~DynamicModule()
+	~DynamicModule() override
 	{
 		for(auto * entry : _ribbonEntries)
 			delete entry;
@@ -75,18 +78,24 @@ public:
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName; }
 	Json::Value			requiredPackages()	const { return _requiredPackages; }
 
-	std::string			generatedPackageName()					const { return _name + "Pkg"; }
-	std::string			qmlFilePath(std::string qmlFileName)	const;
-	std::string			iconFilePath(std::string iconFileName)	const;
-	std::string			rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
+	std::string			generatedPackageName()								const { return _name + "Pkg"; }
+	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
+	std::string			iconFilePath(	const std::string & iconFileName)	const;
+	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
+
+	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
+	std::string			generateModuleUnloadingR();
+	std::string			generateModuleInstallingR();
+	std::string			generateModuleUninstallingR();
 
 	Json::Value			requestJsonForPackageLoadingRequest();
 	Json::Value			requestJsonForPackageUnloadingRequest();
 	Json::Value			requestJsonForPackageInstallationRequest();
+	Json::Value			requestJsonForPackageUninstallingRequest();
 
-	void				setInstalled(bool succes)	{ _status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error; }
-	void				setLoaded(bool succes)		{ _status = succes ? moduleStatus::readyForUse		: moduleStatus::error; }
-	void				unloadModule();
+	void				setInstalled(bool succes);
+	void				setLoaded(bool succes);
+	void				setLoadingNeeded();
 
 	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
 
@@ -101,13 +110,24 @@ public:
 	static std::string	succesResultString() { return "succes!"; }
 
 
+	QString installLog()	const	{ return QString::fromStdString(_installLog);	}
+	QString loadLog()		const	{ return QString::fromStdString(_loadLog);	}
+
+	bool shouldUninstallPackagesInRForUninstall();
+
+public slots:
+	void setInstallLog(QString installLog);
+	void setLoadLog(QString loadLog);
+
+
+signals:
+	void installLogChanged();
+	void loadLogChanged();
+
 private:
-	bool		loadModule(); //returns true if install of package(s) should be done
+	bool		initialize(); //returns true if install of package(s) should be done
 	void		generateRPackage();
 	void		createRLibraryFolder();
-	std::string generateModuleLoadingR();
-	std::string generateModuleUnloadingR();
-	std::string generateModuleInstallingR();
 	std::string generateNamespaceFileForRPackage();
 	std::string generateDescriptionFileForRPackage();
 
@@ -123,14 +143,17 @@ private:
 					_website,
 					_license,
 					_maintainer,
-					_description;
+					_description,
+					_installLog	= "",
+					_loadLog	= "";
 
-	bool			_requiresDataset = true;
+	bool			_requiresDataset	= true;
 
 	Json::Value		_requiredPackages;
 	RibbonEntries	_ribbonEntries;
-	const char		*_libraryRName = "libraryR",
-					*_exposedPostFix = "_exposed";
+	const char		*_libraryRName		= "libraryR",
+					*_exposedPostFix	= "_exposed";
+
 
 
 };

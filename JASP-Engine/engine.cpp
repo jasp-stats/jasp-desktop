@@ -93,7 +93,7 @@ void Engine::run()
 	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
-	while(ProcessInfo::isParentRunning())
+	while(_currentEngineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
 		receiveMessages(100);
 
@@ -101,7 +101,8 @@ void Engine::run()
 		{
 		case engineState::idle:									break;
 		case engineState::analysis:			runAnalysis();		break;
-		case engineState::paused:			/* Do nothing */	break;
+		case engineState::paused:			/* Do nothing */
+		case engineState::stopped:								break;
 		case engineState::resuming:			throw std::runtime_error("Enginestate " + engineStateToString(_currentEngineState) + " should NOT be set as currentState!");
 		default:
 			std::cout << "Engine got stuck in engineState " << engineStateToString(_currentEngineState) << " which is not supposed to happen..." << std::endl;
@@ -110,7 +111,8 @@ void Engine::run()
 		freeRBridgeColumns();
 	}
 
-	boost::interprocess::shared_memory_object::remove(memoryName.c_str());
+	delete _channel;
+	//shared memory files will be removed in jaspDesktop
 }
 
 
@@ -139,6 +141,7 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::pauseRequested:	pauseEngine();								break;
 		case engineState::resuming:			resumeEngine();								break;
 		case engineState::moduleRequest:	receiveModuleRequestMessage(jsonRequest);	break;
+		case engineState::stopRequested:	stopEngine();								break;
 		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState to it!");
 		}
 	}
@@ -146,7 +149,7 @@ bool Engine::receiveMessages(int timeout)
 	return false;
 }
 
-void Engine::receiveFilterMessage(Json::Value jsonRequest)
+void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 {
 	if(_currentEngineState != engineState::idle)
 		throw std::runtime_error("Unexpected filter message, current state is not idle (" + engineStateToString(_currentEngineState) + ")");
@@ -159,7 +162,7 @@ void Engine::receiveFilterMessage(Json::Value jsonRequest)
 	runFilter(filter, generatedFilter, filterRequestId);
 }
 
-void Engine::runFilter(std::string filter, std::string generatedFilter, int filterRequestId)
+void Engine::runFilter(const std::string & filter, const std::string & generatedFilter, int filterRequestId)
 {
 	try
 	{
@@ -178,7 +181,7 @@ void Engine::runFilter(std::string filter, std::string generatedFilter, int filt
 	_currentEngineState = engineState::idle;
 }
 
-void Engine::sendFilterResult(int filterRequestId, std::vector<bool> filterResult, std::string warning)
+void Engine::sendFilterResult(int filterRequestId, const std::vector<bool> & filterResult, const std::string & warning)
 {
 	Json::Value filterResponse(Json::objectValue);
 
@@ -192,7 +195,7 @@ void Engine::sendFilterResult(int filterRequestId, std::vector<bool> filterResul
 	sendString(filterResponse.toStyledString());
 }
 
-void Engine::sendFilterError(int filterRequestId, std::string errorMessage)
+void Engine::sendFilterError(int filterRequestId, const std::string & errorMessage)
 {
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
@@ -203,7 +206,7 @@ void Engine::sendFilterError(int filterRequestId, std::string errorMessage)
 	sendString(filterResponse.toStyledString());
 }
 
-void Engine::receiveRCodeMessage(Json::Value jsonRequest)
+void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 {
 	if(_currentEngineState != engineState::idle)
 		throw std::runtime_error("Unexpected rCode message, current state is not idle (" + engineStateToString(_currentEngineState) + ")");
@@ -216,7 +219,7 @@ void Engine::receiveRCodeMessage(Json::Value jsonRequest)
 }
 
 // Evaluating arbitrary R code (as string) which returns a string
-void Engine::runRCode(std::string rCode, int rCodeRequestId)
+void Engine::runRCode(const std::string & rCode, int rCodeRequestId)
 {
 	std::string rCodeResult = jaspRCPP_evalRCode(rCode.c_str());
 
@@ -227,7 +230,7 @@ void Engine::runRCode(std::string rCode, int rCodeRequestId)
 }
 
 
-void Engine::sendRCodeResult(std::string rCodeResult, int rCodeRequestId)
+void Engine::sendRCodeResult(const std::string & rCodeResult, int rCodeRequestId)
 {
 	Json::Value rCodeResponse(Json::objectValue);
 
@@ -256,7 +259,7 @@ void Engine::sendRCodeError(int rCodeRequestId)
 	sendString(rCodeResponse.toStyledString());
 }
 
-void Engine::receiveComputeColumnMessage(Json::Value jsonRequest)
+void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 {
 	if(_currentEngineState != engineState::idle)
 		throw std::runtime_error("Unexpected compute column message, current state is not idle (" + engineStateToString(_currentEngineState) + ")");
@@ -270,7 +273,7 @@ void Engine::receiveComputeColumnMessage(Json::Value jsonRequest)
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
 
-void Engine::runComputeColumn(std::string computeColumnName, std::string computeColumnCode, Column::ColumnType computeColumnType)
+void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, Column::ColumnType computeColumnType)
 {
 #ifdef JASP_DEBUG
 	std::cout << "Engine::runComputeColumn()" << std::endl;
@@ -296,7 +299,7 @@ void Engine::runComputeColumn(std::string computeColumnName, std::string compute
 	_currentEngineState = engineState::idle;
 }
 
-void Engine::receiveModuleRequestMessage(Json::Value jsonRequest)
+void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 {
 	_currentEngineState = engineState::moduleRequest;
 
@@ -320,7 +323,7 @@ void Engine::receiveModuleRequestMessage(Json::Value jsonRequest)
 	_currentEngineState = engineState::idle;
 }
 
-void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
+void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 {
 	if(_currentEngineState != engineState::idle && _currentEngineState != engineState::analysis)
 		throw std::runtime_error("Unexpected analysis message, current state is not idle or analysis (" + engineStateToString(_currentEngineState) + ")");
@@ -532,7 +535,7 @@ void Engine::sendAnalysisResults()
 	sendString(response.toStyledString());
 }
 
-void Engine::removeNonKeepFiles(Json::Value filesToKeepValue)
+void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 {
 	std::vector<std::string> filesToKeep;
 
@@ -623,7 +626,7 @@ std::string Engine::callback(const std::string &results, int progress)
 	return "{ \"status\" : \"ok\" }";
 }
 
-bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels)
+bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels)
 {
 	std::map<int, int> uniqueInts;
 
@@ -656,6 +659,33 @@ bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnN
 	}
 }
 
+void Engine::stopEngine()
+{
+#ifdef JASP_DEBUG
+	std::cout << "Engine::stopEngine() received, closing engine." << std::endl;
+#endif
+	switch(_currentEngineState)
+	{
+	default:							/* everything not mentioned is fine */	break;
+	case engineState::analysis:			_analysisStatus = Status::aborted;		break;
+	case engineState::filter:
+	case engineState::computeColumn:	throw std::runtime_error("Unexpected data synch during " + engineStateToString(_currentEngineState) + " somehow, you should not expect to see this exception ever.");
+	};
+
+	_currentEngineState = engineState::stopped;
+
+	freeRBridgeColumns();
+	SharedMemory::unloadDataSet();
+	sendEngineStopped();
+}
+
+void Engine::sendEngineStopped()
+{
+	Json::Value rCodeResponse		= Json::objectValue;
+	rCodeResponse["typeRequest"]	= engineStateToString(_currentEngineState);
+	sendString(rCodeResponse.toStyledString());
+}
+
 void Engine::pauseEngine()
 {
 	switch(_currentEngineState)
@@ -673,13 +703,6 @@ void Engine::pauseEngine()
 	sendEnginePaused();
 }
 
-void Engine::resumeEngine()
-{
-	_currentEngineState = engineState::idle;
-	sendEngineResumed();
-}
-
-
 void Engine::sendEnginePaused()
 {
 #ifdef JASP_DEBUG
@@ -690,6 +713,12 @@ void Engine::sendEnginePaused()
 	rCodeResponse["typeRequest"]	= engineStateToString(engineState::paused);
 
 	sendString(rCodeResponse.toStyledString());
+}
+
+void Engine::resumeEngine()
+{
+	_currentEngineState = engineState::idle;
+	sendEngineResumed();
 }
 
 void Engine::sendEngineResumed()

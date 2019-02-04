@@ -37,14 +37,15 @@
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>
 
-typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
-typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
-typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
+typedef boost::interprocess::allocator<char,	boost::interprocess::managed_shared_memory::segment_manager	> CharAllocator;
+typedef boost::container::basic_string<char,	std::char_traits<char>, CharAllocator						> String;
+typedef boost::interprocess::allocator<String,	boost::interprocess::managed_shared_memory::segment_manager	> StringAllocator;
 
 class IPCChannel
 {
 public:
 	IPCChannel(std::string name, int channelNumber, bool isSlave = false);
+	~IPCChannel();
 
 	void send(std::string &data,	bool alreadyLockedMutex = false);
 	void send(std::string &&data,	bool alreadyLockedMutex = false);

@@ -199,7 +199,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				helpEasyRectangularButton
-			iconSource:		"qrc:/icons/QuestionMark.png"
+			iconSource:		"qrc:/images/info-button.png"
 			anchors.right:	closeEasyRectangularButton.left
 			anchors.bottom:	parent.bottom
 			anchors.top:	closeEasyRectangularButton.top
@@ -511,7 +511,7 @@ FocusScope
 			RectangularButton
 			{
 				id:				helpButton
-				iconSource:		"qrc:/icons/QuestionMark.png"
+				iconSource:		"qrc:/images/info-button.png"
 				anchors.right:	closeRectangularButton.left
 				anchors.bottom: parent.bottom
 				anchors.top:	closeRectangularButton.top

@@ -72,10 +72,10 @@ extern "C" {
 
 	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground);
 
-	void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string&, std::vector<double>&)>							source);
-	void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);
-	void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);
-	void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string&, std::vector<std::string>&)>						source);
+	void rbridge_setColumnDataAsScaleSource(		boost::function< bool(const std::string&, const std::vector<double>&)											> source);
+	void rbridge_setColumnDataAsOrdinalSource(		boost::function< bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> source);
+	void rbridge_setColumnDataAsNominalSource(		boost::function< bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> source);
+	void rbridge_setColumnDataAsNominalTextSource(	boost::function< bool(const std::string&, const std::vector<std::string>&)										> source);
 	void rbridge_setGetDataSetRowCountSource(		boost::function<int()> source);
 
 	std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, const std::string &imageBackground = "white", RCallback callback = NULL, bool useJaspResults = false);
@@ -85,11 +85,11 @@ extern "C" {
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
 	void freeLabels(char** labels, size_t nbLabels);
 
-	std::vector<bool>	rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode);
-	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
-	std::string			rbridge_decodeColumnNamesFromBase64(std::string messageBase64);
-	bool				rbridge_columnUsedInFilter(const char * columnName);
+	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
+	std::string			rbridge_encodeColumnNamesToBase64(		const std::string & filterCode);
+	std::string			rbridge_decodeColumnNamesFromBase64(	const std::string & messageBase64);
+	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode);
+	bool				rbridge_columnUsedInFilter(				const char * columnName);
 	void				rbridge_findColumnsUsedInDataSet();
-	std::string			rbridge_evalRCodeWhiteListed(std::string & rCode);
 
 #endif // RBRIDGE_H

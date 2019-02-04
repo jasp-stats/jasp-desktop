@@ -27,7 +27,7 @@ public:
 		IMAGE_BACKGROUND,
 		FIXED_DECIMALS,
 		DEVELOPER_MODE,
-		DEVELEPER_FOLDER
+		DEVELOPER_FOLDER
 	};
 
 	static QVariant value(Settings::Type key);

@@ -12,7 +12,7 @@ public:
 
 	float _aspectRatio;
 	int _width, _height;
-	std::string _error = "", _errorMessage = "", _filePathPng, _status = "complete";
+	std::string _error = "", _errorMessage = "", _filePathPng, _status = "waiting";
 
 	///For safekeeping (aka state replacement?)
 	void setPlotObject(Rcpp::RObject plotSerialized);

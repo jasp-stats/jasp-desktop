@@ -35,9 +35,6 @@ RCPP_MODULE(jaspResults)
 		.method("setOptionMustContainDependency",	&jaspObject_Interface::setOptionMustContainDependency,					"Specifies an option that should define an array and a required value that should be in it, if the analysis is restarted and this option is no longer defined or no longer contains the specified value it will automatically destroy the object. Otherwise it will keep it.")
 		.method("dependOnOptions",					&jaspObject_Interface::dependOnOptions,									"Will make the object depend on the current values of the options specified in the charactervector.")
 		.method("copyDependenciesFromJaspObject",	&jaspObject_Interface::copyDependenciesFromJaspObject,					"Will make the object depend on whatever the other jaspObject depends.")
-
-
-
 	;
 
 	Rcpp::class_<jaspContainer_Interface>("jaspContainer")
@@ -175,7 +172,6 @@ RCPP_MODULE(jaspResults)
 
 		.method("setOptions",				&jaspResults_Interface::setOptions,								"Tells jaspResults which options are currently set, should not be used in an analysis!")
 		.method("changeOptions",			&jaspResults_Interface::changeOptions,							"Changes the currently set options and removes all objects that depend on the changed options. Mostly useful for unit tests because this we we can simulate re-running the analysis. Should not be used in an analysis!")
-
 	;
 }
 

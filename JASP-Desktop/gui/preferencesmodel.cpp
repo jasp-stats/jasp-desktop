@@ -93,7 +93,7 @@ bool	PreferencesModel::exactPValues()			const { return Settings::value(Settings:
 bool	PreferencesModel::dataAutoSynchronization()	const { return Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION		).toBool();					}
 bool	PreferencesModel::useDefaultEditor()		const { return Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR	).toBool();					}
 QString	PreferencesModel::customEditor()			const { return Settings::value(Settings::SPREADSHEET_EDITOR_NAME		).toString();				}
-QString PreferencesModel::developerFolder()			const {	return Settings::value(Settings::DEVELEPER_FOLDER				).toString();				}
+QString PreferencesModel::developerFolder()			const {	return Settings::value(Settings::DEVELOPER_FOLDER				).toString();				}
 bool	PreferencesModel::useDefaultPPI()			const { return Settings::value(Settings::PPI_USE_DEFAULT				).toBool();					}
 int		PreferencesModel::customPPI()				const { return Settings::value(Settings::PPI_CUSTOM_VALUE				).toInt();					}
 bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND				).toString() == "white";	}
@@ -217,7 +217,7 @@ void PreferencesModel::setDeveloperFolder(QString newDeveloperFolder)
 	if (developerFolder() == newDeveloperFolder)
 		return;
 
-	Settings::setValue(Settings::DEVELEPER_FOLDER, newDeveloperFolder);
+	Settings::setValue(Settings::DEVELOPER_FOLDER, newDeveloperFolder);
 	emit developerFolderChanged(newDeveloperFolder);
 }
 

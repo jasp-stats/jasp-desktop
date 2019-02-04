@@ -89,11 +89,11 @@ INSTALLS += auxillaryRFiles
 
 win32 {
     SRC_WRITE_IMAGE ~= s,/,\\,g
-	SRC_WRAPPERS ~= s,/,\\,g
+    SRC_WRAPPERS ~= s,/,\\,g
     DEST_DIR_AUX_R ~= s,/,\\,g
 
-    copyRFiles.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRITE_IMAGE} $${DEST_DIR_AUX_R}*) $$escape_expand(\n\t)
-    copyRFiles.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R}*)
+    copyRFiles.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRITE_IMAGE} $${DEST_DIR_AUX_R}) $$escape_expand(\n\t)
+    copyRFiles.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R})
 }
 
 unix {

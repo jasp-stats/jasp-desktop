@@ -81,6 +81,9 @@ void TempFiles::deleteAll(int id)
 
 void TempFiles::deleteOrphans()
 {
+#ifdef JASP_DEBUG
+	std::cout << "TempFiles::deleteOrphans started" << std::endl;
+#endif
 	system::error_code error;
 
 	try {
@@ -99,6 +102,10 @@ void TempFiles::deleteOrphans()
 		for (; itr != filesystem::directory_iterator(); itr++)
 		{
 			filesystem::path p = itr->path();
+
+#ifdef JASP_DEBUG
+			std::cout << "looking at file " << p.string() << std::endl;
+#endif
 
 			if (p.compare(sessionPath) == 0)
 				continue;

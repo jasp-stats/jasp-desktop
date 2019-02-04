@@ -301,7 +301,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				helpButton
-			iconSource:		"qrc:/icons/QuestionMark.png"
+			iconSource:		"qrc:/images/info-button.png"
 			anchors.right:	closeColumnEditorButton.left
 			anchors.bottom: parent.bottom
 			anchors.top:	closeColumnEditorButton.top

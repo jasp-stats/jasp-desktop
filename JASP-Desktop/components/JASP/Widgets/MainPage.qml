@@ -16,8 +16,8 @@ OLD.SplitView
 
 	onWidthChanged:
 	{
-		if(!panelSplit.shouldShowInputOutput)
-			data.width = panelSplit.width
+		if(!panelSplit.shouldShowInputOutput)							data.width = panelSplit.width
+		else if(panelSplit.width < data.width + Theme.splitHandleWidth)	data.width = panelSplit.width - Theme.splitHandleWidth
 	}
 
 	DataPanel

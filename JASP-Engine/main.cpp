@@ -28,5 +28,12 @@ int main(int argc, char *argv[])
 
 		Engine *e = new Engine(slaveNo, parentPID);
 		e->run();
+
+#ifdef JASP_DEBUG
+		std::cout << "jaspEngine " << slaveNo << " child of " << parentPID << " stops gracefully." << std::endl;
+#endif
+		return 0;
 	}
+
+	return 1;
 }

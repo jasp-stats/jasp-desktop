@@ -47,35 +47,39 @@ public:
 	bool engineStarted()			{ return _engineStarted; }
 
 public slots:
-	void sendFilter(QString generatedFilter, QString filter, int requestID);
-	void sendRCode(QString rCode, int requestId);
-	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
+	void sendFilter(	const QString & generatedFilter,	const QString & filter,			int requestID);
+	void sendRCode(		const QString & rCode,				int requestId);
+	void computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
 	void pause();
 	void resume();
 	void refreshAllPlots(int = 0);
+	void stopEngines();
 
 	
 signals:
-	void processNewFilterResult(std::vector<bool> filterResult, int requestID);
-	void processFilterErrorMsg(QString error, int requestID);
+	void processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
+	void processFilterErrorMsg(const QString & error, int requestID);
 	void engineTerminated();
 	void filterUpdated(int requestID);
-	void filterErrorTextChanged(QString error);
+	void filterErrorTextChanged(const QString & error);
 
 	void ppiChanged(int newPPI);
-	void imageBackgroundChanged(QString value);
-	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
-	void computeColumnFailed(std::string columnName, std::string error);
+	void imageBackgroundChanged(const QString & value);
 
-	void moduleInstallationSucceeded(	std::string moduleName);
-	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
-	void moduleLoadingSucceeded(		std::string moduleName);
-	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage);
+	void computeColumnSucceeded(		const std::string & columnName, const std::string & warning, bool dataChanged);
+	void computeColumnFailed(			const std::string & columnName, const std::string & error);
 
-	void refreshAllPlotsExcept(std::set<Analysis*> inProgress);
+	void moduleInstallationSucceeded(	const std::string & moduleName);
+	void moduleInstallationFailed(		const std::string & moduleName, const std::string & errorMessage);
+	void moduleLoadingSucceeded(		const std::string & moduleName);
+	void moduleLoadingFailed(			const std::string & moduleName, const std::string & errorMessage);
+	void moduleUninstallingFinished(	const std::string & moduleName);
+
+	void refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 
 private:
 	bool		idleEngineAvailable();
+	bool		allEnginesStopped();
 	bool		allEnginesPaused();
 	bool		allEnginesResumed();
 	QProcess*	startSlaveProcess(int no);
@@ -83,6 +87,7 @@ private:
 	void		processDynamicModules();
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
+	void		setModuleWideCastVars(Json::Value newVars);
 	bool		amICastingAModuleRequestWide()	{ return !_requestWideCastModuleJson.isNull(); }
 
 private slots:
@@ -98,9 +103,11 @@ private slots:
 	void subProcessError(QProcess::ProcessError error);
 	void subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
-	void moduleLoadingFailedHandler(		std::string moduleName, std::string errorMessage, int channelID);
-	void moduleLoadingSucceededHandler(		std::string moduleName, int channelID);
-	void moduleUnloadingFinishedHandler(	std::string moduleName, int channelID);
+	void moduleLoadingFailedHandler(		const std::string & moduleName, const std::string & errorMessage, int channelID);
+	void moduleLoadingSucceededHandler(		const std::string & moduleName, int channelID);
+	void moduleUnloadingFinishedHandler(	const std::string & moduleName, int channelID);
+
+	void restartEngines();
 
 private:
 	Analyses		*_analyses;

@@ -29,89 +29,67 @@
 class DynamicModules : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString	currentInstallMsg	READ currentInstallMsg									NOTIFY currentInstallMsgChanged)
-	Q_PROPERTY(QString	currentInstallName	READ currentInstallName									NOTIFY currentInstallNameChanged)
-	Q_PROPERTY(bool		currentInstallDone	READ currentInstallDone	WRITE	setCurrentInstallDone	NOTIFY currentInstallDoneChanged)
 
 public:
 	explicit DynamicModules(QObject *parent) ;
 
-	~DynamicModules()
-	{
-		for(auto dynamic : _modules)
-			delete dynamic.second;
-		_modules.clear();
-	}
+	~DynamicModules() override;
 
-	std::string moduleDirectory(std::string moduleName)		{ return AppDirs::modulesDir().toStdString() + moduleName + '/'; }
-
-	bool		installModule(std::string moduleZipFilename);
-	void		uninstallModule(std::string moduleName);
-
-	std::string	loadModule(std::string moduleName);
-	void		registerForLoading(std::string moduleName);
-	bool		initializeModuleFromDir(std::string moduleDir);
-	void		unloadModule(std::string moduleName);
 	void		initializeInstalledModules();
 
-	bool		moduleIsInitialized(std::string moduleName)	{ return _modules.count(moduleName) > 0;							}
-	bool		moduleIsInstalled(std::string moduleName)	{ return boost::filesystem::exists(moduleDirectory(moduleName));	}
+	bool		installModule(				const	std::string & moduleZipFilename);
+	void		uninstallModule(			const	std::string & moduleName);
+	std::string	loadModule(					const	std::string & moduleName);
+	void		registerForLoading(			const	std::string & moduleName);
+	bool		initializeModuleFromDir(			std::string   moduleDir);
+	void		unloadModule(				const	std::string & moduleName);
 
-	bool		aModuleNeedsToBeLoadedInR()					{ return _modulesToBeLoaded.size() > 0;				}
-	bool		aModuleNeedsToBeUnloadedInR()				{ return _modulesToBeUnloaded.size() > 0;			}
-	bool		aModuleNeedsPackagesInstalled()				{ return _modulesInstallPackagesNeeded.size() > 0;	}
-	Json::Value	requestJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
-	Json::Value requestJsonForPackageUnloadingRequest();
-	Json::Value	requestJsonForPackageInstallationRequest()	{ return requestModuleForSomethingAndRemoveIt(_modulesInstallPackagesNeeded)->requestJsonForPackageInstallationRequest();	}
+	std::string moduleDirectory(			const	std::string & moduleName)	const { return AppDirs::modulesDir().toStdString() + moduleName + '/';	}
+	bool		moduleIsInitialized(		const	std::string & moduleName)	const { return _modules.count(moduleName) > 0;							}
+	bool		moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectory(moduleName));	}
 
-	Modules::DynamicModule*	dynamicModule(const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
-	Modules::DynamicModule*	operator[](const std::string & moduleName)		const { return dynamicModule(moduleName); }
+	bool		aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
+	bool		aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
+	bool		aModuleNeedsPackagesInstalled()				{ return !_modulesInstallPackagesNeeded.empty();	}
+
+	Json::Value	getJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
+	Json::Value getJsonForPackageUnloadingRequest();
+	Json::Value	getJsonForPackageInstallationRequest()	{ return requestModuleForSomethingAndRemoveIt(_modulesInstallPackagesNeeded)->requestJsonForPackageInstallationRequest();	}
+	Json::Value	getJsonForReloadingActiveModules();
+
+	Modules::DynamicModule*	dynamicModule(	const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
+	Modules::DynamicModule*	operator[](		const std::string & moduleName)		const { return dynamicModule(moduleName); }
 
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 	Modules::AnalysisEntry*	retrieveCorrespondingAnalysisEntry(const std::string & codedReference);
 
-	Q_INVOKABLE bool	isFileAnArchive(QString filepath);
-	Q_INVOKABLE QString getDescriptionFromArchive(QString filepath);
-	Q_INVOKABLE void	installJASPModule(QString filepath);
-	Q_INVOKABLE	void	uninstallJASPModule(QString moduleName);
+	Q_INVOKABLE bool	isFileAnArchive(			const QString & filepath);
+	Q_INVOKABLE QString getDescriptionFromArchive(	const QString & filepath);
+	Q_INVOKABLE void	installJASPModule(			const QString & filepath);
+	Q_INVOKABLE	void	uninstallJASPModule(		const QString & moduleName);
 	Q_INVOKABLE void	installJASPDeveloperModule();
 
-	QString currentInstallMsg()									{ return _currentInstallMsg; }
-	void setCurrentInstallMsg(QString currentInstallMsg)		{ if(_currentInstallMsg != currentInstallMsg) { _currentInstallMsg = currentInstallMsg; emit currentInstallMsgChanged(); } }
-	void setCurrentInstallMsg(std::string currentInstallMsg)	{ setCurrentInstallMsg(QString::fromStdString(currentInstallMsg)); }
-
-	QString currentInstallName()								{ return _currentInstallName; }
-	void setCurrentInstallName(QString currentInstallName)		{ if(_currentInstallName != currentInstallName) { _currentInstallName = currentInstallName; emit currentInstallNameChanged(); } }
-
-
-	bool currentInstallDone()									{ return _currentInstallDone; }
-	void setCurrentInstallDone(bool currentInstallDone);
-
-	int numberOfModules()										{ return _modules.size(); }
-
-	const std::vector<std::string> & moduleNames() const		{ return _moduleNames; }
-
-
-
-signals:
-	void currentInstallMsgChanged();
-	void currentInstallNameChanged();
-	void currentInstallDoneChanged();
-
-	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
-	void dynamicModuleUninstalled(std::string moduleName);
-	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
-
-private:
-	Modules::DynamicModule* requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
-	void					checkForInstallMsg(Modules::DynamicModule	* currentModule);
-
+	int numberOfModules()												{ return _modules.size(); }
+	const std::vector<std::string> & moduleNames() const				{ return _moduleNames; }
 
 public slots:
-	void installationPackagesSucceeded(	std::string moduleName);
-	void installationPackagesFailed(	std::string moduleName, std::string errorMessage);
-	void loadingSucceeded(				std::string moduleName);
-	void loadingFailed(					std::string moduleName, std::string errorMessage);
+	void installationPackagesSucceeded(	const std::string & moduleName);
+	void installationPackagesFailed(	const std::string & moduleName, const std::string & errorMessage);
+	void loadingSucceeded(				const std::string & moduleName);
+	void loadingFailed(					const std::string & moduleName, const std::string & errorMessage);
+
+signals:
+	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
+	void dynamicModuleUninstalled(const std::string & moduleName);
+	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
+
+	void stopEngines();
+	void restartEngines();
+
+private:
+	void						removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped = false);
+	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
+
 
 
 private:

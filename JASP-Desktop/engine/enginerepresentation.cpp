@@ -2,24 +2,49 @@
 #include "utilities/settings.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
-	: QObject(parent), _slaveProcess(slaveProcess), _channel(channel)
+	: QObject(parent), _channel(channel)
 {
 	_imageBackground = Settings::value(Settings::IMAGE_BACKGROUND).toString();
+	setSlaveProcess(slaveProcess);
+}
+
+
+void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
+{
+	_slaveProcess = slaveProcess;
+	_slaveProcess->setParent(this);
+	connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this,	&EngineRepresentation::jaspEngineProcessFinished);
 }
 
 EngineRepresentation::~EngineRepresentation()
 {
-	if(_slaveProcess != NULL)
+#ifdef JASP_DEBUG
+	std::cout << "~EngineRepresentation()" << std::endl;
+#endif
+
+	if(_slaveProcess != nullptr)
 	{
 
 		_slaveProcess->terminate();
 		_slaveProcess->kill();
 	}
+
+	delete _channel;
+	_channel = nullptr;
+}
+
+void EngineRepresentation::jaspEngineProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+#ifdef JASP_DEBUG
+	std::cout << "jaspEngine for channel " << engineChannelID() << " finished!" << std::endl;
+#endif
+
+	_slaveProcess = nullptr;
 }
 
 void EngineRepresentation::clearAnalysisInProgress()
 {
-	_analysisInProgress = NULL;
+	_analysisInProgress = nullptr;
 	_engineState		= engineState::idle;
 }
 
@@ -28,10 +53,10 @@ void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 	if(_engineState == engineState::analysis)
 	{
 		if(_analysisInProgress == analysis)	return; //we are already busy with this analysis so everything is fine
-		else								throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is running another analysis. Yet you are trying to set an analysis on it..");
+		else								throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is running another analysis. Yet you are trying to set an analysis in progress on it..");
 	}
 
-	if(_engineState != engineState::idle)	throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is not idle! Yet you are trying to set an analysis on it..");
+	if(_engineState != engineState::idle)	throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is not idle! Yet you are trying to set an analysis in progress on it..");
 
 	_analysisInProgress = analysis;
 	_engineState		= engineState::analysis;
@@ -41,7 +66,8 @@ void EngineRepresentation::process()
 {
 	if (_engineState == engineState::idle)
 	{
-		if(_pauseRequested)	sendPauseEngine();
+		if		(_stopRequested)	sendStopEngine();
+		else if	(_pauseRequested)	sendPauseEngine();
 		return;
 	}
 
@@ -69,6 +95,7 @@ void EngineRepresentation::process()
 		case engineState::computeColumn:	processComputeColumnReply(json);	break;
 		case engineState::paused:			processEnginePausedReply();			break;
 		case engineState::resuming:			processEngineResumedReply();		break;
+		case engineState::stopped:			processEngineStoppedReply();		break;
 		case engineState::moduleRequest:	processModuleRequestReply(json);	break;
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
@@ -96,7 +123,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	sendString(json.toStyledString());
 }
 
-void EngineRepresentation::processFilterReply(Json::Value json)
+void EngineRepresentation::processFilterReply(Json::Value & json)
 {
 	if(_engineState != engineState::filter)
 		throw std::runtime_error("Received an unexpected filter reply!");
@@ -136,7 +163,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 }
 
 
-void EngineRepresentation::processRCodeReply(Json::Value json)
+void EngineRepresentation::processRCodeReply(Json::Value & json)
 {
 	if(_engineState != engineState::rCode)
 		throw std::runtime_error("Received an unexpected rCode reply!");
@@ -169,7 +196,7 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 }
 
 
-void EngineRepresentation::processComputeColumnReply(Json::Value json)
+void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 {
 	if(_engineState != engineState::computeColumn)
 		throw std::runtime_error("Received an unexpected computeColumn reply!");
@@ -230,7 +257,7 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 	clearAnalysisInProgress();
 }
 
-void EngineRepresentation::processAnalysisReply(Json::Value json)
+void EngineRepresentation::processAnalysisReply(Json::Value & json)
 {
 	if(_engineState == engineState::paused || _engineState == engineState::resuming || _engineState == engineState::idle)
 		return;
@@ -311,6 +338,39 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 		runAnalysisOnProcess(_analysisInProgress);
 }
 
+void EngineRepresentation::stopEngine()
+{
+	_stopRequested = true;
+}
+
+void EngineRepresentation::sendStopEngine()
+{
+	Json::Value json		= Json::Value(Json::objectValue);
+	_engineState			= engineState::stopRequested;
+	json["typeRequest"]		= engineStateToString(_engineState);
+
+#ifdef JASP_DEBUG
+	std::cout << "informing engine that it ought to stop" << std::endl;
+#endif
+
+	sendString(json.toStyledString());
+}
+
+void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
+{
+#ifdef JASP_DEBUG
+	std::cout << "informing engine that it ought to restart" << std::endl;
+#endif
+
+	if(_slaveProcess != nullptr && _slaveProcess != jaspEngineProcess)
+		throw std::runtime_error("Engine already has jaspEngine process!");
+
+	sendString("");
+	setSlaveProcess(jaspEngineProcess);
+	_stopRequested	= false;
+	resumeEngine();
+}
+
 void EngineRepresentation::pauseEngine()
 {
 	_pauseRequested = true;
@@ -331,8 +391,8 @@ void EngineRepresentation::sendPauseEngine()
 
 void EngineRepresentation::resumeEngine()
 {
-	if(_engineState != engineState::paused)
-		throw std::runtime_error("Attempt to resume engine made but it isn't paused");
+	if(_engineState != engineState::paused && _engineState != engineState::stopped)
+		throw std::runtime_error("Attempt to resume engine made but it isn't paused or stopped");
 
 	_pauseRequested			= false;
 	_engineState			= engineState::resuming;
@@ -362,6 +422,14 @@ void EngineRepresentation::processEngineResumedReply()
 	_engineState = engineState::idle;
 }
 
+void EngineRepresentation::processEngineStoppedReply()
+{
+	if(_engineState != engineState::stopRequested)
+		throw std::runtime_error("Received an unexpected engine stopped reply!");
+
+	_engineState = engineState::stopped;
+}
+
 void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
 {
 	_engineState			= engineState::moduleRequest;
@@ -370,7 +438,7 @@ void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
 	sendString(request.toStyledString());
 }
 
-void EngineRepresentation::processModuleRequestReply(Json::Value json)
+void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 {
 	if(_engineState != engineState::moduleRequest)
 		throw std::runtime_error("Received an unexpected moduleRequest reply!");

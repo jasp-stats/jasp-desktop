@@ -22,9 +22,13 @@
 namespace Modules
 {
 
+ModuleException::ModuleException(std::string moduleName, std::string problemDescription)
+	: std::runtime_error("Module " + moduleName + " had a problem: " + problemDescription)
+{}
+
 const char * standardRIndent = "  ";
 
-bool DynamicModule::loadModule()
+bool DynamicModule::initialize()
 {
 	//Check some stuff
 	_moduleFolder.makeAbsolute();
@@ -104,7 +108,7 @@ bool DynamicModule::loadModule()
 	return shouldInstall;
 }
 
-void DynamicModule::unloadModule()
+void DynamicModule::setLoadingNeeded()
 {
 	if(_status != moduleStatus::installNeeded)
 		_status = moduleStatus::loadingNeeded;
@@ -200,7 +204,7 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 Json::Value	DynamicModule::requestJsonForPackageInstallationRequest()
 {
 	if(!installNeeded())
-		throw std::runtime_error("Module (" + _name + ") is already installed!");
+		std::cout << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") is already installed!";
 
 	Json::Value requestJson(Json::objectValue);
 
@@ -244,62 +248,86 @@ std::string DynamicModule::generateModuleInstallingR()
 			if(pkgV["version"].isNull())
 				pkgsVersionless.insert(pkgV["package"].asString());
 
-	std::stringstream out;
+	std::stringstream R, installLog;
 
 	//out << "print(paste('ping=', pingr::ping('cloud.r-project.org', count=2)));\n";
 	//out <<" print(Sys.getenv());\n";
 
-	out << "libPathsToUse <- c(.libPaths(), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
+	R			<< "libPathsToUse <- c(.libPaths(), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
+	installLog	<< "Installing module " << _name << ", with required packages: ";
 
-	const bool useWithLibPaths = true;
+	const	bool useWithLibPaths	= true;
+			bool firstPkg			= true;
 
 	if(pkgsVersionless.size() > 0)
 	{
-		out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
+		R			<< standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
 
 		int count = 0;
 		for(const std::string & pkg : pkgsVersionless)
-			out << (count++ > 0 ? std::string(",\n") + standardRIndent + standardRIndent : "") << "'" << pkg << "'";
+		{
+			R			<< (count++ > 0 ? std::string(",\n") + standardRIndent + standardRIndent : "") << "'" << pkg << "'";
+			installLog	<< (!firstPkg   ? ", " : "") << pkg;
 
-		out << ")" << (useWithLibPaths ? ")" : "") <<  ");\n";
+			firstPkg = false;
+		}
+
+		R			<< ")" << (useWithLibPaths ? ")" : "") <<  ");\n";
+		installLog	<< "\n";
 	}
 
 	if(_requiredPackages.isArray())
 		for(Json::Value & pkgV : _requiredPackages)
 			if(!pkgV["version"].isNull())
-				out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "devtools::install_version(repos='https://cloud.r-project.org', type='binary', Ncpus=4, package='" << pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"')" << (useWithLibPaths ? ")" : "") <<  ";\n";
+			{
+				R			<< standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "devtools::install_version(repos='https://cloud.r-project.org', type='binary', Ncpus=4, package='" << pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"')" << (useWithLibPaths ? ")" : "") <<  ";\n";
 
-	out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "");
-	out << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source')" << (useWithLibPaths ? ")" : "") <<  ";" "\n" "}\n" "return('"+succesResultString()+"')";
+				installLog	<< (!firstPkg   ? ", " : "") << pkgV["package"].asString() << " (" <<  pkgV["version"].asString() << ")";
+
+				firstPkg = false;
+			}
+
+	if(firstPkg)
+		installLog << "none";
+
+	installLog << ".\n";
+
+	setInstallLog(QString::fromStdString(installLog.str()));
+
+	R << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "");
+	R << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source')" << (useWithLibPaths ? ")" : "") <<  ";" "\n" "}\n" "return('"+succesResultString()+"')";
 
 #ifdef JASP_DEBUG
-	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << out.str() << std::endl;
+	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
 #endif
 
-	return out.str();
+	return R.str();
 }
 
-std::string DynamicModule::generateModuleLoadingR()
+std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 {
-	std::stringstream out;
+	std::stringstream R;
 
-	out << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
-	out << standardRIndent << "import('" << generatedPackageName() << "');\n\n";
+	setLoadLog("Module " + QString::fromStdString(_name) + " is being loaded from " + _moduleFolder.absolutePath() + "\n");
+
+	R << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
+	R << standardRIndent << "import('" << generatedPackageName() << "');\n\n";
 
 	for(RibbonEntry * ribbon : _ribbonEntries)
 		for(const AnalysisEntry * analysis : ribbon->analysisEntries())
-			out << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
-	out << "})\n" "return('"+succesResultString()+"')";
+			R << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
+	R << "})\n";
+
+	if(shouldReturnSucces)
+		R << "return('"+succesResultString()+"')";
 
 
 #ifdef JASP_DEBUG
-	std::cout << "DynamicModule(" << _name << ")::generateModuleLoadingR() generated:\n" << out.str() << std::endl;
+	std::cout << "DynamicModule(" << _name << ")::generateModuleLoadingR() generated:\n" << R.str() << std::endl;
 #endif
 
-	return out.str();
+	return R.str();
 }
-
-
 
 std::string DynamicModule::generateModuleUnloadingR()
 {
@@ -315,12 +343,36 @@ std::string DynamicModule::generateModuleUnloadingR()
 	return out.str();
 }
 
-std::string	DynamicModule::qmlFilePath(std::string qmlFileName)	const
+std::string DynamicModule::generateModuleUninstallingR()
+{
+	QDir myLibrary(moduleRLibrary());
+
+	if(!myLibrary.exists())
+		return "";
+
+	QStringList libraries = myLibrary.entryList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Dirs);
+	if(libraries.size() == 0)
+		return "";
+
+	std::stringstream out;
+
+	for(const QString & library : libraries)
+	{
+		if(out.str().size() > 0)
+			out << ", ";
+
+		out << "'" << library.toStdString() << "'";
+	}
+
+	return "remove.packages(c(" + out.str() + ", lib='" + moduleRLibrary().toStdString() + "'); R.utils::gcDLLs(gc=TRUE, quiet=TRUE);";
+}
+
+std::string	DynamicModule::qmlFilePath(const std::string & qmlFileName)	const
 {
 	return _moduleFolder.absolutePath().toStdString() + "/qml/" + qmlFileName;
 }
 
-std::string	DynamicModule::iconFilePath(std::string iconFileName)	const
+std::string	DynamicModule::iconFilePath(const std::string & iconFileName)	const
 {
 	return _moduleFolder.absolutePath().toStdString() + "/icons/" + iconFileName;
 }
@@ -353,6 +405,37 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 AnalysisEntry*  DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const
 {
 	return ribbonEntry(ribbonTitle)->analysisEntry(analysisTitle);
+}
+
+void DynamicModule::setInstallLog(QString installLog)
+{
+	if (_installLog == installLog.toStdString())
+		return;
+
+	_installLog = installLog.toStdString();
+	emit installLogChanged();
+}
+
+void DynamicModule::setLoadLog(QString loadLog)
+{
+	if (_loadLog == loadLog.toStdString())
+		return;
+
+	_loadLog = loadLog.toStdString();
+	emit loadLogChanged();
+}
+
+void DynamicModule::setInstalled(bool succes)
+{
+	_status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error;
+
+	setInstallLog(installLog() + "Installation " + (succes ? "succeeded" : "failed") + "\n");
+}
+
+void DynamicModule::setLoaded(bool succes)
+{
+	_status = succes ? moduleStatus::readyForUse		: moduleStatus::error;
+	setLoadLog(loadLog() + "Loading " + (succes ? "succeeded" : "failed") + "\n");
 }
 
 }

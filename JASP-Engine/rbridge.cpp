@@ -33,10 +33,10 @@ std::unordered_set<std::string> filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
 boost::function<size_t()>		rbridge_getDataSetRowCount = NULL;
 
-boost::function<bool(std::string&, std::vector<double>&)>										rbridge_setColumnDataAsScaleEngine			= NULL;
-boost::function<bool(std::string&, std::vector<int>&,			std::map<int, std::string>&)>	rbridge_setColumnDataAsOrdinalEngine		= NULL;
-boost::function<bool(std::string&, std::vector<int>&,			std::map<int, std::string>&)>	rbridge_setColumnDataAsNominalEngine		= NULL;
-boost::function<bool(std::string&, std::vector<std::string>&)>									rbridge_setColumnDataAsNominalTextEngine	= NULL;
+boost::function<bool(const std::string&, const	std::vector<double>&)											> rbridge_setColumnDataAsScaleEngine		= NULL;
+boost::function<bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsOrdinalEngine		= NULL;
+boost::function<bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsNominalEngine		= NULL;
+boost::function<bool(const std::string&, const	std::vector<std::string>&)										> rbridge_setColumnDataAsNominalTextEngine	= NULL;
 
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
@@ -70,10 +70,10 @@ void rbridge_setFileNameSource(			boost::function<void (const std::string &, std
 void rbridge_setStateFileSource(		boost::function<void (std::string &, std::string &)> source)						{	rbridge_stateFileSource			= source; }
 void rbridge_setJaspResultsFileSource(	boost::function<void (std::string &, std::string &)> source)						{	rbridge_jaspResultsFileSource	= source; }
 
-void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string &, std::vector<double>&)> source)												{	rbridge_setColumnDataAsScaleEngine			= source; }
-void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string &, std::vector<int>&,					std::map<int, std::string>&)> source)	{	rbridge_setColumnDataAsOrdinalEngine		= source; }
-void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string &, std::vector<int>&,					std::map<int, std::string>&)> source)	{	rbridge_setColumnDataAsNominalEngine		= source; }
-void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string &, std::vector<std::string>&)> source)											{	rbridge_setColumnDataAsNominalTextEngine	= source; }
+void rbridge_setColumnDataAsScaleSource(		boost::function<bool(const std::string &, const std::vector<double>&)													> source)	{	rbridge_setColumnDataAsScaleEngine			= source; }
+void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(const std::string &,		std::vector<int>&,					const std::map<int, std::string>&)	> source)	{	rbridge_setColumnDataAsOrdinalEngine		= source; }
+void rbridge_setColumnDataAsNominalSource(		boost::function<bool(const std::string &,		std::vector<int>&,					const std::map<int, std::string>&)	> source)	{	rbridge_setColumnDataAsNominalEngine		= source; }
+void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(const std::string &, const std::vector<std::string>&)												> source)	{	rbridge_setColumnDataAsNominalTextEngine	= source; }
 
 void rbridge_setGetDataSetRowCountSource(boost::function<int()> source)	{	rbridge_getDataSetRowCount = source;	}
 
@@ -675,7 +675,7 @@ bool rbridge_columnUsedInFilter(const char * columnName)
 }
 
 
-std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
+std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 {
 	//std::cout << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl << std::flush;
 
@@ -714,7 +714,7 @@ std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
 	return filterBase64;
 }
 
-std::string	rbridge_decodeColumnNamesFromBase64(std::string messageBase64)
+std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase64)
 {
 	std::string messageNormal = messageBase64;
 
@@ -749,7 +749,7 @@ void rbridge_findColumnsUsedInDataSet()
 	std::sort(columnNamesInDataSet.begin(), columnNamesInDataSet.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //from longer to shorter length columnNames to avoid problems with columnanems such as "Height Ratio" and "Height"
 }
 
-std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode)
+std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
 
@@ -807,7 +807,7 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 	return returnThis;
 }
 
-std::string rbridge_evalRCodeWhiteListed(std::string & rCode)
+std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
 	jaspRCPP_resetErrorMsg();

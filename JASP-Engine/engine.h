@@ -45,12 +45,12 @@ public:
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
-	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)										{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
-	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
-	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
-	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)							{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
+	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
+	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
+	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
 
-	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels);
+	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels);
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 
@@ -58,32 +58,34 @@ public:
 
 
 private: // Methods:
-	void receiveRCodeMessage(			Json::Value jsonRequest);
-	void receiveFilterMessage(			Json::Value jsonRequest);
-	void receiveAnalysisMessage(		Json::Value jsonRequest);
-	void receiveComputeColumnMessage(	Json::Value jsonRequest);
-	void receiveModuleRequestMessage(	Json::Value jsonRequest);
+	void receiveRCodeMessage(			const Json::Value & jsonRequest);
+	void receiveFilterMessage(			const Json::Value & jsonRequest);
+	void receiveAnalysisMessage(		const Json::Value & jsonRequest);
+	void receiveComputeColumnMessage(	const Json::Value & jsonRequest);
+	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
 
-	void runComputeColumn(	std::string computeColumnName, std::string computeColumnCode, Column::ColumnType computeColumnType);
 	void runAnalysis();
-	void runFilter(			std::string filter, std::string generatedFilter, int filterRequestId);
-	void runRCode(			std::string rCode,	int rCodeRequestId);
+	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	Column::ColumnType computeColumnType);
+	void runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId);
+	void runRCode(			const std::string & rCode,				int rCodeRequestId);
 
 
+	void stopEngine();
 	void pauseEngine();
 	void resumeEngine();
 	void sendEnginePaused();
 	void sendEngineResumed();
+	void sendEngineStopped();
 
 	void saveImage();
-    void editImage();
+	void editImage();
 	void rewriteImages();
-	void removeNonKeepFiles(	Json::Value filesToKeepValue);
+	void removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void sendAnalysisResults();
-	void sendFilterResult(		int filterRequestId,	std::vector<bool> filterResult, std::string warning = "");
-	void sendFilterError(		int filterRequestId,	std::string errorMessage);
-	void sendRCodeResult(		std::string rCodeResult,		int rCodeRequestId);
+	void sendFilterResult(		int filterRequestId,				const std::vector<bool> & filterResult, const std::string & warning = "");
+	void sendFilterError(		int filterRequestId,				const std::string & errorMessage);
+	void sendRCodeResult(		const std::string & rCodeResult,	int rCodeRequestId);
 	void sendRCodeError(		int rCodeRequestId);
 
 	std::string callback(const std::string &results, int progress);
@@ -97,7 +99,7 @@ private: // Methods:
 private: // Data:
 	static Engine * _EngineInstance;
 
-	Status _analysisStatus = Status::empty;
+	Status		_analysisStatus = Status::empty;
 
 	int			_analysisId,
 				_analysisRevision,
@@ -123,7 +125,7 @@ private: // Data:
 	Json::Value _imageOptions,
 				_analysisResults;
 
-	IPCChannel *_channel = NULL;
+	IPCChannel *_channel = nullptr;
 
 	unsigned long _parentPID = 0;
 

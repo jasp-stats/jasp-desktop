@@ -109,6 +109,27 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _bas
 #endif
 }
 
+IPCChannel::~IPCChannel()
+{
+#ifdef JASP_DEBUG
+	std::cout << "~IPCChannel() of " << (_isSlave ? "Slave" : "Master") << std::endl;
+#endif
+	if(_isSlave)
+		return;
+
+	delete _memoryControl;
+	delete _memoryMasterToSlave;
+	delete _memorySlaveToMaster;
+
+	_memoryControl			= nullptr;
+	_memoryMasterToSlave	= nullptr;
+	_memorySlaveToMaster	= nullptr;
+
+	interprocess::shared_memory_object::remove(_baseName.c_str());
+	interprocess::shared_memory_object::remove(_nameMtS.c_str());
+	interprocess::shared_memory_object::remove(_nameStM.c_str());
+}
+
 void IPCChannel::generateNames()
 {
 	stringstream mutexInName, mutexOutName, dataInName, dataOutName, semaphoreInName, semaphoreOutName;

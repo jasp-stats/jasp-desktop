@@ -36,26 +36,29 @@ public:
 	void runScriptOnProcess(RScriptStore * scriptStore);
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
-	void terminateJaspEngine();
-
-	void pauseEngine();
-	void resumeEngine();
-	bool paused()  const { return _engineState == engineState::paused;											}
-	bool resumed() const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
-
 	void runModuleRequestOnProcess(Json::Value request);
 
-	void process();
-	void processRCodeReply(			Json::Value json);
-	void processFilterReply(		Json::Value json);
-	void processAnalysisReply(		Json::Value json);
-	void processEngineResumedReply();
-	void processEnginePausedReply();
-	void processComputeColumnReply(	Json::Value json);
-	void processModuleRequestReply(	Json::Value json);
+	void stopEngine();
+	void pauseEngine();
+	void resumeEngine();
+	void restartEngine(QProcess * jaspEngineProcess);
+	bool paused()	const { return _engineState == engineState::paused;												}
+	bool resumed()	const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
+	bool stopped()  const { return _engineState == engineState::stopped;											}
 
-	void setChannel(IPCChannel * channel)			{ _channel = channel; }
-	void setSlaveProcess(QProcess * slaveProcess)	{ _slaveProcess = slaveProcess; }
+	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr; }
+
+	void process();
+	void processRCodeReply(			Json::Value & json);
+	void processFilterReply(		Json::Value & json);
+	void processAnalysisReply(		Json::Value & json);
+	void processComputeColumnReply(	Json::Value & json);
+	void processModuleRequestReply(	Json::Value & json);
+	void processEnginePausedReply();
+	void processEngineStoppedReply();
+	void processEngineResumedReply();
+
+
 	int channelNumber()								{ return _channel->channelNumber(); }
 
 
@@ -73,10 +76,32 @@ public slots:
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(QString value);
 	void analysisRemoved(Analysis * analysis);
+	void jaspEngineProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
+signals:
+	void engineTerminated();
+	void processFilterErrorMsg(			const QString & error, int requestId);
+	void processNewFilterResult(		const std::vector<bool> & filterResult, int requestId);
+	void computeColumnErrorTextChanged(	const QString & error);
+
+	void rCodeReturned(const QString & result, int requestId);
+
+	void computeColumnSucceeded(		const std::string & columnName, const std::string & warning, bool dataChanged);
+	void computeColumnFailed(			const std::string & columnName, const std::string & error);
+
+	void moduleInstallationSucceeded(	const std::string & moduleName);
+	void moduleInstallationFailed(		const std::string & moduleName, const std::string & errorMessage);
+	void moduleLoadingSucceeded(		const std::string & moduleName, int channelID);
+	void moduleLoadingFailed(			const std::string & moduleName, const std::string & errorMessage, int channelID);
+	void moduleUnloadingFinished(		const std::string & moduleName, int channelID);
+	void moduleUninstallingFinished(	const std::string & moduleName);
 
 private:
 	void sendPauseEngine();
+	void sendStopEngine();
 	void rerunRunningAnalysis();
+	void setChannel(IPCChannel * channel)			{ _channel = channel; }
+	void setSlaveProcess(QProcess * slaveProcess);
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
@@ -87,24 +112,8 @@ private:
 	engineState	_engineState		= engineState::idle;
 	int			_ppi				= 96;
 	QString		_imageBackground	= "white";
-	bool		_pauseRequested		= false;
-
-signals:
-	void engineTerminated();
-	void processFilterErrorMsg(QString error, int requestId);
-	void processNewFilterResult(std::vector<bool> filterResult, int requestId);
-	void computeColumnErrorTextChanged(QString error);
-
-	void rCodeReturned(QString result, int requestId);
-
-	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
-	void computeColumnFailed(std::string columnName, std::string error);
-
-	void moduleInstallationSucceeded(	std::string moduleName);
-	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
-	void moduleLoadingSucceeded(		std::string moduleName, int channelID);
-	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage, int channelID);
-	void moduleUnloadingFinished(		std::string moduleName, int channelID);
+	bool		_pauseRequested		= false,
+				_stopRequested		= false;
 };
 
 #endif // ENGINEREPRESENTATION_H

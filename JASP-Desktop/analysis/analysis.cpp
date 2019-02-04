@@ -29,10 +29,6 @@
 
 #include <QDebug>
 
-using namespace boost::uuids;
-using namespace boost;
-using namespace std;
-
 Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data)
 	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(name), _version(version), _analyses(analyses)
 {
@@ -126,7 +122,7 @@ void Analysis::imagesRewritten()
 	emit resultsChangedSignal(this);
 }
 
-Analysis::Status Analysis::parseStatus(string name)
+Analysis::Status Analysis::parseStatus(std::string name)
 {
 	if		(name == "empty")			return Analysis::Empty;
 	else if (name == "waiting")			return Analysis::Inited;
@@ -160,7 +156,7 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["version"]		= _version.asString();
 	analysisAsJson["results"]		= _results;
 
-	string status;
+	std::string status;
 
 	switch (_status)
 	{
