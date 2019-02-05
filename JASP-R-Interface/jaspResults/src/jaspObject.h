@@ -110,6 +110,8 @@ public:
 
 	void			notifyParentOfChanges(); ///let ancestors know about updates
 
+	static int getCurrentTimeMs();
+
 protected:
 	jaspObjectType				_type;
 	std::string					_warning = "";
@@ -199,7 +201,17 @@ void jaspObjectFinalizer(jaspObject * obj);
 #define JASP_OBJECT_CREATOR_FUNCTIONNAME_STR(JASP_TYPE) "create_cpp_" #JASP_TYPE
 #define JASP_OBJECT_CREATOR(JASP_TYPE) JASP_TYPE ## _Interface * JASP_OBJECT_CREATOR_FUNCTIONNAME(JASP_TYPE)(std::string title) { return new JASP_TYPE ## _Interface (new JASP_TYPE(title)); }
 #define JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(JASP_TYPE) Rcpp::function(JASP_OBJECT_CREATOR_FUNCTIONNAME_STR(JASP_TYPE), &JASP_OBJECT_CREATOR_FUNCTIONNAME(JASP_TYPE))
+#define JASP_OBJECT_CREATOR_ARG(JASP_TYPE, EXTRA_ARG) JASP_TYPE ## _Interface * JASP_OBJECT_CREATOR_FUNCTIONNAME(JASP_TYPE)(std::string title, Rcpp::RObject EXTRA_ARG) { return new JASP_TYPE ## _Interface (new JASP_TYPE(title, EXTRA_ARG)); }
 
 
 RCPP_EXPOSED_CLASS_NODECL(jaspObject_Interface)
 
+//#define JASP_R_INTERFACE_TIMERS
+
+#ifdef JASP_R_INTERFACE_TIMERS
+#define JASP_OBJECT_TIMERBEGIN			static int cumulativeTime = 0;	int startSerialize = getCurrentTimeMs();
+#define JASP_OBJECT_TIMEREND(ACTIVITY)	cumulativeTime += getCurrentTimeMs() - startSerialize;	std::cout << jaspObjectTypeToString(getType()) << " spent " << cumulativeTime << "ms " #ACTIVITY "!" << std::endl;
+#else
+#define JASP_OBJECT_TIMERBEGIN			/* Doin' nothing */
+#define JASP_OBJECT_TIMEREND(ACTIVITY)	/* What you didn't start you need not stop */
+#endif

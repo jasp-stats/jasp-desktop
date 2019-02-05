@@ -1,4 +1,6 @@
 #include "jaspPlot.h"
+#include "jaspResults.h"
+
 
 jaspPlot::~jaspPlot()
 {
@@ -18,8 +20,8 @@ std::string jaspPlot::dataToString(std::string prefix)
 		prefix << "dims:        "	<< _width << "X" << _height << "\n" <<
 		prefix << "error:       '"	<< _error << "': '" << _errorMessage << "'\n" <<
 		prefix << "filePath:    "	<< _filePathPng << "\n" <<
-		prefix << "status:      "	<< _status << "\n" <<
-		prefix << "has plot:    "	<< (_plotObjSerialized.size() > 0 ? "yes" : "no") << "\n";
+		prefix << "status:      "	<< _status << "\n" ;//<<
+		//prefix << "has plot:    "	<< (_plotObjSerialized.size() > 0 ? "yes" : "no") << "\n";
 
 	if(_footnotes.size() > 0)
 	{
@@ -67,6 +69,13 @@ void jaspPlot::addFootnote(std::string message, std::string symbol)
 }
 
 
+void jaspPlot::initEnvName()
+{
+	static int counter = 0;
+
+	_envName = "plot_" + std::to_string(counter++);
+}
+
 void jaspPlot::setPlotObject(Rcpp::RObject obj)
 {
 	_filePathPng = "";
@@ -89,18 +98,12 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 			_status = "complete";
 	}
 
-
-	static Rcpp::Function serialize("serialize");
-	_plotObjSerialized = serialize(Rcpp::_["object"] = obj, Rcpp::_["connection"] = R_NilValue, Rcpp::_["ascii"] = true);
+	jaspResults::setObjectInEnv(_envName, obj);
 }
 
 Rcpp::RObject jaspPlot::getPlotObject()
 {
-	if(_plotObjSerialized.size() == 0)
-		return NULL;
-
-	static Rcpp::Function unserialize("unserialize");
-	return unserialize(_plotObjSerialized);
+	return jaspResults::getObjectFromEnv(_envName);
 }
 
 Json::Value jaspPlot::convertToJSON()
@@ -115,8 +118,7 @@ Json::Value jaspPlot::convertToJSON()
 	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
 	obj["footnotes"]			= _footnotes;
-	obj["plotObjSerialized"]	= std::string(_plotObjSerialized.begin(), _plotObjSerialized.end());
-
+	obj["environmentName"]		= _envName;
 
 	return obj;
 }
@@ -133,9 +135,11 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
 	_footnotes		= in.get("footnotes",		Json::arrayValue);
-
+	_envName		= in.get("environmentName",	_envName).asString();
+	/*JASP_OBJECT_TIMERBEGIN
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();
 	_plotObjSerialized = Rcpp::Vector<RAWSXP>(jsonPlotObjStr.begin(), jsonPlotObjStr.end());
+	JASP_OBJECT_TIMEREND(converting from JSON)*/
 }
 
 std::string jaspPlot::toHtml()

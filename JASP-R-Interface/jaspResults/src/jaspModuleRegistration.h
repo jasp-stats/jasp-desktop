@@ -5,8 +5,8 @@ JASP_OBJECT_CREATOR(jaspHtml)
 JASP_OBJECT_CREATOR(jaspPlot)
 JASP_OBJECT_CREATOR(jaspTable)
 JASP_OBJECT_CREATOR(jaspState)
-JASP_OBJECT_CREATOR(jaspResults)
 JASP_OBJECT_CREATOR(jaspContainer)
+JASP_OBJECT_CREATOR_ARG(jaspResults, oldState)
 
 RCPP_MODULE(jaspResults)
 {

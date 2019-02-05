@@ -4,15 +4,20 @@
 class jaspPlot : public jaspObject
 {
 public:
-	jaspPlot(std::string title = "") : jaspObject(jaspObjectType::plot, title) {}
+	jaspPlot(std::string title = "") : jaspObject(jaspObjectType::plot, title) { initEnvName(); }
 
 	~jaspPlot();
 
 	void addFootnote(std::string message, std::string symbol = "");
 
-	float _aspectRatio;
-	int _width, _height;
-	std::string _error = "", _errorMessage = "", _filePathPng, _status = "waiting";
+	float		_aspectRatio;
+	int			_width,
+				_height;
+	std::string	_error = "",
+				_errorMessage = "",
+				_filePathPng,
+				_status = "waiting",
+				_envName;
 
 	///For safekeeping (aka state replacement?)
 	void setPlotObject(Rcpp::RObject plotSerialized);
@@ -28,7 +33,9 @@ public:
 	void		convertFromJSON_SetFields(Json::Value in) override;
 
 private:
-	Rcpp::Vector<RAWSXP> _plotObjSerialized;
+	void initEnvName();
+
+	//Rcpp::Vector<RAWSXP> _plotObjSerialized;
 	Json::Value _footnotes = Json::arrayValue;
 };
 

@@ -20,6 +20,7 @@
 #include <QDir>
 
 #include "utilities/application.h"
+#include <QQuickWindow>
 
 void checkTimeOut(int argc, char *argv[], int index, int & timeOut)
 {
@@ -210,6 +211,8 @@ int main(int argc, char *argv[])
 			QCoreApplication::setApplicationName("JASP");
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+
+			//QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it
 
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
 			return a.exec();

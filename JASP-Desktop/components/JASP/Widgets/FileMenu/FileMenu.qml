@@ -14,7 +14,6 @@ FocusScope
 	visible:	actionMenu.x + actionMenu.width > 0
 
 
-	property variant resourcesbuttons:		["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
 	property int action_button_height:		35 * preferencesModel.uiScale
 	property int resource_button_height:	1.5 * action_button_height
 	property int colWidths:					150 * preferencesModel.uiScale

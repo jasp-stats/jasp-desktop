@@ -179,7 +179,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 	if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 
-  jaspResults <- jaspResultsModule$create_cpp_jaspResults(name)
+
+  jaspResults <- jaspResultsModule$create_cpp_jaspResults(name, .retrieveState())
   jaspResults$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)

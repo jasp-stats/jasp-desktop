@@ -28,7 +28,7 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.bottom:		dataStatusBar.top
 
-			font.pixelSize:		baseFontSize * preferencesModel.uiScale
+			font:	Theme.font
 
 			//headersGradient: myHeadersGradient
 			model:				dataSetModel

@@ -4,10 +4,11 @@
 #include <fstream>
 #include <cmath>
 
-sendFuncDef			jaspResults::ipccSendFunc = NULL;
-pollMessagesFuncDef jaspResults::ipccPollFunc = NULL;
-std::string			jaspResults::_saveResultsHere = "";
-std::string			jaspResults::_baseCitation = "";
+sendFuncDef			jaspResults::ipccSendFunc		= nullptr;
+pollMessagesFuncDef jaspResults::ipccPollFunc		= nullptr;
+std::string			jaspResults::_saveResultsHere	= "";
+std::string			jaspResults::_baseCitation		= "";
+Rcpp::Environment*	jaspResults::_RStorageEnv			= nullptr;
 
 const std::string jaspResults::analysisChangedErrorMessage = "Analysis changed and will be restarted!";
 
@@ -38,6 +39,35 @@ void jaspResults::setSaveLocation(const char * newSaveLocation)
 	_saveResultsHere = newSaveLocation;
 }
 
+jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
+	: jaspContainer(title, jaspObjectType::results)
+{
+	if(_RStorageEnv != nullptr)
+		delete _RStorageEnv;
+	_RStorageEnv = new Rcpp::Environment(Rcpp::Environment::global_env());
+
+	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState) && Rcpp::as<Rcpp::List>(oldState).containsElementNamed("figures"))
+	{
+		//Let's try to load all previous plots from the state!
+		Rcpp::List figures = Rcpp::as<Rcpp::List>(oldState)["figures"];
+
+		for(Rcpp::List plotInfo : figures)
+			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
+			{
+				std::string envName = Rcpp::as<std::string>(plotInfo["envName"]);
+				(*_RStorageEnv)[envName] = plotInfo["obj"];
+			}
+	}
+
+	setStatus("running");
+
+	if(_baseCitation != "")
+		addCitation(_baseCitation);
+
+	if(_saveResultsHere != "")
+		loadResults();
+}
+
 void jaspResults::setStatus(std::string status)
 {
 	response["status"] = status;
@@ -61,6 +91,7 @@ void jaspResults::complete()
 
 void jaspResults::saveResults()
 {
+	JASP_OBJECT_TIMERBEGIN
 	if(_saveResultsHere == "")
 	{
 		jaspPrint("Did not store jaspResults");
@@ -71,14 +102,15 @@ void jaspResults::saveResults()
 	Json::Value json = convertToJSON();
 
 	saveHere << json.toStyledString();
+	JASP_OBJECT_TIMEREND(saveResults)
 }
 
 void jaspResults::loadResults()
 {
+	JASP_OBJECT_TIMERBEGIN
 	_previousOptions = Json::nullValue;
 
 	if(_saveResultsHere == "") return;
-
 
 	std::ifstream loadThis(_saveResultsHere);
 
@@ -91,6 +123,8 @@ void jaspResults::loadResults()
 	if(!val.isObject()) return;
 
 	convertFromJSON_SetFields(val);
+
+	JASP_OBJECT_TIMEREND(loadResults);
 }
 
 void jaspResults::changeOptions(std::string opts)
@@ -120,13 +154,13 @@ void jaspResults::send(std::string otherMsg)
 	JASPprint("send was called!");
 #endif
 
-	if(ipccSendFunc != NULL)
+	if(ipccSendFunc != nullptr)
 		(*ipccSendFunc)(otherMsg == "" ? constructResultJson() : otherMsg.c_str());
 }
 
 void jaspResults::checkForAnalysisChanged()
 {
-	if(ipccPollFunc == NULL)
+	if(ipccPollFunc == nullptr)
 		return;
 
 	if((*ipccPollFunc)())
@@ -221,8 +255,9 @@ Rcpp::List jaspResults::getPlotObjectsForState()
 	Rcpp::List returnThis;
 	Rcpp::Shield<Rcpp::List> protectList(returnThis);
 
+	JASP_OBJECT_TIMERBEGIN
 	addSerializedPlotObjsForStateFromJaspObject(this, returnThis);
-
+	JASP_OBJECT_TIMEREND(getting plot objects)
 	return returnThis;
 }
 
@@ -237,6 +272,7 @@ void jaspResults::addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, 
 			pngImg["obj"]					= plot->getPlotObject();
 			pngImg["width"]					= plot->_width;
 			pngImg["height"]				= plot->_height;
+			pngImg["envName"]				= plot->_envName;
 			pngImgObj[plot->_filePathPng]	= pngImg;
 		}
 	}
@@ -297,11 +333,6 @@ void jaspResults::convertFromJSON_SetFields(Json::Value in)
 	_previousOptions	= _currentOptions;
 }
 
-int jaspResults::getCurrentTimeMs()
-{
-	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-}
-
 void jaspResults::startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs)
 {
 	_progressbarExpectedTicks		= expectedTicks;
@@ -336,7 +367,7 @@ jaspObject * jaspObject::convertFromJSON(Json::Value in)
 {
 	jaspObjectType newType = jaspObjectTypeStringToObjectType(in.get("type", "").asString());
 
-	jaspObject * newObject = NULL;
+	jaspObject * newObject = nullptr;
 
 	switch(newType)
 	{
@@ -347,11 +378,28 @@ jaspObject * jaspObject::convertFromJSON(Json::Value in)
 	//case jaspObjectType::list:	newObject = new jaspList();			break;
 	case jaspObjectType::html:		newObject = new jaspHtml();			break;
 	case jaspObjectType::state:		newObject = new jaspState();		break;
-	case jaspObjectType::results:	newObject = new jaspResults();		break;
+	//case jaspObjectType::results:	newObject = new jaspResults();		break;
 	default:						throw std::runtime_error("Cant understand this type");
 	}
 
-	if(newObject != NULL) newObject->convertFromJSON_SetFields(in);
+	if(newObject != nullptr) newObject->convertFromJSON_SetFields(in);
 
 	return newObject;
+}
+
+Rcpp::RObject jaspResults::getObjectFromEnv(std::string envName)
+{
+	if(_RStorageEnv->exists(envName))
+		return (*_RStorageEnv)[envName];
+	return NULL;
+}
+
+void jaspResults::setObjectInEnv(std::string envName, Rcpp::RObject obj)
+{
+	(*_RStorageEnv)[envName] = obj;
+}
+
+bool jaspResults::objectExistsInEnv(std::string envName)
+{
+	return _RStorageEnv->exists(envName);
 }

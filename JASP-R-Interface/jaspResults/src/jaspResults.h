@@ -12,16 +12,7 @@ typedef bool (*pollMessagesFuncDef)();
 class jaspResults : public jaspContainer
 {
 public:
-	jaspResults(std::string title = "", std::string status = "running") : jaspContainer(title, jaspObjectType::results)
-	{
-		setStatus(status);
-
-		if(_baseCitation != "")
-			addCitation(_baseCitation);
-
-		if(_saveResultsHere != "")
-			loadResults();
-	}
+	jaspResults(std::string title, Rcpp::RObject oldState);
 
 	//static functions to allow the values to be set before the constructor is called from R. Would be nicer to just run the constructor in C++ maybe?
 	static void setSendFunc(sendFuncDef sendFunc);
@@ -64,17 +55,21 @@ public:
 	void startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs = 500);
 	void progressbarTick();
 
-	int getCurrentTimeMs();
+	static Rcpp::RObject	getObjectFromEnv(std::string envName);
+	static void				setObjectInEnv(std::string envName, Rcpp::RObject obj);
+	static bool				objectExistsInEnv(std::string envName);
 
 private:
-	static Json::Value response;
-	static sendFuncDef ipccSendFunc;
-	static pollMessagesFuncDef ipccPollFunc;
-	static std::string _saveResultsHere;
-	static std::string _baseCitation;
+	static Json::Value				response;
+	static sendFuncDef				ipccSendFunc;
+	static pollMessagesFuncDef		ipccPollFunc;
+	static std::string				_saveResultsHere;
+	static std::string				_baseCitation;
+	static const std::string		analysisChangedErrorMessage;
 
-	std::string errorMessage = "";
-	static const std::string analysisChangedErrorMessage;
+	static Rcpp::Environment		*	_RStorageEnv; //we need this environment to store R objects in a "named" fashion, because then the garbage collector doesn't throw away everything...
+
+	std::string	errorMessage = "";
 	Json::Value	_currentOptions		= Json::nullValue,
 				_previousOptions	= Json::nullValue;
 
