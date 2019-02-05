@@ -52,8 +52,6 @@ To build JASP follow the next steps:
 	$ git clone https://github.com/jasp-stats/jasp-desktop.git
 	
 	Or from a browser go to https://github.com/jasp-stats/jasp-desktop and choose the Clone or Download option.
-	![Image of Qt Installer](https://static.jasp-stats.org/images/Clown-or-Download.png)
-
 
 Mac OS X
 --------
