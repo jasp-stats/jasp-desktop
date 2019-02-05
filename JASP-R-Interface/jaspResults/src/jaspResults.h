@@ -81,7 +81,12 @@ private:
 	void addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & pngImgObj);
 	void addPlotPathsForKeepFromJaspObject(jaspObject * obj, Rcpp::List & pngPathImgObj);
 
-	int _progressbarExpectedTicks = 100, _progressbarLastUpdateTime = -1, _progressbarTicks = 0, _progressbarBetweenUpdatesTime = 500;
+	int		_progressbarExpectedTicks		= 100,
+			_progressbarLastUpdateTime		= -1,
+			_progressbarTicks				= 0,
+			_progressbarBetweenUpdatesTime	= 500,
+			_sendingFeedbackLastTime		= -1,
+			_sendingFeedbackInterval		= 500;
 };
 
 void JASPresultFinalizer(jaspResults * obj);

@@ -65,7 +65,8 @@ FocusScope
 		MouseArea
 		{
             anchors.fill: parent
-            onClicked: {
+			onClicked:
+			{
                 expanderButton.toggleExpander();
                 expanderButton.forceActiveFocus();
             }

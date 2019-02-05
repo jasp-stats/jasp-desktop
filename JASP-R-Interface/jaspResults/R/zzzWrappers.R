@@ -249,7 +249,6 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
     htmlObj             <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
   }
 
-  htmlObj             <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
   htmlObj$elementType <- elementType
   htmlObj$class       <- class
   htmlObj$title       <- title

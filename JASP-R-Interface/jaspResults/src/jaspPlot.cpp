@@ -84,10 +84,13 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 			_error			= "Error during writeImage";
 			_errorMessage	= Rcpp::as<std::string>(writeResult[writeResult.findName("error")]);
 		}
+
+		if(_status == "waiting" || _status == "running")
+			_status = "complete";
 	}
 
 
-	Rcpp::Function serialize("serialize");
+	static Rcpp::Function serialize("serialize");
 	_plotObjSerialized = serialize(Rcpp::_["object"] = obj, Rcpp::_["connection"] = R_NilValue, Rcpp::_["ascii"] = true);
 }
 
@@ -96,7 +99,7 @@ Rcpp::RObject jaspPlot::getPlotObject()
 	if(_plotObjSerialized.size() == 0)
 		return NULL;
 
-	Rcpp::Function unserialize("unserialize");
+	static Rcpp::Function unserialize("unserialize");
 	return unserialize(_plotObjSerialized);
 }
 

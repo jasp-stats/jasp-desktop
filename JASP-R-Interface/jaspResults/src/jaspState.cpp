@@ -21,7 +21,7 @@ void jaspState::convertFromJSON_SetFields(Json::Value in)
 
 void jaspState::setObject(Rcpp::RObject obj)
 {
-	Rcpp::Function serialize("serialize");
+	static Rcpp::Function serialize("serialize");
 
 	_stateObjectSerialized = serialize(Rcpp::_["object"] = obj, Rcpp::_["connection"] = R_NilValue, Rcpp::_["ascii"] = true);
 }
@@ -31,7 +31,7 @@ Rcpp::RObject jaspState::getObject()
 	if(_stateObjectSerialized.size() == 0)
 		return NULL;
 
-	Rcpp::Function unserialize("unserialize");
+	static Rcpp::Function unserialize("unserialize");
 	return unserialize(_stateObjectSerialized);
 }
 

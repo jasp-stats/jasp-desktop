@@ -75,9 +75,6 @@ void EngineSync::start(int ppi)
 	if (_engineStarted)
 		return;
 
-
-	JASPTIMER_START(EngineSync::start());
-
 	_engineStarted = true;
 
 	try {

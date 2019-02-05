@@ -68,10 +68,7 @@ void jaspResults::saveResults()
 	}
 
 	std::ofstream saveHere(_saveResultsHere);
-
 	Json::Value json = convertToJSON();
-
-	//std::cout << "jaspResults JSON:\n\n" << json.toStyledString();
 
 	saveHere << json.toStyledString();
 }
@@ -81,6 +78,7 @@ void jaspResults::loadResults()
 	_previousOptions = Json::nullValue;
 
 	if(_saveResultsHere == "") return;
+
 
 	std::ifstream loadThis(_saveResultsHere);
 
@@ -146,7 +144,13 @@ void jaspResults::childrenUpdatedCallbackHandler()
 #endif
 
 	checkForAnalysisChanged(); //can "throw" Rf_error
-	send();
+
+	int curTime = getCurrentTimeMs();
+	if(_sendingFeedbackLastTime == -1 || (curTime - _sendingFeedbackLastTime) > _sendingFeedbackInterval)
+	{
+		send();
+		_sendingFeedbackLastTime = curTime;
+	}
 }
 
 Json::Value jaspResults::response = Json::Value(Json::objectValue);
@@ -215,11 +219,10 @@ void jaspResults::setErrorMessage(std::string msg)
 Rcpp::List jaspResults::getPlotObjectsForState()
 {
 	Rcpp::List returnThis;
-	auto * protectList  = new Rcpp::Shield<Rcpp::List>(returnThis);
+	Rcpp::Shield<Rcpp::List> protectList(returnThis);
 
 	addSerializedPlotObjsForStateFromJaspObject(this, returnThis);
 
-	delete protectList;
 	return returnThis;
 }
 
@@ -231,10 +234,10 @@ void jaspResults::addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, 
 		if(plot->_filePathPng != "")
 		{
 			Rcpp::List pngImg;
-			pngImg["obj"] = plot->getPlotObject();
-			pngImg["width"] = plot->_width;
-			pngImg["height"] = plot->_height;
-			pngImgObj[plot->_filePathPng] = pngImg;
+			pngImg["obj"]					= plot->getPlotObject();
+			pngImg["width"]					= plot->_width;
+			pngImg["height"]				= plot->_height;
+			pngImgObj[plot->_filePathPng]	= pngImg;
 		}
 	}
 

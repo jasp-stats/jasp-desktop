@@ -4,6 +4,7 @@
 #include <sstream>
 #include <queue>
 #include "enumutilities.h"
+#include "timers.h"
 #ifdef JASP_R_INTERFACE_LIBRARY
 #include "jsonredirect.h"
 #else
