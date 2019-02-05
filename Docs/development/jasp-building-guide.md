@@ -44,6 +44,16 @@ Building JASP under windows is the most temperamental but should pose no large p
 
 Besides installing and cloning the software above one needs to make some kits in Qt Creator to be able to build JASP and separately JASP-R-Interface. 
 
+Assume that the root folder of your JASP build folder is <JASP>.
+To build JASP follow the next steps:
+	
+1. Clone JASP sources from the jasp-desktop github repository.
+	From <JASP> root folder in a terminal type:
+	$ git clone https://github.com/jasp-stats/jasp-desktop.git
+	
+	Or from a browser go to https://github.com/jasp-stats/jasp-desktop and choose the Clone or Download option.
+	![Image of Qt Installer](https://static.jasp-stats.org/images/Clown-or-Download.png)
+
 
 Mac OS X
 --------
