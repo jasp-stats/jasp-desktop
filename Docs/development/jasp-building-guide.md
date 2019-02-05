@@ -48,7 +48,7 @@ Assume that the root folder of your JASP build folder is <JASP>.
 To build JASP follow the next steps:
 	
 1. Clone JASP sources from the jasp-desktop github repository.
-	From <JASP> root folder in a terminal type:
+	From <JASP> root folder in a terminal type:<br>
 	$ git clone https://github.com/jasp-stats/jasp-desktop.git
 	
 	Or from a browser go to https://github.com/jasp-stats/jasp-desktop and choose the Clone or Download option.
