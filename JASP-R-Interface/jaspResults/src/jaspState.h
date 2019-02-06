@@ -4,7 +4,7 @@
 class jaspState : public jaspObject
 {
 public:
-	jaspState(std::string title = "") : jaspObject(jaspObjectType::state, title) {}
+	jaspState(std::string title = "") : jaspObject(jaspObjectType::state, title) { initEnvName(); }
 	~jaspState() {}
 
 	void setObject(Rcpp::RObject obj);

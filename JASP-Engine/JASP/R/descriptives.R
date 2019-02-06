@@ -15,14 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Descriptives <- function(jaspResults, dataset, options, state=NULL)
+Descriptives <- function(jaspResults, dataset, options)
 {
   variables <- unlist(options$variables)
   splitName <- options$splitby
   makeSplit <- splitName != ""
-
-  if(is.null(state))
-    state <- list()
 
   if (is.null(dataset)) {
     if (makeSplit) {
@@ -375,13 +372,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     if (!is.factor(column)){
       next
     }
-
-    #if (variable %in% names(stateTabs) &&
-    #  "data" %in% names(stateTabs[[variable]])) {
-    #  freqTabs[[length(freqTabs) + 1]] <- stateTabs[[variable]]
-    #  next
-    #}
-
 
     if(!is.null(freqTabs[[variable]]))
       next
