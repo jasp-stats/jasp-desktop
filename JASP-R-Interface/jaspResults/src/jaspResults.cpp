@@ -1,6 +1,4 @@
 #include "jaspModuleRegistration.h"
-
-#include <chrono>
 #include <fstream>
 #include <cmath>
 

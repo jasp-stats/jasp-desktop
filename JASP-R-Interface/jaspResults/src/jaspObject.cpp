@@ -1,6 +1,7 @@
 #define ENUM_DECLARATION_CPP
 #include "jaspObject.h"
 #include "jaspJson.h"
+#include <chrono>
 
 #if defined(__WIN32__) || !defined(JASP_R_INTERFACE_LIBRARY)
 #include "lib_json/json_value.cpp" //hacky way to get libjson in the code ^^
