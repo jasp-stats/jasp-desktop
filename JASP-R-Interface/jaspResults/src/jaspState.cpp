@@ -18,12 +18,15 @@ void jaspState::convertFromJSON_SetFields(Json::Value in)
 
 void jaspState::setObject(Rcpp::RObject obj)
 {
-	jaspResults::setObjectInEnv(_envName, obj);
+	if(!obj.isNULL())
+		jaspResults::setObjectInEnv(_envName, obj);
 }
 
 Rcpp::RObject jaspState::getObject()
 {
-	return jaspResults::getObjectFromEnv(_envName);
+	if(jaspResults::objectExistsInEnv(_envName))
+		return jaspResults::getObjectFromEnv(_envName);
+	return NULL;
 }
 
 std::string jaspState::dataToString(std::string prefix)

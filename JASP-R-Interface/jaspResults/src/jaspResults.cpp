@@ -57,32 +57,6 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 		loadResults();
 }
 
-void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)
-{
-	if(state.containsElementNamed("figures"))
-	{
-		//Let's try to load all previous plots from the state!
-		Rcpp::List figures = state["figures"];
-
-		for(Rcpp::List plotInfo : figures)
-			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
-			{
-				std::string envName = Rcpp::as<std::string>(plotInfo["envName"]);
-				(*_RStorageEnv)[envName] = plotInfo["obj"];
-			}
-	}
-
-	if(state.containsElementNamed("other"))
-	{
-		//Let's try to load all previous plots from the state!
-		Rcpp::List others = state["other"];
-		Rcpp::List names  = others.names();
-
-		for(std::string name : names)
-			(*_RStorageEnv)[name] = others[name];
-	}
-}
-
 void jaspResults::setStatus(std::string status)
 {
 	response["status"] = status;
@@ -311,12 +285,40 @@ void jaspResults::addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj,
 {
 	if(obj->getType() == jaspObjectType::state)
 	{
-		jaspState * state = (jaspState*)obj; //If other objects are needed this code can be more general
-		cumulativeList[state->_envName] = state->getObject();
+		jaspState * state				= (jaspState*)obj; //If other objects are needed this code can be more general
+
+		if(objectExistsInEnv(state->_envName))
+			cumulativeList[state->_envName]	= state->getObject();
 	}
 
 	for(auto c : obj->getChildren())
 		addSerializedOtherObjsForStateFromJaspObject(c, cumulativeList);
+}
+
+void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)
+{
+	if(state.containsElementNamed("figures"))
+	{
+		//Let's try to load all previous plots from the state!
+		Rcpp::List figures = state["figures"];
+
+		for(Rcpp::List plotInfo : figures)
+			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
+			{
+				std::string envName = Rcpp::as<std::string>(plotInfo["envName"]);
+				(*_RStorageEnv)[envName] = plotInfo["obj"];
+			}
+	}
+
+	if(state.containsElementNamed("other"))
+	{
+		//Let's try to load all previous plots from the state!
+		Rcpp::List others = state["other"];
+		Rcpp::List names  = others.names();
+
+		for(std::string name : names)
+			(*_RStorageEnv)[name] = others[name];
+	}
 }
 
 Rcpp::List jaspResults::getPlotPathsForKeep()
