@@ -241,12 +241,12 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
 {
   if (jaspResultsCalledFromJasp()) 
   {
-    htmlObj <- jaspResultsModule$create_cpp_jaspHtml(title)
+    htmlObj <- jaspResultsModule$create_cpp_jaspHtml(text)
   } 
   else 
   {
     checkForJaspResultsInit()
-    htmlObj <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
+    htmlObj <- create_cpp_jaspHtml(text)
   }
 
   htmlObj$elementType <- elementType
@@ -273,7 +273,7 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL, position=N
   else 
   {
     checkForJaspResultsInit()
-    stateObj <- create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
+    stateObj <- create_cpp_jaspState(title)
   }
 
   if(!is.null(object))
