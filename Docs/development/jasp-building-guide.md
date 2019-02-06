@@ -118,17 +118,22 @@ Mac OS X
 --------
 After cloning the jasp-desktop and jasp-required-files repositories you must however install the following software:
 
- 0. Clone the JASP repository
- 1. [XCode](https://developer.apple.com/xcode/) Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
+ 0. **Clone the JASP repository**. For instance, my repositories are dropped in "~/desktop/JASP/" and GitHub makes "~/desktop/JASP/jasp-desktop/" and "~/desktop/JASP/jasp-required-files/". Download 
  
+ 1. [XCode](https://developer.apple.com/xcode/) and [Command Line Tools](https://developer.apple.com/download/more/) Qt requires 
+  (i) XCode, 
+  (ii) command line tools 
+to function. You can download and install both XCode and Command Line Tools through the App Store or the websites provided above. Once both are installed: (a) Run XCode, (b) go to the left top menu XCode - Preferences, the tab "Locations" and tell XCode where Command Line Tools is. 
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
 
- 2.a. **Configure Qt5.11.3**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give "Desktop Qt 5.11.3 clang 64bit". Click on this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
+ 2.a. **Configure Qt5.12**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give **Desktop Qt 5.12 clang 64bit**. Click this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
- 2.b. **Configure project**: Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
+ 2.b. **Open the JASP project**: Go to the jasp-desktop folder (i.e., ~/desktop/JASP/jasp-desktop/) and double click "JASP.pro" which opens in Qt. 
+
+ 2.c. **Configure project**: Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
 
  ![Image of Project debug](https://static.jasp-stats.org/images/jasp2b.1.ConfigureProjectDebug.png)
 
@@ -138,11 +143,11 @@ After cloning the jasp-desktop and jasp-required-files repositories you must how
 
 In both case, I've added the flag "-j4" to make use of all my four cores on my mac.
 
-5. In the end, your folder should be structured as follows:
+3. **Adding additional files in the right place** For Qt to build JASP successfully it requires additional files. These files can be found in "~/desktop/JASP/jasp-required-files/". In the end, your folder should be structured as follows:
 
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
-where the blue files are the binaries that are added manually.
+where the blue files are the binaries that are added manually. This last step of manually dropping the required files in the right folders will be not necessary in the future. 
 
 Linux
 -----
