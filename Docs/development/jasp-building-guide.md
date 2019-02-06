@@ -48,11 +48,72 @@ Assume that the root folder of your JASP build folder is <JASP>.
 To build JASP follow the next steps:
 	
 1. Clone JASP sources from the jasp-desktop github repository.
-	From <JASP> root folder in a terminal type:<br>
-	$ git clone https://github.com/jasp-stats/jasp-desktop.git
+	From <JASP> root folder in a terminal type:
+	
+	\> git clone https://github.com/jasp-stats/jasp-desktop.git
 	
 	Or from a browser go to https://github.com/jasp-stats/jasp-desktop and choose the Clone or Download option.
+	
+	<img src="https://static.jasp-stats.org/images/Clone-or-Download.png" width="400" height="56" />
+	
+	You should now have:  
+	\<JASP\>\jasp-desktop
+	
+2. Clone some third party binaries, boost and used R-packages  from jasp-required-files repository on GitHub. 
+	From \<JASP\> root folder in a terminal type:
+	
+	\> git clone https://github.com/jasp-stats/jasp-required-files.git
+	
+	You should now have:  
+	\<JASP\>\jasp-required-files
+	
+3. Switch to the Windows branch in jasp-required-files. From \<JASP\> root folder in a terminal type:
+	
+	Warning in advance:  
+Because the jasp-required-files folder contains binary files as well as R packages with text files it is necessary that git performs a checkout or commit without changing the line endings. Some packages might generate MD5 checksum errors if line endings are changed. It is possible to change this behavior of git configuration per repository. For more information on this subject see https://help.github.com/articles/dealing-with-line-endings/  
 
+	\> cd \<JASP\>\jasp-required-files  
+	\> git checkout Windows  
+	\> git branch  
+	
+	Should confirm that you are on the Windoows branch now.
+	
+	
+4.	Create a build folder(s). From the \<JASP\> root folder for a 64-bit version e.g.:
+
+	\> mkdir build-release-64  
+	\> mkdir build-debug-64  
+	
+	Latter if you want to build a debug version. In the description it is assumed that you build a release version. 
+	You should now have:  
+
+	 \<JASP\>\build-release-64  
+	 \<JASP\>\build-debug-64  
+	
+	The destinction between debug version and release only differs in the option you choose in QtCreator. Olnly the description for the release version is given.
+	 
+5.	Copy files to its expected location in the build folders:    
+	From \<JASP\>\jasp-required-files\64\\* -> \<JASP\>\build-release-64  
+	From \<JASP\>\jasp-required-files\R -> \<JASP\>\build-release-64\R  
+	From \<JASP\>\jasp-required-files\boost_1_64_0 -> <JASP>\boost_1_64_0  
+	
+	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder. From the buildfolder or Jasp root folder:  
+	\> cd <JASP>\build-release-64  
+	\> mklink /D R ..\ jasp-required-files\R  
+	\> cd \<JASP\>    
+	\> mklink /D boost_1_64_0 .\jasp-required-files\boost_1_64_0  
+		
+	You should now have :  
+
+	\<JASP\>\build-release-64\R    	
+	\<JASP\>\build-release-64\*.lib and *.dll    
+	\<JASP\>\boost_1_64_0  
+
+6.	Install Qt 5.12
+	Go to https://www.qt.io/download
+	Choose Open Source and Download. Start qt-unified-windows-x86-3.0.6-online.exe from your download folder. (Skip some forms if you do not have a Qt account) Use the default options but select the following components to install:
+
+ 
 Mac OS X
 --------
 After cloning the jasp-desktop and jasp-required-files repositories you must however install the following software:
