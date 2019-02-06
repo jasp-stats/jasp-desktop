@@ -3,13 +3,8 @@
 
 Json::Value jaspState::convertToJSON()
 {
-	Json::Value obj		= jaspObject::convertToJSON();
-
-	static Rcpp::Function serialize("serialize");
-	Rcpp::Vector<RAWSXP> stateObjectSerialized = serialize(Rcpp::_["object"] = jaspResults::getObjectFromEnv(_envName), Rcpp::_["connection"] = R_NilValue, Rcpp::_["ascii"] = true);
-
+	Json::Value obj			= jaspObject::convertToJSON();
 	obj["environmentName"]	= _envName;
-	obj["ObjectSerialized"] = std::string(stateObjectSerialized.begin(), stateObjectSerialized.end());
 
 	return obj;
 }
@@ -17,11 +12,7 @@ Json::Value jaspState::convertToJSON()
 void jaspState::convertFromJSON_SetFields(Json::Value in)
 {
 	jaspObject::convertFromJSON_SetFields(in);
-
-	_envName					= in.get("environmentName", _envName).asString();
-	std::string jsonPlotObjStr	= in.get("ObjectSerialized", "").asString();
-
-	jaspResults::setObjectInEnv(_envName, Rcpp::Vector<RAWSXP>(jsonPlotObjStr.begin(), jsonPlotObjStr.end()));
+	_envName = in.get("environmentName", _envName).asString();
 }
 
 

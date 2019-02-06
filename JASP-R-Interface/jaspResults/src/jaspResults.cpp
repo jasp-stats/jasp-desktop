@@ -44,10 +44,25 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 		delete _RStorageEnv;
 	_RStorageEnv = new Rcpp::Environment(Rcpp::Environment::global_env());
 
-	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState) && Rcpp::as<Rcpp::List>(oldState).containsElementNamed("figures"))
+
+	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState))
+		fillEnvironmentWithStateObjects(Rcpp::as<Rcpp::List>(oldState));
+
+	setStatus("running");
+
+	if(_baseCitation != "")
+		addCitation(_baseCitation);
+
+	if(_saveResultsHere != "")
+		loadResults();
+}
+
+void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)
+{
+	if(state.containsElementNamed("figures"))
 	{
 		//Let's try to load all previous plots from the state!
-		Rcpp::List figures = Rcpp::as<Rcpp::List>(oldState)["figures"];
+		Rcpp::List figures = state["figures"];
 
 		for(Rcpp::List plotInfo : figures)
 			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
@@ -57,13 +72,15 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 			}
 	}
 
-	setStatus("running");
+	if(state.containsElementNamed("other"))
+	{
+		//Let's try to load all previous plots from the state!
+		Rcpp::List others = state["other"];
+		Rcpp::List names  = others.names();
 
-	if(_baseCitation != "")
-		addCitation(_baseCitation);
-
-	if(_saveResultsHere != "")
-		loadResults();
+		for(std::string name : names)
+			(*_RStorageEnv)[name] = others[name];
+	}
 }
 
 void jaspResults::setStatus(std::string status)
@@ -277,6 +294,29 @@ void jaspResults::addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, 
 
 	for(auto c : obj->getChildren())
 		addSerializedPlotObjsForStateFromJaspObject(c, pngImgObj);
+}
+
+Rcpp::List jaspResults::getOtherObjectsForState()
+{
+	Rcpp::List returnThis;
+	Rcpp::Shield<Rcpp::List> protectList(returnThis);
+
+	JASP_OBJECT_TIMERBEGIN
+	addSerializedOtherObjsForStateFromJaspObject(this, returnThis);
+	JASP_OBJECT_TIMEREND(getting other objects)
+	return returnThis;
+}
+
+void jaspResults::addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & cumulativeList)
+{
+	if(obj->getType() == jaspObjectType::state)
+	{
+		jaspState * state = (jaspState*)obj; //If other objects are needed this code can be more general
+		cumulativeList[state->_envName] = state->getObject();
+	}
+
+	for(auto c : obj->getChildren())
+		addSerializedOtherObjsForStateFromJaspObject(c, cumulativeList);
 }
 
 Rcpp::List jaspResults::getPlotPathsForKeep()

@@ -248,7 +248,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
       newState <- list()
 
     newState[["figures"]]         <- jaspResults$getPlotObjectsForState()
-
+    newState[["other"]]           <- jaspResults$getOtherObjectsForState()
     jaspResults$relativePathKeep  <- .saveState(newState)$relativePath
 
     returnThis <- list(keep=jaspResults$getKeepList()) #To keep the old keep-code functional we return it like this

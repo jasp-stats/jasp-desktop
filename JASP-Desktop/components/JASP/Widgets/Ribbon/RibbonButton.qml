@@ -77,6 +77,7 @@ Rectangle
 			anchors.topMargin:			5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
 			font						: Theme.font
+			renderType:					Text.QtRendering //Because this might be transform and be ugly if done natively
 		}
 
 		MouseArea

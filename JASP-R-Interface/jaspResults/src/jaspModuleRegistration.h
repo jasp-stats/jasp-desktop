@@ -158,7 +158,10 @@ RCPP_MODULE(jaspResults)
 		.method("send",						&jaspResults_Interface::send,									"Constructs the results/response-json and sends it to JASP-Desktop, but only if jaspResults::setSendFunc was called with an appropriate sendFuncDef first.")
 		.method("complete",					&jaspResults_Interface::complete,								"Constructs the results/response-json and sends it to JASP-Desktop but sets status to complete first.")
 		.method("setErrorMessage",			&jaspResults_Interface::setErrorMessage,						"Sets an errormessage on the results.")
-		.method("getPlotObjectsForState",	&jaspResults_Interface::getPlotObjectsForState,					"Retrieves all plot object and stores them in a list with the filePath of the plot as name of the element.")
+		.method("getPlotObjectsForState",	&jaspResults_Interface::getPlotObjectsForState,					"Retrieves all plot objects and stores them in a list with the filePath of the plot as name of the element.")
+		.method("getOtherObjectsForState",	&jaspResults_Interface::getOtherObjectsForState,				"Retrieves all non-plot objects to store them in state (currently only jaspState objects) . Makes a list with the envName of the object as name of the element.")
+
+
 		.method("getKeepList",				&jaspResults_Interface::getKeepList,							"Builds a list of filenames to keep.")
 
 		.property("relativePathKeep",		&jaspResults_Interface::getRelativePathKeep,

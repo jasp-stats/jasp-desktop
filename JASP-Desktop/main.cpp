@@ -212,8 +212,9 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-			//QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it
-
+#ifdef __WIN32__
+			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it
+#endif
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
 			return a.exec();
 		}

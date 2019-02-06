@@ -56,7 +56,6 @@ Rectangle
 			verticalCenter: parent.verticalCenter
 			left:			parent.left
 			right:			parent.right
-			margins:		parent.border.width
 		}
 
 		Loader //No arrow? then three dots in the center instead

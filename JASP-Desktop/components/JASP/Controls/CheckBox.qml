@@ -70,6 +70,7 @@ JASPControl
 				text:						"\u2713"
 				font:						Theme.font
 				anchors.horizontalCenter:	parent.horizontalCenter
+				renderType:					Text.QtRendering //Prettier
             }
         }
         
