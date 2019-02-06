@@ -166,3 +166,8 @@ void RibbonButtonModel::setModuleName(std::string moduleName)
 	_moduleName = moduleName;
 	emit moduleNameChanged();
 }
+
+Modules::DynamicModule * RibbonButtonModel::myDynamicModule()
+{
+	return !isDynamic() ? nullptr : _dynamicModules->dynamicModule(_moduleName);
+}

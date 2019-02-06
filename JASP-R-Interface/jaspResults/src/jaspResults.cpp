@@ -431,7 +431,7 @@ Rcpp::RObject jaspResults::getObjectFromEnv(std::string envName)
 {
 	if(_RStorageEnv->exists(envName))
 		return (*_RStorageEnv)[envName];
-	return NULL;
+	return R_NilValue;
 }
 
 void jaspResults::setObjectInEnv(std::string envName, Rcpp::RObject obj)

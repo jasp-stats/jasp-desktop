@@ -38,7 +38,8 @@ public:
 		RibbonRole,
 		EnabledRole,
 		DynamicRole,
-		ModuleNameRole
+		ModuleNameRole,
+		ModuleRole
 	};
 
 	RibbonModel(DynamicModules * dynamicModules, std::vector<std::string> staticModulesToLoad = {});

@@ -489,6 +489,11 @@ void jaspRCPP_setRError(SEXP Message)
 	lastErrorMessage = "Error: " + Rcpp::as<std::string>(Message);
 }
 
+void jaspRCPP_setLog(SEXP Message)
+{
+	lastErrorMessage = Rcpp::as<std::string>(Message);
+}
+
 int jaspRCPP_dataSetRowCount()
 {
 	return dataSetRowCount();

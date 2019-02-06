@@ -61,6 +61,7 @@ public:
 	std::string						moduleName()												const			{ return _moduleName;							}
 	QString							moduleNameQ()												const			{ return QString::fromStdString(_moduleName);	}
 	void							setRibbonEntries(Modules::RibbonEntries ribbonEntries);
+	Modules::DynamicModule		*	myDynamicModule();
 
 public slots:
 	void setRequiresDataset(bool requiresDataset);

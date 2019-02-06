@@ -86,7 +86,7 @@ Item
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
 				onClicked: 			dynamicModules.installJASPDeveloperModule()
-				toolTip:			"Install the developer module"
+				toolTip:			"Install selected developer module"
 				visible:			preferencesModel.developerMode				
 			}
 			
@@ -116,6 +116,8 @@ Item
 						text:				displayText
 						checked:			ribbonEnabled
 						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
+
+						toolTip:			dynamicModule.installLog + "\n" + dynamicModule.loadLog
 
 						//textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
 						//toolTip:			(ribbonEnabled ? "Disable" : "Enable") + " module " + displayText
