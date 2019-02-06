@@ -125,6 +125,7 @@ signals:
 	void currentAnalysisIndexChanged(	int			currentAnalysisIndex);
 	void currentFormHeightChanged(		double		currentFormHeight);
 	void visibleChanged(				bool		visible);
+	void emptyQMLCache();
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestComputedColumnDestruction(QString columnName);

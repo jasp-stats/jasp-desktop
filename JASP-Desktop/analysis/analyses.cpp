@@ -154,6 +154,7 @@ void Analyses::clear()
 
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
+	emit emptyQMLCache();
 	beginResetModel();
 	endResetModel();
 	selectAnalysis(analysis);

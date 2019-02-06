@@ -221,6 +221,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
+	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
 	//connect(_analyses,				&Analyses::analysisNameSelected,					_helpModel,				&HelpModel::setAnalysisPagename								); //The user can click the info-button if they want to see some documentation
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
@@ -1448,4 +1449,9 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 
 	_analysesAvailable = analysesAvailable;
 	emit analysesAvailableChanged(_analysesAvailable);
+}
+
+void MainWindow::resetQmlCache()
+{
+	_qml->clearComponentCache();
 }

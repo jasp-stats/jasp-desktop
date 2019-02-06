@@ -135,9 +135,7 @@ public:
 	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();				}
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
-	void					runScriptRequestDone(const QString& result, const QString& controlName);
-	
-	Q_INVOKABLE				void resetAnalysis();
+	void					runScriptRequestDone(const QString& result, const QString& controlName);	
 
 public slots:
 	void					setName(std::string name);

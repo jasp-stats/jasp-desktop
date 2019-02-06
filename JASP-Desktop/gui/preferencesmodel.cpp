@@ -70,19 +70,19 @@ void PreferencesModel::browseSpreadsheetEditor()
 
 void PreferencesModel::browseDeveloperFolder()
 {
-	QString defaultfolder;
-
+	QString defaultfolder = developerFolder();
+	if (defaultfolder.isEmpty())
+	{
 #ifdef __WIN32__
-	defaultfolder = "c:\\";
-#elif __APPLE__
-	defaultfolder = "~";
+		defaultfolder = "c:\\";
 #else
-	defaultfolder = "~";
+		defaultfolder = "~";
 #endif
+	}
 
 	QString folder = MessageForwarder::openFolderBrowse("Select a folder...", defaultfolder);
 
-	if (folder != "")
+	if (!folder.isEmpty())
 		setDeveloperFolder(folder);
 		
 }

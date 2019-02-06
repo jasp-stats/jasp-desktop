@@ -481,16 +481,6 @@ void AnalysisForm::_formCompletedHandler()
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
 		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->optionsFromJASPFile());
 		_analysis->resetOptionsFromJASPFile();
-		_analysis->initialized(this, isNewAnalysis);
-	
-		if (Settings::value(Settings::DEVELOPER_MODE).toBool() && _analysis->isDynamicModule())
-			clearQMLCache();
+		_analysis->initialized(this, isNewAnalysis);	
 	}
-}
-
-void AnalysisForm::clearQMLCache()
-{
-	QQmlEngine* engine = qmlEngine(this);
-	if (engine)
-		engine->clearComponentCache();
 }
