@@ -6,8 +6,8 @@ import JASP.Theme		1.0
 Rectangle
 {
 	id:					expanderButton
-	height:				loader.y + (expanderButton.expanded ?  loader.height : 0)
-	width:				loader.width + ( 2 * Theme.formMargin )
+	height:				loaderAndError.y + (expanderButton.expanded ?  loaderAndError.height : 0)
+	width:				Theme.formWidth
 	clip:				true
 
 	color:				Theme.uiBackground
@@ -126,30 +126,51 @@ Rectangle
 	}
 
 
-	Loader
+	Item
 	{
-		id:					loader
-		source:				!expanderButton.imploded || expanderButton.expanded ? formQmlUrl : ""
-		asynchronous:		false // makes it slow
-		onStatusChanged:	
-		{
-			if (loader.status == Loader.Error)
-			{
-				mainWindow.showWarning("Error",  sourceComponent.errorString());
-				myAnalysis.resetAnalysis();
-			}
-		}
-
+		id:		loaderAndError
+		height:	Math.max(loader.height, errorRect.height * preferencesModel.uiScale)
+		
 		anchors
 		{
 			top:				expanderRectangle.bottom
-			horizontalCenter:	expanderButton.horizontalCenter
+			left:				parent.left
+			right:				parent.right
 			margins:			Theme.formMargin
 		}
 
-		property int		myIndex:			-1
-		property int		myID:				-1
-		property string		analysisTitle:		"???"
-		property var		myAnalysis:         null
+		Rectangle
+		{
+			id: errorRect
+			visible:		loader.status === Loader.Error
+			anchors.top:	parent.top			
+			color:			Theme.errorMessagesBackgroundColor
+			width:			parent.width
+			height:			visible ? errorMessagesText.height : 0
+			
+			Text
+			{
+				id:					errorMessagesText
+				anchors.centerIn:	parent
+				width:				parent.width
+				padding:			5
+				verticalAlignment:	Text.AlignVCenter
+				text: loader.status === Loader.Error ? loader.sourceComponent.errorString() : ""
+				wrapMode: Text.Wrap
+			}
+		}
+		
+	
+		Loader
+		{
+			id:					loader
+			source:				!expanderButton.imploded || expanderButton.expanded ? formQmlUrl : ""
+			asynchronous:		false // makes it slow when true
+	
+			property int		myIndex:			-1
+			property int		myID:				-1
+			property string		analysisTitle:		"???"
+			property var		myAnalysis:         null
+		}
 	}
 }

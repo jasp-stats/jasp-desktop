@@ -200,6 +200,7 @@ private slots:
 
 	void saveJaspFileHandler();
 	void resultsPageLoaded();
+	void resetQmlCache();
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);

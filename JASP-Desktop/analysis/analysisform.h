@@ -79,7 +79,6 @@ public:
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
-	void		clearQMLCache();
 
 protected:
 	void		_setAllAvailableVariablesModel();

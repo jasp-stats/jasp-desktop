@@ -251,13 +251,6 @@ void Analysis::runScriptRequestDone(const QString& result, const QString& contro
 	_analysisForm->runScriptRequestDone(result, controlName);
 }
 
-void Analysis::resetAnalysis()
-{
-	AnalysisForm* analysisForm = form();
-	if (analysisForm)
-		analysisForm->clearQMLCache();
-}
-
 Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackground)
 {
 	performType perform = desiredPerformTypeFromAnalysisStatus();
