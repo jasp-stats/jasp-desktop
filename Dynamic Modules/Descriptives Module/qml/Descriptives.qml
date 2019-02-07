@@ -17,8 +17,8 @@
 //
 
 import QtQuick 2.8
-import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
 // All Analysis forms must be built with the From QML item
@@ -30,6 +30,7 @@ Form
 	{
 		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
 		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "test";	title: qsTr("Test"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
 	}
 
 	CheckBox { name: "frequencyTables"; text: qsTr("Frequency tables (nominal and ordinal variables)") }
@@ -67,34 +68,34 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Statistics")
-		columns: 2
+		alignChildrenTopLeft: true
 
 		Group
 		{
 			title: qsTr("Percentile Values")
 
 			CheckBox { name: "percentileValuesQuartiles";	text: qsTr("Quartiles") }
-			GridLayout
+			CheckBox
 			{
-				rowSpacing: Theme.rowGroupSpacing
-				columnSpacing: 1
-
-				CheckBox { name: "percentileValuesEqualGroups"; text: qsTr("Cut points for: "); id: percentileValuesEqualGroups }
+				name: "percentileValuesEqualGroups"; text: qsTr("Cut points for: ")
+				childrenOnSameRow: true
 				IntegerField
 				{
 					name: "percentileValuesEqualGroupsNo"
 					intValidator { bottom: 1; top: 1000 }
 					defaultValue: 4
-					enabled: percentileValuesEqualGroups.checked
 					afterLabel.text: qsTr(" equal groups")
 				}
-				CheckBox { name: "percentileValuesPercentiles"; text: qsTr("Percentiles:"); id: percentileValuesPercentiles }
+			}
+			CheckBox
+			{
+				name: "percentileValuesPercentiles"; text: qsTr("Percentiles:")
+				childrenOnSameRow: true
 				TextField
 				{
 					inputType: "integerArray"
 					name: "percentileValuesPercentilesPercentiles"
 					fieldWidth: 60
-					enabled: percentileValuesPercentiles.checked
 				}
 			}
 		}
@@ -102,6 +103,7 @@ Form
 		Group
 		{
 			title: qsTr("Central Tendency")
+			implicitWidth: 200
 			CheckBox { name: "mean";			text: qsTr("Mean");		checked: true	}
 			CheckBox { name: "median";			text: qsTr("Median")					}
 			CheckBox { name: "mode";			text: qsTr("Mode");						}
@@ -118,6 +120,7 @@ Form
 			CheckBox { name: "range";				text: qsTr("Range")							}
 			CheckBox { name: "standardErrorMean";	text: qsTr("S. E. mean")					}
 		}
+
 		Group
 		{
 			title: qsTr("Distribution")
@@ -132,7 +135,6 @@ Form
 	{
 		title: qsTr("Charts")
 		debug: true
-		columns: 2
 		RadioButtonGroup
 		{
 			name: "chartType";

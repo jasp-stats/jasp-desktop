@@ -64,6 +64,7 @@ QtObject {
 	readonly property int rowGridSpacing:				15 * uiScale
 	readonly property int columnGridSpacing:			30 * uiScale
 	readonly property int rowGroupSpacing:				5  * uiScale
+	readonly property int columnGroupSpacing:			10 * uiScale
 	readonly property int indentationLength:			20 * uiScale
 	readonly property int borderRadius:					4  * uiScale
 	readonly property int generalAnchorMargin:			8  * uiScale
@@ -88,7 +89,7 @@ QtObject {
 	readonly property int sliderHandleDiameter:			16  * uiScale
 	readonly property int defaultTextAreaHeight:		250 * uiScale
 	readonly property int jaspControlHighlightWidth:	Math.max(1, 3 * uiScale)
-	readonly property int defaultSingleItemListHeight:	45  * uiScale
+	readonly property int defaultSingleItemListHeight:	49  * uiScale
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
 	readonly property int maximumFlickVelocity:			400

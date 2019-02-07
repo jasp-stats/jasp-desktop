@@ -24,10 +24,13 @@ TextField
 {
 					id:				textField
 	property int	defaultValue:	0
+	property bool	validation:		true
+	property int	min:			validation ? 0 : -Infinity
+	property int	max:			Infinity
 	property alias	intValidator:	intValidator
     
 					inputType:		"integer"
-					validator:		IntValidator { id: intValidator; bottom: 0 }
+					validator:		IntValidator { id: intValidator; bottom: min; top: max }
 					value:			Number.parseInt(defaultValue);
 					cursorShape:	Qt.IBeamCursor
 }

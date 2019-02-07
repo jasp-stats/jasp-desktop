@@ -17,7 +17,6 @@
 //
 
 import QtQuick 2.8
-import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
@@ -41,33 +40,30 @@ Form
 		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		allowedColumns: ["ordinal", "nominal"]		}
 	}
 	
-	GridLayout
+	BayesFactorType { }
+
+	Group
 	{
-		
-		BayesFactorType { }
-		
-		GroupBox
+		title: qsTr("Output")
+		CheckBox
 		{
-			title: qsTr("Output")
-			CheckBox { name: "effects"; text: qsTr("Effects"); id: effectsOutput }
+			name: "effects"; text: qsTr("Effects")
 			RadioButtonGroup
 			{
-				indent: true
-				enabled: effectsOutput.checked
 				name: "effectsType"
 				RadioButton { value: "allModels";		text: qsTr("Across all models"); checked: true	}
 				RadioButton { value: "matchedModels";	text: qsTr("Across matched models")				}
 			}
-			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
 		}
-		
-		RadioButtonGroup
-		{
-			title: qsTr("Order")
-			name: "bayesFactorOrder"
-			RadioButton { value: "nullModelTop"; text: qsTr("Compare to null model"); checked: true	}
-			RadioButton { value: "bestModelTop"; text: qsTr("Compare to best model")				}
-		}
+		CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
+	}
+
+	RadioButtonGroup
+	{
+		title: qsTr("Order")
+		name: "bayesFactorOrder"
+		RadioButton { value: "nullModelTop"; text: qsTr("Compare to null model"); checked: true	}
+		RadioButton { value: "bestModelTop"; text: qsTr("Compare to best model")				}
 	}
 	
 	ExpanderButton
@@ -108,7 +104,7 @@ Form
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Correction")
 			CheckBox { name: "postHocTestsNullControl"; text: qsTr("Null control"); checked: true }
@@ -121,20 +117,21 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			height: 140
 			availableVariablesList { name: "descriptivePlotsVariables" ;	title: qsTr("Factors"); source: "fixedFactors" }
 			AssignedVariablesList { name: "plotHorizontalAxis";				title: qsTr("Horizontal axis");	singleItem: true }
 			AssignedVariablesList { name: "plotSeparateLines";				title: qsTr("Separate lines");	singleItem: true }
 			AssignedVariablesList { name: "plotSeparatePlots";				title: qsTr("Separate plots");	singleItem: true }
 		}
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Display")
-			RowLayout
+			CheckBox
 			{
-				CheckBox { name: "plotCredibleInterval"; text: qsTr("Credible interval"); id: plotCredibleInterval }
-				PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95; enabled: plotCredibleInterval.checked }
+				name: "plotCredibleInterval"; text: qsTr("Credible interval")
+				childrenOnSameRow: true
+				PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95 }
 			}
 		}
 	}
@@ -143,28 +140,27 @@ Form
 	{
 		title: qsTr("Additional Options")
 		
-		GridLayout
+		Group
 		{
-			GroupBox
+			title: qsTr("Prior")
+			DoubleField { name: "priorFixedEffects";	text: qsTr("r scale fixed effects"); defaultValue: 0.5; max: 2; decimals: 1 }
+			DoubleField { name: "priorRandomEffects";	text: qsTr("r scale random effects"); defaultValue: 1; max: 2; decimals: 1 }
+		}
+
+		RadioButtonGroup
+		{
+			name: "sampleMode"
+			title: qsTr("Samples")
+			RadioButton { value: "auto";	text: qsTr("Auto"); checked: true }
+			RadioButton
 			{
-				title: qsTr("Prior")
-				DoubleField { name: "priorFixedEffects";	text: qsTr("r scale fixed effects"); defaultValue: 0.5; doubleValidator {top: 2; decimals: 1} }
-				DoubleField { name: "priorRandomEffects";	text: qsTr("r scale random effects"); defaultValue: 1; doubleValidator {top: 2; decimals: 1} }
-			}
-			
-			RadioButtonGroup
-			{
-				name: "sampleMode"
-				RadioButton { value: "auto";	text: qsTr("Auto"); checked: true		}
-				RadioButton { value: "manual";	text: qsTr("Manual"); id: samplesManual	}
+				value: "manual";	text: qsTr("Manual")
 				IntegerField
 				{
 					name: "fixedSamplesNumber"
 					text: qsTr("No. samples")
 					defaultValue: 10000
 					fieldWidth: 50
-					enabled: samplesManual.checked
-					indent: true
 				}
 			}
 		}

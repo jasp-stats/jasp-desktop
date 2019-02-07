@@ -17,6 +17,7 @@
 //
 
 import JASP.Controls 1.0
+import QtQuick.Layouts 1.3 as L
 
 VariablesList {
     title: qsTr("Factors")
@@ -25,6 +26,8 @@ VariablesList {
     listViewType: "AssignedVariables"
     height: 200
     draggable: false
+	
+	L.Layout.columnSpan: parent.columns	
 
     ExtraControlColumn {
         type: "ComboBox"

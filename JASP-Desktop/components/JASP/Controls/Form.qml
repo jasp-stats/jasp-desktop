@@ -17,7 +17,7 @@
 //
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts	1.3
+import QtQuick.Layouts	1.3 as L
 import JASP.Controls	1.0
 import JASP.Theme		1.0
 import JASP.Widgets		1.0
@@ -29,7 +29,7 @@ AnalysisForm
 	width:			Theme.formWidth - ( 2 * Theme.formMargin )
 	height:			formContent.height + (Theme.formMargin * 2)
 	
-	default property alias	content:			column.children
+	default property alias	content:	contentArea.children
 	property alias	form:				form
 	property bool	usesJaspResults:	true
 	property int	majorVersion:		1
@@ -38,6 +38,7 @@ AnalysisForm
 	property int	availableWidth:		form.width - 2 * Theme.formMargin
 	property var	jaspControls:		[]
 	property var    analysis:           myAnalysis
+	property alias	columns:			contentArea.columns
 	
 	property int    plotHeight:         320
 	property int    plotWidth:          480
@@ -78,7 +79,7 @@ AnalysisForm
 	{
 		id:				formContent
 		width:			parent.width
-		height:			errorMessagesBox.height + column.implicitHeight
+		height:			errorMessagesBox.height + contentArea.implicitHeight
 		anchors
 		{
 			top:		form.top
@@ -107,14 +108,11 @@ AnalysisForm
 			}
 		}
 		
-		ColumnLayout
+		GridLayout
 		{
-			id:				column
+			id:				contentArea
 			anchors.top:	errorMessagesBox.bottom
-			spacing:		10
 			width:			parent.width
-			
-			//visible:		currentSelected
 		}
 	}
 	
@@ -128,7 +126,7 @@ AnalysisForm
 		onTriggered:
 		{
 			var previousExpander = null;
-			getJASPControls(jaspControls, column);
+			getJASPControls(jaspControls, contentArea);
 			for (var i = 0; i < jaspControls.length; i++) {
 				var next = i >= (jaspControls.length-1) ? 0 : i+1;
 				if (jaspControls[i].controlType !== "Expander")
@@ -145,7 +143,7 @@ AnalysisForm
 			
 			for (var i = 0; i < jaspControls.length; i++) {
 				if (jaspControls[i].indent)
-					jaspControls[i].Layout.leftMargin = Theme.indentationLength
+					jaspControls[i].L.Layout.leftMargin = Theme.indentationLength
 			}
 			
 			formCompleted();

@@ -25,19 +25,19 @@ JASPControl
 {
 	id:					textField
 	controlType:		"TextField"
-
+	
 	implicitHeight:		row.implicitHeight
 	implicitWidth:		row.implicitWidth
-	controlBackground:	useExternalBorder ? externalControlBackround : controlBackground
+	controlBackground:	useExternalBorder ? externalControlBackground : controlBackground
 	cursorShape:		Qt.IBeamCursor
-
+	
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
 	property int	fieldWidth:			Theme.textFieldWidth
 	property int	textHeight:			Theme.textFieldHeight
 	property bool	useExternalBorder:	true
 	property alias	placeholderText:	control.placeholderText
-
+	
 	property alias	validator:			control.validator
 	property alias	control:			control
 	property alias	label:				beforeLabel
@@ -45,36 +45,36 @@ JASPControl
 	property alias	afterLabel:			afterLabel
 	property string	inputType:			"string"
 	property int	labelSpacing:		4
-
-    signal editingFinished()
-    signal textEdited()
-    signal pressed()
-    signal released()
-    
+	
+	signal editingFinished()
+	signal textEdited()
+	signal pressed()
+	signal released()
+	
 	Component.onCompleted:
 	{
-        if (!beforeLabel.text && textField.text)
-            beforeLabel.text = textField.text;
-
-        control.editingFinished.connect(editingFinished);
-        control.textEdited.connect(textEdited);
-        control.pressed.connect(pressed);
-        control.released.connect(released);        
-    }
-    
+		if (!beforeLabel.text && textField.text)
+			beforeLabel.text = textField.text;
+		
+		control.editingFinished.connect(editingFinished);
+		control.textEdited.connect(textEdited);
+		control.pressed.connect(pressed);
+		control.released.connect(released);        
+	}
+	
 	RowLayout
 	{
 		id:			row
 		spacing:	labelSpacing
-
+		
 		Label
 		{
 			id:			beforeLabel
 			visible:	beforeLabel.text && textField.visible ? true : false
 			font:		Theme.font
 			color:		enabled ? Theme.textEnabled : Theme.textDisabled
-        }
-        
+		}
+		
 		TextField
 		{
 			id:						control
@@ -85,7 +85,7 @@ JASPControl
 			text:					textField.value
 			font:					Theme.font
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
-
+			
 			padding:				1
 			rightPadding:			5
 			selectByMouse:			true
@@ -95,27 +95,27 @@ JASPControl
 				color:			Theme.controlBackgroundColor
 				border.width:	textField.useExternalBorder && !control.activeFocus ? 1					: 0
 				border.color:	textField.useExternalBorder							? Theme.borderColor : "transparent"
-            }
-            
+			}
+			
 			Rectangle
 			{
-				id:					externalControlBackround
+				id:					externalControlBackground
 				height:				textField.textHeight + 6
 				width:				textField.fieldWidth + 6
 				color:				"transparent"
-                border.width: 1
-                border.color: "transparent"
-                anchors.centerIn: parent
-                visible: textField.useExternalBorder
-            }
-        }
-
+				border.width: 1
+				border.color: "transparent"
+				anchors.centerIn: parent
+				visible: textField.useExternalBorder
+			}
+		}
+		
 		Label
 		{
 			id:			afterLabel
 			visible:	afterLabel.text && textField.visible ? true : false
 			font:		Theme.font
 			color:		enabled ? Theme.textEnabled : Theme.textDisabled
-        }
-    }
+		}
+	}
 }

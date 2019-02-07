@@ -18,13 +18,16 @@
 
 import QtQuick 2.11
 import JASP.Theme 1.0
+import QtQuick.Layouts	1.3
+
 
 Item
 {
 	id:				variablesForm
-	implicitWidth:	parent.width
+	implicitWidth:	form.width
 	height:			Theme.defaultListHeight
     implicitHeight: height
+	Layout.columnSpan: parent.columns
 
 	default property alias	content:						items.children
 			property int	listWidth:						parent.width * 2 / 5
