@@ -33,11 +33,12 @@ test_that("Main tables' results match", {
 })
 
 test_that("Path diagram matches", {
+  skip("base plots are not supported in regression testing")
   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma")
   options$incl_pathDiagram <- TRUE
   results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
 })
 

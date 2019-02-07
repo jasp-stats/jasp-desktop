@@ -21,13 +21,14 @@ test_that("Main table results match", {
 })
 
 test_that("Prior posterior plot matches", {
+  skip("base plots are not supported in regression testing")
   set.seed(0)
   options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianPairedSamples")
 })
 
@@ -37,7 +38,7 @@ test_that("BF robustness check plot matches", {
   options$plotBayesFactorRobustness <- TRUE
   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianPairedSamples")
 })
 
@@ -47,7 +48,7 @@ test_that("Sequential analysis plot matches", {
   options$plotSequentialAnalysis <- TRUE
   options$plotSequentialAnalysisRobustness <- TRUE
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianPairedSamples")
 })
 
@@ -57,7 +58,7 @@ test_that("Descriptives plot matches", {
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsCredibleInterval <- 0.90
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianPairedSamples")
 })
 

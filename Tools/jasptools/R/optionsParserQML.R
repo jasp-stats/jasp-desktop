@@ -14,7 +14,7 @@
     "CheckBox",
     "Slider",
     "AssignedVariablesList",
-    "FactorsList",
+    "repeatedMeasuresFactorsList",
     "DropDown"
   ) # the button group requires additional parsing
 
@@ -29,9 +29,9 @@
 
   fileSize <- file.info(file)$size 
   fileContents <- readChar(file, nchars=fileSize)
-  fileContents <- gsub("//.*?\\n", "", fileContents) # remove comments
+  fileContents <- gsub("//.*?(\\r\\n|\\r|\\n)", "", fileContents) # remove comments
   fileContents <- gsub('[[:blank:]]|\\"', "", fileContents) # strip whitespaces
-  fileContents <- gsub("\\n", ";", fileContents) # replace newline characters with ;
+  fileContents <- gsub("(\\r\\n|\\r|\\n)", ";", fileContents) # replace newline characters with ;
   fileContents <- gsub("^.*?Form;*?\\{", "", fileContents) # remove everything up to the actual form
   fileContents <- gsub("(?<={);+|;(?={)|(?<=});+|;(?=})", "", fileContents, perl=TRUE) # remove all ; around {}
 
@@ -150,7 +150,7 @@ extractData.AssignedVariablesList <- function(element) {
   return(result)
 }
 
-extractData.FactorsList <- function(element) {
+extractData.repeatedMeasuresFactorsList <- function(element) {
   return(extractData.AssignedVariablesList(element))
 }
 

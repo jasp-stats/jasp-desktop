@@ -37,13 +37,14 @@ test_that("Correlation table results match", {
 })
 
 test_that("Correlation matrix plot matches", {
+  skip("base plots are not supported in regression testing")
   options <- jasptools::analysisOptions("Correlation")
   options$variables <- list("contGamma", "contNormal")
   options$plotCorrelationMatrix <- TRUE
   options$plotDensities <- TRUE
   options$plotStatistics <- TRUE
   results <- jasptools::run("Correlation", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "correlation-matrix", dir="Correlation")
 })
 

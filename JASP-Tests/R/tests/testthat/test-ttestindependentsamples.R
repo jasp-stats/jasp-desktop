@@ -71,7 +71,7 @@ test_that("Descriptives plot matches", {
   options$groupingVariable <- "contBinom"
   options$descriptivesPlots <- TRUE
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
 })
 

@@ -23,4 +23,4 @@ matrix:
 env:
   global:
     - R_REMOTES_NO_ERRORS_FROM_WARNINGS=true
-    - VDIFFR_RUN_TESTS=false
+    - VDIFFR_RUN_TESTS=true

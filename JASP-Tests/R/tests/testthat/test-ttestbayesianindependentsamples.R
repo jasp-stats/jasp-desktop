@@ -27,7 +27,7 @@ test_that("Prior posterior plot matches", {
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianIndependentSamples")
 })
 
@@ -38,7 +38,7 @@ test_that("BF robustness check plot matches", {
   options$plotBayesFactorRobustness <- TRUE
   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianIndependentSamples")
 })
 
@@ -49,7 +49,7 @@ test_that("Sequential analysis plot matches", {
   options$plotSequentialAnalysis <- TRUE
   options$plotSequentialAnalysisRobustness <- TRUE
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianIndependentSamples")
 })
 
@@ -60,7 +60,7 @@ test_that("Descriptives plot matches", {
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsCredibleInterval <- 0.90
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianIndependentSamples")
 })
 

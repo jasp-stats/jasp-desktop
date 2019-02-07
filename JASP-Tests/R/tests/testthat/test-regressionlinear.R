@@ -186,7 +186,7 @@ test_that("Residuals vs. Dependent plot matches", {
   )
   options$plotResidualsDependent <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "residuals-dependent", dir="RegressionLinear")
 })
 
@@ -199,7 +199,7 @@ test_that("Residuals vs. Covariates plot matches", {
   )
   options$plotResidualsCovariates <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "residuals-covariates", dir="RegressionLinear")
 })
 
@@ -212,7 +212,7 @@ test_that("Residuals vs. Predicted plot matches", {
   )
   options$plotResidualsPredicted <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "residuals-predicted", dir="RegressionLinear")
 })
 
@@ -226,7 +226,7 @@ test_that("Standardized Residuals Histogram matches", {
   options$plotResidualsHistogram <- TRUE
   options$plotResidualsHistogramStandardized <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "residuals-histogram", dir="RegressionLinear")
 })
 
@@ -239,7 +239,7 @@ test_that("Q-Q Plot Standardized Residuals matches", {
   )
   options$plotResidualsQQ <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "residuals-q-q", dir="RegressionLinear")
 })
 
@@ -447,17 +447,17 @@ test_that("Fields Book - Chapter 3 results match", {
   options$residualsCasewiseDiagnosticsOutliersOutside <- 2
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "Album Sales.csv", options)
-  figure3 <- results[["state"]][["figures"]][[1]] # Residuals vs. Predicted
+  figure3 <- results[["state"]][["figures"]][[1]][["obj"]] # Residuals vs. Predicted
   #expect_equal_plots(figure3, "?", dir="RegressionLinear") # This command needs to be updated
-  figure4a <- results[["state"]][["figures"]][[4]] # Partial Plot Adverts
+  figure4a <- results[["state"]][["figures"]][[4]][["obj"]] # Partial Plot Adverts
   #expect_equal_plots(figure4a, "?", dir="RegressionLinear") # This command needs to be updated
-  figure4b <- results[["state"]][["figures"]][[5]] # Partial Plot Airplay
+  figure4b <- results[["state"]][["figures"]][[5]][["obj"]] # Partial Plot Airplay
   #expect_equal_plots(figure4b, "?", dir="RegressionLinear") # This command needs to be updated
-  figure4c <- results[["state"]][["figures"]][[6]] # Partial Plot Image
+  figure4c <- results[["state"]][["figures"]][[6]][["obj"]] # Partial Plot Image
   #expect_equal_plots(figure4c, "?", dir="RegressionLinear") # This command needs to be updated
-  figure5a <- results[["state"]][["figures"]][[2]] # Standardized Residuals Histogram
+  figure5a <- results[["state"]][["figures"]][[2]][["obj"]] # Standardized Residuals Histogram
   #expect_equal_plots(figure5a, "?", dir="RegressionLinear") # This command needs to be updated
-  figure5b <- results[["state"]][["figures"]][[3]] # Q-Q-Plot
+  figure5b <- results[["state"]][["figures"]][[3]][["obj"]] # Q-Q-Plot
   #expect_equal_plots(figure5b, "?", dir="RegressionLinear") # This command needs to be updated
   output1 <- results[["results"]][["casewise diagnostics"]][["data"]]
   expect_equal_tables(output1,
@@ -526,13 +526,13 @@ test_that("Fields Book - Chapter 3 results match", {
   options$plotsPartialRegression <- TRUE
   options$plotResidualsQQ <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "SocialAnxietyRegression.csv", options)
-  figure11a <- results[["state"]][["figures"]][[1]] # Residuals vs. Predicted
+  figure11a <- results[["state"]][["figures"]][[1]][["obj"]] # Residuals vs. Predicted
   #expect_equal_plots(figure11a, "?", dir="RegressionLinear") # This command needs to be updated
-  figure11b <- results[["state"]][["figures"]][[3]] # Partial Plot Adverts
+  figure11b <- results[["state"]][["figures"]][[3]][["obj"]] # Partial Plot Adverts
   #expect_equal_plots(figure11b, "?", dir="RegressionLinear") # This command needs to be updated
-  figure11c <- results[["state"]][["figures"]][[4]] # Partial Plot Airplay
+  figure11c <- results[["state"]][["figures"]][[4]][["obj"]] # Partial Plot Airplay
   #expect_equal_plots(figure11c, "?", dir="RegressionLinear") # This command needs to be updated
-  figure11d <- results[["state"]][["figures"]][[2]] # Q-Q-Plot
+  figure11d <- results[["state"]][["figures"]][[2]][["obj"]] # Q-Q-Plot
   #expect_equal_plots(figure11d, "?", dir="RegressionLinear") # This command needs to be updated
 })
 

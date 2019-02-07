@@ -1,3 +1,4 @@
+library(jaspResults)
 library(jasptools)
 library(testthat)
 develop(path = "../../../")

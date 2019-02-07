@@ -37,7 +37,7 @@ test_that("Correlation plot matches", {
   options$plotDensitiesForVariables <- TRUE
   options$plotPosteriors <- TRUE
   results <- jasptools::run("CorrelationBayesian", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "correlation", dir="CorrelationBayesian")
 })
 

@@ -200,7 +200,7 @@ test_that("Q-Q plot matches", {
   options$modelTerms <- list(list(components="contBinom"))
   options$qqPlot <- TRUE
   results <- jasptools::run("Anova", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "q-q", dir="Anova")
 })
 
@@ -221,12 +221,12 @@ test_that("Descriptives plots match", {
 
   options$errorBarType <- "confidenceInterval"
   results <- jasptools::run("Anova", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives-ci", dir="Anova")
 
   options$errorBarType <- "standardError"
   results <- jasptools::run("Anova", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives-se", dir="Anova")
 })
 

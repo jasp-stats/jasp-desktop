@@ -79,7 +79,7 @@ test_that("Descriptives plot matches", {
   options$variables <- "contGamma"
   options$descriptivesPlots <- TRUE
   results <- jasptools::run("TTestOneSample", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestOneSample")
 })
 

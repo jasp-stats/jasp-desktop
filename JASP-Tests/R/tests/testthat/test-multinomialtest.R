@@ -41,6 +41,6 @@ test_that("Descriptives plot matches", {
   options$descriptivesPlot <- TRUE
   results <- jasptools::run("MultinomialTest", "test.csv", options,
                             view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives-1", dir="MultinomialTest")
 })
