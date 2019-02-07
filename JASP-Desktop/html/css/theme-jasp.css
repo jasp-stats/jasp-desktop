@@ -363,6 +363,12 @@ div.image-status.waiting {
 	visibility: visible ;
 }
 
+div.jasp-image-image.no-data {
+	background-image: url('images/empty-plot.png') ;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
 .error-state {
 	color: silver ;
 }
