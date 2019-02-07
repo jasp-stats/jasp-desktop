@@ -18,37 +18,40 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts	1.3
+import QtQuick.Layouts	1.3 as L
 import JASP.Theme 1.0
 
 JASPControl
 {
 	id: checkBox
 	controlType:			"CheckBox"
-	implicitWidth:			placeChildrenOnSameRow
-								? control.implicitWidth + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitWidth : 0)
-								: Math.max(control.implicitWidth, childControls.implicitWidth)
-	implicitHeight:			placeChildrenOnSameRow
+	implicitWidth:			childrenOnSameRow
+								? control.implicitWidth + (childControls.children.length > 0 ? Theme.columnGroupSpacing + childControls.implicitWidth : 0)
+								: Math.max(control.implicitWidth, childControls.childControlsPadding + childControls.implicitWidth)
+	implicitHeight:			childrenOnSameRow
 								? Math.max(control.implicitHeight, childControls.implicitHeight)
 								: control.implicitHeight + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitHeight : 0)
 	useDefaultBackground:	true
 	subControls:			childControls.children.length > 0 ? childControls : null
 	
 	default property alias	content:				childControls.children
+			property alias	childrenArea:			childControls
 			property alias	text:					control.text
 			property alias	checked:				control.checked
 			property alias	control:				control
-			property bool	placeChildrenOnSameRow:	false
+			property bool	childrenOnSameRow:	false
 			property alias	columns:				childControls.columns
 			property bool	enableChildrenOnChecked: true
+			property alias	alignChildrenTopLeft:	childControls.alignChildrenTopLeft
 	
     signal clicked();
-	    
+		    
 	CheckBox
 	{
 		id:			control
 		padding:	Theme.jaspControlPadding
 		focus:		true
+		onCheckedChanged: checkBox.clicked()
 
 		indicator: Rectangle
 		{
@@ -84,32 +87,43 @@ JASPControl
         }
     }
 		
-	Grid
+	GridLayout
 	{
 		id:				childControls
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
-		columns:		placeChildrenOnSameRow ? children.length : 1
+		columns:		childrenOnSameRow ? children.length : 1
 		rowSpacing:		Theme.rowGroupSpacing
 		columnSpacing:	Theme.columnGridSpacing
+		
+		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
     }
 
 	Component.onCompleted:
 	{
-		control.clicked.connect(clicked);
-
 		if (childControls.children.length > 0)
 		{
-			if (placeChildrenOnSameRow)
+			if (debug)
 			{
-				childControls.x = control.implicitWidth + Theme.rowGroupSpacing
+				var jaspControls = [];
+				form.getJASPControls(jaspControls, childControls)
+				for (var i = 0; i < jaspControls.length; i++)
+					jaspControls[i].debug = true
+			}
+			
+			if (childrenOnSameRow)
+			{
+				childControls.x = childControls.childControlsPadding
+				childControls.anchors.top = control.top
+				if (childControls.implicitHeight < control.implicitHeight)
+					childControls.anchors.topMargin = control.padding - 1 // border width
 			}
 			else
 			{
 				childControls.anchors.top = control.bottom
 				childControls.anchors.topMargin = Theme.rowGroupSpacing
 				childControls.anchors.left = control.left
-				childControls.anchors.leftMargin = Theme.indentationLength				
+				childControls.anchors.leftMargin = childControls.childControlsPadding				
 			}				
 		}
 		

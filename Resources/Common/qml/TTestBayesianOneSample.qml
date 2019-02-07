@@ -21,7 +21,6 @@ import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
-
 Form
 {
 	usesJaspResults: false
@@ -37,60 +36,61 @@ Form
 	}
 	
 	DoubleField { name: "testValue"; text: qsTr("Test value:"); defaultValue: 0; validation: false }
-	
-	GridLayout
+
+	Group
 	{
-		ColumnLayout
+		title: qsTr("Plots")
+		Layout.rowSpan: 3
+
+		CheckBox
 		{
-			spacing: 15
-			
-			RadioButtonGroup
-			{
-				name: "hypothesis"
-				title: qsTr("Hypothesis")
-				RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
-				RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value");					}
-				RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value");					}
-			}
-			
-			BayesFactorType { }
-			
-			GroupBox
-			{
-				title: qsTr("Additional Statistics")
-				CheckBox { name: "descriptives";	text: qsTr("Descriptives") }
-			}
+			name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
 		}
-		
-		ColumnLayout
+
+		CheckBox
 		{
-			spacing: 15
-			
-			GroupBox
-			{
-				title: qsTr("Plots")
-				
-				CheckBox     { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior										}
-				CheckBox     { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked	}
-				
-				CheckBox     { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness							}
-				CheckBox     { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
-				
-				CheckBox     { name: "plotSequentialAnalysis";					text: qsTr("Sequential analysis"); id: plotSequentialAnalysis										}
-				CheckBox     { name: "plotSequentialAnalysisRobustness";		text: qsTr("Robustness check"); indent: true; enabled: plotSequentialAnalysis.checked				}
-				
-				CheckBox     { name: "descriptivesPlots";						text: qsTr("Descriptives plots"); id: descriptivesPlots												}
-				PercentField { name: "descriptivesPlotsCredibleInterval";		text: qsTr("Credible interval"); defaultValue: 95; indent: true; enabled: descriptivesPlots.checked	}
-			}
-			
-			RadioButtonGroup
-			{
-				name: "missingValues"
-				title: qsTr("Missing Values")
-				RadioButton { value: "excludeAnalysisByAnalysis";	text: qsTr("Exclude cases analysis by analysis"); checked: true	}
-				RadioButton { value: "excludeListwise";				text: qsTr("Exclude cases listwise")							}
-			}
+			name: "plotBayesFactorRobustness";	text: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
 		}
+
+		CheckBox
+		{
+			name: "plotSequentialAnalysis";		text: qsTr("Sequential analysis")
+			CheckBox { name: "plotSequentialAnalysisRobustness";		text: qsTr("Robustness check") }
+		}
+
+		CheckBox
+		{
+			name: "descriptivesPlots";			text: qsTr("Descriptives plots")
+			PercentField { name: "descriptivesPlotsCredibleInterval";	text: qsTr("Credible interval"); defaultValue: 95 }
+		}
+	}
+
+
+	RadioButtonGroup
+	{
+		name: "hypothesis"
+		title: qsTr("Hypothesis")
+		RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
+		RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value");					}
+		RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value");					}
+	}
+
+	BayesFactorType { }
+
+	Group
+	{
+		title: qsTr("Additional Statistics")
+		CheckBox { name: "descriptives";	text: qsTr("Descriptives") }
+	}
+
+	RadioButtonGroup
+	{
+		name: "missingValues"
+		title: qsTr("Missing Values")
+		RadioButton { value: "excludeAnalysisByAnalysis";	text: qsTr("Exclude cases analysis by analysis"); checked: true	}
+		RadioButton { value: "excludeListwise";				text: qsTr("Exclude cases listwise")							}
 	}
 	
 	SubjectivePriors { }

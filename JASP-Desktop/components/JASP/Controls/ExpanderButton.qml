@@ -17,7 +17,7 @@
 //
 
 import QtQuick 2.11
-import QtQuick.Layouts 1.3
+import QtQuick.Layouts 1.3 as L
 import JASP.Theme 1.0
 
 FocusScope
@@ -27,6 +27,7 @@ FocusScope
 	implicitWidth:		parent.width
 	anchors.topMargin:	15 * preferencesModel.uiScale
 	clip:				true
+	L.Layout.columnSpan: form.columns
 
 	default		property alias	content:		expanderArea.children
 				property alias	button:			expanderButton
@@ -41,6 +42,7 @@ FocusScope
 	readonly	property string	contractedIcon: "expander-arrow-up.png"
 				property var	childControls:	[]
 				property alias	columns:		expanderArea.columns
+				property alias	alignChildrenTopLeft: expanderArea.alignChildrenTopLeft
 
 	Behavior on implicitHeight { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
   
@@ -114,7 +116,7 @@ FocusScope
 		anchors.topMargin:		15 * preferencesModel.uiScale
 		anchors.bottomMargin:	20 * preferencesModel.uiScale
 		width:					parent.width
-		columns:				1
+		columns:				2
     }
 
 	Rectangle
@@ -126,9 +128,7 @@ FocusScope
     
 	Component.onCompleted:
 	{
-		for (var i = 0; i < expanderArea.children.length; i++)
-			expanderArea.children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft;
-
+		var i
         form.getJASPControls(childControls, expanderArea)
 		if (debug)
 			for (i = 0; i < childControls.length; i++)

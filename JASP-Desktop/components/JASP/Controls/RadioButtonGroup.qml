@@ -19,7 +19,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts	1.3
+import QtQuick.Layouts	1.3 as L
 import JASP.Theme		1.0
 
 JASPControl
@@ -28,19 +28,27 @@ JASPControl
 	controlType:	"RadioButtonGroup"
 	hasTabFocus:	false
 
-	default property alias	content:		items.children
+	default property alias	content:		contentArea.children
 			property alias	buttons:		buttonGroup.buttons
-			property bool	isHorizontal:	false
+			property bool	placeRadioButtonsOnSameRow:	false
+			property alias	columns:		contentArea.columns
+			property bool	alignChildrenTopLeft: true
 			property string title:			""
+			property alias	text:			control.title
 			property int	leftPadding:	Theme.groupContentPadding
+			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
 
     signal clicked(var item)
 
-	implicitHeight:		(control.title ? label.height : 0) + (isHorizontal ? row.height : column.height)
-	implicitWidth:		(isHorizontal ? row.width : column.width) + (title ? control.leftPadding : 0)
+	implicitWidth:	placeRadioButtonsOnSameRow
+						? contentArea.x + contentArea.implicitWidth
+						: Math.max(label.implicitWidth, contentArea.x + contentArea.implicitWidth)
+	implicitHeight:	placeRadioButtonsOnSameRow
+						? Math.max(label.implicitHeight, contentArea.implicitHeight)
+						: contentArea.y + contentArea.implicitHeight	
     
-	Layout.leftMargin:	indent ? Theme.indentationLength : 0
-       
+	L.Layout.leftMargin:	indent ? Theme.indentationLength : 0
+	
 	Label
 	{
 		id:				label
@@ -49,40 +57,23 @@ JASPControl
 		anchors.top:	control.top
 		anchors.left:	control.left
 		font:			Theme.font
-		color:			enabled ? Theme.textEnabled : Theme.textDisabled
+		color:			enabled ? Theme.textEnabled : Theme.textDisabled		
     }
     
-	ButtonGroup { id: buttonGroup			}
-	Item		{ id: items; visible: false	}
+	ButtonGroup { id: buttonGroup }
 
-	ColumnLayout
+	GridLayout
 	{
-		id:				column
-		spacing:		Theme.rowGroupSpacing
-		visible:		!isHorizontal && control.visible ? true : false
-		anchors
-		{
-			top:		control.title ? label.bottom : control.top
-			topMargin:	control.title ? Theme.titleBottomMargin : 0
-			left:		parent.left
-			leftMargin:	control.title ? control.leftPadding : 0
-		}
+		id:					contentArea
+		rowSpacing:			Theme.rowGroupSpacing
+		columnSpacing:		Theme.columnGroupSpacing
+		columns:			placeRadioButtonsOnSameRow ? children.length : 1
+		anchors.top:		control.title && !placeRadioButtonsOnSameRow ? label.bottom : control.top
+		anchors.topMargin:	control.title && !placeRadioButtonsOnSameRow ? Theme.titleBottomMargin : 0
+		anchors.left:		control.title && placeRadioButtonsOnSameRow ? label.right : control.left
+		anchors.leftMargin: control.title ? Theme.groupContentPadding : 0
     }
-
-	RowLayout
-	{
-		id:				row
-		spacing:		Theme.rowGroupSpacing
-		visible:		isHorizontal && control.visible ? true : false
-		anchors
-		{
-			top:		control.title ? label.bottom : control.top
-			topMargin:	control.title ? Theme.titleBottomMargin : 0
-			left:		parent.left
-			leftMargin:	control.title ? control.leftPadding : 0
-		}
-    }
-    
+	
 	function linkRadioButtons(item)
 	{
 		for (var i = 0; i < item.children.length; ++i)
@@ -107,12 +98,7 @@ JASPControl
 	Component.onCompleted:
 	{
         buttonGroup.clicked.connect(clicked);
-        linkRadioButtons(items);
-        var elt = isHorizontal ? row : column;
-
-		while (items.children.length > 0)
-			items.children[0].parent = elt
-
+        linkRadioButtons(contentArea);		
     }
 
 }

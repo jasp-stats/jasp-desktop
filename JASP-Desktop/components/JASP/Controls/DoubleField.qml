@@ -18,15 +18,17 @@
 
 import QtQuick 2.11
 import JASP.Controls 1.0
-import JASP.Theme 1.0
 
 TextField
 {
 	property double defaultValue:		0
 	property alias	doubleValidator:	doubleValidator
 	property bool	validation:			true
+	property int	min:				validation ? 0 : -Infinity
+	property int	max:				Infinity
+	property int	decimals:			3
     
 					inputType:			"number"
-					validator:			DoubleValidator { id: doubleValidator; bottom: validation ? 0 : -Infinity ; decimals: 3 }
+					validator:			DoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals }
 					value:				Number.parseFloat(defaultValue);
 }

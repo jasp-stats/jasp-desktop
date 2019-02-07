@@ -25,15 +25,28 @@ JASPControl
 	id:							radioButton
 	controlType:				"RadioButton"
 	isBound:					false
+	implicitWidth:			childrenOnSameRow
+								? control.implicitWidth + (childControls.children.length > 0 ? Theme.columnGroupSpacing + childControls.implicitWidth : 0)
+								: Math.max(control.implicitWidth, childControls.childControlsPadding + childControls.implicitWidth)
+	implicitHeight:			childrenOnSameRow
+								? Math.max(control.implicitHeight, childControls.implicitHeight)
+								: control.implicitHeight + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitHeight : 0)
 	useDefaultBackground:		true
-	implicitHeight:				control.height
-	implicitWidth:				control.width
+	subControls:				childControls.children.length > 0 ? childControls : null
 
-	property alias	text:		control.text
-	property alias	checked:	control.checked
-	property alias	value:		radioButton.name
-	property var	buttonGroup
-
+	default property alias	content:				childControls.children
+			property alias	childrenArea:			childControls	
+			property alias	text:					control.text
+			property alias	checked:				control.checked
+			property alias	control:				control
+			property alias	value:					radioButton.name
+			property var	buttonGroup
+			property bool	childrenOnSameRow:	false
+			property alias	columns:				childControls.columns
+			property bool	enableChildrenOnChecked: true
+			property alias	alignChildrenTopLeft:	childControls.alignChildrenTopLeft
+	
+	
 	RadioButton
 	{
 		id:					control
@@ -73,4 +86,39 @@ JASPControl
 			color:			enabled ? Theme.textEnabled : Theme.textDisabled
         }
     }
+	
+	GridLayout
+	{
+		id:				childControls
+		enabled:		enableChildrenOnChecked ? control.checked : true
+		visible:		children.length > 0
+		columns:		childrenOnSameRow ? children.length : 1
+		rowSpacing:		Theme.rowGroupSpacing
+		columnSpacing:	Theme.columnGridSpacing
+		
+		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + radioIndicator.width + control.spacing
+    }
+
+	Component.onCompleted:
+	{
+		if (childControls.children.length > 0)
+		{
+			if (childrenOnSameRow)
+			{
+				childControls.x = childControls.childControlsPadding
+				childControls.anchors.top = control.top
+				if (childControls.implicitHeight < control.implicitHeight)
+					childControls.anchors.topMargin = control.padding - 1 // border width
+			}
+			else
+			{
+				childControls.anchors.top = control.bottom
+				childControls.anchors.topMargin = Theme.rowGroupSpacing
+				childControls.anchors.left = control.left
+				childControls.anchors.leftMargin = childControls.childControlsPadding				
+			}				
+		}
+		
+	}
+	
 }

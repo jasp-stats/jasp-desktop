@@ -17,11 +17,8 @@
 //
 
 import QtQuick 2.8
-import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
-
 
 Form
 {
@@ -98,18 +95,20 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Assumption Checks")
-		
-		CheckBox { name: "sphericityTests";			text: qsTr("Sphericity tests")									}
-		CheckBox { name: "sphericityCorrections";	text: qsTr("Sphericity corrections"); id: sphericityCorrections }
-		RowLayout
+
+		Group
 		{
-			Layout.leftMargin: Theme.indentationLength
-			enabled: sphericityCorrections.checked
-			CheckBox { name: "sphericityNone";				text: qsTr("None");					checked: true }
-			CheckBox { name: "sphericityGreenhouseGeisser";	text: qsTr("Greenhouse-Geisser");	checked: true }
-			CheckBox { name: "sphericityHuynhFeldt";		text: qsTr("Huynth-Feidt");			checked: true }
+			CheckBox { name: "sphericityTests";	text: qsTr("Sphericity tests") }
+			CheckBox
+			{
+				name: "sphericityCorrections";	text: qsTr("Sphericity corrections")
+				columns: 3
+				CheckBox { name: "sphericityNone";				text: qsTr("None");					checked: true }
+				CheckBox { name: "sphericityGreenhouseGeisser";	text: qsTr("Greenhouse-Geisser");	checked: true }
+				CheckBox { name: "sphericityHuynhFeldt";		text: qsTr("Huynth-Feidt");			checked: true }
+			}
+			CheckBox { name: "homogeneityTests"; text: qsTr("Homogeneity Tests") }
 		}
-		CheckBox { name: "homogeneityTests"; text: qsTr("Homogeneity Tests") }
 	}
 	
 	ExpanderButton
@@ -121,7 +120,8 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Post Hoc Tests")
-		
+		columns: 1
+
 		VariablesForm
 		{
 			height: 150
@@ -129,13 +129,14 @@ Form
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
-		RowLayout
+		Group
 		{
+			columns: 2
 			CheckBox { name: "postHocTestEffectSize";	text: qsTr("Effect Size")						}
 			CheckBox { name: "postHocTestPooledError";	text: qsTr("Pool error term for RM factors")	}
 		}
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Correction")
 			CheckBox { name: "postHocTestsTukey";		text: qsTr("Tukey"); checked: true	}
@@ -148,6 +149,7 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Descriptives Plots")
+		columns: 1
 		
 		VariablesForm
 		{
@@ -158,13 +160,14 @@ Form
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }
 		}
 		
-		TextField { name: "labelYAxis"; text: qsTr("Label y-axis") }
-		GroupBox
+		TextField { name: "labelYAxis"; text: qsTr("Label y-axis"); fieldWidth: 200 }
+		Group
 		{
 			title: qsTr("Display")
 			
-			RowLayout
+			Group
 			{
+				columns: 2
 				CheckBox { name: "plotErrorBars";			text: qsTr("Display error bars")		}
 				CheckBox { name: "usePooledStandErrorCI";	text: qsTr("Pool SE across RM factors")	}
 			}
@@ -172,8 +175,11 @@ Form
 			RadioButtonGroup
 			{
 				name: "errorBarType"
-				RadioButton { value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true; id: confidenceInterval }
-				PercentField { indent: true; name: "confidenceIntervalInterval"; text: qsTr("Interval"); defaultValue: 95; enabled: confidenceInterval.checked}
+				RadioButton
+				{
+					value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true
+					PercentField { name: "confidenceIntervalInterval"; text: qsTr("Interval"); defaultValue: 95 }
+				}
 				RadioButton { value: "standardError"; text: qsTr("Standard error") }
 			}
 		}
@@ -182,7 +188,9 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Additional Options")
-		GroupBox
+		columns: 1
+
+		Group
 		{
 			title: qsTr("Marginal means")
 			debug: true
@@ -190,35 +198,35 @@ Form
 			VariablesForm
 			{
 				height: 150
-				availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "withinModelTerms"; showVariableTypeIcon: false }
-				AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
+				availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "withinModelTerms" }
+				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
 			
-			CheckBox { name: "marginalMeansCompareMainEffects"; text: qsTr("Compare marginal means to 0"); id: marginalMeansCompareMainEffects }
-			DropDown
+			CheckBox
 			{
-				name: "marginalMeansCIAdjustment"
-				indent: true
-				text: qsTr("Confidence interval adjustment")
-				model: ListModel
+				name: "marginalMeansCompareMainEffects"; text: qsTr("Compare marginal means to 0")
+				DropDown
 				{
-					ListElement { title: "None";		value: "none"		}
-					ListElement { title: "Bonferro";	value: "bonferroni"	}
-					ListElement { title: "Sidak";		value: "sidak"		}
+					name: "marginalMeansCIAdjustment"
+					text: qsTr("Confidence interval adjustment")
+					model: ListModel
+					{
+						ListElement { title: "None";		value: "none"		}
+						ListElement { title: "Bonferro";	value: "bonferroni"	}
+						ListElement { title: "Sidak";		value: "sidak"		}
+					}
 				}
-				enabled: marginalMeansCompareMainEffects.checked
 			}
 		}
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Display")
-			CheckBox { name: "descriptives";		text: qsTr("Descriptive statistics")							}
-			CheckBox { name: "effectSizeEstimates";	text: qsTr("Estimates of effect size"); id: effectSizeEstimates }
-			Row
+			CheckBox { name: "descriptives";		text: qsTr("Descriptive statistics") }
+			CheckBox
 			{
-				Layout.leftMargin: Theme.indentationLength
-				enabled: effectSizeEstimates.checked
+				name: "effectSizeEstimates";	text: qsTr("Estimates of effect size")
+				columns: 3
 				CheckBox { name: "effectSizeEtaSquared";		text: qsTr("η²")         ; checked: true	}
 				CheckBox { name: "effectSizePartialEtaSquared";	text: qsTr("partial η²")					}
 				CheckBox { name: "effectSizeOmegaSquared";		text: qsTr("ω²")							}
