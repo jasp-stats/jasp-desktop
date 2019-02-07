@@ -153,18 +153,16 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 		if (error)
 			this.$el.addClass("error-state");
 
-		html += '<div class="jasp-image-image"';
-
 		if (data) {
-
+			html += '<div class="jasp-image-image"';
 			var id = data.replace(/[^A-Za-z0-9]/g, '-');
+			var url = window.globSet.tempFolder + data;
 			html += ' id="' + id + '" style="';
-            html += 'background-image : url(\'' + window.globSet.tempFolder + data + '?x=' + Math.random() + '\'); '
-
-			html += 'background-size : 100% 100%; '
+			html += 'background-image : url(\'' + url + '?x=' + Math.random() + '\'); '
+			html += 'background-size : 100% 100%">'
+		} else {
+			html += '<div class="jasp-image-image no-data">';
 		}
-
-		html += '">'
 
 		if (error && error.errorMessage) {
 
