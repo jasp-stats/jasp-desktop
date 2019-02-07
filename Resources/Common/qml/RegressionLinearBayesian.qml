@@ -22,7 +22,7 @@ import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
 Form {
-	usesJaspResults: false
+    usesJaspResults: true
 	
 	VariablesForm
 	{
