@@ -20,6 +20,7 @@
 
 #include "boost/foreach.hpp"
 #include "utilities/appdirs.h"
+#include "utilities/settings.h"
 #include "processinfo.h"
 
 #include <QFile>
@@ -123,9 +124,10 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
 	
-	if (analysis->isDynamicModule())
+	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{
 		QString filePath = QString::fromStdString(analysis->qmlFormPath());
+		
 		if (filePath.startsWith("file:"))
 			filePath.remove(0,5);
 		if (!_QMLFileWatcher.files().contains(filePath))
@@ -134,7 +136,6 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 				qDebug() << "Could not watch: " << filePath;
 		}
 		connect(&_QMLFileWatcher, &QFileSystemWatcher::fileChanged, [=] () { this->_analysisQMLFileChanged(analysis); });
-		
 	}
 }
 
