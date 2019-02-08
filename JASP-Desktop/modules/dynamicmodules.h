@@ -25,6 +25,7 @@
 #include <QObject>
 #include "dynamicmodule.h"
 #include <boost/filesystem.hpp>
+#include <QFileSystemWatcher>
 
 class DynamicModules : public QObject
 {
@@ -40,6 +41,7 @@ public:
 	bool		installModule(				const	std::string & moduleZipFilename);
 	void		uninstallModule(			const	std::string & moduleName);
 	std::string	loadModule(					const	std::string & moduleName);
+	void		registerForInstalling(		const	std::string & moduleName);
 	void		registerForLoading(			const	std::string & moduleName);
 	bool		initializeModuleFromDir(			std::string   moduleDir);
 	void		unloadModule(				const	std::string & moduleName);
@@ -65,12 +67,16 @@ public:
 
 	Q_INVOKABLE bool	isFileAnArchive(			const QString & filepath);
 	Q_INVOKABLE QString getDescriptionFromArchive(	const QString & filepath);
-	Q_INVOKABLE void	installJASPModule(			const QString & filepath);
+	Q_INVOKABLE QString	installJASPModule(			const QString & filepath);
 	Q_INVOKABLE	void	uninstallJASPModule(		const QString & moduleName);
 	Q_INVOKABLE void	installJASPDeveloperModule();
 
 	int numberOfModules()												{ return _modules.size(); }
 	const std::vector<std::string> & moduleNames() const				{ return _moduleNames; }
+
+	Q_INVOKABLE Modules::DynamicModule*	dynamicModule(QString moduleName) const { return dynamicModule(moduleName.toStdString()); }
+
+	static std::string developmentModuleName() { return "DevelopmentModule"; }
 
 public slots:
 	void installationPackagesSucceeded(	const std::string & moduleName);
@@ -82,26 +88,38 @@ signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
 	void dynamicModuleUninstalled(const std::string & moduleName);
 	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
+	void dynamicModuleChanged(Modules::DynamicModule * dynamicModule);
 
 	void stopEngines();
 	void restartEngines();
 
+private slots:
+	void enginesStopped();
+
 private:
 	void						removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped = false);
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
-
-
+	void						devModCopyDescription();
+	void						devModCopyFolder(QString folder, QFileSystemWatcher * & watcher);
+	void						regenerateDeveloperModuleRPackage();
 
 private:
-	std::vector<std::string>						_moduleNames;
-	std::map<std::string, Modules::DynamicModule*>	_modules;
-	std::set<std::string>							_modulesInstallPackagesNeeded,
-													_modulesToBeLoaded;
-	std::map<std::string, Json::Value>				_modulesToBeUnloaded;
-	boost::filesystem::path							_modulesInstallDirectory;
-	QString											_currentInstallMsg = "",
-													_currentInstallName = "";
-	bool											_currentInstallDone = false;
+	std::vector<std::string>								_moduleNames;
+	std::map<std::string, Modules::DynamicModule*>			_modules;
+	std::set<std::string>									_modulesInstallPackagesNeeded,
+															_modulesToBeLoaded;
+	std::map<std::string, Json::Value>						_modulesToBeUnloaded;
+	boost::filesystem::path									_modulesInstallDirectory;
+	QString													_currentInstallMsg = "",
+															_currentInstallName = "";
+	bool													_currentInstallDone = false;
+	const std::map<std::string, std::set<std::string>>		_acceptedFilesInFolders = {{"", {"json"}}, {"r", {"r"}}, {"qml", {"qml"}}, {"icons", {"svg", "png", "ico", "jpg", "gif"}}, {"help", {"md", "txt", "htm", "html"}}};
+	QDir													_devModSourceDirectory;
+	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
+														*	_devModRWatcher				= nullptr,
+														*	_devModQmlWatcher			= nullptr,
+														*	_devModIconsWatcher			= nullptr,
+														*	_devModHelpWatcher			= nullptr;
 };
 
 #endif // DYNAMICMODULES_H

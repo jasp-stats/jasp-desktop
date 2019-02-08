@@ -102,6 +102,7 @@ public slots:
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
+	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
 
 
 signals:

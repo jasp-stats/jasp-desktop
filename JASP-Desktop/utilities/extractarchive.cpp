@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include "stringutils.h"
+
 
 int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
 {
@@ -30,9 +32,7 @@ int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
 	}
 }
 
-
-
-bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::string destination, std::function<std::string(std::string)> archiveEntryPathModifier)
+bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::string destination, std::function<std::string(std::string)> archiveEntryPathModifier, std::function<bool(std::string)> fileFilter)
 {
 	// https://github.com/libarchive/libarchive/wiki/Examples#A_Complete_Extractor
 	if(destination.size() == 0 || destination[destination.size() - 1] != '/')
@@ -72,32 +72,36 @@ bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::s
 			if (r < ARCHIVE_WARN)
 				throw std::runtime_error("Error reading archive " + archiveFilename + ": " + archive_error_string(a));
 
-			//change directory to chosen output location
-			const std::string fullOutputPath	= destination + archiveEntryPathModifier(archive_entry_pathname(entry));
-			archive_entry_set_pathname(entry, fullOutputPath.c_str());
-
-			r = archive_write_header(ext, entry);
-
-			if (r < ARCHIVE_OK)
-				std::cerr << "Problem writing header from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
-			else if (archive_entry_size(entry) > 0)
+			std::string archivedFilePath = archive_entry_pathname(entry);
+			if(fileFilter(archivedFilePath))
 			{
-				r = copy_data(a, ext);
+				//change directory to chosen output location
+				const std::string fullOutputPath	= destination + archiveEntryPathModifier(archivedFilePath);
+				archive_entry_set_pathname(entry, fullOutputPath.c_str());
+
+				r = archive_write_header(ext, entry);
 
 				if (r < ARCHIVE_OK)
-					std::cerr << "Problem writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
+					std::cerr << "Problem writing header from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
+				else if (archive_entry_size(entry) > 0)
+				{
+					r = copy_data(a, ext);
+
+					if (r < ARCHIVE_OK)
+						std::cerr << "Problem writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
+
+					if (r < ARCHIVE_WARN)
+						throw std::runtime_error("Error writing archive " + archiveFilename + ": " + archive_error_string(ext));
+				}
+
+				r = archive_write_finish_entry(ext);
+
+				if (r < ARCHIVE_OK)
+					std::cerr << "Problem finishing writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
 
 				if (r < ARCHIVE_WARN)
-					throw std::runtime_error("Error writing archive " + archiveFilename + ": " + archive_error_string(ext));
+					throw std::runtime_error("Error finishing writing archive " + archiveFilename + ": " + archive_error_string(ext));
 			}
-
-			r = archive_write_finish_entry(ext);
-
-			if (r < ARCHIVE_OK)
-				std::cerr << "Problem finishing writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
-
-			if (r < ARCHIVE_WARN)
-				throw std::runtime_error("Error finishing writing archive " + archiveFilename + ": " + archive_error_string(ext));
 		}
 	}
 	catch(std::runtime_error e)
@@ -129,6 +133,46 @@ bool ExtractArchive::extractArchiveToFolderFlattened(std::string archiveFilename
 	};
 
 	return _extractArchiveToFolder(archiveFilename, destination, pathModifier);
+}
+
+bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string destination, const std::map<std::string, std::set<std::string>> & folderAndExtensionExemptions)
+{
+	auto fileNameExtractor	= [&](std::string in, std::string & folder, std::string & filename)
+	{
+		std::string beforeLastSlash = in.substr(0, in.find_last_of('/'));
+					folder			= stringUtils::toLower(beforeLastSlash.substr(beforeLastSlash.find_last_of('/') + 1));
+		auto		slashpos		= in.find_last_of('/');
+					filename		= in.substr(slashpos != std::string::npos ? slashpos + 1 : 0);
+
+		if(filename.find_last_of('.') != std::string::npos)
+			return stringUtils::toLower(filename.substr(filename.find_last_of('.') + 1)); // return extension in lowercase
+		return std::string("");
+	};
+
+	auto pathModifier = [&](std::string in)
+	{
+		std::string folder, filename;
+
+		fileNameExtractor(in, folder, filename);
+
+		if(folder == "" || folderAndExtensionExemptions.count(folder) == 0)
+			return filename;
+
+		if(folder == "r")
+			folder = "R"; //Because we like it like that :)
+
+		return folder + '/' + filename;
+	};
+
+	auto fileFilter = [&](std::string in)
+	{
+		std::string folder, filename, extension = fileNameExtractor(in, folder, filename);
+
+		return 	(folderAndExtensionExemptions.count(folder) > 0 && folderAndExtensionExemptions.at(folder).count(extension) > 0) ||
+				(folderAndExtensionExemptions.count("")		> 0 && folderAndExtensionExemptions.at("").count(extension)		> 0)  ;
+	};
+
+	return _extractArchiveToFolder(archiveFilename, destination, pathModifier, fileFilter);
 }
 
 

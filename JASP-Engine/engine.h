@@ -33,7 +33,7 @@ class Engine
 public:
 	explicit Engine(int slaveNo, unsigned long parentPID);
 	static Engine * theEngine() { return _EngineInstance; } //There is only ever one engine in a process so we might as well have a static pointer to it.
-
+	~Engine();
 
 	void run();
 	bool receiveMessages(int timeout = 0);

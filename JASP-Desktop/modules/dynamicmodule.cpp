@@ -18,6 +18,8 @@
 
 
 #include "dynamicmodule.h"
+#include <locale>
+#include <boost/filesystem.hpp>
 
 namespace Modules
 {
@@ -51,7 +53,6 @@ bool DynamicModule::initialize()
 
 		if(errorMsg == "" && !isFile	&& !checkInfo.isDir())	errorMsg = name + " is not, as expected, a directory";
 		if(errorMsg == "" &&  isFile	&& !checkInfo.isFile())	errorMsg = name + " is not, as expected, a file";
-
 		if(errorMsg != "")
 		{
 /*#ifdef JASP_DEBUG
@@ -111,7 +112,7 @@ bool DynamicModule::initialize()
 void DynamicModule::setLoadingNeeded()
 {
 	if(_status != moduleStatus::installNeeded)
-		_status = moduleStatus::loadingNeeded;
+		setStatus(moduleStatus::loadingNeeded);
 }
 
 void DynamicModule::createRLibraryFolder()
@@ -204,14 +205,20 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 Json::Value	DynamicModule::requestJsonForPackageInstallationRequest()
 {
 	if(!installNeeded())
-		std::cout << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") is already installed!";
+	{
+		std::cout << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") is already installed!" << std::endl;
+	}
+
+	bool	installModPkg  = _status == moduleStatus::installNeeded || _status == moduleStatus::installModPkgNeeded,
+			installReqPkgs = _status == moduleStatus::installNeeded || _status == moduleStatus::installReqPkgsNeeded;
 
 	Json::Value requestJson(Json::objectValue);
 
 	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::installNeeded);
 	requestJson["moduleName"]		= _name;
-	requestJson["moduleCode"]		= generateModuleInstallingR();
+	requestJson["moduleCode"]		= generateModuleInstallingR(installReqPkgs, installModPkg);
 
+	setInstalling(true);
 
 	return requestJson;
 }
@@ -223,6 +230,8 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loadingNeeded);
 	requestJson["moduleName"]		= _name;
 	requestJson["moduleCode"]		= generateModuleLoadingR();
+
+	setLoading(true);
 
 	return requestJson;
 }
@@ -238,7 +247,7 @@ Json::Value	DynamicModule::requestJsonForPackageUnloadingRequest()
 	return requestJson;
 }
 
-std::string DynamicModule::generateModuleInstallingR()
+std::string DynamicModule::generateModuleInstallingR(bool installRequiredPackages, bool installModulePkg)
 {
 
 	std::set<std::string> pkgsVersionless;
@@ -254,51 +263,58 @@ std::string DynamicModule::generateModuleInstallingR()
 	//out <<" print(Sys.getenv());\n";
 
 	R			<< "libPathsToUse <- c(.libPaths(), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
-	installLog	<< "Installing module " << _name << ", with required packages: ";
 
-	const	bool useWithLibPaths	= true;
-			bool firstPkg			= true;
+	if(installModulePkg)	{			installLog	<< "Installing module " << _name;
+		if(installRequiredPackages)		installLog	<< ", with required packages: ";
+	} else if(installRequiredPackages)	installLog << "Installing required packages for module " << _name << ": ";
 
-	if(pkgsVersionless.size() > 0)
+	if(installRequiredPackages)
 	{
-		R			<< standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
+		bool firstPkg			= true;
 
-		int count = 0;
-		for(const std::string & pkg : pkgsVersionless)
+		if(pkgsVersionless.size() > 0)
 		{
-			R			<< (count++ > 0 ? std::string(",\n") + standardRIndent + standardRIndent : "") << "'" << pkg << "'";
-			installLog	<< (!firstPkg   ? ", " : "") << pkg;
+			R << standardRIndent << "withr::with_libpaths(new=libPathsToUse,  install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
 
-			firstPkg = false;
+			int count = 0;
+			for(const std::string & pkg : pkgsVersionless)
+			{
+				R			<< (count++ > 0 ? std::string(",\n") + standardRIndent + standardRIndent : "") << "'" << pkg << "'";
+				installLog	<< (!firstPkg   ? ", " : "") << pkg;
+				firstPkg	= false;
+			}
+			R			<< ")));\n";
 		}
 
-		R			<< ")" << (useWithLibPaths ? ")" : "") <<  ");\n";
-		installLog	<< "\n";
+		if(_requiredPackages.isArray())
+			for(Json::Value & pkgV : _requiredPackages)
+				if(!pkgV["version"].isNull())
+				{
+					R			<< standardRIndent << "withr::with_libpaths(new=libPathsToUse,  devtools::install_version(repos='https://cloud.r-project.org', type='binary', Ncpus=4, package='"
+								<< pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"'));\n";
+					installLog	<< (!firstPkg   ? ", " : "") << pkgV["package"].asString() << " (" <<  pkgV["version"].asString() << ")";
+					firstPkg	= false;
+				}
+
+		if(firstPkg)
+			installLog << "none";
+
 	}
 
-	if(_requiredPackages.isArray())
-		for(Json::Value & pkgV : _requiredPackages)
-			if(!pkgV["version"].isNull())
-			{
-				R			<< standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "devtools::install_version(repos='https://cloud.r-project.org', type='binary', Ncpus=4, package='" << pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"')" << (useWithLibPaths ? ")" : "") <<  ";\n";
-
-				installLog	<< (!firstPkg   ? ", " : "") << pkgV["package"].asString() << " (" <<  pkgV["version"].asString() << ")";
-
-				firstPkg = false;
-			}
-
-	if(firstPkg)
-		installLog << "none";
-
 	installLog << ".\n";
-
 	setInstallLog(QString::fromStdString(installLog.str()));
 
-	R << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "");
-	R << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source')" << (useWithLibPaths ? ")" : "") <<  ";" "\n" "}\n" "return('"+succesResultString()+"')";
+	if(installModulePkg)
+	{
+		R << standardRIndent << "withr::with_libpaths(new=libPathsToUse,  ";
+		R << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source'));\n";
+	}
+
+	R << "}\n" "return('"+succesResultString()+"')";
 
 #ifdef JASP_DEBUG
-	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
+	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR('"<< (installRequiredPackages ? "" : "do not ") << "install required packages', '" << (installModulePkg ? "" : "do not ") << "install module pkg') generated:\n"
+			  << R.str() << std::endl;
 #endif
 
 	return R.str();
@@ -427,15 +443,92 @@ void DynamicModule::setLoadLog(QString loadLog)
 
 void DynamicModule::setInstalled(bool succes)
 {
-	_status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error;
-
+	setStatus(succes ? moduleStatus::loadingNeeded	: moduleStatus::error);
 	setInstallLog(installLog() + "Installation " + (succes ? "succeeded" : "failed") + "\n");
+
+	if(_installed != succes)
+	{
+		_installed = succes;
+
+		emit installedChanged(_installed);
+
+		if(_installed && installing())
+			setInstalling(false);
+	}
 }
 
 void DynamicModule::setLoaded(bool succes)
 {
-	_status = succes ? moduleStatus::readyForUse		: moduleStatus::error;
+	setStatus(succes ? moduleStatus::readyForUse		: moduleStatus::error);
 	setLoadLog(loadLog() + "Loading " + (succes ? "succeeded" : "failed") + "\n");
+
+	if(_loaded != succes)
+	{
+		_loaded = succes;
+
+		emit loadedChanged(_loaded);
+
+		if(_loaded && loading())
+			setLoading(false);
+	}
+}
+
+void DynamicModule::setLoading(bool loading)
+{
+	if (_loading == loading)
+		return;
+
+	_loading = loading;
+	emit loadingChanged(_loading);
+}
+
+void DynamicModule::setInstalling(bool installing)
+{
+	if (_installing == installing)
+		return;
+
+	_installing = installing;
+	emit installingChanged(_installing);
+}
+
+void DynamicModule::setStatus(moduleStatus newStatus)
+{
+	if(_status == newStatus)
+		return;
+
+	_status = newStatus;
+
+	emit statusChanged();
+}
+
+std::string	DynamicModule::moduleNameFromFolder(std::string folderName)
+{
+	//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
+	folderName.erase(std::remove_if(folderName.begin(), folderName.end(), [](unsigned char x) { return !std::isalnum(x, std::locale()); }), folderName.end());
+
+	return folderName;
+}
+
+void DynamicModule::setInstallModulePackageNeeded()
+{
+	if(_status == moduleStatus::installNeeded || _status == moduleStatus::installModPkgNeeded)
+		return;
+
+	setStatus(_status == moduleStatus::installReqPkgsNeeded ? moduleStatus::installNeeded : moduleStatus::installModPkgNeeded);
+}
+
+void DynamicModule::setInstallRequiredPackagesNeeded()
+{
+	if(_status == moduleStatus::installNeeded || _status == moduleStatus::installReqPkgsNeeded)
+		return;
+
+	setStatus(_status == moduleStatus::installModPkgNeeded ? moduleStatus::installNeeded : moduleStatus::installReqPkgsNeeded);
+}
+
+void DynamicModule::regenerateModulePackage()
+{
+	generateRPackage();
+	setInstallModulePackageNeeded();
 }
 
 }

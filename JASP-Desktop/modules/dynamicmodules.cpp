@@ -22,8 +22,12 @@
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
 
+
+
 DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 {
+	connect(this, &DynamicModules::stopEngines, this, &DynamicModules::enginesStopped, Qt::QueuedConnection);
+
 	_modulesInstallDirectory = AppDirs::modulesDir().toStdString();
 
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
@@ -46,8 +50,10 @@ void DynamicModules::initializeInstalledModules()
 	{
 		std::string path = itr->path().generic_string();
 		std::string name = itr->path().filename().generic_string();
-		if(name.size() > 0 && name[0] != '.')
-			initializeModuleFromDir(path);
+
+		//Development Module should always be fresh!
+		if(name == developmentModuleName())			boost::filesystem::remove_all(itr->path());
+		else if(name.size() > 0 && name[0] != '.')	initializeModuleFromDir(path);
 	}
 }
 
@@ -107,8 +113,18 @@ std::string DynamicModules::loadModule(const std::string & moduleName)
 	}
 }
 
+void DynamicModules::registerForInstalling(const std::string & moduleName)
+{
+	_modulesToBeUnloaded.erase(moduleName);
+	_modulesToBeLoaded.erase(moduleName);
+	_modulesInstallPackagesNeeded.insert(moduleName);
+}
+
 void DynamicModules::registerForLoading(const std::string & moduleName)
 {
+	if(_modulesInstallPackagesNeeded.count(moduleName) > 0)
+		return; //When the install is done it will trigger the need for loading anyway.
+
 	_modulesToBeUnloaded.erase(moduleName);
 	_modulesToBeLoaded.insert(moduleName);
 }
@@ -129,7 +145,7 @@ bool DynamicModules::installModule(const std::string & moduleZipFilename)
 	if(moduleIsInstalled(moduleName))
 		uninstallModule(moduleName);
 
-	if(!ExtractArchive::extractArchiveToFolderFlattened(moduleZipFilename, modulePath, {"R", "qml", "icons"}))
+	if(!ExtractArchive::extractJaspModule(moduleZipFilename, modulePath, _acceptedFilesInFolders))
 		MessageForwarder::showWarning("There was some error installing module from " + moduleZipFilename);
 
 	return initializeModuleFromDir(modulePath);
@@ -153,6 +169,21 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 
 void DynamicModules::uninstallModule(const std::string & moduleName)
 {
+	if(moduleName == developmentModuleName())
+	{
+		delete _devModDescriptionWatcher;
+		delete _devModRWatcher;
+		delete _devModQmlWatcher;
+		delete _devModIconsWatcher;
+
+		_devModDescriptionWatcher	= nullptr;
+		_devModRWatcher				= nullptr;
+		_devModQmlWatcher			= nullptr;
+		_devModIconsWatcher			= nullptr;
+
+		_devModSourceDirectory = QDir();
+	}
+
 	std::string modulePath	= moduleDirectory(moduleName);
 
 	if(moduleIsInitialized(moduleName))
@@ -241,6 +272,15 @@ void DynamicModules::installationPackagesSucceeded(const std::string & moduleNam
 
 	if(_modules[moduleName]->loadingNeeded())	registerForLoading(moduleName);
 	else										MessageForwarder::showWarning("Unexpected! Module "+moduleName+" was just installed but doesn't need/want to be loaded..");
+
+	if(_modules[moduleName]->loaded())	//If the package is already loaded it might be hard to convince R to reread it, so let's just restart the engines
+	{
+		stopEngines();
+		_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+		restartEngines();
+
+		emit dynamicModuleChanged(_modules[moduleName]);
+	}
 }
 
 
@@ -292,7 +332,7 @@ QString DynamicModules::getDescriptionFromArchive(const QString &  filepath)
 	return QString::fromStdString(ExtractArchive::extractSingleTextFileFromArchive(filepath.toStdString(), "description.json"));
 }
 
-void DynamicModules::installJASPModule(const QString &  filepath)
+QString DynamicModules::installJASPModule(const QString &  filepath)
 {
 	std::string path	= filepath.toStdString();
 	size_t slash		= path.find_last_of('/');
@@ -300,6 +340,8 @@ void DynamicModules::installJASPModule(const QString &  filepath)
 	name				= name.substr(0, name.find_last_of('.')); //remove .jaspMod
 
 	installModule(path);
+
+	return QString::fromStdString(name);
 }
 
 
@@ -310,22 +352,195 @@ void DynamicModules::uninstallJASPModule(const QString & moduleName)
 
 void DynamicModules::installJASPDeveloperModule()
 {
-	std::string path	= Settings::value(Settings::DEVELOPER_FOLDER).toString().toStdString();
-	size_t slash		= path.find_last_of('/');
-	std::string name	= Modules::DynamicModule::moduleNameFromFolder(path.substr(slash == std::string::npos ? 0 : slash + 1));
+	std::string origin	= Settings::value(Settings::DEVELOPER_FOLDER).toString().toStdString(),
+				name	= developmentModuleName(),
+				dest	= moduleDirectory(name);
 
 	if(moduleIsInstalled(name))
 		uninstallModule(name);
 
-	initializeModuleFromDir(path);
+	QDir destQDir(QString::fromStdString(dest));
+
+	if(!destQDir.exists())
+		QDir(AppDirs::modulesDir()).mkdir(QString::fromStdString(name));
+
+	_devModSourceDirectory = QDir(QString::fromStdString(origin));
+
+	bool	descriptionFound	= false,
+			rFound				= false,
+			qmlFound			= false,
+			iconsFound			= false;
+
+	for(const QFileInfo & entry : _devModSourceDirectory.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
+		if(entry.isFile() && entry.fileName().toLower() == "description.json")
+			descriptionFound = true;
+		else if(entry.isDir())
+		{
+			QString dir = entry.fileName().toLower();
+
+			if(dir == "r")		rFound		= true;
+			if(dir == "qml")	qmlFound	= true;
+			if(dir == "icons")	iconsFound	= true;
+		}
+
+	if(!(descriptionFound && rFound && qmlFound && iconsFound))
+	{
+		MessageForwarder::showWarning("Missing files or folders", "The selected folder cannot be installed as a developer module because it does not contain all the necessary files and folders.\n" +
+			std::string(descriptionFound	? "" : "Create a description.json file.\n") +
+			std::string(rFound				? "" : "Create a R directory containing your analysis code.\n") +
+			std::string(qmlFound			? "" : "Create a qml directory containing your optionsforms.\n") +
+			std::string(iconsFound			? "" : "Create a icons directory containing the icons for your ribbonbuttons.\n"));
+		return;
+	}
+
+
+	devModCopyDescription();
+	devModCopyFolder("R",		_devModRWatcher);
+	devModCopyFolder("qml",		_devModQmlWatcher);
+	devModCopyFolder("icons",	_devModIconsWatcher);
+	devModCopyFolder("help",	_devModHelpWatcher);
+
+	initializeModuleFromDir(moduleDirectory(developmentModuleName()));
+}
+
+void DynamicModules::devModCopyDescription()
+{
+	QFileInfo src(_devModSourceDirectory.filePath("description.json"));
+	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName()) + "description.json"));
+
+	if(!src.exists())
+	{
+		if(dst.exists())
+			MessageForwarder::showWarning("Missing description.json", "You seem to have removed description.json from your development module directory. Without it your module cannot work, make sure to put it back. For now your old description file will be kept.");
+		else
+		{
+			MessageForwarder::showWarning("Missing description.json", "You seem to have never had a description.json in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
+			uninstallModule(developmentModuleName());
+		}
+		return;
+	}
+
+	QFile	srcFile(src.absoluteFilePath()),
+			dstFile(dst.absoluteFilePath());
+
+	srcFile.open(QIODevice::ReadOnly);
+	dstFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+
+	dstFile.write(srcFile.readAll());
+
+	delete _devModDescriptionWatcher;
+
+	_devModDescriptionWatcher	= new QFileSystemWatcher({src.absoluteFilePath()}, this);
+}
+
+void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & watcher)
+{
+	QDir	src(_devModSourceDirectory.absoluteFilePath(folder)),
+			dst(QString::fromStdString(moduleDirectory(developmentModuleName())) + folder),
+			modDir(QString::fromStdString(moduleDirectory(developmentModuleName())));
+
+
+	if(!src.exists())
+	{
+		if(dst.exists())
+			MessageForwarder::showWarning("Missing description.json", "You seem to have removed the folder " + folder.toStdString() + " from your development module directory. Without it your module cannot work, make sure to put it back. For now your old folder will be kept.");
+		else
+		{
+			MessageForwarder::showWarning("Missing description.json", "You seem to have never had the folder " + folder.toStdString() + " in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
+			uninstallModule(developmentModuleName());
+		}
+		return;
+	}
+
+	delete watcher;
+	watcher = new QFileSystemWatcher({_devModSourceDirectory.absoluteFilePath(folder)}, this);
+
+	if(!dst.exists())
+		modDir.mkdir(folder);
+
+	QStringList extensionFilter;
+	for(const std::string & extension :  _acceptedFilesInFolders.at(folder.toLower().toStdString()))
+		extensionFilter << "*." + QString::fromStdString(extension) << "*." + QString::fromStdString(extension).toUpper();
+
+	std::set<QString> filesInSource;
+
+	for(QFileInfo entry : src.entryInfoList(extensionFilter, QDir::Filter::Files))
+	{
+		QFile	srcFile(entry.absoluteFilePath()),
+				dstFile(dst.filePath(entry.fileName()));
+
+		srcFile.open(QIODevice::ReadOnly);
+		dstFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+		dstFile.write(srcFile.readAll());
+		filesInSource.insert(dstFile.fileName());
+
+		watcher->addPath(entry.absoluteFilePath());
+	}
+
+	for(QFileInfo entry : dst.entryInfoList(QDir::Filter::Files))
+	{
+		QFile dstFile(entry.absoluteFilePath());
+
+		if(filesInSource.count(dstFile.fileName()) == 0)
+			dstFile.remove();
+	}
+
+	connect(watcher, &QFileSystemWatcher::fileChanged, [=](const QString & path)
+	{
+		//If only a file changes then update this single file
+		QFileInfo srcFileChanged(path);
+
+		QFile	srcFile(path),
+				dstFile(dst.filePath(srcFileChanged.fileName()));
+
+		if(srcFileChanged.exists())
+		{
+#ifdef JASP_DEBUG
+		std::cout << "Watched folder " << folder.toStdString() << " had a changed file: " << path.toStdString() << std::endl;
+#endif
+			//file changed because it still exists
+			srcFile.open(QIODevice::ReadOnly);
+			dstFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+			dstFile.write(srcFile.readAll());
+		}
+		else
+		{
+#ifdef JASP_DEBUG
+		std::cout << "Watched folder " << folder.toStdString() << " had a file removed: " << path.toStdString() << std::endl;
+#endif
+			dstFile.remove();
+		}
+
+		if(folder.toUpper() == "R")
+			this->regenerateDeveloperModuleRPackage();
+	});
+
+	connect(watcher, &QFileSystemWatcher::directoryChanged, [=, &watcher](QString path)
+	{
+#ifdef JASP_DEBUG
+		std::cout << "Watched folder " << folder.toStdString() << " had a changed directory (file added or removed) on path: " << path.toStdString() << std::endl;
+#endif
+		this->devModCopyFolder(folder, watcher);
+
+		if(folder.toUpper() == "R")
+			this->regenerateDeveloperModuleRPackage();
+	});
+}
+
+void DynamicModules::regenerateDeveloperModuleRPackage()
+{
+	if(_modules.count(developmentModuleName()) == 0)
+		throw std::runtime_error("void DynamicModules::regenerateDeveloperModuleRPackage() called but the development module is not initialized...");
+
+	auto * devMod = _modules[developmentModuleName()];
+
+	devMod->regenerateModulePackage();
+	registerForInstalling(developmentModuleName());
 }
 
 Json::Value	DynamicModules::getJsonForReloadingActiveModules()
 {
 	Json::Value requestJson(Json::objectValue);
-
-	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loadingNeeded);
-	requestJson["moduleName"]		= "*";
 
 	std::stringstream loadingCode;
 	for(int i=0; i<_moduleNames.size(); i++)
@@ -336,7 +551,18 @@ Json::Value	DynamicModules::getJsonForReloadingActiveModules()
 			loadingCode << _modules[modName]->generateModuleLoadingR(i == _moduleNames.size() - 1) << "\n";
 	}
 
+	if(loadingCode.str() == "")
+		loadingCode << "return('" << Modules::DynamicModule::succesResultString() << "')"; //We could also avoid calling getJsonForReloadingActiveModules altogether but whatever
+
 	requestJson["moduleCode"]		= loadingCode.str();
+	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loadingNeeded);
+	requestJson["moduleName"]		= "*";
 
 	return requestJson;
+}
+
+void DynamicModules::enginesStopped()
+{
+	for(auto & nameMod : _modules)
+		nameMod.second->setLoaded(false); //Cause we restarted the engines
 }

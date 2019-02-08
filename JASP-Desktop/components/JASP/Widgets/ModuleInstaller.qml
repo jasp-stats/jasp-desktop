@@ -234,13 +234,12 @@ Popup
 					{
 						installProgressItem.height = Qt.binding(function() { return moduleInstallerRect.height - (installButton.height + (Theme.generalAnchorMargin * 2) )})
 
-						installProgressItem.installText = "Installing Module '"+moduleInstallerRect.currentJSON.moduleDescription.title +"'"
-						text							= installProgressItem.installText + "..."
+						//installProgressItem.installText = "Installing Module '"+moduleInstallerRect.currentJSON.moduleDescription.title +"'"
+						//text							= installProgressItem.installText + "..."
 						enabled							= false
 						selected						= true
 
-
-						dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
+						installProgressItem.moduleBeingInstalled = dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
 					}
 				}
 			}
@@ -264,6 +263,7 @@ Popup
 			{
 				id:				installProgressItem
 
+				property string moduleBeingInstalled: ""
 				anchors.left:	parent.left
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
@@ -272,13 +272,6 @@ Popup
 
 				height: 0
 				visible: height > 0
-
-				property string installMsg:		dynamicModules.currentInstallMsg
-				property bool	installDone:	dynamicModules.currentInstallDone
-				property string installText:	""
-
-				onInstallMsgChanged:	if(installMsg != "")	installText += "\n" + installMsg
-				onInstallDoneChanged:	if(installDone)			installText += "\nInstall is finished!"
 
 				Rectangle
 				{
@@ -294,7 +287,7 @@ Popup
 						anchors.fill:		parent
 						anchors.margins:	Theme.generalAnchorMargin
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
-						text:				installProgressItem.installText
+						text:				installProgressItem.moduleBeingInstalled === "" ? "" : dynamicModules.dynamicModule(installProgressItem.moduleBeingInstalled).installLog
 					}
 				}
 			}

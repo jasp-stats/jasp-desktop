@@ -75,6 +75,14 @@ Engine::Engine(int slaveNo, unsigned long parentPID) : _slaveNo(slaveNo), _paren
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
 }
 
+Engine::~Engine()
+{
+	TempFiles::deleteAll();
+
+	delete _channel; //shared memory files will be removed in jaspDesktop
+	_channel = nullptr;
+}
+
 void Engine::run()
 {
 #if defined(QT_DEBUG) || defined(__linux__)
@@ -109,10 +117,10 @@ void Engine::run()
 		}
 
 		freeRBridgeColumns();
-	}
 
-	delete _channel;
-	//shared memory files will be removed in jaspDesktop
+		if(_currentEngineState != engineState::idle)
+			std::cout << "current Engine state == "<< engineStateToString(_currentEngineState) << std::endl;
+	}
 }
 
 
@@ -301,7 +309,7 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 
 void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 {
-	_currentEngineState = engineState::moduleRequest;
+	_currentEngineState				= engineState::moduleRequest;
 
 	std::string		moduleRequest	= jsonRequest["moduleRequest"].asString();
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 class stringUtils
 {
@@ -74,6 +75,12 @@ public:
 
         return vecString;
     }
+
+	inline static std::string toLower(std::string input)
+	{
+		std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+		return input;
+	}
 
 private:
     stringUtils();

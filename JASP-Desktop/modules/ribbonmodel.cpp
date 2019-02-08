@@ -191,3 +191,12 @@ void RibbonModel::ribbonButtonModelChanged(RibbonButtonModel* model)
 	int row = ribbonButtonModelIndex(model);
 	emit dataChanged(index(row), index(row));
 }
+
+void RibbonModel::moduleLoadingSucceeded(const std::string & moduleName)
+{
+	if(moduleName == "*")
+		return;
+
+	RibbonButtonModel * ribMod = ribbonButtonModel(moduleName);
+	ribMod->setEnabled(true);
+}

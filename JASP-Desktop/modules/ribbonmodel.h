@@ -75,6 +75,7 @@ public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
 	void removeDynamicRibbonButtonModel(std::string moduleName)			{ removeRibbonButtonModel(moduleName);				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
+	void moduleLoadingSucceeded(const std::string & moduleName);
 
 private slots:
 	void ribbonButtonModelChanged(RibbonButtonModel* model);

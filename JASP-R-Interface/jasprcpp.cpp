@@ -79,6 +79,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
 
 	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
+	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
@@ -492,6 +493,7 @@ void jaspRCPP_setRError(SEXP Message)
 void jaspRCPP_setLog(SEXP Message)
 {
 	lastErrorMessage = Rcpp::as<std::string>(Message);
+	std::cout << "jaspRCPP_setLog receives: '" << lastErrorMessage << "'" << std::endl;
 }
 
 int jaspRCPP_dataSetRowCount()

@@ -43,13 +43,18 @@ struct ModuleException : public std::runtime_error
 class DynamicModule : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString installLog	READ installLog WRITE setInstallLog NOTIFY installLogChanged	)
-	Q_PROPERTY(QString loadLog		READ loadLog	WRITE setLoadLog	NOTIFY loadLogChanged		)
+	Q_PROPERTY(QString	installLog	READ installLog WRITE setInstallLog NOTIFY installLogChanged	)
+	Q_PROPERTY(QString	loadLog		READ loadLog	WRITE setLoadLog	NOTIFY loadLogChanged		)
+	Q_PROPERTY(QString	status		READ status							NOTIFY statusChanged		)
+	Q_PROPERTY(bool		loaded		READ loaded		WRITE setLoaded		NOTIFY loadedChanged		)
+	Q_PROPERTY(bool		installed	READ installed	WRITE setInstalled	NOTIFY installedChanged		)
+	Q_PROPERTY(bool		loading		READ loading	WRITE setLoading	NOTIFY loadingChanged		)
+	Q_PROPERTY(bool		installing	READ installing	WRITE setInstalling	NOTIFY installingChanged	)
 
 public:
 	explicit DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
 	{
-		_status = initialize() ? moduleStatus::installNeeded : moduleStatus::loadingNeeded;
+		setStatus(initialize() ? moduleStatus::installNeeded : moduleStatus::loadingNeeded);
 	}
 
 	~DynamicModule() override
@@ -58,8 +63,6 @@ public:
 			delete entry;
 		_ribbonEntries.clear();
 	}
-
-
 
 	std::string			name()				const { return _name;				}
 	std::string			title()				const { return _title;				}
@@ -73,7 +76,7 @@ public:
 
 	bool				error()				const { return _status == moduleStatus::error;			}
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
-	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
+	bool				installNeeded()		const { return _status == moduleStatus::installNeeded || _status == moduleStatus::installModPkgNeeded || _status == moduleStatus::installReqPkgsNeeded;	}
 	bool				loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName; }
 	Json::Value			requiredPackages()	const { return _requiredPackages; }
@@ -85,7 +88,7 @@ public:
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
 	std::string			generateModuleUnloadingR();
-	std::string			generateModuleInstallingR();
+	std::string			generateModuleInstallingR(bool installRequiredPackages = true, bool installModulePkg = true);
 	std::string			generateModuleUninstallingR();
 
 	Json::Value			requestJsonForPackageLoadingRequest();
@@ -96,6 +99,7 @@ public:
 	void				setInstalled(bool succes);
 	void				setLoaded(bool succes);
 	void				setLoadingNeeded();
+	void				setStatus(moduleStatus newStatus);
 
 	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
 
@@ -105,24 +109,40 @@ public:
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const;
 
-	static std::string	moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
+	static std::string	moduleNameFromFolder(std::string folderName);
 
 	static std::string	succesResultString() { return "succes!"; }
 
-
 	QString installLog()	const	{ return QString::fromStdString(_installLog);	}
-	QString loadLog()		const	{ return QString::fromStdString(_loadLog);	}
+	QString loadLog()		const	{ return QString::fromStdString(_loadLog);		}
+	QString status()		const	{ return moduleStatusToQString(_status);		}
 
 	bool shouldUninstallPackagesInRForUninstall();
+
+	bool loaded()		const { return _loaded;		}
+	bool installed()	const { return _installed;	}
+	bool loading()		const { return _loading;	}
+	bool installing()	const { return _installing;	}
+
+	void setInstallModulePackageNeeded();
+	void setInstallRequiredPackagesNeeded();
+	void regenerateModulePackage();
 
 public slots:
 	void setInstallLog(QString installLog);
 	void setLoadLog(QString loadLog);
 
+	void setLoading(bool loading);
+	void setInstalling(bool installing);
 
 signals:
 	void installLogChanged();
 	void loadLogChanged();
+	void statusChanged();
+	void loadedChanged(bool loaded);
+	void installedChanged(bool installed);
+	void loadingChanged(bool loading);
+	void installingChanged(bool installing);
 
 private:
 	bool		initialize(); //returns true if install of package(s) should be done
@@ -131,12 +151,11 @@ private:
 	std::string generateNamespaceFileForRPackage();
 	std::string generateDescriptionFileForRPackage();
 
-
 private:
 	QDir			_generatedPackageFolder;
 	QFileInfo		_moduleFolder;
 	int				_version;
-	moduleStatus	_status = moduleStatus::installNeeded;
+	moduleStatus	_status = moduleStatus::uninitialized;
 	std::string		_name,
 					_title,
 					_author,
@@ -147,13 +166,15 @@ private:
 					_installLog	= "",
 					_loadLog	= "";
 
-	bool			_requiresDataset	= true;
-
+	bool			_requiresDataset	= true,
+					_loaded				= false,
+					_installed			= false,
+					_loading			= false,
+					_installing			= false;
 	Json::Value		_requiredPackages;
 	RibbonEntries	_ribbonEntries;
 	const char		*_libraryRName		= "libraryR",
 					*_exposedPostFix	= "_exposed";
-
 
 
 };

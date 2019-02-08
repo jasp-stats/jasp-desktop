@@ -209,6 +209,13 @@ void Analyses::removeAnalysesOfDynamicModule(Modules::DynamicModule * module)
 		removeAnalysisById(size_t(id));
 }
 
+void Analyses::refreshAnalysesOfDynamicModule(Modules::DynamicModule * module)
+{
+	for(auto & keyval : _analysisMap)
+		if(keyval.second->dynamicModule() == module)
+			keyval.second->refresh();
+}
+
 void Analyses::refreshAllAnalyses()
 {
 	for(auto idAnalysis : _analysisMap)

@@ -25,26 +25,26 @@
 	{																											\
 		__VA_ARGS__																								\
 	};																											\
-	std::ostream &operator<<(std::ostream &os, E enumTmp);														\
-	size_t operator*(E enumTmp);																				\
-	std::string operator~(E enumTmp);																			\
-	std::string operator+(std::string &&str, E enumTmp);														\
-	std::string operator+(E enumTmp, std::string &&str);														\
-	std::string &operator+=(std::string &str, E enumTmp);														\
-	E operator++(E &enumTmp);																					\
-	E E##FromString(std::string enumName);																		\
-	std::string E##ToString(E enumVal);																			\
-	bool valid##E(T value);
+	std::ostream	&operator<<(std::ostream &os, E enumTmp);													\
+	size_t			operator*(E enumTmp);																		\
+	std::string		operator~(E enumTmp);																		\
+	std::string		operator+(std::string &&str, E enumTmp);													\
+	std::string		operator+(E enumTmp, std::string &&str);													\
+	std::string		&operator+=(std::string &str, E enumTmp);													\
+	E				operator++(E &enumTmp);																		\
+	E				E##FromString(std::string enumName);														\
+	std::string		E##ToString(E enumVal);																		\
+	bool			valid##E(T value);
 
 #define DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, ...)															\
-	std::map<T, std::string> E##MapName(generateEnumMap<T>(#__VA_ARGS__));										\
-	std::map<std::string, T> E##FromNameMap(generateEnumNameMap<T>(#__VA_ARGS__));								\
-	std::ostream &operator<<(std::ostream &os, E enumTmp)														\
+	std::map<T, std::string>	E##MapName(generateEnumMap<T>(#__VA_ARGS__));									\
+	std::map<std::string, T>	E##FromNameMap(generateEnumNameMap<T>(#__VA_ARGS__));							\
+	std::ostream				&operator<<(std::ostream &os, E enumTmp)										\
 	{																											\
 		os << E##MapName[static_cast<T>(enumTmp)];																\
 		return os;																								\
 	}																											\
-	size_t operator*(E enumTmp) { (void) enumTmp; return E##MapName.size(); }									\
+	size_t		operator*(E enumTmp) { (void) enumTmp; return E##MapName.size(); }								\
 	std::string operator~(E enumTmp) { return E##MapName[static_cast<T>(enumTmp)]; }							\
 	std::string operator+(std::string &&str, E enumTmp) { return str + E##MapName[static_cast<T>(enumTmp)]; }	\
 	std::string operator+(E enumTmp, std::string &&str) { return E##MapName[static_cast<T>(enumTmp)] + str;	}	\
@@ -72,28 +72,23 @@
 		return (E)E##FromNameMap.at(enumName); 																	\
 	}																											\
 	std::string E##ToString(E enumVal)		{ return ~enumVal; }												\
-	bool valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
+	bool		valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
 
 #ifdef JASP_USES_QT_HERE
 	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)															\
 	DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)																\
-	E E##FromQString(QString enumName);																			\
-	QString E##ToQString(E enumVal);																			\
-	QString operator+(QString &&str, E enumTmp);																\
-	QString operator+(E enumTmp, QString &&str);																\
-	QString &operator+=(QString &str, E enumTmp);
-
-#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)														\
-	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)														\
-	E E##FromQString(QString enumName)	{ return (E)E##FromString(enumName.toStdString()); }				\
-	QString E##ToQString(E enumVal)		{ return QString::fromStdString(~enumVal); }							\
-	QString operator+(QString &&str, E enumTmp) { return str + E##ToQString(enumTmp); }							\
-	QString operator+(E enumTmp, QString &&str) { return E##ToQString(enumTmp) + str;	}						\
-	QString &operator+=(QString &str, E enumTmp)																\
+	inline E		E##FromQString(QString enumName)	{ return (E)E##FromString(enumName.toStdString()); }	\
+	inline QString	E##ToQString(E enumVal)		{ return QString::fromStdString(~enumVal); }					\
+	inline QString	operator+(QString &&str, E enumTmp) { return str + E##ToQString(enumTmp); }					\
+	inline QString	operator+(E enumTmp, QString &&str) { return E##ToQString(enumTmp) + str;	}				\
+	inline QString	&operator+=(QString &str, E enumTmp)														\
 	{																											\
 		str += E##ToQString(enumTmp);																			\
 		return str;																								\
 	}
+
+#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)														\
+	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)
 #else
 	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)			DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)
 	#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)

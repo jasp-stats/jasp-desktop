@@ -67,7 +67,7 @@ Item
 				iconSource:			"qrc:/icons/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 				showIconAndText:	true
 				iconLeft:			false
-				toolTip:			"Install a dynamic module"
+				toolTip:			"Install a module"
 			}
 
 			ToolSeparator
@@ -80,7 +80,7 @@ Item
 			MenuButton
 			{
 				id:					addDeveloperModuleButton
-				text:				"Add Developer Module"
+				text:				"Install Developer Module"
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
@@ -103,12 +103,13 @@ Item
 
 				model: ribbonModel
 
-				Item
+				Rectangle
 				{
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
 					anchors.left:		parent.left
+					color:				!isDynamic || dynamicModule.status !== "error" ? "transparent" : Theme.red
 
 					CheckBox
 					{
@@ -116,8 +117,14 @@ Item
 						text:				displayText
 						checked:			ribbonEnabled
 						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
+						enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
 
-						toolTip:			dynamicModule.installLog + "\n" + dynamicModule.loadLog
+						toolTip:			!isDynamic ? ""
+												: dynamicModule.installing ? "Installing:\n" + dynamicModule.installLog
+													: dynamicModule.loading ? "Loading:\n" + dynamicModule.loadLog
+														: dynamicModule.status === "readyForUse" ? "Loaded and ready for use!"
+															: dynamicModule.status === "error" ? "Error occurred!"
+																: "Not ready for use?"
 
 						//textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
 						//toolTip:			(ribbonEnabled ? "Disable" : "Enable") + " module " + displayText

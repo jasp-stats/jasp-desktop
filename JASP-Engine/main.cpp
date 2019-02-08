@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
 
 		//sleep(10000000);
 
-		Engine *e = new Engine(slaveNo, parentPID);
-		e->run();
+		Engine e(slaveNo, parentPID);
+		e.run();
 
 #ifdef JASP_DEBUG
 		std::cout << "jaspEngine " << slaveNo << " child of " << parentPID << " stops gracefully." << std::endl;

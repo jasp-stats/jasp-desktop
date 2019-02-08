@@ -204,33 +204,28 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     dataset <- do.call(.readDataSetToEnd, cols)
   }
 
-  oldState <- NULL
-  if ('state' %in% names(formals(analysis))) {
-    oldState <- .getStateFromKey(stateKey, options)
-  }
-
-  newState <-
+  analysisResult <-
     tryCatch(
       expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options), error=.addStackTrace),
       error=function(e) e
     )
 
-  if (inherits(newState, "expectedError")) {
+  if (inherits(analysisResult, "expectedError")) {
 
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", newState$message, "\" } }", sep="")
+    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", analysisResult$message, "\" } }", sep="")
 
-    jaspResults$setErrorMessage(newState$message)
+    jaspResults$setErrorMessage(analysisResult$message)
     jaspResults$send()
 
     return(errorResponse)
 
   }
-  else if (inherits(newState, "error"))
+  else if (inherits(analysisResult, "error"))
   {
 
-    error <- .sanitizeForJson(newState)
+    error <- .sanitizeForJson(analysisResult)
 
-    stackTrace <- .sanitizeForJson(newState$stackTrace)
+    stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
     stackTrace <- paste(stackTrace, collapse="<br><br>")
 
     errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
@@ -244,9 +239,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   }
   else
   {
-    if (is.null(newState))
-      newState <- list()
-
+    newState <- list()
     newState[["figures"]]         <- jaspResults$getPlotObjectsForState()
     newState[["other"]]           <- jaspResults$getOtherObjectsForState()
     jaspResults$relativePathKeep  <- .saveState(newState)$relativePath
