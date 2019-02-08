@@ -27,7 +27,7 @@ Form
 {
 	usesJaspResults: false
 
-    GroupBox 
+	Group
 	{
 		DoubleField  { name: "tStatistic";	text: qsTr("t"); validation: false	}
 		IntegerField { name: "n1Size";		text: qsTr("Group 1 size")			}
@@ -36,29 +36,31 @@ Form
 
     Divider { }
 
-    GridLayout 
+	RadioButtonGroup
 	{
-		RadioButtonGroup 
-		{
-			title: qsTr("Hypothesis")
-			name: "hypothesis"
-			RadioButton { value: "groupsNotEqual";	text: qsTr("Group 1 \u2260 Group 2"); checked: true	}
-			RadioButton { value: "groupOneGreater";	text: qsTr("Group 1 > Group 2")						}
-			RadioButton { value: "groupTwoGreater";	text: qsTr("Group 1 < Group 2")						}
-		}
-
-		GroupBox 
-		{
-			title: qsTr("Plots")
-			CheckBox { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
-			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
-		}
-		
-		BayesFactorType { }
-
+		title: qsTr("Hypothesis")
+		name: "hypothesis"
+		RadioButton { value: "groupsNotEqual";	text: qsTr("Group 1 \u2260 Group 2"); checked: true	}
+		RadioButton { value: "groupOneGreater";	text: qsTr("Group 1 > Group 2")						}
+		RadioButton { value: "groupTwoGreater";	text: qsTr("Group 1 < Group 2")						}
 	}
+
+	GroupBox
+	{
+		title: qsTr("Plots")
+		CheckBox
+		{
+			name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
+		}
+		CheckBox
+		{
+			name: "plotBayesFactorRobustness";	text: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
+		}
+	}
+
+	BayesFactorType { }
 
     SubjectivePriors { }
 }

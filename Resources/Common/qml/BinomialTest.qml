@@ -28,35 +28,36 @@ Form
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
-	DoubleField { name: "testValue"; text: qsTr("Test value: "); defaultValue: 0.5 ; doubleValidator { top: 1; decimals: 2 } }    
-	
-	GridLayout 
+	DoubleField { name: "testValue"; text: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
+
+	RadioButtonGroup
 	{
-		GroupBox 
+		title: qsTr("Hypothesis")
+		name: "hypothesis"
+		RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
+		RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")					}
+		RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")					}
+	}
+
+	Group
+	{
+		title: qsTr("Additional Statisics")
+		CheckBox
 		{
-			title: qsTr("Additional Statisics")
-			CheckBox     { name: "confidenceInterval";			text: qsTr("Confidence interval"); id: confidenceInterval }
-			PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); enabled: confidenceInterval.checked; defaultValue: 95; indent: true }
-			CheckBox     { name: "VovkSellkeMPR";				text: qsTr("Vovk-Sellke maximum p-ratio");    }
+			name: "confidenceInterval";	text: qsTr("Confidence interval")
+			PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95 }
 		}
-		
-		RadioButtonGroup 
+		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
+	}
+
+	Group
+	{
+		title: qsTr("Plots")
+		CheckBox
 		{
-			title: qsTr("Hypothesis")
-			name: "hypothesis"
-			RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
-			RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")					}
-			RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")					}
-		}
-		
-		GroupBox 
-		{
-			title: qsTr("Plots")
-			CheckBox     { name: "descriptivesPlots";					text: qsTr("Descriptive plots"); id: descriptivesPlots }
-			PercentField { name: "descriptivesPlotsConfidenceInterval"; text: qsTr("Confidence Interval"); enabled: descriptivesPlots.checked; defaultValue: 95; indent: true }
+			name: "descriptivesPlots";					text: qsTr("Descriptive plots")
+			PercentField { name: "descriptivesPlotsConfidenceInterval"; text: qsTr("Confidence Interval"); defaultValue: 95 }
 		}
 	}
-	
-	CheckBox { name: "frequencyTables"; text: qsTr("Frequency tables (nominal and ordinal variables)") }
-	
+		
 }

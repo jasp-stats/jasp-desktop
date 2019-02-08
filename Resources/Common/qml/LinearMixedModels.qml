@@ -25,8 +25,6 @@ import JASP.Theme 1.0
 
 Form
 {
-	id: form
-
 	VariablesForm
 	{
 		AssignedVariablesList
@@ -139,15 +137,12 @@ Form
 			}
 		}
 
-		GridLayout
+		Group
 		{
-			GroupBox
-			{
-				title: qsTr("Correction")
-				CheckBox { text: qsTr("No correction"); name: "postHocNoCorrection"   ; checked: true }
-				CheckBox { text: qsTr("Bonferroni")   ; name: "postHocTestsBonferroni"				}
-				CheckBox { text: qsTr("Holm")		 ; name: "postHocTestsHolm"					  }
-			}
+			title: qsTr("Correction")
+			CheckBox { text: qsTr("No correction"); name: "postHocNoCorrection"   ; checked: true }
+			CheckBox { text: qsTr("Bonferroni")   ; name: "postHocTestsBonferroni"				}
+			CheckBox { text: qsTr("Holm")		 ; name: "postHocTestsHolm"					  }
 		}
 	}
 
@@ -169,17 +164,19 @@ Form
 	{
 		text: qsTr("Assumption Checks")
 
-		CheckBox { text: qsTr("Homogeneity tests")		  ; name: "homogeneityTests" }
-		CheckBox { text: qsTr("Homogeneity corrections")	; name: "homogeneityCorrections" ; id: homogeneityCorrections }
-		RowLayout
+		Group
 		{
-			Layout.leftMargin: Theme.indentationLength
-			enabled: homogeneityCorrections.checked
-			CheckBox { text: qsTr("None")		   ; name: "homogeneityNone" ; checked: true }
-			CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
-			CheckBox { text: qsTr("Welch")		  ; name: "homogeneityWelch" ; checked: true }
+			CheckBox { text: qsTr("Homogeneity tests"); name: "homogeneityTests" }
+			CheckBox
+			{
+				text: qsTr("Homogeneity corrections"); name: "homogeneityCorrections"
+				columns: 3
+				CheckBox { text: qsTr("None")		   ; name: "homogeneityNone" ; checked: true }
+				CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
+				CheckBox { text: qsTr("Welch")		  ; name: "homogeneityWelch" ; checked: true }
+			}
+			CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
 		}
-		CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
 	}
 
 	ExpanderButton
@@ -192,49 +189,52 @@ Form
 		}
 
 		CheckBox { text: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance" ; checked: true }
-		RowLayout
+		CheckBox
 		{
-			CheckBox { text: qsTr("Confidence intervals") ; name: "confidenceIntervalsContrast"; id: confidenceIntervalsContrast }
-			PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95; enabled: confidenceIntervalsContrast.checked }
+			text: qsTr("Confidence intervals"); name: "confidenceIntervalsContrast"
+			childrenOnSameRow: true
+			PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95 }
 		}
 	}
 
 	ExpanderButton
 	{
 		text: qsTr("Additional Options")
-		Label { text: qsTr("Marginal means") }
+		columns: 1
 
+		Label { text: qsTr("Marginal means") }
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList {		name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
+			availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
 			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 		}
 
-		CheckBox { text: qsTr("Compare marginal means to 0")	; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
-		ComboBox
+		CheckBox
 		{
-			indent: true; name: "marginalMeansCIAdjustment";
-			text: qsTr("Confidence interval adjustment");
-
-			model: ListModel
+			text: qsTr("Compare marginal means to 0")	; name: "marginalMeansCompareMainEffects"
+			ComboBox
 			{
-				ListElement {key: "None"; value: "none"}
-				ListElement {key: "Bonferro"; value: "bonferroni"}
-				ListElement {key: "Sidak"; value: "sidak"}
+				name: "marginalMeansCIAdjustment";
+				text: qsTr("Confidence interval adjustment");
+
+				model: ListModel
+				{
+					ListElement {key: "None"; value: "none"}
+					ListElement {key: "Bonferro"; value: "bonferroni"}
+					ListElement {key: "Sidak"; value: "sidak"}
+				}
 			}
-			enabled: marginalMeansCompareMainEffects.checked
 		}
 
-		GroupBox
+		Group
 		{
 			title: qsTr("Display")
 			CheckBox { text: qsTr("Descriptive statistics")	 ; name: "descriptives" }
-			CheckBox { text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"   ; id: effectSizeEstimates }
-			Row
+			CheckBox
 			{
-				Layout.leftMargin: Theme.indentationLength
-				enabled: effectSizeEstimates.checked
+				text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"
+				columns: 3
 				CheckBox { text: qsTr("η²")		 ; name: "effectSizeEtaSquared"; checked: true }
 				CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
 				CheckBox { text: qsTr("ω²")		 ; name: "effectSizeOmegaSquared" }
@@ -247,7 +247,8 @@ Form
 	{
 		text: qsTr("Simple Main Effects")
 
-		VariablesForm {
+		VariablesForm
+		{
 			height: 170
 			availableVariablesList {		title: qsTr("Factors")			  ; name: "effectsVariables"	  ; source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"		  ; singleItem: true }

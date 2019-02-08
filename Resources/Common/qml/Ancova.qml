@@ -177,17 +177,20 @@ Form
 		Group
 		{
 			title: qsTr("Display")
-			CheckBox { name: "plotErrorBars"; text: qsTr("Display error bars") }
-			
-			RadioButtonGroup
+			CheckBox
 			{
-				name: "errorBarType"
-				RadioButton
+				name: "plotErrorBars"; text: qsTr("Display error bars")
+				RadioButtonGroup
 				{
-					value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true
-					PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95 }
+					name: "errorBarType"
+					RadioButton
+					{
+						value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true
+						childrenOnSameRow: true
+						PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95 }
+					}
+					RadioButton { value: "standardError"; text: qsTr("Standard error") }
 				}
-				RadioButton { value: "standardError"; text: qsTr("Standard error") }
 			}
 		}
 	}

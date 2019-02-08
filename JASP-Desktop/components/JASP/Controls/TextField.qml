@@ -67,12 +67,18 @@ JASPControl
 		id:			row
 		spacing:	labelSpacing
 		
-		Label
+		Rectangle
 		{
-			id:			beforeLabel
-			visible:	beforeLabel.text && textField.visible ? true : false
-			font:		Theme.font
-			color:		enabled ? Theme.textEnabled : Theme.textDisabled
+			implicitWidth: beforeLabel.implicitWidth
+			implicitHeight: beforeLabel.implicitHeight
+			color: debug ? Theme.debugBackgroundColor : "transparent"
+			Label
+			{
+				id:			beforeLabel
+				visible:	beforeLabel.text && textField.visible ? true : false
+				font:		Theme.font
+				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+			}
 		}
 		
 		TextField

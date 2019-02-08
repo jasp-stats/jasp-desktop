@@ -27,23 +27,23 @@ Form
 	VariablesForm
 	{
 		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleItem: true;		}
+		DropDown
+		{
+			name: "method"
+			text: qsTr("Method")
+			model: ListModel
+			{
+				ListElement { title: "Enter";		value: "enter"		}
+				ListElement { title: "Backward";	value: "backward"	}
+				ListElement { title: "Forward";		value: "forward"	}
+				ListElement { title: "Stepwise";	value: "stepwise"	}
+			}
+		}
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]							}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors");				allowedColumns: ["nominal", "ordinal"]; debug: true	}
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleItem: true		}
 	}
 	
-	DropDown
-	{
-		name: "method"
-		text: qsTr("Method")
-		model: ListModel
-		{
-			ListElement { title: "Enter";		value: "enter"		}
-			ListElement { title: "Backward";	value: "backward"	}
-			ListElement { title: "Forward";		value: "forward"	}
-			ListElement { title: "Stepwise";	value: "stepwise"	}
-		}
-	}
 	
 	ExpanderButton
 	{
@@ -80,70 +80,74 @@ Form
 	{
 		title: qsTr("Statistics")
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Regression Coefficients")
-			
-			GridLayout
+			columns: 2
+			Layout.columnSpan: 2
+			Group
 			{
-				GroupBox
+				CheckBox
 				{
-					CheckBox { name: "regressionCoefficientsEstimates"; text: qsTr("Estimates"); checked: true; id: regressionCoefficientsEstimates }
-					RowLayout
+					name: "regressionCoefficientsEstimates"; text: qsTr("Estimates"); checked: true
+					CheckBox
 					{
-						enabled: regressionCoefficientsEstimates.checked
-						Layout.leftMargin: Theme.indentationLength
-						CheckBox { name: "regressionCoefficientsBootstrapping"; text: qsTr("From") }
+						name: "regressionCoefficientsBootstrapping"; text: qsTr("From")
+						childrenOnSameRow: true
 						IntegerField
 						{
 							name: "regressionCoefficientsBootstrappingReplicates"
 							defaultValue: 5000
 							fieldWidth: 50
-							intValidator.bottom: 100
+							min: 100
 							afterLabel.text: qsTr("bootstraps")
 						}
 					}
-					
-					RowLayout
-					{
-						CheckBox { name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals") }
-						PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; defaultValue: 95 }
-					}
-					CheckBox { name: "regressionCoefficientsCovarianceMatrix"; text: qsTr("Covariance matrix") }
 				}
-				
-				GroupBox
+
+				CheckBox
 				{
-					CheckBox { name: "modelFit";					text: qsTr("Model fit");  checked: true		}
-					CheckBox { name: "rSquaredChange";				text: qsTr("R squared change")				}
-					CheckBox { name: "descriptives";				text: qsTr("Descriptives")					}
-					CheckBox { name: "partAndPartialCorrelations";	text: qsTr("Part and partial correlations")	}
-					CheckBox { name: "collinearityDiagnostics";		text: qsTr("Collinearity diagnostics")		}
+					name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
+					childrenOnSameRow: true
+					PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; defaultValue: 95 }
 				}
+				CheckBox { name: "regressionCoefficientsCovarianceMatrix"; text: qsTr("Covariance matrix") }
+			}
+
+			Group
+			{
+				CheckBox { name: "modelFit";					text: qsTr("Model fit");  checked: true		}
+				CheckBox { name: "rSquaredChange";				text: qsTr("R squared change")				}
+				CheckBox { name: "descriptives";				text: qsTr("Descriptives")					}
+				CheckBox { name: "partAndPartialCorrelations";	text: qsTr("Part and partial correlations")	}
+				CheckBox { name: "collinearityDiagnostics";		text: qsTr("Collinearity diagnostics")		}
 			}
 		}
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Residuals")
-			CheckBox { name: "residualsDurbinWatson";			text: qsTr("Dublin-Watson")												}
-			CheckBox { name: "residualsCasewiseDiagnostics";	text: qsTr("Casewise diagnostics"); id: residualsCasewiseDiagnostics	}
-			RadioButtonGroup
+			CheckBox { name: "residualsDurbinWatson";	text: qsTr("Dublin-Watson") }
+			CheckBox
 			{
-				name: "residualsCasewiseDiagnosticsType"
-				enabled: residualsCasewiseDiagnostics.checked
-				indent: true
-				RowLayout
+				name: "residualsCasewiseDiagnostics";	text: qsTr("Casewise diagnostics")
+				RadioButtonGroup
 				{
-					RadioButton { value: "outliersOutside";	text: qsTr("Standard residual >");  checked: true	}
-					IntegerField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3			}
+					name: "residualsCasewiseDiagnosticsType"
+					RadioButton
+					{
+						value: "outliersOutside"; text: qsTr("Standard residual >"); checked: true
+						childrenOnSameRow: true
+						IntegerField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3	}
+					}
+					RadioButton
+					{
+						value: "cooksDistance";	text: qsTr("Cook's distance >")
+						childrenOnSameRow: true
+						IntegerField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+					}
+					RadioButton { value: "allCases"; text: qsTr("All")										}
 				}
-				RowLayout
-				{
-					RadioButton { value: "cooksDistance";	text: qsTr("Cook's distance >")						}
-					IntegerField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0			}
-				}
-				RadioButton { value: "allCases"; text: qsTr("All")												}
 			}
 		}
 		
@@ -152,33 +156,35 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Options")
-		
-		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
+		columns: 1
 		
 		RadioButtonGroup
 		{
 			name: "steppingMethodCriteriaType"
 			title: qsTr("Stepping Method Criteria")
-			RadioButton { value: "usePValue"; text: qsTr("Use p value"); checked: true; id: usePValue	}
-			RowLayout
+			RadioButton
 			{
-				enabled: usePValue.checked
-				Layout.leftMargin: Theme.indentationLength
-				DoubleField { name: "steppingMethodCriteriaPEntry";		text: qsTr("Entry");	defaultValue: 0.05; doubleValidator { top: 1; decimals: 3} }
-				DoubleField { name: "steppingMethodCriteriaPRemoval";	text: qsTr("Removal");	defaultValue: 0.1; doubleValidator { top: 1; decimals: 3} }
+				value: "usePValue"; text: qsTr("Use p value"); checked: true
+				columns: 2
+				DoubleField { name: "steppingMethodCriteriaPEntry";		text: qsTr("Entry");	fieldWidth: 60; defaultValue: 0.05; max: 1; decimals: 3 }
+				DoubleField { name: "steppingMethodCriteriaPRemoval";	text: qsTr("Removal");	fieldWidth: 60; defaultValue: 0.1; max: 1; decimals: 3	}
 			}
-			RadioButton { value: "useFValue"; text: qsTr("Use F value"); id: useFValue					}
-			RowLayout
+			RadioButton
 			{
-				enabled: useFValue.checked
-				Layout.leftMargin: Theme.indentationLength
-				DoubleField { name: "steppingMethodCriteriaFEntry";		text: qsTr("Entry");	defaultValue: 3.84; doubleValidator.decimals: 3 }
-				DoubleField { name: "steppingMethodCriteriaFRemoval";	text: qsTr("Removal");	defaultValue: 2.71; doubleValidator.decimals: 3 }
+				value: "useFValue"; text: qsTr("Use F value")
+				columns: 2
+				DoubleField { name: "steppingMethodCriteriaFEntry";		text: qsTr("Entry");	fieldWidth: 60; defaultValue: 3.84; decimals: 3 }
+				DoubleField { name: "steppingMethodCriteriaFRemoval";	text: qsTr("Removal");	fieldWidth: 60; defaultValue: 2.71; decimals: 3 }
 			}
 		}
 		
-		CheckBox { name: "includeConstant";	text: qsTr("Include constant in equation"); checked: true }
-		
+		Group
+		{
+			CheckBox { name: "includeConstant";	text: qsTr("Include constant in equation"); checked: true }
+			CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
+		}
+
+
 		RadioButtonGroup
 		{
 			name: "missingValues"
@@ -193,16 +199,19 @@ Form
 	{
 		title: qsTr("Plots")
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Residuals Plots")
-			CheckBox { name: "plotResidualsDependent";	text: qsTr("Residuals vs. dependent")								}
-			CheckBox { name: "plotResidualsCovariates";	text: qsTr("Residuals vs. covariates")								}
-			CheckBox { name: "plotResidualsPredicted";	text: qsTr("Residuals vs. predicted")								}
-			CheckBox { name: "plotResidualsHistogram";	text: qsTr("Residuals vs. histogram"); id: plotResidualsHistogram	}
-			CheckBox { name: "plotResidualsHistogramStandardized";	text: qsTr("Standardized residuals"); enabled: plotResidualsHistogram.checked; indent: true }
-			CheckBox { name: "plotResidualsQQ";			text: qsTr("Q-Q plot standardized residuals")						}
-			CheckBox { name: "plotsPartialRegression";	text: qsTr("Partial plots")											}
+			CheckBox { name: "plotResidualsDependent";	text: qsTr("Residuals vs. dependent")					}
+			CheckBox { name: "plotResidualsCovariates";	text: qsTr("Residuals vs. covariates")					}
+			CheckBox { name: "plotResidualsPredicted";	text: qsTr("Residuals vs. predicted")					}
+			CheckBox
+			{
+				name: "plotResidualsHistogram";	text: qsTr("Residuals vs. histogram")
+				CheckBox { name: "plotResidualsHistogramStandardized";	text: qsTr("Standardized residuals")	}
+			}
+			CheckBox { name: "plotResidualsQQ";			text: qsTr("Q-Q plot standardized residuals")			}
+			CheckBox { name: "plotsPartialRegression";	text: qsTr("Partial plots")								}
 		}
 	}
 }

@@ -30,24 +30,21 @@ Form
 		AssignedVariablesList { name: "factors"; title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
-	GridLayout
+	columns: 3
+	BayesFactorType {}
+
+	Group
 	{
-		columns: 3
-		BayesFactorType {}
-		
-		GroupBox
-		{
-			title: qsTr("Prior")
-			DoubleField { name: "priorShape"; text: qsTr("Shape"); defaultValue: -1 ; doubleValidator.bottom: -1 }
-			DoubleField { name: "priorScale"; text: qsTr("Scale"); defaultValue: 0 }
-		}
-		
-		GroupBox
-		{
-			title: qsTr("Model cut-offs")
-			IntegerField { name: "maxModels";					text: qsTr("Display best") ;  defaultValue: 2; afterLabel.text: qsTr("models"); intValidator.bottom: 2 }
-			DoubleField { name: "posteriorProbabilityCutOff";	text: qsTr("Posterior prob."); defaultValue: 0.1 ; doubleValidator.top: 0.5 }
-		}
+		title: qsTr("Prior")
+		DoubleField { name: "priorShape"; text: qsTr("Shape"); defaultValue: -1 ; min: -1 }
+		DoubleField { name: "priorScale"; text: qsTr("Scale"); defaultValue: 0 }
+	}
+
+	Group
+	{
+		title: qsTr("Model cut-offs")
+		IntegerField { name: "maxModels";					text: qsTr("Display best") ;  defaultValue: 2; afterLabel.text: qsTr("models"); min: 2 }
+		DoubleField { name: "posteriorProbabilityCutOff";	text: qsTr("Posterior prob."); defaultValue: 0.1 ; max: 0.5 }
 	}
 	
 	ExpanderButton
@@ -68,39 +65,40 @@ Form
 	{
 		title: qsTr("Statistics")
 		
-		GridLayout
+		Group
 		{
-			GroupBox
+			title: qsTr("Regression Coefficients")
+			CheckBox { name: "regressionCoefficientsEstimates";	text: qsTr("Estimates") }
+			CheckBox
 			{
-				title: qsTr("Regression Coefficients")
-				CheckBox { name: "regressionCoefficientsEstimates";			text: qsTr("Estimates")							}
-				CheckBox { name: "regressionCoefficientsCredibleIntervals";	text: qsTr("Credible intervals"); id: interval	}
+				name: "regressionCoefficientsCredibleIntervals"; text: qsTr("Credible intervals")
 				PercentField
 				{
 					name: "regressionCoefficientsCredibleIntervalsInterval"
 					text: qsTr("Interval");
 					defaultValue: 95
-					validator: IntValidator {bottom: 50}
-					enabled: interval.checked
-					indent: true
 				}
 			}
-			
-			GroupBox
+		}
+
+		Group
+		{
+			CheckBox
 			{
-				Row
+				name: "regressionCoefficientsSubmodel"; text: qsTr("Submodel"); id: regressionCoefficientsSubmodel
+				childrenOnSameRow: true
+				IntegerField { name: "regressionCoefficientsSubmodelNo"; defaultValue: 1 ; min: 1 }
+			}
+
+			Group
+			{
+				indent: true;
+				enabled: regressionCoefficientsSubmodel.checked
+				CheckBox { name: "regressionCoefficientsSubmodelEstimates"; text: qsTr("Estimates") }
+				CheckBox
 				{
-					CheckBox { name: "regressionCoefficientsSubmodel"; text: qsTr("Submodel") ; id: regressionCoefficientsSubmodel }
-					IntegerField { name: "regressionCoefficientsSubmodelNo"; defaultValue: 1 ; intValidator.bottom: 1; enabled: regressionCoefficientsSubmodel.checked }
-				}
-				
-				GroupBox
-				{
-					indent: true;
-					enabled: regressionCoefficientsSubmodel.checked
-					CheckBox { name: "regressionCoefficientsSubmodelEstimates"; text: qsTr("Estimates") }
-					CheckBox { name: "regressionCoefficientsSubmodelCredibleIntervals"; text: qsTr("Credible intervals"); id: submodelCredibleIntervals }
-					PercentField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95 ; enabled: submodelCredibleIntervals.checked ; indent: true }
+					name: "regressionCoefficientsSubmodelCredibleIntervals"; text: qsTr("Credible intervals")
+					PercentField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95 }
 				}
 			}
 		}
@@ -115,8 +113,11 @@ Form
 			title: qsTr("Samples")
 			name: "sampleMode"
 			RadioButton { value: "auto";	text: qsTr("Auto");  checked: true	}
-			RadioButton { value: "manual";	text: qsTr("Manual"); id: manual	}
-			IntegerField { name: "fixedSamplesNumber"; text: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 60; enabled: manual.checked; indent: true }
+			RadioButton
+			{
+				value: "manual";			text: qsTr("Manual")
+				IntegerField { name: "fixedSamplesNumber"; text: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 60 }
+			}
 		}
 	}
 }

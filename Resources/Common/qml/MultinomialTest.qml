@@ -42,6 +42,7 @@ Form
 		id: hypothesisGroup
 		name: "hypothesis"
 		title: qsTr("Alt. Hypothesis")
+		Layout.columnSpan: 2
 		RadioButton { value: "multinomialTest";	text: qsTr("Multinomial test");	 checked: true	}
 		RadioButton { value: "expectedProbs";	text: qsTr("χ² test"); id: expectedProbs			}
 		
@@ -54,36 +55,39 @@ Form
 		}
 	}
 	
-	GridLayout
+	Group
 	{
-		GroupBox
+		title: qsTr("Additional Statistics")
+		CheckBox
 		{
-			title: qsTr("Additional Statistics")
-			CheckBox { name: "descriptives"; text: qsTr("Descriptives"); id: descriptives	}
-			RowLayout
+			name: "descriptives"; text: qsTr("Descriptives")
+			CheckBox
 			{
-				Layout.leftMargin: Theme.indentationLength
-				enabled: descriptives.checked
-				CheckBox { name: "confidenceInterval"; text: qsTr("Confidence interval")	}
-				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95			}
+				name: "confidenceInterval"; text: qsTr("Confidence interval")
+				childrenOnSameRow: true
+				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
 			}
-			CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Dellke maximum p-ratio")		}
 		}
-		ColumnLayout
+		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Dellke maximum p-ratio")		}
+	}
+
+	ColumnLayout
+	{
+		RadioButtonGroup
 		{
-			RadioButtonGroup
+			name: "countProp"
+			title: qsTr("Display")
+			RadioButton { value: "descCounts";	text: qsTr("Counts"); checked: true		}
+			RadioButton { value: "descProps";	text: qsTr("Proportions")				}
+		}
+
+		Group
+		{
+			title: qsTr("Plots")
+			CheckBox
 			{
-				name: "countProp"
-				title: qsTr("Display")
-				RadioButton { value: "descCounts";	text: qsTr("Counts"); checked: true		}
-				RadioButton { value: "descProps";	text: qsTr("Proportions")				}
-			}
-			
-			GroupBox
-			{
-				title: qsTr("Plots")
-				CheckBox { name: "descriptivesPlot"; text: qsTr("Descriptives plot");  id: descriptivesPlot }
-				PercentField { name: "descriptivesPlotConfidenceInterval"; text: qsTr("Confidence interval");  defaultValue: 95; enabled: descriptivesPlot.checked }
+				name: "descriptivesPlot"; text: qsTr("Descriptives plot")
+				PercentField { name: "descriptivesPlotConfidenceInterval"; text: qsTr("Confidence interval"); defaultValue: 95 }
 			}
 		}
 	}

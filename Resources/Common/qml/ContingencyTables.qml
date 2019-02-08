@@ -31,116 +31,125 @@ Form
 		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	allowedColumns: ["ordinal", "nominal"]; listViewType: "Layers"; height: 120 }
 	}
 	
-	ExpanderButton {
+	ExpanderButton
+	{
 		title: qsTr("Statistics")
 		
-		GridLayout {
-			GroupBox {
-				CheckBox { name: "chiSquared";						text: qsTr("χ²"); checked: true			}
-				CheckBox { name: "chiSquaredContinuityCorrection";	text: qsTr("χ² continuity correction")	}
-				CheckBox { name: "likelihoodRatio";					text: qsTr("Likelihood ratio")			}
-			}
-			
-			GroupBox {
-				CheckBox { name: "oddsRatio"; text: qsTr("Log odds ratio (2x2 only)"); id: oddsRatio }
-				PercentField { name: "oddsRatioConfidenceIntervalInterval"; text: qsTr("Confidence interval"); enabled: oddsRatio.checked; defaultValue: 95; indent: true }
-				CheckBox { name: "VovkSellkeMPR";	text: qsTr("Vovk-Sellke maximum p-ratio") }
-			}
-			
-			GroupBox {
-				title: qsTr("Nominal")
-				CheckBox { name: "contingencyCoefficient" ; text: qsTr("Contingency coefficient")				}
-				CheckBox { name: "phiAndCramersV";			text: qsTr("Phi and Cramer's V")					}
-				CheckBox { name: "lambda";					text: qsTr("Lambda");					debug: true }
-				CheckBox { name: "uncertaintyCoefficient";	text: qsTr("Uncertainty coefficient");	debug: true }
-			}
-			
-			GroupBox {
-				title: qsTr("Ordinal")
-				CheckBox { name: "gamma";			text: qsTr("Gamma")						}
-				CheckBox { name: "somersD";			text: qsTr("Somers' d"); debug: true	}
-				CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")			}
-				CheckBox { name: "kendallsTauC";	text: qsTr("Kendall's tau-c"); debug: true }
-			}
+		Group
+		{
+			CheckBox { name: "chiSquared";						text: qsTr("χ²"); checked: true			}
+			CheckBox { name: "chiSquaredContinuityCorrection";	text: qsTr("χ² continuity correction")	}
+			CheckBox { name: "likelihoodRatio";					text: qsTr("Likelihood ratio")			}
 		}
-		
-		GroupBox {
+
+		Group
+		{
+			CheckBox
+			{
+				name: "oddsRatio"; text: qsTr("Log odds ratio (2x2 only)")
+				PercentField { name: "oddsRatioConfidenceIntervalInterval"; text: qsTr("Confidence interval"); defaultValue: 95 }
+			}
+			CheckBox { name: "VovkSellkeMPR";	text: qsTr("Vovk-Sellke maximum p-ratio") }
+		}
+
+		Group
+		{
+			title: qsTr("Nominal")
+			CheckBox { name: "contingencyCoefficient" ; text: qsTr("Contingency coefficient")				}
+			CheckBox { name: "phiAndCramersV";			text: qsTr("Phi and Cramer's V")					}
+			CheckBox { name: "lambda";					text: qsTr("Lambda");					debug: true }
+			CheckBox { name: "uncertaintyCoefficient";	text: qsTr("Uncertainty coefficient");	debug: true }
+		}
+
+		Group
+		{
+			title: qsTr("Ordinal")
+			CheckBox { name: "gamma";			text: qsTr("Gamma")						}
+			CheckBox { name: "somersD";			text: qsTr("Somers' d"); debug: true	}
+			CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")			}
+			CheckBox { name: "kendallsTauC";	text: qsTr("Kendall's tau-c"); debug: true }
+		}
+
+		Group
+		{
 			debug: true
 			title: qsTr("Nominal by interval")
 			CheckBox { name: "byIntervalEta"; text: qsTr("Eta") }
 		}
 		
-		GroupBox {
+		Group
+		{
 			debug: true
-			CheckBox { name: "cochransAndMantel"; text: qsTr("Cochran's and Mantel-Haenszel statistics"); id: cochransAndMantel }
-			IntegerField {
-				name: "testOddsRatioEquals"
-				text: qsTr("Test common odds ratio equals")
-				defaultValue: 1
-				enabled: cochransAndMantel.checked
-				indent: true
+			Layout.columnSpan: 2
+			CheckBox
+			{
+				name: "cochransAndMantel"; text: qsTr("Cochran's and Mantel-Haenszel statistics")
+				IntegerField { name: "testOddsRatioEquals"; text: qsTr("Test common odds ratio equals"); defaultValue: 1 }
 			}
 		}
 	}
 	
-	ExpanderButton {
+	ExpanderButton
+	{
 		title: qsTr("Cells")
 		
-		GridLayout {
-			GroupBox {
-				title: qsTr("Counts")
-				CheckBox { name: "countsExpected";	text: qsTr("Expected")												}
-				CheckBox { name: "hideSmallCounts"; text: qsTr("Hide small counts"); id: hideSmallCounts; debug: true	}
-				IntegerField {
-					name: "hideSmallCountsLessThan"
-					text: qsTr("Less than")
-					defaultValue: 5
-					enabled: hideSmallCounts.checked
-					indent: true
-					debug: true
-				}
+		Group
+		{
+			title: qsTr("Counts")
+			CheckBox { name: "countsExpected";	text: qsTr("Expected") }
+			CheckBox
+			{
+				name: "hideSmallCounts"; text: qsTr("Hide small counts"); debug: true
+				IntegerField { name: "hideSmallCountsLessThan"; text: qsTr("Less than"); defaultValue: 5; debug: true }
 			}
-			
-			GroupBox {
-				title: qsTr("Z-Test")
-				debug: true
-				CheckBox { name: "zTestCompareColumns"; text: qsTr("Compare column proportions"); id: zTestCompareColumns }
-				CheckBox { name: "zTestAdjustPValues";	text: qsTr("Adjust p-values"); enabled: zTestCompareColumns.checked; indent: true }
+		}
+
+		Group
+		{
+			title: qsTr("Z-Test")
+			debug: true
+			CheckBox
+			{
+				name: "zTestCompareColumns"; text: qsTr("Compare column proportions")
+				CheckBox { name: "zTestAdjustPValues";	text: qsTr("Adjust p-values") }
 			}
-			
-			GroupBox {
-				title: qsTr("Percentages")
-				CheckBox { name: "percentagesRow";		text: qsTr("Row")		}
-				CheckBox { name: "percentagesColumn";	text: qsTr("Column")	}
-				CheckBox { name: "percentagesTotal";	text: qsTr("Total")		}
-			}
-			
-			GroupBox {
-				title: qsTr("Residuals")
-				debug: true
-				CheckBox { name: "residualsUnstandardized"; text: qsTr("Unstandardized")				}
-				CheckBox { name: "residualsStandardized"; text: qsTr("Standardized")					}
-				CheckBox { name: "residualsAdjustedStandardized"; text: qsTr("Adjusted Standardized")	}
-			}
+		}
+
+		Group
+		{
+			title: qsTr("Percentages")
+			CheckBox { name: "percentagesRow";		text: qsTr("Row")		}
+			CheckBox { name: "percentagesColumn";	text: qsTr("Column")	}
+			CheckBox { name: "percentagesTotal";	text: qsTr("Total")		}
+		}
+
+		Group
+		{
+			title: qsTr("Residuals")
+			debug: true
+			CheckBox { name: "residualsUnstandardized";			text: qsTr("Unstandardized")		}
+			CheckBox { name: "residualsStandardized";			text: qsTr("Standardized")			}
+			CheckBox { name: "residualsAdjustedStandardized";	text: qsTr("Adjusted Standardized")	}
 		}
 	}
 	
-	ExpanderButton {
+	ExpanderButton
+	{
 		title: qsTr("Options")
 		
-		GridLayout {
-			RadioButtonGroup {
-				name: "rowOrder"
-				title: qsTr("Row Order")
-				RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
-				RadioButton { value: "descending";	text: qsTr("Descending")				}
-			}
-			RadioButtonGroup {
-				name: "columnOrder"
-				title: qsTr("Column Order")
-				RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
-				RadioButton { value: "descending";	text: qsTr("Descending")				}
-			}
+		RadioButtonGroup
+		{
+			name: "rowOrder"
+			title: qsTr("Row Order")
+			RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
+			RadioButton { value: "descending";	text: qsTr("Descending")				}
+		}
+		RadioButtonGroup
+		{
+			name: "columnOrder"
+			title: qsTr("Column Order")
+			RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
+			RadioButton { value: "descending";	text: qsTr("Descending")				}
 		}
 	}
 }

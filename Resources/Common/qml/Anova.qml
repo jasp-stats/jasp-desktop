@@ -144,7 +144,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 170
+			height: 150
 			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleItem: true }
 			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines");	singleItem: true }
@@ -154,18 +154,20 @@ Form
 		Group
 		{
 			title: qsTr("Display")
-			CheckBox { name: "plotErrorBars"; text: qsTr("Display error bars") }
-			
-			RadioButtonGroup
+			CheckBox
 			{
-				name: "errorBarType"
-				RadioButton
+				name: "plotErrorBars"; text: qsTr("Display error bars")
+				RadioButtonGroup
 				{
-					value: "confidenceInterval";		text: qsTr("Confidence Interval"); checked: true
-					childrenOnSameRow: true
-					PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95 }
+					name: "errorBarType"
+					RadioButton
+					{
+						value: "confidenceInterval";		text: qsTr("Confidence Interval"); checked: true
+						childrenOnSameRow: true
+						PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95 }
+					}
+					RadioButton { value: "standardError";	text: qsTr("Standard error") }
 				}
-				RadioButton { value: "standardError";	text: qsTr("Standard error") }
 			}
 		}
 	}
@@ -235,7 +237,7 @@ Form
 		Label { text: qsTr("Kruskal-Wallis test") }
 		VariablesForm
 		{
-			height: 200
+			height: 170
 			availableVariablesList { name: "kruskalVariablesAvailable" ; source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "kruskalVariablesAssigned" }
 		}

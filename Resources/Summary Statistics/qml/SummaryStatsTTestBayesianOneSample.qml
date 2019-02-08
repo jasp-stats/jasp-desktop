@@ -35,28 +35,31 @@ Form
 
     Divider { }
 
-    GridLayout 
+	RadioButtonGroup
 	{
-		RadioButtonGroup 
-		{
-			title: qsTr("Hypothesis")
-			name: "hypothesis"
-			RadioButton { value: "notEqualToTestValue";		text: qsTr("\u2260 Test value"); checked: true	}
-			RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")						}
-			RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")						}
-		}
+		title: qsTr("Hypothesis")
+		name: "hypothesis"
+		RadioButton { value: "notEqualToTestValue";		text: qsTr("\u2260 Test value"); checked: true	}
+		RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")						}
+		RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")						}
+	}
 
-		GroupBox 
+	GroupBox
+	{
+		title: qsTr("Plots")
+		CheckBox
 		{
-			title: qsTr("Plots")
-			CheckBox { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
-			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
+			name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
 		}
-		
-		BayesFactorType { }
-    }
+		CheckBox
+		{
+			name: "plotBayesFactorRobustness";	text: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
+		}
+	}
+
+	BayesFactorType { }
 
     SubjectivePriors { }
 }

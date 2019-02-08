@@ -30,6 +30,7 @@ Rectangle {
 	L.Layout.leftMargin:	indent ? Theme.indentationLength : 0
     
 	default property alias	content:			contentArea.children
+			property alias	contentArea:		contentArea
 			property int	rowSpacing:			Theme.rowGroupSpacing
 			property int	columnSpacing:		Theme.columnGroupSpacing
 			property int	columns:			1
