@@ -109,10 +109,11 @@ Form
 		Group
 		{
 			title: qsTr("Dispersion")
+			columns: 2
 			CheckBox { name: "standardDeviation";	text: qsTr("Std.deviation"); checked: true	}
 			CheckBox { name: "minimum";				text: qsTr("Minimum");		checked: true	}
-			CheckBox { name: "maximum";				text: qsTr("Maximum");		checked: true	}
 			CheckBox { name: "variance";			text: qsTr("Variance")						}
+			CheckBox { name: "maximum";				text: qsTr("Maximum");		checked: true	}
 			CheckBox { name: "range";				text: qsTr("Range")							}
 			CheckBox { name: "standardErrorMean";	text: qsTr("S. E. mean")					}
 		}

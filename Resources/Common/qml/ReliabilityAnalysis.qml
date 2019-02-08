@@ -26,6 +26,7 @@ Form
 	
 	VariablesForm
 	{
+		height: 300
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "nominal"] }
 	}
 	
@@ -35,6 +36,7 @@ Form
 		CheckBox { name: "mcDonaldScale";					text: qsTr("McDonald's ω");	checked: true	}
 		CheckBox
 		{
+			id: chronbach
 			name: "alphaScale";								text: qsTr("Cronbach's α")
 			RadioButtonGroup
 			{
@@ -87,6 +89,7 @@ Form
 		Group
 		{
 			title: qsTr("Confidence Interval")
+			enabled: chronbach.checked
 			CheckBox {
 				name: "confAlpha"; text: qsTr("Cronbach's α analytical")
 				PercentField { name: "confAlphaLevel"; text: qsTr("Confidence"); defaultValue: 95; with1Decimal: true }

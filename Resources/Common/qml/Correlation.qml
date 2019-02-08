@@ -29,55 +29,46 @@ Form
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
 	}
 	
-	GroupBox
+	Group
 	{
 		title: qsTr("Correlation Coefficients")
-		
-		GridLayout
+		CheckBox { name: "pearson";			text: qsTr("Pearson"); checked: true	}
+		CheckBox { name: "spearman";		text: qsTr("Spearman")					}
+		CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")			}
+	}
+
+	Group
+	{
+		CheckBox { name: "displayPairwise";		text: qsTr("Display pairwise table")				}
+		CheckBox { name: "reportSignificance";	text: qsTr("Report significance"); checked: true	}
+		CheckBox { name: "flagSignificant";		text: qsTr("Flag significant correlations")			}
+		CheckBox
 		{
-			GroupBox
-			{
-				CheckBox { name: "pearson";			text: qsTr("Pearson"); checked: true	}
-				CheckBox { name: "spearman";		text: qsTr("Spearman")					}
-				CheckBox { name: "kendallsTauB";	text: qsTr("Kendall's tau-b")			}
-			}
-			
-			GroupBox
-			{
-				CheckBox { name: "displayPairwise";		text: qsTr("Display pairwise table")						}
-				CheckBox { name: "reportSignificance";	text: qsTr("Report significance"); checked: true			}
-				CheckBox { name: "flagSignificant";		text: qsTr("Flag significant correlations")					}
-				CheckBox { name: "confidenceIntervals"; text: qsTr("Confidence intervals"); id: confidenceIntervals	}
-				PercentField { name: "confidenceIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95; enabled:  confidenceIntervals.checked; indent: true}
-				CheckBox { name: "VovkSellkeMPR";		text: qsTr("Vovk-Sellke maximum p-ratio")					}
-			}
+			name: "confidenceIntervals";		text: qsTr("Confidence intervals")
+			PercentField { name: "confidenceIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95 }
 		}
+		CheckBox { name: "VovkSellkeMPR";		text: qsTr("Vovk-Sellke maximum p-ratio")			}
 	}
 	
-	GridLayout
+	RadioButtonGroup
 	{
-		RadioButtonGroup
+		title: qsTr("Hypothesis")
+		name: "hypothesis"
+		RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
+		RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
+		RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
+	}
+
+	Group
+	{
+		title: qsTr("Plots")
+		CheckBox
 		{
-			title: qsTr("Hypothesis")
-			name: "hypothesis"
-			RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
-			RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
-			RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
+			name: "plotCorrelationMatrix"; text: qsTr("Display pairwise table")
+			CheckBox { name: "plotDensities";		text: qsTr("Densities for variables")	}
+			CheckBox { name: "plotStatistics";		text: qsTr("Statistics")				}
 		}
-		
-		GroupBox
-		{
-			title: qsTr("Plots")
-			CheckBox { name: "plotCorrelationMatrix";		text: qsTr("Display pairwise table"); id: plotCorrelationMatrix }
-			GroupBox
-			{
-				enabled: plotCorrelationMatrix.checked
-				indent: true
-				CheckBox { name: "plotDensities";			text: qsTr("Densities for variables")	}
-				CheckBox { name: "plotStatistics";			text: qsTr("Statistics")				}
-			}
-			
-		}
+
 	}
 	
 	ExpanderButton
@@ -85,7 +76,7 @@ Form
 		title: qsTr("Options")
 		debug: true
 		
-		GroupBox
+		Group
 		{
 			title: qsTr("Statistics")
 			CheckBox { name: "meansAndStdDev";	text: qsTr("Means and standard deviations")				}

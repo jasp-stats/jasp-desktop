@@ -24,6 +24,7 @@ import JASP.Theme 1.0
 
 ColumnLayout {
     spacing: 5
+	Layout.columnSpan: parent.columns
     implicitHeight: 2
     implicitWidth: parent.width
     property alias label: textLabel.text

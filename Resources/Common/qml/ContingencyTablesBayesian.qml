@@ -52,53 +52,59 @@ Form
 	{
 		title: qsTr("Statistics")
 		
-		GridLayout
+		RadioButtonGroup
 		{
-			RadioButtonGroup
+			name: "samplingModel"
+			title: qsTr("Sample")
+			RadioButton { value: "poisson";							text: qsTr("Poisson")										}
+			RadioButton { value: "jointMultinomial";				text: qsTr("Joint multinomial")								}
+			RadioButton { value: "independentMultinomialRowsFixed";	text: qsTr("Indep. multinomial, rows fixed"); checked: true	}
+			RadioButton { value: "independentMultinomialColumnsFixed"; text: qsTr("Indep. multinomial, columns fixed")			}
+			RadioButton { value: "hypergeometric";					text: qsTr("Hypergeometrics (2x2 only)"); id: hypergeometric }
+		}
+
+		Group
+		{
+			title: qsTr("Additional Statistics")
+			CheckBox
 			{
-				name: "samplingModel"
-				title: qsTr("Sample")
-				RadioButton { value: "poisson";							text: qsTr("Poisson")										}
-				RadioButton { value: "jointMultinomial";				text: qsTr("Joint multinomial")								}
-				RadioButton { value: "independentMultinomialRowsFixed";	text: qsTr("Indep. multinomial, rows fixed"); checked: true	}
-				RadioButton { value: "independentMultinomialColumnsFixed"; text: qsTr("Indep. multinomial, columns fixed")			}
-				RadioButton { value: "hypergeometric";					text: qsTr("Hypergeometrics (2x2 only)"); id: hypergeometric }
+				name: "oddsRatio";	text: qsTr("Log odds ratio (2x2 only)")
+				PercentField { name: "oddsRatioCredibleIntervalInterval"; text: qsTr("Credible interval"); defaultValue: 95 }
 			}
-			
-			GroupBox
+			CheckBox
 			{
-				title: qsTr("Additional Statistics")
-				CheckBox { name: "oddsRatio";	text: qsTr("Log odds ratio (2x2 only)"); id: oddsRatio }
-				PercentField { name: "oddsRatioCredibleIntervalInterval"; text: qsTr("Credible interval"); defaultValue: 95; enabled: oddsRatio.checked; indent: true }
-				CheckBox { name: "effectSize"; text: qsTr("Cramer's V"); id: effectSize; debug: true }
-				PercentField { name: "effectSizeCredibleIntervalInterval"; text: qsTr("Credible interval");  defaultValue: 95; enabled: effectSize.checked; indent: true ; debug: true }
+				name: "effectSize"; text: qsTr("Cramer's V"); debug: true
+				PercentField { name: "effectSizeCredibleIntervalInterval"; text: qsTr("Credible interval"); defaultValue: 95; debug: true }
 			}
-			
-			RadioButtonGroup
+		}
+
+		RadioButtonGroup
+		{
+			title: qsTr("Hypothesis")
+			name: "hypothesis"
+			enabled: !hypergeometric.checked
+			RadioButton { value: "groupsNotEqual";	text: qsTr("Group one ≠ Group two"); checked: true	}
+			RadioButton { value: "groupOneGreater";	text: qsTr("Group one > Group two")					}
+			RadioButton { value: "groupTwoGreater";	text: qsTr("Group one < Group two")					}
+		}
+
+		Group
+		{
+			title: qsTr("Plots")
+			CheckBox
 			{
-				title: qsTr("Hypothesis")
-				name: "hypothesis"
-				enabled: !hypergeometric.checked
-				RadioButton { value: "groupsNotEqual";	text: qsTr("Group one ≠ Group two"); checked: true	}
-				RadioButton { value: "groupOneGreater";	text: qsTr("Group one > Group two")					}
-				RadioButton { value: "groupTwoGreater";	text: qsTr("Group one < Group two")					}
+				name: "plotPosteriorOddsRatio";			text: qsTr("Log odds ratio (2x2 only)")
+				CheckBox { name: "plotPosteriorOddsRatioAdditionalInfo"; text: qsTr("Additional info"); checked: true }
 			}
-			
-			GroupBox
-			{
-				title: qsTr("Plots")
-				CheckBox { name: "plotPosteriorOddsRatio";				text: qsTr("Log odds ratio (2x2 only)"); id: plotPosteriorOddsRatio }
-				CheckBox { name: "plotPosteriorOddsRatioAdditionalInfo"; text: qsTr("Additional info"); checked: true; enabled: plotPosteriorOddsRatio.checked }
-				CheckBox { name: "plotPosteriorEffectSize";				text: qsTr("Cramer's V"); debug: true }
-			}
-			
-			BayesFactorType {}
-			
-			GroupBox
-			{
-				title: qsTr("Prior")
-				DoubleField { name: "priorConcentration"; text: qsTr("Prior concentration"); defaultValue: 1; doubleValidator { bottom: 1; decimals: 1 } }
-			}
+			CheckBox { name: "plotPosteriorEffectSize";	text: qsTr("Cramer's V"); debug: true }
+		}
+
+		BayesFactorType {}
+
+		Group
+		{
+			title: qsTr("Prior")
+			DoubleField { name: "priorConcentration"; text: qsTr("Prior concentration"); defaultValue: 1; min: 1; decimals: 1 }
 		}
 	}
 	
@@ -106,22 +112,19 @@ Form
 	{
 		title: qsTr("Options")
 		
-		GridLayout
+		RadioButtonGroup
 		{
-			RadioButtonGroup
-			{
-				name: "rowOrder"
-				title: qsTr("Row Order")
-				RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
-				RadioButton { value: "descending";	text: qsTr("Descending")				}
-			}
-			RadioButtonGroup
-			{
-				name: "columnOrder"
-				title: qsTr("Column Order")
-				RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
-				RadioButton { value: "descending";	text: qsTr("Descending")				}
-			}
+			name: "rowOrder"
+			title: qsTr("Row Order")
+			RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
+			RadioButton { value: "descending";	text: qsTr("Descending")				}
+		}
+		RadioButtonGroup
+		{
+			name: "columnOrder"
+			title: qsTr("Column Order")
+			RadioButton { value: "ascending";	text: qsTr("Ascending"); checked: true	}
+			RadioButton { value: "descending";	text: qsTr("Descending")				}
 		}
 	}
 }

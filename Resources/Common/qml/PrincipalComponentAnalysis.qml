@@ -37,43 +37,39 @@ Form
 		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); allowedColumns: ["scale"] }
 	}
 	
-	GridLayout
+	RadioButtonGroup
 	{
-		RadioButtonGroup
+		name: "factorMethod"
+		title: qsTr("Number of Factors")
+		RadioButton
 		{
-			name: "factorMethod"
-			title: qsTr("Number of Factors")
-			RadioButton { value: "parallelAnalysis";	text: qsTr("Parallel Analysis");  checked: true	}
-			RadioButton { value: "eigenValues";			text: qsTr("Eigenvalues");  id: eigenvalues		}
-			DoubleField
-			{
-				name: "eigenValuesBox";
-				text: qsTr("Eigenvalues above");
-				defaultValue: 1
-				indent: true;
-				enabled: eigenvalues.checked
-				doubleValidator.decimals: 1
-			}
-			RadioButton { value: "manual";				text: qsTr("Manual"); id: manual				}
-			IntegerField
-			{
-				name: "numberOfFactors"
-				text: qsTr("Number of Factors")
-				defaultValue: 1
-				intValidator.bottom: 1
-				indent: true
-				enabled: manual.checked
-			}
+			value: "parallelAnalysis"; text: qsTr("Parallel Analysis"); checked: true
 		}
-		
-		RadioButtonGroup
+		RadioButton
 		{
-			name: "rotationMethod"
-			title: qsTr("Rotation")
-			RadioButton { value: "orthogonal";	text: qsTr("Orthogonal");  id: rotationOrthogonal }
-			DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"]; enabled: rotationOrthogonal.checked }
-			RadioButton { value: "oblique";		text: qsTr("Oblique");  checked: true; id: rotationOblique }
-			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ]; enabled: rotationOblique.checked }
+			value: "eigenValues"; text: qsTr("Eigenvalues")
+			DoubleField { name: "eigenValuesBox"; text: qsTr("Eigenvalues above"); defaultValue: 1; decimals: 1 }
+		}
+		RadioButton
+		{
+			value: "manual"; text: qsTr("Manual")
+			IntegerField { name: "numberOfFactors"; text: qsTr("Number of Factors"); defaultValue: 1; min: 1 }
+		}
+	}
+
+	RadioButtonGroup
+	{
+		name: "rotationMethod"
+		title: qsTr("Rotation")
+		RadioButton
+		{
+			value: "orthogonal";	text: qsTr("Orthogonal")
+			DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"] }
+		}
+		RadioButton
+		{
+			value: "oblique";		text: qsTr("Oblique");  checked: true
+			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ] }
 		}
 	}
 	
@@ -81,33 +77,30 @@ Form
 	{
 		title: qsTr("Output Options")
 		
-		GridLayout
+		Slider
 		{
-			Slider
-			{
-				name: "highlightText"
-				title: "Highlight"
-				value: 0.4
-				from: 0
-				to: 1
-				orientation: Qt.Vertical
-			}
-			
-			GroupBox
-			{
-				title: qsTr("Includes tables")
-				CheckBox { name: "incl_correlations";	text: qsTr("Factor correlations")	}
-				CheckBox { name: "incl_pathDiagram";	text: qsTr("Path diagram")			}
-				CheckBox { name: "incl_screePlot";		text: qsTr("Scree plot")			}
-			}
-			
-			RadioButtonGroup
-			{
-				name: "missingValues"
-				title: qsTr("Missing values")
-				RadioButton { value: "pairwise";		text: qsTr("Exclude cases pairwise"); checked: true	}
-				RadioButton { value: "listwise";		text: qsTr("Exclude cases listwise")				}
-			}
+			name: "highlightText"
+			title: "Highlight"
+			value: 0.4
+			from: 0
+			to: 1
+			orientation: Qt.Vertical
+		}
+
+		Group
+		{
+			title: qsTr("Includes tables")
+			CheckBox { name: "incl_correlations";	text: qsTr("Factor correlations")	}
+			CheckBox { name: "incl_pathDiagram";	text: qsTr("Path diagram")			}
+			CheckBox { name: "incl_screePlot";		text: qsTr("Scree plot")			}
+		}
+
+		RadioButtonGroup
+		{
+			name: "missingValues"
+			title: qsTr("Missing values")
+			RadioButton { value: "pairwise";		text: qsTr("Exclude cases pairwise"); checked: true	}
+			RadioButton { value: "listwise";		text: qsTr("Exclude cases listwise")				}
 		}
 	}
 }

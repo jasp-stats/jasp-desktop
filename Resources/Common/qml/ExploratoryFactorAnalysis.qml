@@ -23,89 +23,79 @@ Form
 {
 	usesJaspResults: false
 
-    CheckBox { name: "incl_GoF"; checked: true; visible: false }
-    CheckBox { name: "incl_loadings"; checked: true; visible: false }
-    IntegerField { name: "plotHeightPathDiagram"; defaultValue: 0; visible: false }
-    IntegerField { name: "plotHeightScreePlot"  ; defaultValue: 300; visible: false }
-    IntegerField { name: "plotWidthPathDiagram" ; defaultValue: 480; visible: false }
-    IntegerField { name: "plotWidthScreePlot"   ; defaultValue: 300; visible: false }
+	CheckBox { name: "incl_GoF"; checked: true; visible: false }
+	CheckBox { name: "incl_loadings"; checked: true; visible: false }
+	IntegerField { name: "plotHeightPathDiagram"; defaultValue: 0; visible: false }
+	IntegerField { name: "plotHeightScreePlot"  ; defaultValue: 300; visible: false }
+	IntegerField { name: "plotWidthPathDiagram" ; defaultValue: 480; visible: false }
+	IntegerField { name: "plotWidthScreePlot"   ; defaultValue: 300; visible: false }
 
-    VariablesForm
+	VariablesForm
 	{
 		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); allowedColumns: ["scale"] }
-    }
+	}
 
-    GridLayout
+	RadioButtonGroup
 	{
-        RadioButtonGroup
+		name: "factorMethod"
+		title: qsTr("Number of Factors")
+		RadioButton { value: "parallelAnalysis";	text: qsTr("Parallel Analysis");  checked: true	}
+		RadioButton
 		{
-			name: "factorMethod"
-            title: qsTr("Number of Factors")
-            RadioButton { value: "parallelAnalysis";	text: qsTr("Parallel Analysis");  checked: true	}
-            RadioButton { value: "eigenValues";			text: qsTr("Eigenvalues"); id: eigenvalues		}
-            DoubleField
-			{
-				name: "eigenValuesBox";
-                text: qsTr("Eigenvalues above");
-                defaultValue: 0
-                indent: true;
-                enabled: eigenvalues.checked
-                doubleValidator.decimals: 1
-            }
-            RadioButton { value: "manual";				text: qsTr("Manual"); id: manual				}
-            IntegerField
-			{
-				name: "numberOfFactors"
-                text: qsTr("Number of Factors")
-                defaultValue: 1
-                intValidator.bottom: 1
-                indent: true
-                enabled: manual.checked
-            }
-        }
-
-        RadioButtonGroup
+			value: "eigenValues";					text: qsTr("Eigenvalues")
+			DoubleField { name: "eigenValuesBox"; text: qsTr("Eigenvalues above"); defaultValue: 0; decimals: 1 }
+		}
+		RadioButton
 		{
-			name: "rotationMethod"
-            title: qsTr("Rotation")
-            RadioButton { value: "orthogonal";	text: qsTr("Orthogonal");  id: rotationOrthogonal			}
-            DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"]; enabled: rotationOrthogonal.checked }
-            RadioButton { value: "oblique";		text: qsTr("Oblique"); checked: true; id: rotationOblique	}
-            DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ]; enabled: rotationOblique.checked }
-        }
-    }
+			value: "manual";						text: qsTr("Manual")
+			IntegerField { name: "numberOfFactors"; text: qsTr("Number of Factors"); defaultValue: 1; min: 1 }
+		}
+	}
 
-    ExpanderButton
+	RadioButtonGroup
 	{
-        title: qsTr("Output Options")
-
-        GridLayout
+		name: "rotationMethod"
+		title: qsTr("Rotation")
+		RadioButton
 		{
-            Slider {
-				name: "highlightText"
-                title: "Highlight"
-                value: 0.4
-                from: 0
-                to: 1
-                orientation: Qt.Vertical
-            }
+			value: "orthogonal";	text: qsTr("Orthogonal")
+			DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"] }
+		}
+		RadioButton
+		{
+			value: "oblique";		text: qsTr("Oblique"); checked: true
+			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ] }
+		}
+	}
 
-            GroupBox
-			{
-                title: qsTr("Includes tables")
-                CheckBox { name: "incl_correlations";	text: qsTr("Factor correlations")		}
-                CheckBox { name: "incl_fitIndices";		text: qsTr("Additional fit indices")	}
-                CheckBox { name: "incl_pathDiagram";	text: qsTr("Path diagram")				}
-                CheckBox { name: "incl_screePlot";		text: qsTr("Scree plot")				}
-            }
+	ExpanderButton
+	{
+		title: qsTr("Output Options")
 
-            RadioButtonGroup
-			{
-				name: "missingValues"
-                title: qsTr("Missing values")
-                RadioButton { value: "pairwise";	text: qsTr("Exclude cases pairwise"); checked: true	}
-                RadioButton { value: "listwise";	text: qsTr("Exclude cases listwise")				}
-            }
-        }
-    }
+		Slider {
+			name: "highlightText"
+			title: "Highlight"
+			value: 0.4
+			from: 0
+			to: 1
+			orientation: Qt.Vertical
+		}
+
+		Group
+		{
+			title: qsTr("Includes tables")
+			CheckBox { name: "incl_correlations";	text: qsTr("Factor correlations")		}
+			CheckBox { name: "incl_fitIndices";		text: qsTr("Additional fit indices")	}
+			CheckBox { name: "incl_pathDiagram";	text: qsTr("Path diagram")				}
+			CheckBox { name: "incl_screePlot";		text: qsTr("Scree plot")				}
+		}
+
+		RadioButtonGroup
+		{
+			name: "missingValues"
+			title: qsTr("Missing values")
+			RadioButton { value: "pairwise";	text: qsTr("Exclude cases pairwise"); checked: true	}
+			RadioButton { value: "listwise";	text: qsTr("Exclude cases listwise")				}
+		}
+	}
 }

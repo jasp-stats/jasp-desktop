@@ -46,16 +46,16 @@ Form
 	{
 		title: qsTr("Statistics")
 		
-		GridLayout
+		Group
 		{
-			GroupBox
+			title: qsTr("Regression Coefficient")
+			CheckBox { name: "regressionCoefficientsEstimates";		text: qsTr("Estimates") }
+			CheckBox
 			{
-				title: qsTr("Regression Coefficient")
-				CheckBox { name: "regressionCoefficientsEstimates";							text: qsTr("Estimates") }
-				CheckBox { name: "regressionCoefficientsConfidenceIntervals";				text: qsTr("Confidence intervals");  id: interval }
-				PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval";	text: qsTr("Interval"); defaultValue: 95 ; enabled: interval.checked; indent: true }
+				name: "regressionCoefficientsConfidenceIntervals";	text: qsTr("Confidence intervals")
+				PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95 }
 			}
-			CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
+		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
 	}
 }

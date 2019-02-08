@@ -26,38 +26,35 @@ Form
 {
 	usesJaspResults: false
 
-	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; intValidator.bottom: 3 }
+	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; min: 3; Layout.columnSpan: 2 }
 
-    GridLayout 
+	Group
 	{
-		GroupBox 
-		{
-			title: qsTr("Null model")
-			IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesNull" }
-			DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredNull" ; doubleValidator.top: 0.9999 }
-        }
-		
-		GroupBox 
-		{
-			title: qsTr("Alternative model")
-			IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; intValidator.bottom: 1 }
-			DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; doubleValidator.top: 0.9999 }
-		}
-    }
+		title: qsTr("Null model")
+		IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesNull" }
+		DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredNull" ; max: 0.9999 }
+	}
 
-    Divider { }
-
-    GridLayout 
+	Group
 	{
-		BayesFactorType { }
- 
-		GroupBox 
+		title: qsTr("Alternative model")
+		IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; min: 1 }
+		DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; max: 0.9999 }
+	}
+
+	Divider { }
+
+	BayesFactorType { }
+
+	GroupBox
+	{
+		title: qsTr("Plots")
+		CheckBox
 		{
-			title: qsTr("Plots")
-			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
+			name: "plotBayesFactorRobustness"; text: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; text: qsTr("Additional info"); checked: true }
 		}
-    }
+	}
 
     ExpanderButton 
 	{
@@ -66,7 +63,7 @@ Form
         GroupBox 
 		{
             title: qsTr("Prior")
-            DoubleField { text: qsTr("r scale covariates"); defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 60; doubleValidator.top: 2 }
+			DoubleField { text: qsTr("r scale covariates"); defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 80; max: 2 }
         }
     }
 }

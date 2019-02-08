@@ -30,49 +30,52 @@ Form
 
     Divider { }
 
-    GridLayout 
+	RadioButtonGroup
 	{
-		RadioButtonGroup 
+		name: "correlationCoefficient"
+		title: qsTr("Correlation Coefficient")
+		Layout.columnSpan: 2
+		RadioButton
 		{
-			name: "correlationCoefficient"
-			title: qsTr("Correlation Coefficient")
-			Layout.columnSpan: 2
-			Row 
-			{
-				RadioButton { value: "pearsonRho"; text: qsTr("Pearson's rho") ; id: pearsonRho; checked: true}
-				DoubleField { name: "pearsonRhoValue"; defaultValue: 0; visible: pearsonRho.checked; doubleValidator { bottom: -1; top: 1 } }
-			}
-			Row 
-			{
-				RadioButton { value: "kendallTau"; text: qsTr("Kendall's tau-b"); id: kendallTau }
-				DoubleField { name: "kendallTauValue"; defaultValue: 0; visible: kendallTau.checked; doubleValidator { bottom: -1; top: 1 } }
-			}
+			value: "pearsonRho"; text: qsTr("Pearson's rho"); childrenOnSameRow: true
+			DoubleField { name: "pearsonRhoValue"; defaultValue: 0; min: -1; max: 1 }
 		}
-		
-		RadioButtonGroup 
+		RadioButton
 		{
-			title: qsTr("Hypothesis")
-			name: "hypothesis"
-			RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
-			RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
-			RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
+			value: "kendallTau"; text: qsTr("Kendall's tau-b"); childrenOnSameRow: true
+			DoubleField { name: "kendallTauValue"; defaultValue: 0; min: -1; max: 1 }
 		}
+	}
 
-		GroupBox 
-		{
-			title: qsTr("Plots")
-			CheckBox { name: "plotPriorAndPosterior";					text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); indent: true; checked: true; enabled: plotPriorAndPosterior.checked }
-			CheckBox { name: "plotBayesFactorRobustness";				text: qsTr("Bayes factor robustness check"); id: plotBayesFactorRobustness }
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); indent: true; checked: true; enabled: plotBayesFactorRobustness.checked }
-		}
-		
-        BayesFactorType { }
+	RadioButtonGroup
+	{
+		title: qsTr("Hypothesis")
+		name: "hypothesis"
+		RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
+		RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
+		RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
+	}
 
-		GroupBox 
+	GroupBox
+	{
+		title: qsTr("Plots")
+		CheckBox
 		{
-			title: qsTr("Prior")
-			DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1; doubleValidator {bottom: 0; top: 2} }
+			name: "plotPriorAndPosterior";				text: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
 		}
-    }
+		CheckBox
+		{
+			name: "plotBayesFactorRobustness";			text: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
+		}
+	}
+
+	BayesFactorType { }
+
+	GroupBox
+	{
+		title: qsTr("Prior")
+		DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1; min: 0; max: 2 }
+	}
 }

@@ -40,10 +40,11 @@ JASPControl
 			property alias	checked:				control.checked
 			property alias	control:				control
 			property alias	value:					radioButton.name
-			property var	buttonGroup
+			property var	buttonGroup:			null
 			property bool	childrenOnSameRow:	false
 			property alias	columns:				childControls.columns
 			property bool	enableChildrenOnChecked: true
+			property bool	indentChildren:			true
 			property alias	alignChildrenTopLeft:	childControls.alignChildrenTopLeft
 	
 	
@@ -115,7 +116,7 @@ JASPControl
 				childControls.anchors.top = control.bottom
 				childControls.anchors.topMargin = Theme.rowGroupSpacing
 				childControls.anchors.left = control.left
-				childControls.anchors.leftMargin = childControls.childControlsPadding				
+				childControls.anchors.leftMargin = indentChildren ? childControls.childControlsPadding : 0		
 			}				
 		}
 		

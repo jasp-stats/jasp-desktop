@@ -29,33 +29,33 @@ Form
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
-	DoubleField { text: qsTr("Test value: "); name: "testValue"; defaultValue: 0.5 ; doubleValidator { top: 1; decimals: 2 } }
+	DoubleField { text: qsTr("Test value: "); name: "testValue"; defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
 	
-	GridLayout
+	RadioButtonGroup
 	{
-		RadioButtonGroup
+		title: qsTr("Hypothesis")
+		name: "hypothesis"
+		RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
+		RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")					}
+		RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")					}
+	}
+
+	Group {
+		title: qsTr("Plots")
+		CheckBox
 		{
-			title: qsTr("Hypothesis")
-			name: "hypothesis"
-			RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
-			RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")					}
-			RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")					}
+			name: "plotPriorAndPosterior";				text: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; text: qsTr("Additional info"); checked: true }
 		}
-		
-		GroupBox {
-			title: qsTr("Plots")
-			CheckBox { name: "plotPriorAndPosterior";				text: qsTr("Prior and posterior"); id: plotPriorAndPosterior }
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; text: qsTr("Additional info"); checked: true; enabled: plotPriorAndPosterior.checked; indent: true }
-			CheckBox { name: "plotSequentialAnalysis";				text: qsTr("Sequential analysis") }
-		}
-		
-		BayesFactorType {}
-		
-		GroupBox
-		{
-			title: qsTr("Prior")
-			DoubleField { name: "priorA"; text: qsTr("Beta prior: parameter a"); defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
-			DoubleField { name: "priorB"; text: qsTr("Beta prior: parameter b"); defaultValue: 1; doubleValidator { bottom: 0.1; top: 9999; decimals: 1} }
-		}
+		CheckBox { name: "plotSequentialAnalysis";		text: qsTr("Sequential analysis") }
+	}
+
+	BayesFactorType {}
+
+	Group
+	{
+		title: qsTr("Prior")
+		DoubleField { name: "priorA"; text: qsTr("Beta prior: parameter a"); defaultValue: 1; min: 0.1; max: 9999; decimals: 1 }
+		DoubleField { name: "priorB"; text: qsTr("Beta prior: parameter b"); defaultValue: 1; min: 0.1; max: 9999; decimals: 1 }
 	}
 }

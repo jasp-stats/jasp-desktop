@@ -164,24 +164,24 @@ Form
 		Group
 		{
 			title: qsTr("Display")
-			
-			Group
+			columns: 2
+			CheckBox
 			{
-				columns: 2
-				CheckBox { name: "plotErrorBars";			text: qsTr("Display error bars")		}
-				CheckBox { name: "usePooledStandErrorCI";	text: qsTr("Pool SE across RM factors")	}
-			}
-			
-			RadioButtonGroup
-			{
-				name: "errorBarType"
-				RadioButton
+				name: "plotErrorBars"; text: qsTr("Display error bars")
+				RadioButtonGroup
 				{
-					value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true
-					PercentField { name: "confidenceIntervalInterval"; text: qsTr("Interval"); defaultValue: 95 }
+					name: "errorBarType"
+					RadioButton
+					{
+						value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true
+						childrenOnSameRow: true
+						PercentField { name: "confidenceIntervalInterval"; text: qsTr("Interval"); defaultValue: 95 }
+					}
+					RadioButton { value: "standardError"; text: qsTr("Standard error") }
 				}
-				RadioButton { value: "standardError"; text: qsTr("Standard error") }
 			}
+			CheckBox { name: "usePooledStandErrorCI";	text: qsTr("Pool SE across RM factors")	}
+			
 		}
 	}
 	
