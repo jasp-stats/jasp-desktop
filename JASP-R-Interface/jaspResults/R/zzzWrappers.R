@@ -9,9 +9,9 @@
 		destroyAllAllocatedObjects()
 		destroyAllAllocatedRObjects()
 	}
-	
-	env$jaspResults <- create_cpp_jaspResults("Analysis Test")
-	
+
+	env$jaspResults <- create_cpp_jaspResults("Analysis Test", NULL)
+
 	setRefClass(
 		"jaspTableExtended", 
 		contains=c("Rcpp_jaspTable"), 
@@ -22,7 +22,7 @@
 		),
 		where=globalenv()
 	)
-	
+
 	e <- getNamespace("jaspResults")
 	unlockBinding('.__C__Rcpp_jaspTable', e)
 	
@@ -64,7 +64,7 @@
 			)
 	}
 	lockBinding('.__C__Rcpp_jaspTable', e)
-	
+
 	message("jaspResults has been created and can now be used to test/develop your analysis, try something like:\njaspResults$print()\nor\njaspResults[[\"aTable\"]] <- createJaspTable()")
 	return(invisible(TRUE))
 	

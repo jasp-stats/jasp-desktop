@@ -43,13 +43,17 @@ Json::Value jaspPlot::dataEntry()
 	data["height"]		= _height;
 	data["width"]		= _width;
 	data["aspectRatio"]	= _aspectRatio;
-	data["status"]		= _error == "" ? _status : "error";
-	if(_error != "")
+	if(_error)
     {
+		data["status"]                  = "error";
 		data["error"]					= Json::objectValue;
-		data["error"]["type"]			= _error;
+		data["error"]["type"]			= "badData";//_error;
 		data["error"]["errorMessage"]	= _errorMessage;
     }
+	else
+	{
+		data["status"]                  = _status;
+	}
 	data["name"]		= getUniqueNestedName();
 	data["footnotes"]	= _footnotes;
 
@@ -113,7 +117,6 @@ Json::Value jaspPlot::convertToJSON()
 	obj["aspectRatio"]			= _aspectRatio;
 	obj["width"]				= _width;
 	obj["height"]				= _height;
-	obj["error"]				= _error;
 	obj["status"]				= _status;
 	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
@@ -130,7 +133,7 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_aspectRatio	= in.get("aspectRatio",		0.0f).asDouble();
 	_width			= in.get("width",			-1).asInt();
 	_height			= in.get("height",			-1).asInt();
-	_error			= in.get("error",			"null").asString();
+	_error			= in.get("error",			"false").asBool();
 	_status			= in.get("status",			"complete").asString();
 	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
@@ -149,11 +152,11 @@ std::string jaspPlot::toHtml()
 	out << "<div class=\"status " << _status << "\">" "\n"
 		<< htmlTitle() << "\n";
 
-	if(_error != "" || _errorMessage != "")
+	if(_error || _errorMessage != "")
 	{
 		out << "<p class=\"error\">\n";
-		if(_error		 != "") out << "error: <i>'" << _error << "'</i>";
-		if(_errorMessage != "") out << (_error != "" ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
+		if(_error		      ) out << "error: <i>'" << _error << "'</i>";
+		if(_errorMessage != "") out << (_error       ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
 		out << "\n</p>";
 	}
 	else
