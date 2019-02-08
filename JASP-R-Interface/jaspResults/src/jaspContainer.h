@@ -43,7 +43,7 @@ public:
 	void		checkDependenciesChildren(Json::Value currentOptions) override;
 
 	void		completeChildren();
-
+	void		setError(bool error);
 
 protected:
 	std::map<std::string, jaspObject*>	_data;

@@ -240,6 +240,7 @@ Json::Value jaspObject::convertToJSON()
 	obj["name"]			= _name;
 	obj["title"]		= _title;
 	obj["type"]			= jaspObjectTypeToString(_type);
+	obj["error"]        = _error;
 	obj["warning"]		= _warning;
 	obj["position"]		= _position;
 	obj["warningSet"]	= _warningSet;

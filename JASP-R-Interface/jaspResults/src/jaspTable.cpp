@@ -729,11 +729,11 @@ std::string jaspTable::dataToString(std::string prefix)
 
 	out << prefix << "status: " << _status << "\n";
 
-	if(_error != "" || _errorMessage != "")
+	if(_error || _errorMessage != "")
 	{
 		out << prefix;
-		if(_error		 != "") out << "error: '" << _error << "'";
-		if(_errorMessage != "") out << (_error != "" ? " msg: '" : "errormessage: '") << _errorMessage << "'";
+		if(_error		      ) out << "error: '" << _error << "'";
+		if(_errorMessage != "") out << (_error     ? " msg: '" : "errormessage: '") << _errorMessage << "'";
 		out << "\n";
 	}
 	else
@@ -766,11 +766,11 @@ std::string jaspTable::toHtml()
 	out		<< "<div class=\"status " << _status << " jaspTable\">\n"
 			<< htmlTitle() << "\n";
 
-	if(_error != "" || _errorMessage != "")
+	if(_error || _errorMessage != "")
 	{
 		out << "<p class=\"error\">\n";
-		if(_error		 != "") out << "error: <i>'" << _error << "'</i>";
-		if(_errorMessage != "") out << (_error != "" ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
+		if(_error		      ) out << "error: <i>'" << _error << "'</i>";
+		if(_errorMessage != "") out << (_error       ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
 		out << "\n</p>";
 	}
 	else
@@ -930,13 +930,16 @@ Json::Value jaspTable::dataEntry()
 	dataJson["casesAcrossColumns"]	= _transposeTable;
 	dataJson["overTitle"]			= _transposeWithOvertitle;
 
-	dataJson["status"]				= _error == "" ? _status : "error";
-
-	if(_error != "")
+	if(_error)
 	{
+		dataJson["status"]                  = "error";
 		dataJson["error"]					= Json::objectValue;
-		dataJson["error"]["type"]			= _error;
+		dataJson["error"]["type"]			= "badData";
 		dataJson["error"]["errorMessage"]	= _errorMessage;
+	}
+	else 
+	{
+		dataJson["status"]                  = _status;
 	}
 
 	//We do this so that any unset symbols will be filled in by the javascriptside of things
@@ -1153,7 +1156,6 @@ Json::Value jaspTable::convertToJSON()
 	Json::Value obj		= jaspObject::convertToJSON();
 
 	obj["status"]					= _status;
-	obj["error"]					= _error;
 	obj["errorMessage"]				= _errorMessage;
 	obj["footnotes"]				= _footnotes;
 	obj["transposeTable"]			= _transposeTable;
@@ -1204,7 +1206,7 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	jaspObject::convertFromJSON_SetFields(in);
 
 	_status						= in.get("status",						"null").asString();
-	_error						= in.get("error",						"null").asString();
+	_error						= in.get("error",						"false").asBool();
 	_errorMessage				= in.get("errorMessage",				"null").asString();
 	_footnotes					= in.get("footnotes",					Json::arrayValue);
 	_transposeTable				= in.get("transposeTable",				false).asBool();

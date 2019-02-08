@@ -184,10 +184,15 @@ const char * jaspResults::constructResultJson()
 	response["results"]		= dataEntry();
 	response["name"]		= response["results"]["title"];
 
-	if(errorMessage != "")
+	if(errorMessage != "" )
 	{
 		response["results"]["error"]		= true;
 		response["results"]["errorMessage"] = errorMessage;
+	}
+	else if (_error)
+	{
+		response["results"]["error"]		= true;
+		response["results"]["errorMessage"] = "Analyis returned an error but no errormessage...";
 	}
 
 	static std::string msg;

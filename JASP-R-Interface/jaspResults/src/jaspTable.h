@@ -362,7 +362,6 @@ public:
 							_transposeWithOvertitle = false,
 							_showSpecifiedColumnsOnly = false;
 	std::string				_status = "running",
-							_error = "",
 							_errorMessage = "";
 
 	std::set<std::string>	_specifiedColumns;
@@ -420,7 +419,6 @@ public:
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeTable,				TransposeTable)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeWithOvertitle,		TransposeWithOvertitle)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_status,						Status)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_error,							Error)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_errorMessage,					ErrorMessage)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_showSpecifiedColumnsOnly,		ShowSpecifiedColumnsOnly)
 };
