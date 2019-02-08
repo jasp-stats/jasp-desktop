@@ -99,7 +99,7 @@
 
 
 extractData <- function (element, ...) {
-  regMatch <- "^(.*?)\\{.*?\\}"
+  regMatch <- "^(.*?)\\{.*?[\\};]"
   fieldClassTable <- stringr::str_match(element, regMatch)
   if (length(fieldClassTable) != 2) {
     stop("Could not locate type of the field")

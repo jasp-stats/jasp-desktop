@@ -290,7 +290,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   usesJaspResults <- .usesJaspResults(name)
   if (usesJaspResults) {
-    loadNamespace("jaspResults")
+    require("jaspResults")
     suppressMessages(jaspResults::initJaspResults())
     
     runFun <- "runJaspResults"
@@ -298,20 +298,8 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     # this list is a stand in for the 'jaspResultsModule' inside runJaspResults()
     ns <- "jaspResults"
     envir[["jaspResultsModule"]] <- list(
-      create_cpp_jaspResults   = function(name) get("jaspResults", envir = .GlobalEnv),
-      create_cpp_jaspContainer = function(name) utils::getFromNamespace("create_cpp_jaspContainer", ns = ns),
-      create_cpp_jaspHtml      = function(name) utils::getFromNamespace("create_cpp_jaspHtml",      ns = ns),
-      create_cpp_jaspPlot      = function(name) utils::getFromNamespace("create_cpp_jaspPlot",      ns = ns),
-      create_cpp_jaspState     = function(name) utils::getFromNamespace("create_cpp_jaspState",     ns = ns),
-      create_cpp_jaspTable     = function(name) utils::getFromNamespace("create_cpp_jaspTable",     ns = ns)
+      create_cpp_jaspResults   = function(name, state) get("jaspResults", envir = .GlobalEnv)
     )
-
-    # overwrite these from common --- remove them from common and put in a separate file?
-    envir[["createJaspPlot"]]      <- jaspResults::createJaspPlot
-    envir[["createJaspContainer"]] <- jaspResults::createJaspContainer
-    envir[["createJaspTable"]]     <- jaspResults::createJaspTable
-    envir[["createJaspHtml"]]      <- jaspResults::createJaspHtml
-    envir[["createJaspState"]]     <- jaspResults::createJaspState
 
   } else {
     runFun <- "run"

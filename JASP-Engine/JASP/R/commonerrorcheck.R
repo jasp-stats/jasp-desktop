@@ -115,7 +115,7 @@
 }
 
 
-.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
+.hasErrors <- function(dataset, perform="run", type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
