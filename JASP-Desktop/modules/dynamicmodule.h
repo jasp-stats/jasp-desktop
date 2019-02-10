@@ -43,18 +43,20 @@ struct ModuleException : public std::runtime_error
 class DynamicModule : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString	installLog	READ installLog WRITE setInstallLog NOTIFY installLogChanged	)
-	Q_PROPERTY(QString	loadLog		READ loadLog	WRITE setLoadLog	NOTIFY loadLogChanged		)
-	Q_PROPERTY(QString	status		READ status							NOTIFY statusChanged		)
-	Q_PROPERTY(bool		loaded		READ loaded		WRITE setLoaded		NOTIFY loadedChanged		)
-	Q_PROPERTY(bool		installed	READ installed	WRITE setInstalled	NOTIFY installedChanged		)
-	Q_PROPERTY(bool		loading		READ loading	WRITE setLoading	NOTIFY loadingChanged		)
-	Q_PROPERTY(bool		installing	READ installing	WRITE setInstalling	NOTIFY installingChanged	)
+	Q_PROPERTY(QString		installLog			READ installLog			WRITE setInstallLog			NOTIFY installLogChanged		)
+	Q_PROPERTY(QString		loadLog				READ loadLog			WRITE setLoadLog			NOTIFY loadLogChanged			)
+	Q_PROPERTY(QString		status				READ status											NOTIFY statusChanged			)
+	Q_PROPERTY(bool			loaded				READ loaded				WRITE setLoaded				NOTIFY loadedChanged			)
+	Q_PROPERTY(bool			installed			READ installed			WRITE setInstalled			NOTIFY installedChanged			)
+	Q_PROPERTY(bool			loading				READ loading			WRITE setLoading			NOTIFY loadingChanged			)
+	Q_PROPERTY(bool			installing			READ installing			WRITE setInstalling			NOTIFY installingChanged		)
+	Q_PROPERTY(Json::Value	requiredPackages	READ requiredPackages	WRITE setRequiredPackages	NOTIFY requiredPackagesChanged	)
 
 public:
 	explicit DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
 	{
-		setStatus(initialize() ? moduleStatus::installNeeded : moduleStatus::loadingNeeded);
+		QDir moduleDir(_moduleFolder.absoluteDir());
+		_name = moduleNameFromFolder(moduleDir.dirName().toStdString());
 	}
 
 	~DynamicModule() override
@@ -96,8 +98,11 @@ public:
 	Json::Value			requestJsonForPackageInstallationRequest();
 	Json::Value			requestJsonForPackageUninstallingRequest();
 
-	void				setInstalled(bool succes);
-	void				setLoaded(bool succes);
+	void				setInstalled(bool installed);
+	void				setLoaded(bool loaded);
+	void				setUnloaded();
+	void				setLoadingSucces(bool succes);
+	void				setInstallingSucces(bool succes);
 	void				setLoadingNeeded();
 	void				setStatus(moduleStatus newStatus);
 
@@ -127,6 +132,7 @@ public:
 	void setInstallModulePackageNeeded();
 	void setInstallRequiredPackagesNeeded();
 	void regenerateModulePackage();
+	void initialize(); //returns true if install of package(s) should be done
 
 public slots:
 	void setInstallLog(QString installLog);
@@ -134,6 +140,8 @@ public slots:
 
 	void setLoading(bool loading);
 	void setInstalling(bool installing);
+	void setRequiredPackages(Json::Value requiredPackages);
+	void reloadDescription();
 
 signals:
 	void installLogChanged();
@@ -143,9 +151,12 @@ signals:
 	void installedChanged(bool installed);
 	void loadingChanged(bool loading);
 	void installingChanged(bool installing);
+	void requiredPackagesChanged();
+	void registerForLoading(const std::string & moduleName);
+	void registerForInstalling(const std::string & moduleName);
+	void descriptionReloaded();
 
 private:
-	bool		initialize(); //returns true if install of package(s) should be done
 	void		generateRPackage();
 	void		createRLibraryFolder();
 	std::string generateNamespaceFileForRPackage();
@@ -175,8 +186,6 @@ private:
 	RibbonEntries	_ribbonEntries;
 	const char		*_libraryRName		= "libraryR",
 					*_exposedPostFix	= "_exposed";
-
-
 };
 
 typedef std::vector<DynamicModule*> DynamicModuleVec;

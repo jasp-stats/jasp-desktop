@@ -73,7 +73,7 @@ public slots:
 	void setModuleNameQ(QString moduleName)							{ setModuleName(moduleName.toStdString()); }
 	void somePropertyChanged()										{ emit iChanged(this); }
 	void setDynamicModules(DynamicModules * dynamicModules)			{ _dynamicModules = dynamicModules; }
-
+	void descriptionReloaded();
 
 signals:
 	void enabledChanged();
@@ -97,6 +97,7 @@ private:
 	std::string						_title				= "",
 									_moduleName			= "";
 	DynamicModules				*	_dynamicModules		= nullptr;
+	Modules::DynamicModule		*	_module				= nullptr;
 };
 
 

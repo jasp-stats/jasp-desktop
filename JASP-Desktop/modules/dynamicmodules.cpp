@@ -76,10 +76,12 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
 		_modules[moduleName] = newMod;
 		_moduleNames.push_back(moduleName);
 
-		emit dynamicModuleAdded(newMod);
+		connect(newMod, &Modules::DynamicModule::registerForLoading,	this, &DynamicModules::registerForLoading);
+		connect(newMod, &Modules::DynamicModule::registerForInstalling, this, &DynamicModules::registerForInstalling);
 
-		if(newMod->installNeeded())
-			_modulesInstallPackagesNeeded.insert(moduleName);
+		newMod->initialize();
+
+		emit dynamicModuleAdded(newMod);
 
 		return true;
 	}
@@ -99,10 +101,7 @@ std::string DynamicModules::loadModule(const std::string & moduleName)
 
 
 		Modules::DynamicModule	*loadMe	= _modules[moduleName];
-
-		if(loadMe->installNeeded())			_modulesInstallPackagesNeeded.insert(moduleName);
-		else if(loadMe->loadingNeeded())	registerForLoading(moduleName);
-		//else								throw std::runtime_error("A module("+ loadMe->name() +") that does not require installing or loading was \"loaded\" into JASP, this can't be right.");
+		loadMe->setLoadingNeeded();
 
 		return moduleName;
 	}
@@ -129,7 +128,7 @@ void DynamicModules::registerForLoading(const std::string & moduleName)
 	_modulesToBeLoaded.insert(moduleName);
 }
 
-bool DynamicModules::installModule(const std::string & moduleZipFilename)
+bool DynamicModules::unpackAndInitializeModule(const std::string & moduleZipFilename)
 {
 	if(!QFile(QString::fromStdString(moduleZipFilename)).exists())
 	{
@@ -161,7 +160,7 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 		Modules::DynamicModule * dynMod		= _modules[moduleName];
 		_modulesToBeUnloaded[moduleName]	= dynMod->requestJsonForPackageUnloadingRequest();
 
-		dynMod->setLoadingNeeded();
+		dynMod->setUnloaded();
 
 		emit dynamicModuleUnloadBegin(dynMod);
 	}
@@ -191,6 +190,8 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 	if(_modules.count(moduleName) > 0)
 	{
+		_modules[moduleName]->setInstalled(false);
+
 		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
 			if(_moduleNames[size_t(i)] == moduleName)
 				_moduleNames.erase(_moduleNames.begin() + i);
@@ -261,17 +262,15 @@ Json::Value DynamicModules::getJsonForPackageUnloadingRequest()
 void DynamicModules::installationPackagesFailed(const std::string & moduleName, const std::string & errorMessage)
 {
 	if(_modules.count(moduleName) > 0)
-		_modules[moduleName]->setInstalled(false);
+		_modules[moduleName]->setInstallingSucces(false);
 
+	MessageForwarder::showWarning("Installation of Module " + moduleName + " failed", "The installation of Module "+ moduleName+ " failed with the following errormessage:\n"+errorMessage);
 }
 
 void DynamicModules::installationPackagesSucceeded(const std::string & moduleName)
 {
 	std::cout << "Installing packages for module (" << moduleName<< ") succeeded!" << std::endl;
-	_modules[moduleName]->setInstalled(true);
-
-	if(_modules[moduleName]->loadingNeeded())	registerForLoading(moduleName);
-	else										MessageForwarder::showWarning("Unexpected! Module "+moduleName+" was just installed but doesn't need/want to be loaded..");
+	_modules[moduleName]->setInstallingSucces(true);
 
 	if(_modules[moduleName]->loaded())	//If the package is already loaded it might be hard to convince R to reread it, so let's just restart the engines
 	{
@@ -287,7 +286,7 @@ void DynamicModules::installationPackagesSucceeded(const std::string & moduleNam
 void DynamicModules::loadingFailed(const std::string & moduleName, const std::string & errorMessage)
 {
 	std::cout << "Loading packages for module (" << moduleName << ") failed because of: " << errorMessage << std::endl;
-	_modules[moduleName]->setLoaded(false);
+	_modules[moduleName]->setLoadingSucces(false);
 }
 
 void DynamicModules::loadingSucceeded(const std::string & moduleName)
@@ -295,7 +294,7 @@ void DynamicModules::loadingSucceeded(const std::string & moduleName)
 	std::cout << "Loading packages for module (" << moduleName<< ") succeeded!" << std::endl;
 
 	if(moduleName != "*")
-		_modules[moduleName]->setLoaded(true);
+		_modules[moduleName]->setLoadingSucces(true);
 }
 
 Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
@@ -339,7 +338,7 @@ QString DynamicModules::installJASPModule(const QString &  filepath)
 	std::string name	= Modules::DynamicModule::moduleNameFromFolder(path.substr(slash == std::string::npos ? 0 : slash + 1));
 	name				= name.substr(0, name.find_last_of('.')); //remove .jaspMod
 
-	installModule(path);
+	unpackAndInitializeModule(path);
 
 	return QString::fromStdString(name);
 }
@@ -405,16 +404,17 @@ void DynamicModules::installJASPDeveloperModule()
 
 void DynamicModules::devModCopyDescription()
 {
-	QFileInfo src(_devModSourceDirectory.filePath("description.json"));
-	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName()) + "description.json"));
+	const QString descJson = "description.json";
+	QFileInfo src(_devModSourceDirectory.filePath(descJson));
+	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName())) + descJson);
 
 	if(!src.exists())
 	{
 		if(dst.exists())
-			MessageForwarder::showWarning("Missing description.json", "You seem to have removed description.json from your development module directory. Without it your module cannot work, make sure to put it back. For now your old description file will be kept.");
+			MessageForwarder::showWarning("Missing "+descJson.toStdString(), "You seem to have removed "+descJson.toStdString()+" from your development module directory. Without it your module cannot work, make sure to put it back. For now your old "+descJson.toStdString()+" file will be kept.");
 		else
 		{
-			MessageForwarder::showWarning("Missing description.json", "You seem to have never had a description.json in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
+			MessageForwarder::showWarning("Missing "+descJson.toStdString(), "You seem to have never had a "+descJson.toStdString()+" in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
 			uninstallModule(developmentModuleName());
 		}
 		return;
@@ -427,10 +427,41 @@ void DynamicModules::devModCopyDescription()
 	dstFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
 
 	dstFile.write(srcFile.readAll());
+	srcFile.close();
+	dstFile.close();
 
 	delete _devModDescriptionWatcher;
 
 	_devModDescriptionWatcher	= new QFileSystemWatcher({src.absoluteFilePath()}, this);
+
+	connect(_devModDescriptionWatcher, &QFileSystemWatcher::fileChanged, [=](const QString & path)
+	{
+		if(path != src.absoluteFilePath())
+			throw std::runtime_error("This watcher ought to watch just a single file! ("+src.absoluteFilePath().toStdString()+")");
+
+		if(src.exists()) //file changed because it still exists
+		{
+#ifdef JASP_DEBUG
+		std::cout << "Watched file " << descJson.toStdString() << " was modified." << std::endl;
+#endif
+			QFile	srcFileChanged(src.absoluteFilePath()),
+					dstFileChanged(dst.absoluteFilePath());
+
+			srcFileChanged.open(QIODevice::ReadOnly);
+			dstFileChanged.open(QIODevice::WriteOnly | QIODevice::Truncate);
+			dstFileChanged.write(srcFileChanged.readAll());
+
+			srcFileChanged.close();
+			dstFileChanged.close();
+
+			this->dynamicModule(developmentModuleName())->reloadDescription();
+		}
+		else
+		{
+			MessageForwarder::showWarning(descJson.toStdString() + " was removed!", "You seem to have removed "+descJson.toStdString()+" but this file is required for your module to work. The development module is going to be uninstalled now.");
+			uninstallModule(developmentModuleName());
+		}
+	});
 }
 
 void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & watcher)
@@ -502,6 +533,8 @@ void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & wat
 			srcFile.open(QIODevice::ReadOnly);
 			dstFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
 			dstFile.write(srcFile.readAll());
+			srcFile.close();
+			dstFile.close();
 		}
 		else
 		{

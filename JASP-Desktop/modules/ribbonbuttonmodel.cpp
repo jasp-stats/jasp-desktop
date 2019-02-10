@@ -50,15 +50,26 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 	bindYourself();
 }
 
-RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * module)  : QAbstractListModel(parent)
+RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * module)  : QAbstractListModel(parent), _module(module)
 {
-	setRibbonEntries(	module->ribbonEntries()		);
-	setTitle(			module->title()				);
+	setRibbonEntries(	_module->ribbonEntries()	);
+	setTitle(			_module->title()			);
+	setRequiresDataset(	_module->requiresDataset()	);
 	setIsDynamic(		true						);
-	setRequiresDataset(	module->requiresDataset()	);
-	setModuleName(		module->name()				);
+	setModuleName(		_module->name()				);
 
 	bindYourself();
+
+	connect(_module, &Modules::DynamicModule::DynamicModule::descriptionReloaded, this, &RibbonButtonModel::descriptionReloaded);
+}
+
+void RibbonButtonModel::descriptionReloaded()
+{
+	beginResetModel();
+	setRibbonEntries(	_module->ribbonEntries()	);
+	setTitle(			_module->title()			);
+	setRequiresDataset(	_module->requiresDataset()	);
+	endResetModel();
 }
 
 void RibbonButtonModel::bindYourself()
@@ -105,6 +116,10 @@ QHash<int, QByteArray> RibbonButtonModel::roleNames() const
 
 void RibbonButtonModel::setRibbonEntries(Modules::RibbonEntries ribbonEntries)
 {
+	for(auto * oldMenuModel : _analysisMenuModels)
+		delete oldMenuModel;
+	_analysisMenuModels.clear();
+
 	_ribbonEntries = ribbonEntries;
 
 	for (auto * ribbonEntry : _ribbonEntries)

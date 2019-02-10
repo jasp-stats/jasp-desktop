@@ -26,7 +26,7 @@ DEFINES += "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
 
 
 BUILDING_JASP_ENGINE=false
-DEFINES += PRINT_ENGINE_MESSAGES
+#DEFINES += PRINT_ENGINE_MESSAGES
 
 #macx | windows | exists(/app/lib/*) {
 #	message(using libjson static)

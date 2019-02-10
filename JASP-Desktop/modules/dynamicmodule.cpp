@@ -30,13 +30,11 @@ ModuleException::ModuleException(std::string moduleName, std::string problemDesc
 
 const char * standardRIndent = "  ";
 
-bool DynamicModule::initialize()
+void DynamicModule::initialize()
 {
 	//Check some stuff
 	_moduleFolder.makeAbsolute();
 	QDir moduleDir(_moduleFolder.absoluteDir());
-
-	_name = moduleNameFromFolder(moduleDir.dirName().toStdString());
 
 	if(!_moduleFolder.exists())				throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " does not exist!");
 	else if(!_moduleFolder.isDir())			throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " is not a directory!");
@@ -106,7 +104,7 @@ bool DynamicModule::initialize()
 	try { checkForExistence(_libraryRName);				} catch(...) {	createRLibraryFolder();	shouldInstall = true; }
 	try { checkForExistence(generatedPackageName());	} catch(...) {	generateRPackage();		shouldInstall = true; }
 
-	return shouldInstall;
+	setStatus(shouldInstall ? moduleStatus::installNeeded : moduleStatus::loadingNeeded);
 }
 
 void DynamicModule::setLoadingNeeded()
@@ -262,7 +260,7 @@ std::string DynamicModule::generateModuleInstallingR(bool installRequiredPackage
 	//out << "print(paste('ping=', pingr::ping('cloud.r-project.org', count=2)));\n";
 	//out <<" print(Sys.getenv());\n";
 
-	R			<< "libPathsToUse <- c(.libPaths(), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
+	R			<< "libPathsToUse <- c(.libPaths(.Library), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
 
 	if(installModulePkg)	{			installLog	<< "Installing module " << _name;
 		if(installRequiredPackages)		installLog	<< ", with required packages: ";
@@ -441,36 +439,53 @@ void DynamicModule::setLoadLog(QString loadLog)
 	emit loadLogChanged();
 }
 
-void DynamicModule::setInstalled(bool succes)
+void DynamicModule::setInstallingSucces(bool succes)
 {
 	setStatus(succes ? moduleStatus::loadingNeeded	: moduleStatus::error);
 	setInstallLog(installLog() + "Installation " + (succes ? "succeeded" : "failed") + "\n");
 
-	if(_installed != succes)
-	{
-		_installed = succes;
-
-		emit installedChanged(_installed);
-
-		if(_installed && installing())
-			setInstalling(false);
-	}
+	setInstalled(succes);
+	setInstalling(false);
 }
 
-void DynamicModule::setLoaded(bool succes)
+
+void DynamicModule::setInstalled(bool installed)
+{
+	if(_installed != installed)
+	{
+		_installed = installed;
+
+		emit installedChanged(_installed);
+	}
+
+
+	if(installing())
+		setInstalling(false);
+}
+
+void DynamicModule::setLoadingSucces(bool succes)
 {
 	setStatus(succes ? moduleStatus::readyForUse		: moduleStatus::error);
 	setLoadLog(loadLog() + "Loading " + (succes ? "succeeded" : "failed") + "\n");
 
-	if(_loaded != succes)
+	setLoaded(succes);
+	setLoading(false);
+}
+
+void DynamicModule::setUnloaded()
+{
+	setLoaded(false);
+	setLoading(false);
+}
+
+void DynamicModule::setLoaded(bool loaded)
+{
+	if(_loaded != loaded)
 	{
-		_loaded = succes;
+		_loaded = loaded;
 
 		emit loadedChanged(_loaded);
-
-		if(_loaded && loading())
-			setLoading(false);
-	}
+	}		
 }
 
 void DynamicModule::setLoading(bool loading)
@@ -499,6 +514,17 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	_status = newStatus;
 
 	emit statusChanged();
+
+	switch(_status)
+	{
+	case moduleStatus::loadingNeeded:			emit registerForLoading(_name);			break;
+	case moduleStatus::installNeeded:
+	case moduleStatus::installModPkgNeeded:
+	case moduleStatus::installReqPkgsNeeded:	emit registerForInstalling(_name);		break;
+	case moduleStatus::error:
+		std::cout << "Just set an error on the status of module "<< _name << std::endl;	break;
+	default:																			break;
+	}
 }
 
 std::string	DynamicModule::moduleNameFromFolder(std::string folderName)
@@ -529,6 +555,43 @@ void DynamicModule::regenerateModulePackage()
 {
 	generateRPackage();
 	setInstallModulePackageNeeded();
+}
+
+void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
+{
+	if (_requiredPackages == requiredPackages)
+		return;
+
+	_requiredPackages = requiredPackages;
+	emit requiredPackagesChanged();
+
+	setInstallRequiredPackagesNeeded();
+}
+
+void DynamicModule::reloadDescription()
+{
+	QFile descriptionFile(_moduleFolder.absoluteFilePath() + "\description.json");
+
+	descriptionFile.open(QIODevice::ReadOnly);
+
+	Json::Value descriptionJson;
+	Json::Reader().parse(descriptionFile.readAll().toStdString(), descriptionJson);
+
+	setRequiredPackages(descriptionJson["requiredPackages"]);
+
+	for(auto * ribbonEntry : _ribbonEntries)
+		delete ribbonEntry;
+	_ribbonEntries.clear();
+
+	for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
+		_ribbonEntries.push_back(new RibbonEntry(ribbonEntry, this));
+
+	Json::Value & moduleDescription = descriptionJson["moduleDescription"];
+	_title							= moduleDescription.get("title",			_name).asString();
+	_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
+
+
+	emit descriptionReloaded();
 }
 
 }

@@ -38,11 +38,9 @@ public:
 
 	void		initializeInstalledModules();
 
-	bool		installModule(				const	std::string & moduleZipFilename);
+	bool		unpackAndInitializeModule(				const	std::string & moduleZipFilename);
 	void		uninstallModule(			const	std::string & moduleName);
 	std::string	loadModule(					const	std::string & moduleName);
-	void		registerForInstalling(		const	std::string & moduleName);
-	void		registerForLoading(			const	std::string & moduleName);
 	bool		initializeModuleFromDir(			std::string   moduleDir);
 	void		unloadModule(				const	std::string & moduleName);
 
@@ -83,6 +81,8 @@ public slots:
 	void installationPackagesFailed(	const std::string & moduleName, const std::string & errorMessage);
 	void loadingSucceeded(				const std::string & moduleName);
 	void loadingFailed(					const std::string & moduleName, const std::string & errorMessage);
+	void registerForInstalling(			const std::string & moduleName);
+	void registerForLoading(			const std::string & moduleName);
 
 signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
