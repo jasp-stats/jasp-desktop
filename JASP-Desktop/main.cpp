@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 	QString filePathQ(QString::fromStdString(filePath));
 
 	if(!dirTest)
-		try
+		//try
 		{
 			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
@@ -218,7 +218,8 @@ int main(int argc, char *argv[])
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
 			return a.exec();
 		}
-		catch(...) { return -1; }
+	//	catch(std::exception & e) { std::cerr << "Expection ocurred: " << e.what() << std::endl;  return -1; }
+	//	catch(...) { return -1; }
 	else
 	{
 		int		failures	= 0,

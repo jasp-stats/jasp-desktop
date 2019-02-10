@@ -78,6 +78,7 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
 
 		connect(newMod, &Modules::DynamicModule::registerForLoading,	this, &DynamicModules::registerForLoading);
 		connect(newMod, &Modules::DynamicModule::registerForInstalling, this, &DynamicModules::registerForInstalling);
+		connect(newMod, &Modules::DynamicModule::descriptionReloaded,	this, &DynamicModules::descriptionReloaded);
 
 		newMod->initialize();
 
@@ -314,11 +315,9 @@ Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	if(parts.size() != 3)
 		throw Modules::ModuleException("No module", "This isnt a coded reference");
 
-	std::string moduleName		= parts[0],
-				ribbonTitle		= parts[1],
-				analysisTitle	= parts[2];
+	std::string moduleName		= parts[0];
 
-	return dynamicModule(moduleName)->retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
+	return dynamicModule(moduleName)->retrieveCorrespondingAnalysisEntry(codedReference);
 }
 
 bool DynamicModules::isFileAnArchive(const QString &  filepath)
@@ -354,6 +353,12 @@ void DynamicModules::installJASPDeveloperModule()
 	std::string origin	= Settings::value(Settings::DEVELOPER_FOLDER).toString().toStdString(),
 				name	= developmentModuleName(),
 				dest	= moduleDirectory(name);
+
+	if(origin == "")
+	{
+		MessageForwarder::showWarning("Select a folder", "To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced.");
+		return;
+	}
 
 	if(moduleIsInstalled(name))
 		uninstallModule(name);
@@ -473,12 +478,15 @@ void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & wat
 
 	if(!src.exists())
 	{
-		if(dst.exists())
-			MessageForwarder::showWarning("Missing description.json", "You seem to have removed the folder " + folder.toStdString() + " from your development module directory. Without it your module cannot work, make sure to put it back. For now your old folder will be kept.");
-		else
+		if(folder != "help") //help is not really necessary
 		{
-			MessageForwarder::showWarning("Missing description.json", "You seem to have never had the folder " + folder.toStdString() + " in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
-			uninstallModule(developmentModuleName());
+			if(dst.exists())
+				MessageForwarder::showWarning("Missing description.json", "You seem to have removed the folder " + folder.toStdString() + " from your development module directory. Without it your module cannot work, make sure to put it back. For now your old folder will be kept.");
+			else
+			{
+				MessageForwarder::showWarning("Missing description.json", "You seem to have never had the folder " + folder.toStdString() + " in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
+				uninstallModule(developmentModuleName());
+			}
 		}
 		return;
 	}

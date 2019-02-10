@@ -111,8 +111,9 @@ public:
 	RibbonEntry*		ribbonEntry(const std::string & ribbonTitle) const;
 	RibbonEntry*		operator[](const std::string & ribbonTitle) const { return ribbonEntry(ribbonTitle); }
 
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const;
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle)	const;
 
 	static std::string	moduleNameFromFolder(std::string folderName);
 
@@ -154,7 +155,7 @@ signals:
 	void requiredPackagesChanged();
 	void registerForLoading(const std::string & moduleName);
 	void registerForInstalling(const std::string & moduleName);
-	void descriptionReloaded();
+	void descriptionReloaded(Modules::DynamicModule * dynMod);
 
 private:
 	void		generateRPackage();

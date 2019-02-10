@@ -363,7 +363,11 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 #endif
 
 	if(_slaveProcess != nullptr && _slaveProcess != jaspEngineProcess)
-		throw std::runtime_error("Engine already has jaspEngine process!");
+	{
+		_slaveProcess->kill();
+		delete _slaveProcess;
+		std::cout << "EngineRepresentation::restartEngine says: Engine already has jaspEngine process!" << std::endl;
+	}
 
 	sendString("");
 	setSlaveProcess(jaspEngineProcess);

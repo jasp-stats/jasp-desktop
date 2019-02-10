@@ -45,14 +45,30 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 }
 
 Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry)
-	: QObject(analyses), _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()), _version(AppInfo::version), _moduleData(analysisEntry), _analyses(analyses)
+	: QObject(analyses), _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()),
+	  _moduleData(analysisEntry), _dynamicModule(_moduleData->dynamicModule()), _version(AppInfo::version), _analyses(analyses)
 {
+	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
 	bindOptionHandlers();
 }
 
 Analysis::~Analysis()
 {
 	delete _options;
+}
+
+bool Analysis::checkAnalysisEntry()
+{
+	try
+	{
+		if(_codedReferenceToAnalysisEntry != "" && _dynamicModule != nullptr)
+			_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
+		return true;
+	}
+	catch (Modules::ModuleException & e)
+	{
+		return false;
+	}
 }
 
 void Analysis::bindOptionHandlers()

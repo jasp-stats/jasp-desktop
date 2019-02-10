@@ -89,6 +89,7 @@ signals:
 	void dynamicModuleUninstalled(const std::string & moduleName);
 	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
 	void dynamicModuleChanged(Modules::DynamicModule * dynamicModule);
+	void descriptionReloaded(Modules::DynamicModule * dynMod);
 
 	void stopEngines();
 	void restartEngines();

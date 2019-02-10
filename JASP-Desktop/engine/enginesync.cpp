@@ -423,18 +423,24 @@ void EngineSync::subProcessStarted()
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
 {
-	emit engineTerminated();
+	if(!_engineStarted)
+		return;
 
 	qDebug() << "subprocess error" << error;
+	emit engineTerminated();
+
 }
 
 void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+	if(!_engineStarted)
+		return;
+
 	if(exitCode != 0 || exitStatus == QProcess::ExitStatus::CrashExit)
 	{
+		qDebug() << "subprocess finished" << exitCode;
 		emit engineTerminated();
 
-		qDebug() << "subprocess finished" << exitCode;
 	}
 }
 
@@ -445,6 +451,8 @@ void EngineSync::stopEngines()
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
 		engine->process();
+
+	_engineStarted = false;
 
 	for(EngineRepresentation * e : _engines)
 		e->stopEngine();
@@ -480,7 +488,7 @@ void EngineSync::stopEngines()
 		std::cout << "Engines stopped" << std::endl;
 #endif
 
-	_engineStarted = false;
+
 }
 
 void EngineSync::pause()

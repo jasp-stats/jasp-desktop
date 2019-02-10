@@ -63,7 +63,7 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * m
 	connect(_module, &Modules::DynamicModule::DynamicModule::descriptionReloaded, this, &RibbonButtonModel::descriptionReloaded);
 }
 
-void RibbonButtonModel::descriptionReloaded()
+void RibbonButtonModel::descriptionReloaded(Modules::DynamicModule * dynMod)
 {
 	beginResetModel();
 	setRibbonEntries(	_module->ribbonEntries()	);

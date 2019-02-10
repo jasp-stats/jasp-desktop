@@ -73,7 +73,7 @@ public slots:
 	void setModuleNameQ(QString moduleName)							{ setModuleName(moduleName.toStdString()); }
 	void somePropertyChanged()										{ emit iChanged(this); }
 	void setDynamicModules(DynamicModules * dynamicModules)			{ _dynamicModules = dynamicModules; }
-	void descriptionReloaded();
+	void descriptionReloaded(Modules::DynamicModule * dynMod);
 
 signals:
 	void enabledChanged();

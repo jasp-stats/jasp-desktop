@@ -416,7 +416,25 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 	return ribbonEntry(ribbonTitle)->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 }
 
-AnalysisEntry*  DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const
+AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & codedReference) const
+{
+
+	auto parts = stringUtils::splitString(codedReference, '~');
+
+	if(parts.size() != 3)
+		throw Modules::ModuleException("No module", "This isnt a coded reference");
+
+	std::string moduleName		= parts[0],
+				ribbonTitle		= parts[1],
+				analysisTitle	= parts[2];
+
+	if(_name != moduleName)
+		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
+
+	return retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
+}
+
+AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const
 {
 	return ribbonEntry(ribbonTitle)->analysisEntry(analysisTitle);
 }
@@ -530,7 +548,15 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 std::string	DynamicModule::moduleNameFromFolder(std::string folderName)
 {
 	//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
-	folderName.erase(std::remove_if(folderName.begin(), folderName.end(), [](unsigned char x) { return !std::isalnum(x, std::locale()); }), folderName.end());
+	folderName.erase(std::remove_if(folderName.begin(), folderName.end(), [](unsigned char x)
+	{
+#ifdef __WIN32__
+		return !std::isalnum(x, std::locale());
+#else
+		return !std::isalnum(x);
+#endif
+
+	}), folderName.end());
 
 	return folderName;
 }
@@ -575,7 +601,11 @@ void DynamicModule::reloadDescription()
 	descriptionFile.open(QIODevice::ReadOnly);
 
 	Json::Value descriptionJson;
-	Json::Reader().parse(descriptionFile.readAll().toStdString(), descriptionJson);
+	std::string descriptionFileText = descriptionFile.readAll().toStdString();
+	if(descriptionFileText.size() == 0) //ignore it when it is empty
+		return;
+
+	Json::Reader().parse(descriptionFileText, descriptionJson);
 
 	setRequiredPackages(descriptionJson["requiredPackages"]);
 
@@ -591,7 +621,7 @@ void DynamicModule::reloadDescription()
 	_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
 
 
-	emit descriptionReloaded();
+	emit descriptionReloaded(this);
 }
 
 }

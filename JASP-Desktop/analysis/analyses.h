@@ -103,6 +103,7 @@ public slots:
 	void setVisible(bool visible);
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
+	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
 
 
 signals:

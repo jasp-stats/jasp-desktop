@@ -88,6 +88,8 @@ public:
 	void setUserData(Json::Value userData)				{ _userData = userData;						}
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;					}
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;		}
+
+	bool checkAnalysisEntry();
 	
 	//getters
 	const	Json::Value		&	results()			const	{ return _results;						}
@@ -107,7 +109,7 @@ public:
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;				}
 	const	Json::Value		&	getImgResults()		const	{ return _imgResults;					}
 			DataSet			*	getDataSet()		const;
-	Modules::DynamicModule	*	dynamicModule()		const	{ return _moduleData == nullptr ? nullptr : _moduleData->dynamicModule(); }
+	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;				}
 			AnalysisForm	*	form()				const	{ return _analysisForm;					}
 
 			void		refresh();
@@ -178,8 +180,11 @@ private:
 	int						_revision		= 0;
 
 	Modules::AnalysisEntry*	_moduleData		= nullptr;
+	Modules::DynamicModule* _dynamicModule	= nullptr;
 	Analyses*				_analyses		= nullptr;
 	AnalysisForm*			_analysisForm	= nullptr;	
+
+	std::string				_codedReferenceToAnalysisEntry = "";
 };
 
 #endif // ANALYSIS_H

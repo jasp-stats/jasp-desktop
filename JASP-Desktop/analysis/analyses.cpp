@@ -216,6 +216,18 @@ void Analyses::refreshAnalysesOfDynamicModule(Modules::DynamicModule * module)
 			keyval.second->refresh();
 }
 
+void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module)
+{
+
+	std::set<int> removeIds;
+	for(auto & keyval : _analysisMap)
+		if(keyval.second->dynamicModule() == module  && !keyval.second->checkAnalysisEntry()) // Check if the analysisEntry this analysis is based still exists
+			removeIds.insert(keyval.first);
+
+	for(const int & id : removeIds)
+		removeAnalysisById(size_t(id));
+}
+
 void Analyses::refreshAllAnalyses()
 {
 	for(auto idAnalysis : _analysisMap)
@@ -354,10 +366,8 @@ void Analyses::analysisClickedHandler(QString analysisTitle, QString ribbonTitle
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)
-		create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisTitle.toStdString()));
-	else
-		create(module, analysisTitle);
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisTitle.toStdString()));
+	else							create(module, analysisTitle);
 }
 
 

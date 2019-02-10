@@ -15,12 +15,12 @@
 	"ribbonEntries":
 	[
 		{
-			"title": 	"DescriptivesModule",
+			"title": 	"Modular Madness",
 			"icon": 	"analysis-descriptives.svg",
 			"analyses":
 			[
 				{
-					"title":	"Descriptives from Module",
+					"title":	"Modular Madness!!",
 					"qml":		"Descriptives.qml",
 					"function":	"Descriptives"
 				}
