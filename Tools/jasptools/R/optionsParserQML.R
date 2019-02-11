@@ -1,5 +1,4 @@
-.analysisOptionsFromQMLFile <- function(analysis) {
-  file <- .pathToOptionsFile(analysis, "qml")
+.analysisOptionsFromQMLFile <- function(file) {
   options <- .readQML(file)
   return(options)
 }

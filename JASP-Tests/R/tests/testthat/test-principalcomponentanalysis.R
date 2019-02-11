@@ -56,7 +56,7 @@ test_that("Factor correlation table matches", {
   options$incl_correlations <- TRUE
   results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
   table <- results[["results"]][["factorCorrelations"]][["data"]]
-  expect_equal_tables(table, list("RC 1", 1))
+  expect_equal_tables(table, list("PC 1", 1))
 })
 
 test_that("Missing values works", {

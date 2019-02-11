@@ -290,13 +290,12 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   usesJaspResults <- .usesJaspResults(name)
   if (usesJaspResults) {
-    require("jaspResults")
-    suppressMessages(jaspResults::initJaspResults())
+    loadNamespace('jaspResults')
+    jaspResults::initJaspResults()
     
     runFun <- "runJaspResults"
 
     # this list is a stand in for the 'jaspResultsModule' inside runJaspResults()
-    ns <- "jaspResults"
     envir[["jaspResultsModule"]] <- list(
       create_cpp_jaspResults   = function(name, state) get("jaspResults", envir = .GlobalEnv)
     )

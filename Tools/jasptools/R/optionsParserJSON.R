@@ -16,8 +16,7 @@
 }
 
 
-.analysisOptionsFromJSONFile <- function(analysis) {
-  file <- .pathToOptionsFile(analysis, "json")
+.analysisOptionsFromJSONFile <- function(file) {
   
   analysisOptsRaw <- try(jsonlite::read_json(file), silent = TRUE)
   

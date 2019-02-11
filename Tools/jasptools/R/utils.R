@@ -72,23 +72,27 @@
 }
 
 .usesJaspResults <- function(analysis) {
-  if (.usesQML(analysis)) {
-    file <- .pathToOptionsFile(analysis, "qml")
-    .jaspResultsExistsInQMLFile(file)
+  qmlFile <- .getQMLFile(analysis)
+  if (file.exists(qmlFile)) {
+    .jaspResultsExistsInQMLFile(qmlFile)
   } else {
-    file <- .pathToOptionsFile(analysis, "json")
-    .jaspResultsExistsInJSONFile(file)
+    jsonFile <- .getJSONFile(analysis)
+    if (file.exists(jsonFile)) {
+      .jaspResultsExistsInJSONFile(jsonFile)
+    } else {
+      stop("Could not find the options file for analysis ", analysis)
+    }
   }
 }
 
 .jaspResultsExistsInJSONFile <- function(file) {
   analysisJSON <- try(jsonlite::read_json(file), silent=TRUE)
   if (inherits(analysisJSON, "try-error")) {
-    stop("The JSON file for the analysis you supplied could not be found.
+    stop("The JSON file for the analysis you supplied could not be read.
          Please ensure that (1) its name matches the main R function.")
   }
   
-  jaspResults <- FALSE
+  jaspResults <- TRUE
   if ("jaspResults" %in% names(analysisJSON)) {
     jaspResults <- analysisJSON$jaspResults
   }
@@ -100,9 +104,9 @@
   fileContents <- readChar(file, nchars=fileSize)
   fileContents <- gsub('[[:blank:]]|\\"', "", fileContents)
   
-  jaspResults <- FALSE
-  if (isTRUE(grepl("usesJaspResults:true", fileContents))) {
-    jaspResults <- TRUE
+  jaspResults <- TRUE
+  if (isTRUE(grepl("usesJaspResults:false", fileContents))) {
+    jaspResults <- FALSE
   }
   return(jaspResults)
 }

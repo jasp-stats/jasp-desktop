@@ -67,27 +67,35 @@ analysisOptions <- function(source) {
 }
 
 .analysisOptionsFromFile <- function(analysis) {
-  if (.usesQML(analysis)) {
-    .analysisOptionsFromQMLFile(analysis)
+  qmlFile <- .getQMLFile(analysis)
+  if (file.exists(qmlFile)) {
+    .analysisOptionsFromQMLFile(qmlFile)
   } else {
-    .analysisOptionsFromJSONFile(analysis)
+    jsonFile <- .getJSONFile(analysis)
+    if (file.exists(jsonFile)) {
+      .analysisOptionsFromJSONFile(jsonFile)
+    } else {
+      stop("Could not find the options file for analysis ", analysis)
+    }
   }
 }
 
-.pathToOptionsFile <- function(analysis, type) {
-  if (type != "json" && type != "qml") {
-    stop("Option files can only be .qml or .json")
-  }
-  dir <- .getPkgOption(paste0(type, ".dir"))
-  file <- paste0(analysis, ".", type)
-  return(file.path(dir, file))
+.getJSONFile <- function(analysis) {
+  dir <- .getPkgOption("json.dir")
+  file <- paste0(analysis, ".json")
+  absolutePath <- file.path(dir, file)
+  return(absolutePath)
 }
 
-.usesQML <- function(analysis) {
-  possibleFile <- .pathToOptionsFile(analysis, "qml")
-  if (file.exists(possibleFile)) {
-    return(TRUE)
-  } else {
-    return(FALSE)
+.getQMLFile <- function(analysis) {
+  dir <- .getPkgOption("qml.dir")
+  pathsToFiles <- list.files(dir, pattern = ".qml$", recursive = TRUE)
+  fileNames <- tolower(basename(pathsToFiles))
+  fileName <- tolower(paste0(analysis, ".qml"))
+  if (any(fileNames == fileName)) {
+    relativePath <- pathsToFiles[which(fileNames == fileName)]
+    absolutePath <- file.path(dir, relativePath)
+    return(absolutePath)
   }
+  return("")
 }
