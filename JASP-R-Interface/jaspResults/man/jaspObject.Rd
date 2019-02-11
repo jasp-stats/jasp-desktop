@@ -36,7 +36,8 @@
 		
     \item{\code{addMessage}:}{Adds a message to this object, it is ignored for now.}
     \item{\code{addCitation}:}{Adds a citation to this object, should be specified fully and as you wish it to be shown onscreen or in print.}
-		
+	\item{\code{setError}:}{Set an error on this object. Will make the output in JASP greyed out. Errors set on jaspContainers or jaspResults are propagated to children.}
+	\item{\code{getError}:}{Get the error status of this object.}
 	 }
 }	
 \section{Fields}{
