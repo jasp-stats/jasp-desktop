@@ -33,8 +33,14 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 		obj->_title = field;
 
 	obj->setName(field);
-	if (_error)
+	if (!_alreadyPassedErrorMessage & _passErrorMessageToNextChild) {
+		obj->setErrorMessage(_errorMessage);
+		_alreadyPassedErrorMessage   = true;
+	}
+	else if (_error) 
+	{
 		obj->setError();
+	}
 
 	if(_data_order.count(field) == 0) //this way we can keep the order after removing the original object due to changes/options-changing or whatever because the order will stay the same
 		_data_order[field] = _order_increment++;
@@ -277,4 +283,18 @@ void jaspContainer::setError() {
 	_error = true;
 	for(auto & d : _data)
 		d.second->setError();
+}
+
+void jaspContainer::setErrorMessage(std::string message) {
+	_error = true;
+	_errorMessage = message;
+	if (_data.empty())
+	{
+		_passErrorMessageToNextChild = true;
+	} 
+	else if (!_alreadyPassedErrorMessage)
+	{
+		_data.begin()->second->setErrorMessage(message);
+		_alreadyPassedErrorMessage = true;
+	}
 }
