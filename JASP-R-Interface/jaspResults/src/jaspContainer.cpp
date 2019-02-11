@@ -34,7 +34,7 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	obj->setName(field);
 	if (_error)
-		obj->setError(_error);
+		obj->setError();
 
 	if(_data_order.count(field) == 0) //this way we can keep the order after removing the original object due to changes/options-changing or whatever because the order will stay the same
 		_data_order[field] = _order_increment++;
@@ -273,9 +273,8 @@ void jaspContainer::checkDependenciesChildren(Json::Value currentOptions)
 		_data.erase(removeThis);
 }
 
-void jaspContainer::setError(bool error) {
-	_error = error;
-	if (error)
-		for(auto & d : _data) 
-			d.second->setError(_error);
+void jaspContainer::setError() {
+	_error = true;
+	for(auto & d : _data)
+		d.second->setError();
 }
