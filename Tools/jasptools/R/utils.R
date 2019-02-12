@@ -29,8 +29,10 @@
 
 # it is necessary to export custom S3 methods to the global envir as otherwise they are not registered
 .exportS3Methods <- function(env) {
-  if (identical(env, .GlobalEnv))
+  if (identical(env, .GlobalEnv)) {
+    .setInternal("s3Methods", NULL)
     return(invisible(NULL))
+  }
 
   objs <- ls(env, all.names=FALSE)
   s3 <- vapply(objs, utils::isS3method, envir=env, FUN.VALUE=logical(1))
@@ -45,7 +47,7 @@
 
 .removeS3Methods <- function() {
   objs <- .getInternal("s3Methods")
-  if (is.null(objs))
+  if (length(objs))
     return(invisible(NULL))
   rm(list=objs, envir=.GlobalEnv)
 }
@@ -69,33 +71,55 @@
   }
 }
 
-.getJSON <- function(analysis, ...) {
-  file <- file.path(.getPkgOption("json.dir"), paste0(analysis, ".json"))
-  analysisJSON <- try(readLines(file, warn=FALSE), silent=TRUE)
-  if (inherits(analysisJSON, "try-error")) {
-    stop("The JSON file for the analysis you supplied could not be found.
-         Please ensure that (1) its name matches the main R function
-         and (2) your working directory is set properly.")
-  }
-
-  args <- list(...)
-  if (length(args) == 0)
-   return(analysisJSON)
-
-  result <- list()
-  optsList <- jsonlite::read_json(file)
-  for (arg in args) {
-    keys <- unlist(strsplit(arg, "=>", fixed=TRUE))
-    value <- optsList
-    for (key in keys) {
-      value <- value[[key]]
+.usesJaspResults <- function(analysis) {
+  qmlFile <- .getQMLFile(analysis)
+  if (file.exists(qmlFile)) {
+    .jaspResultsExistsInQMLFile(qmlFile)
+  } else {
+    jsonFile <- .getJSONFile(analysis)
+    if (file.exists(jsonFile)) {
+      .jaspResultsExistsInJSONFile(jsonFile)
+    } else {
+      stop("Could not find the options file for analysis ", analysis)
     }
-    if (is.null(value))
-      result[[key]] <- "null"
-    else
-      result[[key]] <- jsonlite::toJSON(value)
   }
-  return(result)
+}
+
+.jaspResultsExistsInJSONFile <- function(file) {
+  analysisJSON <- try(jsonlite::read_json(file), silent=TRUE)
+  if (inherits(analysisJSON, "try-error")) {
+    stop("The JSON file for the analysis you supplied could not be read.
+         Please ensure that (1) its name matches the main R function.")
+  }
+  
+  jaspResults <- TRUE
+  if ("jaspResults" %in% names(analysisJSON)) {
+    jaspResults <- analysisJSON$jaspResults
+  }
+  return(jaspResults)
+}
+
+.jaspResultsExistsInQMLFile <- function(file) {
+  fileSize <- file.info(file)$size 
+  fileContents <- readChar(file, nchars=fileSize)
+  fileContents <- gsub('[[:blank:]]|\\"', "", fileContents)
+  
+  jaspResults <- TRUE
+  if (isTRUE(grepl("usesJaspResults:false", fileContents))) {
+    jaspResults <- FALSE
+  }
+  return(jaspResults)
+}
+
+.transferPlotsFromjaspResults <- function() {
+  pathPlotsjaspResults <- file.path(tempdir(), "jaspResults", "plots")
+  pathPlotsjasptools <- file.path(tempdir(), "jasptools", "html")
+  if (dir.exists(pathPlotsjaspResults)) {
+    plots <- list.files(pathPlotsjaspResults)
+    if (length(plots) > 0) {
+      file.copy(file.path(pathPlotsjaspResults, plots), pathPlotsjasptools, overwrite=TRUE)
+    }
+  }
 }
 
 .parseUnicode <- function(str) {
@@ -152,14 +176,20 @@
 }
 
 .restoreNamespaces <- function(nms) {
-  addedNamespaces <- setdiff(loadedNamespaces(), nms)
-  if (length(addedNamespaces) > 0) {
-    addedNamespaces <- rev(addedNamespaces) # assuming new pkgs (i.e. dependents) get added later
-    addedNamespaces <- addedNamespaces[addedNamespaces != "jaspResults"]
+  nms <- unique(c(nms, "jasptools", "jaspResults", "JASPgraphs", "Rcpp", "vdiffr", "testthat", "jsonlite"))
+  for (i in 1:2) {
+    if (length(setdiff(loadedNamespaces(), nms)) == 0)
+      break
+    addedNamespaces <- setdiff(loadedNamespaces(), nms)
+    dependencies <- unlist(lapply(addedNamespaces, tools:::dependsOnPkgs))
+    namespaces <- c(dependencies, addedNamespaces)
+    namespaces <- names(sort(table(namespaces), decreasing=TRUE))
+    addedNamespaces <- namespaces[namespaces %in% loadedNamespaces() & !namespaces %in% nms]
     for (namespace in addedNamespaces) {
-      try(unloadNamespace(namespace), silent=TRUE) # this will fail if the pkg is a dependent
+      suppressWarnings(suppressMessages(try(unloadNamespace(namespace), silent=TRUE)))
     }
   }
+  suppressWarnings(R.utils::gcDLLs())
 }
 
 # not used. Could possibly make pkg unloading more targeted, but does not include pkgs used in other (linked) analyses
@@ -201,7 +231,12 @@
 
 collapseTable <- function(rows) {
   if (! is.list(rows) || length(rows) == 0) {
-    stop("expecting input to be a list with table rows")
+    if (.insideTestEnvironment()) {
+      errorMsg <- .getErrorMsgFromLastResults()
+      stop(paste("Tried retrieving table rows from results, but last run of jasptools exited with an error:", errorMsg))
+    } else {
+      stop("expecting input to be a list (with a list for each JASP table row)")
+    }
   }
 
   x <- unname(unlist(rows))
@@ -223,4 +258,30 @@ collapseTable <- function(rows) {
   }
 
   return(analysis)
+}
+
+.insideTestEnvironment <- function() {
+  testthat <- vapply(sys.frames(), 
+    function(frame) 
+      methods::getPackageName(frame) == "testthat", 
+    logical(1))
+  if (any(testthat)) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+.getErrorMsgFromLastResults <- function() {
+  errorMsg <- NULL
+  lastResults <- .getInternal("lastResults")
+  if (jsonlite::validate(lastResults))
+    lastResults <- jsonlite::fromJSON(lastResults)
+    
+  if (is.null(lastResults) || !is.list(lastResults) || is.null(names(lastResults)))
+    return(errorMsg)
+  
+  if (lastResults[["status"]] == "exception" && is.list(lastResults[["results"]]))
+    errorMsg <- lastResults$results$errorMessage
+  
+  return(errorMsg)
 }

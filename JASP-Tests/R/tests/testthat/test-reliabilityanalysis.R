@@ -15,7 +15,7 @@ test_that("Main table results match", {
   options$mcDonaldScale <- TRUE
   options$meanScale <- TRUE
   options$sdScale <- TRUE
-  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
   table <- results[["results"]][["reliabilityScale"]][["data"]]
   expect_equal_tables(table,
     list("scale", 0.535041083185576, 0.558313196445623, 0.667932535083157,
@@ -34,7 +34,7 @@ test_that("Item Statistics table matches", {
   options$mcDonaldItem <- TRUE
   options$meanItem <- TRUE
   options$sdItem <- TRUE
-  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
   table <- results[["results"]][["reliabilityItemsObj"]][["reliabilityItems"]][["data"]]
   expect_equal_tables(table,
     list("contcor1", 0.0618194975467092, 0.0319398198963565, 0.061902485553013,

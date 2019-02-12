@@ -12,7 +12,7 @@ test_that("Main table results match", {
     list(components="facGender"),
     list(components=c("contBinom", "facGender"))
   )
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
   table <- results[["results"]][["logregressionanova"]][["data"]]
   expect_equal_tables(table,
     list("NULL", "", " ", 99, 936.356249443911, " ", " ", "contBinom",
@@ -35,7 +35,7 @@ test_that("Coefficients table matches", {
   options$regressionCoefficientsEstimates <- TRUE
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   options$regressionCoefficientsConfidenceIntervalsInterval <- 0.95
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
   table <- results[["results"]][["logregression"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 3.36441813015886, 0.0536828127084252, 3.25920175066154,

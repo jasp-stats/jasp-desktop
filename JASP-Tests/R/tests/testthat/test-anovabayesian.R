@@ -48,7 +48,7 @@ test_that("Main table results match", {
 
   for (order in c("nullModelTop", "bestModelTop")) {
     options$bayesFactorOrder <- order
-    results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("AnovaBayesian", "test.csv", options)
     table <- results[["results"]][["model comparison"]][["data"]]
     expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
   }
@@ -77,7 +77,7 @@ test_that("Effects table results match", {
 
   for (effectsType in c("allModels", "matchedModels")) {
     options$effectsType <- effectsType
-    results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("AnovaBayesian", "test.csv", options)
     table <- results[["results"]][["effects"]][["data"]]
     expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
   }
@@ -92,7 +92,7 @@ test_that("Post-hoc Comparisons table results match", {
   )
   options$postHocTestsNullControl <- TRUE
   options$postHocTestsVariables <- "facFive"
-  results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaBayesian", "test.csv", options)
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table,
     list(1, 2, 0.319507910772894, 0.0997312866070229, -0.505650193633655,
@@ -117,35 +117,35 @@ test_that("Analysis handles errors", {
   options$dependent <- "debInf"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive", isNuisance=FALSE))
-  results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaBayesian", "test.csv", options)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                    label="Inf check")
 
   options$dependent <- "contNormal"
   options$fixedFactors <- "debSame"
   options$modelTerms <- list(list(components="debSame", isNuisance=FALSE))
-  results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaBayesian", "test.csv", options)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                    label="1-level factor check")
 
   options$dependent <- "contNormal"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive", isNuisance=TRUE))
-  results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaBayesian", "test.csv", options)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                    label="All nuisance check")
 
   # options$dependent <- "debSame"
   # options$fixedFactors <- "facFive"
   # options$modelTerms <- list(list(components="facFive", isNuisance=FALSE))
-  # results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  # results <- jasptools::run("AnovaBayesian", "test.csv", options)
   # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
   #                  label="No variance check")
 
   options$dependent <- "debMiss99"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive", isNuisance=FALSE))
-  results <- jasptools::run("AnovaBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaBayesian", "test.csv", options)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                  label="Too few obs check")
 })

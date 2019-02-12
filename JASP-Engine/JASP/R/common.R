@@ -31,7 +31,9 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
     location <- .fromRCPP(".requestStateFileNameNative")
     root <- location$root
     base::Encoding(root) <- "UTF-8"
+    oldwd <- getwd()
     setwd(root)
+    on.exit(setwd(oldwd))
   }
 
   analysis <- eval(parse(text=name))
@@ -191,7 +193,9 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     location <- .fromRCPP(".requestStateFileNameNative")
     root <- location$root
     base::Encoding(root) <- "UTF-8"
+    oldwd <- getwd()
     setwd(root)
+    on.exit(setwd(oldwd))
   }
 
   #print("analysis    <- eval(parse(text=functionCall)), analysis: ");
@@ -1621,28 +1625,21 @@ isTryError <- function(obj){
 }
 
 .saveState <- function(state) {
-	result <- list()
-	relativePath <- NULL
-	fullPath <- NULL
-	if (base::exists(".requestStateFileNameNative")) {
+	location <- .fromRCPP(".requestStateFileNameNative")
+	relativePath <- location$relativePath
 
-		location <- .fromRCPP(".requestStateFileNameNative")
-
-		relativePath <- location$relativePath
-
-		# when run in jasptools do not save the state, but store it internally
-		searchPath <- search()
-		if ("package:jasptools" %in% searchPath) {
-			jasptools:::.setInternal("state", state)
-			return(list(relativePath = relativePath))
-		}
-
-		base::Encoding(relativePath) <- "UTF-8"
-
-		try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
+	# when run in jasptools do not save the state, but store it internally
+	searchPath <- search()
+	if ("package:jasptools" %in% searchPath) {
+		jasptools:::.setInternal("state", state)
+		return(list(relativePath = relativePath))
 	}
-  result <- list(relativePath = relativePath)
-  return(result)
+
+	base::Encoding(relativePath) <- "UTF-8"
+
+	try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
+  
+	return(list(relativePath = relativePath))
 }
 
 .retrieveState <- function() {
@@ -2809,4 +2806,3 @@ editImage <- function(plotName, type, height, width) {
 
   return(v)
 }
-

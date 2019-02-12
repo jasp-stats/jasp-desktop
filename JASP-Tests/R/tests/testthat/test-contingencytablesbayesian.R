@@ -16,7 +16,7 @@ test_that("Main table results match", {
     name = "Layer 1",
     variables = "facGender"
   ))
-  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   table <- results[["results"]][["Counts Table 1"]][["data"]]
   expect_equal_tables(table,
     list(320, 495, "Count", 815, "control", "f", "TRUE", 334, 202, "Count",
@@ -33,7 +33,7 @@ test_that("Multiple row and column variables give multiple main tables", {
   options <- jasptools::analysisOptions("ContingencyTablesBayesian")
   options$rows <- c("facExperim", "facGender")
   options$columns <- c("contBinom", "facFive")
-  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
 
   pairs <- list(
     c("facExperim", "contBinom"),
@@ -67,7 +67,7 @@ test_that("Bayesian Contingency Tables Tests table results match", {
 
   for (samplingModel in samplingModels) {
     options$samplingModel <- samplingModel
-    results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
     table <- results[["results"]][["Tests Table 1"]][["data"]]
     expect_equal_tables(table, refTables[[samplingModel]], label=paste("Sampling model", samplingModel))
   }
@@ -80,7 +80,7 @@ test_that("Log Odds Ratio table results match", {
   options$columns <- "contBinom"
   options$oddsRatio <- TRUE
   options$oddsRatioCredibleIntervalInterval <- 0.90
-  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   table <- results[["results"]][["Odds Ratio Table 1"]][["data"]]
   expect_equal_tables(table,
     list("Odds ratio", -0.325226942981456, -0.981898524010587, 0.337174584207703,
@@ -88,24 +88,24 @@ test_that("Log Odds Ratio table results match", {
   )
 })
 
-# test_that("Log Odds Ratio Plot matches", {
-#   set.seed(0)
-#   options <- jasptools::analysisOptions("ContingencyTablesBayesian")
-#   options$rows <- "facExperim"
-#   options$columns <- "contBinom"
-#   options$plotPosteriorOddsRatio <- TRUE
-#   options$plotPosteriorOddsRatioAdditionalInfo <- TRUE
-#   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "log-odds-ratio", dir="ContingencyTablesBayesian")
-# })
+test_that("Log Odds Ratio Plot matches", {
+  set.seed(0)
+  options <- jasptools::analysisOptions("ContingencyTablesBayesian")
+  options$rows <- "facExperim"
+  options$columns <- "contBinom"
+  options$plotPosteriorOddsRatio <- TRUE
+  options$plotPosteriorOddsRatioAdditionalInfo <- TRUE
+  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "log-odds-ratio", dir="ContingencyTablesBayesian")
+})
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("ContingencyTablesBayesian")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$counts <- "contNormal"
-  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   errorMsg <- results[["results"]][["Counts Table 1"]][["error"]][["errorMessage"]]
   expect_is(errorMsg, "character")
 })

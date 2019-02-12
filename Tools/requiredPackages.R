@@ -39,18 +39,6 @@ INSTALL_opts <- c("--no-docs", "--no-html", "--no-multiarch")
 options("repos" = "https://cloud.r-project.org")
 
 if (travis) {
-
-  if (!"devtools" %in% installed)
-    install.packages("devtools", INSTALL_opts = INSTALL_opts)
-
-  # install jasptools if necessary
-  if (!"jasptools" %in% installed)
-    devtools::install("Tools/jasptools/", upgrade = "always", quick = TRUE)
-    
-  # install JASPgraphs if necessary
-  if (!"JASPgraphs" %in% installed)
-    devtools::install("JASP-Engine/JASPgraphs", upgrade = "always", quick = TRUE)
-
   # create ~/.R/makevars for C/   C++ compilation flags
   dir.create("~/.R")
   fileConn <- file("~/.R/Makevars")
@@ -89,6 +77,18 @@ if (travis) {
 
   if (!"BH" %in% installed)
     install.packages("BH")
+  
+  
+  if (!"devtools" %in% installed)
+    install.packages("devtools", INSTALL_opts = INSTALL_opts)
+  
+  # install jasptools if necessary
+  if (!"jasptools" %in% installed)
+    devtools::install("Tools/jasptools/", upgrade = "always", quick = TRUE)
+  
+  # install JASPgraphs if necessary
+  if (!"JASPgraphs" %in% installed)
+    devtools::install("JASP-Engine/JASPgraphs", upgrade = "always", quick = TRUE)
 
 }
 

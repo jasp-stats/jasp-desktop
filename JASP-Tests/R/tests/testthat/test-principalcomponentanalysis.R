@@ -14,15 +14,15 @@ test_that("Main tables' results match", {
   options$eigenValuesBox <- 0.95
   options$rotationMethod <- "orthogonal"
   options$orthogonalSelector <- "varimax"
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
 
   table <- results[["results"]][["factorLoadings"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 0.709068975944499, ".", 0.494098364850579, "contGamma",
-         ".", -0.730807163622534, 0.426552751857732, "debCollin1", ".",
-         0.766942636295035, 0.388000487607395, "contcor1", 0.613519408318389,
-         ".", 0.556716214776696, "facFifty", -0.560112933829558, ".",
-         0.683577731988681),
+    list("contNormal", 0.709068975944499, -0.055882219913321, 0.494098364850579,
+         "contGamma", -0.198414056307147, -0.730807163622534, 0.426552751857732,
+         "debCollin1", -0.154267640888904, 0.766942636295035, 0.388000487607395,
+         "contcor1", 0.613519408318389, 0.258607271436745, 0.556716214776696,
+         "facFifty", -0.560112933829558, 0.0519207989938901, 0.683577731988681),
     label="Factor loadings table"
   )
 
@@ -32,20 +32,21 @@ test_that("Main tables' results match", {
   )
 })
 
-# test_that("Path diagram matches", {
-#   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-#   options$variables <- list("contNormal", "contGamma")
-#   options$incl_pathDiagram <- TRUE
-#   results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
-# })
+test_that("Path diagram matches", {
+  skip("base plots are not supported in regression testing")
+  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
+  options$variables <- list("contNormal", "contGamma")
+  options$incl_pathDiagram <- TRUE
+  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
+})
 
 test_that("Scree plot option creates .png", {
   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma")
   options$incl_screePlot <- TRUE
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
   expect_match(results[["results"]][["screePlot"]][["data"]], ".*\\.png")
 })
 
@@ -53,9 +54,9 @@ test_that("Factor correlation table matches", {
   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma", "contcor1", "debCollin1")
   options$incl_correlations <- TRUE
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
   table <- results[["results"]][["factorCorrelations"]][["data"]]
-  expect_equal_tables(table, list("RC 1", 1))
+  expect_equal_tables(table, list("PC 1", 1))
 })
 
 test_that("Missing values works", {
@@ -63,12 +64,12 @@ test_that("Missing values works", {
 	options$variables <- list("contNormal", "contGamma", "contcor1", "debMiss30")
 
 	options$missingValues <- "pairwise"
-	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 20.7622398603288, 2, 3.10125086457269e-05), label = "pairwise")
 
 	options$missingValues <- "listwise"
-	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 13.8130059031587, 2, 0.00100125311189221), label = "listwise")
 })

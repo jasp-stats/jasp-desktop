@@ -2,7 +2,7 @@
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 720.00 576.00'>
 <defs>
   <style type='text/css'><![CDATA[
-    line, polyline, path, rect, circle {
+    line, polyline, polygon, path, rect, circle {
       fill: none;
       stroke: #000000;
       stroke-linecap: round;
@@ -12,29 +12,31 @@
   ]]></style>
 </defs>
 <rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
-<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.07; stroke: none;' />
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 10.67; stroke: none;' />
 <defs>
-  <clipPath id='cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2'>
-    <rect x='50.72' y='35.62' width='669.28' height='517.70' />
+  <clipPath id='cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw=='>
+    <rect x='44.76' y='19.67' width='675.24' height='547.83' />
   </clipPath>
 </defs>
-<rect x='50.72' y='35.62' width='669.28' height='517.70' style='stroke-width: 1.07; stroke: none;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
-<polyline points='318.43,74.46 452.29,74.46 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
-<polyline points='385.36,74.46 385.36,488.01 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
-<polyline points='318.43,488.01 452.29,488.01 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
-<circle cx='385.36' cy='281.23' r='4.62pt' style='stroke-width: 0.71; fill: #000000;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
-<line x1='50.72' y1='59.16' x2='720.00' y2='59.16' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
-<line x1='50.72' y1='529.79' x2='50.72' y2='59.16' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTUzLjMyM3wzNS42MjM2)' />
+<rect x='44.76' y='19.67' width='675.24' height='547.83' style='stroke-width: 10.67; stroke: #FFFFFF; fill: #FFFFFF;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<polyline points='326.11,60.77 438.65,60.77 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<polyline points='382.38,60.77 382.38,498.38 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<polyline points='326.11,498.38 438.65,498.38 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<circle cx='382.38' cy='279.57' r='4.62pt' style='stroke-width: 0.71; fill: #000000;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<line x1='44.76' y1='44.57' x2='720.00' y2='44.57' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<line x1='44.76' y1='542.59' x2='44.76' y2='44.57' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<line x1='382.38' y1='567.50' x2='382.38' y2='567.50' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
+<line x1='44.76' y1='542.59' x2='44.76' y2='44.57' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpNDQuNzZ8NzIwLjAwfDU2Ny41MHwxOS42Nw==)' />
 <defs>
-  <clipPath id='cpMHw3MjB8NTc2fDA='>
+  <clipPath id='cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA='>
     <rect x='0.00' y='0.00' width='720.00' height='576.00' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='14.17' y='534.95' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='25.85px' lengthAdjust='spacingAndGlyphs'>-0.4</text></g>
-<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='19.17' y='64.31' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='20.85px' lengthAdjust='spacingAndGlyphs'>0.0</text></g>
-<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='19.17' y='64.31' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='20.85px' lengthAdjust='spacingAndGlyphs'>0.0</text></g>
-<polyline points='42.21,529.79 50.72,529.79 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
-<polyline points='42.21,59.16 50.72,59.16 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
-<polyline points='42.21,59.16 50.72,59.16 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
-<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='50.72' y='26.56' style='font-size: 18.00px; font-family: Liberation Sans;' textLength='316.13px' lengthAdjust='spacingAndGlyphs'>TTestBayesianOneSample-descriptives</text></g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)'><text x='0.00' y='548.45' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='29.28px' lengthAdjust='spacingAndGlyphs'>-0.4</text></g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)'><text x='5.66' y='50.42' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.0</text></g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)'><text x='5.66' y='50.42' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.0</text></g>
+<polyline points='36.26,542.59 44.76,542.59 ' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)' />
+<polyline points='36.26,44.57 44.76,44.57 ' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)' />
+<polyline points='36.26,44.57 44.76,44.57 ' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)' />
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA=)'><text x='234.04' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='296.67px' lengthAdjust='spacingAndGlyphs'>TTestBayesianOneSample-descriptives</text></g>
 </svg>
