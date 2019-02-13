@@ -181,7 +181,7 @@ For the JASP-R-Interface the Build directory should be build-release-64\JASP-R-I
 
 Mac OS X
 --------
-To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories and install the following software:
+To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories, install XCode, Command line tools, Qt and some packages in R. 
 
  0. Clone the repository **jasp-desktop**
  1. [XCode and command line tools](https://developer.apple.com/xcode/) Qt on OS X relies on XCode and Command line tools to function. You can install them through the App Store or the link provided above. Once you've installed both, you should: 
@@ -190,7 +190,7 @@ To build JASP you need to clone **jasp-desktop** and **jasp-required-files** rep
  - Tell XCode which "Command Line Tools" to use 
  - Close
 
- 2. [Qt](https://www.qt.io/) **Install Qt 5.12**
+ 2. [Qt](https://www.qt.io/): **Install Qt 5.12**
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
 
  2.a. **Configure Qt5.12**: Once installed:
