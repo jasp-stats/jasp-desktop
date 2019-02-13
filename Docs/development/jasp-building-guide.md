@@ -181,15 +181,22 @@ For the JASP-R-Interface the Build directory should be build-release-64\JASP-R-I
 
 Mac OS X
 --------
-After cloning the jasp-desktop and jasp-required-files repositories you must however install the following software:
+To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories and install the following software:
 
- 0. Clone the JASP repository
- 1. [XCode](https://developer.apple.com/xcode/) Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
- 
+ 0. Clone the repository **jasp-desktop**
+ 1. [XCode and command line tools](https://developer.apple.com/xcode/) Qt on OS X relies on XCode and Command line tools to function. You can install them through the App Store or the link provided above. Once you've installed both, you should: 
+ - open XCode 
+ - Go to "Preferences" - "Locations"
+ - Tell XCode which "Command Line Tools" to use 
+ - Close
 
+ 2. [Qt](https://www.qt.io/) **Install Qt 5.12**
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
 
- 2.a. **Configure Qt5.11.3**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give "Desktop Qt 5.11.3 clang 64bit". Click on this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
+ 2.a. **Configure Qt5.12**: Once installed:
+ - Go to "Qt Creator" - "Preference" - "Kits" 
+ - Auto-detect should give "Desktop Qt 5.12.0 clang 64bit". Click on this. 
+ - Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
@@ -203,11 +210,21 @@ After cloning the jasp-desktop and jasp-required-files repositories you must how
 
 In both case, I've added the flag "-j4" to make use of all my four cores on my mac.
 
-5. In the end, your folder should be structured as follows:
+ 3. Clone the repository **jasp-required-files** and select the **MacOS** branch. These files can now be put in the folders as shown here:
 
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
-where the blue files are the binaries that are added manually.
+where the blue files are the binaries that are added manually. The process will be smoothened out in the near future.
+
+ 4. Install packages in your local R for JASP to build JASPGraph: 
+
+``` 
+ install.packages(c("ggplot2", "scales", "cowplot", "gridExtra", "stringr"))
+```
+
+The process will be smoothened out in the near future.
+
+ 5. Build JASP in Qt. 
 
 Linux
 -----
