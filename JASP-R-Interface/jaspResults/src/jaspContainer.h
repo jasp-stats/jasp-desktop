@@ -44,14 +44,13 @@ public:
 
 	void		completeChildren();
 	void		setError() override;
-	void		setErrorMessage(std::string message) override;
+	void		setError(std::string message) override;
 
 protected:
 	std::map<std::string, jaspObject*>	_data;
 	std::map<std::string, int>			_data_order;
 	int									_order_increment = 0;
-	bool								_passErrorMessageToNextChild = false,
-										_alreadyPassedErrorMessage = false;
+	bool								_passErrorMessageToNextChild = false;
 	
 	std::vector<std::string>			getSortedDataFields();
 

@@ -33,11 +33,12 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 		obj->_title = field;
 
 	obj->setName(field);
-	if (!_alreadyPassedErrorMessage & _passErrorMessageToNextChild) {
-		obj->setErrorMessage(_errorMessage);
-		_alreadyPassedErrorMessage   = true;
+	if (_passErrorMessageToNextChild)
+	{
+		obj->setError(_errorMessage);
+		_passErrorMessageToNextChild = false;
 	}
-	else if (_error) 
+	else if (_error)
 	{
 		obj->setError();
 	}
@@ -279,22 +280,24 @@ void jaspContainer::checkDependenciesChildren(Json::Value currentOptions)
 		_data.erase(removeThis);
 }
 
-void jaspContainer::setError() {
+void jaspContainer::setError()
+{
 	_error = true;
 	for(auto & d : _data)
 		d.second->setError();
 }
 
-void jaspContainer::setErrorMessage(std::string message) {
-	_error = true;
-	_errorMessage = message;
+void jaspContainer::setError(std::string message)
+{
+	jaspObject::setError(message);
 	if (_data.empty())
 	{
 		_passErrorMessageToNextChild = true;
 	} 
-	else if (!_alreadyPassedErrorMessage)
+	else
 	{
-		_data.begin()->second->setErrorMessage(message);
-		_alreadyPassedErrorMessage = true;
+		for(auto & d : _data)
+			d.second->setError();
+		_data.begin()->second->setError(message);
 	}
 }
