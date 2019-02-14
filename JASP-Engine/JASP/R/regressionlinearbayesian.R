@@ -15,58 +15,69 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) {
+RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   
   jaspResults$title <- "Bayesian Linear Regression"
   
-  status <- .basregSetStatus(options)
+  ready <- .basregSetAnalysisStatus(options)
   
-  dataset <- .basregReadData(dataset, options, status)
+  if (ready) {
+    dataset <- .basregReadData(dataset, options)
+
+    .basregCheckErrors(dataset, options)
+  }
   
-  .basregCheckErrors(dataset, options, status)
+  .basregCreateContainers(jaspResults)
+  basregContainer <- jaspResults[["basreg"]]
+  descriptivesContainer <- jaspResults[["descriptives"]]
   
-  basregResults <- .basregComputeModel(dataset, jaspResults, options, status)
-  status <- basregResults$status
-  basregModel <- basregResults$model
+  if (is.null(basregContainer[["modelComparisonTable"]]))
+    .basregTableModelComparison(basregContainer, dataset, options, ready)
   
-  .basregTableModelComparison(basregModel, jaspResults, options, status)
-  .basregTableDescriptives(dataset, jaspResults, options, status)
+  if (options$descriptives && is.null(basregContainer[["descriptivesTable"]]))
+    .basregTableDescriptives(descriptivesContainer, dataset, options, ready)
   
-  posteriorSummary <- .basregComputePosteriorSummary(basregModel, dataset, jaspResults, options, status)
+  if (options$postSummaryTable && is.null(basregContainer[["posteriorSummaryTable"]]))
+    .basregTablePosteriorSummary(basregContainer, dataset, options, ready)
   
-  .basregTablePosteriorSummary(posteriorSummary, basregModel, jaspResults, options, status)
-  .basregPlotPosteriorSummary(posteriorSummary, jaspResults, options, status)
-  .basregplotsPosteriorDistribution(posteriorSummary, basregModel, jaspResults, options, status)
+  if (options$postSummaryPlot && is.null(basregContainer[["posteriorSummaryPlot"]]))
+    .basregPlotPosteriorSummary(basregContainer, dataset, options, ready)
   
-  .basregPlotResidualsVsFitted(basregModel, jaspResults, options, status)
-  .basregPlotModelProbabilities(basregModel, jaspResults, options, status)
-  .basregPlotModelComplexity(basregModel, jaspResults, options, status)
-  .basregPlotInclusionProbabilities(basregModel, jaspResults, options, status)
-  .basregPlotQQ(basregModel, jaspResults, options, status)
+  if (options$plotPosteriorDistributions && is.null(basregContainer[["posteriorDistributionPlots"]]))
+    .basregplotsPosteriorDistribution(basregContainer, dataset, options, ready)
   
-  # this function still needs to be rewritten to ggplot (start in .plotImage.basReg):
-  .basregPlotPosteriorLogOdds(basregModel, jaspResults, options, status)
+  if (options$plotResidualsVsFitted && is.null(basregContainer[["ResidualsVsFittedPlot"]]))
+    .basregPlotResidualsVsFitted(basregContainer, options, ready)
+  
+  if (options$plotModelProbabilities && is.null(basregContainer[["modelProbabilitiesPlot"]]))
+    .basregPlotModelProbabilities(basregContainer, options, ready)
+  
+  if (options$plotModelComplexity && is.null(basregContainer[["modelComplexityPlot"]]))
+    .basregPlotModelComplexity(basregContainer, options, ready)
+  
+  if (options$plotInclusionProbabilities && is.null(basregContainer[["inclusionProbabilitiesPlot"]]))
+    .basregPlotInclusionProbabilities(basregContainer, options, ready)
+  
+  if (options$plotQQplot && is.null(basregContainer[["qqPlot"]]))
+    .basregPlotQQ(basregContainer, options, ready)
+  
+  # this function still needs to be rewritten to ggplot (start in .plotImage.basreg):
+  # .basregPlotPosteriorLogOdds(basregModel, jaspResults, options, status)
   
   return()
 }
 
-.basregSetStatus <- function(options) {
-  status <- list(
-    ready = TRUE,
-    error = FALSE,
-    errorMessage <- ""
-  )
+.basregSetAnalysisStatus <- function(options) {
+  ready <- TRUE
+  if (length(options$modelTerms) == 0 || options$dependent == "")
+    ready <- FALSE
   
-  if (length(options$modelTerms) == 0 || options$dependent == "") {
-    status$ready <- FALSE
-  }
-  
-  return(status)
+  return(ready)
 }
 
-.basregReadData <- function(dataset, options, status) {
-  if (!is.null(dataset)) return(dataset)
-  if (!status$ready) return()
+.basregReadData <- function(dataset, options) {
+  if (!is.null(dataset)) 
+    return(dataset)
   
   vars <- c(options$dependent, unlist(options$covariates))
   if (options$wlsWeights != "") {
@@ -78,8 +89,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return(dataset)
 }
 
-.basregCheckErrors <- function(dataset, options, status) {
-  if (!status$ready) return()
+.basregCheckErrors <- function(dataset, options) {
   
   customChecks <- list( #TODO: add these to hasErrors officially
     function() {
@@ -147,20 +157,37 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregComputeModel <- function(dataset, jaspResults, options, status) {
-  if (!is.null(jaspResults[["stateModel"]]) && !is.null(jaspResults[["stateModel"]]$object))
-    return(jaspResults[["stateModel"]]$object)
+.basregCreateContainers <- function(jaspResults) {
   
-  jaspResults[["stateModel"]] <- createJaspState()
-  jaspResults[["stateModel"]]$dependOnOptions(c(
+  if (is.null(jaspResults[["basreg"]])) {
+    basregContainer <- createJaspContainer(title="Regression Model")
+    basregContainer$dependOnOptions(c(
+      "dependent", "covariates", "wlsWeights", "modelTerms",
+      "priorRegressionCoefficients", "alpha", "rScale",
+      "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
+      "samplingMethod", "iterationsMCMC", "numberOfModels"
+    ))
+    jaspResults[["basreg"]] <- basregContainer
+  }
+  
+  if (is.null(jaspResults[["descriptives"]])) { #FIXME: the descriptives table re-runs when a table/plot is added to the basregContainer
+    descriptivesContainer <- createJaspContainer(title="Descriptive Statistics")
+    descriptivesContainer$dependOnOptions(c(
+      "dependent", "covariates"
+    ))
+    jaspResults[["descriptives"]] <- descriptivesContainer
+  }
+
+}
+
+.basregComputeModel <- function(basregContainer, dataset, options) {
+  basregContainer[["basregModel"]] <- createJaspState()
+  basregContainer[["basregModel"]]$dependOnOptions(c(
     "dependent", "covariates", "wlsWeights", "modelTerms",
     "priorRegressionCoefficients", "alpha", "rScale",
     "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
-    "samplingMethod", "iterationsMCMC", "numberOfModels")
-  )
-  
-  if (!status$ready) 
-    return(list(model = NULL, status = status))
+    "samplingMethod", "iterationsMCMC", "numberOfModels"
+  )) #FIXME: this is a filthy hack to prevent jaspResults from tossing the state object. It should inherit it from its parent!
   
   nPreds <- length(options$modelTerms)
   isNuisance <- rep(FALSE, nPreds)
@@ -246,8 +273,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   ))
   
   if (isTryError(bas_lm)) {
-    status$error <- TRUE
-    status$errorMessage <- .extractErrorMessage(bas_lm)
+    errorMsg <- .extractErrorMessage(bas_lm)
+    basregContainer$setError(errorMsg)
   } else {
     if (bas_lm$n.models > 1 && nPreds > 1) # can crash without this check
       bas_lm <- BAS::force.heredity.bas(bas_lm)
@@ -268,34 +295,31 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
     bas_lm[["namesx"]][-1] <- .unvf(bas_lm[["namesx"]][-1])
   }
   
-  result <- list(model = bas_lm, status = status)
+  basregContainer[["basregModel"]]$object <- bas_lm
   
-  jaspResults[["stateModel"]]$object <- result
-  
-  return(result)
+  return()
 }
 
-.basregTableModelComparison <- function(basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["modelComparisonTable"]]))
-    return()
-  
+.basregTableModelComparison <- function(basregContainer, dataset, options, ready) {
   modelComparisonTable <- createJaspTable(title = "Model Comparison")
-  jaspResults[["modelComparisonTable"]] <- modelComparisonTable
+  modelComparisonTable$dependOnOptions(c(
+    "bayesFactorType", "bayesFactorOrder", "shownModels", "numShownModels"
+  ))
   
-  modelComparisonTable$copyDependenciesFromJaspObject(jaspResults[["stateModel"]])
-  modelComparisonTable$dependOnOptions(c("bayesFactorType", "bayesFactorOrder", "shownModels", "numShownModels"))
+  modelComparisonTable$addCitation(
+    "Clyde, M. A. (2017). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.5.3)[Computer software]."
+  )
+  modelComparisonTable$addCitation(
+    "Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. 
+    Journal of Computational and Graphical Statistics, 20, 80-101."
+  )
   
-  
-  modelComparisonTable$addCitation("Clyde, M. A. (2017). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.5.3)[Computer software].")
-  modelComparisonTable$addCitation("Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. Journal of Computational and Graphical Statistics, 20, 80-101.")
-  
-  if (options$bayesFactorType == "BF10") {
+  if (options$bayesFactorType == "BF10")
     bf.title <- "BF<sub>10</sub>"
-  } else if (options$bayesFactorType == "BF01") {
+  else if (options$bayesFactorType == "BF01")
     bf.title <- "BF<sub>01</sub>"
-  } else if (options$bayesFactorType == "LogBF10") {
+  else
     bf.title <- "Log(BF<sub>10</sub>)"
-  }
   
   modelComparisonTable$addColumnInfo(name = "Models", type = "string")
   modelComparisonTable$addColumnInfo(name = "priorProbModel", type = "number", format = "sf:4;dp:3", title="P(M)")
@@ -304,42 +328,43 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   modelComparisonTable$addColumnInfo(name = "BF", type = "number", format = "sf:4;dp:3", title = paste(bf.title, sep = ""))
   modelComparisonTable$addColumnInfo(name = "R2", type = "number", format = "dp:3", title = "R\u00B2")
   
-  if (!status$ready) {
-    modelComparisonTable$setExpectedRows(1)
+  modelComparisonTable$setExpectedRows(1) #FIXME: set expectedRows before model is computed when there is no error
+  
+  basregContainer[["modelComparisonTable"]] <- modelComparisonTable
+  
+  if (!ready)
     return()
-  } else if (status$error) {
-    modelComparisonTable$error <- "badData"
-    modelComparisonTable$errorMessage <- status$errorMessage
+  
+  if (is.null(basregContainer[["basregModel"]]))
+    .basregComputeModel(basregContainer, dataset, options)
+
+  if (basregContainer$getError())
     return()
-  }
   
-  nRows <- NULL
-  if (options$shownModels == "limited") {
-    nRows <- options$numShownModels
-  }
-  
-  if (is.null(nRows) || nRows > length(basregModel$which)) {
-    nRows <- length(basregModel$which)
-  }
-  
-  modelComparisonTable$setExpectedRows(nRows)
+  basregModel <- basregContainer[["basregModel"]]$object
   
   footnote <- basregModel[["interaction"]][["footnote"]]
-  if (!is.null(footnote)) {
+  if (!is.null(footnote))
     modelComparisonTable$addFootnote(message = footnote, symbol = "<em>Warning.</em>")
-  }
   
   if (sum(basregModel$nuisanceTerms) > 0) {
     footnote <- paste0("All models include ", paste(names(which(basregModel$nuisanceTerms)), collapse = ", "), ".")
     modelComparisonTable$addFootnote(message = footnote, symbol = "<em>Note.</em>")
   }
   
-  .basregFillTableModelComparison(modelComparisonTable, basregModel, nRows, options)
+  .basregFillTableModelComparison(modelComparisonTable, basregModel, options)
   
   return()
-}
+}               
 
-.basregFillTableModelComparison <- function(modelComparisonTable, basregModel, nRows, options) {
+.basregFillTableModelComparison <- function(modelComparisonTable, basregModel, options) {
+  
+  nRows <- NULL
+  if (options$shownModels == "limited")
+    nRows <- options$numShownModels
+  
+  if (is.null(nRows) || nRows > length(basregModel$which))
+    nRows <- length(basregModel$which)
   
   # ordered indices based on posterior probabilities of the models
   models.ordered <- order(basregModel$postprobs, decreasing = TRUE)
@@ -420,28 +445,21 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregTableDescriptives <- function(dataset, jaspResults, options, status) {
-  if (!is.null(jaspResults[["descriptivesTable"]]) ||
-      !options$descriptives)
-    return()
-  
+.basregTableDescriptives <- function(descriptivesContainer, dataset, options, ready) {
   descriptivesTable <- createJaspTable(title = "Descriptives")
-  jaspResults[["descriptivesTable"]] <- descriptivesTable
-  
-  descriptivesTable$dependOnOptions(c("dependent", "covariates", "descriptives"))
+  descriptivesTable$dependOnOptions("descriptives")
   
   descriptivesTable$addColumnInfo(name="v", title="", type="string")
   descriptivesTable$addColumnInfo(name="N", title="N", type="integer")
   descriptivesTable$addColumnInfo(name="mean", title="Mean", type="number", format="sf:4;dp:3")
   descriptivesTable$addColumnInfo(name="sd", title="SD", type="number", format="sf:4;dp:3")
   
-  if (!status$ready) {
-    descriptivesTable$setExpectedRows(1)
-    return()
-  }
+  descriptivesTable$setExpectedRows(1)
   
-  nRows <- length(c(unlist(options$covariates), options$dependent))
-  descriptivesTable$setExpectedRows(nRows)
+  descriptivesContainer[["descriptivesTable"]] <- descriptivesTable
+  
+  if (!ready)
+    return()
   
   .basregFillTableDescriptives(descriptivesTable, dataset, options)
   
@@ -463,22 +481,11 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregComputePosteriorSummary <- function(basregModel, dataset, jaspResults, options, status) {
-  if (!is.null(jaspResults[["statePosteriorSummary"]]) && !is.null(jaspResults[["statePosteriorSummary"]]$object))
-    return(jaspResults[["statePosteriorSummary"]]$object)
-  
-  jaspResults[["statePosteriorSummary"]] <- createJaspState()
-  jaspResults[["statePosteriorSummary"]]$dependOnOptions(c(
-    "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI",
-    "dependent", "covariates", "wlsWeights", "modelTerms",
-    "priorRegressionCoefficients", "alpha", "rScale",
-    "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
-    "samplingMethod", "iterationsMCMC", "numberOfModels"
+.basregComputePosteriorSummary <- function(basregContainer, dataset, options) {
+  basregContainer[["posteriorSummaryModel"]] <- createJaspState()
+  basregContainer[["posteriorSummaryModel"]]$dependOnOptions(c(
+    "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
   ))
-  
-  if (!status$ready || status$error ||
-      (!options$postSummaryTable && !options$postSummaryPlot && !options$plotCoefficientsPosterior))
-    return()
   
   estimator <- switch(
     options$summaryType,
@@ -486,6 +493,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
     median="MPM",
     "BMA"
   )
+  
+  basregModel <- basregContainer[["basregModel"]]$object
   
   # required for the marginal posterior plots
   # done here such that the information in the plots and tables always matches
@@ -525,13 +534,12 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   posteriorSummary <- list(coef = coef, loopIdx = loopIdx, coefficients = coefficients, probne0 = probne0,
                            conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote)
   
-  jaspResults[["statePosteriorSummary"]]$object <- posteriorSummary
+  basregContainer[["posteriorSummaryModel"]]$object <- posteriorSummary
   
-  return(posteriorSummary)
+  return()
 }
 
-.basregOverwritecoefBas <- function (basregModel, n.models, estimator = "BMA",
-                                     dataset, weights = NULL) {
+.basregOverwritecoefBas <- function (basregModel, n.models, estimator = "BMA", dataset, weights = NULL) {
   
   # this function is an adaptation of BAS:::coef.bas
   # additional arguments:
@@ -694,16 +702,11 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   
 }
 
-.basregTablePosteriorSummary <- function(posteriorSummary, basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["posteriorSummaryTable"]]) ||
-      !options$postSummaryTable)
-    return()
-  
+.basregTablePosteriorSummary <- function(basregContainer,  dataset, options, ready) {
   posteriorSummaryTable <- createJaspTable(title = "Posterior Summaries of Coefficients")
-  jaspResults[["posteriorSummaryTable"]] <- posteriorSummaryTable
-  
-  posteriorSummaryTable$copyDependenciesFromJaspObject(jaspResults[["statePosteriorSummary"]])
-  posteriorSummaryTable$dependOnOptions("postSummaryTable")
+  posteriorSummaryTable$dependOnOptions(c(
+    "postSummaryTable", "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
+  ))
   
   overtitle <- sprintf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
   posteriorSummaryTable$addColumnInfo(name="coefficient", title="Coefficient", type="string")
@@ -715,21 +718,25 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   posteriorSummaryTable$addColumnInfo(name="lowerCri", title = "Lower", type="number", format="sf:4;dp:3", overtitle = overtitle)
   posteriorSummaryTable$addColumnInfo(name="upperCri", title = "Upper", type="number", format="sf:4;dp:3", overtitle = overtitle)
   
-  if (!status$ready) {
-    posteriorSummaryTable$setExpectedRows(1)
+  posteriorSummaryTable$setExpectedRows(1)
+  
+  basregContainer[["posteriorSummaryTable"]] <- posteriorSummaryTable
+  
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    posteriorSummaryTable$error <- "badData"
-    return()
-  }
   
   nRows <- length(unlist(options$covariates)) + 1 # 1 extra for intercept
   posteriorSummaryTable$setExpectedRows(nRows)
   
+  if (is.null(basregContainer[["posteriorSummaryModel"]]))
+    .basregComputePosteriorSummary(basregContainer, dataset, options)
+  
+  posteriorSummary <- basregContainer[["posteriorSummaryModel"]]$object
+  basregModel <- basregContainer[["basregModel"]]$object
+    
   footnote <- posteriorSummary[["footnotes"]]
-  if (!is.null(footnote)) {
+  if (!is.null(footnote))
     posteriorSummaryTable$addFootnote(footnote, symbol="<em>Warning.</em>")
-  }
   
   .basregFillTablePosteriorSummary(posteriorSummaryTable, posteriorSummary, basregModel, options)
   
@@ -776,25 +783,24 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregPlotPosteriorSummary <- function(posteriorSummary, jaspResults, options, status) {
-  if (!is.null(jaspResults[["posteriorSummaryPlot"]]) ||
-      !options$postSummaryPlot)
-    return()
-  
+.basregPlotPosteriorSummary <- function(basregContainer, dataset, options, ready) {
   title <- sprintf("Posterior Coefficients with %s%% Credible Interval", 
                    format(100*options$posteriorSummaryPlotCredibleIntervalValue, digits = 3))
   posteriorSummaryPlot <- createJaspPlot(title = title, width = 530, height = 400)
-  jaspResults[["posteriorSummaryPlot"]] <- posteriorSummaryPlot
+  posteriorSummaryPlot$dependOnOptions(c(
+    "postSummaryPlot", "omitIntercept", "summaryType", 
+    "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
+  ))
   
-  posteriorSummaryPlot$copyDependenciesFromJaspObject(jaspResults[["statePosteriorSummary"]])
-  posteriorSummaryPlot$dependOnOptions(c("postSummaryPlot", "omitIntercept"))
+  basregContainer[["posteriorSummaryPlot"]] <- posteriorSummaryPlot
   
-  if (!status$ready) {
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    posteriorSummaryPlot$error <- "badData"
-    return()
-  }
+  
+  if (is.null(basregContainer[["posteriorSummaryModel"]]))
+    .basregComputePosteriorSummary(basregContainer, dataset, options)
+  
+  posteriorSummary <- basregContainer[["posteriorSummaryModel"]]$object
   
   .basregFillPlotPosteriorSummary(posteriorSummaryPlot, posteriorSummary, options)
   
@@ -835,8 +841,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    posteriorSummaryPlot$error <- "badData" #FIXME: this should go
-    posteriorSummaryPlot$errorMessage <- errorMessage
+    posteriorSummaryPlot$setError(errorMessage)
   } else {
     posteriorSummaryPlot$plotObject <- p
   }
@@ -844,24 +849,19 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregplotsPosteriorDistribution <- function(posteriorSummary, basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["posteriorDistributionPlots"]]) || # TODO: check if some variable plots can be re-used or not
-      !options$plotCoefficientsPosterior) #TODO: rename this option
+.basregplotsPosteriorDistribution <- function(basregContainer, dataset, options, ready) {
+  posteriorDistributionPlots <- createJaspContainer("Marginal posterior distributions") #TODO: check if this name is ok
+  posteriorDistributionPlots$dependOnOptions(c(
+    "plotPosteriorDistributions", "summaryType", 
+    "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
+  )) #TODO: check if dependencies are correct for this item: was probably wrong in release
+  
+  basregContainer[["posteriorDistributionPlots"]] <- posteriorDistributionPlots
+  
+  if (!ready || basregContainer$getError())
     return()
   
-  posteriorDistributionPlots <- createJaspContainer("Distribution plots") #TODO: check if this name is ok
-  jaspResults[["posteriorDistributionPlots"]] <- posteriorDistributionPlots
-  
-  posteriorDistributionPlots$copyDependenciesFromJaspObject(jaspResults[["statePosteriorSummary"]]) #TODO: check this: was probably wrong in release
-  posteriorDistributionPlots$dependOnOptions("plotCoefficientsPosterior") 
-  
-  if (!status$ready) {
-    return()
-  } else if (status$error) {
-    posteriorDistributionPlots$error <- "badData"
-    return()
-  }
-  
+  basregModel <- basregContainer[["basregModel"]]$object
   plotNames <- basregModel$namesx
   isNuisance <- basregModel$nuisanceTerms
   
@@ -873,15 +873,19 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
     posteriorDistributionPlots[[plotName]] <- createJaspPlot(title = plotName, width = 530, height = 400)
   }
   
+  if (is.null(basregContainer[["posteriorSummaryModel"]]))
+    .basregComputePosteriorSummary(basregContainer, dataset, options)
+  
+  posteriorSummary <- basregContainer[["posteriorSummaryModel"]]$object
+  
   # fill the empty placeholders
-  for (plotName in plotNames) {
+  for (plotName in plotNames) { # TODO: check if some variable plots can be re-used or not
     if (plotName != "Intercept" && isNuisance[which(names(isNuisance) == plotName)])
       next
     
     posteriorDistributionPlot <- posteriorDistributionPlots[[plotName]]
     index <- which(plotNames == plotName)
     .basregFillplotPosteriorDistribution(posteriorDistributionPlot, index, posteriorSummary, basregModel)
-    
   }
   
   return()
@@ -1023,11 +1027,10 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
     
     JASPgraphs::themeJasp(g)
   })
-  
+
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    posteriorDistributionPlot$error <- "badData" #FIXME: this should go
-    posteriorDistributionPlot$errorMessage <- errorMessage
+    posteriorDistributionPlot$setError(errorMessage)
   } else {
     posteriorDistributionPlot$plotObject <- p
   }
@@ -1035,23 +1038,16 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregPlotResidualsVsFitted <- function(basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["ResidualsVsFittedPlot"]]) ||
-      !options$plotResidualsVsFitted)
-    return()
-  
+.basregPlotResidualsVsFitted <- function(basregContainer, options, ready) {
   ResidualsVsFittedPlot <- createJaspPlot(title = "Residuals vs Fitted", width = 530, height = 400)
-  jaspResults[["ResidualsVsFittedPlot"]] <- ResidualsVsFittedPlot
-  
-  ResidualsVsFittedPlot$copyDependenciesFromJaspObject(jaspResults[["stateModel"]])
   ResidualsVsFittedPlot$dependOnOptions("plotResidualsVsFitted")
   
-  if (!status$ready) {
+  basregContainer[["ResidualsVsFittedPlot"]] <- ResidualsVsFittedPlot
+  
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    ResidualsVsFittedPlot$error <- "badData"
-    return()
-  }
+  
+  basregModel <- basregContainer[["basregModel"]]$object
   
   .basregFillPlotResidualsVsFitted(ResidualsVsFittedPlot, basregModel)
   
@@ -1077,11 +1073,10 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
       ggplot2::scale_x_continuous(name = "Predictions under BMA", breaks = xBreaks, limits = range(xBreaks))
     JASPgraphs::themeJasp(g)
   })
-  
+
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    ResidualsVsFittedPlot$error <- "badData" #FIXME: this should go
-    ResidualsVsFittedPlot$errorMessage <- errorMessage
+    ResidualsVsFittedPlot$setError(errorMessage)
   } else {
     ResidualsVsFittedPlot$plotObject <- p
   }
@@ -1089,23 +1084,16 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregPlotModelProbabilities <- function(basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["modelProbabilitiesPlot"]]) ||
-      !options$plotModelProbabilities)
-    return()
-  
+.basregPlotModelProbabilities <- function(basregContainer, options, ready) {
   modelProbabilitiesPlot <- createJaspPlot(title = "Model Probabilities", width = 530, height = 400)
-  jaspResults[["modelProbabilitiesPlot"]] <- modelProbabilitiesPlot
-  
-  modelProbabilitiesPlot$copyDependenciesFromJaspObject(jaspResults[["stateModel"]])
   modelProbabilitiesPlot$dependOnOptions("plotModelProbabilities")
   
-  if (!status$ready) {
+  basregContainer[["modelProbabilitiesPlot"]] <- modelProbabilitiesPlot
+  
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    modelProbabilitiesPlot$error <- "badData"
-    return()
-  }
+  
+  basregModel <- basregContainer[["basregModel"]]$object
   
   .basregFillPlotModelProbabilities(modelProbabilitiesPlot, basregModel)
   
@@ -1133,8 +1121,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    modelProbabilitiesPlot$error <- "badData" #FIXME: this should go
-    modelProbabilitiesPlot$errorMessage <- errorMessage
+    modelProbabilitiesPlot$setError(errorMessage)
   } else {
     modelProbabilitiesPlot$plotObject <- p
   }
@@ -1142,23 +1129,16 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregPlotModelComplexity <- function(basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["modelComplexityPlot"]]) ||
-      !options$plotModelComplexity)
-    return()
-  
-  modelComplexityPlot <- createJaspPlot(title = "Log(P(data|M)) vs. model size", width = 530, height = 400)
-  jaspResults[["modelComplexityPlot"]] <- modelComplexityPlot
-  
-  modelComplexityPlot$copyDependenciesFromJaspObject(jaspResults[["stateModel"]])
+.basregPlotModelComplexity <- function(basregContainer, options, ready) {
+  modelComplexityPlot <- createJaspPlot(title = "Log(P(data|M)) vs. Model Size", width = 530, height = 400)
   modelComplexityPlot$dependOnOptions("plotModelComplexity")
   
-  if (!status$ready) {
+  basregContainer[["modelComplexityPlot"]] <- modelComplexityPlot
+  
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    modelComplexityPlot$error <- "badData"
-    return()
-  }
+  
+  basregModel <- basregContainer[["basregModel"]]$object
   
   .basregFillPlotModelComplexity(modelComplexityPlot, basregModel)
   
@@ -1187,8 +1167,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    modelComplexityPlot$error <- "badData" #FIXME: this should go
-    modelComplexityPlot$errorMessage <- errorMessage
+    modelComplexityPlot$setError(errorMessage)
   } else {
     modelComplexityPlot$plotObject <- p
   }
@@ -1196,23 +1175,16 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregPlotInclusionProbabilities <- function(basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["inclusionProbabilitiesPlot"]]) ||
-      !options$plotInclusionProbabilities)
-    return()
-  
+.basregPlotInclusionProbabilities <- function(basregContainer, options, ready) {
   inclusionProbabilitiesPlot <- createJaspPlot(title = "Inclusion Probabilities", width = 700, height = 400)
-  jaspResults[["inclusionProbabilitiesPlot"]] <- inclusionProbabilitiesPlot
-  
-  inclusionProbabilitiesPlot$copyDependenciesFromJaspObject(jaspResults[["stateModel"]])
   inclusionProbabilitiesPlot$dependOnOptions("plotInclusionProbabilities")
   
-  if (!status$ready) {
+  basregContainer[["inclusionProbabilitiesPlot"]] <- inclusionProbabilitiesPlot
+  
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    inclusionProbabilitiesPlot$error <- "badData"
-    return()
-  }
+  
+  basregModel <- basregContainer[["basregModel"]]$object
   
   .basregFillPlotInclusionProbabilities(inclusionProbabilitiesPlot, basregModel)
   
@@ -1263,8 +1235,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    inclusionProbabilitiesPlot$error <- "badData" #FIXME: this should go
-    inclusionProbabilitiesPlot$errorMessage <- errorMessage
+    inclusionProbabilitiesPlot$setError(errorMessage)
   } else {
     inclusionProbabilitiesPlot$plotObject <- p
   }
@@ -1272,23 +1243,16 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   return()
 }
 
-.basregPlotQQ <- function(basregModel, jaspResults, options, status) {
-  if (!is.null(jaspResults[["qqPlot"]]) ||
-      !options$plotQQplot)
-    return()
-  
+.basregPlotQQ <- function(basregContainer, options, ready) {
   qqPlot <- createJaspPlot(title = "Q-Q Plot", width = 700, height = 400)
-  jaspResults[["qqPlot"]] <- qqPlot
-  
-  qqPlot$copyDependenciesFromJaspObject(jaspResults[["stateModel"]]) #TODO: check if qqplot really needs all these dependencies
   qqPlot$dependOnOptions("plotQQplot")
   
-  if (!status$ready) {
+  basregContainer[["qqPlot"]] <- qqPlot
+  
+  if (!ready || basregContainer$getError())
     return()
-  } else if (status$error) {
-    qqPlot$error <- "badData"
-    return()
-  }
+  
+  basregModel <- basregContainer[["basregModel"]]$object
   
   .basregFillPlotQQ(qqPlot, basregModel)
   
@@ -1305,8 +1269,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   
   if (isTryError(p)) {
     errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-    qqPlot$error <- "badData"
-    qqPlot$errorMessage <- errorMessage
+    qqPlot$setError(errorMessage)
   } else {
     qqPlot$plotObject <- p
   }
@@ -1322,10 +1285,10 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
   postLogOddsPlot <- createJaspPlot(title = "Posterior Log Odds", width = 530, height = 400) # TODO: these should now display empty axes
   jaspResults[["logPosteriorOddsPlot"]] <- postLogOddsPlot
   
-  postLogOddsPlot$copyDependenciesFromJaspObject(jaspResults[["stateModel"]])
+  postLogOddsPlot$copyDependenciesFromJaspObject(jaspResults[["basregModel"]])
   postLogOddsPlot$dependOnOptions("plotLogPosteriorOdds")
   
-  if (!status$ready) {
+  if (!ready) {
     return()
   } else if (status$error) {
     postLogOddsPlot$error <- "badData"
@@ -1353,7 +1316,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) 
 }
 
 # to be adapted and spliced into the logodds plot:
-.plotImage.basReg <- function(x, top.models = 20, intensity = TRUE, prob = TRUE,
+.plotImage.basreg <- function(x, top.models = 20, intensity = TRUE, prob = TRUE,
                               log = TRUE, rotate = TRUE, color = "rainbow", subset = NULL,
                               offset = 0.75, digits = 3, vlas = 2, plas = 0, rlas = 0,
                               ...) {

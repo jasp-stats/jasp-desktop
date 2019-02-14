@@ -1,5 +1,5 @@
-//
 // Copyright (C) 2013-2018 University of Amsterdam
+//
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -22,16 +22,15 @@ import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
 Form {
-    usesJaspResults: true
-	
+
 	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true	}	
-		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]					}
-		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true }
+		AvailableVariablesList	{ name: "allVariablesList" }
+		AssignedVariablesList	{ name: "dependent";	title: qsTr("Dependent Variable");		allowedColumns: ["scale"];	singleVariable: true	}
+		AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				allowedColumns: ["scale"]							}
+		AssignedVariablesList	{ name: "wlsWeights";	title: qsTr("WLS Weights (optional)");	allowedColumns: ["scale"];	singleVariable: true	}
 	}
-	
+
 	BayesFactorType {}
 
 	Group
@@ -39,28 +38,38 @@ Form {
 		title: qsTr("Output")
 		columns: 2
 
-		CheckBox
+		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable }
+
+		DropDown
 		{
-			name: "postSummaryTable"; label: qsTr("Posterior summary")
-			DropDown
-			{
-				name: "summaryType"
-				indexDefaultValue: 3
-				values: [
-					{ label: "Best model",			value: "best"	},
-					{ label: "Most complex model",	value: "complex"},
-					{ label: "Median model",		value: "median"	},
-					{ label: "Model averaged",		value: "averaged"}
-				]				
-			}
+			name: "summaryType"
+			enabled: postSummaryTable.checked || postSummaryPlot.checked
+			indexDefaultValue: 3
+			values: [
+				{ label: "Best model",			value: "best"		},
+				{ label: "Most complex model",	value: "complex"	},
+				{ label: "Median model",		value: "median"		},
+				{ label: "Model averaged",		value: "averaged"	}
+			]
 		}
 
 		CheckBox
 		{
-			name: "postSummaryPlot"; label: qsTr("Plot of coefficients")
+			name: "postSummaryPlot"
+			label: qsTr("Plot of coefficients")
+			id: postSummaryPlot
 			CheckBox { name: "omitIntercept"; label: qsTr("Omit intercept") }
-			PercentField { name: "posteriorSummaryPlotCredibleIntervalValue"; label: qsTr("Credible interval"); defaultValue: 95 }
+
 		}
+
+		PercentField
+		{
+			name: "posteriorSummaryPlotCredibleIntervalValue"
+			label: qsTr("Credible interval")
+			enabled: postSummaryTable.checked || postSummaryPlot.checked
+			defaultValue: 95
+		}
+
 	}
 
 	RadioButtonGroup
@@ -68,17 +77,17 @@ Form {
 		name: "bayesFactorOrder"
 		title: qsTr("Order")
 		RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model"); checked: true	}
-		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model")				}
+		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model")					}
 	}
 
 	RadioButtonGroup
 	{
 		name: "shownModels"
 		title: qsTr("Limit no. models shown")
-		RadioButton { value: "limited"; label: qsTr("No") }
+		RadioButton { value: "unlimited"; label: qsTr("No") }
 		RowLayout
 		{
-			RadioButton { value: "unlimited"; label: qsTr("Yes, show best"); checked: true }
+			RadioButton { value: "limited"; label: qsTr("Yes, show best"); checked: true }
 			IntegerField { name: "numShownModels"; defaultValue: 10; min: 1 }
 		}
 	}
@@ -88,11 +97,11 @@ Form {
 		title: qsTr("Data")
 		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Model")
-		
+
 		VariablesForm
 		{
 			height: 200
@@ -117,25 +126,25 @@ Form {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Plots")
-		
+
 		Group
 		{
 			title: qsTr("Coefficients")
 			CheckBox { name: "plotInclusionProbabilities";	label: qsTr("Inclusion probabilities")			}
-			CheckBox { name: "plotCoefficientsPosterior";	label: qsTr("Marginal posterior distributions")	}
+			CheckBox { name: "plotPosteriorDistributions";	label: qsTr("Marginal posterior distributions")	}
 		}
 
 		Group
 		{
 			title: qsTr("Models")
 			CheckBox { name: "plotLogPosteriorOdds";	label: qsTr("Log posterior odds")				}
-			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data)M)) vs. model size")		}
+			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data)M)) vs. model size")	}
 			CheckBox { name: "plotModelProbabilities";	label: qsTr("Model probabilities")				}
 		}
 
@@ -146,11 +155,11 @@ Form {
 			CheckBox { name: "plotQQplot";	            label: qsTr("Q-Q plot of model averaged residuals")}
 		}
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Advanced Options")
-		
+
 		RadioButtonGroup
 		{
 			name: "priorRegressionCoefficients"
@@ -168,8 +177,8 @@ Form {
 				Group
 				{
 					RadioButton { value: "hyper-g";			label: qsTr("Hyper-g!");			id: hyperg			}
-					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");	id: hyperglaplace	}
-					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");		id: hypergn			}
+					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");		id: hyperglaplace	}
+					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");			id: hypergn			}
 				}
 				IntegerField
 				{
@@ -190,7 +199,7 @@ Form {
 				}
 			}
 		}
-			
+
 		ColumnLayout
 		{
 			RadioButtonGroup
@@ -247,5 +256,5 @@ Form {
 			}
 		}
 	}
-	
+
 }
