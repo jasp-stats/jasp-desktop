@@ -756,12 +756,12 @@ Descriptives <- function(jaspResults, dataset, options)
   plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
-    plotObj$error         <- "badData"
+    plotObj$setError()
     plotObj$errorMessage  <- "Plotting is not possible: Variable contains infinity"
     plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
   else if (length(column) < 3) {
-    plotObj$error         <- "badData"
+    plotObj$setError()
     plotObj$errorMessage  <- "Plotting is not possible: Too few rows (left)"
     plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
@@ -819,17 +819,17 @@ Descriptives <- function(jaspResults, dataset, options)
 
   if (!is.numeric(y))
   {
-    thePlot$error         <- "badData"
+    thePlot$setError()
     thePlot$errorMessage  <- "Plotting is not possible: Variable is not numeric!"
   }
   else if (length(y) == 0)
   {
-    thePlot$error         <- "badData"
+    thePlot$setError()
     thePlot$errorMessage  <- "Plotting is not possible: Variable only contains NA!"
   }
   else if (!(options$splitPlotViolin || options$splitPlotBoxplot || options$splitPlotJitter))
   {
-    thePlot$error         <- "badData"
+    thePlot$setError()
     thePlot$errorMessage  <- "Plotting is not possible: No plot type selected!"
   }
   else
