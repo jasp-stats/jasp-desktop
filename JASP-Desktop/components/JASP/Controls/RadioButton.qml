@@ -22,30 +22,31 @@ import JASP.Theme		1.0
 
 JASPControl
 {
-	id:							radioButton
-	controlType:				"RadioButton"
-	isBound:					false
+	id:						radioButton
+	controlType:			"RadioButton"
+	isBound:				false
 	implicitWidth:			childrenOnSameRow
-								? control.implicitWidth + (childControls.children.length > 0 ? Theme.columnGroupSpacing + childControls.implicitWidth : 0)
-								: Math.max(control.implicitWidth, childControls.childControlsPadding + childControls.implicitWidth)
+								? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+								: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
 	implicitHeight:			childrenOnSameRow
-								? Math.max(control.implicitHeight, childControls.implicitHeight)
-								: control.implicitHeight + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitHeight : 0)
-	useDefaultBackground:		true
-	subControls:				childControls.children.length > 0 ? childControls : null
+								? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
+								: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+	focusIndicator:			focusIndicator
+	childControlsArea:		childControlsArea
 
-	default property alias	content:				childControls.children
-			property alias	childrenArea:			childControls	
+	default property alias	content:				childControlsArea.children
+			property alias	control:				control
+
+			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
 			property alias	checked:				control.checked
-			property alias	control:				control
 			property alias	value:					radioButton.name
 			property var	buttonGroup:			null
 			property bool	childrenOnSameRow:	false
-			property alias	columns:				childControls.columns
+			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
 			property bool	indentChildren:			true
-			property alias	alignChildrenTopLeft:	childControls.alignChildrenTopLeft
+			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 	
 	
 	RadioButton
@@ -53,6 +54,7 @@ JASPControl
 		id:					control
 		ButtonGroup.group:	buttonGroup
 		padding:			Theme.jaspControlPadding
+		focus:				true
 
 		indicator: Rectangle
 		{
@@ -78,6 +80,18 @@ JASPControl
             }
         }
 
+		Rectangle
+		{
+			id: focusIndicator
+			anchors.centerIn: radioIndicator
+			width: radioIndicator.width + Theme.jaspControlHighlightWidth
+			height: radioIndicator.height + Theme.jaspControlHighlightWidth
+			radius: width
+			color: "transparent"
+			border.width: 0
+			border.color: "transparent"
+		}
+
 		contentItem: Label
 		{
 			id:				label
@@ -86,11 +100,17 @@ JASPControl
 			font:			Theme.font
 			color:			enabled ? Theme.textEnabled : Theme.textDisabled
         }
+
+		background: Rectangle
+		{
+			color: "transparent"
+		}
+
     }
 	
 	GridLayout
 	{
-		id:				childControls
+		id:				childControlsArea
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
 		columns:		childrenOnSameRow ? children.length : 1
@@ -102,21 +122,21 @@ JASPControl
 
 	Component.onCompleted:
 	{
-		if (childControls.children.length > 0)
+		if (childControlsArea.children.length > 0)
 		{
 			if (childrenOnSameRow)
 			{
-				childControls.x = childControls.childControlsPadding
-				childControls.anchors.top = control.top
-				if (childControls.implicitHeight < control.implicitHeight)
-					childControls.anchors.topMargin = control.padding - 1 // border width
+				childControlsArea.x = childControlsArea.childControlsPadding
+				childControlsArea.anchors.top = control.top
+				if (childControlsArea.implicitHeight < control.implicitHeight)
+					childControlsArea.anchors.topMargin = control.padding - 1 // border width
 			}
 			else
 			{
-				childControls.anchors.top = control.bottom
-				childControls.anchors.topMargin = Theme.rowGroupSpacing
-				childControls.anchors.left = control.left
-				childControls.anchors.leftMargin = indentChildren ? childControls.childControlsPadding : 0		
+				childControlsArea.anchors.top = control.bottom
+				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
+				childControlsArea.anchors.left = control.left
+				childControlsArea.anchors.leftMargin = indentChildren ? childControlsArea.childControlsPadding : 0
 			}				
 		}
 		

@@ -28,18 +28,18 @@ JASPControl
 	
 	implicitHeight:		row.implicitHeight
 	implicitWidth:		row.implicitWidth
-	controlBackground:	useExternalBorder ? externalControlBackground : controlBackground
+	background:			useExternalBorder ? externalControlBackground : control.background
 	cursorShape:		Qt.IBeamCursor
 	
+	property alias	control:			control	
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
 	property int	fieldWidth:			Theme.textFieldWidth
-	property int	textHeight:			Theme.textFieldHeight
+	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
 	property alias	placeholderText:	control.placeholderText
 	
 	property alias	validator:			control.validator
-	property alias	control:			control
 	property alias	label:				beforeLabel
 	property alias	beforeLabel:		beforeLabel
 	property alias	afterLabel:			afterLabel
@@ -70,13 +70,14 @@ JASPControl
 		Rectangle
 		{
 			implicitWidth: beforeLabel.implicitWidth
-			implicitHeight: beforeLabel.implicitHeight
+			implicitHeight: control.implicitHeight
 			color: debug ? Theme.debugBackgroundColor : "transparent"
 			Label
 			{
 				id:			beforeLabel
 				visible:	beforeLabel.text && textField.visible ? true : false
 				font:		Theme.font
+				anchors.verticalCenter: parent.verticalCenter				
 				color:		enabled ? Theme.textEnabled : Theme.textDisabled
 			}
 		}
@@ -84,16 +85,14 @@ JASPControl
 		TextField
 		{
 			id:						control
-			Layout.fillWidth:		true
-			Layout.fillHeight:		true
-			Layout.preferredWidth:	textField.fieldWidth
-			Layout.preferredHeight:	textField.textHeight
 			text:					textField.value
+			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
+			Layout.leftMargin:		beforeLabel.visible ? 0 : -labelSpacing
 			
-			padding:				1
-			rightPadding:			5
+			padding:				Theme.jaspControlPadding
+			leftPadding:			4 * preferencesModel.uiScale
 			selectByMouse:			true
 			background: Rectangle
 			{
@@ -106,22 +105,41 @@ JASPControl
 			Rectangle
 			{
 				id:					externalControlBackground
-				height:				textField.textHeight + 6
-				width:				textField.fieldWidth + 6
+				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
+				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
 				border.width: 1
 				border.color: "transparent"
 				anchors.centerIn: parent
+				opacity: debug ? .3 : 1
 				visible: textField.useExternalBorder
+				radius: Theme.jaspControlHighlightWidth
 			}
 		}
 		
-		Label
+		Binding
 		{
-			id:			afterLabel
-			visible:	afterLabel.text && textField.visible ? true : false
-			font:		Theme.font
-			color:		enabled ? Theme.textEnabled : Theme.textDisabled
+			// This is a way to set the property implicitHeight only if fieldHeight is set
+			// If not, implicitHeight should keep its implicit binding.
+			target: control
+			property: "implicitHeight"
+			value: textField.fieldHeight
+			when: textField.fieldHeight != 0
 		}
+		
+		Rectangle
+		{
+			implicitWidth: afterLabel.implicitWidth
+			implicitHeight: control.implicitHeight
+			color: debug ? Theme.debugBackgroundColor : "transparent"
+			Label
+			{
+				id:			afterLabel
+				visible:	afterLabel.text && textField.visible ? true : false
+				font:		Theme.font
+				anchors.verticalCenter: parent.verticalCenter				
+				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+			}
+		}		
 	}
 }

@@ -24,11 +24,11 @@ import JASP.Theme 1.0
 
 JASPControl
 {
-	id: factorsList
-	controlType: "FactorsListAssigned"
-	useDefaultBackground: true
-	implicitWidth: parent.width
-	implicitHeight: Theme.defaultListHeight
+	id:							factorsList
+	controlType:				"FactorsListAssigned"
+	background:					rectangle
+	implicitWidth:				parent.width
+	implicitHeight:				Theme.defaultListHeight
 
 	property var model
 	property string title

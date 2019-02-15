@@ -24,25 +24,25 @@ import JASP.Theme 1.0
 JASPControl
 {
 	id: checkBox
-	controlType:			"CheckBox"
-	implicitWidth:			childrenOnSameRow
-								? control.implicitWidth + (childControls.children.length > 0 ? Theme.columnGroupSpacing + childControls.implicitWidth : 0)
-								: Math.max(control.implicitWidth, childControls.childControlsPadding + childControls.implicitWidth)
-	implicitHeight:			childrenOnSameRow
-								? Math.max(control.implicitHeight, childControls.implicitHeight)
-								: control.implicitHeight + (childControls.children.length > 0 ? Theme.rowGroupSpacing + childControls.implicitHeight : 0)
-	useDefaultBackground:	true
-	subControls:			childControls.children.length > 0 ? childControls : null
+	controlType:		"CheckBox"
+	implicitWidth:		childrenOnSameRow
+							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+							: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
+	implicitHeight:		childrenOnSameRow
+							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
+							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+	focusIndicator:		focusIndicator
+	childControlsArea:	childControlsArea
 	
-	default property alias	content:				childControls.children
-			property alias	childrenArea:			childControls
+	default property alias	content:				childControlsArea.children
+			property alias	control:				control
+			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
 			property alias	checked:				control.checked
-			property alias	control:				control
 			property bool	childrenOnSameRow:	false
-			property alias	columns:				childControls.columns
+			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
-			property alias	alignChildrenTopLeft:	childControls.alignChildrenTopLeft
+			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 	
     signal clicked();
 		    
@@ -52,6 +52,8 @@ JASPControl
 		padding:	Theme.jaspControlPadding
 		focus:		true
 		onCheckedChanged: checkBox.clicked()
+		
+		Keys.onReturnPressed: clicked()
 
 		indicator: Rectangle
 		{
@@ -76,6 +78,18 @@ JASPControl
 				renderType:					Text.QtRendering //Prettier
             }
         }
+		
+		Rectangle
+		{
+			id: focusIndicator
+			anchors.centerIn: checkIndicator
+			width: checkIndicator.width + Theme.jaspControlHighlightWidth
+			height: checkIndicator.height + Theme.jaspControlHighlightWidth
+			color: "transparent"
+			border.width: 0
+			border.color: "transparent"
+			radius: Theme.jaspControlHighlightWidth
+		}
         
 		contentItem: Label
 		{
@@ -85,11 +99,16 @@ JASPControl
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter
         }
+		
+		background: Rectangle 
+		{
+			color: "transparent"
+		}
     }
 		
 	GridLayout
 	{
-		id:				childControls
+		id:				childControlsArea
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
 		columns:		childrenOnSameRow ? children.length : 1
@@ -101,29 +120,21 @@ JASPControl
 
 	Component.onCompleted:
 	{
-		if (childControls.children.length > 0)
+		if (childControlsArea.children.length > 0)
 		{
-			if (debug)
-			{
-				var jaspControls = [];
-				form.getJASPControls(jaspControls, childControls)
-				for (var i = 0; i < jaspControls.length; i++)
-					jaspControls[i].debug = true
-			}
-			
 			if (childrenOnSameRow)
 			{
-				childControls.x = childControls.childControlsPadding
-				childControls.anchors.top = control.top
-				if (childControls.implicitHeight < control.implicitHeight)
-					childControls.anchors.topMargin = control.padding - 1 // border width
+				childControlsArea.x = childControlsArea.childControlsPadding
+				childControlsArea.anchors.top = control.top
+				if (childControlsArea.implicitHeight < control.implicitHeight)
+					childControlsArea.anchors.topMargin = control.padding - 1 // border width
 			}
 			else
 			{
-				childControls.anchors.top = control.bottom
-				childControls.anchors.topMargin = Theme.rowGroupSpacing
-				childControls.anchors.left = control.left
-				childControls.anchors.leftMargin = childControls.childControlsPadding				
+				childControlsArea.anchors.top = control.bottom
+				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
+				childControlsArea.anchors.left = control.left
+				childControlsArea.anchors.leftMargin = childControlsArea.childControlsPadding				
 			}				
 		}
 		

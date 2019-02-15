@@ -22,14 +22,13 @@ import JASP.Theme		1.0
 
 JASPControl
 {
-	controlType:			"Switch"
-	implicitWidth:			control.width
-	implicitHeight:			control.height
-
-	useDefaultBackground:	true
-
-	property alias text:	control.text
-	property alias checked:	control.checked
+	controlType:				"Switch"
+	implicitWidth:				control.width
+	implicitHeight:				control.height
+	
+	property alias control:		control
+	property alias text:		control.text
+	property alias checked:		control.checked
     signal clicked();
     
 	Component.onCompleted: control.clicked.connect(clicked);

@@ -121,7 +121,7 @@ JASPControl
                 TextField
 				{
 					fieldWidth:			parent.width
-					textHeight:			parent.height
+					fieldHeight:		parent.height
 					value:				itemText;
 					inputType:			tableView.itemType
 					useExternalBorder:	false

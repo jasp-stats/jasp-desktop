@@ -8,8 +8,7 @@ JASPControl {
 	controlType:		"TextArea"
 	implicitHeight:		Theme.defaultTextAreaHeight
 	implicitWidth:		parent.width
-	controlBackground:	control.background
-    
+	
 	property alias	control:		control
 	property alias	text:			control.text
     property string textType

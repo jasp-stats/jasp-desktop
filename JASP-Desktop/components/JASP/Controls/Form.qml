@@ -43,7 +43,7 @@ AnalysisForm
 	property int    plotHeight:         320
 	property int    plotWidth:          480
 	
-	function getJASPControls(controls, item)
+	function getJASPControls(controls, item, deep)
 	{
 		for (var i = 0; i < item.children.length; ++i)
 		{
@@ -52,22 +52,22 @@ AnalysisForm
 			if (child instanceof ExpanderButton)
 			{
 				controls.push(child.button);
-				getJASPControls(controls, child.area);
+				getJASPControls(controls, child.childControlsArea, deep);
 			}
 			else if (child instanceof JASPControl)
 			{
 				if (child.hasTabFocus)
 				{
 					controls.push(child);
-					if (child.subControls)
-						getJASPControls(controls, child.subControls);
+					if (child.childControlsArea && deep)
+						getJASPControls(controls, child.childControlsArea, deep);
 				}
 				else
-					getJASPControls(controls, child);
+					getJASPControls(controls, child, deep);
 				
 			}
 			else
-				getJASPControls(controls, child);
+				getJASPControls(controls, child, deep);
 		}
 	}
 	
@@ -126,7 +126,7 @@ AnalysisForm
 		onTriggered:
 		{
 			var previousExpander = null;
-			getJASPControls(jaspControls, contentArea);
+			getJASPControls(jaspControls, contentArea, true);
 			for (var i = 0; i < jaspControls.length; i++) {
 				var next = i >= (jaspControls.length-1) ? 0 : i+1;
 				if (jaspControls[i].controlType !== "Expander")
