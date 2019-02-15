@@ -31,7 +31,7 @@ FocusScope
 
 	default		property alias	content:		expanderArea.children
 				property alias	button:			expanderButton
-				property alias	area:			expanderArea
+				property alias	childControlsArea: expanderArea
 				property alias	spacing:		expanderArea.rowSpacing
 				property alias	text:			label.text
                 property alias  title:          label.text
@@ -40,7 +40,6 @@ FocusScope
 	readonly	property string iconsFolder:	"qrc:/images/"
 	readonly	property string	expandedIcon:	"expander-arrow-down.png"
 	readonly	property string	contractedIcon: "expander-arrow-up.png"
-				property var	childControls:	[]
 				property alias	columns:		expanderArea.columns
 				property alias	alignChildrenTopLeft: expanderArea.alignChildrenTopLeft
 
@@ -52,7 +51,8 @@ FocusScope
 		id:						expanderButton
 		controlType:			"Expander"
 		isBound:				false
-		controlBackground:		expanderRectangle
+		background:				expanderRectangle
+		childControlsArea:		expanderArea
 		width:					parent.width
 		height:					22 * preferencesModel.uiScale
 		Keys.onSpacePressed:	toggleExpander()
@@ -124,14 +124,5 @@ FocusScope
 		z:				-1
 		anchors.fill:	parent
 		color:			Theme.analysisBackgroundColor
-	}
-    
-	Component.onCompleted:
-	{
-		var i
-        form.getJASPControls(childControls, expanderArea)
-		if (debug)
-			for (i = 0; i < childControls.length; i++)
-                childControls[i].debug = true;	
-    }
+	}    
 }

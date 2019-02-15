@@ -27,6 +27,7 @@ JASPControl
 	id:				control
 	controlType:	"RadioButtonGroup"
 	hasTabFocus:	false
+	childControlsArea:	contentArea
 
 	default property alias	content:		contentArea.children
 			property alias	buttons:		buttonGroup.buttons
@@ -81,9 +82,6 @@ JASPControl
             var child = item.children[i];
 			if (child instanceof JASPControl)
 			{
-				if (control.debug)
-					child.debug = true;
-
 				switch(child.controlType)
 				{
 				case "RadioButton":			child.buttonGroup = buttonGroup;	break;

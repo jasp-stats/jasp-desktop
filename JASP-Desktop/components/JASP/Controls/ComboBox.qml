@@ -9,9 +9,8 @@ JASPControl {
 	implicitHeight:		control.height
 	implicitWidth:		control.implicitWidth + (label.visible ? labelSpacing + label.implicitWidth : 0)
 	width:				implicitWidth
-	controlBackground:	comboBoxBackground
-
     
+	property alias	control:				control
 	property int	labelSpacing:			4 * preferencesModel.uiScale
 	property alias	label:					label
     property alias	text:					label.text
@@ -28,7 +27,6 @@ JASPControl {
 	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
 	property string	emptyValue:				qsTr("<no choice>")
-	property alias	control:				control
 	property bool	initialized:			false
     
     signal activated(int index);
@@ -51,92 +49,38 @@ JASPControl {
 	{
         spacing: label.visible ? labelSpacing : 0
         
-		Label
+		Rectangle
 		{
-            id: label
-            visible: label.text && comboBox.visible ? true : false
-        }
+			implicitWidth: label.implicitWidth
+			implicitHeight: control.implicitHeight
+			color: debug ? Theme.debugBackgroundColor : "transparent"
+			Label
+			{
+				id:			label
+				visible:	label.text && comboBox.visible ? true : false
+				font:		Theme.font
+				anchors.verticalCenter: parent.verticalCenter				
+				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+			}
+		}
         
         ComboBox {
 							id:				control
 							focus:			true
-							spacing:		5 * preferencesModel.uiScale
-							height:			Theme.comboBoxHeight
-			property int	modelWidth:		30 * preferencesModel.uiScale
-			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
+							padding:		2 * preferencesModel.uiScale //Theme.jaspControlPadding
 							implicitWidth:	modelWidth + leftPadding + rightPadding + canvas.width
 							textRole:		comboBox.textRole
+			property int	modelWidth:		30 * preferencesModel.uiScale
+			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
+							
+			Layout.leftMargin: label.visible ? 0 : -labelSpacing
+							
             
 			TextMetrics { id: textMetrics }
-
-			delegate: ItemDelegate
-			{
-				height:								control.height
-				highlighted:						control.highlightedIndex === index
-
-				contentItem:	Rectangle
-				{
-					id:								itemRectangle
-					anchors.fill:					parent
-
-					property bool isEmptyValue:		comboBox.addEmptyValue && index == 0
-
-					Image
-					{
-						id:							delegateIcon
-						x:							1 * preferencesModel.uiScale
-						height:						15 * preferencesModel.uiScale
-						width:						15 * preferencesModel.uiScale
-						source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
-						visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
-
-						anchors.verticalCenter:		parent.verticalCenter
-                    }
-                    
-                    Text {
-						x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-						text:						comboBox.initialized ? model.name : ""
-						font:						control.font
-						color:						itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
-						verticalAlignment:			Text.AlignVCenter
-						anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
-                    }
-
-                }
-
-
-            }
             
-            
-			indicator: Canvas
-			{
-				id:				canvas
-				x:				control.width - width - control.spacing
-				y:				control.topPadding + (control.availableHeight - height) / 2
-				width:			12 * preferencesModel.uiScale
-				height:			8  * preferencesModel.uiScale
-				contextType:	"2d"
-        
-                Connections {
-					target:				control
-					onPressedChanged:	canvas.requestPaint()
-                }
-        
-				onPaint: //Is this really the best way to do whatever it is that is being done here? Maybe we can make a custom QuickItem.
-				{
-                    context.reset();
-                    context.moveTo(0, 0);
-                    context.lineTo(width, 0);
-                    context.lineTo(width / 2, height);
-                    context.closePath();
-                    context.fillStyle = Theme.grayDarker;
-                    context.fill();
-                }
-            }
-        
-
 			contentItem: Item
 			{
+				implicitHeight:				Theme.comboBoxHeight
 				Image
 				{
 					id:						contentIcon
@@ -158,11 +102,36 @@ JASPControl {
 					color:						(!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
                 }
             }
+			
+			indicator: Canvas
+			{
+				id:				canvas
+				x:				control.width - width - 3 //control.spacing
+				y:				control.topPadding + (control.availableHeight - height) / 2
+				width:			12 * preferencesModel.uiScale
+				height:			8  * preferencesModel.uiScale
+				contextType:	"2d"
+        
+                Connections {
+					target:				control
+					onPressedChanged:	canvas.requestPaint()
+                }
+        
+				onPaint: //Is this really the best way to do whatever it is that is being done here? Maybe we can make a custom QuickItem.
+				{
+                    context.reset();
+                    context.moveTo(0, 0);
+                    context.lineTo(width, 0);
+                    context.lineTo(width / 2, height);
+                    context.closePath();
+                    context.fillStyle = Theme.grayDarker;
+                    context.fill();
+                }
+            }        
 
 			background: Rectangle
 			{
 				id:				comboBoxBackground
-                implicitHeight: control.height
 				border.color:	Theme.borderColor
 				border.width:	1
 				radius:			2
@@ -191,6 +160,41 @@ JASPControl {
 					radius:			2
                 }
             }
+			
+			delegate: ItemDelegate
+			{
+				height:								Theme.comboBoxHeight				
+				highlighted:						control.highlightedIndex === index
+
+				contentItem:	Rectangle
+				{
+					id:								itemRectangle
+					anchors.fill:					parent
+
+					property bool isEmptyValue:		comboBox.addEmptyValue && index == 0
+
+					Image
+					{
+						id:							delegateIcon
+						x:							1 * preferencesModel.uiScale
+						height:						15 * preferencesModel.uiScale
+						width:						15 * preferencesModel.uiScale
+						source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
+						visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
+
+						anchors.verticalCenter:		parent.verticalCenter
+                    }
+                    
+                    Text {
+						x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
+						text:						comboBox.initialized ? model.name : ""
+						font:						Theme.font
+						color:						itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
+						verticalAlignment:			Text.AlignVCenter
+						anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
+                    }
+                }
+            }			
         }
     }
 }

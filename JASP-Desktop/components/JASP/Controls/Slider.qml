@@ -10,8 +10,8 @@ JASPControl
 	controlType:		"Slider"
 	implicitHeight:		control.height + (label.visible ? labelSpacing + label.implicitWidth : 0)
 	implicitWidth:		control.width
-	controlBackground:	textField.controlBackground
     
+	property alias	control:		textField
 	property int	labelSpacing:	4 * preferencesModel.uiScale
 	property int	decimals:		2
 	property int	power:			Math.pow(10, decimals);
@@ -23,7 +23,6 @@ JASPControl
 	property alias	stepSize:		control.stepSize
 	property alias	from:			control.from
 	property alias	to:				control.to
-	property alias	control:		control
 	property alias	textField:		textField
     
     signal moved();
@@ -101,10 +100,9 @@ JASPControl
                 
         }
         
-        JC.TextField {
+        JC.DoubleField {
 			id:					textField
 			value:				control.value
-			inputType:			"number";
 			isBound:			false
 			Layout.alignment:	Qt.AlignCenter
 			validator:			DoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }

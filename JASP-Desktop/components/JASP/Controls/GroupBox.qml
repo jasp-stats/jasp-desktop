@@ -72,12 +72,13 @@ Rectangle {
 	Component.onCompleted:
 	{
 		var i;
-        form.getJASPControls(childControls, contentArea)
+        form.getJASPControls(childControls, contentArea, false)
 		for (i = 0; i < childControls.length; i++)
+		{
             if (control.debug)
-                childControls[i].debug = true;
-
-        
+				childControls[i].setDebugState();
+		}
+		
 		if (alignTextFields)
 		{
             var textFieldsControls = [];

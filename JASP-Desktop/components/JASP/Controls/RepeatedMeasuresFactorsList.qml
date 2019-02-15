@@ -24,11 +24,11 @@ import JASP.Theme 1.0
 
 JASPControl
 {
-	id:						repeatedMeasuresFactorsList
-	controlType:			"RepeatedMeasuresFactorsList"
-	useDefaultBackground:	true
-	implicitWidth:			parent.width
-	implicitHeight:			Theme.defaultListHeight
+	id:							repeatedMeasuresFactorsList
+	controlType:				"RepeatedMeasuresFactorsList"
+	implicitWidth:				parent.width
+	implicitHeight:				Theme.defaultListHeight
+	background:					rectangle
 
 				property var	model
 				property string title

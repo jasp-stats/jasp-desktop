@@ -26,7 +26,7 @@ JASPControl
 {
 	id:					variablesList
 	controlType:		"VariablesListView"
-	controlBackground:	rectangle
+	background:			rectangle
 	implicitWidth:		parent.width
 	height:				singleItem ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height

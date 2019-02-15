@@ -26,12 +26,11 @@ JASPControl
 	controlType:		"Button"
 	implicitHeight:		control.implicitHeight
 	implicitWidth:		control.implicitWidth
-	controlBackground:	rectangle
 	isBound:			false
-
-    property alias control: control
-    property alias text: control.text
-    property alias image: image
+	
+	property alias control: control
+    property alias text:	control.text
+    property alias image:	image
     
     signal clicked()
     
