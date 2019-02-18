@@ -402,6 +402,13 @@ void Analyses::selectAnalysis(Analysis * analysis)
 		}
 }
 
+void Analyses::setDataSet(DataSet *dataSet)
+{
+	_dataSet = dataSet;
+	
+	emit dataSetChanged();
+}
+
 
 void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 {

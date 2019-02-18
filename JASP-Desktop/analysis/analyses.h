@@ -76,7 +76,7 @@ public:
 
 	void		selectAnalysis(Analysis * analysis);
 	
-	void		setDataSet(DataSet* dataSet)	{ _dataSet = dataSet; }
+	void		setDataSet(DataSet* dataSet);
 	DataSet*	getDataSet() const				{ return _dataSet; }
 
 	int						rowCount(const QModelIndex & = QModelIndex())				const override	{ return int(count()); }
@@ -128,6 +128,7 @@ signals:
 	void currentFormHeightChanged(		double		currentFormHeight);
 	void visibleChanged(				bool		visible);
 	void emptyQMLCache();
+	void dataSetChanged();
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestComputedColumnDestruction(QString columnName);
