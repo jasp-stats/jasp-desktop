@@ -149,7 +149,7 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 	else
 		std::cout << "Unknown item " << controlName.toStdString() << std::endl;
 #endif
-
+	
 }
 
 void AnalysisForm::_parseQML()
@@ -481,6 +481,14 @@ void AnalysisForm::_formCompletedHandler()
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
 		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->optionsFromJASPFile());
 		_analysis->resetOptionsFromJASPFile();
-		_analysis->initialized(this, isNewAnalysis);	
+		_analysis->initialized(this, isNewAnalysis);
 	}
 }
+
+void AnalysisForm::dataSetChanged()
+{
+	_dataSet = _analysis->getDataSet();
+	_setAllAvailableVariablesModel();
+}
+
+

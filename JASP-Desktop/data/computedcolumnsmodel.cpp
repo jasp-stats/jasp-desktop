@@ -396,9 +396,9 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	while (!success);
 
 	//if(theData != _package->dataSet())
-	emit dataSetChanged(_package->dataSet());
 
 	ComputedColumn  * createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
+	emit dataSetChanged(_package->dataSet());
 	emit refreshData();
 
 	setLastCreatedColumn(name);

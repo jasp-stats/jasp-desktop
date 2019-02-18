@@ -61,6 +61,7 @@ public:
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
+				void			dataSetChanged();
 
 signals:
 				void			illegalChanged(AnalysisForm * form);
