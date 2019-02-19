@@ -45,6 +45,7 @@ FocusScope
 		{
 			customMenu.visible		= false;
 			fileMenuModel.visible	= !fileMenuModel.visible;
+			modulesMenu.opened = false;
 		}
 
 		anchors
@@ -66,6 +67,17 @@ FocusScope
 			right	: modulesPlusButton.left
 			left	: fileMenuOpenButton.right
 		}
+
+		MouseArea
+		{
+			anchors.fill: parent
+			enabled:  fileMenuModel.visible  || modulesMenu.opened
+
+			onClicked: {
+				fileMenuModel.visible =false;
+				modulesMenu.opened = false;
+			}
+		}
 	}
 
 	MenuArrowButton
@@ -77,6 +89,7 @@ FocusScope
 		{
 			customMenu.visible	= false;
 			modulesMenu.opened	= !modulesMenu.opened;
+			fileMenuModel.visible = false;
 		}
 
 		showArrow	: modulesMenu.opened
