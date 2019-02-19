@@ -33,12 +33,13 @@ Rectangle
 	property bool	hamburger:	true
 	property bool	showArrow:	false
 	property string	toolTip:	""
+	property bool	toolTipVisible:	toolTip !== "" && mice.containsMouse
 
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			Theme.toolTipTimeout
-	ToolTip.delay:				Theme.toolTipDelay
+	ToolTip.delay:				Theme.toolTipDelay / 5
 	ToolTip.toolTip.font:		Theme.font
-	ToolTip.visible:			toolTip !== "" && mice.containsMouse
+	ToolTip.visible:			toolTipVisible
 	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor }
 
 	signal clicked

@@ -29,12 +29,13 @@ Rectangle
 	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	color	: mice.pressed ? Theme.grayLighter : "transparent"
 
-			property alias	text		: innerText.text
-			property alias	source		: backgroundImage.source
-			property bool	enabled		: true
-			property string moduleName	: "???"
-			property string moduleTitle : "???"
-			property string ribbonTitle	: "???"
+	property alias	text		: innerText.text
+	property alias	source		: backgroundImage.source
+	property bool	enabled		: true
+	property string moduleName	: "???"
+	property string moduleTitle : "???"
+	property string ribbonTitle	: "???"
+	property bool showTitle: true
 	default property var	menu
 
 	signal clicked
@@ -100,11 +101,11 @@ Rectangle
 				else
 				{
 					customMenu.functionCall = function menuItemClicked(index)
-						{
-							var analysis = customMenu.model.getFunctionName(index);
-							ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
-							customMenu.visible = false;
-						}
+					{
+						var analysis = customMenu.model.getFunctionName(index);
+						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						customMenu.visible = false;
+					}
 
 					customMenu.showMenu(ribbonButton, ribbonButton.menu);
 				}
@@ -119,7 +120,7 @@ Rectangle
 		border.color:				Theme.uiBorder
 		border.width:				1
 		color:						Theme.uiBackground
-		visible:					mice.containsMouse && !mice.pressed
+		visible:					showTitle && (mice.containsMouse && !mice.pressed)
 		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
 		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
 
