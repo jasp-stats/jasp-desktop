@@ -27,29 +27,28 @@ Form
 	
 	VariablesForm
 	{
-		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["nominal", "ordinal"]; singleItem: true	}
+		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["nominal", "ordinal"]; singleVariable: true	}
 		DropDown
 		{
 			name: "method"
-			text: qsTr("Method")
-			model: ListModel
-			{
-				ListElement { title: "Enter";		value: "enter"		}
-				ListElement { title: "Backward";	value: "backward"	}
-				ListElement { title: "Forward";		value: "forward"	}
-				ListElement { title: "Stepwise";	value: "stepwise"	}
-			}
+			label: qsTr("Method")
+			values: [
+				{ label: "Enter",		value: "enter"},
+				{ label: "Backward",	value: "backward"},
+				{ label: "Forward",		value: "forward"},
+				{ label: "Stepwise",	value: "stepwise"}
+			]
 		}
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]									}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors");				allowedColumns: ["nominal", "ordinal"];itemType: "fixedFactors" }
-		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleItem: true; debug: true	}
+		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true; debug: true	}
 	}
 	
 	ExpanderButton
 	{
 		title: qsTr("Model")
 		
-		CheckBox { name: "includeIntercept"; text: qsTr("Include intercept"); checked: true }
+		CheckBox { name: "includeIntercept"; label: qsTr("Include intercept"); checked: true }
 		
 		VariablesForm
 		{
@@ -87,7 +86,7 @@ Form
 		Group
 		{
 			title: qsTr("Descriptives")
-			CheckBox { name: "factorDescriptivesOpt"; text: qsTr("Factor descriptives") }
+			CheckBox { name: "factorDescriptivesOpt"; label: qsTr("Factor descriptives") }
 		}
 
 		Group
@@ -95,37 +94,37 @@ Form
 			title: qsTr("Performance Diagnostics")
 			CheckBox
 			{
-				name: "confusionMatrixOpt";	text: qsTr("Confusion matrix")
-				CheckBox { name: "confusionMatrixProportions";	text: qsTr("Proportions") }
+				name: "confusionMatrixOpt";	label: qsTr("Confusion matrix")
+				CheckBox { name: "confusionMatrixProportions";	label: qsTr("Proportions") }
 			}
 		}
 
 		Group
 		{
 			title: qsTr("Regression Coefficients")
-			CheckBox { name: "coeffEstimates";	text: qsTr("Estimates"); checked: true			}
-			CheckBox { name: "stdCoeff";		text: qsTr("Standardized coefficients")			}
-			CheckBox { name: "oddsRatios";		text: qsTr("Odds ratios")						}
+			CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true			}
+			CheckBox { name: "stdCoeff";		label: qsTr("Standardized coefficients")			}
+			CheckBox { name: "oddsRatios";		label: qsTr("Odds ratios")						}
 			CheckBox
 			{
-				name: "coeffCI";				text: qsTr("Confidence intervals")
-				PercentField {	name: "coeffCIInterval"; text: "Interval"; defaultValue: 95	}
-				CheckBox {		name: "coeffCIOR";		text: qsTr("Odds ratio scale")		}
+				name: "coeffCI";				label: qsTr("Confidence intervals")
+				PercentField {	name: "coeffCIInterval"; label: "Interval"; defaultValue: 95	}
+				CheckBox {		name: "coeffCIOR";		label: qsTr("Odds ratio scale")		}
 			}
-			CheckBox { name: "robustSEOpt";		text: qsTr("Robust standard errors")		}
-			CheckBox { name: "VovkSellkeMPR";	text: qsTr("Vovk-Sellke maximum p-ratio")	}
+			CheckBox { name: "robustSEOpt";		label: qsTr("Robust standard errors")		}
+			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")	}
 		}
 
 		Group
 		{
 			title: qsTr("Performance metrics")
-			CheckBox { name: "AUC";			text: qsTr("AUC")					}
-			CheckBox { name: "Sens";		text: qsTr("Sensitivity / Recall")	}
-			CheckBox { name: "Spec";		text: qsTr("Specificity")			}
-			CheckBox { name: "Prec";		text: qsTr("Precision")				}
-			CheckBox { name: "Fmsr";		text: qsTr("F-measure")				}
-			CheckBox { name: "BrierScr";	text: qsTr("Brier score")			}
-			CheckBox { name: "Hmsr";		text: qsTr("H-measure")				}
+			CheckBox { name: "AUC";			label: qsTr("AUC")					}
+			CheckBox { name: "Sens";		label: qsTr("Sensitivity / Recall")	}
+			CheckBox { name: "Spec";		label: qsTr("Specificity")			}
+			CheckBox { name: "Prec";		label: qsTr("Precision")				}
+			CheckBox { name: "Fmsr";		label: qsTr("F-measure")				}
+			CheckBox { name: "BrierScr";	label: qsTr("Brier score")			}
+			CheckBox { name: "Hmsr";		label: qsTr("H-measure")				}
 		}
 	}
 	
@@ -138,26 +137,26 @@ Form
 			title: qsTr("Inferential plots")
 			CheckBox
 			{
-				name: "estimatesPlotsOpt"; text: qsTr("Display conditional estimates plots")
-				PercentField {	name: "estimatesPlotsCI";	text: qsTr("Confidence interval"); defaultValue: 95 }
-				CheckBox {		name: "showPoints";			text: qsTr("Show data points")						}
+				name: "estimatesPlotsOpt"; label: qsTr("Display conditional estimates plots")
+				PercentField {	name: "estimatesPlotsCI";	label: qsTr("Confidence interval"); defaultValue: 95 }
+				CheckBox {		name: "showPoints";			label: qsTr("Show data points")						}
 			}
 		}
 
 		Group
 		{
 			title: qsTr("Residual plots")
-			CheckBox { name: "predictedPlotOpt";		text: qsTr("Predicted - residual plot")			}
-			CheckBox { name: "predictorPlotsOpt";		text: qsTr("Predictor - residual plots")		}
-			CheckBox { name: "squaredPearsonPlotOpt";	text: qsTr("Squared Pearson residuals plot")	}
+			CheckBox { name: "predictedPlotOpt";		label: qsTr("Predicted - residual plot")			}
+			CheckBox { name: "predictorPlotsOpt";		label: qsTr("Predictor - residual plots")		}
+			CheckBox { name: "squaredPearsonPlotOpt";	label: qsTr("Squared Pearson residuals plot")	}
 		}
 
 		RadioButtonGroup
 		{
 			name: "residualType"
 			title: qsTr("Residual type")
-			RadioButton { value: "deviance";	text: qsTr("Deviance");	checked: true   }
-			RadioButton { value: "pearson";		text: qsTr("Pearson")					}
+			RadioButton { value: "deviance";	label: qsTr("Deviance");	checked: true   }
+			RadioButton { value: "pearson";		label: qsTr("Pearson")					}
 		}
 	}
 }

@@ -30,16 +30,16 @@ Form {
 	{
 		height: 200
 		AssignedVariablesList { name: "variables"; title: qsTr("Dependent Variables"); allowedColumns: ["scale"] }
-		AssignedVariablesList { name: "groupingVariable"; title: qsTr("Grouping Variable"); allowedColumns: ["ordinal", "nominal"]; singleItem: true }
+		AssignedVariablesList { name: "groupingVariable"; title: qsTr("Grouping Variable"); allowedColumns: ["ordinal", "nominal"]; singleVariable: true }
 	}
 	
 	RadioButtonGroup
 	{
 		name: "hypothesis"
 		title: qsTr("Hypothesis")
-		RadioButton { value: "groupsNotEqual";	text: qsTr("Group 1 ≠ Group 2"); checked: true	}
-		RadioButton { value: "groupOneGreater";	text: qsTr("Group 1 > Group 2")					}
-		RadioButton { value: "groupTwoGreater";	text: qsTr("Group 1 < Group 2")					}
+		RadioButton { value: "groupsNotEqual";	label: qsTr("Group 1 ≠ Group 2"); checked: true	}
+		RadioButton { value: "groupOneGreater";	label: qsTr("Group 1 > Group 2")					}
+		RadioButton { value: "groupTwoGreater";	label: qsTr("Group 1 < Group 2")					}
 	}
 
 	Group
@@ -49,26 +49,26 @@ Form {
 
 		CheckBox
 		{
-			name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
+			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		label: qsTr("Additional info"); checked: true }
 		}
 
 		CheckBox
 		{
-			name: "plotBayesFactorRobustness";	text: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
+			name: "plotBayesFactorRobustness";	label: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 
 		CheckBox
 		{
-			name: "plotSequentialAnalysis";		text: qsTr("Sequential analysis")
-			CheckBox { name: "plotSequentialAnalysisRobustness";		text: qsTr("Robustness check") }
+			name: "plotSequentialAnalysis";		label: qsTr("Sequential analysis")
+			CheckBox { name: "plotSequentialAnalysisRobustness";		label: qsTr("Robustness check") }
 		}
 
 		CheckBox
 		{
-			name: "descriptivesPlots";			text: qsTr("Descriptives plots")
-			PercentField { name: "descriptivesPlotsCredibleInterval";	text: qsTr("Credible interval"); defaultValue: 95 }
+			name: "descriptivesPlots";			label: qsTr("Descriptives plots")
+			PercentField { name: "descriptivesPlotsCredibleInterval";	label: qsTr("Credible interval"); defaultValue: 95 }
 		}
 	}
 
@@ -80,11 +80,11 @@ Form {
 		title: qsTr("Tests")
 		RadioButton
 		{
-			value: "Student";	text: qsTr("Student"); checked: true }
+			value: "Student";	label: qsTr("Student"); checked: true }
 		RadioButton
 		{
-			value: "Wilcoxon";	text: qsTr("Mann-Whitney");
-			IntegerField { name: "wilcoxonSamplesNumber"; text: qsTr("No. samples"); defaultValue: 1000; min: 100; max: 10000; fieldWidth: 60 }
+			value: "Wilcoxon";	label: qsTr("Mann-Whitney");
+			IntegerField { name: "wilcoxonSamplesNumber"; label: qsTr("No. samples"); defaultValue: 1000; min: 100; max: 10000; fieldWidth: 60 }
 		}
 	}
 
@@ -92,14 +92,14 @@ Form {
 	{
 		name: "missingValues"
 		title: qsTr("Missing Values")
-		RadioButton { value: "excludeAnalysisByAnalysis";	text: qsTr("Exclude cases analysis by analysis"); checked: true }
-		RadioButton { value: "excludeListwise";				text: qsTr("Exclude cases listwise")							}
+		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases analysis by analysis"); checked: true }
+		RadioButton { value: "excludeListwise";				label: qsTr("Exclude cases listwise")							}
 	}
 
 	Group
 	{
 		title: qsTr("Additional Statistics")
-		CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
+		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
 
 	SubjectivePriors { }

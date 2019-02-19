@@ -26,7 +26,7 @@ Form
 {
 	usesJaspResults: false
 
-	IntegerField { name: "sampleSize"; text: qsTr("Sample size"); intValidator.bottom: 2 }
+	IntegerField { name: "sampleSize"; label: qsTr("Sample size"); intValidator.bottom: 2 }
 
     Divider { }
 
@@ -37,12 +37,12 @@ Form
 		Layout.columnSpan: 2
 		RadioButton
 		{
-			value: "pearsonRho"; text: qsTr("Pearson's rho"); childrenOnSameRow: true
+			value: "pearsonRho"; label: qsTr("Pearson's rho"); childrenOnSameRow: true
 			DoubleField { name: "pearsonRhoValue"; defaultValue: 0; min: -1; max: 1 }
 		}
 		RadioButton
 		{
-			value: "kendallTau"; text: qsTr("Kendall's tau-b"); childrenOnSameRow: true
+			value: "kendallTau"; label: qsTr("Kendall's tau-b"); childrenOnSameRow: true
 			DoubleField { name: "kendallTauValue"; defaultValue: 0; min: -1; max: 1 }
 		}
 	}
@@ -51,31 +51,31 @@ Form
 	{
 		title: qsTr("Hypothesis")
 		name: "hypothesis"
-		RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
-		RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
-		RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
+		RadioButton { value: "correlated";				label: qsTr("Correlated"); checked: true	}
+		RadioButton { value: "correlatedPositively";	label: qsTr("Correlated positively")		}
+		RadioButton { value: "correlatedNegatively";	label: qsTr("Correlated negatively")		}
 	}
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotPriorAndPosterior";				text: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
+			name: "plotPriorAndPosterior";				label: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{
-			name: "plotBayesFactorRobustness";			text: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
+			name: "plotBayesFactorRobustness";			label: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 	}
 
 	BayesFactorType { }
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Prior")
-		DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1; min: 0; max: 2 }
+		DoubleField { name: "priorWidth"; label: qsTr("Stretched beta prior width"); defaultValue: 1; min: 0; max: 2 }
 	}
 }

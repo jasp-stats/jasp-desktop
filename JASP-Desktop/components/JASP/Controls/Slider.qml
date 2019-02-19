@@ -8,16 +8,16 @@ JASPControl
 {
 	id:					slider
 	controlType:		"Slider"
-	implicitHeight:		control.height + (label.visible ? labelSpacing + label.implicitWidth : 0)
+	implicitHeight:		control.height + (controlLabel.visible ? labelSpacing + controlLabel.implicitWidth : 0)
 	implicitWidth:		control.width
     
 	property alias	control:		textField
 	property int	labelSpacing:	4 * preferencesModel.uiScale
 	property int	decimals:		2
 	property int	power:			Math.pow(10, decimals);
-	property alias	text:			label.text
-	property alias	title:			label.text
-	property alias	label:			label
+	property alias	label:			controlLabel.text
+	property alias	title:			controlLabel.text
+	property alias	controlLabel:	controlLabel
 	property alias	value:			control.value
 	property alias	orientation:	control.orientation
 	property alias	stepSize:		control.stepSize
@@ -32,12 +32,12 @@ JASPControl
 	ColumnLayout
 	{
 		id:			columnLayout;
-		spacing:	label.visible ? labelSpacing : 0
+		spacing:	controlLabel.visible ? labelSpacing : 0
         
 		Label
 		{
-			id:			label
-			visible:	label.text && slider.visible ? true : false
+			id:			controlLabel
+			visible:	controlLabel.text && slider.visible ? true : false
 			font:		Theme.font
 			color:		enabled ? Theme.textEnabled : Theme.textDisabled
         }

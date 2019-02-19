@@ -41,14 +41,14 @@ Form
 	VariablesForm 
 	{
 		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables") }
-		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
 	DropDown
 	{
 		id: estimator
 		name: "estimator"
-		text: qsTr("Estimator")
+		label: qsTr("Estimator")
 		Layout.columnSpan: 2
 		values: ["EBICglasso", "cor", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm"]
 	}
@@ -56,21 +56,21 @@ Form
 	Group
 	{
 		title: qsTr("Plots")
-		CheckBox { name: "plotNetwork";		text: qsTr("Network plot")		}
-		CheckBox { name: "plotCentrality";	text: qsTr("Centrality plot")	}
-		CheckBox { name: "plotClustering";	text: qsTr("Clustering plot")	}
+		CheckBox { name: "plotNetwork";		label: qsTr("Network plot")		}
+		CheckBox { name: "plotCentrality";	label: qsTr("Centrality plot")	}
+		CheckBox { name: "plotClustering";	label: qsTr("Clustering plot")	}
 	}
 
 	Group
 	{
 		title: qsTr("Tables")
-		CheckBox { name: "tableCentrality";			text: qsTr("Centrality tabel")					}
-		CheckBox { name: "tableClustering";			text: qsTr("Clustering tabel")					}
-		CheckBox { name: "tableWeightsMatrix";		text: qsTr("Weights matrix")					}
+		CheckBox { name: "tableCentrality";			label: qsTr("Centrality tabel")					}
+		CheckBox { name: "tableClustering";			label: qsTr("Clustering tabel")					}
+		CheckBox { name: "tableWeightsMatrix";		label: qsTr("Weights matrix")					}
 		CheckBox
 		{
-			name: "tableLayout"; text: qsTr("Layout matrix")
-			CheckBox { name: "tableLayoutValuesOnly"; text: qsTr("Show variable names") }
+			name: "tableLayout"; label: qsTr("Layout matrix")
+			CheckBox { name: "tableLayoutValuesOnly"; label: qsTr("Show variable names") }
 		}
 	}
 
@@ -83,10 +83,10 @@ Form
 			name: "correlationMethod"
 			title: qsTr("Correlation method")
 			visible: [0, 1, 2].includes(estimator.currentIndex)
-			RadioButton { value: "auto";	text: qsTr("Auto");	checked: true	}
-			RadioButton { value: "cor";		text: qsTr("Cor")					}
-			RadioButton { value: "cov";		text: qsTr("Cov")					}
-			RadioButton { value: "npn";		text: qsTr("Npn")					}
+			RadioButton { value: "auto";	label: qsTr("Auto"); checked: true	}
+			RadioButton { value: "cor";		label: qsTr("Cor")					}
+			RadioButton { value: "cov";		label: qsTr("Cov")					}
+			RadioButton { value: "npn";		label: qsTr("Npn")					}
 		}
 
 		RadioButtonGroup
@@ -94,17 +94,17 @@ Form
 			name: "normalizeCentrality"
 			title: qsTr("Centrality measures")
 			visible: estimator.currentIndex === 0
-			RadioButton { value: "normalized";	text: qsTr("Normalized"); checked: true	}
-			RadioButton { value: "relative" ;	text: qsTr("Relative")					}
-			RadioButton { value: "raw";			text: qsTr("Raw")						}
+			RadioButton { value: "normalized";	label: qsTr("Normalized"); checked: true }
+			RadioButton { value: "relative" ;	label: qsTr("Relative")					}
+			RadioButton { value: "raw";			label: qsTr("Raw")						}
 		}
 
 		Group
 		{
 			title: qsTr("Network")
 			visible: estimator.currentIndex === 0
-			CheckBox { name: "weightedNetwork"; text: qsTr("Weighted");	checked: true }
-			CheckBox { name: "signedNetwork";	text: qsTr("Signed");	checked: true }
+			CheckBox { name: "weightedNetwork"; label: qsTr("Weighted"); checked: true	}
+			CheckBox { name: "signedNetwork";	label: qsTr("Signed");	checked: true	}
 		}
 
 		RadioButtonGroup
@@ -112,8 +112,8 @@ Form
 			name: "missingValues"
 			title: qsTr("Missing values")
 			visible: [0, 1, 2].includes(estimator.currentIndex)
-			RadioButton { value: "pairwise";	text: qsTr("Exclude pairwise"); checked: true	}
-			RadioButton { value: "listwise";	text: qsTr("Exclude listwise")					}
+			RadioButton { value: "pairwise";	label: qsTr("Exclude pairwise"); checked: true	}
+			RadioButton { value: "listwise";	label: qsTr("Exclude listwise")					}
 		}
 
 		RadioButtonGroup
@@ -121,8 +121,8 @@ Form
 			name: "sampleSize"
 			title: qsTr("Sample size")
 			visible: estimator.currentIndex === 0
-			RadioButton { value: "maximum";	text: qsTr("Maximum"); checked: true	}
-			RadioButton { value: "minimim";	text: qsTr("Minimum")					}
+			RadioButton { value: "maximum";	label: qsTr("Maximum"); checked: true	}
+			RadioButton { value: "minimim";	label: qsTr("Minimum")					}
 		}
 
 		RadioButtonGroup
@@ -130,10 +130,10 @@ Form
 			name: "isingEstimator"
 			title: qsTr("Ising Estimator")
 			visible: estimator.currentIndex === 4
-			RadioButton { value: "pseudoLikelihood";		text: qsTr("Pseudo-likelihood"); checked: true	}
-			RadioButton { value: "univariateRegressions";	text: qsTr("Univariate regressions")			}
-			RadioButton { value: "bivariateRegressions";	text: qsTr("Bivariate regressions")				}
-			RadioButton { value: "logLinear";				text: qsTr("Loglinear")							}
+			RadioButton { value: "pseudoLikelihood";		label: qsTr("Pseudo-likelihood"); checked: true	}
+			RadioButton { value: "univariateRegressions";	label: qsTr("Univariate regressions")			}
+			RadioButton { value: "bivariateRegressions";	label: qsTr("Bivariate regressions")			}
+			RadioButton { value: "logLinear";				label: qsTr("Loglinear")						}
 		}
 
 		RadioButtonGroup
@@ -141,10 +141,10 @@ Form
 			name: "criterion"
 			title: qsTr("Criterion")
 			visible: [5, 7].includes(estimator.currentIndex)
-			RadioButton { value: "ebic";	text: qsTr("EBIC"); checked: true	}
-			RadioButton { value: "ric";	text: qsTr("RIC")						}
-			RadioButton { value: "stars";	text: qsTr("STARS")					}
-			RadioButton { value: "cv";	text: qsTr("CV")						}
+			RadioButton { value: "ebic";	label: qsTr("EBIC"); checked: true	}
+			RadioButton { value: "ric";		label: qsTr("RIC")					}
+			RadioButton { value: "stars";	label: qsTr("STARS")				}
+			RadioButton { value: "cv";		label: qsTr("CV")					}
 		}
 
 		RadioButtonGroup
@@ -152,8 +152,8 @@ Form
 			name: "rule"
 			title: qsTr("Rule")
 			visible: [3, 7].includes(estimator.currentIndex)
-			RadioButton { value: "and";	text: qsTr("AND"); checked: true	}
-			RadioButton { value: "or";	text: qsTr("OR")					}
+			RadioButton { value: "and";	label: qsTr("AND"); checked: true	}
+			RadioButton { value: "or";	label: qsTr("OR")					}
 		}
 
 		RadioButtonGroup
@@ -161,15 +161,15 @@ Form
 			name: "split"
 			title: qsTr("Split")
 			visible: [3, 4].includes(estimator.currentIndex)
-			RadioButton { value: "median";	text: qsTr("Median"); checked: true	}
-			RadioButton { value: "mean";	text: qsTr("Mean")					}
+			RadioButton { value: "median";	label: qsTr("Median"); checked: true	}
+			RadioButton { value: "mean";	label: qsTr("Mean")						}
 		}
 
 		Group
 		{
 			title: qsTr("Tuning parameters")
 			visible: [0, 3, 5, 7].includes(estimator.currentIndex)
-			DoubleField { name: "tuningParameter"; text: qsTr("value"); defaultValue: 0.5; max: 1 }
+			DoubleField { name: "tuningParameter"; label: qsTr("value"); defaultValue: 0.5; max: 1 }
 		}
 
 		RadioButtonGroup
@@ -179,29 +179,28 @@ Form
 			visible: [1, 2].includes(estimator.currentIndex)
 			RadioButton
 			{
-				value: "value";	text: qsTr("Value"); checked: true
+				value: "value";	label: qsTr("Value"); checked: true
 				childrenOnSameRow: true
 				DoubleField { name: "thresholdValue"; defaultValue: 0; max: 1000000000 }
 			}
 			RadioButton
 			{
-				value: "method"; text: qsTr("Method")
+				value: "method"; label: qsTr("Method")
 				childrenOnSameRow: true
 				DropDown
 				{
 					name: "thresholdMethod"
-					model: ListModel
-					{
-						ListElement { title: "Significant"; value: "sig" }
-						ListElement { title: "Bonferroni"; value: "bonferroni" }
-						ListElement { title: "locfdr"; value: "locfdr" }
-						ListElement { title: "Holm"; value: "holm" }
-						ListElement { title: "Hochberg"; value: "hochberg" }
-						ListElement { title: "Hommel"; value: "hommel" }
-						ListElement { title: "BH"; value: "BH" }
-						ListElement { title: "BY"; value: "BY" }
-						ListElement { title: "fdr"; value: "fdr" }
-					}
+					values: [
+						{ label: "Significant", value: "sig"		},
+						{ label: "Bonferroni",	value: "bonferroni"	},
+						{ label: "locfdr",		value: "locfdr"		},
+						{ label: "Holm",		value: "holm"		},
+						{ label: "Hochberg",	value: "hochberg"	},
+						{ label: "Hommel",		value: "hommel"		},
+						{ label: "BH",			value: "BH"			},
+						{ label: "BY",			value: "BY"			},
+						{ label: "fdr",			value: "fdr"		}
+					]
 				}
 			}
 		}
@@ -210,7 +209,7 @@ Form
 		{
 			title: qsTr("Cross-validation")
 			visible: [6].includes(estimator.currentIndex)
-			IntegerField { name: "nFolds"; text: qsTr("nFolds"); min: 3; max: 100000; fieldWidth: 60 }
+			IntegerField { name: "nFolds"; label: qsTr("nFolds"); min: 3; max: 100000; fieldWidth: 60 }
 		}
 
 		VariablesForm
@@ -218,7 +217,7 @@ Form
 			visible: [7].includes(estimator.currentIndex)
 			height: 150
 			availableVariablesList.name: "variablesTypeAvailable"
-			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleItem: true; allowedColumns: ["nominal"] }
+			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleVariable: true; allowedColumns: ["nominal"] }
 		}
 	}
 
@@ -229,8 +228,8 @@ Form
 		Group
 		{
 			title: qsTr("Settings")
-			CheckBox	 { name: "bootstrapOnOff";		text: qsTr("Bootstrap network")	}
-			IntegerField { name: "numberOfBootstraps";	text: qsTr("Number of bootstraps"); defaultValue: 0; max: 100000 }
+			CheckBox	 { name: "bootstrapOnOff";		label: qsTr("Bootstrap network")	}
+			IntegerField { name: "numberOfBootstraps";	label: qsTr("Number of bootstraps"); defaultValue: 0; max: 100000 }
 		}
 
 		RadioButtonGroup
@@ -238,19 +237,19 @@ Form
 			name: "BootstrapType"
 			title: qsTr("Bootstrap type")
 			Layout.rowSpan: 2
-			RadioButton { value: "nonparametric";	text: qsTr("Nonparametic");	 checked: true	}
-			RadioButton { value: "case";			text: qsTr("Case")							}
-			RadioButton { value: "node";			text: qsTr("Node")							}
-			RadioButton { value: "parametric";		text: qsTr("Parametric")					}
-			RadioButton { value: "person";			text: qsTr("Person")						}
-			RadioButton { value: "jackknife";		text: qsTr("Jackknife")						}
+			RadioButton { value: "nonparametric";	label: qsTr("Nonparametic"); checked: true	}
+			RadioButton { value: "case";			label: qsTr("Case")							}
+			RadioButton { value: "node";			label: qsTr("Node")							}
+			RadioButton { value: "parametric";		label: qsTr("Parametric")					}
+			RadioButton { value: "person";			label: qsTr("Person")						}
+			RadioButton { value: "jackknife";		label: qsTr("Jackknife")					}
 		}
 
 		Group
 		{
 			title: qsTr("Statistics")
-			CheckBox { name: "StatisticsEdges";			text: qsTr("Edges");		checked: true }
-			CheckBox { name: "StatisticsCentrality";	text: qsTr("Centrality");	checked: true }
+			CheckBox { name: "StatisticsEdges";			label: qsTr("Edges");		checked: true }
+			CheckBox { name: "StatisticsCentrality";	label: qsTr("Centrality");	checked: true }
 		}
 	}
 	
@@ -262,65 +261,64 @@ Form
 		{
 			height: 200
 			availableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
-			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color nodes by"); singleItem: true }
+			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color nodes by"); singleVariable: true }
 		}
 		
 		Group
 		{
 			Layout.columnSpan: 2
-			DoubleField { name: "nodeSize"; text: qsTr("Node size"); defaultValue: 1; max: 10 }
+			DoubleField { name: "nodeSize"; label: qsTr("Node size"); defaultValue: 1; max: 10 }
 			DropDown
 			{
 				name: "nodeColors"
-				text: qsTr("Node palette")
+				label: qsTr("Node palette")
 				indexDefaultValue: 1
-				model: ListModel {
-					ListElement { title: qsTr("Rainbow");		value: "rainbow"	}
-					ListElement { title: qsTr("Colorblind");	value: "colorblind" }
-					ListElement { title: qsTr("Pastel");		value: "pastel"		}
-					ListElement { title: qsTr("Gray");			value: "gray"		}
-					ListElement { title: qsTr("R");				value: "R"			}
-					ListElement { title: qsTr("ggplot2");		value: "ggplot2"	}
-				}
+				values: [
+					{ label: qsTr("Rainbow"),		value: "rainbow"	},
+					{ label: qsTr("Colorblind"),	value: "colorblind" },
+					{ label: qsTr("Pastel"),		value: "pastel"		},
+					{ label: qsTr("Gray"),			value: "gray"		},
+					{ label: qsTr("R"),				value: "R"			},
+					{ label: qsTr("ggplot2"),		value: "ggplot2"	}
+				]
 			}
 		}
 
 		Group
 		{
 			title: qsTr("Edges")
-			DoubleField { name: "edgeSize";			text: qsTr("Edge size");			defaultValue: 1 }
-			DoubleField { name: "maxEdgeStrength";	text: qsTr("Max edge strength");	defaultValue: 0; max: 10 }
-			DoubleField { name: "minEdgeStrength";	text: qsTr("Min edge strength");	defaultValue: 0; max: 10 }
-			DoubleField { name: "cut";				text: qsTr("Cut");					defaultValue: 0; max: 10 }
-			CheckBox	{ name: "showDetails";		text: qsTr("Show details") }
+			DoubleField { name: "edgeSize";			label: qsTr("Edge size");			defaultValue: 1 }
+			DoubleField { name: "maxEdgeStrength";	label: qsTr("Max edge strength");	defaultValue: 0; max: 10 }
+			DoubleField { name: "minEdgeStrength";	label: qsTr("Min edge strength");	defaultValue: 0; max: 10 }
+			DoubleField { name: "cut";				label: qsTr("Cut");					defaultValue: 0; max: 10 }
+			CheckBox	{ name: "showDetails";		label: qsTr("Show details") }
 			DropDown
 			{
 				name: "edgeColors"
-				text: qsTr("Edge palette")
+				label: qsTr("Edge palette")
 				indexDefaultValue: 1
-				model: ListModel
-				{
-					ListElement { title: qsTr("Classic");		value: "classic"	}
-					ListElement { title: qsTr("Colorblind");	value: "colorblind" }
-					ListElement { title: qsTr("Gray");			value: "gray"		}
-					ListElement { title: qsTr("Hollywood");		value: "Hollywood"	}
-					ListElement { title: qsTr("Borkulo");		value: "Borkulo"	}
-					ListElement { title: qsTr("TeamFortress");	value: "TeamFortress" }
-					ListElement { title: qsTr("Reddit");		value: "Reddit"		}
-					ListElement { title: qsTr("Fried");			value: "Fried"		}
-				}
-
+				values:
+				[
+					{ label: qsTr("Classic"),		value: "classic"	},
+					{ label: qsTr("Colorblind"),	value: "colorblind" },
+					{ label: qsTr("Gray"),			value: "gray"		},
+					{ label: qsTr("Hollywood"),		value: "Hollywood"	},
+					{ label: qsTr("Borkulo"),		value: "Borkulo"	},
+					{ label: qsTr("TeamFortress"),	value: "TeamFortress" },
+					{ label: qsTr("Reddit"),		value: "Reddit"		},
+					{ label: qsTr("Fried"),			value: "Fried"		}
+				]
 			}
 		}
 
 		Group
 		{
 			title: qsTr("Labels")
-			DoubleField { name: "labelSize";	text: qsTr("Label size");		defaultValue: 1; max: 10 }
-			CheckBox	{ name: "scaleLabels";	text: qsTr("Scale label size");	checked: true }
+			DoubleField { name: "labelSize";	label: qsTr("Label size");		defaultValue: 1; max: 10 }
+			CheckBox	{ name: "scaleLabels";	label: qsTr("Scale label size");	checked: true }
 			CheckBox
 			{
-				name: "abbreviateLabels"; text: qsTr("Abbreviate labels to ")
+				name: "abbreviateLabels"; label: qsTr("Abbreviate labels to ")
 				childrenOnSameRow: true
 				IntegerField { name: "abbreviateNoChars"; defaultValue: 4; max: 100000 }
 			}
@@ -331,16 +329,16 @@ Form
 		{
 			name: "graphSize";
 			title: qsTr("Network size")
-			RadioButton { value: "graphSizeFixed";	text: qsTr("Fixed ratio"); checked: true	}
-			RadioButton { value: "graphSizeFree";	text: qsTr("Free")							}
+			RadioButton { value: "graphSizeFixed";	label: qsTr("Fixed ratio"); checked: true	}
+			RadioButton { value: "graphSizeFree";	label: qsTr("Free")							}
 		}
 
 		RadioButtonGroup
 		{
 			name: "showVariableNames";
 			title: qsTr("Show variable names")
-			RadioButton { value: "In nodes";		text: qsTr("In nodes");	 checked: true	}
-			RadioButton { value: "In legend";		text: qsTr("In legend")					}
+			RadioButton { value: "In nodes";		label: qsTr("In nodes");	 checked: true	}
+			RadioButton { value: "In legend";		label: qsTr("In legend")					}
 		}
 
 		RadioButtonGroup
@@ -348,20 +346,20 @@ Form
 			name: "showMgmVariableType";
 			title: qsTr("Show variable type")
 			visible: [7].includes(estimator.currentIndex)
-			RadioButton { value: "mgmNoShow";		text: qsTr("Don't show")						}
-			RadioButton { value: "mgmNodeColor";	text: qsTr("Using node color")					}
-			RadioButton { value: "mgmNodeShape";	text: qsTr("Using node shape"); checked: true	}
+			RadioButton { value: "mgmNoShow";		label: qsTr("Don't show")						}
+			RadioButton { value: "mgmNodeColor";	label: qsTr("Using node color")					}
+			RadioButton { value: "mgmNodeShape";	label: qsTr("Using node shape"); checked: true	}
 		}
 
 		RadioButtonGroup
 		{
 			name: "showLegend"
 			title: qsTr("Legend")
-			RadioButton { value: "No legend";		text: qsTr("No legend")					}
-			RadioButton { value: "All plots";		text: qsTr("All plots"); checked: true	}
+			RadioButton { value: "No legend";		label: qsTr("No legend")					}
+			RadioButton { value: "All plots";		label: qsTr("All plots"); checked: true	}
 			RadioButton
 			{
-				value: "In plot number: "; text: qsTr("In plot number: ")
+				value: "In plot number: "; label: qsTr("In plot number: ")
 				childrenOnSameRow: true
 				IntegerField { name: "legendNumber"; defaultValue: 1 }
 			}
@@ -371,15 +369,15 @@ Form
 		{
 			name: "layout"
 			title: qsTr("Layout")
-			CheckBox { name: "keepLayoutTheSame"; text: qsTr("Do not update layout") }
+			CheckBox { name: "keepLayoutTheSame"; label: qsTr("Do not update layout") }
 			RadioButton
 			{
-				value: "spring"; text: qsTr("Spring"); checked: true
+				value: "spring"; label: qsTr("Spring"); checked: true
 				childrenOnSameRow: true
-				DoubleField { name: "repulsion"; text: qsTr("Repulsion"); defaultValue: 1; max: 10 }
+				DoubleField { name: "repulsion"; label: qsTr("Repulsion"); defaultValue: 1; max: 10 }
 			}
-			RadioButton { value: "circle";	text: qsTr("Circle")	}
-			RadioButton { value: "data";	text: qsTr("Data")		}
+			RadioButton { value: "circle";	label: qsTr("Circle")	}
+			RadioButton { value: "data";	label: qsTr("Data")		}
 		}
 	}
 }

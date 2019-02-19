@@ -39,6 +39,7 @@ JASPControl
 
 			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
+			property alias	label:					control.text
 			property alias	checked:				control.checked
 			property alias	value:					radioButton.name
 			property var	buttonGroup:			null

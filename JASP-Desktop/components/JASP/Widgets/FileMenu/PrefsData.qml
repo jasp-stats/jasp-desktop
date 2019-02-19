@@ -17,7 +17,7 @@ ScrollView
 
 		CheckBox
 		{
-			text:				"Synchronize automatically on data file save"
+			label:				"Synchronize automatically on data file save"
 			checked:			preferencesModel.dataAutoSynchronization
 			onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
 			//font:				Theme.font
@@ -31,7 +31,7 @@ ScrollView
 			CheckBox
 			{
 				id:					useDefaultEditor
-				text:				"Use default spreadsheet editor"
+				label:				"Use default spreadsheet editor"
 				checked:			preferencesModel.useDefaultEditor
 				onCheckedChanged:	preferencesModel.useDefaultEditor = checked
 				//font:				Theme.font

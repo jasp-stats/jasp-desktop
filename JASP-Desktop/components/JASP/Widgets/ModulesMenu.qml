@@ -114,7 +114,7 @@ Item
 					CheckBox
 					{
 						id:					moduleButton
-						text:				displayText
+						label:				displayText
 						checked:			ribbonEnabled
 						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
 						enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)

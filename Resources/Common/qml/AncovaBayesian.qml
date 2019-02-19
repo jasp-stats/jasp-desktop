@@ -34,7 +34,7 @@ Form
 	
 	VariablesForm
 	{
-		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variable");	allowedColumns: ["scale"];  singleItem: true	}
+		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variable");	allowedColumns: ["scale"];  singleVariable: true	}
 		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		allowedColumns: ["ordinal", "nominal"]			}
 		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		allowedColumns: ["ordinal", "nominal"]			}
 		AssignedVariablesList { name: "covariates";		title: qsTr("Covariates");			allowedColumns: ["scale"]						}
@@ -47,23 +47,23 @@ Form
 		title: qsTr("Output")
 		CheckBox
 		{
-			name: "effects"; text: qsTr("Effects")
+			name: "effects"; label: qsTr("Effects")
 			RadioButtonGroup
 			{
 				name: "effectsType"
-				RadioButton { value: "allModels";		text: qsTr("Across all models"); checked: true	}
-				RadioButton { value: "matchedModels";	text: qsTr("Across matched models")				}
+				RadioButton { value: "allModels";		label: qsTr("Across all models"); checked: true	}
+				RadioButton { value: "matchedModels";	label: qsTr("Across matched models")			}
 			}
 		}
-		CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
+		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
 
 	RadioButtonGroup
 	{
 		title: qsTr("Order")
 		name: "bayesFactorOrder"
-		RadioButton { value: "nullModelTop"; text: qsTr("Compare to null model"); checked: true	}
-		RadioButton { value: "bestModelTop"; text: qsTr("Compare to best model")				}
+		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model"); checked: true	}
+		RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model")					}
 	}
 	
 	ExpanderButton
@@ -113,7 +113,7 @@ Form
 		Group
 		{
 			title: qsTr("Correction")
-			CheckBox { name: "postHocTestsNullControl"; text: qsTr("Null control"); checked: true }
+			CheckBox { name: "postHocTestsNullControl"; label: qsTr("Null control"); checked: true }
 		}
 	}
 	
@@ -125,9 +125,9 @@ Form
 		{
 			height: 200
 			availableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors")          ; source: "fixedFactors" }
-			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis")  ; singleItem: true }
-			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines")	; singleItem: true }
-			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots")   ; singleItem: true }
+			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis")  ; singleVariable: true }
+			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines")	; singleVariable: true }
+			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots")   ; singleVariable: true }
 		}
 		
 		Group
@@ -135,7 +135,7 @@ Form
 			title: qsTr("Display")
 			CheckBox
 			{
-				name: "plotCredibleInterval"; text: qsTr("Credible interval")
+				name: "plotCredibleInterval"; label: qsTr("Credible interval")
 				childrenOnSameRow: true
 				PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95 }
 			}
@@ -149,23 +149,23 @@ Form
 		Group
 		{
 			title: qsTr("Prior")
-			DoubleField { name: "priorFixedEffects";		text: qsTr("r scale fixed effects");	defaultValue: 0.5;	fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorRandomEffects";		text: qsTr("r scale random effects");	defaultValue: 1;	fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorCovariatesEffects";	text: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 50; max: 2; decimals: 1 }
+			DoubleField { name: "priorFixedEffects";		label: qsTr("r scale fixed effects");	defaultValue: 0.5;	fieldWidth: 50; max: 2; decimals: 1 }
+			DoubleField { name: "priorRandomEffects";		label: qsTr("r scale random effects");	defaultValue: 1;	fieldWidth: 50; max: 2; decimals: 1 }
+			DoubleField { name: "priorCovariatesEffects";	label: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 50; max: 2; decimals: 1 }
 		}
 
 		RadioButtonGroup
 		{
 			name: "sampleMode"
-			text: qsTr("Samples")
+			title: qsTr("Samples")
 			RadioButton
 			{
-				value: "auto";		text: qsTr("Auto");	checked: true
+				value: "auto";		label: qsTr("Auto");	checked: true
 			}
 			RadioButton
 			{
-				value: "manual";	text: qsTr("Manual")
-				IntegerField { name: "fixedSamplesNumber"; text: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 70 }
+				value: "manual";	label: qsTr("Manual")
+				IntegerField { name: "fixedSamplesNumber"; label: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 70 }
 			}
 		}
 	}

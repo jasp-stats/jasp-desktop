@@ -7,20 +7,20 @@ JASPControl {
 	id:					comboBox
 	controlType:		"ComboBox"
 	implicitHeight:		control.height
-	implicitWidth:		control.implicitWidth + (label.visible ? labelSpacing + label.implicitWidth : 0)
+	implicitWidth:		control.implicitWidth + (controlLabel.visible ? labelSpacing + controlLabel.implicitWidth : 0)
 	width:				implicitWidth
     
 	property alias	control:				control
 	property int	labelSpacing:			4 * preferencesModel.uiScale
-	property alias	label:					label
-    property alias	text:					label.text
+	property alias	controlLabel:			controlLabel
+	property alias	label:					controlLabel.text
 	property string	currentText				//Am i empty or what?
 	property string	currentColumnType		//Same here
 	property alias	currentIndex:			control.currentIndex
 	property alias	indexDefaultValue:		control.currentIndex
 	property alias	model:					control.model
 	property alias	values:					control.model
-	property string	textRole:				"title"
+	property string	textRole:				"label"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
 	property var	source					//defaults would be nice
@@ -47,17 +47,17 @@ JASPControl {
     
 	RowLayout
 	{
-        spacing: label.visible ? labelSpacing : 0
+        spacing: controlLabel.visible ? labelSpacing : 0
         
 		Rectangle
 		{
-			implicitWidth: label.implicitWidth
+			implicitWidth: controlLabel.implicitWidth
 			implicitHeight: control.implicitHeight
 			color: debug ? Theme.debugBackgroundColor : "transparent"
 			Label
 			{
-				id:			label
-				visible:	label.text && comboBox.visible ? true : false
+				id:			controlLabel
+				visible:	controlLabel.text && comboBox.visible ? true : false
 				font:		Theme.font
 				anchors.verticalCenter: parent.verticalCenter				
 				color:		enabled ? Theme.textEnabled : Theme.textDisabled
@@ -73,7 +73,7 @@ JASPControl {
 			property int	modelWidth:		30 * preferencesModel.uiScale
 			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
 							
-			Layout.leftMargin: label.visible ? 0 : -labelSpacing
+			Layout.leftMargin: controlLabel.visible ? 0 : -labelSpacing
 							
             
 			TextMetrics { id: textMetrics }

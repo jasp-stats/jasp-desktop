@@ -32,7 +32,7 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 {
 	_optionsTable = nullptr;
 	_optionVariables = nullptr;
-	_singleItem = QQmlProperty(_item, "singleItem").read().toBool();
+	_singleItem = QQmlProperty(_item, "singleVariable").read().toBool();
 	_variablesModel = new ListModelTermsAssigned(this, _singleItem);
 	
 	connect(_variablesModel, &ListModelAssignedInterface::allExtraControlsLoaded, this, &BoundQMLListViewTerms::bindExtraControlOptions);

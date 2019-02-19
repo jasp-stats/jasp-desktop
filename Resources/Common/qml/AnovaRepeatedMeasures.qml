@@ -39,7 +39,7 @@ Form
 			name: "repeatedMeasuresCells"
 			title: qsTr("Repeated Measures Cells")
 			allowedColumns: ["scale"]
-			listViewType: "MeasuresCells"
+			listViewType: "RepeatedMeasures"
 			source: "repeatedMeasuresFactors"
 			height: 140
 		}
@@ -81,13 +81,12 @@ Form
 		{
 			name: "sumOfSquares"
 			indexDefaultValue: 2
-			text: qsTr("Sum of squares")
-			model: ListModel
-			{
-				ListElement { title: "Type \u2160"; value: "type1" }
-				ListElement { title: "Type \u2161"; value: "type2" }
-				ListElement { title: "Type \u2162"; value: "type3" }
-			}
+			label: qsTr("Sum of squares")
+			values: [
+				{ label: "Type \u2160", value: "type1"},
+				{ label: "Type \u2161", value: "type2"},
+				{ label: "Type \u2162", value: "type3"}
+			]
 		}
 		
 	}
@@ -98,16 +97,16 @@ Form
 
 		Group
 		{
-			CheckBox { name: "sphericityTests";	text: qsTr("Sphericity tests") }
+			CheckBox { name: "sphericityTests";	label: qsTr("Sphericity tests") }
 			CheckBox
 			{
-				name: "sphericityCorrections";	text: qsTr("Sphericity corrections")
+				name: "sphericityCorrections";	label: qsTr("Sphericity corrections")
 				columns: 3
-				CheckBox { name: "sphericityNone";				text: qsTr("None");					checked: true }
-				CheckBox { name: "sphericityGreenhouseGeisser";	text: qsTr("Greenhouse-Geisser");	checked: true }
-				CheckBox { name: "sphericityHuynhFeldt";		text: qsTr("Huynth-Feidt");			checked: true }
+				CheckBox { name: "sphericityNone";				label: qsTr("None");					checked: true }
+				CheckBox { name: "sphericityGreenhouseGeisser";	label: qsTr("Greenhouse-Geisser");	checked: true }
+				CheckBox { name: "sphericityHuynhFeldt";		label: qsTr("Huynth-Feidt");			checked: true }
 			}
-			CheckBox { name: "homogeneityTests"; text: qsTr("Homogeneity Tests") }
+			CheckBox { name: "homogeneityTests"; label: qsTr("Homogeneity Tests") }
 		}
 	}
 	
@@ -132,17 +131,17 @@ Form
 		Group
 		{
 			columns: 2
-			CheckBox { name: "postHocTestEffectSize";	text: qsTr("Effect Size")						}
-			CheckBox { name: "postHocTestPooledError";	text: qsTr("Pool error term for RM factors")	}
+			CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size")						}
+			CheckBox { name: "postHocTestPooledError";	label: qsTr("Pool error term for RM factors")	}
 		}
 		
 		Group
 		{
 			title: qsTr("Correction")
-			CheckBox { name: "postHocTestsTukey";		text: qsTr("Tukey"); checked: true	}
-			CheckBox { name: "postHocTestsScheffe";		text: qsTr("Scheffe")				}
-			CheckBox { name: "postHocTestsBonferroni";	text: qsTr("Bonferroni")			}
-			CheckBox { name: "postHocTestsHolm";		text: qsTr("Holm")					}
+			CheckBox { name: "postHocTestsTukey";		label: qsTr("Tukey"); checked: true	}
+			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
+			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
+			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm")					}
 		}
 	}
 	
@@ -155,32 +154,32 @@ Form
 		{
 			height: 150
 			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");			source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis"); singleItem: true }
-			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleItem: true }
-			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleItem: true }
+			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis"); singleVariable: true }
+			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleVariable: true }
+			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleVariable: true }
 		}
 		
-		TextField { name: "labelYAxis"; text: qsTr("Label y-axis"); fieldWidth: 200 }
+		TextField { name: "labelYAxis"; label: qsTr("Label y-axis"); fieldWidth: 200 }
 		Group
 		{
 			title: qsTr("Display")
 			columns: 2
 			CheckBox
 			{
-				name: "plotErrorBars"; text: qsTr("Display error bars")
+				name: "plotErrorBars"; label: qsTr("Display error bars")
 				RadioButtonGroup
 				{
 					name: "errorBarType"
 					RadioButton
 					{
-						value: "confidenceInterval"; text: qsTr("Confidence Interval"); checked: true
+						value: "confidenceInterval"; label: qsTr("Confidence Interval"); checked: true
 						childrenOnSameRow: true
-						PercentField { name: "confidenceIntervalInterval"; text: qsTr("Interval"); defaultValue: 95 }
+						PercentField { name: "confidenceIntervalInterval"; label: qsTr("Interval"); defaultValue: 95 }
 					}
-					RadioButton { value: "standardError"; text: qsTr("Standard error") }
+					RadioButton { value: "standardError"; label: qsTr("Standard error") }
 				}
 			}
-			CheckBox { name: "usePooledStandErrorCI";	text: qsTr("Pool SE across RM factors")	}
+			CheckBox { name: "usePooledStandErrorCI";	label: qsTr("Pool SE across RM factors")	}
 			
 		}
 	}
@@ -204,17 +203,16 @@ Form
 			
 			CheckBox
 			{
-				name: "marginalMeansCompareMainEffects"; text: qsTr("Compare marginal means to 0")
+				name: "marginalMeansCompareMainEffects"; label: qsTr("Compare marginal means to 0")
 				DropDown
 				{
 					name: "marginalMeansCIAdjustment"
-					text: qsTr("Confidence interval adjustment")
-					model: ListModel
-					{
-						ListElement { title: "None";		value: "none"		}
-						ListElement { title: "Bonferro";	value: "bonferroni"	}
-						ListElement { title: "Sidak";		value: "sidak"		}
-					}
+					label: qsTr("Confidence interval adjustment")
+					values: [
+						{ label: "None",		value: "none"},
+						{ label: "Bonferro",	value: "bonferroni"},
+						{ label: "Sidak",		value: "sidak"}
+					]
 				}
 			}
 		}
@@ -222,16 +220,16 @@ Form
 		Group
 		{
 			title: qsTr("Display")
-			CheckBox { name: "descriptives";		text: qsTr("Descriptive statistics") }
+			CheckBox { name: "descriptives";		label: qsTr("Descriptive statistics") }
 			CheckBox
 			{
-				name: "effectSizeEstimates";	text: qsTr("Estimates of effect size")
+				name: "effectSizeEstimates";	label: qsTr("Estimates of effect size")
 				columns: 3
-				CheckBox { name: "effectSizeEtaSquared";		text: qsTr("η²")         ; checked: true	}
-				CheckBox { name: "effectSizePartialEtaSquared";	text: qsTr("partial η²")					}
-				CheckBox { name: "effectSizeOmegaSquared";		text: qsTr("ω²")							}
+				CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
+				CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
+				CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
 			}
-			CheckBox { name: "VovkSellkeMPR";					text: qsTr("Vovk-Sellke maximum p-ratio")	}
+			CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}
 		}
 	}
 	
@@ -243,12 +241,12 @@ Form
 		{
 			height: 150
 			availableVariablesList { name: "effectsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple effect factor");	singleItem: true }
-			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator factor 1");		singleItem: true }
-			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2");		singleItem: true }
+			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple effect factor");	singleVariable: true }
+			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator factor 1");		singleVariable: true }
+			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2");		singleVariable: true }
 		}
 		
-		CheckBox { name: "poolErrorTermSimpleEffects"; text: qsTr("Pool error terms") }
+		CheckBox { name: "poolErrorTermSimpleEffects"; label: qsTr("Pool error terms") }
 	}
 	
 	ExpanderButton
@@ -260,9 +258,9 @@ Form
 			height: 150
 			availableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "friedmanWithinFactor";		title: qsTr("RM Factor") }
-			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional grouping factor"); singleItem: true }
+			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional grouping factor"); singleVariable: true }
 		}
 		
-		CheckBox { name: "connoverTest"; text: qsTr("Connover's post hoc tests") }
+		CheckBox { name: "connoverTest"; label: qsTr("Connover's post hoc tests") }
 	}
 }

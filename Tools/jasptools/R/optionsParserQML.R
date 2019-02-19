@@ -139,7 +139,7 @@ extractData.AssignedVariablesList <- function(element) {
   }
 
   result <- list()
-  regSingleItem <- "singleItem:true"
+  regSingleItem <- "singleVariable:true"
   isSingleItem <- grepl(regSingleItem, element)
   if (isSingleItem) {
     result[[name]] <- ""

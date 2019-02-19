@@ -32,6 +32,7 @@ JASPControl
 	cursorShape:		Qt.IBeamCursor
 	
 	property alias	control:			control	
+	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
 	property int	fieldWidth:			Theme.textFieldWidth
@@ -40,9 +41,8 @@ JASPControl
 	property alias	placeholderText:	control.placeholderText
 	
 	property alias	validator:			control.validator
-	property alias	label:				beforeLabel
-	property alias	beforeLabel:		beforeLabel
-	property alias	afterLabel:			afterLabel
+	property alias	controlLabel:		beforeLabel
+	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
 	property int	labelSpacing:		4
 	

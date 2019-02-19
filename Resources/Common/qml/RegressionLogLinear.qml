@@ -25,7 +25,7 @@ Form
 	
 	VariablesForm
 	{
-		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleItem: true	}
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleVariable: true	}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }			
 	}
 	
@@ -49,13 +49,13 @@ Form
 		Group
 		{
 			title: qsTr("Regression Coefficient")
-			CheckBox { name: "regressionCoefficientsEstimates";		text: qsTr("Estimates") }
+			CheckBox { name: "regressionCoefficientsEstimates";		label: qsTr("Estimates") }
 			CheckBox
 			{
-				name: "regressionCoefficientsConfidenceIntervals";	text: qsTr("Confidence intervals")
-				PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; text: qsTr("Interval"); defaultValue: 95 }
+				name: "regressionCoefficientsConfidenceIntervals";	label: qsTr("Confidence intervals")
+				PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval"); defaultValue: 95 }
 			}
 		}
-		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
+		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
 	}
 }

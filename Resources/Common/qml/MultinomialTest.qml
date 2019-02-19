@@ -32,9 +32,9 @@ Form
 	{
 		height: 170
 		marginBetweenVariablesLists: 15
-		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleItem: true; allowedColumns: ["ordinal", "nominal"] }
-		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleItem: true; allowedColumns: ["ordinal", "scale"] }
-		AssignedVariablesList { name: "exProbVar";	title: qsTr("Expected Counts"); singleItem: true; allowedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList { name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; allowedColumns: ["ordinal", "scale"] }
 	}
 	
 	RadioButtonGroup
@@ -43,8 +43,8 @@ Form
 		name: "hypothesis"
 		title: qsTr("Alt. Hypothesis")
 		Layout.columnSpan: 2
-		RadioButton { value: "multinomialTest";	text: qsTr("Multinomial test");	 checked: true	}
-		RadioButton { value: "expectedProbs";	text: qsTr("χ² test"); id: expectedProbs			}
+		RadioButton { value: "multinomialTest";	label: qsTr("Multinomial test");	 checked: true	}
+		RadioButton { value: "expectedProbs";	label: qsTr("χ² test"); id: expectedProbs			}
 		
 		Chi2TestTableView
 		{
@@ -60,15 +60,15 @@ Form
 		title: qsTr("Additional Statistics")
 		CheckBox
 		{
-			name: "descriptives"; text: qsTr("Descriptives")
+			name: "descriptives"; label: qsTr("Descriptives")
 			CheckBox
 			{
-				name: "confidenceInterval"; text: qsTr("Confidence interval")
+				name: "confidenceInterval"; label: qsTr("Confidence interval")
 				childrenOnSameRow: true
 				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
 			}
 		}
-		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Dellke maximum p-ratio")		}
+		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Dellke maximum p-ratio")		}
 	}
 
 	ColumnLayout
@@ -77,8 +77,8 @@ Form
 		{
 			name: "countProp"
 			title: qsTr("Display")
-			RadioButton { value: "descCounts";	text: qsTr("Counts"); checked: true		}
-			RadioButton { value: "descProps";	text: qsTr("Proportions")				}
+			RadioButton { value: "descCounts";	label: qsTr("Counts"); checked: true		}
+			RadioButton { value: "descProps";	label: qsTr("Proportions")				}
 		}
 
 		Group
@@ -86,8 +86,8 @@ Form
 			title: qsTr("Plots")
 			CheckBox
 			{
-				name: "descriptivesPlot"; text: qsTr("Descriptives plot")
-				PercentField { name: "descriptivesPlotConfidenceInterval"; text: qsTr("Confidence interval"); defaultValue: 95 }
+				name: "descriptivesPlot"; label: qsTr("Descriptives plot")
+				PercentField { name: "descriptivesPlotConfidenceInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
 			}
 		}
 	}

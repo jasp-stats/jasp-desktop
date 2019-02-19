@@ -28,15 +28,15 @@ Form
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
-	DoubleField { name: "testValue"; text: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
+	DoubleField { name: "testValue"; label: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
 
 	RadioButtonGroup
 	{
 		title: qsTr("Hypothesis")
 		name: "hypothesis"
-		RadioButton { value: "notEqualToTestValue";		text: qsTr("≠ Test value"); checked: true	}
-		RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")					}
-		RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")					}
+		RadioButton { value: "notEqualToTestValue";		label: qsTr("≠ Test value"); checked: true	}
+		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value")					}
+		RadioButton { value: "lessThanTestValue";		label: qsTr("< Test value")					}
 	}
 
 	Group
@@ -44,10 +44,10 @@ Form
 		title: qsTr("Additional Statisics")
 		CheckBox
 		{
-			name: "confidenceInterval";	text: qsTr("Confidence interval")
-			PercentField { name: "confidenceIntervalInterval";	text: qsTr("Interval"); defaultValue: 95 }
+			name: "confidenceInterval";	label: qsTr("Confidence interval")
+			PercentField { name: "confidenceIntervalInterval";	label: qsTr("Interval"); defaultValue: 95 }
 		}
-		CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
+		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
 	}
 
 	Group
@@ -55,8 +55,8 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "descriptivesPlots";					text: qsTr("Descriptive plots")
-			PercentField { name: "descriptivesPlotsConfidenceInterval"; text: qsTr("Confidence Interval"); defaultValue: 95 }
+			name: "descriptivesPlots";					label: qsTr("Descriptive plots")
+			PercentField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence Interval"); defaultValue: 95 }
 		}
 	}
 		

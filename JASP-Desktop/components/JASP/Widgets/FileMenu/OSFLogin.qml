@@ -232,7 +232,7 @@ Rectangle
 			id: idRememberMe
 
 			checked: fileMenuModel.osf.rememberme
-			text   : qsTr("Remember me")
+			label   : qsTr("Remember me")
 
 			anchors.left  : parent.left
 			anchors.right : parent.right
