@@ -43,17 +43,17 @@ Form
 		title: qsTr("Number of Factors")
 		RadioButton
 		{
-			value: "parallelAnalysis"; text: qsTr("Parallel Analysis"); checked: true
+			value: "parallelAnalysis"; label: qsTr("Parallel Analysis"); checked: true
 		}
 		RadioButton
 		{
-			value: "eigenValues"; text: qsTr("Eigenvalues")
-			DoubleField { name: "eigenValuesBox"; text: qsTr("Eigenvalues above"); defaultValue: 1; decimals: 1 }
+			value: "eigenValues"; label: qsTr("Eigenvalues")
+			DoubleField { name: "eigenValuesBox"; label: qsTr("Eigenvalues above"); defaultValue: 1; decimals: 1 }
 		}
 		RadioButton
 		{
-			value: "manual"; text: qsTr("Manual")
-			IntegerField { name: "numberOfFactors"; text: qsTr("Number of Factors"); defaultValue: 1; min: 1 }
+			value: "manual"; label: qsTr("Manual")
+			IntegerField { name: "numberOfFactors"; label: qsTr("Number of Factors"); defaultValue: 1; min: 1 }
 		}
 	}
 
@@ -63,12 +63,12 @@ Form
 		title: qsTr("Rotation")
 		RadioButton
 		{
-			value: "orthogonal";	text: qsTr("Orthogonal")
+			value: "orthogonal";	label: qsTr("Orthogonal")
 			DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"] }
 		}
 		RadioButton
 		{
-			value: "oblique";		text: qsTr("Oblique");  checked: true
+			value: "oblique";		label: qsTr("Oblique");  checked: true
 			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ] }
 		}
 	}
@@ -90,17 +90,17 @@ Form
 		Group
 		{
 			title: qsTr("Includes tables")
-			CheckBox { name: "incl_correlations";	text: qsTr("Factor correlations")	}
-			CheckBox { name: "incl_pathDiagram";	text: qsTr("Path diagram")			}
-			CheckBox { name: "incl_screePlot";		text: qsTr("Scree plot")			}
+			CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")	}
+			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")			}
+			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")			}
 		}
 
 		RadioButtonGroup
 		{
 			name: "missingValues"
 			title: qsTr("Missing values")
-			RadioButton { value: "pairwise";		text: qsTr("Exclude cases pairwise"); checked: true	}
-			RadioButton { value: "listwise";		text: qsTr("Exclude cases listwise")				}
+			RadioButton { value: "pairwise";		label: qsTr("Exclude cases pairwise"); checked: true	}
+			RadioButton { value: "listwise";		label: qsTr("Exclude cases listwise")				}
 		}
 	}
 }

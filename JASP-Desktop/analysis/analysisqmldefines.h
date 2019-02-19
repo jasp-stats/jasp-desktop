@@ -4,7 +4,7 @@
 #include "enumutilities.h"
 
 DECLARE_ENUM(qmlControlType, JASPControl, CheckBox, Switch, TextField, RadioButtonGroup, VariablesListView, ComboBox, RepeatedMeasuresFactorsList, TableView, Slider, TextArea, Button);
-DECLARE_ENUM(qmlListViewType, AssignedVariables, AssignedPairs, Interaction, AvailableVariables, MeasuresCells, Layers);
+DECLARE_ENUM(qmlListViewType, AssignedVariables, Pairs, Interaction, AvailableVariables, RepeatedMeasures, Layers);
 DECLARE_ENUM(qmlDropMode, None, Replace, Insert)
 
 #endif // ANALYSISQMLDEFINES_H

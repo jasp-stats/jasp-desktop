@@ -27,7 +27,7 @@ JASPControl
 	implicitHeight:				control.height
 	
 	property alias control:		control
-	property alias text:		control.text
+	property alias label:		control.text
 	property alias checked:		control.checked
     signal clicked();
     
@@ -37,7 +37,7 @@ JASPControl
 	{
 		id:			control
 		height:		control.indicator.height + (4 * preferencesModel.uiScale)
-		width:		control.indicator.width + label.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
+		width:		control.indicator.width + controlLabel.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
 
 		indicator:	Rectangle
 		{
@@ -68,7 +68,7 @@ JASPControl
         
 		contentItem: Label
 		{
-			id:				label
+			id:				controlLabel
 			text:			control.text
 			font:			Theme.font
 			color:			enabled ? Theme.textEnabled : Theme.textDisabled

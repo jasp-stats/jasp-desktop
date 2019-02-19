@@ -34,6 +34,6 @@ TextField
 	control.width:		Theme.font.pixelSize * (with1Decimal ? 3 : 2)
 	validator:			with1Decimal ? doubleVal : intVal
 	value:				Number.parseInt(defaultValue);
-	afterLabel.text:	showPercent ? "%" : ""
+	afterLabel:			showPercent ? "%" : ""
 	cursorShape:		Qt.IBeamCursor
 }

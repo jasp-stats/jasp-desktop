@@ -31,14 +31,14 @@ Form
 	VariablesForm
 	{
 		height: 200
-		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); allowedColumns: ["scale"]; listViewType: "AssignedPairs" }
+		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); allowedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	Group
 	{
 		title: qsTr("Tests")
-		CheckBox { name: "students";			text: qsTr("Student"); checked: true	}
-		CheckBox { name: "wilcoxonSignedRank";	text: qsTr("Wilcoxon signed-rank")		}
+		CheckBox { name: "students";			label: qsTr("Student"); checked: true	}
+		CheckBox { name: "wilcoxonSignedRank";	label: qsTr("Wilcoxon signed-rank")		}
 	}
 
 	Group
@@ -47,10 +47,10 @@ Form
 		Layout.rowSpan: 2
 		CheckBox
 		{
-			name: "meanDifference";	text: qsTr("Location parameter")
+			name: "meanDifference";	label: qsTr("Location parameter")
 			CheckBox
 			{
-				name: "meanDiffConfidenceIntervalCheckbox";	text: qsTr("Confidence interval")
+				name: "meanDiffConfidenceIntervalCheckbox";	label: qsTr("Confidence interval")
 				childrenOnSameRow: true
 				PercentField { name: "meanDiffConfidenceIntervalPercent"; defaultValue: 95 }
 			}
@@ -58,44 +58,44 @@ Form
 
 		CheckBox
 		{
-			name: "effectSize";	text: qsTr("Effect Size")
+			name: "effectSize";	label: qsTr("Effect Size")
 			CheckBox
 			{
-				name: "effSizeConfidenceIntervalCheckbox";	text: qsTr("Confidence interval")
+				name: "effSizeConfidenceIntervalCheckbox";	label: qsTr("Confidence interval")
 				childrenOnSameRow: true
 				PercentField { name: "effSizeConfidenceIntervalPercent"; defaultValue: 95 }
 			}
 		}
-		CheckBox { name: "descriptives";					text: qsTr("Descriptives")											}
+		CheckBox { name: "descriptives";					label: qsTr("Descriptives")											}
 		CheckBox
 		{
-			name: "descriptivesPlots";						text: qsTr("Descriptives plots")
-			PercentField { name: "descriptivesPlotsConfidenceInterval";	text: qsTr("Confidence interval"); defaultValue: 95 }
+			name: "descriptivesPlots";						label: qsTr("Descriptives plots")
+			PercentField { name: "descriptivesPlotsConfidenceInterval";	label: qsTr("Confidence interval"); defaultValue: 95 }
 		}
-		CheckBox { name: "VovkSellkeMPR";					text: qsTr("Vovk-Sellke mazimum p-ratio")						}
+		CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke mazimum p-ratio")						}
 	}
 
 	RadioButtonGroup
 	{
 		name: "hypothesis"
 		title: qsTr("Alt. Hypothesis")
-		RadioButton { value: "groupsNotEqual";	text: qsTr("Measure 1 ≠ Measure 2"); checked: true	}
-		RadioButton { value: "groupOneGreater";	text: qsTr("Measure 1 > Measure 2");				}
-		RadioButton { value: "groupTwoGreater";	text: qsTr("Measure 1 < Measure 2");				}
+		RadioButton { value: "groupsNotEqual";	label: qsTr("Measure 1 ≠ Measure 2"); checked: true	}
+		RadioButton { value: "groupOneGreater";	label: qsTr("Measure 1 > Measure 2");				}
+		RadioButton { value: "groupTwoGreater";	label: qsTr("Measure 1 < Measure 2");				}
 	}
 
 	Group
 	{
 		title: qsTr("Assumption checks")
-		CheckBox { name: "normalityTests";		text: qsTr("Normality") }
+		CheckBox { name: "normalityTests";		label: qsTr("Normality") }
 	}
 
 	RadioButtonGroup
 	{
 		name: "missingValues"
 		title: qsTr("Missing Values")
-		RadioButton { value: "excludeAnalysisByAnalysis";			text: qsTr("Exclude cases analysis by analysis"); checked: true		}
-		RadioButton { value: "excludeListwise";						text: qsTr("Exclude cases listwise")								}
+		RadioButton { value: "excludeAnalysisByAnalysis";			label: qsTr("Exclude cases analysis by analysis"); checked: true		}
+		RadioButton { value: "excludeListwise";						label: qsTr("Exclude cases listwise")								}
 	}
 
 }

@@ -26,51 +26,51 @@ Form
 	
 	VariablesForm
 	{
-		AssignedVariablesList { name: "pairs"; allowedColumns: ["scale"]; listViewType: "AssignedPairs" }
+		AssignedVariablesList { name: "pairs"; allowedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	RadioButtonGroup
 	{
 		name: "corcoefficient"
 		title: qsTr("Correlation Coefficients")
-		RadioButton { value: "Pearson";	text: qsTr("Pearson's rho"); checked: true	}
-		RadioButton { value: "Kendall";	text: qsTr("Kendall's tau-b")				}
+		RadioButton { value: "Pearson";	label: qsTr("Pearson's rho"); checked: true	}
+		RadioButton { value: "Kendall";	label: qsTr("Kendall's tau-b")				}
 	}
 
 	CheckBox
 	{
-		name: "credibleInterval"; text: qsTr("Credible intervals")
-		PercentField { name: "ciValue";	text: qsTr("Interval"); defaultValue: 95; debug: true }
+		name: "credibleInterval"; label: qsTr("Credible intervals")
+		PercentField { name: "ciValue";	label: qsTr("Interval"); defaultValue: 95; debug: true }
 	}
 
 	RadioButtonGroup
 	{
 		name: "hypothesis"
 		title: qsTr("Hypothesis")
-		RadioButton { value: "correlated";				text: qsTr("Correlated"); checked: true	}
-		RadioButton { value: "correlatedPositively";	text: qsTr("Correlated positively")		}
-		RadioButton { value: "correlatedNegatively";	text: qsTr("Correlated negatively")		}
+		RadioButton { value: "correlated";				label: qsTr("Correlated"); checked: true	}
+		RadioButton { value: "correlatedPositively";	label: qsTr("Correlated positively")		}
+		RadioButton { value: "correlatedNegatively";	label: qsTr("Correlated negatively")		}
 	}
 
 	Group
 	{
 		title: qsTr("Plots")
 		Layout.rowSpan: 2
-		CheckBox { name: "plotScatter";				text: qsTr("Scatterplot") }
+		CheckBox { name: "plotScatter";				label: qsTr("Scatterplot") }
 		CheckBox
 		{
-			name: "plotPriorAndPosterior";			text: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	text: qsTr("Additional info") }
+			name: "plotPriorAndPosterior";			label: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	label: qsTr("Additional info") }
 		}
 		CheckBox
 		{
-			name: "plotBayesFactorRobustness";		text: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; text: qsTr("Additional info") }
+			name: "plotBayesFactorRobustness";		label: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info") }
 		}
 		CheckBox
 		{
-			name: "plotSequentialAnalysis";			text: qsTr("Sequential analysis")
-			CheckBox { name: "plotSequentialAnalysisRobustness"; text: qsTr("Robustness check"); debug: true }
+			name: "plotSequentialAnalysis";			label: qsTr("Sequential analysis")
+			CheckBox { name: "plotSequentialAnalysisRobustness"; label: qsTr("Robustness check"); debug: true }
 		}
 	}
 
@@ -79,14 +79,14 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
-		DoubleField { name: "priorWidth"; text: qsTr("Stretched beta prior width"); defaultValue: 1.0; max: 2; decimals: 1 }
+		DoubleField { name: "priorWidth"; label: qsTr("Stretched beta prior width"); defaultValue: 1.0; max: 2; decimals: 1 }
 	}
 
 	RadioButtonGroup
 	{
 		name: "missingValues"
 		title: qsTr("Missing Values")
-		RadioButton { value: "excludeAnalysisByAnalysis";	text: qsTr("Exclude cases analysis by analysis"); checked: true	}
-		RadioButton { value: "excludeListwise";				text: qsTr("Exclude cases listwise")							}
+		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases analysis by analysis"); checked: true	}
+		RadioButton { value: "excludeListwise";				label: qsTr("Exclude cases listwise")							}
 	}
 }

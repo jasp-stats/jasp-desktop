@@ -31,7 +31,7 @@ Form
 		{
 			name: "dependent"
 			title: qsTr("Dependent Variable")
-			singleItem: true
+			singleVariable: true
 			allowedColumns: ["scale"]
 		}
 
@@ -61,7 +61,7 @@ Form
 	{
 		name: "estimation"
 		currentIndex: 2
-		text: qsTr("Estimation method")
+		label: qsTr("Estimation method")
 
 		model: ListModel
 		{
@@ -75,7 +75,7 @@ Form
 
 	ExpanderButton
 	{
-		text: qsTr("Fixed Effects")
+		title: qsTr("Fixed Effects")
 
 		VariablesForm
 		{
@@ -94,12 +94,12 @@ Form
 			}
 		}
 
-		CheckBox { text: qsTr("Test intercept"); name: "testIntercept" }
+		CheckBox { label: qsTr("Test intercept"); name: "testIntercept" }
 	}
 
 	ExpanderButton
 	{
-		text: qsTr("Random Effects")
+		title: qsTr("Random Effects")
 
 		// TODO: Widget similar to repeated measures anova
 
@@ -121,7 +121,7 @@ Form
 
 	ExpanderButton
 	{
-		text: qsTr("Post Hoc Tests")
+		title: qsTr("Post Hoc Tests")
 
 		VariablesForm
 		{
@@ -140,58 +140,58 @@ Form
 		Group
 		{
 			title: qsTr("Correction")
-			CheckBox { text: qsTr("No correction"); name: "postHocNoCorrection"   ; checked: true }
-			CheckBox { text: qsTr("Bonferroni")   ; name: "postHocTestsBonferroni"				}
-			CheckBox { text: qsTr("Holm")		 ; name: "postHocTestsHolm"					  }
+			CheckBox { label: qsTr("No correction"); name: "postHocNoCorrection"   ; checked: true }
+			CheckBox { label: qsTr("Bonferroni")   ; name: "postHocTestsBonferroni"				}
+			CheckBox { label: qsTr("Holm")		 ; name: "postHocTestsHolm"					  }
 		}
 	}
 
 	ExpanderButton
 	{
-		text: qsTr("Descriptives Plots")
+		title: qsTr("Descriptives Plots")
 
 		VariablesForm
 		{
 			height: 170
 			availableVariablesList {		title: qsTr("Factors")		  ; name: "descriptivePlotsVariables" ; source: ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"	; singleItem: true }
-			AssignedVariablesList {		 title: qsTr("Separate lines")   ; name: "plotSeparateLines"	 ; singleItem: true }
-			AssignedVariablesList {		 title: qsTr("Separate plots")   ; name: "plotSeparatePlots"	 ; singleItem: true }
+			AssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"	; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Separate lines")   ; name: "plotSeparateLines"	 ; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Separate plots")   ; name: "plotSeparatePlots"	 ; singleVariable: true }
 		}
 	}
 
 	ExpanderButton
 	{
-		text: qsTr("Assumption Checks")
+		title: qsTr("Assumption Checks")
 
 		Group
 		{
-			CheckBox { text: qsTr("Homogeneity tests"); name: "homogeneityTests" }
+			CheckBox { label: qsTr("Homogeneity tests"); name: "homogeneityTests" }
 			CheckBox
 			{
-				text: qsTr("Homogeneity corrections"); name: "homogeneityCorrections"
+				label: qsTr("Homogeneity corrections"); name: "homogeneityCorrections"
 				columns: 3
-				CheckBox { text: qsTr("None")		   ; name: "homogeneityNone" ; checked: true }
-				CheckBox { text: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
-				CheckBox { text: qsTr("Welch")		  ; name: "homogeneityWelch" ; checked: true }
+				CheckBox { label: qsTr("None")		   ; name: "homogeneityNone" ; checked: true }
+				CheckBox { label: qsTr("Brown-Forsythe") ; name: "homogeneityBrown" ; checked: true }
+				CheckBox { label: qsTr("Welch")		  ; name: "homogeneityWelch" ; checked: true }
 			}
-			CheckBox { text: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
+			CheckBox { label: qsTr("Q-Q plot of residuals") ; name: "qqPlot" }
 		}
 	}
 
 	ExpanderButton
 	{
-		text: qsTr("Contrasts")
+		title: qsTr("Contrasts")
 
 		ContrastsList
 		{
 			source: ["fixedFactors", "randomFactors"]
 		}
 
-		CheckBox { text: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance" ; checked: true }
+		CheckBox { label: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance" ; checked: true }
 		CheckBox
 		{
-			text: qsTr("Confidence intervals"); name: "confidenceIntervalsContrast"
+			label: qsTr("Confidence intervals"); name: "confidenceIntervalsContrast"
 			childrenOnSameRow: true
 			PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95 }
 		}
@@ -199,7 +199,7 @@ Form
 
 	ExpanderButton
 	{
-		text: qsTr("Additional Options")
+		title: qsTr("Additional Options")
 		columns: 1
 
 		Label { text: qsTr("Marginal means") }
@@ -212,11 +212,11 @@ Form
 
 		CheckBox
 		{
-			text: qsTr("Compare marginal means to 0")	; name: "marginalMeansCompareMainEffects"
+			label: qsTr("Compare marginal means to 0")	; name: "marginalMeansCompareMainEffects"
 			ComboBox
 			{
 				name: "marginalMeansCIAdjustment";
-				text: qsTr("Confidence interval adjustment");
+				label: qsTr("Confidence interval adjustment");
 
 				model: ListModel
 				{
@@ -230,36 +230,36 @@ Form
 		Group
 		{
 			title: qsTr("Display")
-			CheckBox { text: qsTr("Descriptive statistics")	 ; name: "descriptives" }
+			CheckBox { label: qsTr("Descriptive statistics")	 ; name: "descriptives" }
 			CheckBox
 			{
-				text: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"
+				label: qsTr("Estimates of effect size")   ; name: "effectSizeEstimates"
 				columns: 3
-				CheckBox { text: qsTr("η²")		 ; name: "effectSizeEtaSquared"; checked: true }
-				CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
-				CheckBox { text: qsTr("ω²")		 ; name: "effectSizeOmegaSquared" }
+				CheckBox { label: qsTr("η²")		 ; name: "effectSizeEtaSquared"; checked: true }
+				CheckBox { label: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
+				CheckBox { label: qsTr("ω²")		 ; name: "effectSizeOmegaSquared" }
 			}
-			CheckBox { text: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
+			CheckBox { label: qsTr("Vovk-Sellke maximum p-ratio"); name: "VovkSellkeMPR" }
 		}
 	}
 
 	ExpanderButton
 	{
-		text: qsTr("Simple Main Effects")
+		title: qsTr("Simple Main Effects")
 
 		VariablesForm
 		{
 			height: 170
 			availableVariablesList {		title: qsTr("Factors")			  ; name: "effectsVariables"	  ; source:  ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"		  ; singleItem: true }
-			AssignedVariablesList {		 title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"	; singleItem: true }
-			AssignedVariablesList {		 title: qsTr("Moderator factor 2")   ; name: "moderatorFactorTwo"	; singleItem: true }
+			AssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"		  ; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"	; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Moderator factor 2")   ; name: "moderatorFactorTwo"	; singleVariable: true }
 		}
 	}
 
 	ExpanderButton
 	{
-		text: qsTr("Non parametrics")
+		title: qsTr("Non parametrics")
 
 		VariablesForm
 		{

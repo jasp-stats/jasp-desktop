@@ -50,13 +50,27 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	}
 	else
 	{
+		QString textRole = QQmlProperty(item, "textRole").read().toString();
+		QString valueRole = QQmlProperty(item, "valueRole").read().toString();
 		_model->setTermsAreVariables(false);
 		Terms terms;
 		QList<QVariant> list = model.toList();
 		if (!list.isEmpty())
 		{
-			for (const QVariant& val : list)
-				terms.add(val.toString());
+			for (const QVariant& itemVariant : list)
+			{
+				QMap<QString, QVariant> labelValueMap = itemVariant.toMap();
+				if (labelValueMap.isEmpty())
+					terms.add(itemVariant.toString());
+				else
+				{
+					QString key = labelValueMap[textRole].toString();
+					QString value = labelValueMap[valueRole].toString();
+					terms.add(key);
+					_keyToValueMap[key] = value;
+					_valueToKeyMap[value] = key;					
+				}
+			}
 			_model->initTerms(terms);
 		}
 		else
@@ -64,12 +78,11 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 			QAbstractListModel *srcModel = qobject_cast<QAbstractListModel *>(model.value<QObject *>());
 			if (srcModel)
 			{
-				QMap<QString, int> roleMap;				
-				QString textRole = QQmlProperty(item, "textRole").read().toString();
-				QString valueRole = QQmlProperty(item, "valueRole").read().toString();
+				QMap<QString, int> roleMap;
 				QHash<int, QByteArray> roles = srcModel->roleNames();
 				QHashIterator<int, QByteArray> i(roles);
-				while (i.hasNext()) {
+				while (i.hasNext()) 
+				{
 					i.next();
 					QString valueStr = QString::fromStdString(i.value().toStdString());
 					roleMap[valueStr] = i.key();

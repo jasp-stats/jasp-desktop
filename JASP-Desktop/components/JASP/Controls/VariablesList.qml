@@ -28,12 +28,13 @@ JASPControl
 	controlType:		"VariablesListView"
 	background:			rectangle
 	implicitWidth:		parent.width
-	height:				singleItem ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
+	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height
 	useControlMouseArea:	false
 	
 	property var	model
 	property string title
+	property alias	label:				variablesList.title
 	property alias	count:				listView.count	
 	property int	columns:			1
 	property string itemType:			"variables"
@@ -42,7 +43,7 @@ JASPControl
 	property bool	draggable:			true
 	property var	source
 	property alias	syncModels:			variablesList.source
-	property bool	singleItem:			false
+	property bool	singleVariable:			false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
@@ -98,7 +99,7 @@ JASPControl
 		
 		onPositionChanged:
 		{
-			if (variablesList.singleItem || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+			if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 			var itemIndex = Math.floor((drag.y - text.height) / listView.cellHeight);
 			if (variablesList.columns > 1)
 			{
@@ -634,7 +635,7 @@ JASPControl
 							if (itemRectangle.Drag.target)
 							{
 								var dropTarget = itemRectangle.Drag.target.parent
-								if (dropTarget.singleItem && listView.selectedItems.length > 1)
+								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;                                
 								
 								listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards

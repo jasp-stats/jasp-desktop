@@ -33,34 +33,34 @@ Form
 	Group
 	{
 		title: qsTr("Scale Statistics")
-		CheckBox { name: "mcDonaldScale";					text: qsTr("McDonald's ω");	checked: true	}
+		CheckBox { name: "mcDonaldScale";					label: qsTr("McDonald's ω");	checked: true	}
 		CheckBox
 		{
 			id: chronbach
-			name: "alphaScale";								text: qsTr("Cronbach's α")
+			name: "alphaScale";								label: qsTr("Cronbach's α")
 			RadioButtonGroup
 			{
 				name: "alphaScaleStandardized"
-				RadioButton { value: "_1unstandardized";	text: qsTr("Unstandardized"); checked: true }
-				RadioButton { value: "_2standardized";		text: qsTr("Standardized")					}
+				RadioButton { value: "_1unstandardized";	label: qsTr("Unstandardized"); checked: true }
+				RadioButton { value: "_2standardized";		label: qsTr("Standardized")					}
 			}
 		}
-		CheckBox { name: "gutmannScale";					text: qsTr("Gutmann's λ6")					}
-		CheckBox { name: "glbScale";						text: qsTr("Greatest lower bound")			}
-		CheckBox { name: "averageInterItemCor";				text: qsTr("Average interitem correlation")	}
-		CheckBox { name: "meanScale";						text: qsTr("Mean")							}
-		CheckBox { name: "sdScale";							text: qsTr("Standard deviation")			}
+		CheckBox { name: "gutmannScale";					label: qsTr("Gutmann's λ6")					}
+		CheckBox { name: "glbScale";						label: qsTr("Greatest lower bound")			}
+		CheckBox { name: "averageInterItemCor";				label: qsTr("Average interitem correlation")	}
+		CheckBox { name: "meanScale";						label: qsTr("Mean")							}
+		CheckBox { name: "sdScale";							label: qsTr("Standard deviation")			}
 	}
 
 	Group
 	{
 		title: qsTr("Individual Item Statistics")
-		CheckBox { name: "mcDonaldItem";					text: qsTr("McDonald's ω  (if item dropped)")	}
-		CheckBox { name: "alphaItem";						text: qsTr("Cronbach's α (if item dropped)")	}
-		CheckBox { name: "gutmannItem";						text: qsTr("Gutmann's λ6 (if item dropped)")	}
-		CheckBox { name: "meanItem";						text: qsTr("Mean")								}
-		CheckBox { name: "sdItem";							text: qsTr("Standard deviation")				}
-		CheckBox { name: "itemRestCor";						text: qsTr("Item-rest correlation")				}
+		CheckBox { name: "mcDonaldItem";					label: qsTr("McDonald's ω  (if item dropped)")	}
+		CheckBox { name: "alphaItem";						label: qsTr("Cronbach's α (if item dropped)")	}
+		CheckBox { name: "gutmannItem";						label: qsTr("Gutmann's λ6 (if item dropped)")	}
+		CheckBox { name: "meanItem";						label: qsTr("Mean")								}
+		CheckBox { name: "sdItem";							label: qsTr("Standard deviation")				}
+		CheckBox { name: "itemRestCor";						label: qsTr("Item-rest correlation")				}
 	}
 
 	ExpanderButton
@@ -82,8 +82,8 @@ Form
 		RadioButtonGroup {
 			title: qsTr("Missing Values")
 			name: "missingValues"
-			RadioButton { value: "excludeCasesListwise"; text: qsTr("Exclude cases listwise"); checked: true	}
-			RadioButton { value: "excludeCasesPairwise"; text: qsTr("Exclude cases pairwise")					}
+			RadioButton { value: "excludeCasesListwise"; label: qsTr("Exclude cases listwise"); checked: true	}
+			RadioButton { value: "excludeCasesPairwise"; label: qsTr("Exclude cases pairwise")					}
 		}
 
 		Group
@@ -91,8 +91,8 @@ Form
 			title: qsTr("Confidence Interval")
 			enabled: chronbach.checked
 			CheckBox {
-				name: "confAlpha"; text: qsTr("Cronbach's α analytical")
-				PercentField { name: "confAlphaLevel"; text: qsTr("Confidence"); defaultValue: 95; with1Decimal: true }
+				name: "confAlpha"; label: qsTr("Cronbach's α analytical")
+				PercentField { name: "confAlphaLevel"; label: qsTr("Confidence"); defaultValue: 95; with1Decimal: true }
 			}
 		}
 	}

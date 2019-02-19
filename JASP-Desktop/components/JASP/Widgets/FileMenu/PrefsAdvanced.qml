@@ -20,7 +20,7 @@ Column
 		CheckBox
 		{
 			id:					useDefaultPPICheckbox
-			text:				"Use default PPI (Pixels per Inch) in plots: " + preferencesModel.defaultPPI
+			label:				"Use default PPI (Pixels per Inch) in plots: " + preferencesModel.defaultPPI
 			checked:			preferencesModel.useDefaultPPI
 			onCheckedChanged:	preferencesModel.useDefaultPPI = checked
 			//font:				Theme.font
@@ -141,7 +141,7 @@ Column
 		CheckBox
 		{
 			id:					developerMode
-			text:				qsTr("Developer mode")
+			label:				qsTr("Developer mode")
 			checked:			preferencesModel.developerMode
 			onCheckedChanged:	preferencesModel.developerMode = checked
 		}

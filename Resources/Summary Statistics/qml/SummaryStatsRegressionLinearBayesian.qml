@@ -26,33 +26,33 @@ Form
 {
 	usesJaspResults: false
 
-	IntegerField { text: qsTr("Sample size"); name: "sampleSize" ; min: 3; Layout.columnSpan: 2 }
+	IntegerField { label: qsTr("Sample size"); name: "sampleSize" ; min: 3; Layout.columnSpan: 2 }
 
 	Group
 	{
 		title: qsTr("Null model")
-		IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesNull" }
-		DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredNull" ; max: 0.9999 }
+		IntegerField {	label: qsTr("Number of covariates"); name: "numberOfCovariatesNull" }
+		DoubleField {	label: qsTr("R-squared");			name: "unadjustedRSquaredNull" ; max: 0.9999 }
 	}
 
 	Group
 	{
 		title: qsTr("Alternative model")
-		IntegerField {	text: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; min: 1 }
-		DoubleField {	text: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; max: 0.9999 }
+		IntegerField {	label: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; min: 1 }
+		DoubleField {	label: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; max: 0.9999 }
 	}
 
 	Divider { }
 
 	BayesFactorType { }
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotBayesFactorRobustness"; text: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; text: qsTr("Additional info"); checked: true }
+			name: "plotBayesFactorRobustness"; label: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info"); checked: true }
 		}
 	}
 
@@ -60,10 +60,10 @@ Form
 	{
         title: qsTr("Advanced Options")
 
-        GroupBox 
+        Group
 		{
             title: qsTr("Prior")
-			DoubleField { text: qsTr("r scale covariates"); defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 80; max: 2 }
+			DoubleField { label: qsTr("r scale covariates"); defaultValue: 0.3536 ; name: "priorWidth" ; fieldWidth: 80; max: 2 }
         }
     }
 }

@@ -75,7 +75,7 @@ Item
                 allAssignedVariablesList.push(control);
             if (i > 0)
                 minHeight += marginBetweenVariablesLists;
-            if (control.singleItem)
+            if (control.singleVariable)
                 minHeight += control.height;
             else if (control.height !== Theme.defaultListHeight)
                 // If the height of this List item was changed, don't change it
@@ -89,7 +89,7 @@ Item
             allJASPControls[i].parent = variablesForm;
         }
 
-        // Set the height of controls (that have not singleItem set or where the height is already specifically set)
+        // Set the height of controls (that have not singleVariable set or where the height is already specifically set)
         // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
 		// To Do: Should be a binding of some kind to avoid problems with resizing after changing preferencesModel.uiScale
         if (changeableHeightControls.length > 0) {

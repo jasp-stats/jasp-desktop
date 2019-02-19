@@ -29,11 +29,11 @@ Form
 	VariablesForm
 	{
 		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
-		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
-		AssignedVariablesList { name: "test";	title: qsTr("Test"); singleItem: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "test";		title: qsTr("Test"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	}
 
-	CheckBox { name: "frequencyTables"; text: qsTr("Frequency tables (nominal and ordinal variables)") }
+	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
 
 	ExpanderButton
 	{
@@ -43,22 +43,22 @@ Form
 		{
 			CheckBox
 			{
-				name: "plotVariables"; text: qsTr("Distribution plots")
-				CheckBox { name: "distPlotDensity"; text: qsTr("Display density") }
+				name: "plotVariables"; label: qsTr("Distribution plots")
+				CheckBox { name: "distPlotDensity"; label: qsTr("Display density") }
 			}
-			CheckBox { name: "plotCorrelationMatrix"; text: qsTr("Correlation plots") }
+			CheckBox { name: "plotCorrelationMatrix"; label: qsTr("Correlation plots") }
 			CheckBox
 			{
-				name: "splitPlots"; text: qsTr("Boxplots")
-				CheckBox { name: "splitPlotOutlierLabel"; text: qsTr("Label Outliers") }
+				name: "splitPlots"; label: qsTr("Boxplots")
+				CheckBox { name: "splitPlotOutlierLabel"; label: qsTr("Label Outliers") }
 				CheckBox
 				{
-					name: "splitPlotColour"; text: qsTr("Color"); enableChildrenOnChecked: false
+					name: "splitPlotColour"; label: qsTr("Color"); enableChildrenOnChecked: false
 					Group
 					{
-						CheckBox { name: "splitPlotBoxplot";	text: qsTr("Boxplot Element"); checked: true	}
-						CheckBox { name: "splitPlotViolin";		text: qsTr("Violin Elem∂ent")					}
-						CheckBox { name: "splitPlotJitter";		text: qsTr("Jitter Element")					}
+						CheckBox { name: "splitPlotBoxplot";	label: qsTr("Boxplot Element"); checked: true	}
+						CheckBox { name: "splitPlotViolin";		label: qsTr("Violin Elem∂ent")					}
+						CheckBox { name: "splitPlotJitter";		label: qsTr("Jitter Element")					}
 					}
 				}
 			}
@@ -74,22 +74,22 @@ Form
 		{
 			title: qsTr("Percentile Values")
 
-			CheckBox { name: "percentileValuesQuartiles";	text: qsTr("Quartiles") }
+			CheckBox { name: "percentileValuesQuartiles";	label: qsTr("Quartiles") }
 			CheckBox
 			{
-				name: "percentileValuesEqualGroups"; text: qsTr("Cut points for: ")
+				name: "percentileValuesEqualGroups"; label: qsTr("Cut points for: ")
 				childrenOnSameRow: true
 				IntegerField
 				{
 					name: "percentileValuesEqualGroupsNo"
 					intValidator { bottom: 1; top: 1000 }
 					defaultValue: 4
-					afterLabel.text: qsTr(" equal groups")
+					afterLabel: qsTr(" equal groups")
 				}
 			}
 			CheckBox
 			{
-				name: "percentileValuesPercentiles"; text: qsTr("Percentiles:")
+				name: "percentileValuesPercentiles"; label: qsTr("Percentiles:")
 				childrenOnSameRow: true
 				TextField
 				{
@@ -104,31 +104,31 @@ Form
 		{
 			title: qsTr("Central Tendency")
 			implicitWidth: 200
-			CheckBox { name: "mean";			text: qsTr("Mean");		checked: true	}
-			CheckBox { name: "median";			text: qsTr("Median")					}
-			CheckBox { name: "mode";			text: qsTr("Mode");						}
-			CheckBox { name: "sum";				text: qsTr("Sum");						}
+			CheckBox { name: "mean";			label: qsTr("Mean");	checked: true	}
+			CheckBox { name: "median";			label: qsTr("Median")					}
+			CheckBox { name: "mode";			label: qsTr("Mode");					}
+			CheckBox { name: "sum";				label: qsTr("Sum");						}
 		}
 
 		Group
 		{
 			title: qsTr("Dispersion")
-			CheckBox { name: "standardDeviation";	text: qsTr("Std.deviation"); checked: true	}
-			CheckBox { name: "minimum";				text: qsTr("Minimum");		checked: true	}
-			CheckBox { name: "maximum";				text: qsTr("Maximum");		checked: true	}
-			CheckBox { name: "variance";			text: qsTr("Variance")						}
-			CheckBox { name: "range";				text: qsTr("Range")							}
-			CheckBox { name: "standardErrorMean";	text: qsTr("S. E. mean")					}
+			CheckBox { name: "standardDeviation";	label: qsTr("Std.deviation"); checked: true	}
+			CheckBox { name: "minimum";				label: qsTr("Minimum");		checked: true	}
+			CheckBox { name: "maximum";				label: qsTr("Maximum");		checked: true	}
+			CheckBox { name: "variance";			label: qsTr("Variance")						}
+			CheckBox { name: "range";				label: qsTr("Range")						}
+			CheckBox { name: "standardErrorMean";	label: qsTr("S. E. mean")					}
 		}
 
 		Group
 		{
 			title: qsTr("Distribution")
-			CheckBox { name: "skewness";			text: qsTr("Skewness")						}
-			CheckBox { name: "kurtosis";			text: qsTr("Kurtosis")						}
+			CheckBox { name: "skewness";			label: qsTr("Skewness")						}
+			CheckBox { name: "kurtosis";			label: qsTr("Kurtosis")						}
 		}
 
-		CheckBox { name: "statisticsValuesAreGroupMidpoints"; text: qsTr("Values are group midpoints"); debug: true }
+		CheckBox { name: "statisticsValuesAreGroupMidpoints"; label: qsTr("Values are group midpoints"); debug: true }
 	}
 
 	ExpanderButton
@@ -139,18 +139,18 @@ Form
 		{
 			name: "chartType";
 			title: qsTr("Chart Type")
-			RadioButton { value: "_1noCharts";		text: qsTr("None")			}
-			RadioButton { value: "_2barCharts";		text: qsTr("Bar charts")	}
-			RadioButton { value: "_3pieCharts";		text: qsTr("Pie Charts")	}
-			RadioButton { value: "_4histograms";	text: qsTr("Histograms")	}
+			RadioButton { value: "_1noCharts";		label: qsTr("None")			}
+			RadioButton { value: "_2barCharts";		label: qsTr("Bar charts")	}
+			RadioButton { value: "_3pieCharts";		label: qsTr("Pie Charts")	}
+			RadioButton { value: "_4histograms";	label: qsTr("Histograms")	}
 		}
 
 		RadioButtonGroup
 		{
 			name: "chartValues"
 			title: qsTr("Chart Values")
-			RadioButton { value: "_1frequencies";	text: qsTr("Frequencies")	}
-			RadioButton { value: "_2percentages";	text: qsTr("Percentages")	}
+			RadioButton { value: "_1frequencies";	label: qsTr("Frequencies")	}
+			RadioButton { value: "_2percentages";	label: qsTr("Percentages")	}
 		}
 	}
 }

@@ -12,7 +12,7 @@ Column
 
 	CheckBox
 	{
-		text:				"Display exact p-values"
+		label:				"Display exact p-values"
 		checked:			preferencesModel.exactPValues
 		onCheckedChanged:	preferencesModel.exactPValues = checked
 		//font:				Theme.font
@@ -26,7 +26,7 @@ Column
 		CheckBox
 		{
 			id:					fixDecs
-			text:				"Fix the number of decimals"
+			label:				"Fix the number of decimals"
 			checked:			preferencesModel.fixedDecimals
 			onCheckedChanged:	preferencesModel.fixedDecimals = checked
 			//font:				Theme.font

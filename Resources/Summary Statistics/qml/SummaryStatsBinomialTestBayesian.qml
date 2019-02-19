@@ -28,9 +28,9 @@ Form
 
 	Group
 	{
-		IntegerField { name: "successes";	text: qsTr("Successes")	}
-		IntegerField { name: "failures";	text: qsTr("Failures")	}
-		DoubleField  { name: "testValue";	text: qsTr("Test value"); defaultValue: 0.5 ; max: 1 }
+		IntegerField { name: "successes";	label: qsTr("Successes")	}
+		IntegerField { name: "failures";	label: qsTr("Failures")		}
+		DoubleField  { name: "testValue";	label: qsTr("Test value"); defaultValue: 0.5 ; max: 1 }
     }
 
     Divider { }
@@ -39,9 +39,9 @@ Form
 	{
 		title: qsTr("Hypothesis")
 		name: "hypothesis"
-		RadioButton { value: "notEqualToTestValue";		text: qsTr("\u2260 Test value"); checked: true	}
-		RadioButton { value: "greaterThanTestValue";	text: qsTr("> Test value")						}
-		RadioButton { value: "lessThanTestValue";		text: qsTr("< Test value")						}
+		RadioButton { value: "notEqualToTestValue";		label: qsTr("\u2260 Test value"); checked: true	}
+		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value")						}
+		RadioButton { value: "lessThanTestValue";		label: qsTr("< Test value")						}
 	}
 
 	Group
@@ -49,8 +49,8 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; text: qsTr("Additional info"); checked: true }
+			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; label: qsTr("Additional info"); checked: true }
 		}
 	}
 
@@ -60,7 +60,7 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
-		DoubleField { name: "betaPriorParamA"; text: qsTr("Beta prior: parameter a"); defaultValue: 1 }
-		DoubleField { name: "betaPriorParamB"; text: qsTr("Beta prior: parameter b"); defaultValue: 1 }
+		DoubleField { name: "betaPriorParamA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1 }
+		DoubleField { name: "betaPriorParamB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1 }
 	}
 }

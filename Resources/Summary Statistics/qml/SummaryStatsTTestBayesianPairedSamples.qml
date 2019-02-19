@@ -27,10 +27,10 @@ Form
 {
 	usesJaspResults: false
 
-	GroupBox 
+	Group
 	{
-		DoubleField  { text: qsTr("t");				name: "tStatistic" ; validation: false  }
-		IntegerField { text: qsTr("Group size");	name: "n1Size" }
+		DoubleField  { label: qsTr("t");				name: "tStatistic" ; validation: false  }
+		IntegerField { label: qsTr("Group size");	name: "n1Size" }
 	}
 	
     Divider { }
@@ -39,23 +39,23 @@ Form
 	{
 		name: "hypothesis"
 		title: qsTr("Hypothesis")
-		RadioButton { value: "groupsNotEqual";	text: qsTr("Measure 1 \u2260 Measure 2"); checked: true }
-		RadioButton { value: "groupOneGreater";	text: qsTr("Measure 1 > Measure 2")						}
-		RadioButton { value: "groupTwoGreater";	text: qsTr("Measure 1 < Measure 2")						}
+		RadioButton { value: "groupsNotEqual";	label: qsTr("Measure 1 \u2260 Measure 2"); checked: true }
+		RadioButton { value: "groupOneGreater";	label: qsTr("Measure 1 > Measure 2")					}
+		RadioButton { value: "groupTwoGreater";	label: qsTr("Measure 1 < Measure 2")					}
 	}
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotPriorAndPosterior";		text: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		text: qsTr("Additional info"); checked: true }
+			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
+			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{
-			name: "plotBayesFactorRobustness";	text: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	text: qsTr("Additional info"); checked: true }
+			name: "plotBayesFactorRobustness";	label: qsTr("Bayes factor robustness check")
+			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 	}
 

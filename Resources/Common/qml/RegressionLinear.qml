@@ -26,22 +26,21 @@ Form
 	
 	VariablesForm
 	{
-		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleItem: true;		}
+		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true;		}
 		DropDown
 		{
 			name: "method"
-			text: qsTr("Method")
-			model: ListModel
-			{
-				ListElement { title: "Enter";		value: "enter"		}
-				ListElement { title: "Backward";	value: "backward"	}
-				ListElement { title: "Forward";		value: "forward"	}
-				ListElement { title: "Stepwise";	value: "stepwise"	}
-			}
+			label: qsTr("Method")
+			values: [
+				{ label: "Enter",		value: "enter"},
+				{ label: "Backward",	value: "backward"},
+				{ label: "Forward",		value: "forward"},
+				{ label: "Stepwise",	value: "stepwise"}
+			]			
 		}
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]							}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors");				allowedColumns: ["nominal", "ordinal"]; debug: true	}
-		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleItem: true		}
+		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true		}
 	}
 	
 	
@@ -89,10 +88,10 @@ Form
 			{
 				CheckBox
 				{
-					name: "regressionCoefficientsEstimates"; text: qsTr("Estimates"); checked: true
+					name: "regressionCoefficientsEstimates"; label: qsTr("Estimates"); checked: true
 					CheckBox
 					{
-						name: "regressionCoefficientsBootstrapping"; text: qsTr("From")
+						name: "regressionCoefficientsBootstrapping"; label: qsTr("From")
 						childrenOnSameRow: true
 						IntegerField
 						{
@@ -100,53 +99,53 @@ Form
 							defaultValue: 5000
 							fieldWidth: 50
 							min: 100
-							afterLabel.text: qsTr("bootstraps")
+							afterLabel: qsTr("bootstraps")
 						}
 					}
 				}
 
 				CheckBox
 				{
-					name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
+					name: "regressionCoefficientsConfidenceIntervals"; label: qsTr("Confidence intervals")
 					childrenOnSameRow: true
 					PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; defaultValue: 95 }
 				}
-				CheckBox { name: "regressionCoefficientsCovarianceMatrix"; text: qsTr("Covariance matrix") }
+				CheckBox { name: "regressionCoefficientsCovarianceMatrix"; label: qsTr("Covariance matrix") }
 			}
 
 			Group
 			{
-				CheckBox { name: "modelFit";					text: qsTr("Model fit");  checked: true		}
-				CheckBox { name: "rSquaredChange";				text: qsTr("R squared change")				}
-				CheckBox { name: "descriptives";				text: qsTr("Descriptives")					}
-				CheckBox { name: "partAndPartialCorrelations";	text: qsTr("Part and partial correlations")	}
-				CheckBox { name: "collinearityDiagnostics";		text: qsTr("Collinearity diagnostics")		}
+				CheckBox { name: "modelFit";					label: qsTr("Model fit");  checked: true		}
+				CheckBox { name: "rSquaredChange";				label: qsTr("R squared change")				}
+				CheckBox { name: "descriptives";				label: qsTr("Descriptives")					}
+				CheckBox { name: "partAndPartialCorrelations";	label: qsTr("Part and partial correlations")	}
+				CheckBox { name: "collinearityDiagnostics";		label: qsTr("Collinearity diagnostics")		}
 			}
 		}
 		
 		Group
 		{
 			title: qsTr("Residuals")
-			CheckBox { name: "residualsDurbinWatson";	text: qsTr("Dublin-Watson") }
+			CheckBox { name: "residualsDurbinWatson";	label: qsTr("Dublin-Watson") }
 			CheckBox
 			{
-				name: "residualsCasewiseDiagnostics";	text: qsTr("Casewise diagnostics")
+				name: "residualsCasewiseDiagnostics";	label: qsTr("Casewise diagnostics")
 				RadioButtonGroup
 				{
 					name: "residualsCasewiseDiagnosticsType"
 					RadioButton
 					{
-						value: "outliersOutside"; text: qsTr("Standard residual >"); checked: true
+						value: "outliersOutside"; label: qsTr("Standard residual >"); checked: true
 						childrenOnSameRow: true
 						IntegerField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3	}
 					}
 					RadioButton
 					{
-						value: "cooksDistance";	text: qsTr("Cook's distance >")
+						value: "cooksDistance";	label: qsTr("Cook's distance >")
 						childrenOnSameRow: true
 						IntegerField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
 					}
-					RadioButton { value: "allCases"; text: qsTr("All")										}
+					RadioButton { value: "allCases"; label: qsTr("All")										}
 				}
 			}
 		}
@@ -164,24 +163,24 @@ Form
 			title: qsTr("Stepping Method Criteria")
 			RadioButton
 			{
-				value: "usePValue"; text: qsTr("Use p value"); checked: true
+				value: "usePValue"; label: qsTr("Use p value"); checked: true
 				columns: 2
-				DoubleField { name: "steppingMethodCriteriaPEntry";		text: qsTr("Entry");	fieldWidth: 60; defaultValue: 0.05; max: 1; decimals: 3 }
-				DoubleField { name: "steppingMethodCriteriaPRemoval";	text: qsTr("Removal");	fieldWidth: 60; defaultValue: 0.1; max: 1; decimals: 3	}
+				DoubleField { name: "steppingMethodCriteriaPEntry";		label: qsTr("Entry");	fieldWidth: 60; defaultValue: 0.05; max: 1; decimals: 3 }
+				DoubleField { name: "steppingMethodCriteriaPRemoval";	label: qsTr("Removal");	fieldWidth: 60; defaultValue: 0.1; max: 1; decimals: 3	}
 			}
 			RadioButton
 			{
-				value: "useFValue"; text: qsTr("Use F value")
+				value: "useFValue"; label: qsTr("Use F value")
 				columns: 2
-				DoubleField { name: "steppingMethodCriteriaFEntry";		text: qsTr("Entry");	fieldWidth: 60; defaultValue: 3.84; decimals: 3 }
-				DoubleField { name: "steppingMethodCriteriaFRemoval";	text: qsTr("Removal");	fieldWidth: 60; defaultValue: 2.71; decimals: 3 }
+				DoubleField { name: "steppingMethodCriteriaFEntry";		label: qsTr("Entry");	fieldWidth: 60; defaultValue: 3.84; decimals: 3 }
+				DoubleField { name: "steppingMethodCriteriaFRemoval";	label: qsTr("Removal");	fieldWidth: 60; defaultValue: 2.71; decimals: 3 }
 			}
 		}
 		
 		Group
 		{
-			CheckBox { name: "includeConstant";	text: qsTr("Include constant in equation"); checked: true }
-			CheckBox { name: "VovkSellkeMPR"; text: qsTr("Vovk-Sellke maximum p-ratio") }
+			CheckBox { name: "includeConstant";	label: qsTr("Include constant in equation"); checked: true }
+			CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
 
 
@@ -190,8 +189,8 @@ Form
 			name: "missingValues"
 			title: qsTr("Missing Values")
 			debug: true
-			RadioButton { value: "excludeCasesListwise"; text: qsTr("Exclude cases listwise"); checked: true	}
-			RadioButton { value: "excludeCasesPairwise"; text: qsTr("Exclude cases pairwise")					}
+			RadioButton { value: "excludeCasesListwise"; label: qsTr("Exclude cases listwise"); checked: true	}
+			RadioButton { value: "excludeCasesPairwise"; label: qsTr("Exclude cases pairwise")					}
 		}
 	}
 	
@@ -202,16 +201,16 @@ Form
 		Group
 		{
 			title: qsTr("Residuals Plots")
-			CheckBox { name: "plotResidualsDependent";	text: qsTr("Residuals vs. dependent")					}
-			CheckBox { name: "plotResidualsCovariates";	text: qsTr("Residuals vs. covariates")					}
-			CheckBox { name: "plotResidualsPredicted";	text: qsTr("Residuals vs. predicted")					}
+			CheckBox { name: "plotResidualsDependent";	label: qsTr("Residuals vs. dependent")					}
+			CheckBox { name: "plotResidualsCovariates";	label: qsTr("Residuals vs. covariates")					}
+			CheckBox { name: "plotResidualsPredicted";	label: qsTr("Residuals vs. predicted")					}
 			CheckBox
 			{
-				name: "plotResidualsHistogram";	text: qsTr("Residuals vs. histogram")
-				CheckBox { name: "plotResidualsHistogramStandardized";	text: qsTr("Standardized residuals")	}
+				name: "plotResidualsHistogram";	label: qsTr("Residuals vs. histogram")
+				CheckBox { name: "plotResidualsHistogramStandardized";	label: qsTr("Standardized residuals")	}
 			}
-			CheckBox { name: "plotResidualsQQ";			text: qsTr("Q-Q plot standardized residuals")			}
-			CheckBox { name: "plotsPartialRegression";	text: qsTr("Partial plots")								}
+			CheckBox { name: "plotResidualsQQ";			label: qsTr("Q-Q plot standardized residuals")			}
+			CheckBox { name: "plotsPartialRegression";	label: qsTr("Partial plots")								}
 		}
 	}
 }
