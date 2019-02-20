@@ -32,7 +32,7 @@ Form
     
 	ExpanderButton
 	{
-		text: qsTr("Second-order factors")
+		title: qsTr("Second-order factor")
 		VariablesForm
 		{
             id: secondorder
@@ -43,7 +43,7 @@ Form
                 showVariableTypeIcon: false
             }
             AssignedVariablesList {
-                title: qsTr("Second-order factors")
+                title: qsTr("Second-order factor")
                 name: "SecondOrder"
                 showVariableTypeIcon: false
             }
@@ -52,34 +52,34 @@ Form
 
 	ExpanderButton
 	{
-        text: qsTr("Model options")
+        title: qsTr("Model options")
 		GridLayout
 		{
 			GroupBox
 			{
                 title: qsTr("Additional fit measures")
-                CheckBox { text: qsTr("AIC")   ; name: "aic"   }
-                CheckBox { text: qsTr("BIC")   ; name: "bic"   }
-                CheckBox { text: qsTr("SRMR")  ; name: "srmr"  }
-                CheckBox { text: qsTr("TLI")   ; name: "tli"   }
-                CheckBox { text: qsTr("CFI")   ; name: "cfi"   }
-                CheckBox { text: qsTr("RMSEA") ; name: "rmsea" }
+                CheckBox { label: qsTr("AIC")   ; name: "aic"   }
+                CheckBox { label: qsTr("BIC")   ; name: "bic"   }
+                CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
+                CheckBox { label: qsTr("TLI")   ; name: "tli"   }
+                CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
+                CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
             }
 			GroupBox
 			{
                 title: qsTr("Model Options")
-                CheckBox { text: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
-                CheckBox { text: qsTr("Assume factors uncorrelated") ; name: "uncorrelatedFactors"    }
-                CheckBox { text: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true }
+                CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
+                CheckBox { label: qsTr("Assume factors uncorrelated") ; name: "uncorrelatedFactors"    }
+                CheckBox { label: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true }
 				ComboBox
 				{
-                    label.text: qsTr("Factor Scaling")
+                    label: qsTr("Factor Scaling")
                     name: "identify"
-                    model: ListModel {
-                        ListElement { key: "Factor loadings" ; value: "factor"  }
-                        ListElement { key: "Marker variable" ; value: "marker"  }
-                        ListElement { key: "Effects coding"  ; value: "effects" }
-                    }
+                    values: [
+                        { label: "Factor loadings",  value: "factor"  },
+                        { label: "Marker variable",  value: "marker"  },
+                        { label: "Effects coding",   value: "effects" }
+                    ]
                 }
             }
         }
@@ -93,39 +93,39 @@ Form
             AssignedVariablesList {
                 title: qsTr("Residual Covariances")
                 name: "rescov"
-                listViewType: "AssignedPairs"
+                listViewType: "Pairs"
             }
             height: 150
         }
     }
     
     ExpanderButton {
-        text: qsTr("Additional output")
-        CheckBox { text: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
-        CheckBox { text: qsTr("Residual covariance matrix") ; name: "residCov"   }
-        CheckBox { text: qsTr("Modification indices") ; name: "modIndices" ; id: modIndices }
-        TextField {
-            text: qsTr("Cutoff")
-            name: "miCutoff"
-            fieldWidth: 60
-            value: "3.84"
-            validator: IntValidator { bottom: 0 }
-            Layout.leftMargin: 20
-            enabled: modIndices.checked
+        title: qsTr("Additional output")
+        CheckBox { label: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
+        CheckBox { label: qsTr("Residual covariance matrix") ; name: "residCov"   }
+        CheckBox { 
+            label: qsTr("Modification indices")
+            name: "modIndices"
+            DoubleField {
+                label: qsTr("Cutoff")
+                name: "miCutoff"
+                min: 0
+                defaultValue: 3.84
+            }
         }
-        CheckBox { text: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
+        CheckBox { label: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
     }
 
     ExpanderButton {
         text: qsTr("Multigroup CFA")
         ComboBox { 
-            label.text: qsTr("Grouping variable") ; 
+            label: qsTr("Grouping variable") ; 
             name: "groupvar"; 
             showVariableTypeIcon: true; 
             addEmptyValue: true 
         } // No model or syncModels: it takes all variables per default
         ComboBox {
-            label.text: qsTr("Invariance testing")
+            label: qsTr("Invariance testing")
             name: "invariance"
             model: ListModel {
                 ListElement { key: qsTr("Configural") ; value: "configural"  }
@@ -179,16 +179,18 @@ Form
                 name: "se"
                 RadioButton { text: qsTr("Standard")  ; name: "standard" ; checked: true }
                 RadioButton { text: qsTr("Robust")    ; name: "robust" }
-                RadioButton { text: qsTr("Bootstrap") ; name: "bootstrap"; id: bootstrapOption }
-                TextField   {
-                    text: qsTr("Bootstrap samples")
-                    name: "bootstrapNumber"
-                    fieldWidth: 60
-                    value: "1000"
-                    validator: IntValidator { bottom: 1 }
-                    enabled: bootstrapOption.checked
-                    Layout.leftMargin: 20
+                RadioButton { 
+                    text: qsTr("Bootstrap") 
+                    name: "bootstrap" 
+                    IntegerField {
+                        text: qsTr("Bootstrap samples")
+                        name: "bootstrapNumber"
+                        defaultValue: 1000
+                        min: 1
+                        max: 1000000
+                    }
                 }
+                
             }
 
             RadioButtonGroup {

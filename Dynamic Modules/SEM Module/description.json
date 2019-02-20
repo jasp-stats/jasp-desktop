@@ -11,7 +11,7 @@
 		"dynamic":		false
 	},
 
-	"requiredPackages":	[ 
+	"requiredPackagess":	[ 
 		{ "package": "kutils" },
 		{ "package": "lavaan" },
 		{ "package": "semPlot" }

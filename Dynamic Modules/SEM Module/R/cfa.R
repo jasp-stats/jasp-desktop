@@ -20,18 +20,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                                                  class = "jasp-code", position = 7, title = "Options")
 }
 
-preprocessOptions <- function(options) {
-  # TEMP: preprocess 
-  options$bootstrapNumber <- as.integer(options$bootstrapNumber)
-  options$miCutoff <- as.integer(options$miCutoff)
-
-  return(options)
-}
 
 ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults$title <- "Confirmatory Factor Analysis"
-
-  options <- preprocessOptions(options)
 
   # Read dataset
   dataset <- .cfaReadData(dataset, options)
@@ -102,6 +93,12 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
   
   return(NULL)
+}
+
+.translateFactorNames <- function(factor_name, options) {
+  fac_names <- vapply(options$factors, function(x) x$name, "name")
+  idx <- vapply(factor_name, function(n) which(fac_names == n), 0L, USE.NAMES = FALSE)
+  vapply(idx, function(i) options$factors[[i]]$title, "title")
 }
 
 # Results functions ----
@@ -293,7 +290,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   maintab$copyDependenciesFromJaspObject(jaspResults[["maincontainer"]])
   
   maintab$addColumnInfo(name = "mod",    title = "Model",        type = "string")
-  maintab$addColumnInfo(name = "chisq",  title = "\u03a7\u00b2", type = "number", format = "sf:4")
+  maintab$addColumnInfo(name = "chisq",  title = "\u03a7\u00b2", type = "number", format = "dp:3;sf:4")
   maintab$addColumnInfo(name = "df",     title = "df",           type = "integer")
   maintab$addColumnInfo(name = "pvalue", title = "p",            type = "number", format = "dp:3;p:.001")
   
@@ -305,6 +302,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     maintab[["pvalue"]] <- c(      "."       ,      "."      )
   } else {
     fm <- lavaan::fitMeasures(cfaResult[["lav"]])
+    maintab[["mod"]]    <- c("Baseline model", "Factor model")
     maintab[["chisq"]]  <- fm[c("baseline.chisq", "chisq")]
     maintab[["df"]]     <- fm[c("baseline.df", "df")]
     maintab[["pvalue"]] <- c(NA, fm["pvalue"])
@@ -395,6 +393,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # add data
   fl1dat <- pei[pei$op == "=~" & !pei$rhs %in% facNames, colSel]
   fl1dat$label <- gsub("lambda", "\u03bb", fl1dat$label)
+  fl1dat$lhs <- .translateFactorNames(fl1dat$lhs, options)
   fl1dat$rhs <- .unv(fl1dat$rhs)
   fl1$setData(fl1dat)
   fl1$copyDependenciesFromJaspObject(jrobject)
@@ -425,6 +424,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     # add data
     fl2dat <- pei[pei$op == "=~" & pei$rhs %in% facNames, colSel]
     fl2dat$label <- gsub("gamma", "\u03b3", fl2dat$label)
+    fl2dat$rhs   <- .translateFactorNames(fl2dat$rhs, options)
     fl2$setData(fl2dat)
     fl2$copyDependenciesFromJaspObject(jrobject)
   }
@@ -450,7 +450,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                      type = "number", format = "sf:4;dp:3")
 
   # Add data
-  fvdat <- pei[pei$op == "~~" & pei$lhs %in% facNames & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
+  fvdat     <- pei[pei$op == "~~" & pei$lhs %in% facNames & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
+  fvdat$lhs <- .translateFactorNames(fvdat$lhs, options)
   fv$setData(fvdat)
   fv$copyDependenciesFromJaspObject(jrobject)
 
@@ -508,6 +509,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                        format = "sf:4;dp:3")
     
     fcdat <- pei[pei$op == "~~" & pei$lhs %in% facNames & pei$lhs != pei$rhs, colSel[-c(3)]]
+    fcdat$lhs <- .translateFactorNames(fcdat$lhs, options)
+    fcdat$rhs <- .translateFactorNames(fcdat$rhs, options)
     fcdat$op  <- rep("\u2B64", nrow(fcdat))
     
     fc$setData(fcdat)
@@ -554,11 +557,11 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       # Factor intercepts
       jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = "Factor Intercepts")
 
-      fi$addColumnInfo(name = "lhs",    title = "Factor",      type = "string", combine = TRUE)
-      fi$addColumnInfo(name = "est",    title  = "Estimate",   type = "number", format = "sf:4;dp:3")
-      fi$addColumnInfo(name = "se",     title  = "Std. Error", type = "number", format = "sf:4;dp:3")
-      fi$addColumnInfo(name = "z",      title  = "z-value",    type = "number", format = "sf:4;dp:3")
-      fi$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
+      fi$addColumnInfo(name = "lhs",    title = "Factor",  type = "string", combine = TRUE)
+      fi$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format = "sf:4;dp:3")
+      fi$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format = "sf:4;dp:3")
+      fi$addColumnInfo(name = "z",      title = "z-value",    type = "number", format = "sf:4;dp:3")
+      fi$addColumnInfo(name = "pvalue", title = "p",          type = "number", format = "dp:3;p:.001")
 
       fi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
                        overtitle = "Confidence Interval")
@@ -570,7 +573,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                           type = "number", format = "sf:4;dp:3")
 
       # add data
-      fidat <- pei[pei$op == "~1" &  pei$lhs %in% facNames, colSel[-c(2, 3)]]
+      fidat <- pei[pei$op == "~1" & pei$lhs %in% facNames, colSel[-c(2, 3)]]
+      fidat$lhs <- .translateFactorNames(fidat$lhs, options)
       print(fidat)
       fi$setData(fidat)
       fi$copyDependenciesFromJaspObject(jrobject)
@@ -579,7 +583,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     # Manifest variable intercepts
     jrobject[["Intercepts"]] <- vi <- createJaspTable(title = "Intercepts")
 
-    vi$addColumnInfo(name = "lhs",    title = "Factor",    type = "string", combine = TRUE)
+    vi$addColumnInfo(name = "lhs",    title  = "Indicator",  type = "string", combine = TRUE)
     vi$addColumnInfo(name = "est",    title  = "Estimate",   type = "number", format = "sf:4;dp:3")
     vi$addColumnInfo(name = "se",     title  = "Std. Error", type = "number", format = "sf:4;dp:3")
     vi$addColumnInfo(name = "z",      title  = "z-value",    type = "number", format = "sf:4;dp:3")
@@ -786,7 +790,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   
   png() # semplot opens a device even though we specify doNotPlot, so we hack.
   pathplot <- semPlot::semPaths(
-    object         = .lavToPlotObj(cfaResult[["lav"]]),
+    object         = .lavToPlotObj(cfaResult[["lav"]], options),
     DoNotPlot      = TRUE,
     ask            = FALSE,
     layout         = "tree",
@@ -817,19 +821,28 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults[["plots"]][["pathplot"]]$dependOnOptions(c("pathplot", "plotmeans", "plotpars"))
 }
 
-.lavToPlotObj <- function(lavResult) {
-  # Create semplot model and unv the names of the manifest variables
+.lavToPlotObj <- function(lavResult, options) {
+  # Create semplot model and unv the names of the manifest variables and backtranslate latent variables
   # Sorry, this code is really ugly but all it does is replace names for plot.
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
   semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
+  latents   <- semPlotMod@Vars$name[!semPlotMod@Vars$manifest]
+  semPlotMod@Vars$name[!semPlotMod@Vars$manifest] <- .translateFactorNames(latents, options)
 
   lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
   if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- .unv(semPlotMod@Pars$lhs[lhsAreManifest])
+  lhsAreLatent   <- semPlotMod@Pars$lhs %in% latents
+  if (any(lhsAreLatent)) 
+    semPlotMod@Pars$lhs[lhsAreLatent] <- .translateFactorNames(semPlotMod@Pars$lhs[lhsAreLatent], options)
+  
 
   rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
   if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- .unv(semPlotMod@Pars$rhs[rhsAreManifest])
+  rhsAreLatent   <- semPlotMod@Pars$rhs %in% latents
+  if (any(rhsAreLatent)) 
+    semPlotMod@Pars$rhs[rhsAreLatent] <- .translateFactorNames(semPlotMod@Pars$rhs[rhsAreLatent], options)
 
   return(semPlotMod)
 }
