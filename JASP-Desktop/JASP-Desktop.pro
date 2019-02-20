@@ -372,7 +372,9 @@ HEADERS += \
     widgets/listmodelinteractionavailable.h \
     results/resultmenuentry.h \
     results/resultmenumodel.h \
-    analysis/jaspdoublevalidator.h
+    analysis/jaspdoublevalidator.h \
+    widgets/boundqmlfactorsform.h \
+    widgets/listmodelfactorsform.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -549,7 +551,9 @@ SOURCES += \
     widgets/listmodelinteractionavailable.cpp \
     results/resultmenumodel.cpp \
     results/resultmenuentry.cpp \
-    analysis/jaspdoublevalidator.cpp
+    analysis/jaspdoublevalidator.cpp \
+    widgets/boundqmlfactorsform.cpp \
+    widgets/listmodelfactorsform.cpp
 
 RESOURCES += \
     html/html.qrc \

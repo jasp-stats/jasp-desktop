@@ -38,6 +38,7 @@
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
 #include "widgets/boundqmlrepeatedmeasuresfactors.h"
+#include "widgets/boundqmlfactorsform.h"
 #include "widgets/boundqmltableview.h"
 #include "widgets/qmllistviewtermsavailable.h"
 #include "widgets/listmodeltermsavailable.h"
@@ -227,6 +228,13 @@ void AnalysisForm::_parseQML()
 			_modelMap[controlName] = factorList->model();
 			break;
 		}
+		case qmlControlType::FactorsForm:
+		{
+			BoundQMLFactorsForm* factorForm = new BoundQMLFactorsForm(quickItem, this);
+			control = factorForm;
+			_modelMap[controlName] = factorForm->model();
+			break;
+		}
 		case qmlControlType::TableView:
 		{
 			BoundQMLTableView* tableView = new BoundQMLTableView(quickItem, this);
@@ -293,7 +301,18 @@ void AnalysisForm::_parseQML()
 			_controls[control->name()] = control;
 	}
 
-	for (auto const& pair : dropKeyMap)
+	_setUpRelatedModels(dropKeyMap);
+	_setUpItems();
+
+	if (!_errorMessagesItem)
+		qDebug() << "No errorMessages Item found!!!";
+
+	_setErrorMessages();
+}
+
+void AnalysisForm::_setUpRelatedModels(const map<QString, QString>& relationMap)
+{
+	for (auto const& pair : relationMap)
 	{
 		ListModel* sourceModel = _modelMap[pair.first];
 		ListModel* targetModel = _modelMap[pair.second];
@@ -305,14 +324,7 @@ void AnalysisForm::_parseQML()
 		}
 		else
 			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
-	}
-
-	_setUpItems();
-
-	if (!_errorMessagesItem)
-		qDebug() << "No errorMessages Item found!!!";
-
-	_setErrorMessages();
+	}	
 }
 
 void AnalysisForm::_setUpItems()
@@ -352,6 +364,12 @@ void AnalysisForm::_setUpItems()
 	{
 		_orderedControls.push_back(control);
 	}	
+}
+
+void AnalysisForm::addListView(QMLListView* listView, const map<QString, QString>& relationMap)
+{
+	_modelMap[listView->name()] = listView->model();
+	_setUpRelatedModels(relationMap);
 }
 
 void AnalysisForm::_setErrorMessages()

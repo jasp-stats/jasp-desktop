@@ -80,6 +80,7 @@ public:
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
+	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
 
 protected:
 	void		_setAllAvailableVariablesModel();
@@ -87,6 +88,7 @@ protected:
 
 private:
 	void		_parseQML();
+	void		_setUpRelatedModels(const std::map<QString, QString>& relationMap);
 	void		_setUpItems();
 	void		_setErrorMessages();
 

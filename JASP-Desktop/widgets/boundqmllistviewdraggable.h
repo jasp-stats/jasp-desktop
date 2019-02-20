@@ -34,10 +34,10 @@ public:
 	BoundQMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
 	virtual void setUp() OVERRIDE;
+	ListModelAssignedInterface* assignedModel();
 	
 protected:
 	ListModelAvailableInterface* _availableModel;
-	ListModelAssignedInterface* assignedModel();
 	
 	std::string _extraControlOptionName;
 	bool _hasExtraControls	= false;

@@ -35,6 +35,7 @@ public:
 	qmlDropMode dropMode() const							{ return _dropMode; }
 	
 	void setDropMode(qmlDropMode dropMode)					{ _dropMode = dropMode; }
+	void setCopyTermsWhenDropped(bool copy)					{ _copyTermsWhenDropped = copy; }
 	
 	virtual Terms* termsFromIndexes(const QList<int> &indexes) const;
 	virtual bool canAddTerms(Terms* terms) const;
