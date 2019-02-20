@@ -290,7 +290,10 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   usesJaspResults <- .usesJaspResults(name)
   if (usesJaspResults) {
-    loadNamespace('jaspResults')
+    
+    if (! "jaspResults" %in% .packages())
+      library(jaspResults)
+    
     jaspResults::initJaspResults()
     
     runFun <- "runJaspResults"

@@ -23,7 +23,8 @@
     "RadioButton",
     "ExpanderButton",
     "BayesFactorType",
-    "SubjectivePriors"
+    "SubjectivePriors",
+    "ContrastsList"
   )
 
   fileSize <- file.info(file)$size 
@@ -33,6 +34,7 @@
   fileContents <- gsub("(\\r\\n|\\r|\\n)", ";", fileContents) # replace newline characters with ;
   fileContents <- gsub("^.*?Form;*?\\{", "", fileContents) # remove everything up to the actual form
   fileContents <- gsub("(?<={);+|;(?={)|(?<=});+|;(?=})", "", fileContents, perl=TRUE) # remove all ; around {}
+  fileContents <- gsub("(?<=\\[);+|;(?=\\[)|(?<=\\]);+|;(?=\\])", "", fileContents, perl=TRUE) # remove all ; around []
 
   regExpr <- paste0("(", regularFields, "\\{.*?)(?=", paste0(c(regularFields, ignoreWhenParsingRegularFields, "$"), collapse="|"), ")", collapse="|")
   qmlElements <- stringr::str_extract_all(fileContents, regExpr)[[1]]
@@ -43,7 +45,7 @@
 
   options <- .qmlElementsToOptionsList(qmlElements)
   optionsOfStaticElements <- .staticElementsToOptions(fileContents)
-  options <- c(optionsOfStaticElements, options)
+  options <- c(options, optionsOfStaticElements)
   return(options)
 }
 
@@ -66,6 +68,11 @@
   regMatch <- "BayesFactorType\\{\\}"
   if (grepl(regMatch, fileContents)) {
     result[["bayesFactorType"]] <- "BF10"
+  }
+  
+  regMatch <- "ContrastsList\\{\\}"
+  if (grepl(regMatch, fileContents)) {
+    result[["contrast"]] <- "none"
   }
   
   regMatch <- "SubjectivePriors\\{\\}"
@@ -174,14 +181,17 @@ extractData.Slider <- function(element) {
 
 
 extractData.DropDown <- function(element) {
-  regMatches <- c("indexDefaultValue:(\\d+)", "values:\\[(.*?)\\]", "ListElement\\{.*?value:(.*?)\\}")
+  regMatches <- c("indexDefaultValue:(\\d+)", "values:\\[(?!\\{)(.*?)\\]", "values:\\[(.*?)\\]")
   matchTable <- stringr::str_match_all(element, regMatches)
-
-  model <- matchTable[[2]][2]
-  if (!is.na(model)) {
-    values <- unlist(strsplit(model, ","))
+  
+  unnamedArray <- matchTable[[2]][2]
+  if (!is.na(unnamedArray)) {
+    values <- unlist(strsplit(unnamedArray, ","))
   } else {
-    values <- matchTable[[3]][, 2]
+    namedArray <- matchTable[[3]][2]
+    regMatchValue <- "value:(.*?)[;\\}]"
+    matchTableValues <- stringr::str_match_all(namedArray, regMatchValue)
+    values <- matchTableValues[[1]][, 2]
   }
   
   index <- as.numeric(matchTable[[1]][2])
@@ -194,6 +204,8 @@ extractData.DropDown <- function(element) {
   value <- NA
   if (length(values) >= index) {
     value <- values[index]
+  } else {
+    stop("Index value exceeds array size for element", element)
   }
 
   extractData.default(element, value)
