@@ -125,13 +125,13 @@ isJaspDesktopDir <- function(path) {
       message("Unable to find the bundled R packages.
       Required packages will have to be installed manually, or 'pkgs.dir' must be set.")
     }
-
+    
     # set locations of all required resources (json, analyses, html, packages)
     relativePaths <- list(
-      r.dir = file.path("JASP-Engine", "JASP", "R"),
+      r.dirs = c(file.path("JASP-Engine", "JASP", "R"), file.path("Dynamic Modules")),
       html.dir = file.path("JASP-Desktop", "html"),
       json.dir = file.path("Resources", "Library"),
-      qml.dir = file.path("Resources"),
+      qml.dirs = c(file.path("Resources"), file.path("Dynamic Modules")),
       data.dir = file.path("Resources", "Data Sets"),
       tests.dir = file.path("JASP-Tests", "R", "tests", "testthat"),
       tests.data.dir = file.path("JASP-Tests", "R", "tests", "datasets")

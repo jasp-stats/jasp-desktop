@@ -6,7 +6,7 @@ lintAnalysis <- function(analysis) {
   prog <- dplyr::progress_estimated(nLint)
     # lintr checks the parent environment for function definitions (i.e.)
   env <- new.env()
-  .sourceDir(.getPkgOption("r.dir"), env)
+  .sourceDir(.getPkgOption("r.dirs")[1], env)
 
   for (i in seq_len(nLint)) {
 
@@ -14,7 +14,7 @@ lintAnalysis <- function(analysis) {
 
     output[[i]] <- if (!inherits("try-error", analysis[i])) {
       lintr::lint(
-        filename = file.path(.getPkgOption("r.dir"), paste0(analysis[i], ".R")),
+        filename = file.path(.getPkgOption("r.dirs")[1], paste0(analysis[i], ".R")),
         linters = list(
           absolute_paths_linter          = lintr::absolute_path_linter,
           no_tab_linter                  = lintr::no_tab_linter,
@@ -48,15 +48,15 @@ lintAnalysis <- function(analysis) {
 lintAll <- function() {
 
   env <- new.env()
-  .sourceDir(.getPkgOption("r.dir"), env)
-  files <- list.files(.getPkgOption("r.dir"), "\\.[RrSsQq]$")
+  .sourceDir(.getPkgOption("r.dirs")[1], env)
+  files <- list.files(.getPkgOption("r.dirs")[1], "\\.[RrSsQq]$")
   output <- vector("list", length(files))
   names(output) <- files
 
   prog <- dplyr::progress_estimated(length(files))
   for (f in files) {
     output[[f]] <- lintr::lint(
-      filename = file.path(.getPkgOption("r.dir"), f),
+      filename = file.path(.getPkgOption("r.dirs")[1], f),
       linters = list(
         absolute_paths_linter          = lintr::absolute_path_linter,
         no_tab_linter                  = lintr::no_tab_linter,
@@ -101,7 +101,7 @@ styleAnalysis <- function(analysis, silent = FALSE, safetyCopy = tempfile(fileex
     filename <- basename(fullname)
   } else {
     filename <- paste0(.validateAnalysis(analysis), ".R")
-    fullname <- file.path(.getPkgOption("r.dir"), filename)
+    fullname <- file.path(.getPkgOption("r.dirs")[1], filename) #TODO: fix this for dynamic modules
     obj <- lintAnalysis(analysis)
   }
 

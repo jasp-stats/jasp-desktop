@@ -22,7 +22,7 @@
   .setInternal("envir", envir) # envir in which the analysis is executed
   .setInternal("dataset", dataset) # dataset to be found later when it needs to be read
   .libPaths(c(.getPkgOption("pkgs.dir"), .libPaths())) # location of JASP's R packages
-  .sourceDir(.getPkgOption("r.dir"), envir) # source all the R analysis files
+  .sourceDir(.getPkgOption("r.dirs"), envir) # source all the R analysis files
   .exportS3Methods(envir) # ensure S3 methods can be registered to the associated generic functions
   .setRCPPMasks(...) # set the rbridge globals to the value run is called with
 }
@@ -65,9 +65,11 @@
   }
 }
 
-.sourceDir <- function(path, envir) {
-  for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
-    source(file.path(path, nm), local=envir)
+.sourceDir <- function(paths, envir) {
+  for (i in 1:length(paths)) {
+    for (nm in list.files(paths[i], pattern = "\\.[RrSsQq]$", recursive=TRUE)) {
+      source(file.path(paths[i], nm), local=envir)
+    }
   }
 }
 
@@ -192,27 +194,6 @@
   suppressWarnings(R.utils::gcDLLs())
 }
 
-# not used. Could possibly make pkg unloading more targeted, but does not include pkgs used in other (linked) analyses
-.getAnalysisPkgs <- function(analysis, base=FALSE) {
-  analysis <- .validateAnalysis(analysis)
-  file <- file.path(.getPkgOption("r.dir"), paste0(analysis, ".R"))
-  content <- readLines(file, warn=FALSE)
-  content <- gsub('#.*', "", content) # remove comments
-  matches <- stringr::str_match_all(content, '([a-zA-Z0-9.]{2,}(?<![.]))(?:::|:::)[a-zA-Z0-9._]+')
-  analysisPkgs <- unique(unlist(lapply(matches, function(match) match[, 2])))
-
-  if (! base) {
-    basePkgs <- utils::installed.packages(priority="high")
-    basePkgs <- basePkgs[basePkgs[, "Priority"] == "base", 1]
-    if (length(analysisPkgs) > 0)
-      analysisPkgs <- analysisPkgs[! analysisPkgs %in% basePkgs]
-  }
-
-  if (length(analysisPkgs) > 0)
-    return(analysisPkgs)
-  return(NULL)
-}
-
 .charVec2MixedList <- function(x) {
   x <- stringi::stri_escape_unicode(x)
   x <- gsub("\\\\u.{4}", "<unicode>", x)
@@ -251,7 +232,7 @@ collapseTable <- function(rows) {
   }
 
   analysis <- tolower(analysis)
-  analyses <- list.files(.getPkgOption("r.dir"), pattern = "\\.[RrSsQq]$")
+  analyses <- list.files(.getPkgOption("r.dirs"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   analyses <- gsub("\\.[RrSsQq]$", "", analyses)
   if (! analysis %in% analyses) {
     stop("Could not find the analysis. Please ensure that its name matches the main R function.")
