@@ -32,3 +32,4 @@ AnalysisFormExpander        1.0 AnalysisFormExpander.qml
 CustomMenu                  1.0 CustomMenu.qml
 ColumntypeModel             1.0 ColumnTypeModel
 SplitHandle                 1.0 SplitHandle.qml
+ResultsMenuOptionsModel     1.0 ResultsMenuOptionsModel.qml

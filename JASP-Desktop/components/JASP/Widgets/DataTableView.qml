@@ -180,7 +180,7 @@ FocusScope
 								customMenu.visible = false;
 							}
 
-							customMenu.showMenu(colIcon, columnTypeModel);
+							customMenu.showMenu(colIcon, columnTypeModel, colIcon.width / 2, colIcon.height);
 						}
 
 						hoverEnabled:		true

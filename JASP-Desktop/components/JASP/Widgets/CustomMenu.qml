@@ -95,6 +95,7 @@ Item
 
 							anchors.left		: parent.left
 							anchors.leftMargin	: 3 * Theme.uiScale
+							anchors.verticalCenter	: parent.verticalCenter
 
 							Image
 							{

@@ -108,6 +108,10 @@ OLD.SplitView
 
 			webChannel.registeredObjects: [ resultsJsInterfaceInterface ]
 
+			ResultsMenuOptionsModel {
+				id: resultsMenuOptionsModel
+			}
+
 			Item
 			{
 				id:				resultsJsInterfaceInterface
@@ -122,7 +126,19 @@ OLD.SplitView
 				function analysisUnselected()					{ resultsJsInterface.analysisUnselected()					}
 				function analysisSelected(id)					{ resultsJsInterface.analysisSelected(id)					}
 				function analysisChangedDownstream(id, model)	{ resultsJsInterface.analysisChangedDownstream(id, model)	}
-				function showAnalysesMenu(options)				{ resultsJsInterface.showAnalysesMenu(options)				}
+				function showAnalysesMenu(options)
+				{
+					customMenu.functionCall = function menuItemClicked(index)
+					{
+						// resultsJsInterface.runJavaScript()
+						console.log("CLICKED")
+						customMenu.visible = false;
+					}
+
+					options = JSON.parse(options)
+					customMenu.showMenu(resultsView, resultsMenuOptionsModel, options['rXright'] + 10, options['rY']);
+
+				}
 				function updateUserData(id, key)				{ resultsJsInterface.updateUserData(id, key)				}
 				function analysisSaveImage(id, options)			{ resultsJsInterface.analysisSaveImage(id, options)			}
 				function analysisEditImage(id, options)			{ resultsJsInterface.analysisEditImage(id, options)			}

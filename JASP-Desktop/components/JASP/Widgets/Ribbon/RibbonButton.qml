@@ -107,7 +107,7 @@ Rectangle
 						customMenu.visible = false;
 					}
 
-					customMenu.showMenu(ribbonButton, ribbonButton.menu);
+					customMenu.showMenu(ribbonButton, ribbonButton.menu, ribbonButton.width / 2, ribbonButton.height);
 				}
 			}
 		}
