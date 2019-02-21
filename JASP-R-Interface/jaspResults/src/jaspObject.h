@@ -42,7 +42,8 @@ public:
 			std::string	getWarning()						{ return _warning; }
 			void		setWarning(std::string warning)		{ _warning = warning; _warningSet = true; }
 			bool		getError()							{ return _error; }
-	virtual void		setError()							{ _error = true;}
+	virtual void		setError()							{ _error = true; }
+	virtual void		setError(std::string message)		{ _errorMessage = message; _error = true; }
 
 			void		print()								{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
 			void		addMessage(std::string msg)			{ _messages.push_back(msg); }
@@ -116,15 +117,14 @@ public:
 
 protected:
 	jaspObjectType				_type;
-	std::string					_warning = "";
-	bool						_warningSet = false;
-	
-	bool						_error = false;
+	std::string					_warning = "",
+								_errorMessage = "";
+	bool						_warningSet = false,
+								_error = false;
 
 	std::vector<std::string>	_messages;
 	Json::Value					_citations = Json::arrayValue;
 	std::string					_name;
-
 
 	std::map<std::string, Json::Value> _optionMustBe;
 	std::map<std::string, Json::Value> _optionMustContain;
@@ -190,7 +190,7 @@ public:
 
 	void		setWarning(std::string newWarning)	{ myJaspObject->setWarning(newWarning); }
 	std::string getWarning()						{ return myJaspObject->getWarning(); }
-	void		setError()							{ myJaspObject->setError(); }
+	void		setError(std::string message)		{ myJaspObject->setError(message); }
 	bool		getError()							{ return myJaspObject->getError(); }
 
 	jaspObject * returnMyJaspObject() { return myJaspObject; }

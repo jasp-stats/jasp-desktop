@@ -46,6 +46,8 @@
     \item{\code{position}:}{"Set the position of this object in it's container. By default this is at the end in the order of adding. You can specify any other value, they do not need to be next to each other or unique. The rule is: lower values (including negative) are higher in the container and when multiple objects in a container have the same position-value order is derived from adding-order."}
 
 	\item{\code{warning}:}{A field to set a warning, this is ignored for now.}
+	\item{\code{errorMessage}:}{A field to set an errorMessage. Error messages set on containers are propagated to the first table or plot in the container.
+	In addition, setting an error message automatically sets an error on the object.}
   }
 }
 \examples{
