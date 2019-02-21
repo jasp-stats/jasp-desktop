@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 import QtQuick			2.11
 import QtWebEngine		1.7
 import QtWebChannel		1.0
@@ -126,19 +144,56 @@ OLD.SplitView
 				function analysisUnselected()					{ resultsJsInterface.analysisUnselected()					}
 				function analysisSelected(id)					{ resultsJsInterface.analysisSelected(id)					}
 				function analysisChangedDownstream(id, model)	{ resultsJsInterface.analysisChangedDownstream(id, model)	}
+
 				function showAnalysesMenu(options)
 				{
-					customMenu.functionCall = function menuItemClicked(index)
+					// FIXME: This is a mess
+					// TODO:  1. remove redundant computations
+					//        2. move everything to one place :P 
+
+					var optionsJSON  = JSON.parse(options);
+					var functionCall = function (index)
 					{
-						// resultsJsInterface.runJavaScript()
-						console.log("CLICKED")
 						customMenu.visible = false;
+						var name = customMenu.props['model'].getName(index);
+
+						if (name === 'hasRefreshAllAnalyses') {
+							resultsJsInterface.refreshAllAnalyses();
+							return;
+						}
+
+						if (name === 'hasRemoveAllAnalyses') {
+							resultsJsInterface.removeAllAnalyses();
+							return;
+						}
+
+						if (name === 'hasCopy' || name === 'hasCite') {
+							resultsJsInterface.purgeClipboard();
+						}
+
+						resultsJsInterface.runJavaScript(customMenu.props['model'].getJSFunction(index));
+
+						if (name === 'hasEditTitle' || name === 'hasNotes') {
+							resultsJsInterface.packageModified();
+						}
 					}
 
-					options = JSON.parse(options)
-					customMenu.showMenu(resultsView, resultsMenuOptionsModel, options['rXright'] + 10, options['rY']);
+					var selectedOptions = []
+					for (var key in optionsJSON) {
+						if (optionsJSON.hasOwnProperty(key))
+							if (optionsJSON[key] === true)
+								selectedOptions.push(key)
+					}
+					resultMenuModel.setOptions(options, selectedOptions);
 
+					var props = {
+						"model"			: resultMenuModel,
+						"functionCall"	: functionCall
+					};
+
+					customMenu.showMenu(resultsView, props, optionsJSON['rXright'] + 10, optionsJSON['rY']);
 				}
+
 				function updateUserData(id, key)				{ resultsJsInterface.updateUserData(id, key)				}
 				function analysisSaveImage(id, options)			{ resultsJsInterface.analysisSaveImage(id, options)			}
 				function analysisEditImage(id, options)			{ resultsJsInterface.analysisEditImage(id, options)			}

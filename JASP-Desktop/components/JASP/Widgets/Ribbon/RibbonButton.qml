@@ -92,22 +92,26 @@ Rectangle
 
 			onClicked		:
 			{
+				if (fileMenuModel.visible)	fileMenuModel.visible = false
+				if (modulesMenu.opened)		modulesMenu.opened  = false
 
-				if(fileMenuModel.visible) fileMenuModel.visible = false
-				if(modulesMenu.opened)		modulesMenu.opened  = false
-
-				if(ribbonButton.menu.rowCount() === 1)
+				if (ribbonButton.menu.rowCount() === 1)
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
 				else
 				{
-					customMenu.functionCall = function menuItemClicked(index)
+					var functionCall = function (index)
 					{
-						var analysis = customMenu.model.getFunctionName(index);
+						var analysis = customMenu.props['model'].getFunctionName(index);
 						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
 						customMenu.visible = false;
 					}
 
-					customMenu.showMenu(ribbonButton, ribbonButton.menu, ribbonButton.width / 2, ribbonButton.height);
+					var props = {
+						"model"			: ribbonButton.menu,
+						"functionCall"	: functionCall
+					};
+
+					customMenu.showMenu(ribbonButton, props, ribbonButton.width / 2, ribbonButton.height);
 				}
 			}
 		}

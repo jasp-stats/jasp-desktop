@@ -18,48 +18,75 @@
 
 import QtQuick 2.0
 
-ListModel {
+ListModel
+{
+	ListElement
+	{
+		displayText		: "Edit Title"
+		name			: "hasEditTitle"
+		menuImageSource	: ""
+		jsFunction		: "window.editTitleMenuClicked();"
+	}
 	ListElement
 	{
 		displayText		: "Copy"
+		name			: "hasCopy"
 		menuImageSource	: "qrc:/icons/copy.png"
 		jsFunction		: "window.copyMenuClicked();"
 	}
 	ListElement
 	{
-		displayText		: "Copy LateX"
+		displayText		: "Copy LaTeX"
+		name			: "hasLaTeXCode"
 		menuImageSource	: "qrc:/icons/code-icon.png"
 		jsFunction		: "window.latexCodeMenuClicked();"
 	}
 	ListElement
 	{
 		displayText		: "Copy Citations"
+		name			: "hasCite"
 		menuImageSource	: "qrc:/icons/cite.png"
 		jsFunction		: "window.citeMenuClicked();"
 	}
 	ListElement
 	{
-		displayText		: "???"
-	}
-	ListElement
-	{
 		displayText		: "Save Image As"
+		name			: "hasSaveImg"
 		menuImageSource	: "qrc:/icons/document-save-as.png"
 		jsFunction		: "window.saveImageClicked();"
 	}
 	ListElement
 	{
 		displayText		: "Edit Image"
+		name			: "hasEditImage"
 		menuImageSource	: "qrc:/icons/editImage.png"
 		jsFunction		: "window.editImageClicked();"
 	}
 	ListElement
 	{
-		displayText		: "???"
+		displayText		: "Add Note"
+		name			: "hasNotes"
+		menuImageSource	: ""
+		jsFunction		: ""
 	}
 	ListElement
 	{
-		displayText		: "Add Note"
+		displayText		: "Remove"
+		name			: "hasRemove"
+		menuImageSource	: ""
+		jsFunction		: "window.removeMenuClicked();"
+	}
+	ListElement
+	{
+		displayText		: "Remove All"
+		name			: "hasRemoveAllAnalyses"
+		menuImageSource	: ""
+		jsFunction		: ""
+	}
+	ListElement
+	{
+		displayText		: "Refresh All"
+		name			: "hasRefreshAllAnalyses"
 		menuImageSource	: ""
 		jsFunction		: ""
 	}
