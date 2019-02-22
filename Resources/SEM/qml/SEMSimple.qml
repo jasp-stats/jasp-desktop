@@ -23,14 +23,14 @@ Form
 {
 	usesJaspResults: false
 	columns: 1
-	
+
 	TextArea
 	{
 		name: "model"
 		textType: "lavaan"
 	}
-	
-	RadioButtonGroup 
+
+	RadioButtonGroup
 	{
 		title: qsTr("Data")
 		name: "Data"
@@ -42,12 +42,12 @@ Form
 			IntegerField { name: "SampleSize"; label: qsTr("Sample Size"); defaultValue: 0 }
 		}
 	}
-	
-	
+
+
 	ExpanderButton
 	{
 		title: qsTr("Statistics")
-		
+
 		RadioButtonGroup
 		{
 			title: qsTr("Error Calculation")
@@ -86,7 +86,7 @@ Form
 			}
 		}
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Options")
@@ -143,7 +143,7 @@ Form
 			}
 		}
 	}
-	
+
 	ExpanderButton
 	{
 		title: qsTr("Advanced")
@@ -160,6 +160,7 @@ Form
 			CheckBox { name: "addThresholds";				label: qsTr("Add thresholdds");					checked: true	}
 			CheckBox { name: "addScalingParameters";		label: qsTr("Add scalings parameters");			checked: true	}
 			CheckBox { name: "correlateDependentVariables";	label: qsTr("Correlate dependent variables");	checked: true	}
+			CheckBox { name: "addPathDiagram";              text: qsTr("Path diagram");                     checked: false }
 		}
 
 		RadioButtonGroup
