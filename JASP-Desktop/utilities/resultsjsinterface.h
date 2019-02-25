@@ -75,7 +75,6 @@ public slots:
 	void setZoom(double zoom);
 	void resultsDocumentChanged()				{ emit packageModified(); }
 	void updateUserData(int id, QString key)	{ emit packageModified(); }
-	// void showAnalysesMenu(QString options);
 	void simulatedMouseClick(int x, int y, int count);
 	void saveTempImage(int id, QString path, QByteArray data);
 	void pushImageToClipboard(const QByteArray &base64, const QString &html);

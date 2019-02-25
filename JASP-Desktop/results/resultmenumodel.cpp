@@ -103,9 +103,6 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 			continue;
 		}
 
-		if (key == "hasRemove" || key == "hasRefreshAllAnalyses")
-			entries.push_back(separator);
-
 		entries.push_back(entry);
 	}
 
