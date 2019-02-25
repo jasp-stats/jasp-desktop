@@ -126,10 +126,6 @@ OLD.SplitView
 
 			webChannel.registeredObjects: [ resultsJsInterfaceInterface ]
 
-			ResultsMenuOptionsModel {
-				id: resultsMenuOptionsModel
-			}
-
 			Item
 			{
 				id:				resultsJsInterfaceInterface
@@ -149,7 +145,7 @@ OLD.SplitView
 				{
 					// FIXME: This is a mess
 					// TODO:  1. remove redundant computations
-					//        2. move everything to one place :P 
+					//        2. move everything to one place :P
 
 					var optionsJSON  = JSON.parse(options);
 					var functionCall = function (index)
