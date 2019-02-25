@@ -179,9 +179,9 @@ jaspResultsR <- R6Class(
 			  stop("You should not create a new jaspResultsR object!")
 			}
 		},
+		startProgressbar        = function(ntick, updateMs) {if (missing(updateMs)) private$jaspObject$startProgressbar(ntick) else private$jaspObject$startProgressbar(ntick, updateMs)},
 		getResults              = function()                {private$jaspObject$getResults()},
-		startProgressbar        = function()                {private$jaspObject$startProgressbar()},
-		progressbarTick         = function(ntick, updateMs) {private$jaspObject$progressbarTick(ntick, updateMs)},
+		progressbarTick         = function()                {private$jaspObject$progressbarTick()},
 		setOptions              = function(options)         {private$jaspObject$setOptions(options)},
 		changeOptions           = function(options)         {private$jaspObject$changeOptions(options)},
 		getKeepList             = function()                {private$jaspObject$getKeepList()},
