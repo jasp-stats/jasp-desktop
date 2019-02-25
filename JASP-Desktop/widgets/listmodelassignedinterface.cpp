@@ -21,7 +21,7 @@
 
 ListModelAssignedInterface::ListModelAssignedInterface(QMLListView* listView)
 	: ListModelDraggable(listView)
-  , _source(nullptr) 
+  , _source(nullptr)
 {
 	connect(this, &QAbstractTableModel::modelReset, this, &ListModelAssignedInterface::modelResetHandler);
 }
@@ -32,7 +32,7 @@ QVariant ListModelAssignedInterface::data(const QModelIndex &index, int role) co
 	if (role == ListModel::ExtraColumnsRole)
 	{
 		int row = index.row();
-		return QVariant::fromValue(_extraControlsModels[_rows[row]]);
+		return QVariant::fromValue(_extraControlsModels[_rowNames[row]]);
 	}
 	else
 		return ListModelDraggable::data(index, role);
@@ -50,15 +50,14 @@ void ListModelAssignedInterface::modelResetHandler()
 			_modelCache[it.key()] = it.value();
 		}
 		
-		_allExtraControlsLoaded = false;
 		_extraControlsLoadedIndicator.clear();
 		_extraControlsModels.clear();
-		_rows.clear();
+		_rowNames.clear();
 		for (int i = 0; i < rowCount(); i++)
 		{
 			QString colName = data(index(i, 0), ListModel::NameRole).toString();
 			_extraControlsLoadedIndicator[colName] = _extraControlsNames;
-			_rows[i] = colName;
+			_rowNames[i] = colName;
 			if (_modelCache.contains(colName))
 				_extraControlsModels[colName] = _modelCache[colName];
 			else
@@ -96,7 +95,6 @@ void ListModelAssignedInterface::controlLoaded(const QString &colName, const QSt
 				allControlsLoaded = false;
 		}
 	}
-	_allExtraControlsLoaded = allControlsLoaded;
 	if (allControlsLoaded)
 		emit allExtraControlsLoaded();
 }

@@ -358,7 +358,6 @@ HEADERS += \
     modules/ribbonmodelfiltered.h \
     utilities/helpmodel.h \
     widgets/lavaansyntaxhighlighter.h \
-    widgets/boundqmllistviewinteraction.h \
     widgets/listmodelinteractionassigned.h \
     gui/preferencesmodel.h \
     widgets/filemenu/actionbuttons.h \
@@ -366,7 +365,9 @@ HEADERS += \
     widgets/filemenu/resourcebuttonsvisible.h \
     widgets/boundqmlrepeatedmeasuresfactors.h \
     widgets/listmodelrepeatedmeasuresfactors.h \
-    widgets/listmodelextracontrols.h
+    widgets/listmodelextracontrols.h \
+    widgets/interactionmodel.h \
+    widgets/listmodelinteractionavailable.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -531,7 +532,6 @@ SOURCES += \
     modules/ribbonmodelfiltered.cpp \
     utilities/helpmodel.cpp \
     widgets/lavaansyntaxhighlighter.cpp \
-    widgets/boundqmllistviewinteraction.cpp \
     widgets/listmodelinteractionassigned.cpp \
     gui/preferencesmodel.cpp \
     widgets/filemenu/actionbuttons.cpp \
@@ -539,7 +539,9 @@ SOURCES += \
     widgets/filemenu/resourcebuttonsvisible.cpp \
     widgets/boundqmlrepeatedmeasuresfactors.cpp \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
-    widgets/listmodelextracontrols.cpp
+    widgets/listmodelextracontrols.cpp \
+    widgets/interactionmodel.cpp \
+    widgets/listmodelinteractionavailable.cpp
 
 RESOURCES += \
     html/html.qrc \

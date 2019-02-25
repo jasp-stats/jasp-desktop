@@ -39,7 +39,7 @@ protected:
 	ListModelAvailableInterface* _availableModel;
 	ListModelAssignedInterface* assignedModel();
 	
-	std::string _extraControlVariableName;
+	std::string _extraControlOptionName;
 	bool _hasExtraControls	= false;
 	
 	void addExtraOptions(Options* options);

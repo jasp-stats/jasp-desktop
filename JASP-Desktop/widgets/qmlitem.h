@@ -21,6 +21,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QVariant>
 
 class QQuickItem;
 class AnalysisForm;
@@ -39,6 +40,7 @@ public:
 	void addError(const QString& error);
 	bool addDependency(QMLItem* item);
 	const QVector<QMLItem*>& depends() { return _depends; }
+	void setProperty(const QString& name, const QVariant& value);
 	
 protected:
 	

@@ -45,7 +45,7 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	QVariant model = QQmlProperty(item, "model").read();
 	if (model.isNull())
 	{
-		if (sourceModelsList().isEmpty())
+		if (sourceModels().isEmpty())
 			hasAllVariablesModel = true;
 	}
 	else

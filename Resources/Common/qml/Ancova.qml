@@ -203,8 +203,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
-			AssignedVariablesList {	 name: "marginalMeansTerms"; showVariableTypeIcon: false }
+			availableVariablesList { name: "marginalMeansTermsAvailable" ; source: [{ name: "modelTerms", discard: "covariates" }] }
+			AssignedVariablesList {	 name: "marginalMeansTerms" }
 		}
 		
 		CheckBox

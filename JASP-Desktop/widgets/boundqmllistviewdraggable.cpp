@@ -35,7 +35,6 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 	: QMLListViewDraggable(item, form)
 	, BoundQMLItem(item, form) 
 {
-	_extraControlVariableName = QQmlProperty(_item, "extraControlVariableName").read().toString().toStdString();
 	QStringList extraControlTitles;
 	
 	QList<QVariant> extraControlColumnsVariants = QQmlProperty(_item, "extraControlColumns").read().toList();
@@ -92,13 +91,13 @@ void BoundQMLListViewDraggable::setUp()
 	if (!availableModel)
 	{
 		if (sourceModels().empty())
-			addError(QString::fromLatin1("Cannot find source ListView for item ") + name());
+			addError(QString::fromLatin1("Cannot find source for VariableList ") + name());
 	}
 	else
 	{
 		_availableModel = dynamic_cast<ListModelAvailableInterface*>(availableModel);
 		if (!_availableModel)
-			addError(QString::fromLatin1("Wrong kind of source ListView for item ") + name());
+			addError(QString::fromLatin1("Wrong kind of source for VariableList ") + name());
 		else
 		{
 			_assignedModel->setAvailableModel(_availableModel);
@@ -128,11 +127,24 @@ void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 		QString type = properties["type"].toString();
 		Option* option = nullptr;
 		if (type == "CheckBox")
-			option = new OptionBoolean();
+		{
+			bool checked = (properties.contains("checked") ? properties["checked"].toBool() : false);
+			option = new OptionBoolean(checked);
+		}
 		else if (type == "ComboBox")
-			option = new OptionList(std::vector<std::string>());
+		{
+			QString defaultValue = (properties.contains("value") ? properties["value"].toString() : "");
+			QStringList valueList = (properties.contains("values") ? properties["values"].toStringList() : QStringList());
+			std::vector<std::string> values;
+			for (const QString& oneValue : valueList)
+				values.push_back(oneValue.toStdString());
+			option = new OptionList(values, defaultValue.toStdString());
+		}
 		else if (type == "TextField")
-			option = new OptionString();
+		{
+			QString value = (properties.contains("value") ? properties["value"].toString() : "");
+			option = new OptionString(value.toStdString());
+		}
 		if (option)
 			options->add(properties["name"].toString().toStdString(), option);
 		else
