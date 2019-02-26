@@ -93,7 +93,7 @@ Form
 			enabled: chronbach.checked
 			CheckBox {
 				name: "confAlpha"; label: qsTr("Cronbach's α analytical")
-				PercentField { name: "confAlphaLevel"; label: qsTr("Confidence"); defaultValue: 95; with1Decimal: true }
+				PercentField { name: "confAlphaLevel"; label: qsTr("Confidence"); defaultValue: 95; decimals: 1 }
 			}
 		}
 	}

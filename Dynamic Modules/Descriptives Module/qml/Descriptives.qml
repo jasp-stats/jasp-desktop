@@ -82,7 +82,7 @@ Form
 				IntegerField
 				{
 					name: "percentileValuesEqualGroupsNo"
-					intValidator { bottom: 1; top: 1000 }
+					min: 1; max: 1000
 					defaultValue: 4
 					afterLabel: qsTr(" equal groups")
 				}

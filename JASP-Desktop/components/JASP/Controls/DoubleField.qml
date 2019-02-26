@@ -18,6 +18,7 @@
 
 import QtQuick 2.11
 import JASP.Controls 1.0
+import JASP 1.0
 
 TextField
 {
@@ -29,6 +30,6 @@ TextField
 	property int	decimals:			3
     
 					inputType:			"number"
-					validator:			DoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals }
+					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals }
 					value:				Number.parseFloat(defaultValue);
 }
