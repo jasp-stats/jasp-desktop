@@ -43,6 +43,7 @@
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonentry.h"
 #include "gui/preferencesmodel.h"
+#include "results/resultmenumodel.h"
 #include "utilities/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
@@ -81,7 +82,7 @@ public:
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
-	
+
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
 
@@ -227,6 +228,7 @@ private:
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
+	ResultMenuModel				*	_resultMenuModel		= nullptr;
 
 	QSettings						_settings;
 

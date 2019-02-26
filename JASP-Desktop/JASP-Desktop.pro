@@ -366,7 +366,9 @@ HEADERS += \
     widgets/filemenu/resourcebuttonsvisible.h \
     widgets/boundqmlrepeatedmeasuresfactors.h \
     widgets/listmodelrepeatedmeasuresfactors.h \
-    widgets/listmodelextracontrols.h
+    widgets/listmodelextracontrols.h \
+    results/resultmenuentry.h \
+    results/resultmenumodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -539,7 +541,9 @@ SOURCES += \
     widgets/filemenu/resourcebuttonsvisible.cpp \
     widgets/boundqmlrepeatedmeasuresfactors.cpp \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
-    widgets/listmodelextracontrols.cpp
+    widgets/listmodelextracontrols.cpp \
+    results/resultmenumodel.cpp \
+    results/resultmenuentry.cpp
 
 RESOURCES += \
     html/html.qrc \
@@ -549,5 +553,3 @@ RESOURCES += \
 
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
-
-

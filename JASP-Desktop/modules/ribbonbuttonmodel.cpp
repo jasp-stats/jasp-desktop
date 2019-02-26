@@ -88,11 +88,11 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	Modules::RibbonEntry* entry = _ribbonEntries.at(index.row());
-    AnalysisMenuModel *menuModel = qobject_cast<AnalysisMenuModel *>(_analysisMenuModels.at(index.row()));
+	AnalysisMenuModel *menuModel = qobject_cast<AnalysisMenuModel *>(_analysisMenuModels.at(index.row()));
 
 	switch(role)
 	{
-	case AnalysisMenuRole:      return QVariant::fromValue(menuModel);
+	case AnalysisMenuRole:		return QVariant::fromValue(menuModel);
 	case DisplayRole:			return QString::fromStdString(entry->title());
 	case IconSourceRole:		return QString::fromStdString(entry->icon());
 	case EnabledAnalysisRole:	{std::cout << "EnabledAnalysisRole not implemented!" << std::endl; return true; }
