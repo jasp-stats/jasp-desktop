@@ -92,7 +92,7 @@ Item
 
 			if (rightControl)
 			{
-				if (firstRightControl)
+				if (!firstRightControl)
 					minHeight += marginBetweenVariablesLists;
 				firstRightControl = false;
 				if (control.singleVariable)
