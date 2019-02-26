@@ -44,6 +44,8 @@
 
 #### General 
   - [Licensing](Docs/development/jasp-licensing.md)
+  
+#### Building
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
   - [Rebasing your Repository](Docs/development/git-guide.md)
 
