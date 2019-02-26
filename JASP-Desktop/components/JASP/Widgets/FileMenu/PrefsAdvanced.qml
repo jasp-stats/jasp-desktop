@@ -4,6 +4,7 @@ import QtQuick.Layouts	1.3
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
+import JASP				1.0
 
 Column
 {
@@ -95,9 +96,10 @@ Column
 			property int	decimals:	2
 			property real	realValue:	value / _mult
 
-			validator: DoubleValidator {
+			validator: JASPDoubleValidator {
 			  bottom:	Math.min(uiScaleSlider.from, uiScaleSlider.to)
 			  top:		Math.max(uiScaleSlider.from, uiScaleSlider.to)
+			  decimals: uiScaleSlider.decimals
 			}
 
 			textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSlider.decimals)	}

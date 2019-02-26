@@ -19,6 +19,7 @@
 import QtQuick 2.11
 import JASP.Controls 1.0
 import JASP.Theme 1.0
+import JASP 1.0
 
 TextField
 {
@@ -30,7 +31,7 @@ TextField
 	property alias	intValidator:	intValidator
     
 					inputType:		"integer"
-					validator:		IntValidator { id: intValidator; bottom: min; top: max }
+					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
 					value:			Number.parseInt(defaultValue);
 					cursorShape:	Qt.IBeamCursor
 }

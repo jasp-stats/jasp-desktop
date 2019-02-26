@@ -369,7 +369,8 @@ HEADERS += \
     widgets/interactionmodel.h \
     widgets/listmodelinteractionavailable.h \
     results/resultmenuentry.h \
-    results/resultmenumodel.h
+    results/resultmenumodel.h \
+    analysis/jaspdoublevalidator.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -545,7 +546,8 @@ SOURCES += \
     widgets/interactionmodel.cpp \
     widgets/listmodelinteractionavailable.cpp \
     results/resultmenumodel.cpp \
-    results/resultmenuentry.cpp
+    results/resultmenuentry.cpp \
+    analysis/jaspdoublevalidator.cpp
 
 RESOURCES += \
     html/html.qrc \

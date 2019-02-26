@@ -3,6 +3,7 @@ import QtQuick.Controls		2.4
 import JASP.Controls		1.0 as JC //He returns!
 import QtQuick.Layouts		1.3
 import JASP.Theme			1.0
+import JASP					1.0
 
 JASPControl
 {
@@ -105,7 +106,7 @@ JASPControl
 			value:				control.value
 			isBound:			false
 			Layout.alignment:	Qt.AlignCenter
-			validator:			DoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }
+			validator:			JASPDoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }
             
 			onEditingFinished:
 			{
