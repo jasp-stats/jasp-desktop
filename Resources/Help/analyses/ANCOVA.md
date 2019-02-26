@@ -20,7 +20,7 @@ ANCOVA allows the user to analyze the difference among three, or more, group mea
 
 #### Model: 
 - Components and model terms 
-    - Components: All the independent variables you can put in the model. 
+    - Components: All the independent variables and covariates you can put in the model. 
     - Model terms: The independent variables and covariates being used in the model. By default all the independent variables and covariates included in the model are placed in this box, plus the interaction between the independent variables.  
 - Sum of Squares 
     - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, containing the order in the model. 
@@ -157,7 +157,6 @@ Games-Howell Post Hoc Comparisons - independent variable:
     - Upper: The upper bound of the confidence interval. 
 - SE: The standard error of the mean difference. 
 - t: The value for the t-statistic. 
-- Cohen's D: The effect size Cohen's d. Cohen's d does not correct for multiple comparisons. 
 - $$p_{tukey}$$: Tukey's corrected p-value for multiple comparisons. 
     
 Dunnett Post Hoc Comparisons 
