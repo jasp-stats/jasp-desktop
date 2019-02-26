@@ -198,6 +198,7 @@ Form
 			VariablesForm
 			{
 				height: 150
+				debug: true
 				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: "withinModelTerms" }
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}

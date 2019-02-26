@@ -28,13 +28,14 @@ Item
 	height:			Theme.defaultListHeight
     implicitHeight: height
 	Layout.columnSpan: parent.columns
+	visible:		!debug || DEBUG_MODE
 
 	default property alias	content:						items.children
 			property int	listWidth:						implicitWidth * 2 / 5
 			property var	availableVariablesList
 			property var	allAssignedVariablesList:		[]
 			property int	nbOfAssignedVariablesList:		0
-
+			property bool	debug:							false
 			property int	marginBetweenVariablesLists:	8 * preferencesModel.uiScale
 			property int    uiScale:						preferencesModel.uiScale
 
@@ -63,6 +64,8 @@ Item
 
         for (var i = 0; i < items.children.length; ++i) {
             var child = items.children[i];
+			if (variablesForm.debug)
+				child.debug = true
 			if (child.name && (DEBUG_MODE || !child.debug)) {
                 allJASPControls.push(child);
             }
@@ -118,8 +121,10 @@ Item
 		else
 			allJASPControls.splice(availableVariablesListIndex, 1);
 		
+		var setWidth = allJASPControls.length > 0 ? availableVariablesList.width === allJASPControls[0].width : true
+		
 		availableVariablesList.parent = variablesForm
-		availableVariablesList.width = Qt.binding(function (){ return variablesForm.listWidth});
+		availableVariablesList.width = setWidth ? variablesForm.listWidth : availableVariablesList.width;
 		availableVariablesList.height	= variablesForm.height
 		availableVariablesList.anchors.top = variablesForm.top
 		availableVariablesList.anchors.left = variablesForm.left
@@ -138,7 +143,7 @@ Item
 
 		var anchorTop = variablesForm.top;
         for (i = 0; i < allJASPControls.length; ++i) {
-            allJASPControls[i].width = Qt.binding(function (){ return variablesForm.listWidth});
+			allJASPControls[i].width = setWidth ? variablesForm.listWidth : allJASPControls[i].width
             allJASPControls[i].anchors.top = anchorTop;
             allJASPControls[i].anchors.topMargin = i === 0 ? 0 : marginBetweenVariablesLists;
             allJASPControls[i].anchors.right = variablesForm.right;
