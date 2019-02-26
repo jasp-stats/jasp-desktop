@@ -1,6 +1,8 @@
 QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
+QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
+
 include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

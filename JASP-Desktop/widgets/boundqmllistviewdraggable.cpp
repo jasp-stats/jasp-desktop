@@ -90,7 +90,7 @@ void BoundQMLListViewDraggable::setUp()
 	
 	if (!availableModel)
 	{
-		if (sourceModels().empty())
+		if (sourceModels().empty() && !_item->property("debug").toBool())
 			addError(QString::fromLatin1("Cannot find source for VariableList ") + name());
 	}
 	else

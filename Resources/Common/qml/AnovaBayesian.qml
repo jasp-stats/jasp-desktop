@@ -74,7 +74,6 @@ Form
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
 			
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]; width: parent.width / 4 }
 			AssignedVariablesList
@@ -82,6 +81,7 @@ Form
 				name: "modelTerms"
 				title: qsTr("Model terms")
 				listViewType: "Interaction"
+				width: parent.width * 5 / 9
 				
 				ExtraControlColumn
 				{
