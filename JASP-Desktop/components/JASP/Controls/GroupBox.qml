@@ -28,6 +28,7 @@ Rectangle {
 	implicitHeight:		label.realHeight + Theme.titleBottomMargin + contentArea.implicitHeight	
 	color:				Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
 	L.Layout.leftMargin:	indent ? Theme.indentationLength : 0
+	visible:			!debug || DEBUG_MODE
     
 	default property alias	content:			contentArea.children
 			property alias	contentArea:		contentArea

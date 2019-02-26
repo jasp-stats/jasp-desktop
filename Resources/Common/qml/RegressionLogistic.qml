@@ -54,7 +54,6 @@ Form
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
 			
 			AvailableVariablesList
 			{
@@ -67,6 +66,7 @@ Form
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
+				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				
 				ExtraControlColumn

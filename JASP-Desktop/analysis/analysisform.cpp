@@ -175,12 +175,6 @@ void AnalysisForm::_parseQML()
 		if (! QQmlProperty(quickItem, "isBound").read().toBool())
 			continue;
 
-#ifndef QT_DEBUG
-		bool isDebug = QQmlProperty(quickItem, "debug").read().toBool();
-		if (isDebug)
-			continue;
-#endif
-
 		QString controlName = QQmlProperty(quickItem, "name").read().toString();
 
 		if (controlName.isEmpty())
