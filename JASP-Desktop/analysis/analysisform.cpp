@@ -34,7 +34,6 @@
 #include "widgets/boundqmltextarea.h"
 #include "widgets/boundqmlradiobuttons.h"
 #include "widgets/boundqmllistviewpairs.h"
-#include "widgets/boundqmllistviewinteraction.h"
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
@@ -251,18 +250,22 @@ void AnalysisForm::_parseQML()
 
 			switch(listViewType)
 			{
-			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this);			break;
-			case qmlListViewType::Pairs:				listView = new BoundQMLListViewPairs(quickItem,this);			break;
-			case qmlListViewType::Interaction:			listView = new BoundQMLListViewInteraction(quickItem, this);	break;
-			case qmlListViewType::RepeatedMeasures:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);	break;
-			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);			break;
+			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this, false);		break;
+			case qmlListViewType::Interaction:			listView = new BoundQMLListViewTerms(quickItem, this, true);		break;
+			case qmlListViewType::Pairs:				listView = new BoundQMLListViewPairs(quickItem,this);				break;
+			case qmlListViewType::RepeatedMeasures:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);		break;
+			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);				break;
 			case qmlListViewType::AvailableVariables:
+			case qmlListViewType::AvailableInteractons:
 			{
-				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
+				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteractons);
 				listView = availableVariablesListView;
-				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-				if (availableVariablesListView->sourceModelsList().isEmpty()) // If there is no sourceModels, set all available variables.
-					_allAvailableVariablesModels.push_back(availableModel);
+				if (availableVariablesListView->sourceModels().isEmpty()) // If there is no sourceModels, set all available variables.
+				{
+					ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
+					if (availableModel)
+						_allAvailableVariablesModels.push_back(availableModel);
+				}
 				break;
 			}
 			default:

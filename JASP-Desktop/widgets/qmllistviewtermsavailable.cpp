@@ -17,15 +17,20 @@
 //
 
 #include "qmllistviewtermsavailable.h"
+#include "listmodeltermsavailable.h"
+#include "listmodelinteractionavailable.h"
 #include "listmodelassignedinterface.h"
 #include <QQuickItem>
 #include <QQmlProperty>
 
-QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form)
+QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form, bool isInteraction)
 	: QMLItem(item, form)
 	, QMLListViewDraggable(item, form)
 {
-	_availableModel = new ListModelTermsAvailable(this);
+	if (isInteraction)
+		_availableModel = new ListModelInteractionAvailable(this);
+	else
+		_availableModel = new ListModelTermsAvailable(this);
 }
 
 void QMLListViewTermsAvailable::addAssignedModel(ListModelAssignedInterface *model)
@@ -40,4 +45,11 @@ void QMLListViewTermsAvailable::setTermsAreNotVariables()
 	QMLListView::setTermsAreNotVariables();
 	for (ListModelAssignedInterface* model : _assignedModels)
 		model->listView()->setTermsAreNotVariables();
+}
+
+void QMLListViewTermsAvailable::setTermsAreInteractions()
+{
+	QMLListView::setTermsAreInteractions();
+	for (ListModelAssignedInterface* model : _assignedModels)
+		model->listView()->setTermsAreInteractions();
 }

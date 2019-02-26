@@ -33,10 +33,21 @@ public:
 	
 	virtual const Terms& allTerms() const { return _allTerms; }
 	virtual void removeAssignedTerms(const Terms& terms);
+	virtual void resetTermsFromSourceModels() = 0;	
+	
+	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;	
+	
+public slots:
+	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;
 
 protected:
-	std::map<QString, ListModel*> _termSourceModelMap;
 	Terms _allTerms;
+	
+	Terms _tempRemovedTerms;
+	Terms _tempAddedTerms;	
+	
+	void setChangedTerms(const Terms &newTerms);
+	void removeTermsInAssignedList();
 };
 
 #endif // LISTMODELTERMSAVAILABLEINTERFACE_H

@@ -25,4 +25,5 @@ QtObject {
 	property var values
 	property int width 
     property string value
+	property bool checked
 }

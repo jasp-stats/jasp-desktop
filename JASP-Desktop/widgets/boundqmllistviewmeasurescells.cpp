@@ -82,9 +82,9 @@ void BoundQMLListViewMeasuresCells::setUp()
 {
 	BoundQMLListViewDraggable::setUp();
 	
-	for (ListModel* model : _sourceModels)
+	for (SourceType* sourceItem : _sourceModels)
 	{
-		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(model);
+		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model);
 		if (!factorsModel)
 			addError(tq("Source model of ") + name() + tq(" must be from a Factor List"));
 		addDependency(factorsModel->listView());

@@ -56,13 +56,17 @@ void ListModel::initTerms(const Terms &terms)
 
 Terms ListModel::getSourceTerms()
 {
-	const QList<ListModel*>& sourceModels = listView()->sourceModels();
+	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
 	
 	Terms result;
-	for (ListModel* sourceModel : sourceModels)
+	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
-		const Terms& terms = sourceModel->terms();
-		result.add(terms);
+		ListModel* sourceModel = sourceItem->model;
+		if (sourceModel)
+		{
+			const Terms& terms = sourceModel->terms();
+			result.add(terms);
+		}
 	}
 	
 	return result;

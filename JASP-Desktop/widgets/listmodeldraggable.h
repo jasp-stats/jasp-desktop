@@ -45,6 +45,7 @@ public:
 protected:
 	bool _removeTermsWhenDragged;
 	bool _copyTermsWhenDropped;
+	bool _addNewAvailableTermsToAssignedModel = false;
 	qmlDropMode _dropMode;
 		
 	bool isAllowed(const Term &term) const;

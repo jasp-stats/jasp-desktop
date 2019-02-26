@@ -23,6 +23,7 @@
 #include "listmodelavailableinterface.h"
 
 class ListModelExtraControls;
+class Options;
 
 class ListModelAssignedInterface : public ListModelDraggable
 {
@@ -38,6 +39,7 @@ public:
 	ListModelExtraControls* getExtraControlModel(QString colName)						{ return _extraControlsModels[colName]; }
 	void controlLoaded(const QString& colName, const QString& controlName);
 	
+	virtual void initExtraControlOptions(const QString& colName, Options* options) {}
 public slots:
 	virtual void availableTermsChanged(Terms *termsAdded, Terms *termsRemoved) {}
 	
@@ -51,9 +53,8 @@ protected:
 	QVector<QMap<QString, QVariant> >		_extraControlsDefinitions;
 	QMap<QString, bool>						_extraControlsNames;
 	QMap<QString, ListModelExtraControls* > _extraControlsModels;
-	QMap<int, QString>						_rows;
+	QMap<int, QString>						_rowNames;
 	QMap<QString, ListModelExtraControls* > _modelCache;
-	bool									_allExtraControlsLoaded = true;
 	QMap<QString, QMap<QString, bool> >		_extraControlsLoadedIndicator;
 };
 

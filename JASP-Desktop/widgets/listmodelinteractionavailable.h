@@ -16,32 +16,23 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELTERMSAVAILABLE_H
-#define LISTMODELTERMSAVAILABLE_H
+#ifndef LISTMODELINTERACTIONAVAILABLE_H
+#define LISTMODELINTERACTIONAVAILABLE_H
 
 #include "listmodelavailableinterface.h"
+#include "interactionmodel.h"
 #include "common.h"
 
-class ListModelTermsAvailable : public ListModelAvailableInterface
+class ListModelInteractionAvailable : public ListModelAvailableInterface, public InteractionModel
 {
 	Q_OBJECT	
 public:
-	ListModelTermsAvailable(QMLListView* listView);
-	
-	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
+	ListModelInteractionAvailable(QMLListView* listView);
 	
 	virtual void resetTermsFromSourceModels() OVERRIDE;
-	virtual ListModel* getSourceModelOfTerm(const Term& term);
-	
-	void setEmptyValue(QString emptyValue)	{ _addEmptyValue = true; _emptyValue = emptyValue; }	
 
 protected:
-	virtual void _resetTerms(const Terms &terms);
-	
-private:	
-	std::map<QString, ListModel*> _termSourceModelMap;	
-	bool _addEmptyValue;
-	QString _emptyValue;
+	QString getItemType(ListModel* model);
 };
 
-#endif // LISTMODELTERMSAVAILABLE_H
+#endif // LISTMODELINTERACTIONAVAILABLE_H

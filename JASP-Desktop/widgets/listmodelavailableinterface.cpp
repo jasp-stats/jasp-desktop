@@ -18,6 +18,8 @@
 
 #include "listmodelavailableinterface.h"
 #include "listmodelassignedinterface.h"
+#include "qmllistviewtermsavailable.h"
+
 
 void ListModelAvailableInterface::removeAssignedTerms(const Terms &terms)
 {
@@ -25,3 +27,52 @@ void ListModelAvailableInterface::removeAssignedTerms(const Terms &terms)
 	_terms.remove(terms);
 	endResetModel();
 }
+
+QVariant ListModelAvailableInterface::requestInfo(const Term &term, VariableInfo::InfoType info) const
+{
+	return VariableInfoConsumer::requestInfo(term, info);
+}
+
+void ListModelAvailableInterface::sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)
+{
+	Q_UNUSED(termsAdded);
+	Q_UNUSED(termsRemoved);
+	
+	resetTermsFromSourceModels();
+	emit modelChanged(&_tempAddedTerms, &_tempRemovedTerms);	
+}
+
+
+void ListModelAvailableInterface::setChangedTerms(const Terms &newTerms)
+{
+	_tempRemovedTerms.clear();
+	_tempAddedTerms.clear();
+	for (const Term& term : _allTerms)
+	{
+		if (!newTerms.contains(term))
+			_tempRemovedTerms.add(term);
+	}
+	
+	for (const Term& term : newTerms)
+	{
+		if (!_allTerms.contains(term))
+			_tempAddedTerms.add(term);
+	}
+}
+
+void ListModelAvailableInterface::removeTermsInAssignedList()
+{
+	QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(listView());
+	if (qmlAvailableListView)
+	{
+		const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
+		for (ListModelAssignedInterface* modelAssign : assignedModels)
+		{
+			if (!modelAssign->copyTermsWhenDropped())
+				_terms.remove(modelAssign->terms());
+		}
+	}
+}
+
+
+

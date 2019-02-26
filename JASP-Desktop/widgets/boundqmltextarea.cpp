@@ -115,17 +115,20 @@ void BoundQMLTextArea::checkSyntax()
 		// TODO: Proper handling of end-of-string characters and funny colnames
 		QString colNames = "c(";
 		bool firstCol = true;
-		QList<QString> vars = _allVariablesModel->allTerms().asQList();
-		for (QString &var : vars)
+		if (_allVariablesModel)
 		{
-			if (!firstCol)
-				colNames.append(',');
-			colNames.append('\'')
-					.append(var.replace("\'", "\\u0027")
-							   .replace("\"", "\\u0022")
-							   .replace("\\", "\\\\"))
-					.append('\'');
-			firstCol = false;
+			QList<QString> vars = _allVariablesModel->allTerms().asQList();
+			for (QString &var : vars)
+			{
+				if (!firstCol)
+					colNames.append(',');
+				colNames.append('\'')
+						.append(var.replace("\'", "\\u0027")
+								   .replace("\"", "\\u0022")
+								   .replace("\\", "\\\\"))
+						.append('\'');
+				firstCol = false;
+			}
 		}
 		colNames.append(')');
 		

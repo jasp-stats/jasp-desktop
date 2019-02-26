@@ -55,7 +55,7 @@ JASPControl
 	property bool	showVariableTypeIcon:	true
 	
 	property var	extraControlColumns:		[]
-	property string extraControlVariableName:	"variable"
+	property string extraControlOptionName:		""
 	property alias	extraControlTitles:	titles.model
 	
 	property int	indexInDroppedListViewOfDraggedItem:	-1
