@@ -5,13 +5,21 @@ Running the tests
 -----------------
 
 Currently, the analysis unit tests are not integrated into the JASP-Tests app.  
-To run the tests, the R package [jasptools](https://github.com/jasp-stats/jasptools) is required.  
-Note that this package does not need to be installed manually; it is installed automatically when you clone the jasp-desktop environment.  
-To load the package simply type `library(jasptools, lib.loc="path/to/jasp-desktop/Tools")`
+To run the tests, the R package [jasptools](https://github.com/jasp-stats/jasptools) is required. 
+This package is included with your clone of the jasp-desktop repository.
+However, before you install it, make sure you install jaspResults first.
+
+To install jaspResults:
+- `install.packages("/path/to/jasp-desktop/JASP-R-Interface/jaspResults", type="source", repos=NULL)`
+
+To install and use jasptools type:
+- `install.packages("/path/to/jasp-desktop/Tools/jasptools", type="source", repos=NULL)`
+- `library(jasptools)`
+- `develop("path/to/jasp-desktop")`
 
 To run all tests type
 ```
-jasptools::testAll()
+testAll()
 ```
 
 Any test that fails is shown in the console.  
@@ -19,7 +27,7 @@ Warnings may be ignored, but should be minimized.
 
 It is also possible to test a specific analysis, as running all unit tests may take some time
 ```
-jasptools::testAnalysis("Anova")
+testAnalysis("Anova")
 ```
 
 Fixing the tests
@@ -29,7 +37,7 @@ If you made a legitimate change that the test does not cover, then the unit test
 Locate it under [JASP-Tests/R/tests/testthat](https://github.com/jasp-stats/jasp-desktop/tree/development/JASP-Tests/R/tests/testthat) and change the offending test.  
 Note that if the failed test was related to plotting, then you may use
 ```
-jasptools::inspectTestPlots("Anova")
+manageTestPlots("Anova")
 ```
 to inspect differences between the saved reference plot and the failing plot.  
 If you validate the failing plot (because it was a legitimate change), it will replace the reference plot in the figs folder.
@@ -56,7 +64,7 @@ This reference list can be created by supplying a table to jasptools.
 ```
 options <- jasptools::analysisOptions("BinomialTest")
 options[["variables"]] <- "contBinom"
-results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE)
+results <- jasptools::run("BinomialTest", "debug.csv", options)
 table <- results[["results"]][["binomial"]][["data"]]
 jasptools::makeTestTable(table)
 ```
@@ -71,7 +79,7 @@ We can now write the expectation
 test_that("Binomial table results match", {
   options <- jasptools::analysisOptions("BinomialTest")
   options[["variables"]] <- "contBinom"
-  results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE)
+  results <- jasptools::run("BinomialTest", "debug.csv", options)
   table <- results[["results"]][["binomial"]][["data"]]
   expect_equal_tables(table,
    list("contBinom", 0, 58, 100, 0.58, 0.133210619207213, 0.477119195723914,
@@ -92,14 +100,14 @@ test_that("Descriptives plot matches", {
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$descriptivesPlots <- TRUE
-  results <- jasptools::run("TTestIndependentSamples", "debug.csv", options, view=FALSE)
+  results <- jasptools::run("TTestIndependentSamples", "debug.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
 })
 ```
 To validate a plot for a newly created test, run
 ```
-jasptools::inspectTestPlots("TTestIndependentSamples")
+manageTestPlots("TTestIndependentSamples")
 ```
 This function starts a Shiny application that allows you to view and then validate your new plot.  
 Validating a plot places it in figs/analysisName.
@@ -109,16 +117,13 @@ You should use whatever is most suitable for the situation.
 
 #### Dependencies related to plots
 Note that it is very important that all plots are created with equal versions of certain dependencies.  
-If this is not the case, then we cannot compare plots across different systems and platforms.  
-The settings you must use can be found in [figs/deps.txt](https://github.com/jasp-stats/jasp-desktop/blob/development/JASP-Tests/R/tests/figs/deps.txt)  
+If this is not the case, then we cannot compare plots across different systems.  
+The settings you must use can be found in [figs/deps.txt](https://github.com/jasp-stats/jasp-desktop/blob/development/JASP-Tests/R/tests/figs/deps.txt). Note that these should be automatically installed with `vdiffr`.
 This file will look something like (but not necessarily the same as)
 ```
-Fontconfig: 2.11.94
-FreeType: 2.6.1
-Cairo: 1.14.6
-vdiffr: 0.2.1
-svglite: 1.2.1
-ggplot2: 2.2.1
+- vdiffr-svg-engine: 1.0
+- vdiffr: 0.3.0
+- freetypeharfbuzz: 0.2.5
 ```
 You must never edit deps.txt unless the travis-CI config is updated as well.
 If you have different versions of the dependencies installed the plots will be skipped.
