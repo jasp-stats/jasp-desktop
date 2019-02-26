@@ -7,6 +7,6 @@ assignees: ''
 
 ---
 
-To report an issue, please go to our designated issues page: 
+Issues reported here no longer be looked into. Instead, please go to our designated issues page: 
 
    https://github.com/jasp-stats/jasp-issues/issues/new/choose
