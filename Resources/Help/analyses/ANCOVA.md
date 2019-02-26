@@ -58,7 +58,7 @@ If there is a significant effect of the independent variable when is accounted f
     -  Standard: Multiple t-tests are performed. All the corrections can be applied to this method. This option is selected by default. 
     -  Games-Howell: This method can be used when you do not assume equal group/level variances. The Tukey correction is given for this method.  
     -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. 
-    -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskall-Wallis test. The Bonferroni and Holm correction can be applied to this method. 
+    -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The Bonferroni and Holm correction can be applied to this method. 
 
 #### Descriptive Plots:  
 If you want a descriptive plot you can place the independent variable on the horizontal axis. If you have more than one independent variable, you can decide to display the variables in one plot by putting the other variable in the box `Separate lines`, or decide to show them in separate plots by dragging the other variable in the box `Separate plots`.
@@ -197,7 +197,7 @@ Simple Main Effects - Independent Variable:
 - F: The value for the F-statistic. 
 - p: The p-value. 
 
-Kruskall-Wallis Test: 
+Kruskal-Wallis Test: 
 - Factor: This column contains the independent variable included in the analysis. 
 - Statistic: The value for the test statistic. 
 - df: The degrees of freedom. 
