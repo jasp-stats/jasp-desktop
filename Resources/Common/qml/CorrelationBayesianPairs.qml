@@ -26,6 +26,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "pairs"; allowedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	

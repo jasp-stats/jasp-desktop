@@ -26,6 +26,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true;		}
 		DropDown
 		{
@@ -52,7 +53,7 @@ Form
 		{
 			height: 200
 			listWidth: parent.width * 5 / 9
-			availableVariablesList
+			AvailableVariablesList
 			{
 				name: "availableTerms"
 				title: qsTr("Components")

@@ -40,6 +40,7 @@ Form
 	
 	VariablesForm 
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables") }
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	}
@@ -216,7 +217,7 @@ Form
 		{
 			visible: [7].includes(estimator.currentIndex)
 			height: 150
-			availableVariablesList.name: "variablesTypeAvailable"
+			AvailableVariablesList { name: "variablesTypeAvailable" }
 			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleVariable: true; allowedColumns: ["nominal"] }
 		}
 	}
@@ -260,7 +261,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
+			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
 			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color nodes by"); singleVariable: true }
 		}
 		

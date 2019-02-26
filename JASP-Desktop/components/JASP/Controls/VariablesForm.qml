@@ -30,31 +30,33 @@ Item
 	Layout.columnSpan: parent.columns
 
 	default property alias	content:						items.children
-			property int	listWidth:						parent.width * 2 / 5
-			property alias	availableVariablesList:			availableVariablesList
-			property int	marginBetweenVariablesLists:	8 * preferencesModel.uiScale
+			property int	listWidth:						implicitWidth * 2 / 5
+			property var	availableVariablesList
+			property var	allAssignedVariablesList:		[]
+			property int	nbOfAssignedVariablesList:		0
 
-	VariablesList
-	{
-		id:				availableVariablesList
-		name:			"allAvailableVariables"
-		width:			listWidth
-		height:			parent.height
-		anchors.top:	parent.top
-		anchors.left:	parent.left
-    }
+			property int	marginBetweenVariablesLists:	8 * preferencesModel.uiScale
+			property int    uiScale:						preferencesModel.uiScale
+
 
 	Item { id: items }
-    
-	Component.onCompleted:
+	
+	onUiScaleChanged: setup()
+	
+	Repeater
 	{
-        var assignButtonComponent = Qt.createComponent("AssignButton.qml");
-        
-        if (assignButtonComponent.status === Component.Error) {
-            console.log("Error loading AssignButton component:", assignButtonComponent.errorString());
-            return;
-        }
-        
+		model: nbOfAssignedVariablesList
+		AssignButton
+		{
+			leftSource: availableVariablesList
+            rightSource: allAssignedVariablesList[index];
+		}
+	}
+	
+	Component.onCompleted: setup()
+    
+	function setup()
+	{
         var titleHeight = Theme.variablesListTitle;
 
         var allJASPControls = []
@@ -67,27 +69,60 @@ Item
         }
 
         var minHeight = 0;
-        var allAssignedVariablesList = [];
         var changeableHeightControls = [];
+		var firstRightControl = true;
+		var availableVariablesListIndex = -1;
+		
         for (i = 0; i < allJASPControls.length; i++) {
             var control = allJASPControls[i];
-            if (control instanceof AssignedVariablesList)
-                allAssignedVariablesList.push(control);
-            if (i > 0)
-                minHeight += marginBetweenVariablesLists;
-            if (control.singleVariable)
-                minHeight += control.height;
-            else if (control.height !== Theme.defaultListHeight)
-                // If the height of this List item was changed, don't change it
-                minHeight += control.height
-            else {
-                changeableHeightControls.push(control);
-                if (control.title)
-                    minHeight += titleHeight;
-            }
+			var rightControl = true;
+			if (control instanceof VariablesList)
+			{
+				if (control.listViewType === "AvailableVariables" || control.listViewType === "AvailableInteracton")
+				{
+					if (availableVariablesList)
+						form.addError("Only 1 Available Variables list can be set in a VariablesForm");
+					availableVariablesList = control;
+					availableVariablesListIndex = i;
+					rightControl = false;
+				}
+				else
+					allAssignedVariablesList.push(control);
+			}
+
+			if (rightControl)
+			{
+				if (firstRightControl)
+					minHeight += marginBetweenVariablesLists;
+				firstRightControl = false;
+				if (control.singleVariable)
+					minHeight += control.height;
+				else if (control.height !== Theme.defaultListHeight)
+					// If the height of this List item was changed, don't change it
+					minHeight += control.height
+				else {
+					changeableHeightControls.push(control);
+					if (control.title)
+						minHeight += titleHeight;
+				}
+			}
             // Do not set the parent in the previous loop: this removes it from the items children.
-            allJASPControls[i].parent = variablesForm;
+            control.parent = variablesForm;
         }
+		
+		if (!availableVariablesList)
+		{
+			form.addError("There is no Available List in the VariablesForm");
+			return;
+		}
+		else
+			allJASPControls.splice(availableVariablesListIndex, 1);
+		
+		availableVariablesList.parent = variablesForm
+		availableVariablesList.width = Qt.binding(function (){ return variablesForm.listWidth});
+		availableVariablesList.height	= variablesForm.height
+		availableVariablesList.anchors.top = variablesForm.top
+		availableVariablesList.anchors.left = variablesForm.left
 
         // Set the height of controls (that have not singleVariable set or where the height is already specifically set)
         // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
@@ -117,11 +152,9 @@ Item
             for (var j = 0; j < allAssignedVariablesList.length; ++j) {
                 assignedList.dropKeys.push(allAssignedVariablesList[j].name);
             }
-
-            var assignButton = assignButtonComponent.createObject(variablesForm,
-                                   {"leftSource" : availableVariablesList,
-                                    "rightSource" : assignedList});
         }
+		
+		nbOfAssignedVariablesList = allAssignedVariablesList.length;
     }
 
 }

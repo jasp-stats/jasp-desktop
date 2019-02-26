@@ -1,6 +1,7 @@
 module JASP.Controls
 AssignButton          1.0 AssignButton.qml
 AssignedVariablesList 1.0 AssignedVariablesList.qml
+AvailableVariablesList 1.0 AvailableVariablesList.qml
 Button                1.0 Button.qml
 CheckBox              1.0 CheckBox.qml
 ColumnLayout          1.0 ColumnLayout.qml

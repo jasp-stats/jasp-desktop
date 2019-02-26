@@ -25,6 +25,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
 	}
 	

@@ -19,12 +19,11 @@
 #include "listmodelinteractionavailable.h"
 #include "listmodeltermsassigned.h"
 #include "../analysis/analysisform.h"
-#include <QQmlProperty>
 
 ListModelInteractionAvailable::ListModelInteractionAvailable(QMLListView* listView)
 	: ListModelAvailableInterface(listView), InteractionModel ()
 {
-	_areTermsInteractions = true;	
+	_areTermsInteractions = true;
 }
 
 QString ListModelInteractionAvailable::getItemType(ListModel* model)
@@ -88,3 +87,4 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels()
 	
 	endResetModel();
 }
+
