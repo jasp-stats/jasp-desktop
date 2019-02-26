@@ -32,6 +32,7 @@ Form
 	{
 		height: 170
 		marginBetweenVariablesLists: 15
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"] }
 		AssignedVariablesList { name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; allowedColumns: ["ordinal", "scale"] }

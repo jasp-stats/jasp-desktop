@@ -25,6 +25,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleVariable: true	}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }			
 	}
@@ -37,7 +38,7 @@ Form
 		{
 			height: 200
 			listWidth: parent.width * 5 / 9
-			availableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
+			AvailableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
 			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 	}

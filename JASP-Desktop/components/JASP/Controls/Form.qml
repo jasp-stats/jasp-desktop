@@ -71,6 +71,12 @@ AnalysisForm
 		}
 	}
 	
+	function addError(message)
+	{
+		errorMessagesText.text = message;
+		errorMessagesText.visible = true;
+	}
+	
 	IntegerField { visible: false; name: "plotWidth";  value: plotWidth }
 	IntegerField { visible: false; name: "plotHeight"; value: plotHeight }
 	

@@ -26,6 +26,7 @@ Form {
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true	}	
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]					}
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true }
@@ -97,7 +98,7 @@ Form {
 			height: 200
 			listWidth: parent.width * 5 / 9
 			
-			availableVariablesList
+			AvailableVariablesList
 			{
 				name: "availableTerms"
 				title: qsTr("Components")

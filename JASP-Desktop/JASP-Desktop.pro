@@ -369,8 +369,7 @@ HEADERS += \
     widgets/interactionmodel.h \
     widgets/listmodelinteractionavailable.h \
     results/resultmenuentry.h \
-    results/resultmenumodel.h \
-    widgets/listmodelinteractionavailable.h
+    results/resultmenumodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -546,8 +545,7 @@ SOURCES += \
     widgets/interactionmodel.cpp \
     widgets/listmodelinteractionavailable.cpp \
     results/resultmenumodel.cpp \
-    results/resultmenuentry.cpp \
-    widgets/listmodelinteractionavailable.cpp
+    results/resultmenuentry.cpp
 
 RESOURCES += \
     html/html.qrc \
