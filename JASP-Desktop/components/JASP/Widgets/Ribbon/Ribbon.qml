@@ -27,7 +27,6 @@ Item
 	implicitWidth:	ribbonRow.width + ribbonRow.spacing
 	implicitHeight:	Theme.ribbonButtonHeight
 
-
 	property var	model:			null
 	property bool	separateMe:		false
 	property bool	ribbonEnabled:	true
@@ -101,6 +100,7 @@ Item
 						moduleName:		jaspRibbon.module
 						ribbonTitle:	displayText
 						moduleTitle:	jaspRibbon.moduleTitle
+						showTitle:		false
 					}
 				}
 

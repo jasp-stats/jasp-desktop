@@ -13,8 +13,7 @@ public:
 	float		_aspectRatio;
 	int			_width,
 				_height;
-	std::string _errorMessage = "",
-				_filePathPng,
+	std::string	_filePathPng,
 				_status = "waiting",
 				_envName;
 
@@ -48,7 +47,6 @@ public:
 	void setPlotObject(Rcpp::RObject plotObject)					{ ((jaspPlot*)myJaspObject)->setPlotObject(plotObject); }
 	Rcpp::RObject getPlotObject()									{ return ((jaspPlot*)myJaspObject)->getPlotObject(); }
 
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspPlot, std::string,	_errorMessage,	ErrorMessage)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspPlot, std::string,	_filePathPng,	FilePathPng)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspPlot, std::string,	_status,		Status)
 

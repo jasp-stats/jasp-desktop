@@ -367,7 +367,9 @@ HEADERS += \
     widgets/listmodelrepeatedmeasuresfactors.h \
     widgets/listmodelextracontrols.h \
     widgets/interactionmodel.h \
-    widgets/listmodelinteractionavailable.h
+    widgets/listmodelinteractionavailable.h \
+    results/resultmenuentry.h \
+    results/resultmenumodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -541,7 +543,9 @@ SOURCES += \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
     widgets/listmodelextracontrols.cpp \
     widgets/interactionmodel.cpp \
-    widgets/listmodelinteractionavailable.cpp
+    widgets/listmodelinteractionavailable.cpp \
+    results/resultmenumodel.cpp \
+    results/resultmenuentry.cpp
 
 RESOURCES += \
     html/html.qrc \
@@ -551,5 +555,3 @@ RESOURCES += \
 
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
-
-

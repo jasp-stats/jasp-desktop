@@ -24,6 +24,7 @@
 #include <QQmlWebChannel>
 #include <QAuthenticator>
 #include <QNetworkReply>
+
 #include "utilities/jsonutilities.h"
 #include "analysis/analysis.h"
 
@@ -54,6 +55,8 @@ public:
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webViewZoom;	}
 
+	Q_INVOKABLE void purgeClipboard();
+
 //Callable from javascript through resultsJsInterfaceInterface...
 signals:
 	Q_INVOKABLE void openFileTab();
@@ -64,12 +67,14 @@ signals:
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 	Q_INVOKABLE void analysisSelected(int id);
 	Q_INVOKABLE void removeAnalysisRequest(int id);
+	Q_INVOKABLE void packageModified();
+	Q_INVOKABLE void refreshAllAnalyses();
+	Q_INVOKABLE void removeAllAnalyses();
 
 public slots:
 	void setZoom(double zoom);
 	void resultsDocumentChanged()				{ emit packageModified(); }
 	void updateUserData(int id, QString key)	{ emit packageModified(); }
-	void showAnalysesMenu(QString options);
 	void simulatedMouseClick(int x, int y, int count);
 	void saveTempImage(int id, QString path, QByteArray data);
 	void pushImageToClipboard(const QByteArray &base64, const QString &html);
@@ -88,7 +93,6 @@ signals:
 	void resultsPageUrlChanged(QUrl resultsPageUrl);
 	void runJavaScript(QString js);
 	void zoomChanged(double zoom);
-	void packageModified();
 	void resultsPageLoadedSignal();
 
 public slots:
@@ -105,15 +109,6 @@ private:
 
 private slots:
 	void menuHidding();
-	void removeSelected();
-	void collapseSelected();
-	void editTitleSelected();
-	void copySelected();
-	void citeSelected();
-	void latexCodeSelected();
-	void saveImage();
-	void editImage();
-	void noteSelected();
 
 private:
 	double			_webViewZoom = 1.0;

@@ -1,9 +1,9 @@
 # first the externally accessible options
 .pkgOptions <- list2env(list(
-  r.dir = file.path("..", "JASP-Engine", "JASP", "R"),
+  r.dirs = c(file.path("..", "JASP-Engine", "JASP", "R"), file.path("..", "Dynamic Modules")),
   html.dir = file.path("..", "JASP-Desktop", "html"),
   json.dir = file.path("..", "Resources", "Library"),
-  qml.dir = file.path("..", "Resources"),
+  qml.dirs = c(file.path("..", "Resources"), file.path("..", "Dynamic Modules")),
   data.dir = file.path("..", "Resources", "Data Sets"),
   pkgs.dir = "",
   tests.dir = file.path("..", "JASP-Tests", "R", "tests", "testthat"),

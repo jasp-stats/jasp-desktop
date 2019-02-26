@@ -73,22 +73,21 @@ Window
 			}
 		}
 
-	CustomMenu
-	{
-		id	: customMenu
-		z	: 5
-
-		function showMenu(item, model)
+		CustomMenu
 		{
-			var point = item.mapToItem(null, 0, 0);
+			id	: customMenu
+			z	: 5
 
-			customMenu.x		= point.x + (item.width / 2);
-			customMenu.y		= point.y + item.height;
+			function showMenu(item, props, x_offset, y_offset)
+			{
+				customMenu.props	= props;
 
-			customMenu.model	= model;
-			customMenu.visible	= true;
+				var point			= item.mapToItem(null, 0, 0);
+				customMenu.x		= point.x + x_offset;
+				customMenu.y		= point.y + y_offset;
+				customMenu.visible	= true;
+			}
 		}
-	}
 
 		FileMenu
 		{

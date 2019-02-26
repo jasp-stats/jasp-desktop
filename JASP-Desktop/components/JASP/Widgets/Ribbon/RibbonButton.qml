@@ -29,12 +29,13 @@ Rectangle
 	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	color	: mice.pressed ? Theme.grayLighter : "transparent"
 
-			property alias	text		: innerText.text
-			property alias	source		: backgroundImage.source
-			property bool	enabled		: true
-			property string moduleName	: "???"
-			property string moduleTitle : "???"
-			property string ribbonTitle	: "???"
+	property alias	text		: innerText.text
+	property alias	source		: backgroundImage.source
+	property bool	enabled		: true
+	property string moduleName	: "???"
+	property string moduleTitle : "???"
+	property string ribbonTitle	: "???"
+	property bool showTitle: true
 	default property var	menu
 
 	signal clicked
@@ -91,22 +92,26 @@ Rectangle
 
 			onClicked		:
 			{
+				if (fileMenuModel.visible)	fileMenuModel.visible = false
+				if (modulesMenu.opened)		modulesMenu.opened  = false
 
-				if(fileMenuModel.visible) fileMenuModel.visible = false
-				if(modulesMenu.opened)		modulesMenu.opened  = false
-
-				if(ribbonButton.menu.rowCount() === 1)
+				if (ribbonButton.menu.rowCount() === 1)
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
 				else
 				{
-					customMenu.functionCall = function menuItemClicked(index)
-						{
-							var analysis = customMenu.model.getFunctionName(index);
-							ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
-							customMenu.visible = false;
-						}
+					var functionCall = function (index)
+					{
+						var analysis = customMenu.props['model'].getFunctionName(index);
+						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						customMenu.visible = false;
+					}
 
-					customMenu.showMenu(ribbonButton, ribbonButton.menu);
+					var props = {
+						"model"			: ribbonButton.menu,
+						"functionCall"	: functionCall
+					};
+
+					customMenu.showMenu(ribbonButton, props, ribbonButton.width / 2, ribbonButton.height);
 				}
 			}
 		}
@@ -119,7 +124,7 @@ Rectangle
 		border.color:				Theme.uiBorder
 		border.width:				1
 		color:						Theme.uiBackground
-		visible:					mice.containsMouse && !mice.pressed
+		visible:					showTitle && (mice.containsMouse && !mice.pressed)
 		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
 		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
 

@@ -88,14 +88,16 @@ analysisOptions <- function(source) {
 }
 
 .getQMLFile <- function(analysis) {
-  dir <- .getPkgOption("qml.dir")
-  pathsToFiles <- list.files(dir, pattern = ".qml$", recursive = TRUE)
-  fileNames <- tolower(basename(pathsToFiles))
-  fileName <- tolower(paste0(analysis, ".qml"))
-  if (any(fileNames == fileName)) {
-    relativePath <- pathsToFiles[which(fileNames == fileName)]
-    absolutePath <- file.path(dir, relativePath)
-    return(absolutePath)
+  dirs <- .getPkgOption("qml.dirs")
+  for (dir in dirs) {
+    pathsToFiles <- list.files(dir, pattern = ".qml$", recursive = TRUE)
+    fileNames <- tolower(basename(pathsToFiles))
+    fileName <- tolower(paste0(analysis, ".qml"))
+    if (any(fileNames == fileName)) {
+      relativePath <- pathsToFiles[which(fileNames == fileName)]
+      absolutePath <- file.path(dir, relativePath)
+      return(absolutePath)
+    }
   }
   return("")
 }
