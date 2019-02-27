@@ -26,10 +26,9 @@ Table of Contents:
     + [Layout.columnSpan](#layoutcolumnspan)
 - [Connecting Multiple Components](#connecting-multiple-components)
 - [An Example](#an-example)
-  * [1. Setting up the QML Watcher](#1-setting-up-the-qml-watcher)
-  * [2. Specifying Imports](#2-specifying-imports)
-  * [3. Adding the Form](#3-adding-the-form)
-  * [4. Adding the Components](#4-adding-the-components)
+  * [1. Specifying Imports](#1-specifying-imports)
+  * [2. Adding the Form](#2-adding-the-form)
+  * [3. Adding the Components](#3-adding-the-components)
 
 
 ## Components
@@ -624,7 +623,7 @@ We'll create a simple analysis input panel to show the workflow.
 Read first the Guide to adding a module in JASP. In this way, when you edit your QML file, the changes made will be automatically seen in JASP. You can play with the components and their properties, and see immediately the output in JASP.
 
 
-### 2. Specifying Imports
+### 1. Specifying Imports
 We can begin actual work on the QML file, first we have to tell the engine where to find our resources. To do so, we add a number of imports to the top of our file.
 
 <details>
@@ -640,7 +639,7 @@ We can begin actual work on the QML file, first we have to tell the engine where
 </details>
 
 
-### 3. Adding the Form
+### 2. Adding the Form
 At this point we add a `Form` which will hold all our input components:
 
 <details>
@@ -660,7 +659,7 @@ At this point we add a `Form` which will hold all our input components:
   
 </details>
 
-### 4. Adding the Components
+### 3. Adding the Components
 It's now a matter of mixing and matching the previously shown components to create a form to our liking. Of course, if something isn't quite possible, you can also use QML features that were not covered here. 
 
 <details>
