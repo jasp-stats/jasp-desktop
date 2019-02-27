@@ -9,12 +9,13 @@ Table of Contents:
     + [CheckBox](#checkbox)
     + [RadioButton](#radiobutton)
     + [DropDown](#dropdown)
+    + [Slider](#slider)
     + [DoubleField](#doublefield)
     + [IntegerField](#integerfield)
     + [PercentField](#percentfield)
     + [TextField](#textfield)
   * [Variable Specification](#variable-specification)
-    + [availableVariablesList](#availablevariableslist)
+    + [AvailableVariablesList](#availablevariableslist)
     + [AssignedVariablesList](#assignedvariableslist)
     + [RepeatedMeasuresFactorsList](#repeatedmeasuresfactorslist)
   * [Grouping](#grouping)
@@ -32,18 +33,24 @@ Table of Contents:
 
 
 ## Components
-The components can roughly be divided in three classes. One that deals with general inputs (e.g., checkboxes), one that deals with assigning variables and one that groups components together. Each will be covered in the following section. Note that in several examples you may encounter `qsTr()`, it is important that this function wraps all text that will be shown in the interface. It will provide the possibility to translate JASP in the future. Additionally, note that the components described below may generally be nested to an arbitrary level (e.g., a checkbox in a checkbox in a checkbox).
+The components can roughly be divided in three classes. One that deals with general inputs (e.g., checkboxes), one that deals with assigning variables and one that groups components together. Each will be covered in the following section.
+Some remarks about these components:
+- They are all QML items, so they automatically get generic QML properties like `enabled` or `visible`.
+- The properties of the components can be set directly with a value. You can use also a JavaScript expression so that the value will depend on other components (see the section on [Connecting Multiple Components](#connecting-multiple-components)).
+- In several examples you may encounter `qsTr()`, it is important that this function wraps all text that will be shown in the interface. It will provide the possibility to translate JASP in the future.
+- The components described below may generally be nested to an arbitrary level (e.g., a checkbox in a group in a checkbox).
 
 ### General Input
-These components are quite common in questionnaires and input forms on websites, they include the checkbox, radiobutton, dropdown and fields where text may be entered.
+These components are quite common in questionnaires and input forms on websites, they include the checkbox, radiobutton, dropdown, slider and textfields where text may be entered.
 
 #### CheckBox
+Check button that can be toggled on and off. If some components are nested inside a CheckBox, they are automatically enabled or disabled when the CheckBox is set or not.
 Properties
 - `name`: string identifier (in your R code you will be able to retrieve the value of the checkbox through this identifier)
 - `label`: text that will be shown to the left of the checkbox
-- `checked`: [optional, default: `false`] boolean specifying if it should contain a checkmark (often a binding that when evaluated gives a boolean, see the section on [Connecting Multiple Components](#connecting-multiple-components))
+- `checked`: [optional, default: `false`] boolean specifying if it should be set per default on or not.
 - `childrenOnSameRow`: [optional, default: `false`] boolean specifying if components (e.g., other checkboxes, textfields) nested within the checkbox should be shown on the same row or, alternatively, below the checkbox
-- `columns`: [optional, default: `1`] integer specifying how many columns the nested components should spread out over (e.g., when set to 3, with three nested checkboxes, these three checkboxes will appear side by side on the same horizontal row)
+- `columns`: [optional, default: `1`] integer specifying how many columns the nested components should occupy (e.g., when set to 3, with three nested checkboxes, these three checkboxes will appear side by side on the same horizontal row)
 
 <details>
 	<summary>Examples</summary>
@@ -69,17 +76,20 @@ Properties
 </details>
 
 #### RadioButton
-A single radiobutton is not very useful, and so they must be grouped together. We can do this by putting multiple `RadioButton`s together in a `RadioButtonGroup`.
+A RadioButton is used with other RadioButton's inside a `RadioButtonGroup`. Contrary to CheckBox, only 1 RadioButton can be checked at the same time.
 
-Properties
+RadioButtonGroup properties:
 - `name`: string identifier (in your R code you will be able to retrieve the value of the checked radiobutton through this identifier)
 - `title`: text that is shown above the set of radiobuttons
-- `RadioButton`: 
-  * `value`: the value of the `RadioButtonGroup` that is send to R when this radiobutton is checked
-  * `label`: the text that is shown to the right of the radiobutton
-  * `checked`: [optional, default: `false`] boolean specifying if it should contain a checkmark (and thus be the default); one radiobutton should have this property set to `true`
-  * `childrenOnSameRow`: [optional, default: `false`] boolean specifying if components (e.g., checkboxes, textfields) nested within the radiobutton should be shown on the same row or, alternatively, below the radiobutton
-  * `columns`: [optional, default: `1`] integer specifying how many columns the nested components should spread out over (e.g., when set to 3, with three nested checkboxes, these three checkboxes will appear side by side on the same horizontal row)
+- `placeRadioButtonsOnSameRow`: [optional, default: `false`] per default, the RadioButton's are placed vertically under the title. Set this property to true to place the buttons horizontally.
+- `columns`: [optional, default: `1`] integer specifying how many columns should be used to display the RadioButton's
+
+RadioButton properties:
+- `value`: the value of the `RadioButtonGroup` that is send to R when this radiobutton is checked
+- `label`: the text that is shown to the right of the radiobutton
+- `checked`: [optional, default: `false`] boolean specifying if it should contain a checkmark (and thus be the default); one radiobutton should have this property set to `true`
+- `childrenOnSameRow`: [optional, default: `false`] boolean specifying if components (e.g., checkboxes, textfields) nested within the radiobutton should be shown on the same row or, alternatively, below the radiobutton
+- `columns`: [optional, default: `1`] integer specifying how many columns the nested components should occupy (e.g., when set to 3, with three nested checkboxes, these three checkboxes will appear side by side on the same horizontal row)
 
 <details>
 	<summary>Examples</summary>
@@ -126,6 +136,7 @@ Properties
 - `label`: [optional, default: `""`] text that will be shown above the dropdown
 - `values`: array of (named) values that is shown in the dropdown list, in the case of an unnamed array the value and the label are the same, but when a named array is provided the label shown to the user can be different from the value send to R (see example below)
 - `indexDefaultValue`: [optional, default: `1`] integer specifying the index of the dropdown item that is selected by default, take note that this is zero-based
+- `source`: if `values` is empty, you can use the name of a VariablesList (see [Variable Specification](#variable-specification)) to set the source of the values of the DropDown.
 
 <details>
 	<summary>Examples</summary>
@@ -156,6 +167,32 @@ Properties
   ![Image example](/Docs/development/img/qml-guide/DropDown_example_2.png)
   
 </details>
+
+#### Slider
+Slider is used to select a value by sliding a handle along a track.
+Properties
+- `name`: string identifier (in your R code you will be able to retrieve the value of the slider through this identifier)
+- `label`: [optional, default: `""`] text that will be shown above the slider
+- `value`: [optional, default: `0.5`] default value
+- `min`: [optional, default: `0`] minimum value
+- `max`: [optional, default: `1`] maximum value
+- `orientation`: [optional, default: `Qt.Vertical`] set wheter the slider should be displayed vertically (`Qt.Vertical`) or horizontally (`Qt.Horizontal`)
+
+<details>
+	<summary>Examples</summary>
+	
+  ```qml
+  Slider
+  {
+    name: "highlight"
+    label: qsTr("Highlight")
+    value: 0.4
+  }
+  ```
+  ![Image example](/Docs/development/img/qml-guide/Slider_example_1.png)
+    
+</details>
+
 
 #### DoubleField
 Properties
@@ -242,6 +279,7 @@ Properties
 - `label`: text that will be shown to the left of the field
 - `defaultValue`: [optional, default: `50`] integer specifying the default percentage shown
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
+- `decimals`: [optional, default: `0`] integer specifying how many decimals the user can enter
 
 <details>
 	<summary>Examples</summary>
@@ -258,7 +296,7 @@ Properties:
 - `name`: string identifier (in your R code you will be able to retrieve the value of the field through this identifier)
 - `label`: [optional, default: `""`] text that will be shown to the left of the field
 - `afterLabel`: [optional, default: `""`] text that will be shown to the right of the field
-- `defaultValue`: [optional, default: `""`] default text before the user enters anything
+- `value`: [optional, default: `""`] default text before the user enters anything
 - `placeholderText`: [optional, default: `""`] text shown as a placeholder until a user enters something, will not be send to R if left unchanged by the user (mutually exclusive with `defaultValue`)
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
 
@@ -281,7 +319,7 @@ Properties
 - `name`: identifier of the variables list, this is never send to R
 - `label`: [optional, default: `""`] text that will be shown above the variable field
 - `source`: [optional] can be set to the `name` of an `AssignedVariablesList`, when omitted variables are taken from the dataset (example usage: you have a second `availableVariablesList` for plotting the variables that are assigned to an `AssignedVariablesList`; see also the example)
-- `width`: [optional, default: ±`230`] in pixels how wide should the field be
+- `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 
 Note: `height` should be defined on `VariablesForm` itself.
 
@@ -290,23 +328,16 @@ Note: `height` should be defined on `VariablesForm` itself.
   
   ```qml
   VariablesForm
-	{
-    AssignedVariablesList
-    {
-      name: "fixedFactors"
-      label: qsTr("Fixed Factors")
-      allowedColumns: ["ordinal", "nominal"]
-    }
+  {
+    AvailableVariablesList { name: "allVariables" }
+    AssignedVariablesList  { name: "fixedFactors"; label: qsTr("Fixed Factors"); allowedColumns: ["ordinal", "nominal"] }
   }
 
   VariablesForm
   {
     height: 200
-    AvailableVariablesList
-    { 
-      name: "postHocTestsAvailable"
-      source: "fixedFactors"
-    }
+    AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
+    AssignedVariablesList {  name: "postHocTestsVariables" }
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/availableVariablesList_example_1_1.png)
@@ -322,8 +353,8 @@ Properties
 - `singleVariable`: [optional, default: `false`] boolean specifying if this field will accept a maximum of one variable
 - `listViewType`: [optional] string that specifies the type of `AssignedVariablesList`, when omitted we get a normal list,  options are `"Layers"` (see Contingency Tables), `"Pairs"` (see Paired Samples T-Test), `"Interaction"` (see ANOVA) and `"RepeatedMeasures"` (see Repeated Measures ANOVA)
 - `ExtraControlColumn`: [optional] addititional general input component (e.g., `"CheckBox"`) which is added to each variable and can be used to add extra control (e.g., you can specify the status of the variable within a linear model, see example below)
-- `width`: [optional, default: ±`230`] in pixels how wide should the field be
-- `height`: [optional, default: `350`] in pixels how heigh should the field be
+- `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
+- `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.
 
 <details>
 	<summary>Examples</summary>
@@ -331,13 +362,15 @@ Properties
   ```qml
 	VariablesForm
 	{
-    AssignedVariablesList
-    {
-      name: "dependent"
-      label: qsTr("Dependent Variable")
-      allowedColumns: ["scale"]
-      singleVariable: true
-    }
+		AvailableVariablesList { name: "allVariables" }
+		AssignedVariablesList
+		{
+			name: "dependent"
+			label: qsTr("Dependent Variable")
+			allowedColumns: ["scale"]
+			singleVariable: true
+		}
+	}
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/AssignedVariablesList_example_1.png)
@@ -345,6 +378,7 @@ Properties
   ```qml
   VariablesForm
   {
+    AvailableVariablesList { name: "allVariables" }
     AssignedVariablesList
     {
       name: "modelTerms"
@@ -406,7 +440,7 @@ In order to add more structure to the input panel you can group components toget
 #### Group
 Properties
 - `title`: text shown above the grouped input components
-- `columns`: [optional, default: `1`] integer specifying how many columns the grouped components should spread out over
+- `columns`: [optional, default: `1`] integer specifying how many columns the grouped components should occupy
 
 <details>
 	<summary>Examples</summary>
@@ -435,7 +469,7 @@ Properties
 #### ExpanderButton
 Properties
 - `title`: text shown in the button that controls the collapse of an entire section
-- `columns`: [optional, default: `2`] integer specifying how many columns the grouped components should spread out over
+- `columns`: [optional, default: `2`] integer specifying how many columns the grouped components should occupy
 
 <details>
 	<summary>Examples</summary>
@@ -525,22 +559,22 @@ To accomplish this we can set `Layout.columnSpan: 2` on RadioButtonGroup A. This
 
 
 ## Connecting Multiple Components
-In `AvailableVariablesList` we showed that through its `source` property, we can establish a link between two components. There are other ways of connecting components and they are not limited to a `VariableList` (although they are a little different, only a `VariableList` uses the `name` property). QML allows us to do this is by adding an `id` to one component and then referencing this `id` in a different component. Note that the `id` can be any string, but it must be unique.
+In `AvailableVariablesList` we showed that through its `source` property, we can establish a link between two components. There are other ways of connecting components and they are not limited to a `VariableList` (although they are a little different, only a `VariableList` uses the `name` property). QML allows us to do this is by adding an `id` to one component and then referencing this `id` in a different component. Note that the `id` can be any string starting with a lowercase, but it must be unique.
 
 An example is enabling a checkbox if one of two different checkboxes is checked.
 <p><details>
 	<summary>Implementation</summary>
 	
   ```qml
-  CheckBox { name: "checkboxA"; label: qsTr("Some label"), id: "A"}
-  CheckBox { name: "checkboxB"; label: qsTr("Some label"), id: "B"}
+  CheckBox { name: "checkboxA"; label: qsTr("Some label"), id: checkA}
+  CheckBox { name: "checkboxB"; label: qsTr("Some label"), id: checkB}
 
-  CheckBox { name: "checkboxC";	label: qsTr("Some Label too"); enabled: A.checked || B.checked }
+  CheckBox { name: "checkboxC";	label: qsTr("Some Label too"); enabled: checkA.checked || checkB.checked }
   ```
   
 </details></p>
 
-Here we make use of a JavaScript expression to evaluate if either CheckBox A or CheckBox B has been checked and if this is the case we enable CheckBox C. It may be a bit confusing that we didn't cover `enabled` as a property of a `CheckBox`, this is simply one of the many properties that QML adds without our help.
+Here we make use of a JavaScript expression to evaluate if either CheckBox A or CheckBox B has been checked and if this is the case we enable CheckBox C. This JavaScript expression will be automatically updated each time that the checked values of checkA and checkB changes. 
 
 Another example would be setting the visibility of some textfield to invisible if a checkbox is not checked.
 
@@ -552,28 +586,43 @@ Another example would be setting the visibility of some textfield to invisible i
   {
     name: "checkboxA"
     label: qsTr("Some label")
-    id: "A"
-    TextField { name: "textfieldA"; afterlabel: qsTr("x"); visible: A.checked}
+    id: checkA
+    TextField { name: "textfieldA"; afterlabel: qsTr("x"); visible: checkA.checked}
   
   }
   ```
   
 </details>
 
+Any property can be set with an expression. A title of an ExpanderButton for example:
+<details>
+	<summary>Implementation</summary>
+	
+  ```qml
+  
+	DropDown
+	{
+		id: estimator
+		name: "estimator"
+		label: qsTr("Estimator")
+		values: ["EBICglasso", "cor", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm"]
+	}
+	
+	ExpanderButton 
+	{
+		title: qsTr("Analysis Options - ") + estimator.currentText
+                ....
+	}
+
+  ```
+  
+</details>
+	
 
 ## An Example
 We'll create a simple analysis input panel to show the workflow.
+Read first the Guide to adding a module in JASP. In this way, when you edit your QML file, the changes made will be automatically seen in JASP. You can play with the components and their properties, and see immediately the output in JASP.
 
-### 1. Setting up the QML Watcher
-It is, of course, much easier to create a working product when you can test it along the way. This was made easy when the QML watcher was introduced to JASP. To use it:
-1. Open JASP
-2. Click on the menu in the top left corner
-3. Navigate to 'Preferences'
-4. Navigate to 'Advanced'
-5. Place a checkmark before 'Developer mode'
-6. Enter the path where the QML file you want to make can be found
-
-Now every time you save a change in your QML file it will immediately be reflected in the input panel of your analysis.
 
 ### 2. Specifying Imports
 We can begin actual work on the QML file, first we have to tell the engine where to find our resources. To do so, we add a number of imports to the top of our file.
