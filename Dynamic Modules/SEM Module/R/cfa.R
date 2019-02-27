@@ -24,9 +24,12 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults$title <- "Confirmatory Factor Analysis"
 
+  # Preprocess options
+  options <- .cfaPreprocessOptions(options)
+  
   # Read dataset
   dataset <- .cfaReadData(dataset, options)
-
+  
   # Error checking
   errors <- .cfaCheckErrors(dataset, options)
   
@@ -57,7 +60,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .cfaReadData <- function(dataset, options) {
   if (!is.null(dataset)) return(dataset)
   
-  vars <- unlist(lapply(options$factors, function(x) x$indicators))
+  vars <- unique(unlist(lapply(options$factors, function(x) x$indicators)))
   if (options$groupvar == "") {
     return(.readDataSetToEnd(columns = vars))
   } else {
@@ -65,10 +68,20 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 }
 
+.cfaPreprocessOptions <- function(options) {
+  # Remove empty factors
+  facwoindicators <- sapply(options$factors, function(f) length(f$indicators)) == 0
+  options$factors <- options$factors[!facwoindicators]
+  
+  sofacwoindicators   <- sapply(options$secondOrder, function(f) length(f$indicators)) == 0
+  options$secondOrder <- options$secondOrder[!sofacwoindicators]
+  return(options)
+}
+
 .cfaCheckErrors <- function(dataset, options) {
   # TODO (vankesteren) content error checks, e.g., posdef covmat
   
-  vars <- unlist(lapply(options$factors, function(x) x$indicators))
+  vars <- unique(unlist(lapply(options$factors, function(x) x$indicators)))
   
   if (length(vars) == 0) return("No variables")
   
@@ -84,7 +97,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     
     for (group in levels(dataset[[.v(options$groupvar)]])) {
       
-      idx <- dataset[[.v(options$groupvar)]]
+      idx <- dataset[[.v(options$groupvar)]] == group
       JASP:::.hasErrors(dataset[idx, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE, 
                  varCovData.corFun = stats::cov)
       
@@ -96,9 +109,17 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .translateFactorNames <- function(factor_name, options) {
-  fac_names <- vapply(options$factors, function(x) x$name, "name")
-  idx <- vapply(factor_name, function(n) which(fac_names == n), 0L, USE.NAMES = FALSE)
-  vapply(idx, function(i) options$factors[[i]]$title, "title")
+  fac_names    <- vapply(options$factors,     function(x) x$name, "name")
+  sofac_names  <- vapply(options$secondOrder, function(x) x$name, "name")
+  sofac_names  <- paste0("so", sofac_names)
+  fac_titles   <- vapply(options$factors,     function(x) x$title, "title")
+  sofac_titles <- vapply(options$secondOrder, function(x) x$title, "title")
+  
+  fnames  <- c(fac_names, sofac_names)
+  ftitles <- c(fac_titles, sofac_titles)
+  
+  idx <- vapply(factor_name, function(n) which(fnames == n), 0L, USE.NAMES = FALSE)
+  ftitles[idx]
 }
 
 # Results functions ----
@@ -176,6 +197,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   spec$variables <- unlist(lapply(options$factors, function(x) x$indicators))
   spec$latents   <- vapply(options$factors,        function(x) x$name, "names")
   spec$soLatents <- vapply(options$secondOrder,    function(x) x$name, "names")
+  spec$soLatents <- paste0("so", spec$soLatents)
   if (options$se == "bootstrap") {
     spec$se <- "standard"
     spec$bootstrap <- TRUE
@@ -188,7 +210,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .optionsToCFAMod <- function(options, dataset, cfaResult, base64 = TRUE) {
   if (!base64) .v <- identity
-
+  
   vars    <- options$factors
   latents <- cfaResult[["spec"]]$latents
   labels  <- list()
@@ -225,6 +247,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   } else {
     so <- NULL
   }
+  
 
   if (length(options$rescov) > 0) {
     rc <- "# Residual Correlations"
@@ -290,7 +313,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   maintab$copyDependenciesFromJaspObject(jaspResults[["maincontainer"]])
   
   maintab$addColumnInfo(name = "mod",    title = "Model",        type = "string")
-  maintab$addColumnInfo(name = "chisq",  title = "\u03a7\u00b2", type = "number", format = "dp:3;sf:4")
+  maintab$addColumnInfo(name = "chisq",  title = "\u03a7\u00b2", type = "number", format = "dp:3")
   maintab$addColumnInfo(name = "df",     title = "df",           type = "integer")
   maintab$addColumnInfo(name = "pvalue", title = "p",            type = "number", format = "dp:3;p:.001")
   
@@ -424,6 +447,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     # add data
     fl2dat <- pei[pei$op == "=~" & pei$rhs %in% facNames, colSel]
     fl2dat$label <- gsub("gamma", "\u03b3", fl2dat$label)
+    fl2dat$lhs   <- .translateFactorNames(fl2dat$lhs, options)
     fl2dat$rhs   <- .translateFactorNames(fl2dat$rhs, options)
     fl2$setData(fl2dat)
     fl2$copyDependenciesFromJaspObject(jrobject)
@@ -455,37 +479,10 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fv$setData(fvdat)
   fv$copyDependenciesFromJaspObject(jrobject)
 
-  # Residual variances ----
-  # Set up table
-  jrobject[["rv"]] <- rv <- createJaspTable("Residual variances")
-
-  rv$addColumnInfo(name = "lhs",    title = "Indicator",  type = "string", combine = TRUE)
-  rv$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format  = "sf:4;dp:3")
-  rv$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format  = "sf:4;dp:3")
-  rv$addColumnInfo(name = "z",      title = "z-value",    type = "number", format  = "sf:4;dp:3")
-  rv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
-
-  rv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = "Confidence Interval")
-  rv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = "Confidence Interval")
-
-  if (options$std != "none")
-    rv$addColumnInfo(name   = paste0("std.", options$std),
-                     title  = paste0("Std. Est. (", options$std, ")"),
-                     type   = "number",
-                     format = "sf:4;dp:3")
-
-  # add data
-  rvdat <- pei[pei$op == "~~" & !pei$lhs %in% facNames & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
-  rvdat$lhs <- .unv(rvdat$lhs)
-  rv$setData(rvdat)
-  rv$copyDependenciesFromJaspObject(jrobject)
-
   # Factor covariances ----
   hasMultipleFactorsAtTopLevel <-
     length(options$secondOrder) > 1 || (length(options$secondOrder) == 0 & length(options$factors) > 1)
-
+  
   if (!options$uncorrelatedFactors & hasMultipleFactorsAtTopLevel) {
     jrobject[["fc"]] <- fc <- createJaspTable("Factor Covariances")
     
@@ -516,6 +513,33 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fc$setData(fcdat)
     fc$copyDependenciesFromJaspObject(jrobject)
   }
+  
+  # Residual variances ----
+  # Set up table
+  jrobject[["rv"]] <- rv <- createJaspTable("Residual variances")
+
+  rv$addColumnInfo(name = "lhs",    title = "Indicator",  type = "string", combine = TRUE)
+  rv$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format  = "sf:4;dp:3")
+  rv$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format  = "sf:4;dp:3")
+  rv$addColumnInfo(name = "z",      title = "z-value",    type = "number", format  = "sf:4;dp:3")
+  rv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
+
+  rv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
+                   overtitle = "Confidence Interval")
+  rv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
+                   overtitle = "Confidence Interval")
+
+  if (options$std != "none")
+    rv$addColumnInfo(name   = paste0("std.", options$std),
+                     title  = paste0("Std. Est. (", options$std, ")"),
+                     type   = "number",
+                     format = "sf:4;dp:3")
+
+  # add data
+  rvdat <- pei[pei$op == "~~" & !pei$lhs %in% facNames & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
+  rvdat$lhs <- .unv(rvdat$lhs)
+  rv$setData(rvdat)
+  rv$copyDependenciesFromJaspObject(jrobject)
 
   # Residual covariances ----
   if (length(options$rescov) > 0) {
@@ -557,7 +581,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       # Factor intercepts
       jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = "Factor Intercepts")
 
-      fi$addColumnInfo(name = "lhs",    title = "Factor",  type = "string", combine = TRUE)
+      fi$addColumnInfo(name = "lhs",    title = "Factor",     type = "string", combine = TRUE)
       fi$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format = "sf:4;dp:3")
       fi$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format = "sf:4;dp:3")
       fi$addColumnInfo(name = "z",      title = "z-value",    type = "number", format = "sf:4;dp:3")

@@ -15,9 +15,10 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
+import QtQuick          2.8
+import QtQuick.Layouts  1.3
+import JASP.Controls    1.0
+import JASP.Theme		1.0
 import "." as SEM
 
 Form
@@ -33,20 +34,24 @@ Form
 	ExpanderButton
 	{
 		title: qsTr("Second-order factor")
-		VariablesForm
+		SEM.FactorsForm
 		{
             id: secondorder
+            name: "secondOrder"
+            implicitHeight: Theme.defaultListHeight / 3 - 10
 			availableVariablesList
 			{
                 name: "availableFactors"
 				source: ["factors"]
                 showVariableTypeIcon: false
+                height: Theme.defaultListHeight / 3 - 10
             }
-            AssignedVariablesList {
-                title: qsTr("Second-order factor")
-                name: "SecondOrder"
-                showVariableTypeIcon: false
-            }
+            initNumberFactors: 1
+            // AssignedVariablesList {
+            //     title: qsTr("Second-order factor")
+            //     name: "secondOrder"
+            //     showVariableTypeIcon: false
+            // }
         }
     }
 
@@ -86,7 +91,9 @@ Form
         
         VariablesForm {
             id: rescov
-            availableVariablesList {
+            debug: true
+            height: 120
+            AvailableVariablesList {
 				name: "observedvars"
 				syncModels: factors.name
             }
@@ -95,7 +102,6 @@ Form
                 name: "rescov"
                 listViewType: "Pairs"
             }
-            height: 150
         }
     }
     
@@ -118,13 +124,13 @@ Form
 
     ExpanderButton {
         text: qsTr("Multigroup CFA")
-        ComboBox { 
+        DropDown { 
             label: qsTr("Grouping variable") ; 
             name: "groupvar"; 
             showVariableTypeIcon: true; 
-            addEmptyValue: true 
+            addEmptyValue: true;
         } // No model or syncModels: it takes all variables per default
-        ComboBox {
+        DropDown {
             label: qsTr("Invariance testing")
             name: "invariance"
             model: ListModel {
