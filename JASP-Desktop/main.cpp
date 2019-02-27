@@ -211,7 +211,6 @@ int main(int argc, char *argv[])
 			QCoreApplication::setApplicationName("JASP");
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
-
 #ifdef __WIN32__
 			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it
 #endif

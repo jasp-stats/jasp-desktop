@@ -42,10 +42,9 @@ Button
 	control.height: 20 * preferencesModel.uiScale
 	width:			control.width
 	height:			control.height
+	implicitWidth:  width
+    implicitHeight:	height	
     
-	x:				(rightSource.x + leftSource.width - control.width) / 2
-	y:				rightSource.y + rightSource.rectangleY
-
 	onClicked:		source.moveSelectedItems(target)
 
 	function setIconToRight()	{ if (leftSource.activeFocus)	 leftToRight = true;	}
@@ -55,10 +54,6 @@ Button
 	onSourceChanged:	setDisabledState()
 
     Component.onCompleted: {
-        rightSource.activeFocusChanged.connect(setIconToLeft);
-        leftSource.activeFocusChanged.connect(setIconToRight);
-        rightSource.hasSelectedItemsChanged.connect(setDisabledState);
-        leftSource.hasSelectedItemsChanged.connect(setDisabledState);
         state = "disabled";
     }
 

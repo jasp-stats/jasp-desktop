@@ -174,7 +174,7 @@ void BoundQMLListViewTerms::modelChangedHandler()
 {
 	if (!_hasExtraControls)
 	{
-		if (_termsModel->areTermsInteractions())
+		if (_termsModel->areTermsInteractions() && _optionsTable)
 		{
 			vector<Options*> allOptions;
 			const Terms& terms = _termsModel->terms();
@@ -193,7 +193,7 @@ void BoundQMLListViewTerms::modelChangedHandler()
 			
 			_optionsTable->setValue(allOptions);
 		}
-		else
+		else if (_optionVariables)
 			_optionVariables->setValue(_termsModel->terms().asVectorOfVectors());
 	}
 }

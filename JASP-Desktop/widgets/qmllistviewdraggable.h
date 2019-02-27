@@ -36,10 +36,10 @@ public:
 	virtual void setUp() OVERRIDE;
 	
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
+	
+	void setDropMode(qmlDropMode dropMode);
 
 protected:
-	void setDropMode(qmlDropMode dropMode);
-	
 	ListModelDraggable* _draggableModel;
 	
 private slots:

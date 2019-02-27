@@ -49,8 +49,18 @@ Item
 		model: nbOfAssignedVariablesList
 		AssignButton
 		{
-			leftSource: availableVariablesList
-            rightSource: allAssignedVariablesList[index];
+            id:             assignButton
+            leftSource:     availableVariablesList
+            rightSource:    allAssignedVariablesList[index];
+            x:				(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
+            y:              allAssignedVariablesList[index].y + allAssignedVariablesList[index].rectangleY
+		}
+        Component.onCompleted:
+		{
+            allAssignedVariablesList[index].activeFocusChanged.connect(assignButton.setIconToLeft);
+			availableVariablesList.activeFocusChanged.connect(assignButton.setIconToRight);
+            allAssignedVariablesList[index].hasSelectedItemsChanged.connect(assignButton.setDisabledState);
+			availableVariablesList.hasSelectedItemsChanged.connect(assignButton.setDisabledState);
 		}
 	}
 	
@@ -156,7 +166,7 @@ Item
             assignedList.dropKeys.push(availableVariablesList.name);
             for (var j = 0; j < allAssignedVariablesList.length; ++j) {
                 assignedList.dropKeys.push(allAssignedVariablesList[j].name);
-            }
+            }			
         }
 		
 		nbOfAssignedVariablesList = allAssignedVariablesList.length;
