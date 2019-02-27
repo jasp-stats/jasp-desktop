@@ -650,7 +650,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 			_loader.io(event, _package);
-			showProgress();
+			showProgress(event->type() != Utils::FileType::jasp);
 
 		}
 	}
@@ -674,7 +674,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -683,7 +683,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
@@ -698,7 +698,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -754,7 +754,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
-			populateUIfromDataSet();
+			populateUIfromDataSet(event->type() != Utils::FileType::jasp);
 			QString name = QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
 			_currentFilePath = event->path();
@@ -847,7 +847,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 }
 
 
-void MainWindow::populateUIfromDataSet()
+void MainWindow::populateUIfromDataSet(bool showData)
 {
 	setDataSetAndPackageInModels(_package);
 
@@ -859,7 +859,7 @@ void MainWindow::populateUIfromDataSet()
 	else
 	{
 		_filterModel->init();
-		setDataPanelVisible(true);
+		setDataPanelVisible(showData);
 		setDataAvailable(true);
 	}
 
@@ -1214,10 +1214,11 @@ void MainWindow::startDataEditor(QString path)
 
 }
 
-void MainWindow::showProgress()
+void MainWindow::showProgress(bool showData)
 {
 	_fileMenu->setVisible(false);
-	setDataPanelVisible(true);
+	if (showData)
+		setDataPanelVisible(true);
 	setDataAvailable(true);
 	setProgressBarVisible(true);
 }

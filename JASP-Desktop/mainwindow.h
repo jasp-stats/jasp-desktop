@@ -182,7 +182,7 @@ private slots:
 
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
-	void populateUIfromDataSet();
+	void populateUIfromDataSet(bool showData);
 
 	void startDataEditorEventCompleted(FileEvent *event);
 
@@ -192,7 +192,7 @@ private slots:
 
 	void closeVariablesPage();
 
-	void showProgress();
+	void showProgress(bool showData = true);
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
