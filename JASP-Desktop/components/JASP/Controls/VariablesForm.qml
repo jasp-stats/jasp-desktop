@@ -54,13 +54,14 @@ Item
             rightSource:    allAssignedVariablesList[index];
             x:				(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
             y:              allAssignedVariablesList[index].y + allAssignedVariablesList[index].rectangleY
-		}
-        Component.onCompleted:
-		{
-            allAssignedVariablesList[index].activeFocusChanged.connect(assignButton.setIconToLeft);
-			availableVariablesList.activeFocusChanged.connect(assignButton.setIconToRight);
-            allAssignedVariablesList[index].hasSelectedItemsChanged.connect(assignButton.setDisabledState);
-			availableVariablesList.hasSelectedItemsChanged.connect(assignButton.setDisabledState);
+			
+			Component.onCompleted:
+			{
+				allAssignedVariablesList[index].activeFocusChanged.connect(assignButton.setIconToLeft);
+				availableVariablesList.activeFocusChanged.connect(assignButton.setIconToRight);
+				allAssignedVariablesList[index].hasSelectedItemsChanged.connect(assignButton.setDisabledState);
+				availableVariablesList.hasSelectedItemsChanged.connect(assignButton.setDisabledState);
+			}
 		}
 	}
 	
