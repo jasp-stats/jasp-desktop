@@ -157,6 +157,10 @@
 					"function":	"BinomialTestBayesian"
 				},
 				{
+					"title":	"Bayesian Multinomial Test",
+					"function":	"MultinomialTestBayesian"
+				},
+				{
 					"title":	"Bayesian Contingency Tables",
 					"function":	"ContingencyTablesBayesian"
 				},
