@@ -44,8 +44,9 @@ Form
 		name: "hypothesis"
 		title: qsTr("Alt. Hypothesis")
 		Layout.columnSpan: 2
-		RadioButton { value: "multinomialTest";	label: qsTr("Multinomial test");	 checked: true	}
-		RadioButton { value: "expectedProbs";	label: qsTr("χ² test"); id: expectedProbs			}
+
+		RadioButton { value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
+		RadioButton { value: "expectedProbs";	label: qsTr("Expected proportions"); id: expectedProbs			}
 
 		Chi2TestTableView
 		{
@@ -56,20 +57,24 @@ Form
 		}
 	}
 
-	Group
+	ColumnLayout
 	{
-		title: qsTr("Additional Statistics")
-		CheckBox
+		BayesFactorType { }
+
+		Group
 		{
-			name: "descriptives"; label: qsTr("Descriptives")
+			title: qsTr("Additional Statistics")
 			CheckBox
 			{
-				name: "confidenceInterval"; label: qsTr("Confidence interval")
-				childrenOnSameRow: true
-				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
+				name: "descriptives"; label: qsTr("Descriptives")
+				CheckBox
+				{
+					name: "confidenceInterval"; label: qsTr("Confidence interval")
+					childrenOnSameRow: true
+					PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
+				}
 			}
 		}
-		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Dellke maximum p-ratio")		}
 	}
 
 	ColumnLayout
