@@ -31,7 +31,7 @@ JASPControl
 
 	default property alias	content:		contentArea.children
 			property alias	buttons:		buttonGroup.buttons
-			property bool	placeRadioButtonsOnSameRow:	false
+			property bool	radioButtonsOnSameRow:	false
 			property alias	columns:		contentArea.columns
 			property bool	alignChildrenTopLeft: true
 			property string title:			""
@@ -41,10 +41,10 @@ JASPControl
 
     signal clicked(var item)
 
-	implicitWidth:	placeRadioButtonsOnSameRow
+	implicitWidth:	radioButtonsOnSameRow
 						? contentArea.x + contentArea.implicitWidth
 						: Math.max(label.implicitWidth, contentArea.x + contentArea.implicitWidth)
-	implicitHeight:	placeRadioButtonsOnSameRow
+	implicitHeight:	radioButtonsOnSameRow
 						? Math.max(label.implicitHeight, contentArea.implicitHeight)
 						: contentArea.y + contentArea.implicitHeight	
     
@@ -68,10 +68,10 @@ JASPControl
 		id:					contentArea
 		rowSpacing:			Theme.rowGroupSpacing
 		columnSpacing:		Theme.columnGroupSpacing
-		columns:			placeRadioButtonsOnSameRow ? children.length : 1
-		anchors.top:		control.title && !placeRadioButtonsOnSameRow ? label.bottom : control.top
-		anchors.topMargin:	control.title && !placeRadioButtonsOnSameRow ? Theme.titleBottomMargin : 0
-		anchors.left:		control.title && placeRadioButtonsOnSameRow ? label.right : control.left
+		columns:			radioButtonsOnSameRow ? children.length : 1
+		anchors.top:		control.title && !radioButtonsOnSameRow ? label.bottom : control.top
+		anchors.topMargin:	control.title && !radioButtonsOnSameRow ? Theme.titleBottomMargin : 0
+		anchors.left:		control.title && radioButtonsOnSameRow ? label.right : control.left
 		anchors.leftMargin: control.title ? Theme.groupContentPadding : 0
     }
 	
