@@ -35,7 +35,13 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 		std::vector<Modules::RibbonEntry*>	ribbonEntries;
 
 		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
+		{
+#ifndef JASP_DEBUG
+			if (ribbonEntry.get("debug", false).asBool())
+				continue;
+#endif
 			ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, nullptr));
+		}
 
 		setRibbonEntries(ribbonEntries);
 	}
