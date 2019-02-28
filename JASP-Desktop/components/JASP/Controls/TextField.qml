@@ -35,6 +35,7 @@ JASPControl
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
+	property alias	defaultValue:		control.text
 	property int	fieldWidth:			Theme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true

@@ -77,9 +77,6 @@ Form
 			name: "highlightText"
 			title: "Highlight"
 			value: 0.4
-			from: 0
-			to: 1
-			orientation: Qt.Vertical
 		}
 
 		Group

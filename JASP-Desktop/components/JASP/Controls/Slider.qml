@@ -20,10 +20,14 @@ JASPControl
 	property alias	title:			controlLabel.text
 	property alias	controlLabel:	controlLabel
 	property alias	value:			control.value
+	property bool	vertical:		true
+	property int	verticalInt:	vertical ? Qt.Vertical : Qt.Horizontal
 	property alias	orientation:	control.orientation
 	property alias	stepSize:		control.stepSize
 	property alias	from:			control.from
 	property alias	to:				control.to
+	property alias	min:			control.from
+	property alias	max:			control.to
 	property alias	textField:		textField
     
     signal moved();
@@ -50,6 +54,7 @@ JASPControl
 			Layout.leftMargin:	control.orientation === Qt.Vertical ? leftPadding + Theme.sliderWidth : 0
 			value:				0.5
 			stepSize:			1 / slider.power
+			orientation:		slider.verticalInt
         
 			background: Rectangle
 			{
