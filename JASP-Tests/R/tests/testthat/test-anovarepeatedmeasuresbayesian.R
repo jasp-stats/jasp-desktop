@@ -32,44 +32,43 @@ test_that("Main table results match", {
   options$priorRandomEffects <- 0.8
 
   refTables <- list(
-    nullModelTop = list("Null model (incl. subject)", 0.1, -23.8744941250848, -22.9202516156455,
-                        0, "", "RM Factor 1", 0.1, -0.52191065188766, 0.587649376228934,
-                        23.3525834731972, 39.1063682924946, "facGender", 0.1, -24.2606062414806,
-                        -23.3063637320413, -0.386112116395769, 7.76323643953116, "RM Factor 1 + facGender",
-                        0.1, -0.333725484709657, 0.891141584222282, 23.5407686403752,
-                        9.48562764001249, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
-                        0.1, -1.22109858280499, -0.239935999954474, 22.6533955422798,
-                        12.5735651534712, "contcor1", 0.1, -24.4965580075927, -23.5423154981534,
-                        -0.622063882507853, 16.2455760987562, "RM Factor 1 + contcor1",
-                        0.1, -1.04768016045519, -0.0526687357727608, 22.8268139646297,
-                        12.8879892201747, "facGender + contcor1", 0.1, -24.9098326377401,
-                        -23.9555901283008, -1.03533851265525, 13.7488070754196, "RM Factor 1 + facGender + contcor1",
-                        0.1, -1.11529732351552, -0.126405348442144, 22.7591968015693,
-                        15.7870140533182, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender + contcor1",
-                        0.1, -2.03617619580061, -1.0779193502007, 21.8383179292842,
-                        11.0628049253349),
-    bestModelTop = list("RM Factor 1 + facGender", 0.1, -0.367321960540044, 0.830450364907295,
-                        0, "", "RM Factor 1", 0.1, -0.457519307040247, 0.682957515126908,
-                        -0.0901973465002028, 11.0954992966344, "RM Factor 1 + facGender + contcor1",
-                        0.1, -0.991089350964165, 0.00991210164236568, -0.623767390424122,
-                        32.3366583310552, "RM Factor 1 + contcor1", 0.1, -1.08270023626127,
-                        -0.0909876647379188, -0.715378275721224, 19.6531753785511, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
-                        0.1, -1.61472220777918, -0.649804181052933, -1.24740024723913,
-                        57.5970298850713, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender + contcor1",
-                        0.1, -1.88460906299348, -0.924664607527325, -1.51728710245343,
-                        18.7536425473633, "Null model (incl. subject)", 0.1, -23.9062736764081,
-                        -22.9520311669687, -23.538951715868, 10.0789056479773, "facGender",
-                        0.1, -24.2732563884872, -23.3190138790478, -23.9059344279471,
-                        11.1219703306485, "contcor1", 0.1, -24.6183358489862, -23.6640933395468,
-                        -24.2510138884461, 12.5005001657945, "facGender + contcor1",
-                        0.1, -25.0129223005788, -24.0586797911395, -24.6456003400388,
-                        15.8888968826608)
+    nullModelTop = list(3.62496733116162e+23, 5.73145848262438, "RM Factor 1 + facGender",
+                        0.1, 0.389062528288327, 1.72433512753681, 3.46448419993762e+23,
+                        5.32751662817302, "RM Factor 1", 0.1, 0.37183810470666, 3.74201005842137,
+                        8.9411204428442e+22, 0.955353109807862, "RM Factor 1 + facGender + contcor1",
+                        0.1, 0.0959637593232787, 16.4218696956561, 6.81640452356858e+22,
+                        0.710408526266743, "RM Factor 1 + contcor1", 0.1, 0.0731594890518848,
+                        4.65091229160849, 5.48567012520599e+22, 0.5630423677071, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.0588769082115965, 8.02076448534254, 1.03413390502686e+22,
+                        0.101014070184426, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.0110992104182495, 4.18450741833095, 1, 9.65957051390276e-24,
+                        "Null model (incl. subject)", 0.1, 1.07328561265586e-24, 0.449149895733824,
+                        4.33859508915294e-24, "facGender", 0.1, 4.82066121016992e-25,
+                        3.63958095837114, 0.199117747695815, 1.92339192443722e-24, "contcor1",
+                        0.1, 2.13710213826357e-25, 2.50946236929854, 0.0827555999423614,
+                        7.99383553063569e-25, "facGender + contcor1", 0.1, 8.88203947848407e-26,
+                        1.53533237565983),
+    bestModelTop = list(1, 6.50874645747621, "RM Factor 1 + facGender", 0.1, 0.419682304777031,
+                        0.836215528978976, 4.86631035203809, "RM Factor 1", 0.1, 0.350944860492241,
+                        1.97072663295013, 0.215841804977564, 0.896471757374706, "RM Factor 1 + facGender + contcor1",
+                        0.1, 0.0905849861802185, 6.6431450159699, 0.170299127246734,
+                        0.692756111371905, "RM Factor 1 + contcor1", 0.1, 0.071471530224426,
+                        2.19671475265757, 0.133248845838306, 0.533112456797527, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.0559221827302997, 2.962819662002, 0.0271494305718735,
+                        0.103729124066941, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.0113941355957878, 4.60008794602492, 2.70717632857682e-24,
+                        1.02253860091345e-23, "Null model (incl. subject)", 0.1, 1.13615400101494e-24,
+                        1.77842089287593, 1.18358526138156e-24, 4.47056811357066e-24,
+                        "facGender", 0.1, 4.96729790396738e-25, 2.11365788695685, 5.27151495518567e-25,
+                        1.99112539145302e-24, "contcor1", 0.1, 2.21236154605891e-25,
+                        2.06808792667175, 2.66915441617695e-25, 1.00817718946824e-24,
+                        "facGender + contcor1", 0.1, 1.12019687718693e-25, 13.9884843562539)
   )
 
   for (order in c("nullModelTop", "bestModelTop")) {
     options$bayesFactorOrder <- order
     results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-    table <- results[["results"]][["model comparison"]][["data"]]
+    table <- results[["results"]][["tableModelComparison"]][["data"]]
     expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
   }
 })
@@ -89,12 +88,12 @@ test_that("Effects table results match", {
   options$effects <- TRUE
 
   refTables <- list(
-    allModels = list("RM Factor 1", 0.6, 1, "<unicode>", "facGender", 0.6, 0.757389476581774,
-                     2.08122183080559, "RM Factor 1<unicode><unicode><unicode>facGender",
-                     0.2, 0.0790846685097528, 0.343504623304625),
-    matchedModels = list("RM Factor 1", 0.4, 0.920915331490247, 1.02806370019033e+24, "facGender",
-                         0.4, 0.678304808072022, 2.79585896982186, "RM Factor 1<unicode><unicode><unicode>facGender",
-                         0.2, 0.0790846685097528, 0.1165916378133)
+    allModels = list("<unicode>", "RM Factor 1", 0.6, 1, 1.23554633080453, "facGender",
+                     0.6, 0.649531010694947, 0.541809634931426, "RM Factor 1<unicode><unicode><unicode>facGender",
+                     0.2, 0.119293779018021),
+    matchedModels = list(7.95624688797964e+23, "RM Factor 1", 0.4, 0.880706220981981, 1.51293623075849,
+                         "facGender", 0.4, 0.530237231676927, 0.224981898462208, "RM Factor 1<unicode><unicode><unicode>facGender",
+                         0.2, 0.119293779018021)
   )
 
   effectsTypes <- c("allModels", "matchedModels")
@@ -102,7 +101,7 @@ test_that("Effects table results match", {
     options$effectsType <- effectsType
     set.seed(5) # setting seed at start gives aberrant behaviour
     results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-    table <- results[["results"]][["effects"]][["data"]]
+    table <- results[["results"]][["tableEffects"]][["data"]]
     expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
   }
 })
@@ -119,17 +118,19 @@ test_that("Post-hoc Comparisons table results match", {
   options$postHocTestsNullControl <- TRUE
   options$postHocTestsVariables <- "RM Factor 1"
   results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-  table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
+  table <- results[["results"]][["collectionPosthoc"]][["collection"]][["collectionPosthoc_postHoc_RM Factor 1"]][["data"]]
   expect_equal_tables(table,
-    list("Level 1", "Level 2", 0.587401051968199, 83932041568197648, 17.1549930670883,
-         2.78226779130567e-20, "TRUE", "Level 1", "Level 3", 0.587401051968199,
-         0.30644539432695, -0.282581621383003, 2.74342774324035e-05,
-         "FALSE", "Level 2", "Level 3", 0.587401051968199, 48708968131887.4,
-         13.9186742094611, 1.07201998003854e-19, "FALSE")
+    list("Level 1", "Level 2", 142887114837413104, 83932041568197648, 0.587401051968199,
+         2.78226779130567e-20, "Level 1", "Level 3", 0.521697047188026,
+         0.30644539432695, 0.587401051968199, 2.74342774324035e-05, "Level 2",
+         "Level 3", 82922847973592.7, 48708968131887.4, 0.587401051968199,
+         1.07201998003854e-19)
   )
 })
 
 test_that("Analysis handles errors", {
+  # NOTE: only errors that are not handled in test-anovabayesian or test-ancovabayesian are tested
+  
   options <- initOpts()
   options$repeatedMeasuresFactors <- list(
     list(levels=c("Level 1", "Level 2"), name="RM Factor 1")
@@ -138,36 +139,37 @@ test_that("Analysis handles errors", {
   options$repeatedMeasuresCells <- c("contNormal", "debInf")
   options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
   results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                   label="Inf RM factor check")
+  expect_true(results[["results"]][["error"]], label = "Inf RM factor check")
+  # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
+  #                  label="Inf RM factor check")
 
-  options$repeatedMeasuresCells <- c("contNormal", "contGamma")
-  options$covariates <- "debInf"
-  options$modelTerms <- list(
-    list(components="RM Factor 1", isNuisance=FALSE),
-    list(components="debInf", isNuisance=FALSE)
-  )
-  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                  label="Inf covariate check")
+  # options$repeatedMeasuresCells <- c("contNormal", "contGamma")
+  # options$covariates <- "debInf"
+  # options$modelTerms <- list(
+  #   list(components="RM Factor 1", isNuisance=FALSE),
+  #   list(components="debInf", isNuisance=FALSE)
+  # )
+  # results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+  # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
+  #                 label="Inf covariate check")
 
-  options$repeatedMeasuresCells <- c("contNormal", "contGamma")
-  options$betweenSubjectFactors <- "debSame"
-  options$covariates <- list()
-  options$modelTerms <- list(
-    list(components="RM Factor 1", isNuisance=FALSE),
-    list(components="debSame", isNuisance=FALSE)
-  )
-  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                   label="1-level factor check")
+  # options$repeatedMeasuresCells <- c("contNormal", "contGamma")
+  # options$betweenSubjectFactors <- "debSame"
+  # options$covariates <- list()
+  # options$modelTerms <- list(
+  #   list(components="RM Factor 1", isNuisance=FALSE),
+  #   list(components="debSame", isNuisance=FALSE)
+  # )
+  # results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+  # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
+  #                  label="1-level factor check")
 
-  options$repeatedMeasuresCells <- c("contNormal", "contGamma")
-  options$betweenSubjectFactors <- list()
-  options$modelTerms <- list(list(components="RM Factor 1", isNuisance=TRUE))
-  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                   label="All nuisance check")
+  # options$repeatedMeasuresCells <- c("contNormal", "contGamma")
+  # options$betweenSubjectFactors <- list()
+  # options$modelTerms <- list(list(components="RM Factor 1", isNuisance=TRUE))
+  # results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+  # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
+  #                  label="All nuisance check")
 
   # options$repeatedMeasuresCells <- c("contNormal", "debSame")
   # options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
@@ -175,9 +177,9 @@ test_that("Analysis handles errors", {
   # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
   #                  label="No variance check")
 
-  options$repeatedMeasuresCells <- c("contNormal", "debMiss99")
-  options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
-  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-  expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
-                  label="Too few obs check")
+  # options$repeatedMeasuresCells <- c("contNormal", "debMiss99")
+  # options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
+  # results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+  # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
+  #                 label="Too few obs check")
 })

@@ -26,8 +26,6 @@
   dataset <- .BANOVAreadData(dataset, options, analysisType)
   errors  <- .BANOVAerrorhandling(dataset, options, analysisType)
 
-  save(dataset, errors, options, analysisType, file = "~/jasp.RData")
-
   model <- .BANOVAestimateModels(jaspResults, dataset, options, errors, analysisType)
   model[["posteriors"]] <- .BANOVAestimatePosteriors(jaspResults, dataset, options, model)
 
@@ -90,14 +88,10 @@
 
   # also makes the model comparison table
   stateObj <- jaspResults[["tableModelComparisonState"]]$object
-  save(stateObj, file = "~/jaspState.Rdata")
-  # load("~/jaspState.Rdata")
   if (!is.null(jaspResults[["tableModelComparison"]])) {
-    print("here12: complete reuse of table")
     stateObj$completelyReused <- TRUE # means that posteriors won't need to be resampled
     return(stateObj)
   } else if (errors$noVariables) {
-    print("here13: empty table only")
     modelTable <- .BANOVAinitModelComparisonTable(options, NULL)
     jaspResults[["tableModelComparison"]] <- modelTable
     return(list(analysisType = analysisType))
@@ -107,7 +101,6 @@
          identical(stateObj$covariates,   options$covariates)
        )) {
 
-      print("here14: change in BF type or BF order")
       # if the statement above is TRUE then no new variables were added
       # and the only change is in the Bayes factor type or the ordering
       modelTable <- .BANOVAinitModelComparisonTable(options, stateObj$models)
@@ -120,7 +113,6 @@
   	  
     }
   }
-  print("here2: recreating table completely")
 
 	rscaleFixed   <- options$priorFixedEffects
 	rscaleRandom  <- options$priorRandomEffects
@@ -128,7 +120,7 @@
 	dependent     <- options$dependent
 	randomFactors <- options$randomFactors
 	fixedFactors  <- options$fixedFactors
-	
+
 	if (analysisType == "RM-ANOVA") {
 	  rscaleCont <- options$priorCovariates
 	  modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
@@ -239,7 +231,7 @@
 
 	if (analysisType == "RM-ANOVA") { 
 	  # the default null-model contains subject
-	  anyNuisance <- !all(.unv(nuisance) == "subject")
+	  anyNuisance <- TRUE
 	} else {
 	  # the default null-model is intercept only
 	  anyNuisance <- length(nuisance) > 0L
@@ -273,7 +265,6 @@
 	      bf <- NULL
 	    }
 	  } else {
-	    print("Some models reused")
 	    bf <- stateObj$models[[reuseable[m]]]$bf
 	  }
 	  modelObject[[m]]$bf <- bf
@@ -303,6 +294,11 @@
 
 	internalTableObj <- .BANOVAfinalizeInternalTable(options, internalTable)
 	modelTable$setData(internalTableObj$table)
+	
+	if (anyNuisance) {
+	  message <- paste("All models include", paste0(.unv(nuisance), collapse = ", "))
+	  modelTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+	}
 
 	model <- list(
 	  models              = modelObject,
@@ -431,16 +427,17 @@
 	effectsTable[["Effects"]]      <- .unvf(effectNames)
 	effectsTable[["P(incl)"]]      <- priorInclProb
 	effectsTable[["P(incl|data)"]] <- postInclProb
-	if (options$bayesFactorType == "LogBF10"){
-	  effectsTable[["BFInclusion"]] <- log(bfIncl)
+	# FIXME: remove .clean after this is handled by jaspResults
+	if (options[["bayesFactorType"]] == "LogBF10") {
+	  effectsTable[["BFInclusion"]] <- sapply(log(bfIncl), .clean)
 	} else {
-	  effectsTable[["BFInclusion"]] <- bfIncl
+	  effectsTable[["BFInclusion"]] <- sapply(bfIncl, .clean)
 	}
 	return()
 }
 
 .BANOVAinitModelComparisonTable <- function(options, modelObject = NULL) {
-  
+
   # function that creates an empty JASP table to be filled later
   modelTable <- createJaspTable(title = "Model Comparison")
   modelTable$position <- 1L
@@ -545,14 +542,10 @@
   # model$completelyReused is needed because it can happen that some posterior samples can be reused (e.g., 
   # when the modelTerms change)
   stateObj <- jaspResults[["statePosteriors"]]$object
-  # save(stateObj, file = "~/jaspStatePosteriors.Rdata")
   if (!is.null(stateObj) && isTRUE(model$completelyReused)) {
-    print("posteriors from state")
     return(stateObj)
   }
-  print("resample posteriors")
 	# calculate posteriors
-	# load("~/jaspStatePosteriors.Rdata")
   posteriors <- .BANOVAsamplePosteriors(jaspResults, dataset, options, model, stateObj)
   
   stateObj <- createJaspState(object = posteriors)
@@ -805,7 +798,8 @@
       next
     }
 
-    if (model$analysisType == "RM-ANOVA" && posthoc.var %in% options$fixedFactors && !posthoc.var %in% options$betweenSubjectFactors) {
+    fixed <- unlist(c(options$fixedFactors, sapply(options$repeatedMeasuresFactors, `[[`, "name")))
+    if (model$analysisType == "RM-ANOVA" && posthoc.var %in% fixed && !posthoc.var %in% options$betweenSubjectFactors) {
       variable.levels <- options$repeatedMeasuresFactors[[which(lapply(options$repeatedMeasuresFactors, function(x) x$name) == posthoc.var)]]$levels
       paired <- TRUE
     } else if (posthoc.var %in% c(options$fixedFactors, options$betweenSubjectFactors, options$randomFactors)) {
@@ -1033,7 +1027,6 @@
   data <- do.call(rbind.data.frame, rows)
   
   descriptivesTable$setData(data)
-  descriptivesTable$print()
 
   return()
 }
@@ -1149,9 +1142,6 @@
       summaryStatSubset <- summaryStat
     }
     
-    print(head(summaryStatSubset))
-    print(summary(summaryStatSubset))
-    
     if(options$plotSeparateLines == "") {
       
       p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
@@ -1208,8 +1198,6 @@
   # TODO: Bayes factor samples unobserved interaction levels, what to do?
 
   # if the most complex model is retrieved from the state?
-save(dataset, options, model, state, file = "~/jaspPosteriors.Rdata")
-  # load("~/jaspPosteriors.Rdata")
   nIter <- if (options[["sampleModeMCMC"]] == "auto") 1e4L else options[["fixedMCMCSamples"]]
   nmodels    <- length(model[["models"]])
   postProbs  <- model[["postProbs"]]
@@ -1301,7 +1289,6 @@ save(dataset, options, model, state, file = "~/jaspPosteriors.Rdata")
       statistics[[i]]$types  <- types
 
     } else { # reuse state
-      print("Some posteriors reused")
       statistics[[i]] <- state$statistics[[reuseable[i]]]
       nms             <- statistics[[i]]$names
       types           <- statistics[[i]]$types
@@ -1852,9 +1839,6 @@ save(dataset, options, model, state, file = "~/jaspPosteriors.Rdata")
     options$singleModelEffects
   if (!(options[["singleModelEffects"]] || userWantsSMI))
     return()
-
-  save(dataset, options, model, file = "~/jaspSMI.Rdata")
-  # load("~/jaspSMI.Rdata")
 
   if (!is.null(jaspResults[["collectionSingleModel"]])) {
     singleModelContainer <- jaspResults[["containerSingleModel"]]
