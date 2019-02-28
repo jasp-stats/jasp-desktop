@@ -15,7 +15,7 @@ DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 #JASP Version
 JASP_VERSION_MAJOR      = 0
 JASP_VERSION_MINOR      = 9
-JASP_VERSION_REVISION   = 2
+JASP_VERSION_REVISION   = 3
 JASP_VERSION_BUILD      = 0 #Should be incremented or retrieved from somewhere
 JASP_VERSION_TYPE       = release
 
