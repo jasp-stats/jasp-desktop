@@ -24,14 +24,14 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults	: true
 
 	CheckBox { name: "simulatepval"; checked: false; visible: false }
 
 	VariablesForm
 	{
-		height: 170
-		marginBetweenVariablesLists: 15
+		height	: 170
+		marginBetweenVariablesLists	: 15
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"] }
@@ -40,9 +40,9 @@ Form
 
 	RadioButtonGroup
 	{
-		id: hypothesisGroup
-		name: "hypothesis"
-		title: qsTr("Alt. Hypothesis")
+		id		: hypothesisGroup
+		name	: "hypothesis"
+		title	: qsTr("Alt. Hypothesis")
 		Layout.columnSpan: 2
 
 		RadioButton { value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
@@ -63,14 +63,14 @@ Form
 
 		Group
 		{
-			title: qsTr("Additional Statistics")
+			title	: qsTr("Additional Statistics")
 			CheckBox
 			{
-				name: "descriptives"; label: qsTr("Descriptives")
+				name	: "descriptives"; label: qsTr("Descriptives")
 				CheckBox
 				{
-					name: "confidenceInterval"; label: qsTr("Confidence interval")
-					childrenOnSameRow: true
+					name				: "confidenceInterval"; label: qsTr("Confidence interval")
+					childrenOnSameRow	: true
 					PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
 				}
 			}
@@ -81,20 +81,35 @@ Form
 	{
 		RadioButtonGroup
 		{
-			name: "countProp"
-			title: qsTr("Display")
-			RadioButton { value: "descCounts";	label: qsTr("Counts"); checked: true		}
+			name	: "countProp"
+			title	: qsTr("Display")
+			RadioButton { value: "descCounts";	label: qsTr("Counts"); checked: true	}
 			RadioButton { value: "descProps";	label: qsTr("Proportions")				}
 		}
 
 		Group
 		{
-			title: qsTr("Plots")
+			title	: qsTr("Plots")
 			CheckBox
 			{
-				name: "descriptivesPlot"; label: qsTr("Descriptives plot")
+				name	: "descriptivesPlot"; label: qsTr("Descriptives plot")
 				PercentField { name: "descriptivesPlotConfidenceInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
 			}
+		}
+	}
+
+
+	ExpanderButton
+	{
+		title	: qsTr("Prior")
+
+		Chi2TestTableView
+		{
+			name	: "priorCounts"
+			width	: form.availableWidth - hypothesisGroup.leftPadding
+			source	: "factor"
+			showAddButton		: false
+			showDeleteButton	: false
 		}
 	}
 }
