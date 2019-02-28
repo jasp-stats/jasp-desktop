@@ -20,7 +20,7 @@ Table of Contents:
     + [RepeatedMeasuresFactorsList](#repeatedmeasuresfactorslist)
   * [Grouping](#grouping)
     + [Group](#group)
-    + [ExpanderButton](#expanderbutton)
+    + [Section](#section)
 - [Layout of Components](#layout-of-components)
     + [Layout.rowSpan](#layoutrowspan)
     + [Layout.columnSpan](#layoutcolumnspan)
@@ -80,7 +80,7 @@ A RadioButton is used with other RadioButton's inside a `RadioButtonGroup`. Cont
 RadioButtonGroup properties:
 - `name`: string identifier (in your R code you will be able to retrieve the value of the checked radiobutton through this identifier)
 - `title`: text that is shown above the set of radiobuttons
-- `placeRadioButtonsOnSameRow`: [optional, default: `false`] per default, the RadioButton's are placed vertically under the title. Set this property to true to place the buttons horizontally.
+- `radioButtonsOnSameRow`: [optional, default: `false`] per default, the RadioButton's are placed vertically under the title. Set this property to true to place the buttons horizontally.
 - `columns`: [optional, default: `1`] integer specifying how many columns should be used to display the RadioButton's
 
 RadioButton properties:
@@ -175,7 +175,7 @@ Properties
 - `value`: [optional, default: `0.5`] default value
 - `min`: [optional, default: `0`] minimum value
 - `max`: [optional, default: `1`] maximum value
-- `orientation`: [optional, default: `Qt.Vertical`] set wheter the slider should be displayed vertically (`Qt.Vertical`) or horizontally (`Qt.Horizontal`)
+- `vertical`: [optional, default: true] set whether the slider should be displayed vertically or horizontally
 
 <details>
 	<summary>Examples</summary>
@@ -295,7 +295,7 @@ Properties:
 - `name`: string identifier (in your R code you will be able to retrieve the value of the field through this identifier)
 - `label`: [optional, default: `""`] text that will be shown to the left of the field
 - `afterLabel`: [optional, default: `""`] text that will be shown to the right of the field
-- `value`: [optional, default: `""`] default text before the user enters anything
+- `defaultValue`: [optional, default: `""`] default text before the user enters anything
 - `placeholderText`: [optional, default: `""`] text shown as a placeholder until a user enters something, will not be send to R if left unchanged by the user (mutually exclusive with `defaultValue`)
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
 
@@ -317,7 +317,7 @@ Most analyses are performed on variables. JASP offers a few ways of visualizing 
 Properties
 - `name`: identifier of the variables list, this is never send to R
 - `label`: [optional, default: `""`] text that will be shown above the variable field
-- `source`: [optional] can be set to the `name` of an `AssignedVariablesList`, when omitted variables are taken from the dataset (example usage: you have a second `availableVariablesList` for plotting the variables that are assigned to an `AssignedVariablesList`; see also the example)
+- `source`: [optional] can be set to the `name` (or a list of names) of an `AssignedVariablesList`, when omitted variables are taken from the dataset (example usage: you have a second `AvailableVariablesList` for plotting the variables that are assigned to an `AssignedVariablesList`; see also the example)
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 
 Note: `height` should be defined on `VariablesForm` itself.
@@ -434,7 +434,7 @@ Properties
 
 
 ### Grouping
-In order to add more structure to the input panel you can group components together. This grouping can occur on different levels, ranging from just a few input options to an entire section of the options panel.
+In order to add more structure to the input panel you can group components together. There are 2 levels of grouping: Section and Group. A Section can hide a group of components under a button. A Group is a smaller logical unit.
 
 #### Group
 Properties
@@ -465,7 +465,8 @@ Properties
   
 </details>
 
-#### ExpanderButton
+#### Section
+A Section sets components (or groups of components) under a button. By clicking the button, you can hide or display these components.
 Properties
 - `title`: text shown in the button that controls the collapse of an entire section
 - `columns`: [optional, default: `2`] integer specifying how many columns the grouped components should occupy
@@ -474,7 +475,7 @@ Properties
 	<summary>Examples</summary>
 	
   ```qml
-  ExpanderButton
+  Section
   {
     title: qsTr("Advanced Options")
 
