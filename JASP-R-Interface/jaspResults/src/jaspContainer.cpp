@@ -29,9 +29,6 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	_data[field] = obj; //If we overwrite anything: deletion will be taken care of by jaspObject::destroyAllAllocatedObjects()
 
-	if(obj->_title == "")
-		obj->_title = field;
-
 	obj->setName(field);
 	if (_passErrorMessageToNextChild)
 	{
