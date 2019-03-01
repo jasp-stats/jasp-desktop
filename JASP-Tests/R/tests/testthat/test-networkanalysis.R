@@ -48,6 +48,6 @@ test_that("weightmatrixTB table results match", {
 test_that("layoutTB table results match", {
   table <- results[["results"]][["layoutTB"]][["data"]]
   expect_equal_tables(table,
-    list(1, 1, -1, 0.0611664081106051, -0.270697752594105, -1)
+    list(1, 1, -1, 0.0473496200043197, -0.258402690078048, -1)
   )
 })
