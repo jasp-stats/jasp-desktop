@@ -47,6 +47,8 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 
+		version+="-Beta";
+
 #ifdef JASP_DEBUG
 		version+="-Debug";
 #endif

@@ -63,6 +63,8 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 	{
 		QString version = tq(AppInfo::version.asString());
 
+		version+="-Beta";
+
 #ifdef JASP_DEBUG
 		version+="-Debug";
 #endif
