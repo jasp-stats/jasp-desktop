@@ -35,6 +35,8 @@ public:
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }
 	virtual bool isOptionValid(Option* option) OVERRIDE;
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
+	
+	void setQMLItemChecked(bool checked);
 
 signals:
 	

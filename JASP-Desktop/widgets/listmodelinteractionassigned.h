@@ -43,15 +43,15 @@ public:
 	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
 	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
 	
-	virtual void initExtraControlOptions(const QString& colName, Options* options) OVERRIDE;	
+	virtual QString getItemType(const Term &term) const OVERRIDE;
 	
+		
 public slots:
 	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) OVERRIDE;
 	
 protected:
 	void addCombinedTerms(const Terms& terms, int assignType);
 	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
-	QString getItemType(const Term &term);
 	
 	void setTerms();
 };

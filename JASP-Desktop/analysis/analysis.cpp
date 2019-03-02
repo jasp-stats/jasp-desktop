@@ -33,13 +33,9 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(name), _version(version), _analyses(analyses)
 {
 	if (data)
-	{
-		qDebug() << "Analysis data: " << QString::fromStdString(data->toStyledString());
-		if (data->type() == Json::arrayValue)
-			_options->init(*data);
-		else
-			_optionsDotJASP = *data;
-	}
+		// We cannot set the options now because it needs sometimes more information from the QML file
+		// (especially with OptionsTable that needs a template information).
+		_optionsDotJASP = *data;
 
 	bindOptionHandlers();
 }

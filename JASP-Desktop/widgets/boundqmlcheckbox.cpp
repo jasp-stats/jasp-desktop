@@ -64,6 +64,12 @@ void BoundQMLCheckBox::resetQMLItem(QQuickItem *item)
 	QQuickItem::connect(_item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
 }
 
+void BoundQMLCheckBox::setQMLItemChecked(bool checked)
+{
+	_checked = checked;
+	_item->setProperty("checked", checked);
+}
+
 void BoundQMLCheckBox::checkBoxClickedSlot()
 {
 	_checked = QQmlProperty::read(_item, "checked").toBool();

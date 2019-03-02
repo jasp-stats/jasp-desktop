@@ -74,6 +74,7 @@ Form
 					type: "CheckBox"
 					name: "isNuisance"
 					title: qsTr("Add to null model")
+					purpose: "nuisance"					
 				}
 			}
 		}

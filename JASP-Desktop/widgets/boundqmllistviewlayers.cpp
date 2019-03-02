@@ -42,11 +42,6 @@ void BoundQMLListViewLayers::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 	
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("variables", new OptionVariables());
-	_boundTo->setTemplate(templote);	
-	
 	vector<Options*> allOptions = _boundTo->value();
 	vector<vector<string> > variables;	
 	

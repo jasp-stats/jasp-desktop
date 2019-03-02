@@ -47,77 +47,6 @@ Json::Value Options::asJSON() const
 	return asJSON(true);
 }
 
-void Options::init(const Json::Value &array)
-{
-    for (auto itr = array.begin(); itr != array.end(); itr++)
-	{
-		Json::Value value = (*itr);
-
-		std::string name = value["name"].asString(),
-					type = value["type"].asString();
-
-		Option *option = createOption(type);
-
-		if (option != nullptr)
-		{
-			Json::Value &val = value["value"];
-			if (val != Json::nullValue)
-				option->set(val);	
-			else
-				option->init(value);
-			add(name, option);
-		}
-		else
-		{
-            cout << "Unknown data type: '" << type << "' for name '" << name << "'\n";
-            cout.flush();
-		}
-	}
-}
-
-Option* Options::createOption(string typeString)
-{
-	if		(typeString == "List")				return new OptionList();
-	else if (typeString == "Term")				return new OptionTerm();
-	else if (typeString == "Terms")				return new OptionTerms();
-	else if (typeString == "Table")				return new OptionsTable();
-	else if (typeString == "Number")			return new OptionNumber();
-	else if (typeString == "String")			return new OptionString();
-	else if	(typeString == "Boolean")			return new OptionBoolean();
-	else if (typeString == "Integer")			return new OptionInteger();
-	else if (typeString == "Variable")			return new OptionVariable();
-	else if (typeString == "Variables")			return new OptionVariables();
-	else if (typeString == "DoubleArray")		return new OptionDoubleArray();
-	else if (typeString == "IntegerArray")		return new OptionIntegerArray();
-	else if (typeString == "ComputedColumn")	return new OptionComputedColumn();
-	else if (typeString == "VariablesGroups")	return new OptionVariablesGroups();
-
-	return nullptr;
-}
-
-string Options::getType(Option* option) const
-{
-	// Be careful on the order: e.g. an OptionVariables is an OptionTerms
-	// so dynamic_cast test on OptionVariables has to be done before OptionTerms
-	if (dynamic_cast<OptionList*>(option))					return "List";				
-	else if (dynamic_cast<OptionVariablesGroups*>(option))	return "VariablesGroups";	
-	else if (dynamic_cast<OptionComputedColumn*>(option))	return "ComputedColumn";
-	else if (dynamic_cast<OptionIntegerArray*>(option))		return "IntegerArray";
-	else if (dynamic_cast<OptionDoubleArray*>(option))		return "DoubleArray";
-	else if (dynamic_cast<OptionVariable*>(option))			return "Variable";
-	else if (dynamic_cast<OptionVariables*>(option))		return "Variables";
-	else if (dynamic_cast<OptionTerm*>(option))				return "Term";
-	else if (dynamic_cast<OptionTerms*>(option))			return "Terms";
-	else if (dynamic_cast<OptionsTable*>(option))			return "Table";
-	else if (dynamic_cast<OptionNumber*>(option))			return "Number";
-	else if (dynamic_cast<OptionString*>(option))			return "String";
-	else if (dynamic_cast<OptionBoolean*>(option))			return "Boolean";
-	else if (dynamic_cast<OptionInteger*>(option))			return "Integer";
-
-	return "";
-}
-
-
 void Options::add(string name, Option *option)
 {
 	remove(name);
@@ -142,30 +71,6 @@ void Options::optionsChanged(Option *)
 {
 	notifyChanged();
 }
-
-Json::Value Options::asJSONWithType(bool includeTransient) const
-{
-	Json::Value top = Json::arrayValue;
-
-	for (const OptionNamed& item : _options)
-	{
-		if (includeTransient == false && item.second->isTransient())
-			continue;
-
-		Json::Value jsonValue(Json::objectValue);
-
-		string name			= item.first;
-		Option* option		= item.second;
-		jsonValue["name"]	= name;
-		jsonValue["type"]	= getType(option);
-		jsonValue["value"]	= option->asJSON();
-		
-		top.append(jsonValue);
-	}
-
-	return top;
-}
-
 
 Json::Value Options::asJSON(bool includeTransient) const
 {

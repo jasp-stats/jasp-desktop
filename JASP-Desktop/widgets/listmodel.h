@@ -45,7 +45,7 @@ public:
 	virtual const Terms& terms() const						{ return _terms; }
 	bool areTermsVariables() const							{ return _areTermsVariables; }
 	bool areTermsInteractions() const						{ return _areTermsInteractions; }
-	const QString& getItemType() const						{ return _itemType; }	
+	virtual QString getItemType(const Term& term) const		{ return _itemType; }	
 	void setTermsAreVariables(bool areVariables)			{ _areTermsVariables = areVariables; }
 	void setTermsAreInteractions(bool interactions)			{ _areTermsInteractions = interactions; }
 	void setItemType(QString type)							{ _itemType = type; }

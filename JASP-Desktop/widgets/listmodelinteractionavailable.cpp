@@ -26,16 +26,6 @@ ListModelInteractionAvailable::ListModelInteractionAvailable(QMLListView* listVi
 	_areTermsInteractions = true;
 }
 
-QString ListModelInteractionAvailable::getItemType(ListModel* model)
-{
-	QString type;
-	type = model->getItemType();
-	if (type.isEmpty() || type == "variables")
-		type = model->name();
-	
-	return type;
-}
-
 void ListModelInteractionAvailable::resetTermsFromSourceModels()
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
@@ -56,7 +46,10 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels()
 			const Terms& terms = sourceModel->terms();
 			for (const Term& term : terms)
 			{
-				QString itemType = getItemType(sourceModel);
+				QString itemType = sourceModel->getItemType(term);
+				if (itemType.isEmpty() || itemType == "variables")
+					itemType = sourceModel->name();
+								
 				if (itemType == "fixedFactors")
 					fixedFactors.add(term);
 				else if (itemType == "randomFactors")

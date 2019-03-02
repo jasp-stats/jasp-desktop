@@ -135,7 +135,8 @@ Item
 		var setWidth = allJASPControls.length > 0 ? availableVariablesList.width === allJASPControls[0].width : true
 		
 		availableVariablesList.parent = variablesForm
-		availableVariablesList.width = setWidth ? variablesForm.listWidth : availableVariablesList.width;
+		if (setWidth)
+			availableVariablesList.width = variablesForm.listWidth
 		availableVariablesList.height	= variablesForm.height
 		availableVariablesList.anchors.top = variablesForm.top
 		availableVariablesList.anchors.left = variablesForm.left
@@ -154,7 +155,8 @@ Item
 
 		var anchorTop = variablesForm.top;
         for (i = 0; i < allJASPControls.length; ++i) {
-			allJASPControls[i].width = setWidth ? variablesForm.listWidth : allJASPControls[i].width
+			if (setWidth)
+				allJASPControls[i].width = variablesForm.listWidth
             allJASPControls[i].anchors.top = anchorTop;
             allJASPControls[i].anchors.topMargin = i === 0 ? 0 : marginBetweenVariablesLists;
             allJASPControls[i].anchors.right = variablesForm.right;

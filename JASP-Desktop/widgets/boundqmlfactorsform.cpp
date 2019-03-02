@@ -50,12 +50,6 @@ void BoundQMLFactorsForm::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("title", new OptionString());
-	templote->add("indicators", new OptionVariables());
-	_boundTo->setTemplate(templote);
-	
 	vector<tuple<string, string, vector<string> > > factors;
 	vector<Options*> allOptions = _boundTo->value();
 	

@@ -51,6 +51,12 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 			QString key = QString::fromLatin1(property.name());
 			QVariant value = property.read(extraControlColumnObject);
 			bool addValue = true;
+			if (key == "purpose")
+			{
+				addValue = false;
+				if (value.toString() == "nuisance")
+					_hasNuisanceControl = true;
+			}
 			switch (QMetaType::Type(property.type()))
 			{
 			case QMetaType::Int:
@@ -71,6 +77,8 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 				properties[key] = value;
 		}
 
+		if (_hasNuisanceControl)
+			_nuisanceName = properties["name"].toString().toStdString();
 		_extraControlColumns.push_back(properties);
 	}
 	
