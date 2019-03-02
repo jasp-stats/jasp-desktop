@@ -26,4 +26,5 @@ QtObject {
 	property int width 
     property string value
 	property bool checked
+	property string purpose
 }

@@ -17,11 +17,13 @@
 //
 
 #include "boundqmllistviewterms.h"
+#include "boundqmlcheckbox.h"
 #include "analysis/options/optionvariable.h"
 #include "../analysis/analysisform.h"
 #include "listmodeltermsavailable.h"
 #include "analysis/options/optionstable.h"
 #include "analysis/options/optionterm.h"
+#include "analysis/options/optionboolean.h"
 #include "listmodelextracontrols.h"
 #include "listmodeltermsassigned.h"
 #include "listmodelinteractionassigned.h"
@@ -60,14 +62,6 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 			qDebug() << "Options for list view " << name() << " is not of type Table!";
 			return;
 		}
-		Options* templote = new Options();
-		if (_termsModel->areTermsInteractions())
-			templote->add(_extraControlOptionName, new OptionTerm());
-		else
-			templote->add(_extraControlOptionName, new OptionVariable());
-		if (_hasExtraControls)
-			addExtraOptions(templote);
-		_optionsTable->setTemplate(templote);
 		
 		Terms terms;
 		std::vector<Options*> optionsList = _optionsTable->value();
@@ -112,38 +106,12 @@ Option* BoundQMLListViewTerms::createOption()
 	{
 		Options* templote = new Options();
 		if (_termsModel->areTermsInteractions())
-			templote->add(_extraControlComponentName, new OptionTerm());
+			templote->add(_extraControlOptionName, new OptionTerm());
 		else
 			templote->add(_extraControlOptionName, new OptionVariable());
 		if (_hasExtraControls)
 			addExtraOptions(templote);
-		OptionsTable* optionsTable = new OptionsTable(templote);
-		
-		std::vector<Options*> allOptions;
-		const Terms& terms = _termsModel->terms();
-		for (const Term& term : terms)
-		{
-			Options* options = static_cast<Options *>(templote->clone());
-			if (_termsModel->areTermsInteractions())
-			{
-				OptionTerm* optionTerm = dynamic_cast<OptionTerm *>(options->get(_extraControlComponentName));
-				if (optionTerm)
-					optionTerm->setValue(term.scomponents());
-				else
-					qDebug() << "An option is not of type OptionTerm!";
-			}
-			else
-			{
-				OptionVariable* optionVariable = dynamic_cast<OptionVariable *>(options->get(_extraControlOptionName));
-				if (optionVariable)
-					optionVariable->setValue(term.asString());
-				else
-					qDebug() << "An option is not of type OptionVariable!";
-			}
-			allOptions.push_back(options);
-		}
-		optionsTable->setValue(allOptions);
-		result = optionsTable;
+		result = new OptionsTable(templote);		
 	}
 	else
 		result = _singleItem ? new OptionVariable() : new OptionVariables();
@@ -246,7 +214,7 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 		if (!options)
 		{
 			options = static_cast<Options *>(_optionsTable->rowTemplate()->clone());
-			_termsModel->initExtraControlOptions(termQStr, options);
+			initExtraControlOptions(termQStr, options);
 			if (_termsModel->areTermsInteractions())
 			{
 				OptionTerm* optionTerm = dynamic_cast<OptionTerm *>(options->get(_extraControlOptionName));
@@ -275,6 +243,10 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 			Option* option = options->get(name);
 			if (!option)
 			{
+				// The rowTemplate should have given all options
+				// But never know...
+				std::cout << "It should never come here!!!" << std::endl;
+				std::cout.flush();
 				option = boundItem->boundTo();
 				if (!option)
 					option = boundItem->createOption();
@@ -283,7 +255,97 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 			boundItem->bindTo(option);
 		}
 		newOptionsList.push_back(options);
+		options->changed.connect(boost::bind(&BoundQMLListViewTerms::extraOptionsChangedSlot, this, _1));
 	}
 	
 	_optionsTable->connectOptions(newOptionsList);
 }
+
+void BoundQMLListViewTerms::extraOptionsChangedSlot(Option *option)
+{
+	Options* options = dynamic_cast<Options*>(option);
+	
+	if (_termsModel->areTermsInteractions() && _hasNuisanceControl)
+	{
+		OptionTerm* termOption = dynamic_cast<OptionTerm *>(options->get(_extraControlOptionName));
+		if (termOption)
+		{
+			OptionBoolean* nuisance = dynamic_cast<OptionBoolean*>(options->get(_nuisanceName));
+			if (nuisance)
+				updateNuisances(nuisance->value());
+		}
+	}	
+}
+
+void BoundQMLListViewTerms::initExtraControlOptions(const QString &colName, Options *options)
+{
+	if (_hasNuisanceControl)
+	{
+		QString itemType = _termsModel->getItemType(colName);
+		if (itemType == "randomFactors")
+		{
+			OptionBoolean* option = dynamic_cast<OptionBoolean*>(options->get(_nuisanceName));
+			if (option)
+				option->setValue(true);
+		}
+	}
+}
+
+void BoundQMLListViewTerms::updateNuisances(bool checked)
+{
+	QString nuisanceName = QString::fromStdString(_nuisanceName);
+	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
+	std::vector<Options*> allOptions = _optionsTable->value();
+	for (Options* options : allOptions)
+	{
+		OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_extraControlOptionName));
+		OptionBoolean *nuisanceOption = static_cast<OptionBoolean*>(options->get(_nuisanceName));
+		Term term = Term(termOption->term());
+
+		if (nuisanceOption->value() == checked)
+		{
+			for (Options* optionsBis : allOptions)
+			{
+				if (optionsBis == options)
+					continue;
+
+				OptionTerm *tOption = static_cast<OptionTerm*>(optionsBis->get(_extraControlOptionName));
+				OptionBoolean *nOption = static_cast<OptionBoolean*>(optionsBis->get(_nuisanceName));
+				Term t = Term(tOption->term());
+
+				if (checked)
+				{
+					if (term.containsAll(t))
+					{
+						if (!nOption->value())
+						{
+							ListModelExtraControls* extraControlModel = _termsModel->getExtraControlModel(t.asQString());
+							const QMap<QString, BoundQMLItem* >& QMLItemMap = extraControlModel->getBoundItems();
+							BoundQMLCheckBox* checkBox = dynamic_cast<BoundQMLCheckBox*>(QMLItemMap[nuisanceName]);
+							if (checkBox)
+								checkBox->setQMLItemChecked(true);							
+							nOption->setValue(true);
+						}
+					}
+				}
+				else
+				{
+					if (t.containsAll(term))
+					{
+						if (nOption->value())
+						{
+							ListModelExtraControls* extraControlModel = _termsModel->getExtraControlModel(t.asQString());
+							const QMap<QString, BoundQMLItem* >& QMLItemMap = extraControlModel->getBoundItems();
+							BoundQMLCheckBox* checkBox = dynamic_cast<BoundQMLCheckBox*>(QMLItemMap[nuisanceName]);
+							if (checkBox)
+								checkBox->setQMLItemChecked(false);							
+							
+							nOption->setValue(false);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+

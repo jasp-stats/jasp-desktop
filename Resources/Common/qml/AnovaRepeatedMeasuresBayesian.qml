@@ -119,6 +119,7 @@ Form
 					type: "CheckBox"
 					name: "isNuisance"
 					title: "Add to null model"
+					purpose: "nuisance"					
 				}
 			}
 		}

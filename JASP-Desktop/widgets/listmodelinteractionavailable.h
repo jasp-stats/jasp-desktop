@@ -31,8 +31,6 @@ public:
 	
 	virtual void resetTermsFromSourceModels() OVERRIDE;
 
-protected:
-	QString getItemType(ListModel* model);
 };
 
 #endif // LISTMODELINTERACTIONAVAILABLE_H

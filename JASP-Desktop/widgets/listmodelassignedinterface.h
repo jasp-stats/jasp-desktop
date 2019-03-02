@@ -34,12 +34,11 @@ public:
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
 		
 	virtual void setAvailableModel(ListModelAvailableInterface *source);
-	ListModelAvailableInterface* source()												{ return _source; }
+	ListModelAvailableInterface* source() const											{ return _source; }
 	void addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
 	ListModelExtraControls* getExtraControlModel(QString colName)						{ return _extraControlsModels[colName]; }
 	void controlLoaded(const QString& colName, const QString& controlName);
 	
-	virtual void initExtraControlOptions(const QString& colName, Options* options) {}
 public slots:
 	virtual void availableTermsChanged(Terms *termsAdded, Terms *termsRemoved) {}
 	

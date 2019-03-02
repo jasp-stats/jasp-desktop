@@ -41,11 +41,6 @@ void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("levels", new OptionVariables());
-	_boundTo->setTemplate(templote);	
-	
 	vector<pair<string, vector<string> > > factors;
 	vector<Options*> allOptions = _boundTo->value();
 	

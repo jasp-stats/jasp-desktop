@@ -51,12 +51,6 @@ void BoundQMLTableView::bindTo(Option *option)
 
 	if (_boundTo != nullptr)
 	{
-		Options* templote = new Options();
-		templote->add("name", new OptionString());
-		templote->add("levels", new OptionVariables());
-		templote->add("values", new OptionDoubleArray());
-		_boundTo->setTemplate(templote);	
-		
 		std::vector<Options *> _groups = _boundTo->value();
 		std::vector<std::vector<double> > values;
 		std::vector<std::string> levels;

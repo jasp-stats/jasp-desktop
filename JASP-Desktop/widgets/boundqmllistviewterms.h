@@ -47,18 +47,22 @@ public:
 	virtual bool isOptionValid(Option* option) OVERRIDE;
 	
 	virtual void setTermsAreInteractions() OVERRIDE;	
+
+protected:
+	virtual void initExtraControlOptions(const QString &colName, Options *options);
 	
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;
 	void bindExtraControlOptions();
-
+	
 private:
 	OptionVariables* _optionVariables;
 	OptionsTable* _optionsTable;
 	ListModelAssignedInterface* _termsModel;
 	bool _singleItem		= false;
-	std::string _extraControlComponentName = "components";
 	
+	void extraOptionsChangedSlot(Option *option);
+	void updateNuisances(bool checked);
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

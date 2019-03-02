@@ -63,18 +63,6 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 	setTerms();
 }
 
-void ListModelInteractionAssigned::initExtraControlOptions(const QString &colName, Options *options)
-{
-	QString itemType = getItemType(colName);
-	if (itemType == "randomFactors")
-	{
-		// Really specific setting!! No idea to make it generic.
-		OptionBoolean* option = dynamic_cast<OptionBoolean*>(options->get("isNuisance"));
-		if (option)
-			option->setValue(true);
-	}
-}
-
 Terms *ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms* terms = new Terms;
@@ -135,7 +123,7 @@ void ListModelInteractionAssigned::availableTermsChanged(Terms *termsAdded, Term
 	}
 }
 
-QString ListModelInteractionAssigned::getItemType(const Term &term)
+QString ListModelInteractionAssigned::getItemType(const Term &term) const
 {
 	QString type;
 	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(source());	
@@ -144,7 +132,7 @@ QString ListModelInteractionAssigned::getItemType(const Term &term)
 		ListModel* model = _source->getSourceModelOfTerm(term);
 		if (model)
 		{
-			type = model->getItemType();
+			type = model->getItemType(term);
 			if (type.isEmpty() || type == "variables")
 				type = model->name();
 		}

@@ -41,6 +41,8 @@ protected:
 	
 	std::string _extraControlOptionName;
 	bool _hasExtraControls	= false;
+	std::string _nuisanceName;
+	bool _hasNuisanceControl = false;
 	
 	void addExtraOptions(Options* options);
 	
