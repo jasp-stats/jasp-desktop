@@ -63,7 +63,11 @@ The description.json file should contain the following fields:
       "license": "GPL (>= 2)"
     },
 
-    "requiredPackages": [],
+    "requiredPackages": [    
+		{ "package": "package1" },
+		{ "package": "package2" },
+		{ "package": "package3" }
+    ],
 
     "ribbonEntries":
     [
@@ -76,6 +80,11 @@ The description.json file should contain the following fields:
             "title": "Analysis Module",
             "qml": "analysisName.qml",
             "function": "analysisName"
+          }, 
+	  {
+            "title": "Analysis Module 2",
+            "qml": "analysisName2.qml",
+            "function": "analysisName2"
           }
         ]
       }
@@ -92,7 +101,7 @@ In the icons folder you should place a .svg that will be shown on the ribbon. Th
 In the qml folder you should place one .qml file per analysis. The names of these files should match the names you specify under `qml` in description.json. A detailed guide on creating QML files can be found [here](jasp-qml-guide.md).
 
 #### R
-In the R folder you should place your R file(s). You could add all your analyses to one file, or put them in separate files (recommended). The important part is that the name of your main function matches the name you specified under `function` in description.json. A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
+In the R folder you should place your R file(s). You could add all your analyses into one file, or store separately them into separate files (recommended). The important part is that the name of your main function matches the name you specified under `function` in description.json. A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
 
 ### Development Process
 To start developing your own module you should first create the folder structure as shown above. You do not need to add any of the .qml, .R or .svg files, you should, however, create the description.json. The first version of this file can be quite simple (i.e., with a single analysis); you will be able to update it at any point.
