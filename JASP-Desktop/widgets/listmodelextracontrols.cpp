@@ -98,7 +98,11 @@ void ListModelExtraControls::controlLoaded(const QString& name, QVariant item)
 					i.next();
 					quickItem->setProperty(i.key().toStdString().c_str(), i.value());
 				}
-				qmlControlType controlType = qmlControlTypeFromQString(extraColumn->type);
+				
+				qmlControlType controlType;
+				try						{ controlType	= qmlControlTypeFromQString(extraColumn->type);	}
+				catch(std::exception)	{ _assignedModel->addError(QString::fromLatin1("Unknown Control type: ") + extraColumn->type); controlType = qmlControlType::JASPControl; }
+				
 				BoundQMLItem* boundItem = nullptr;
 				switch(controlType)
 				{
