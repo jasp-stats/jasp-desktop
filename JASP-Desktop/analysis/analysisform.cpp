@@ -191,7 +191,9 @@ void AnalysisForm::_parseQML()
 		controlNames.append(controlName);
 
 		QMLItem *control = nullptr;
-		qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
+		qmlControlType controlType;
+		try						{ controlType	= qmlControlTypeFromQString(controlTypeStr);	}
+		catch(std::exception)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); continue; }
 
 		switch(controlType)
 		{
@@ -247,8 +249,12 @@ void AnalysisForm::_parseQML()
 			QString			listViewTypeStr = QQmlProperty(quickItem, "listViewType").read().toString();
 			qmlListViewType	listViewType;
 
-			try							{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
-			catch(std::out_of_range)	{ _errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(". Cannot set a model to the VariablesList")); }
+			try	{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
+			catch(std::exception)
+			{
+				_errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(" form VariablesList ") + controlName);
+				listViewType = qmlListViewType::AssignedVariables;
+			}
 
 			switch(listViewType)
 			{
