@@ -21,6 +21,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQml.Models 2.2
 import JASP.Theme 1.0
+import QtQuick.Layouts 1.3
 
 JASPControl
 {
@@ -487,12 +488,12 @@ JASPControl
 					font:					Theme.font
 				}
 				
-				Row
+				RowLayout
 				{
 					anchors.fill:			parent
 					anchors.rightMargin:	10  * preferencesModel.uiScale
 					spacing:				1
-					z:						10 * preferencesModel.uiScale
+					z:						10
 					
 					layoutDirection: Qt.RightToLeft
 					
@@ -504,6 +505,7 @@ JASPControl
 						{
 							source:			model.path
 							asynchronous:	false
+							Layout.topMargin:	-2
 							
 							onLoaded:		itemRectangle.extraColumnsModel.controlLoaded(model.name, item)
 						}
