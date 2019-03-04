@@ -75,20 +75,20 @@ QtObject {
 	readonly property int sliderLength:					80  * uiScale
 	readonly property int switchHeight:					15  * uiScale
 	readonly property int shadowRadius:					10  * uiScale
-	readonly property int comboBoxHeight:				22  * uiScale
+	readonly property int comboBoxHeight:				18  * uiScale
 	readonly property int textFieldWidth:				40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
-	readonly property int jaspControlPadding:			5   * uiScale
+	readonly property int jaspControlPadding:			3   * uiScale
 	readonly property int ribbonButtonHeight:			72  * uiScale
 	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
 	readonly property int sliderHandleDiameter:			16  * uiScale
 	readonly property int defaultTextAreaHeight:		250 * uiScale
-	readonly property int jaspControlHighlightWidth:	Math.max(2, 4 * uiScale)
+	readonly property int jaspControlHighlightWidth:	Math.max(2, 3 * uiScale)
 	readonly property int defaultSingleItemListHeight:	49  * uiScale
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
