@@ -81,7 +81,7 @@ Form
 
 		RadioButtonGroup
 		{
-			title: qsTr("Hypothesis")
+			title: qsTr("Alt. Hypothesis")
 			name: "hypothesis"
 			enabled: !hypergeometric.checked
 			RadioButton { value: "groupsNotEqual";	label: qsTr("Group one ≠ Group two"); checked: true	}

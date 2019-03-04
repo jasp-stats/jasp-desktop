@@ -33,7 +33,7 @@ Form
 
 	RadioButtonGroup
 	{
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		name: "hypothesis"
 		RadioButton { value: "notEqualToTestValue";		label: qsTr("≠ Test value"); checked: true	}
 		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value")					}

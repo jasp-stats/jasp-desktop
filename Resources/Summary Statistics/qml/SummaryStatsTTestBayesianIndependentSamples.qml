@@ -38,7 +38,7 @@ Form
 
 	RadioButtonGroup
 	{
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		name: "hypothesis"
 		RadioButton { value: "groupsNotEqual";	label: qsTr("Group 1 \u2260 Group 2"); checked: true	}
 		RadioButton { value: "groupOneGreater";	label: qsTr("Group 1 > Group 2")						}

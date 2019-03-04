@@ -47,7 +47,7 @@ Form
 	RadioButtonGroup
 	{
 		name: "hypothesis"
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		RadioButton { value: "correlated";				label: qsTr("Correlated"); checked: true	}
 		RadioButton { value: "correlatedPositively";	label: qsTr("Correlated positively")		}
 		RadioButton { value: "correlatedNegatively";	label: qsTr("Correlated negatively")		}
