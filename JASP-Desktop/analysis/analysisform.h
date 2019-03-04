@@ -83,7 +83,7 @@ public:
 	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
 
 protected:
-	void		_setAllAvailableVariablesModel();
+	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
 
 private:

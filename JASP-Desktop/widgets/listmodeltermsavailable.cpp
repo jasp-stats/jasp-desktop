@@ -57,7 +57,6 @@ void ListModelTermsAvailable::_resetTerms(const Terms &terms)
 	_allTerms.set(ordered);
 	_terms.removeParent();
 	_terms.set(ordered);
-
 	_terms.setSortParent(_allTerms);
 
 	endResetModel();	

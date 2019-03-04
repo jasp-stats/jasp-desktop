@@ -38,7 +38,7 @@ void ListModelTermsAssigned::initTerms(const Terms &terms)
 	if (source() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
-			source()->removeAssignedTerms(_terms);
+			source()->removeTermsInAssignedList();
 	}
 }
 
