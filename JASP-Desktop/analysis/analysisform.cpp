@@ -397,7 +397,7 @@ void AnalysisForm::_setErrorMessages()
 	}
 }
 
-void AnalysisForm::_setAllAvailableVariablesModel()
+void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 {
 	if (_allAvailableVariablesModels.size() == 0)
 		return;
@@ -409,7 +409,19 @@ void AnalysisForm::_setAllAvailableVariablesModel()
 			columnNames.push_back(column.name());
 
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
+	{
 		model->initTerms(columnNames);
+		if (refreshAssigned)
+		{
+			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
+			if (qmlAvailableListView)
+			{
+				const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
+				for (ListModelAssignedInterface* modelAssign : assignedModels)
+					modelAssign->refresh();
+			}
+		}
+	}
 }
 
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value& optionsFromJASPFile)
@@ -509,7 +521,7 @@ void AnalysisForm::_formCompletedHandler()
 void AnalysisForm::dataSetChanged()
 {
 	_dataSet = _analysis->getDataSet();
-	_setAllAvailableVariablesModel();
+	_setAllAvailableVariablesModel(true);
 }
 
 

@@ -21,10 +21,15 @@
 #include "qmllistviewtermsavailable.h"
 
 
-void ListModelAvailableInterface::removeAssignedTerms(const Terms &terms)
+void ListModelAvailableInterface::initTerms(const Terms &terms)
 {
 	beginResetModel();
-	_terms.remove(terms);
+	
+	ListModelDraggable::initTerms(terms);
+	_allTerms = _terms;
+	_terms.setSortParent(_allTerms);
+	removeTermsInAssignedList();
+	
 	endResetModel();
 }
 
@@ -62,6 +67,11 @@ void ListModelAvailableInterface::setChangedTerms(const Terms &newTerms)
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
 {
+	beginResetModel();
+	
+	_terms = _allTerms;
+	_terms.setSortParent(_allTerms);
+	
 	QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(listView());
 	if (qmlAvailableListView)
 	{
@@ -72,6 +82,8 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 				_terms.remove(modelAssign->terms());
 		}
 	}
+	
+	endResetModel();
 }
 
 
