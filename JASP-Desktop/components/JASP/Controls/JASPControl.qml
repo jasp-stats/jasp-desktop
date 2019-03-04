@@ -58,7 +58,7 @@ FocusScope
 				background = control.background
 		}
 		
-		if (childControlsArea && childControlsArea.children.length > 0)
+		if (typeof(getJASPControls) === "function" && childControlsArea && childControlsArea.children.length > 0)
 		{
 			getJASPControls(childControls, childControlsArea, false)
 			if (controlType != "Expander")

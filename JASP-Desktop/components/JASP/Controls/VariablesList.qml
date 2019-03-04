@@ -27,7 +27,8 @@ JASPControl
 	id:					variablesList
 	controlType:		"VariablesListView"
 	background:			rectangle
-	implicitWidth:		parent.width
+	width:				parent.width
+	implicitWidth:		width
 	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height
 	useControlMouseArea:	false
@@ -53,6 +54,9 @@ JASPControl
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
 	property bool	showVariableTypeIcon:	true
+	property bool	setWidthInForm:		false
+	property bool	setHeightInForm:	false
+	
 	
 	property var	extraControlColumns:		[]
 	property string extraControlOptionName:		""

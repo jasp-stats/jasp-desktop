@@ -19,6 +19,5 @@
 VariablesList
 {
     listViewType: "AssignedVariables"
-    dropMode: "Insert"
-
+    dropMode: "Insert"	
 }

@@ -26,12 +26,16 @@ JASPControl
 {
 	id:							repeatedMeasuresFactorsList
 	controlType:				"RepeatedMeasuresFactorsList"
-	implicitWidth:				parent.width
-	implicitHeight:				Theme.defaultListHeight
+	width:						parent.width
+	implicitWidth:				width
+	height:						Theme.defaultListHeight
+	implicitHeight:				height
 	background:					rectangle
 
 				property var	model
 				property string title
+				property bool	setWidthInForm: false
+				property bool	setHeightInForm: false
 	readonly	property string deleteIcon: "dialog-close.png"
 
 	signal itemChanged(int index, var name);
