@@ -258,9 +258,9 @@ void AnalysisForm::_parseQML()
 			case qmlListViewType::RepeatedMeasures:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);		break;
 			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);				break;
 			case qmlListViewType::AvailableVariables:
-			case qmlListViewType::AvailableInteracton:
+			case qmlListViewType::AvailableInteraction:
 			{
-				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteracton);
+				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteraction);
 				listView = availableVariablesListView;
 				if (availableVariablesListView->sourceModels().isEmpty()) // If there is no sourceModels, set all available variables.
 				{
