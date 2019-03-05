@@ -89,7 +89,7 @@ Form {
 		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -121,7 +121,7 @@ Form {
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 		
@@ -148,7 +148,7 @@ Form {
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Advanced Options")
 		

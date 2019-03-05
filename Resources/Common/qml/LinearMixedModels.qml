@@ -74,7 +74,7 @@ Form
 	}
 
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Fixed Effects")
 
@@ -98,7 +98,7 @@ Form
 		CheckBox { label: qsTr("Test intercept"); name: "testIntercept" }
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Random Effects")
 
@@ -120,7 +120,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Post Hoc Tests")
 
@@ -147,7 +147,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Descriptives Plots")
 
@@ -161,7 +161,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Assumption Checks")
 
@@ -180,7 +180,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Contrasts")
 
@@ -198,7 +198,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Additional Options")
 		columns: 1
@@ -244,7 +244,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Simple Main Effects")
 
@@ -258,7 +258,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Non parametrics")
 

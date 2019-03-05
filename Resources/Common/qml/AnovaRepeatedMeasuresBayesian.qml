@@ -93,7 +93,7 @@ Form
 		RadioButton { value: "bestModelTop";	label: qsTr("Compare to best model")					}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 
@@ -126,7 +126,7 @@ Form
 	}
 
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Post Hoc Tests")
 
@@ -144,7 +144,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Descriptives Plots")
 		columns: 1
@@ -167,7 +167,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Additional Options")
 

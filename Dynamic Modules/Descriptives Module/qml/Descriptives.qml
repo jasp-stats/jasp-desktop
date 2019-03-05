@@ -35,7 +35,7 @@ Form
 
 	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 
@@ -65,7 +65,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		alignChildrenTopLeft: true
@@ -131,7 +131,7 @@ Form
 		CheckBox { name: "statisticsValuesAreGroupMidpoints"; label: qsTr("Values are group midpoints"); debug: true }
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Charts")
 		debug: true

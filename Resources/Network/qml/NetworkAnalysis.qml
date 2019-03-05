@@ -75,7 +75,7 @@ Form
 		}
 	}
 
-	ExpanderButton 
+	Section 
 	{
 		title: qsTr("Analysis Options - ") + estimator.currentText
 
@@ -222,7 +222,7 @@ Form
 		}
 	}
 
-	ExpanderButton 
+	Section 
 	{
 		title: qsTr("Bootstrap Options")
 		
@@ -254,7 +254,7 @@ Form
 		}
 	}
 	
-	ExpanderButton 
+	Section 
 	{
 		title: qsTr("Graphical Options")
 		

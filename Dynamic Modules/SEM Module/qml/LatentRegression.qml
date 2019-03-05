@@ -49,7 +49,7 @@ Form {
 
 
 
-    ExpanderButton {
+	Section {
         text: qsTr("Model options")
         GridLayout {
             GroupBox {
@@ -93,7 +93,7 @@ Form {
         }
     }
     
-    ExpanderButton {
+	Section {
         text: qsTr("Additional output")
         CheckBox { text: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
         CheckBox { text: qsTr("Residual covariance matrix") ; name: "residCov"   }
@@ -110,7 +110,7 @@ Form {
         CheckBox { text: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
     }
 
-    ExpanderButton {
+	Section {
         text: qsTr("Multigroup CFA")
         ComboBox { 
             label.text: qsTr("Grouping variable") ; 
@@ -131,7 +131,7 @@ Form {
         
     }
 
-    ExpanderButton {
+	Section {
         text: qsTr("Plots")
         GroupBox {
             title: "Plots"
@@ -142,7 +142,7 @@ Form {
         }   
     }
     
-    ExpanderButton {
+	Section {
         text: qsTr("Advanced")
         GridLayout {
             GroupBox {
