@@ -1,4 +1,6 @@
 #include "actionbuttons.h"
+#include <QObject>
+#include <QtQml>
 
 //property variant actionbuttons:			["Open", "Save","Save As", "Export Results", "Export Data","Sync Data", "Close"]
 
@@ -10,12 +12,14 @@ ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
 		{FileOperation::ExportResults,	"Export Results",	false},
 		{FileOperation::ExportData,		"Export Data",		false},
 		{FileOperation::SyncData,		"Sync Data",		false},
-		{FileOperation::Preferences,	"Preferences",		true},
-		{FileOperation::Close,			"Close",			false}
+		{FileOperation::Close,			"Close",			false},
+		{FileOperation::Preferences,	"Preferences",		true}
 	})
 {
 	for(size_t i=0; i<_data.size(); i++)
 		_opToIndex[_data[i].operation] = i;
+
+	qmlRegisterUncreatableType<ActionButtons>("FileOperation",1,0,"FileOperation","Impossible create a FileOperation Object");
 }
 
 
@@ -64,7 +68,7 @@ QHash<int, QByteArray>	ActionButtons::roleNames() const
 
 void ActionButtons::buttonClicked(int fileOperation)
 {
-	if(fileOperation < Open || fileOperation > Close)
+	if(fileOperation < Open || fileOperation > Preferences)
 		throw std::runtime_error("This should not be happening!");
 
 	FileOperation op = static_cast<FileOperation>(fileOperation);
