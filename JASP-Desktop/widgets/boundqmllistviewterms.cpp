@@ -37,7 +37,8 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 	_optionsTable = nullptr;
 	_optionVariables = nullptr;
 	_singleItem = QQmlProperty(_item, "singleVariable").read().toBool();
-	QString extraControlOptionName = QQmlProperty(_item, "extraControlOptionName").read().toString();
+	QString extraControlOptionName = _item->property("extraControlOptionName").toString();
+	bool addAvailableTermsToAssigned = _item->property("addAvailableVariablesToAssigned").toBool();
 	
 	if (extraControlOptionName.isEmpty())
 		_extraControlOptionName = interaction ? "components" : "variable";
@@ -45,7 +46,7 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 		_extraControlOptionName = extraControlOptionName.toStdString();
 	
 	if (interaction)
-		_termsModel = new ListModelInteractionAssigned(this);
+		_termsModel = new ListModelInteractionAssigned(this, addAvailableTermsToAssigned);
 	else
 		_termsModel = new ListModelTermsAssigned(this, _singleItem);
 	

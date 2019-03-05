@@ -32,7 +32,7 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface, public I
 	enum AssignType { Cross = 0, MainEffects, Interaction, All2Way, All3Way, All4Way, All5Way };
 	
 public:
-	ListModelInteractionAssigned(QMLListView* listView);
+	ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned);
 
 	virtual void initTerms(const Terms &terms) OVERRIDE;
 	
