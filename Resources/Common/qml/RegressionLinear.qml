@@ -45,7 +45,7 @@ Form
 	}
 	
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -77,7 +77,7 @@ Form
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -154,7 +154,7 @@ Form
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		columns: 1
@@ -196,7 +196,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 		

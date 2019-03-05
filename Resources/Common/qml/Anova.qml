@@ -40,7 +40,7 @@ Form
 		AssignedVariablesList { name: "wlsWeights";		title: qsTr("WLS Weights");			allowedColumns: ["scale"]; singleVariable: true }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -65,7 +65,7 @@ Form
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Assumption Checks")
 		
@@ -84,7 +84,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Contrasts")
 		
@@ -99,7 +99,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Post Hoc Tests")
 		
@@ -138,7 +138,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Descriptives Plots")
 		
@@ -172,7 +172,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Additional Options")
 		columns: 1
@@ -215,7 +215,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Simple Main Effects")
 		
@@ -229,7 +229,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Nonparametrics")
 		

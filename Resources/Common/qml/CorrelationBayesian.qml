@@ -78,7 +78,7 @@ Form
 		DoubleField { name: "priorWidth"; label: qsTr("Stretched beta prior width"); defaultValue: 1.0; max: 2; decimals: 1 }
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		

@@ -49,7 +49,7 @@ AnalysisForm
 		{
 			var child = item.children[i];
 			
-			if (child instanceof ExpanderButton)
+			if (child.objectName === "Section")
 			{
 				controls.push(child.button);
 				getJASPControls(controls, child.childControlsArea, deep);

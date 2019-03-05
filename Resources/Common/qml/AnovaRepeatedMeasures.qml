@@ -60,7 +60,7 @@ Form
 	}
 	
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -92,7 +92,7 @@ Form
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Assumption Checks")
 
@@ -111,13 +111,13 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Contrasts")
 		ContrastsList { source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Post Hoc Tests")
 		columns: 1
@@ -146,7 +146,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Descriptives Plots")
 		columns: 1
@@ -185,7 +185,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Additional Options")
 		columns: 1
@@ -235,7 +235,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Simple Main Effects")
 		
@@ -251,7 +251,7 @@ Form
 		CheckBox { name: "poolErrorTermSimpleEffects"; label: qsTr("Pool error terms") }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Nonparametrics")
 		

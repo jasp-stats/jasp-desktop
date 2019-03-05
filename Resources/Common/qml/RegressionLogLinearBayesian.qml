@@ -48,7 +48,7 @@ Form
 		DoubleField { name: "posteriorProbabilityCutOff";	label: qsTr("Posterior prob."); defaultValue: 0.1 ; max: 0.5 }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -61,7 +61,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -104,7 +104,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Advanced")
 		

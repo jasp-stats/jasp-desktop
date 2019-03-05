@@ -28,6 +28,7 @@ FocusScope
 	anchors.topMargin:	15 * preferencesModel.uiScale
 	clip:				true
 	L.Layout.columnSpan: form.columns
+	objectName:			"Section"
 
 	default		property alias	content:		expanderArea.children
 				property alias	button:			expanderButton

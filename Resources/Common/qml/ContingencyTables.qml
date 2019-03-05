@@ -32,7 +32,7 @@ Form
 		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	allowedColumns: ["ordinal", "nominal"]; listViewType: "Layers"; height: 120 }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -90,7 +90,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Cells")
 		
@@ -134,7 +134,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		

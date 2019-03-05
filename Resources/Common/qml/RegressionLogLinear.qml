@@ -30,7 +30,7 @@ Form
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }			
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -42,7 +42,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		

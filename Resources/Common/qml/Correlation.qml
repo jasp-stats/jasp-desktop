@@ -72,7 +72,7 @@ Form
 
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		debug: true

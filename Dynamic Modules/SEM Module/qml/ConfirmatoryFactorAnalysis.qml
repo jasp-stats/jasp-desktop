@@ -31,7 +31,7 @@ Form
 		initNumberFactors: 1
     }        
     
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Second-order factor")
 		SEM.FactorsForm
@@ -55,7 +55,7 @@ Form
         }
     }
 
-	ExpanderButton
+	Section
 	{
         title: qsTr("Model options")
 		GridLayout
@@ -105,7 +105,7 @@ Form
         }
     }
     
-    ExpanderButton {
+	Section {
         title: qsTr("Additional output")
         CheckBox { label: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
         CheckBox { label: qsTr("Residual covariance matrix") ; name: "residCov"   }
@@ -122,7 +122,7 @@ Form
         CheckBox { label: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
     }
 
-    ExpanderButton {
+	Section {
         text: qsTr("Multigroup CFA")
         DropDown { 
             label: qsTr("Grouping variable") ; 
@@ -143,7 +143,7 @@ Form
         
     }
 
-    ExpanderButton {
+	Section {
         text: qsTr("Plots")
         GroupBox {
             title: "Plots"
@@ -154,7 +154,7 @@ Form
         }   
     }
     
-    ExpanderButton {
+	Section {
         text: qsTr("Advanced")
         GridLayout {
             GroupBox {

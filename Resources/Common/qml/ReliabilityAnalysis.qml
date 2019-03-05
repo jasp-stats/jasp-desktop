@@ -64,7 +64,7 @@ Form
 		CheckBox { name: "itemRestCor";						label: qsTr("Item-rest correlation")				}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Reverse-Scaled Items")
 		
@@ -76,7 +76,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Advanced Options")
 		
