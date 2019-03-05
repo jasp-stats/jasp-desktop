@@ -53,10 +53,11 @@ class FileMenu : public QObject
 	Q_PROPERTY(ResourceButtonsVisible * resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		)
 
 public:
+
 	enum FileLocation { Recent = 0, Current, ThisComputer, Osf, Examples, CountLocations };
 
 	Q_ENUM(FileMenuListItemType)
-	
+
 	explicit FileMenu(QObject *parent = nullptr);
 	virtual ~FileMenu() {}
 	

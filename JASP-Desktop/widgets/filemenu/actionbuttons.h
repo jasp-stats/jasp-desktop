@@ -8,7 +8,7 @@ class ActionButtons : public QAbstractListModel
 {
 	Q_OBJECT
 public:
-	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Preferences, Close};
+	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences};
 	Q_ENUM(FileOperation)
 
 	struct DataRow { FileOperation operation; QString name; bool enabled; };
