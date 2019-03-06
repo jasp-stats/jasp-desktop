@@ -25,7 +25,7 @@ RadioButtonGroup
 {
     title: qsTr("Bayes Factor")                     ; name: "bayesFactorType"
 
-    RadioButton { text: qsTr("BF\u2081\u2080")      ; name: "BF10"; checked: true }
-    RadioButton { text: qsTr("BF\u2080\u2081")      ; name: "BF01"                }
-    RadioButton { text: qsTr("Log(BF\u2081\u2080)") ; name: "LogBF10"             }
+    RadioButton { label: qsTr("BF\u2081\u2080")      ; name: "BF10"; checked: true }
+    RadioButton { label: qsTr("BF\u2080\u2081")      ; name: "BF01"                }
+    RadioButton { label: qsTr("Log(BF\u2081\u2080)") ; name: "LogBF10"             }
 }

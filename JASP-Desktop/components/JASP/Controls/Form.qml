@@ -91,9 +91,7 @@ AnalysisForm
 			top:		form.top
 			left:		form.left
 		}
-		
-		Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
-		
+				
 		Rectangle
 		{
 			property alias text:	errorMessagesText.text
