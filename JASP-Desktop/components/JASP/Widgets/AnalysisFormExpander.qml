@@ -6,7 +6,7 @@ import JASP.Theme		1.0
 Rectangle
 {
 	id:					expanderButton
-	height:				loaderAndError.y + (expanderButton.expanded ?  loaderAndError.height : 0)
+	height:				loaderAndError.y
 	width:				Theme.formWidth
 	clip:				true
 
@@ -28,10 +28,21 @@ Rectangle
 		else												analysesModel.selectAnalysisAtRow(myIndex);
 	}
 
-	Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; } }
+	states: [
+		State {
+			name: "expanded"
+			when: expanderButton.expanded
+			PropertyChanges {
+				target: expanderButton
+				height: loaderAndError.y + loaderAndError.height
+			}
+		}
+	]
 
-	//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
-
+	transitions: Transition {
+		NumberAnimation { property: "height"; duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+	}
+	
 	Item
 	{
 		id:				expanderRectangle
