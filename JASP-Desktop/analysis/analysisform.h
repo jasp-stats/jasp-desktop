@@ -58,6 +58,8 @@ public:
 				void			illegalValueHandler(Bound *source);
 
 				void			runRScript(QString script, QString controlName);
+				
+	virtual		void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) OVERRIDE;
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
@@ -102,10 +104,6 @@ protected:
 	QVector<QMLItem*>						_orderedControls;	
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::map<QString, ListModel* >			_modelMap;
-
-
-
-protected:
 	DataSet							*_dataSet;
 	Options							*_options;
 
@@ -116,6 +114,7 @@ protected:
 	std::list<Bound *>				_bounds;
 	bool							_hasIllegalValue;
 	QString							_illegalMessage;
+	bool							_removed = false;
 	
 private:
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
