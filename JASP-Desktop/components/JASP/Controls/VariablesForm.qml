@@ -71,8 +71,8 @@ Item
 			{
 				allAssignedVariablesList[index].activeFocusChanged.connect(assignButton.setIconToLeft);
 				availableVariablesList.activeFocusChanged.connect(assignButton.setIconToRight);
-				allAssignedVariablesList[index].hasSelectedItemsChanged.connect(assignButton.setDisabledState);
-				availableVariablesList.hasSelectedItemsChanged.connect(assignButton.setDisabledState);
+				allAssignedVariablesList[index].hasSelectedItemsChanged.connect(assignButton.setState);
+				availableVariablesList.hasSelectedItemsChanged.connect(assignButton.setState);
 			}
 		}
 	}

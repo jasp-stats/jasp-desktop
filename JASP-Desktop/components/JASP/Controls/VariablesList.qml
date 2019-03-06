@@ -50,7 +50,7 @@ JASPControl
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
-	property bool	hasSelectedItems:	false; // Binding does not work on array length: listView.selectedItems.length > 0;
+	property alias	selectedItems:		listView.selectedItems
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
@@ -70,15 +70,11 @@ JASPControl
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex);
-	
-	function selectedItemsChanged()
-	{
-		hasSelectedItems = (listView.selectedItems.length > 0);
-	}
-	
+	signal hasSelectedItemsChanged();
+		
 	function moveSelectedItems(target)
 	{
-		if (!hasSelectedItems) return;
+		if (listView.selectedItems.length === 0) return;
 		
 		var selectedIndexes = [];
 		for (var i = 0; i < listView.selectedItems.length; i++)
@@ -330,7 +326,7 @@ JASPControl
 				if (!added)
 					selectedItems.push(item);
 				
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function removeSelectedItem(item)
@@ -348,7 +344,7 @@ JASPControl
 						break;
 					}
 				}
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectItem(item, selected)
@@ -366,7 +362,7 @@ JASPControl
 					selectedItems[i].selected = false;
 				}
 				selectedItems = [];
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectShiftItems(selected)

@@ -34,8 +34,9 @@ Button
 
 	readonly	property string iconToLeft:		"qrc:/images/arrow-left.png"
 	readonly	property string iconToRight:	"qrc:/images/arrow-right.png"
+	
 	text:			""
-
+	enabled:		false
 	image.source:	leftToRight ? iconToRight : iconToLeft
     
 	control.width:	40 * preferencesModel.uiScale
@@ -49,12 +50,28 @@ Button
 
 	function setIconToRight()	{ if (leftSource.activeFocus)	 leftToRight = true;	}
 	function setIconToLeft()	{ if (rightSource.activeFocus) leftToRight = false;		}
-	function setDisabledState() { state = source.hasSelectedItems ? "" : "disabled"		}
+	function setState()
+	{
+		var result = false;
+		if (source.selectedItems.length > 0)
+		{
+			if (target.allowedColumns.length > 0)
+			{
+				result = true;
+				for (var i = 0; i < source.selectedItems.length; i++)
+				{
+					var item = source.selectedItems[i];
+					if (!target.allowedColumns.includes(item.columnType))
+						result = false;
+				}
+			}
+			else
+				result = true;
+		}
 
-	onSourceChanged:	setDisabledState()
+		enabled = result
+	}
 
-    Component.onCompleted: {
-        state = "disabled";
-    }
+	onSourceChanged:	setState()
 
 }
