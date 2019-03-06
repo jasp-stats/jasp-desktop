@@ -314,6 +314,8 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #endif
 
 	QDir rHome(rHomePath);
+	std::cout << "R_HOME set to " << rHomePath.toStdString();
+	std::cout.flush();
 
 #ifdef __WIN32__
 
