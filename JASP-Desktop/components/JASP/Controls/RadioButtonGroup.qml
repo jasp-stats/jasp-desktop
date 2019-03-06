@@ -24,9 +24,9 @@ import JASP.Theme		1.0
 
 JASPControl
 {
-	id:				control
-	controlType:	"RadioButtonGroup"
-	hasTabFocus:	false
+	id:					control
+	controlType:		"RadioButtonGroup"
+	activeFocusOnTab:	false
 	childControlsArea:	contentArea
 
 	default property alias	content:		contentArea.children

@@ -8,10 +8,10 @@ import JASP 1.0
 
 JASPControl
 {
-	id:				tableView
+	id:					tableView
     
-	controlType:	"TableView"
-	hasTabFocus:	false
+	controlType:		"TableView"
+	activeFocusOnTab:	false
     
 	property var	source
 	property alias	syncModels:	tableView.source

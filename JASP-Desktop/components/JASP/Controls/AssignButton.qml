@@ -22,8 +22,8 @@ import JASP.Theme	1.0
 
 Button
 {
-	id:				button
-	hasTabFocus:	false
+	id:					button
+	activeFocusOnTab:	false
 
 				property var	leftSource;
 				property var	rightSource;
