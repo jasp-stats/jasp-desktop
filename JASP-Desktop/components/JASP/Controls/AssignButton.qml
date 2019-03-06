@@ -60,8 +60,9 @@ Button
 				result = true;
 				for (var i = 0; i < source.selectedItems.length; i++)
 				{
-					var item = source.selectedItems[i];
-					if (!target.allowedColumns.includes(item.columnType))
+					var itemType = source.selectedItems[i].columnType;
+					if (itemType === "nominalText") itemType = "nominal";
+					if (!target.allowedColumns.includes(itemType))
 						result = false;
 				}
 			}
