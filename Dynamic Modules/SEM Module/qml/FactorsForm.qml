@@ -73,8 +73,8 @@ JASPControl
 					{
 						activeFocusChanged.connect(button.setIconToLeft);
 						availableVariablesList.activeFocusChanged.connect(button.setIconToRight);
-						hasSelectedItemsChanged.connect(button.setDisabledState);
-						availableVariablesList.hasSelectedItemsChanged.connect(button.setDisabledState);
+						hasSelectedItemsChanged.connect(button.setState);
+						availableVariablesList.hasSelectedItemsChanged.connect(button.setState);
 						factorsForm.factorAdded(index, factorList);
 						factorsForm.calculateHeight();
 					}
