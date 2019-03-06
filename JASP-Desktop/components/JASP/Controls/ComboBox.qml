@@ -72,6 +72,7 @@ JASPControl {
 							textRole:		comboBox.textRole
 			property int	modelWidth:		30 * preferencesModel.uiScale
 			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
+							font:			Theme.font
 							
 			Layout.leftMargin: controlLabel.visible ? 0 : -labelSpacing
 							

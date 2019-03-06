@@ -475,7 +475,7 @@ JASPControl
 				Text
 				{
 					id:						colName
-					x:						variablesList.showVariableTypeIcon ? 20 : 4
+					x:						(variablesList.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale
 					text:					model.name
 					width:					itemRectangle.width - x
 					elide:					Text.ElideRight
