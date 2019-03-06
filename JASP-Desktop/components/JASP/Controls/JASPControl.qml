@@ -25,7 +25,6 @@ FocusScope
 
 	property string	controlType:			"JASPControl"
 	property string name:					""
-	property bool	hasTabFocus:			true
 	property bool	isBound:				true
 	property bool	debug:					false
 	property var	background:				null
@@ -37,6 +36,8 @@ FocusScope
 	property var	childControlsArea:		null
 	property var	childControls:			[]
 	property bool	childControlHasFocus:	false
+	
+	activeFocusOnTab: true
 	
 	function setDebugState()
 	{
@@ -78,7 +79,7 @@ FocusScope
 	states: [
 		State
 		{
-			when: jaspControl.activeFocus && jaspControl.hasTabFocus && !jaspControl.childControlHasFocus
+			when: jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
 			PropertyChanges
 			{
 				target:			focusIndicator

@@ -56,7 +56,7 @@ AnalysisForm
 			}
 			else if (child instanceof JASPControl)
 			{
-				if (child.hasTabFocus)
+				if (child.activeFocusOnTab)
 				{
 					controls.push(child);
 					if (child.childControlsArea && deep)
@@ -145,7 +145,7 @@ AnalysisForm
 			if (previousExpander)
 				previousExpander.nextExpander = jaspControls[0];
 			
-			for (var i = 0; i < jaspControls.length; i++) {
+			for (i = 0; i < jaspControls.length; i++) {
 				if (jaspControls[i].indent)
 					jaspControls[i].L.Layout.leftMargin = Theme.indentationLength
 			}
