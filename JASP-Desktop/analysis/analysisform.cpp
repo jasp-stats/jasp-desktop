@@ -140,6 +140,13 @@ void AnalysisForm::runRScript(QString script, QString controlName)
 	emit _analysis->sendRScript(_analysis, script, controlName);
 }
 
+void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
+{
+	if (change == ItemChange::ItemSceneChange)
+		_removed = value.window ? true : false;
+	QQuickItem::itemChange(change, value);
+}
+
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
 {	
 	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
@@ -520,8 +527,11 @@ void AnalysisForm::_formCompletedHandler()
 
 void AnalysisForm::dataSetChanged()
 {
-	_dataSet = _analysis->getDataSet();
-	_setAllAvailableVariablesModel(true);
+	if (_removed)
+	{
+		_dataSet = _analysis->getDataSet();
+		_setAllAvailableVariablesModel(true);
+	}
 }
 
 
