@@ -143,7 +143,7 @@ void AnalysisForm::runRScript(QString script, QString controlName)
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange)
-		_removed = value.window ? true : false;
+		_removed = value.window ? false : true;
 	QQuickItem::itemChange(change, value);
 }
 
@@ -527,7 +527,7 @@ void AnalysisForm::_formCompletedHandler()
 
 void AnalysisForm::dataSetChanged()
 {
-	if (_removed)
+	if (!_removed)
 	{
 		_dataSet = _analysis->getDataSet();
 		_setAllAvailableVariablesModel(true);
