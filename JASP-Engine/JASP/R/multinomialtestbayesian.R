@@ -261,6 +261,14 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
       k <- counts[i]
       a <- alphas[i]
       b <- sum(alphas[-i])
+
+      print(paste0('lower: ', lower))
+      print(paste0('upper: ', upper))
+      print(paste0('a: ', a))
+      print(paste0('k: ', k))
+      print(paste0('b: ', b))
+      print(paste0('N: ', N))
+
       medianCI[i, ] <- qbeta(c(lower, upper), a + k, b + N - k)
     }
 

@@ -30,6 +30,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
   if (base::exists(".requestStateFileNameNative")) {
     location <- .fromRCPP(".requestStateFileNameNative")
     root <- location$root
+    dir.create(root)
     base::Encoding(root) <- "UTF-8"
     oldwd <- getwd()
     setwd(root)
@@ -1638,7 +1639,7 @@ isTryError <- function(obj){
 	base::Encoding(relativePath) <- "UTF-8"
 
 	try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
-  
+
 	return(list(relativePath = relativePath))
 }
 
@@ -2658,7 +2659,7 @@ if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
 rewriteImages <- function() {
   state    <- .retrieveState()
   oldPlots <- state[["figures"]]
-  
+
   for (i in seq_along(oldPlots)) {
     try({
       plotName <- names(oldPlots)[i]
@@ -2669,7 +2670,7 @@ rewriteImages <- function() {
       invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathpng = plotName))
     })
   }
-  
+
   return(NULL)
 }
 
