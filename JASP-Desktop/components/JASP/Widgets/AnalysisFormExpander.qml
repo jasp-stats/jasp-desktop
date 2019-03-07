@@ -86,7 +86,7 @@ Rectangle
 				height:	expanderIcon.height * 2
 			}
 		}
-		
+
 		Text
 		{
 			id:			label
@@ -145,7 +145,7 @@ Rectangle
 	{
 		id:		loaderAndError
 		height:	Math.max(loader.height, errorRect.height * preferencesModel.uiScale)
-		
+
 		anchors
 		{
 			top:				expanderRectangle.bottom
@@ -162,7 +162,7 @@ Rectangle
 			color:			Theme.errorMessagesBackgroundColor
 			width:			parent.width
 			height:			visible ? errorMessagesText.height : 0
-			
+
 			Text
 			{
 				id:					errorMessagesText
@@ -174,8 +174,7 @@ Rectangle
 				wrapMode: Text.Wrap
 			}
 		}
-		
-	
+
 		Loader
 		{
 			id:					loader
