@@ -36,11 +36,16 @@ Rectangle
 				target: expanderButton
 				height: loaderAndError.y + loaderAndError.height
 			}
+			PropertyChanges {
+				target: expanderIcon	
+				rotation: 90
+			}
 		}
 	]
 
 	transitions: Transition {
 		NumberAnimation { property: "height"; duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+		RotationAnimation { duration: 250 }
 	}
 	
 	Item
@@ -63,25 +68,44 @@ Rectangle
 			cursorShape:	Qt.PointingHandCursor
 		}
 
-		Image
+		Canvas
 		{
-			id:					icon
-			height:				expanderRectangle.height
-			width:				height
-			source:				iconsFolder + (expanded ? expandedIcon : contractedIcon)
-			sourceSize.width:	width * 2
-			sourceSize.height:	height * 2
+			id:				expanderIcon
 			anchors
 			{
 				left:			parent.left
 				leftMargin:		6 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
-
-			readonly property string iconsFolder:		"qrc:/images/"
-			readonly property string expandedIcon:		"expander-arrow-down.png"
-			readonly property string contractedIcon:	"expander-arrow-up.png"
+			height:			expanderRectangle.height / 2
+			width:			height
+			contextType:	"2d"	
+			onPaint:
+			{
+				context.reset();
+				context.moveTo(0, 0);
+				context.lineTo(width, height/2);
+				context.lineTo(0, height);
+				context.closePath();
+				context.fillStyle = Theme.grayDarker;
+				context.fill();
+			}
 		}
+		
+		Rectangle
+		{
+			id: expanderSeparator
+			anchors
+			{
+				left:			parent.left
+				leftMargin:		expanderRectangle.height
+				verticalCenter:	parent.verticalCenter
+			}
+			width: 2
+			height: expanderRectangle.height
+			border.width: 1
+			border.color: Theme.grayDarker
+		}		
 
 		Text
 		{
@@ -90,7 +114,7 @@ Rectangle
 			font:		Theme.fontLabel
 			anchors
 			{
-				left:			icon.right
+				left:			expanderSeparator.right
 				right:			helpButton.left
 				margins:		5 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter

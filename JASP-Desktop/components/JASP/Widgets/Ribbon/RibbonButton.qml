@@ -96,13 +96,14 @@ Rectangle
 				if (modulesMenu.opened)		modulesMenu.opened  = false
 
 				if (ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
 				else
 				{
 					var functionCall = function (index)
 					{
-						var analysis = customMenu.props['model'].getFunctionName(index);
-						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						var analysisName = customMenu.props['model'].getAnalysisName(index);
+						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
+						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.ribbonTitle, ribbonButton.moduleName)
 						customMenu.visible = false;
 					}
 

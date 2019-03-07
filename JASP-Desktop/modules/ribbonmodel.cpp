@@ -163,6 +163,16 @@ void RibbonModel::setModuleEnabled(int ribbonButtonModelIndex, bool enabled)
 	}
 }
 
+Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string& moduleName, const std::string& analysisName)
+{
+	Modules::AnalysisEntry* analysis = nullptr;
+	RibbonButtonModel* ribbonButton = ribbonButtonModel(moduleName);
+	if (ribbonButton)
+		analysis = ribbonButton->getAnalysis(analysisName);
+	
+	return analysis;
+}
+
 void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)
 {
 	if(ribbonButtonModelIndex < 0)

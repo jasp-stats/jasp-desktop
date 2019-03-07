@@ -48,3 +48,14 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 
 	return roles;
 }
+
+Modules::AnalysisEntry *AnalysisMenuModel::getAnalysisEntry(const std::string& name)
+{
+	for (Modules::AnalysisEntry* analysis : _analysisEntries)
+	{
+		if (analysis->function() == name)
+			return analysis;
+	}
+	
+	return nullptr;
+}

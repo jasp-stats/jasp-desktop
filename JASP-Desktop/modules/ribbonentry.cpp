@@ -58,13 +58,13 @@ AnalysisEntry* RibbonEntry::retrieveCorrespondingAnalysisEntry(const Json::Value
 	return analysisEntry(analysisTitle);
 }
 
-AnalysisEntry* RibbonEntry::analysisEntry(const std::string & analysisTitle) const
+AnalysisEntry* RibbonEntry::analysisEntry(const std::string & analysisName) const
 {
 	for(AnalysisEntry * entry : _analysisEntries)
-		if(entry->title() == analysisTitle || entry->function() == analysisTitle)
+		if(entry->title() == analysisName || entry->function() == analysisName)
 			return entry;
 
-	throw ModuleException(dynamicModule()->name(), "Couldn't find AnalysisEntry " + analysisTitle);
+	throw ModuleException(dynamicModule()->name(), "Couldn't find AnalysisEntry " + analysisName);
 }
 
 std::string RibbonEntry::icon() const

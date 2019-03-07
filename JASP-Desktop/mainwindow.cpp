@@ -900,7 +900,7 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			{
 				try
 				{
-					_analyses->createFromJaspFileEntry(analysisData);
+					_analyses->createFromJaspFileEntry(analysisData, _ribbonModel);
 				}
 				catch (Modules::ModuleException modProb)
 				{
