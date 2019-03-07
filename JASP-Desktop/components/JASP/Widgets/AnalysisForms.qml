@@ -152,10 +152,10 @@ FocusScope
 						delegate: AnalysisFormExpander
 						{
 							myIndex:			index
-							myID:				analysisID
-							analysisTitle:		name
-							myAnalysis:         analysis
-							formQmlUrl:			formPath
+							myID:				model.analysisID
+							analysisTitle:		model.displayText
+							myAnalysis:         model.analysis
+							formQmlUrl:			model.formPath
 						}
 					}
 				}

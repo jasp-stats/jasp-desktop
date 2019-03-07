@@ -47,7 +47,7 @@ public:
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, RewriteImgs, Exception, Initializing };
 	void setStatus(Status status);
 
-	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data);
+	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
 	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry);
 
 	virtual ~Analysis();

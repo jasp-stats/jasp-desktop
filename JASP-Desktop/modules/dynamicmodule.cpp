@@ -434,9 +434,9 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::stri
 	return retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
 }
 
-AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const
+AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName) const
 {
-	return ribbonEntry(ribbonTitle)->analysisEntry(analysisTitle);
+	return ribbonEntry(ribbonTitle)->analysisEntry(analysisName);
 }
 
 void DynamicModule::setInstallLog(QString installLog)

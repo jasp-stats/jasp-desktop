@@ -20,6 +20,7 @@
 #include "ribbonbuttonmodel.h"
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
+#include "modules/analysisentry.h"
 
 RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJson)  : QAbstractListModel(parent)
 {
@@ -191,4 +192,17 @@ void RibbonButtonModel::setModuleName(std::string moduleName)
 Modules::DynamicModule * RibbonButtonModel::myDynamicModule()
 {
 	return !isDynamic() ? nullptr : _dynamicModules->dynamicModule(_moduleName);
+}
+
+Modules::AnalysisEntry *RibbonButtonModel::getAnalysis(const std::string &name)
+{
+	Modules::AnalysisEntry* analysis = nullptr;
+	for (AnalysisMenuModel* analysisMenu : _analysisMenuModels)
+	{
+		analysis = analysisMenu->getAnalysisEntry(name);
+		if (analysis)
+			break;
+	}
+	
+	return analysis;
 }

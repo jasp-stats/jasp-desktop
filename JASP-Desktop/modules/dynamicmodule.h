@@ -113,7 +113,7 @@ public:
 
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle)	const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName)	const;
 
 	static std::string	moduleNameFromFolder(std::string folderName);
 
