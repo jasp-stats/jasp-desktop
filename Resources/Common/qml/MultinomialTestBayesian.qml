@@ -108,8 +108,11 @@ Form
 			name	: "priorCounts"
 			width	: form.availableWidth - hypothesisGroup.leftPadding
 			source	: "factor"
+
 			showAddButton		: false
 			showDeleteButton	: false
+			tableType			: "PriorCounts"
+			itemType			: "integer"
 		}
 	}
 }

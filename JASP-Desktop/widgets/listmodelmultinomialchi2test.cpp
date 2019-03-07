@@ -29,9 +29,10 @@
 
 using namespace std;
 
-ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(QMLListView* parent) :
-    ListModel(parent)
+ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(QMLListView* parent, QString tableType) :
+	ListModel(parent)
 {
+	_tableType = tableType;
 }
 
 
@@ -62,7 +63,7 @@ QVariant ListModelMultinomialChi2Test::data(const QModelIndex &index, int role) 
 		else if(role == int(specialRoles::lines))
 		{
 			bool	belowMeIsActive = index.row() < rowCount() - 1;
-			
+
 			bool	up		= true,
 					left	= true,
 					down	= !belowMeIsActive,
@@ -77,7 +78,7 @@ QVariant ListModelMultinomialChi2Test::data(const QModelIndex &index, int role) 
 
 	}
 
-    return QVariant();
+	return QVariant();
 }
 
 
@@ -91,7 +92,7 @@ int ListModelMultinomialChi2Test::getMaximumColumnWidthInCharacters(size_t colum
 void ListModelMultinomialChi2Test::addColumn()
 {
 	beginResetModel();
-	
+
 	if (_columnCount < _maxColumn)
 	{
 		_colNames.push_back(_getColName(_columnCount));
@@ -99,25 +100,25 @@ void ListModelMultinomialChi2Test::addColumn()
 		QVector<double> newValues(_rowNames.length(), 1);
 		_values.push_back(newValues);
 	}
-	
+
 	endResetModel();
-	
+
 	emit modelChanged();
 }
 
 void ListModelMultinomialChi2Test::removeColumn(size_t col)
 {
 	beginResetModel();
-	
+
 	if (col < _columnCount)
 	{
 		_values.removeAt(int(col));
 		_colNames.pop_back();
 		_columnCount--;
 	}
-	
+
 	endResetModel();
-	
+
 	emit modelChanged();
 }
 
@@ -138,9 +139,9 @@ void ListModelMultinomialChi2Test::reset()
 	{
 		_columnCount = 0;
 	}
-	
+
 	endResetModel();
-	
+
 	emit modelChanged();
 }
 
@@ -163,14 +164,14 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& co
 		_colNames.push_back(QString::fromStdString(colName));
 	for (std::string level : levels)
 		_rowNames.push_back(QString::fromStdString(level));
-	
+
 	if (values.size() != _columnCount)
 		addError("Wrong number of columns for Chi2 Test!!!");
 	else if (values.size() > 0 && int(values[0].size()) != _rowNames.size())
 		addError("Wrong number of rows for Chi2 Test!!!!");
-		
+
 	beginResetModel();
-	
+
 	for (size_t i = 0; i < values.size(); ++i)
 	{
 		QVector<double> colValues;
@@ -180,13 +181,13 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& co
 			colValues.push_back(1);
 		_values.push_back(colValues);
 	}
-	
+
 	for (size_t i = values.size(); i < _columnCount; ++i)
 	{
 		QVector<double> extraColumn(_rowNames.length(), 1);
 		_values.push_back(extraColumn);
 	}
-	
+
 	endResetModel();
 }
 
@@ -194,9 +195,9 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& co
 void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
 	Q_UNUSED(termsRemoved);
-	
+
 	beginResetModel();
-	
+
 	_rowNames.clear();
 	_colNames.clear();
 	_values.clear();
@@ -216,14 +217,17 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *
 		_values.push_back(newValues);
 		_colNames.push_back(_getColName(0));
 	}
-	
+
 	endResetModel();
-	
+
 	emit modelChanged();
 }
 
 QString ListModelMultinomialChi2Test::_getColName(size_t index)
 {
+	if (_tableType == "PriorCounts")
+		return tq("Counts");
+
 	if (index >= _maxColumn)
 		index = _maxColumn - 1;
 	char letter = char(97 + index);

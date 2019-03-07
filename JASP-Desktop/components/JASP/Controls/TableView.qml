@@ -9,34 +9,33 @@ import JASP 1.0
 JASPControl
 {
 	id:					tableView
-    
+
 	controlType:		"TableView"
 	activeFocusOnTab:	false
-    
+
 	property var	source
 	property alias	syncModels:	tableView.source
-    property string modelType
-	property string itemType:	"string"
+	property string	modelType
+	property string	itemType:	"string"
+	property string	tableType
 	property alias	model:		theView.model
 	property var	validator:	(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
 	property int	colSelected: -1
 	property int	columnCount: 0
 	property int	rowCount: 0
 
-    
+	signal addColumn();
+	signal removeColumn(int col);
+	signal reset();
+	signal itemChanged(int col, int row, string value)
 
-    signal addColumn();
-    signal removeColumn(int col);
-    signal reset();
-    signal itemChanged(int col, int row, string value)
-    
-    function removeAColumn()
+	function removeAColumn()
 	{
-        if (colSelected >= 0)
-            removeColumn(colSelected);
-    }    
-    
-    Rectangle
+		if (colSelected >= 0)
+			removeColumn(colSelected);
+	}
+
+	Rectangle
 	{
 		id:					rectangleBorder
 		anchors.centerIn:	parent
@@ -45,7 +44,7 @@ JASPControl
 		border.width:		1
 		border.color:		Theme.borderColor
 		color:				Theme.white
-    }
+	}
 
 	Flickable
 	{
@@ -63,32 +62,32 @@ JASPControl
 			model:					null
 			itemHorizontalPadding:	0
 			itemVerticalPadding:	8 * preferencesModel.uiScale
-            
-            viewportX: myFlickable.visibleArea.xPosition * width
+
+			viewportX: myFlickable.visibleArea.xPosition * width
 			viewportY: myFlickable.visibleArea.yPosition * height
 			viewportW: myFlickable.visibleArea.widthRatio * width
 			viewportH: myFlickable.visibleArea.heightRatio * height
-            
-            columnHeaderDelegate: Rectangle
+
+			columnHeaderDelegate: Rectangle
 			{
 				color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
-                Text { text: headerText; anchors.centerIn: parent }
+				Text { text: headerText; anchors.centerIn: parent }
 				MouseArea
 				{
-                    anchors.fill: parent
-                    onClicked: {
-                        if (tableView.colSelected === columnIndex)
-                            columnIndex = -1
-                        tableView.colSelected = columnIndex;
-                    }
-                }
-            }
+					anchors.fill: parent
+					onClicked: {
+						if (tableView.colSelected === columnIndex)
+							columnIndex = -1
+						tableView.colSelected = columnIndex;
+					}
+				}
+			}
 
-            rowNumberDelegate: Rectangle
+			rowNumberDelegate: Rectangle
 			{
-                color: Theme.analysisBackgroundColor
-                Text
-				{ 
+				color: Theme.analysisBackgroundColor
+				Text
+				{
 					text:					headerText;
 					anchors.centerIn:		parent;
 					horizontalAlignment:	Text.AlignHCenter
@@ -97,28 +96,28 @@ JASPControl
 					elide:					Text.ElideRight;
 					width:					parent.width
 					height:					parent.width
-                }
+				}
 
 				ToolTip.visible:			mouseAreaItem.containsMouse
 				ToolTip.delay:				Theme.toolTipDelay
 				ToolTip.timeout:			Theme.toolTipTimeout
 				ToolTip.text:				headerText
 
-                MouseArea
+				MouseArea
 				{
 					id:				mouseAreaItem
 					hoverEnabled:	true
 					anchors.fill:	parent
-                }
-            }
-            
-			JASPDoubleValidator	{ id: intValidator; bottom: 0; decimals: 0 }
-            JASPDoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
-            RegExpValidator { id: stringValidator }
+				}
+			}
 
-            itemDelegate: Rectangle 
+			JASPDoubleValidator	{ id: intValidator; bottom: 0; decimals: 0 }
+			JASPDoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
+			RegExpValidator { id: stringValidator }
+
+			itemDelegate: Rectangle
 			{
-                TextField
+				TextField
 				{
 					fieldWidth:			parent.width
 					fieldHeight:		parent.height
@@ -129,10 +128,10 @@ JASPControl
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
-                }
-            }
-            
-            leftTopCornerItem: Rectangle { color: Theme.analysisBackgroundColor }
+				}
+			}
+
+			leftTopCornerItem: Rectangle { color: Theme.analysisBackgroundColor }
 
 		}
 

@@ -33,7 +33,7 @@ class BoundQMLTableView : public QMLListView, public BoundQMLItem
 	
 public:
 	BoundQMLTableView(QQuickItem* item, AnalysisForm* form);
-	
+
 	void		bindTo(Option *option)						override;
 	ListModel*	model()										override { return _tableModel; }
 	Option*		createOption()								override;
@@ -42,7 +42,7 @@ public:
 	Option*		boundTo()									override { return _boundTo; }
 	void		setUp()										override;
 
-    
+
 protected:
 	OptionsTable*					_boundTo;
 	ListModel*						_tableModel = nullptr;
