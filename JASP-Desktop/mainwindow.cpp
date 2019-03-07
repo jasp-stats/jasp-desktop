@@ -862,6 +862,8 @@ void MainWindow::populateUIfromDataSet(bool showData)
 		_filterModel->init();
 		setDataPanelVisible(showData);
 		setDataAvailable(true);
+		if (!showData)
+			_analyses->setVisible(true);
 	}
 
 	hideProgress();
