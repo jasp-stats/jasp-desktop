@@ -26,7 +26,7 @@ JASPControl {
 	property var	source					//defaults would be nice
 	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
-	property string	emptyValue:				qsTr("<no choice>")
+	property string	placeholderText:		qsTr("<no choice>")
 	property bool	initialized:			false
     
     signal activated(int index);
@@ -96,7 +96,7 @@ JASPControl {
 				Text
 				{
 					x:							(contentIcon.visible ? 23 : 4) * preferencesModel.uiScale
-					text:						comboBox.currentText
+					text:						control.isEmptyValue ? comboBox.placeholderText : comboBox.currentText
 					font:						control.font
 					anchors.verticalCenter:		parent.verticalCenter
 					anchors.horizontalCenter:	control.isEmptyValue ? parent.horizontalCenter : undefined
@@ -164,7 +164,7 @@ JASPControl {
 			
 			delegate: ItemDelegate
 			{
-				height:								Theme.comboBoxHeight				
+				height:								Theme.comboBoxHeight
 				highlighted:						control.highlightedIndex === index
 
 				contentItem:	Rectangle
@@ -172,7 +172,7 @@ JASPControl {
 					id:								itemRectangle
 					anchors.fill:					parent
 
-					property bool isEmptyValue:		comboBox.addEmptyValue && index == 0
+					property bool isEmptyValue:		comboBox.addEmptyValue && index <= 0
 
 					Image
 					{
@@ -188,7 +188,7 @@ JASPControl {
                     
                     Text {
 						x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-						text:						comboBox.initialized ? model.name : ""
+						text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : model.name) : ""
 						font:						Theme.font
 						color:						itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
 						verticalAlignment:			Text.AlignVCenter
