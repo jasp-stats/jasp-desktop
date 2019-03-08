@@ -45,7 +45,7 @@ Rectangle
 
 	transitions: Transition {
 		NumberAnimation { property: "height"; duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
-		RotationAnimation { duration: 250 }
+		RotationAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 	}
 	
 	Item
@@ -74,10 +74,10 @@ Rectangle
 			anchors
 			{
 				left:			parent.left
-				leftMargin:		6 * preferencesModel.uiScale
+				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
-			height:			expanderRectangle.height / 2
+			height:			expanderRectangle.height / 3.5
 			width:			height
 			contextType:	"2d"	
 			onPaint:
@@ -92,21 +92,6 @@ Rectangle
 			}
 		}
 		
-		Rectangle
-		{
-			id: expanderSeparator
-			anchors
-			{
-				left:			parent.left
-				leftMargin:		expanderRectangle.height
-				verticalCenter:	parent.verticalCenter
-			}
-			width: 2
-			height: expanderRectangle.height
-			border.width: 1
-			border.color: Theme.grayDarker
-		}		
-
 		Text
 		{
 			id:			label
@@ -114,9 +99,9 @@ Rectangle
 			font:		Theme.fontLabel
 			anchors
 			{
-				left:			expanderSeparator.right
+				left:			expanderIcon.right
 				right:			helpButton.left
-				margins:		5 * preferencesModel.uiScale
+				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
 		}
