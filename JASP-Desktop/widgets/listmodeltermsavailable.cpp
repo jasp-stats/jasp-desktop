@@ -23,8 +23,6 @@
 
 ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
 	: ListModelAvailableInterface(listView)
-	, _addEmptyValue(false)
-	
 {
 }
 
@@ -46,9 +44,6 @@ void ListModelTermsAvailable::_resetTerms(const Terms &terms)
 			allowed.add(term);
 	}
 	Terms ordered; // present them in a nice order
-
-	if (_addEmptyValue)
-		ordered.add(_emptyValue);
 	
 	ordered.add(suggested);
 	ordered.add(allowed);
@@ -62,14 +57,6 @@ void ListModelTermsAvailable::_resetTerms(const Terms &terms)
 	endResetModel();	
 }
 
-QVariant ListModelTermsAvailable::data(const QModelIndex &index, int role) const
-{
-	if (_addEmptyValue && role == ListModel::TypeRole && index.row() == 0)
-		return QVariant();
-	else
-		return ListModelAvailableInterface::data(index, role);
-}
-
 void ListModelTermsAvailable::resetTermsFromSourceModels()
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
@@ -78,6 +65,8 @@ void ListModelTermsAvailable::resetTermsFromSourceModels()
 	
 	beginResetModel();
 	Terms termsAvailable;
+	if (_addEmptyValue)
+		termsAvailable.add(QString());
 	_termSourceModelMap.empty();
 	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
@@ -102,4 +91,18 @@ void ListModelTermsAvailable::resetTermsFromSourceModels()
 ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)
 {
 	return _termSourceModelMap[term.asQString()];
+}
+
+void ListModelTermsAvailable::initTerms(const Terms& terms) 
+{
+	if (_addEmptyValue)
+	{
+		Terms newTerms;
+		newTerms.add(QString());
+		newTerms.add(terms);
+		ListModelAvailableInterface::initTerms(newTerms);
+	}
+	else
+		ListModelAvailableInterface::initTerms(terms);
+	
 }
