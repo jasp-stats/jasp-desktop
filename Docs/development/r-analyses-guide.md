@@ -822,7 +822,7 @@ If we are indeed ready, then it is time to create a ggplot object. This will be 
   
 </details></p>
 
-Just like we did with the table earlier, we can use the pass-by-reference mechanics of `binomialPlot` to avoid having to return anything from our plotting function. Instead we just set the `object` property of `binomialPlot` to a ggplot object. JASP does not support any other plotting method than ggplot, as we wish to create a uniform plot editing solution in the future.
+Just like we did with the table earlier, we can use the pass-by-reference mechanics of `binomialPlot` to avoid having to return anything from our plotting function. Instead we just set the `plotObject` property of `binomialPlot` to a ggplot object. JASP does not support any other plotting method than ggplot, as we wish to create a uniform plot editing solution in the future.
 
 <details>
 	<summary>Code</summary>
@@ -832,7 +832,7 @@ Just like we did with the table earlier, we can use the pass-by-reference mechan
    
     plot <- ggplot2::ggplot(<code>)
    
-    binomialPlot$object <- plot
+    binomialPlot$plotObject <- plot
    
     return()
   }
