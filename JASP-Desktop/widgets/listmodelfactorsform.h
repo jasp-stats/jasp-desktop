@@ -40,7 +40,7 @@ public:
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 	
 	void initFactors(const std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > &factors);
-	virtual const Terms& terms() const OVERRIDE;
+	virtual const Terms& terms(const QString& what = QString()) const OVERRIDE;
 	
 	int	count() const { return int(_factors.size()); }
 	std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > getFactors() const;
@@ -65,6 +65,10 @@ protected:
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}
 	};
 	QVector<Factor*> _factors;
+	Terms _titles;
+	
+protected slots:
+	void resetTerms();
 };
 
 #endif // LISTMODELFACTORSFORM_H

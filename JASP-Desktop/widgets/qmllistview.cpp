@@ -52,7 +52,8 @@ QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form)
 			else
 			{
 				QString discard = map["discard"].toString();
-				_sourceModels.append(new SourceType(sourceName, discard));
+				QString modelUse = map["use"].toString();
+				_sourceModels.append(new SourceType(sourceName, discard, modelUse));
 			}
 		}
 	}

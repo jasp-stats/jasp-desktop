@@ -72,14 +72,18 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 	beginResetModel();
 	
 	_factors.clear();
+	_titles.clear();
 	_terms.clear();
 	int index = 0;
 	for (const tuple<string, string, vector<string> > &factorTuple : factors)
 	{
 		QString name = tq(get<0>(factorTuple));
-		Factor* factor = new Factor(name, tq(get<1>(factorTuple)), get<2>(factorTuple));
+		QString title = tq(get<1>(factorTuple));
+		std::vector<string> terms = get<2>(factorTuple);
+		Factor* factor = new Factor(name, title, terms);
 		_factors.push_back(factor);
-        _terms.add(factor->name);
+        _titles.add(name);
+		_terms.add(Terms(terms));
 		index++;
 	}
 	
@@ -87,8 +91,10 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 }
 
 
-const Terms& ListModelFactorsForm::terms() const
+const Terms& ListModelFactorsForm::terms(const QString& what) const
 {
+	if (what == "title")
+		return _titles;
 	return _terms;
 }
 
@@ -115,7 +121,7 @@ void ListModelFactorsForm::addFactor()
 	QString title = tq("Factor ") + index;
 	Factor* factor = new Factor(name, title);
 	_factors.push_back(factor);
-    _terms.add(name);
+    _titles.add(name);
 	endResetModel();
 	
 	emit modelChanged();
@@ -126,8 +132,10 @@ void ListModelFactorsForm::removeFactor()
 	if (_factors.size() > 1)
 	{
 		beginResetModel();
+		const Terms& lastTerms = _factors[_factors.size() - 1]->listView->model()->terms();
+		_terms.remove(lastTerms);
+		_titles.remove(_titles.size() - 1);
 		_factors.removeLast();
-		_terms.remove(_terms[_terms.size() - 1]);
 		endResetModel();
 	}
 	
@@ -143,10 +151,10 @@ void ListModelFactorsForm::titleChangedSlot(int index, QString title)
 		return;
 	
 	_factors[index]->title = title;
-	_terms.clear();
+	_titles.clear();
 	
 	for (Factor* factor : _factors)
-        _terms.add(factor->name);
+        _titles.add(factor->name);
 	
 	emit modelChanged();
 }
@@ -177,9 +185,22 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 		ListModelAssignedInterface* model = factor->listView->assignedModel();
 		model->initTerms(terms);
 		model->setCopyTermsWhenDropped(true);
+		connect(factor->listView->model(), &ListModelAssignedInterface::modelChanged, this, &ListModelFactorsForm::resetTerms);
 		emit addListView(factor->listView);
 	}
 	
 	factor->listView->setDropMode(qmlDropMode::Replace);		
 	factor->listView->setUp();
+}
+
+void ListModelFactorsForm::resetTerms()
+{
+	_terms.clear();
+	for (Factor* factor : _factors)
+	{
+		if (factor->listView)
+			_terms.add(factor->listView->model()->terms());
+	}
+	
+	emit modelChanged();
 }
