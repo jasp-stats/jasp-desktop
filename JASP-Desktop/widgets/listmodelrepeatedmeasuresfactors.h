@@ -33,7 +33,6 @@ public:
 	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
 	const Terms& getLevels() const;
-	virtual const Terms& terms() const OVERRIDE;
 	
 public slots:
 	void itemChanged(int row, QVariant value);

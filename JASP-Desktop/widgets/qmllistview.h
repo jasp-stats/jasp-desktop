@@ -35,8 +35,9 @@ public:
 		QString discard;
 		ListModel* model;
 		ListModel* discardModel;
-		SourceType(QString _name, QString _discard = "")
-			: name(_name), discard(_discard), model(nullptr), discardModel(nullptr) {}
+		QString modelUse;
+		SourceType(QString _name, QString _discard = "", QString _modelUse = "")
+			: name(_name), discard(_discard), model(nullptr), discardModel(nullptr), modelUse(_modelUse) {}
 	};
 	
 	QMLListView(QQuickItem* item, AnalysisForm* form);

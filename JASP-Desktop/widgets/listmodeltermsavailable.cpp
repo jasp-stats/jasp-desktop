@@ -73,7 +73,7 @@ void ListModelTermsAvailable::resetTermsFromSourceModels()
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
 		{
-			Terms terms = sourceModel->terms();
+			Terms terms = sourceModel->terms(sourceItem->modelUse);
 			if (sourceItem->discardModel)
 				terms.discardWhatDoesContainTheseComponents(sourceItem->discardModel->terms());
 			for (const Term& term : terms)
