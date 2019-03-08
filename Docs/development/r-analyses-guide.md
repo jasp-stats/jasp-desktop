@@ -857,7 +857,7 @@ It's entirely possible that an analysis still crashes even after our error check
       return()
     }
     
-    binomialPlot$object <- plot
+    binomialPlot$plotObject <- plot
    
     return()
   }
