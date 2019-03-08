@@ -39,19 +39,15 @@ Form
             id: secondorder
             name: "secondOrder"
             implicitHeight: Theme.defaultListHeight / 3 - 10
+            allowAll: true
 			availableVariablesList
 			{
                 name: "availableFactors"
-				source: ["factors"]
+				source: [{ name: "factors", use: "title" }]
                 showVariableTypeIcon: false
                 height: Theme.defaultListHeight / 3 - 10
             }
             initNumberFactors: 1
-            // AssignedVariablesList {
-            //     title: qsTr("Second-order factor")
-            //     name: "secondOrder"
-            //     showVariableTypeIcon: false
-            // }
         }
     }
 
@@ -81,7 +77,7 @@ Form
                     label: qsTr("Factor Scaling")
                     name: "identify"
                     values: [
-                        { label: "Factor loadings",  value: "factor"  },
+                        { label: "Factor variances",  value: "factor"  },
                         { label: "Marker variable",  value: "marker"  },
                         { label: "Effects coding",   value: "effects" }
                     ]
@@ -91,7 +87,6 @@ Form
         
         VariablesForm {
             id: rescov
-            debug: true
             height: 120
             AvailableVariablesList {
 				name: "observedvars"

@@ -18,6 +18,7 @@ JASPControl
 	property var	model
 	property string availableVariablesListName: "allAvailableVariables"
 	property alias	availableVariablesList: availableVariablesList
+    property bool   allowAll: false
 	property int	initNumberFactors: 1
 	property int    listWidth:			parent.width * 2 / 5
     property int    factorListHeight: (Theme.defaultListHeight - factorButtons.height) / 3 - factorsFormColumn.spacing 
@@ -64,7 +65,7 @@ JASPControl
 					name:               factorName
 					editableTitle:      factorTitle
 					dropMode:			"Replace"
-                    allowedColumns:     ["scale"]
+                    allowedColumns:     allowAll ? [] : ["scale"]
                     implicitWidth:      listWidth
 					height:             factorsForm.factorListHeight
 

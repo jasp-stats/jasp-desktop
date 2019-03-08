@@ -24,7 +24,7 @@
 			"icon": 	"sem-latreg.svg",
 			"analyses":  [
 				{
-					"title":	"Lavaan SEM Modeling",
+					"title":	"Lavaan Modeling",
 					"qml":		"SEMSimple.qml",
 					"function":	"SEMSimple"
 				},
@@ -32,11 +32,6 @@
 					"title":	"Confirmatory Factor Analysis",
 					"qml":		"ConfirmatoryFactorAnalysis.qml",
 					"function":	"ConfirmatoryFactorAnalysis"
-				},
-				{
-					"title":	"Latent Regression",
-					"qml":		"LatentRegression.qml",
-					"function":	"LatentRegression"
 				}
 			]
 		}

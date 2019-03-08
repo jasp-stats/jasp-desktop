@@ -82,7 +82,7 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 		std::vector<string> terms = get<2>(factorTuple);
 		Factor* factor = new Factor(name, title, terms);
 		_factors.push_back(factor);
-        _titles.add(name);
+        _titles.add(title);
 		_terms.add(Terms(terms));
 		index++;
 	}
@@ -121,7 +121,7 @@ void ListModelFactorsForm::addFactor()
 	QString title = tq("Factor ") + index;
 	Factor* factor = new Factor(name, title);
 	_factors.push_back(factor);
-    _titles.add(name);
+    _titles.add(title);
 	endResetModel();
 	
 	emit modelChanged();
@@ -154,7 +154,7 @@ void ListModelFactorsForm::titleChangedSlot(int index, QString title)
 	_titles.clear();
 	
 	for (Factor* factor : _factors)
-        _titles.add(factor->name);
+        _titles.add(factor->title);
 	
 	emit modelChanged();
 }

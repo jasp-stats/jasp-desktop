@@ -22,25 +22,24 @@ import JASP.Controls 1.0
 Form
 {
 	usesJaspResults: false
+	columns: 1
 	
 	TextArea
 	{
 		name: "model"
-		textType: "lavaan"
+		textType: "lavaan" 
 	}
 	
 	RadioButtonGroup 
 	{
 		title: qsTr("Data")
 		name: "Data"
-		RadioButton { value: "raw"; text: qsTr("raw"); checked: true }
-		RowLayout
+		columns: 2
+		RadioButton { value: "raw"; label: qsTr("raw"); checked: true }
+		RadioButton
 		{
-			RadioButton { value: "varcov"; text: qsTr("Variance-covariance matrix"); id: varcovOption }
-			IntegerField { name: "SampleSize"; text: qsTr("Sample Size")
-				defaultValue: 0
-				enabled: varcovOption.checked
-			}
+			value: "varcov"; label: qsTr("Variance-covariance matrix")
+			IntegerField { name: "SampleSize"; label: qsTr("Sample Size"); defaultValue: 0 }
 		}
 	}
 	
@@ -49,41 +48,41 @@ Form
 	{
 		title: qsTr("Statistics")
 		
-		GridLayout
+		RadioButtonGroup
 		{
-			RadioButtonGroup
+			title: qsTr("Error Calculation")
+			name: "errorCalculation"
+			RadioButton { value: "standard";	label: qsTr("Standard"); checked: true		}
+			RadioButton { value: "robust";		label: qsTr("Robust")						}
+			RadioButton
 			{
-				title: qsTr("Error Calculation")
-				name: "errorCalculation"
-				RadioButton { value: "standard";	text: qsTr("Standard"); checked: true		}
-				RadioButton { value: "robust";		text: qsTr("Robust")						}
-				RadioButton { value: "bootstrap";	text: qsTr("Bootstrap"); id: boostrapOption	}
+				value: "bootstrap";	label: qsTr("Bootstrap")
 				IntegerField
 				{
 					name: "errorCalculationBootstrapSamples"
-					text: qsTr("Bootstrap samples")
+					label: qsTr("Bootstrap samples")
 					fieldWidth: 60
 					defaultValue: 1000
-					validator: IntValidator { bottom: 1 }
-					enabled: boostrapOption.checked
-					indent: true
+					min: 1
 				}
 			}
-			
-			GroupBox
+		}
+
+		Group
+		{
+			CheckBox { name: "outputAdditionalFitMeasures";				label: qsTr("Additional fit measures")				}
+			CheckBox { name: "outputFittedCovarianceCorrelations";		label: qsTr("Fitted covariances / correlations")	}
+			CheckBox { name: "outputObservedCovarianceCorrelations";	label: qsTr("Observed covariances / correlations")	}
+			CheckBox { name: "outputResidualCovarianceCorrelations";	label: qsTr("Residual covariances / correlations")	}
+			CheckBox { name: "outputMardiasCoefficients";				label: qsTr("Mardia's coefficient")					}
+			CheckBox
 			{
-				CheckBox { name: "outputAdditionalFitMeasures";				text: qsTr("Additional fit measures")				}
-				CheckBox { name: "outputFittedCovarianceCorrelations";		text: qsTr("Fitted covariances / correlations")		}
-				CheckBox { name: "outputObservedCovarianceCorrelations";	text: qsTr("Observed covariances / correlations")	}
-				CheckBox { name: "outputResidualCovarianceCorrelations";	text: qsTr("Residual covariances / correlations")	}
-				CheckBox { name: "outputMardiasCoefficients";				text: qsTr("Mardia's coefficient")					}
-				CheckBox { name: "outputModificationIndices";				text: qsTr("Modification indices"); id: outputModificationIndices }
-				CheckBox { name: "outputModificationIndicesHideLowIndices";	text: qsTr("Hide low indices")
-					enabled: outputModificationIndices.checked
-					indent: true; id: lowIndices }
-				CheckBox { name: "outputModificationIndicesHideLowIndicesThreshold"; text: qsTr("Threshold")                             ; 
-					enabled: outputModificationIndices.checked && lowIndices.checked
-					indent: true }
+				name: "outputModificationIndices";						label: qsTr("Modification indices")
+				CheckBox
+				{
+					name: "outputModificationIndicesHideLowIndices";	label: qsTr("Hide low indices")
+					IntegerField { name: "outputModificationIndicesHideLowIndicesThreshold"; label: qsTr("Threshold"); defaultValue: 10 }
+				}
 			}
 		}
 	}
@@ -91,99 +90,94 @@ Form
 	Section
 	{
 		title: qsTr("Options")
-		
-		GridLayout
+		columns: 3
+
+		Group
 		{
-			columns: 3
-			GroupBox
+			title: qsTr("Grouping variable")
+			DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or source: it takes all variables per default
+			Group
 			{
-				title: qsTr("Grouping variable")
-				DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or syncModels: it takes all variables per default
-				GroupBox
-				{
-					title: qsTr("Equality Constraits")					
-					CheckBox { name: "eq_loadings";				text: qsTr("Loadings")				}
-					CheckBox { name: "eq_intercepts";			text: qsTr("Intercepts")			}
-					CheckBox { name: "eq_residuals";			text: qsTr("Residuals")				}
-					CheckBox { name: "eq_residualcovariances";	text: qsTr("Residual covariances")	}
-					CheckBox { name: "eq_means";				text: qsTr("Means")					}
-					CheckBox { name: "eq_thresholds";			text: qsTr("Threashold")			}
-					CheckBox { name: "eq_regressions";			text: qsTr("Regressions")			}
-					CheckBox { name: "eq_variances";			text: qsTr("Latent Variances")		}
-					CheckBox { name: "eq_lvcovariances";		text: qsTr("Latent Covariances")	}
-				}
+				title: qsTr("Equality Constraits")
+				CheckBox { name: "eq_loadings";				label: qsTr("Loadings")				}
+				CheckBox { name: "eq_intercepts";			label: qsTr("Intercepts")			}
+				CheckBox { name: "eq_residuals";			label: qsTr("Residuals")			}
+				CheckBox { name: "eq_residualcovariances";	label: qsTr("Residual covariances")	}
+				CheckBox { name: "eq_means";				label: qsTr("Means")				}
+				CheckBox { name: "eq_thresholds";			label: qsTr("Threashold")			}
+				CheckBox { name: "eq_regressions";			label: qsTr("Regressions")			}
+				CheckBox { name: "eq_variances";			label: qsTr("Latent Variances")		}
+				CheckBox { name: "eq_lvcovariances";		label: qsTr("Latent Covariances")	}
 			}
-			
-			RadioButtonGroup
+		}
+
+		RadioButtonGroup
+		{
+			name: "estimator"
+			title: qsTr("Estimator")
+			RadioButton { value: "automatic";	label: qsTr("Auto"); checked: true	}
+			RadioButton { value: "ML";			label: qsTr("ML")					}
+			RadioButton { value: "GLS";			label: qsTr("GLS")					}
+			RadioButton { value: "WLS";			label: qsTr("WLS")					}
+			RadioButton { value: "ULS";			label: qsTr("ULS")					}
+			RadioButton { value: "DWLS";		label: qsTr("DWLS")					}
+		}
+
+		Group
+		{
+			title: qsTr("Model Options")
+			CheckBox { name: "includeMeanStructure";		label: qsTr("Include mean structure")					}
+			CheckBox { name: "assumeFactorsUncorrelated";	label: qsTr("Assume factors uncorrelated")				}
+			CheckBox { name: "fixExogenousCovariates";		label: qsTr("Fix exogenous covariates"); checked: true	}
+
+			DropDown
 			{
-				name: "estimator"
-				title: qsTr("Estimator")
-				RadioButton { value: "automatic";	text: qsTr("Auto"); checked: true	}
-				RadioButton { value: "ML";			text: qsTr("ML")					}
-				RadioButton { value: "GLS";			text: qsTr("GLS")					}
-				RadioButton { value: "WLS";			text: qsTr("WLS")					}
-				RadioButton { value: "ULS";			text: qsTr("ULS")					}
-				RadioButton { value: "DWLS";		text: qsTr("DWLS")					}
+				name: "factorStandardisation"
+				label: qsTr("Factor Scaling")
+				values:
+				[
+					{ label: "Factor Loadings"    , value: "factorLoadings"		},
+					{ label: "Residual Variance"  , value: "residualVariance"	},
+					{ label: "None"               , value: "none"				}
+				]
 			}
-			
-			GroupBox
-			{
-				title: qsTr("Model Options")
-				CheckBox { name: "includeMeanStructure";		text: qsTr("Include mean structure")					}
-				CheckBox { name: "assumeFactorsUncorrelated";	text: qsTr("Assume factors uncorrelated")				}
-				CheckBox { name: "fixExogenousCovariates";		text: qsTr("Fix exogenous covariates"); checked: true	}
-				
-				DropDown
-				{
-					name: "factorStandardisation"
-					text: qsTr("Factor Scaling")
-					model: ListModel
-					{
-						ListElement { title: "Factor Loadings"    ; value: "factorLoadings"		}
-						ListElement { title: "Residual Variance"  ; value: "residualVariance"	}
-						ListElement { title: "None"               ; value: "none"				}
-					}
-				}
-			}
-			
 		}
 	}
 	
 	Section
 	{
 		title: qsTr("Advanced")
-		GridLayout
+		Group
 		{
-			GroupBox
+			title: qsTr("Options")
+			columns: 2
+			Layout.columnSpan: 2
+			CheckBox { name: "fixManifestInterceptsToZero";	label: qsTr("Fix manifest intercepts to zero")					}
+			CheckBox { name: "fixLatentInterceptsToZero";	label: qsTr("Fix latent intercepts to zero");	checked: true	}
+			CheckBox { name: "omitResidualSingleIndicator";	label: qsTr("Omit residual single indicator");	checked: true	}
+			CheckBox { name: "residualVariances";			label: qsTr("Residual variances");				checked: true	}
+			CheckBox { name: "correlateExogenousLatents";	label: qsTr("Correlate exogenous latents");		checked: true	}
+			CheckBox { name: "addThresholds";				label: qsTr("Add thresholdds");					checked: true	}
+			CheckBox { name: "addScalingParameters";		label: qsTr("Add scalings parameters");			checked: true	}
+			CheckBox { name: "correlateDependentVariables";	label: qsTr("Correlate dependent variables");	checked: true	}
+		}
+
+		RadioButtonGroup
+		{
+			name: "emulation"
+			title: qsTr("Emulation")
+			RadioButton { value: "none";	label: qsTr("None"); checked: true	}
+			RadioButton { value: "Mplus";	label: qsTr("Mplus")				}
+			RadioButton { value: "EQS";		label: qsTr("EQS")					}
+		}
+
+		Group
+		{
+			title: qsTr("Model Name")
+			DropDown
 			{
-				title: qsTr("Options")
-				CheckBox { name: "fixManifestInterceptsToZero";	text: qsTr("Fix manifest intercepts to zero")					}
-				CheckBox { name: "fixLatentInterceptsToZero";	text: qsTr("Fix latent intercepts to zero");	checked: true	}
-				CheckBox { name: "omitResidualSingleIndicator";	text: qsTr("Omit residual single indicator");	checked: true	}
-				CheckBox { name: "residualVariances";			text: qsTr("Residual variances");				checked: true	}
-				CheckBox { name: "correlateExogenousLatents";	text: qsTr("Correlate exogenous latents");		checked: true	}
-				CheckBox { name: "addThresholds";				text: qsTr("Add thresholdds");					checked: true	}
-				CheckBox { name: "addScalingParameters";		text: qsTr("Add scalings parameters");			checked: true	}
-				CheckBox { name: "correlateDependentVariables";	text: qsTr("Correlate dependent variables");	checked: true	}
-			}
-			
-			GroupBox
-			{
-				RadioButtonGroup
-				{
-					name: "emulation"
-					title: qsTr("Emulation")
-					RadioButton { value: "none";	text: qsTr("None");	checked: true	}
-					RadioButton { value: "Mplus";	text: qsTr("Mplus")					}
-					RadioButton { value: "EQS";		text: qsTr("EQS")					}
-				}
-				
-				DropDown
-				{
-					name: "modelName"
-					text: qsTr("Model Name")
-					values: ["Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7", "Model 8", "Model 8", "Model 9", "Model 10"]
-				}
+				name: "modelName"
+				values: ["Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7", "Model 8", "Model 8", "Model 9", "Model 10"]
 			}
 		}
 	}
