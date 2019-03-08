@@ -51,7 +51,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   .cfaPlotMisfit(jaspResults, options, cfaResult)      # Plot residual correlations
 
   # Output model syntax
-  .cfaSyntax(jaspResults, options, cfaResult)          # Output model syntax to user
+  .cfaSyntax(jaspResults, options, dataset, cfaResult) # Output model syntax to user
 
   return()
 }
@@ -108,19 +108,25 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   return(NULL)
 }
 
-.translateFactorNames <- function(factor_name, options) {
+.translateFactorNames <- function(factor_name, options, back = FALSE) {
   fac_names    <- vapply(options$factors,     function(x) x$name, "name")
   sofac_names  <- vapply(options$secondOrder, function(x) x$name, "name")
-  sofac_names  <- paste0("so", sofac_names)
+  if (length(sofac_names) > 0) sofac_names <- paste0("so", sofac_names)
   fac_titles   <- vapply(options$factors,     function(x) x$title, "title")
   sofac_titles <- vapply(options$secondOrder, function(x) x$title, "title")
   
   fnames  <- c(fac_names, sofac_names)
   ftitles <- c(fac_titles, sofac_titles)
   
-  idx <- vapply(factor_name, function(n) which(fnames == n), 0L, USE.NAMES = FALSE)
-  ftitles[idx]
+  if (back) {
+    idx <- vapply(factor_name, function(n) which(ftitles == n), 0L, USE.NAMES = FALSE)
+    return(fnames[idx])
+  } else {
+    idx <- vapply(factor_name, function(n) which(fnames == n), 0L, USE.NAMES = FALSE)
+    return(ftitles[idx])
+  }
 }
+
 
 # Results functions ----
 .cfaComputeResults <- function(jaspResults, dataset, options, errors) {
@@ -197,7 +203,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   spec$variables <- unlist(lapply(options$factors, function(x) x$indicators))
   spec$latents   <- vapply(options$factors,        function(x) x$name, "names")
   spec$soLatents <- vapply(options$secondOrder,    function(x) x$name, "names")
-  spec$soLatents <- paste0("so", spec$soLatents)
+  if (length(spec$soLatents) > 0) spec$soLatents <- paste0("so", sofac_names)
   if (options$se == "bootstrap") {
     spec$se <- "standard"
     spec$bootstrap <- TRUE
@@ -209,6 +215,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .optionsToCFAMod <- function(options, dataset, cfaResult, base64 = TRUE) {
+  gv <- .v(options$groupvar)
   if (!base64) .v <- identity
   
   vars    <- options$factors
@@ -258,13 +265,13 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     rc <- NULL
   }
 
-  if (options$includemeanstructure && options$groupvar != "" && options$invariance == "strict") {
+  if (options$includemeanstructure && options$groupvar != "") {
     lm <- "# Latent means"
     lvs <- c(cfaResult[["spec"]]$latents, cfaResult[["spec"]]$soLatents)
     for (i in seq_along(lvs)) {
       lm <- paste0(lm, '\n', lvs[i], " ~ c(0,",
-                   paste(rep(NA, length(unique(dataset[[.v(options$groupvar)]])) - 1), collapse = ","),
-                   ")*1")
+                  paste(rep(NA, length(unique(dataset[[gv]])) - 1), collapse = ","),
+                  ")*1")
     }
   } else {
     lm <- NULL
@@ -577,8 +584,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Intercepts ----
   if (options$includemeanstructure) {
 
-    if (options$groupvar != "" && options$invariance == "strict") {
-      # Factor intercepts
+    if (options$groupvar != "") {
       jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = "Factor Intercepts")
 
       fi$addColumnInfo(name = "lhs",    title = "Factor",     type = "string", combine = TRUE)
@@ -588,9 +594,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       fi$addColumnInfo(name = "pvalue", title = "p",          type = "number", format = "dp:3;p:.001")
 
       fi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                       overtitle = "Confidence Interval")
+                        overtitle = "Confidence Interval")
       fi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                       overtitle = "Confidence Interval")
+                        overtitle = "Confidence Interval")
 
       if (options$std != "none")
         fi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -599,11 +605,10 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       # add data
       fidat <- pei[pei$op == "~1" & pei$lhs %in% facNames, colSel[-c(2, 3)]]
       fidat$lhs <- .translateFactorNames(fidat$lhs, options)
-      print(fidat)
       fi$setData(fidat)
       fi$copyDependenciesFromJaspObject(jrobject)
     }
-
+    
     # Manifest variable intercepts
     jrobject[["Intercepts"]] <- vi <- createJaspTable(title = "Intercepts")
 
@@ -778,7 +783,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       tab <- createJaspTable()
       for (i in 1:ncol(rc)) {
         nm <- colnames(rc)[i]
-        tab$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3")
+        tab$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3;p:.001")
       }
       tab$addRows(rc, rowNames = colnames(rc))
       rcc[[l]] <- tab
@@ -789,7 +794,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     rcc <- createJaspTable("Residual covariance matrix", position = 4)
     for (i in 1:ncol(rc)) {
       nm <- colnames(rc)[i]
-      rcc$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3")
+      rcc$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3;p:.001")
     }
     rcc$addRows(rc, rowNames = colnames(rc))
     jaspResults[["rescov"]] <- rcc
@@ -927,11 +932,12 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   return(misfitplot)
 }
 
-.cfaSyntax <- function(jaspResults, options, cfaResult) {
+.cfaSyntax <- function(jaspResults, options, dataset, cfaResult) {
   if (is.null(cfaResult) || !options$showSyntax || !is.null(jaspResults[["syntax"]])) return()
   
   mod <- .optionsToCFAMod(options, dataset, cfaResult, FALSE)
 
   jaspResults[["syntax"]] <- createJaspHtml(mod, class = "jasp-code", position = 7, title = "Model syntax")
   jaspResults[["syntax"]]$copyDependenciesFromJaspObject(jaspResults[["maincontainer"]][["cfatab"]])
+  jaspResults[["syntax"]]$dependOnOptions("showSyntax")
 }
