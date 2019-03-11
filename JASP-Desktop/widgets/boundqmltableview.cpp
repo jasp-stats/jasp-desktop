@@ -114,14 +114,12 @@ void BoundQMLTableView::removeColumnSlot(int col)
 {
 	if (_multinomialChi2TestModel)
 		_multinomialChi2TestModel->removeColumn(col);
-
 }
 
 void BoundQMLTableView::resetSlot()
 {
 	if (_multinomialChi2TestModel)
 		_multinomialChi2TestModel->reset();
-
 }
 
 void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)

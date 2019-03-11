@@ -48,10 +48,10 @@ Form
 
 		Chi2TestTableView
 		{
-			name: "tableWidget"
-			width: form.availableWidth - hypothesisGroup.leftPadding
-			visible: expectedProbs.checked
-			source: "factor"
+			name	: "tableWidget"
+			width	: form.availableWidth - hypothesisGroup.leftPadding
+			visible	: expectedProbs.checked
+			source	: "factor"
 		}
 	}
 
@@ -64,7 +64,8 @@ Form
 			title	: qsTr("Additional Statistics")
 			CheckBox
 			{
-				name	: "descriptives"; label: qsTr("Descriptives")
+				name	: "descriptives"
+				label	: qsTr("Descriptives")
 				CheckBox
 				{
 					name				: "credibleInterval"; label: qsTr("Confidence interval")
@@ -81,7 +82,7 @@ Form
 		{
 			name	: "countProp"
 			title	: qsTr("Display")
-			RadioButton { value: "descCounts";	label: qsTr("Counts"); checked: true	}
+			RadioButton { value: "descCounts";	label: qsTr("Counts");	checked: true	}
 			RadioButton { value: "descProps";	label: qsTr("Proportions")				}
 		}
 
@@ -90,7 +91,8 @@ Form
 			title	: qsTr("Plots")
 			CheckBox
 			{
-				name	: "descriptivesPlot"; label: qsTr("Descriptives plot")
+				name	: "descriptivesPlot"
+				label	: qsTr("Descriptives plot")
 				PercentField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
 			}
 		}

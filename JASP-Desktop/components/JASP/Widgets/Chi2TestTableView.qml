@@ -32,8 +32,8 @@ Item
 	property	alias	name				: tableView.name
 	property	alias	source				: tableView.source
 	property	alias	tableView			: tableView
-	property	var		showAddButton		: true
-	property	var		showDeleteButton	: true
+	property	alias	showAddButton		: addButton.visible
+	property	alias	showDeleteButton	: deleteButton.visible
 	property	string	tableType			: "ExpectedProportions"
 	property	string	itemType			: "double"
 
@@ -58,7 +58,7 @@ Item
 
 			Button
 			{
-				visible			: chi2TestTableView.showAddButton
+				id				: addButton
 				text			: qsTr("Add Column")
 				name			: "addButton"
 				control.width	: chi2TestTableView.width * 1 / 4
@@ -68,7 +68,7 @@ Item
 
 			Button
 			{
-				visible			: chi2TestTableView.showDeleteButton
+				id				: deleteButton
 				text			: qsTr("Delete Column")
 				name			: "deleteButton"
 				control.width	: chi2TestTableView.width * 1 / 4

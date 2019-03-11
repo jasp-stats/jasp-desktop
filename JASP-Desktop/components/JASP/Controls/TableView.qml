@@ -72,7 +72,8 @@ JASPControl
 		contentWidth:	theView.width
 		contentHeight:	theView.height
 		clip:			true
-
+		boundsBehavior	: Flickable.StopAtBounds
+		boundsMovement	: Flickable.StopAtBounds
 
 		DataSetView
 		{

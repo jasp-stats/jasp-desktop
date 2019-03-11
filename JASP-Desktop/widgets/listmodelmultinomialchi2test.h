@@ -26,7 +26,7 @@
 
 class ListModelMultinomialChi2Test : public ListModel
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	enum class	specialRoles { active = Qt::UserRole, lines, maxColString };

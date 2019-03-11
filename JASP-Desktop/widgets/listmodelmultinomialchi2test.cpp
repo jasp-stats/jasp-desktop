@@ -230,6 +230,7 @@ QString ListModelMultinomialChi2Test::_getColName(size_t index)
 
 	if (index >= _maxColumn)
 		index = _maxColumn - 1;
+
 	char letter = char(97 + index);
 	return tq("H₀ (") + letter + tq(")");
 }
