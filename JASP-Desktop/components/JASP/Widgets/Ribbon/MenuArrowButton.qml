@@ -25,7 +25,7 @@ Rectangle
 	id							: ribbonButton
 	width						: implicitWidth
 	height						: implicitHeight
-	implicitHeight				: Theme.ribbonButtonHeight * 0.8
+	implicitHeight				: Theme.ribbonButtonHeight * 0.6
 	implicitWidth				: implicitHeight
 	// radius					: 5
 	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground
@@ -53,7 +53,7 @@ Rectangle
 		scale:				baseScale * (mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1)
 
 
-		property real	baseScale:		0.8 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
+		property real	baseScale:		0.7 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
 
 		property real	baseHeight:		80
 		property real	barThickness:	8 //(Theme.ribbonButtonHeight (2 * Theme.ribbonButtonPadding)) / 7
