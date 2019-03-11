@@ -25,19 +25,19 @@ import JASP.Theme 1.0
 Form
 {
 	usesJaspResults: false
-	
+
 	CheckBox { name: "simulatepval"; checked: false; visible: false }
-	
+
 	VariablesForm
 	{
 		height: 170
 		marginBetweenVariablesLists: 15
-		AvailableVariablesList { name: "allVariablesList" }		
+		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"] }
 		AssignedVariablesList { name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; allowedColumns: ["ordinal", "scale"] }
 	}
-	
+
 	RadioButtonGroup
 	{
 		id: hypothesisGroup
@@ -46,7 +46,7 @@ Form
 		Layout.columnSpan: 2
 		RadioButton { value: "multinomialTest";	label: qsTr("Multinomial test");	 checked: true	}
 		RadioButton { value: "expectedProbs";	label: qsTr("χ² test"); id: expectedProbs			}
-		
+
 		Chi2TestTableView
 		{
 			name: "tableWidget"
@@ -55,7 +55,7 @@ Form
 			source: "factor"
 		}
 	}
-	
+
 	Group
 	{
 		title: qsTr("Additional Statistics")

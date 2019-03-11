@@ -26,8 +26,6 @@ Form
 {
 	usesJaspResults	: true
 
-	CheckBox { name: "simulatepval"; checked: false; visible: false }
-
 	VariablesForm
 	{
 		height	: 170
