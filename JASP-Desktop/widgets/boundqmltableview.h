@@ -30,7 +30,7 @@
 class BoundQMLTableView : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
-	
+
 public:
 	BoundQMLTableView(QQuickItem* item, AnalysisForm* form);
 
