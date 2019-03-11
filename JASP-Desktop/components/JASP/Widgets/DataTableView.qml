@@ -120,7 +120,7 @@ FocusScope
 					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
 					color:	Theme.uiBackground
 					Text {
-						text:				rowIndex
+						text:				rowIndex + 1
 						anchors.centerIn:	parent
 						font:				dataTableView.font
 					}
