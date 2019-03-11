@@ -128,7 +128,7 @@ Form
 		}
 	}
     
-    ExpanderButton
+    Section
     {
         text: qsTr("Single Model Inference")
 

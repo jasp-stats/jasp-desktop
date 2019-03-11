@@ -132,7 +132,7 @@ Form
 		}
 	}
 	
-    ExpanderButton
+    Section
     {
         text: qsTr("Single Model Inference")
 
@@ -153,9 +153,6 @@ Form
                 CheckBox { text: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
-<<<<<<< HEAD
-	Section
-=======
         }
 
         VariablesForm
@@ -170,9 +167,8 @@ Form
             }
         }
     }
-	
-	ExpanderButton
->>>>>>> started on jaspResults
+
+    Section
 	{
 		title: qsTr("Post Hoc Tests")
 

@@ -664,7 +664,18 @@
     indices <- which(!isRandom)
   }
 
-  for (i in indices) {
+  if (groupParameters) {
+
+    indices <- split(indices, plotTitles[indices])[order(unique(plotTitles[indices]))]
+    nms <- names(indices)
+
+    for (i in seq_along(indices)) {
+
+      ind <- indices[[i]]
+      # make prior posterior plot
+      dfLines <- data.frame(x = c(densities[, ind, "x"]),
+                            y = c(densities[, ind, "y"]),
+                            g = rep(xNames[ind], each = nrow(densities)))
 
     # make prior posterior plot
     df <- data.frame(x = densities[, i, "x"],
