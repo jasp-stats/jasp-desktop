@@ -151,7 +151,7 @@ Rectangle
 		{
 							id:		threeDots
 							height:	width * 4
-							width:	Theme.splitHandleWidth * 0.4
+							width:	Theme.splitHandleWidth * 0.3
 			property color	kleur:	Theme.grayDarker
 
 			Rectangle

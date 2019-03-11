@@ -60,13 +60,15 @@ Rectangle
 			anchors.horizontalCenter	: parent.horizontalCenter
 		}
 
-		Desaturate
+		Colorize
 		{
 			z:				2
 			anchors.fill	: backgroundImage
 			source			: backgroundImage
 			visible			: !ribbonButton.enabled
-			desaturation	: 0.95
+			hue				: 0.1
+			saturation		: 0.6
+			lightness		: -0.2
 		}
 
 		Text
