@@ -26,6 +26,7 @@
 #endif
 
 #include "utilities/qutils.h"
+#include "utilities/aboutmodel.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include <functional>
@@ -42,7 +43,6 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	//_analysisMenu = new QMenu(_mainWindow);
 	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
 }
-
 
 void ResultsJsInterface::setZoom(double zoom)
 {
@@ -61,13 +61,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
 	if (succes)
 	{
-		QString version = tq(AppInfo::version.asString());
-
-		version+="-Beta";
-
-#ifdef JASP_DEBUG
-		version+="-Debug";
-#endif
+		QString version = AboutModel::getJaspVersion();
 
 		emit runJavaScript("window.setAppVersion('" + version + "')");
 

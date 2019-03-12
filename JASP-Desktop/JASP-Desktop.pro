@@ -271,7 +271,6 @@ HEADERS += \
     engine/enginesync.h \
     engine/rscriptstore.h \
     gui/aboutdialog.h \
-    gui/aboutdialogjsinterface.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
@@ -370,7 +369,8 @@ HEADERS += \
     results/resultmenumodel.h \
     analysis/jaspdoublevalidator.h \
     widgets/boundqmlfactorsform.h \
-    widgets/listmodelfactorsform.h
+    widgets/listmodelfactorsform.h \
+    utilities/aboutmodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -452,7 +452,6 @@ SOURCES += \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
     gui/aboutdialog.cpp \
-    gui/aboutdialogjsinterface.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
@@ -549,7 +548,8 @@ SOURCES += \
     results/resultmenuentry.cpp \
     analysis/jaspdoublevalidator.cpp \
     widgets/boundqmlfactorsform.cpp \
-    widgets/listmodelfactorsform.cpp
+    widgets/listmodelfactorsform.cpp \
+    utilities/aboutmodel.cpp
 
 RESOURCES += \
     html/html.qrc \

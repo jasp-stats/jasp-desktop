@@ -13,7 +13,8 @@ ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
 		{FileOperation::ExportData,		"Export Data",		false},
 		{FileOperation::SyncData,		"Sync Data",		false},
 		{FileOperation::Close,			"Close",			false},
-		{FileOperation::Preferences,	"Preferences",		true}
+		{FileOperation::Preferences,	"Preferences",		true},
+		{FileOperation::About,			"About",			true}
 	})
 {
 	for(size_t i=0; i<_data.size(); i++)
@@ -68,7 +69,7 @@ QHash<int, QByteArray>	ActionButtons::roleNames() const
 
 void ActionButtons::buttonClicked(int fileOperation)
 {
-	if(fileOperation < Open || fileOperation > Preferences)
+	if(fileOperation < Open || fileOperation > About)
 		throw std::runtime_error("This should not be happening!");
 
 	FileOperation op = static_cast<FileOperation>(fileOperation);

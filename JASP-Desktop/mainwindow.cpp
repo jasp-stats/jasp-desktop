@@ -113,6 +113,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
+	_aboutModel				= new AboutModel(this);
 	_preferences			= new PreferencesModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
 
@@ -232,6 +233,7 @@ void MainWindow::makeConnections()
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
+	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
@@ -285,6 +287,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel);
+	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel);
 	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
@@ -309,6 +312,7 @@ void MainWindow::loadQML()
 	_qml->addImportPath("qrc:///components");
 
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 }
 
@@ -1155,6 +1159,11 @@ void MainWindow::startDataEditorHandler()
 	}
 	else
 		startDataEditor(path);
+}
+
+void MainWindow::showAbout()
+{
+	_aboutModel->setVisible(true);
 }
 
 

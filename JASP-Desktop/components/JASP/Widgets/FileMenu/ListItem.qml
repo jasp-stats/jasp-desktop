@@ -18,6 +18,7 @@ Rectangle
 	property bool mainHovered:		descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
 	property bool allHovered:		mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
 	property bool hasBreadCrumbs:	false
+	focus:true
 
 	function openStuff(model)
 	{

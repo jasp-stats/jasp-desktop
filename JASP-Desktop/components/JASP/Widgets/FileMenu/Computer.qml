@@ -8,31 +8,19 @@ Item
 {
 	id:rect
 
-	Label
-	{
-		id:headLabel
+	MenuHeader {
+		id: menuHeader
 
-		width:implicitWidth
-		height:30
-		anchors.top: parent.top
-		anchors.left: parent.left  //Position Recent Files label
-		anchors.leftMargin: 12
-		anchors.topMargin: 12
-		text: "Recent Folders"
-		verticalAlignment: Text.AlignVCenter
-		font.family: "SansSerif"
-		font.pixelSize: 18
-		color: Theme.black
+		headertext: qsTr("Recent Folders")
+		toolseparator: false
 	}
 
 	RectangularButton {
 		id: browseButton
 
-		text: "Browse"
-		anchors.left: parent.left
-		anchors.top: headLabel.bottom
-		anchors.leftMargin: 10
-		anchors.topMargin: 10
+		text: qsTr("Browse")
+		anchors.left: menuHeader.left
+		anchors.top: menuHeader.bottom
 
 		onClicked: {
 			fileMenuModel.computer.browseMostRecent();
@@ -44,7 +32,9 @@ Item
 		id: firstSeparator
 
 		anchors.top: browseButton.bottom
-		anchors.topMargin: 10
+		anchors.left: menuHeader.left
+		anchors.right: menuHeader.right
+		anchors.topMargin: 8
 		width: rect.width
 		orientation: Qt.Horizontal
 	}
@@ -57,13 +47,11 @@ Item
 		anchors
 		{
 			top:			firstSeparator.bottom
-			left:			parent.left
-			right:			parent.right
+			left:			menuHeader.left
+			right:			menuHeader.right
 			bottom:			parent.bottom
-			leftMargin:		12  //Position datalibrary items
-			topMargin:		Theme.generalAnchorMargin
-			bottomMargin:	Theme.generalAnchorMargin
-			rightMargin:	Theme.generalAnchorMargin
+			topMargin:		Theme.generalMenuMargin
+			bottomMargin:	Theme.generalMenuMargin
 		}
 
 	}

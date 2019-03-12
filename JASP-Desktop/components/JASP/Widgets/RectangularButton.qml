@@ -32,7 +32,6 @@ Rectangle
 	property string	text:				""
 	property string	toolTip:			""
 	property string textColor:			"default"
-	property bool	enabled:			true
 	property bool	selected:			false
 	property string	iconSource:			""
 	property real	buttonPadding:		6 * preferencesModel.uiScale
@@ -71,7 +70,7 @@ Rectangle
 		acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
 		hoverEnabled:				true
 		cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-		onClicked:					if(filterButtonRoot.enabled) filterButtonRoot.clicked(); //else mouse.accepted = false;
+		onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.focus = true; } //else mouse.accepted = false;
 		visible:					filterButtonRoot.enabled
 		//propagateComposedEvents:	true
 	}

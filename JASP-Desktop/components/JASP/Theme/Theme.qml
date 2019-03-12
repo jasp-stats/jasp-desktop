@@ -68,7 +68,8 @@ QtObject {
 	readonly property int indentationLength:			20 * uiScale
 	readonly property int borderRadius:					4  * uiScale
 	readonly property int generalAnchorMargin:			8  * uiScale
-	readonly property int rowSpacing:					6  * uiScale
+	readonly property int generalMenuMargin:			8  * uiScale
+	readonly property int rowSpacing:					12 * uiScale
 	readonly property int subOptionOffset:				40 * uiScale
 
 	readonly property int sliderWidth:					4   * uiScale

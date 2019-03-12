@@ -95,6 +95,7 @@ signals:
 	void exportSelected(QString filename);
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
+	void showAbout();
 
 public slots:
 	void analysisAdded(Analysis *analysis);
@@ -106,6 +107,7 @@ public slots:
 	void setVisible(bool visible);
 	void showFileMenu();
 	void resourceButtonClicked(const int buttonType);
+	void showAboutRequest();
 
 private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }

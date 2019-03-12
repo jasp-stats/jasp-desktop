@@ -48,6 +48,7 @@
 #include "utilities/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
+#include "utilities/aboutmodel.h"
 #include "variablespage/levelstablemodel.h"
 #include "variablespage/labelfiltergenerator.h"
 #include "widgets/filemenu/filemenu.h"
@@ -102,6 +103,7 @@ public slots:
 
 	void startDataEditorHandler();
 	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
+	void showAbout();
 
 	void saveKeysSelected();
 	void openKeysSelected();
@@ -230,6 +232,7 @@ private:
 	QApplication				*	_application 			= nullptr;
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
+	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
 

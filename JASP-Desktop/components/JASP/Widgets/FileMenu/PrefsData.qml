@@ -4,100 +4,114 @@ import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
 
-ScrollView
-{
-	id:					scrollPrefs
+
+Item {
+
 	anchors.fill:		parent
-	anchors.margins:	Theme.generalAnchorMargin
 
-	Column
+	MenuHeader {
+		id: menuHeader
+		headertext:"Data Preferences"
+	}
+
+	ScrollView
 	{
-		width:			scrollPrefs.width
-		spacing:		Theme.rowSpacing
+		id:				scrollPrefs
+		anchors.top:	menuHeader.bottom
+		anchors.left:	menuHeader.left
+		anchors.right:	menuHeader.right
+		anchors.bottom: menuHeader.bottom
+		anchors.topMargin: 2 * Theme.generalMenuMargin
 
-		CheckBox
+		Column
 		{
-			label:				"Synchronize automatically on data file save"
-			checked:			preferencesModel.dataAutoSynchronization
-			onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-			//font:				Theme.font
-		}
-
-		Item
-		{
-			height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
-			width:	parent.width - Theme.generalAnchorMargin
+			width:			scrollPrefs.width
+			spacing:		Theme.rowSpacing
 
 			CheckBox
 			{
-				id:					useDefaultEditor
-				label:				"Use default spreadsheet editor"
-				checked:			preferencesModel.useDefaultEditor
-				onCheckedChanged:	preferencesModel.useDefaultEditor = checked
+				label:				"Synchronize automatically on data file save"
+				checked:			preferencesModel.dataAutoSynchronization
+				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
 				//font:				Theme.font
 			}
 
 			Item
 			{
-				id:					editCustomEditor
-				visible:			!preferencesModel.useDefaultEditor
-				width:				parent.width
-				height:				browseEditorButton.height
-				anchors.top:		useDefaultEditor.bottom
+				height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
+				width:	parent.width - Theme.generalAnchorMargin
 
-
-				RectangularButton
+				CheckBox
 				{
-					id:					browseEditorButton
-					text:				"Select custom editor"
-					onClicked:			preferencesModel.browseSpreadsheetEditor()
-					anchors.left:		parent.left
-					anchors.leftMargin: Theme.subOptionOffset
+					id:					useDefaultEditor
+					label:				"Use default spreadsheet editor"
+					checked:			preferencesModel.useDefaultEditor
+					onCheckedChanged:	preferencesModel.useDefaultEditor = checked
+					//font:				Theme.font
 				}
 
-				Rectangle
+				Item
 				{
-					anchors
+					id:					editCustomEditor
+					visible:			!preferencesModel.useDefaultEditor
+					width:				parent.width
+					height:				browseEditorButton.height
+					anchors.top:		useDefaultEditor.bottom
+
+
+					RectangularButton
 					{
-						left:			browseEditorButton.right
-						right:			parent.right
-						top:			parent.top
-						bottom:			parent.bottom
+						id:					browseEditorButton
+						text:				"Select custom editor"
+						onClicked:			preferencesModel.browseSpreadsheetEditor()
+						anchors.left:		parent.left
+						anchors.leftMargin: Theme.subOptionOffset
 					}
 
-					height:				browseEditorButton.height
-					color:				Theme.white
-					border.color:		Theme.buttonBorderColor
-					border.width:		1
-
-					TextInput
+					Rectangle
 					{
-						id:					customEditorText
-						text:				preferencesModel.customEditor
-						clip:				true
-						font:				Theme.font
-						onTextChanged:		preferencesModel.customEditor = text
-						color:				Theme.textEnabled
-
 						anchors
 						{
-							left:			parent.left
+							left:			browseEditorButton.right
 							right:			parent.right
-							verticalCenter:	parent.verticalCenter
-							margins:		Theme.generalAnchorMargin
+							top:			parent.top
+							bottom:			parent.bottom
 						}
 
-						Connections
+						height:				browseEditorButton.height
+						color:				Theme.white
+						border.color:		Theme.buttonBorderColor
+						border.width:		1
+
+						TextInput
 						{
-							target:					preferencesModel
-							onCustomEditorChanged:	customEditorText = preferencesModel.customEditor
-						}
+							id:					customEditorText
+							text:				preferencesModel.customEditor
+							clip:				true
+							font:				Theme.font
+							onTextChanged:		preferencesModel.customEditor = text
+							color:				Theme.textEnabled
 
+							anchors
+							{
+								left:			parent.left
+								right:			parent.right
+								verticalCenter:	parent.verticalCenter
+								margins:		Theme.generalAnchorMargin
+							}
+
+							Connections
+							{
+								target:					preferencesModel
+								onCustomEditorChanged:	customEditorText = preferencesModel.customEditor
+							}
+
+						}
 					}
 				}
 			}
-		}
 
-		PrefsMissingValues {}
+			PrefsMissingValues {}
+		}
 	}
 }
