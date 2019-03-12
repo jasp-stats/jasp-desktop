@@ -49,24 +49,20 @@ Rectangle
 
 		Image
 		{
-			id		: backgroundImage
-			z		: 1
-			width	: (37 / 28) * height
-			height	: Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
-			visible	: ribbonButton.enabled
+			id:			backgroundImage
+			z:			1
+			width:		(37 / 28) * height
+			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
+			opacity:	ribbonButton.enabled ? 1 : 0.5
 
-			anchors.top					: parent.top
-			anchors.topMargin			: Theme.ribbonButtonPadding
-			anchors.horizontalCenter	: parent.horizontalCenter
-		}
 
-		BrightnessContrast {
-			z:				2
-			anchors.fill	: backgroundImage
-			source			: backgroundImage
-			visible			: !ribbonButton.enabled
-			brightness: 0
-			contrast: -0.25
+			anchors
+			{
+				top				: parent.top
+				topMargin		: Theme.ribbonButtonPadding
+				horizontalCenter: parent.horizontalCenter
+			}
+
 		}
 
 		Text
