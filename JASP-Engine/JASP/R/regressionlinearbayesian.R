@@ -33,7 +33,7 @@ RegressionLinearBayesian <- function (
 	stateKey <- list(
 		bas_obj = modelOpts,
 		postSummary = c(modelOpts, summaryOpts),
-		postSummaryTable = c(modelOpts, summaryOpts, "postSummaryTable"),
+		postSummaryTable = c(modelOpts, summaryOpts, "postSummaryTable", "bayesFactorType"),
 		postSummaryPlot = c(modelOpts, summaryOpts, "postSummaryPlot", "omitIntercept"),
 		descriptives = c("dependent", "covariates"),
 		plotPosteriorLogOdds = c(modelOpts, "plotLogPosteriorOdds"),
@@ -796,17 +796,20 @@ RegressionLinearBayesian <- function (
 
 	posterior[["title"]] <- "Posterior Summaries of Coefficients"
 
+	inclusionBfTitle <- "BF<sub>inclusion</sub>"
+	if (options$bayesFactorType == "LogBF10")
+		inclusionBfTitle <- "Log(BF<sub>inclusion</sub>)"
 	overTitle <- sprintf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
 	fields <-
 		list(
 			list(name="coefficient", title="Coefficient", type="string"),
 			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
 			list(name="sd", title="SD", type="number", format="sf:4;dp:3"),
-			list(name="pInclprior", title ="P(incl)", type="number", format="sf:4;dp:3"),
-			list(name="pIncl", title ="P(incl|data)", type="number", format="sf:4;dp:3"),
-			list(name="BFincl", title ="BF<sub>inclusion</sub>", type="number", format="sf:4;dp:3"),
-			list(name="lowerCri", title = "Lower", type="number", format="sf:4;dp:3", overTitle = overTitle),
-			list(name="upperCri", title = "Upper", type="number", format="sf:4;dp:3", overTitle = overTitle)
+			list(name="pInclprior", title="P(incl)", type="number", format="sf:4;dp:3"),
+			list(name="pIncl", title="P(incl|data)", type="number", format="sf:4;dp:3"),
+			list(name="BFincl", title =inclusionBfTitle, type="number", format="sf:4;dp:3"),
+			list(name="lowerCri", title="Lower", type="number", format="sf:4;dp:3", overTitle=overTitle),
+			list(name="upperCri", title="Upper", type="number", format="sf:4;dp:3", overTitle=overTitle)
 	)
 
 	posterior[["schema"]] <- list(fields=fields)
@@ -815,6 +818,8 @@ RegressionLinearBayesian <- function (
 		rows <- list()
 
 		BFinclusion <- bas_obj[["BFinclusion"]]
+		if (options$bayesFactorType == "LogBF10")
+			BFinclusion <- log(BFinclusion)
 		coef <- bas_obj[["posteriorSummary"]][["coef"]]
 		coefficients <- bas_obj[["posteriorSummary"]][["coefficients"]]
 		probne0 <- bas_obj[["posteriorSummary"]][["probne0"]]
