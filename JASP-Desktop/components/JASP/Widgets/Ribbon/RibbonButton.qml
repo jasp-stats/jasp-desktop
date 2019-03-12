@@ -60,15 +60,13 @@ Rectangle
 			anchors.horizontalCenter	: parent.horizontalCenter
 		}
 
-		Colorize
-		{
+		BrightnessContrast {
 			z:				2
 			anchors.fill	: backgroundImage
 			source			: backgroundImage
 			visible			: !ribbonButton.enabled
-			hue				: 0.1
-			saturation		: 0.6
-			lightness		: -0.2
+			brightness: 0
+			contrast: -0.25
 		}
 
 		Text
