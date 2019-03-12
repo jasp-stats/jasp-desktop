@@ -348,15 +348,12 @@
   effectsTable$addCitation("Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].")
   effectsTable$addCitation("Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
 
-  if (options$bayesFactorType == "LogBF10") {
-    inclusion.title <- "Log(BF<sub>Inclusion</sub>)"
-    forward.title   <- "Log(BF<sub>Forward</sub>)"
-    backward.title  <- "Log(BF<sub>Backward</sub>)"
-  } else {
-    inclusion.title <- "BF<sub>Inclusion</sub>"
-    forward.title   <- "BF<sub>Forward</sub>"
-    backward.title  <- "BF<sub>Backward</sub>"
-  }
+  inclusion.title <- switch(
+    options$bayesFactorType,
+    "LogBF10" = "Log(BF<sub>Inclusion, 10</sub>)",
+    "BF01"    = "BF<sub>Inclusion, 01</sub>",
+    "BF10"    = "BF<sub>Inclusion, 10</sub>"
+  )
 
   effectsTable$addColumnInfo(name = "Effects",      type = "string")
   effectsTable$addColumnInfo(name = "P(incl)",      type = "number", format = "sf:4;dp:3")
@@ -428,11 +425,12 @@
   effectsTable[["P(incl)"]]      <- priorInclProb
   effectsTable[["P(incl|data)"]] <- postInclProb
   # FIXME: remove .clean after this is handled by jaspResults
-  if (options[["bayesFactorType"]] == "LogBF10") {
-    effectsTable[["BFInclusion"]] <- sapply(log(bfIncl), .clean)
-  } else {
-    effectsTable[["BFInclusion"]] <- sapply(bfIncl, .clean)
-  }
+  effectsTable[["BFInclusion"]] <- switch(
+    options$bayesFactorType,
+    "LogBF10" = sapply(log(bfIncl), .clean),
+    "BF01"    = sapply(1 / bfIncl,  .clean),
+    "BF10"    = sapply(bfIncl,      .clean)
+  )
   return()
 }
 
