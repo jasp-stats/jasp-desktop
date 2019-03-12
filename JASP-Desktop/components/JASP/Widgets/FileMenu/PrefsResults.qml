@@ -4,45 +4,64 @@ import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
 
-Column
-{
-	anchors.fill:		parent
-	anchors.margins:	Theme.generalAnchorMargin
-	spacing:			Theme.rowSpacing
+Item {
 
-	CheckBox
-	{
-		label:				"Display exact p-values"
-		checked:			preferencesModel.exactPValues
-		onCheckedChanged:	preferencesModel.exactPValues = checked
-		//font:				Theme.font
+	anchors.fill:		parent
+
+	MenuHeader {
+		id: menuHeader
+		headertext:"Results Preferences"
 	}
 
-	Item
+	ScrollView
 	{
-		height:		fixDecs.height
-		width:		fixDecs.width + numDecs.width
+		id:				scrollPrefs
+		anchors.top:	menuHeader.bottom
+		anchors.left:	menuHeader.left
+		anchors.right:	menuHeader.right
+		anchors.bottom: menuHeader.bottom
+		anchors.topMargin: 2 * Theme.generalMenuMargin
 
-		CheckBox
+		Column
 		{
-			id:					fixDecs
-			label:				"Fix the number of decimals"
-			checked:			preferencesModel.fixedDecimals
-			onCheckedChanged:	preferencesModel.fixedDecimals = checked
-			//font:				Theme.font
-		}
+			width:			scrollPrefs.width
+			spacing:		Theme.rowSpacing
 
-		SpinBox
-		{
-			id:					numDecs
-			value:				preferencesModel.numDecimals
-			onValueChanged:		preferencesModel.numDecimals = value
-			anchors.left:		fixDecs.right
-			anchors.leftMargin: Theme.generalAnchorMargin
-			anchors.top:		parent.top
-			height:				parent.height
-			visible:			preferencesModel.fixedDecimals
-			font:				Theme.font
+			CheckBox
+			{
+				label:				"Display exact p-values"
+				checked:			preferencesModel.exactPValues
+				onCheckedChanged:	preferencesModel.exactPValues = checked
+				//font:				Theme.font
+			}
+
+			Item
+			{
+				height:		fixDecs.height
+				width:		fixDecs.width + numDecs.width
+
+				CheckBox
+				{
+					id:					fixDecs
+					label:				"Fix the number of decimals"
+					checked:			preferencesModel.fixedDecimals
+					onCheckedChanged:	preferencesModel.fixedDecimals = checked
+					//font:				Theme.font
+				}
+
+				SpinBox
+				{
+					id:					numDecs
+					value:				preferencesModel.numDecimals
+					onValueChanged:		preferencesModel.numDecimals = value
+					anchors.left:		fixDecs.right
+					anchors.leftMargin: Theme.generalAnchorMargin
+					anchors.top:		parent.top
+					height:				parent.height
+					visible:			preferencesModel.fixedDecimals
+					font:				Theme.font
+				}
+			}
 		}
 	}
 }

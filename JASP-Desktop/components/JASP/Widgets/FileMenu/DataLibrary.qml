@@ -7,22 +7,11 @@ Item
 {
 	id:			rect
 	
-	Label
-	{
-		id:				headlabel
+	MenuHeader {
+		id: menuHeader
 
-		height:			30
-		anchors
-		{
-			top:		parent.top
-			left:		parent.left  //Position Datalibrary label
-			right:		parent.right
-			leftMargin: 12
-			topMargin:	12
-		}
-
-		text:	"Data Library"
-		font:	Theme.fontLabel
+		headertext:		qsTr("Data Library")
+		toolseparator:	false
 	}
 	
 	BreadCrumbs
@@ -35,10 +24,10 @@ Item
 		height:			40
 		anchors
 		{
-			top:		headlabel.bottom
+			top:		menuHeader.bottom
 			left:		parent.left
 			right:		parent.right
-			leftMargin:	12  //Position datalibrary breadcrumbs
+			leftMargin:	Theme.generalMenuMargin
 		}
 
 		onCrumbButtonClicked: model.indexChanged(modelIndex)
@@ -47,6 +36,8 @@ Item
 	ToolSeparator
 	{
 		id:				secondseparator
+		anchors.left:	menuHeader.left
+		anchors.right:	menuHeader.right
 		anchors.top:	datalibrarybreadcrumbs.bottom
 		width:			rect.width
 		orientation:	Qt.Horizontal
@@ -61,13 +52,11 @@ Item
 		anchors
 		{
 			top:			secondseparator.bottom
-			bottom:			parent.bottom
-			left:			parent.left
-			right:			parent.right
-			leftMargin:		12  //Position datalibrary items
-			topMargin:		Theme.generalAnchorMargin
-			bottomMargin:	Theme.generalAnchorMargin
-			rightMargin:	Theme.generalAnchorMargin
+            bottom:	parent.bottom
+            left:			menuHeader.left
+            right:		menuHeader.right
+            topMargin:		Theme.generalMenuMargin
+            bottomMargin:	Theme.generalMenuMargin
 		}
 	}
 }

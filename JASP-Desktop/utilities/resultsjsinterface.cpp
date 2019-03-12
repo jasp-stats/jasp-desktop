@@ -26,6 +26,7 @@
 #endif
 
 #include "utilities/qutils.h"
+#include "utilities/aboutmodel.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include <functional>
@@ -45,7 +46,6 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	connect(this, &ResultsJsInterface::welcomeScreenIsCleared, this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
 }
 
-
 void ResultsJsInterface::setZoom(double zoom)
 {
 	if(zoom == _webViewZoom)
@@ -63,13 +63,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
 	if (succes)
 	{
-		QString version = tq(AppInfo::version.asString());
-
-		version+="-Beta";
-
-#ifdef JASP_DEBUG
-		version+="-Debug";
-#endif
+		QString version = AboutModel::getJaspVersion();
 
 		emit runJavaScript("window.setAppVersion('" + version + "')");
 

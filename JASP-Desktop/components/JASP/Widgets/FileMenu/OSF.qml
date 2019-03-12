@@ -23,231 +23,211 @@ import JASP.Widgets 1.0
 
 Item
 {
-	id:		rect
+    id:		rect
 
-	property bool loggedin:			fileMenuModel.osf.loggedin
-	property bool processing:		fileMenuModel.osf.processing
-	property bool showfiledialog:	fileMenuModel.osf.showfiledialog
+    property bool loggedin:			fileMenuModel.osf.loggedin
+    property bool processing:		fileMenuModel.osf.processing
+    property bool showfiledialog:	fileMenuModel.osf.showfiledialog
 
+    MenuHeader {
+        id: menuHeader
 
-	Label
-	{
-		id:		headLabel
+        headertext: qsTr("Open Science Framework")
+		toolseparator: !loggedin
+    }
 
-		width:		implicitWidth
-		height:		30
-		visible:	!osfLogin.visible
-		anchors
-		{
-			top:		parent.top
-			left:		parent.left
-			leftMargin: 12
-			topMargin:	12
-			right:		parent.right
-		}
-		verticalAlignment: Text.AlignVCenter
+    RectangularButton {
+        id: logoutButton
 
-		text: "Open Science Framework"
-		font: Theme.fontLabel
-		color: Theme.black
-	}
+        visible: loggedin
 
+        text: qsTr("Logout")
 
-	RectangularButton {
-		id: logoutButton
+        anchors.right:			parent.right
+        anchors.top:			parent.top
+        anchors.rightMargin:	Theme.generalMenuMargin
+        anchors.topMargin:		Theme.generalMenuMargin
+
+        onClicked: {
+            fileMenuModel.osf.logoutClicked();
+        }
+    }
+
+    BreadCrumbs
+    {
+        id:		osfbreadcrumbs
+
+        visible: loggedin
+        model : fileMenuModel.osf.breadCrumbs
+
+        width:				rect.width
+        height:				loggedin ? 40 : 0
+        anchors.top:		menuHeader.bottom
+        anchors.left:		menuHeader.left
+        anchors.right:		parent.right
+
+        onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
+    }
+
+    ToolSeparator
+    {
+        id: firstSeparator
+
+        anchors.top: osfbreadcrumbs.bottom
+        anchors.left: menuHeader.left
+        anchors.right: menuHeader.right
+        orientation: Qt.Horizontal
 
 		visible: loggedin
+    }
 
-		text: "Logout"
+    Item  /////////////////////////// File dialog to save in OSF ////////////////////////////////////
+    {
+        id: fileExportDialog
 
-		anchors.right:			parent.right
-		anchors.top:			parent.top
-		anchors.rightMargin:	12
-		anchors.topMargin:		12
+        anchors.left: menuHeader.left
+        anchors.right: menuHeader.right
+        anchors.top: firstSeparator.bottom
+        anchors.topMargin:	Theme.generalMenuMargin
 
-		onClicked: {
-			fileMenuModel.osf.logoutClicked();
-		}
-	}
+        visible: showfiledialog && loggedin
+        height: visible ? 90 : 0
 
-	BreadCrumbs
-	{
-		id:		osfbreadcrumbs
+        Label {
+            id : saveFilenameLabel
 
-		visible: loggedin
+            width:	80
+            height: 30
+            anchors.top: parent.top
+            anchors.left:	 parent.left
 
-		model : fileMenuModel.osf.breadCrumbs
+            text :			qsTr("Filename")
+            font.family:	"SansSerif"
+            font.pixelSize: 14
+            color:			Theme.black
+            verticalAlignment: Text.AlignVCenter
+        }
 
-		width:				rect.width
-		height:				loggedin ? 40 : 0
-		anchors.top:		headLabel.bottom
-		anchors.left:		parent.left
-		anchors.right:		parent.right
-		anchors.leftMargin:	12  //Position datalibrary breadcrumbs
+        Rectangle
+        {
+            id: saveFilenameInput
 
-		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
-	}
+            anchors
+            {
+                left: saveFilenameLabel.right
+                leftMargin: 6
+                top: saveFilenameLabel.top
+                right: parent.right
+            }
 
+            height: saveFilenameLabel.height
+            clip: true
 
+            color: Theme.white
+            border.width: filenameText.activeFocus ? 5 : 1
+            border.color: filenameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 
-	Item  /////////////////////////// File dialog to save in OSF ////////////////////////////////////
-	{
+            TextInput {
 
-		id: fileExportDialog
+                id: filenameText
 
-		width: rect.width
-		visible: showfiledialog
-		anchors.top: osfbreadcrumbs.bottom
-		anchors.topMargin: 6
-		height: visible ? 90 : 0
+                anchors.fill: parent
+                selectByMouse: true
 
+                text: fileMenuModel.osf.savefilename
 
-		ToolSeparator
-		{
-			id: firstSeparator
-			anchors.top: fileExportDialog.top
-			width: rect.width
-			orientation: Qt.Horizontal
-		}
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 14
 
-		Label {
-			id : saveFilenameLabel
+                onAccepted: {
+                    fileMenuModel.osf.saveFile(filenameText.text)
+                }
+            }
+        }
 
-			width:	80
-			height: 30
-			anchors
-			{
-				top:		firstSeparator.bottom
-				left:		parent.left
-				leftMargin: 12
-				topMargin:	6
-				right:		parent.right
-			}
+        RectangularButton
+        {
+            id:						saveFilenameButton
 
-			text :			"Filename"
-			font.family:	"SansSerif"
-			font.pixelSize: 14
-			color:			Theme.black
-			verticalAlignment: Text.AlignVCenter
-		}
+            anchors.right:		parent.right
+            anchors.top:			saveFilenameInput.bottom
+            anchors.topMargin:	Theme.generalMenuMargin
+            width:60
+            height: 30
 
-		Rectangle
-		{
+            text:		qsTr("Save")
 
-			id: saveFilenameInput
+            onClicked: {
+                fileMenuModel.osf.saveFile(filenameText.text)
+            }
+        }
 
-			anchors
-			{
-				left: saveFilenameLabel.right
-				leftMargin: 6
-				top: saveFilenameLabel.top
-				right: parent.right
-				rightMargin: 12
-			}
-			height: saveFilenameLabel.height
-			clip: true
+        RectangularButton {
+            id:						newDirectoryButton
 
-			color: Theme.white
-			border.width: filenameText.activeFocus ? 5 : 1
-			border.color: filenameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+            text:					qsTr("New Folder")
+            anchors.right:		saveFilenameButton.left
+            anchors.top:			saveFilenameButton.top
+            anchors.rightMargin:	Theme.generalMenuMargin
+            width:120
+            height: 30
 
-			TextInput {
-
-				id: filenameText
-
-				anchors.fill: parent
-				anchors.leftMargin: 10
-				selectByMouse: true
-
-				text: fileMenuModel.osf.savefilename
-
-				verticalAlignment: Text.AlignVCenter
-				font.pixelSize: 14
-
-				onAccepted: {
-					fileMenuModel.osf.saveFile(filenameText.text)
-				}
-			}
-		}
-
-		RectangularButton {
-			id:						newDirectoryButton
-
-			text:					"New Folder"
-			anchors.right:			saveFilenameButton.left
-			anchors.top:			saveFilenameInput.bottom
-			anchors.rightMargin:	12
-			anchors.topMargin:		12
-
-			onClicked: {
-				fileMenuModel.osf.newFolderClicked()
-			}
-		}
-
-		RectangularButton {
-			id:						saveFilenameButton
-
-			text:					"Save"
-			anchors.right:			parent.right
-			anchors.top:			newDirectoryButton.top
-			anchors.rightMargin:	12
-
-			onClicked: {
-				fileMenuModel.osf.saveFile(filenameText.text)
-			}
-		}
-	}
-	//////////////////////////////////////////////////////////////////////////////////////
+            onClicked: {
+                fileMenuModel.osf.newFolderClicked()
+            }
+        }
+    }
 
 	ToolSeparator
 	{
 		id: secondSeparator
+
 		anchors.top: fileExportDialog.bottom
-		width: rect.width
+		anchors.left: menuHeader.left
+		anchors.right: menuHeader.right
 		orientation: Qt.Horizontal
-
-		// TODO: remove this and headLabel
-		visible: !osfLogin.visible
+		visible: fileExportDialog.visible
 	}
+    //////////////////////////////////////////////////////////////////////////////////////
 
-	Item {
 
-		visible: processing
+    Item {
 
-		width: animation.width;
-		height: animation.height + 8
+        visible: processing
 
-		anchors.horizontalCenter: osfList.horizontalCenter
-		anchors.verticalCenter: osfList.verticalCenter
+        width: animation.width;
+        height: animation.height + 8
 
-		AnimatedImage { id: animation; source: "qrc:/icons/loading.gif" }
-	}
+        anchors.horizontalCenter: osfList.horizontalCenter
+        anchors.verticalCenter: osfList.verticalCenter
 
-	FileList {
-		id:			osfList
-		visible:	loggedin && !processing
-		cppModel:	fileMenuModel.osf.listModel
-		hasBreadCrumbs : true
-		anchors
-		{
-			top:			secondSeparator.bottom
-			left:			parent.left
-			right:			parent.right
-			bottom:			parent.bottom
-			leftMargin:		12  //Position datalibrary items
-			topMargin:		Theme.generalAnchorMargin
-			bottomMargin:	Theme.generalAnchorMargin
-			rightMargin:	Theme.generalAnchorMargin
-		}
-	}
+        AnimatedImage { id: animation; source: "qrc:/icons/loading.gif" }
+    }
 
-	OSFLogin {
-		id: osfLogin
+    FileList {
+        id:			osfList
+        visible:	loggedin && !processing
+        cppModel:	fileMenuModel.osf.listModel
+        hasBreadCrumbs : true
 
-		visible: !loggedin && !processing
+        anchors
+        {
+			top:		fileExportDialog.visible ? secondSeparator.bottom :  firstSeparator.bottom
+			bottom:		parent.bottom
+			left:		menuHeader.left
+            right:		menuHeader.right
+            topMargin:		Theme.generalMenuMargin
+            bottomMargin:	Theme.generalMenuMargin
+        }
+    }
 
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top             : secondSeparator.bottom
+    OSFLogin {
+        id: osfLogin
+
+        visible: !loggedin && !processing
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top             : secondSeparator.bottom
         anchors.topMargin       : 40
-	}
+    }
 }

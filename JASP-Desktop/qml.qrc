@@ -105,5 +105,7 @@
         <file>components/JASP/Widgets/SplitHandle.qml</file>
         <file>components/JASP/Controls/AvailableVariablesList.qml</file>
         <file>components/JASP/Controls/ComputedColumnField.qml</file>
+        <file>components/JASP/Widgets/AboutWindow.qml</file>
+        <file>components/JASP/Widgets/FileMenu/MenuHeader.qml</file>
     </qresource>
 </RCC>

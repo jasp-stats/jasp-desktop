@@ -19,13 +19,13 @@
 #include "aboutdialog.h"
 
 #include "utilities/qutils.h"
+#include "utilities/aboutmodel.h"
 #include "appinfo.h"
 
 AboutDialog::AboutDialog(QObject *parent) :
 	QObject(parent)
 {
-	m_aboutDialogJsInterface = new AboutDialogJsInterface(this);
-	
+
 	m_network_manager = new QNetworkAccessManager();
 	m_pBuffer = new QByteArray();
 	
@@ -45,18 +45,9 @@ void AboutDialog::aboutPageLoaded(bool success)
 	// Show aboutWebView with about.html and patch information
 	if (success)
 	{
-		QString version = tq(AppInfo::version.asString());
-
-		version+="-Beta";
-
-#ifdef JASP_DEBUG
-		version+="-Debug";
-#endif
-
+		QString version = AboutModel::getJaspVersion();
 		QString builddate = tq(AppInfo::builddate);
 		
-		m_aboutDialogJsInterface->setAppInfo(version, builddate);
-
 		delayedVersionCheck = new QTimer();
 		delayedVersionCheck->setInterval(200);
 		connect(delayedVersionCheck, &QTimer::timeout, this, &AboutDialog::checkForJaspUpdate);
@@ -106,9 +97,9 @@ void AboutDialog::downloadFinished()
 		long latest = lv.major*100000 + lv.minor*10000 + lv.revision*1000 + lv.build;
 		if (latest > cur)
 		{
-			m_aboutDialogJsInterface->setNewVersion(version);
+			//m_aboutDialogJsInterface->setNewVersion(version);
 #ifndef __linux__
-			m_aboutDialogJsInterface->showDownloadButton(downloadfile);
+			//m_aboutDialogJsInterface->showDownloadButton(downloadfile);
 #endif
 		}
 	}

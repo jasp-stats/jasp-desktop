@@ -17,7 +17,7 @@ ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 
 	connect(this, &ResourceButtons::clicked, this, &ResourceButtons::clickedHandler);
 }
-//ameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole };
+//nameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole };
 
 QVariant ResourceButtons::data(const QModelIndex &index, int role)	const
 {

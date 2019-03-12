@@ -49,6 +49,8 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::ExportData,		false);
 	_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
+	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
+	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setFileoperation(ActionButtons::Open);
 }
@@ -346,11 +348,11 @@ void FileMenu::fileOperationClicked(const ActionButtons::FileOperation action)
 		else
 			setSaveMode(FileEvent::FileSave);			
 		break;
-
-
 	case ActionButtons::FileOperation::Close:
 		close();
 		setSaveMode(FileEvent::FileOpen);
+		break;
+	default:
 		break;
 	}
 }
@@ -359,6 +361,11 @@ void FileMenu::resourceButtonClicked(const int buttonType)
 {
 	if (buttonType == ResourceButtons::OSF)
 		_OSF->attemptToConnect();
+}
+
+void FileMenu::showAboutRequest()
+{
+	emit showAbout();
 }
 
 void FileMenu::dataSetOpenCurrentRequestHandler(QString path)
