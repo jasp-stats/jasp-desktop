@@ -26,10 +26,10 @@ Form {
 	
 	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true	}	
-		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]					}
-		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true }
+		AvailableVariablesList	{ name: "allVariablesList" }
+		AssignedVariablesList	{ name: "dependent";	title: qsTr("Dependent Variable");		allowedColumns: ["scale"];	singleVariable: true	}
+		AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				allowedColumns: ["scale"]							}
+		AssignedVariablesList	{ name: "wlsWeights";	title: qsTr("WLS Weights (optional)");	allowedColumns: ["scale"];	singleVariable: true	}
 	}
 	
 	BayesFactorType {}
@@ -39,27 +39,36 @@ Form {
 		title: qsTr("Output")
 		columns: 2
 
-		CheckBox
+		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable }
+
+		DropDown
 		{
-			name: "postSummaryTable"; label: qsTr("Posterior summary")
-			DropDown
-			{
-				name: "summaryType"
-				indexDefaultValue: 3
-				values: [
-					{ label: "Best model",			value: "best"	},
-					{ label: "Most complex model",	value: "complex"},
-					{ label: "Median model",		value: "median"	},
-					{ label: "Model averaged",		value: "averaged"}
-				]				
-			}
+			name: "summaryType"
+			enabled: postSummaryTable.checked || postSummaryPlot.checked
+			indexDefaultValue: 3
+			values: [
+				{ label: "Best model",			value: "best"		},
+				{ label: "Most complex model",	value: "complex"	},
+				{ label: "Median model",		value: "median"		},
+				{ label: "Model averaged",		value: "averaged"	}
+			]
 		}
 
 		CheckBox
 		{
-			name: "postSummaryPlot"; label: qsTr("Plot of coefficients")
+			name: "postSummaryPlot"
+			label: qsTr("Plot of coefficients")
+			id: postSummaryPlot
 			CheckBox { name: "omitIntercept"; label: qsTr("Omit intercept") }
-			PercentField { name: "posteriorSummaryPlotCredibleIntervalValue"; label: qsTr("Credible interval"); defaultValue: 95 }
+
+		}
+
+		PercentField
+		{
+			name: "posteriorSummaryPlotCredibleIntervalValue"
+			label: qsTr("Credible interval")
+			enabled: postSummaryTable.checked || postSummaryPlot.checked
+			defaultValue: 95
 		}
 	}
 
@@ -68,19 +77,22 @@ Form {
 		name: "bayesFactorOrder"
 		title: qsTr("Order")
 		RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model"); checked: true	}
-		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model")				}
+		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model")					}
 	}
 
 	RadioButtonGroup
 	{
 		name: "shownModels"
 		title: qsTr("Limit no. models shown")
-		RadioButton { value: "limited"; label: qsTr("No") }
-		RowLayout
-		{
-			RadioButton { value: "unlimited"; label: qsTr("Yes, show best"); checked: true }
-			IntegerField { name: "numShownModels"; defaultValue: 10; min: 1 }
+		RadioButton { value: "unlimited"; label: qsTr("No") }
+		RadioButton { 
+			value: "limited"
+			label: qsTr("Yes, show best")
+			checked: true
+			childrenOnSameRow: true
+			IntegerField { name: "numShownModels"; defaultValue: 10; min: 1}
 		}
+
 	}
 
 	Group
@@ -136,7 +148,7 @@ Form {
 		{
 			title: qsTr("Models")
 			CheckBox { name: "plotLogPosteriorOdds";	label: qsTr("Log posterior odds")				}
-			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data)M)) vs. model size")		}
+			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data)M)) vs. model size")	}
 			CheckBox { name: "plotModelProbabilities";	label: qsTr("Model probabilities")				}
 		}
 
@@ -169,8 +181,8 @@ Form {
 				Group
 				{
 					RadioButton { value: "hyper-g";			label: qsTr("Hyper-g!");			id: hyperg			}
-					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");	id: hyperglaplace	}
-					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");		id: hypergn			}
+					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");		id: hyperglaplace	}
+					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");			id: hypergn			}
 				}
 				IntegerField
 				{
