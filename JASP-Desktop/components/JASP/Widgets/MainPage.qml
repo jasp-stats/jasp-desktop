@@ -40,8 +40,7 @@ Item
 		id:				panelSplit
 		orientation:	Qt.Horizontal
 		height:			parent.height
-		width:			parent.width + hackySplitHandlerHideWidth
-
+		width:			parent.width + hackySplitHandlerHideWidth 
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidth : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
@@ -101,35 +100,42 @@ Item
 			}
 		}
 
-		WebEngineView
+		Item
 		{
-			id:						resultsView
-			implicitWidth:			Theme.resultWidth
+			id:						giveResultsSomeSpace
+			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
 			//Layout.minimumWidth:	Math.max(Theme.minPanelWidth, analyses.width)
 			Layout.fillWidth:		true
 			z:						3
 			visible:				panelSplit.shouldShowInputOutput
 			onVisibleChanged:		if(visible) width = Theme.resultWidth; else data.maximizeData()
 
-			//property int minimumFullWidth: Theme.resultWidth + Theme.formWidth
-
 			Connections
 			{
 				target:				analysesModel
 				onAnalysisAdded:
 				{
-					var combinedWidth = resultsView.width + analyses.width;
+					//make sure we get to see the results!
 
-					if(combinedWidth <= 10)		mainWindow.dataPanelVisible = false;
-					//else if(inputOutput.width < inputOutput.minimumFullWidth)	inputOutput.width			= inputOutput.minimumFullWidth
+					var inputOutputWidth	= splitViewContainer.width - (data.width + Theme.splitHandleWidth)
+					var remainingDataWidth	= Math.max(0, data.width - (Theme.splitHandleWidth + Theme.resultWidth));
+
+					if(inputOutputWidth < 100 * preferencesModel.uiScale)
+						 mainWindow.dataPanelVisible = false;
+					else if(inputOutputWidth < Theme.resultWidth)
+					{
+						if(remainingDataWidth === 0)	mainWindow.dataPanelVisible = false;
+						else							data.width = remainingDataWidth
+					}
 				}
 			}
 
+			WebEngineView
+			{
+				id:						resultsView
 
-
-
-				//anchors.fill:			parent
-				//anchors.leftMargin:		analyses.width
+				anchors.fill:			parent
+				anchors.rightMargin:	panelSplit.hackySplitHandlerHideWidth
 				url:					resultsJsInterface.resultsPageUrl
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
 				onContextMenuRequested: request.accepted = true
@@ -220,8 +226,8 @@ Item
 					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
 					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
 
+				}
 			}
 		}
-
 	}
 }
