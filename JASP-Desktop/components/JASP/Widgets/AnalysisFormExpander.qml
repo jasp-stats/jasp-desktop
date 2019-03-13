@@ -7,7 +7,9 @@ Rectangle
 {
 	id:					expanderButton
 	height:				loaderAndError.y
-	width:				Theme.formWidth
+	//width:				Theme.formWidth
+	anchors.left:		parent.left
+	anchors.right:		parent.right
 	clip:				true
 
 	color:				Theme.uiBackground
@@ -186,6 +188,13 @@ Rectangle
 			id:					loader
 			source:				!expanderButton.imploded || expanderButton.expanded ? formQmlUrl : ""
 			asynchronous:		false // makes it slow when true
+
+			anchors
+			{
+				top:			errorRect.bottom
+				left:			parent.left
+				right:			parent.right
+			}
 	
 			property int		myIndex:			-1
 			property int		myID:				-1
