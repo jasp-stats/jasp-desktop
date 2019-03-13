@@ -2,22 +2,23 @@
 #include <fstream>
 #include <cmath>
 
-sendFuncDef			jaspResults::ipccSendFunc		= nullptr;
-pollMessagesFuncDef jaspResults::ipccPollFunc		= nullptr;
+sendFuncDef			jaspResults::_ipccSendFunc		= nullptr;
+pollMessagesFuncDef jaspResults::_ipccPollFunc		= nullptr;
 std::string			jaspResults::_saveResultsHere	= "";
 std::string			jaspResults::_baseCitation		= "";
-Rcpp::Environment*	jaspResults::_RStorageEnv			= nullptr;
+Rcpp::Environment*	jaspResults::_RStorageEnv		= nullptr;
+bool				jaspResults::_insideJASP		= false;
 
 const std::string jaspResults::analysisChangedErrorMessage = "Analysis changed and will be restarted!";
 
 void jaspResults::setSendFunc(sendFuncDef sendFunc)
 {
-	ipccSendFunc = sendFunc;
+	_ipccSendFunc = sendFunc;
 }
 
 void jaspResults::setPollMessagesFunc(pollMessagesFuncDef pollFunc)
 {
-	ipccPollFunc = pollFunc;
+	_ipccPollFunc = pollFunc;
 }
 
 void jaspResults::setBaseCitation(std::string baseCitation)
@@ -27,9 +28,9 @@ void jaspResults::setBaseCitation(std::string baseCitation)
 
 void jaspResults::setResponseData(int analysisID, int revision)
 {
-	response["id"]			= analysisID;
-	response["revision"]	= revision;
-	response["progress"]	= -1;
+	_response["id"]			= analysisID;
+	_response["revision"]	= revision;
+	_response["progress"]	= -1;
 }
 
 void jaspResults::setSaveLocation(const char * newSaveLocation)
@@ -37,12 +38,17 @@ void jaspResults::setSaveLocation(const char * newSaveLocation)
 	_saveResultsHere = newSaveLocation;
 }
 
+void jaspResults::setInsideJASP()
+{
+	_insideJASP = true;
+}
+
 jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 	: jaspContainer(title, jaspObjectType::results)
 {
 	if(_RStorageEnv != nullptr)
 		delete _RStorageEnv;
-	_RStorageEnv = new Rcpp::Environment(Rcpp::Environment::global_env());
+	_RStorageEnv = new Rcpp::Environment(_insideJASP ? Rcpp::Environment::global_env() : Rcpp::as<Rcpp::Environment>(Rcpp::Environment::namespace_env("jaspResults")[".plotStateStorage"]));
 
 
 	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState))
@@ -59,12 +65,12 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 
 void jaspResults::setStatus(std::string status)
 {
-	response["status"] = status;
+	_response["status"] = status;
 }
 
 std::string jaspResults::getStatus()
 {
-	return response["status"].asString();
+	return _response["status"].asString();
 }
 
 void jaspResults::complete()
@@ -143,16 +149,16 @@ void jaspResults::send(std::string otherMsg)
 	JASPprint("send was called!");
 #endif
 
-	if(ipccSendFunc != nullptr)
-		(*ipccSendFunc)(otherMsg == "" ? constructResultJson() : otherMsg.c_str());
+	if(_ipccSendFunc != nullptr)
+		(*_ipccSendFunc)(otherMsg == "" ? constructResultJson() : otherMsg.c_str());
 }
 
 void jaspResults::checkForAnalysisChanged()
 {
-	if(ipccPollFunc == nullptr)
+	if(_ipccPollFunc == nullptr)
 		return;
 
-	if((*ipccPollFunc)())
+	if((*_ipccPollFunc)())
 	{
 		setStatus("changed");
 		Rf_error(analysisChangedErrorMessage.c_str());
@@ -176,27 +182,27 @@ void jaspResults::childrenUpdatedCallbackHandler()
 	}
 }
 
-Json::Value jaspResults::response = Json::Value(Json::objectValue);
+Json::Value jaspResults::_response = Json::Value(Json::objectValue);
 
 const char * jaspResults::constructResultJson()
 {
-	response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
-	response["results"]		= dataEntry();
-	response["name"]		= response["results"]["title"];
+	_response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
+	_response["results"]		= dataEntry();
+	_response["name"]		= _response["results"]["title"];
 
 	if(errorMessage != "" )
 	{
-		response["results"]["error"]		= true;
-		response["results"]["errorMessage"] = errorMessage;
+		_response["results"]["error"]		= true;
+		_response["results"]["errorMessage"] = errorMessage;
 	}
 	else if (_error)
 	{
-		response["results"]["error"]		= true;
-		response["results"]["errorMessage"] = "Analyis returned an error but no errormessage...";
+		_response["results"]["error"]		= true;
+		_response["results"]["errorMessage"] = "Analyis returned an error but no errormessage...";
 	}
 
 	static std::string msg;
-	msg = response.toStyledString();
+	msg = _response.toStyledString();
 
 #ifdef JASP_RESULTS_DEBUG_TRACES
 	std::cout << "Result JSON:\n" << msg << "\n\n" << std::flush;
@@ -385,7 +391,7 @@ void jaspResults::startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs
 	_progressbarLastUpdateTime		= getCurrentTimeMs();
 	_progressbarTicks				= 0;
 
-	response["progress"]			= 0;
+	_response["progress"]			= 0;
 
 	send();
 }
@@ -397,7 +403,7 @@ void jaspResults::progressbarTick()
 	_progressbarTicks++;
 
 	int progress			= std::lround(100.0f * ((float)_progressbarTicks) / ((float)_progressbarExpectedTicks));	progress				= std::min(100, std::max(progress, 0));
-	response["progress"]	= progress;
+	_response["progress"]	= progress;
 
 	int curTime = getCurrentTimeMs();
 	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progress == 100)

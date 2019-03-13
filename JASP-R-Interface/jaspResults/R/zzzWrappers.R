@@ -10,7 +10,7 @@
 		destroyAllAllocatedRObjects()
 	}
 
-	env$jaspResults <- create_cpp_jaspResults("Analysis Test", NULL)
+  env$jaspResults <- create_cpp_jaspResults("Analysis Test", NULL)
 
 	setRefClass(
 		"jaspTableExtended", 
@@ -23,8 +23,8 @@
 		where=globalenv()
 	)
 
-	e <- getNamespace("jaspResults")
-	unlockBinding('.__C__Rcpp_jaspTable', e)
+  e <- getNamespace("jaspResults")
+  unlockBinding('.__C__Rcpp_jaspTable', e)
 	
 	# these functions were obtained using dput on a method 
 	# e.g., dput(createJaspTable()$addColumnInfo)
@@ -69,6 +69,9 @@
 	return(invisible(TRUE))
 	
 }
+
+#For use inside jaspResults to store plots and states (as is obvious from the name)
+.plotStateStorage <- new.env()
 
 initJaspResults <- function() .onAttach()
 

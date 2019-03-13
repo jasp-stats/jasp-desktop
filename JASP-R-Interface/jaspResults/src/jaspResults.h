@@ -20,6 +20,8 @@ public:
 	static void setResponseData(int analysisID, int revision);
 	static void setSaveLocation(const char * newSaveLocation);
 	static void setBaseCitation(std::string baseCitation);
+	static void setInsideJASP();
+	static bool isInsideJASP() { return _insideJASP; }
 
 	void send(std::string otherMsg = "");
 	void checkForAnalysisChanged();
@@ -61,11 +63,12 @@ public:
 	static bool				objectExistsInEnv(std::string envName);
 
 private:
-	static Json::Value				response;
-	static sendFuncDef				ipccSendFunc;
-	static pollMessagesFuncDef		ipccPollFunc;
+	static Json::Value				_response;
+	static sendFuncDef				_ipccSendFunc;
+	static pollMessagesFuncDef		_ipccPollFunc;
 	static std::string				_saveResultsHere;
 	static std::string				_baseCitation;
+	static bool						_insideJASP;
 	static const std::string		analysisChangedErrorMessage;
 
 	static Rcpp::Environment		*	_RStorageEnv; //we need this environment to store R objects in a "named" fashion, because then the garbage collector doesn't throw away everything...
