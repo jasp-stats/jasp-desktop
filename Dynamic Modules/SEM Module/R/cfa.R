@@ -203,7 +203,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   spec$variables <- unlist(lapply(options$factors, function(x) x$indicators))
   spec$latents   <- vapply(options$factors,        function(x) x$name, "names")
   spec$soLatents <- vapply(options$secondOrder,    function(x) x$name, "names")
-  if (length(spec$soLatents) > 0) spec$soLatents <- paste0("so", sofac_names)
+  if (length(spec$soLatents) > 0) spec$soLatents <- paste0("so", spec$soLatents)
   if (options$se == "bootstrap") {
     spec$se <- "standard"
     spec$bootstrap <- TRUE
