@@ -45,10 +45,10 @@ public:
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
-	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
-	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
-	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
-	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
+	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(columnName == "") return false; return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(columnName == "") return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
+	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	if(columnName == "") return false; return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
+	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(columnName == "") return false; return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
 
 	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels);
 
