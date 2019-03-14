@@ -199,6 +199,7 @@ Properties
 - `label`: [optional, default: `""`] text that will be shown to the left of the field
 - `afterLabel`: [optional, default: `""`] text that will be shown to the right of the field
 - `defaultValue`: [optional, default: `0`] numeric specifying the default value shown; can be an integer or a decimal value, just be sure to use a dot and not a comma
+- `negativeValues`: [optional, default: `false`] specifies if the user should be able to input negative values (works only when the `min` argument is omitted)
 - `min`: [optional, default: `-Infinity`] numeric specifying the minimum value a user can enter
 - `max`: [optional, default: `Infinity`] numeric specifying the maximum value a user can enter
 - `decimals`: [optional, default: `3`] integer specifying how many decimals the user can enter
@@ -240,6 +241,7 @@ Properties
 - `label`: [optional, default: `""`] text that will be shown to the left of the field
 - `afterLabel`: [optional, default: `""`] text that will be shown to the right of the field
 - `defaultValue`: [optional, default: `0`] integer specifying the default value shown
+- `negativeValues`: [optional, default: `false`] specifies if the user should be able to input negative values (works only when the `min` argument is omitted)
 - `min`: [optional, default: `0`] integer specifying the minimum value a user can enter
 - `max`: [optional, default: `Infinity`] integer specifying the maximum value a user can enter
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
