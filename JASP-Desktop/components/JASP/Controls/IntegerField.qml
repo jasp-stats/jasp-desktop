@@ -25,9 +25,9 @@ TextField
 {
 					id:				textField
 	property int	defaultValue:	0
-	property bool	validation:		true
-	property int	min:			validation ? 0 : -Infinity
-	property int	max:			Infinity
+	property bool	negativeValues:	false
+	property int	min:			negativeValues ? -2147483647 : 0
+	property int	max:			2147483647
 	property alias	intValidator:	intValidator
     
 					inputType:		"integer"

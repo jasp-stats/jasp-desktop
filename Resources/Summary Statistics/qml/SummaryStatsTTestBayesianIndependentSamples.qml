@@ -29,9 +29,9 @@ Form
 
 	Group
 	{
-		DoubleField  { name: "tStatistic";	label: qsTr("t"); validation: false	}
-		IntegerField { name: "n1Size";		label: qsTr("Group 1 size")			}
-		IntegerField { name: "n2Size";		label: qsTr("Group 2 size")			}
+		DoubleField  { name: "tStatistic";	label: qsTr("t"); negativeValues: true	}
+		IntegerField { name: "n1Size";		label: qsTr("Group 1 size")				}
+		IntegerField { name: "n2Size";		label: qsTr("Group 2 size")				}
     }
 
     Divider { }

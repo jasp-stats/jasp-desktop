@@ -36,7 +36,7 @@ Form
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["scale"] }
 	}
 	
-	DoubleField { name: "testValue"; label: qsTr("Test value:"); defaultValue: 0; validation: false }
+	DoubleField { name: "testValue"; label: qsTr("Test value:"); defaultValue: 0; negativeValues: true }
 
 	Group
 	{

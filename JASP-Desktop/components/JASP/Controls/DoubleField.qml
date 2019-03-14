@@ -24,8 +24,8 @@ TextField
 {
 	property double defaultValue:		0
 	property alias	doubleValidator:	doubleValidator
-	property bool	validation:			true
-	property double	min:				validation ? 0 : -Infinity
+	property bool	negativeValues:		false
+	property double	min:				negativeValues ? -Infinity : 0
 	property double	max:				Infinity
 	property int	decimals:			3
     
