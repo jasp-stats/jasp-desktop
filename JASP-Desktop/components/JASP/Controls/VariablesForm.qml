@@ -57,27 +57,93 @@ Item
 	
 	Repeater
 	{
-		id: assigneButtonRepeater
+		id: assignButtonRepeater
 		model: 0
-		AssignButton
+		
+		Loader
 		{
-            id:             assignButton
-            leftSource:     availableVariablesList
-            rightSource:    allAssignedVariablesList[index];
-            x:				(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
-            y:              allAssignedVariablesList[index].y + allAssignedVariablesList[index].rectangleY
+			property var myLeftSource:     availableVariablesList
+			property var myRightSource:    allAssignedVariablesList[index];
+			property bool interactionAssign: allAssignedVariablesList[index].addInteractionOptions
 			
-			Component.onCompleted:
+			
+			sourceComponent: interactionAssign ? assignInteractionButtonComponent : assignButtonComponent
+			x:		(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
+			y:      allAssignedVariablesList[index].y + allAssignedVariablesList[index].rectangleY
+		
+			onLoaded:
 			{
-				allAssignedVariablesList[index].activeFocusChanged.connect(assignButton.setIconToLeft);
-				availableVariablesList.activeFocusChanged.connect(assignButton.setIconToRight);
-				allAssignedVariablesList[index].hasSelectedItemsChanged.connect(assignButton.setState);
-				availableVariablesList.hasSelectedItemsChanged.connect(assignButton.setState);
+				allAssignedVariablesList[index].activeFocusChanged.connect(item.setIconToLeft);
+				availableVariablesList.activeFocusChanged.connect(item.setIconToRight);
+				allAssignedVariablesList[index].hasSelectedItemsChanged.connect(item.setState);
+				availableVariablesList.hasSelectedItemsChanged.connect(item.setState);
+				
+				if (interactionAssign)
+				{
+					allAssignedVariablesList[index].interactionControl = item.interactionControl
+					item.interactionControl.resetWidth("Main Effects")
+					item.interactionControl.activated.connect(item.setState)
+				}
 			}
+		}
+
+	}
+	
+	Component
+	{
+		id: assignButtonComponent
+		AssignButton 
+		{
+			leftSource: myLeftSource
+			rightSource: myRightSource
+		}		
+	}
+	
+	Component
+	{
+		id: assignInteractionButtonComponent
+		Item
+		{
+			property alias assignButton: assignButton
+			property alias interactionControl: interactionControl
+			
+			function setIconToLeft() { assignButton.setIconToLeft() }
+			function setIconToRight() { assignButton.setIconToRight() }
+			function setState() { assignButton.setState() }
+			
+			AssignButton
+			{
+				id: assignButton
+				leftSource: myLeftSource
+				rightSource: myRightSource
+				interactionControl: interactionControl
+			}
+			
+			DropDown
+			{
+				id: interactionControl
+				anchors.left: assignButton.left
+				anchors.leftMargin: (assignButton.width - width - 4) / 2
+				anchors.top: assignButton.bottom
+				anchors.topMargin: 2
+				isDirectModel: true
+				currentIndex: 0
+				values: ListModel 
+				{
+					ListElement { label: "Main Effects"; value: "MainEffects" }
+					ListElement { label: "Only 2 way"; value: "All2Way" }
+					ListElement { label: "Only 3 way"; value: "All3Way" }
+					ListElement { label: "Only 4 way"; value: "All4Way" }
+					ListElement { label: "Only 5 way"; value: "All5Way" }
+					ListElement { label: "All"; value: "Cross" }
+				}
+			}			
 		}
 	}
 	
-	Component.onCompleted:
+	Component.onCompleted: setup()
+	
+	function setup()
 	{
 		allJASPControls = []
 		allAssignedVariablesList = []
@@ -162,7 +228,7 @@ Item
 		
 		setControlsSize()
 		
-		assigneButtonRepeater.model = allAssignedVariablesList.length;
+		assignButtonRepeater.model = allAssignedVariablesList.length;
 		formInitialized = true
     }
 	

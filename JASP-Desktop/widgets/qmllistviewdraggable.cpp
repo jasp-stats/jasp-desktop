@@ -40,7 +40,7 @@ void QMLListViewDraggable::setUp()
 	_draggableModel->setDropMode(qmlDropModeFromQString(dropMode));
 	
 	QQuickItem::connect(_item, SIGNAL(itemDoubleClicked(int)), this, SLOT(itemDoubleClickedHandler(int)));	
-	QQuickItem::connect(_item, SIGNAL(itemsDropped(QVariant, QVariant, int)), this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));	
+	QQuickItem::connect(_item, SIGNAL(itemsDropped(QVariant, QVariant, int, QString)), this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, QString)));	
 }
 
 void QMLListViewDraggable::itemDoubleClickedHandler(int index)
@@ -62,10 +62,10 @@ void QMLListViewDraggable::itemDoubleClickedHandler(int index)
 	
 	QList<int> indexes;
 	indexes.push_back(index);
-	_moveItems(indexes, draggableTargetModel, -1);
+	_moveItems(indexes, draggableTargetModel);
 }
 
-void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex)
+void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, QString assignOption)
 {
 	QQuickItem* dropList = qobject_cast<QQuickItem*>(vdropList.value<QObject*>());
 	ListModelDraggable* dropModel = nullptr;
@@ -91,6 +91,7 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	
 	_tempDropModel = dropModel;
 	_tempDropItemIndex = dropItemIndex;
+	_tempAssignOption = assignOption;
 	// We need to move the items with another thread, if not, the drag and drop in QML get confused:
 	// the call to itemsDropped is called from an item that will be removed (the items of the variable list
 	// will be re-created). So itemsDropped should not call _moveItems directly.
@@ -99,10 +100,10 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 
 void QMLListViewDraggable::moveItemsDelayedHandler()
 {
-	_moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex);
+	_moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex, _tempAssignOption);
 }
 
-void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex)
+void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, const QString& assignOption)
 {
 	if (targetModel && indexes.size() > 0)
 	{
@@ -122,7 +123,7 @@ void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* t
 				Terms* terms = sourceModel->termsFromIndexes(indexes);
 				success = targetModel->canAddTerms(terms);
 				if (success)
-					removedTermsWhenDropping = targetModel->addTerms(terms, dropItemIndex);
+					removedTermsWhenDropping = targetModel->addTerms(terms, dropItemIndex, assignOption);
 				delete terms;
 			}
 				

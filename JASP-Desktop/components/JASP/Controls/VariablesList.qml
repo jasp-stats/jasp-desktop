@@ -45,7 +45,7 @@ JASPControl
 	property bool	draggable:			true
 	property var	source
 	property alias	syncModels:			variablesList.source
-	property bool	singleVariable:			false
+	property bool	singleVariable:		false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
@@ -59,6 +59,8 @@ JASPControl
 	property bool	setHeightInForm:	false
 	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
 	
+	property var	interactionControl
+	property bool	addInteractionOptions:	false
 	
 	property var	extraControlColumns:		[]
 	property string extraControlOptionName:		""
@@ -69,7 +71,7 @@ JASPControl
 	readonly property int rectangleY: rectangle.y
 	
 	signal itemDoubleClicked(int index);
-	signal itemsDropped(var indexes, var dropList, int dropItemIndex);
+	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
 	signal hasSelectedItemsChanged();
 		
 	function moveSelectedItems(target)
@@ -85,9 +87,9 @@ JASPControl
 		
 		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
 		// So we have to clear the selected items list before.
-		listView.clearSelectedItems();
-		itemsDropped(selectedIndexes, target, -1);
-		
+		listView.clearSelectedItems(true);
+		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""							
+		itemsDropped(selectedIndexes, target, -1, assignOption);
 	}    
 	
 	DropArea
@@ -268,7 +270,7 @@ JASPControl
 					{
 						var itemRectangle = itemWrapper.children[0];
 						itemWrapper.forceActiveFocus();
-						listView.clearSelectedItems();
+						listView.clearSelectedItems(false);
 						listView.selectItem(itemRectangle, true);
 						listView.startShiftSelected = listView.currentIndex;
 						listView.endShiftSelected = -1;
@@ -355,14 +357,15 @@ JASPControl
 					listView.removeSelectedItem(item);
 			}        
 			
-			function clearSelectedItems()
+			function clearSelectedItems(emitSignal)
 			{
 				for (var i = 0; i < selectedItems.length; i++)
 				{
 					selectedItems[i].selected = false;
 				}
 				selectedItems = [];
-				variablesList.hasSelectedItemsChanged();
+				if (emitSignal)
+					variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectShiftItems(selected)
@@ -422,7 +425,7 @@ JASPControl
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			!variablesList.dragOnlyVariables || isVariable
-				property string columnType:			isVariable ? model.columnType : ""
+				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraColumnsModel:		model.extraColumns
 				
 				function setRelative(draggedRect)
@@ -542,7 +545,7 @@ JASPControl
 					
 					onDoubleClicked:
 					{
-						listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+						listView.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 						itemDoubleClicked(index);
 					}
 					
@@ -550,7 +553,7 @@ JASPControl
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 						{
-							listView.clearSelectedItems();
+							listView.clearSelectedItems(false);
 							listView.selectItem(itemRectangle, true);
 						}
 					}
@@ -578,7 +581,7 @@ JASPControl
 							itemWrapper.forceActiveFocus();
 							if (!itemRectangle.selected)
 							{
-								listView.clearSelectedItems();
+								listView.clearSelectedItems(false);
 								listView.selectItem(itemRectangle, true);
 							}
 							else
@@ -639,9 +642,10 @@ JASPControl
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;                                
 								
-								listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
+								listView.clearSelectedItems(true); // Must be before itemsDropped: listView does not exist anymore afterwards
 								var variablesListName = variablesList.name
-								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);                               
+								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""							
+								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);                               
 							}
 						}
 					}

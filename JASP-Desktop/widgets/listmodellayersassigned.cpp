@@ -97,7 +97,7 @@ Terms *ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) cons
 	return terms;
 }
 
-Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex)
+Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
 {
 	beginResetModel();
 	

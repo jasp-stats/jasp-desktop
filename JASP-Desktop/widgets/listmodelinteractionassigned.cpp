@@ -148,36 +148,38 @@ bool ListModelInteractionAssigned::canAddTerms(Terms *terms) const
 	return true;
 }
 
-void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, int assignType)
+void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssignType assignType)
 {
 	Terms dropped;
 	dropped.setSortParent(source()->allTerms());
 	dropped.set(terms);
 
+	int nbTerms = int(dropped.size());
+	
 	Terms newTerms;
 
 	switch (assignType)
 	{
-	case Cross:
+	case qmlAssignType::Cross:
 		newTerms = dropped.crossCombinations();
 		break;
-	case Interaction:
-		newTerms = dropped.wayCombinations(dropped.size());
+	case qmlAssignType::Interaction:
+		newTerms = dropped.wayCombinations(nbTerms);
 		break;
-	case MainEffects:
+	case qmlAssignType::MainEffects:
 		newTerms = dropped.wayCombinations(1);
 		break;
-	case All2Way:
-		newTerms = dropped.wayCombinations(2);
+	case qmlAssignType::All2Way:
+		newTerms = dropped.wayCombinations(nbTerms < 2 ? nbTerms : 2);
 		break;
-	case All3Way:
-		newTerms = dropped.wayCombinations(3);
+	case qmlAssignType::All3Way:
+		newTerms = dropped.wayCombinations(nbTerms < 3 ? nbTerms : 3);
 		break;
-	case All4Way:
-		newTerms = dropped.wayCombinations(4);
+	case qmlAssignType::All4Way:
+		newTerms = dropped.wayCombinations(nbTerms < 4 ? nbTerms : 4);
 		break;
-	case All5Way:
-		newTerms = dropped.wayCombinations(5);
+	case qmlAssignType::All5Way:
+		newTerms = dropped.wayCombinations(nbTerms < 5 ? nbTerms : 5);
 		break;
 	default:
 		(void)newTerms;
@@ -187,11 +189,22 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, int assi
 	setTerms();
 }
 
-Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex)
+Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOptionStr)
 {
 	Q_UNUSED(dropItemIndex);
 	
-	addCombinedTerms(*terms, Cross);
+	if (!terms || terms->size() == 0)
+		return nullptr;
+	
+	qmlAssignType assignType = qmlAssignType::Cross;
+	
+	if (!assignOptionStr.isEmpty())
+	{
+		try						{ assignType	= qmlAssignTypeFromQString(assignOptionStr);	}
+		catch(std::exception)	{ addError(QString::fromStdString("Unknown Assign type: ") + assignOptionStr); }
+	}
+	
+	addCombinedTerms(*terms, assignType);
 	
 	return nullptr;
 }
