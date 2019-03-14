@@ -83,6 +83,7 @@ public:
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
 	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
+	void		clearErrors()							{ _errorMessages.clear(); _setErrorMessages(); }
 
 	Options*	options() { return _options; }
 

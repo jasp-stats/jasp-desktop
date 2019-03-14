@@ -106,6 +106,11 @@ bool BoundQMLRadioButtons::isOptionValid(Option *option)
 	return dynamic_cast<OptionList*>(option) != nullptr;
 }
 
+bool BoundQMLRadioButtons::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::stringValue;
+}
+
 void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 {
 	QObject* objButton = button.value<QObject*>();

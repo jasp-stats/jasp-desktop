@@ -85,7 +85,7 @@ Form
 			CheckBox
 			{
 				name: "cochransAndMantel"; label: qsTr("Cochran's and Mantel-Haenszel statistics")
-				IntegerField { name: "testOddsRatioEquals"; label: qsTr("Test common odds ratio equals"); defaultValue: 1 }
+				DoubleField { name: "testOddsRatioEquals"; label: qsTr("Test common odds ratio equals"); defaultValue: 1 }
 			}
 		}
 	}

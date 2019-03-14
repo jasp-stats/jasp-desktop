@@ -35,6 +35,7 @@ public:
 	virtual Option* createOption() = 0;
 	virtual Option* boundTo() = 0;
 	virtual bool isOptionValid(Option* option) = 0;
+	virtual bool isJsonValid(const Json::Value& optionValue) = 0;
 	
 	void runRScript(const QString& script);	
 	virtual void rScriptDoneHandler(const QString& result);

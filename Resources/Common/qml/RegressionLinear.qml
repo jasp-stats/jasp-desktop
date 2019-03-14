@@ -145,7 +145,7 @@ Form
 					{
 						value: "cooksDistance";	label: qsTr("Cook's distance >")
 						childrenOnSameRow: true
-						IntegerField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+						DoubleField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
 					}
 					RadioButton { value: "allCases"; label: qsTr("All")										}
 				}

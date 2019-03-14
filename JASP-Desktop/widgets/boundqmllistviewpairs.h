@@ -35,6 +35,7 @@ public:
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
 	virtual bool isOptionValid(Option* option) OVERRIDE;			
+	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
 
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;

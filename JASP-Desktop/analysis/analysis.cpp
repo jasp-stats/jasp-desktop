@@ -87,6 +87,8 @@ void Analysis::setResults(const Json::Value & results, int progress)
 {
 	_results = results;
 	_progress = progress;
+	if (_analysisForm)
+		_analysisForm->clearErrors();
 	emit resultsChangedSignal(this);
 }
 

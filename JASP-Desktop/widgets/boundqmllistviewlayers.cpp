@@ -70,6 +70,30 @@ bool BoundQMLListViewLayers::isOptionValid(Option *option)
 	return dynamic_cast<OptionsTable*>(option) != nullptr;
 }
 
+bool BoundQMLListViewLayers::isJsonValid(const Json::Value &optionValue)
+{
+	bool valid = optionValue.type() == Json::arrayValue;
+	if (valid)
+	{
+		for (uint i = 0; i < optionValue.size(); i++)
+		{
+			const Json::Value& value = optionValue[i];
+			valid = value.type() == Json::objectValue;
+			if (valid)
+			{
+				const Json::Value& nameOption = value["name"];
+				const Json::Value& variablesOption = value["variables"];
+				valid = nameOption.type() == Json::stringValue && variablesOption.type() == Json::arrayValue;
+
+				if (!valid)
+					break;
+			}
+		}
+	}
+
+	return valid;
+}
+
 void BoundQMLListViewLayers::modelChangedHandler()
 {
 	vector<pair<string, vector<string> > > layers = _layersModel->getLayers();
