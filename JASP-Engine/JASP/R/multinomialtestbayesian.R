@@ -16,20 +16,15 @@
 #
 
 
-MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL) {
+MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
-  # Set title
-  jaspResults$title <- "Bayesian Multinomial Test"
+  jaspResults$title  <- "Bayesian Multinomial Test"
+  dataset            <- .multinomialBayesReadData(dataset, options)
 
-  # Read dataset
-  dataset <- .multinomialBayesReadData(dataset, options)
-
-  # Error checking
   .multinomialBayesCheckErrors(dataset, options)
 
-  # Compute Results for Tables
   multinomialResults <- .computeMultinomialResults(jaspResults, dataset, options)
-  # Output tables and plots
+
   .createMultBayesMainTable(jaspResults, options, multinomialResults)
   .createMultBayesDescriptivesTable(jaspResults, options, multinomialResults)
   .createMultBayesDescriptivesPlot(jaspResults, options, multinomialResults)
@@ -37,7 +32,50 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   return()
 }
 
-# Results functions
+
+#' Funciton checks for errors
+#'   1. Number of levels of the variables must be bigger than 1
+#'   2. 0 observations for a level of a variable
+#'
+#' @param dataset
+#' @param options user input options
+.multinomialBayesCheckErrors <- function(dataset, options) {
+
+  if (options$factor == "")
+    return()
+
+  fact <- options$factor
+
+  # Error Check 1: Number of levels of the variables must be bigger than 1
+  .hasErrors(dataset              = dataset,
+             perform              = "run",
+             type                 = "factorLevels",
+             factorLevels.target  = fact,
+             factorLevels.amount  = '< 1',
+             exitAnalysisIfErrors = TRUE)
+
+  # Error check 2: 0 observations for a level of a variable
+  column <- dataset[[ .v(fact) ]]
+  data   <- column[!is.na(column)]
+  levels <- levels(as.factor(data))
+
+  for (level in levels) {
+    .hasErrors(dataset              = data[data == level],
+               perfrom              = "run",
+               type                 = "observations",
+               observations.amount  = c('< 1'),
+               exitAnalysisIfErrors = TRUE)
+  }
+}
+
+
+#' Compute results for multinomial table
+#'
+#' @param jaspResults
+#' @param dataset
+#' @param options user input options
+#'
+#' @return multinomialResults results table
 .computeMultinomialResults <- function(jaspResults, dataset, options) {
 
   # Take results from state if possible
@@ -124,7 +162,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   jaspResults[["stateMultinomialBayesianResults"]] <- createJaspState(multinomialResults)
   jaspResults[["stateMultinomialBayesianResults"]]$dependOnOptions(defaultOptions)
 
-  return(multinomialResults)  # return the out object
+  return(multinomialResults)
 }
 
 .createMultBayesMainTable <- function(jaspResults, options, multinomialResults){
@@ -151,6 +189,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   multinomialTable$addColumnInfo(name = "level",   title = "Levels", type = "integer")
   multinomialTable$addColumnInfo(name = "BF",      title = bf.title, type = "number", format="sf:4;dp:3")
 
+  jaspResults[["multinomialTable"]] <- multinomialTable
+
   # Show empty table if no variable is selected
   if(!multinomialResults$specs[["ready"]])
     return()
@@ -167,23 +207,30 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
     )
     multinomialTable$addRows(row)
   }
-
-  jaspResults[["multinomialTable"]] <- multinomialTable
 }
 
+
+#' Create and return the Descriptives table
+#' If descriptives is not selected: do not create a table
+#'
+#' @param jaspResults
+#' @param options user input options
+#' @param multinomialResults results table from .computeMultinomialResults() function
+#'
+#' @return descriptivesTable descriptives table
 .createMultBayesDescriptivesTable <- function(jaspResults, options, multinomialResults){
-  # If descriptives is not selected: do not create a table
+
   if(!options[["descriptives"]])
     return()
 
   # Create table
-  factorVariable                             <- multinomialResults[["specs"]][["factorVariable"]]
   descriptivesTable                          <- createJaspTable(title = "Descriptives")
   descriptivesTable$dependOnOptions(c("countProp", "descriptives", "credibleIntervalInterval"))
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   descriptivesTable$position                 <- 2
 
-  # Number type
+  factorVariable                             <- multinomialResults[["specs"]][["factorVariable"]]
+
   if(options$countProp == "descCounts") {
     numberType <- "integer"
     format <- NULL
@@ -217,6 +264,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
                                     overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
   }
 
+  jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
+
   # Show empty table if no variable is selected
   if(!multinomialResults$specs[["ready"]])
     return()
@@ -236,9 +285,16 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   }
 
   descriptivesTable$setData(descDF)
-  jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
 }
 
+
+#' Create Descriptives plot for Multinomial Bayesian Test
+#'
+#' @param jaspResults
+#' @param options user input options
+#' @param multinomialResults results table from .computeMultinomialResults() function
+#'
+#' @return descriptivesPlot descriptives plot object
 .createMultBayesDescriptivesPlot <- function(jaspResults, options, multinomialResults) {
   # If there is no data OR descriptives plot is not selected: do not create a plot
   if(!options$descriptivesPlot)
@@ -254,7 +310,13 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   descriptivesPlot$position <- 2
 }
 
-# Helper functions
+
+#' Helper function - compute confidence interval
+#'
+#' @param counts
+#' @param credibleInterval
+#'
+#' @return medianCI median confidence interval as data frame
 .multComputeCIs <- function(counts, credibleInterval) {
 
   # based on marginal beta distributions with uniform Dirichlet prior
@@ -277,6 +339,14 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   return(as.data.frame(medianCI))
 }
 
+
+#' Helper function - Generate descriptives plot
+#'
+#' @param factorVariable
+#' @param options user input options
+#' @param multinomialResults results table from .computeMultinomialResults() function
+#'
+#' @return p ggplot2 object
 .multBayesPlotHelper <- function(factorVariable, options, multinomialResults) {
   # Default Plot
   if(!multinomialResults$specs[["ready"]])
@@ -323,7 +393,13 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   return(p)
 }
 
-# Functions for Analysis
+#' Function for Analysis - compute Bayes factor
+#'
+#' @param alphas
+#' @param counts
+#' @param thetas
+#'
+#' @return list list containing BF and expected counts
 .multBayesBfEquality <- function(alphas, counts, thetas) {
 
   # if needed: rescale
@@ -353,7 +429,11 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
               expected = expected))
 }
 
-# Init functions
+#' Init function - calculate specifications
+#' @param dataset
+#' @param options user input options
+#'
+#' @return specs
 .multBayesCalcSpecs <- function(dataset, options){
   specs <- list()
 
@@ -392,10 +472,19 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   return(specs)
 }
 
+
+#' Multiomial Bayes - Read dataset
+#'
+#' @param dataset
+#' @param options user input options
+#'
+#' @return dataset
 .multinomialBayesReadData <- function(dataset, options) {
+
   # First, we load the variables into the R environment
   asnum <- NULL
   fact  <- NULL
+
   if (options$factor != "") {
     fact <- options$factor
     if (options$counts != "") {
@@ -407,40 +496,11 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   }
 
   if (is.null(dataset)) {
-      dataset <- .readDataSetToEnd(columns.as.numeric = asnum, columns.as.factor = fact,
-                                   exclude.na.listwise = NULL)
+    dataset <- .readDataSetToEnd(columns.as.numeric = asnum, columns.as.factor = fact,
+                                 exclude.na.listwise = NULL)
   } else {
     dataset <- .vdf(dataset, columns.as.numeric = asnum, columns.as.factor = fact)
   }
 
   return(dataset)
-}
-
-.multinomialBayesCheckErrors <- function(dataset, options) {
-
-  if (options$factor == "")
-    return()
-
-  fact <- options$factor
-
-  # Error Check 1: Number of levels of the variables must be bigger than 1
-  .hasErrors(dataset              = dataset,
-             perform              = "run",
-             type                 = "factorLevels",
-             factorLevels.target  = fact,
-             factorLevels.amount  = '< 1',
-             exitAnalysisIfErrors = TRUE)
-
-  # Error check 2: 0 observations for a level of a variable
-  column <- dataset[[ .v(fact) ]]
-  data   <- column[!is.na(column)]
-  levels <- levels(as.factor(data))
-
-  for (level in levels) {
-    .hasErrors(dataset              = data[data == level],
-               perfrom              = "run",
-               type                 = "observations",
-               observations.amount  = c('< 1'),
-               exitAnalysisIfErrors = TRUE)
-  }
 }
