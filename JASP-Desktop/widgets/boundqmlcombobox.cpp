@@ -191,6 +191,11 @@ bool BoundQMLComboBox::isOptionValid(Option *option)
 	return dynamic_cast<OptionList*>(option) != nullptr;
 }
 
+bool BoundQMLComboBox::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::stringValue;
+}
+
 void BoundQMLComboBox::setUp()
 {
 	QMLListView::setUp();

@@ -108,6 +108,8 @@ AnalysisForm
 				id:					errorMessagesText
 				anchors.centerIn:	parent
 				padding:			5
+				wrapMode:			Text.Wrap
+				width:				parent.width - 10
 				verticalAlignment:	Text.AlignVCenter
 			}
 		}

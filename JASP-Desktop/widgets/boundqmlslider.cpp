@@ -62,6 +62,11 @@ bool BoundQMLSlider::isOptionValid(Option *option)
 	return dynamic_cast<OptionNumber*>(option) != nullptr;
 }
 
+bool BoundQMLSlider::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::realValue || optionValue.type() == Json::intValue;
+}
+
 void BoundQMLSlider::sliderMovedSlot()
 {
 	double newValue = QQmlProperty(_item, "value").read().toDouble();

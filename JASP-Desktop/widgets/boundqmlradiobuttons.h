@@ -35,7 +35,8 @@ public:
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }	
 	
 	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;	
+	virtual bool isOptionValid(Option* option) OVERRIDE;
+	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
 
 signals:
 	

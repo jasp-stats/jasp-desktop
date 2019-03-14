@@ -49,6 +49,11 @@ bool BoundQMLCheckBox::isOptionValid(Option* option)
 	return dynamic_cast<OptionBoolean*>(option) != nullptr;
 }
 
+bool BoundQMLCheckBox::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::booleanValue;
+}
+
 Option *BoundQMLCheckBox::createOption()
 {
 	QVariant checkedVariant = _item->property("checked");

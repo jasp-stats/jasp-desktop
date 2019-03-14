@@ -164,7 +164,35 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::StringInputType:
 	default:									valid = dynamic_cast<OptionString*>(option) != nullptr;			break;
 	}
-	return valid;	
+	return valid;
+}
+
+bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
+{
+	bool valid = false;
+	switch (_inputType)
+	{
+	case TextInputType::IntegerInputType:
+	{
+		valid = optionValue.type() == Json::intValue;
+		if (!valid)
+		{
+			if (optionValue.type() == Json::realValue)
+			{
+				double value = optionValue.asDouble();
+				if (int(value) == value)
+					valid = true;
+			}
+		}
+		break;
+	}
+	case TextInputType::NumberInputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
+	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
+	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::StringInputType:
+	default:									valid = (optionValue.type() == Json::stringValue);			break;
+	}
+	return valid;
 }
 
 void BoundQMLTextInput::resetQMLItem(QQuickItem *item)

@@ -77,6 +77,13 @@ bool BoundQMLListViewMeasuresCells::isOptionValid(Option *option)
 	return dynamic_cast<OptionVariables*>(option) != nullptr;
 }
 
+bool BoundQMLListViewMeasuresCells::isJsonValid(const Json::Value &optionValue)
+{
+	bool ok = optionValue.type() == Json::arrayValue;
+
+	return ok;
+}
+
 
 void BoundQMLListViewMeasuresCells::setUp()
 {

@@ -93,6 +93,11 @@ bool BoundQMLTableView::isOptionValid(Option *option)
 	return dynamic_cast<OptionsTable*>(option) != nullptr;
 }
 
+bool BoundQMLTableView::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::arrayValue;
+}
+
 void BoundQMLTableView::setUp()
 {
 	QMLListView::setUp();

@@ -41,6 +41,7 @@ public:
 	bool addDependency(QMLItem* item);
 	const QVector<QMLItem*>& depends() { return _depends; }
 	void setProperty(const QString& name, const QVariant& value);
+	QVariant getProperty(const QString& name);
 	
 protected:
 	
