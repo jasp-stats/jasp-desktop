@@ -99,6 +99,11 @@ bool BoundQMLTextArea::isOptionValid(Option *option)
 	return dynamic_cast<OptionString*>(option) != nullptr;
 }
 
+bool BoundQMLTextArea::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::stringValue;
+}
+
 void BoundQMLTextArea::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);

@@ -184,12 +184,12 @@ Form {
 					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");		id: hyperglaplace	}
 					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");			id: hypergn			}
 				}
-				IntegerField
+				DoubleField
 				{
 					name: "alpha";
 					label: qsTr("alpha");
 					enabled: hyperg.checked || hyperglaplace.checked || hypergn.checked
-					defaultValue: 3
+					defaultValue: 3.0
 				}
 				RadioButton { value: "JZS"; label: qsTr("JZS"); checked: true; id: jzs }
 				DoubleField

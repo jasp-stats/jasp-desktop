@@ -100,6 +100,11 @@ bool BoundQMLFactorsForm::isOptionValid(Option *option)
 	return dynamic_cast<OptionsTable*>(option) != nullptr;
 }
 
+bool BoundQMLFactorsForm::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::arrayValue;
+}
+
 void BoundQMLFactorsForm::modelChangedHandler()
 {
 	const vector<tuple<string, string, vector<string> > > &factors = _factorsModel->getFactors();

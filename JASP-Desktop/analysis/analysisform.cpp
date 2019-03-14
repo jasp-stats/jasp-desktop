@@ -387,20 +387,28 @@ void AnalysisForm::addListView(QMLListView* listView, const map<QString, QString
 
 void AnalysisForm::_setErrorMessages()
 {
-	if (!_errorMessages.isEmpty() && _errorMessagesItem)
+	if (_errorMessagesItem)
 	{
-		QString text;
-		if (_errorMessages.length() == 1)
-			text = _errorMessages[0];
+		if (!_errorMessages.isEmpty())
+		{
+			QString text;
+			if (_errorMessages.length() == 1)
+				text = _errorMessages[0];
+			else
+			{
+				text.append("<ul style=\"margin-bottom:0px\">");
+				for (const QString& errorMessage : _errorMessages)
+					text.append("<li>").append(errorMessage).append("</li>");
+				text.append("</ul>");
+			}
+			QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(text));
+			_errorMessagesItem->setVisible(true);
+		}
 		else
 		{
-			text.append("<ul style=\"margin-bottom:0px\">");
-			for (const QString& errorMessage : _errorMessages)
-				text.append("<li>").append(errorMessage).append("</li>");
-			text.append("</ul>");
+			QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(QString()));
+			_errorMessagesItem->setVisible(false);
 		}
-		QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(text));
-		_errorMessagesItem->setVisible(true);
 	}
 }
 
@@ -462,8 +470,28 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 				option = boundControl->createOption();
 				if (optionsFromJASPFile != Json::nullValue)
 				{
-					if (optionsFromJASPFile[name] != Json::nullValue)
-						option->set(optionsFromJASPFile[name]);
+					const Json::Value& optionValue = optionsFromJASPFile[name];
+					if (optionValue != Json::nullValue)
+					{
+						if (!boundControl->isJsonValid(optionValue))
+						{
+							std::string labelStr;
+							QVariant label = boundControl->getProperty("label");
+							if (!label.isNull())
+								labelStr = label.toString().toStdString();
+							if (labelStr.empty())
+							{
+								label = boundControl->getProperty("title");
+								labelStr = label.toString().toStdString();
+							}
+							if (labelStr.empty())
+								labelStr = name;
+							addError(tq("Control " + labelStr + " was loaded with a wrong kind of value. Probably the file comes from an older version of JASP.<br>"
+										+ "That means that the results currently displayed do not correspond to the options selected.<br>Refreshing the analysis may change the results"));
+						}
+						else
+							option->set(optionValue);
+					}
 				}
 				options->add(name, option);
 			}

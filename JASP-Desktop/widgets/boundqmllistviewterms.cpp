@@ -130,6 +130,51 @@ bool BoundQMLListViewTerms::isOptionValid(Option *option)
 		return dynamic_cast<OptionVariables*>(option) != nullptr;
 }
 
+bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
+{
+	bool valid = true;
+	if (_hasExtraControls || _termsModel->areTermsInteractions())
+	{
+		valid = optionValue.type() == Json::arrayValue;
+		if (valid)
+		{
+			for (uint i = 0; i < optionValue.size(); i++)
+			{
+				const Json::Value& value = optionValue[i];
+				valid = value.type() == Json::objectValue;
+				if (valid)
+				{
+					const Json::Value& components = value[_extraControlOptionName];
+					if (_termsModel->areTermsInteractions())
+						valid = components.type() == Json::arrayValue;
+					else
+						valid = components.type() == Json::stringValue;
+				}
+				if (!valid)
+					break;
+			}
+		}
+	}
+	else if (_singleItem)
+		valid = optionValue.type() == Json::stringValue;
+	else
+	{
+		valid = optionValue.type() == Json::arrayValue;
+		if (valid)
+		{
+			for (uint i = 0; i < optionValue.size(); i++)
+			{
+				const Json::Value& value = optionValue[i];
+				valid = value.type() == Json::stringValue;
+				if (!valid)
+					break;
+			}
+		}
+	}
+
+	return valid;
+}
+
 void BoundQMLListViewTerms::setTermsAreInteractions()
 {
 	BoundQMLListViewDraggable::setTermsAreInteractions();

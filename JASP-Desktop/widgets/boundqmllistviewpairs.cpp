@@ -56,6 +56,13 @@ bool BoundQMLListViewPairs::isOptionValid(Option *option)
 	return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
 }
 
+bool BoundQMLListViewPairs::isJsonValid(const Json::Value &optionValue)
+{
+	bool ok = optionValue.type() == Json::arrayValue;
+
+	return ok;
+}
+
 void BoundQMLListViewPairs::modelChangedHandler()
 {
 	vector<vector<string> > pairs;

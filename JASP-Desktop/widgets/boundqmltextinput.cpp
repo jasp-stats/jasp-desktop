@@ -24,7 +24,7 @@
 
 using namespace std;
 
-BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form) 
+BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QObject(form)
 	, BoundQMLItem(item, form)
@@ -37,7 +37,7 @@ BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	else if (type == "integerArray")	_inputType = TextInputType::IntegerArrayInputType;
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
 	else								_inputType = TextInputType::StringInputType;
-	
+
 	QQuickItem::connect(item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
 
@@ -60,22 +60,22 @@ QString BoundQMLTextInput::_getIntegerArrayValue()
 	QString value;
 	vector<int> intValues = _integerArray->value();
 	bool first  = true;
-	for (int intValue : intValues) 
+	for (int intValue : intValues)
 	{
 		if (!first)
 			value += ",";
 		first = false;
 		value += QString::number(intValue);
 	}
-	
+
 	return value;
 }
 
 void BoundQMLTextInput::bindTo(Option *option)
 {
 	setLegal();
-	
-	switch (_inputType) 
+
+	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:
 		_option = _integer = dynamic_cast<OptionInteger *>(option);
@@ -147,7 +147,7 @@ Option *BoundQMLTextInput::createOption()
 	case TextInputType::StringInputType:
 	default:									option = new OptionString();			break;
 	}
-	
+
 	_setOptionValue(option, _value);
 	return option;
 }
@@ -164,14 +164,41 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::StringInputType:
 	default:									return dynamic_cast<OptionString*>(option)			!= nullptr;
 	}
-
 	return false;
+}
+
+bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
+{
+	bool valid = false;
+	switch (_inputType)
+	{
+	case TextInputType::IntegerInputType:
+	{
+		valid = optionValue.type() == Json::intValue;
+		if (!valid)
+		{
+			if (optionValue.type() == Json::realValue)
+			{
+				double value = optionValue.asDouble();
+				if (int(value) == value)
+					valid = true;
+			}
+		}
+		break;
+	}
+	case TextInputType::NumberInputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
+	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
+	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::StringInputType:
+	default:									valid = (optionValue.type() == Json::stringValue);			break;
+	}
+	return valid;
 }
 
 void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
-	
+
 	_item->setProperty("value", _value);
 	QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }

@@ -32,29 +32,30 @@
 class BoundQMLTextInput : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
-	
+
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, ComputedColumnType };
-	
+
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
 	void bindTo(Option *option)			override;
-	
+
 	Option* createOption()				override;
 	bool isOptionValid(Option* option)	override;
+	bool isJsonValid(const Json::Value& optionValue) override;
 	Option* boundTo()					override { return _option; }
 	void resetQMLItem(QQuickItem *item) override;
 
 signals:
-	
+
 private slots:
 	void textChangedSlot();
-    
+
 private:
 	void _setOptionValue(Option* option, QString& text);
-	
+
 	QString					  _getPercentValue();
 	QString					  _getIntegerArrayValue();
-	
+
 	TextInputType			  _inputType;
 	OptionInteger			* _integer			= nullptr;
 	OptionIntegerArray		* _integerArray		= nullptr;
