@@ -29,23 +29,14 @@ BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	, QObject(form)
 	, BoundQMLItem(item, form)
 {
-	_integer = nullptr;
-	_integerArray = nullptr;
-	_number = nullptr;
-	_string = nullptr;
-	_option = nullptr;
-	
 	QString type = QQmlProperty(item, "inputType").read().toString();
-	if (type == "integer")
-		_inputType = TextInputType::IntegerInputType;
-	else if (type == "number")
-		_inputType = TextInputType::NumberInputType;
-	else if (type == "percent")
-		_inputType = TextInputType::PercentIntputType;
-	else if (type == "integerArray")
-		_inputType = TextInputType::IntegerArrayInputType;
-	else
-		_inputType = TextInputType::StringInputType;	
+
+		 if (type == "integer")			_inputType = TextInputType::IntegerInputType;
+	else if (type == "number")			_inputType = TextInputType::NumberInputType;
+	else if (type == "percent")			_inputType = TextInputType::PercentIntputType;
+	else if (type == "integerArray")	_inputType = TextInputType::IntegerArrayInputType;
+	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
+	else								_inputType = TextInputType::StringInputType;
 	
 	QQuickItem::connect(item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
@@ -86,49 +77,49 @@ void BoundQMLTextInput::bindTo(Option *option)
 	
 	switch (_inputType) 
 	{
-		case TextInputType::IntegerInputType:
-		{
-			_option = _integer = dynamic_cast<OptionInteger *>(option);
-			_value = QString::number(_integer->value());
-		}
+	case TextInputType::IntegerInputType:
+		_option = _integer = dynamic_cast<OptionInteger *>(option);
+		_value = QString::number(_integer->value());
 		break;
-		case TextInputType::NumberInputType:
-		{
-			_option = _number = dynamic_cast<OptionNumber *>(option);
-			_value = QString::number(_number->value());
-		}
+
+	case TextInputType::NumberInputType:
+		_option = _number = dynamic_cast<OptionNumber *>(option);
+		_value = QString::number(_number->value());
 		break;
-		case TextInputType::PercentIntputType:
-		{
-			_option = _number = dynamic_cast<OptionNumber *>(option);
-			_value = _getPercentValue();
-		}
+
+	case TextInputType::PercentIntputType:
+		_option = _number = dynamic_cast<OptionNumber *>(option);
+		_value = _getPercentValue();
 		break;
-		case TextInputType::IntegerArrayInputType:
+
+	case TextInputType::IntegerArrayInputType:
+		_integerArray = dynamic_cast<OptionIntegerArray *>(option);
+		if (!_integerArray)
 		{
-			_integerArray = dynamic_cast<OptionIntegerArray *>(option);
-			if (!_integerArray)
+			OptionDoubleArray* doubleArray = dynamic_cast<OptionDoubleArray *>(option);
+			if (doubleArray)
 			{
-				OptionDoubleArray* doubleArray = dynamic_cast<OptionDoubleArray *>(option);
-				if (doubleArray)
-				{
-					std::vector<int> integerArray;
-					const std::vector<double>& doubles = doubleArray->value();
-					for (double d : doubles)
-						integerArray.push_back(int(d));
-					_integerArray = new OptionIntegerArray();
-					_integerArray->setValue(integerArray);
-				}
+				std::vector<int> integerArray;
+				const std::vector<double>& doubles = doubleArray->value();
+				for (double d : doubles)
+					integerArray.push_back(int(d));
+				_integerArray = new OptionIntegerArray();
+				_integerArray->setValue(integerArray);
 			}
-			_option = _integerArray;
-			_value = _getIntegerArrayValue();
 		}
+		_option = _integerArray;
+		_value = _getIntegerArrayValue();
 		break;
-		default:
-		{
-			_option = _string = dynamic_cast<OptionString *>(option);
-			_value = QString::fromStdString(_string->value());
-		}
+
+	case TextInputType::ComputedColumnType:
+		_option = _computedColumn = dynamic_cast<OptionComputedColumn *>(option);
+		_value	= QString::fromStdString(_computedColumn->value());
+		break;
+
+	default:
+		_option = _string = dynamic_cast<OptionString *>(option);
+		_value  = QString::fromStdString(_string->value());
+		break;
 	}
 
 	_item->setProperty("value", _value);
@@ -140,12 +131,21 @@ Option *BoundQMLTextInput::createOption()
 	_value = QQmlProperty::read(_item, "value").toString();
 	switch (_inputType)
 	{
-	case TextInputType::IntegerInputType:		option = new OptionInteger();		break;
-	case TextInputType::NumberInputType:		option = new OptionNumber();		break;
-	case TextInputType::PercentIntputType:		option = new OptionNumber();		break;
-	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();	break;
+	case TextInputType::IntegerInputType:		option = new OptionInteger();			break;
+	case TextInputType::NumberInputType:		option = new OptionNumber();			break;
+	case TextInputType::PercentIntputType:		option = new OptionNumber();			break;
+	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();		break;
+	case TextInputType::ComputedColumnType:
+	{
+		option = new OptionComputedColumn();
+
+		option->requestComputedColumnCreation.connect(		boost::bind( &Option::notifyRequestComputedColumnCreation,		form()->options(), _1));
+		option->requestComputedColumnDestruction.connect(	boost::bind( &Option::notifyRequestComputedColumnDestruction,	form()->options(), _1));
+
+		break;
+	}
 	case TextInputType::StringInputType:
-	default:									option = new OptionString();		break;
+	default:									option = new OptionString();			break;
 	}
 	
 	_setOptionValue(option, _value);
@@ -154,17 +154,18 @@ Option *BoundQMLTextInput::createOption()
 
 bool BoundQMLTextInput::isOptionValid(Option *option)
 {
-	bool valid = false;
 	switch (_inputType)
 	{
-	case TextInputType::IntegerInputType:		valid = dynamic_cast<OptionInteger*>(option) != nullptr;		break;
-	case TextInputType::NumberInputType:		valid = dynamic_cast<OptionNumber*>(option) != nullptr;			break;
-	case TextInputType::PercentIntputType:		valid = dynamic_cast<OptionNumber*>(option) != nullptr;			break;
-	case TextInputType::IntegerArrayInputType:	valid = dynamic_cast<OptionIntegerArray*>(option) != nullptr;	break;
+	case TextInputType::IntegerInputType:		return dynamic_cast<OptionInteger*>(option)			!= nullptr;
+	case TextInputType::NumberInputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
+	case TextInputType::PercentIntputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
+	case TextInputType::IntegerArrayInputType:	return dynamic_cast<OptionIntegerArray*>(option)	!= nullptr;
+	case TextInputType::ComputedColumnType:		return dynamic_cast<OptionComputedColumn*>(option)	!= nullptr;
 	case TextInputType::StringInputType:
-	default:									valid = dynamic_cast<OptionString*>(option) != nullptr;			break;
+	default:									return dynamic_cast<OptionString*>(option)			!= nullptr;
 	}
-	return valid;	
+
+	return false;
 }
 
 void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
@@ -177,41 +178,44 @@ void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 
 void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 {
-	switch (_inputType) {
+	switch (_inputType)
+	{
 	case TextInputType::IntegerInputType:
 		dynamic_cast<OptionInteger*>(option)->setValue(text.toInt());
 		break;
+
 	case TextInputType::NumberInputType:
 		dynamic_cast<OptionNumber*>(option)->setValue(text.toDouble());
 		break;
+
 	case TextInputType::PercentIntputType:
-		{
-			double value = text.toDouble();
-			if (value > 100) value = 100;
-			else if (value < 0) value = 0;
-			value = value / 100;
-			dynamic_cast<OptionNumber*>(option)->setValue(value);
-		}	
+		dynamic_cast<OptionNumber*>(option)->setValue(std::min(std::max(text.toDouble(), 0.0), 100.0) / 100);
 		break;
+
 	case TextInputType::IntegerArrayInputType:
+	{
+		text.replace(QString(" "), QString(","));
+		std::vector<int> values;
+		QStringList chunks = text.split(QChar(','), QString::SkipEmptyParts);
+
+		for (QString &chunk: chunks)
 		{
-			text.replace(QString(" "), QString(","));
-			std::vector<int> values;
-			QStringList chunks = text.split(QChar(','), QString::SkipEmptyParts);
-		
-			for (QString &chunk: chunks)
-			{
-				bool ok;
-				int value = chunk.toInt(&ok);
-		
-				if (ok)
-					values.push_back(value);
-			}
-			dynamic_cast<OptionIntegerArray*>(option)->setValue(values);			
+			bool ok;
+			int value = chunk.toInt(&ok);
+
+			if (ok)
+				values.push_back(value);
 		}
+		dynamic_cast<OptionIntegerArray*>(option)->setValue(values);
 		break;
+	}
+	case TextInputType::ComputedColumnType:
+		dynamic_cast<OptionComputedColumn*>(option)->setValue(text.toStdString());
+		break;
+
 	default:
 		dynamic_cast<OptionString*>(option)->setValue(text.toStdString());
+		break;
 	}
 }
 

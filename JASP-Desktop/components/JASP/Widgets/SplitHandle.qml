@@ -47,6 +47,7 @@ Rectangle
 		hoverEnabled:		true
 		z:					-20
 		anchors.fill:		parent
+		cursorShape:		Qt.SplitHCursor //Take into account resizing? styleData.resizing
 	}
 
 

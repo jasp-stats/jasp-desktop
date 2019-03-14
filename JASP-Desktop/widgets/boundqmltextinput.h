@@ -23,6 +23,7 @@
 #include "analysis/options/optioninteger.h"
 #include "analysis/options/optionnumber.h"
 #include "analysis/options/optionstring.h"
+#include "analysis/options/optioncomputedcolumn.h"
 #include "analysis/options/optionintegerarray.h"
 
 #include <QObject>
@@ -33,35 +34,35 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType };
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, ComputedColumnType };
 	
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
+	void bindTo(Option *option)			override;
 	
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;	
-	virtual Option* boundTo() OVERRIDE { return _option; }	
-	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
+	Option* createOption()				override;
+	bool isOptionValid(Option* option)	override;
+	Option* boundTo()					override { return _option; }
+	void resetQMLItem(QQuickItem *item) override;
 
 signals:
 	
 private slots:
 	void textChangedSlot();
     
-protected:
 private:
 	void _setOptionValue(Option* option, QString& text);
 	
-	QString _getPercentValue();
-	QString _getIntegerArrayValue();
+	QString					  _getPercentValue();
+	QString					  _getIntegerArrayValue();
 	
-	TextInputType _inputType;
-	OptionInteger *_integer;
-	OptionIntegerArray *_integerArray;
-	OptionNumber *_number;
-	OptionString *_string;
-	Option *_option;
-	QString _value;
+	TextInputType			  _inputType;
+	OptionInteger			* _integer			= nullptr;
+	OptionIntegerArray		* _integerArray		= nullptr;
+	OptionNumber			* _number			= nullptr;
+	OptionString			* _string			= nullptr;
+	OptionComputedColumn	* _computedColumn	= nullptr;
+	Option					* _option			= nullptr;
+	QString					  _value;
 
 };
 

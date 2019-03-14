@@ -449,12 +449,14 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 		if (boundControl)
 		{
 			std::string name = boundControl->name().toStdString();
-			Option* option = options->get(name);
+			Option* option   = options->get(name);
+
 			if (option && !boundControl->isOptionValid(option))
 			{
 				option = nullptr;
 				addError(tq("Item " + name + " was loaded with a wrong kind of value." + (optionsFromJASPFile != Json::nullValue ? ". Probably the file comes from an older version of JASP." : "")));
 			}
+
 			if (!option)
 			{
 				option = boundControl->createOption();
@@ -465,6 +467,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 				}
 				options->add(name, option);
 			}
+
 			boundControl->bindTo(option);
 			boundControl->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}

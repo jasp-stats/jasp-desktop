@@ -52,8 +52,6 @@ void Options::add(string name, Option *option)
 	remove(name);
 	_options.push_back(OptionNamed(name, option));
 	option->changed.connect(							boost::bind( &Options::optionsChanged,							this, _1));
-	option->requestComputedColumnCreation.connect(		boost::bind( &Option::notifyRequestComputedColumnCreation,		this, _1));
-	option->requestComputedColumnDestruction.connect(	boost::bind( &Option::notifyRequestComputedColumnDestruction,	this, _1));
 }
 
 void Options::remove(string name)

@@ -31,3 +31,4 @@ TextArea              1.0 TextArea.qml
 VariablesForm         1.0 VariablesForm.qml
 VariablesList         1.0 VariablesList.qml
 ExtraControlColumn    1.0 ExtraControlColumn.qml
+ComputedColumnField   1.0 ComputedColumnField.qml

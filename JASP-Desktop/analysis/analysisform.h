@@ -84,6 +84,8 @@ public:
 	DataSet*	getDataSet()							{ return _dataSet; }
 	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
 
+	Options*	options() { return _options; }
+
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
@@ -104,17 +106,17 @@ protected:
 	QVector<QMLItem*>						_orderedControls;	
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::map<QString, ListModel* >			_modelMap;
-	DataSet							*_dataSet;
-	Options							*_options;
+	DataSet									*_dataSet;
+	Options									*_options;
 
-	OptionVariables					*_mainVariables;
+	OptionVariables							*_mainVariables;
 
-	void							updateIllegalStatus();
+	void									updateIllegalStatus();
 
-	std::list<Bound *>				_bounds;
-	bool							_hasIllegalValue;
-	QString							_illegalMessage;
-	bool							_removed = false;
+	std::list<Bound *>						_bounds;
+	bool									_hasIllegalValue;
+	QString									_illegalMessage;
+	bool									_removed = false;
 	
 private:
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;

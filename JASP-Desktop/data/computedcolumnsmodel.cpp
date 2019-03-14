@@ -373,7 +373,7 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 }
 
 
-ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType)
+ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis)
 {
 	bool success			= false;
 	DataSet	*theData		= _package->dataSet();
@@ -398,6 +398,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	//if(theData != _package->dataSet())
 
 	ComputedColumn  * createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
+	createdColumn->setAnalysis(analysis);
+
 	emit dataSetChanged(_package->dataSet());
 	emit refreshData();
 
@@ -409,12 +411,9 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(QString columnName, Analysis * analysis)
 {
 	if(!_package->isColumnNameFree(columnName.toStdString()))
-		return NULL;
+		return nullptr;
 
-	ComputedColumn * result = createComputedColumn(columnName, (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis);
-	result->setAnalysis(analysis);
-
-	return result;
+	return createComputedColumn(columnName, (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis, analysis);
 }
 
 

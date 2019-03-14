@@ -168,10 +168,9 @@ signals:
 
 	//void showWarning(QString title, QString message);
 	void datasetLoadedChanged(bool datasetLoaded);
-
 	void dataAvailableChanged(bool dataAvailable);
-
 	void analysesAvailableChanged(bool analysesAvailable);
+
 
 private slots:
 	void analysisResultsChangedHandler(Analysis* analysis);
@@ -202,6 +201,8 @@ private slots:
 	void saveJaspFileHandler();
 	void resultsPageLoaded();
 	void resetQmlCache();
+
+	void showResultsPanel() { setDataPanelVisible(false); }
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
