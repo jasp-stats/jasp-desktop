@@ -27,10 +27,12 @@ JASPControl {
 	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
 	property string	placeholderText:		qsTr("<no choice>")
-	property bool	initialized:			false
+	property bool	isDirectModel:			false
+	property bool	initialized:			isDirectModel
+	property var	enabledOptions:			[]
     
     signal activated(int index);
-    
+	
 	function resetWidth(value)
 	{
         textMetrics.font = control.font
@@ -96,7 +98,7 @@ JASPControl {
 				Text
 				{
 					x:							(contentIcon.visible ? 23 : 4) * preferencesModel.uiScale
-					text:						control.isEmptyValue ? comboBox.placeholderText : comboBox.currentText
+					text:						control.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? control.currentText : comboBox.currentText)
 					font:						control.font
 					anchors.verticalCenter:		parent.verticalCenter
 					anchors.horizontalCenter:	control.isEmptyValue ? parent.horizontalCenter : undefined
@@ -149,6 +151,7 @@ JASPControl {
 				enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } }
 				contentItem: ListView
 				{
+					id: popupView
 					clip:			true
 					implicitHeight:	contentHeight
 					model:			control.popup.visible ? control.delegateModel : null
@@ -166,8 +169,9 @@ JASPControl {
 			{
 				height:								Theme.comboBoxHeight
 				highlighted:						control.highlightedIndex === index
-
-				contentItem:	Rectangle
+				enabled:							comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
+				
+				contentItem: Rectangle
 				{
 					id:								itemRectangle
 					anchors.fill:					parent
@@ -188,9 +192,9 @@ JASPControl {
                     
                     Text {
 						x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-						text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : model.name) : ""
+						text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? model.label : model.name)) : ""
 						font:						Theme.font
-						color:						itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
+						color:						itemRectangle.isEmptyValue || !enabled ? Theme.grayDarker : Theme.black
 						verticalAlignment:			Text.AlignVCenter
 						anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
                     }

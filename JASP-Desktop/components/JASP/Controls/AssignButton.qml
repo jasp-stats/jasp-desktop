@@ -25,12 +25,14 @@ Button
 	id:					button
 	activeFocusOnTab:	false
 
-				property var	leftSource;
-				property var	rightSource;
+				property var	leftSource
+				property var	rightSource
 				property bool	leftToRight:	true
 
-				property var	source:			leftToRight ? leftSource : rightSource;
-				property var	target:			leftToRight ? rightSource : leftSource;
+				property var	source:			leftToRight ? leftSource : rightSource
+				property var	target:			leftToRight ? rightSource : leftSource
+
+				property var	interactionControl
 
 	readonly	property string iconToLeft:		"qrc:/images/arrow-left.png"
 	readonly	property string iconToRight:	"qrc:/images/arrow-right.png"
@@ -70,7 +72,23 @@ Button
 				result = true;
 		}
 
+		if (interactionControl)
+		{
+			if (target.addInteractionOptions)
+			{
+				var nb = source.selectedItems.length
+				interactionControl.enabled = result
+				var enabledOptions = [ true, nb > 1, nb > 2, nb > 3, nb > 4, true ]
+				interactionControl.enabledOptions = enabledOptions
+				if (!enabledOptions[interactionControl.currentIndex])
+					result = false;
+			}
+			else
+				interactionControl.enabled = false
+		}
+		
 		enabled = result
+		
 	}
 
 	onSourceChanged:	setState()

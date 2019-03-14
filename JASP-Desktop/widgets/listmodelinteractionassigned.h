@@ -24,12 +24,11 @@
 #include "interactionmodel.h"
 #include "analysis/options/options.h"
 #include "analysis/options/optionterm.h"
+#include "analysis/analysisqmldefines.h"
 
 class ListModelInteractionAssigned : public ListModelAssignedInterface, public InteractionModel
 {
 	Q_OBJECT
-	
-	enum AssignType { Cross = 0, MainEffects, Interaction, All2Way, All3Way, All4Way, All5Way };
 	
 public:
 	ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned);
@@ -40,7 +39,7 @@ public:
 	
 	virtual Terms *termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
 	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
-	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
+	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") OVERRIDE;
 	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
 	
 	virtual QString getItemType(const Term &term) const OVERRIDE;
@@ -50,7 +49,7 @@ public slots:
 	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) OVERRIDE;
 	
 protected:
-	void addCombinedTerms(const Terms& terms, int assignType);
+	void addCombinedTerms(const Terms& terms, qmlAssignType assignType);
 	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
 	
 	void setTerms();

@@ -39,7 +39,7 @@ public:
 	
 	virtual Terms* termsFromIndexes(const QList<int> &indexes) const;
 	virtual bool canAddTerms(Terms* terms) const;
-	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1) ;
+	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "") ;
 	virtual void removeTerms(const QList<int>& indexes);
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
 

@@ -75,7 +75,11 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
-			AssignedVariablesList {  name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
+			AssignedVariablesList
+			{
+				name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction"
+				addInteractionOptions: true
+			}
 		}
 		
 		DropDown
