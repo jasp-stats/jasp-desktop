@@ -68,7 +68,11 @@ Item
 			Connections
 			{
 				target:						mainWindow
-				onDataPanelVisibleChanged:	if(mainWindow.dataPanelVisible)		data.maximizeData(); else data.width = 0
+				onDataPanelVisibleChanged:
+				{
+					if(mainWindow.dataPanelVisible && data.width === 0)		data.maximizeData();
+					else if(!mainWindow.dataPanelVisible && data.width > 0)	data.width = 0
+				}
 			}
 		}
 
