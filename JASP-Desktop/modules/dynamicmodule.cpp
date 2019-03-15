@@ -391,6 +391,11 @@ std::string	DynamicModule::iconFilePath(const std::string & iconFileName)	const
 	return _moduleFolder.absolutePath().toStdString() + "/icons/" + iconFileName;
 }
 
+QString DynamicModule::helpFolderPath() const
+{
+	return _moduleFolder.absolutePath() + "/help/";
+}
+
 RibbonEntry* DynamicModule::ribbonEntry(const std::string & ribbonTitle) const
 {
 	for(RibbonEntry * entry : _ribbonEntries)

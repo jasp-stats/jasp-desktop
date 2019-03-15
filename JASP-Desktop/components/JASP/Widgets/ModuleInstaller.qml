@@ -240,6 +240,8 @@ Popup
 						selected						= true
 
 						installProgressItem.moduleBeingInstalled = dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
+
+						moduleInstallerPopup.close() //There is no information being shown anyway so lets just close the window now
 					}
 				}
 			}

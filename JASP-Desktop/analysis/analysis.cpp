@@ -37,6 +37,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 		// (especially with OptionsTable that needs a template information).
 		_optionsDotJASP = *data;
 
+	setHelpFile("analyses/" + nameQ());
 	bindOptionHandlers();
 }
 
@@ -45,6 +46,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	  _moduleData(analysisEntry), _dynamicModule(_moduleData->dynamicModule()), _version(AppInfo::version), _analyses(analyses)
 {
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
+	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
 	bindOptionHandlers();
 }
 

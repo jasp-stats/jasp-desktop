@@ -108,7 +108,7 @@ Rectangle
 			iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
 			//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 			enabled:			expanderButton.expanded
-			onClicked:			helpModel.showOrTogglePage("analyses/" + expanderButton.myAnalysis.name)
+			onClicked:			helpModel.showOrTogglePage(expanderButton.myAnalysis.helpFile)
 			toolTip:			"Show info for analysis"
 			radius:				height
 			anchors

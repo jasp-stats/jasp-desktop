@@ -94,6 +94,8 @@ signals:
 	void stopEngines();
 	void restartEngines();
 
+	void reloadHelpPage();
+
 private slots:
 	void enginesStopped();
 
@@ -114,7 +116,7 @@ private:
 	QString													_currentInstallMsg = "",
 															_currentInstallName = "";
 	bool													_currentInstallDone = false;
-	const std::map<std::string, std::set<std::string>>		_acceptedFilesInFolders = {{"", {"json"}}, {"r", {"r"}}, {"qml", {"qml"}}, {"icons", {"svg", "png", "ico", "jpg", "gif"}}, {"help", {"md", "txt", "htm", "html"}}};
+	const std::map<std::string, std::set<std::string>>		_acceptedFilesInFolders = {{"", {"json"}}, {"r", {"r"}}, {"qml", {"qml"}}, {"icons", {"svg", "png", "ico", "jpg", "gif"}}, {"help", {"md", "html"}}};
 	QDir													_devModSourceDirectory;
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
 														*	_devModRWatcher				= nullptr,

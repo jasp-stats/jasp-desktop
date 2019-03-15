@@ -38,7 +38,8 @@ class AnalysisForm;
 class Analysis : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString name READ nameQ NOTIFY nameChanged)
+	Q_PROPERTY(QString name		READ nameQ		NOTIFY nameChanged		)
+	Q_PROPERTY(QString helpFile	READ helpFile	NOTIFY helpFileChanged	)
 	
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
@@ -70,6 +71,8 @@ signals:
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestComputedColumnDestruction(	QString columnName);
+
+	void helpFileChanged(QString helpFile);
 
 public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
@@ -139,12 +142,26 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
 	void					runScriptRequestDone(const QString& result, const QString& controlName);	
 
+	QString helpFile() const
+	{
+		return m_helpFile;
+	}
+
 public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
 
 
 	
+	void setHelpFile(QString helpFile)
+	{
+		if (m_helpFile == helpFile)
+			return;
+
+		m_helpFile = helpFile;
+		emit helpFileChanged(m_helpFile);
+	}
+
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
@@ -185,6 +202,7 @@ private:
 	AnalysisForm*			_analysisForm	= nullptr;	
 
 	std::string				_codedReferenceToAnalysisEntry = "";
+	QString m_helpFile;
 };
 
 #endif // ANALYSIS_H

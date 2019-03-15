@@ -87,6 +87,7 @@ public:
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
 	std::string			iconFilePath(	const std::string & iconFileName)	const;
 	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
+	QString				helpFolderPath()									const;
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
 	std::string			generateModuleUnloadingR();

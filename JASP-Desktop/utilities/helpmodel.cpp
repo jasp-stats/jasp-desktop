@@ -1,6 +1,9 @@
 #include "helpmodel.h"
 #include "appdirs.h"
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include "stringutils.h"
 
 void HelpModel::setVisible(bool visible)
 {
@@ -12,15 +15,15 @@ void HelpModel::setVisible(bool visible)
 }
 
 
-void HelpModel::setPageName(QString pageName)
+void HelpModel::setPagePath(QString pagePath)
 {
-	pageName = pageName.toLower(); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
+	pagePath = convertPagePathToLower(pagePath); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
 
-	if (_pageName == pageName)
+	if (_pagePath == pagePath)
 		return;
 
-	_pageName = pageName;
-	emit pageNameChanged(_pageName);
+	_pagePath = pagePath;
+	emit pagePathChanged(_pagePath);
 }
 
 QString	HelpModel::indexURL()
@@ -30,10 +33,25 @@ QString	HelpModel::indexURL()
 
 void HelpModel::generateJavascript()
 {
-	QFile fileMD(AppDirs::help() + "/" + _pageName + ".md"), fileHTML(AppDirs::help() + "/" + _pageName + ".html");
-
 	QString content, renderFunc = "window.render";
 
+	QFile fileMD, fileHTML;
+	QFileInfo pathMd(_pagePath + ".md");
+
+	bool relative = pathMd.isRelative();
+
+	if(relative) //This is probably a file in resources then
+	{
+		fileMD.setFileName(AppDirs::help() + "/" + _pagePath + ".md");
+		fileHTML.setFileName(AppDirs::help() + "/" + _pagePath + ".html");
+	}
+	else
+	{
+		//We got an absolute path, this probably means it comes from a (dynamic) module.
+
+		fileMD.setFileName(_pagePath + ".md");
+		fileHTML.setFileName(_pagePath + ".html");
+	}
 
 	if (fileHTML.exists())
 	{
@@ -51,11 +69,16 @@ void HelpModel::generateJavascript()
 		fileMD.close();
 	}
 	else
+	{
 		content = "Coming Soon!\n========\n\nThere is currently no help available for this analysis"
 #ifdef JASP_DEBUG
-			 " ("+_pageName+")"
+			 " ("+_pagePath+")"
 #endif
-			".\n\nAdditional documentation will be available in future releases of JASP.";
+				".\n\nAdditional documentation will be available in future releases of "
+		;
+
+		content += relative ? "JASP." : "the module.";
+	}
 
 	content.replace("\"", "\\\"");
 	content.replace("\r\n", "\\n");
@@ -74,15 +97,42 @@ void HelpModel::setHelpJS(QString helpJS)
 	emit helpJSChanged(_helpJS);
 }
 
-void HelpModel::showOrTogglePage(QString pageName)
+QString HelpModel::convertPagePathToLower(const QString & pagePath)
 {
-	pageName = pageName.toLower();
+	std::string pagePathStd		= pagePath.toStdString();
+	auto		slashPos		= pagePathStd.find_last_of('/');
 
-	if(pageName == _pageName && _visible)
+	if(slashPos == std::string::npos)
+		return pagePath.toLower();
+
+	slashPos++;
+
+	std::string	lastSegment		= pagePathStd.substr(slashPos),
+				firstSegment	= pagePathStd.substr(0, slashPos);
+
+	return QString::fromStdString(firstSegment + stringUtils::toLower(lastSegment));
+}
+
+void HelpModel::showOrTogglePage(QString pagePath)
+{
+	pagePath = convertPagePathToLower(pagePath);
+
+	if(pagePath == _pagePath && _visible)
 		setVisible(false);
 	else
 	{
-		setPageName(pageName);
+		setPagePath(pagePath);
 		setVisible(true);
+	}
+}
+
+void HelpModel::reloadPage()
+{
+	QString curPage = _pagePath;
+
+	if(curPage != "" && curPage != "index")
+	{
+		setPagePath("index");
+		setPagePath(curPage);
 	}
 }

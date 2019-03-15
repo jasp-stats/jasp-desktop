@@ -139,8 +139,10 @@ bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string 
 {
 	auto fileNameExtractor	= [&](std::string in, std::string & folder, std::string & filename)
 	{
-		std::string beforeLastSlash = in.substr(0, in.find_last_of('/'));
-					folder			= stringUtils::toLower(beforeLastSlash.substr(beforeLastSlash.find_last_of('/') + 1));
+		std::string beforeLastSlash = in.substr(0, in.find_last_of('/')),
+					fullPath		= beforeLastSlash.substr(beforeLastSlash.find_last_of('/') + 1);
+
+					folder			= stringUtils::toLower(fullPath);
 		auto		slashpos		= in.find_last_of('/');
 					filename		= in.substr(slashpos != std::string::npos ? slashpos + 1 : 0);
 
@@ -160,6 +162,9 @@ bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string 
 
 		if(folder == "r")
 			folder = "R"; //Because we like it like that :)
+
+		if(folder == "help")
+			filename = stringUtils::toLower(filename); //To make life easier on case sensitive filesystems like linux has (HelpModel::showOrTogglePage also expects this)
 
 		return folder + '/' + filename;
 	};
