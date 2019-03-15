@@ -131,7 +131,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
-			AssignedVariablesList {  name: "postHocTestsVariables" }
+			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
 		}
 		
 		CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size") }
@@ -269,7 +269,6 @@ Form
 			}
 		}
 		
-		CheckBox { name: "dunnTest"; label: qsTr("Dunn's post hoc test") }
 	}
 	
 }

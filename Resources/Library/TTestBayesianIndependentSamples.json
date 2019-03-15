@@ -27,7 +27,7 @@
 			"name": "wilcoxonSamplesNumber",
 			"type": "Integer",
 			"min": 100,
-			"max": 10000
+			"max": 100000
 		},
 		{
 			"name": "hypothesis",
