@@ -165,6 +165,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   return(multinomialResults)
 }
 
+#' Create and return the multinomial table
 .createMultBayesMainTable <- function(jaspResults, options, multinomialResults){
 
   if (!is.null(jaspResults[["multinomialTable"]])) return()
@@ -303,7 +304,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   factorVariable   <- multinomialResults[["specs"]][["factorVariable"]]
   descriptivesPlot <- .multBayesPlotHelper(factorVariable, options, multinomialResults)
 
-  jaspResults[["descriptivesPlot"]] <- createJaspPlot(plot = descriptivesPlot, title = "Descriptives plot")
+  jaspResults[["descriptivesPlot"]] <- createJaspPlot(plot = descriptivesPlot, title = "Descriptives plot", width = 480, height = 320)
   jaspResults[["descriptivesPlot"]]$dependOnOptions(c("descriptivesPlot", "factor", "counts",
                                                       "descriptivesPlotsCredibleInterval"))
 
@@ -311,12 +312,12 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-#' Helper function - compute confidence interval
+#' Helper function - compute credible interval
 #'
 #' @param counts
 #' @param credibleInterval
 #'
-#' @return medianCI median confidence interval as data frame
+#' @return medianCI median credible interval as data frame
 .multComputeCIs <- function(counts, credibleInterval) {
 
   # based on marginal beta distributions with uniform Dirichlet prior
@@ -388,12 +389,12 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     ggplot2::ylab(yname) +
     ggplot2::coord_flip()
 
-  p <- JASPgraphs::themeJasp(p, xAxis = FALSE)
+    p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
 
   return(p)
 }
 
-#' Function for Analysis - compute Bayes factor
+#' Function for Analysis - compute Bayes factor and expected counts
 #'
 #' @param alphas
 #' @param counts
