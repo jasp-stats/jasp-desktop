@@ -93,6 +93,11 @@ FocusScope
 				anchors.leftMargin:		6 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
 				source:					iconsFolder + (expanded ? expandedIcon : contractedIcon)
+				sourceSize
+				{
+					width:	icon.width * 2
+					height:	icon.height * 2
+				}
             }
 
 			Text

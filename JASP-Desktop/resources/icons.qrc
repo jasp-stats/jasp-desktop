@@ -123,5 +123,6 @@
         <file>icons/variable-nominal-disabled.svg</file>
         <file>icons/variable-ordinal-disabled.svg</file>
         <file>icons/variable-scale-disabled.svg</file>
+        <file>icons/large-arrow-right.png</file>
     </qresource>
 </RCC>

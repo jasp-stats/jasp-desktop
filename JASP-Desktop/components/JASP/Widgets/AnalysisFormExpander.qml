@@ -31,23 +31,18 @@ Rectangle
 	}
 
 	states: [
-		State {
-			name: "expanded"
-			when: expanderButton.expanded
-			PropertyChanges {
-				target: expanderButton
-				height: loaderAndError.y + loaderAndError.height
-			}
-			PropertyChanges {
-				target: expanderIcon	
-				rotation: 90
-			}
+		State
+		{
+			name: "expanded";	when: expanderButton.expanded
+			PropertyChanges {	target: expanderButton;		height: loaderAndError.y + loaderAndError.height;		}
+			PropertyChanges {	target: expanderIcon;		rotation: 90;											}
 		}
 	]
 
-	transitions: Transition {
-		NumberAnimation { property: "height"; duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
-		RotationAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+	transitions: Transition
+	{
+		NumberAnimation		{ property: "height";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+		RotationAnimation	{						duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 	}
 	
 	Item
@@ -55,10 +50,13 @@ Rectangle
 		id:				expanderRectangle
 		height:			Theme.formExpanderHeaderHeight  //label.contentHeight
 
-		anchors.left:		parent.left
-		anchors.right:		parent.right
-		anchors.top:		parent.top
-		anchors.topMargin:	Theme.formMargin
+		anchors
+		{
+			left:		parent.left
+			right:		parent.right
+			top:		parent.top
+			topMargin:	Theme.formMargin
+		}
 
 
 		MouseArea
@@ -70,27 +68,22 @@ Rectangle
 			cursorShape:	Qt.PointingHandCursor
 		}
 
-		Canvas
+		Image
 		{
-			id:				expanderIcon
+			id:						expanderIcon
 			anchors
 			{
 				left:			parent.left
 				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
-			height:			expanderRectangle.height / 3.5
+			height:			expanderRectangle.height / 1.5
 			width:			height
-			contextType:	"2d"	
-			onPaint:
+			source:			"qrc:/icons/large-arrow-right.png"
+			sourceSize
 			{
-				context.reset();
-				context.moveTo(0, 0);
-				context.lineTo(width, height/2);
-				context.lineTo(0, height);
-				context.closePath();
-				context.fillStyle = Theme.grayDarker;
-				context.fill();
+				width:	expanderIcon.width * 2
+				height:	expanderIcon.height * 2
 			}
 		}
 		
