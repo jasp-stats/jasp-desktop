@@ -723,14 +723,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 		rmFactorIndex <- 1
 		allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
-		
-		# for(factorName in allNames){
-		#   if (any(factorName %in% options$betweenSubjectFactors )) {
-		#     error <- TRUE
-		#     errorMessage <- paste("Please choose a different name for the RM factor.", sep="")
-		#     posthoc.table[["error"]] <- errorMessage
-		#   }
-		# }
 
 		for (var in variables) {
 
@@ -2486,7 +2478,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		} else {
 
-			summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors),
+		  summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors),
 							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType, 
 							usePooledSE=usePooledSE)
 
@@ -3351,12 +3343,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	# This does the summary. For each group's data frame, return a vector with
 	# N, mean, and sd
-	# First aggregate over RM factors, if desired:
-	if (usePooledSE) {
+	# First aggregate over unused RM factors, if desired:
+	if (usePooledSE & measurevar == "dependent") {
 	  data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent))
 	  names(data)[which(names(data) == "dependent")] <- measurevar
+	} else if (usePooledSE & measurevar == "dependent_norm") {
+	  data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent_norm))
+	  names(data)[which(names(data) == "dependent")] <- measurevar
 	}
-	
+
 	datac <- plyr::ddply(data, groupvars, .drop=.drop,
 						 .fun = function(xx, col) {
 						 	c(N    = length2(xx[[col]], na.rm=na.rm),
@@ -3423,7 +3418,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL, idvar=NULL, na.rm=FALSE, 
                              conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval", usePooledSE=FALSE) {
 
-	# Get the means from the un-normed data
+  # Get the means from the un-normed data
 	datac <- .summarySE(data, measurevar, groupvars=c(betweenvars, withinvars), na.rm=na.rm, 
 	                    conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType, usePooledSE=usePooledSE)
 	# Drop all the unused columns (these will be calculated with normed data)
