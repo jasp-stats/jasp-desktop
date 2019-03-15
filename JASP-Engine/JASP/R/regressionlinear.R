@@ -3938,11 +3938,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
     h <- hist(res, plot = FALSE)
     dens <- h$density
-    yhigh <- 1.2*max(h$density)
+		yhigh <- max(c(h$density, dens$y))
     ylow <- 0
     xticks <- base::pretty(c(res, h$breaks), min.n= 3)
 
-	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(ylow, yhigh), force = TRUE, yLabels = NULL, xLabels = xticks)
     p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
                                 binwidth = (h$breaks[2] - h$breaks[1]),
                                 fill = "grey",
