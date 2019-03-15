@@ -59,6 +59,7 @@ FocusScope
 				anchors.topMargin:		-1
 				toolTipDrag:			mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data"
 				toolTipArrow:			analysesModel.visible		? "Hide options" : "Show options"
+				dragEnabled:			mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
 		}
 
@@ -146,7 +147,12 @@ FocusScope
 				z:					-10
 				onWheel:			wheel.accepted = true
 				onPositionChanged:	mouse.accepted = true
-				anchors.fill:		parent
+				anchors
+				{
+					fill:			parent
+					leftMargin:		-1
+					rightMargin:	-1
+				}
 				hoverEnabled:		true
 			}
 		}

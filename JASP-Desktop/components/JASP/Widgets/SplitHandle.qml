@@ -12,13 +12,14 @@ Rectangle
 	signal arrowClicked
 	property bool pointingLeft: true
 	property bool showArrow:	false
+	property bool dragEnabled:	true
 
 	property string toolTipDrag:	""
 	property string toolTipArrow:	""
 	property alias	hovered:		hoverMouse.containsMouse
 
 	width:			Theme.splitHandleWidth
-	color:			handleRoot.hovered ? Theme.grayLighter : Theme.uiBackground
+	color:			handleRoot.dragEnabled && handleRoot.hovered ? Theme.grayLighter : Theme.uiBackground
 	//border.color:	Theme.uiBorder
 	//border.width:	1
 
@@ -35,7 +36,7 @@ Rectangle
 		delay:			Theme.toolTipDelay
 		font:			Theme.font
 		background:		Rectangle { color:	Theme.tooltipBackgroundColor }
-		visible:		hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
+		visible:		!handleRoot.dragEnabled && hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
 		y:				hoverMouse.mouseY
 		x:				parent.width / 2
 	}
@@ -47,7 +48,8 @@ Rectangle
 		hoverEnabled:		true
 		z:					-20
 		anchors.fill:		parent
-		cursorShape:		Qt.SplitHCursor //Take into account resizing? styleData.resizing
+		cursorShape:		handleRoot.dragEnabled ? Qt.SplitHCursor : Qt.ArrowCursor //Take into account resizing? styleData.resizing
+		onPositionChanged:	mouse.accepted = true
 	}
 
 
@@ -74,6 +76,7 @@ Rectangle
 			color:			arrowMouse.containsMouse ? Theme.grayLighter : Theme.uiBackground
 			visible:		handleRoot.showArrow
 			anchors.fill:	parent
+
 			MouseArea
 			{
 				id:				arrowMouse
@@ -91,13 +94,13 @@ Rectangle
 				readonly property string leftIcon:			"arrow-left.png"
 				readonly property string rightIcon:			"arrow-right.png"
 
-				source:				iconsFolder + (handleRoot.pointingLeft ? leftIcon : rightIcon)
-				width:				parent.width - (4 * preferencesModel.uiScale)
-				height:				width
-				sourceSize.width:	width * 2;
-				sourceSize.height:	height * 2;
+				source:					iconsFolder + (handleRoot.pointingLeft ? leftIcon : rightIcon)
+				width:					parent.width - (4 * preferencesModel.uiScale)
+				height:					width
+				sourceSize.width:		width * 2;
+				sourceSize.height:		height * 2;
 
-				anchors.centerIn:	parent
+				anchors.centerIn:		parent
 
 				ToolTip.text:			handleRoot.toolTipArrow
 				ToolTip.timeout:		Theme.toolTipTimeout
@@ -153,10 +156,11 @@ Rectangle
 
 		Item
 		{
-							id:		threeDots
-							height:	width * 4
-							width:	Theme.splitHandleWidth * 0.3
-			property color	kleur:	Theme.grayDarker
+							id:			threeDots
+							height:		width * 4
+							width:		Theme.splitHandleWidth * 0.3
+			property color	kleur:		Theme.grayDarker
+							visible:	handleRoot.dragEnabled
 
 			Rectangle
 			{

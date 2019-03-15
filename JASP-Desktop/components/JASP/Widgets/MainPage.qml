@@ -49,15 +49,23 @@ Item
 		DataPanel
 		{
 			id:						data
-			visible:				mainWindow.dataAvailable //|| analysesModel.count > 0
+			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
-			property real maxWidth: splitViewContainer.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
+
+			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
+			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 
 			onWidthChanged:
 			{
 				var iAmBig = width > 0;
 				if(iAmBig !== mainWindow.dataPanelVisible)
 					mainWindow.dataPanelVisible = iAmBig
+
+				if(fakeEmptyDataForSumStatsEtc)
+				{
+					mainWindow.dataPanelVisible = false;
+					width = 0;
+				}
 			}
 
 			function maximizeData()
@@ -87,9 +95,10 @@ Item
 				id:				splitHandle
 				onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
 				pointingLeft:	mainWindow.dataPanelVisible
-				showArrow:		true
+				showArrow:		mainWindow.dataAvailable
 				toolTipArrow:	mainWindow.dataPanelVisible ? "Hide data"   : "Maximize data"
 				toolTipDrag:	mainWindow.dataPanelVisible ? "Resize data" : "Drag to show data"
+				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
 
 			AnalysisForms //This is placed inside the splithandle so that you can drag on both sides of it. Not the most obvious path to take but the only viable one. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
