@@ -1949,6 +1949,7 @@ callback <- function(results=NULL, progress=NULL) {
 	stringr::str_trim(last)
 }
 
+#.clean is not necessary for analyses using jaspResults, jaspTable will take care of it for you.
 .clean <- function(value) {
     # Clean function value so it can be reported in json/html
 
