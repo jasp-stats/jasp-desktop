@@ -111,7 +111,6 @@ private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }
 	void dataSetOpenCurrentRequestHandler(QString path);
 	void dataSetIORequestHandler(FileEvent *event);
-	void dataSetOpenExampleRequestHandler(QString path);
 
 private:
 			bool checkSyncFileExists(const QString &path);

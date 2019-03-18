@@ -638,11 +638,18 @@ void MainWindow::updateShownVariablesModel()
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
+	if (!_IORequestMutex.tryLock())
+	{
+		qDebug() << "Mutex locked!";
+		return;
+	}
+	
 	if (event->operation() == FileEvent::FileOpen)
 	{
 		if (_package->isLoaded())
 		{
-			//If this instance has a valid OSF connection save this setting for a new instance
+			_IORequestMutex.unlock();
+			// If this instance has a valid OSF connection save this setting for a new instance
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
 			// begin new instance
@@ -705,7 +712,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -827,7 +833,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_analyses->setVisible(false);
 			_analyses->clear();
 			setDataSetAndPackageInModels(nullptr);
-			_loader.free(_package->dataSet());
+			if (_package->dataSet())
+				_loader.free(_package->dataSet());
 			_package->reset();
 			_resultsJsInterface->resetResults();
 
@@ -846,6 +853,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		else
 			_applicationExiting = false;
 	}
+	
+	_IORequestMutex.unlock();	
 
 }
 

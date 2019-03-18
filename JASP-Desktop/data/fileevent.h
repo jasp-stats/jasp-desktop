@@ -72,8 +72,8 @@ private:
 	QString _last_error;
 	bool _readOnly;
 
-	bool _isComplete;
-	bool _success;
+	bool _isComplete = false;
+	bool _success = false;
 	QString _message;
 
 	FileEvent *_chainedTo;
