@@ -217,6 +217,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeysSelected							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,			this,					&MainWindow::delayedLoadHandler						);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -258,6 +259,7 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
+
 }
 
 
@@ -625,7 +627,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		qDebug() << "Mutex locked!";
 		return;
 	}
-	
+
 	if (event->operation() == FileEvent::FileOpen)
 	{
 		if (_package->isLoaded())
@@ -639,10 +641,17 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
+			//_qml->clearComponentCache();
+
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-			_loader.io(event, _package);
-			showProgress(event->type() != Utils::FileType::jasp);
+			_resultsJsInterface->clearWelcomeScreen();
+
+			_openEvent = event;
+
+			// Wait for JS callback clearing welcome screen to call funtions below in delayedLoadHandler
+			//_loader.io(event, _package);
+			//showProgress(event->type() != Utils::FileType::jasp);
 
 		}
 	}
@@ -835,8 +844,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		else
 			_applicationExiting = false;
 	}
-	
-	_IORequestMutex.unlock();	
+
+	_IORequestMutex.unlock();
 
 }
 
@@ -1379,6 +1388,20 @@ void MainWindow::removeAllAnalyses()
 		_analyses->clear();
 }
 
+void MainWindow::delayedLoadHandler()
+{
+	if (_openEvent)
+	{
+		_loader.io(_openEvent, _package);
+		showProgress(_openEvent->type() != Utils::FileType::jasp);
+		_openEvent = nullptr;
+	}
+	else {
+		std::cerr << "Unable to open file" << std::endl;
+	}
+
+}
+
 void MainWindow::getAnalysesUserData()
 {
 	QVariant userData = _resultsJsInterface->getAllUserData();
@@ -1444,3 +1467,5 @@ void MainWindow::resetQmlCache()
 {
 	_qml->clearComponentCache();
 }
+
+

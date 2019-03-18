@@ -137,6 +137,7 @@ private:
 	void analysisSaveImageHandler(int id, QString options);
 	void analysisEditImageHandler(int id, QString options);
 	void removeAnalysisRequestHandler(int id);
+	void delayedLoadHandler();
 	void matchComputedColumnsToAnalyses();
 
 	void startComparingResults();
@@ -204,6 +205,7 @@ private slots:
 
 	void showResultsPanel() { setDataPanelVisible(false); }
 
+
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 
@@ -262,6 +264,7 @@ private:
 									_iconInactiveFiles,
 									_iconDisabledFiles;
 	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
+	FileEvent *_openEvent = nullptr;;
 };
 
 #endif // MAINWIDGET_H
