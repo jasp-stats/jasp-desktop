@@ -147,7 +147,11 @@ void Analyses::clear()
 {
 	beginResetModel();
 	for (auto idAnalysis : _analysisMap)
-		delete idAnalysis.second;
+	{
+		Analysis* analysis = idAnalysis.second;
+		emit analysisRemoved(analysis);
+		delete analysis;
+	}
 
 	_analysisMap.clear();
 	_orderedIds.clear();
