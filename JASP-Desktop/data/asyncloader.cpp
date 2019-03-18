@@ -215,6 +215,7 @@ void AsyncLoader::loadPackage(QString id)
 			{
 				//loadPackage argument extension determines type
 				_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+				emit PackageLoaded();
 			}
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);

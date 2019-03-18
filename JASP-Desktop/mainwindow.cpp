@@ -259,6 +259,8 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
+	connect(&_loader,				&AsyncLoader::PackageLoaded,						_resultsJsInterface,	&ResultsJsInterface::clearWelcomeScreen						);
+
 }
 
 

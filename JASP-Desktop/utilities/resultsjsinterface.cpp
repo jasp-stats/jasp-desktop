@@ -273,6 +273,11 @@ void ResultsJsInterface::setResultsMeta(QString str)
 	emit runJavaScript(results);
 }
 
+void ResultsJsInterface::clearWelcomeScreen()
+{
+	emit runJavaScript("window.clearWelcomeScreen()");
+}
+
 void ResultsJsInterface::unselect()
 {
 	emit runJavaScript("window.unselect()");

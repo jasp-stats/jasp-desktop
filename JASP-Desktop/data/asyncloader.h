@@ -46,6 +46,7 @@ signals:
 	void beginSave(FileEvent*, DataSetPackage*);
 	void progress(const QString &status, int progress);
 	void beginFileUpload(QString nodePath, QString sourcePath);
+	void PackageLoaded();
 
 private slots:
 	void loadTask(FileEvent *event, DataSetPackage *package);

@@ -44,6 +44,11 @@ $(document).ready(function () {
         document.body.style.zoom = zoomProcent
     }
 
+	window.clearWelcomeScreen = function () {
+		$("#intro").text("");
+		$("#intro").css("background-color","white")
+	}
+
 	window.reRenderAnalyses = function () {
 		analyses.reRender();
 	}
