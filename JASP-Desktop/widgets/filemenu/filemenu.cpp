@@ -315,15 +315,6 @@ void FileMenu::dataSetIORequestHandler(FileEvent *event)
 	
 }
 
-void FileMenu::dataSetOpenExampleRequestHandler(QString path)
-{
-	FileEvent *event = new FileEvent(this);
-	event->setPath(path);
-	event->setReadOnly();
-
-	dataSetIORequestHandler(event);
-}
-
 void FileMenu::analysisAdded(Analysis *analysis)
 {
 	_actionButtons->setEnabled(ActionButtons::SaveAs, true);

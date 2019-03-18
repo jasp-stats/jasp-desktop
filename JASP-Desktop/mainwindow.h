@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QMutex>
 
 #include "analysis/analyses.h"
 #include "analysis/analysisform.h"
@@ -244,6 +245,7 @@ private:
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
+	QMutex							_IORequestMutex;
 
 	bool							_applicationExiting		= false,
 									_resultsViewLoaded		= false,

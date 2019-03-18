@@ -158,7 +158,7 @@ void AsyncLoader::progressHandler(string status, int progress)
 
 void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
 {
-	if (_odm != NULL)
+	if (_odm != nullptr)
 	{
 		disconnect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
 		disconnect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
@@ -166,7 +166,7 @@ void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
 
 	_odm = odm;
 
-	if (_odm != NULL)
+	if (_odm != nullptr)
 	{
 		connect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
 		connect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
@@ -178,10 +178,11 @@ void AsyncLoader::loadPackage(QString id)
 {
 	if (id == "asyncloader")
 	{
-		OnlineDataNode *dataNode = NULL;
+		OnlineDataNode *dataNode = nullptr;
 
 		try
 		{
+			qDebug() << "loadPackage";
 			string path = fq(_currentEvent->path());
 			string extension = "";
 
@@ -200,7 +201,7 @@ void AsyncLoader::loadPackage(QString id)
 
 				dataNode = _odm->getActionDataNode(id);
 
-				if (dataNode != NULL && dataNode->error())
+				if (dataNode != nullptr && dataNode->error())
 					throw runtime_error(fq(dataNode->errorMessage()));
 
 				//Generated local path has no extension
@@ -219,7 +220,7 @@ void AsyncLoader::loadPackage(QString id)
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 			{
 				if (calcMD5 != dataNode->md5().toLower())
 					throw runtime_error("The securtiy check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
@@ -227,7 +228,7 @@ void AsyncLoader::loadPackage(QString id)
 
 			_currentPackage->setInitialMD5(fq(calcMD5));
 
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 			{
 				_currentPackage->setId(fq(dataNode->nodeId()));
 				_currentEvent->setPath(dataNode->path());
@@ -244,14 +245,14 @@ void AsyncLoader::loadPackage(QString id)
 			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath()));
 			_currentEvent->setComplete();
 
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
 		catch (runtime_error e)
 		{
 			std::cout << "Runtime Exception in loadPackage: " << e.what() << std::endl;
 
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
@@ -259,7 +260,7 @@ void AsyncLoader::loadPackage(QString id)
 		{
 			std::cout << "Exception in loadPackage: " << e.what() << std::endl;
 
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
@@ -284,7 +285,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 {
 	if (id == "asyncloader")
 	{
-		OnlineDataNode *dataNode = NULL;
+		OnlineDataNode *dataNode = nullptr;
 
 		try
 		{
@@ -303,18 +304,18 @@ void AsyncLoader::uploadFileFinished(QString id)
 			}
 
 			_currentPackage->setInitialMD5(fq(fileChecksum(tq(path), QCryptographicHash::Md5)));
-			_currentPackage->setId(dataNode != NULL ? fq(dataNode->nodeId()) : path);
+			_currentPackage->setId(dataNode != nullptr ? fq(dataNode->nodeId()) : path);
 
 			_currentEvent->setComplete();
 
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
 		catch (runtime_error e)
 		{
 			std::cout << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
 			std::cout.flush();
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
@@ -322,7 +323,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 		{
 			std::cout << "Exception in uploadFileFinished: " << e.what() << std::endl;
 			std::cout.flush();
-			if (dataNode != NULL)
+			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
