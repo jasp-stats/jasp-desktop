@@ -66,7 +66,7 @@ JASPControl
 		GridView
 		{
 			id:					listView
-			cellHeight:			20 * preferencesModel.uiScale
+			cellHeight:			23 * preferencesModel.uiScale
 			cellWidth:			width
 			clip:				true
 
