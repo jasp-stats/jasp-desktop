@@ -48,6 +48,7 @@ public:
 	void exportPreviewHTML();
 	void exportHTML();
 	void resetResults() { emit resultsPageUrlChanged(_resultsPageUrl); }
+	void clearWelcomeScreen();
 
 	Json::Value &getResultsMeta();
 	QVariant	&getAllUserData();
@@ -70,6 +71,7 @@ signals:
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
 	Q_INVOKABLE void removeAllAnalyses();
+	Q_INVOKABLE void welcomeScreenIsCleared();
 
 public slots:
 	void setZoom(double zoom);
@@ -84,6 +86,7 @@ public slots:
 	void setAllUserDataFromJavascript(QString json);
 	void setResultsMetaFromJavascript(QString json);
 	void removeAnalysis(Analysis *analysis);
+
 //end callables
 
 

@@ -30,9 +30,6 @@ $(document).ready(function () {
 	var selectedAnalysis = null
 
 	var $intro = $("#intro")
-	var introVisible = true
-	var introHiding = false
-	var introHidingResultsWaiting = []
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
@@ -43,6 +40,12 @@ $(document).ready(function () {
         var zoomProcent = "" + Math.floor(zoom * 100) + "%"
         document.body.style.zoom = zoomProcent
     }
+
+	window.clearWelcomeScreen = function () {
+		$intro.hide();
+		$("#style").attr("href","css/theme-jasp.css");
+		jasp.welcomeScreenIsCleared();
+	}
 
 	window.reRenderAnalyses = function () {
 		analyses.reRender();
@@ -433,30 +436,6 @@ $(document).ready(function () {
     }
 
 	window.analysisChanged = function (analysis) {
-
-		if (introVisible) {
-
-			introHidingResultsWaiting.push(analysis)
-
-			if (introHiding == false) {
-
-				introHiding = true
-
-				$intro.hide(10, function () {
-					
-					$("#style").attr("href","css/theme-jasp.css")
-					introHiding = false
-					introVisible = false
-
-					introHidingResultsWaiting.reverse()
-					
-					while (introHidingResultsWaiting.length > 0)
-						window.analysisChanged(introHidingResultsWaiting.pop())
-				});
-			}
-
-			return
-		}
 
 		if (showInstructions)
 			$instructions.fadeIn(400, "easeOutCubic")
