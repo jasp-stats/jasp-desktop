@@ -16,10 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-VariablesList {
-    id: variablesList
-
+VariablesList
+{
     listViewType: "AssignedVariables"
-    dropMode: "Insert"
-
+    dropMode: "Insert"	
 }

@@ -22,6 +22,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "processinfo.h"
+#include "modules/ribbonmodel.h"
 
 #include <QFile>
 #include <QTimer>
@@ -34,7 +35,7 @@
 using namespace std;
 
 
-Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData)
+Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 	size_t id					= analysisData["id"].asUInt();
@@ -52,7 +53,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData)
 		Json::Value &versionJson	= analysisData["version"];
 
 		Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-		analysis					= create(module, name, id, version, &optionsJson, status, false);
+		Modules::AnalysisEntry*		analysisEntry = ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
+		QString title				= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+		
+		analysis					= create(module, name, title, id, version, &optionsJson, status, false);
 	}
 	else
 		analysis = create(_dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status, false);
@@ -63,9 +67,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData)
 	return analysis;
 }
 
-Analysis* Analyses::create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
+Analysis* Analyses::create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
 {
-	Analysis *analysis = new Analysis(this, id, module.toStdString(), name.toStdString(), version, options);
+	Analysis *analysis = new Analysis(this, id, module.toStdString(), name.toStdString(), title.toStdString(), version, options);
 	analysis->setStatus(status);
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
@@ -143,7 +147,11 @@ void Analyses::clear()
 {
 	beginResetModel();
 	for (auto idAnalysis : _analysisMap)
-		delete idAnalysis.second;
+	{
+		Analysis* analysis = idAnalysis.second;
+		emit analysisRemoved(analysis);
+		delete analysis;
+	}
 
 	_analysisMap.clear();
 	_orderedIds.clear();
@@ -362,12 +370,12 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisTitle, QString ribbonTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString ribbonTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisTitle.toStdString()));
-	else							create(module, analysisTitle);
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisName.toStdString()));
+	else							create(module, analysisName, analysisTitle);
 }
 
 

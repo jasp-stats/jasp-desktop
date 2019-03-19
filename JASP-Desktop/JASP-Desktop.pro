@@ -1,6 +1,8 @@
 QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
+QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
+
 include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -358,7 +360,6 @@ HEADERS += \
     modules/ribbonmodelfiltered.h \
     utilities/helpmodel.h \
     widgets/lavaansyntaxhighlighter.h \
-    widgets/boundqmllistviewinteraction.h \
     widgets/listmodelinteractionassigned.h \
     gui/preferencesmodel.h \
     widgets/filemenu/actionbuttons.h \
@@ -366,7 +367,14 @@ HEADERS += \
     widgets/filemenu/resourcebuttonsvisible.h \
     widgets/boundqmlrepeatedmeasuresfactors.h \
     widgets/listmodelrepeatedmeasuresfactors.h \
-    widgets/listmodelextracontrols.h
+    widgets/listmodelextracontrols.h \
+    widgets/interactionmodel.h \
+    widgets/listmodelinteractionavailable.h \
+    results/resultmenuentry.h \
+    results/resultmenumodel.h \
+    analysis/jaspdoublevalidator.h \
+    widgets/boundqmlfactorsform.h \
+    widgets/listmodelfactorsform.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -531,7 +539,6 @@ SOURCES += \
     modules/ribbonmodelfiltered.cpp \
     utilities/helpmodel.cpp \
     widgets/lavaansyntaxhighlighter.cpp \
-    widgets/boundqmllistviewinteraction.cpp \
     widgets/listmodelinteractionassigned.cpp \
     gui/preferencesmodel.cpp \
     widgets/filemenu/actionbuttons.cpp \
@@ -539,7 +546,14 @@ SOURCES += \
     widgets/filemenu/resourcebuttonsvisible.cpp \
     widgets/boundqmlrepeatedmeasuresfactors.cpp \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
-    widgets/listmodelextracontrols.cpp
+    widgets/listmodelextracontrols.cpp \
+    widgets/interactionmodel.cpp \
+    widgets/listmodelinteractionavailable.cpp \
+    results/resultmenumodel.cpp \
+    results/resultmenuentry.cpp \
+    analysis/jaspdoublevalidator.cpp \
+    widgets/boundqmlfactorsform.cpp \
+    widgets/listmodelfactorsform.cpp
 
 RESOURCES += \
     html/html.qrc \
@@ -549,5 +563,3 @@ RESOURCES += \
 
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
-
-

@@ -32,20 +32,15 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	_model = nullptr;
 	_currentIndex = _item->property("currentIndex").toInt();
 	bool addEmptyValue = _item->property("addEmptyValue").toBool();
-	QString emptyValue = _item->property("emptyValue").toString();
 	
 	_model = new ListModelTermsAvailable(this);
 	if (addEmptyValue)
-	{
-		_model->setEmptyValue(emptyValue);
-		_keyToValueMap[emptyValue] = "";
-		_valueToKeyMap[""] = emptyValue;
-	}
+		_model->addEmptyValue();
 
 	QVariant model = QQmlProperty(item, "model").read();
 	if (model.isNull())
 	{
-		if (sourceModelsList().isEmpty())
+		if (sourceModels().isEmpty())
 			hasAllVariablesModel = true;
 	}
 	else
@@ -181,7 +176,8 @@ Option *BoundQMLComboBox::createOption()
 	
 	if (options.size() == 0)
 		index = -1;
-	else if (index >= int(options.size()))		index = 0;
+	else if (index >= int(options.size()))
+		index = 0;
 	
 	std::string selected = "";
 	if (index >= 0)
@@ -193,6 +189,11 @@ Option *BoundQMLComboBox::createOption()
 bool BoundQMLComboBox::isOptionValid(Option *option)
 {
 	return dynamic_cast<OptionList*>(option) != nullptr;
+}
+
+bool BoundQMLComboBox::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::stringValue;
 }
 
 void BoundQMLComboBox::setUp()
@@ -271,18 +272,18 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 	_currentColumnType.clear();
 	if (_currentIndex >= 0)
 	{
-		const Terms& terms = _model->terms();
-		if (_currentIndex >= int(terms.size()))
+		int rowCount = _model->rowCount();
+		if (_currentIndex >= rowCount)
 		{
-			if (terms.size() > 0)
+			if (rowCount > 0)
 				_currentIndex = -1;
 			else
 				_currentIndex = 0;
 		}
 		if (_currentIndex >= 0)
 		{
-			_currentText = terms.at(size_t(_currentIndex)).asQString();
 			QModelIndex index(_model->index(_currentIndex, 0));
+			_currentText = _model->data(index, ListModel::NameRole).toString();	
 			_currentColumnType = _model->data(index, ListModel::ColumnTypeRole).toString();			
 		}
 	}

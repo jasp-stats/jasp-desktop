@@ -29,7 +29,13 @@ RibbonEntry::RibbonEntry(Json::Value & ribbonEntry, DynamicModule * parentDynami
 	_dynamicModule(parentDynamicModule)
 {
 	for(Json::Value & analysisEntry : ribbonEntry["analyses"])
+	{
+#ifndef JASP_DEBUG
+		if (analysisEntry.get("debug", false).asBool())
+			continue;
+#endif
 		_analysisEntries.push_back(new AnalysisEntry(analysisEntry, this));
+	}
 }
 
 RibbonEntry::~RibbonEntry()
@@ -52,13 +58,13 @@ AnalysisEntry* RibbonEntry::retrieveCorrespondingAnalysisEntry(const Json::Value
 	return analysisEntry(analysisTitle);
 }
 
-AnalysisEntry* RibbonEntry::analysisEntry(const std::string & analysisTitle) const
+AnalysisEntry* RibbonEntry::analysisEntry(const std::string & analysisName) const
 {
 	for(AnalysisEntry * entry : _analysisEntries)
-		if(entry->title() == analysisTitle || entry->function() == analysisTitle)
+		if(entry->title() == analysisName || entry->function() == analysisName)
 			return entry;
 
-	throw ModuleException(dynamicModule()->name(), "Couldn't find AnalysisEntry " + analysisTitle);
+	throw ModuleException(dynamicModule()->name(), "Couldn't find AnalysisEntry " + analysisName);
 }
 
 std::string RibbonEntry::icon() const

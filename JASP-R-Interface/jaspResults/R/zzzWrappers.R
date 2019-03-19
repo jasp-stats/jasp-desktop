@@ -16,6 +16,9 @@
 	
 }
 
+#For use inside jaspResults to store plots and states (as is obvious from the name)
+.plotStateStorage <- new.env()
+
 initJaspResults <- function() .onAttach()
 
 checkForJaspResultsInit <- function() {if (!exists("jaspResults", .GlobalEnv)) .onAttach()}

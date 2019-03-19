@@ -1949,6 +1949,7 @@ callback <- function(results=NULL, progress=NULL) {
 	stringr::str_trim(last)
 }
 
+#.clean is not necessary for analyses using jaspResults, jaspTable will take care of it for you.
 .clean <- function(value) {
     # Clean function value so it can be reported in json/html
 
@@ -2277,7 +2278,7 @@ as.list.footnotes <- function(footnotes) {
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
         .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
-      qgraph::plot.qgraph(plot)
+      qgraph:::plot.qgraph(plot)
     } else {
       plot(plot)
     }
@@ -2297,56 +2298,67 @@ as.list.footnotes <- function(footnotes) {
 # not .saveImage() because RInside (interface to CPP) cannot handle that
 saveImage <- function(plotName, format, height, width)
 {
-  state           <- .retrieveState()     # Retrieve plot object from state
-  plt             <- state[["figures"]][[plotName]]
-  location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
-  backgroundColor <- .fromRCPP(".imageBackground")
+  error <- try({
+    state           <- .retrieveState()     # Retrieve plot object from state
+    plt             <- state[["figures"]][[plotName]][["obj"]]
+    
+    location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
+    backgroundColor <- .fromRCPP(".imageBackground")
+    
+    # create file location string
+    location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+    relativePath <- paste0("temp.", format)
+    
+    # Get file size in inches by creating a mock file and closing it
+    pngMultip <- .fromRCPP(".ppi") / 96
+    png(filename="dpi.png", width=width * pngMultip,
+        height=height * pngMultip,res=72 * pngMultip)
+    insize <- dev.size("in")
+    dev.off()
+    
+    # Open correct graphics device
+    if (format == "eps") {
+      grDevices::cairo_ps(filename=relativePath, width=insize[1],
+                          height=insize[2], bg=backgroundColor)
+    } else if (format == "tiff") {
+      
+      hiResMultip <- 300/72
+      grDevices::tiff(filename    = relativePath,
+                      width       = width * hiResMultip,
+                      height      = height * hiResMultip,
+                      res         = 300,
+                      bg          = backgroundColor,
+                      compression = "lzw",
+                      type        = "cairo")
+      
+    }
+    else if (format == "pdf") {
+      grDevices::cairo_pdf(filename=relativePath, width=insize[1], height=insize[2], bg="transparent")
+    } else { # add optional other formats here in "else if"-statements
+      stop("Format incorrectly specified")
+    }
+    
+    # Plot and close graphics device
+    if (inherits(plt, "recordedplot")) {
+      .redrawPlot(plt) #(see below)
+    } else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+      gridExtra::grid.arrange(plt)
+    } else {
+      plot(plt) #ggplots
+    }
+    dev.off()
+  })
+  # Create output for interpretation by JASP front-end and return it
+  output <- list(
+    status = "imageSaved",
+    results = list(
+      name  = relativePath
+    )
+  )
+  if (isTryError(error))
+    output[["results"]][["error"]] <- .extractErrorMessage(error)
 
-	# create file location string
-	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
-  relativePath <- paste0("temp.", format)
-
-  # Get file size in inches by creating a mock file and closing it
-  pngMultip <- .fromRCPP(".ppi") / 96
-  png(filename="dpi.png", width=width * pngMultip,
-      height=height * pngMultip,res=72 * pngMultip)
-  insize <- dev.size("in")
-  dev.off()
-
-  # Open correct graphics device
-	if (format == "eps") {
-		grDevices::cairo_ps(filename=relativePath, width=insize[1],
-		                                        height=insize[2], bg=backgroundColor)
-	} else if (format == "tiff") {
-
-		hiResMultip <- 300/72
-    grDevices::tiff(filename    = relativePath,
-                    width       = width * hiResMultip,
-                    height      = height * hiResMultip,
-                    res         = 300,
-					bg          = backgroundColor,
-                    compression = "lzw",
-                    type        = "cairo")
-
-  }
-  else if (format == "pdf")
-    grDevices::cairo_pdf(filename=relativePath, width=insize[1], height=insize[2], bg="transparent")
-   else  # add optional other formats here in "else if"-statements
-		stop("Format incorrectly specified")
-
-
-	# Plot and close graphics device
-	if (inherits(plt, "recordedplot")) {
-		.redrawPlot(plt) #(see below)
-	} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-		gridExtra::grid.arrange(plt)
-	} else {
-		plot(plt) #ggplots
-	}
-	dev.off()
-
-  # Create JSON string for interpretation by JASP front-end and return it
-  return(paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"",	relativePath , "\" } }"))
+  return(toJSON(output))
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
@@ -2684,7 +2696,7 @@ editImage <- function(plotName, type, height, width) {
         editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
         plot <- editedPlot[["UpdatedPlots"]][[1]]
       }
-
+      
       # nothing was modified in ggedit, or editing was cancelled
       if (identical(plot, oldPlot) && !requireResize)
         return(oldPlot)
@@ -2716,9 +2728,10 @@ editImage <- function(plotName, type, height, width) {
   )
 
   # error checks
-  if (isTryError(results) || is.null(results))
+  if (isTryError(results) || is.null(results)) {
     response[["results"]][["error"]] <- TRUE
-  else {
+    response[["results"]][["errorMessage"]] <- .extractErrorMessage(results)
+  } else {
     # adjust the state of the analysis and save it
     state[["figures"]][[plotName]]  <- list(obj=results[["obj"]], width=results[["width"]], height=results[["height"]])
     key                             <- attr(x = state, which = "key")

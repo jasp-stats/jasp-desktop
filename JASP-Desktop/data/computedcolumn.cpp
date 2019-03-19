@@ -43,7 +43,7 @@ bool ComputedColumn::setError(std::string error)
 void ComputedColumn::setAnalysis(Analysis *analysis)
 {
 	_analysis	= analysis;
-	_analysisId = _analysis == NULL ? -1 : _analysis->id();
+	_analysisId = _analysis == nullptr ? -1 : _analysis->id();
 }
 
 std::vector<std::string> ComputedColumn::_allColumnNames;

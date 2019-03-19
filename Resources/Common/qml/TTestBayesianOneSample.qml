@@ -32,10 +32,11 @@ Form
 	VariablesForm
 	{
 		height: 200
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["scale"] }
 	}
 	
-	DoubleField { name: "testValue"; label: qsTr("Test value:"); defaultValue: 0; validation: false }
+	DoubleField { name: "testValue"; label: qsTr("Test value:"); defaultValue: 0; negativeValues: true }
 
 	Group
 	{
@@ -71,7 +72,7 @@ Form
 	RadioButtonGroup
 	{
 		name: "hypothesis"
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		RadioButton { value: "notEqualToTestValue";		label: qsTr("≠ Test value"); checked: true	}
 		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value");					}
 		RadioButton { value: "lessThanTestValue";		label: qsTr("< Test value");					}

@@ -31,11 +31,14 @@ Descriptives <- function(jaspResults, dataset, options)
     }
   }
 
-  # If user requests split, create a list of datasets, one for each level
   if (makeSplit)
   {
     splitFactor      <- dataset[[.v(splitName)]]
     splitLevels      <- levels(splitFactor)
+    # remove missing values from the grouping variable
+    dataset <- dataset[!is.na(splitFactor), ]
+    dataset.factors <- dataset.factors[!is.na(splitFactor), ]
+    # create a list of datasets, one for each level
     splitDat         <- split(dataset[.v(variables)],         splitFactor)
     splitDat.factors <- split(dataset.factors[.v(variables)], splitFactor)
   }

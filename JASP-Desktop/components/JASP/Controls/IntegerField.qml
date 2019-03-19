@@ -19,18 +19,20 @@
 import QtQuick 2.11
 import JASP.Controls 1.0
 import JASP.Theme 1.0
+import JASP 1.0
 
 TextField
 {
 					id:				textField
 	property int	defaultValue:	0
-	property bool	validation:		true
-	property int	min:			validation ? 0 : -Infinity
-	property int	max:			Infinity
+	property bool	negativeValues:	false
+	property int	min:			negativeValues ? -2147483647 : 0
+	property int	max:			2147483647
 	property alias	intValidator:	intValidator
     
 					inputType:		"integer"
-					validator:		IntValidator { id: intValidator; bottom: min; top: max }
+					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
 					value:			Number.parseInt(defaultValue);
 					cursorShape:	Qt.IBeamCursor
+					fieldWidth:		Theme.numericFieldWidth
 }

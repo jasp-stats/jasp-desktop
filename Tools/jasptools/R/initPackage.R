@@ -101,7 +101,7 @@ isJaspDesktopDir <- function(path) {
         }
 
         if (is.null(pathsToPackages)) {
-          pathsToPackages <- .findDirPackages(file.path(".."), c("build", "jasp"))
+          pathsToPackages <- .findDirPackages(file.path(".."), c("build"))
         }
       } else if (os == "linux") {
         message("Identified OS as Linux. Assuming R packages required for JASP were installed manually.")

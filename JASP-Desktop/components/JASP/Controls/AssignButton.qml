@@ -22,44 +22,75 @@ import JASP.Theme	1.0
 
 Button
 {
-	id:				button
-	hasTabFocus:	false
+	id:					button
+	activeFocusOnTab:	false
 
-				property var	leftSource;
-				property var	rightSource;
+				property var	leftSource
+				property var	rightSource
 				property bool	leftToRight:	true
 
-				property var	source:			leftToRight ? leftSource : rightSource;
-				property var	target:			leftToRight ? rightSource : leftSource;
+				property var	source:			leftToRight ? leftSource : rightSource
+				property var	target:			leftToRight ? rightSource : leftSource
+
+				property var	interactionControl
 
 	readonly	property string iconToLeft:		"qrc:/images/arrow-left.png"
 	readonly	property string iconToRight:	"qrc:/images/arrow-right.png"
+	
 	text:			""
-
+	enabled:		false
 	image.source:	leftToRight ? iconToRight : iconToLeft
     
 	control.width:	40 * preferencesModel.uiScale
 	control.height: 20 * preferencesModel.uiScale
 	width:			control.width
 	height:			control.height
+	implicitWidth:  width
+    implicitHeight:	height	
     
-	x:				(rightSource.x + leftSource.width - control.width) / 2
-	y:				rightSource.y + rightSource.rectangleY
-
 	onClicked:		source.moveSelectedItems(target)
 
 	function setIconToRight()	{ if (leftSource.activeFocus)	 leftToRight = true;	}
 	function setIconToLeft()	{ if (rightSource.activeFocus) leftToRight = false;		}
-	function setDisabledState() { state = source.hasSelectedItems ? "" : "disabled"		}
+	function setState()
+	{
+		var result = false;
+		if (source.selectedItems.length > 0)
+		{
+			if (target.allowedColumns.length > 0)
+			{
+				result = true;
+				for (var i = 0; i < source.selectedItems.length; i++)
+				{
+					var itemType = source.selectedItems[i].columnType;
+					if (itemType === "nominalText") itemType = "nominal";
+					if (!target.allowedColumns.includes(itemType))
+						result = false;
+				}
+			}
+			else
+				result = true;
+		}
 
-	onSourceChanged:	setDisabledState()
+		if (interactionControl)
+		{
+			if (target.addInteractionOptions)
+			{
+				var nb = source.selectedItems.length
+				interactionControl.enabled = result
+				var enabledOptions = [ true, nb > 1, nb > 2, nb > 3, nb > 4, true ]
+				interactionControl.enabledOptions = enabledOptions
+				if (!enabledOptions[interactionControl.currentIndex])
+					result = false;
+			}
+			else
+				interactionControl.enabled = false
+		}
+		
+		enabled = result
+		
+	}
 
-    Component.onCompleted: {
-        rightSource.activeFocusChanged.connect(setIconToLeft);
-        leftSource.activeFocusChanged.connect(setIconToRight);
-        rightSource.hasSelectedItemsChanged.connect(setDisabledState);
-        leftSource.hasSelectedItemsChanged.connect(setDisabledState);
-        state = "disabled";
-    }
+	onSourceChanged:	setState()
 
 }

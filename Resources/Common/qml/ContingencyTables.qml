@@ -25,13 +25,14 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "rows";		title: qsTr("Rows");	allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "columns";	title: qsTr("Columns");	allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");	allowedColumns: ["scale"]; singleVariable: true }
 		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	allowedColumns: ["ordinal", "nominal"]; listViewType: "Layers"; height: 120 }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -84,12 +85,12 @@ Form
 			CheckBox
 			{
 				name: "cochransAndMantel"; label: qsTr("Cochran's and Mantel-Haenszel statistics")
-				IntegerField { name: "testOddsRatioEquals"; label: qsTr("Test common odds ratio equals"); defaultValue: 1 }
+				DoubleField { name: "testOddsRatioEquals"; label: qsTr("Test common odds ratio equals"); defaultValue: 1 }
 			}
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Cells")
 		
@@ -133,7 +134,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		

@@ -27,6 +27,7 @@ Form
 	VariablesForm
 	{
 		height: 300
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "nominal"] }
 	}
 	
@@ -63,19 +64,19 @@ Form
 		CheckBox { name: "itemRestCor";						label: qsTr("Item-rest correlation")				}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Reverse-Scaled Items")
 		
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); source: "variables" }
+			AvailableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); source: "variables" }
 			AssignedVariablesList {  name: "reverseScaledItems"; title: qsTr("Reverse-Scaled Items") }
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Advanced Options")
 		
@@ -92,7 +93,7 @@ Form
 			enabled: chronbach.checked
 			CheckBox {
 				name: "confAlpha"; label: qsTr("Cronbach's α analytical")
-				PercentField { name: "confAlphaLevel"; label: qsTr("Confidence"); defaultValue: 95; with1Decimal: true }
+				PercentField { name: "confAlphaLevel"; label: qsTr("Confidence"); defaultValue: 95; decimals: 1 }
 			}
 		}
 	}

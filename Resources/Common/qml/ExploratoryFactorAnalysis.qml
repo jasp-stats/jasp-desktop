@@ -32,6 +32,7 @@ Form
 
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); allowedColumns: ["scale"] }
 	}
 
@@ -68,7 +69,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Output Options")
 
@@ -76,9 +77,6 @@ Form
 			name: "highlightText"
 			title: "Highlight"
 			value: 0.4
-			from: 0
-			to: 1
-			orientation: Qt.Vertical
 		}
 
 		Group

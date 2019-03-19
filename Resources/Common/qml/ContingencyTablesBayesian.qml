@@ -42,13 +42,14 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "rows";		title: qsTr("Rows");	allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "columns";	title: qsTr("Columns");	allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");	allowedColumns: ["scale"]; singleVariable: true }
 		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	allowedColumns: ["ordinal", "nominal"]; listViewType: "Layers"; height: 120 }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -80,7 +81,7 @@ Form
 
 		RadioButtonGroup
 		{
-			title: qsTr("Hypothesis")
+			title: qsTr("Alt. Hypothesis")
 			name: "hypothesis"
 			enabled: !hypergeometric.checked
 			RadioButton { value: "groupsNotEqual";	label: qsTr("Group one ≠ Group two"); checked: true	}
@@ -108,7 +109,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		

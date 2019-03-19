@@ -49,14 +49,14 @@ AnalysisForm
 		{
 			var child = item.children[i];
 			
-			if (child instanceof ExpanderButton)
+			if (child.objectName === "Section")
 			{
 				controls.push(child.button);
 				getJASPControls(controls, child.childControlsArea, deep);
 			}
 			else if (child instanceof JASPControl)
 			{
-				if (child.hasTabFocus)
+				if (child.activeFocusOnTab)
 				{
 					controls.push(child);
 					if (child.childControlsArea && deep)
@@ -69,6 +69,12 @@ AnalysisForm
 			else
 				getJASPControls(controls, child, deep);
 		}
+	}
+	
+	function addError(message)
+	{
+		errorMessagesText.text = message;
+		errorMessagesText.visible = true;
 	}
 	
 	IntegerField { visible: false; name: "plotWidth";  value: plotWidth }
@@ -85,9 +91,7 @@ AnalysisForm
 			top:		form.top
 			left:		form.left
 		}
-		
-		Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
-		
+				
 		Rectangle
 		{
 			property alias text:	errorMessagesText.text
@@ -104,6 +108,8 @@ AnalysisForm
 				id:					errorMessagesText
 				anchors.centerIn:	parent
 				padding:			5
+				wrapMode:			Text.Wrap
+				width:				parent.width - 10
 				verticalAlignment:	Text.AlignVCenter
 			}
 		}
@@ -141,7 +147,7 @@ AnalysisForm
 			if (previousExpander)
 				previousExpander.nextExpander = jaspControls[0];
 			
-			for (var i = 0; i < jaspControls.length; i++) {
+			for (i = 0; i < jaspControls.length; i++) {
 				if (jaspControls[i].indent)
 					jaspControls[i].L.Layout.leftMargin = Theme.indentationLength
 			}

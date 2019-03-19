@@ -391,6 +391,11 @@ std::string	DynamicModule::iconFilePath(const std::string & iconFileName)	const
 	return _moduleFolder.absolutePath().toStdString() + "/icons/" + iconFileName;
 }
 
+QString DynamicModule::helpFolderPath() const
+{
+	return _moduleFolder.absolutePath() + "/help/";
+}
+
 RibbonEntry* DynamicModule::ribbonEntry(const std::string & ribbonTitle) const
 {
 	for(RibbonEntry * entry : _ribbonEntries)
@@ -434,9 +439,9 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::stri
 	return retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
 }
 
-AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const
+AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName) const
 {
-	return ribbonEntry(ribbonTitle)->analysisEntry(analysisTitle);
+	return ribbonEntry(ribbonTitle)->analysisEntry(analysisName);
 }
 
 void DynamicModule::setInstallLog(QString installLog)

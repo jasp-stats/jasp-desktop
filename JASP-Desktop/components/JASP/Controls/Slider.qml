@@ -3,6 +3,7 @@ import QtQuick.Controls		2.4
 import JASP.Controls		1.0 as JC //He returns!
 import QtQuick.Layouts		1.3
 import JASP.Theme			1.0
+import JASP					1.0
 
 JASPControl
 {
@@ -19,10 +20,14 @@ JASPControl
 	property alias	title:			controlLabel.text
 	property alias	controlLabel:	controlLabel
 	property alias	value:			control.value
+	property bool	vertical:		true
+	property int	verticalInt:	vertical ? Qt.Vertical : Qt.Horizontal
 	property alias	orientation:	control.orientation
 	property alias	stepSize:		control.stepSize
 	property alias	from:			control.from
 	property alias	to:				control.to
+	property alias	min:			control.from
+	property alias	max:			control.to
 	property alias	textField:		textField
     
     signal moved();
@@ -49,6 +54,7 @@ JASPControl
 			Layout.leftMargin:	control.orientation === Qt.Vertical ? leftPadding + Theme.sliderWidth : 0
 			value:				0.5
 			stepSize:			1 / slider.power
+			orientation:		slider.verticalInt
         
 			background: Rectangle
 			{
@@ -105,7 +111,7 @@ JASPControl
 			value:				control.value
 			isBound:			false
 			Layout.alignment:	Qt.AlignCenter
-			validator:			DoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }
+			validator:			JASPDoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }
             
 			onEditingFinished:
 			{

@@ -22,7 +22,7 @@ import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 
 
-ExpanderButton
+Section
 {
     title: qsTr("Prior")
 
@@ -31,27 +31,33 @@ ExpanderButton
         name: "effectSize"
         RadioButton
 		{
-			label: qsTr("Standardized effect size"); name: "standardized"; checked: true; debug: true
-			indentChildren: DEBUG_MODE
-			RadioButtonGroup
+			label: qsTr("Standardized effect size")
+			name: "standardized"
+			debug: true
+			checked: true
+			id: standardized
+		}
+		
+		RadioButtonGroup
+		{
+			name: "effectSizeStandardized"
+			indent: DEBUG_MODE
+			enabled: standardized.checked
+			RadioButton
 			{
-				name: "effectSizeStandardized"
-				RadioButton
+				label: qsTr("Default"); name: "default"; checked: true
+				RadioButtonGroup
 				{
-					label: qsTr("Default"); name: "default"; checked: true
-					RadioButtonGroup
+					name: "defaultStandardizedEffectSize"
+					RadioButton
 					{
-						name: "defaultStandardizedEffectSize"
-						RadioButton
-						{
-							label: qsTr("Cauchy"); name: "cauchy"; checked: true; childrenOnSameRow: true
-							DoubleField { label: qsTr("scale"); name: "priorWidth"; defaultValue: 0.707; fieldWidth: 50; max: 2 }
-						}
+						label: qsTr("Cauchy"); name: "cauchy"; checked: true; childrenOnSameRow: true
+						DoubleField { label: qsTr("scale"); name: "priorWidth"; defaultValue: 0.707; fieldWidth: 50; max: 2 }
 					}
 				}
 			}
 
-            RadioButton
+			RadioButton
 			{
 				label: qsTr("Informed"); name: "informative"
 				RadioButtonGroup
@@ -78,7 +84,7 @@ ExpanderButton
 					}
 				}
 			}
-        }
+		}
 
         RadioButton
 		{
@@ -106,5 +112,6 @@ ExpanderButton
 				}
 			}
 		}
-    }
+    }	
+	
 }

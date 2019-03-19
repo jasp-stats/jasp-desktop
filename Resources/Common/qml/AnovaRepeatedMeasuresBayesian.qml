@@ -36,6 +36,7 @@ Form
 	VariablesForm
 	{
 		height: 520
+		AvailableVariablesList { name: "allVariablesList" }		
 		RepeatedMeasuresFactorsList
 		{
 			name: "repeatedMeasuresFactors"
@@ -92,16 +93,15 @@ Form
 		RadioButton { value: "bestModelTop";	label: qsTr("Compare to best model")					}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
 
-			availableVariablesList
+			AvailableVariablesList
 			{
 				name: "components"
 				title: qsTr("Components")
@@ -112,26 +112,28 @@ Form
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
+				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 
 				ExtraControlColumn {
 					type: "CheckBox"
 					name: "isNuisance"
 					title: "Add to null model"
+					purpose: "nuisance"					
 				}
 			}
 		}
 	}
 
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Post Hoc Tests")
 
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables"; width: parent.width / 4; listViewType: "Interaction" }
 		}
 
@@ -142,7 +144,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Descriptives Plots")
 		columns: 1
@@ -150,7 +152,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			AvailableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis");	singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleVariable: true }
@@ -165,7 +167,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Additional Options")
 

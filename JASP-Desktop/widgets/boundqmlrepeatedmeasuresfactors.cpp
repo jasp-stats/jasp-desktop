@@ -41,11 +41,6 @@ void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("levels", new OptionVariables());
-	_boundTo->setTemplate(templote);	
-	
 	vector<pair<string, vector<string> > > factors;
 	vector<Options*> allOptions = _boundTo->value();
 	
@@ -88,6 +83,31 @@ Option* BoundQMLRepeatedMeasuresFactors::createOption()
 bool BoundQMLRepeatedMeasuresFactors::isOptionValid(Option *option)
 {
 	return dynamic_cast<OptionsTable*>(option) != nullptr;
+}
+
+bool BoundQMLRepeatedMeasuresFactors::isJsonValid(const Json::Value &optionValue)
+{
+	bool valid = optionValue.type() == Json::arrayValue;
+
+	if (valid)
+	{
+		for (uint i = 0; i < optionValue.size(); i++)
+		{
+			const Json::Value& value = optionValue[i];
+			valid = value.type() == Json::objectValue;
+			if (valid)
+			{
+				const Json::Value& nameOption = value["name"];
+				const Json::Value& variablesOption = value["levels"];
+				valid = nameOption.type() == Json::stringValue && variablesOption.type() == Json::arrayValue;
+
+				if (!valid)
+					break;
+			}
+		}
+	}
+
+	return valid;
 }
 
 void BoundQMLRepeatedMeasuresFactors::modelChangedHandler()

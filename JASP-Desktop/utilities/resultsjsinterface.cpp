@@ -63,6 +63,8 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 	{
 		QString version = tq(AppInfo::version.asString());
 
+		version+="-Beta";
+
 #ifdef JASP_DEBUG
 		version+="-Debug";
 #endif
@@ -77,170 +79,10 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 	}
 }
 
-void ResultsJsInterface::showAnalysesMenu(QString options)
-{
-	std::cout << "showAnalysesMenu must be done in QML" << std::endl;
 
-	/*
-	Json::Value menuOptions;
-
-	Json::Reader parser;
-	parser.parse(fq(options), menuOptions);
-
-	QIcon _copyIcon = QIcon(":/icons/copy.png");
-	QIcon _citeIcon = QIcon(":/icons/cite.png");
-	QIcon _codeIcon = QIcon(":/icons/code-icon.png");
-	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
-	QIcon _expandIcon = QIcon(":/icons/expand.png");
-	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
-	QIcon _editImageIcon = QIcon(":/icons/editImage.png");
-
-	_analysisMenu->clear();
-
-	QString objName = tq(menuOptions["objectName"].asString());
-
-	if (menuOptions["hasCollapse"].asBool())
-	{
-		Json::Value collapseOptions = menuOptions["collapseOptions"];
-		QIcon icon = collapseOptions["collapsed"].asBool() ? _expandIcon : _collapseIcon;
-		_analysisMenu->addAction(icon, tq(collapseOptions["menuText"].asString()), this, SLOT(collapseSelected()));
-		_analysisMenu->addSeparator();
-	}
-
-	if (menuOptions["hasEditTitle"].asBool())
-	{
-		_analysisMenu->addAction("Edit Title", this, SLOT(editTitleSelected()));
-		_analysisMenu->addSeparator();
-	}
-
-	if (menuOptions["hasCopy"].asBool())
-		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
-
-	if (menuOptions["hasLaTeXCode"].asBool())  // TODO: || menuOptions["hasPlainText"].asBool())
-	{
-		_copySpecialMenu = _analysisMenu->addMenu(tr("&Copy special"));
-
-		_copySpecialMenu->addAction(_codeIcon, "LaTeX code", this, SLOT(latexCodeSelected()));
-
-		QAction *copyTextAction = new QAction("Copy text");
-		// connect(copyTextAction, SIGNAL(triggered), this, SLOT(copyTextSelected));
-		copyTextAction->setEnabled(false);
-		_copySpecialMenu->addAction(copyTextAction);
-	}
-
-	if (menuOptions["hasCite"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
-	}
-
-	if (menuOptions["hasSaveImg"].asBool())
-	{
-		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
-	}
-#ifdef JASP_DEBUG
-    if (menuOptions["hasEditImg"].asBool())
-    {
-        _analysisMenu->addAction(_editImageIcon, "Edit Image", this, SLOT(editImage()));
-    }
-#endif
-
-	if (menuOptions["hasNotes"].asBool())
-	{
-		_analysisMenu->addSeparator();
-
-		Json::Value noteOptions = menuOptions["noteOptions"];
-
-		for (Json::ValueIterator iter = noteOptions.begin(); iter != noteOptions.end(); iter++)
-		{
-			Json::Value noteOption = *iter;
-			QAction *a1 = _analysisMenu->addAction(tq(noteOption["menuText"].asString()), this, SLOT(noteSelected()));
-
-			a1->setDisabled(noteOption["visible"].asBool());
-
-
-			QString call = QString("window.notesMenuClicked('%1', %2);").arg(tq(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
-
-			a1->setData(call);
-		}
-	}
-
-
-	if (menuOptions["hasRemove"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
-	}
-
-	if (menuOptions["hasRemoveAllAnalyses"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction("Remove All ", _mainWindow, SLOT(removeAllAnalyses()));
-	}
-
-	if (menuOptions["hasRefreshAllAnalyses"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction("Refresh All ", _mainWindow, SLOT(refreshAllAnalyses()));
-	}
-
-	QPoint point = _webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
-
-	_analysisMenu->move(point);
-	_analysisMenu->show();*/
-}
-
-void ResultsJsInterface::collapseSelected()
-{
-	emit runJavaScript("window.collapseMenuClicked();");
-}
-
-void ResultsJsInterface::removeSelected()
-{
-	emit runJavaScript("window.removeMenuClicked();");
-}
-
-void ResultsJsInterface::editTitleSelected()
-{
-	emit runJavaScript("window.editTitleMenuClicked();");
-	emit packageModified();
-}
-
-void ResultsJsInterface::copySelected()
+void ResultsJsInterface::purgeClipboard()
 {
 	TempFiles::purgeClipboard();
-	emit runJavaScript("window.copyMenuClicked();");
-}
-
-void ResultsJsInterface::citeSelected()
-{
-	TempFiles::purgeClipboard();
-	emit runJavaScript("window.citeMenuClicked();");
-}
-
-void ResultsJsInterface::latexCodeSelected()
-{
-	TempFiles::purgeClipboard();
-	emit runJavaScript("window.latexCodeMenuClicked();");
-}
-
-void ResultsJsInterface::saveImage()
-{
-	emit runJavaScript("window.saveImageClicked();");
-}
-
-void ResultsJsInterface::editImage()
-{
-	emit runJavaScript("window.editImageClicked();");
-}
-
-void ResultsJsInterface::noteSelected()
-{
-	QAction *action = (QAction *)this->sender();
-	QString call = action->data().toString();
-
-	emit runJavaScript(call);
-	emit packageModified();
 }
 
 void ResultsJsInterface::simulatedMouseClick(int x, int y, int count)

@@ -29,13 +29,14 @@ Form {
 	VariablesForm
 	{
 		height: 200
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); allowedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	RadioButtonGroup
 	{
 		name: "hypothesis"
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		RadioButton { value: "groupsNotEqual";	label: qsTr("Measure 1 ≠ Measure 2"); checked: true	}
 		RadioButton { value: "groupOneGreater";	label: qsTr("Measure 1 > Measure 2");				}
 		RadioButton { value: "groupTwoGreater";	label: qsTr("Measure 1 < Measure 2");				}

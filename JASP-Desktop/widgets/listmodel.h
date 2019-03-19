@@ -42,10 +42,12 @@ public:
 
 	QMLListView* listView() const							{ return _listView; }
 	const QString& name() const								{ return _listView->name(); }
-	virtual const Terms& terms() const						{ return _terms; }
+	virtual const Terms& terms(const QString& what = QString()) const { return _terms; }
 	bool areTermsVariables() const							{ return _areTermsVariables; }
-	const QString& getItemType() const						{ return _itemType; }	
+	bool areTermsInteractions() const						{ return _areTermsInteractions; }
+	virtual QString getItemType(const Term& term) const		{ return _itemType; }	
 	void setTermsAreVariables(bool areVariables)			{ _areTermsVariables = areVariables; }
+	void setTermsAreInteractions(bool interactions)			{ _areTermsInteractions = interactions; }
 	void setItemType(QString type)							{ _itemType = type; }
 
 	void addError(const QString& error) const;
@@ -59,7 +61,7 @@ public:
 	virtual Terms getSourceTerms();
 
 signals:
-	void modelChanged(Terms* added = NULL, Terms* removed = NULL);
+	void modelChanged(Terms* added = nullptr, Terms* removed = nullptr);
 
 public slots:	
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
@@ -68,7 +70,8 @@ protected:
 	QMLListView* _listView;
 	QString _itemType;
 	Terms _terms;
-	bool _areTermsVariables;	
+	bool _areTermsVariables;
+	bool _areTermsInteractions = false;
 };
 
 #endif // LISTMODEL_H

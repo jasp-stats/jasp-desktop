@@ -34,7 +34,10 @@ public:
 	virtual Option* createOption() OVERRIDE;
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }
 	virtual bool isOptionValid(Option* option) OVERRIDE;
+	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
+	
+	void setQMLItemChecked(bool checked);
 
 signals:
 	

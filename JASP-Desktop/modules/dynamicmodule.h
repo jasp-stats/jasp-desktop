@@ -87,6 +87,7 @@ public:
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
 	std::string			iconFilePath(	const std::string & iconFileName)	const;
 	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
+	QString				helpFolderPath()									const;
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
 	std::string			generateModuleUnloadingR();
@@ -113,7 +114,7 @@ public:
 
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle)	const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName)	const;
 
 	static std::string	moduleNameFromFolder(std::string folderName);
 

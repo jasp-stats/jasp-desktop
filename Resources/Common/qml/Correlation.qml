@@ -26,6 +26,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
 	}
 	
@@ -52,7 +53,7 @@ Form
 	
 	RadioButtonGroup
 	{
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		name: "hypothesis"
 		RadioButton { value: "correlated";				label: qsTr("Correlated"); checked: true	}
 		RadioButton { value: "correlatedPositively";	label: qsTr("Correlated positively")		}
@@ -71,7 +72,7 @@ Form
 
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		debug: true

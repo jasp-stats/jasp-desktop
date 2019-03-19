@@ -141,11 +141,6 @@ const Terms &ListModelRepeatedMeasuresFactors::getLevels() const
 	return _allLevelsCombinations;
 }
 
-const Terms& ListModelRepeatedMeasuresFactors::terms() const
-{
-	return _terms;
-}
-
 void ListModelRepeatedMeasuresFactors::_setAllLevelsCombinations()
 {
 	vector<vector<string> > allLevelsCombinations;

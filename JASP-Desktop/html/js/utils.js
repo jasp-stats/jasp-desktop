@@ -500,7 +500,8 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
     let columnCount = columnDefs.length;
     let columns = Array(columnCount);
     let columnHeaders = Array(columnCount);
-    let rowCount = rowData ? rowData.length : 0;
+    let tableDataExists = rowData.length > 0;
+    let rowCount = tableDataExists ? rowData.length : 1;
 
     for (let colNo = 0; colNo < columnCount; colNo++) {
 
@@ -538,8 +539,14 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
 
         for (let rowNo = 0; rowNo < rowCount; rowNo++) {
 
-            let row = rowData[rowNo];
-			let content = row[columnName] === null ? '' : row[columnName];
+            let row = [];
+            let content = '.';
+
+            if (tableDataExists) {
+                row = rowData[rowNo];
+                content = row[columnName] === null ? '' : row[columnName];
+            }          
+
             let cell = { content: content };
 
             if (row['.footnotes'] && row['.footnotes'][columnName])

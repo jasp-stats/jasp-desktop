@@ -8,10 +8,10 @@ import JASP 1.0
 
 JASPControl
 {
-	id:				tableView
+	id:					tableView
     
-	controlType:	"TableView"
-	hasTabFocus:	false
+	controlType:		"TableView"
+	activeFocusOnTab:	false
     
 	property var	source
 	property alias	syncModels:	tableView.source
@@ -112,8 +112,8 @@ JASPControl
                 }
             }
             
-			IntValidator	{ id: intValidator; bottom: 0 }
-            DoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
+			JASPDoubleValidator	{ id: intValidator; bottom: 0; decimals: 0 }
+            JASPDoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
             RegExpValidator { id: stringValidator }
 
             itemDelegate: Rectangle 

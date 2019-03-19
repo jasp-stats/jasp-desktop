@@ -58,6 +58,8 @@ public:
 				void			illegalValueHandler(Bound *source);
 
 				void			runRScript(QString script, QString controlName);
+				
+	virtual		void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) OVERRIDE;
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
@@ -80,13 +82,18 @@ public:
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
+	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
+	void		clearErrors()							{ _errorMessages.clear(); _setErrorMessages(); }
+
+	Options*	options() { return _options; }
 
 protected:
-	void		_setAllAvailableVariablesModel();
+	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
 
 private:
 	void		_parseQML();
+	void		_setUpRelatedModels(const std::map<QString, QString>& relationMap);
 	void		_setUpItems();
 	void		_setErrorMessages();
 
@@ -100,20 +107,17 @@ protected:
 	QVector<QMLItem*>						_orderedControls;	
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::map<QString, ListModel* >			_modelMap;
+	DataSet									*_dataSet;
+	Options									*_options;
 
+	OptionVariables							*_mainVariables;
 
+	void									updateIllegalStatus();
 
-protected:
-	DataSet							*_dataSet;
-	Options							*_options;
-
-	OptionVariables					*_mainVariables;
-
-	void							updateIllegalStatus();
-
-	std::list<Bound *>				_bounds;
-	bool							_hasIllegalValue;
-	QString							_illegalMessage;
+	std::list<Bound *>						_bounds;
+	bool									_hasIllegalValue;
+	QString									_illegalMessage;
+	bool									_removed = false;
 	
 private:
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;

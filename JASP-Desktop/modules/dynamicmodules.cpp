@@ -506,7 +506,7 @@ void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & wat
 	for(QFileInfo entry : src.entryInfoList(extensionFilter, QDir::Filter::Files))
 	{
 		QFile	srcFile(entry.absoluteFilePath()),
-				dstFile(dst.filePath(entry.fileName()));
+				dstFile(dst.filePath(folder != "help" ? entry.fileName() : entry.fileName().toLower()));
 
 		srcFile.open(QIODevice::ReadOnly);
 		dstFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
@@ -530,7 +530,7 @@ void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & wat
 		QFileInfo srcFileChanged(path);
 
 		QFile	srcFile(path),
-				dstFile(dst.filePath(srcFileChanged.fileName()));
+				dstFile(dst.filePath(folder != "help" ? srcFileChanged.fileName() : srcFileChanged.fileName().toLower()));
 
 		if(srcFileChanged.exists())
 		{
@@ -552,8 +552,8 @@ void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & wat
 			dstFile.remove();
 		}
 
-		if(folder.toUpper() == "R")
-			this->regenerateDeveloperModuleRPackage();
+		if(folder.toUpper() == "R")				this->regenerateDeveloperModuleRPackage();
+		else if(folder == "help")		emit	this->reloadHelpPage();
 	});
 
 	connect(watcher, &QFileSystemWatcher::directoryChanged, [=, &watcher](QString path)
@@ -563,8 +563,8 @@ void DynamicModules::devModCopyFolder(QString folder, QFileSystemWatcher * & wat
 #endif
 		this->devModCopyFolder(folder, watcher);
 
-		if(folder.toUpper() == "R")
-			this->regenerateDeveloperModuleRPackage();
+		if(folder.toUpper() == "R")				this->regenerateDeveloperModuleRPackage();
+		else if(folder == "help")		emit	this->reloadHelpPage();
 	});
 }
 

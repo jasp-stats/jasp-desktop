@@ -56,7 +56,7 @@ Form
 		}
 	}
 
-    ExpanderButton 
+    Section 
 	{
         title: qsTr("Advanced Options")
 

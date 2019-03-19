@@ -516,6 +516,40 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	menuName: "Analysis",
 
+	createResultsViewFromMeta: function (results, resultsMeta, $result) {
+		for (let i = 0; i < resultsMeta.length; i++) {
+
+			let meta = resultsMeta[i];
+			let name = meta.name;
+
+			if (!_.has(results, name))
+				continue
+			let data = results[name];
+			
+			if (meta.type == 'collection' && data.title == "") {  // remove collections without a title from view
+				let collectionMeta = meta.meta;
+				if (Array.isArray(collectionMeta)) { // the meta comes from a jaspResult analysis
+					$result = this.createResultsViewFromMeta(data["collection"], collectionMeta, $result);
+					continue;
+				}
+			}
+
+			let itemView = this.createChild(data, this.model.get("status"), meta);
+			if (itemView === null)
+				continue;
+
+			this.passUserDataToView([name], itemView);
+
+			this.views.push(itemView);
+			this.volatileViews.push(itemView);
+
+			itemView.render();
+			$result.append(itemView.$el);
+
+		}
+		return($result);
+	},
+
 	createChild: function (result, status, metaEntry) {
 
 		var itemView = null;
@@ -589,8 +623,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$innerElement.empty();
 
-		if (results.error) {
-
+		if (!results.error) {
+			$innerElement.removeClass("error-state");
+			meta = results[".meta"]
+			if (meta)
+				$innerElement = this.createResultsViewFromMeta(results, meta, $innerElement);
+		} else {
 			var status = this.model.get("status");
 			var error = results.errorMessage
 			if (error == null) // parser.parse() in the engine was unable to parse the R error message
@@ -608,36 +646,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			$innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
 			if ($innerElement.find('.jasp-display-item').length > 3) {
 				$innerElement.find('.analysis-error').addClass('analysis-error-top-max');
-			}
-
-		}
-		else
-		{
-			$innerElement.removeClass("error-state");
-			if (results[".meta"]) {
-
-				var meta = results[".meta"]
-
-				for (var i = 0; i < meta.length; i++)
-				{
-					var name = meta[i].name;
-
-					if (_.has(results, name))
-					{
-						var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
-
-						if (itemView !== null)
-						{
-							this.passUserDataToView([name], itemView);
-
-							this.views.push(itemView);
-							this.volatileViews.push(itemView);
-
-							itemView.render();
-							$innerElement.append(itemView.$el);
-						}
-					}
-				}
 			}
 
 		}

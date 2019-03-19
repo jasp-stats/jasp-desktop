@@ -49,3 +49,14 @@ bool QMLItem::addDependency(QMLItem *item)
 	_depends.push_back(item);
 	return true;
 }
+
+void QMLItem::setProperty(const QString& name, const QVariant& value)
+{
+	_item->setProperty(name.toStdString().c_str(), value);
+}
+
+QVariant QMLItem::getProperty(const QString &name)
+{
+	return _item->property(name.toStdString().c_str());
+}
+

@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QMutex>
 
 #include "analysis/analyses.h"
 #include "analysis/analysisform.h"
@@ -43,6 +44,7 @@
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonentry.h"
 #include "gui/preferencesmodel.h"
+#include "results/resultmenumodel.h"
 #include "utilities/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
@@ -81,7 +83,7 @@ public:
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
-	
+
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
 
@@ -167,10 +169,9 @@ signals:
 
 	//void showWarning(QString title, QString message);
 	void datasetLoadedChanged(bool datasetLoaded);
-
 	void dataAvailableChanged(bool dataAvailable);
-
 	void analysesAvailableChanged(bool analysesAvailable);
+
 
 private slots:
 	void analysisResultsChangedHandler(Analysis* analysis);
@@ -181,7 +182,7 @@ private slots:
 
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
-	void populateUIfromDataSet();
+	void populateUIfromDataSet(bool showData);
 
 	void startDataEditorEventCompleted(FileEvent *event);
 
@@ -191,7 +192,7 @@ private slots:
 
 	void closeVariablesPage();
 
-	void showProgress();
+	void showProgress(bool showData = true);
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
@@ -201,6 +202,8 @@ private slots:
 	void saveJaspFileHandler();
 	void resultsPageLoaded();
 	void resetQmlCache();
+
+	void showResultsPanel() { setDataPanelVisible(false); }
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
@@ -227,6 +230,7 @@ private:
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
+	ResultMenuModel				*	_resultMenuModel		= nullptr;
 
 	QSettings						_settings;
 
@@ -241,6 +245,7 @@ private:
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
+	QMutex							_IORequestMutex;
 
 	bool							_applicationExiting		= false,
 									_resultsViewLoaded		= false,

@@ -187,6 +187,7 @@
 		},
 		{
 			"title":	"Mixed Models",
+			"debug":	true,
 			"icon":		"analysis-classical-sem.svg",
 			"analyses":
 			[

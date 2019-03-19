@@ -28,14 +28,14 @@ Form
 
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariables" }
 		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
 		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
-		AssignedVariablesList { name: "test";		title: qsTr("Test"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	}
 
 	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 
@@ -65,7 +65,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		alignChildrenTopLeft: true
@@ -82,7 +82,7 @@ Form
 				IntegerField
 				{
 					name: "percentileValuesEqualGroupsNo"
-					intValidator { bottom: 1; top: 1000 }
+					min: 1; max: 1000
 					defaultValue: 4
 					afterLabel: qsTr(" equal groups")
 				}
@@ -131,7 +131,7 @@ Form
 		CheckBox { name: "statisticsValuesAreGroupMidpoints"; label: qsTr("Values are group midpoints"); debug: true }
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Charts")
 		debug: true

@@ -27,6 +27,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["nominal", "ordinal"]; singleVariable: true	}
 		DropDown
 		{
@@ -44,7 +45,7 @@ Form
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true; debug: true	}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -53,9 +54,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
 			
-			availableVariablesList
+			AvailableVariablesList
 			{
 				name: "availableTerms"
 				title: qsTr("Components")
@@ -66,6 +66,7 @@ Form
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
+				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				
 				ExtraControlColumn
@@ -73,13 +74,14 @@ Form
 					type: "CheckBox"
 					name: "isNuisance"
 					title: qsTr("Add to null model")
+					purpose: "nuisance"					
 				}
 			}
 		}
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -128,7 +130,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 		

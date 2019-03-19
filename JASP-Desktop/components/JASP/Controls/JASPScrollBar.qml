@@ -24,7 +24,7 @@ import JASP.Theme 1.0
 Item {
 	id: scrollbar;
 
-	readonly property real visibleBreadth:	(handleSize + 2 * (backScrollbar.border.width +1))
+	readonly property real visibleBreadth:	Theme.scrollbarBoxWidth
 	property real breadth: visible ? visibleBreadth : 0
 	width:  vertical ? breadth   : undefined;
 	height: vertical ? undefined : breadth;
@@ -32,7 +32,7 @@ Item {
 	property real extraMarginRightOrBottom	: 0
 	property real extraMarginLeftOrTop		: 0
 	property Flickable flickable			: null;
-	property int handleSize					: 7  * preferencesModel.uiScale
+	property int handleSize					: Theme.scrollbarWidth
 	property int minimumLength				: 16 * preferencesModel.uiScale
 	property string bkColor					: Theme.white; //Use JASPTheme when available!
 	property string fgColor					: Theme.black;

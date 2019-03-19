@@ -18,243 +18,124 @@
 
 #include "listmodelinteractionassigned.h"
 #include "utilities/qutils.h"
-#include "analysis/options/optionterm.h"
-#include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
+#include "analysis/boundqmlitem.h"
+#include "analysis/options/optionboolean.h"
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView)
-	: ListModelAssignedInterface(listView)
+ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned)
+	: ListModelAssignedInterface(listView), InteractionModel ()
 {
+	_areTermsInteractions = true;
 	_copyTermsWhenDropped = true;
+	_addNewAvailableTermsToAssignedModel = addAvailableTermsToAssigned;
 }
 
-void ListModelInteractionAssigned::initTermsWithTemplate(const std::vector<Options *> &terms, Options* rowTemplate)
+void ListModelInteractionAssigned::initTerms(const Terms &terms)
 {
+	_addTerms(terms, false);
+	
 	beginResetModel();
-	
-	_rows = terms;
-	_rowTemplate = rowTemplate;
-
-	_covariates.clear();
-	_fixedFactors.clear();
-	_randomFactors.clear();
-	_interactionTerms.clear();
-	_interactionTerms.removeParent();
-
-	for (Options *row : _rows)
-	{
-		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
-		vector<string> term = nameOption->term();
-
-		_interactionTerms.add(Term(term));
-	}
-	
-	endResetModel();
+	_terms.set(interactionTerms());
+	endResetModel();	
 }
-
-
-
-QVariant ListModelInteractionAssigned::data(const QModelIndex &index, int role) const
-{
-	if (index.isValid() == false)
-		return QVariant();
-
-	if (role == Qt::DisplayRole || role == ListModel::NameRole)
-	{
-		int colNo = index.column();
-		int rowNo = index.row();
-		Options *row = _rows.at(rowNo);
-
-		if (colNo == 0) {
-
-			OptionTerms *termOption = static_cast<OptionTerms *>(row->get(0));
-			Term t(termOption->value().front());
-			return t.asQString();
-		}
-	}
-
-	return ListModelAssignedInterface::data(index, role);
-}
-
-int ListModelInteractionAssigned::rowCount(const QModelIndex &) const
-{
-	return _rows.size();
-}
-
 
 void ListModelInteractionAssigned::setAvailableModel(ListModelAvailableInterface *source)
 {
 	ListModelAssignedInterface::setAvailableModel(source);
-	_interactionTerms.setSortParent(source->allTerms());
+	_terms.setSortParent(source->allTerms());
 }
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 {
-	// sort indices, and delete from end to beginning
-
-	QList<int> sorted = indices;
-	std::sort(sorted.begin(), sorted.end(), qGreater<int>());
-
-	int lastRowDeleted = -1;
-
-	Terms terms = _interactionTerms;
 	Terms toRemove;
 
-	for (const int &index : sorted)
+	for (size_t index : indices)
 	{
-		if (index != lastRowDeleted)
-		{
-			toRemove.add(terms.at(index));
-			terms.remove(index);
-		}
-
-		lastRowDeleted = index;
+		if (index < _terms.size())
+			toRemove.add(_terms.at(index));
 	}
 
-	for (const Term &rem : toRemove)
-	{
-		size_t i = 0;
-
-		while (i < terms.size())
-		{
-			const Term &term = terms.at(i);
-
-			if (term.containsAll(rem))
-				terms.remove(i);
-			else
-				i++;
-		}
-	}
-
-	setTerms(terms);
+	removeInteractionTerms(toRemove);
+	
+	setTerms();
 }
 
 Terms *ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms* terms = new Terms;
-	for (const int &index : indexes)
+	for (size_t index : indexes)
 	{
-		Options *row = _rows.at(index);
-		if (row->size() == 1)
-		{
-			OptionTerms *termOption = static_cast<OptionTerms *>(row->get(0));
-			const vector<string>& val =  termOption->value().front();
-			if (val.size() == 1)
-			{
-				Term term(val);		
-				terms->add(term);
-			}
-		}
+		if (index < _terms.size())
+			terms->add(_terms.at(index));
 	}
 	
 	return terms;
 }
 
-const Terms &ListModelInteractionAssigned::terms() const
+void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWithExistingTerms)
 {
-	return _interactionTerms;
-}
-
-const vector<Options *>& ListModelInteractionAssigned::rows() const
-{
-	return _rows;
+	Terms fixedFactors;
+	Terms randomFactors;
+	Terms covariates;
+	Terms others;
+	for (const Term& term : terms)
+	{
+		QString itemType = getItemType(term);
+		if (itemType == "fixedFactors")
+			fixedFactors.add(term);
+		else if (itemType == "randomFactors")
+			randomFactors.add(term);
+		else if (itemType == "covariates")
+			covariates.add(term);
+		else
+			others.add(term);
+	}
+			
+	if (fixedFactors.size() > 0)
+		addFixedFactors(fixedFactors, combineWithExistingTerms);
+	
+	if (randomFactors.size() > 0)
+		addRandomFactors(randomFactors);
+	
+	if (covariates.size() > 0)
+		addCovariates(covariates);
+	
+	if (others.size() > 0)
+		addInteractionTerms(others);
+	
 }
 
 void ListModelInteractionAssigned::availableTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
-	if (termsAdded && termsAdded->size() > 0)
+	if (termsAdded && termsAdded->size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
-		Terms fixedFactors;
-		Terms randomFactors;
-		Terms covariates;
-		for (const Term& term : *termsAdded)
-		{
-			QString itemType = getItemType(term);
-			if (itemType == "fixedFactors")
-				fixedFactors.add(term);
-			else if (itemType == "randomFactors")
-				randomFactors.add(term);
-			else if (itemType == "covariates")
-				covariates.add(term);
-		}
-		
-		if (fixedFactors.size() > 0)
-			addFixedFactors(fixedFactors);
-		
-		if (randomFactors.size() > 0)
-			addRandomFactors(randomFactors);
-		
-		if (covariates.size() > 0)
-			addCovariates(covariates);
+		_addTerms(*termsAdded, true);
+		setTerms();
 	}
 	
 	if (termsRemoved && termsRemoved->size() > 0)
-		removeVariables(*termsRemoved);
+	{
+		removeFactors(*termsRemoved);
+		setTerms();
+	}
 }
 
-void ListModelInteractionAssigned::addFixedFactors(const Terms &terms)
-{
-	_fixedFactors.add(terms);
-
-	Terms existingTerms = _interactionTerms;
-
-	Terms newTerms = _interactionTerms;
-	newTerms.discardWhatDoesContainTheseComponents(_randomFactors);
-	newTerms.discardWhatDoesContainTheseComponents(_covariates);
-	existingTerms.add(newTerms.ffCombinations(terms));
-
-	setTerms(existingTerms);
-
-}
-
-void ListModelInteractionAssigned::addRandomFactors(const Terms &terms)
-{
-	_randomFactors.add(terms);
-
-	Terms newTerms = _interactionTerms;
-	newTerms.add(terms);
-
-	setTerms(newTerms, true);
-
-}
-
-void ListModelInteractionAssigned::addCovariates(const Terms &terms)
-{
-	_covariates.add(terms);
-
-	Terms newTerms = _interactionTerms;
-	newTerms.add(terms);
-
-	setTerms(newTerms);
-
-}
-
-void ListModelInteractionAssigned::removeVariables(const Terms &terms)
-{
-	_fixedFactors.remove(terms);
-	_randomFactors.remove(terms);
-	_covariates.remove(terms);
-
-	Terms newTerms = _interactionTerms;
-	newTerms.discardWhatDoesContainTheseComponents(terms);
-
-	setTerms(newTerms);
-	
-}
-
-QString ListModelInteractionAssigned::getItemType(const Term &term)
+QString ListModelInteractionAssigned::getItemType(const Term &term) const
 {
 	QString type;
 	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(source());	
-	ListModel* model = _source->getSourceModelOfTerm(term);
-	if (model)
+	if (_source)
 	{
-		type = model->getItemType();
-		if (type.isEmpty() || type == "variables")
-			type = model->name();
+		ListModel* model = _source->getSourceModelOfTerm(term);
+		if (model)
+		{
+			type = model->getItemType(term);
+			if (type.isEmpty() || type == "variables")
+				type = model->name();
+		}
 	}
 	
 	return type;
@@ -267,192 +148,74 @@ bool ListModelInteractionAssigned::canAddTerms(Terms *terms) const
 	return true;
 }
 
-Terms* ListModelInteractionAssigned::_addTerms(Terms *terms, int assignType)
+void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssignType assignType)
 {
 	Terms dropped;
 	dropped.setSortParent(source()->allTerms());
-	dropped.set(*terms);
+	dropped.set(terms);
 
+	int nbTerms = int(dropped.size());
+	
 	Terms newTerms;
 
 	switch (assignType)
 	{
-	case Cross:
+	case qmlAssignType::Cross:
 		newTerms = dropped.crossCombinations();
 		break;
-	case Interaction:
-		newTerms = dropped.wayCombinations(dropped.size());
+	case qmlAssignType::Interaction:
+		newTerms = dropped.wayCombinations(nbTerms);
 		break;
-	case MainEffects:
+	case qmlAssignType::MainEffects:
 		newTerms = dropped.wayCombinations(1);
 		break;
-	case All2Way:
-		newTerms = dropped.wayCombinations(2);
+	case qmlAssignType::All2Way:
+		newTerms = dropped.wayCombinations(nbTerms < 2 ? nbTerms : 2);
 		break;
-	case All3Way:
-		newTerms = dropped.wayCombinations(3);
+	case qmlAssignType::All3Way:
+		newTerms = dropped.wayCombinations(nbTerms < 3 ? nbTerms : 3);
 		break;
-	case All4Way:
-		newTerms = dropped.wayCombinations(4);
+	case qmlAssignType::All4Way:
+		newTerms = dropped.wayCombinations(nbTerms < 4 ? nbTerms : 4);
 		break;
-	case All5Way:
-		newTerms = dropped.wayCombinations(5);
+	case qmlAssignType::All5Way:
+		newTerms = dropped.wayCombinations(nbTerms < 5 ? nbTerms : 5);
 		break;
 	default:
 		(void)newTerms;
 	}
 
-	Terms allTerms = _interactionTerms;
-	allTerms.add(newTerms);
-	setTerms(allTerms);
+	_addTerms(newTerms, false);	
+	setTerms();
+}
+
+Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOptionStr)
+{
+	Q_UNUSED(dropItemIndex);
+	
+	if (!terms || terms->size() == 0)
+		return nullptr;
+	
+	qmlAssignType assignType = qmlAssignType::Cross;
+	
+	if (!assignOptionStr.isEmpty())
+	{
+		try						{ assignType	= qmlAssignTypeFromQString(assignOptionStr);	}
+		catch(std::exception)	{ addError(QString::fromStdString("Unknown Assign type: ") + assignOptionStr); }
+	}
+	
+	addCombinedTerms(*terms, assignType);
 	
 	return nullptr;
 }
 
-Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex)
-{
-	Q_UNUSED(dropItemIndex);
-	return _addTerms(terms, Cross);
-}
-
-OptionTerm *ListModelInteractionAssigned::termOptionFromRow(Options *row)
-{
-	return static_cast<OptionTerm *>(row->get(0));
-}
-
-void ListModelInteractionAssigned::setTerms(const Terms &terms, bool newTermsAreNuisance)
+void ListModelInteractionAssigned::setTerms()
 {	
 	beginResetModel();
-	_interactionTerms.set(terms);
-
-	_rows.erase(
-		std::remove_if(
-			_rows.begin(),
-			_rows.end(),
-			[&](Options *row)
-			{
-				OptionTerm *termCell = termOptionFromRow(row);
-				Term existingTerm = Term(termCell->term());
-		
-				bool shouldRemove = true;
-		
-				for (const Term &term : terms)
-				{
-					if (term == existingTerm)
-					{
-						shouldRemove = false;
-						break;
-					}		
-				}
-		
-				if (shouldRemove)
-					delete row;
-					
-				return shouldRemove;
-			}
-		),
-		_rows.end()
-	);
-
-	Terms::const_iterator itr = terms.begin();
-
-	for (size_t i = 0; i < terms.size(); i++)
-	{
-		const Term &term = *itr;
-
-		if (i < _rows.size())
-		{
-			vector<Options *>::iterator otr = _rows.begin();
-			otr += i;
-			Options *row = *otr;
-			OptionTerm *termCell = termOptionFromRow(row);
-			Term existingTerm = Term(termCell->term());
-
-			if (existingTerm != term)
-			{
-				Options *row = static_cast<Options *>(_rowTemplate->clone());
-				OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
-				termCell->setValue(term.scomponents());
-
-				if (row->size() > 1 && newTermsAreNuisance)
-				{
-					OptionBoolean *nuisance = static_cast<OptionBoolean *>(row->get(1));
-					nuisance->setValue(true);
-				}
-
-				_rows.insert(otr, row);
-			}
-		}
-		else
-		{
-			Options *row = static_cast<Options *>(_rowTemplate->clone());
-			OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
-			termCell->setValue(term.scomponents());
-
-			if (row->size() > 1 && newTermsAreNuisance)
-			{
-				OptionBoolean *nuisance = static_cast<OptionBoolean *>(row->get(1));
-				nuisance->setValue(true);
-			}
-
-			_rows.push_back(row);
-		}
-
-		itr++;
-	}
-
-	updateNuisances();
-
+	
+	_terms.set(interactionTerms());
+	
 	endResetModel();
 	
 	emit modelChanged();
 }
-
-void ListModelInteractionAssigned::updateNuisances(bool checked)
-{
-	if (_rows.size() > 0)
-	{
-		Options *row = _rows.front();
-		if (row->size() < 2)
-			return; // no nuisance terms
-	}
-
-	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
-
-	for (size_t i = 0; i < _rows.size(); i++)
-	{
-		Options *row = _rows.at(i);
-		OptionTerm *termOption = static_cast<OptionTerm*>(row->get(0));
-		OptionBoolean *nuisanceOption = static_cast<OptionBoolean*>(row->get(1));
-		Term term = Term(termOption->term());
-
-		if (nuisanceOption->value() == checked)
-		{
-			for (size_t j = 0; j < _rows.size(); j++)
-			{
-				if (i == j)
-					continue;
-
-				Options *r = _rows.at(j);
-
-				OptionTerm *tOption = static_cast<OptionTerm*>(r->get(0));
-				OptionBoolean *nOption = static_cast<OptionBoolean*>(r->get(1));
-				Term t = Term(tOption->term());
-
-				if (checked)
-				{
-					if (term.containsAll(t))
-						nOption->setValue(true);
-				}
-				else
-				{
-					if (t.containsAll(term))
-						nOption->setValue(false);
-				}
-			}
-		}
-	}
-
-//	emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
-}
-

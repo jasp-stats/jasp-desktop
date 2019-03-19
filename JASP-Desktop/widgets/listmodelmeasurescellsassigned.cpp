@@ -79,7 +79,7 @@ Terms *ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexe
 	return terms;
 }
 
-Terms *ListModelMeasuresCellsAssigned::addTerms(Terms *terms, int dropItemIndex)
+Terms *ListModelMeasuresCellsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
 {
 	beginResetModel();
 	if (dropItemIndex >= 0)

@@ -105,6 +105,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
 	jaspResults::setBaseCitation(baseCitation);
+	jaspResults::setInsideJASP();
 
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
 

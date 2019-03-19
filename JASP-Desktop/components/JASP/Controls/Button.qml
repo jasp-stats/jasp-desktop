@@ -27,9 +27,11 @@ JASPControl
 	implicitHeight:		control.implicitHeight
 	implicitWidth:		control.implicitWidth
 	isBound:			false
+	opacity:			enabled ? 1 : .7
 	
 	property alias control: control
     property alias text:	control.text
+	property alias label:	control.text
     property alias image:	image
     
     signal clicked()
@@ -56,16 +58,10 @@ JASPControl
 			border.width:	1
 			border.color:	Theme.borderColor
 			radius:			Theme.borderRadius
-			color:			control.down ? Theme.gray : Theme.controlBackgroundColor
+			color:			enabled ? (control.down ? Theme.gray : Theme.controlBackgroundColor) : Theme.disableControlBackgroundColor
             
 			Behavior on color { ColorAnimation { duration: 100 } }
         }
         
-        states: [
-            State {
-                name: "disabled"
-                PropertyChanges { target: rectangle; color: Theme.disableControlBackgroundColor }
-            }
-        ]
     }
 }

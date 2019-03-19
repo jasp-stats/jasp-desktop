@@ -32,7 +32,7 @@ public:
 	virtual void initTerms(const Terms& terms) OVERRIDE;
 	
 	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
-	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
+	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") OVERRIDE;
 	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
 
 public slots:

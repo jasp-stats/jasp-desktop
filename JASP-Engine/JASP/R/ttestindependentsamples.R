@@ -337,26 +337,32 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							sed <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
 							confIntEffSize <- c(0,0)
 							if (wantsConfidenceEffSize){
+							  # Taken from effsize package by Marco Torchiano, v0.7.4
+							  # Using the non-central t distributions for computing the confidence interval.
+							  # https://cran.r-project.org/web/packages/effsize/index.html
+							  # Same result as MBESS package by Ken Kelley, v4.4.3
 							  alphaLevels <- sort( c( (1-ciEffSize), ciEffSize ) )
 							  
 							  if (direction == "two.sided") {
 							    alphaLevels[1] <- (1-ciEffSize) / 2
 							    alphaLevels[2] <- (ciEffSize + 1) / 2
 							  } 
-							  
-							  end1 <- abs(stat)
+							  st = max(0.1,abs(stat))
+							  df <- sum(ns) -2
+							  end1 <- stat
 							  while( pt(q=stat,df=df,ncp=end1) > alphaLevels[1]){
-							    end1 = end1 * 2
+							    end1 <- end1 + st
 							  }
 							  ncp1 <- uniroot(function(x) alphaLevels[1] - pt(q=stat, df=df, ncp=x),
 							                  c(2*stat-end1,end1))$root
 				
-							  end2 = -abs(stat)
+							  end2 <- stat
 							  while( pt(q=stat,df=df,ncp=end2) < alphaLevels[2]){
-							    end2 = end2 * 2
+							    end2 <- end2 - st
 							  }
 							  ncp2 <- uniroot(function(x) alphaLevels[2] - pt(q=stat, df=df, ncp=x),
 							                  c(end2,2*stat-end2))$root
+							  
 							  
 							  confIntEffSize = sort(c(ncp1*sqrt(1/ns[1]+1/ns[2]),  ncp2*sqrt(1/ns[1]+1/ns[2]) ))[order(c(1-ciEffSize, ciEffSize ))]
 							  if (direction == "greater") {

@@ -21,13 +21,15 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQml.Models 2.2
 import JASP.Theme 1.0
+import QtQuick.Layouts 1.3
 
 JASPControl
 {
 	id:					variablesList
 	controlType:		"VariablesListView"
 	background:			rectangle
-	implicitWidth:		parent.width
+	width:				parent.width
+	implicitWidth:		width
 	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height
 	useControlMouseArea:	false
@@ -43,19 +45,25 @@ JASPControl
 	property bool	draggable:			true
 	property var	source
 	property alias	syncModels:			variablesList.source
-	property bool	singleVariable:			false
+	property bool	singleVariable:		false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
-	property bool	hasSelectedItems:	false; // Binding does not work on array length: listView.selectedItems.length > 0;
+	property alias	selectedItems:		listView.selectedItems
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
 	property bool	showVariableTypeIcon:	true
+	property bool	setWidthInForm:		false
+	property bool	setHeightInForm:	false
+	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
+	
+	property var	interactionControl
+	property bool	addInteractionOptions:	false
 	
 	property var	extraControlColumns:		[]
-	property string extraControlVariableName:	"variable"
+	property string extraControlOptionName:		""
 	property alias	extraControlTitles:	titles.model
 	
 	property int	indexInDroppedListViewOfDraggedItem:	-1
@@ -63,18 +71,12 @@ JASPControl
 	readonly property int rectangleY: rectangle.y
 	
 	signal itemDoubleClicked(int index);
-	signal itemsDropped(var indexes, var dropList, int dropItemIndex);
-	signal removeRowWithControls(int id, string name);
-	signal addRowWithControls(int id, string name, var columns);
-	
-	function selectedItemsChanged()
-	{
-		hasSelectedItems = (listView.selectedItems.length > 0);
-	}
-	
+	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
+	signal hasSelectedItemsChanged();
+		
 	function moveSelectedItems(target)
 	{
-		if (!hasSelectedItems) return;
+		if (listView.selectedItems.length === 0) return;
 		
 		var selectedIndexes = [];
 		for (var i = 0; i < listView.selectedItems.length; i++)
@@ -85,9 +87,9 @@ JASPControl
 		
 		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
 		// So we have to clear the selected items list before.
-		listView.clearSelectedItems();
-		itemsDropped(selectedIndexes, target, -1);
-		
+		listView.clearSelectedItems(true);
+		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""							
+		itemsDropped(selectedIndexes, target, -1, assignOption);
 	}    
 	
 	DropArea
@@ -268,7 +270,7 @@ JASPControl
 					{
 						var itemRectangle = itemWrapper.children[0];
 						itemWrapper.forceActiveFocus();
-						listView.clearSelectedItems();
+						listView.clearSelectedItems(false);
 						listView.selectItem(itemRectangle, true);
 						listView.startShiftSelected = listView.currentIndex;
 						listView.endShiftSelected = -1;
@@ -326,7 +328,7 @@ JASPControl
 				if (!added)
 					selectedItems.push(item);
 				
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function removeSelectedItem(item)
@@ -344,7 +346,7 @@ JASPControl
 						break;
 					}
 				}
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectItem(item, selected)
@@ -355,14 +357,15 @@ JASPControl
 					listView.removeSelectedItem(item);
 			}        
 			
-			function clearSelectedItems()
+			function clearSelectedItems(emitSignal)
 			{
 				for (var i = 0; i < selectedItems.length; i++)
 				{
 					selectedItems[i].selected = false;
 				}
 				selectedItems = [];
-				variablesList.selectedItemsChanged();
+				if (emitSignal)
+					variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectShiftItems(selected)
@@ -422,7 +425,7 @@ JASPControl
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			!variablesList.dragOnlyVariables || isVariable
-				property string columnType:			isVariable ? model.columnType : ""
+				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraColumnsModel:		model.extraColumns
 				
 				function setRelative(draggedRect)
@@ -475,7 +478,7 @@ JASPControl
 				Text
 				{
 					id:						colName
-					x:						variablesList.showVariableTypeIcon ? 20 : 4
+					x:						(variablesList.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale
 					text:					model.name
 					width:					itemRectangle.width - x
 					elide:					Text.ElideRight
@@ -485,12 +488,12 @@ JASPControl
 					font:					Theme.font
 				}
 				
-				Row
+				RowLayout
 				{
 					anchors.fill:			parent
 					anchors.rightMargin:	10  * preferencesModel.uiScale
 					spacing:				1
-					z:						10 * preferencesModel.uiScale
+					z:						10
 					
 					layoutDirection: Qt.RightToLeft
 					
@@ -502,6 +505,7 @@ JASPControl
 						{
 							source:			model.path
 							asynchronous:	false
+							Layout.topMargin:	-2
 							
 							onLoaded:		itemRectangle.extraColumnsModel.controlLoaded(model.name, item)
 						}
@@ -541,7 +545,7 @@ JASPControl
 					
 					onDoubleClicked:
 					{
-						listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+						listView.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 						itemDoubleClicked(index);
 					}
 					
@@ -549,7 +553,7 @@ JASPControl
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 						{
-							listView.clearSelectedItems();
+							listView.clearSelectedItems(false);
 							listView.selectItem(itemRectangle, true);
 						}
 					}
@@ -577,7 +581,7 @@ JASPControl
 							itemWrapper.forceActiveFocus();
 							if (!itemRectangle.selected)
 							{
-								listView.clearSelectedItems();
+								listView.clearSelectedItems(false);
 								listView.selectItem(itemRectangle, true);
 							}
 							else
@@ -638,9 +642,10 @@ JASPControl
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;                                
 								
-								listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
+								listView.clearSelectedItems(true); // Must be before itemsDropped: listView does not exist anymore afterwards
 								var variablesListName = variablesList.name
-								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);                               
+								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""							
+								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);                               
 							}
 						}
 					}

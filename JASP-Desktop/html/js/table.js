@@ -63,7 +63,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let columnDefs = optSchema.fields;
 		let columnCount = columnDefs.length;
 
-		let rowCount = optData ? optData.length : 0;
+		let rowCount = optData.length > 1 ? optData.length : 1;
 		let cells = Array(columnCount);
 
 		for (let colNo = 0; colNo < columnCount; colNo++) {
@@ -434,7 +434,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		var columnCount = columnDefs.length
 
 		let rowData = optData;
-		let rowCount = rowData ? rowData.length : 0
+		let rowCount = rowData.length > 1 ? rowData.length : 1;
 
 		let columnsDict = createColumns(columnDefs, rowData, optFootnotes);
 		let columnHeaders = columnsDict['columnHeaders'];

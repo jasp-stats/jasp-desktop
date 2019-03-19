@@ -49,24 +49,20 @@ Rectangle
 
 		Image
 		{
-			id		: backgroundImage
-			z		: 1
-			width	: (37 / 28) * height
-			height	: Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
-			visible	: ribbonButton.enabled
+			id:			backgroundImage
+			z:			1
+			width:		(37 / 28) * height
+			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
+			opacity:	ribbonButton.enabled ? 1 : 0.5
 
-			anchors.top					: parent.top
-			anchors.topMargin			: Theme.ribbonButtonPadding
-			anchors.horizontalCenter	: parent.horizontalCenter
-		}
 
-		Desaturate
-		{
-			z:				2
-			anchors.fill	: backgroundImage
-			source			: backgroundImage
-			visible			: !ribbonButton.enabled
-			desaturation	: 0.95
+			anchors
+			{
+				top				: parent.top
+				topMargin		: Theme.ribbonButtonPadding
+				horizontalCenter: parent.horizontalCenter
+			}
+
 		}
 
 		Text
@@ -92,22 +88,27 @@ Rectangle
 
 			onClicked		:
 			{
+				if (fileMenuModel.visible)	fileMenuModel.visible = false
+				if (modulesMenu.opened)		modulesMenu.opened  = false
 
-				if(fileMenuModel.visible) fileMenuModel.visible = false
-				if(modulesMenu.opened)		modulesMenu.opened  = false
-
-				if(ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+				if (ribbonButton.menu.rowCount() === 1)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
 				else
 				{
-					customMenu.functionCall = function menuItemClicked(index)
+					var functionCall = function (index)
 					{
-						var analysis = customMenu.model.getFunctionName(index);
-						ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						var analysisName = customMenu.props['model'].getAnalysisName(index);
+						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
+						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.ribbonTitle, ribbonButton.moduleName)
 						customMenu.visible = false;
 					}
 
-					customMenu.showMenu(ribbonButton, ribbonButton.menu, ribbonButton.width / 2, ribbonButton.height);
+					var props = {
+						"model"			: ribbonButton.menu,
+						"functionCall"	: functionCall
+					};
+
+					customMenu.showMenu(ribbonButton, props, ribbonButton.width / 2, ribbonButton.height);
 				}
 			}
 		}

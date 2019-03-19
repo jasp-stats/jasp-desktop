@@ -34,11 +34,11 @@
 #include "widgets/boundqmltextarea.h"
 #include "widgets/boundqmlradiobuttons.h"
 #include "widgets/boundqmllistviewpairs.h"
-#include "widgets/boundqmllistviewinteraction.h"
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
 #include "widgets/boundqmlrepeatedmeasuresfactors.h"
+#include "widgets/boundqmlfactorsform.h"
 #include "widgets/boundqmltableview.h"
 #include "widgets/qmllistviewtermsavailable.h"
 #include "widgets/listmodeltermsavailable.h"
@@ -140,6 +140,13 @@ void AnalysisForm::runRScript(QString script, QString controlName)
 	emit _analysis->sendRScript(_analysis, script, controlName);
 }
 
+void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
+{
+	if (change == ItemChange::ItemSceneChange)
+		_removed = value.window ? false : true;
+	QQuickItem::itemChange(change, value);
+}
+
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
 {	
 	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
@@ -176,12 +183,6 @@ void AnalysisForm::_parseQML()
 		if (! QQmlProperty(quickItem, "isBound").read().toBool())
 			continue;
 
-#ifndef QT_DEBUG
-		bool isDebug = QQmlProperty(quickItem, "debug").read().toBool();
-		if (isDebug)
-			continue;
-#endif
-
 		QString controlName = QQmlProperty(quickItem, "name").read().toString();
 
 		if (controlName.isEmpty())
@@ -197,7 +198,9 @@ void AnalysisForm::_parseQML()
 		controlNames.append(controlName);
 
 		QMLItem *control = nullptr;
-		qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
+		qmlControlType controlType;
+		try						{ controlType	= qmlControlTypeFromQString(controlTypeStr);	}
+		catch(std::exception)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); continue; }
 
 		switch(controlType)
 		{
@@ -234,6 +237,13 @@ void AnalysisForm::_parseQML()
 			_modelMap[controlName] = factorList->model();
 			break;
 		}
+		case qmlControlType::FactorsForm:
+		{
+			BoundQMLFactorsForm* factorForm = new BoundQMLFactorsForm(quickItem, this);
+			control = factorForm;
+			_modelMap[controlName] = factorForm->model();
+			break;
+		}
 		case qmlControlType::TableView:
 		{
 			BoundQMLTableView* tableView = new BoundQMLTableView(quickItem, this);
@@ -246,23 +256,31 @@ void AnalysisForm::_parseQML()
 			QString			listViewTypeStr = QQmlProperty(quickItem, "listViewType").read().toString();
 			qmlListViewType	listViewType;
 
-			try							{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
-			catch(std::out_of_range)	{ _errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(". Cannot set a model to the VariablesList")); }
+			try	{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
+			catch(std::exception)
+			{
+				_errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(" form VariablesList ") + controlName);
+				listViewType = qmlListViewType::AssignedVariables;
+			}
 
 			switch(listViewType)
 			{
-			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this);			break;
-			case qmlListViewType::Pairs:				listView = new BoundQMLListViewPairs(quickItem,this);			break;
-			case qmlListViewType::Interaction:			listView = new BoundQMLListViewInteraction(quickItem, this);	break;
-			case qmlListViewType::RepeatedMeasures:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);	break;
-			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);			break;
+			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this, false);		break;
+			case qmlListViewType::Interaction:			listView = new BoundQMLListViewTerms(quickItem, this, true);		break;
+			case qmlListViewType::Pairs:				listView = new BoundQMLListViewPairs(quickItem,this);				break;
+			case qmlListViewType::RepeatedMeasures:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);		break;
+			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);				break;
 			case qmlListViewType::AvailableVariables:
+			case qmlListViewType::AvailableInteraction:
 			{
-				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
+				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteraction);
 				listView = availableVariablesListView;
-				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-				if (availableVariablesListView->sourceModelsList().isEmpty()) // If there is no sourceModels, set all available variables.
-					_allAvailableVariablesModels.push_back(availableModel);
+				if (availableVariablesListView->sourceModels().isEmpty()) // If there is no sourceModels, set all available variables.
+				{
+					ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
+					if (availableModel)
+						_allAvailableVariablesModels.push_back(availableModel);
+				}
 				break;
 			}
 			default:
@@ -296,7 +314,18 @@ void AnalysisForm::_parseQML()
 			_controls[control->name()] = control;
 	}
 
-	for (auto const& pair : dropKeyMap)
+	_setUpRelatedModels(dropKeyMap);
+	_setUpItems();
+
+	if (!_errorMessagesItem)
+		qDebug() << "No errorMessages Item found!!!";
+
+	_setErrorMessages();
+}
+
+void AnalysisForm::_setUpRelatedModels(const map<QString, QString>& relationMap)
+{
+	for (auto const& pair : relationMap)
 	{
 		ListModel* sourceModel = _modelMap[pair.first];
 		ListModel* targetModel = _modelMap[pair.second];
@@ -308,14 +337,7 @@ void AnalysisForm::_parseQML()
 		}
 		else
 			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
-	}
-
-	_setUpItems();
-
-	if (!_errorMessagesItem)
-		qDebug() << "No errorMessages Item found!!!";
-
-	_setErrorMessages();
+	}	
 }
 
 void AnalysisForm::_setUpItems()
@@ -357,26 +379,40 @@ void AnalysisForm::_setUpItems()
 	}	
 }
 
+void AnalysisForm::addListView(QMLListView* listView, const map<QString, QString>& relationMap)
+{
+	_modelMap[listView->name()] = listView->model();
+	_setUpRelatedModels(relationMap);
+}
+
 void AnalysisForm::_setErrorMessages()
 {
-	if (!_errorMessages.isEmpty() && _errorMessagesItem)
+	if (_errorMessagesItem)
 	{
-		QString text;
-		if (_errorMessages.length() == 1)
-			text = _errorMessages[0];
+		if (!_errorMessages.isEmpty())
+		{
+			QString text;
+			if (_errorMessages.length() == 1)
+				text = _errorMessages[0];
+			else
+			{
+				text.append("<ul style=\"margin-bottom:0px\">");
+				for (const QString& errorMessage : _errorMessages)
+					text.append("<li>").append(errorMessage).append("</li>");
+				text.append("</ul>");
+			}
+			QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(text));
+			_errorMessagesItem->setVisible(true);
+		}
 		else
 		{
-			text.append("<ul style=\"margin-bottom:0px\">");
-			for (const QString& errorMessage : _errorMessages)
-				text.append("<li>").append(errorMessage).append("</li>");
-			text.append("</ul>");
+			QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(QString()));
+			_errorMessagesItem->setVisible(false);
 		}
-		QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(text));
-		_errorMessagesItem->setVisible(true);
 	}
 }
 
-void AnalysisForm::_setAllAvailableVariablesModel()
+void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 {
 	if (_allAvailableVariablesModels.size() == 0)
 		return;
@@ -388,7 +424,19 @@ void AnalysisForm::_setAllAvailableVariablesModel()
 			columnNames.push_back(column.name());
 
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
+	{
 		model->initTerms(columnNames);
+		if (refreshAssigned)
+		{
+			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
+			if (qmlAvailableListView)
+			{
+				const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
+				for (ListModelAssignedInterface* modelAssign : assignedModels)
+					modelAssign->refresh();
+			}
+		}
+	}
 }
 
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value& optionsFromJASPFile)
@@ -409,22 +457,45 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 		if (boundControl)
 		{
 			std::string name = boundControl->name().toStdString();
-			Option* option = options->get(name);
+			Option* option   = options->get(name);
+
 			if (option && !boundControl->isOptionValid(option))
 			{
 				option = nullptr;
 				addError(tq("Item " + name + " was loaded with a wrong kind of value." + (optionsFromJASPFile != Json::nullValue ? ". Probably the file comes from an older version of JASP." : "")));
 			}
+
 			if (!option)
 			{
 				option = boundControl->createOption();
 				if (optionsFromJASPFile != Json::nullValue)
 				{
-					if (optionsFromJASPFile[name] != Json::nullValue)
-						option->set(optionsFromJASPFile[name]);
+					const Json::Value& optionValue = optionsFromJASPFile[name];
+					if (optionValue != Json::nullValue)
+					{
+						if (!boundControl->isJsonValid(optionValue))
+						{
+							std::string labelStr;
+							QVariant label = boundControl->getProperty("label");
+							if (!label.isNull())
+								labelStr = label.toString().toStdString();
+							if (labelStr.empty())
+							{
+								label = boundControl->getProperty("title");
+								labelStr = label.toString().toStdString();
+							}
+							if (labelStr.empty())
+								labelStr = name;
+							addError(tq("Control " + labelStr + " was loaded with a wrong kind of value. Probably the file comes from an older version of JASP.<br>"
+										+ "That means that the results currently displayed do not correspond to the options selected.<br>Refreshing the analysis may change the results"));
+						}
+						else
+							option->set(optionValue);
+					}
 				}
 				options->add(name, option);
 			}
+
 			boundControl->bindTo(option);
 			boundControl->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}
@@ -487,8 +558,11 @@ void AnalysisForm::_formCompletedHandler()
 
 void AnalysisForm::dataSetChanged()
 {
-	_dataSet = _analysis->getDataSet();
-	_setAllAvailableVariablesModel();
+	if (!_removed)
+	{
+		_dataSet = _analysis->getDataSet();
+		_setAllAvailableVariablesModel(true);
+	}
 }
 
 

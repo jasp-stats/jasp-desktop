@@ -19,6 +19,7 @@
 #include "qmllistview.h"
 #include "../analysis/analysisform.h"
 #include "listmodel.h"
+#include "interactionmodel.h"
 
 #include <QQmlProperty>
 #include <QDebug>
@@ -29,7 +30,33 @@ QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form)
 	  
 {
 	_setAllowedVariables();	
-	_sourceModelsList = QQmlProperty(_item, "source").read().toStringList();	
+	QList<QVariant> sources = QQmlProperty(_item, "source").read().toList();
+	
+	if (sources.isEmpty())
+	{
+		QStringList stringSources = QQmlProperty(_item, "source").read().toStringList();
+		for (const QString& stringSource : stringSources)
+			sources.push_back(stringSource);
+	}
+	
+	for (const QVariant& source : sources)
+	{
+		if (source.canConvert<QString>())
+			_sourceModels.append(new SourceType(source.toString()));
+		else if (source.canConvert<QMap<QString, QVariant> >())
+		{
+			QMap<QString, QVariant> map = source.toMap();
+			QString sourceName = map["name"].toString();
+			if (sourceName.isEmpty())
+				addError("No name given is source attribute of VariableList " + name());
+			else
+			{
+				QString discard = map["discard"].toString();
+				QString modelUse = map["use"].toString();
+				_sourceModels.append(new SourceType(sourceName, discard, modelUse));
+			}
+		}
+	}
 }
 
 void QMLListView::setUp()
@@ -40,31 +67,45 @@ void QMLListView::setUp()
 	if (!listModel)
 		return;
 	
-	if (_sourceModelsList.isEmpty())
+	if (_sourceModels.isEmpty())
 	{
 		if (_needsSourceModels)
 			addError(QString::fromLatin1("Needs source model for VariablesList ") + name());
 	}
 	else
 	{
-		bool areTermsVariables = true;
-		for (const QString& sourceModelName : _sourceModelsList)
+		bool termsAreVariables = true;
+		bool termsAreInteractions = false;
+		for (SourceType* sourceItem : _sourceModels)
 		{
-			ListModel* sourceModel = _form->getModel(sourceModelName);
+			ListModel* sourceModel = _form->getModel(sourceItem->name);
 			if (sourceModel)
 			{
 				if (!sourceModel->areTermsVariables())
-					areTermsVariables = false;
-				_sourceModels.push_back(sourceModel);
+					termsAreVariables = false;
+				if (sourceModel->areTermsInteractions())
+					termsAreInteractions = true;
+				sourceItem->model = sourceModel;
 				addDependency(sourceModel->listView());
 				connect(sourceModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
+				
+				if (!sourceItem->discard.isEmpty())
+				{
+					ListModel* discardModel = _form->getModel(sourceItem->discard);
+					if (discardModel)
+						sourceItem->discardModel = discardModel;
+					else
+						addError(QString::fromLatin1("Unknown discard model ") + sourceItem->discard + QString::fromLatin1(" for VariableList ") + name());
+				}
 			}
 			else
-				addError(QString::fromLatin1("Unknown source model ") + sourceModelName + QString::fromLatin1(" for ModelVIew ") + name());
+				addError(QString::fromLatin1("Unknown source model ") + sourceItem->name + QString::fromLatin1(" for VariableList ") + name());
 		}
 		
-		if (!areTermsVariables)
+		if (!termsAreVariables)
 			setTermsAreNotVariables(); // set it only when it is false
+		if (termsAreInteractions)
+			setTermsAreInteractions(); // set it only when it is true
 	}
 
 	connect(listModel, &ListModel::modelChanged, this, &QMLListView::modelChangedHandler);
@@ -75,6 +116,11 @@ void QMLListView::setTermsAreNotVariables()
 {
 	model()->setTermsAreVariables(false);
 	QQmlProperty::write(_item, "showVariableTypeIcon", false);
+}
+
+void QMLListView::setTermsAreInteractions()
+{
+	model()->setTermsAreInteractions(true);
 }
 
 int QMLListView::_getAllowedColumnsTypes()

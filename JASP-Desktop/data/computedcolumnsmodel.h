@@ -43,7 +43,7 @@ public:
 
 	Q_INVOKABLE bool	isColumnNameFree(QString name)						{ return _package->isColumnNameFree(name.toStdString()); }
 
-				ComputedColumn*		createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType);
+				ComputedColumn*		createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis = nullptr);
 	Q_INVOKABLE void				createComputedColumn(QString name, int columnType, bool jsonPlease)									{ createComputedColumn(name, columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
 
 				ComputedColumns*	computedColumnsPointer() { return _package->computedColumnsPointer(); }

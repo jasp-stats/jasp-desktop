@@ -20,7 +20,7 @@
 #define BOUNDQMLLISTVIEWTERMS_H
 
 #include "boundqmllistviewdraggable.h"
-#include "listmodeltermsassigned.h"
+#include "listmodelassignedinterface.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionstable.h"
 
@@ -29,12 +29,12 @@ class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form, bool interaction = false);
 	
-	virtual ListModel* model() OVERRIDE	{ return _variablesModel; }
+	virtual ListModel* model() OVERRIDE	{ return _termsModel; }
 	virtual Option* boundTo() OVERRIDE
 	{
-		if (_hasExtraControls)
+		if (_hasExtraControls || _termsModel->areTermsInteractions())
 			return _optionsTable;
 		else
 			return _optionVariables; 
@@ -44,18 +44,26 @@ public:
 	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;	
+	virtual bool isOptionValid(Option* option) OVERRIDE;
+	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
+	
+	virtual void setTermsAreInteractions() OVERRIDE;	
+
+protected:
+	virtual void initExtraControlOptions(const QString &colName, Options *options);
 	
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;
 	void bindExtraControlOptions();
-
+	
 private:
 	OptionVariables* _optionVariables;
 	OptionsTable* _optionsTable;
-	ListModelTermsAssigned* _variablesModel;
+	ListModelAssignedInterface* _termsModel;
 	bool _singleItem		= false;
 	
+	void extraOptionsChangedSlot(Option *option);
+	void updateNuisances(bool checked);
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

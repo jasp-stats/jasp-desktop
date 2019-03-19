@@ -33,20 +33,21 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true }
 		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		allowedColumns: ["ordinal", "nominal"]		}
 		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		allowedColumns: ["ordinal", "nominal"];	debug: true }
 		AssignedVariablesList { name: "wlsWeights";		title: qsTr("WLS Weights");			allowedColumns: ["scale"]; singleVariable: true }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
+			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
@@ -64,7 +65,7 @@ Form
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Assumption Checks")
 		
@@ -83,7 +84,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Contrasts")
 		
@@ -98,15 +99,16 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Post Hoc Tests")
 		
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
-			AssignedVariablesList {  name: "postHocTestsVariables" }
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
+			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
+
 		}
 		
 		CheckBox { name: "postHocTestEffectSize"; label: qsTr("Effect Size") }
@@ -137,14 +139,14 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Descriptives Plots")
 		
 		VariablesForm
 		{
 			height: 150
-			availableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: ["fixedFactors", "randomFactors"] }
+			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleVariable: true }
 			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines");	singleVariable: true }
 			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleVariable: true }
@@ -171,7 +173,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Additional Options")
 		columns: 1
@@ -180,7 +182,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-			availableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
 			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 		}
 		
@@ -214,21 +216,21 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Simple Main Effects")
 		
 		VariablesForm
 		{
 			height: 170
-			availableVariablesList { name: "effectsVariables";	title: qsTr("Factors")				; source:  ["fixedFactors", "randomFactors"] }
+			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors")				; source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple effect factor") ; singleVariable: true }
 			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator factor 1")	; singleVariable: true }
 			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2")	; singleVariable: true }
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Nonparametrics")
 		
@@ -236,7 +238,7 @@ Form
 		VariablesForm
 		{
 			height: 170
-			availableVariablesList { name: "kruskalVariablesAvailable" ; source:  ["fixedFactors", "randomFactors"] }
+			AvailableVariablesList { name: "kruskalVariablesAvailable" ; source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "kruskalVariablesAssigned" }
 		}
 	}	

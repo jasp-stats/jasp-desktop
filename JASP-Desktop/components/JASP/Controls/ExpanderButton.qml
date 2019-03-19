@@ -28,6 +28,7 @@ FocusScope
 	anchors.topMargin:	15 * preferencesModel.uiScale
 	clip:				true
 	L.Layout.columnSpan: form.columns
+	objectName:			"Section"
 
 	default		property alias	content:		expanderArea.children
 				property alias	button:			expanderButton
@@ -92,6 +93,11 @@ FocusScope
 				anchors.leftMargin:		6 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
 				source:					iconsFolder + (expanded ? expandedIcon : contractedIcon)
+				sourceSize
+				{
+					width:	icon.width * 2
+					height:	icon.height * 2
+				}
             }
 
 			Text

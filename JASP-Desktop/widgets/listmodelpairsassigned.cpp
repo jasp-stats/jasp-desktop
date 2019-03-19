@@ -130,7 +130,7 @@ bool ListModelPairsAssigned::canAddTerms(Terms *terms) const
 	return true;
 }
 
-Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex)
+Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
 {
 	beginResetModel();
 	Terms* removedTerms = new Terms();

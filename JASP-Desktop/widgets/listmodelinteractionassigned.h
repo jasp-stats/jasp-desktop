@@ -21,60 +21,38 @@
 
 #include "listmodelassignedinterface.h"
 #include "listmodelavailableinterface.h"
+#include "interactionmodel.h"
 #include "analysis/options/options.h"
 #include "analysis/options/optionterm.h"
+#include "analysis/analysisqmldefines.h"
 
-class ListModelInteractionAssigned : public ListModelAssignedInterface
+class ListModelInteractionAssigned : public ListModelAssignedInterface, public InteractionModel
 {
 	Q_OBJECT
 	
-	enum AssignType { Cross = 0, MainEffects, Interaction, All2Way, All3Way, All4Way, All5Way };
-	
 public:
-	ListModelInteractionAssigned(QMLListView* listView);
+	ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned);
 
-	void initTermsWithTemplate(const std::vector<Options*> &terms, Options* rowTemplate);
+	virtual void initTerms(const Terms &terms) OVERRIDE;
 	
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;	
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
 	virtual void setAvailableModel(ListModelAvailableInterface *source) OVERRIDE;
 	
 	virtual Terms *termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
 	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
-	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
+	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") OVERRIDE;
 	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
-	virtual const Terms &terms() const OVERRIDE;
 	
-	const std::vector<Options *> &rows() const;
+	virtual QString getItemType(const Term &term) const OVERRIDE;
 	
+		
 public slots:
 	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) OVERRIDE;
 	
 protected:
-	Terms* _addTerms(Terms *terms, int assignType);
-	void addFixedFactors(const Terms &terms);
-	void addRandomFactors(const Terms &terms);
-	void addCovariates(const Terms &terms);
-	void removeVariables(const Terms &terms);
+	void addCombinedTerms(const Terms& terms, qmlAssignType assignType);
+	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
 	
-	QString getItemType(const Term &term);
-	
-	static OptionTerm* termOptionFromRow(Options *row);
-	
-	void setTerms(const Terms &terms, bool newTermsAreNuisance = false);
-	
-	void updateNuisances(bool checked = true);
-	
-	std::vector<Options *> _rows;
-	Options* _rowTemplate;
-	
-	bool _piecesCanBeAssigned;
-	
-	Terms _covariates;
-	Terms _fixedFactors;
-	Terms _randomFactors;
-	
-	Terms _interactionTerms;	
+	void setTerms();
 };
 
 

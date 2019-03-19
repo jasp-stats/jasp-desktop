@@ -78,7 +78,7 @@ void ListModelDraggable::moveTerms(const QList<int> &indexes, int dropItemIndex)
 	endResetModel();
 }
 
-Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex)
+Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
 {
 	Q_UNUSED(dropItemIndex);
 
