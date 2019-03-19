@@ -147,8 +147,8 @@ if not exist %VCVARS_DIR% (
     exit /b 11
 )
 
-SET CPUS=1
-REM %NUMBER_OF_PROCESSORS% to try and avoid stressing MSVC because it loves to crash :S
+SET CPUS=4
+REM %NUMBER_OF_PROCESSORS% manually changed to 8 because MSVC because loves to crash when specifying 24 :S (Although that isn't that crazy to be honest)
 
 REM Setting up Visual Studio Environment
 call %VCVARS_DIR%\vcvars%ARCH%.bat
