@@ -270,9 +270,12 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 	for (Json::Value &userDataObj  : userData)
 	{
 		Analysis *analysis				= get(size_t(userDataObj["id"].asInt()));
-		Json::Value &analysisUserData	= userDataObj["userdata"];
 
-		analysis->setUserData(analysisUserData);
+		if(analysis != nullptr)
+		{
+			Json::Value &analysisUserData	= userDataObj["userdata"];
+			analysis->setUserData(analysisUserData);
+		}
 	}
 }
 
