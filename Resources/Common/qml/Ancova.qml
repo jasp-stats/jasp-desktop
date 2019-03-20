@@ -150,6 +150,7 @@ Form
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
 			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm")					}
+            CheckBox { name: "postHocTestsSidak";       label: qsTr("Šidák")                }
 		}
 
 		Group
