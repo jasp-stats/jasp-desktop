@@ -27,15 +27,14 @@ class ListModelPairsAssigned: public ListModelAssignedInterface
 public:
 	ListModelPairsAssigned(QMLListView* listView);
 	
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	int rowCount(const QModelIndex &parent = QModelIndex())							const override;
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)				const override;
 
-	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
-	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
-	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") OVERRIDE;
-	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1) OVERRIDE;	
-	virtual void removeTerms(const QList<int> &indexes) OVERRIDE;
-
+	Terms* termsFromIndexes(const QList<int> &indexes)								const override;
+	bool canAddTerms(Terms *terms) const override;
+	Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") override;
+	void moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;	
+	void removeTerms(const QList<int> &indexes)												override;
 };
 
 #endif // LISTMODELPAIRSASSIGNED_H

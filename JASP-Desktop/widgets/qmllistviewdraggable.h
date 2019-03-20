@@ -33,7 +33,7 @@ class QMLListViewDraggable : public QMLListView
 public:
 	QMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
-	virtual void setUp() OVERRIDE;
+	void setUp() override;
 	
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
 	

@@ -31,7 +31,7 @@ class ListModelAssignedInterface : public ListModelDraggable
 public:
 	ListModelAssignedInterface(QMLListView* listView);
 	
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;	
 		
 	virtual void setAvailableModel(ListModelAvailableInterface *source);
 	ListModelAvailableInterface* source() const											{ return _source; }

@@ -28,18 +28,18 @@ class ListModelTermsAvailable : public ListModelAvailableInterface
 public:
 	ListModelTermsAvailable(QMLListView* listView);
 		
-	virtual void initTerms(const Terms& terms) OVERRIDE;
-	virtual void resetTermsFromSourceModels() OVERRIDE;
-	virtual ListModel* getSourceModelOfTerm(const Term& term);
+	void		initTerms(const Terms& terms)		override;
+	void		resetTermsFromSourceModels()		override;
 	
-	void addEmptyValue() { _addEmptyValue = true; }
+	ListModel*	getSourceModelOfTerm(const Term& term);
+	void		addEmptyValue() { _addEmptyValue = true; }
 
 protected:
 	virtual void _resetTerms(const Terms &terms);
 	
 private:	
-	std::map<QString, ListModel*> _termSourceModelMap;	
-	bool _addEmptyValue = false;
+	std::map<QString, ListModel*>	_termSourceModelMap;	
+	bool							_addEmptyValue = false;
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

@@ -1043,22 +1043,6 @@ void MainWindow::emptyValuesChangedHandler()
 }
 
 
-void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
-{
-	std::cout << "void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry) should be a function of RibbonModel that sends a signal to Analyses (or something)" << std::endl;
-	try
-	{
-		_analyses->create(entry);
-		checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
-	}
-	catch (runtime_error& e)
-	{
-		_fatalError = tq(e.what());
-		fatalError();
-	}
-}
-
-
 void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)
 {
 	if (filename == "%PREVIEW%" || filename == "%EXPORT%")

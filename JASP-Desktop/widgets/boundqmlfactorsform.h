@@ -34,26 +34,23 @@ class BoundQMLFactorsForm :  public QMLListView, public BoundQMLItem
 public:
 	BoundQMLFactorsForm(QQuickItem* item, AnalysisForm* form);	
 
-	virtual ListModel* model() OVERRIDE		{ return _factorsModel; }
-	virtual Option* boundTo() OVERRIDE		{ return _boundTo; }
-	
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;
-	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
+	ListModel*	model()										override { return _factorsModel; }
+	Option*		boundTo()									override { return _boundTo; }
+	void		bindTo(Option *option)						override;
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;
+	bool		isJsonValid(const Json::Value& optionValue) override;
 
 protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
-	
+	void modelChangedHandler() override;
 	void addListViewSlot(BoundQMLListViewTerms* listView);
 	
 private:
-	ListModelFactorsForm* _factorsModel;
-	OptionsTable* _boundTo;
-	QString _availableVariablesListName;
-	QQuickItem* _availableVariablesListItem;
-	int _initNumberFactors;
-	
+	ListModelFactorsForm*	_factorsModel;
+	OptionsTable*			_boundTo;
+	QString					_availableVariablesListName;
+	QQuickItem*				_availableVariablesListItem;
+	int						_initNumberFactors;
 };
 
 #endif // BOUNDQMLFACTORSFORM_H

@@ -27,8 +27,9 @@ class ListModelRepeatedMeasuresFactors : public ListModel
 public:
 	
 	ListModelRepeatedMeasuresFactors(QMLListView* listView);
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	
+	int rowCount(const QModelIndex &parent = QModelIndex())						const override;
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)			const override;
 	
 	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
@@ -39,17 +40,18 @@ public slots:
 	void itemRemoved(int row);
 		
 protected:
-	struct Factor {
-		QString value;
-		bool isVirtual;
-		bool isLevel;
-		int index;
+	struct Factor
+	{
+		QString		value;
+		bool		isVirtual;
+		bool		isLevel;
+		int			index;
 		Factor(const QString& _value, bool _isVirtual, bool _isLevel, int _index) :
 			value(_value), isVirtual(_isVirtual), isLevel(_isLevel), index(_index) {}
 	};
-	QList<Factor> _factors;
-	QList<QString> _factorTitles;
-	Terms _allLevelsCombinations;
+	QList<Factor>	_factors;
+	QList<QString>	_factorTitles;
+	Terms			_allLevelsCombinations;
 	
 	void _setAllLevelsCombinations();
 };

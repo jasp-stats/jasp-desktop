@@ -31,8 +31,8 @@ class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 public:
 	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form, bool interaction = false);
 	
-	virtual ListModel* model() OVERRIDE	{ return _termsModel; }
-	virtual Option* boundTo() OVERRIDE
+	ListModel*	model()										override { return _termsModel; }
+	Option*		boundTo()									override
 	{
 		if (_hasExtraControls || _termsModel->areTermsInteractions())
 			return _optionsTable;
@@ -40,27 +40,25 @@ public:
 			return _optionVariables; 
 	}	
 	
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
-	
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;
-	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
-	
-	virtual void setTermsAreInteractions() OVERRIDE;	
+	void		bindTo(Option *option)						override;
+	void		unbind()									override;
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;
+	bool		isJsonValid(const Json::Value& optionValue) override;
+	void		setTermsAreInteractions()					override;	
 
 protected:
 	virtual void initExtraControlOptions(const QString &colName, Options *options);
 	
 protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
+	void modelChangedHandler() override;
 	void bindExtraControlOptions();
 	
 private:
-	OptionVariables* _optionVariables;
-	OptionsTable* _optionsTable;
-	ListModelAssignedInterface* _termsModel;
-	bool _singleItem		= false;
+	OptionVariables*				_optionVariables;
+	OptionsTable*					_optionsTable;
+	ListModelAssignedInterface*		_termsModel;
+	bool							_singleItem		= false;
 	
 	void extraOptionsChangedSlot(Option *option);
 	void updateNuisances(bool checked);
