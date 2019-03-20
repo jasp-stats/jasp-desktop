@@ -49,6 +49,16 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 			ss << (colNo + 1);
 			colName = ss.str();
 		}
+		else
+		{
+			// Colname should not be integer
+			try
+			{
+				int number = std::stoi(colName);
+				colName = "V" + colName;
+			} catch (...) {
+			}
+		}
 
 		if (it != colNames.begin())
 		{
@@ -60,9 +70,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 				ss << "_";
 				ss << (colNo + 1);
 				colName = ss.str();
-				colNames[colNo] = colName;
 			}
 		}
+		*it = colName;
 
 		importColumns.push_back(new CSVImportColumn(result, colName));
 	}
