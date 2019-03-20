@@ -537,20 +537,32 @@
   if (is.null(model$models) || !userNeedsPosteriorSamples)
     return()
 
-  # model$completelyReused is needed because it can happen that some posterior samples can be reused (e.g.,
+  # model[["completelyReused"]] is needed because it can happen that some posterior samples can be reused (e.g.,
   # when the modelTerms change)
-  stateObj <- jaspResults[["statePosteriors"]]$object
-  if (!is.null(stateObj) && isTRUE(model$completelyReused)) {
-    return(stateObj)
+  posteriors <- jaspResults[["statePosteriors"]]$object
+  if (!is.null(posteriors) && isTRUE(model[["completelyReused"]])) { # can all posterior be reused?
+
+    posteriorsCRI <- jaspResults[["statePosteriorsCRI"]]$object
+    if (is.null(posteriorsCRI)) # do we need to recompute credible intervals?
+      posteriorsCRI <- .BANOVAcomputePosteriorCRI(dataset, options, model, posteriors)
+
+  } else { # compute posteriors and credible intervals
+
+    posteriors    <- .BANOVAsamplePosteriors(jaspResults, dataset, options, model, posteriors)
+    posteriorsCRI <- .BANOVAcomputePosteriorCRI(dataset, options, model, posteriors)
+
+    statePosteriors <- createJaspState(object = posteriors)
+    statePosteriors$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
+    jaspResults[["statePosteriors"]] <- statePosteriors
+
+    statePosteriorsCRI <- createJaspState(object = posteriorsCRI)
+    statePosteriorsCRI$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
+    statePosteriorsCRI$dependOnOptions("credibleInterval")
+    jaspResults[["statePosteriorCRI"]] <- statePosteriorsCRI
+
   }
-  # calculate posteriors
-  posteriors <- .BANOVAsamplePosteriors(jaspResults, dataset, options, model, stateObj)
 
-  stateObj <- createJaspState(object = posteriors)
-  stateObj$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
-  jaspResults[["statePosteriors"]] <- stateObj
-
-  return(posteriors)
+  return(c(posteriors, posteriorsCRI))
 }
 
 .BANOVAestimatesTable <- function(jaspResults, options, model) {
@@ -564,10 +576,10 @@
   estsTable$dependOnOptions(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
     "fixedMCMCSamples", "bayesFactorType", "modelTerms", "fixedFactors", "posteriorEstimates",
-    "repeatedMeasuresFactors"
+    "repeatedMeasuresFactors", "credibleInterval"
   ))
 
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * 0.95, digits = 3))
+  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   estsTable$addColumnInfo(name = "Variable", type = "string")
   estsTable$addColumnInfo(name = "Level",    type = "string")
   estsTable$addColumnInfo(name = "Mean",     type = "number", format = "sf:4;dp:3")
@@ -630,7 +642,7 @@
 
   posteriorPlotContainer <- createJaspContainer(title = "Model Averaged Posterior Distributions")
   jaspResults[["posteriorPlot"]] <- posteriorPlotContainer
-  posteriorPlotContainer$dependOnOptions(c("posteriorPlot", "modelTerms"))
+  posteriorPlotContainer$dependOnOptions(c("posteriorPlot", "modelTerms", "credibleInterval"))
   posteriorPlotContainer$position <- 4
 
   if (is.null(model$models)) {
@@ -715,7 +727,7 @@
     plot$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
   }
 
-  plot$dependOnOptions(c("qqPlot", "modelTerms"))
+  plot$dependOnOptions(c("qqPlot", "modelTerms", "credibleInterval"))
   plot$position <- 5
   jaspResults[["QQplot"]] <- plot
   return()
@@ -743,7 +755,7 @@
     plot$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
   }
 
-  plot$dependOnOptions(c("rsqPlot", "modelTerms"))
+  plot$dependOnOptions(c("rsqPlot", "modelTerms", "credibleInterval"))
   plot$position <- 6
   jaspResults[["rsqplot"]] <- plot
   return()
@@ -976,7 +988,8 @@
   descriptivesTable <- createJaspTable(title = title)
   jaspResults[["tableDescriptives"]] <- descriptivesTable
   descriptivesTable$position <- 1
-  descriptivesTable$dependOnOptions(c("dependent", "fixedFactors", "betweenSubjectFactors", "descriptives"))
+  descriptivesTable$dependOnOptions(c("dependent", "fixedFactors", "betweenSubjectFactors", "descriptives",
+                                      "credibleInterval"))
 
   # internal names: change " " into "." because R does that to dataframe names.
   # Add a . in case variable is "Mean", "SD" or "N"
@@ -985,9 +998,12 @@
     descriptivesTable$addColumnInfo(name = nms[i], type = "string", title = fixed[i], combine = TRUE)
   }
 
-  descriptivesTable$addColumnInfo(name = "Mean", type = "number", format = "sf:4;dp:3")
-  descriptivesTable$addColumnInfo(name = "SD",   type = "number", format = "sf:4;dp:3")
-  descriptivesTable$addColumnInfo(name = "N",    type = "number", format = "dp:0")
+  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  descriptivesTable$addColumnInfo(name = "Mean",  type = "number", format = "sf:4;dp:3")
+  descriptivesTable$addColumnInfo(name = "SD",    type = "number", format = "sf:4;dp:3")
+  descriptivesTable$addColumnInfo(name = "N",     type = "number", format = "dp:0")
+  descriptivesTable$addColumnInfo(name = "Lower", type = "number", format = "sf:4;dp:3", overtitle = overTitle)
+  descriptivesTable$addColumnInfo(name = "Upper", type = "number", format = "sf:4;dp:3", overtitle = overTitle)
 
   if (errors$noVariables) {
     descriptivesTable$setExpectedRows(1L)
@@ -1002,7 +1018,7 @@
   ind <- apply(dataset[, fixedB64, drop = FALSE], 1L, paste0, ".", collapse = "")
 
   # temporary function to calculate all descriptives
-  tmpFun <- function(data, fixedB64, dependentB64) {
+  tmpFun <- function(data, fixedB64, dependentB64, cri) {
 
     row <- list()
     for (j in fixedB64)
@@ -1019,18 +1035,24 @@
     } else if (N == 1L) {
 
       row[["Mean"]] <- data[[dependentB64]]
-      row[["SD"]]   <- ""
+      row[["SD"]] <- row[["Lower"]] <- row[["Upper"]] <- ""
 
     } else {
 
       row[["Mean"]] <- mean(data[[dependentB64]])
       row[["SD"]]   <- stats::sd(data[[dependentB64]])
+
+      tmp <- .posteriorSummaryGroupMean(data[[dependentB64]], cri)
+      row[["Lower"]] <- tmp[["ciLower"]]
+      row[["Upper"]] <- tmp[["ciUpper"]]
+
     }
     return(row)
   }
 
   # apply tempFun on each subset defined by ind
-  rows <- by(dataset, ind, tmpFun, fixedB64 = fixedB64, dependentB64 = dependentB64)
+  rows <- by(dataset, ind, tmpFun, fixedB64 = fixedB64, 
+             dependentB64 = dependentB64, cri = options[["credibleInterval"]])
 
   # do.call(rbind, rows) turns rows into a data.frame (from a list) for jaspResults
   data <- do.call(rbind.data.frame, rows)
@@ -1396,20 +1418,88 @@
   # postProbs don't sum to one so we renormalize the densities
   weightedDensities[, , 2L] <- sweep(weightedDensities[, , 2L], 2, weights, FUN = `/`)
 
+  # # compute weighted CRIs
+  # weightedCRIs <- matrix(NA, nparam, 2L, dimnames = list(names(weights), NULL))
+  # cri <- options[["credibleInterval"]]
+  # for (i in seq_len(nparam)) {
+  #   weightedCRIs[i, ] <- .BANOVAapproxCRI(weightedDensities[, i, 1L], weightedDensities[, i, 2L], cri)
+  # }
+  # 
+  # # compute residuals and r-squared
+  # # sample from the joint posterior over models and parameters
+  # tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, weights)
+  # means  <- rowMeans(tmp$resid)
+  # h <- (1 - cri) / 2
+  # quants <- matrixStats::rowQuantiles(tmp$resid, probs = c(h, 1 - h))
+  # 
+  # # the code above is equivalent to the code below, but the code below needs to keep all posterior samples of
+  # # all models in memory.
+  # # weights <- rep(postProbs, each = nIter)
+  # # independentVariable <- all.vars(.BANOVAgetModelFormulaFromBFobj(model$models[[2L]]))[1L]
+  # # resids <- matrix(NA, nrow(dataset), 0)
+  # # rsq <- vector("list", nmodels)
+  # # # get residuals of all models individually
+  # # for (i in seq_len(nmodels)) {
+  # #   if (is.null(model$models[[i]]$bf)) {
+  # #     tmp2    <- .BANOVAresidualsNullModel(nIter, dataset[[independentVariable]])
+  # #   } else {
+  # #     tmp2 <- .BANOVAgetSMIResidRsq(
+  # #       posterior = samples[[i]],
+  # #       dataset   = dataset,
+  # #       formula   = .BANOVAgetModelFormulaFromBFobj(model$models[[i]])
+  # #     )
+  # #   }
+  # #   resids <- cbind(resids, tmp2$resid)
+  # #   rsq[[i]] <- tmp2$rsq
+  # # }
+  # # # compute weighted mean for each row
+  # # means2 <- tcrossprod(weights / nIter, resids)
+  # # plot(means, means2); abline(0, 1)
+  # # quants2 <- apply(resids, 1L, Hmisc::wtd.quantile, weights = weights, probs = c(0.025, 0.975))
+  # # plot(quants[, 1], quants2[1, ]); abline(0, 1)
+  # # plot(quants[, 2], quants2[2, ]); abline(0, 1)
+  # 
+  # # all information for q-q plot of residuals
+  # weightedResidSumStats <- matrix(c(means, quants), nrow = length(means), ncol = 3L,
+  #                                 dimnames = list(NULL, c("mean", "cri.2.5%", "cri.97.5%")))
+  # 
+  # # all information for r-squared density plot
+  # weightedRsqDens <- density(tmp$rsq, n = 2^11, from = 0, to = 1)
+  # weightedRsqCri <- quantile(tmp$rsq, probs   = c(h, 1 - h))
+
+  return(list(
+    statistics = statistics, weights = weights, weightedMeans = weightedMeans, weightedSds = weightedSds,
+    weightedDensities = weightedDensities,
+    #weightedCRIs = weightedCRIs, weightedResidSumStats = weightedResidSumStats, 
+    #weightedRsqDens = weightedRsqDens, weightedRsqCri = weightedRsqCri,
+    allContinuous = allContinuous, isRandom = isRandom, levelInfo = levelInfo
+  ))
+}
+
+.BANOVAcomputePosteriorCRI <- function(dataset, options, model, posterior) {
+
+  nIter <- if (options[["sampleModeMCMC"]] == "auto") 1e4L else options[["fixedMCMCSamples"]]
+  weightedDensities <- posterior[["weightedDensities"]]
+  weights <- posterior[["weights"]]
+  nmodels    <- length(model[["models"]])
+  nparam <- length(weights)
+  
   # compute weighted CRIs
   weightedCRIs <- matrix(NA, nparam, 2L, dimnames = list(names(weights), NULL))
+  cri <- options[["credibleInterval"]]
   for (i in seq_len(nparam)) {
-    weightedCRIs[i, ] <- .BANOVAapproxCRI(weightedDensities[, i, 1L], weightedDensities[, i, 2L], 0.95)
+    weightedCRIs[i, ] <- .BANOVAapproxCRI(weightedDensities[, i, 1L], weightedDensities[, i, 2L], cri)
   }
 
   # compute residuals and r-squared
   # sample from the joint posterior over models and parameters
   tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, weights)
   means  <- rowMeans(tmp$resid)
-  quants <- matrixStats::rowQuantiles(tmp$resid, probs = c(0.025, 0.975))
+  h <- (1 - cri) / 2
+  quants <- matrixStats::rowQuantiles(tmp$resid, probs = c(h, 1 - h))
 
   # the code above is equivalent to the code below, but the code below needs to keep all posterior samples of
-  # all models in memory.
+  # all models in memory. plug this body of this function into the call inside .BANOVAsamplePosteriors() to check
   # weights <- rep(postProbs, each = nIter)
   # independentVariable <- all.vars(.BANOVAgetModelFormulaFromBFobj(model$models[[2L]]))[1L]
   # resids <- matrix(NA, nrow(dataset), 0)
@@ -1441,14 +1531,12 @@
 
   # all information for r-squared density plot
   weightedRsqDens <- density(tmp$rsq, n = 2^11, from = 0, to = 1)
-  weightedRsqCri <- quantile(tmp$rsq, probs   = c(0.025, 0.975))
-
+  weightedRsqCri <- quantile(tmp$rsq, probs   = c(h, 1 - h))
+  
   return(list(
-    statistics = statistics, weights = weights, weightedCRIs = weightedCRIs,
-    weightedMeans = weightedMeans, weightedSds = weightedSds, weightedDensities = weightedDensities,
-    weightedResidSumStats = weightedResidSumStats, weightedRsqDens = weightedRsqDens, weightedRsqCri = weightedRsqCri,
-    allContinuous = allContinuous, isRandom = isRandom, levelInfo = levelInfo)
-  )
+    weightedCRIs = weightedCRIs, weightedResidSumStats = weightedResidSumStats, 
+    weightedRsqDens = weightedRsqDens, weightedRsqCri = weightedRsqCri
+  ))
 }
 
 .BANOVAsampleNullModel <- function(nsamples, dependent) {
@@ -1942,7 +2030,7 @@
   sds <- matrixStats::colSds(samples)
   names(means) <- names(sds) <- colnames(samples)
 
-  h <- (1 - 0.95) / 2
+  h <- (1 - options[["credibleInterval"]]) / 2
   cri <- matrixStats::colQuantiles(samples, probs = c(h, 1 - h))
 
   densities <- .BANOVAfitDensity(samples, 2^9, FALSE)
@@ -1974,9 +2062,9 @@
   estsTable <- createJaspTable(title = "Single Model Posterior Summary")
   estsTable$position <- 1
   jaspContainer[["SMItablePosteriorEstimates"]] <- estsTable
-  estsTable$dependOnOptions("singleModelEffects")
+  estsTable$dependOnOptions("singleModelEffects", "credibleInterval")
 
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * 0.95, digits = 3))
+  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   estsTable$addColumnInfo(name = "Variable", type = "string")
   estsTable$addColumnInfo(name = "Level",    type = "string")
   estsTable$addColumnInfo(name = "Mean",     type = "number", format = "sf:4;dp:3")

@@ -83,6 +83,7 @@ Form
 		}
         CheckBox { name: "posteriorEstimates"; text: qsTr("Estimates") }      
         CheckBox { name: "descriptives"; text: qsTr("Descriptives") }       
+        PercentField { name: "credibleInterval";	label: qsTr("Credible interval"); defaultValue: 95 }
     }
     RadioButtonGroup
     {
