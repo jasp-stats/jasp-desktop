@@ -24,6 +24,8 @@ using namespace std;
 map<int, map<int, string> > Labels::_orgStringValues;
 int Labels::_counter = 0;
 
+typedef unsigned int uint;
+
 Labels::Labels(boost::interprocess::managed_shared_memory *mem)
 	: _labels(mem->get_segment_manager())
 {
@@ -131,7 +133,7 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 {
 	std::vector<std::pair<std::string,std::string> > valuesToAdd;
 	std::map<std::string, std::vector<unsigned int> > mapValuesToAdd;
-	uint valuesToAddIndex = 0;
+	unsigned int valuesToAddIndex = 0;
 
 	for (const std::string& newValue : new_values)
 	{
