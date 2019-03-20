@@ -129,12 +129,20 @@ bool Labels::syncInts(const std::set<int> &values)
 
 std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething)
 {
-	std::map<std::string,std::string> valuesToAdd;
+	std::vector<std::pair<std::string,std::string> > valuesToAdd;
+	std::map<std::string, std::vector<uint> > mapValuesToAdd;
+	uint valuesToAddIndex = 0;
 
 	for (const std::string& newValue : new_values)
 	{
 		std::string shortValue	= newValue.length() > Label::MAX_LABEL_LENGTH ? newValue.substr(0, Label::MAX_LABEL_LENGTH) : newValue;
-		valuesToAdd[shortValue] = newValue;
+		valuesToAdd.push_back(make_pair(newValue, shortValue));
+		auto elt = mapValuesToAdd.find(shortValue);
+		if (elt != mapValuesToAdd.end())
+			elt->second.push_back(valuesToAddIndex);
+		else
+			mapValuesToAdd[shortValue] = { valuesToAddIndex };
+		valuesToAddIndex++;
 	}
 	
 	std::set<int>				valuesToRemove;
@@ -149,17 +157,18 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 		if (labelValue > maxLabelKey)
 			maxLabelKey = labelValue;
 
-		auto elt = valuesToAdd.find(labelText);
-		if (elt != valuesToAdd.end())
+		auto elt = mapValuesToAdd.find(labelText);
+		if (elt != mapValuesToAdd.end())
 		{
-			result[elt->second] = labelValue;
-			valuesToAdd.erase(elt);
+			for (uint i : elt->second)
+				result[valuesToAdd[i].first] = labelValue;
+			mapValuesToAdd.erase(elt);
 		}
 		else
 			valuesToRemove.insert(labelValue);
 	}
 
-	if(changedSomething != NULL && (valuesToRemove.size() > 0 || valuesToAdd.size() > 0))
+	if(changedSomething != nullptr && (valuesToRemove.size() > 0 || mapValuesToAdd.size() > 0))
 		*changedSomething = true;
 
 	removeValues(valuesToRemove);
@@ -167,8 +176,8 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 	for (auto elt : valuesToAdd)
 	{
 		maxLabelKey++;
-		add(maxLabelKey, elt.first, true);
-		result[elt.second] = maxLabelKey;
+		add(maxLabelKey, elt.second, true);
+		result[elt.first] = maxLabelKey;
 	}
 
 	for (Label& label : _labels)
@@ -182,7 +191,7 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 			{
 				_setNewStringForLabel(label, newStringLabel);
 
-				if(changedSomething != NULL)
+				if(changedSomething != nullptr)
 					*changedSomething = true;
 			}
 		}
