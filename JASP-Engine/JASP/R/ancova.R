@@ -52,7 +52,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   ## Retrieve State
   anovaModel <- state$model
   statePostHoc <- state$statePostHoc
-  # statePostHocBoots <- state$statePostHocBoots
+  statePostHocBoots <- state$statePostHocBoots
   stateqqPlot <- state$stateqqPlot
   stateDescriptivesPlot <- state$stateDescriptivesPlot
   stateContrasts <- state$stateContrasts
@@ -179,6 +179,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
   }
   
+  if(is.null(statePostHocBoots) && options$postHocTestsBootstrapping){
+    
+    result <- .anovaPostHocBootstrappingTable(dataset, options, perform, model, status, statePostHocBoots, singular)
+    results[["posthocBoots"]] <- list(collection=result$result, title = "Post Hoc Tests via Bootstrapping")
+    status <- result$status
+    statePostHocBoots <- result$statePostHocBoots
+    
+  } else if(options$postHocTestsBootstrapping){
+    
+    result[['posthocBoots']] <- list(collection=statePostHoc, title = "Post Hoc Tests via Bootstrapping")
+    
+  }
   
   ## Create Marginal Means Table
   
@@ -273,6 +285,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
     list(name="contrasts", type="collection", meta="table"),
     list(name="posthoc", type="collection", meta="table"),
+    list(name="posthocBoots", type="collection", meta="table"),
     list(name="marginalMeans", type="collection", meta="table"),
     list(name="simpleEffects", type="table"),
     list(name="kruskal", type="table")
@@ -296,6 +309,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     model = anovaModel,
     options = options,
     statePostHoc = statePostHoc,
+    statePostHocBoots = statePostHocBoots,
     stateqqPlot = stateqqPlot,
     stateDescriptivesPlot = stateDescriptivesPlot,
     stateContrasts = stateContrasts,
@@ -312,9 +326,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   stateKey <- list(
     model = c(defaults, "contrasts", "homogeneityCorrections", "homogeneityNone", "homogeneityBrown", "homogeneityWelch"),
     stateContrasts = c(defaults, "contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", "confidenceIntervalsContrast" ),
-    statePostHoc = c(defaults, "postHocTestsVariables", "postHocTestsTypeStandard", "postHocTestsTypeDunn", "postHocTestsTypeDunnett",
-                     "postHocTestsTypeGames", "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey", "postHocTestsBonferroni",
+    statePostHoc = c(defaults, "postHocTestsVariables", "postHocTestsTypeStandard", "postHocTestsTypeDunn",
+                     "postHocTestsTypeDunnett", "postHocTestsTypeGames", "postHocTestsTukey",
+                     "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsBonferroni", "postHocTestsSidak",
                      "postHocTestEffectSize", "confidenceIntervalIntervalPostHoc", "confidenceIntervalsPostHoc"),
+    statePostHocBoots = c(defaults, "postHocTestsVariables", 
+                          "postHocTestsBootstrapping", "postHocTestsBootstrappingReplicates",
+                          "confidenceIntervalIntervalPostHoc"),
     stateqqPlot = c(defaults, "qqPlot", "plotWidthQQPlot", "plotHeightQQPlot"),
     stateDescriptivesPlot = c(defaults, "plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots",
                               "plotErrorBars", "errorBarType",  "confidenceIntervalInterval", "plotWidthDescriptivesPlotLegend",
@@ -1445,6 +1463,177 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   }
   
   list(result=postHocTables, status=status)
+}
+
+.anovaPostHocBootstrappingTable <- function(dataset, options, perform, model, status, statePostHocBoots, singular) {
+
+  if (!length(options$postHocTestsVariables))
+    return (list(result=NULL, status=status))
+  
+  postHocVariables <- unlist(options$postHocTestsVariables, recursive = FALSE)
+  postHocVariablesListV <- unname(lapply(postHocVariables, .v))
+  
+  postHocTables <- resultPostHoc <- list()
+  
+  for (postHocVarIndex in 1:length(postHocVariables)) {
+    footnotes <- .newFootnotes()
+    
+    postHocTable <- list()
+    thisVarName <- paste(postHocVariables[[postHocVarIndex]], collapse = " \u273B ")
+    interactionTerm <- ifelse(length(postHocVariables[[postHocVarIndex]]) > 1,
+                              TRUE, FALSE)
+    
+    postHocTable[["title"]] <- paste("Post Hoc Comparisons - ", thisVarName, sep="")
+    postHocTable[["name"]] <- paste("postHoc_", thisVarName, sep="")
+    
+    postHocInterval  <- options$confidenceIntervalIntervalPostHoc
+    
+    fields <- list(
+      list(name="(I)",title="", type="string", combine=TRUE),
+      list(name="(J)",title="", type="string"),
+      list(name="Mean Difference", title="Mean Difference", type="number", format="sf:4;dp:3"),
+      list(name="Bias", type="number", format="sf:4;dp:3"),
+      list(name="SE", type="number", format="sf:4;dp:3"),
+      list(name="lwrBound", type = "number", title = "Lower",
+           format="sf:4;dp:3", overTitle=paste0(postHocInterval*100, "% bca\u002A CI for Mean Difference")),
+      list(name="uprBound", type="number", title = "Upper",
+           format="sf:4;dp:3", overTitle=paste0(postHocInterval*100, "% bca\u002A CI for Mean Difference")))
+
+    postHocTable[["schema"]] <- list(fields=fields)
+    rows <- list()
+    
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+      
+      # a stupid way to obatin the var names in compared levels
+      postHocRef <- emmeans::lsmeans(model, postHocVariablesListV)
+      comparisons <- summary(emmeans::contrast(postHocRef[[postHocVarIndex]], method = "pairwise"),
+                          infer = c(FALSE, FALSE))
+      
+      # actual bootstrapping
+      .bootstrapPostHoc <- function(data, indices, options, thisVarName, postHocVariablesListV, postHocVarIndex){
+        resamples <- data[indices, , drop = FALSE] # allows boot to select sample
+        
+        anovaModel <- .anovaModel(resamples, options) # refit model
+        
+        modelBoots <- anovaModel$model
+        singularBoots <- anovaModel$singular
+        
+        postHocRefBoots <- emmeans::lsmeans(modelBoots, postHocVariablesListV)
+        
+        postHocTableBoots <- summary(emmeans::contrast(postHocRefBoots[[postHocVarIndex]], method = "pairwise"),
+                infer = c(FALSE, FALSE))
+        
+        postHocTableBoots[['estimate']]
+      }
+      
+      bootstrapPostHoc <- boot::boot(data = dataset, statistic = .bootstrapPostHoc, 
+                                     R = options[["postHocTestsBootstrappingReplicates"]],
+                                     options = options, thisVarName = thisVarName,
+                                     postHocVariablesListV = postHocVariablesListV, postHocVarIndex = postHocVarIndex)
+      
+      bootstrapPostHoc.summary <- summary(bootstrapPostHoc)
+      bootstrapPostHoc.ci <- t(sapply(1:nrow(bootstrapPostHoc.summary), function(comparison){
+        boot::boot.ci(boot.out = bootstrapPostHoc, conf = postHocInterval, type = "bca",
+                      index = comparison)[['bca']][1,4:5]
+      }))
+      bootstrapPostHoc.summary[,"lower.CL"] <- bootstrapPostHoc.ci[,1]
+      bootstrapPostHoc.summary[,"upper.CL"] <- bootstrapPostHoc.ci[,2]
+      bootstrapPostHoc.summary[,"contrast"] <- comparisons[,"contrast"]
+      
+      resultPostHoc[[thisVarName]][[1]] <- bootstrapPostHoc.summary
+      mainPostResults <- resultPostHoc[[thisVarName]][[1]]
+      
+    } else {
+      
+      mainPostResults <- matrix(nrow=1)
+    }
+    
+    for (i in 1:nrow(mainPostResults)) {
+      
+      levelA <- "."
+      levelB <- "."
+      row <- list("(I)"=levelA, "(J)"=levelB)
+      md <- "."
+      bias <- "."
+      se  <- "."
+      uprBound <- "."
+      lwrBound <- "."
+      
+      if (any(class(mainPostResults) == "try-error")) {
+        
+        .addFootnote(footnotes, 
+                     symbol = "<i>Note.</i>", 
+                     text = "Some comparisons could not be performed. Possibly too few samples.")
+        
+      } else if(length(mainPostResults) == 1) {
+        
+      } else {
+        
+        thisContrast <- unlist(strsplit(as.character(mainPostResults$contrast[i]), split = " - "))
+        levelA <- thisContrast[1]
+        levelB <- thisContrast[2]
+        
+        md <- .clean(as.numeric(mainPostResults$bootMed[i]))
+        bias <- .clean(as.numeric(mainPostResults$bootBias[i]))
+        se <- .clean(as.numeric(mainPostResults$bootSE[i]))
+        
+        lwrBound <- .clean(as.numeric(mainPostResults$lower.CL[i]))
+        uprBound <- .clean(as.numeric(mainPostResults$upper.CL[i]))
+      }
+      
+      row[["(I)"]] = levelA
+      row[["(J)"]] = levelB
+      row[["Mean Difference"]] <- md
+      row[["Bias"]] <- bias
+      row[["SE"]]  <- se
+      row[["lwrBound"]] <- lwrBound
+      row[["uprBound"]] <- uprBound
+      
+      postHocTable[["status"]] <- "complete"
+      
+      
+      if(length(rows) == 0)  {
+        row[[".isNewGroup"]] <- TRUE
+      } else {
+        row[[".isNewGroup"]] <- FALSE
+      }
+      
+      rows[[length(rows)+1]] <- row
+    }
+    
+     .addFootnote(footnotes, symbol = "<em>Note.</em>",
+                  text = paste0("Bootstrapping based on ", options[['postHocTestsBootstrappingReplicates']], " replicates."))
+     .addFootnote(footnotes, symbol = "<em>Note.</em>",
+                  text = "Mean Difference is based on the median of the bootstrap distribution.")
+     .addFootnote(footnotes, symbol = "\u002A",
+                  text = "Bias corrected accelerated.")
+    
+    postHocTable[["data"]] <- rows
+    postHocTable[["footnotes"]] <- as.list(footnotes)
+    
+    
+    if (singular)
+      .addFootnote(footnotes, 
+                   symbol = "<em>Warning.</em>", 
+                   text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables.")
+    
+    if (status$error)
+      postHocTable[["error"]] <- list(errorType="badData")
+    
+    postHocTables[[length(postHocTables)+1]] <- postHocTable
+  }
+  
+  if (perform == "init" || status$error || !status$ready) {
+    
+    statePostHocBoots <- NULL
+    
+  } else {
+    
+    statePostHocBoots <- postHocTables
+    
+  }
+  
+  list(result=postHocTables, status=status, statePostHocBoots = statePostHocBoots)
 }
 
 .anovaDescriptivesTable <- function(dataset, options, perform, status, stateDescriptivesTable) {
