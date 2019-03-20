@@ -13,8 +13,6 @@ echo "But for now the default of 64-bit will be set."
 SET ARCH=64
 ))
 
-SET BRANCH=%2
-if "%2"=="" SET BRANCH=development
 
 echo "Building %ARCH% bits JASP"
 
@@ -147,15 +145,15 @@ if not exist %VCVARS_DIR% (
     exit /b 11
 )
 
-SET CPUS=4
-REM %NUMBER_OF_PROCESSORS% manually changed to 8 because MSVC because loves to crash when specifying 24 :S (Although that isn't that crazy to be honest)
+SET CPUS=8
+REM %NUMBER_OF_PROCESSORS% manually changed to 8 because MSVC because loves to crash when specifying 24 :S (Although that isn't *that* crazy to be honest)
 
 REM Setting up Visual Studio Environment
 call %VCVARS_DIR%\vcvars%ARCH%.bat
 
 SET PATH=%MINGWDIR%;%QTVCDIR%;%PATH%
 
-REM you uncomment the following goto to skip building JASP, but it assumes that you did in fact build it before in the normal location
+REM you uncomment the following goto to skip building JASP, but it assumes that you did in fact build it previously in the normal location
 rem goto skipbuilding
 rem goto copyR
 
@@ -196,7 +194,7 @@ if not "%CRYPTKEY%"=="" (
 )
 
 REM Build JASP-R-Interface
-echo Start building %JASP_R_INTERFACE%
+echo Building %JASP_R_INTERFACE%
 mkdir %JASP_R_INTERFACE%
 cd %JASP_R_INTERFACE%
 echo %JASP_DESKTOP%\%JASP_R_INTERFACE%\%JASP_R_INTERFACE%.pro
@@ -205,7 +203,7 @@ echo %JASP_DESKTOP%\%JASP_R_INTERFACE%\%JASP_R_INTERFACE%.pro
 
 REM Build JASP
 cd ..
-echo "Start Building JASP"
+echo "Building JASP"
 %QTVCDIR%\qmake.exe %JASP_DESKTOP%\JASP.pro -spec win32-msvc
 %JOM% -j%CPUS%  || exit /B 6
 
@@ -214,8 +212,8 @@ echo "Start Building JASP"
 :setup
 
 REM ---------------------- Make setup ---------------------------------
-REM ----- Prepair the Install folder -------
-echo "Prepairing the installer"
+REM ----- Prepare the Install folder -------
+echo "Preparing the installer"
 
 REM Cleanup
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
@@ -249,6 +247,8 @@ REM --- Update R ------
 call %JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%
 
 :skipbuilding
+
+echo Melting and Coalescing MSI
 
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
 
