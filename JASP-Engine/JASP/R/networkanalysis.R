@@ -1422,46 +1422,42 @@ NetworkAnalysis <- function (
 
 }
 
-.networkAnalysisOneNetworkPlot <- function() {
-
-	# eval(quote()) construction because this function is evaluated inside .writeImage()
-	# which needs to look 2 levels up to find the objects network, options, layout, groups, legend, and shape.
-	eval(quote({
-
-		wMat <- network[["graph"]]
-		if (!options[["weightedNetwork"]]) {
-			wMat <- sign(wMat)
-		}
-		if (!options[["signedNetwork"]]) {
-			wMat <- abs(wMat)
-		}
-		if (all(abs(wMat) <= minE))
-		  minE <- NULL
-
-		qgraph::qgraph(
-			input       = wMat,
-			layout      = layout, # options[["layout"]],
-			groups      = groups,
-			repulsion   = options[["repulsion"]], # redundant
-			cut         = options[["cut"]],
-			edge.width  = options[["edgeSize"]],
-			node.width  = options[["nodeSize"]],
-			maximum     = maxE, # options[["maxEdgeStrength"]],
-			minimum     = minE, # options[["minEdgeStrength"]],
-			details     = options[["showDetails"]],
-			labels      = labels, # .unv(network[["labels"]]),
-			palette     = options[["nodeColors"]],
-			theme       = options[["edgeColors"]],
-			legend      = legend, # options[["showLegend"]]
-			shape       = shape,
-			color       = nodeColor,
-			edge.color  = edgeColor,
-			nodeNames   = nodeNames,
-			label.scale = options[["scaleLabels"]],
-			label.cex   = options[["labelSize"]]
-		)}
-	), envir = parent.frame(2))
-
+.networkAnalysisOneNetworkPlot <- function(network, options, minE, qgraph, layout, groups, maxE, labels, legend, shape, 
+                                           nodeColor, edgeColor, nodeNames) {
+  
+  wMat <- network[["graph"]]
+  if (!options[["weightedNetwork"]]) {
+    wMat <- sign(wMat)
+  }
+  if (!options[["signedNetwork"]]) {
+    wMat <- abs(wMat)
+  }
+  if (all(abs(wMat) <= minE))
+    minE <- NULL
+  
+  return(
+    qgraph::qgraph(
+      input       = wMat,
+      layout      = layout, # options[["layout"]],
+      groups      = groups,
+      repulsion   = options[["repulsion"]], # redundant
+      cut         = options[["cut"]],
+      edge.width  = options[["edgeSize"]],
+      node.width  = options[["nodeSize"]],
+      maximum     = maxE, # options[["maxEdgeStrength"]],
+      minimum     = minE, # options[["minEdgeStrength"]],
+      details     = options[["showDetails"]],
+      labels      = labels, # .unv(network[["labels"]]),
+      palette     = options[["nodeColors"]],
+      theme       = options[["edgeColors"]],
+      legend      = legend, # options[["showLegend"]]
+      shape       = shape,
+      color       = nodeColor,
+      edge.color  = edgeColor,
+      nodeNames   = nodeNames,
+      label.scale = options[["scaleLabels"]],
+      label.cex   = options[["labelSize"]]
+    ))
 }
 
 .networkAnalysisNetworkPlot <- function(network, options, perform, oldPlot = NULL) {
@@ -1582,6 +1578,10 @@ NetworkAnalysis <- function (
 		}
 
 		names(allLegends) <- names(allNetworks) # allows indexing by name
+		
+		# fake png hack again...
+		tempFileName <- .networkAnalysisGetTempFileName()
+		grDevices::png(filename = tempFileName)
 
 		for (v in names(allNetworks)) {
 
@@ -1589,11 +1589,11 @@ NetworkAnalysis <- function (
 			subPlot[["title"]] <- v
 			subPlot[["name"]] <- v
 
-			network <- allNetworks[[v]]
+			networkToPlot <- allNetworks[[v]]
 			if (options[["estimator"]] == "mgm") {
-			  edgeColor <- network[["results"]][["edgecolor"]]
+			  edgeColor <- networkToPlot[["results"]][["edgecolor"]]
 			  if (is.null(edgeColor)) # compatability issues
-			    edgeColor <- network[["results"]][["pairwise"]][["edgecolor"]]
+			    edgeColor <- networkToPlot[["results"]][["pairwise"]][["edgecolor"]]
 			}
 
 			legend <- allLegends[[v]]
@@ -1601,7 +1601,9 @@ NetworkAnalysis <- function (
 				subPlot[["width"]] <- 1.4 * subPlot[["height"]]
 			}
 
-			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]], plot = .networkAnalysisOneNetworkPlot)
+			currentplot <- .networkAnalysisOneNetworkPlot(networkToPlot, options, minE, qgraph, layout, groups, maxE, labels, 
+			                                              legend, shape, nodeColor, edgeColor, nodeNames)
+			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]], plot = currentplot)
 
 			subPlot[["convertible"]] <- TRUE
 			subPlot[["data"]] <- content[["png"]]
@@ -1610,6 +1612,8 @@ NetworkAnalysis <- function (
 			plot[["collection"]][[v]] <- subPlot
 
 		}
+    dev.off() # close the fake png
+    if (file.exists(tempFileName)) file.remove(tempFileName) # remove the fake png file
 
 		plot[["status"]] <- "complete"
 
