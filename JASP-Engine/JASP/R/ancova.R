@@ -210,7 +210,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   if(is.null(stateMarginalMeansBoots) && options[['marginalMeansBootstrapping']]){
     
-    result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateMarginalMeans)
+    result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateMarginalMeansBoots)
     results[["marginalMeansBoots"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
     status <- result$status
     stateMarginalMeans <- result$stateMarginalMeans
@@ -1501,7 +1501,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     interactionTerm <- ifelse(length(postHocVariables[[postHocVarIndex]]) > 1,
                               TRUE, FALSE)
     
-    postHocTable[["title"]] <- paste("Post Hoc Comparisons - ", thisVarName, sep="")
+    postHocTable[["title"]] <- paste("Bootstrapped Post Hoc Comparisons - ", thisVarName, sep="")
     postHocTable[["name"]] <- paste("postHoc_", thisVarName, sep="")
     
     postHocInterval  <- options$confidenceIntervalIntervalPostHoc
@@ -1894,8 +1894,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
     fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
     fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
-    fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
-    fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
+    fields[[length(fields) + 1]] <- list(name="Lower", type="number", format="sf:4;dp:3", overTitle = "95% CI")
+    fields[[length(fields) + 1]] <- list(name="Upper", type="number", format="sf:4;dp:3", overTitle = "95% CI")
     
     footnotes <- .newFootnotes()
     
@@ -1961,8 +1961,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         
         row[["Marginal Mean"]] <- .clean(r$lsmean[index])
         row[["SE"]] <- .clean(r$SE[index])
-        row[["Lower CI"]] <- .clean(r$lower.CL[index])
-        row[["Upper CI"]] <- .clean(r$upper.CL[index])
+        row[["Lower"]] <- .clean(r$lower.CL[index])
+        row[["Upper"]] <- .clean(r$upper.CL[index])
         
         if(options$marginalMeansCompareMainEffects) {
           row[["t"]] <- .clean(r$t.ratio[index])
@@ -1995,13 +1995,200 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         
         row[["Marginal Mean"]] <- "."
         row[["SE"]] <- "."
-        row[["Lower CI"]] <- "."
-        row[["Upper CI"]] <- "."
+        row[["Lower"]] <- "."
+        row[["Upper"]] <- "."
         
         if(options$marginalMeansCompareMainEffects) {
           row[["t"]] <- "."
           row[["p"]] <- "."
         }
+        
+        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+        
+        rows[[k]] <- row
+        
+      }
+      
+      result[["data"]] <- rows
+    }
+    
+    result[["footnotes"]] <- as.list(footnotes)
+    
+    if (status$error)
+      result[["error"]] <- list(error="badData")
+    
+    marginalMeans[[i]] <- result
+    
+  }
+  
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+    
+    stateMarginalMeans <- marginalMeans
+    
+  } else {
+    
+    stateMarginalMeans <- NULL
+    
+  }
+  
+  list(result=marginalMeans, status=status, stateMarginalMeans=stateMarginalMeans)
+}
+
+.anovaMarginalMeansBootstrapping <- function(dataset, options, perform, model, status, singular, stateMarginalMeans) {
+  
+  if (is.null(options$marginalMeansTerms))
+    return (list(result=NULL, status=status))
+  
+  terms <- options$marginalMeansTerms
+  
+  terms.base64 <- c()
+  terms.normal <- c()
+  
+  for (term in terms) {
+    
+    components <- unlist(term)
+    term.base64 <- paste(.v(components), collapse=":", sep="")
+    term.normal <- paste(components, collapse=" \u273B ", sep="")
+    
+    terms.base64 <- c(terms.base64, term.base64)
+    terms.normal <- c(terms.normal, term.normal)
+  }
+  
+  marginalMeans <- list()
+  
+  for (i in .indices(terms.base64)) {
+    
+    result <- list()
+    
+    result[["title"]] <- paste("Bootstrapped Marginal Means - ",terms.normal[i], sep="")
+    result[["name"]] <- paste("marginalMeans_",gsub("\u273B","*",gsub(" ", "", terms.normal[i], fixed=TRUE), fixed=TRUE), sep="")
+    
+    fields <- list()
+    
+    for(j in .indices(unlist(terms[[i]])))
+      fields[[j]] <- list(name=unlist(terms[[i]])[[j]], type="string", combine=TRUE)
+    
+    fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
+    fields[[length(fields) + 1]] <- list(name="Bias", type="number", format="sf:4;dp:3")
+    fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
+    fields[[length(fields) + 1]] <- list(name="Lower", type="number", format="sf:4;dp:3", overTitle="95% bca\u002A CI")
+    fields[[length(fields) + 1]] <- list(name="Upper", type="number", format="sf:4;dp:3", overTitle="95% bca\u002A CI")
+    
+    footnotes <- .newFootnotes()
+    
+    .addFootnote(footnotes, symbol = "<em>Note.</em>",
+                 text = paste0("Bootstrapping based on ", options[['marginalMeansBootstrappingReplicates']], " replicates."))
+    .addFootnote(footnotes, symbol = "<em>Note.</em>",
+                 text = "Marginal Means are based on the median of the bootstrap distribution.")
+    .addFootnote(footnotes, symbol = "\u002A",
+                 text = "Bias corrected accelerated.")
+    
+    result[["schema"]] <- list(fields=fields)
+    
+    termsTemp <- unlist(terms[[i]])
+    
+    lvls <- list()
+    factors <- list()
+    
+    for (variable in termsTemp) {
+      
+      factor <- dataset[[ .v(variable) ]]
+      factors[[length(factors)+1]] <- factor
+      lvls[[variable]] <- levels(factor)
+    }
+    
+    cases <- rev(expand.grid(rev(lvls)))
+    cases <- as.data.frame(apply(cases,2,as.character))
+    
+    nRows <- dim(cases)[1]
+    nCol <- dim(cases)[2]
+    
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+      
+      formula <- as.formula(paste("~", terms.base64[i]))
+      
+      .bootstrapMarginalMeans <- function(data, indices, options){
+        resamples <- data[indices, , drop=FALSE]
+        
+        anovaModelBoots <- .anovaModel(resamples, options) # refit model
+        
+        modelBoots <- anovaModelBoots$model
+        singularBoots <- anovaModelBoots$singular
+        r <- summary(emmeans::lsmeans(modelBoots, formula), infer = c(FALSE,FALSE))
+        
+        r$lsmean
+      }
+
+      bootstrapMarginalMeans <- boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
+                                           R = options[["marginalMeansBootstrappingReplicates"]],
+                                           options = options)
+      
+      bootstrapMarginalMeans.summary <- summary(bootstrapMarginalMeans)
+      bootstrapMarginalMeans.ci <- t(sapply(1:nrow(bootstrapMarginalMeans.summary), function(index){
+        boot::boot.ci(boot.out = bootstrapMarginalMeans, conf = 0.95, type = "bca",
+                      index = index)[['bca']][1,4:5]
+      }))
+      bootstrapMarginalMeans.summary[,"lower.CL"] <- bootstrapMarginalMeans.ci[,1]
+      bootstrapMarginalMeans.summary[,"upper.CL"] <- bootstrapMarginalMeans.ci[,2]
+      
+      r <- as.data.frame(bootstrapMarginalMeans.summary)
+      r <- cbind(cases, r)
+      
+      rows <- list()
+
+      for(k in 1:nRows) {
+        
+        row <- list()
+        
+        for(j in 1:nCol)
+          row[[ colnames(cases)[j] ]] <- cases[k,j]
+        
+        if(nCol > 1) {
+          index <- apply(r[,1:nCol], 1, function(x) all(x==cases[k,]))
+        } else {
+          index <- k
+        }
+        
+        row[["Marginal Mean"]] <- .clean(r$bootMed[index])
+        row[["Bias"]] <- .clean(r$bootBias[index])
+        row[["SE"]] <- .clean(r$bootSE[index])
+        row[["Lower"]] <- .clean(r$lower.CL[index])
+        row[["Upper"]] <- .clean(r$upper.CL[index])
+        
+        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+        
+        rows[[k]] <- row
+        
+      }
+      
+      result[["data"]] <- rows
+      result[["status"]] <- "complete"
+      
+    } else {
+      
+      rows <- list()
+      
+      for(k in 1:nRows) {
+        
+        row <- list()
+        
+        for(j in 1:nCol)
+          row[[ colnames(cases)[j] ]] <- cases[k,j]
+        
+        row[["Marginal Mean"]] <- "."
+        row[["Bias"]] <- "."
+        row[["SE"]] <- "."
+        row[["Lower"]] <- "."
+        row[["Upper"]] <- "."
+        
         
         if(cases[k,nCol] == lvls[[ nCol ]][1]) {
           row[[".isNewGroup"]] <- TRUE
