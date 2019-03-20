@@ -129,7 +129,7 @@ windows {
         createVersionWix.commands += $$quote(echo ^<?define MajorVersion=\"$${JASP_VERSION_MAJOR}\" ?^> >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define MinorVersion=\"$${JASP_VERSION_MINOR}\" ?^> >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define BuildVersion=\"$${JASP_VERSION_BUILD}\" ?^> >>  $${WIXFILENAME}) &&
-        createVersionWix.commands += $$quote(echo ^<?define Revision=\"$${JASP_VERSION_REVISION}\" ?^> >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define Revision=\"$${JASP_VERSION_REVISION}\" ?^> >>  $${WIXFILENAME})
 
         QMAKE_EXTRA_TARGETS += createVersionWix
         POST_TARGETDEPS     += createVersionWix
