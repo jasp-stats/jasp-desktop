@@ -130,7 +130,7 @@ bool Labels::syncInts(const std::set<int> &values)
 std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething)
 {
 	std::vector<std::pair<std::string,std::string> > valuesToAdd;
-	std::map<std::string, std::vector<uint> > mapValuesToAdd;
+	std::map<std::string, std::vector<unsigned int> > mapValuesToAdd;
 	uint valuesToAddIndex = 0;
 
 	for (const std::string& newValue : new_values)
