@@ -58,6 +58,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   stateContrasts <- state$stateContrasts
   stateLevene <- state$stateLevene
   stateMarginalMeans <- state$stateMarginalMeans
+  stateMarginalMeansBoots <- state$stateMarginalMeansBoots
   stateSimpleEffects <- state$stateSimpleEffects
   stateDescriptivesTable <- state$stateDescriptivesTable
   stateKruskal <- state$stateKruskal
@@ -207,6 +208,19 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
   }
   
+  if(is.null(stateMarginalMeansBoots) && options[['marginalMeansBootstrapping']]){
+    
+    result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateMarginalMeans)
+    results[["marginalMeansBoots"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
+    status <- result$status
+    stateMarginalMeans <- result$stateMarginalMeans
+    
+  } else if(options[['marginalMeansBootstrapping']]) {
+    
+    results[['marginalMeansBoots']] <- list(collection=stateMarginalMeansBoots, title = "Marginal Means via Bootstrapping")
+    
+  }
+  
   ## Create Simple Effects Table
   
   if (is.null(stateSimpleEffects)) {
@@ -287,6 +301,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(name="posthoc", type="collection", meta="table"),
     list(name="posthocBoots", type="collection", meta="table"),
     list(name="marginalMeans", type="collection", meta="table"),
+    list(name="marginalMeansBoots", type="collection", meta="table"),
     list(name="simpleEffects", type="table"),
     list(name="kruskal", type="table")
   )
@@ -316,6 +331,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     stateLevene = stateLevene,
     stateDescriptivesTable = stateDescriptivesTable,
     stateMarginalMeans = stateMarginalMeans,
+    stateMarginalMeansBoots = stateMarginalMeansBoots,
     stateSimpleEffects = stateSimpleEffects,
     stateKruskal = stateKruskal
   )
@@ -340,6 +356,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     stateLevene = c(defaults, "homogeneityTests", "VovkSellkeMPR"),
     stateDescriptivesTable = c(defaults, "descriptives"),
     stateMarginalMeans = c(defaults, "marginalMeansTerms", "marginalMeansCompareMainEffects", "marginalMeansCIAdjustment"),
+    stateMarginalMeansBoots = c(defaults, "marginalMeansTerms", 
+                                "marginalMeansBootstrapping", "marginalMeansBootstrappingReplicates"),
     stateSimpleEffects = c(defaults, "simpleFactor", "moderatorFactorOne", "moderatorFactorTwo"),
     stateKruskal = c(defaults, "kruskalVariablesAssigned"))
   
@@ -1841,7 +1859,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .anovaMarginalMeans <- function(dataset, options, perform, model, status, singular, stateMarginalMeans) {
-  
+
   if (is.null(options$marginalMeansTerms))
     return (list(result=NULL, status=status))
   
@@ -1870,9 +1888,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     result[["name"]] <- paste("marginalMeans_",gsub("\u273B","*",gsub(" ", "", terms.normal[i], fixed=TRUE), fixed=TRUE), sep="")
     
     fields <- list()
-    
-    for(j in .indices(terms[[i]]))
-      fields[[j]] <- list(name=terms[[i]][[j]], type="string", combine=TRUE)
+
+    for(j in .indices(unlist(terms[[i]])))
+      fields[[j]] <- list(name=unlist(terms[[i]])[[j]], type="string", combine=TRUE)
     
     fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
     fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
@@ -1894,11 +1912,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
     result[["schema"]] <- list(fields=fields)
     
-    termsTemp <- as.vector(terms[[i]])
+    termsTemp <- unlist(terms[[i]])
     
     lvls <- list()
     factors <- list()
-    
+
     for (variable in termsTemp) {
       
       factor <- dataset[[ .v(variable) ]]

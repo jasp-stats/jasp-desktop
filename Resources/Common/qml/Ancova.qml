@@ -227,6 +227,20 @@ Form
 			AssignedVariablesList {	 name: "marginalMeansTerms" }
 		}
 		
+        CheckBox
+        {
+            name: "marginalMeansBootstrapping"; label: qsTr("From")
+            childrenOnSameRow: true
+            IntegerField
+            {
+                name: "marginalMeansBootstrappingReplicates"
+                defaultValue: 1000
+                fieldWidth: 50
+                min: 100
+                afterLabel: qsTr("bootstraps")
+            }
+        }
+
 		CheckBox
 		{
 			name: "marginalMeansCompareMainEffects"; label: qsTr("Compare marginal means to 0")
