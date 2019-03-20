@@ -12,7 +12,7 @@ FocusScope
 	width:		slidePart.width
 	height:		600
 	z:			1
-	visible:	actionMenu.x + actionMenu.width > 0
+	visible:	fileMenuAnimation.running ? actionMenu.x + actionMenu.width > 0 : fileMenuModel.visible
 
 
 	property int action_button_height:		35 * preferencesModel.uiScale
@@ -26,7 +26,7 @@ FocusScope
 		width:	(resourceScreen.x + resourceScreen.width)
 		height:	fileMenu.height
 
-		Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		Behavior on x { PropertyAnimation { id: fileMenuAnimation; duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 		MouseArea
 		{
