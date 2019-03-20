@@ -29,8 +29,7 @@ class ListModelInteractionAvailable : public ListModelAvailableInterface, public
 public:
 	ListModelInteractionAvailable(QMLListView* listView);
 	
-	virtual void resetTermsFromSourceModels() OVERRIDE;
-
+	void resetTermsFromSourceModels() override;
 };
 
 #endif // LISTMODELINTERACTIONAVAILABLE_H

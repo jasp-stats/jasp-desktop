@@ -35,18 +35,19 @@ public:
     };
 
 	ListModelFactorsForm(QMLListView* listView);
-	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE { return count(); }
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 	
-	void initFactors(const std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > &factors);
-	virtual const Terms& terms(const QString& what = QString()) const OVERRIDE;
+	QHash<int, QByteArray>	roleNames()													const override;
+	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return count(); }
+	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	
-	int	count() const { return int(_factors.size()); }
+	const Terms&			terms(const QString& what = QString())						const override;
+	
+	void					initFactors(const std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > &factors);
+	int						count() const { return int(_factors.size()); }
 	std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > getFactors() const;
 	
-	Q_INVOKABLE void addFactor();
-	Q_INVOKABLE void removeFactor();
+	Q_INVOKABLE void		addFactor();
+	Q_INVOKABLE void		removeFactor();
 		
 public slots:
 	void titleChangedSlot(int index, QString title);	
@@ -56,16 +57,17 @@ signals:
 	void addListView(BoundQMLListViewTerms* listView);
 	
 protected:
-	struct Factor {
-		QString name;
-		QString title;
-		BoundQMLListViewTerms* listView;
-		std::vector<std::string> initTerms;
+	struct Factor
+	{
+		QString						name;
+		QString						title;
+		BoundQMLListViewTerms*		listView;
+		std::vector<std::string>	initTerms;
 		Factor(const QString& _name, const QString& _title, std::vector<std::string> _initTerms = std::vector<std::string>()) :
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}
 	};
-	QVector<Factor*> _factors;
-	Terms _titles;
+	QVector<Factor*>	_factors;
+	Terms				_titles;
 	
 protected slots:
 	void resetTerms();

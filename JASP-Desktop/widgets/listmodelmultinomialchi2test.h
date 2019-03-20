@@ -53,7 +53,7 @@ public:
 				void				initValues(const std::vector<std::string>& colNames, std::vector<std::string>& levels, const std::vector<std::vector<double> >& values);
 				
 public slots:	
-	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;
+	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
 				
 	void refreshModel() { return ListModel::refresh(); }
 

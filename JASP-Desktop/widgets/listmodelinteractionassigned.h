@@ -33,20 +33,17 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface, public I
 public:
 	ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned);
 
-	virtual void initTerms(const Terms &terms) OVERRIDE;
-	
-	virtual void setAvailableModel(ListModelAvailableInterface *source) OVERRIDE;
-	
-	virtual Terms *termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
-	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
-	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") OVERRIDE;
-	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
-	
-	virtual QString getItemType(const Term &term) const OVERRIDE;
+	void	initTerms(const Terms &terms)													override;
+	void	setAvailableModel(ListModelAvailableInterface *source)							override;
+	Terms*	termsFromIndexes(const QList<int> &indexes)								const	override;
+	bool	canAddTerms(Terms *terms) const override;
+	Terms*	addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") override;
+	void	removeTerms(const QList<int> &indices)											override;
+	QString getItemType(const Term &term)											const	override;
 	
 		
 public slots:
-	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) OVERRIDE;
+	void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) override;
 	
 protected:
 	void addCombinedTerms(const Terms& terms, qmlAssignType assignType);

@@ -43,7 +43,7 @@ public:
 	QMLListView(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() = 0;
-	virtual void setUp() OVERRIDE;	
+	void setUp() override;	
 	
 	virtual void setTermsAreNotVariables();
 	virtual void setTermsAreInteractions();

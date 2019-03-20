@@ -59,7 +59,7 @@ public:
 
 				void			runRScript(QString script, QString controlName);
 				
-	virtual		void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) OVERRIDE;
+				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);

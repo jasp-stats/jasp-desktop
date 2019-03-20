@@ -31,26 +31,24 @@ class BoundQMLListViewMeasuresCells : public BoundQMLListViewDraggable
 public:
 	BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisForm* form);
 	
-	virtual ListModel* model() OVERRIDE	{ return _measuresCellsModel; }
-	virtual Option* boundTo() OVERRIDE	{ return _boundTo; }
-	
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;
-	virtual bool isJsonValid(const Json::Value& optionValue) OVERRIDE;
-	virtual void setUp() OVERRIDE;
+	ListModel*	model()										override { return _measuresCellsModel; }
+	Option*		boundTo()									override { return _boundTo; }
+	void		bindTo(Option *option)						override;
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;
+	bool		isJsonValid(const Json::Value& optionValue) override;
+	void		setUp()										override;
 	
 	const Terms& getLevels();
 	
 protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
+	void modelChangedHandler() override;
 	
 private:
-	OptionVariables* _boundTo;
-	ListModelMeasuresCellsAssigned* _measuresCellsModel;
-	QList<ListModelRepeatedMeasuresFactors*> _sourceFactorsModels;
-	
-	Terms _tempTerms;
+	OptionVariables*							_boundTo;
+	ListModelMeasuresCellsAssigned*				_measuresCellsModel;
+	QList<ListModelRepeatedMeasuresFactors*>	_sourceFactorsModels;
+	Terms										_tempTerms;
 	
 	void _initLevels();
 };

@@ -125,7 +125,6 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 
 	void removeAnalysis(Analysis *analysis);
-	void addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry);
 
 	void getAnalysesUserData();
 	Json::Value getResultsMeta();
