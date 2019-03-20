@@ -145,7 +145,8 @@ if not exist %VCVARS_DIR% (
     exit /b 11
 )
 
-SET CPUS=1
+SET CPUS=6
+REM setting it to 1 might avoid errors but also makes it take an hour...
 REM %NUMBER_OF_PROCESSORS% manually changed to 1... because MSVC because loves to get all tangled up in internal errors when specifying "big" numbers like 8 or 24 :s
 
 REM Setting up Visual Studio Environment
