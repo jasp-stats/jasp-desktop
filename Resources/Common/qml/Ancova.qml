@@ -138,7 +138,7 @@ Form
 
 		CheckBox
 		{
-			name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
+            name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
 			childrenOnSameRow: true
 			PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
 		}
@@ -169,10 +169,12 @@ Form
 		
 		VariablesForm {
 			height: 200
-			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: "fixedFactors"	}
+            AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");         source: ["fixedFactors", "covariates"]	}
 			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleVariable: true	}
-			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate lines"); singleVariable: true		}
-			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots"); singleVariable: true		}
+            AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate lines");  singleVariable: true
+                                    allowedColumns: ["ordinal", "nominal"]		}
+            AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots");  singleVariable: true
+                                    allowedColumns: ["ordinal", "nominal"]		}
 		}
 		
 		Group
@@ -186,9 +188,9 @@ Form
 					name: "errorBarType"
 					RadioButton
 					{
-						value: "confidenceInterval"; label: qsTr("Confidence Interval"); checked: true
+                        value: "confidenceInterval"; label: qsTr("Confidence Intervals"); checked: true
 						childrenOnSameRow: true
-						PercentField { name: "confidenceIntervalInterval";	label: qsTr("Interval"); defaultValue: 95 }
+                        PercentField { name: "confidenceIntervalInterval"; defaultValue: 95 }
 					}
 					RadioButton { value: "standardError"; label: qsTr("Standard error") }
 				}

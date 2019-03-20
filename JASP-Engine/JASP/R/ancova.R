@@ -2373,32 +2373,59 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "" && options$dependent != "") {
     
-    groupVars <- c(options$plotHorizontalAxis, options$plotSeparateLines, options$plotSeparatePlots)
+    independent <- options$plotHorizontalAxis
+
+    if (independent %in% options$covariates) {
+      independentType <- "covariate"
+    } else if (independent %in% options$fixedFactors | independent %in% options$randomFactors) {
+      independentType <- "factor"
+    } else {
+      independentType <- NA
+    }
+    moderator1 <- options$plotSeparateLines
+    moderator2 <- options$plotSeparatePlots
+    
+    groupVars <- c(independent, moderator1, moderator2)
+    groupVars <- groupVars[! groupVars %in% options$covariates]
     groupVars <- groupVars[groupVars != ""]
     groupVarsV <- .v(groupVars)
     dependentV <- .v(options$dependent)
+    independentV <- .v(independent)
+    moderator1V <- .v(moderator1)
+    moderator2V <- .v(moderator2)
     
-    summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
-                              conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType)
-    
-    colnames(summaryStat)[which(colnames(summaryStat) == dependentV)] <- "dependent"
-    
-    if ( options$plotHorizontalAxis != "" ) {
-      colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
-    }
-    
-    if ( options$plotSeparateLines != "" ) {
-      colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparateLines))] <- "plotSeparateLines"
-    }
-    
-    if ( options$plotSeparatePlots != "" ) {
-      colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparatePlots))] <- "plotSeparatePlots"
+    if(independentType != "covariate"){
+      summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
+                                conf.interval = options$confidenceIntervalInterval,
+                                na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType)
+      
+      colnames(summaryStat)[which(colnames(summaryStat) == dependentV)] <- "dependent"
+      
+      if ( options$plotHorizontalAxis != "" ) {
+        colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
+      }
+      
+      if ( options$plotSeparateLines != "" ) {
+        colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparateLines))] <- "plotSeparateLines"
+      }
+      
+      if ( options$plotSeparatePlots != "" ) {
+        colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparatePlots))] <- "plotSeparatePlots"
+      }
     }
     
     base_breaks_x <- function(x){
       b <- unique(as.numeric(x))
       d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-      list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+      
+      breaks <- list()
+      breaks[[1]] <- ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend),
+                                           inherit.aes=FALSE, size=1)
+      if(!is.factor(x)) {
+        breaks[[2]] <- ggplot2::scale_x_continuous(breaks=pretty(b))
+      }
+      
+      return(breaks)
     }
     
     base_breaks_y <- function(x, plotErrorBars){
@@ -2409,7 +2436,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
              ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
       } else {
-        b <- pretty(x[,"dependent"])
+        if(length(names(x))>1){
+          b <- pretty(x[,"dependent"])
+        } else{
+          b <- pretty(x)
+        }
         d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
         list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
              ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
@@ -2417,7 +2448,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     }
     
     if (options$plotSeparatePlots != "") {
-      subsetPlots <- levels(summaryStat[,"plotSeparatePlots"])
+      subsetPlots <- levels(dataset[,.v(options$plotSeparatePlots)])
       nPlots <- length(subsetPlots)
     } else {
       nPlots <- 1
@@ -2431,67 +2462,149 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         
         descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotLegend
         descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotLegend
-        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotLegend", height="plotHeightDescriptivesPlotLegend")
+        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotLegend",
+                                             height="plotHeightDescriptivesPlotLegend")
         
       } else {
         
         descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotNoLegend
         descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotNoLegend
-        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotNoLegend", height="plotHeightDescriptivesPlotNoLegend")
+        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotNoLegend",
+                                             height="plotHeightDescriptivesPlotNoLegend")
         
       }
-      
-      if (options$plotSeparatePlots != "") {
-        summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
-      } else {
-        summaryStatSubset <- summaryStat
+        
+      if(independentType == "factor") {
+        
+        if (options$plotSeparatePlots != "") {
+          summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
+        } else {
+          summaryStatSubset <- summaryStat
+        }
+        
+        if(options$plotSeparateLines == "") {
+          
+          p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
+                                                               y=dependent,
+                                                               group=1))
+          
+        } else {
+          
+          p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
+                                                               y=dependent,
+                                                               group=plotSeparateLines,
+                                                               shape=plotSeparateLines,
+                                                               fill=plotSeparateLines))
+          
+        }
+        
+        if (options$plotErrorBars) {
+          
+          pd <- ggplot2::position_dodge(.2)
+          p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
+                                                      ymax=ciUpper),
+                                         colour="black", width=.2, position=pd)
+          
+        } else {
+          
+          pd <- ggplot2::position_dodge(0)
+          
+        }
+        
+        guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)),
+                                             title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3,
+                                             default.unit = "inch")
+        
+        p <- p + ggplot2::geom_line(position=pd, size = .7) +
+          ggplot2::geom_point(position=pd, size=4) +
+          ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
+          ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
+          ggplot2::scale_color_manual(values = rep("black",200),guide=guideLegend) +
+          ggplot2::ylab(options$dependent) +
+          ggplot2::xlab(options$plotHorizontalAxis) +
+          base_breaks_y(summaryStat, options$plotErrorBars) +
+          base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
+        
+      } else if(independentType == "covariate"){
+        if (options$plotSeparatePlots != "") {
+          level <- levels(dataset[, .v(options$plotSeparatePlots)])[i]
+          data <- dataset[dataset[[moderator2V]] == level, ]
+        } else {
+          data <- dataset
+        }
+        
+        if (options$plotSeparateLines == "") {
+          
+          p <- ggplot2::ggplot(data, ggplot2::aes_string(x=independentV, y=dependentV))
+          p <- p + ggplot2::geom_point(na.rm = TRUE, size = 3)
+          p <- p + ggplot2::labs(x = .unv(independentV), y = .unv(dependentV))
+          
+          if (options$plotErrorBars) {
+            
+            if (options$errorBarType == "confidenceInterval") {
+              
+              p <- p + ggplot2::geom_smooth(method="lm", se=TRUE, level = options$confidenceIntervalInterval,
+                                            size = .7, color = "black")
+              
+            } else if (options$errorBarType == "standardError") {
+              
+              p <- p + ggplot2::geom_smooth(method="lm", se=TRUE, level = 1-(2*pnorm(-1)), size = .7, color = "black")
+              
+            } 
+            
+          } else {
+            
+            p <- p + ggplot2::geom_smooth(method="lm", se=FALSE, size = .7, color = "black")
+            
+          }
+          
+        } else {
+          p <- ggplot2::ggplot(data, ggplot2::aes_string(x=independentV, y=dependentV, group = moderator1V,
+                                                         shape = moderator1V, fill = moderator1V))
+          p <- p + ggplot2::geom_point(na.rm = TRUE, size = 3)
+          p <- p + ggplot2::labs(x = .unv(independentV), y = .unv(dependentV), group = .unv(moderator1V))
+          
+          if (options$plotErrorBars) {
+            
+            if (options$errorBarType == "confidenceInterval") {
+              
+              p <- p + ggplot2::geom_smooth(method="lm", se=TRUE, level = options$confidenceIntervalInterval,
+                                            size = .7, color = "black")
+              
+            } else if (options$errorBarType == "standardError") {
+              
+              p <- p + ggplot2::geom_smooth(method="lm", se=TRUE, level = 1-(2*pnorm(-1)), size = .7, color = "black")
+              
+            } 
+            
+          } else {
+            
+            p <- p + ggplot2::geom_smooth(method="lm", se=FALSE, size = .7, color = "black")
+            
+          }
+          
+        }
+        
+        p <- p +
+          ggplot2::scale_fill_hue(c=60, l=80) +
+          ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
+          ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+          ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines)
+        p <- p + base_breaks_y(dataset[, dependentV], FALSE)
+        p <- p + base_breaks_x(dataset[, .v(options$plotHorizontalAxis)])
       }
       
-      if(options$plotSeparateLines == "") {
-        
-        p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
-                                                             y=dependent,
-                                                             group=1))
-        
-      } else {
-        
-        p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
-                                                             y=dependent,
-                                                             group=plotSeparateLines,
-                                                             shape=plotSeparateLines,
-                                                             fill=plotSeparateLines))
-        
-      }
-      
-      if (options$plotErrorBars) {
-        
-        pd <- ggplot2::position_dodge(.2)
-        p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
-                                                    ymax=ciUpper),
-                                       colour="black", width=.2, position=pd)
-        
-      } else {
-        
-        pd <- ggplot2::position_dodge(0)
-        
-      }
-      
-      guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)), title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3, default.unit = "inch")
-      
-      p <- p + ggplot2::geom_line(position=pd, size = .7) +
-        ggplot2::geom_point(position=pd, size=4) +
-        ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
-        ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
-        ggplot2::scale_color_manual(values = rep("black",200),guide=guideLegend) +
-        ggplot2::ylab(options$dependent) +
-        ggplot2::xlab(options$plotHorizontalAxis) +
-        base_breaks_y(summaryStat, options$plotErrorBars) +
-        base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
       
       p <- JASPgraphs::themeJasp(p, legend.position = "right")
       
       if (nPlots > 1) {
-        descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
+        if (independentType == "factor") {
+          descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",
+                                               subsetPlots[i], sep = "")
+        } else if (independentType == "covariate") {
+          descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",
+                                               levels(dataset[, .v(options$plotSeparatePlots)])[i], sep = "")
+        }
       } else {
         descriptivesPlot[["title"]] <- "Descriptives Plot"
       }
