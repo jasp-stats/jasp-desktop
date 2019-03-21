@@ -59,7 +59,7 @@
           <th>File</th>
           <th>Branch</th>
           <th>Size <small>MB</small></th>
-          <th>Date Mod.</th>
+          <th>Uploaded</th>
           <th>Source</th>
         </tr>
       </thead>
@@ -92,12 +92,13 @@
             
             if(count($inputSplit) === 4 && $inputSplit[0] === "JASP")
             {
-              $inputType   = $inputSplit[1];
-              $inputBranch = $inputSplit[2];
-              $inputCommitPart = explode(".", $inputSplit[3])[0];
-              $inputCommit = "<a href='https://github.com/jasp-stats/jasp-desktop/commit/$inputCommitPart'>GitHub</a>";
-
-              $inputName  = "JASP $inputType";
+              $inputType       = $inputSplit[1];
+              $inputBranch     = $inputSplit[2];
+              $inputEnding     = explode(".", $inputSplit[3]);
+              $inputCommitPart = $inputEnding[0];
+              $inputCommit     = "<a href='https://github.com/jasp-stats/jasp-desktop/commit/$inputCommitPart'>GitHub</a>";
+              $inputExt        = $inputEnding[1];
+              $inputName       = "JASP $inputExt";
             }
             
             print("
