@@ -27,12 +27,16 @@ QMLItem::QMLItem(QQuickItem *item, AnalysisForm* form)
 	_name = QQmlProperty(_item, "name").read().toString();
 }
 
-QMLItem::~QMLItem()
+void QMLItem::cleanUp()
 {
+	if (_item)
+		_item->disconnect();	
 }
 
 void QMLItem::resetQMLItem(QQuickItem *item)
 {
+	if (_item)
+		_item->disconnect();
 	_item = item;
 }
 
