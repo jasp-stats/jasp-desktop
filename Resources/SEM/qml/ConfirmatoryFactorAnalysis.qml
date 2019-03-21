@@ -34,68 +34,91 @@ Form
 	Section
 	{
 		title: qsTr("Second-order factor")
-		SEM.FactorsForm
-		{
+        VariablesForm
+        {
             id: secondorder
-            name: "secondOrder"
-            implicitHeight: Theme.defaultListHeight / 3 - 10
-            allowAll: true
-			availableVariablesList
-			{
+            AvailableVariablesList
+            {
                 name: "availableFactors"
-				source: [{ name: "factors", use: "title" }]
+                source: [{ name: "factors", use: "title" }]
                 showVariableTypeIcon: false
                 height: Theme.defaultListHeight / 3 - 10
             }
-            initNumberFactors: 1
+            AssignedVariablesList
+            {
+                title: "Second-Order"
+                name:  "secondOrder"
+                allowedColumns: []
+            }
+            height: Theme.defaultListHeight / 3
         }
+
+//		SEM.FactorsForm
+//		{
+//            id: secondorder
+//            name: "secondOrder"
+//            implicitHeight: Theme.defaultListHeight / 3 - 10
+//            allowAll: true
+//			availableVariablesList
+//			{
+//                name: "availableFactors"
+//				source: [{ name: "factors", use: "title" }]
+//                showVariableTypeIcon: false
+//                height: Theme.defaultListHeight / 3 - 10
+//            }
+//            initNumberFactors: 1
+//        }
     }
 
 	Section
 	{
         title: qsTr("Model options")
-		GridLayout
-		{
-			GroupBox
-			{
-                title: qsTr("Additional fit measures")
-                CheckBox { label: qsTr("AIC")   ; name: "aic"   }
-                CheckBox { label: qsTr("BIC")   ; name: "bic"   }
-                CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
-                CheckBox { label: qsTr("TLI")   ; name: "tli"   }
-                CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
-                CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
-            }
-			GroupBox
-			{
-                title: qsTr("Model Options")
-                CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
-                CheckBox { label: qsTr("Assume factors uncorrelated") ; name: "uncorrelatedFactors"    }
-                CheckBox { label: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true }
-				ComboBox
-				{
-                    label: qsTr("Factor Scaling")
-                    name: "identify"
-                    values: [
-                        { label: "Factor variances",  value: "factor"  },
-                        { label: "Marker variable",  value: "marker"  },
-                        { label: "Effects coding",   value: "effects" }
-                    ]
+        ColumnLayout {
+            GridLayout
+            {
+                GroupBox
+                {
+                    title: qsTr("Additional fit measures")
+                    CheckBox { label: qsTr("AIC")   ; name: "aic"   }
+                    CheckBox { label: qsTr("BIC")   ; name: "bic"   }
+                    CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
+                    CheckBox { label: qsTr("TLI")   ; name: "tli"   }
+                    CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
+                    CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
+                }
+                GroupBox
+                {
+                    title: qsTr("Model Options")
+                    CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
+                    CheckBox { label: qsTr("Assume factors uncorrelated") ; name: "uncorrelatedFactors"    }
+                    CheckBox { label: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true ; visible: false }
+                    ComboBox
+                    {
+                        label: qsTr("Factor Scaling")
+                        name: "identify"
+                        values: [
+                            { label: "Factor variances",  value: "factor"  },
+                            { label: "Marker variable",  value: "marker"  },
+                            { label: "Effects coding",   value: "effects" }
+                        ]
+                    }
                 }
             }
-        }
-        
-        VariablesForm {
-            id: rescov
-            height: 120
-            AvailableVariablesList {
-				name: "observedvars"
-				syncModels: factors.name
-            }
-            AssignedVariablesList {
+            GroupBox
+            {
                 title: qsTr("Residual Covariances")
-                name: "rescov"
-                listViewType: "Pairs"
+                VariablesForm {
+                    id: rescov
+                    height: 120
+                    AvailableVariablesList {
+                        name: "observedvars"
+                        syncModels: factors.name
+                    }
+                    AssignedVariablesList {
+                        name: "rescov"
+                        listViewType: "Pairs"
+                    }
+                }
             }
         }
     }
