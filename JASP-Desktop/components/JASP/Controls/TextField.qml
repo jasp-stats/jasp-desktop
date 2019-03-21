@@ -52,12 +52,19 @@ JASPControl
 	signal pressed()
 	signal released()
 	
+	function keyReturnPressed()
+	{
+		if (activeFocus)
+			trillFocus()
+		editingFinished();
+	}
+	
 	Component.onCompleted:
 	{
 		if (!beforeLabel.text && textField.text)
 			beforeLabel.text = textField.text;
 		
-		control.editingFinished.connect(editingFinished);
+		control.editingFinished.connect(keyReturnPressed);
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
 		control.released.connect(released);        
@@ -89,6 +96,7 @@ JASPControl
 			text:					textField.value
 			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
+			focus:					true
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
 			Layout.leftMargin:		beforeLabel.visible ? 0 : -labelSpacing
 			
