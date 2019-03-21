@@ -39,6 +39,11 @@ FocusScope
 	
 	activeFocusOnTab: true
 	
+	function trillFocus()
+	{
+		trillingFocusAnimation.start();
+	}
+	
 	function setDebugState()
 	{
 		debug = true
@@ -79,6 +84,7 @@ FocusScope
 	states: [
 		State
 		{
+			name: "hasFocus"
 			when: jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
 			PropertyChanges
 			{
@@ -88,6 +94,24 @@ FocusScope
 			}
 		}
 	]
+	
+	SequentialAnimation
+	{
+		id: trillingFocusAnimation
+		NumberAnimation {
+			target: focusIndicator
+			property: "border.width"
+			duration: 100
+			to: 0
+		}
+		NumberAnimation {
+			target: focusIndicator
+			property: "border.width"
+			duration: 100
+			to: Theme.jaspControlHighlightWidth			
+		}
+	}
+
 
 	transitions: [
 		Transition
