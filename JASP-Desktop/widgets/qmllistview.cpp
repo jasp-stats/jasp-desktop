@@ -112,6 +112,12 @@ void QMLListView::setUp()
 	QQmlProperty(_item, "model").write(QVariant::fromValue(listModel));
 }
 
+void QMLListView::cleanUp()
+{
+	model()->disconnect();
+	QMLItem::cleanUp();
+}
+
 void QMLListView::setTermsAreNotVariables()
 {
 	model()->setTermsAreVariables(false);

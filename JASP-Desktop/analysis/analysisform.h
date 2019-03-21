@@ -53,10 +53,6 @@ public:
 				void			bindTo(Options *options, DataSet *dataSet, const Json::Value& oldVersionOptions);
 				void			unbind();
 
-				bool			hasIllegalValue()		const;
-				const QString	&illegalValueMessage()	const;
-				void			illegalValueHandler(Bound *source);
-
 				void			runRScript(QString script, QString controlName);
 				
 				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
@@ -66,7 +62,6 @@ public slots:
 				void			dataSetChanged();
 
 signals:
-				void			illegalChanged(AnalysisForm * form);
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
 				void			formCompleted();
@@ -96,6 +91,7 @@ private:
 	void		_setUpRelatedModels(const std::map<QString, QString>& relationMap);
 	void		_setUpItems();
 	void		_setErrorMessages();
+	void		_cleanUpForm();
 
 private slots:
 	void		formCompletedHandler();
@@ -110,13 +106,6 @@ protected:
 	DataSet									*_dataSet;
 	Options									*_options;
 
-	OptionVariables							*_mainVariables;
-
-	void									updateIllegalStatus();
-
-	std::list<Bound *>						_bounds;
-	bool									_hasIllegalValue;
-	QString									_illegalMessage;
 	bool									_removed = false;
 	
 private:

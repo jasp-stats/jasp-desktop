@@ -31,23 +31,24 @@ class QMLItem
 
 public:
 	QMLItem(QQuickItem* item, AnalysisForm* form);
-	virtual ~QMLItem();
+	virtual ~QMLItem() {};
 	
-	virtual void setUp() {}
-	const QString& name() { return _name; }
-	AnalysisForm* form() { return _form; }
-	virtual void resetQMLItem(QQuickItem* item);
-	void addError(const QString& error);
-	bool addDependency(QMLItem* item);
-	const QVector<QMLItem*>& depends() { return _depends; }
-	void setProperty(const QString& name, const QVariant& value);
-	QVariant getProperty(const QString& name);
+	virtual void				setUp() {}
+	virtual void				cleanUp();
+	const QString&				name() { return _name; }
+	AnalysisForm*				form() { return _form; }
+	virtual void				resetQMLItem(QQuickItem* item);
+	void						addError(const QString& error);
+	bool						addDependency(QMLItem* item);
+	const QVector<QMLItem*>&	depends() { return _depends; }
+	void						setProperty(const QString& name, const QVariant& value);
+	QVariant					getProperty(const QString& name);
 	
 protected:
 	
-	QQuickItem* _item;
-	QString _name;
-	AnalysisForm* _form;
+	QQuickItem*			_item;
+	QString				_name;
+	AnalysisForm*		_form;
 	QVector<QMLItem*>	_depends;
 };
 

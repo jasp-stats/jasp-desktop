@@ -312,7 +312,6 @@ HEADERS += \
     widgets/filemenu/osffilesystem.h \
     widgets/filemenu/computerfilesystem.h \
     widgets/filemenu/filesystementry.h \
-    widgets/boundmodel.h \
     widgets/boundqmlcheckbox.h \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \

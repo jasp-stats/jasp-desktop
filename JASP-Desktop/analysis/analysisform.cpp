@@ -55,24 +55,10 @@ using namespace std;
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
-	_mainVariables = nullptr;
-
 	_options = nullptr;
 	_dataSet = nullptr;
-
-	_hasIllegalValue = false;
 	
 	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler);
-}
-
-bool AnalysisForm::hasIllegalValue() const
-{
-	return _hasIllegalValue;
-}
-
-const QString &AnalysisForm::illegalValueMessage() const
-{
-	return _illegalMessage;
 }
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
@@ -105,36 +91,6 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 }
 
-void AnalysisForm::updateIllegalStatus()
-{
-	QString message;
-	bool illegal = false;
-
-	for (const Bound *bound : _bounds)
-	{
-		if (bound->isIllegal())
-		{
-			if ( ! illegal)
-				message = bound->illegalMessage();
-
-			illegal = true;
-		}
-	}
-
-	if (illegal != _hasIllegalValue || message != _illegalMessage)
-	{
-		_hasIllegalValue = illegal;
-		_illegalMessage = message;
-
-		emit illegalChanged(this);
-	}
-}
-
-void AnalysisForm::illegalValueHandler(Bound *source)
-{
-	updateIllegalStatus();
-}
-
 void AnalysisForm::runRScript(QString script, QString controlName)
 {
 	emit _analysis->sendRScript(_analysis, script, controlName);
@@ -142,9 +98,18 @@ void AnalysisForm::runRScript(QString script, QString controlName)
 
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
-	if (change == ItemChange::ItemSceneChange)
-		_removed = value.window ? false : true;
+	if (change == ItemChange::ItemSceneChange && !value.window)
+		_cleanUpForm();
 	QQuickItem::itemChange(change, value);
+}
+
+void AnalysisForm::_cleanUpForm()
+{
+	_removed = true;
+	for (QMLItem* control : _orderedControls)
+		// controls will be automatically deleted by the delation of AnalysisForm
+		// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
+		control->cleanUp();
 }
 
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
@@ -497,7 +462,6 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 			}
 
 			boundControl->bindTo(option);
-			boundControl->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}
 		else
 		{
@@ -509,15 +473,10 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 	}
 
 	_options->blockSignals(false, false);
-
-	updateIllegalStatus();
 }
 
 void AnalysisForm::unbind()
 {
-	_bounds.clear();
-	updateIllegalStatus();
-
 	if (_options == nullptr)
 		return;
 	

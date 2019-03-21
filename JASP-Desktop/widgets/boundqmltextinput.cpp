@@ -73,8 +73,6 @@ QString BoundQMLTextInput::_getIntegerArrayValue()
 
 void BoundQMLTextInput::bindTo(Option *option)
 {
-	setLegal();
-
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:
