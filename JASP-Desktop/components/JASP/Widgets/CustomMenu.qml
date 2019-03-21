@@ -51,7 +51,7 @@ Item
 		Repeater
 		{
 			id		: repeater
-			model	: menu.props['model']
+            model	: menu.props === undefined ? undefined : menu.props["model"]
 
 			onItemAdded:
 			{

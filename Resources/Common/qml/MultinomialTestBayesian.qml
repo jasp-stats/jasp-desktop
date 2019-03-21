@@ -24,14 +24,11 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
-
-	CheckBox { name: "simulatepval"; checked: false; visible: false }
 
 	VariablesForm
 	{
-		height: 170
-		marginBetweenVariablesLists: 15
+		height	: 170
+		marginBetweenVariablesLists	: 15
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"] }
@@ -40,56 +37,81 @@ Form
 
 	RadioButtonGroup
 	{
-		id: hypothesisGroup
-		name: "hypothesis"
-		title: qsTr("Alt. Hypothesis")
+		id		: hypothesisGroup
+		name	: "hypothesis"
+		title	: qsTr("Alt. Hypothesis")
 		Layout.columnSpan: 2
-		RadioButton { value: "multinomialTest";	label: qsTr("Multinomial test");	 checked: true	}
-		RadioButton { value: "expectedProbs";	label: qsTr("χ² test"); id: expectedProbs			}
+
+		RadioButton { value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
+		RadioButton { value: "expectedProbs";	label: qsTr("Expected proportions"); id: expectedProbs			}
 
 		Chi2TestTableView
 		{
-			name: "tableWidget"
-			width: form.availableWidth - hypothesisGroup.leftPadding
-			visible: expectedProbs.checked
-			source: "factor"
+			name	: "tableWidget"
+			width	: form.availableWidth - hypothesisGroup.leftPadding
+			visible	: expectedProbs.checked
+			source	: "factor"
 		}
 	}
 
-	Group
+	ColumnLayout
 	{
-		title: qsTr("Additional Statistics")
-		CheckBox
+		BayesFactorType { }
+
+		Group
 		{
-			name: "descriptives"; label: qsTr("Descriptives")
+			title	: qsTr("Additional Statistics")
 			CheckBox
 			{
-				name: "confidenceInterval"; label: qsTr("Confidence interval")
-				childrenOnSameRow: true
-				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
+				name	: "descriptives"
+				label	: qsTr("Descriptives")
+				CheckBox
+				{
+					name				: "credibleInterval"; label: qsTr("Confidence interval")
+					childrenOnSameRow	: true
+					PercentField { name: "credibleIntervalInterval"; defaultValue: 95	}
+				}
 			}
 		}
-		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Dellke maximum p-ratio")		}
 	}
 
 	ColumnLayout
 	{
 		RadioButtonGroup
 		{
-			name: "countProp"
-			title: qsTr("Display")
-			RadioButton { value: "descCounts";	label: qsTr("Counts"); checked: true		}
+			name	: "countProp"
+			title	: qsTr("Display")
+			RadioButton { value: "descCounts";	label: qsTr("Counts");	checked: true	}
 			RadioButton { value: "descProps";	label: qsTr("Proportions")				}
 		}
 
 		Group
 		{
-			title: qsTr("Plots")
+			title	: qsTr("Plots")
 			CheckBox
 			{
-				name: "descriptivesPlot"; label: qsTr("Descriptives plot")
-				PercentField { name: "descriptivesPlotConfidenceInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+				name	: "descriptivesPlot"
+				label	: qsTr("Descriptives plot")
+				PercentField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
 			}
+		}
+	}
+
+
+	ExpanderButton
+	{
+		title	: qsTr("Prior")
+
+		Chi2TestTableView
+		{
+			name	: "priorCounts"
+			width	: form.availableWidth - hypothesisGroup.leftPadding
+			source	: "factor"
+
+			showAddButton		: false
+			showDeleteButton	: false
+			tableType			: "PriorCounts"
+			itemType			: "integer"
 		}
 	}
 }
