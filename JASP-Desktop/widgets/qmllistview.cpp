@@ -114,7 +114,9 @@ void QMLListView::setUp()
 
 void QMLListView::cleanUp()
 {
-	model()->disconnect();
+	ListModel* _model = model();
+	if (_model)
+		_model->disconnect();
 	QMLItem::cleanUp();
 }
 

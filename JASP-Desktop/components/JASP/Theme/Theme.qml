@@ -57,7 +57,7 @@ QtObject {
 	readonly property int itemPadding:					8	* uiScale
 	readonly property int minPanelWidth:				200 * uiScale
 	readonly property int resultWidth:					600	* uiScale
-	readonly property int formWidth:					600	* uiScale
+	readonly property int formWidth:					625	* uiScale
 	readonly property int formMargin:					10	* uiScale
 	readonly property int formExpanderHeaderHeight:		40  * uiScale
 
