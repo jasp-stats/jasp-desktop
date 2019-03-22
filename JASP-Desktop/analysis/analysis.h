@@ -72,7 +72,8 @@ signals:
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestComputedColumnDestruction(	QString columnName);
 
-	void helpFileChanged(QString helpFile);
+	void				helpFileChanged(QString helpFile);
+	Q_INVOKABLE void	expandAnalysis();
 
 public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
