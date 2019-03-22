@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 FocusScope
 {
 	id:					expanderWrapper
-	implicitHeight:		expanderButton.height + (expanded ? expanderArea.anchors.topMargin + expanderArea.height : 0)
+	implicitHeight:		expanderButton.height
 	implicitWidth:		parent.width
 	anchors.topMargin:	15 * preferencesModel.uiScale
 	clip:				true
@@ -39,14 +39,26 @@ FocusScope
 				property bool	expanded:		false
 				property alias	debug:			expanderButton.debug
 	readonly	property string iconsFolder:	"qrc:/images/"
-	readonly	property string	expandedIcon:	"expander-arrow-down.png"
-	readonly	property string	contractedIcon: "expander-arrow-up.png"
+	readonly	property string	expanderButtonIcon:	"expander-arrow-up.png"
 				property alias	columns:		expanderArea.columns
 				property alias	alignChildrenTopLeft: expanderArea.alignChildrenTopLeft
 
-	Behavior on implicitHeight { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 } }
-  
+	
+	states: [
+		State
+		{
+			name: "expanded";	when: expanderWrapper.expanded
+			PropertyChanges {	target: expanderWrapper;	implicitHeight: expanderButton.height + expanderArea.anchors.topMargin + expanderArea.height }
+			PropertyChanges {	target: expanderIcon;		rotation: 90;											}
+		}
+	]
 
+	transitions: Transition
+	{
+		NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+		RotationAnimation	{								duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+	}
+	
 	JASPControl
 	{
 		id:						expanderButton
@@ -83,27 +95,30 @@ FocusScope
 			border.color:	Theme.borderColor
 			radius:			Theme.borderRadius
 			color:			debug ? Theme.debugBackgroundColor : Theme.white
-            
+			
 			Image
 			{
-				id:						icon
+				id:					expanderIcon
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		6 * preferencesModel.uiScale
+					verticalCenter:	parent.verticalCenter
+				}
 				height:					15 * preferencesModel.uiScale
 				width:					15 * preferencesModel.uiScale
-				anchors.left:			parent.left
-				anchors.leftMargin:		6 * preferencesModel.uiScale
-                anchors.verticalCenter: parent.verticalCenter
-				source:					iconsFolder + (expanded ? expandedIcon : contractedIcon)
+				source:			"qrc:/icons/large-arrow-right.png"
 				sourceSize
 				{
-					width:	icon.width * 2
-					height:	icon.height * 2
+					width:	expanderIcon.width * 2
+					height:	expanderIcon.height * 2
 				}
-            }
-
+			}
+            
 			Text
 			{
 				id:						label
-				anchors.left:			icon.right
+				anchors.left:			expanderIcon.right
 				anchors.leftMargin:		5 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
 				font:					Theme.font
