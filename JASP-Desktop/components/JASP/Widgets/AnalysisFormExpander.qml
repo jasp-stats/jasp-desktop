@@ -29,6 +29,8 @@ Rectangle
 		if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()
 		else												analysesModel.selectAnalysisAtRow(myIndex);
 	}
+	
+	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
 	states: [
 		State

@@ -157,8 +157,6 @@ void MainWindow::StartOnlineDataManager()
 
 }
 
-#define CONNECT_SHORTCUT(shortcut, method) connect(new QShortcut(QKeySequence(shortcut), this),	&QShortcut::activated,	this,	method);
-
 Q_DECLARE_METATYPE(Column::ColumnType)
 
 void MainWindow::makeConnections()
@@ -423,21 +421,6 @@ void MainWindow::syncKeysSelected()
 {
 	_fileMenu->sync();
 }
-
-/*
-void MainWindow::illegalOptionStateChanged(AnalysisForm * form)
-{
-	if (form->hasIllegalValue())
-	{
-		ui->optionsErrorLabel->setText(form->illegalValueMessage());
-		ui->optionsErrorPanel->show();
-	}
-	else
-	{
-		ui->optionsErrorPanel->hide();
-	}
-}*/
-
 
 void MainWindow::packageChanged(DataSetPackage *package)
 {
@@ -884,8 +867,8 @@ void MainWindow::populateUIfromDataSet(bool showData)
 	if (_package->hasAnalyses())
 	{
 		int corruptAnalyses = 0;
-
 		stringstream corruptionStrings;
+		Analysis* currentAnalysis = nullptr;
 
 		Json::Value analysesData = _package->analysesData();
 		if (analysesData.isNull())
@@ -910,7 +893,7 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			{
 				try
 				{
-					_analyses->createFromJaspFileEntry(analysisData, _ribbonModel);
+					currentAnalysis = _analyses->createFromJaspFileEntry(analysisData, _ribbonModel);
 				}
 				catch (Modules::ModuleException modProb)
 				{
@@ -935,6 +918,9 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+		
+		if (_analyses->count() == 1)
+			emit currentAnalysis->expandAnalysis();
 	}
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
