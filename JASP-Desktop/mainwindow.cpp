@@ -395,9 +395,8 @@ void MainWindow::saveKeysSelected()
 
 void MainWindow::openKeysSelected()
 {
-	std::cout << "openKeysSelected does nothing..."<< std::endl;
+	_fileMenu->showFileMenu();
 }
-
 
 void MainWindow::refreshKeysSelected()
 {
