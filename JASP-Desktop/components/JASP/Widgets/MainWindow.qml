@@ -44,21 +44,41 @@ Window
 		anchors.fill: parent
 
 		focus:	true
-		Keys.onPressed:
+		Shortcut
 		{
-			if((event.modifiers & Qt.ControlModifier) > 0)
-				switch(event.key)
-				{
-				case Qt.Key_S:			mainWindow.saveKeysSelected();		return;
-				case Qt.Key_O:			mainWindow.openKeysSelected();		return;
-				case Qt.Key_Y:			mainWindow.syncKeysSelected();		return;
-				case Qt.Key_T:			mainWindow.refreshKeysSelected();	return;
-				case Qt.Key_Plus:		mainWindow.zoomInKeysSelected();	return;
-				case Qt.Key_Minus:		mainWindow.zoomOutKeysSelected();	return;
-				case Qt.Key_Equal:		mainWindow.zoomEqualKeysSelected();	return;
-				}
+			sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+"]
+			onActivated: mainWindow.zoomInKeysSelected()
 		}
-
+		Shortcut
+		{
+			sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"]
+			onActivated: mainWindow.zoomOutKeysSelected();
+		}
+		Shortcut
+		{
+			sequences: ["Ctrl+\="]
+			onActivated: mainWindow.zoomEqualKeysSelected();
+		}
+		Shortcut
+		{
+			sequences: ["Ctrl+S"]
+			onActivated: mainWindow.saveKeysSelected();
+		}
+		Shortcut
+		{
+			sequences: ["Ctrl+O"]
+			onActivated: mainWindow.openKeysSelected();
+		}
+		Shortcut
+		{
+			sequences: ["Ctrl+Y"]
+			onActivated: mainWindow.syncKeysSelected();
+		}
+		Shortcut
+		{
+			sequences: ["Ctrl+R"]
+			onActivated: mainWindow.refreshKeysSelected();
+		}
 
 		RibbonBar
 		{
