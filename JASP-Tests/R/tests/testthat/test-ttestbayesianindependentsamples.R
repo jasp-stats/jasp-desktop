@@ -7,6 +7,7 @@ context("Bayesian Independent Samples T-Test")
 # - error handling of plots
 
 test_that("Main table results match", {
+  set.seed(0)
   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
@@ -16,7 +17,7 @@ test_that("Main table results match", {
   options$informativeCauchyScale <- 0.5
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.0895633315624481))
+  expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.02174378))
 })
 
 test_that("Prior posterior plot matches", {
