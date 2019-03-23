@@ -2136,7 +2136,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       # the next chunk of code ensures that the rows in bootstrap
       # table are in the same order as the rows in object cases
       getModelCases <- summary(emmeans::lsmeans(model, formula), infer = c(FALSE,FALSE))
-      getModelCases <- getModelCases[,.v(names(cases))]
+      getModelCases <- getModelCases[,.v(names(cases)), drop = FALSE]
       names(getModelCases) <- .unv(names(getModelCases))
       r <- as.data.frame(bootstrapMarginalMeans.summary)
       r <- cbind(getModelCases, r)
