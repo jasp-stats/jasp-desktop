@@ -112,7 +112,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   results[["anova"]] <- result$result
   status <- result$status
   
-  
   ## Create Levene's Table
   
   if (is.null(stateLevene)) {
@@ -871,7 +870,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
         
       } else if (options$sumOfSquares == "type3") {
-        
         result <- car::Anova(model, type=3, singular.ok=FALSE)
         SSt <- sum(result[-1,"Sum Sq"], na.rm = TRUE)
         
@@ -2135,8 +2133,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       bootstrapMarginalMeans.summary[,"lower.CL"] <- bootstrapMarginalMeans.ci[,1]
       bootstrapMarginalMeans.summary[,"upper.CL"] <- bootstrapMarginalMeans.ci[,2]
       
+      # the next chunk of code ensures that the rows in bootstrap
+      # table are in the same order as the rows in object cases
+      getModelCases <- summary(emmeans::lsmeans(model, formula), infer = c(FALSE,FALSE))
+      getModelCases <- getModelCases[,.v(names(cases))]
+      names(getModelCases) <- .unv(names(getModelCases))
       r <- as.data.frame(bootstrapMarginalMeans.summary)
-      r <- cbind(cases, r)
+      r <- cbind(getModelCases, r)
+      r <- merge(cases, r)
       
       rows <- list()
 
