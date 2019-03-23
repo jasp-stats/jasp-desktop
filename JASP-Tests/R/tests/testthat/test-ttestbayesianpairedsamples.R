@@ -17,7 +17,7 @@ test_that("Main table results match", {
   options$informativeTDf <- 2
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("contNormal", "-", "contGamma", 293915424756.037, 1.32616895200622e-19))
+  expect_equal_tables(table, list("contNormal", "-", "contGamma", 0, 1.052979e-22))
 })
 
 test_that("Prior posterior plot matches", {

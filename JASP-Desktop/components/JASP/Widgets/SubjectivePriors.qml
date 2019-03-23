@@ -24,12 +24,12 @@ import JASP.Controls 1.0
 
 Section
 {
-    title: qsTr("Prior")
+	title: qsTr("Prior")
 
-    RadioButtonGroup
+	RadioButtonGroup
 	{
-        name: "effectSize"
-        RadioButton
+		name: "effectSize"
+		RadioButton
 		{
 			label: qsTr("Standardized effect size")
 			name: "standardized"
@@ -37,7 +37,7 @@ Section
 			checked: true
 			id: standardized
 		}
-		
+
 		RadioButtonGroup
 		{
 			name: "effectSizeStandardized"
@@ -66,19 +66,19 @@ Section
 					RadioButton
 					{
 						label: qsTr("Cauchy"); name: "cauchy"; checked: true; childrenOnSameRow: true; id: cauchyInformative
-						DoubleField { label: qsTr("location:"); name: "informativeCauchyLocation"; visible: cauchyInformative.checked; defaultValue: 0; min: -3; max: -3 }
+						DoubleField { label: qsTr("location:"); name: "informativeCauchyLocation"; visible: cauchyInformative.checked; defaultValue: 0; min: -3; max: 3 }
 						DoubleField { label: qsTr("scale:"); name: "informativeCauchyScale"; visible: cauchyInformative.checked; defaultValue: 0.707; fieldWidth: 50; max: 2 }
 					}
 					RadioButton
 					{
 						label: qsTr("Normal"); name: "normal"; childrenOnSameRow: true; id: normalInformative
-						DoubleField { label: qsTr("mean:"); name: "informativeNormalMean"; visible: normalInformative.checked; defaultValue: 0; min: -3; max: -3 }
+						DoubleField { label: qsTr("mean:"); name: "informativeNormalMean"; visible: normalInformative.checked; defaultValue: 0; min: -3; max: 3 }
 						DoubleField { label: qsTr("std:"); name: "informativeNormalStd"; visible: normalInformative.checked; defaultValue: 0.707; fieldWidth: 50; max: 2 }
 					}
 					RadioButton
 					{
 						label: qsTr("t"); name: "t"; childrenOnSameRow: true; id: tInformative
-						DoubleField { label: qsTr("location:"); name: "informativeTLocation"; visible: tInformative.checked; defaultValue: 0; min: -3; max: -3 }
+						DoubleField { label: qsTr("location:"); name: "informativeTLocation"; visible: tInformative.checked; defaultValue: 0; min: -3; max: 3 }
 						DoubleField { label: qsTr("scale:"); name: "informativeTScale"; visible: tInformative.checked; defaultValue: 0.707; fieldWidth: 50; min: 0.001; max: 2 }
 						DoubleField { label: qsTr("df:"); name: "informativeTDf"; visible: tInformative.checked; inputType: "number"; value: "1"; min: 1; max: 100 }
 					}
@@ -86,7 +86,7 @@ Section
 			}
 		}
 
-        RadioButton
+		RadioButton
 		{
 			label: qsTr("Raw effect size (Dienes)"); name: "dienes"; debug: true
 			RadioButtonGroup
@@ -112,6 +112,6 @@ Section
 				}
 			}
 		}
-    }	
-	
+    }
+
 }
