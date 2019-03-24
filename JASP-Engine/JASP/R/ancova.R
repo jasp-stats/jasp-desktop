@@ -2155,7 +2155,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       names(getModelCases) <- .unv(names(getModelCases))
       r <- as.data.frame(bootstrapMarginalMeans.summary)
       r <- cbind(getModelCases, r)
-      r <- merge(cases, r)
       
       rows <- list()
 
