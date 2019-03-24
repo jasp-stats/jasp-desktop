@@ -107,10 +107,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   
   ## Create ANOVA Table
-  
   result <- .anovaTable(options, model, status, singular)
   results[["anova"]] <- result$result
   status <- result$status
+
   
   ## Create Levene's Table
   
@@ -643,7 +643,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     WLS <- dataset[[ .v(options$wlsWeights) ]]
   
   model <- aov(model.formula, dataset, weights=WLS)
-  
+
   modelError <- try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))
   errorMessage <- ""
   
@@ -870,6 +870,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
         
       } else if (options$sumOfSquares == "type3") {
+
         result <- car::Anova(model, type=3, singular.ok=FALSE)
         SSt <- sum(result[-1,"Sum Sq"], na.rm = TRUE)
         
@@ -1534,12 +1535,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         modelBoots <- anovaModel$model
         singularBoots <- anovaModel$singular
         
-        postHocRefBoots <- emmeans::lsmeans(modelBoots, postHocVariablesListV)
+        postHocRefBoots <- suppressMessages(
+          emmeans::lsmeans(modelBoots, postHocVariablesListV)
+        )
         
-        postHocTableBoots <- summary(emmeans::contrast(postHocRefBoots[[postHocVarIndex]], method = "pairwise"),
+        postHocTableBoots <- suppressMessages(
+          summary(emmeans::contrast(postHocRefBoots[[postHocVarIndex]], method = "pairwise"),
                 infer = c(FALSE, FALSE))
+        )
         
-        postHocTableBoots[['estimate']]
+        if(nrow(postHocTableBoots) == nrow(comparisons)){
+          postHocTableBoots[['estimate']]
+        } else{
+          return(rep(NA, nrow(comparisons)))
+        }
       }
       
       bootstrapPostHoc <- boot::boot(data = dataset, statistic = .bootstrapPostHoc, 
@@ -1620,7 +1629,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
      .addFootnote(footnotes, symbol = "<em>Note.</em>",
                   text = paste0("Bootstrapping based on ", options[['postHocTestsBootstrappingReplicates']], " replicates."))
      .addFootnote(footnotes, symbol = "<em>Note.</em>",
-                  text = "Mean Difference is based on the median of the bootstrap distribution.")
+                  text = "Mean Difference estimate is based on the median of the bootstrap distribution.")
      .addFootnote(footnotes, symbol = "\u002A",
                   text = "Bias corrected accelerated.")
     
@@ -2081,7 +2090,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     .addFootnote(footnotes, symbol = "<em>Note.</em>",
                  text = paste0("Bootstrapping based on ", options[['marginalMeansBootstrappingReplicates']], " replicates."))
     .addFootnote(footnotes, symbol = "<em>Note.</em>",
-                 text = "Marginal Means are based on the median of the bootstrap distribution.")
+                 text = "Marginal Means estimate is based on the median of the bootstrap distribution.")
     .addFootnote(footnotes, symbol = "\u002A",
                  text = "Bias corrected accelerated.")
     
@@ -2116,9 +2125,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         
         modelBoots <- anovaModelBoots$model
         singularBoots <- anovaModelBoots$singular
-        r <- summary(emmeans::lsmeans(modelBoots, formula), infer = c(FALSE,FALSE))
+        r <- suppressMessages( # to remove clutter
+          summary(emmeans::lsmeans(modelBoots, formula), infer = c(FALSE,FALSE))
+        )
         
-        r$lsmean
+        if(length(r$lsmean) == nRows){ # ensure that the bootstrap has all levels
+          return(r$lsmean)
+        } else {
+          return(rep(NA, nRows))
+        }
       }
 
       bootstrapMarginalMeans <- boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
@@ -2132,7 +2147,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       }))
       bootstrapMarginalMeans.summary[,"lower.CL"] <- bootstrapMarginalMeans.ci[,1]
       bootstrapMarginalMeans.summary[,"upper.CL"] <- bootstrapMarginalMeans.ci[,2]
-      
+
       # the next chunk of code ensures that the rows in bootstrap
       # table are in the same order as the rows in object cases
       getModelCases <- summary(emmeans::lsmeans(model, formula), infer = c(FALSE,FALSE))
