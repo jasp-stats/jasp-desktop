@@ -68,6 +68,7 @@ Item
 				showIconAndText:	true
 				iconLeft:			false
 				toolTip:			"Install a module"
+				visible:			preferencesModel.developerMode
 			}
 
 			ToolSeparator
@@ -75,6 +76,7 @@ Item
 				orientation:				Qt.Horizontal
 				width:						modules.buttonWidth
 				anchors.horizontalCenter:	parent.horizontalCenter
+				visible:					preferencesModel.developerMode
 			}
 			
 			MenuButton
@@ -87,7 +89,7 @@ Item
 				anchors.left:		parent.left
 				onClicked: 			dynamicModules.installJASPDeveloperModule()
 				toolTip:			"Install selected developer module"
-				visible:			preferencesModel.developerMode				
+				visible:			preferencesModel.developerMode
 			}
 			
 			ToolSeparator
