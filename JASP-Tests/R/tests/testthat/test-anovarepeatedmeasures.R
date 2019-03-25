@@ -97,15 +97,15 @@ test_that("Post-hoc tests match", {
   options$postHocTestsBonferroni <- TRUE
   options$postHocTestPooledError <- FALSE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
+  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = mydat,
                             options = options, view = FALSE, quiet = TRUE)
   
-  refTable <- list("Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
-                   "NaN", "", 0.703009687611414, "", "TRUE", "Beer", "Water", 8.31666666666667,
-                   3.3351289023547, 2.49365674016224, 0.557598598355329, "NaN",
-                   "", 0.0660988675936689, "", "FALSE", "Wine", "Water", 4.81666666666667,
-                   1.1164571680934, 4.31424223366509, 0.964693890587566, "NaN",
-                   "", 0.00112213065327869, "", "FALSE")
+  refTable <- list("Beer", "Water", 8.31666666666667,
+                   3.3351289023547, 2.49365674016224, 0.557598598355329, 0.0440659117291126,
+                   0.0660988675936689, "", "", "TRUE", "Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
+                   0.234336562537138, 0.703009687611414, "", "", "FALSE", "Water", "Wine", -4.81666666666667,
+                   1.1164571680934, -4.31424223366509, -0.964693890587566, 0.00112213065327869,
+                   0.00112213065327869, "", "", "FALSE")
   
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table, refTable)
