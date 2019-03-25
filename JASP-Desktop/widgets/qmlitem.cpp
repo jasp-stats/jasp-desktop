@@ -35,8 +35,6 @@ void QMLItem::cleanUp()
 
 void QMLItem::resetQMLItem(QQuickItem *item)
 {
-	if (_item)
-		_item->disconnect();
 	_item = item;
 }
 
