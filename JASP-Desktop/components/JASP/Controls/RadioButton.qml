@@ -33,7 +33,7 @@ JASPControl
 								: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:			focusIndicator
 	childControlsArea:		childControlsArea
-
+	
 	default property alias	content:				childControlsArea.children
 			property alias	control:				control
 
@@ -49,6 +49,7 @@ JASPControl
 			property bool	indentChildren:			true
 			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 	
+	function toggle() { control.toggle() }
 	
 	RadioButton
 	{
