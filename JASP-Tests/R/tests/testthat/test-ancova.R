@@ -369,7 +369,9 @@ test_that("Field - Chapter 6 results match", {
     list(components = list("Dose", "Puppy_love"))
   )
   
-  
+  options$contrasts <- list(
+    list(contrast = "none", variable = "Dose")
+  )
   options$plotHorizontalAxis <- "Puppy_love"
   options$plotSeparatePlots <- "Dose"
   results <- jasptools::run("Ancova", "Puppy Love.csv", options)
@@ -384,12 +386,12 @@ test_that("Field - Chapter 6 results match", {
                            24, 2.44252174503391, "", "", "TRUE"))
   
   # descriptive plots
-  plot1 <- results[['state']][['figures']][[1]]
+  plot1 <- results[['state']][['figures']][[1]][["obj"]]
   expect_equal_plots(plot1, "PuppyLove1", "Ancova")
   
-  plot2 <- results[['state']][['figures']][[2]]
-  expect_equal_plots(plot1, "PuppyLove2", "Ancova")
+  plot2 <- results[['state']][['figures']][[2]][["obj"]]
+  expect_equal_plots(plot2, "PuppyLove2", "Ancova")
   
-  plot3 <- results[['state']][['figures']][[3]]
-  expect_equal_plots(plot1, "PuppyLove3", "Ancova")
+  plot3 <- results[['state']][['figures']][[3]][["obj"]]
+  expect_equal_plots(plot3, "PuppyLove3", "Ancova")
 })

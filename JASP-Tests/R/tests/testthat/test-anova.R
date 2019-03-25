@@ -410,6 +410,7 @@ test_that("Field - Chapter 7 results match", {
   )
   
   options$contrasts <- list(
+    list(contrast = "none", variable = "FaceType"),
     list(contrast = "Helmert", variable = "Alcohol")
   )
   options$confidenceIntervalsContrast <- TRUE
