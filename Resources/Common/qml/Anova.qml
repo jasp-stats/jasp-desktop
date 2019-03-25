@@ -110,15 +110,31 @@ Form
 			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
 
 		}
-		
-		CheckBox { name: "postHocTestEffectSize"; label: qsTr("Effect Size") }
 
-		CheckBox
-		{
-			name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
-			childrenOnSameRow: true
-			PercentField {	name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
-		}
+        Group
+        {
+            CheckBox
+            {
+                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+                childrenOnSameRow: true
+                PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
+            }
+            CheckBox
+            {
+                name: "postHocTestsBootstrapping"; label: qsTr("From")
+                childrenOnSameRow: true
+                IntegerField
+                {
+                    name: "postHocTestsBootstrappingReplicates"
+                    defaultValue: 1000
+                    fieldWidth: 50
+                    min: 100
+                    afterLabel: qsTr("bootstraps")
+                }
+            }
+        }
+
+        CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size") }
 
 		Group
 		{
@@ -127,6 +143,7 @@ Form
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
 			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm")					}
+            CheckBox { name: "postHocTestsSidak";       label: qsTr("Šidák")                }
 		}
 
 		Group
@@ -185,7 +202,21 @@ Form
 			AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
 			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 		}
-		
+
+        CheckBox
+        {
+            name: "marginalMeansBootstrapping"; label: qsTr("From")
+            childrenOnSameRow: true
+            IntegerField
+            {
+                name: "marginalMeansBootstrappingReplicates"
+                defaultValue: 1000
+                fieldWidth: 50
+                min: 100
+                afterLabel: qsTr("bootstraps")
+            }
+        }
+
 		CheckBox
 		{
 			name: "marginalMeansCompareMainEffects"; label: qsTr("Compare marginal means to 0")

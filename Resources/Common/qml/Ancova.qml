@@ -133,15 +133,31 @@ Form
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
 			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
 		}
-		
-		CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size") }
 
-		CheckBox
-		{
-			name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
-			childrenOnSameRow: true
-			PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
-		}
+        Group
+        {
+            CheckBox
+            {
+                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+                childrenOnSameRow: true
+                PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
+            }
+            CheckBox
+            {
+                name: "postHocTestsBootstrapping"; label: qsTr("From")
+                childrenOnSameRow: true
+                IntegerField
+                {
+                    name: "postHocTestsBootstrappingReplicates"
+                    defaultValue: 1000
+                    fieldWidth: 50
+                    min: 100
+                    afterLabel: qsTr("bootstraps")
+                }
+            }
+        }
+
+        CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size") }
 		
 		Group
 		{
@@ -150,6 +166,7 @@ Form
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
 			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm")					}
+            CheckBox { name: "postHocTestsSidak";       label: qsTr("Šidák")                }
 		}
 
 		Group
@@ -168,10 +185,12 @@ Form
 		
 		VariablesForm {
 			height: 200
-			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: "fixedFactors"	}
+            AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");         source: ["fixedFactors", "covariates"]	}
 			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleVariable: true	}
-			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate lines"); singleVariable: true		}
-			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots"); singleVariable: true		}
+            AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate lines");  singleVariable: true
+                                    allowedColumns: ["ordinal", "nominal"]		}
+            AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots");  singleVariable: true
+                                    allowedColumns: ["ordinal", "nominal"]		}
 		}
 		
 		Group
@@ -185,9 +204,9 @@ Form
 					name: "errorBarType"
 					RadioButton
 					{
-						value: "confidenceInterval"; label: qsTr("Confidence Interval"); checked: true
+                        value: "confidenceInterval"; label: qsTr("Confidence Intervals"); checked: true
 						childrenOnSameRow: true
-						PercentField { name: "confidenceIntervalInterval";	label: qsTr("Interval"); defaultValue: 95 }
+                        PercentField { name: "confidenceIntervalInterval"; defaultValue: 95 }
 					}
 					RadioButton { value: "standardError"; label: qsTr("Standard error") }
 				}
@@ -208,6 +227,20 @@ Form
 			AssignedVariablesList {	 name: "marginalMeansTerms" }
 		}
 		
+        CheckBox
+        {
+            name: "marginalMeansBootstrapping"; label: qsTr("From")
+            childrenOnSameRow: true
+            IntegerField
+            {
+                name: "marginalMeansBootstrappingReplicates"
+                defaultValue: 1000
+                fieldWidth: 50
+                min: 100
+                afterLabel: qsTr("bootstraps")
+            }
+        }
+
 		CheckBox
 		{
 			name: "marginalMeansCompareMainEffects"; label: qsTr("Compare marginal means to 0")
