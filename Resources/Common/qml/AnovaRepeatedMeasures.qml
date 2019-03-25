@@ -68,7 +68,10 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
-			AssignedVariablesList {  name: "withinModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
+			AssignedVariablesList
+			{
+				name: "withinModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction"
+			}
 		}
 		
 		VariablesForm
@@ -130,7 +133,7 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "postHocTestsVariables" }
+			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
 		}
 		
 		Group
@@ -143,10 +146,10 @@ Form
 		Group
 		{
 			title: qsTr("Correction")
-			CheckBox { name: "postHocTestsTukey";		label: qsTr("Tukey"); checked: true	}
-			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
+			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm"); 		checked: true	}
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
-			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm")					}
+			CheckBox { name: "postHocTestsTukey";		label: qsTr("Tukey")				}
+			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
 		}
 	}
 	
@@ -184,7 +187,7 @@ Form
 					RadioButton { value: "standardError"; label: qsTr("Standard error") }
 				}
 			}
-			CheckBox { name: "usePooledStandErrorCI";	label: qsTr("Pool SE across RM factors")	}
+			CheckBox { name: "usePooledStandErrorCI";	label: qsTr("Average across unused RM factors")	}
 			
 		}
 	}
