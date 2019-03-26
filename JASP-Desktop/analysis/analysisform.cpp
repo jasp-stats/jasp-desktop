@@ -411,6 +411,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 
 	_dataSet = dataSet;
 	_options = options;
+	QVector<ListModelAvailableInterface*> availableModels;
 
 	_options->blockSignals(true);
 	
@@ -468,10 +469,25 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
 			// The availableListControl are not bound, but they have to be updated when the form is initialized.
 			if (availableListControl)
-				availableListControl->availableModel()->resetTermsFromSourceModels();
+			{
+				ListModelAvailableInterface* availableModel = availableListControl->availableModel();
+				if (availableModel)
+				{
+					availableModel->resetTermsFromSourceModels();
+					availableModels.push_back(availableModel);
+				}
+			}
 		}
 	}
-
+	
+	if (optionsFromJASPFile == Json::nullValue)
+	{
+		// If the options do not come from a JASP file
+		// the assigned models must be aware of the default values of the available models.
+		for (ListModelAvailableInterface* availableModel : availableModels)
+			availableModel->emitChangedTerms();
+	}
+		
 	_options->blockSignals(false, false);
 }
 
