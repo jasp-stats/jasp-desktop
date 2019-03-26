@@ -486,7 +486,7 @@ Descriptives <- function(jaspResults, dataset, options)
     return(NULL)
 
   if (nrow(dataset) < 3)
-    return(createJaspPlot(error="badData", errorMessage="Plotting is not possible: Too few rows", dependencies=depends))
+    return(createJaspPlot(error="Plotting is not possible: Too few rows", dependencies=depends))
 
   # check variables
   d         <- vector("character",  length(.v(variables)))
@@ -759,13 +759,11 @@ Descriptives <- function(jaspResults, dataset, options)
   plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
-    plotObj$error         <- "badData"
-    plotObj$errorMessage  <- "Plotting is not possible: Variable contains infinity"
+    plotObj$setError("Plotting is not possible: Variable contains infinity")
     plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
   else if (length(column) < 3) {
-    plotObj$error         <- "badData"
-    plotObj$errorMessage  <- "Plotting is not possible: Too few rows (left)"
+    plotObj$setError("Plotting is not possible: Too few rows (left)")
     plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
   else if (length(column) > 0 && is.factor(column))
@@ -822,18 +820,15 @@ Descriptives <- function(jaspResults, dataset, options)
 
   if (!is.numeric(y))
   {
-    thePlot$error         <- "badData"
-    thePlot$errorMessage  <- "Plotting is not possible: Variable is not numeric!"
+    thePlot$setError("Plotting is not possible: Variable is not numeric!")
   }
   else if (length(y) == 0)
   {
-    thePlot$error         <- "badData"
-    thePlot$errorMessage  <- "Plotting is not possible: Variable only contains NA!"
+    thePlot$setError("Plotting is not possible: Variable only contains NA!")
   }
   else if (!(options$splitPlotViolin || options$splitPlotBoxplot || options$splitPlotJitter))
   {
-    thePlot$error         <- "badData"
-    thePlot$errorMessage  <- "Plotting is not possible: No plot type selected!"
+    thePlot$setError("Plotting is not possible: No plot type selected!")
   }
   else
   {

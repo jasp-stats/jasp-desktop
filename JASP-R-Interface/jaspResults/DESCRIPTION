@@ -1,7 +1,7 @@
 Package: jaspResults
 Type: Package
 Title: Easy results for your JASP analysis
-Version: 1.2
+Version: 1.3
 Date: 2018-12-07
 Author: Joris Goosen
 Maintainer: Joris Goosen <j.c.goosen@uva.nl>
@@ -10,6 +10,7 @@ Description: This package helps you build your analysis for JASP (http://jasp-st
         When you then later on run this in JASP it will automatically make it appear fully formatted in the resultsview. 
         When developing your analysis in R(-Studio) you can see a simpler representation by using $print().
 License: GPL (>= 2)
-Imports: methods, Rcpp (>= 0.12.14)
+Imports: methods, Rcpp (>= 0.12.14), R6
 LinkingTo: Rcpp
 RcppModules: jaspResults
+NeedsCompilation: yes

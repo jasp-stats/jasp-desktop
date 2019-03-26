@@ -182,7 +182,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 		compiler::enableJIT(0)
 
 
-  jaspResults <- jaspResultsModule$create_cpp_jaspResults(name, .retrieveState())
+  jaspResults <- jaspResultsR$new(jaspResultsModule$create_cpp_jaspResults(name, .retrieveState()))
   jaspResults$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)
