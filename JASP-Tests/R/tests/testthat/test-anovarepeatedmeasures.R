@@ -97,7 +97,7 @@ test_that("Post-hoc tests match", {
   options$postHocTestsBonferroni <- TRUE
   options$postHocTestPooledError <- FALSE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = mydat,
+  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options, view = FALSE, quiet = TRUE)
   
   refTable <- list("Beer", "Water", 8.31666666666667,
@@ -259,7 +259,7 @@ test_that("Simple Effects table match", {
   options$moderatorFactorTwo <- "Charisma"
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", #mydat,
+                            dataset = "AnovaMixedEffects.csv",
                             options = options,
                             view = FALSE, quiet = TRUE)
   
@@ -289,8 +289,7 @@ test_that("Nonparametric table match", {
   options$friedmanWithinFactor <- "Charisma"
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", #mydat,
-                            options = options,
+                            dataset = "AnovaMixedEffects.csv",                             options = options,
                             view = FALSE, quiet = TRUE)
   
   refTable <- list( "Charisma", 40.074508162411, 2, 1.98577994376659e-09, -170.212868480726,
