@@ -105,5 +105,7 @@ void BoundQMLListViewMeasuresCells::modelChangedHandler()
 	vector<string> terms;
 	for (const QString& variable : variables)
 		terms.push_back(variable.toStdString());
-	_boundTo->setValue(terms);
+	
+	if (_boundTo)
+		_boundTo->setValue(terms);
 }

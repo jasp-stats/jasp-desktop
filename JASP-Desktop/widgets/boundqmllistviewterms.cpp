@@ -214,6 +214,9 @@ void BoundQMLListViewTerms::modelChangedHandler()
 
 void BoundQMLListViewTerms::bindExtraControlOptions()
 {
+	if (!_optionsTable)
+		return;
+	
 	const Terms& terms = _termsModel->terms();
 	
 	std::vector<Options*> newOptionsList;

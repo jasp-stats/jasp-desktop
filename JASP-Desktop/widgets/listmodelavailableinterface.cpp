@@ -86,5 +86,10 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 	endResetModel();
 }
 
+void ListModelAvailableInterface::emitChangedTerms()
+{
+	emit modelChanged(&_tempAddedTerms, &_tempRemovedTerms);
+}
+
 
 

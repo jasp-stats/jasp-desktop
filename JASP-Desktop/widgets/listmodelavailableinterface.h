@@ -35,6 +35,7 @@ public:
 			void initTerms(const Terms &terms) override;
 	virtual void resetTermsFromSourceModels() = 0;
 	virtual void removeTermsInAssignedList();
+			void emitChangedTerms();
 	
 			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;	
 	
