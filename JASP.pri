@@ -4,7 +4,7 @@
 JASP_R_INTERFACE_TARGET = JASP-R-Interface
 
 JASP_R_INTERFACE_MAJOR_VERSION = 6 # Interface changes
-JASP_R_INTERFACE_MINOR_VERSION = 3 # Code changes
+JASP_R_INTERFACE_MINOR_VERSION = 4 # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -48,7 +48,6 @@ exists(/app/lib/*) {
   linux:	CONFIG(debug, debug|release)  {  DEFINES += JASP_DEBUG }
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
-
 
 windows {
 	message(QT_ARCH $$QT_ARCH)

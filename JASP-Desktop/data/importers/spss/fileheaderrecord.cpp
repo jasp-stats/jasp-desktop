@@ -83,7 +83,6 @@ void FileHeaderRecord::process(SPSSImporter* importer, SPSSImportDataSet *datase
 	{
         std::cout << "This file appears to have more than one file header record.\n"
 				"  Only the last one found will be used." << endl;
-        std::cout.flush();
 		dataset->clear();
 	}
 

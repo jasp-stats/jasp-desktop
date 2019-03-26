@@ -149,7 +149,7 @@ private:
 	const Endians _endThisMachine = mach_littleEndian;
 #elif defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
 	const Endians _endThisMachine = mach_bigEndian;
-#elif defined(__WIN32__) //TODO What is the right defined for VS
+#elif defined(_WIN32) //TODO What is the right define for VS
 	const Endians _endThisMachine = mach_littleEndian;
 #else
   #error "Could not determine target system endian byte order."

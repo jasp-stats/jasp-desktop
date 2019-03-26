@@ -22,7 +22,7 @@
 
 using namespace std;
 
-#ifndef __WIN32__
+#ifndef _WIN32
 RInside_ConsoleLogging *rinside_consoleLog;
 #endif
 
@@ -55,7 +55,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 {
 	rinside = new RInside();
 
-#ifndef __WIN32__
+#ifndef _WIN32
 	rinside_consoleLog = new RInside_ConsoleLogging();
 	rinside->set_callbacks(rinside_consoleLog);
 #endif
@@ -122,12 +122,14 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside.parseEvalQNT("source(file='writeImage.R')");
 	rInside.parseEvalQNT("source(file='zzzWrappers.R')");
 
-    rinside->parseEvalNT("initEnvironment()");
+	rInside.parseEvalNT("initEnvironment()");
+
+	std::cout << "R_HOME: " << Rcpp::as<std::string>(rInside.parseEval("R.home('')")) << std::endl;
+
 
 	//rinside->parseEvalNT("print('installing modules!'); install.packages('modules', repos='https://cloud.r-project.org', Ncpus=4, lib='/Users/jorisgoosen/.JASP/library'); print('installing modules worked?'); ");
 
 }
-
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground)
 {
@@ -152,7 +154,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"]	= imageBackground;
 
-#ifndef __WIN32__
+#ifndef _WIN32
 	rinside_consoleLog->clearConsoleBuffer();
 #endif
 
@@ -212,7 +214,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"]	= imageBackground;
 
-#ifndef __WIN32__
+#ifndef _WIN32
 	rinside_consoleLog->clearConsoleBuffer();
 #endif
 
@@ -249,6 +251,14 @@ void STDCALL jaspRCPP_runScript(const char * scriptCode)
 	rinside->parseEvalNT(scriptCode);
 
 	return;
+}
+
+const char * STDCALL jaspRCPP_runScriptReturnString(const char * scriptCode)
+{
+	static std::string returnStr;
+	returnStr = Rcpp::as<std::string>(rinside->parseEvalNT(scriptCode));
+
+	return returnStr.c_str();
 }
 
 
@@ -380,7 +390,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 
 } // extern "C"
 
-#ifndef __WIN32__
+#ifndef _WIN32
 const char* STDCALL jaspRCPP_getRConsoleOutput()
 {
 	static std::string output;

@@ -295,7 +295,6 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 				// The rowTemplate should have given all options
 				// But never know...
 				std::cout << "It should never come here!!!" << std::endl;
-				std::cout.flush();
 				option = boundItem->boundTo();
 				if (!option)
 					option = boundItem->createOption();

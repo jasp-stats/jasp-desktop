@@ -288,6 +288,8 @@ void DynamicModules::loadingFailed(const std::string & moduleName, const std::st
 {
 	std::cout << "Loading packages for module (" << moduleName << ") failed because of: " << errorMessage << std::endl;
 	_modules[moduleName]->setLoadingSucces(false);
+
+	MessageForwarder::showWarning("Loading packages for Module " + moduleName + " failed", "Loading the packages of Module "+ moduleName+ " failed with the following errormessage:\n"+errorMessage);
 }
 
 void DynamicModules::loadingSucceeded(const std::string & moduleName)

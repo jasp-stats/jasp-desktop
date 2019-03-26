@@ -97,8 +97,6 @@ private slots:
 
 	void process();
 
-	void subProcessStandardOutput();
-	void subProcessStandardError();
 	void subProcessStarted();
 	void subProcessError(QProcess::ProcessError error);
 	void subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus);

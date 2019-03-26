@@ -88,7 +88,7 @@ FocusScope
 		id			: modulesPlusButton
 		width		: height
 		hamburger	: false
-		toolTip		: qsTr("Add Module")
+		toolTip		: qsTr("Show Modules Menu")
 
 		onClicked	:
 		{

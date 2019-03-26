@@ -21,7 +21,7 @@
 #include <QClipboard>
 #include <QStringBuilder>
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <QPainter>
 #endif
 
@@ -217,7 +217,7 @@ void ResultsJsInterface::pushImageToClipboard(const QByteArray &base64, const QS
 	QImage pm;
 	if(pm.loadFromData(byteArray))
 	{
-#ifdef __WIN32__ //needed because jpegs/clipboard doesn't support transparency in windows
+#ifdef _WIN32 //needed because jpegs/clipboard doesn't support transparency in windows
 		QImage image2(pm.size(), QImage::Format_ARGB32);
 		image2.fill(Qt::white);
 		QPainter painter(&image2);

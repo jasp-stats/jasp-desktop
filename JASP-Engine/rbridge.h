@@ -18,7 +18,7 @@
 #ifndef RBRIDGE_H
 #define RBRIDGE_H
 
-#ifdef __WIN32__
+#ifdef _WIN32
 
 #undef Realloc
 #undef Free

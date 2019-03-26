@@ -115,7 +115,6 @@ bool Labels::syncInts(const std::set<int> &values)
 		else
 		{
 			std::cout << "Remove label " << label.text() << std::endl;
-			std::cout.flush();
 			valuesToRemove.insert(value);
 		}
 	}
@@ -235,7 +234,6 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 	{
 		std::cout << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
 	}
-	std::cout.flush();
 	throw runtime_error("Cannot find this entry");
 }
 
@@ -244,7 +242,6 @@ bool Labels::setLabelFromRow(int row, const string &display)
 	if (row >= (int)_labels.size() || row < 0)
 	{
 		std::cout << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
-		std::cout.flush();
 		return false;
 	}
 
@@ -308,7 +305,6 @@ string Labels::getValueFromRow(int row)
 	if (row >= (int)_labels.size())
 	{
 		std::cout << "Get value with wrong row: " << row << ", size: " << _labels.size() << std::endl;
-		std::cout.flush();
 		return "";
 	}
 	const Label &label = _labels.at(row);
@@ -325,7 +321,6 @@ std::string Labels::getLabelFromRow(int row)
 	if (row >= (int)_labels.size())
 	{
 		std::cout << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
-		std::cout.flush();
 		return "";
 	}
 	Label &label = _labels.at(row);

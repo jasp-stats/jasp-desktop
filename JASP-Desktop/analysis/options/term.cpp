@@ -33,7 +33,7 @@ Term::Term(const std::vector<string> components)
 		if (first)
 			first = false;
 		else
-#ifdef __WIN32__
+#ifdef _WIN32
 			_asString.append(" * ");
 #else
 			_asString.append(" \xE2\x88\x97 ");
@@ -64,7 +64,7 @@ Term::Term(const QStringList components)
 		if (first)
 			first = false;
 		else
-#ifdef __WIN32__
+#ifdef _WIN32
 			_asQString.append(" * ");
 #else
 			_asQString.append(" \xE2\x88\x97 ");

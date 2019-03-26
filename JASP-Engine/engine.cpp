@@ -42,7 +42,7 @@ bool PollMessagesFunctionForJaspResults()
 	return false;
 }
 
-#ifdef __WIN32__
+#ifdef _WIN32
 
 #undef Realloc
 #undef Free
@@ -93,8 +93,7 @@ void Engine::run()
 		Json::Value v;
 		Json::Reader().parse(engineInfo, v);
 
-		std::cout << v.toStyledString() << "\n";
-		std::cout.flush();
+		std::cout << v.toStyledString() << std::endl;
 	}
 #endif
 

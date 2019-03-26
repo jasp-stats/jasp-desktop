@@ -260,7 +260,7 @@ std::string DynamicModule::generateModuleInstallingR(bool installRequiredPackage
 	//out << "print(paste('ping=', pingr::ping('cloud.r-project.org', count=2)));\n";
 	//out <<" print(Sys.getenv());\n";
 
-	R			<< "libPathsToUse <- c(.libPaths(.Library), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
+	R			<< "libPathsToUse <- c('" << moduleRLibrary().toStdString() << "', .libPaths(.Library));\n"  "{\n"; //"print(libPathsToUse);\n"
 
 	if(installModulePkg)	{			installLog	<< "Installing module " << _name;
 		if(installRequiredPackages)		installLog	<< ", with required packages: ";
@@ -272,7 +272,7 @@ std::string DynamicModule::generateModuleInstallingR(bool installRequiredPackage
 
 		if(pkgsVersionless.size() > 0)
 		{
-			R << standardRIndent << "withr::with_libpaths(new=libPathsToUse,  install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
+			R << standardRIndent << "withr::with_libpaths(new=libPathsToUse,  install.packages(nrepos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
 
 			int count = 0;
 			for(const std::string & pkg : pkgsVersionless)
@@ -555,7 +555,7 @@ std::string	DynamicModule::moduleNameFromFolder(std::string folderName)
 	//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
 	folderName.erase(std::remove_if(folderName.begin(), folderName.end(), [](unsigned char x)
 	{
-#ifdef __WIN32__
+#ifdef _WIN32
 		return !std::isalnum(x, std::locale());
 #else
 		return !std::isalnum(x);

@@ -9,7 +9,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 include(../R_HOME.pri)
 
+TEMPLATE = app
+
 CONFIG += c++11
+CONFIG -= app_bundle
 
 DESTDIR = ..
 
@@ -17,13 +20,7 @@ windows:TARGET = JASP
    macx:TARGET = JASP
   linux:{ exists(/app/lib/*) {TARGET = org.jasp.JASP } else { TARGET = jasp }}
 
-
-TEMPLATE = app
-
 DEPENDPATH = ..
-
-CONFIG -= app_bundle
-
 INCLUDEPATH += ../JASP-Common/
 
 #exists(/app/lib/*) should only be true when building flatpak
@@ -67,7 +64,7 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 

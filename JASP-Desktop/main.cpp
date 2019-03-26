@@ -182,7 +182,7 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 
 int main(int argc, char *argv[])
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 	// Temporary fix for #2322 by disabling opengl drawing on windows
 	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for 
 	// future permanent fix.
@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
 			QCoreApplication::setApplicationName("JASP");
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
-#ifdef __WIN32__
+#ifdef _WIN32
 			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it
 #endif
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);

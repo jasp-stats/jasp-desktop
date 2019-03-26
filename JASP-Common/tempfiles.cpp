@@ -127,7 +127,6 @@ void TempFiles::deleteOrphans()
 					long modTime	= Utils::getFileModificationTime(Utils::osPath(p));
 					long now		= Utils::currentSeconds();
 
-					std::cout.flush();
 					if (now - modTime > 70)
 					{
 						std::cout << "Try to delete: " << fileName << std::endl;

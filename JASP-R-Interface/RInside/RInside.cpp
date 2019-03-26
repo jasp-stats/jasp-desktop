@@ -20,14 +20,14 @@
 // You should have received a copy of the GNU General Public License
 // along with RInside.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #define Win32
 #define WIN32
 #endif
 
 #include "RInside.h"
 #include "Callbacks.h"
-#ifndef __WIN32__
+#ifndef _WIN32
   #define R_INTERFACE_PTRS
   #include <Rinterface.h>
 #endif
@@ -36,7 +36,7 @@ RInside* RInside::instance_m = 0 ;
 
 const char *programName = "RInside";
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	// on Windows, we need to provide setenv which is in the file setenv.c here
 	#include "setenv/setenv.c"
 	extern int optind;
@@ -47,7 +47,7 @@ RInside::~RInside() {           // now empty as MemBuf is internal
     R_RunExitFinalizers();
     R_CleanTempDir();
     //Rf_KillAllDevices();
-	//#ifndef __WIN32__
+	//#ifndef _WIN32
     //fpu_setup(FALSE);
     //#endif
     Rf_endEmbeddedR(0);
@@ -63,7 +63,7 @@ RInside::RInside(): global_env_m(NULL)
     initialize(0, 0, false, false, false);
 }
 
-#ifdef __WIN32__
+#ifdef _WIN32
 static int myReadConsole(const char *prompt, char *buf, int len, int addtohistory) {
     fputs(prompt, stdout);
     fflush(stdout);
@@ -122,7 +122,7 @@ void RInside::initialize(const int argc, const char* const argv[], const bool lo
     // generated from Makevars{.win}
     #include "RInsideEnvVars.h"
 
-	#ifdef __WIN32__
+	#ifdef _WIN32
     // we need a special case for Windows where users may deploy an RInside binary from CRAN
     // which will have R_HOME set at compile time to CRAN's value -- so let's try to correct
     // this here: a) allow user's setting of R_HOME and b) use R's get_R_HOME() function
@@ -144,7 +144,7 @@ void RInside::initialize(const int argc, const char* const argv[], const bool lo
         }
     }
 
-	#ifndef __WIN32__
+	#ifndef _WIN32
     R_SignalHandlers = 0;               // Don't let R set up its own signal handlers
     #endif
 
@@ -155,7 +155,7 @@ void RInside::initialize(const int argc, const char* const argv[], const bool lo
     int R_argc = sizeof(R_argv) / sizeof(R_argv[0]);
     Rf_initEmbeddedR(R_argc, (char**)R_argv);
 
-	#ifndef __WIN32__
+	#ifndef _WIN32
     R_CStackLimit = -1;      		// Don't do any stack checking, see R Exts, '8.1.5 Threading issues'
     #endif
 
@@ -164,7 +164,7 @@ void RInside::initialize(const int argc, const char* const argv[], const bool lo
     structRstart Rst;
     R_DefParams(&Rst);
     Rst.R_Interactive = (Rboolean) interactive_m;       // sets interactive() to eval to false
-	#ifdef __WIN32__
+	#ifdef _WIN32
     Rst.rhome = getenv("R_HOME");       // which is set above as part of R_VARS
     Rst.home = getRUser();
     Rst.CharacterMode = LinkDLL;
@@ -477,7 +477,7 @@ void RInside_Busy( int which ){
 void RInside::set_callbacks(Callbacks* callbacks_){
     callbacks = callbacks_ ;
 
-#ifdef __WIN32__
+#ifdef _WIN32
     // do something to tell user that he doesn't get this
 #else
 

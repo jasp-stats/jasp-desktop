@@ -937,10 +937,7 @@ bool Column::isValueEqual(int row, int value)
 	{
 		bool result = (intValue == value);
 		if (!result)
-		{
 			std::cout << "Value not equal: " << intValue << " " << value << std::endl;
-			std::cout.flush();
-		}
 		return result;
 	}
 
@@ -1163,7 +1160,6 @@ void Column::truncate(int rows)
 			if (itr == _blocks.rend())
 			{
 				std::cout << "Try to erase more blocks than existing!!" << std::endl;
-				std::cout.flush();
 				rowsToDelete = 0;
 				_rowCount = 0;
 			}
@@ -1235,7 +1231,6 @@ int& Column::IntsStruct::operator [](int rowIndex)
 	{
 		std::cout << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
 		std::cout << "Nb of blocks: " << parent->_blocks.size() << std::endl;
-		std::cout.flush();
 	}
 
 	int blockId = itr->first;

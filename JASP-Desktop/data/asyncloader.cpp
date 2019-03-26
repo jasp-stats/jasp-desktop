@@ -138,14 +138,14 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 	catch (runtime_error e)
 	{
 		std::cout << "Runtime Exception in saveTask: " << e.what() << std::endl;
-		std::cout.flush();
+
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
 		std::cout << "Exception in saveTask: " << e.what() << std::endl;
-		std::cout.flush();
+
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
@@ -314,7 +314,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 		catch (runtime_error e)
 		{
 			std::cout << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
-			std::cout.flush();
+
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
@@ -322,7 +322,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 		catch (exception e)
 		{
 			std::cout << "Exception in uploadFileFinished: " << e.what() << std::endl;
-			std::cout.flush();
+
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
