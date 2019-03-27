@@ -24,6 +24,13 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	menuName: 'All',
 
+	close: function () {
+		// Based on https://stackoverflow.com/questions/7379263/disposing-of-view-and-model-objects-in-backbone-js/7383008#7383008
+		// this.$el.empty();
+		this.remove();
+		// this.unbind();
+	},
+
 	noteOptions: function () {
 		var visible = this.noteBox.visible;
 		var options = { key: 'main', menuText: 'Add Note', visible: visible };
@@ -81,7 +88,8 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 		analysis.$el.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 			analysis.$el.slideUp(400, function () {
-				analysis.close();
+				// TODO: See why analysis is NULL here.
+				// analysis.close();
 				this.analyses = _.without(this.analyses, analysis);
 				this.views = _.without(this.analyses, analysis);
 			});
@@ -99,7 +107,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	getAnalysis: function(id) {
 		return _.find(this.analyses, function (cv) { return cv.model.get("id") === id; });
 	},
-	
+
 	reRender: function() {
 		this.analyses.forEach(function(analysis) {analysis.render();});
 	},
