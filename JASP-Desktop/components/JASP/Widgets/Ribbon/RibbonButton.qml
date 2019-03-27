@@ -65,6 +65,20 @@ Rectangle
 
 		}
 
+		Image
+		{
+			id: menuIndicatior
+
+			anchors.left:		backgroundImage.right
+			anchors.leftMargin: 5
+			height:				0.3 * backgroundImage.height
+			width:				height
+			anchors.top:		backgroundImage.top
+			source:				"qrc:/icons/toolbutton-menu-indicator.svg"
+			opacity:			ribbonButton.enabled ? 1 : 0.5
+			visible:			ribbonButton.menu.rowCount() > 1
+		}
+
 		Text
 		{
 			id	: innerText
@@ -108,7 +122,7 @@ Rectangle
 						"functionCall"	: functionCall
 					};
 
-					customMenu.showMenu(ribbonButton, props, ribbonButton.width / 2, ribbonButton.height);
+					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
 				}
 			}
 		}
