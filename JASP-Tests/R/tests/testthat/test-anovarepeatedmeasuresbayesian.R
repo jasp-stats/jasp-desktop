@@ -38,9 +38,9 @@ test_that("Main table results match", {
                         8.9411204428442e+22, 0.955353109807862, "RM Factor 1 + facGender + contcor1",
                         0.1, 0.0959637593232787, 16.4218696956561, 6.81640452356858e+22,
                         0.710408526266743, "RM Factor 1 + contcor1", 0.1, 0.0731594890518848,
-                        4.65091229160849, 5.48567012520599e+22, 0.5630423677071, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        4.65091229160849, 5.48567012520599e+22, 0.5630423677071, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
                         0.1, 0.0588769082115965, 8.02076448534254, 1.03413390502686e+22,
-                        0.101014070184426, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.101014070184426, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
                         0.1, 0.0110992104182495, 4.18450741833095, 1, 9.65957051390276e-24,
                         "Null model (incl. subject)", 0.1, 1.07328561265586e-24, 0.449149895733824,
                         4.33859508915294e-24, "facGender", 0.1, 4.82066121016992e-25,
@@ -50,12 +50,12 @@ test_that("Main table results match", {
                         1.53533237565983),
     bestModelTop = list(1, 6.50874645747621, "RM Factor 1 + facGender", 0.1, 0.419682304777031,
                         0.836215528978976, 4.86631035203809, "RM Factor 1", 0.1, 0.350944860492241,
-                        1.97072663295013, 0.215841804977564, 0.896471757374706, "RM Factor 1 + facGender + contcor1",
+                        1.97072663295012, 0.215841804977564, 0.896471757374706, "RM Factor 1 + facGender + contcor1",
                         0.1, 0.0905849861802185, 6.6431450159699, 0.170299127246734,
                         0.692756111371905, "RM Factor 1 + contcor1", 0.1, 0.071471530224426,
-                        2.19671475265757, 0.133248845838306, 0.533112456797527, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        2.19671475265757, 0.133248845838306, 0.533112456797527, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
                         0.1, 0.0559221827302997, 2.962819662002, 0.0271494305718735,
-                        0.103729124066941, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.103729124066941, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
                         0.1, 0.0113941355957878, 4.60008794602492, 2.70717632857682e-24,
                         1.02253860091345e-23, "Null model (incl. subject)", 0.1, 1.13615400101494e-24,
                         1.77842089287593, 1.18358526138156e-24, 4.47056811357066e-24,
@@ -88,12 +88,12 @@ test_that("Effects table results match", {
   options$effects <- TRUE
 
   refTables <- list(
-    allModels = list("<unicode>", "RM Factor 1", 0.6, 1, 1.23554633080453, "facGender",
-                     0.6, 0.649531010694947, 0.541809634931426, "RM Factor 1<unicode><unicode><unicode>facGender",
-                     0.2, 0.119293779018021),
-    matchedModels = list(7.95624688797964e+23, "RM Factor 1", 0.4, 0.880706220981981, 1.51293623075849,
-                         "facGender", 0.4, 0.530237231676927, 0.224981898462208, "RM Factor 1<unicode><unicode><unicode>facGender",
-                         0.2, 0.119293779018021)
+    allModels = list(1501199875790165, "RM Factor 1", 0.6, 1, 1.23554633080451, "facGender",
+                     0.6, 0.649531010694943, 0.541809634931422, "RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
+                     0.2, 0.11929377901802),
+    matchedModels = list(7.95624688797966e+23, "RM Factor 1", 0.4, 0.88070622098198, 1.51293623075847,
+                         "facGender", 0.4, 0.530237231676923, 0.224981898462208, "RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
+                         0.2, 0.11929377901802)
   )
 
   effectsTypes <- c("allModels", "matchedModels")

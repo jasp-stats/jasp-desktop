@@ -32,7 +32,7 @@ test_that("Main table results match", {
                         0.969106320600043, 1, 1.38052893828542, "Null model (incl. facExperim)",
                         0.2, 0.256578666172056, 0.432501410293758, 0.499288951910149,
                         "facGender + facFive", 0.2, 0.110970634970706, 1.41647769133671,
-                        0.21724304954363, 0.236121101672541, "facGender + facFive + facGender<unicode><unicode><unicode>facFive",
+                        0.21724304954363, 0.236121101672541, "facGender + facFive + facGender<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facFive",
                         0.2, 0.0557399318870544, 1.83775875304445, 0.213733397143635,
                         0.232085136403676, "facFive", 0.2, 0.0548394299555363, 1.04177436451923),
     bestModelTop = list(1, 4.18686558133661, "facGender", 0.2, 0.511412522868496, 0.510943003733483,
@@ -40,7 +40,7 @@ test_that("Main table results match", {
                         2.3021061884882, 0.223966148027088, 0.517421342346211, "facGender + facFive",
                         0.2, 0.114539092799672, 4.15307380646848, 0.111744890960883,
                         0.242446197872535, "facFive", 0.2, 0.0571477366039704, 2.59068727917517,
-                        0.108714579053848, 0.235484452504449, "facGender + facFive + facGender<unicode><unicode><unicode>facFive",
+                        0.108714579053848, 0.235484452504449, "facGender + facFive + facGender<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facFive",
                         0.2, 0.0555979971465146, 3.03025679917061)
   )
 
@@ -66,10 +66,10 @@ test_that("Effects table results match", {
 
   refTables <- list(
     allModels = list(0.101833665496691, "facFive", 0.6, 0.132509592038855, 0.184940107557576,
-                     "contBinom", 0.6, 0.217166083167955, 0.0176366361186621, "facFive<unicode><unicode><unicode>contBinom",
+                     "contBinom", 0.6, 0.217166083167955, 0.0176366361186621, "facFive<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
                      0.2, 0.0043898036871001),
     matchedModels = list(0.146995523754444, "facFive", 0.4, 0.127601379108464, 0.271032837792626,
-                         "contBinom", 0.4, 0.2123137507459, 0.174704371549221, "facFive<unicode><unicode><unicode>contBinom",
+                         "contBinom", 0.4, 0.2123137507459, 0.174704371549221, "facFive<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
                          0.2, 0.00433559523354601)
   )
 
