@@ -288,6 +288,11 @@ void ResultsJsInterface::removeAnalysis(Analysis *analysis)
 	emit runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
 }
 
+void ResultsJsInterface::removeAnalyses()
+{
+	emit runJavaScript("window.removeAllAnalyses()");
+}
+
 Json::Value &ResultsJsInterface::getResultsMeta()
 {
 	QEventLoop loop;

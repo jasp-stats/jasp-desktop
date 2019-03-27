@@ -927,7 +927,7 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
-		
+
 		if (_analyses->count() == 1)
 			emit currentAnalysis->expandAnalysis();
 	}
@@ -1384,8 +1384,10 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 void MainWindow::removeAllAnalyses()
 {
-	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
+	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?")) {
+		_resultsJsInterface->removeAnalyses();
 		_analyses->clear();
+	}
 }
 
 void MainWindow::delayedLoadHandler()
@@ -1467,5 +1469,3 @@ void MainWindow::resetQmlCache()
 {
 	_qml->clearComponentCache();
 }
-
-

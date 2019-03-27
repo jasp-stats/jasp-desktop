@@ -86,6 +86,7 @@ public slots:
 	void setAllUserDataFromJavascript(QString json);
 	void setResultsMetaFromJavascript(QString json);
 	void removeAnalysis(Analysis *analysis);
+	void removeAnalyses();
 
 //end callables
 

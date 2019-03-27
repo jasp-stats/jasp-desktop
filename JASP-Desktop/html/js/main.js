@@ -8,7 +8,7 @@ $(document).ready(function () {
 	var day = d.getDate();
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
-	
+
     if (typeof qt !== "undefined")
         var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
                 // now you retrieve your object
@@ -332,7 +332,7 @@ $(document).ready(function () {
 			else
 				params.cssValues[params.cssProperties[i]] = 'rgba(' + color + ', ' + alpha + ')';
 
-			if (params.count < params.divisions && alpha !== targetAlpha) 
+			if (params.count < params.divisions && alpha !== targetAlpha)
 				params.alphas[i] = alpha;
 			else
 				params.rates[i] = 0;
@@ -346,7 +346,7 @@ $(document).ready(function () {
 		params.baseTime += params.waitTime;
 
 		if (params.count === params.divisions)
-			params.callback();			
+			params.callback();
 	}
 
 
@@ -373,10 +373,17 @@ $(document).ready(function () {
 			hideInstructions()
 	}
 
+	window.removeAllAnalyses = function () {
+		window.unselect();
+		analyses.close();
+		// Initialize view to defaults and re-render - Clears titles, notebox, etc.
+		analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
+	}
+
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
-		
+
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
@@ -399,7 +406,7 @@ $(document).ready(function () {
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
-		
+
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 
@@ -496,7 +503,7 @@ $(document).ready(function () {
                 jasp.analysisSaveImage(id, JSON.stringify(options))
 
             });
-            
+
             jaspWidget.on("editimage", function (id, options) {
 
                 jasp.analysisEditImage(id, JSON.stringify(options))
@@ -522,7 +529,7 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 	}
-	
+
 	$("#results").on("click", ".stack-trace-selector", function() {
 		$(this).next(".stack-trace").slideToggle(function() {
 			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
