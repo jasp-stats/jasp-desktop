@@ -461,8 +461,8 @@ $(document).ready(function () {
 				window.menuObject = obj;
 			});
 
-			analyses.on("analyses:userDataChanged", function (key) {
-				jasp.updateUserData(-1, key);
+			analyses.on("analyses:userDataChanged", function () {
+				jasp.updateUserData();
 			});
 
 			analyses.render();
@@ -520,8 +520,9 @@ $(document).ready(function () {
 				jasp.removeAnalysisRequest(id);
 			});
 
-			jaspWidget.on("analysis:userDataChanged", function (id, key) {
-				jasp.updateUserData(id, key);
+			jaspWidget.on("analysis:userDataChanged", function () {
+
+				jasp.updateUserData();
 			});
 		}
 		else

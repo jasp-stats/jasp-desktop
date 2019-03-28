@@ -16,7 +16,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.noteBox = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-main-note jasp_top_level", model: this.note });
 
 		this.listenTo(this.noteBox, "NoteBox:textChanged", function () {
-			this.trigger("analyses:userDataChanged", 'first');
+			this.trigger("analyses:userDataChanged");
 		});
 
 		this.views.push(this.noteBox);

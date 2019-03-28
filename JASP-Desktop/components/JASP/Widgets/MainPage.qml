@@ -40,7 +40,7 @@ Item
 		id:				panelSplit
 		orientation:	Qt.Horizontal
 		height:			parent.height
-		width:			parent.width + hackySplitHandlerHideWidth 
+		width:			parent.width + hackySplitHandlerHideWidth
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidth : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
@@ -227,7 +227,7 @@ Item
 						customMenu.showMenu(resultsView, props, optionsJSON['rXright'] + 10, optionsJSON['rY']);
 					}
 
-					function updateUserData(id, key)				{ resultsJsInterface.updateUserData(id, key)				}
+					function updateUserData()						{ resultsJsInterface.updateUserData()						}
 					function analysisSaveImage(id, options)			{ resultsJsInterface.analysisSaveImage(id, options)			}
 					function analysisEditImage(id, options)			{ resultsJsInterface.analysisEditImage(id, options)			}
 					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
