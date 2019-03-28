@@ -31,7 +31,7 @@ using namespace std;
 BoundQMLFactorsForm::BoundQMLFactorsForm(QQuickItem *item, AnalysisForm *form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_factorsModel = new ListModelFactorsForm(this);
 	setTermsAreNotVariables();

@@ -28,7 +28,7 @@ using namespace std;
 BoundQMLRepeatedMeasuresFactors::BoundQMLRepeatedMeasuresFactors(QQuickItem *item, AnalysisForm *form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_factorsModel = new ListModelRepeatedMeasuresFactors(this);
 	setTermsAreNotVariables();

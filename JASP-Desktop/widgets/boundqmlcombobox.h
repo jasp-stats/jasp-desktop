@@ -31,6 +31,10 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 	
 public:
 	BoundQMLComboBox(QQuickItem* item, AnalysisForm* form);
+	BoundQMLComboBox(QMap<QString, QVariant>& properties, AnalysisForm *form);
+
+	void		initComboBox();
+
 	void		bindTo(Option *option)						override;
 	void		resetQMLItem(QQuickItem *item)				override;
 	Option*		createOption()								override;
@@ -47,11 +51,11 @@ protected slots:
 	void comboBoxChangeValueSlot(int index);
 
 protected:
-	OptionList*				_boundTo;
-	int						_currentIndex;
+	OptionList*				_boundTo = nullptr;
+	int						_currentIndex = 0;
 	QString					_currentText;
 	QString					_currentColumnType;
-	ListModelTermsAvailable* _model;
+	ListModelTermsAvailable* _model = nullptr;
 	QMap<QString, QString>	_keyToValueMap;
 	QMap<QString, QString>	_valueToKeyMap;
 	

@@ -142,7 +142,6 @@ FocusScope
 	ToolTip.delay:				Theme.toolTipDelay
 	ToolTip.toolTip.font:		Theme.font
 	ToolTip.visible:			toolTip !== "" && controlMouseArea.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
 	MouseArea
 	{

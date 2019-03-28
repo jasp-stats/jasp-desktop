@@ -27,9 +27,22 @@ using namespace std;
 BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QObject(form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
-	QString type = QQmlProperty(item, "inputType").read().toString();
+	initTextInput();
+}
+
+BoundQMLTextInput::BoundQMLTextInput(QMap<QString, QVariant> &properties, AnalysisForm *form)
+	: QMLItem(properties, form)
+	, QObject(form)
+	, BoundQMLItem()
+{
+	initTextInput();
+}
+
+void BoundQMLTextInput::initTextInput()
+{
+	QString type = getItemProperty("inputType").toString();
 
 		 if (type == "integer")			_inputType = TextInputType::IntegerInputType;
 	else if (type == "number")			_inputType = TextInputType::NumberInputType;
@@ -38,8 +51,10 @@ BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
 	else								_inputType = TextInputType::StringInputType;
 
-	QQuickItem::connect(item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
+	if (_item)
+		 QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
+
 
 QString BoundQMLTextInput::_getPercentValue()
 {
@@ -120,13 +135,13 @@ void BoundQMLTextInput::bindTo(Option *option)
 		break;
 	}
 
-	_item->setProperty("value", _value);
+	setItemProperty("value", _value);
 }
 
 Option *BoundQMLTextInput::createOption()
 {
 	Option* option = nullptr;
-	_value = QQmlProperty::read(_item, "value").toString();
+	_value = getItemProperty("value").toString();
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:		option = new OptionInteger();			break;
@@ -197,8 +212,9 @@ void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 
-	_item->setProperty("value", _value);
-	QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
+	setItemProperty("value", _value);
+	if (_item)
+		QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
 
 void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
@@ -246,7 +262,7 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 
 void BoundQMLTextInput::textChangedSlot()
 {
-	_value = QQmlProperty::read(_item, "value").toString();
+	_value = getItemProperty("value").toString();
 	if (_option)
 		_setOptionValue(_option, _value);
 }

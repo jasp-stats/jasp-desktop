@@ -29,7 +29,7 @@
 BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_boundTo = nullptr;
 	QString modelType = _item->property("modelType").toString();

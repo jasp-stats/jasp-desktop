@@ -29,8 +29,8 @@ class BoundQMLItem : public virtual QMLItem, public Bound
 {
 
 public:
-	BoundQMLItem(QQuickItem* item, AnalysisForm* form);
-	virtual ~BoundQMLItem();
+	BoundQMLItem() {}
+	virtual ~BoundQMLItem() {}
 	
 	virtual Option* createOption() = 0;
 	virtual Option* boundTo() = 0;

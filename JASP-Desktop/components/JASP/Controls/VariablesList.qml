@@ -18,7 +18,7 @@
 
 
 import QtQuick 2.11
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.4 as QTCONTROLS
 import QtQml.Models 2.2
 import JASP.Theme 1.0
 import QtQuick.Layouts 1.3
@@ -37,7 +37,7 @@ JASPControl
 	property var	model
 	property string title
 	property alias	label:				variablesList.title
-	property alias	count:				listView.count	
+	property alias	count:				listView.count
 	property int	columns:			1
 	property string itemType:			"variables"
 	property alias	dropKeys:			dropArea.keys
@@ -73,7 +73,7 @@ JASPControl
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
 	signal hasSelectedItemsChanged();
-		
+
 	function moveSelectedItems(target)
 	{
 		if (listView.selectedItems.length === 0) return;
@@ -81,16 +81,16 @@ JASPControl
 		var selectedIndexes = [];
 		for (var i = 0; i < listView.selectedItems.length; i++)
 		{
-			var selectedItem = listView.selectedItems[i];            
+			var selectedItem = listView.selectedItems[i];
 			selectedIndexes.push(selectedItem.rank);
 		}
 		
 		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
 		// So we have to clear the selected items list before.
 		listView.clearSelectedItems(true);
-		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""							
+		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedIndexes, target, -1, assignOption);
-	}    
+	}
 	
 	DropArea
 	{
@@ -355,7 +355,7 @@ JASPControl
 					listView.addSelectedItem(item);
 				else
 					listView.removeSelectedItem(item);
-			}        
+			}
 			
 			function clearSelectedItems(emitSignal)
 			{
@@ -406,7 +406,7 @@ JASPControl
 				anchors.horizontalCenter:	parent.horizontalCenter
 				anchors.verticalCenter:		parent.verticalCenter
 				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
-				// when the rectangle is dragged, it gets another parent but it must keep the same size,                
+				// when the rectangle is dragged, it gets another parent but it must keep the same size,
 				height:			listView.cellHeight
 				width:			listView.cellWidth
 				focus:			true
@@ -448,15 +448,9 @@ JASPControl
 				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
-				ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
-				
-				ToolTip.delay: 300
-				ToolTip.text: model.name
-				ToolTip.toolTip.background: Rectangle
-				{
-					id:		tooltipRectangle
-					color:	Theme.tooltipBackgroundColor
-				}
+				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
+				QTCONTROLS.ToolTip.delay: 300
+				QTCONTROLS.ToolTip.text: model.name
 				
 				Rectangle
 				{
@@ -503,11 +497,19 @@ JASPControl
 						
 						delegate: Loader
 						{
-							source:			model.path
+							sourceComponent: model.type === "CheckBox" ? extraCheckBoxComponent :
+											(	(model.type === "ComboBox" || model.type === "Dropdown") ? extraComboBoxComponent :
+													(model.type === "IntegerField" ? extraIntegerFieldComponent :
+														extraTextFieldComponent
+													 )
+											 )
 							asynchronous:	false
 							Layout.topMargin:	-2
-							
-							onLoaded:		itemRectangle.extraColumnsModel.controlLoaded(model.name, item)
+
+							property string extraControlColName:    colName.text
+							property var    extraControlModel:      itemRectangle.extraColumnsModel
+							property string extraControlName:       model.name
+							property var    extraControlProperties: model.properties
 						}
 					}
 				}
@@ -541,7 +543,7 @@ JASPControl
 					anchors.fill:	parent
 					drag.target:	parent
 					hoverEnabled:	true
-					cursorShape:	Qt.PointingHandCursor					
+					cursorShape:	Qt.PointingHandCursor
 					
 					onDoubleClicked:
 					{
@@ -591,7 +593,7 @@ JASPControl
 							
 							listView.startShiftSelected = index;
 							listView.endShiftSelected = -1;
-						}                        
+						}
 					}
 					onReleased:
 					{
@@ -619,7 +621,7 @@ JASPControl
 										selectedItem.dragging = true;
 										selectedItem.offsetX = selectedItem.x - itemRectangle.x;
 										selectedItem.offsetY = selectedItem.y - itemRectangle.y;
-										selectedItem.setRelative(itemRectangle);                                
+										selectedItem.setRelative(itemRectangle);
 									}
 								}
 							}
@@ -640,18 +642,93 @@ JASPControl
 							{
 								var dropTarget = itemRectangle.Drag.target.parent
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
-									return;                                
+									return;
 								
 								listView.clearSelectedItems(true); // Must be before itemsDropped: listView does not exist anymore afterwards
 								var variablesListName = variablesList.name
-								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""							
-								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);                               
+								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
+								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
 							}
 						}
 					}
 				}
-			}			
+			}
 		}
 	}
-	
+
+	Component
+	{
+		id: extraCheckBoxComponent
+
+		CheckBox
+		{
+			id:			extraCheckBoxControl
+			name:		extraControlName
+			checked:	extraControlProperties["checked"]
+
+			property string controlColName: extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraCheckBoxControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraCheckBoxControl)
+		}
+	}
+
+	Component
+	{
+		id: extraComboBoxComponent
+
+		ComboBox
+		{
+			id:				extraComboxControl
+			name:			extraControlName
+			values:			extraControlProperties["values"]
+			currentIndex:	extraControlProperties["currentIndex"]
+
+			property string controlColName:	extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraComboxControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraComboxControl)
+		}
+	}
+
+	Component
+	{
+		id: extraTextFieldComponent
+
+		TextField
+		{
+			id:				extraTextFieldControl
+			name:			extraControlName
+			defaultValue:	extraControlProperties["defaultValue"]
+
+			property string controlColName: extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraTextFieldControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraTextFieldControl)
+		}
+	}
+
+	Component
+	{
+		id: extraIntegerFieldComponent
+
+		IntegerField
+		{
+			id:				extraIntegerFieldControl
+			name:			extraControlName
+			defaultValue:	extraControlProperties["defaultValue"]
+			min:			extraControlProperties["min"]
+			max:			extraControlProperties["max"]
+
+			property string controlColName: extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraIntegerFieldControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraIntegerFieldControl)
+		}
+	}
+
 }
