@@ -7,8 +7,8 @@ context("Bayesian Repeated Measures ANOVA")
 
 initOpts <- function() {
   options <- jasptools::analysisOptions("AnovaRepeatedMeasuresBayesian")
-  options$sampleMode <- "manual"
-  options$fixedSamplesNumber <- 50
+  options$sampleModeNumAcc <- "manual"
+  options$fixedNumAcc <- 50
   return(options)
 }
 
@@ -32,37 +32,39 @@ test_that("Main table results match", {
   options$priorRandomEffects <- 0.8
 
   refTables <- list(
-    nullModelTop = list(3.62496733116162e+23, 5.73145848262438, "RM Factor 1 + facGender",
-                        0.1, 0.389062528288327, 1.72433512753681, 3.46448419993762e+23,
-                        5.32751662817302, "RM Factor 1", 0.1, 0.37183810470666, 3.74201005842137,
-                        8.9411204428442e+22, 0.955353109807862, "RM Factor 1 + facGender + contcor1",
-                        0.1, 0.0959637593232787, 16.4218696956561, 6.81640452356858e+22,
-                        0.710408526266743, "RM Factor 1 + contcor1", 0.1, 0.0731594890518848,
-                        4.65091229160849, 5.48567012520599e+22, 0.5630423677071, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
-                        0.1, 0.0588769082115965, 8.02076448534254, 1.03413390502686e+22,
-                        0.101014070184426, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
-                        0.1, 0.0110992104182495, 4.18450741833095, 1, 9.65957051390276e-24,
-                        "Null model (incl. subject)", 0.1, 1.07328561265586e-24, 0.449149895733824,
-                        4.33859508915294e-24, "facGender", 0.1, 4.82066121016992e-25,
-                        3.63958095837114, 0.199117747695815, 1.92339192443722e-24, "contcor1",
-                        0.1, 2.13710213826357e-25, 2.50946236929854, 0.0827555999423614,
-                        7.99383553063569e-25, "facGender + contcor1", 0.1, 8.88203947848407e-26,
-                        1.53533237565983),
-    bestModelTop = list(1, 6.50874645747621, "RM Factor 1 + facGender", 0.1, 0.419682304777031,
-                        0.836215528978976, 4.86631035203809, "RM Factor 1", 0.1, 0.350944860492241,
-                        1.97072663295012, 0.215841804977564, 0.896471757374706, "RM Factor 1 + facGender + contcor1",
-                        0.1, 0.0905849861802185, 6.6431450159699, 0.170299127246734,
-                        0.692756111371905, "RM Factor 1 + contcor1", 0.1, 0.071471530224426,
-                        2.19671475265757, 0.133248845838306, 0.533112456797527, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
-                        0.1, 0.0559221827302997, 2.962819662002, 0.0271494305718735,
-                        0.103729124066941, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
-                        0.1, 0.0113941355957878, 4.60008794602492, 2.70717632857682e-24,
-                        1.02253860091345e-23, "Null model (incl. subject)", 0.1, 1.13615400101494e-24,
-                        1.77842089287593, 1.18358526138156e-24, 4.47056811357066e-24,
-                        "facGender", 0.1, 4.96729790396738e-25, 2.11365788695685, 5.27151495518567e-25,
-                        1.99112539145302e-24, "contcor1", 0.1, 2.21236154605891e-25,
-                        2.06808792667175, 2.66915441617695e-25, 1.00817718946824e-24,
-                        "facGender + contcor1", 0.1, 1.12019687718693e-25, 13.9884843562539)
+    nullModelTop = list(3.47351082631419e+23, 7.78290269354818, "RM Factor 1 + facGender",
+                        0.1, 0.463739964156508, 9.48562551500826, 2.25207823390771e+23,
+                        3.86945112370334, "RM Factor 1", 0.1, 0.300669475839298, 39.106368292494,
+                        6.71141299730886e+22, 0.885790984667994, "RM Factor 1 + contcor1",
+                        0.1, 0.0896024391009056, 12.887989220175, 5.74376683392463e+22,
+                        0.74747150859863, "RM Factor 1 + facGender + contcor1", 0.1,
+                        0.0766836310256722, 15.7870140533192, 4.50189687402267e+22,
+                        0.575524732870682, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.0601037278818813, 12.5735601755857, 6.89156615187532e+21,
+                        0.0835758191825197, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.00920076199573587, 11.0628049253349, 1, 1.2015680635829e-23,
+                        "Null model (incl. subject)", 0.1, 1.33507562620322e-24, "",
+                        0.41104359340273, 4.93896854573074e-24, "facGender", 0.1, 5.4877428285897e-25,
+                        7.7632364395313, 0.23874600738579, 2.86869577782693e-24, "contcor1",
+                        0.1, 3.18743975314103e-25, 16.2455760987563, 0.0921852605167578,
+                        1.10766864970006e-24, "facGender + contcor1", 0.1, 1.23074294411118e-25,
+                        13.7488070754201),
+    bestModelTop = list(1, 6.76784490026738, "RM Factor 1 + facGender", 0.1, 0.429218129875987,
+                        "", 0.812461183408298, 4.81900629644283, "RM Factor 1", 0.1,
+                        0.348723069739341, 11.0954981789983, 0.23781134935476, 1.02308586890581,
+                        "RM Factor 1 + facGender + contcor1", 0.1, 0.102072942633335,
+                        32.3366579475681, 0.192584660287367, 0.810984063552273, "RM Factor 1 + contcor1",
+                        0.1, 0.0826608277313462, 19.6531747475726, 0.0565717639157407,
+                        0.223973070906526, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.0242816267117001, 57.5970296697693, 0.0303887520130162,
+                        0.118942038756438, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.013043403308292, 18.7536418861197, 2.8910010651933e-24,
+                        1.11678306360458e-23, "Null model (incl. subject)", 0.1, 1.24087007067176e-24,
+                        10.0789044176123, 1.2418397001326e-24, 4.79718102327006e-24,
+                        "facGender", 0.1, 5.33020113696672e-25, 11.1219692156722, 5.61029992468607e-25,
+                        2.16723819754544e-24, "contcor1", 0.1, 2.40804244171715e-25,
+                        12.5004991737756, 2.26151580646109e-25, 8.73615226620796e-25,
+                        "facGender + contcor1", 0.1, 9.70683585134215e-26, 15.8888961021958)
   )
 
   for (order in c("nullModelTop", "bestModelTop")) {
@@ -88,12 +90,12 @@ test_that("Effects table results match", {
   options$effects <- TRUE
 
   refTables <- list(
-    allModels = list(1501199875790165, "RM Factor 1", 0.6, 1, 1.23554633080451, "facGender",
-                     0.6, 0.649531010694943, 0.541809634931422, "RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
-                     0.2, 0.11929377901802),
-    matchedModels = list(7.95624688797966e+23, "RM Factor 1", 0.4, 0.88070622098198, 1.51293623075847,
-                         "facGender", 0.4, 0.530237231676923, 0.224981898462208, "RM Factor 1<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facGender",
-                         0.2, 0.11929377901802)
+    allModels = list(1000799917193443, "RM Factor 1", 0.6, 0.999999999999999, 2.08122183080565,
+                     "facGender", 0.6, 0.757389476581779, 0.343504623304608, "RM Factor 1<unicode><unicode><unicode>facGender",
+                     0.2, 0.0790846685097493),
+    matchedModels = list(1.02806369879075e+24, "RM Factor 1", 0.4, 0.92091533149025, 2.79585896982196,
+                         "facGender", 0.4, 0.67830480807203, 0.116591637813293, "RM Factor 1<unicode><unicode><unicode>facGender",
+                         0.2, 0.0790846685097493)
   )
 
   effectsTypes <- c("allModels", "matchedModels")

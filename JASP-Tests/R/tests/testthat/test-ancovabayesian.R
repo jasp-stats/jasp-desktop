@@ -7,8 +7,8 @@ context("Bayesian ANCOVA")
 
 initOpts <- function() {
   options <- jasptools::analysisOptions("AncovaBayesian")
-  options$sampleMode <- "manual"
-  options$fixedSamplesNumber <- 50
+  options$sampleModeNumAcc <- "manual"
+  options$fixedNumAcc <- 50
   return(options)
 }
 
@@ -28,17 +28,18 @@ test_that("Main table results match", {
   )
 
   refTables <- list(
-    nullModelTop = list(2.0810402340829, 3.45565802495949, "facGender", 0.25, 0.535291369462089,
-                        2.54299550940088, 1, 1.03889716184925, "Null model (incl. facFive)",
-                        0.25, 0.257222979496111, 0.554492327691682, 0.499065271632886,
-                        "facGender + contGamma", 0.25, 0.142628168636589, 1.52356717742169,
-                        0.252144977607616, 0.208067159341743, "contGamma", 0.25, 0.0648574824052112,
-                        1.09719511907165),
-    bestModelTop = list(1, 3.1778383618232, "facGender", 0.25, 0.514393251442299, 0.512506394916977,
-                        1.07403793058239, "Null model (incl. facFive)", 0.25, 0.263629830866315,
-                        1.45815184582002, 0.290516285547582, 0.527086446737985, "facGender + contGamma",
-                        0.25, 0.14943961671976, 2.72502064669284, 0.141015265593473,
-                        0.234631433849418, "contGamma", 0.25, 0.0725373009716262, 7.06028559007371)
+    nullModelTop = list(1.83701195521646, 3.11340404608183, "facGender", 0.25, 0.509275032798994,
+                        29.6656710072444, 1, 1.15069866070698, "Null model (incl. facFive)",
+                        0.25, 0.277230113474675, "", 0.502295526791326, 0.485338413495893,
+                        "facGender + contGamma", 0.25, 0.139251445890181, 9.83211717425022,
+                        0.267804268827858, 0.24059264108273, "contGamma", 0.25, 0.0742434078361496,
+                        15.885810482332),
+    bestModelTop = list(1, 3.52818212286609, "facGender", 0.25, 0.540453997217391, "",
+                        0.485506904639836, 1.0672128467728, "Null model (incl. facFive)",
+                        0.25, 0.262394147289242, 10.5414217188718, 0.230284849014787,
+                        0.426450425012883, "facGender + contGamma", 0.25, 0.124458367148645,
+                        14.932174588461, 0.134504488298719, 0.235176246789085, "contGamma",
+                        0.25, 0.0726934883447225, 15.235554204653)
   )
 
   for (order in c("nullModelTop", "bestModelTop")) {
@@ -63,12 +64,12 @@ test_that("Effects table results match", {
   )
 
   refTables <- list(
-    allModels = list(0.194541140104503, "contGamma", 0.6, 0.22589337738806, 0.215301593138521,
-                     "contBinom", 0.6, 0.244114899538536, 0.139109048927543, "contGamma<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
-                     0.2, 0.033608452273947),
-    matchedModels = list(0.2488203279531, "contGamma", 0.4, 0.192486007853074, 0.278924648376759,
-                         "contBinom", 0.4, 0.210695472488687, 0.777915623551311, "contGamma<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
-                         0.2, 0.0339196100618932)
+    allModels = list(0.195147508378383, "contGamma", 0.6, 0.226438035053418, 0.215922578651088,
+                     "contBinom", 0.6, 0.24464673662928, 0.148059370442442, "contGamma<unicode><unicode><unicode>contBinom",
+                     0.2, 0.0356936478531284),
+    matchedModels = list(0.251463756140854, "contGamma", 0.4, 0.193766080181002, 0.281631799589675,
+                         "contBinom", 0.4, 0.211903947712592, 0.784742840790345, "contGamma<unicode><unicode><unicode>contBinom",
+                         0.2, 0.0356812041725068)
   )
 
   for (effectsType in c("allModels", "matchedModels")) {

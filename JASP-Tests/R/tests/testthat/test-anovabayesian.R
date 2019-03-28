@@ -7,8 +7,8 @@ context("Bayesian ANOVA")
 
 initOpts <- function() {
   options <- jasptools::analysisOptions("AnovaBayesian")
-  options$sampleMode <- "manual"
-  options$fixedSamplesNumber <- 50
+  options$sampleModeNumAcc <- "manual"
+  options$fixedNumAcc <- 50
   return(options)
 }
 
@@ -28,20 +28,21 @@ test_that("Main table results match", {
   )
 
   refTables <- list(
-    nullModelTop = list(2.03396231183419, 4.36594897914025, "facGender", 0.2, 0.521871337014648,
-                        0.969106320600043, 1, 1.38052893828542, "Null model (incl. facExperim)",
-                        0.2, 0.256578666172056, 0.432501410293758, 0.499288951910149,
-                        "facGender + facFive", 0.2, 0.110970634970706, 1.41647769133671,
-                        0.21724304954363, 0.236121101672541, "facGender + facFive + facGender<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facFive",
-                        0.2, 0.0557399318870544, 1.83775875304445, 0.213733397143635,
-                        0.232085136403676, "facFive", 0.2, 0.0548394299555363, 1.04177436451923),
-    bestModelTop = list(1, 4.18686558133661, "facGender", 0.2, 0.511412522868496, 0.510943003733483,
-                        1.41493752908138, "Null model (incl. facExperim)", 0.2, 0.261302650581348,
-                        2.3021061884882, 0.223966148027088, 0.517421342346211, "facGender + facFive",
-                        0.2, 0.114539092799672, 4.15307380646848, 0.111744890960883,
-                        0.242446197872535, "facFive", 0.2, 0.0571477366039704, 2.59068727917517,
-                        0.108714579053848, 0.235484452504449, "facGender + facFive + facGender<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>facFive",
-                        0.2, 0.0555979971465146, 3.03025679917061)
+    nullModelTop = list(2.02979323789675, 4.26708821602261, "facGender", 0.2, 0.5161537054549,
+                        13.7355911669483, 1, 1.36400693663762, "Null model (incl. facExperim)",
+                        0.2, 0.254288809233464, "", 0.395602125048142, 0.447395505374489,
+                        "facGender + facFive", 0.2, 0.10059719330872, 9.31843477414318,
+                        0.283048448817154, 0.310233602217543, "facGender + facFive + facGender<unicode><unicode><unicode>facFive",
+                        0.2, 0.0719760530050931, 27.3699066120891, 0.224092594438576,
+                        0.241710653647034, "facFive", 0.2, 0.0569842389978229, 12.4382643482552),
+    bestModelTop = list(1, 5.89338824855042, "facGender", 0.2, 0.595689575754183, "",
+                        0.387257922203485, 1.19943409151523, "Null model (incl. facExperim)",
+                        0.2, 0.230685507384841, 20.3818205689193, 0.144085444036832,
+                        0.375554724086775, "facGender + facFive", 0.2, 0.0858301970306536,
+                        21.4710504386786, 0.0777010838721742, 0.194128270632499, "facFive",
+                        0.2, 0.0462857256874556, 21.0528996183454, 0.0696822570553021,
+                        0.173226431502077, "facGender + facFive + facGender<unicode><unicode><unicode>facFive",
+                        0.2, 0.0415089941428668, 21.7314934303167)
   )
 
   for (order in c("nullModelTop", "bestModelTop")) {
@@ -65,12 +66,12 @@ test_that("Effects table results match", {
   )
 
   refTables <- list(
-    allModels = list(0.101833665496691, "facFive", 0.6, 0.132509592038855, 0.184940107557576,
-                     "contBinom", 0.6, 0.217166083167955, 0.0176366361186621, "facFive<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
-                     0.2, 0.0043898036871001),
-    matchedModels = list(0.146995523754444, "facFive", 0.4, 0.127601379108464, 0.271032837792626,
-                         "contBinom", 0.4, 0.2123137507459, 0.174704371549221, "facFive<unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode><unicode>contBinom",
-                         0.2, 0.00433559523354601)
+    allModels = list(0.099907027453377, "facFive", 0.6, 0.130329318915725, 0.182805120830185,
+                     "contBinom", 0.6, 0.215198578129191, 0.0164190701020927, "facFive<unicode><unicode><unicode>contBinom",
+                     0.2, 0.0040879872880584),
+    matchedModels = list(0.144492921488286, "facFive", 0.4, 0.125726268310479, 0.268259601459664,
+                         "contBinom", 0.4, 0.210639434646253, 0.182973144016417, "facFive<unicode><unicode><unicode>contBinom",
+                         0.2, 0.00415312636511842)
   )
 
   for (effectsType in c("allModels", "matchedModels")) {
