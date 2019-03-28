@@ -100,12 +100,12 @@ test_that("Post-hoc tests match", {
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options, view = FALSE, quiet = TRUE)
   
-  refTable <- list("Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
-                   "NaN", "", 0.703009687611414, "", "TRUE", "Beer", "Water", 8.31666666666667,
-                   3.3351289023547, 2.49365674016224, 0.557598598355329, "NaN",
-                   "", 0.0660988675936689, "", "FALSE", "Wine", "Water", 4.81666666666667,
-                   1.1164571680934, 4.31424223366509, 0.964693890587566, "NaN",
-                   "", 0.00112213065327869, "", "FALSE")
+  refTable <- list("Beer", "Water", 8.31666666666667,
+                   3.3351289023547, 2.49365674016224, 0.557598598355329, 0.0440659117291126,
+                   0.0660988675936689, "", "", "TRUE", "Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
+                   0.234336562537138, 0.703009687611414, "", "", "FALSE", "Water", "Wine", -4.81666666666667,
+                   1.1164571680934, -4.31424223366509, -0.964693890587566, 0.00112213065327869,
+                   0.00112213065327869, "", "", "FALSE")
   
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table, refTable)
@@ -259,7 +259,7 @@ test_that("Simple Effects table match", {
   options$moderatorFactorTwo <- "Charisma"
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", #mydat,
+                            dataset = "AnovaMixedEffects.csv",
                             options = options,
                             view = FALSE, quiet = TRUE)
   
@@ -289,8 +289,7 @@ test_that("Nonparametric table match", {
   options$friedmanWithinFactor <- "Charisma"
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", #mydat,
-                            options = options,
+                            dataset = "AnovaMixedEffects.csv",                             options = options,
                             view = FALSE, quiet = TRUE)
   
   refTable <- list( "Charisma", 40.074508162411, 2, 1.98577994376659e-09, -170.212868480726,

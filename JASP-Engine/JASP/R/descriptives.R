@@ -152,7 +152,7 @@ Descriptives <- function(jaspResults, dataset, options)
   stats$position          <- 1
 
   stats$dependOnOptions(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
-    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "range", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
+    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
 
   if (wantsSplit)
   {
@@ -178,6 +178,8 @@ Descriptives <- function(jaspResults, dataset, options)
                                     stats$addColumnInfo(name="Std. Error of Skewness",      type="number", format="sf:4") }
   if (options$kurtosis) {           stats$addColumnInfo(name="Kurtosis",                    type="number", format="sf:4")
                                     stats$addColumnInfo(name="Std. Error of Kurtosis",      type="number", format="sf:4") }
+  if (options$shapiro) {            stats$addColumnInfo(name="Shapiro-Wilk",                type="number", format="sf:4")
+                                    stats$addColumnInfo(name="P-value of Shapiro-Wilk",     type="number", format="sf:4") }
   if (options$range)                stats$addColumnInfo(name="Range",                       type="number", format="sf:4")
   if (options$minimum)              stats$addColumnInfo(name="Minimum",                     type="number", format="sf:4")
   if (options$maximum)              stats$addColumnInfo(name="Maximum",                     type="number", format="sf:4")
@@ -256,7 +258,7 @@ Descriptives <- function(jaspResults, dataset, options)
   resultsCol[["Valid"]]   <- length(na.omitted)
   resultsCol[["Missing"]] <- rows - length(na.omitted)
 
-  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$kurtosis || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum))
+  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum))
     shouldAddNominalTextFootnote <- TRUE
 
   resultsCol[["Mean"]]                    <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mean,              na.omitted, mean)
@@ -272,6 +274,9 @@ Descriptives <- function(jaspResults, dataset, options)
   resultsCol[["Std. Error of Kurtosis"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesSEK)
   resultsCol[["Skewness"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSkewness)
   resultsCol[["Std. Error of Skewness"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSES)
+  resultsCol[["Shapiro-Wilk"]]            <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { shapiro.test(param)$statistic })
+  resultsCol[["P-value of Shapiro-Wilk"]] <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { shapiro.test(param)$p.value })
+  
 
   if (options$mode)
   {
