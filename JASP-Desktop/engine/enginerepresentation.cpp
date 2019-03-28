@@ -289,8 +289,8 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	switch(status)
 	{
 	case analysisResultStatus::imageSaved:
-		if (results.get("error", "") != "")
-			MessageForwarder::showWarning("Error saving plot", "Unfortunately the plot could not be saved. R returned the following error:\n\n" + results.get("error", "").asString() + "\n\n Please report this error at https://github.com/jasp-stats/jasp-issues");
+		if (results.get("error", false).asBool())
+			MessageForwarder::showWarning("Error saving plot", "Unfortunately the plot could not be saved.\n\nError message:\n" + results.get("errorMessage", "").asString() + "\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports");
 		else
 			analysis->imageSaved(results);
 		clearAnalysisInProgress();
@@ -298,10 +298,9 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 
 	case analysisResultStatus::imageEdited:
-		if (results.get("errorMessage", "") != "")
-			MessageForwarder::showWarning("Error resizing plot", "Unfortunately the plot could not be resized. R returned the following error:\n\n" + results.get("errorMessage", "").asString() + "\n\n Please report this error at https://github.com/jasp-stats/jasp-issues");
-		else
-			analysis->imageEdited(results);
+		if (results.get("error", false).asBool())
+			MessageForwarder::showWarning("Error resizing plot", "Unfortunately the plot could not be resized.\n\nError message:\n" + results.get("errorMessage", "").asString() + "\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports");
+		analysis->imageEdited(results); // if an error occurs js needs to resize the plot back to the old size
 		clearAnalysisInProgress();
 		break;
 
