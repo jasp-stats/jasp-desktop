@@ -33,7 +33,7 @@
 
 BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)
 	: QMLListViewDraggable(item, form)
-	, BoundQMLItem(item, form) 
+	, BoundQMLItem()
 {
 	QStringList extraControlTitles;
 	

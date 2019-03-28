@@ -24,6 +24,8 @@ Rectangle
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
 	property bool		imploded:			height == loader.y
 
+    ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
+
 	function toggleExpander()
 	{
 		if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()

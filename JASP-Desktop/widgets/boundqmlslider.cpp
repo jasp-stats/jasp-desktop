@@ -26,7 +26,7 @@
 BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	QQuickItem::connect(item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
 }

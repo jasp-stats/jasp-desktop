@@ -28,7 +28,7 @@
 BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_boundTo = nullptr;
 	_lavaanHighlighter = nullptr;

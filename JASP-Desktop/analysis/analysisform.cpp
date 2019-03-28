@@ -442,12 +442,12 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 						if (!boundControl->isJsonValid(optionValue))
 						{
 							std::string labelStr;
-							QVariant label = boundControl->getProperty("label");
+							QVariant label = boundControl->getItemProperty("label");
 							if (!label.isNull())
 								labelStr = label.toString().toStdString();
 							if (labelStr.empty())
 							{
-								label = boundControl->getProperty("title");
+								label = boundControl->getItemProperty("title");
 								labelStr = label.toString().toStdString();
 							}
 							if (labelStr.empty())

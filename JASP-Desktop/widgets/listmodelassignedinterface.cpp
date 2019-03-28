@@ -23,7 +23,6 @@ ListModelAssignedInterface::ListModelAssignedInterface(QMLListView* listView)
 	: ListModelDraggable(listView)
   , _source(nullptr)
 {
-	connect(this, &QAbstractTableModel::modelReset, this, &ListModelAssignedInterface::modelResetHandler);
 }
 
 
@@ -39,30 +38,33 @@ QVariant ListModelAssignedInterface::data(const QModelIndex &index, int role) co
 	
 }
 
-void ListModelAssignedInterface::modelResetHandler()
+void ListModelAssignedInterface::endResetModel()
+{
+	addExtraControls();
+	ListModelDraggable::endResetModel();
+}
+
+void ListModelAssignedInterface::addExtraControls()
 {
 	if (!_extraControlsDefinitions.isEmpty())
 	{
-		QMapIterator<QString, ListModelExtraControls* > it(_extraControlsModels);
-		while(it.hasNext())
-		{
-			it.next();
-			_modelCache[it.key()] = it.value();
-		}
-		
-		_extraControlsLoadedIndicator.clear();
 		_extraControlsModels.clear();
 		_rowNames.clear();
 		for (int i = 0; i < rowCount(); i++)
 		{
 			QString colName = data(index(i, 0), ListModel::NameRole).toString();
-			_extraControlsLoadedIndicator[colName] = _extraControlsNames;
 			_rowNames[i] = colName;
 			if (_modelCache.contains(colName))
 				_extraControlsModels[colName] = _modelCache[colName];
 			else
-				_extraControlsModels[colName] = new ListModelExtraControls(this, colName, _extraControlsDefinitions);
+			{
+				ListModelExtraControls* extraControlsModel = new ListModelExtraControls(this, colName, _extraControlsDefinitions);
+				_extraControlsModels[colName] = extraControlsModel;
+				_modelCache[colName] = extraControlsModel;
+			}
 		}
+
+        emit extraControlsChanged();
 	}
 }
 
@@ -77,24 +79,4 @@ void ListModelAssignedInterface::addExtraControls(const QVector<QMap<QString, QV
 	
 	for (const QMap<QString, QVariant>& extraControlDefinition : _extraControlsDefinitions)
 		_extraControlsNames[extraControlDefinition["name"].toString()] = false;
-}
-
-void ListModelAssignedInterface::controlLoaded(const QString &colName, const QString &controlName)
-{
-	_extraControlsLoadedIndicator[colName][controlName] = true;
-	bool allControlsLoaded = true;
-	QMapIterator<QString, QMap<QString, bool> > it(_extraControlsLoadedIndicator);
-	while (it.hasNext())
-	{
-		it.next();
-		QMapIterator<QString, bool> it2(it.value());
-		while (it2.hasNext())
-		{
-			it2.next();
-			if (!it2.value())
-				allControlsLoaded = false;
-		}
-	}
-	if (allControlsLoaded)
-		emit allExtraControlsLoaded();
 }

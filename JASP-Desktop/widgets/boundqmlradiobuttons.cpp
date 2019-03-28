@@ -25,7 +25,7 @@ using namespace std;
 
 BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_boundTo = nullptr;
 	_checkedButton = nullptr;

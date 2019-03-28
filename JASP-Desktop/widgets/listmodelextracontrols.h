@@ -31,7 +31,9 @@ class ListModelExtraControls : public QAbstractTableModel
 public:
 	enum ListModelExtraControlsRoles {
         NameRole = Qt::UserRole + 1,
-		PathRole
+		PathRole,
+		TypeRole,
+		PropertiesRole
     };
 	
 	ListModelExtraControls(ListModelAssignedInterface* parent, const QString& colName, const QVector<QMap<QString, QVariant> >& controlColumns);
@@ -42,6 +44,7 @@ public:
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	
 	Q_INVOKABLE	void controlLoaded(const QString& name, QVariant item);
+	Q_INVOKABLE void controlDestroyed(const QString& name, QVariant item);
 	const QMap<QString, BoundQMLItem*>&	getBoundItems() const { return _boundItems; } 
 
 private:

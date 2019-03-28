@@ -29,6 +29,7 @@ class BoundQMLCheckBox : public QObject, public BoundQMLItem
 	
 public:
 	BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form);
+	BoundQMLCheckBox(QMap<QString, QVariant>& properties,  AnalysisForm* form);
 	
 	void	bindTo(Option *option)						override;
 	Option* createOption()								override;
@@ -45,8 +46,8 @@ private slots:
 	void checkBoxClickedSlot();
     
 protected:
-	OptionBoolean *_boundTo;
-	bool _checked;
+	OptionBoolean *_boundTo = nullptr;
+	bool _checked = false;
 
 };
 

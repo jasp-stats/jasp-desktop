@@ -30,11 +30,11 @@ QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form)
 	  
 {
 	_setAllowedVariables();	
-	QList<QVariant> sources = QQmlProperty(_item, "source").read().toList();
+	QList<QVariant> sources = getItemProperty("source").toList();
 	
 	if (sources.isEmpty())
 	{
-		QStringList stringSources = QQmlProperty(_item, "source").read().toStringList();
+		QStringList stringSources = getItemProperty("source").toStringList();
 		for (const QString& stringSource : stringSources)
 			sources.push_back(stringSource);
 	}
@@ -109,7 +109,7 @@ void QMLListView::setUp()
 	}
 
 	connect(listModel, &ListModel::modelChanged, this, &QMLListView::modelChangedHandler);
-	QQmlProperty(_item, "model").write(QVariant::fromValue(listModel));
+	setItemProperty("model", QVariant::fromValue(listModel));
 }
 
 void QMLListView::cleanUp()
@@ -123,7 +123,7 @@ void QMLListView::cleanUp()
 void QMLListView::setTermsAreNotVariables()
 {
 	model()->setTermsAreVariables(false);
-	QQmlProperty::write(_item, "showVariableTypeIcon", false);
+	setItemProperty("showVariableTypeIcon", false);
 }
 
 void QMLListView::setTermsAreInteractions()
@@ -135,10 +135,10 @@ int QMLListView::_getAllowedColumnsTypes()
 {
 	int allowedColumnsTypes = -1;
 	
-	QStringList allowedColumns = QQmlProperty(_item, "allowedColumns").read().toStringList();
+	QStringList allowedColumns = getItemProperty("allowedColumns").toStringList();
 	if (allowedColumns.isEmpty())
 	{
-		QString allowedColumn = QQmlProperty(_item, "allowedColumns").read().toString();
+		QString allowedColumn = getItemProperty("allowedColumns").toString();
 		if (!allowedColumn.isEmpty())
 			allowedColumns.append(allowedColumn);
 	}

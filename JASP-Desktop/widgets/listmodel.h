@@ -58,6 +58,8 @@ public:
 	virtual void			refresh();
 	virtual void			initTerms(const Terms &terms);
 	virtual Terms			getSourceTerms();
+	virtual void			endResetModel()									{ return QAbstractTableModel::endResetModel(); } // Make endResetModel virtual
+
 
 signals:
 	void modelChanged(Terms* added = nullptr, Terms* removed = nullptr);

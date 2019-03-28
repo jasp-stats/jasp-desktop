@@ -24,11 +24,19 @@
 BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
-	_boundTo = nullptr;
-	_checked = false;
-	QQuickItem::connect(item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
+	if (item)
+		QQuickItem::connect(item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
+}
+
+BoundQMLCheckBox::BoundQMLCheckBox(QMap<QString, QVariant>& properties, AnalysisForm *form)
+	: QMLItem(properties, form)
+	, QObject(form)
+	, BoundQMLItem()
+
+{
+	_checked = getItemProperty("checked").toBool();
 }
 
 void BoundQMLCheckBox::bindTo(Option *option)
@@ -38,7 +46,7 @@ void BoundQMLCheckBox::bindTo(Option *option)
 	if (_boundTo != nullptr)
 	{
 		_checked = _boundTo->value();
-		_item->setProperty("checked", _checked);
+		setItemProperty("checked", _checked);
 	}
 	else
 		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
@@ -56,7 +64,7 @@ bool BoundQMLCheckBox::isJsonValid(const Json::Value &optionValue)
 
 Option *BoundQMLCheckBox::createOption()
 {
-	QVariant checkedVariant = _item->property("checked");
+	QVariant checkedVariant = getItemProperty("checked");
 	if (!checkedVariant.isNull())
 		_checked = checkedVariant.toBool();
 	return new OptionBoolean(_checked);
@@ -65,14 +73,17 @@ Option *BoundQMLCheckBox::createOption()
 void BoundQMLCheckBox::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
-	_item->setProperty("checked", _checked);
-	QQuickItem::connect(_item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
+	setItemProperty("checked", _checked);
+	if (_item)
+	{
+		QQuickItem::connect(_item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
+	}
 }
 
 void BoundQMLCheckBox::setQMLItemChecked(bool checked)
 {
 	_checked = checked;
-	_item->setProperty("checked", checked);
+	setItemProperty("checked", checked);
 }
 
 void BoundQMLCheckBox::checkBoxClickedSlot()

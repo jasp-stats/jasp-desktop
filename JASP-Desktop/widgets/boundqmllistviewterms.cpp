@@ -49,8 +49,8 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 		_termsModel = new ListModelInteractionAssigned(this, addAvailableTermsToAssigned);
 	else
 		_termsModel = new ListModelTermsAssigned(this, _singleItem);
-	
-	connect(_termsModel, &ListModelAssignedInterface::allExtraControlsLoaded, this, &BoundQMLListViewTerms::bindExtraControlOptions);
+
+	connect(_termsModel, &ListModelAssignedInterface::extraControlsChanged, this, &BoundQMLListViewTerms::bindExtraControlOptions);
 }
 
 void BoundQMLListViewTerms::bindTo(Option *option)
@@ -83,7 +83,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 		}
 		
 		// This will create the rows in QML, and if needed, this will create also their extra controls
-		// In that case, when all rows are loaded in QML, bindExtraControlOptions will be called.
+		// That will also call bindExtraControlOptions
 		_termsModel->initTerms(terms);
 	}
 	else
