@@ -15,7 +15,7 @@ testAnalysis <- function(analysis) {
   root <- .getPkgOption("tests.dir")
   file <- file.path(root, paste0("test-", analysis, ".R"))
   envirValue <- Sys.getenv("NOT_CRAN")
-  Sys.setenv("NOT_CRAN" = "true")
+  Sys.setenv("NOT_CRAN" = "true") # this is to prevent vdiffr from skipping plots
   on.exit(Sys.setenv("NOT_CRAN" = envirValue))
   testthat::test_file(file)
 }

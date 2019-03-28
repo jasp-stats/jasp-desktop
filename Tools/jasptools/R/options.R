@@ -46,58 +46,37 @@
 analysisOptions <- function(source) {
   if (! is.character(source) || length(source) > 1) {
     stop("Expecting a character input of length 1 as source,
-    either a json string or analysis name.")
-  }
-
-  type <- "file"
-  if (jsonlite::validate(source) == TRUE) {
-    type <- "JSONString"
+    either a json string copied from the Qt terminal or an analysis name.")
   }
 
   options <- NULL
-  if (type == "JSONString") {
+  if (jsonlite::validate(source) == TRUE) { # valid json
     analysisName <- stringr::str_match(source, '\\"name\\" : \\"(.*?)\\"')[2L]
     options <- .analysisOptionsFromJSONString(source)
-  } else {
+  } else if (grepl("[{}\":]", source)) { # invalid json
+      stop("Your json is invalid, please copy the entire message
+           including the outer braces { } that was send to R in the Qt terminal.
+           Remember to use single quotes around the message.", call.=FALSE)
+  } else { # QML
     analysisName <- source
-    options <- .analysisOptionsFromFile(source)
+    options <- .analysisOptionsFromQMLFile(source)
   }
   attr(options, "analysisName") <- analysisName
   return(options)
 }
 
-.analysisOptionsFromFile <- function(analysis) {
-  qmlFile <- .getQMLFile(analysis)
-  if (file.exists(qmlFile)) {
-    .analysisOptionsFromQMLFile(qmlFile)
-  } else {
-    jsonFile <- .getJSONFile(analysis)
-    if (file.exists(jsonFile)) {
-      .analysisOptionsFromJSONFile(jsonFile)
-    } else {
-      stop("Could not find the options file for analysis ", analysis)
-    }
-  }
-}
-
-.getJSONFile <- function(analysis) {
-  dir <- .getPkgOption("json.dir")
-  file <- paste0(analysis, ".json")
-  absolutePath <- file.path(dir, file)
-  return(absolutePath)
-}
-
 .getQMLFile <- function(analysis) {
-  dirs <- .getPkgOption("qml.dirs")
-  for (dir in dirs) {
-    pathsToFiles <- list.files(dir, pattern = ".qml$", recursive = TRUE)
-    fileNames <- tolower(basename(pathsToFiles))
-    fileName <- tolower(paste0(analysis, ".qml"))
-    if (any(fileNames == fileName)) {
-      relativePath <- pathsToFiles[which(fileNames == fileName)]
-      absolutePath <- file.path(dir, relativePath)
-      return(absolutePath)
-    }
+  if (.isModule())
+    dir <- .getPkgOption("module.dir")
+  else
+    dir <- .getPkgOption("common.qml.dir")
+  pathsToFiles <- list.files(dir, pattern = ".qml$", recursive=TRUE, ignore.case=TRUE)
+  fileNames <- tolower(basename(pathsToFiles))
+  fileName <- tolower(paste0(analysis, ".qml"))
+  if (any(fileNames == fileName)) {
+    relativePath <- pathsToFiles[which(fileNames == fileName)]
+    absolutePath <- file.path(dir, relativePath)
+    return(absolutePath)
   }
-  return("")
+  return(NULL)
 }
