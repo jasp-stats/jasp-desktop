@@ -198,9 +198,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     on.exit(setwd(oldwd))
   }
 
-  #print("analysis    <- eval(parse(text=functionCall)), analysis: ");
   analysis    <- eval(parse(text=functionCall))
-  #print(analysis)
 
   dataset <- NULL
   if (! is.null(dataKey)) {
@@ -2298,17 +2296,17 @@ as.list.footnotes <- function(footnotes) {
 # not .saveImage() because RInside (interface to CPP) cannot handle that
 saveImage <- function(plotName, format, height, width)
 {
+  state           <- .retrieveState()     # Retrieve plot object from state
+  plt             <- state[["figures"]][[plotName]][["obj"]]
+  
+  location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
+  backgroundColor <- .fromRCPP(".imageBackground")
+  
+  # create file location string
+  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+  relativePath <- paste0("temp.", format)
+  
   error <- try({
-    state           <- .retrieveState()     # Retrieve plot object from state
-    plt             <- state[["figures"]][[plotName]][["obj"]]
-    
-    location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
-    backgroundColor <- .fromRCPP(".imageBackground")
-    
-    # create file location string
-    location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
-    relativePath <- paste0("temp.", format)
-    
     # Get file size in inches by creating a mock file and closing it
     pngMultip <- .fromRCPP(".ppi") / 96
     png(filename="dpi.png", width=width * pngMultip,
@@ -2352,11 +2350,14 @@ saveImage <- function(plotName, format, height, width)
   output <- list(
     status = "imageSaved",
     results = list(
-      name  = relativePath
+      name  = relativePath,
+      error = FALSE
     )
   )
-  if (isTryError(error))
-    output[["results"]][["error"]] <- .extractErrorMessage(error)
+  if (isTryError(error)) {
+    output[["results"]][["error"]] <- TRUE
+    output[["results"]][["errorMessage"]] <- .extractErrorMessage(error)
+	}
 
   return(toJSON(output))
 }
@@ -2730,7 +2731,11 @@ editImage <- function(plotName, type, height, width) {
   # error checks
   if (isTryError(results) || is.null(results)) {
     response[["results"]][["error"]] <- TRUE
-    response[["results"]][["errorMessage"]] <- .extractErrorMessage(results)
+    if (is.null(results))
+      errorMessage <- "no plot object was found"
+    else
+      errorMessage <- .extractErrorMessage(results)
+    response[["results"]][["errorMessage"]] <- errorMessage
   } else {
     # adjust the state of the analysis and save it
     state[["figures"]][[plotName]]  <- list(obj=results[["obj"]], width=results[["width"]], height=results[["height"]])
