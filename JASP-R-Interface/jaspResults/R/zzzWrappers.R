@@ -24,13 +24,8 @@ initJaspResults <- function() .onAttach()
 checkForJaspResultsInit <- function() {if (!exists("jaspResults", .GlobalEnv)) .onAttach()}
 
 is.JaspResultsObj <- function(x) {
-	isS4(x) && 
-		inherits(x, c("Rcpp_jaspPlot", "Rcpp_jaspHtml", "Rcpp_jaspResultsClass", 
-									"Rcpp_jaspIntlist", "Rcpp_jaspContainer", "Rcpp_jaspStringlist", 
-									"Rcpp_jaspObject", "Rcpp_jaspDoublelist", "Rcpp_jaspBoollist", 
-									"Rcpp_jaspTable", "Rcpp_jaspState",
-									"jaspTableExtended"
-									))
+	inherits(x, "R6") && 
+	inherits(x, c("jaspResultsR", "jaspContainerR", "jaspObjR", "jaspPlotR", "jaspTableR", "jaspHtmlR", "jaspStateR"))
 }
 
 destroyAllAllocatedRObjects <- function() {
@@ -104,15 +99,42 @@ jaspObjR <- R6Class(
 		getJaspObject                  = function()                            {private$jaspObject},
 		addCitation                    = function(x)                           {private$jaspObject$addCitation(x)},
 		addMessage                     = function(x)                           {private$addMessage(x)},
-		copyDependenciesFromJaspObject = function(x)                           {private$jaspObject$copyDependenciesFromJaspObject(x$getJaspObject())},
-		dependOnOptions                = function(x)                           {private$jaspObject$dependOnOptions(x)},
 		print                          = function()                            {private$jaspObject$print()},
 		printHtml                      = function()                            {private$jaspObject$printHtml()},
 		toHtml                         = function()                            {private$jaspObject$toHtml()},
-		setOptionMustBeDependency      = function(optionName, mustBeThis)	   {private$jaspObject$setOptionMustBeDependency(optionName, mustBeThis)},
-		setOptionMustContainDependency = function(optionName, mustContainThis) {private$jaspObject$setOptionMustContainDependency(optionName, mustContainThis)},
 		setError                       = function(x)                           {private$jaspObject$setError(x)},
-		getError                       = function()                            {private$jaspObject$getError()}
+		getError                       = function()                            {private$jaspObject$getError()},
+		dependOn                      = function(options=NULL, optionsFromObject=NULL, optionContainsValue=NULL) {
+			if (!is.null(options)) {
+				if (!is.character(options))
+					stop("please provide a character vector in `options`")
+				private$jaspObject$dependOnOptions(options)
+			}
+			
+			if (!is.null(optionsFromObject)) {
+				if (is.JaspResultsObj(optionsFromObject)) {
+					private$jaspObject$copyDependenciesFromJaspObject(optionsFromObject$getJaspObject())
+				} else if (is.list(optionsFromObject)) {
+					for (object in optionsFromObject)
+						if (is.JaspResultsObj(object))
+							private$jaspObject$copyDependenciesFromJaspObject(object$getJaspObject())
+				} else {
+					stop("please provide a (list of) jasp object(s) in `optionsFromObject`")
+				}
+			}
+				
+			if (!is.null(optionContainsValue)) {
+				if (!is.list(optionContainsValue) || is.null(names(optionContainsValue)))
+					stop("please provide a named list in `optionContainsValue`")
+				for (i in seq_along(optionContainsValue)) {
+					name <- names(optionContainsValue)[i]
+					value <- optionContainsValue[[i]]
+					if (length(value) != 1 || !is.atomic(value))
+						stop("value provided in `optionContainsValue` must be of type atomic and length 1")
+					private$jaspObject$setOptionMustContainDependency(name, value)
+				}
+			}
+		}
 	),
 	active = list(
 		position = function(x) {if (missing(x)) private$jaspObject$position else private$jaspObject$position <- as.numeric(x)},

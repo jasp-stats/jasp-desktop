@@ -53,7 +53,7 @@ Descriptives <- function(jaspResults, dataset, options)
     if(is.null(jaspResults[["tables"]]))
     {
       jaspResults[["tables"]] <- createJaspContainer("Frequency Tables")
-      jaspResults[["tables"]]$dependOnOptions(c("frequencyTables", "splitby"))
+      jaspResults[["tables"]]$dependOn(c("frequencyTables", "splitby"))
       jaspResults[["tables"]]$position <- 3
     }
 
@@ -62,8 +62,7 @@ Descriptives <- function(jaspResults, dataset, options)
     if (jaspResults[["tables"]]$length > 0 && is.null(jaspResults[["frequenciesHeading"]]))
     {
       jaspResults[["frequenciesHeading"]] <- createJaspHtml("Frequencies", "h1")
-      jaspResults[["frequenciesHeading"]]$copyDependenciesFromJaspObject(jaspResults[["tables"]])
-      jaspResults[["frequenciesHeading"]]$dependOnOptions("variables")
+      jaspResults[["frequenciesHeading"]]$dependOn(options="variables", optionsFromObject=jaspResults[["tables"]])
       jaspResults[["frequenciesHeading"]]$position <- 2
     }
   }
@@ -77,7 +76,7 @@ Descriptives <- function(jaspResults, dataset, options)
       {
         jaspResults[["matrixPlot"]] <- createJaspContainer(title="Correlation plots")
         corrPlot <- jaspResults[["matrixPlot"]]
-        corrPlot$dependOnOptions(c("plotCorrelationMatrix", "splitby"))
+        corrPlot$dependOn(c("plotCorrelationMatrix", "splitby"))
 
         for (i in 1:length(splitLevels))
           corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
@@ -95,7 +94,7 @@ Descriptives <- function(jaspResults, dataset, options)
     if(is.null(jaspResults[["distributionPlots"]]))
     {
       jaspResults[["distributionPlots"]] <- createJaspContainer("Distribution Plots")
-      jaspResults[["distributionPlots"]]$dependOnOptions(c("plotVariables", "splitby", "distPlotDensity"))
+      jaspResults[["distributionPlots"]]$dependOn(c("plotVariables", "splitby", "distPlotDensity"))
       jaspResults[["distributionPlots"]]$position <- 5
     }
 
@@ -119,7 +118,7 @@ Descriptives <- function(jaspResults, dataset, options)
     if(is.null(jaspResults[["splitPlots"]]))
     {
       jaspResults[["splitPlots"]] <- createJaspContainer("Boxplots")
-      jaspResults[["splitPlots"]]$dependOnOptions(c("splitPlots", "splitby"))
+      jaspResults[["splitPlots"]]$dependOn(c("splitPlots", "splitby"))
       jaspResults[["splitPlots"]]$position <- 7
     }
 
@@ -129,7 +128,7 @@ Descriptives <- function(jaspResults, dataset, options)
       if(is.null(splitPlots[[var]]))
       {
         splitPlots[[var]] <- .descriptivesSplitPlot(dataset = dataset, options = options, variable = var)
-        splitPlots[[var]]$setOptionMustContainDependency("variables", var)
+        splitPlots[[var]]$dependOn(optionContainsValue=list(variables=var))
       }
 
     if(splitPlots$length == 0)
@@ -151,7 +150,7 @@ Descriptives <- function(jaspResults, dataset, options)
   stats$transpose         <- TRUE
   stats$position          <- 1
 
-  stats$dependOnOptions(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
+  stats$dependOn(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
     "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
 
   if (wantsSplit)
@@ -387,7 +386,7 @@ Descriptives <- function(jaspResults, dataset, options)
     freqTab <- createJaspTable(paste("Frequencies for", variable))
 
     freqTabs[[variable]] <- freqTab
-    freqTab$setOptionMustContainDependency("variables", variable)
+    freqTab$dependOn(optionContainsValue=list(variables=variable))
 
     if (wantsSplit) freqTab$addColumnInfo(name = "factor", title = splitName, type = "string", combine=TRUE)
 
@@ -737,12 +736,11 @@ Descriptives <- function(jaspResults, dataset, options)
     split <- names(dataset)
 
     plotResult <- createJaspContainer(title=variable)
-    plotResult$setOptionMustContainDependency("variables",  variable)
-    plotResult$setOptionMustBeDependency("splitby",         options$splitby)
+    plotResult$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     for (l in split) {
       plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
-      plotResult[[l]]$copyDependenciesFromJaspObject(plotResult)
+      plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
@@ -752,8 +750,7 @@ Descriptives <- function(jaspResults, dataset, options)
   {
     column <- dataset[[ .v(variable) ]]
     aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
-    aPlot$setOptionMustContainDependency("variables",  variable)
-    aPlot$setOptionMustBeDependency("splitby",         options$splitby)
+    aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     return(aPlot)
   }

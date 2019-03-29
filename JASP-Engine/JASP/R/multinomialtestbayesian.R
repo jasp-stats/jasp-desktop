@@ -160,7 +160,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   # Save results to state
   defaultOptions <- multinomialResults$specs$defaultOptions
   jaspResults[["stateMultinomialBayesianResults"]] <- createJaspState(multinomialResults)
-  jaspResults[["stateMultinomialBayesianResults"]]$dependOnOptions(defaultOptions)
+  jaspResults[["stateMultinomialBayesianResults"]]$dependOn(defaultOptions)
 
   return(multinomialResults)
 }
@@ -174,7 +174,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   defaultOptions                    <- multinomialResults$specs$defaultOptions
   multinomialTable                  <- createJaspTable(title = "Bayesian Multinomial Test")
   multinomialTable$position         <- 1
-  multinomialTable$dependOnOptions(c(defaultOptions, "bayesFactorType"))
+  multinomialTable$dependOn(c(defaultOptions, "bayesFactorType"))
 
   # Bayes factor type
   if (options$bayesFactorType == "BF01") {
@@ -226,7 +226,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   # Create table
   descriptivesTable                          <- createJaspTable(title = "Descriptives")
-  descriptivesTable$dependOnOptions(c("countProp", "descriptives", "credibleIntervalInterval"))
+  descriptivesTable$dependOn(c("countProp", "descriptives", "credibleIntervalInterval"))
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   descriptivesTable$position                 <- 2
 
@@ -305,7 +305,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   descriptivesPlot <- .multBayesPlotHelper(factorVariable, options, multinomialResults)
 
   jaspResults[["descriptivesPlot"]] <- createJaspPlot(plot = descriptivesPlot, title = "Descriptives plot", width = 480, height = 320)
-  jaspResults[["descriptivesPlot"]]$dependOnOptions(c("descriptivesPlot", "factor", "counts",
+  jaspResults[["descriptivesPlot"]]$dependOn(c("descriptivesPlot", "factor", "counts",
                                                       "descriptivesPlotsCredibleInterval"))
 
   descriptivesPlot$position <- 2

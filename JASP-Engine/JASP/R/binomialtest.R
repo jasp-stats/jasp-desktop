@@ -160,7 +160,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   # Save results to state
   jaspResults[["stateBinomResults"]] <- createJaspState(results)
-  jaspResults[["stateBinomResults"]]$dependOnOptions(
+  jaspResults[["stateBinomResults"]]$dependOn(
     c("variables", "testValue", "hypothesis", "confidenceIntervalInterval", "descriptivesPlotsConfidenceInterval")
   )
 
@@ -200,7 +200,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   # Create table
   binomialTable <- createJaspTable(title = "Binomial Test")
   jaspResults[["binomialTable"]] <- binomialTable
-  binomialTable$dependOnOptions(c("variables", "testValue", "hypothesis", "confidenceInterval",
+  binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                                   "confidenceIntervalInterval", "VovkSellkeMPR"))
 
   binomialTable$showSpecifiedColumnsOnly <- TRUE
@@ -257,7 +257,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   if (is.null(jaspResults[["containerPlots"]])) {
     jaspResults[["containerPlots"]] <- createJaspContainer("Descriptives Plots")
-    jaspResults[["containerPlots"]]$dependOnOptions("descriptivesPlots")
+    jaspResults[["containerPlots"]]$dependOn("descriptivesPlots")
   }
 }
 
@@ -275,14 +275,13 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
     if (!is.null(pct[[variable]])) next
 
     pct[[variable]] <- createJaspContainer(variable)
-    pct[[variable]]$setOptionMustContainDependency("variables", variable)
-    pct[[variable]]$dependOnOptions(c("testValue", "descriptivesPlotsConfidenceInterval"))
+    pct[[variable]]$dependOn(options=c("testValue", "descriptivesPlotsConfidenceInterval"), optionContainsValue=list(variables=variable))
 
 
     for (level in binomResults[["spec"]][["levels"]][[variable]]) {
       descriptivesPlot <- .binomPlotHelper(binomResults[["binom"]][[variable]][[level]]$plotDat, options$testValue)
       pct[[variable]][[level]] <- createJaspPlot(plot = descriptivesPlot, title = level, width = 160, height = 320)
-      pct[[variable]][[level]]$dependOnOptions("descriptivesPlots")
+      pct[[variable]][[level]]$dependOn("descriptivesPlots")
     }
 
   }

@@ -19,16 +19,14 @@
 import QtQuick 2.8
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
 
 // All Analysis forms must be built with the From QML item
 Form
 {
-	usesJaspResults: true
-
+	columns: 1
 	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariables" }
+		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
 		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	}
@@ -68,7 +66,6 @@ Form
 	Section
 	{
 		title: qsTr("Statistics")
-		alignChildrenTopLeft: true
 
 		Group
 		{
@@ -82,7 +79,8 @@ Form
 				IntegerField
 				{
 					name: "percentileValuesEqualGroupsNo"
-					min: 1; max: 1000
+					min: 1
+					max: 1000
 					defaultValue: 4
 					afterLabel: qsTr(" equal groups")
 				}
@@ -103,7 +101,6 @@ Form
 		Group
 		{
 			title: qsTr("Central Tendency")
-			implicitWidth: 200
 			CheckBox { name: "mean";			label: qsTr("Mean");	checked: true	}
 			CheckBox { name: "median";			label: qsTr("Median")					}
 			CheckBox { name: "mode";			label: qsTr("Mode");					}
@@ -113,10 +110,11 @@ Form
 		Group
 		{
 			title: qsTr("Dispersion")
+			columns: 2
 			CheckBox { name: "standardDeviation";	label: qsTr("Std.deviation"); checked: true	}
 			CheckBox { name: "minimum";				label: qsTr("Minimum");		checked: true	}
-			CheckBox { name: "maximum";				label: qsTr("Maximum");		checked: true	}
 			CheckBox { name: "variance";			label: qsTr("Variance")						}
+			CheckBox { name: "maximum";				label: qsTr("Maximum");		checked: true	}
 			CheckBox { name: "range";				label: qsTr("Range")						}
 			CheckBox { name: "standardErrorMean";	label: qsTr("S. E. mean")					}
 		}
@@ -126,6 +124,7 @@ Form
 			title: qsTr("Distribution")
 			CheckBox { name: "skewness";			label: qsTr("Skewness")						}
 			CheckBox { name: "kurtosis";			label: qsTr("Kurtosis")						}
+			CheckBox { name: "shapiro";			label: qsTr("Shapiro-Wilk test")						}
 		}
 
 		CheckBox { name: "statisticsValuesAreGroupMidpoints"; label: qsTr("Values are group midpoints"); debug: true }
@@ -141,7 +140,7 @@ Form
 			title: qsTr("Chart Type")
 			RadioButton { value: "_1noCharts";		label: qsTr("None")			}
 			RadioButton { value: "_2barCharts";		label: qsTr("Bar charts")	}
-			RadioButton { value: "_3pieCharts";		label: qsTr("Pie Charts")	}
+			RadioButton { value: "_3pieCharts";		label: qsTr("Pie charts")	}
 			RadioButton { value: "_4histograms";	label: qsTr("Histograms")	}
 		}
 
