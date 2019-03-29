@@ -212,17 +212,10 @@ void BoundQMLListViewTerms::modelChangedHandler()
 	}
 }
 
-void BoundQMLListViewTerms::bindExtraControlOptions()
+void BoundQMLListViewTerms::_fillOptionsMap(QMap<std::string, Options*>& optionsMap)
 {
-	if (!_optionsTable)
-		return;
-	
-	const Terms& terms = _termsModel->terms();
-	
-	std::vector<Options*> newOptionsList;
 	std::vector<Options*> oldOptionsList = _optionsTable->value();
-	QMap<std::string, Options*> oldOptionsMap;
-	
+
 	for (Options* options : oldOptionsList)
 	{
 		std::string colName;
@@ -245,9 +238,23 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 			else
 				qDebug() << "An option os not of type OptionVariable!!!";
 		}
-		oldOptionsMap[colName] = options;
-	}	
+		optionsMap[colName] = options;
+	}
+}
+
+void BoundQMLListViewTerms::bindExtraControlOptions()
+{
+	if (!_optionsTable)
+		return;
 	
+	const Terms& terms = _termsModel->terms();
+	
+	std::vector<Options*> newOptionsList;
+	QMap<std::string, Options*> oldOptionsMap;
+	_fillOptionsMap(oldOptionsMap);
+	
+	// For each term, check wether an option exists already, if not create a new one
+	// Then bind this option to the appropriate BoundQMLItem object
 	for (const Term& term : terms)
 	{
 		QString termQStr = term.asQString();
@@ -255,7 +262,7 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 		ListModelExtraControls* extraControlModel = _termsModel->getExtraControlModel(termQStr);
 		if (!extraControlModel)
 		{
-			qDebug() << "connectExtraControlOptions: Could not find " << termQStr << " in rows!!!";
+			std::cout << "connectExtraControlOptions: Could not find " << termStr << " in rows!!!" << std::flush;
 			continue;
 		}
 		
@@ -270,7 +277,7 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 				if (optionTerm)
 					optionTerm->setValue(term.scomponents());
 				else
-					qDebug() << "An option is not of type OptionTerm!!!!";
+					std::cout << "An option is not of type OptionTerm!!!!" << std::flush;
 			}
 			else
 			{
@@ -278,8 +285,9 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 				if (optionVariable)
 					optionVariable->setValue(termStr);
 				else
-					qDebug() << "An option is not of type OptionVariable!!!!";
+					std::cout << "An option is not of type OptionVariable!!!!" << std::flush;
 			}
+			options->changed.connect(boost::bind(&BoundQMLListViewTerms::extraOptionsChangedSlot, this, _1));
 		}
 		
 		const QMap<QString, BoundQMLItem* >& row = extraControlModel->getBoundItems();
@@ -294,7 +302,7 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 			{
 				// The rowTemplate should have given all options
 				// But never know...
-				std::cout << "It should never come here!!!" << std::endl;
+				std::cout << "It should never come here!!!" << std::flush;
 				option = boundItem->boundTo();
 				if (!option)
 					option = boundItem->createOption();
@@ -303,7 +311,6 @@ void BoundQMLListViewTerms::bindExtraControlOptions()
 			boundItem->bindTo(option);
 		}
 		newOptionsList.push_back(options);
-		options->changed.connect(boost::bind(&BoundQMLListViewTerms::extraOptionsChangedSlot, this, _1));
 	}
 	
 	_optionsTable->connectOptions(newOptionsList);
