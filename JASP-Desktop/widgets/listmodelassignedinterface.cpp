@@ -40,11 +40,11 @@ QVariant ListModelAssignedInterface::data(const QModelIndex &index, int role) co
 
 void ListModelAssignedInterface::endResetModel()
 {
-	addExtraControls();
+	addExtraControlModels();
 	ListModelDraggable::endResetModel();
 }
 
-void ListModelAssignedInterface::addExtraControls()
+void ListModelAssignedInterface::addExtraControlModels()
 {
 	if (!_extraControlsDefinitions.isEmpty())
 	{

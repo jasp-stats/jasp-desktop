@@ -46,7 +46,7 @@ signals:
 	void extraControlsChanged();
 
 protected:
-	void addExtraControls();
+	void addExtraControlModels();
 	
 	ListModelAvailableInterface*			_source;
 	QVector<QMap<QString, QVariant> >		_extraControlsDefinitions;

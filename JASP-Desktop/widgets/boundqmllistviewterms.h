@@ -62,6 +62,8 @@ private:
 	
 	void extraOptionsChangedSlot(Option *option);
 	void updateNuisances(bool checked);
+
+	void _fillOptionsMap(QMap<std::string, Options*>& optionsMap);
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

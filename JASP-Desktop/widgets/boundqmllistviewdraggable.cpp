@@ -50,30 +50,18 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 			QMetaProperty property = meta->property(i);
 			QString key = QString::fromLatin1(property.name());
 			QVariant value = property.read(extraControlColumnObject);
-			bool addValue = true;
 			if (key == "purpose")
 			{
-				addValue = false;
 				if (value.toString() == "nuisance")
 					_hasNuisanceControl = true;
 			}
-			switch (QMetaType::Type(property.type()))
+			else if (key == "title")
 			{
-			case QMetaType::Int:
-				if (value.toInt() == 0) addValue = false;
-				break;
-			case QMetaType::QString:
-				if (value.toString().isEmpty()) addValue = false;
-				if (key == "title")
-				{
+				QString title = value.toString();
+				if (!title.isEmpty())
 					extraControlTitles.push_back(value.toString());
-					addValue = false;
-				}
-				break;
-			default:
-				addValue = true;
 			}
-			if (addValue)
+			else
 				properties[key] = value;
 		}
 
