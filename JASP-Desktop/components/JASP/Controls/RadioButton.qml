@@ -49,7 +49,14 @@ JASPControl
 			property bool	indentChildren:			true
 			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 	
-	function toggle() { control.toggle() }
+	function click()
+	{
+		if (!checked)
+		{
+			control.toggle();
+			control.clicked()
+		}
+	}
 	
 	RadioButton
 	{
