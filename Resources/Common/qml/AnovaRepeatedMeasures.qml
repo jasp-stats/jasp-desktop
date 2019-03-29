@@ -270,6 +270,6 @@ Form
 			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional grouping factor"); singleVariable: true }
 		}
 		
-		CheckBox { name: "connoverTest"; label: qsTr("Connover's post hoc tests") }
+		CheckBox { name: "conoverTest"; label: qsTr("Conover's post hoc tests") }
 	}
 }
