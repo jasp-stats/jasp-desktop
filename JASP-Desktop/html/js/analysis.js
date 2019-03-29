@@ -425,16 +425,39 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	notesMenuClicked: function (noteType, visibility) {
 
 		var scrollIntoView = true;
-		for (var i = 0; i < this.viewNotes.list.length; i++) {
-			var noteBoxData = this.viewNotes.list[i];
-			if (noteBoxData.noteDetails.level === 0) {
-				var noteBox = noteBoxData.widget;
-				if (noteBox.visible !== visibility) {
-					noteBox.setVisibilityAnimate(visibility, scrollIntoView);
-					scrollIntoView = false;
-				}
-			}
-		}
+		// for (var i = 0; i < this.viewNotes.list.length; i++) {
+		// 	var noteBoxData = this.viewNotes.list[i];
+		// 	if (noteBoxData.noteDetails.level === 0) {
+		// 		var noteBox = noteBoxData.widget;
+		// 		if (noteBox.visible !== visibility) {
+		// 			noteBox.setVisibilityAnimate(visibility, scrollIntoView);
+		// 			scrollIntoView = false;
+		// 		}
+		// 	}
+		// }
+
+		var toolbarOptions = [
+			['bold', 'italic', 'underline', 'link', 'image'],        // toggled buttons
+			['blockquote', 'code-block'],
+
+			[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+			[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+			[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+
+			[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+			[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+			[{ 'font': [] }],
+			[{ 'align': [] }],
+
+			['clean']                                         // remove formatting button
+		];
+
+		var quill = new Quill('#editor', {
+			modules: {
+				toolbar: toolbarOptions
+			},
+			theme: 'snow'
+		});
 
 		return true;
 	},
@@ -639,6 +662,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.views.push(this.viewNotes.firstNoteNoteBox);
 
 		$innerElement.empty();
+
+		// For Quill js
+		$innerElement.append('<div id="editor"> </div>')
 
 		if (!results.error) {
 			$innerElement.removeClass("error-state");
