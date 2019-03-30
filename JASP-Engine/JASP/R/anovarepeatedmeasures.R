@@ -53,7 +53,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	stateSimpleEffects <- NULL
 	stateSphericity <- NULL
 	stateFriedman <- NULL
-	stateConnover <- NULL
+	stateConover <- NULL
 	
 	if ( ! is.null(state)) {  # is there state?
 
@@ -66,6 +66,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			# old model can be used
 
 			anovaModel <- state$model
+			fullModel <- anovaModel$fullModel
 			statePostHoc <- state$statePostHoc
 			stateContrasts <- state$stateContrasts
 			stateSphericity <- state$stateSphericity
@@ -112,13 +113,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 		
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && 
-		    diff[['repeatedMeasuresCells']] == FALSE && diff[['friedmanWithinFactor']] == FALSE && 
-		    diff[['friedmanBetweenFactor']] == FALSE && diff[['contrasts']] == FALSE && diff[['connoverTest']]) {
+		    diff[['repeatedMeasuresCells']] == FALSE && diff[['friedmanWithinFactor']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE && 
+		    diff[['friedmanBetweenFactor']] == FALSE && diff[['contrasts']] == FALSE && diff[['conoverTest']] == FALSE) {
 		  
 		  # old Friedman table can be used
 		  
 		  stateFriedman <- state$stateFriedman
-		  stateConnover <- state$stateConnover
+		  stateConover <- state$stateConover
 		}
 	}
 
@@ -253,16 +254,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   	  
   	}
   	
-  	if (is.null(stateConnover)) {
-  	  
-  	  result <- .rmAnovaConnoverTable(dataset, options, perform, fullModel, status, stateConnover, singular)
-  	  results[["connover"]] <- list(collection=result$result, title = "Connover's Post Hoc Tests")
+  	if (is.null(stateConover)) {
+  	
+  	  result <- .rmAnovaConoverTable(dataset, options, perform, anovaModel$fullModel, status, stateConover, singular)
+  	  results[["conover"]] <- list(collection=result$result, title = "Conover's Post Hoc Tests")
   	  status <- result$status
-  	  stateConnover <- result$stateConnover
+  	  stateConover <- result$stateConover
   	  
   	} else {
   	  
-  	  results[["connover"]] <- stateConnover
+  	  results[["conover"]] <- stateConover
   	  
   	}
 
@@ -343,7 +344,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="simpleEffects", type="table"),
 		list(name="friedman", type="table"),
-		list(name="connover", type="collection", meta="table")
+		list(name="conover", type="collection", meta="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -362,7 +363,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	## Save State
 
-	anovaModel$fullModel <- NULL
+	# anovaModel$fullModel <- NULL
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
@@ -373,7 +374,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state[["stateSphericity"]] <- stateSphericity
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateFriedman"]] <- stateFriedman
-	state[["stateConnover"]] <- stateConnover
+	state[["stateConover"]] <- stateConover
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 
@@ -3226,23 +3227,22 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   list(result=result, status=status, stateFriedman=stateFriedman)
 }
 
-.rmAnovaConnoverTable <- function(dataset, options, perform, fullModel, status, stateConnover, singular) {
+.rmAnovaConoverTable <- function(dataset, options, perform, fullModel, status, stateConover, singular) {
   
-  if (options$connoverTest == FALSE | identical(options$friedmanWithinFactor, ""))
-    return (list(result=NULL, status=status, stateConnover=NULL))
-  
+  if (options$conoverTest == FALSE | identical(options$friedmanWithinFactor, ""))
+    return (list(result=NULL, status=status))
+
   groupingVariables <- unlist(options$friedmanWithinFactor)
   blockingVar <- ifelse( identical(options$friedmanBetweenFactor, ""), "subject", .v(options$friedmanBetweenFactor))
   
-  connoverTables <- list()
-  stateConnover <- list()
-  
+  conoverTables <- list()
+
   for (groupingVar in groupingVariables) {
     
-    connoverTable <- list()
+    conoverTable <- list()
     
-    connoverTable[["title"]] <- paste("Connover's Post Hoc Comparisons - ", groupingVar, sep="")
-    connoverTable[["name"]] <- paste("connoverTest_", groupingVar, sep="")
+    conoverTable[["title"]] <- paste("Conover's Post Hoc Comparisons - ", groupingVar, sep="")
+    conoverTable[["name"]] <- paste("conoverTest_", groupingVar, sep="")
     
     fields <- list(
       list(name="(I)",title="", type="string", combine=TRUE),
@@ -3256,11 +3256,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
     )
     
-    connoverTable[["schema"]] <- list(fields=fields)
+    conoverTable[["schema"]] <- list(fields=fields)
     
     rows <- list()
     
-    if (perform == "run" && status$ready && status$error == FALSE)  {
+    if (perform == "run" && status$ready && status$error == FALSE) {
 
       longData <- fullModel$data$long
 
@@ -3276,14 +3276,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       k <- unique(table(blocks)) 
       rij <- unlist(tapply(y, blocks, rank))
       Rj <- unname(tapply(rij, groups, sum))
-      A <- sum(rij^2)
-      C <- (b * k * (k + 1)^2) / 4
-      D <- sum(Rj^2) - r * C
-      T1 <- (t - 1) / (A - C) * D
       
-      denom <- sqrt(((A - C) * 2 * r) / (b * k - b - t + 1) *
-                      (1 - T1 / (b * (k -1))))
       df <- b * k - b - t + 1
+      
+      S2 <- 1 / ( 1 * t -1 ) * (sum(rij^2) - t * b * ( t + 1)^2 / 4)
+      T2 <- 1 / S2 * (sum(Rj) - b * ((t + 1) / 2)^2)
+      A <- S2 * (2 * b * (t - 1)) / ( b * t - t - b + 1)
+      B <- 1 - T2 / (b * (t- 1))
+      denom <- sqrt(A) * sqrt(B)
 
       for (i in 1:t) {
         
@@ -3303,7 +3303,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           row[["holm"]] <- .clean(pval)
           row[["df"]] <- .clean(df)
 
-          connoverTable[["status"]] <- "complete"
+          conoverTable[["status"]] <- "complete"
           rows[[length(rows)+1]] <- row
           
         }
@@ -3337,13 +3337,22 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       rows[[length(rows)+1]] <- row
     }
     
-    connoverTable[["data"]] <- rows
+    conoverTable[["data"]] <- rows
     
-    connoverTables[[length(connoverTables)+1]] <- connoverTable
-    stateConnover <- connoverTables
+    conoverTables[[length(conoverTables)+1]] <- conoverTable
   }
   
-  list(result=connoverTables, status=status, stateConnover=stateConnover)
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+    
+    stateConover <- conoverTables
+    
+  } else {
+    
+    stateConover <- NULL
+    
+  }
+  
+  list(result=conoverTables, status=status, stateConover=stateConover)
 }
 
 .summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, 
