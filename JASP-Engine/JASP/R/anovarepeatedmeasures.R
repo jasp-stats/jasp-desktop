@@ -61,7 +61,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     
     if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE &&
         diff[['postHocTestEffectSize']] == FALSE && diff[['postHocTestsVariables']] == FALSE &&diff[['postHocTestPooledError']] == FALSE && 
-        diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE && diff[['covariates']] == FALSE && diff[['betweenSubjectFactors']] == FALSE) {
+        diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE && diff[['covariates']] == FALSE && diff[['betweenSubjectFactors']] == FALSE
+        && diff[['confidenceIntervalsPostHoc']] == FALSE && diff[['confidenceIntervalIntervalPostHoc']] == FALSE) {
       
       # old model can be used
       
@@ -742,7 +743,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     resultScheffe <- summary(pairs(referenceGrid[[var]], adjust="scheffe"))
     
     # Results using the Bonferroni method
-    resultBonf <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), infer = TRUE)
+    resultBonf <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), 
+                          infer = TRUE, level = options$confidenceIntervalIntervalPostHoc)
     
     comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
     
@@ -765,23 +767,29 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         }
         
         countr <- 1
-        allEstimates <- allTees <- allSE <- allPees <- numeric() 
+        allEstimates <- allTees <- allSE <- allPees <- allLowerCI <- allUpperCI <- numeric() 
         for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
           for (i in .seqx(k+1, numberOfLevels)) {
-            tResult <- t.test(rowMeans(postHocData[listVarNamesToLevel[[k]]]),rowMeans(postHocData[listVarNamesToLevel[[i]]]), paired= TRUE, var.equal = FALSE)
+            bonfAdjustCIlevel <- 1-((1-options$confidenceIntervalIntervalPostHoc)/choose(numberOfLevels, 2))
+            tResult <- t.test(rowMeans(postHocData[listVarNamesToLevel[[k]]]),rowMeans(postHocData[listVarNamesToLevel[[i]]]),
+                              paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
             allEstimates[countr] <- tResult$estimate
             allTees[countr] <- tResult$statistic
             allSE[countr] <- tResult$estimate / tResult$statistic
             allPees[countr] <- tResult$p.value
+            allLowerCI[countr] <- tResult$conf.int[1]
+            allUpperCI[countr] <- tResult$conf.int[2]
             countr <- countr + 1
           }
         }
         bonferPvals <- p.adjust(allPees, method = "bonferroni")  # correct all pvalues according to bonf
-        resultGeneral <- list(estimate = allEstimates, t.ratio = allTees, SE = allSE, p.value = bonferPvals )
+        # resultGeneral <- list(estimate = allEstimates, t.ratio = allTees, SE = allSE, p.value = bonferPvals )
         resultBonf['t.ratio'] <- allTees
         resultBonf['p.value'] <- bonferPvals
         resultBonf['SE'] <- allSE
-        resultBonf['estimate'] <- allEstimates 
+        resultBonf['estimate'] <- allEstimates
+        resultBonf['lower.CL'] <- allLowerCI
+        resultBonf['upper.CL'] <- allUpperCI
         resultHolm['p.value'] <- p.adjust(allPees, method = "holm")  # correct all pvalues according to holm
       }
       
@@ -2175,12 +2183,24 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", thisVarName, sep="")
     posthoc.table[["name"]] <- paste("postHoc_", thisVarName, sep="")
     
-    fields <- list(
-      list(name="(I)", title="", type="string", combine=TRUE),
-      list(name="(J)", title="", type="string"),
-      list(name="Mean Difference", type="number", format="sf:4;dp:3"),
-      list(name="SE", type="number", format="sf:4;dp:3"),
-      list(name="t", type="number", format="sf:4;dp:3"))
+    if(options$confidenceIntervalsPostHoc){
+      ciInterval100 <- options$confidenceIntervalIntervalPostHoc*100
+      fields <- list(
+        list(name="(I)", title="", type="string", combine=TRUE),
+        list(name="(J)", title="", type="string"),
+        list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+        list(name="Lower CI", title = "Lower", type="number", format="sf:4;dp:3", overTitle = paste0(ciInterval100, "% CI of Mean Difference")),
+        list(name="Upper CI", title = "Upper", type="number", format="sf:4;dp:3", overTitle = paste0(ciInterval100, "% CI of Mean Difference")),
+        list(name="SE", type="number", format="sf:4;dp:3"),
+        list(name="t", type="number", format="sf:4;dp:3"))
+    } else{
+      fields <- list(
+        list(name="(I)", title="", type="string", combine=TRUE),
+        list(name="(J)", title="", type="string"),
+        list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+        list(name="SE", type="number", format="sf:4;dp:3"),
+        list(name="t", type="number", format="sf:4;dp:3"))
+    }
     
     if (options$postHocTestEffectSize) {
       fields[[length(fields) + 1]] <- list(name="Cohen's d", title="Cohen's d", type="number", format="sf:4;dp:3")
@@ -2231,6 +2251,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           if (length(class(statePostHoc[[thisVarNameV]]$resultBonf)) == 1 && class(statePostHoc[[thisVarNameV]]$resultBonf) == "try-error") {
             
             md <- ""
+            mdlowerci <- ""
+            mdupperci <- ""
             SE  <- ""
             t <- ""
             p  <- 1
@@ -2252,11 +2274,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                   reverse <- FALSE
               }
             }
-            
+
             if (reverse) {
               md <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$estimate[index]))
+              if ("z.ratio" %in% names(statePostHoc[[thisVarNameV]]$resultBonf)) {
+                mdlowerci <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$asymp.UCL[index]))
+                mdupperci <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$asymp.LCL[index]))
+              } else {
+                mdlowerci <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$upper.CL[index]))
+                mdupperci <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$lower.CL[index]))
+              }
             } else {
               md <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$estimate[index]))
+              if ("z.ratio" %in% names(statePostHoc[[thisVarNameV]]$resultBonf)) {
+                mdlowerci <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$asymp.LCL[index]))
+                mdupperci <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$asymp.UCL[index]))
+              } else {
+                mdlowerci <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$lower.CL[index]))
+                mdupperci <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$upper.CL[index]))
+              }
             }
             
             SE  <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$SE[index]))
@@ -2264,7 +2300,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             if (reverse) {
               
               if ("z.ratio" %in% names(statePostHoc[[thisVarNameV]]$resultBonf)) {
-                posthoc.table$schema$fields[[5]]$name <- "z"
+                posthoc.table$schema$fields[[7]]$name <- "z"
                 z <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$z.ratio[index]))
               } else {
                 t <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$t.ratio[index]))
@@ -2273,7 +2309,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             } else {
               
               if ("z.ratio" %in% names(statePostHoc[[thisVarNameV]]$resultBonf)) {
-                posthoc.table$schema$fields[[5]]$name <- "z"
+                posthoc.table$schema$fields[[7]]$name <- "z"
                 z <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$z.ratio[index]))
               } else {
                 t <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$t.ratio[index]))
@@ -2319,6 +2355,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           }
           
           row[["Mean Difference"]] <- md
+          
+          if(options$confidenceIntervalIntervalPostHoc){
+            .addFootnote(footnotes, symbol = "<i>Note.</i>", 
+                         text = "Bonferroni adjusted confidence intervals.")
+            row[["Lower CI"]] <- mdlowerci
+            row[["Upper CI"]] <- mdupperci
+          }
+          
           row[["SE"]]  <- SE
           if (posthoc.table$schema$fields[[5]]$name == "z") {
             row[["z"]] <- z

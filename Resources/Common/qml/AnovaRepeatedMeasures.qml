@@ -136,6 +136,13 @@ Form
 			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
 		}
 		
+        CheckBox
+        {
+            name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+            childrenOnSameRow: true
+            PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
+        }
+
 		Group
 		{
 			columns: 2
