@@ -207,18 +207,18 @@ Form
 		Group
 		{
 			title: qsTr("Marginal means")
-			debug: true
 			
 			VariablesForm
 			{
 				height: 150
 				debug: true
-				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: "withinModelTerms" }
+                AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]}
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
 			
 			CheckBox
 			{
+                debug: true
 				name: "marginalMeansCompareMainEffects"; label: qsTr("Compare marginal means to 0")
 				DropDown
 				{
