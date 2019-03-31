@@ -3937,7 +3937,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     density <- density(res)
 
     h <- hist(res, plot = FALSE)
-    dens <- h$density
+    dens <- density(res)
 		yhigh <- max(c(h$density, dens$y))
     ylow <- 0
     xticks <- base::pretty(c(res, h$breaks), min.n= 3)
