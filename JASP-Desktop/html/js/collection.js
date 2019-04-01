@@ -60,9 +60,12 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 			if (this.noteBox.isTextboxEmpty())
 				noteData.text = '';
 			else
-				noteData.text = Mrkdwn.fromHtmlText(this.noteBox.model.get('text'));
-			noteData.format = 'markdown';
+				noteData.text = this.noteBox.model.get('text');
+
+			noteData.format = 'html';
 			noteData.visible = this.noteBox.visible;
+			noteData.delta = this.noteBox.model.get('delta');
+			noteData.deltaAvailable = this.noteBox.model.get('deltaAvailable')
 
 			userData[this.noteBoxLocalKey] = noteData;
 
@@ -90,6 +93,11 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	isCollapsed:				function()  { return this.model.get('collapsed'); },
 	_hoveringStart:				function(e) { this.toolbar.setVisibility(true);},
 	_hoveringEnd:				function(e) { this.toolbar.setVisibility(false);},
+	_mouseClicked: function (e) {
+		if (!this.noteBox.$quill.hasFocus()) {
+			// this.noteBox.setQuillToolbarVisibility('none');
+		}
+	},
 
 	eventEcho:					function (eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { this.trigger(eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7); },
 
@@ -126,6 +134,7 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+		'click': '_mouseClicked',
 	},
 
 
@@ -304,7 +313,7 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 		 for (var i = 0; i < this.views.length; i++)
 		 {
-			
+
 			var optCitation = null;
 			if (this.views[i].getCitations)
 				optCitation = this.views[i].getCitations();

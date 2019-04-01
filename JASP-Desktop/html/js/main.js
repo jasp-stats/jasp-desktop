@@ -154,6 +154,7 @@ $(document).ready(function () {
 		if (filename === "%PREVIEW%") { exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource; }
 
 		analyses.exportBegin(exportParams, function (exportParams, exportContent) {
+
 			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
 				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
 		})
@@ -380,6 +381,7 @@ $(document).ready(function () {
 		if (showInstructions)
 			$instructions.fadeIn(400, "easeOutCubic")
 
+		// probably change something here
 		var id = "id-" + analysis.id
 
 		var spacer = $("#spacer")
