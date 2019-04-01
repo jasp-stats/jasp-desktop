@@ -46,12 +46,23 @@ protected:
 		bool		isVirtual;
 		bool		isLevel;
 		int			index;
-		Factor(const QString& _value, bool _isVirtual, bool _isLevel, int _index) :
-			value(_value), isVirtual(_isVirtual), isLevel(_isLevel), index(_index) {}
+		Factor*		headFactor;
+		Factor(const QString& _value, bool _isVirtual, bool _isLevel, int _index, Factor* _factor = nullptr) :
+			value(_value), isVirtual(_isVirtual), isLevel(_isLevel), index(_index)
+		{
+			if (_factor)
+				headFactor = _factor;
+			else
+				headFactor = this;
+		}
 	};
 	QList<Factor>	_factors;
 	QList<QString>	_factorTitles;
 	Terms			_allLevelsCombinations;
+	QStringList		_getLevels(const Factor& factor);
+	QStringList		_getAllFactors();
+	QString			_giveUniqueName(const QStringList& names, const QString startName);
+
 	
 	void _setAllLevelsCombinations();
 };
