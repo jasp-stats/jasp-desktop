@@ -1,27 +1,27 @@
 # Principal Component Analysis 
 ---
-Principcal Component Analysis is used to represent the data in smaller components than the dataset originally consisted of. The components explain most of the variance in the original dataset. 
+Principcal Component Analysis is used to represent the data in smaller components than the dataset originally consisted of. The components are chosedn such that they explain most of the variance in the original dataset. 
 
 ### Input 
 ---
 #### Asssignment Box: 
-- Included Variables: In this box you can drop the variables to perform the principal component analysis on. 
+- Included Variables: In this box the variables to perform the principal component analysis on are selected. 
 
 #### Number of Factors: 
-Here you decide on how many components you would like to apply the rotation. For this you can use several methods.  
-- Parallell Analysis: Components are selected on the basis of parallell analysis. With this method components are selected when their eigenvalue is bigger than the parallel average random eigenvalue. This method is selected by default. 
+Here it is decided on how many components the rotation is applied to. Several methods can be used:   
+- Parallell Analysis: Components are selected on the basis of parallell analysis. With this method, components are selected when their eigenvalue is bigger than the parallel average random eigenvalue. This method is selected by default. 
 - Eigenvalues: Components are selected when they have a certain eigenvalue. By default components are selected that have an eigenvalue above 1. 
-- Manual: Here you can set the amount of components yourself. By default this is set to 1. 
+- Manual: Here the number of components can be set. By default this is set to 1. 
 
 #### Rotation: 
-Here you can set the rotation method to apply on the components. Rotation ensures a simpler understanding of the data structure. 
-- Orthogonal: This method produces components that are uncorrelated. For this method there are several possibilities you can select. 
+Here the rotation method to apply to the components can be set. Rotation ensures a simpler understanding of the data structure. 
+- Orthogonal: This method produces components that are uncorrelated. For this method, there are several possibilities that can be selected. 
     - None: No rotation method is selected. 
     - varimax: Orthogonal rotation method varimax. Rotation based on the maximizing the variance of the loadings. 
-    - quartimax: Orthogonal rotation method quartimax. In this rotation method the number of factors that is  necessary to explain each variable is minimized. 
+    - quartimax: Orthogonal rotation method quartimax. In this rotation method, the number of components that is  necessary to explain each variable is minimized. 
     - bentlerT: Orthogonal rotation method bentlerT. 
     - equamax: Orthogonal rotation method equamax. This is a combination of varimax and quartimax. 
-- Oblique: This method produces components that allow for correlation. This method is selected by default. For this method there are several possibilities you can select. 
+- Oblique: This method produces components that allow for correlation between the components. This method is selected by default. Several possibilities are available.  
     - promax: Oblique rotation method promax. This method is selected by default. 
     - oblimin: Oblique rotation method oblimin. 
     - simplimax: Oblique rotation method simplimax. 
@@ -30,46 +30,48 @@ Here you can set the rotation method to apply on the components. Rotation ensure
     - cluster: Oblique rotation method cluster. 
 
 #### Output Options: 
-- Highlight: This option allows you to adjust the thickness of the arrows in the path diagram. By default arrows become thicker when their value is 0.4 or higher. 
+- Highlight: This option allows the adjustment of the width of the arrows in the path diagram. By default, arrows become wider when their value is 0.4 or higher. 
 - Include Tables: 
-    - Factor correlations: When selecting this option, a table with the correlations between the components will be provided. 
-    - Path diagram: By selecting this option, a visual representation of the direction and strength of the relation between the variable and component will be provided. 
-    - Scree plot: When selecting this option, the output will provide a scree plot. The scree plot provides information on how much variance, indicated by the eigenvalue, in the data is explained by each component. A scree plot can be used to decide how many components should be selected. We would like to explain the most variance with the least amount of components. When by adding a component not much more variance is explained, this point indicates how many components should be used in the model. 
+    - Factor correlations: When selecting this option, a table with the correlations between the components will be displayed. 
+    - Path diagram: By selecting this option, a visual representation of the direction and strength of the relation between the variable and component will be displayed. 
+    - Scree plot: When selecting this option, a scree plot will be displayed. The scree plot provides information on how much variance in the data, indicated by the eigenvalue, is explained by each component. A scree plot can be used to decide how many components should be selected.  
 - Missing values: 
-    - Exclude cases pairwise: If one observation from a variable is missing, all the other variable observations from the same case, will still be used for the analysis. In this scenario it is not necessary to have a observation for all the variables to include the case in the analysis. This option is selected by default. 
-    - Exclude cases listwise: If one observation from a variable is missing, the whole case, so all the other connected variable observations, will be dismissed from the analysis. In this scenario observations for every variable are needed to include the case in the analysis. 
+    - Exclude cases pairwise: If one observation from a variable is missing, all the other variable observations from the same case will still be used for the analysis. In this scenario, it is not necessary to have a observation for all the variables to include the case in the analysis. This option is selected by default. 
+    - Exclude cases listwise: If one observation from a variable is missing, the whole case, so all the other connected variable observations, will be dismissed from the analysis. In this scenario, observations for every variable are needed to include the case in the analysis. 
 
 ### Output 
 --- 
 #### Component Loadings: 
 - Variables: The first column shows all the variables included in the analysis. 
 - PC (1, 2, 3, ...): This column shows the variable loadings on the components. 
-- Uniqueness: The percentage of the variable variance that is not explained by the component. 
+- Uniqueness: The percentage of the variance of each variable that is not explained by the component. 
 
 #### Component Correlations: 
-- The correlation between the principal components. The diagonal is always 1 because it represents the correlation with the own component 
+- The correlation between the principal components. The diagonal is always 1 because it represents the correlation between the same component. 
 
 #### Chi-squared Test: 
 The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation is unreliable for small sample sizes. 
 - Model: The model obtained from the principal component analysis. 
-- Value: The test statistic chi-squared. 
+- Value: The chi-squared test statistic.  
 - df: Degrees of freedom. 
 - p: P-value. 
 
 #### Path Diagram: 
 - PC: The principal components are represented by the circles 
 - Variables: The variables loadings on the components are represented by the boxes 
-- Arrows: Going from the variables to the principal components, representing the loading from the variable on the component. Red indicates a negative loading, green a positive loading. The thicker the arrows, the higher the loading. You can adjust this highlight at  `highlight` in the `Output Options` 
+- Arrows: Going from the variables to the principal components, representing the loading from the variable on the component. Red indicates a negative loading, green a positive loading. The wider the arrows, the higher the loading. This highlight can be adjusted at  `highlight` in the `Output Options` 
 
 #### Screeplot: 
-The scree plot provides information on how much variance, indicated by the eigenvalue, in the data is explained by each component. The scree plot can be used to decide how many components should be selected in the model. We would like to explain the most variance with the least amount of components. The point where adding a component does not lead to more explained variance, indicates how many components should be used in the model.
+The scree plot provides information on how much variance in the data, indicated by the eigenvalue, is explained by each component. The scree plot can be used to decide how many components should be selected in the model. 
 - Components: On the x-axis, the components. 
-- Eigenvalue: On the y-axis, the eigenvalue indicating the variance explained by each component. 
+- Eigenvalue: On the y-axis, the eigenvalue that indicates the variance explained by each component. 
 - Data: The dotted line represents the data. 
 - Simulated: The triangle line represents the simulated data. This line is indicative for the parallel analysis. When the points from the dotted line (real data) are above this line, these components will be included in the model by parallel analysis. 
 - Kaiser criterion: The horizontal line at the eigenvalue of 1 represents the Kaiser criterion. According to this criterion, only components with values above this line (at an eigenvalue of 1) should be included in the model. 
 
 ### References 
-Hayton, J. C., Allen, D. G., & Scarpello, V. (2004). Factor retention decisions in exploratory factor analysis: A tutorial on parallel analysis. Organizational research methods, 7(2), 191-205.
-James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning (Vol. 112, p. 18). New York: springer.
-Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in exploratory factor analysis. Best practices in quantitative methods,          86-99.
+- Hayton, J. C., Allen, D. G., & Scarpello, V. (2004). Factor retention decisions in exploratory factor analysis: A tutorial on parallel analysis. Organizational research methods, 7(2), 191-205.
+- James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning (Vol. 112, p. 18). New York: springer.
+- Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in exploratory factor analysis. Best practices in quantitative methods, 86-99.
+
+
