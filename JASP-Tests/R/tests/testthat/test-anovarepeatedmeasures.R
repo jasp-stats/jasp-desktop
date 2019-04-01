@@ -465,6 +465,33 @@ test_that("Nonparametric table match", {
   expect_equal_tables(table, refTable)
 })
 
+test_that("Conover table match", {
+  
+  options <- initOpts()
+  
+  options$betweenSubjectFactors <- "gender"
+  options$betweenModelTerms <- list(
+    list(components = "gender")
+  )
+  
+  options$conoverTest <- TRUE
+  
+  options$friedmanWithinFactor <- "Charisma"
+  
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv",
+                            options = options,
+                            view = FALSE, quiet = TRUE)
+  
+  refTable <- list( "High", "Some", 1.31809226918034, 406, 306.5, 0.189380510753162, 0.568141532259486, 
+                    0.233862092301299, 158, "High", "None", 2.89450412880305, 406, 187.5,
+                    0.00433496034546402, 0.0130048810363921, 0.0130048810363921, 158, "Some",
+                    "None", 1.57641185962271, 306.5, 187.5, 0.116931046150649, 0.350793138451948,
+                    0.233862092301299, 158)
+  
+  table <- results[["results"]][["conover"]][[1]][[1]][["data"]]
+  expect_equal_tables(table, refTable)
+})
 
 
 ### Andy Field tests ---
