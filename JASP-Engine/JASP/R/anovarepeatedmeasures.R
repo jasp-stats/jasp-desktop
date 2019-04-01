@@ -129,7 +129,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         diff[['repeatedMeasuresCells']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE && 
         diff[['sumOfSquares']] == FALSE && diff[['covariates']] == FALSE && 
         diff[['betweenSubjectFactors']] == FALSE && diff[['marginalMeansTerms']] == FALSE && 
-        diff[['marginalMeansBootstrapping']] == FALSE && 
         diff[['marginalMeansBootstrappingReplicates']] == FALSE) {
       
       # old marginal means bootstrapping tables can be used
