@@ -41,7 +41,6 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	notesMenuClicked: function (noteType, visibility) {
 
 		this.noteBox.setVisibilityAnimate(visibility);
-
 	},
 
 	copyMenuClicked: function () {
@@ -63,6 +62,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+		'click': '_mouseClicked',
 	},
 
 	_hoveringStart: function (e) {
@@ -71,6 +71,12 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
+	},
+
+	_mouseClicked: function (e) {
+		if (!this.noteBox.$quill.hasFocus()) {
+			// this.noteBox.setQuillToolbarVisibility('none');
+		}
 	},
 
 	addAnalysis: function(analysis) {
@@ -145,13 +151,19 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	},
 
 	getResultsMeta: function () {
+
+        // text: Mrkdwn.fromHtmlText(this.note.get('text')),
+        // format: 'markdown',
+
 		return {
 			title: this.toolbar.title,
 			notes: {
 				first: {
-					text: Mrkdwn.fromHtmlText(this.note.get('text')),
-					format: 'markdown',
-					visible: this.noteBox.visible
+                    text: this.note.get('text'),
+                    format: this.note.get('format'),
+					visible: this.noteBox.visible,
+					delta: this.note.get('delta'),
+					deltaAvailable: this.note.get('deltaAvailable'),
 				}
 			}
 		};

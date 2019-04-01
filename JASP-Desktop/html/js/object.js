@@ -65,7 +65,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	itemModel.on("EditImage:clicked",			function (image, options)	{ this.trigger("EditImage:clicked",			image, options)	}, this.model);
 	itemModel.on("ShowDependencies:clicked",	function (options)			{ this.trigger("ShowDependencies:clicked",	options)		}, this.model);
 	itemModel.on("analysis:resizeStarted",		function (image)			{ this.trigger("analysis:resizeStarted",	image)			}, this.model);
-	
+
 	if (!ignoreEvents) { this.listenTo(itemView, "toolbar:showMenu", function (obj, options) { this.trigger("toolbar:showMenu", obj, options); }); }
 
 	if (itemView.constructChildren) {
@@ -81,7 +81,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 };
 
 JASPWidgets.objectView = JASPWidgets.View.extend({
-	
+
 	initialize: function () {
 
 		this.views = [];
@@ -98,14 +98,15 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+		'click': '_mouseClicked'
 	},
-	
+
 	setNoteBox: function (key, localKey, noteBox) {
 		this.noteBox = noteBox;
 
 		if (this.indentChildren)
 			noteBox.$el.addClass('jasp-indent');
-		
+
 		this.noteBoxKey = key;
 		this.noteBoxLocalKey = localKey;
 		if (this.notePositionBottom)
@@ -138,13 +139,16 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		if (this.noteBox && this.noteBox.visible) {
 
 			var noteData = {};
-			
+
 			if (this.noteBox.isTextboxEmpty())
 				noteData.text = '';
 			else
-				noteData.text = Mrkdwn.fromHtmlText(this.noteBox.model.get('text'));
-			noteData.format = 'markdown';
+				noteData.text = this.noteBox.model.get('text');
+
+			noteData.format = 'html';
 			noteData.visible = this.noteBox.visible;
+			noteData.delta = this.noteBox.model.get('delta');
+			noteData.deltaAvailable = this.noteBox.model.get('deltaAvailable')
 
 			userData[this.noteBoxLocalKey] = noteData;
 
@@ -184,6 +188,12 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
+	},
+
+	_mouseClicked: function (e) {
+		if (!this.noteBox.$quill.hasFocus()) {
+			// this.noteBox.setQuillToolbarVisibility('none');
+		}
 	},
 
 	constructChildren: function (constructor, data) {
@@ -284,7 +294,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 	setCollapsedState: function(collapsed) {
 		var self = this;
-		if (collapsed) {		
+		if (collapsed) {
 			window.slideAlpha(this.$el, 300, ['border-color', 'background-color'], [1, 0.5], 10, true, function () {
 				self.$el.addClass('jasp-collapsed');
 			});

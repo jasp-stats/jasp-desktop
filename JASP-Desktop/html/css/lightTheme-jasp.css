@@ -434,14 +434,14 @@ div.jasp-image-image.no-data.error {
 
 .stack-trace-selector div,
 .stack-trace-selector span {
-	
+
   cursor: pointer ;
   display: inline-block ;
   vertical-align: middle ;
 }
 
 .stack-trace-arrow {
-	
+
   background: center no-repeat url("images/lightTheme/expand.png") ;
   background-size: 70% ;
 	width: 16px ;
@@ -450,7 +450,7 @@ div.jasp-image-image.no-data.error {
 }
 
 .stack-trace {
-	
+
   display: none ;
 }
 
@@ -494,14 +494,17 @@ td.squash-left
 
 .jasp-closer {
     background: top left no-repeat url(images/lightTheme/closer.png);
-    right: 2px;
-    top: 2px;
-    position: -webkit-sticky;
-    position: sticky;
+    background-size: 16px;
+	position: absolute;
+	right: 5px;
+	top: 5px;
     width: 16px;
     height: 16px;
-    bottom: 2px;
+    bottom: 1px;
     float: right;
+    border: 8px solid;
+    border-color: transparent;
+    z-index: 1;
 }
 
 .jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar h5, .jasp-toolbar h6, .jasp-toolbar div , .jasp-toolbar span {
