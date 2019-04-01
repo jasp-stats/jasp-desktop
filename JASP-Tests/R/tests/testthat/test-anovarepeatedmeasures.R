@@ -454,7 +454,8 @@ test_that("Nonparametric table match", {
   options$friedmanWithinFactor <- "Charisma"
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv",                             options = options,
+                            dataset = "AnovaMixedEffects.csv",
+                            options = options,
                             view = FALSE, quiet = TRUE)
   
   refTable <- list( "Charisma", 40.074508162411, 2, 1.98577994376659e-09, -170.212868480726,
@@ -533,6 +534,125 @@ test_that("Field - Chapter 8 results match", {
                     "Stick", -3.875, -6.82534547190668, -0.924654528093315, 0.811469126250126,
                     -4.77528950227193, 1.68831979459271, 0.0101164143794359, 0.0121396972553231,
                     "", "", "FALSE")
+  
+  expect_equal_tables(table, refTable)
+})
+
+test_that("Field - Chapter 9 match", {
+  options <- initOpts()
+  
+  options$sphericityTests <- TRUE
+  
+  options$marginalMeansTerms <- list(
+    list(components = "Charisma"),
+    list(components = "Looks"),
+    list(components = c("Looks", "Charisma")),
+    list(components = "gender")
+  )
+  
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv",
+                            options = options,
+                            view = FALSE, quiet = TRUE)
+  
+  # sphericity
+  table <- results$results$assumptionsObj$sphericity$data
+  refTable <- list("Looks", 0.960205401636332, 0.690336975266099, 2, 0.708101037148711,
+                   0.961728404411513, 1, 0.5, "TRUE", "Charisma", 0.929329811889938,
+                   1.24595694485668, 2, 0.536344568684782, 0.933994437414187, 1,
+                   0.5, "FALSE", "Looks <unicode> Charisma", 0.613354486153378,
+                   8.02466743180245, 9, 0.533938195513754, 0.799354278085918, 0.992241110561882,
+                   0.25, "FALSE")
+  
+  expect_equal_tables(table, refTable)
+  
+  # marginal charisma
+  table <- results$results$marginalMeans$collection[[1]]$data
+  refTable <- list("High", 82.1000000000002, 0.792376225226709, 80.5111143833479,
+                   83.6888856166524, "TRUE", "Some", 69.3000000000002, 0.792376225226709,
+                   67.7111143833479, 70.8888856166524, "FALSE", "None", 54.3000000000002,
+                   0.792376225226709, 52.7111143833479, 55.8888856166524, "FALSE")
+  
+  expect_equal_tables(table, refTable)
+  
+  # gender (strategy) * looks interaction
+  table <- results$results$marginalMeans$collection[[6]]$data
+  refTable <- list("Female", "Attractive", 76.1666666666668, 1.00705331467645, 74.1441569164011,
+                   78.1891764169326, "TRUE", "Female", "Average", 68.1000000000002,
+                   1.00705331467645, 66.0774902497344, 70.1225097502659, "FALSE",
+                   "Female", "Ugly", 61.3333333333335, 1.00705331467645, 59.3108235830677,
+                   63.3558430835992, "FALSE", "Male", "Attractive", 88.0333333333335,
+                   1.00705331467645, 86.0108235830677, 90.0558430835993, "TRUE",
+                   "Male", "Average", 67.4666666666668, 1.00705331467645, 65.4441569164011,
+                   69.4891764169326, "FALSE", "Male", "Ugly", 50.3000000000002,
+                   1.00705331467645, 48.2774902497344, 52.3225097502659, "FALSE")
+  
+  expect_equal_tables(table, refTable)
+  
+  # gender (strategy) * charisma interaction
+  table <- results$results$marginalMeans$collection[[5]]$data
+  refTable <- list("Female", "High", 88.2333333333335, 1.12058920421761, 85.9863097452043,
+                   90.4803569214627, "TRUE", "Female", "Some", 69.0666666666668,
+                   1.12058920421761, 66.8196430785377, 71.313690254796, "FALSE",
+                   "Female", "None", 48.3000000000002, 1.12058920421761, 46.052976411871,
+                   50.5470235881293, "FALSE", "Male", "High", 75.9666666666669,
+                   1.12058920421761, 73.7196430785377, 78.213690254796, "TRUE",
+                   "Male", "Some", 69.5333333333335, 1.12058920421761, 67.2863097452043,
+                   71.7803569214627, "FALSE", "Male", "None", 60.3000000000002,
+                   1.12058920421761, 58.052976411871, 62.5470235881293, "FALSE")
+  
+  expect_equal_tables(table, refTable)
+  
+  # looks * charisma interaction
+  table <- results$results$marginalMeans$collection[[3]]$data
+  refTable <- list("Attractive", "High", 88.9500000000002, 1.23097873335623, 86.5185279595704,
+                   91.38147204043, "TRUE", "Attractive", "Some", 87.8000000000002,
+                   1.23097873335623, 85.3685279595704, 90.2314720404299, "FALSE",
+                   "Attractive", "None", 69.5500000000002, 1.23097873335623, 67.1185279595704,
+                   71.9814720404299, "FALSE", "Average", "High", 85.6000000000002,
+                   1.23097873335623, 83.1685279595704, 88.0314720404299, "TRUE",
+                   "Average", "Some", 70.3500000000002, 1.23097873335623, 67.9185279595704,
+                   72.7814720404299, "FALSE", "Average", "None", 47.4000000000001,
+                   1.23097873335623, 44.9685279595704, 49.8314720404299, "FALSE",
+                   "Ugly", "High", 71.7500000000002, 1.23097873335623, 69.3185279595704,
+                   74.1814720404299, "TRUE", "Ugly", "Some", 49.7500000000002,
+                   1.23097873335623, 47.3185279595704, 52.1814720404299, "FALSE",
+                   "Ugly", "None", 45.9500000000002, 1.23097873335623, 43.5185279595704,
+                   48.3814720404299, "FALSE")
+  expect_equal_tables(table, refTable)
+  
+  # gender (strategy) * looks * charisma interaction
+  table <- results$results$marginalMeans$collection[[7]]$data
+  refTable <- list("Female", "Attractive", "High", 89.6000000000002, 1.74086681970523,
+                  86.1613792638934, 93.0386207361069, "TRUE", "Female", "Attractive",
+                  "Some", 87.1000000000002, 1.74086681970523, 83.6613792638934,
+                  90.5386207361069, "FALSE", "Female", "Attractive", "None", 51.8000000000002,
+                  1.74086681970523, 48.3613792638934, 55.2386207361069, "FALSE",
+                  "Female", "Average", "High", 88.4000000000002, 1.74086681970523,
+                  84.9613792638934, 91.8386207361069, "TRUE", "Female", "Average",
+                  "Some", 68.9000000000002, 1.74086681970523, 65.4613792638934,
+                  72.3386207361069, "FALSE", "Female", "Average", "None", 47.0000000000001,
+                  1.74086681970523, 43.5613792638934, 50.4386207361069, "FALSE",
+                  "Female", "Ugly", "High", 86.7000000000001, 1.74086681970523,
+                  83.2613792638934, 90.1386207361069, "TRUE", "Female", "Ugly",
+                  "Some", 51.2000000000001, 1.74086681970523, 47.7613792638934,
+                  54.6386207361069, "FALSE", "Female", "Ugly", "None", 46.1000000000002,
+                  1.74086681970523, 42.6613792638934, 49.5386207361069, "FALSE",
+                  "Male", "Attractive", "High", 88.3000000000002, 1.74086681970523,
+                  84.8613792638934, 91.738620736107, "TRUE", "Male", "Attractive",
+                  "Some", 88.5000000000002, 1.74086681970524, 85.0613792638934,
+                  91.9386207361069, "FALSE", "Male", "Attractive", "None", 87.3000000000002,
+                  1.74086681970524, 83.8613792638934, 90.738620736107, "FALSE",
+                  "Male", "Average", "High", 82.8000000000002, 1.74086681970523,
+                  79.3613792638934, 86.238620736107, "TRUE", "Male", "Average",
+                  "Some", 71.8000000000002, 1.74086681970523, 68.3613792638934,
+                  75.2386207361069, "FALSE", "Male", "Average", "None", 47.8000000000001,
+                  1.74086681970523, 44.3613792638934, 51.2386207361069, "FALSE",
+                  "Male", "Ugly", "High", 56.8000000000002, 1.74086681970523,
+                  53.3613792638934, 60.2386207361069, "TRUE", "Male", "Ugly",
+                  "Some", 48.3000000000002, 1.74086681970523, 44.8613792638934,
+                  51.7386207361069, "FALSE", "Male", "Ugly", "None", 45.8000000000002,
+                  1.74086681970523, 42.3613792638934, 49.2386207361069, "FALSE")
   
   expect_equal_tables(table, refTable)
 })

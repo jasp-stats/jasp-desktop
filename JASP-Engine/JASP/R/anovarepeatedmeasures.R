@@ -3615,15 +3615,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 }
 
 .rmAnovaMarginalMeansTable <- function(dataset, options, perform, status, fullModel = NULL) {
-  # browser()
-
+  
   if (is.null(options$marginalMeansTerms))
     return (list(result=NULL, status=status))
   
   
   terms <- options$marginalMeansTerms
-  # repeatedMeasuresFactors <- sapply(options$repeatedMeasuresFactors, function(fac) fac$name)
-  # whichBS <- lapply(terms, function(term) any())
+  # the following adds automatically interactions of repeated measures terms with between subject terms
+  # (a workaround the qml/ui stuff)
+  repeatedMeasuresFactors <- sapply(options$repeatedMeasuresFactors, function(fac) fac$name)
+  repeatedMeasuresTerms <- sapply(terms, function(term) any(term$components %in% repeatedMeasuresFactors))
+  if(any(!repeatedMeasuresTerms)){
+    termsInteract <- list()
+    for(rmterm in which(repeatedMeasuresTerms)){
+      for(bsterm in which(!repeatedMeasuresTerms)){
+        termsInteract <- c(termsInteract, list(list(components = c(terms[[bsterm]]$components, terms[[rmterm]]$components))))
+      }
+    }
+    terms <- c(terms, termsInteract)
+  }
   terms.base64 <- c()
   terms.normal <- c()
   
@@ -3809,6 +3819,19 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     return (list(result=NULL, status=status))
   
   terms <- options$marginalMeansTerms
+  # the following adds automatically interactions of repeated measures terms with between subject terms
+  # (a workaround the qml/ui stuff)
+  repeatedMeasuresFactors <- sapply(options$repeatedMeasuresFactors, function(fac) fac$name)
+  repeatedMeasuresTerms <- sapply(terms, function(term) any(term$components %in% repeatedMeasuresFactors))
+  if(any(!repeatedMeasuresTerms)){
+    termsInteract <- list()
+    for(rmterm in which(repeatedMeasuresTerms)){
+      for(bsterm in which(!repeatedMeasuresTerms)){
+        termsInteract <- c(termsInteract, list(list(components = c(terms[[bsterm]]$components, terms[[rmterm]]$components))))
+      }
+    }
+    terms <- c(terms, termsInteract)
+  }
   terms.base64 <- c()
   terms.normal <- c()
   

@@ -211,7 +211,6 @@ Form
 			VariablesForm
 			{
 				height: 150
-				debug: true
                 AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]}
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
@@ -238,9 +237,9 @@ Form
 					name: "marginalMeansCIAdjustment"
 					label: qsTr("Confidence interval adjustment")
 					values: [
-						{ label: "None",		value: "none"},
-						{ label: "Bonferro",	value: "bonferroni"},
-						{ label: "Sidak",		value: "sidak"}
+                        { label: qsTr("None"),		value: "none"},
+                        { label: qsTr("Bonferroni"),	value: "bonferroni"},
+                        { label: qsTr("Šidák"),		value: "sidak"}
 					]
 				}
 			}
