@@ -55,6 +55,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   stateFriedman <- NULL
   stateConover <- NULL
   stateMarginalMeans <- NULL
+  stateMarginalMeansBoots <- NULL
   
   if ( ! is.null(state)) {  # is there state?
     
@@ -124,6 +125,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       stateMarginalMeans <- state$stateMarginalMeans
     }
     
+    if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && 
+        diff[['repeatedMeasuresCells']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE && 
+        diff[['sumOfSquares']] == FALSE && diff[['covariates']] == FALSE && 
+        diff[['betweenSubjectFactors']] == FALSE && diff[['marginalMeansTerms']] == FALSE && 
+        diff[['marginalMeansBootstrapping']] == FALSE && 
+        diff[['marginalMeansBootstrappingReplicates']] == FALSE) {
+      
+      # old marginal means bootstrapping tables can be used
+      stateMarginalMeansBoots <- state$stateMarginalMeansBoots
+    }
     
     if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && 
         diff[['repeatedMeasuresCells']] == FALSE && diff[['friedmanWithinFactor']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE && 
@@ -170,6 +181,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         stateContrasts <- NULL
         stateSphericity <- NULL
         stateMarginalMeans <- NULL
+        stateMarginalMeansBoots <- NULL
         
       } else {
         
@@ -315,6 +327,17 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     results[["marginalMeans"]] <- list(collection=stateMarginalMeans, title = "Marginal Means")
   } 
   
+  ## Create Marginal Means via Bootstrapping Tables
+  if(is.null(stateMarginalMeansBoots) && options[['marginalMeansBootstrapping']]){
+    result <- .rmAnovaMarginalMeansBootstrappingTable(dataset, options, perform, status, fullModel)
+    
+    results[["marginalMeansBoots"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
+    status <- result$status
+    stateMarginalMeansBoots <- result$stateMarginalMeansBoots
+    
+  } else if(options[['marginalMeansBootstrapping']]) {
+    results[["marginalMeansBoots"]] <- list(collection=stateMarginalMeansBoots, title = "Marginal Means via Bootstrapping")
+  }
   
   ## Create Descriptives Table
   
@@ -369,6 +392,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     list(name="contrasts", type="collection", meta="table"),
     list(name="posthoc", type="collection", meta="table"),
     list(name="marginalMeans", type="collection", meta="table"),
+    list(name="marginalMeansBoots", type="collection", meta="table"),
     list(name="simpleEffects", type="table"),
     list(name="friedman", type="table"),
     list(name="conover", type="collection", meta="table")
@@ -398,6 +422,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   state[["stateLevene"]] <- stateLevene
   state[["statePostHoc"]] <- statePostHoc
   state[["stateMarginalMeans"]] <- stateMarginalMeans
+  state[["stateMarginalMeansBoots"]] <- stateMarginalMeansBoots
   state[["stateContrasts"]] <- stateContrasts
   state[["stateSphericity"]] <- stateSphericity
   state[["stateSimpleEffects"]] <- stateSimpleEffects
@@ -3590,11 +3615,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 }
 
 .rmAnovaMarginalMeansTable <- function(dataset, options, perform, status, fullModel = NULL) {
+  # browser()
 
   if (is.null(options$marginalMeansTerms))
     return (list(result=NULL, status=status))
   
+  
   terms <- options$marginalMeansTerms
+  # repeatedMeasuresFactors <- sapply(options$repeatedMeasuresFactors, function(fac) fac$name)
+  # whichBS <- lapply(terms, function(term) any())
   terms.base64 <- c()
   terms.normal <- c()
   
@@ -3854,9 +3883,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       .bootstrapMarginalMeans <- function(data, indices, options){
         resamples <- data[indices, , drop=FALSE]
         
-        anovaModelBoots <- .anovaModel(resamples, options) # refit model
+        anovaModelBoots <- .rmAnovaModel(resamples, options, TRUE) # refit model
         
-        modelBoots <- anovaModelBoots$model
+        modelBoots <- anovaModelBoots$fullModel
         singularBoots <- anovaModelBoots$singular
         r <- suppressMessages( # to remove clutter
           summary(emmeans::lsmeans(modelBoots, formula), infer = c(FALSE,FALSE))
@@ -3880,15 +3909,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       }))
       bootstrapMarginalMeans.summary[,"lower.CL"] <- bootstrapMarginalMeans.ci[,1]
       bootstrapMarginalMeans.summary[,"upper.CL"] <- bootstrapMarginalMeans.ci[,2]
-      
+
       # the next chunk of code ensures that the rows in bootstrap
       # table are in the same order as the rows in object cases
-      getModelCases <- summary(emmeans::lsmeans(model, formula), infer = c(FALSE,FALSE))
-      getModelCases <- getModelCases[,.v(names(cases)), drop = FALSE]
+      getModelCases <- summary(emmeans::lsmeans(fullModel, formula), infer = c(FALSE,FALSE))
+      getModelCases <- getModelCases[,names(cases), drop = FALSE]
       names(getModelCases) <- .unv(names(getModelCases))
       r <- as.data.frame(bootstrapMarginalMeans.summary)
       r <- cbind(getModelCases, r)
-      
+
       rows <- list()
       
       for(k in 1:nRows) {
@@ -3905,15 +3934,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           index <- k
         }
         
-        row[["Marginal Mean"]] <- .clean(r$lsmean[index])
-        row[["SE"]] <- .clean(r$SE[index])
+        row[["Marginal Mean"]] <- .clean(r$bootMed[index])
+        row[["Bias"]] <- .clean(r$bootBias[index])
+        row[["SE"]] <- .clean(r$bootSE[index])
         row[["Lower"]] <- .clean(r$lower.CL[index])
         row[["Upper"]] <- .clean(r$upper.CL[index])
         
-        if(options$marginalMeansCompareMainEffects) {
-          row[["t"]] <- .clean(r$t.ratio[index])
-          row[["p"]] <- .clean(r$p.value[index])
-        }
         
         if(cases[k,nCol] == lvls[[ nCol ]][1]) {
           row[[".isNewGroup"]] <- TRUE
@@ -3940,14 +3966,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           row[[ .unv(colnames(cases)[j]) ]] <- .unv(cases[k,j])
         
         row[["Marginal Mean"]] <- "."
+        row[["Bias"]] <- "."
         row[["SE"]] <- "."
         row[["Lower"]] <- "."
         row[["Upper"]] <- "."
-        
-        if(options$marginalMeansCompareMainEffects) {
-          row[["t"]] <- "."
-          row[["p"]] <- "."
-        }
         
         if(cases[k,nCol] == lvls[[ nCol ]][1]) {
           row[[".isNewGroup"]] <- TRUE
@@ -3981,5 +4003,5 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     stateMarginalMeans <- NULL
     
   }
-  list(result=marginalMeans, status=status, stateMarginalMeans=stateMarginalMeans)
+  list(result=marginalMeans, status=status, stateMarginalMeansBoots=stateMarginalMeans)
 }
