@@ -136,6 +136,13 @@ Form
 			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
 		}
 		
+        CheckBox
+        {
+            name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+            childrenOnSameRow: true
+            PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
+        }
+
 		Group
 		{
 			columns: 2
@@ -200,16 +207,28 @@ Form
 		Group
 		{
 			title: qsTr("Marginal means")
-			debug: true
 			
 			VariablesForm
 			{
 				height: 150
-				debug: true
-				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: "withinModelTerms" }
+                AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]}
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
 			
+            CheckBox
+            {
+                name: "marginalMeansBootstrapping"; label: qsTr("From")
+                childrenOnSameRow: true
+                IntegerField
+                {
+                    name: "marginalMeansBootstrappingReplicates"
+                    defaultValue: 1000
+                    fieldWidth: 50
+                    min: 100
+                    afterLabel: qsTr("bootstraps")
+                }
+            }
+
 			CheckBox
 			{
 				name: "marginalMeansCompareMainEffects"; label: qsTr("Compare marginal means to 0")
@@ -218,9 +237,9 @@ Form
 					name: "marginalMeansCIAdjustment"
 					label: qsTr("Confidence interval adjustment")
 					values: [
-						{ label: "None",		value: "none"},
-						{ label: "Bonferro",	value: "bonferroni"},
-						{ label: "Sidak",		value: "sidak"}
+                        { label: qsTr("None"),		value: "none"},
+                        { label: qsTr("Bonferroni"),	value: "bonferroni"},
+                        { label: qsTr("Šidák"),		value: "sidak"}
 					]
 				}
 			}
