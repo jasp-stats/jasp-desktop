@@ -51,11 +51,15 @@ JASPControl
 	signal textEdited()
 	signal pressed()
 	signal released()
+
 	
 	function keyReturnPressed()
 	{
 		if (activeFocus)
-			trillFocus()
+		{
+			if (KeyNavigation.tab)
+				KeyNavigation.tab.forceActiveFocus();
+		}
 		editingFinished();
 	}
 	
@@ -117,8 +121,8 @@ JASPControl
 				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
 				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
-				border.width: 1
-				border.color: "transparent"
+				border.width: 2
+				border.color: control.acceptableInput ? "transparent" : Theme.red
 				anchors.centerIn: parent
 				opacity: debug ? .3 : 1
 				visible: textField.useExternalBorder
