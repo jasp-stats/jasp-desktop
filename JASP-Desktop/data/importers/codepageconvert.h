@@ -18,7 +18,7 @@
 #ifndef _CODEPAGE_CONVERT_H_
 #define _CODEPAGE_CONVERT_H_
 
-#ifdef __WIN32__ //TODO: what is the define for VS compiler
+#ifdef _WIN32 //TODO: what is the define for VS compiler
 #define strcasecmp(a,b) stricmp(a,b)
 #endif
 

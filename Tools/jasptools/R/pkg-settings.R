@@ -1,9 +1,9 @@
 # first the externally accessible options
 .pkgOptions <- list2env(list(
-  r.dir = file.path("..", "JASP-Engine", "JASP", "R"),
+  common.r.dir = file.path("..", "JASP-Engine", "JASP", "R"),
   html.dir = file.path("..", "JASP-Desktop", "html"),
-  json.dir = file.path("..", "Resources", "Library"),
-  qml.dir = file.path("..", "Resources"),
+  common.qml.dir = file.path("..", "Resources"),
+  module.dir = "",
   data.dir = file.path("..", "Resources", "Data Sets"),
   pkgs.dir = "",
   tests.dir = file.path("..", "JASP-Tests", "R", "tests", "testthat"),
@@ -66,7 +66,7 @@ setPkgOption <- function(name, value) {
       warning("jasptools is not configured correctly. It will not find the needed resources.
               Please set your working directory to %path%/to%jasp%jasp-desktop/Tools.")
     }
-    }
+  }
   return(get(name, envir = .pkgOptions))
 }
 

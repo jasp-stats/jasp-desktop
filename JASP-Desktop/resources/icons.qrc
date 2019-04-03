@@ -16,14 +16,6 @@
         <file>icons/document-save-as.png</file>
         <file>icons/edit-delete-shred.png</file>
         <file>icons/emblem-favorite.png</file>
-        <file>icons/folder-blue.png</file>
-        <file>icons/folder-cyan.png</file>
-        <file>icons/folder-grey.png</file>
-        <file>icons/folder-orange.png</file>
-        <file>icons/folder-red.png</file>
-        <file>icons/folder-txt.png</file>
-        <file>icons/folder-violet.png</file>
-        <file>icons/folder-yellow.png</file>
         <file>icons/text-x-moc.png</file>
         <file>icons/user-home.png</file>
         <file>icons/tools-wizard.png</file>
@@ -123,5 +115,7 @@
         <file>icons/variable-nominal-disabled.svg</file>
         <file>icons/variable-ordinal-disabled.svg</file>
         <file>icons/variable-scale-disabled.svg</file>
+        <file>icons/large-arrow-right.png</file>
+        <file>icons/sem-latreg.svg</file>
     </qresource>
 </RCC>

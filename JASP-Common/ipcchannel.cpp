@@ -70,7 +70,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _bas
 			; // do nothing
 
 	}
-#elif defined __WIN32__
+#elif defined _WIN32
 
 	wstring inName  = nowide::widen(_semaphoreInName);
 	wstring outName = nowide::widen(_semaphoreOutName);
@@ -224,7 +224,7 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 
 #ifdef __APPLE__
 	sem_post(_semaphoreOut);
-#elif defined __WIN32__
+#elif defined _WIN32
 	ReleaseSemaphore(_semaphoreOut, 1, NULL);
 #else
 	_semaphoreOut->post();
@@ -287,7 +287,7 @@ bool IPCChannel::tryWait(int timeout)
 		messageWaiting = sem_trywait(_semaphoreIn) == 0;
 	}
 
-#elif defined __WIN32__
+#elif defined _WIN32
 
 	messageWaiting = (WaitForSingleObject(_semaphoreIn, timeout) == WAIT_OBJECT_0);
 

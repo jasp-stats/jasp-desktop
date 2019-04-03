@@ -29,12 +29,16 @@ class BoundQMLCheckBox : public QObject, public BoundQMLItem
 	
 public:
 	BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
+	BoundQMLCheckBox(QMap<QString, QVariant>& properties,  AnalysisForm* form);
 	
-	virtual Option* createOption() OVERRIDE;
-	virtual Option* boundTo() OVERRIDE { return _boundTo; }
-	virtual bool isOptionValid(Option* option) OVERRIDE;
-	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
+	void	bindTo(Option *option)						override;
+	Option* createOption()								override;
+	Option* boundTo()									override { return _boundTo; }
+	bool	isOptionValid(Option* option)				override;
+	bool	isJsonValid(const Json::Value& optionValue) override;
+	void	resetQMLItem(QQuickItem *item)				override;
+	
+	void setQMLItemChecked(bool checked);
 
 signals:
 	
@@ -42,8 +46,8 @@ private slots:
 	void checkBoxClickedSlot();
     
 protected:
-	OptionBoolean *_boundTo;
-	bool _checked;
+	OptionBoolean *_boundTo = nullptr;
+	bool _checked = false;
 
 };
 

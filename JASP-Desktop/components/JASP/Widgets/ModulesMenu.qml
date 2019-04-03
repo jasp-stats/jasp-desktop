@@ -68,6 +68,7 @@ Item
 				showIconAndText:	true
 				iconLeft:			false
 				toolTip:			"Install a module"
+				visible:			preferencesModel.developerMode
 			}
 
 			ToolSeparator
@@ -75,19 +76,22 @@ Item
 				orientation:				Qt.Horizontal
 				width:						modules.buttonWidth
 				anchors.horizontalCenter:	parent.horizontalCenter
+				visible:					preferencesModel.developerMode
 			}
 			
 			MenuButton
 			{
 				id:					addDeveloperModuleButton
-				text:				"Install Developer Module"
+				text:				folderSelected ? "Install Developer Module" : "Select a Developer Module"
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
-				onClicked: 			dynamicModules.installJASPDeveloperModule()
-				toolTip:			"Install selected developer module"
-				visible:			preferencesModel.developerMode				
+				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
+				toolTip:			folderSelected ? "Install selected developer module" : "Select a developer module under Left menu->Preference->Advanced"
+				visible:			preferencesModel.developerMode
+
+				readonly property bool folderSelected: preferencesModel.developerFolder != ""
 			}
 			
 			ToolSeparator
@@ -105,6 +109,7 @@ Item
 
 				Rectangle
 				{
+					visible:			displayText != "Common"
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin

@@ -26,6 +26,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true;		}
 		DropDown
 		{
@@ -44,15 +45,14 @@ Form
 	}
 	
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
-			availableVariablesList
+			AvailableVariablesList
 			{
 				name: "availableTerms"
 				title: qsTr("Components")
@@ -63,19 +63,21 @@ Form
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
+				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				ExtraControlColumn
 				{
 					type: "CheckBox"
 					name: "isNuisance"
 					title: qsTr("Add to null model")
+					purpose: "nuisance"					
 				}
 			}
 		}
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -143,7 +145,7 @@ Form
 					{
 						value: "cooksDistance";	label: qsTr("Cook's distance >")
 						childrenOnSameRow: true
-						IntegerField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+						DoubleField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
 					}
 					RadioButton { value: "allCases"; label: qsTr("All")										}
 				}
@@ -152,7 +154,7 @@ Form
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		columns: 1
@@ -194,7 +196,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 		

@@ -32,11 +32,22 @@ public:
 	ListModelAvailableInterface(QMLListView* listView) : ListModelDraggable(listView) {}
 	
 	virtual const Terms& allTerms() const { return _allTerms; }
-	virtual void removeAssignedTerms(const Terms& terms);
+			void initTerms(const Terms &terms) override;
+	virtual void resetTermsFromSourceModels() = 0;
+	virtual void removeTermsInAssignedList();
+			void emitChangedTerms();
+	
+			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;	
+	
+public slots:
+			void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
 
 protected:
-	std::map<QString, ListModel*> _termSourceModelMap;
 	Terms _allTerms;
+	Terms _tempRemovedTerms;
+	Terms _tempAddedTerms;	
+	
+	void setChangedTerms(const Terms &newTerms);
 };
 
 #endif // LISTMODELTERMSAVAILABLEINTERFACE_H

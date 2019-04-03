@@ -6,8 +6,10 @@ import JASP.Theme		1.0
 Rectangle
 {
 	id:					expanderButton
-	height:				loaderAndError.y + (expanderButton.expanded ?  loaderAndError.height : 0)
-	width:				Theme.formWidth
+	height:				loaderAndError.y
+	//width:				Theme.formWidth
+	anchors.left:		parent.left
+	anchors.right:		parent.right
 	clip:				true
 
 	color:				Theme.uiBackground
@@ -22,25 +24,43 @@ Rectangle
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
 	property bool		imploded:			height == loader.y
 
+    ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
+
 	function toggleExpander()
 	{
 		if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()
 		else												analysesModel.selectAnalysisAtRow(myIndex);
 	}
+	
+	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
-	Behavior on height { PropertyAnimation { duration: 250; easing.type: Easing.OutQuad; } }
+	states: [
+		State
+		{
+			name: "expanded";	when: expanderButton.expanded
+			PropertyChanges {	target: expanderButton;		height: loaderAndError.y + loaderAndError.height;		}
+			PropertyChanges {	target: expanderIcon;		rotation: 90;											}
+		}
+	]
 
-	//KeyNavigation.tab: expanderWrapper.expanded ? childControls[0] : nextExpander
-
+	transitions: Transition
+	{
+		NumberAnimation		{ property: "height";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+		RotationAnimation	{						duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+	}
+	
 	Item
 	{
 		id:				expanderRectangle
 		height:			Theme.formExpanderHeaderHeight  //label.contentHeight
 
-		anchors.left:		parent.left
-		anchors.right:		parent.right
-		anchors.top:		parent.top
-		anchors.topMargin:	Theme.formMargin
+		anchors
+		{
+			left:		parent.left
+			right:		parent.right
+			top:		parent.top
+			topMargin:	Theme.formMargin
+		}
 
 
 		MouseArea
@@ -54,22 +74,21 @@ Rectangle
 
 		Image
 		{
-			id:					icon
-			height:				expanderRectangle.height
-			width:				height
-			source:				iconsFolder + (expanded ? expandedIcon : contractedIcon)
-			sourceSize.width:	width * 2
-			sourceSize.height:	height * 2
+			id:						expanderIcon
 			anchors
 			{
 				left:			parent.left
-				leftMargin:		6 * preferencesModel.uiScale
+				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
-
-			readonly property string iconsFolder:		"qrc:/images/"
-			readonly property string expandedIcon:		"expander-arrow-down.png"
-			readonly property string contractedIcon:	"expander-arrow-up.png"
+			height:			expanderRectangle.height / 1.5
+			width:			height
+			source:			"qrc:/icons/large-arrow-right.png"
+			sourceSize
+			{
+				width:	expanderIcon.width * 2
+				height:	expanderIcon.height * 2
+			}
 		}
 
 		Text
@@ -79,9 +98,9 @@ Rectangle
 			font:		Theme.fontLabel
 			anchors
 			{
-				left:			icon.right
+				left:			expanderIcon.right
 				right:			helpButton.left
-				margins:		5 * preferencesModel.uiScale
+				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
 		}
@@ -93,7 +112,7 @@ Rectangle
 			iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
 			//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 			enabled:			expanderButton.expanded
-			onClicked:			helpModel.showOrTogglePage("analyses/" + expanderButton.myAnalysis.name)
+			onClicked:			helpModel.showOrTogglePage(expanderButton.myAnalysis.helpFile)
 			toolTip:			"Show info for analysis"
 			radius:				height
 			anchors
@@ -130,7 +149,7 @@ Rectangle
 	{
 		id:		loaderAndError
 		height:	Math.max(loader.height, errorRect.height * preferencesModel.uiScale)
-		
+
 		anchors
 		{
 			top:				expanderRectangle.bottom
@@ -147,7 +166,7 @@ Rectangle
 			color:			Theme.errorMessagesBackgroundColor
 			width:			parent.width
 			height:			visible ? errorMessagesText.height : 0
-			
+
 			Text
 			{
 				id:					errorMessagesText
@@ -159,13 +178,19 @@ Rectangle
 				wrapMode: Text.Wrap
 			}
 		}
-		
-	
+
 		Loader
 		{
 			id:					loader
 			source:				!expanderButton.imploded || expanderButton.expanded ? formQmlUrl : ""
 			asynchronous:		false // makes it slow when true
+
+			anchors
+			{
+				top:			errorRect.bottom
+				left:			parent.left
+				right:			parent.right
+			}
 	
 			property int		myIndex:			-1
 			property int		myID:				-1

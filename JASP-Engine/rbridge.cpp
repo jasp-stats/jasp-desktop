@@ -63,6 +63,9 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 	};
 
 	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks, sendToDesktopFunction, pollMessagesFunction);
+#ifdef JASP_DEBUG
+	std::cout << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
+#endif
 }
 
 void rbridge_setDataSetSource(			boost::function<DataSet* ()> source)												{	rbridge_dataSetSource			= source; }
@@ -256,9 +259,9 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	datasetStatic[colMax].nbRows	= filteredRowCount;
 	int filteredRow					= 0;
 
-	for(size_t i=0; i<rbridge_dataSet->rowCount() && i<datasetStatic[colMax].nbRows; i++)
+	for(size_t i=0; i<rbridge_dataSet->rowCount() && filteredRow < datasetStatic[colMax].nbRows; i++)
 		if(!obeyFilter || (rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i]))
-			datasetStatic[colMax].ints[filteredRow++] = int(i + 1); //R needs 1-based index
+			datasetStatic[colMax].ints[filteredRow++] = int(filteredRow + 1); //R needs 1-based index
 
 
 	for (int colNo = 0; colNo < colMax; colNo++)

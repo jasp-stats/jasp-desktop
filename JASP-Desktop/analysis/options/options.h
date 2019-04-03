@@ -35,12 +35,10 @@ public:
 	Options() : Option(), names(&_options) {}
 	~Options();
 
-	void		init(const Json::Value &data)					override;
 	Option*		clone()									const	override;
 	void		set(const Json::Value &json)					override;
 	Json::Value asJSON()								const	override;
 	Json::Value asJSON(bool includeTransient)			const;
-	Json::Value asJSONWithType(bool includeTransient)	const;
 
 	void		add(std::string name, Option *option);
 	void		remove(std::string name);
@@ -48,11 +46,7 @@ public:
 
 	Option*		get(std::string name)					const;
 	Option*		get(int index)												{ return _options.at(index).second; }
-	void		get(int index, std::string &name, Option *&option);
-	std::string getType(Option *option) const;
-	
-
-	Option*		createOption(std::string typeString);
+	void		get(int index, std::string &name, Option *&option);	
 
 	std::set<std::string>	usedVariables()													override;
 	void					removeUsedVariable(std::string var)								override;

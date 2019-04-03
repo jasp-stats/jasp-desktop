@@ -49,6 +49,11 @@ Rectangle
 
 			fillMode:	Image.PreserveAspectFit
 			source:		model.iconsource
+			sourceSize
+			{
+				width:	firstFileOrFolderImage.width * 2
+				height:	firstFileOrFolderImage.height * 2
+			}
 
 			MouseArea
 			{
@@ -84,6 +89,12 @@ Rectangle
 			fillMode:		Image.PreserveAspectFit
 			source:			model.dataiconsource
 			visible :		model.associated_datafile !== ""
+
+			sourceSize
+			{
+				width:	associatedDatafileImage.width * 2
+				height:	associatedDatafileImage.height * 2
+			}
 
 			MouseArea
 			{

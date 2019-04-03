@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
+import FileOperation 1.0
 
 FocusScope
 {
@@ -11,7 +12,7 @@ FocusScope
 	width:		slidePart.width
 	height:		600
 	z:			1
-	visible:	actionMenu.x + actionMenu.width > 0
+	visible:	fileMenuAnimation.running ? actionMenu.x + actionMenu.width > 0 : fileMenuModel.visible
 
 
 	property int action_button_height:		35 * preferencesModel.uiScale
@@ -25,7 +26,7 @@ FocusScope
 		width:	(resourceScreen.x + resourceScreen.width)
 		height:	fileMenu.height
 
-		Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		Behavior on x { PropertyAnimation { id: fileMenuAnimation; duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 		MouseArea
 		{
@@ -64,17 +65,37 @@ FocusScope
 
 					model:					fileMenuModel.actionButtons
 
-					MenuButton
-					{
-						id:					actionButton
-						text:				nameRole
-						selected:			fileMenuModel.fileoperation === typeRole
-						width:				parent.width-6
-						height:				action_button_height
-						anchors.leftMargin: 3
-						anchors.left:		parent.left
-						onClicked:			fileMenuModel.actionButtons.buttonClicked(typeRole)
-						enabled:			enabledRole
+					Item{
+
+						id: itemActionMenu
+						width: parent.width-6
+						anchors.left:parent.left
+						height: action_button_height + actionToolSeperator.height
+
+						MenuButton
+						{
+							id:					actionMenuButton
+							text:				nameRole
+							selected:			fileMenuModel.fileoperation === typeRole
+							width:				itemActionMenu.width
+							height:				action_button_height
+							anchors.leftMargin: 3
+							anchors.left:		itemActionMenu.left
+							onClicked:			fileMenuModel.actionButtons.buttonClicked(typeRole)
+							enabled:			enabledRole
+
+						}
+
+						ToolSeparator
+						{
+							id: actionToolSeperator
+							anchors.top: actionMenuButton.bottom
+							width : actionMenuButton.width
+							anchors.topMargin: typeRole===FileOperation.Close ? 3 : 0
+							anchors.left:	actionMenuButton.leftß
+							orientation: Qt.Horizontal
+							visible: typeRole===FileOperation.Close
+						}
 					}
 				}
 			}
@@ -120,7 +141,9 @@ FocusScope
 						selected:			qmlRole === fileMenuModel.resourceButtons.currentQML
 						onClicked:			fileMenuModel.resourceButtonsVisible.clicked(typeRole)
 					}
+
 				}
+
 			}
 		}
 
@@ -156,7 +179,7 @@ FocusScope
 			//anchors.left:	locationMenu.right
 
 			x:				otherColumnsWidth - (aButtonVisible && fileMenuModel.visible ? 0 : width)
-            width:			Math.min(mainWindowRoot.width - otherColumnsWidth, 800 * preferencesModel.uiScale)
+			width:			Math.min(mainWindowRoot.width - otherColumnsWidth, 800 * preferencesModel.uiScale)
 			height:			parent.height
 			visible:		fileMenuModel.visible || x + width > otherColumnsWidth + 1
 

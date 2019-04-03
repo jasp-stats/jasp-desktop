@@ -26,6 +26,7 @@
 
 #include "modules/ribbonbuttonmodel.h"
 
+
 class RibbonModel : public QAbstractListModel
 {
 	Q_OBJECT
@@ -64,18 +65,19 @@ public:
 	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);
 
 	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
-
+	Modules::AnalysisEntry*		getAnalysis(const std::string& moduleName, const std::string& analysisName);
+	
 signals:
 	void currentButtonModelChanged();
-	Q_INVOKABLE void analysisClickedSignal(QString analysis, QString ribbonTitle, QString module);
+	Q_INVOKABLE void analysisClickedSignal(QString analysisName, QString analysisTitle, QString ribbonTitle, QString module);
 
 	void highlightedModuleIndexChanged(int highlightedModuleIndex);
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
-	void removeDynamicRibbonButtonModel(std::string moduleName)			{ removeRibbonButtonModel(moduleName);				}
+	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
-	void moduleLoadingSucceeded(const std::string & moduleName);
+	void moduleLoadingSucceeded(const QString & moduleName);
 
 private slots:
 	void ribbonButtonModelChanged(RibbonButtonModel* model);

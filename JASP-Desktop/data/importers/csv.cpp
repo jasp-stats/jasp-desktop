@@ -77,8 +77,7 @@ void CSV::open()
 		_status = Empty;
 	}
 
-	//std::cout << "encoding : " << _encoding << " delimeters : " << _delim << "\n";
-	//std::cout.flush();
+	//std::cout << "encoding : " << _encoding << " delimeters : " << _delim << std::endl;
 }
 
 bool CSV::readRaw()

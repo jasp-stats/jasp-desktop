@@ -25,7 +25,6 @@ FocusScope
 
 	property string	controlType:			"JASPControl"
 	property string name:					""
-	property bool	hasTabFocus:			true
 	property bool	isBound:				true
 	property bool	debug:					false
 	property var	background:				null
@@ -37,6 +36,8 @@ FocusScope
 	property var	childControlsArea:		null
 	property var	childControls:			[]
 	property bool	childControlHasFocus:	false
+	
+	activeFocusOnTab: true
 	
 	function setDebugState()
 	{
@@ -58,7 +59,7 @@ FocusScope
 				background = control.background
 		}
 		
-		if (childControlsArea && childControlsArea.children.length > 0)
+		if (typeof(getJASPControls) === "function" && childControlsArea && childControlsArea.children.length > 0)
 		{
 			getJASPControls(childControls, childControlsArea, false)
 			if (controlType != "Expander")
@@ -78,7 +79,8 @@ FocusScope
 	states: [
 		State
 		{
-			when: jaspControl.activeFocus && jaspControl.hasTabFocus && !jaspControl.childControlHasFocus
+			name: "hasFocus"
+			when: jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
 			PropertyChanges
 			{
 				target:			focusIndicator
@@ -117,7 +119,6 @@ FocusScope
 	ToolTip.delay:				Theme.toolTipDelay
 	ToolTip.toolTip.font:		Theme.font
 	ToolTip.visible:			toolTip !== "" && controlMouseArea.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
 	MouseArea
 	{

@@ -967,9 +967,11 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		var posY = offset.top + $titleLabel.height() - $(window).scrollTop() + 3;
 		var posX = offset.left - $(window).scrollLeft();
+		var posXright = offset.left + $titleLabel.outerWidth() - $(window).scrollLeft();
 
 		this.options.rX = posX;
 		this.options.rY = posY;
+		this.options.rXright = posXright;
 
 		this.options.x = e.screenX;
 		this.options.y = e.screenY;

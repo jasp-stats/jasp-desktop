@@ -1,0 +1,39 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 		"SEM",
+		"description" : "Various SEM procedures in a single module.",
+		"version":		1,
+		"author":		"JASP Team",
+		"maintainer":	"JASP Team <jasp@jasp-stats.org>",
+		"website":		"jasp-stats.org",
+		"license":		"GPL (>= 2)",
+		"dynamic":		false
+	},
+
+	"requiredPackagess":	[ 
+		{ "package": "kutils" },
+		{ "package": "lavaan" },
+		{ "package": "semPlot" }
+	],
+	
+	"ribbonEntries":
+	[
+		{
+			"title": 	"SEM",
+			"icon": 	"sem-latreg.svg",
+			"analyses":  [
+				{
+					"title":	"Lavaan Modeling",
+					"qml":		"SEMSimple.qml",
+					"function":	"SEMSimple"
+				},
+				{
+					"title":	"Confirmatory Factor Analysis",
+					"qml":		"ConfirmatoryFactorAnalysis.qml",
+					"function":	"ConfirmatoryFactorAnalysis"
+				}
+			]
+		}
+	]
+}

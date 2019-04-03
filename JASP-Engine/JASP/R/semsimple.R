@@ -470,7 +470,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   meta[[12]] <- list(name="pathDiagram", type="image")
   
   results[[".meta"]] <- meta
-  results[["title"]] <- "lavaan: Structural Equation Modeling"
+  results[["title"]] <- "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
 
   # Error:
   error <- !inputCorrect || (errorMessage!="" & perform == "run" & options$model != "")

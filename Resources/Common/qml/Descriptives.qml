@@ -26,13 +26,14 @@ Form
 	columns: 1
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
 		AssignedVariablesList { name: "splitby";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	}
 
 	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 
@@ -62,7 +63,7 @@ Form
 		}
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 
@@ -123,12 +124,13 @@ Form
 			title: qsTr("Distribution")
 			CheckBox { name: "skewness";			label: qsTr("Skewness")						}
 			CheckBox { name: "kurtosis";			label: qsTr("Kurtosis")						}
+			CheckBox { name: "shapiro";			label: qsTr("Shapiro-Wilk test")						}
 		}
 
 		CheckBox { name: "statisticsValuesAreGroupMidpoints"; label: qsTr("Values are group midpoints"); debug: true }
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Charts")
 		debug: true
@@ -138,7 +140,7 @@ Form
 			title: qsTr("Chart Type")
 			RadioButton { value: "_1noCharts";		label: qsTr("None")			}
 			RadioButton { value: "_2barCharts";		label: qsTr("Bar charts")	}
-			RadioButton { value: "_3pieCharts";		label: qsTr("Pie Charts")	}
+			RadioButton { value: "_3pieCharts";		label: qsTr("Pie charts")	}
 			RadioButton { value: "_4histograms";	label: qsTr("Histograms")	}
 		}
 

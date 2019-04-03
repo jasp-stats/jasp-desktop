@@ -162,20 +162,20 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
 
   if (perform == "run" && !is.null(fact)) {
     # first determine the hypotheses
-    f <- dataset[[.v(fact)]]
-    f <- f[!is.na(f)]
+    f    <- dataset[[.v(fact)]]
+    f    <- as.factor(f[!is.na(f)])
+    nlev <- nlevels(f)
 
     if (options$counts != "") {
       # convert to "regular" fact
       c <- dataset[[.v(options$counts)]]
-      if (length(c) != length(levels(f))) {
-        .quitAnalysis("Invalid counts: the number of counts does not equal the number of categories. Check your count dataset!")
-      }
+      c <- c[!is.na(c)]
+      # Check for invalid counts
+      .checkCountsMultinomial(c, nlev)
       f <- factor(rep(f, c), levels = levels(f))
     }
 
     t <- table(f)
-    nlev <- nlevels(f)
 
     hyps <- .multinomialHypotheses(dataset, options, nlev)
 
@@ -519,10 +519,10 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
       base_breaks_y(ciDf$upperCI) +
       ggplot2::xlab(options$factor) +
       ggplot2::ylab(yname)
-      
+
     p <- JASPgraphs::themeJasp(p, horizontal = TRUE, xAxis = FALSE)
-    
-    
+
+
 
     # create plot object
     content <- .writeImage(width = options$plotWidth,
@@ -591,13 +591,14 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     rownames(eProps) <- fact
 
     # Reorder to match factor levels
-    eProps <- data.frame(eProps[levels(fact),])
+    eProps           <- data.frame(eProps[levels(fact),])
     colnames(eProps) <- options$exProbVar
     rownames(eProps) <- levels(fact)
 
-    if (nlevels != nrow(eProps)) {
-      stop("Expected counts do not match number of levels of factor!")
-    }
+    # Exclude missing values
+    eProps           <- na.omit(eProps)
+    # Check for invalid expected counts
+    .checkCountsMultinomial(eProps[[1]], nlevels, expectedCounts = TRUE)
 
     return(eProps)
 
@@ -618,5 +619,27 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   } else {
 
     stop("No expected counts entered!")
+  }
+}
+
+
+.checkCountsMultinomial <- function(counts, nlevels, expectedCounts = FALSE){
+
+  if(expectedCounts){
+    variable <- "Invalid expected counts: "
+  } else {
+    variable <- "Invalid counts: "
+  }
+
+  if (nlevels != length(counts)) {
+    .quitAnalysis(paste0(variable, "variable does not match the number of levels of factor."))
+  }
+
+  if(any(is.infinite(counts))) {
+    .quitAnalysis(paste0(variable, "variable contains infinity."))
+  }
+
+  if(any(counts < 0)){
+    .quitAnalysis(paste0(variable, "variable contains negative values"))
   }
 }

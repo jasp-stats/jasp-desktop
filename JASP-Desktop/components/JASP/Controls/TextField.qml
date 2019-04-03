@@ -35,6 +35,7 @@ JASPControl
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
+	property alias	defaultValue:		control.text
 	property int	fieldWidth:			Theme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
@@ -50,13 +51,24 @@ JASPControl
 	signal textEdited()
 	signal pressed()
 	signal released()
+
+	
+	function keyReturnPressed()
+	{
+		if (activeFocus)
+		{
+			if (KeyNavigation.tab)
+				KeyNavigation.tab.forceActiveFocus();
+		}
+		editingFinished();
+	}
 	
 	Component.onCompleted:
 	{
 		if (!beforeLabel.text && textField.text)
 			beforeLabel.text = textField.text;
 		
-		control.editingFinished.connect(editingFinished);
+		control.editingFinished.connect(keyReturnPressed);
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
 		control.released.connect(released);        
@@ -88,6 +100,7 @@ JASPControl
 			text:					textField.value
 			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
+			focus:					true
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
 			Layout.leftMargin:		beforeLabel.visible ? 0 : -labelSpacing
 			
@@ -108,8 +121,8 @@ JASPControl
 				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
 				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
-				border.width: 1
-				border.color: "transparent"
+				border.width: 2
+				border.color: control.acceptableInput ? "transparent" : Theme.red
 				anchors.centerIn: parent
 				opacity: debug ? .3 : 1
 				visible: textField.useExternalBorder

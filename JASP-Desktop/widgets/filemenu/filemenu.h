@@ -53,10 +53,11 @@ class FileMenu : public QObject
 	Q_PROPERTY(ResourceButtonsVisible * resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		)
 
 public:
+
 	enum FileLocation { Recent = 0, Current, ThisComputer, Osf, Examples, CountLocations };
 
 	Q_ENUM(FileMenuListItemType)
-	
+
 	explicit FileMenu(QObject *parent = nullptr);
 	virtual ~FileMenu() {}
 	
@@ -110,7 +111,6 @@ private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }
 	void dataSetOpenCurrentRequestHandler(QString path);
 	void dataSetIORequestHandler(FileEvent *event);
-	void dataSetOpenExampleRequestHandler(QString path);
 
 private:
 			bool checkSyncFileExists(const QString &path);

@@ -27,7 +27,7 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent)
 {
 	_readOnly = false;
-	_chainedTo = NULL;
+	_chainedTo = nullptr;
 	_operation = fileMode;
 	_last_error = "Unkown error";
 	switch (fileMode)
@@ -45,13 +45,13 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 		_exporter = new JASPExporter();
 		break;
 	default:
-		_exporter = NULL;
+		_exporter = nullptr;
 	}
 }
 
 FileEvent::~FileEvent()
 {
-	if (_exporter != NULL) {
+	if (_exporter != nullptr) {
 		delete _exporter;
 	}
 }
@@ -70,14 +70,14 @@ bool FileEvent::setPath(const QString &path)
 
     if (filetype == Utils::unknown)
 	{
-		if (_exporter != NULL) {
+		if (_exporter != nullptr) {
 			filetype = _exporter->getDefaultFileType();
 			_path.append('.');
 			_path.append(Utils::getFileTypeString(filetype));
 		}
 	}
 
-	if (_exporter != NULL)
+	if (_exporter != nullptr)
 	{
 		result = _exporter->isFileTypeAllowed(filetype);
 		if (result)

@@ -26,7 +26,7 @@
 BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QObject(form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	QQuickItem::connect(item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
 }
@@ -60,6 +60,11 @@ Option *BoundQMLSlider::createOption()
 bool BoundQMLSlider::isOptionValid(Option *option)
 {
 	return dynamic_cast<OptionNumber*>(option) != nullptr;
+}
+
+bool BoundQMLSlider::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::realValue || optionValue.type() == Json::intValue;
 }
 
 void BoundQMLSlider::sliderMovedSlot()

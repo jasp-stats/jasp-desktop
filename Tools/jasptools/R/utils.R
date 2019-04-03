@@ -19,10 +19,14 @@
 }
 
 .initRunEnvironment <- function(envir, dataset, ...) {
+  # source all the R analysis files
+  if (.isModule())
+    .sourceModuleCode(envir)
+  else
+    .sourceDir(.getPkgOption("common.r.dir"), envir)
   .setInternal("envir", envir) # envir in which the analysis is executed
   .setInternal("dataset", dataset) # dataset to be found later when it needs to be read
   .libPaths(c(.getPkgOption("pkgs.dir"), .libPaths())) # location of JASP's R packages
-  .sourceDir(.getPkgOption("r.dir"), envir) # source all the R analysis files
   .exportS3Methods(envir) # ensure S3 methods can be registered to the associated generic functions
   .setRCPPMasks(...) # set the rbridge globals to the value run is called with
 }
@@ -65,38 +69,30 @@
   }
 }
 
-.sourceDir <- function(path, envir) {
-  for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
-    source(file.path(path, nm), local=envir)
+.sourceModuleCode <- function(envir) {
+  .sourceDir(.getPkgOption("module.dir"), envir)
+  rFiles <- c("base64", "common", "commonerrorcheck", "commonmessages", "exposeUs")
+  .sourceDir(.getPkgOption("common.r.dir"), envir, fileNames=rFiles)
+}
+
+
+.sourceDir <- function(paths, envir, fileNames=NULL) {
+  for (i in 1:length(paths)) {
+    rFilePaths <- list.files(paths[i], pattern = "\\.[RrSsQq]$", recursive=TRUE)
+    for (rFilePath in rFilePaths) {
+      rFileName <- tools::file_path_sans_ext(basename(rFilePath))
+      if (! is.null(fileNames) && ! rFileName %in% fileNames)
+        next
+      source(file.path(paths[i], rFilePath), local=envir)
+    }
   }
 }
 
 .usesJaspResults <- function(analysis) {
   qmlFile <- .getQMLFile(analysis)
-  if (file.exists(qmlFile)) {
-    .jaspResultsExistsInQMLFile(qmlFile)
-  } else {
-    jsonFile <- .getJSONFile(analysis)
-    if (file.exists(jsonFile)) {
-      .jaspResultsExistsInJSONFile(jsonFile)
-    } else {
-      stop("Could not find the options file for analysis ", analysis)
-    }
-  }
-}
-
-.jaspResultsExistsInJSONFile <- function(file) {
-  analysisJSON <- try(jsonlite::read_json(file), silent=TRUE)
-  if (inherits(analysisJSON, "try-error")) {
-    stop("The JSON file for the analysis you supplied could not be read.
-         Please ensure that (1) its name matches the main R function.")
-  }
-  
-  jaspResults <- TRUE
-  if ("jaspResults" %in% names(analysisJSON)) {
-    jaspResults <- analysisJSON$jaspResults
-  }
-  return(jaspResults)
+  if (!is.null(qmlFile))
+    return(.jaspResultsExistsInQMLFile(qmlFile))
+  stop("Could not find the options file for analysis ", analysis)
 }
 
 .jaspResultsExistsInQMLFile <- function(file) {
@@ -192,27 +188,6 @@
   suppressWarnings(R.utils::gcDLLs())
 }
 
-# not used. Could possibly make pkg unloading more targeted, but does not include pkgs used in other (linked) analyses
-.getAnalysisPkgs <- function(analysis, base=FALSE) {
-  analysis <- .validateAnalysis(analysis)
-  file <- file.path(.getPkgOption("r.dir"), paste0(analysis, ".R"))
-  content <- readLines(file, warn=FALSE)
-  content <- gsub('#.*', "", content) # remove comments
-  matches <- stringr::str_match_all(content, '([a-zA-Z0-9.]{2,}(?<![.]))(?:::|:::)[a-zA-Z0-9._]+')
-  analysisPkgs <- unique(unlist(lapply(matches, function(match) match[, 2])))
-
-  if (! base) {
-    basePkgs <- utils::installed.packages(priority="high")
-    basePkgs <- basePkgs[basePkgs[, "Priority"] == "base", 1]
-    if (length(analysisPkgs) > 0)
-      analysisPkgs <- analysisPkgs[! analysisPkgs %in% basePkgs]
-  }
-
-  if (length(analysisPkgs) > 0)
-    return(analysisPkgs)
-  return(NULL)
-}
-
 .charVec2MixedList <- function(x) {
   x <- stringi::stri_escape_unicode(x)
   x <- gsub("\\\\u.{4}", "<unicode>", x)
@@ -230,14 +205,8 @@
 }
 
 collapseTable <- function(rows) {
-  if (! is.list(rows) || length(rows) == 0) {
-    if (.insideTestEnvironment()) {
-      errorMsg <- .getErrorMsgFromLastResults()
-      stop(paste("Tried retrieving table rows from results, but last run of jasptools exited with an error:", errorMsg))
-    } else {
-      stop("expecting input to be a list (with a list for each JASP table row)")
-    }
-  }
+  if (! is.list(rows) || length(rows) == 0)
+    stop("expecting input to be a list (with a list for each JASP table row)")
 
   x <- unname(unlist(rows))
   x <- .charVec2MixedList(x)
@@ -251,7 +220,10 @@ collapseTable <- function(rows) {
   }
 
   analysis <- tolower(analysis)
-  analyses <- list.files(.getPkgOption("r.dir"), pattern = "\\.[RrSsQq]$")
+  if (.isModule())
+    analyses <- list.files(.getPkgOption("module.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
+  else
+    analyses <- list.files(.getPkgOption("common.r.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   analyses <- gsub("\\.[RrSsQq]$", "", analyses)
   if (! analysis %in% analyses) {
     stop("Could not find the analysis. Please ensure that its name matches the main R function.")
@@ -272,16 +244,31 @@ collapseTable <- function(rows) {
 }
 
 .getErrorMsgFromLastResults <- function() {
-  errorMsg <- NULL
   lastResults <- .getInternal("lastResults")
   if (jsonlite::validate(lastResults))
     lastResults <- jsonlite::fromJSON(lastResults)
     
   if (is.null(lastResults) || !is.list(lastResults) || is.null(names(lastResults)))
-    return(errorMsg)
+    return(NULL)
   
-  if (lastResults[["status"]] == "exception" && is.list(lastResults[["results"]]))
-    errorMsg <- lastResults$results$errorMessage
-  
-  return(errorMsg)
+  if ((lastResults[["status"]] == "error" || lastResults[["status"]] == "exception") && is.list(lastResults[["results"]]))
+    return(.errorMsgFromHtml(lastResults$results$errorMessage))
+
+  return(NULL)
+}
+
+.isModule <- function() {
+  moduleDir <- .getPkgOption("module.dir")
+  if (dir.exists(moduleDir)) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+.errorMsgFromHtml <- function(html) {
+  parsedMsg <- gsub("<br>", " ", html, fixed=TRUE)
+  indexStackTrace <- unlist(gregexpr("<div class=stack-trace", parsedMsg, fixed=TRUE))[1]
+  if (indexStackTrace > -1)
+    parsedMsg <- substr(parsedMsg, 1, indexStackTrace - 1)
+  return(parsedMsg)
 }

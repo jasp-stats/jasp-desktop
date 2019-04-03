@@ -14,6 +14,9 @@ testAnalysis <- function(analysis) {
   analysis <- .validateAnalysis(analysis)
   root <- .getPkgOption("tests.dir")
   file <- file.path(root, paste0("test-", analysis, ".R"))
+  envirValue <- Sys.getenv("NOT_CRAN")
+  Sys.setenv("NOT_CRAN" = "true") # this is to prevent vdiffr from skipping plots
+  on.exit(Sys.setenv("NOT_CRAN" = envirValue))
   testthat::test_file(file)
 }
 
@@ -28,6 +31,9 @@ testAnalysis <- function(analysis) {
 #' @export testAll
 testAll <- function() {
   testDir <- .getPkgOption("tests.dir")
+  envirValue <- Sys.getenv("NOT_CRAN")
+  Sys.setenv("NOT_CRAN" = "true")
+  on.exit(Sys.setenv("NOT_CRAN" = envirValue))
   testthat::test_dir(testDir)
 }
 

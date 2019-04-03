@@ -29,12 +29,13 @@ Rectangle
 	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	color	: mice.pressed ? Theme.grayLighter : "transparent"
 
-			property alias	text		: innerText.text
-			property alias	source		: backgroundImage.source
-			property bool	enabled		: true
-			property string moduleName	: "???"
-			property string moduleTitle : "???"
-			property string ribbonTitle	: "???"
+	property alias	text		: innerText.text
+	property alias	source		: backgroundImage.source
+	property bool	enabled		: true
+	property string moduleName	: "???"
+	property string moduleTitle : "???"
+	property string ribbonTitle	: "???"
+	property bool showTitle: true
 	default property var	menu
 
 	signal clicked
@@ -48,24 +49,34 @@ Rectangle
 
 		Image
 		{
-			id		: backgroundImage
-			z		: 1
-			width	: (37 / 28) * height
-			height	: Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
-			visible	: ribbonButton.enabled
+			id:			backgroundImage
+			z:			1
+			width:		(37 / 28) * height
+			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
+			opacity:	ribbonButton.enabled ? 1 : 0.5
 
-			anchors.top					: parent.top
-			anchors.topMargin			: Theme.ribbonButtonPadding
-			anchors.horizontalCenter	: parent.horizontalCenter
+
+			anchors
+			{
+				top				: parent.top
+				topMargin		: Theme.ribbonButtonPadding
+				horizontalCenter: parent.horizontalCenter
+			}
+
 		}
 
-		Desaturate
+		Image
 		{
-			z:				2
-			anchors.fill	: backgroundImage
-			source			: backgroundImage
-			visible			: !ribbonButton.enabled
-			desaturation	: 0.95
+			id: menuIndicatior
+
+			anchors.left:		backgroundImage.right
+			anchors.leftMargin: 5
+			height:				0.3 * backgroundImage.height
+			width:				height
+			anchors.top:		backgroundImage.top
+			source:				"qrc:/icons/toolbutton-menu-indicator.svg"
+			opacity:			ribbonButton.enabled ? 1 : 0.5
+			visible:			ribbonButton.menu.rowCount() > 1
 		}
 
 		Text
@@ -91,22 +102,27 @@ Rectangle
 
 			onClicked		:
 			{
+				if (fileMenuModel.visible)	fileMenuModel.visible = false
+				if (modulesMenu.opened)		modulesMenu.opened  = false
 
-				if(fileMenuModel.visible) fileMenuModel.visible = false
-				if(modulesMenu.opened)		modulesMenu.opened  = false
-
-				if(ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisEntry(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+				if (ribbonButton.menu.rowCount() === 1)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
 				else
 				{
-					customMenu.functionCall = function menuItemClicked(index)
-						{
-							var analysis = customMenu.model.getFunctionName(index);
-							ribbonModel.analysisClickedSignal(analysis, ribbonButton.ribbonTitle, ribbonButton.moduleName)
-							customMenu.visible = false;
-						}
+					var functionCall = function (index)
+					{
+						var analysisName = customMenu.props['model'].getAnalysisName(index);
+						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
+						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						customMenu.visible = false;
+					}
 
-					customMenu.showMenu(ribbonButton, ribbonButton.menu);
+					var props = {
+						"model"			: ribbonButton.menu,
+						"functionCall"	: functionCall
+					};
+
+					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
 				}
 			}
 		}
@@ -119,7 +135,7 @@ Rectangle
 		border.color:				Theme.uiBorder
 		border.width:				1
 		color:						Theme.uiBackground
-		visible:					mice.containsMouse && !mice.pressed
+		visible:					showTitle && (mice.containsMouse && !mice.pressed)
 		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
 		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
 

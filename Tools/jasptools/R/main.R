@@ -143,6 +143,8 @@ view <- function(results) {
   insertedJS <- paste0(
     "<script>
       $(document).ready(function() {
+        window.jasp = { welcomeScreenIsCleared: function() {} }
+        window.clearWelcomeScreen()
         window.analysisChanged(", content, ")
       })
     </script></body>")
@@ -226,7 +228,7 @@ view <- function(results) {
 #' # If we want R functions sourced to the global env
 #' jasptools::run("BinomialTest", "debug.csv", options, sideEffects="globalEnv")
 #'
-#' # Or additionally have the .libPaths() set to JASP<e2><80><99>s R packages
+#' # Or additionally have the .libPaths() set to the JASP R packages
 #' jasptools::run("BinomialTest", "debug.csv", options, sideEffects=c("globalEnv", "libPaths"))
 #'
 #' @export run
@@ -274,8 +276,11 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     })
   }
   
-  usesJaspResults <- .usesJaspResults(name)
   .initRunEnvironment(envir = envir, dataset = dataset, perform = perform)
+
+  if (! name %in% names(envir))
+    stop("Could not find the R analysis function ", name, ".\n",
+         "If you're trying to run the R script of an analysis from a module you have to set the module directory with setPkgOption(\"module.dir\", dir/to/module)")
   
   possibleArgs <- list(
     name = name,
@@ -290,8 +295,11 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   usesJaspResults <- .usesJaspResults(name)
   if (usesJaspResults) {
-    loadNamespace('jaspResults')
-    jaspResults::initJaspResults()
+    
+    if (! "jaspResults" %in% .packages())
+      suppressMessages(library(jaspResults))
+    else
+      suppressMessages(jaspResults::initJaspResults())
     
     runFun <- "runJaspResults"
 

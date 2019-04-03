@@ -45,6 +45,34 @@ ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* paren
 			_extraColumns[name] = new ExtraColumnType(name, type, controlColumn);
 			_names.push_back(name);
 		}
+
+
+		BoundQMLItem* boundItem = nullptr;
+		if (type == "CheckBox" || type == "Switch")
+			boundItem = new BoundQMLCheckBox(controlColumn,	_assignedModel->listView()->form());
+		else if (type == "ComboBox" || type == "Dropdown")
+			boundItem = new BoundQMLComboBox(controlColumn,	_assignedModel->listView()->form());
+		else if (type == "TextField" || type == "IntegerField" || type == "DoubleField" || type == "PercentField")
+		{
+			QString inputType = "string";
+			if (type == "IntegerField")
+				inputType = "integer";
+			else if (type == "DoubleField")
+				inputType = "double";
+			else if (type == "PercentField")
+				inputType = "percent";
+
+			controlColumn["inputType"] = inputType;
+			boundItem = new BoundQMLTextInput(controlColumn,  _assignedModel->listView()->form());
+		}
+		else
+			std::cout << "Control type " << type.toStdString() << " not supported in TableView" << std::flush;
+
+		if (boundItem)
+		{
+			boundItem->setUp();
+			_boundItems[name] = boundItem;
+		}
 	}
 }
 
@@ -53,6 +81,9 @@ QHash<int, QByteArray> ListModelExtraControls::roleNames() const
 	QHash<int, QByteArray> roles;
 	roles[NameRole] = "name";
 	roles[PathRole] = "path";
+	roles[TypeRole] = "type";
+	roles[PropertiesRole] = "properties";
+
 	return roles;
 }
 
@@ -66,14 +97,14 @@ QVariant ListModelExtraControls::data(const QModelIndex &index, int role) const
 	int row = index.row();
 
 	if (role == Qt::DisplayRole || role == ListModelExtraControls::NameRole)
-	{
 		return QVariant(_extraColumns[_names[row]]->name);
-	}	
 	else if (role == ListModelExtraControls::PathRole)
-	{
 		return QVariant(_extraColumns[_names[row]]->path);
-	}
-	
+	else if (role == ListModelExtraControls::TypeRole)
+		return QVariant(_extraColumns[_names[row]]->type);
+	else if (role == ListModelExtraControls::PropertiesRole)
+		return QVariant(_extraColumns[_names[row]]->properties);
+
 	return QVariant();
 }
 
@@ -82,48 +113,29 @@ void ListModelExtraControls::controlLoaded(const QString& name, QVariant item)
 	QQuickItem *quickItem = qobject_cast<QQuickItem *>(item.value<QObject *>());
 	if (quickItem)
 	{
-		ExtraColumnType* extraColumn = _extraColumns[name];
-		if (extraColumn)
-		{			
-			if (_boundItems.contains(name))
-			{
-				BoundQMLItem* boundItem = _boundItems[name];
-				boundItem->resetQMLItem(quickItem);
-			}
-			else
-			{
-				QMapIterator<QString, QVariant> i(extraColumn->properties);
-				while (i.hasNext())
-				{
-					i.next();
-					quickItem->setProperty(i.key().toStdString().c_str(), i.value());
-				}
-				qmlControlType controlType = qmlControlTypeFromQString(extraColumn->type);
-				BoundQMLItem* boundItem = nullptr;
-				switch(controlType)
-				{
-				case qmlControlType::CheckBox:		//fallthrough:
-				case qmlControlType::Switch:		boundItem = new BoundQMLCheckBox(quickItem,	_assignedModel->listView()->form());	break;
-				case qmlControlType::TextField:		boundItem = new BoundQMLTextInput(quickItem, _assignedModel->listView()->form());	break;
-				case qmlControlType::ComboBox:		boundItem = new BoundQMLComboBox(quickItem,	_assignedModel->listView()->form());	break;
-				default:
-					qDebug() << "Control type " << extraColumn->type << " not supported in TableView";
-				}
-				
-				if (boundItem)
-				{
-					boundItem->setUp();
-					_boundItems[name] = boundItem;
-				}
-	
-			}
-			
-			_assignedModel->controlLoaded(_colName, name);
+		if (_boundItems.contains(name))
+		{
+			BoundQMLItem* boundItem = _boundItems[name];
+			boundItem->resetQMLItem(quickItem);
 		}
 		else
-			_assignedModel->addError("Cannot find Extra column with name " + name);
+			std::cout << "controlLoaded: Cannot find bound item " << name.toStdString() << std::flush;
 	}
 	else
-		qDebug() << "Quick Item not found";
-	
+		std::cout << "Quick Item not found" << std::flush;
+
+}
+
+void ListModelExtraControls::controlDestroyed(const QString &name, QVariant item)
+{
+	QQuickItem *quickItem = qobject_cast<QQuickItem *>(item.value<QObject *>());
+	if (_boundItems.contains(name))
+	{
+		BoundQMLItem* boundItem = _boundItems[name];
+		if (boundItem->item() == quickItem)
+			boundItem->resetQMLItem(nullptr);
+	}
+	else
+		std::cout << "controlDestroyed: Cannot find bound item " << name.toStdString() << std::flush;
+
 }

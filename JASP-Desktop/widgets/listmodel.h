@@ -30,7 +30,8 @@ class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
-	enum ListModelRoles {
+	enum ListModelRoles
+	{
         NameRole = Qt::UserRole + 1,
 		TypeRole,
 		ColumnTypeRole,
@@ -38,37 +39,40 @@ public:
     };
 
 	ListModel(QMLListView* listView);
-	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
+	
+	QHash<int, QByteArray> roleNames()										const override;
+	int			rowCount(const QModelIndex &parent = QModelIndex())			const override;
+	int			columnCount(const QModelIndex &parent = QModelIndex())		const override { return 1; }
+	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;	
 
-	QMLListView* listView() const							{ return _listView; }
-	const QString& name() const								{ return _listView->name(); }
-	virtual const Terms& terms() const						{ return _terms; }
-	bool areTermsVariables() const							{ return _areTermsVariables; }
-	const QString& getItemType() const						{ return _itemType; }	
-	void setTermsAreVariables(bool areVariables)			{ _areTermsVariables = areVariables; }
-	void setItemType(QString type)							{ _itemType = type; }
+	QMLListView*			listView() const								{ return _listView; }
+	const QString&			name() const									{ return _listView->name(); }
+	virtual const Terms&	terms(const QString& what = QString()) const	{ return _terms; }
+	bool					areTermsVariables() const						{ return _areTermsVariables; }
+	bool					areTermsInteractions() const					{ return _areTermsInteractions; }
+	virtual QString			getItemType(const Term& term) const				{ return _itemType; }	
+	void					setTermsAreVariables(bool areVariables)			{ _areTermsVariables = areVariables; }
+	void					setTermsAreInteractions(bool interactions)		{ _areTermsInteractions = interactions; }
+	void					setItemType(QString type)						{ _itemType = type; }
+	void					addError(const QString& error) const;
+	virtual void			refresh();
+	virtual void			initTerms(const Terms &terms);
+	virtual Terms			getSourceTerms();
+	virtual void			endResetModel()									{ return QAbstractTableModel::endResetModel(); } // Make endResetModel virtual
 
-	void addError(const QString& error) const;
-
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE { return 1; }
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
-
-	virtual void refresh();
-	virtual void initTerms(const Terms &terms);
-	virtual Terms getSourceTerms();
 
 signals:
-	void modelChanged(Terms* added = NULL, Terms* removed = NULL);
+	void modelChanged(Terms* added = nullptr, Terms* removed = nullptr);
 
 public slots:	
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 protected:
-	QMLListView* _listView;
-	QString _itemType;
-	Terms _terms;
-	bool _areTermsVariables;	
+	QMLListView*	_listView;
+	QString			_itemType;
+	Terms			_terms;
+	bool			_areTermsVariables;
+	bool			_areTermsInteractions = false;
 };
 
 #endif // LISTMODEL_H

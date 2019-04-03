@@ -20,7 +20,7 @@
 #define BOUNDQMLLISTVIEWTERMS_H
 
 #include "boundqmllistviewdraggable.h"
-#include "listmodeltermsassigned.h"
+#include "listmodelassignedinterface.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionstable.h"
 
@@ -29,33 +29,41 @@ class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form, bool interaction = false);
 	
-	virtual ListModel* model() OVERRIDE	{ return _variablesModel; }
-	virtual Option* boundTo() OVERRIDE
+	ListModel*	model()										override { return _termsModel; }
+	Option*		boundTo()									override
 	{
-		if (_hasExtraControls)
+		if (_hasExtraControls || _termsModel->areTermsInteractions())
 			return _optionsTable;
 		else
 			return _optionVariables; 
 	}	
 	
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
-	
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;	
+	void		bindTo(Option *option)						override;
+	void		unbind()									override;
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;
+	bool		isJsonValid(const Json::Value& optionValue) override;
+	void		setTermsAreInteractions()					override;	
+
+protected:
+	virtual void initExtraControlOptions(const QString &colName, Options *options);
 	
 protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
+	void modelChangedHandler() override;
 	void bindExtraControlOptions();
-
-private:
-	OptionVariables* _optionVariables;
-	OptionsTable* _optionsTable;
-	ListModelTermsAssigned* _variablesModel;
-	bool _singleItem		= false;
 	
+private:
+	OptionVariables*				_optionVariables;
+	OptionsTable*					_optionsTable;
+	ListModelAssignedInterface*		_termsModel;
+	bool							_singleItem		= false;
+	
+	void extraOptionsChangedSlot(Option *option);
+	void updateNuisances(bool checked);
+
+	void _fillOptionsMap(QMap<std::string, Options*>& optionsMap);
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

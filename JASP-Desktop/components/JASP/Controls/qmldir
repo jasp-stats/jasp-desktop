@@ -1,6 +1,7 @@
 module JASP.Controls
 AssignButton          1.0 AssignButton.qml
 AssignedVariablesList 1.0 AssignedVariablesList.qml
+AvailableVariablesList 1.0 AvailableVariablesList.qml
 Button                1.0 Button.qml
 CheckBox              1.0 CheckBox.qml
 ColumnLayout          1.0 ColumnLayout.qml
@@ -8,6 +9,7 @@ ComboBox              1.0 ComboBox.qml
 DoubleField           1.0 DoubleField.qml
 DropDown              1.0 ComboBox.qml
 ExpanderButton        1.0 ExpanderButton.qml
+Section               1.0 ExpanderButton.qml
 Form                  1.0 Form.qml
 GridLayout            1.0 GridLayout.qml
 Group	              1.0 GroupBox.qml
@@ -29,3 +31,4 @@ TextArea              1.0 TextArea.qml
 VariablesForm         1.0 VariablesForm.qml
 VariablesList         1.0 VariablesList.qml
 ExtraControlColumn    1.0 ExtraControlColumn.qml
+ComputedColumnField   1.0 ComputedColumnField.qml

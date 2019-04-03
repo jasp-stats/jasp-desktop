@@ -21,7 +21,7 @@
 #include <QtCore/qglobal.h>
 
 //unix use same compiler so no need for dll-hoops to jump through
-#ifdef __WIN32__
+#ifdef _WIN32
 #if defined(JASP_R_INTERFACE_LIBRARY)
 #  define RBRIDGE_TO_JASP_INTERFACE Q_DECL_EXPORT
 #else
@@ -31,7 +31,7 @@
 #define RBRIDGE_TO_JASP_INTERFACE
 #endif
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #define STDCALL __stdcall
 #else
 #define STDCALL
@@ -122,12 +122,13 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCode(const char *rCo
 RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_runScript(const char * scriptCode);
+RBRIDGE_TO_JASP_INTERFACE const char *	STDCALL jaspRCPP_runScriptReturnString(const char * scriptCode);
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getLastErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 
-#ifndef __WIN32__
+#ifndef _WIN32
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getRConsoleOutput();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_clearRConsoleOutput();
 #endif

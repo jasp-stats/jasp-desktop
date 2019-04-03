@@ -241,7 +241,7 @@ void jaspTable::addColumnsFromList(Rcpp::List newData)
 	extractRowNames(newData, true);
 
 	for(int col=0; col<newData.size(); col++)
-		addOrSetColumnInData(jaspJson::RcppVector_to_VectorJson((Rcpp::RObject)newData[col]), localColNames.size() > col ? localColNames[col] : "");
+		addOrSetColumnInData(jaspJson::RcppVector_to_VectorJson((Rcpp::RObject)newData[col], false), localColNames.size() > col ? localColNames[col] : "");
 }
 
 ///Logically we must assume that each entry in the list is a single element vector
@@ -256,7 +256,7 @@ void jaspTable::setColumnFromList(Rcpp::List column, int colIndex)
 
 	for(int row=0; row<column.size(); row++)
 	{
-		std::vector<Json::Value> jsonVec = jaspJson::RcppVector_to_VectorJson((Rcpp::RObject)column[row]);
+		std::vector<Json::Value> jsonVec = jaspJson::RcppVector_to_VectorJson((Rcpp::RObject)column[row], false);
 		_data[colIndex].push_back(jsonVec.size() > 0 ? jsonVec[0u] : Json::nullValue);
 	}
 }

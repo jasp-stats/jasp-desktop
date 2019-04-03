@@ -27,6 +27,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
 	}
 
@@ -52,7 +53,7 @@ Form
 	RadioButtonGroup
 	{
 		name: "hypothesis"
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		RadioButton { value: "correlated";				label: qsTr("Correlated"); checked: true	}
 		RadioButton { value: "correlatedPositively";	label: qsTr("Correlated positively")		}
 		RadioButton { value: "correlatedNegatively";	label: qsTr("Correlated negatively")		}
@@ -77,7 +78,7 @@ Form
 		DoubleField { name: "priorWidth"; label: qsTr("Stretched beta prior width"); defaultValue: 1.0; max: 2; decimals: 1 }
 	}
 
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Options")
 		

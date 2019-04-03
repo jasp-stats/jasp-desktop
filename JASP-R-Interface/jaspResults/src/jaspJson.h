@@ -1,6 +1,6 @@
 #pragma once
 #include "jaspObject.h"
-
+#include <limits>
 
 class jaspJson : public jaspObject
 {
@@ -31,7 +31,7 @@ public:
 
 	template<int RTYPE>	static Json::Value RObject_to_JsonValue(Rcpp::Vector<RTYPE>	obj)
 	{
-		Json::Value val(Json::nullValue);
+		Json::Value val("");
 
 		if(obj.size() == 1)
 			val = RVectorEntry_to_JsonValue(obj, 0);
@@ -46,8 +46,8 @@ public:
 		return val;
 	}
 
-	template<int RTYPE> static inline Json::Value RVectorEntry_to_JsonValue(Rcpp::Vector<RTYPE> obj, int row)				{ return Json::nullValue; }
-	template<int RTYPE> static inline Json::Value RMatrixColumnEntry_to_JsonValue(Rcpp::MatrixColumn<RTYPE> obj, int row)	{ return Json::nullValue; }
+	template<int RTYPE> static inline Json::Value RVectorEntry_to_JsonValue(Rcpp::Vector<RTYPE> obj, int row)				{ return ""; }
+	template<int RTYPE> static inline Json::Value RMatrixColumnEntry_to_JsonValue(Rcpp::MatrixColumn<RTYPE> obj, int row)	{ return ""; }
 
 	std::string dataToString(std::string prefix) override { return jsonToPrefixedStrings(prefix + "\t"); }
 
@@ -58,7 +58,7 @@ public:
 	static Json::Value VectorJson_to_ArrayJson(std::vector<Json::Value> vec);
 	static std::vector<Json::Value> RList_to_VectorJson(Rcpp::List obj);
 
-	static std::vector<Json::Value> RcppVector_to_VectorJson(Rcpp::RObject obj, bool throwError=true)
+	static std::vector<Json::Value> RcppVector_to_VectorJson(Rcpp::RObject obj, bool throwError=false)
 	{
 		if(Rcpp::is<Rcpp::NumericVector>(obj))			return RcppVector_to_VectorJson<REALSXP>((Rcpp::NumericVector)		obj);
 		else if(Rcpp::is<Rcpp::LogicalVector>(obj))		return RcppVector_to_VectorJson<LGLSXP>((Rcpp::LogicalVector)		obj);
@@ -68,7 +68,7 @@ public:
 		else if(Rcpp::is<Rcpp::List>(obj))				return RList_to_VectorJson((Rcpp::List)								obj);
 		else if(throwError) Rf_error("JASPjson::RcppVector_to_VectorJson received an SEXP that is not a Vector of some kind.");
 
-		return std::vector<Json::Value>();
+		return std::vector<Json::Value>({""});
 	}
 
 
@@ -109,16 +109,27 @@ protected:
 	Json::Value _json;
 };
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<INTSXP>(Rcpp::Vector<INTSXP> obj, int row)					{ return (int)(obj[row]) == NA_INTEGER	? Json::nullValue : Json::Value((int)(obj[row]));			}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<INTSXP>(Rcpp::MatrixColumn<INTSXP> obj, int row)		{ return (int)(obj[row]) == NA_INTEGER	? Json::nullValue : Json::Value((int)(obj[row]));			}
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<INTSXP>(Rcpp::Vector<INTSXP> obj, int row)					{ return (int)(obj[row]) == NA_INTEGER	? "" : Json::Value((int)(obj[row]));			}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<INTSXP>(Rcpp::MatrixColumn<INTSXP> obj, int row)		{ return (int)(obj[row]) == NA_INTEGER	? "" : Json::Value((int)(obj[row]));			}
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<REALSXP>(Rcpp::Vector<REALSXP> obj, int row)					{ return R_IsNA((double)(obj[row]))		? Json::nullValue : Json::Value((double)(obj[row]));		}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<REALSXP>(Rcpp::MatrixColumn<REALSXP> obj, int row)		{ return R_IsNA((double)(obj[row]))		? Json::nullValue : Json::Value((double)(obj[row]));		}
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<LGLSXP>(Rcpp::Vector<LGLSXP> obj, int row)					{ return (bool)(obj[row]) == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<LGLSXP>(Rcpp::MatrixColumn<LGLSXP> obj, int row)		{ return (bool)(obj[row]) == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<LGLSXP>(Rcpp::Vector<LGLSXP> obj, int row)					{ return (bool)(obj[row]) == NA_LOGICAL	? Json::nullValue : Json::Value((bool)(obj[row]));			}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<LGLSXP>(Rcpp::MatrixColumn<LGLSXP> obj, int row)		{ return (bool)(obj[row]) == NA_LOGICAL	? Json::nullValue : Json::Value((bool)(obj[row]));			}
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<STRSXP>(Rcpp::Vector<STRSXP> obj, int row)					{ return obj[row] == NA_STRING			? "" : Json::Value((std::string)(obj[row]));	}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(Rcpp::MatrixColumn<STRSXP> obj, int row)		{ return obj[row] == NA_STRING			? "" : Json::Value((std::string)(obj[row]));	}
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<STRSXP>(Rcpp::Vector<STRSXP> obj, int row)					{ return obj[row] == NA_STRING			? Json::nullValue : Json::Value((std::string)(obj[row]));	}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(Rcpp::MatrixColumn<STRSXP> obj, int row)		{ return obj[row] == NA_STRING			? Json::nullValue : Json::Value((std::string)(obj[row]));	}
+
+#define TO_INFINITY_AND_BEYOND																					\
+{																												\
+	double val = static_cast<double>(obj[row]);																	\
+	return	R_IsNA(val) ? "" :																					\
+				R_IsNaN(val) ? "NaN" :																			\
+					val == std::numeric_limits<double>::infinity() ? "\u221E" :									\
+						val == -1 * std::numeric_limits<double>::infinity() ? "-\u221E"  :						\
+							Json::Value((double)(obj[row]));													\
+}
+
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<REALSXP>(Rcpp::Vector<REALSXP> obj, int row)				TO_INFINITY_AND_BEYOND
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<REALSXP>(Rcpp::MatrixColumn<REALSXP> obj, int row)	TO_INFINITY_AND_BEYOND
 
 RCPP_EXPOSED_CLASS_NODECL(jaspJson)

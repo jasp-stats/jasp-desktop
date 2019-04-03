@@ -71,6 +71,7 @@ To build JASP follow the next steps:
 	
 	Warning in advance:  
 Because the jasp-required-files folder contains binary files as well as R packages with text files it is necessary that git performs a checkout or commit without changing the line endings. Some packages might generate MD5 checksum errors if line endings are changed. It is possible to change this behavior of git configuration per repository. For more information on this subject see https://help.github.com/articles/dealing-with-line-endings/  
+(To use a repostory specific setting for this : in the jasp-required-files folder type: \>git config core.autocrlf false)
 
 	\> cd \<JASP\>\jasp-required-files  
 	\> git checkout Windows  

@@ -163,6 +163,16 @@ void RibbonModel::setModuleEnabled(int ribbonButtonModelIndex, bool enabled)
 	}
 }
 
+Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string& moduleName, const std::string& analysisName)
+{
+	Modules::AnalysisEntry* analysis = nullptr;
+	RibbonButtonModel* ribbonButton = ribbonButtonModel(moduleName);
+	if (ribbonButton)
+		analysis = ribbonButton->getAnalysis(analysisName);
+	
+	return analysis;
+}
+
 void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)
 {
 	if(ribbonButtonModelIndex < 0)
@@ -192,11 +202,11 @@ void RibbonModel::ribbonButtonModelChanged(RibbonButtonModel* model)
 	emit dataChanged(index(row), index(row));
 }
 
-void RibbonModel::moduleLoadingSucceeded(const std::string & moduleName)
+void RibbonModel::moduleLoadingSucceeded(const QString & moduleName)
 {
 	if(moduleName == "*")
 		return;
 
-	RibbonButtonModel * ribMod = ribbonButtonModel(moduleName);
+	RibbonButtonModel * ribMod = ribbonButtonModel(moduleName.toStdString());
 	ribMod->setEnabled(true);
 }

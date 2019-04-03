@@ -77,14 +77,21 @@ bool BoundQMLListViewMeasuresCells::isOptionValid(Option *option)
 	return dynamic_cast<OptionVariables*>(option) != nullptr;
 }
 
+bool BoundQMLListViewMeasuresCells::isJsonValid(const Json::Value &optionValue)
+{
+	bool ok = optionValue.type() == Json::arrayValue;
+
+	return ok;
+}
+
 
 void BoundQMLListViewMeasuresCells::setUp()
 {
 	BoundQMLListViewDraggable::setUp();
 	
-	for (ListModel* model : _sourceModels)
+	for (SourceType* sourceItem : _sourceModels)
 	{
-		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(model);
+		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model);
 		if (!factorsModel)
 			addError(tq("Source model of ") + name() + tq(" must be from a Factor List"));
 		addDependency(factorsModel->listView());
@@ -98,5 +105,7 @@ void BoundQMLListViewMeasuresCells::modelChangedHandler()
 	vector<string> terms;
 	for (const QString& variable : variables)
 		terms.push_back(variable.toStdString());
-	_boundTo->setValue(terms);
+	
+	if (_boundTo)
+		_boundTo->setValue(terms);
 }

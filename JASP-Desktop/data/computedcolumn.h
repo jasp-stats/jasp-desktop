@@ -77,7 +77,7 @@ private:
 											_error				= "",
 											_rCodeStripped		= "";
 			Json::Value						_constructorCode	= Json::objectValue;
-			Analysis						*_analysis			= NULL;
+			Analysis						*_analysis			= nullptr;
 
 	static	std::vector<std::string>		_allColumnNames;
 			std::set<std::string>			_dependsOnColumns;

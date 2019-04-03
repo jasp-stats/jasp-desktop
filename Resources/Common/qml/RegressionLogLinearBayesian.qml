@@ -26,6 +26,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "counts";	 title: qsTr("Counts (optional)");	singleVariable: true	}
 		AssignedVariablesList { name: "factors"; title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }
 	}
@@ -47,21 +48,20 @@ Form
 		DoubleField { name: "posteriorProbabilityCutOff";	label: qsTr("Posterior prob."); defaultValue: 0.1 ; max: 0.5 }
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
 			
-			availableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
-			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); listViewType: "Interaction" }
+			AvailableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
+			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); width: parent.width * 5 / 9; listViewType: "Interaction" }
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -104,7 +104,7 @@ Form
 		}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Advanced")
 		

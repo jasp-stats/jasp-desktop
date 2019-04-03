@@ -29,18 +29,15 @@
 
 #include <QDebug>
 
-Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data)
-	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(name), _version(version), _analyses(analyses)
+Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data)
+	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(title), _version(version), _analyses(analyses)
 {
 	if (data)
-	{
-		qDebug() << "Analysis data: " << QString::fromStdString(data->toStyledString());
-		if (data->type() == Json::arrayValue)
-			_options->init(*data);
-		else
-			_optionsDotJASP = *data;
-	}
+		// We cannot set the options now because it needs sometimes more information from the QML file
+		// (especially with OptionsTable that needs a template information).
+		_optionsDotJASP = *data;
 
+	setHelpFile("analyses/" + nameQ());
 	bindOptionHandlers();
 }
 
@@ -49,6 +46,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	  _moduleData(analysisEntry), _dynamicModule(_moduleData->dynamicModule()), _version(AppInfo::version), _analyses(analyses)
 {
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
+	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
 	bindOptionHandlers();
 }
 
@@ -89,6 +87,8 @@ void Analysis::setResults(const Json::Value & results, int progress)
 {
 	_results = results;
 	_progress = progress;
+	if (_analysisForm)
+		_analysisForm->clearErrors();
 	emit resultsChangedSignal(this);
 }
 

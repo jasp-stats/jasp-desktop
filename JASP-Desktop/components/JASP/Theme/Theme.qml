@@ -57,7 +57,7 @@ QtObject {
 	readonly property int itemPadding:					8	* uiScale
 	readonly property int minPanelWidth:				200 * uiScale
 	readonly property int resultWidth:					600	* uiScale
-	readonly property int formWidth:					600	* uiScale
+	readonly property int formWidth:					625	* uiScale
 	readonly property int formMargin:					10	* uiScale
 	readonly property int formExpanderHeaderHeight:		40  * uiScale
 
@@ -75,20 +75,23 @@ QtObject {
 	readonly property int sliderLength:					80  * uiScale
 	readonly property int switchHeight:					15  * uiScale
 	readonly property int shadowRadius:					10  * uiScale
-	readonly property int comboBoxHeight:				22  * uiScale
-	readonly property int textFieldWidth:				40  * uiScale
+	readonly property int scrollbarWidth:				8   * uiScale
+	readonly property int scrollbarBoxWidth:			12  * uiScale
+	readonly property int comboBoxHeight:				18  * uiScale
+	readonly property int textFieldWidth:				200 * uiScale
+	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
-	readonly property int jaspControlPadding:			5   * uiScale
+	readonly property int jaspControlPadding:			3   * uiScale
 	readonly property int ribbonButtonHeight:			72  * uiScale
 	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
 	readonly property int sliderHandleDiameter:			16  * uiScale
 	readonly property int defaultTextAreaHeight:		250 * uiScale
-	readonly property int jaspControlHighlightWidth:	Math.max(2, 4 * uiScale)
+	readonly property int jaspControlHighlightWidth:	Math.max(2, 3 * uiScale)
 	readonly property int defaultSingleItemListHeight:	49  * uiScale
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
@@ -98,7 +101,7 @@ QtObject {
 	readonly property real ribbonScaleHovered:			1.1
 
 	readonly property int menuItemHeight:               20  * uiScale
-	readonly property real menuSpacing:					2   * uiScale
+	readonly property real menuSpacing:					1   * uiScale
 	readonly property real menuPadding:					10  * uiScale
 
 	property font font

@@ -39,6 +39,7 @@ mkdir modules
 XCOPY %SOURCEDIR%\modules\%ARCH% /E /I modules\%ARCH%
 
 XCOPY %SOURCEDIR%\etc /E /I etc
+XCOPY %SOURCEDIR%\share /E /I share
 
 mkdir library
 cd library

@@ -20,7 +20,7 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #include <shlwapi.h>
 #include <shlobj.h>
@@ -59,7 +59,7 @@ string Dirs::appDataDir()
 	string dir;
 	filesystem::path pa;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	TCHAR buffer[MAX_PATH];
 
 	HRESULT ret = SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer);
@@ -114,7 +114,7 @@ string Dirs::tempDir()
 	string dir;
 	filesystem::path pa;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	TCHAR buffer[MAX_PATH];
 	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
 		throw Exception("App Data directory could not be retrieved");
@@ -168,7 +168,7 @@ string Dirs::exeDir()
 	if (p != "")
 		return p;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	HMODULE hModule = GetModuleHandleW(NULL);
 	WCHAR path[MAX_PATH];
 

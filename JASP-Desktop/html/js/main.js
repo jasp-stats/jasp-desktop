@@ -8,7 +8,7 @@ $(document).ready(function () {
 	var day = d.getDate();
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
-	
+
     if (typeof qt !== "undefined")
         var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
                 // now you retrieve your object
@@ -30,9 +30,6 @@ $(document).ready(function () {
 	var selectedAnalysis = null
 
 	var $intro = $("#intro")
-	var introVisible = true
-	var introHiding = false
-	var introHidingResultsWaiting = []
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
@@ -43,6 +40,12 @@ $(document).ready(function () {
         var zoomProcent = "" + Math.floor(zoom * 100) + "%"
         document.body.style.zoom = zoomProcent
     }
+
+	window.clearWelcomeScreen = function () {
+		$intro.hide();
+		$("#style").attr("href","css/theme-jasp.css");
+		jasp.welcomeScreenIsCleared();
+	}
 
 	window.reRenderAnalyses = function () {
 		analyses.reRender();
@@ -329,7 +332,7 @@ $(document).ready(function () {
 			else
 				params.cssValues[params.cssProperties[i]] = 'rgba(' + color + ', ' + alpha + ')';
 
-			if (params.count < params.divisions && alpha !== targetAlpha) 
+			if (params.count < params.divisions && alpha !== targetAlpha)
 				params.alphas[i] = alpha;
 			else
 				params.rates[i] = 0;
@@ -343,7 +346,7 @@ $(document).ready(function () {
 		params.baseTime += params.waitTime;
 
 		if (params.count === params.divisions)
-			params.callback();			
+			params.callback();
 	}
 
 
@@ -370,10 +373,17 @@ $(document).ready(function () {
 			hideInstructions()
 	}
 
+	window.removeAllAnalyses = function () {
+		window.unselect();
+		analyses.close();
+		// Initialize view to defaults and re-render - Clears titles, notebox, etc.
+		analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
+	}
+
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
-		
+
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
@@ -396,7 +406,7 @@ $(document).ready(function () {
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
-		
+
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 
@@ -434,30 +444,6 @@ $(document).ready(function () {
 
 	window.analysisChanged = function (analysis) {
 
-		if (introVisible) {
-
-			introHidingResultsWaiting.push(analysis)
-
-			if (introHiding == false) {
-
-				introHiding = true
-
-				$intro.hide(10, function () {
-					
-					$("#style").attr("href","css/theme-jasp.css")
-					introHiding = false
-					introVisible = false
-
-					introHidingResultsWaiting.reverse()
-					
-					while (introHidingResultsWaiting.length > 0)
-						window.analysisChanged(introHidingResultsWaiting.pop())
-				});
-			}
-
-			return
-		}
-
 		if (showInstructions)
 			$instructions.fadeIn(400, "easeOutCubic")
 
@@ -475,8 +461,8 @@ $(document).ready(function () {
 				window.menuObject = obj;
 			});
 
-			analyses.on("analyses:userDataChanged", function (key) {
-				jasp.updateUserData(-1, key);
+			analyses.on("analyses:userDataChanged", function () {
+				jasp.updateUserData();
 			});
 
 			analyses.render();
@@ -517,7 +503,7 @@ $(document).ready(function () {
                 jasp.analysisSaveImage(id, JSON.stringify(options))
 
             });
-            
+
             jaspWidget.on("editimage", function (id, options) {
 
                 jasp.analysisEditImage(id, JSON.stringify(options))
@@ -534,8 +520,9 @@ $(document).ready(function () {
 				jasp.removeAnalysisRequest(id);
 			});
 
-			jaspWidget.on("analysis:userDataChanged", function (id, key) {
-				jasp.updateUserData(id, key);
+			jaspWidget.on("analysis:userDataChanged", function () {
+
+				jasp.updateUserData();
 			});
 		}
 		else
@@ -543,7 +530,7 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 	}
-	
+
 	$("#results").on("click", ".stack-trace-selector", function() {
 		$(this).next(".stack-trace").slideToggle(function() {
 			var $selectedInner = $(this).parent().siblings(".jasp-analysis");

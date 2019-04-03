@@ -27,7 +27,6 @@
 #include "modules/analysismenumodel.h"
 
 
-
 class RibbonButtonModel : public QAbstractListModel
 {
 	Q_OBJECT
@@ -61,7 +60,8 @@ public:
 	std::string						moduleName()												const			{ return _moduleName;							}
 	QString							moduleNameQ()												const			{ return QString::fromStdString(_moduleName);	}
 	void							setRibbonEntries(Modules::RibbonEntries ribbonEntries);
-	Modules::DynamicModule		*	myDynamicModule();
+	Modules::DynamicModule*			myDynamicModule();
+	Modules::AnalysisEntry*			getAnalysis(const std::string& name);
 
 public slots:
 	void setRequiresDataset(bool requiresDataset);

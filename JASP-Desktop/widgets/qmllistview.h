@@ -30,24 +30,34 @@ class QMLListView : public QObject, public virtual QMLItem
 Q_OBJECT
 
 public:
+	struct SourceType {
+		QString name;
+		QString discard;
+		ListModel* model;
+		ListModel* discardModel;
+		QString modelUse;
+		SourceType(QString _name, QString _discard = "", QString _modelUse = "")
+			: name(_name), discard(_discard), model(nullptr), discardModel(nullptr), modelUse(_modelUse) {}
+	};
+	
 	QMLListView(QQuickItem* item, AnalysisForm* form);
 	
 	virtual ListModel* model() = 0;
-	virtual void setUp() OVERRIDE;	
+	void setUp() override;
+	void cleanUp() override;
 	
 	virtual void setTermsAreNotVariables();
+	virtual void setTermsAreInteractions();
 	
-	int variableTypesAllowed() const				{ return _variableTypesAllowed; }
-	int variableTypesSuggested() const				{ return _variableTypesSuggested; }	
-	const QList<ListModel*>& sourceModels() const		{ return _sourceModels; }
-	const QStringList& sourceModelsList() const		{ return _sourceModelsList; }
+	int variableTypesAllowed() const					{ return _variableTypesAllowed; }
+	int variableTypesSuggested() const					{ return _variableTypesSuggested; }	
+	const QList<SourceType*>& sourceModels() const		{ return _sourceModels; }
 
 protected slots:
 	virtual void modelChangedHandler() {} // Model has changed: change the options
 
 protected:
-	QStringList _sourceModelsList;
-	QList<ListModel*> _sourceModels;
+	QList<SourceType*> _sourceModels;
 	bool _needsSourceModels;
 	int _variableTypesAllowed;
 	int _variableTypesSuggested;

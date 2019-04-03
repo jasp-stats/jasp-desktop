@@ -24,7 +24,7 @@
 
 #ifdef __APPLE__
 #include <semaphore.h>
-#elif defined __WIN32__
+#elif defined _WIN32
 
 #undef Realloc
 #undef Free
@@ -85,7 +85,7 @@ private:
 #ifdef __APPLE__
 	sem_t* _semaphoreOut;
 	sem_t* _semaphoreIn;
-#elif defined __WIN32__
+#elif defined _WIN32
     HANDLE _semaphoreOut;
     HANDLE _semaphoreIn;
 

@@ -23,9 +23,8 @@ import JASP.Theme 1.0
 
 Item
 {
-	id							: menu
-	property var model			: undefined
-	property var functionCall	: undefined
+	id					: menu
+	property var props	: undefined
 
 	function resizeElements(newWidth)
 	{
@@ -52,7 +51,7 @@ Item
 		Repeater
 		{
 			id		: repeater
-			model	: menu.model
+            model	: menu.props === undefined ? undefined : menu.props["model"]
 
 			onItemAdded:
 			{
@@ -72,7 +71,13 @@ Item
 
 			delegate: Loader
 			{
-				sourceComponent	: displayText === "???" ? menuSeparator : menuDelegate
+				sourceComponent :
+				{
+					if (displayText === "???")
+						return menuSeparator
+
+					return menuDelegate
+				}
 
 				Component
 				{
@@ -93,8 +98,9 @@ Item
 							width	: menuItem.height - 5 * Theme.uiScale
 							color	: menuItem.color
 
-							anchors.left		: parent.left
-							anchors.leftMargin	: 3 * Theme.uiScale
+							anchors.left			: parent.left
+							anchors.leftMargin		: 3 * Theme.uiScale
+							anchors.verticalCenter	: parent.verticalCenter
 
 							Image
 							{
@@ -104,6 +110,7 @@ Item
 								fillMode	: Image.PreserveAspectFit
 							}
 						}
+
 						Text
 						{
 							id					: menuItemText
@@ -123,7 +130,7 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked:		functionCall(index, menu.model)
+							onClicked		: menu.props['functionCall'](index)
 						}
 					}
 				}

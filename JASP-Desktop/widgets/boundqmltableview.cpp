@@ -26,22 +26,23 @@
 #include <QQuickItem>
 #include <QTimer>
 
-BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form) 
+BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_boundTo = nullptr;
 	QString modelType = _item->property("modelType").toString();
-	
+	QString tableType = _item->property("tableType").toString();
+
 	if (modelType == "MultinomialChi2Model")
-		_tableModel	= _multinomialChi2TestModel = new ListModelMultinomialChi2Test(this);
-	
+		_tableModel	= _multinomialChi2TestModel = new ListModelMultinomialChi2Test(this, tableType);
+
 	QQuickItem::connect(item, SIGNAL(addColumn()), this, SLOT(addColumnSlot()));
 	QQuickItem::connect(item, SIGNAL(removeColumn(int)), this, SLOT(removeColumnSlot(int)));
 	QQuickItem::connect(item, SIGNAL(reset()), this, SLOT(resetSlot()));
 	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)), this, SLOT(itemChangedSlot(int, int, QString)));
-	
+
 	connect(_tableModel, &ListModel::modelChanged, this, &BoundQMLTableView::modelChangedSlot);
 }
 
@@ -51,19 +52,13 @@ void BoundQMLTableView::bindTo(Option *option)
 
 	if (_boundTo != nullptr)
 	{
-		Options* templote = new Options();
-		templote->add("name", new OptionString());
-		templote->add("levels", new OptionVariables());
-		templote->add("values", new OptionDoubleArray());
-		_boundTo->setTemplate(templote);	
-		
 		std::vector<Options *> _groups = _boundTo->value();
 		std::vector<std::vector<double> > values;
 		std::vector<std::string> levels;
 		std::vector<std::string> colNames;
-		
+
 		for (std::vector<Options *>::iterator it = _groups.begin(); it != _groups.end(); ++it) {
-	
+
 			Options *newRow = static_cast<Options *>(*it);
 			OptionString *optionName = static_cast<OptionString *>(newRow->get("name"));
 			OptionVariables *optionLevels = static_cast<OptionVariables *>(newRow->get("levels"));
@@ -72,13 +67,13 @@ void BoundQMLTableView::bindTo(Option *option)
 			levels = optionLevels->variables();
 			values.push_back(optionValues->value());
 		}
-		
+
 		if (_multinomialChi2TestModel)
 			_multinomialChi2TestModel->initValues(colNames, levels, values);
-		
+
 		_item->setProperty("columnCount", (int)(colNames.size()));
 		_item->setProperty("rowCount", (int)(levels.size()));
-		
+
 	}
 	else
 		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
@@ -86,7 +81,7 @@ void BoundQMLTableView::bindTo(Option *option)
 
 
 Option *BoundQMLTableView::createOption()
-{	
+{
 	Options* templote = new Options();
 	templote->add("name", new OptionString());
 	templote->add("levels", new OptionVariables());
@@ -97,6 +92,11 @@ Option *BoundQMLTableView::createOption()
 bool BoundQMLTableView::isOptionValid(Option *option)
 {
 	return dynamic_cast<OptionsTable*>(option) != nullptr;
+}
+
+bool BoundQMLTableView::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::arrayValue;
 }
 
 void BoundQMLTableView::setUp()
@@ -114,14 +114,12 @@ void BoundQMLTableView::removeColumnSlot(int col)
 {
 	if (_multinomialChi2TestModel)
 		_multinomialChi2TestModel->removeColumn(col);
-	
 }
 
 void BoundQMLTableView::resetSlot()
 {
 	if (_multinomialChi2TestModel)
 		_multinomialChi2TestModel->reset();
-	
 }
 
 void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)
@@ -144,11 +142,11 @@ void BoundQMLTableView::modelChangedSlot()
 		const QVector<QVector<double> >& allValues = _multinomialChi2TestModel->values();
 		const QVector<QString>& colNames = _multinomialChi2TestModel->colNames();
 		const QVector<QString>& rowNames = _multinomialChi2TestModel->rowNames();
-		
+
 		std::vector<std::string> stdlevels;
 		for (const QString& rowName : rowNames)
 			stdlevels.push_back(rowName.toStdString());
-		
+
 		std::vector<Options*> allOptions;
 		int colIndex = 0;
 		for (const QString& colName : colNames)
@@ -161,13 +159,13 @@ void BoundQMLTableView::modelChangedSlot()
 			OptionDoubleArray* values = new OptionDoubleArray();
 			values->setValue(allValues[colIndex].toStdVector());
 			options->add("values", values);
-			
+
 			allOptions.push_back(options);
 			colIndex++;
 		}
-		
+
 		_boundTo->setValue(allOptions);
-		
+
 		_item->setProperty("columnCount", colNames.length());
 		_item->setProperty("rowCount", rowNames.length());
 	}

@@ -20,7 +20,7 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFRememberMe",				false},
 	{"PPIUseDefault",				false},
 	{"PPICustomValue",				300},
-	{"UIScaleQML",					1.0f},
+	{"UIScaleQML",					0.9f},
 	{"ImageBackground",				"white"},
 	{"fixedDecimals",				false},
 	{"developerMode",				false},

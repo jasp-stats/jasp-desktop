@@ -37,14 +37,14 @@
 
 #include <Rcpp.h>
 
-#ifdef __WIN32__
+#ifdef _WIN32
   #ifndef Win32
     // needed for parts of Rembedded.h
     #define Win32
   #endif
 #endif
 
-#ifndef __WIN32__
+#ifndef _WIN32
   // needed to turn-off stack checking, and we already have uintptr_t
   #define CSTACK_DEFNS
   #define HAVE_UINTPTR_T

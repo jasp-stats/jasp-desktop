@@ -26,32 +26,42 @@
 BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, QMLListView(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
-	_boundTo = nullptr;
-	_model = nullptr;
-	_currentIndex = _item->property("currentIndex").toInt();
-	bool addEmptyValue = _item->property("addEmptyValue").toBool();
-	QString emptyValue = _item->property("emptyValue").toString();
+	initComboBox();
+}
+
+BoundQMLComboBox::BoundQMLComboBox(QMap<QString, QVariant> &properties, AnalysisForm *form)
+	: QMLItem(properties, form)
+	, QMLListView(nullptr, form)
+	, BoundQMLItem()
+
+{
+	initComboBox();
+}
+
+void BoundQMLComboBox::initComboBox()
+{
+	_currentIndex = getItemProperty("currentIndex").toInt();
+	bool addEmptyValue = getItemProperty("addEmptyValue").toBool();
 	
 	_model = new ListModelTermsAvailable(this);
 	if (addEmptyValue)
-	{
-		_model->setEmptyValue(emptyValue);
-		_keyToValueMap[emptyValue] = "";
-		_valueToKeyMap[""] = emptyValue;
-	}
+		_model->addEmptyValue();
 
-	QVariant model = QQmlProperty(item, "model").read();
+	QVariant model = getItemProperty("model");
+	if (model.isNull())
+		model = getItemProperty("values");
+
 	if (model.isNull())
 	{
-		if (sourceModelsList().isEmpty())
+		if (sourceModels().isEmpty())
 			hasAllVariablesModel = true;
 	}
 	else
 	{
-		QString textRole = QQmlProperty(item, "textRole").read().toString();
-		QString valueRole = QQmlProperty(item, "valueRole").read().toString();
+		QString textRole = getItemProperty("textRole").toString();
+		QString valueRole = getItemProperty("valueRole").toString();
 		_model->setTermsAreVariables(false);
 		Terms terms;
 		QList<QVariant> list = model.toList();
@@ -106,7 +116,9 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	}
 	
 	_resetItemWidth();
-	QQuickItem::connect(item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
+
+	if (_item)
+		QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 
 void BoundQMLComboBox::bindTo(Option *option)
@@ -149,13 +161,15 @@ void BoundQMLComboBox::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	
-	QQmlProperty(_item, "model").write(QVariant::fromValue(_model));
-	_item->setProperty("currentIndex", _currentIndex);
-	_item->setProperty("currentText", _currentText);
-	_item->setProperty("currentColumnType", _currentColumnType);
-	_item->setProperty("initialized", true);
+	setItemProperty("model", QVariant::fromValue(_model));
+	setItemProperty("currentIndex", _currentIndex);
+	setItemProperty("currentText", _currentText);
+	setItemProperty("currentColumnType", _currentColumnType);
+	setItemProperty("initialized", true);
 	_resetItemWidth();
-	QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
+
+	if (_item)
+		QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 
 std::vector<std::string> BoundQMLComboBox::_getOptionValues()
@@ -177,11 +191,12 @@ Option *BoundQMLComboBox::createOption()
 {
 	std::vector<std::string> options = _getOptionValues();
 	
-	int index = _item->property("currentIndex").toInt();
+	int index = getItemProperty("currentIndex").toInt();
 	
 	if (options.size() == 0)
 		index = -1;
-	else if (index >= int(options.size()))		index = 0;
+	else if (index >= int(options.size()))
+		index = 0;
 	
 	std::string selected = "";
 	if (index >= 0)
@@ -195,12 +210,17 @@ bool BoundQMLComboBox::isOptionValid(Option *option)
 	return dynamic_cast<OptionList*>(option) != nullptr;
 }
 
+bool BoundQMLComboBox::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::stringValue;
+}
+
 void BoundQMLComboBox::setUp()
 {
 	QMLListView::setUp();
 	
 	_setCurrentValue(_currentIndex, true, false);
-	_item->setProperty("initialized", true);
+	setItemProperty("initialized", true);
 }
 
 void BoundQMLComboBox::modelChangedHandler()
@@ -248,6 +268,9 @@ void BoundQMLComboBox::comboBoxChangeValueSlot(int index)
 
 void BoundQMLComboBox::_resetItemWidth()
 {
+	if (!_item)
+		return;
+
 	const Terms& terms = _model->terms();
 	int maxLength = 0;
 	QString maxValue;
@@ -271,25 +294,25 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 	_currentColumnType.clear();
 	if (_currentIndex >= 0)
 	{
-		const Terms& terms = _model->terms();
-		if (_currentIndex >= int(terms.size()))
+		int rowCount = _model->rowCount();
+		if (_currentIndex >= rowCount)
 		{
-			if (terms.size() > 0)
+			if (rowCount > 0)
 				_currentIndex = -1;
 			else
 				_currentIndex = 0;
 		}
 		if (_currentIndex >= 0)
 		{
-			_currentText = terms.at(size_t(_currentIndex)).asQString();
 			QModelIndex index(_model->index(_currentIndex, 0));
+			_currentText = _model->data(index, ListModel::NameRole).toString();	
 			_currentColumnType = _model->data(index, ListModel::ColumnTypeRole).toString();			
 		}
 	}
-	_item->setProperty("currentText", _currentText);
-	_item->setProperty("currentColumnType", _currentColumnType);
+	setItemProperty("currentText", _currentText);
+	setItemProperty("currentColumnType", _currentColumnType);
 	if (setComboBoxIndex)
-		_item->setProperty("currentIndex", _currentIndex);
+		setItemProperty("currentIndex", _currentIndex);
 	if (setOption && _boundTo)
 		_boundTo->set(size_t(_currentIndex));
 }

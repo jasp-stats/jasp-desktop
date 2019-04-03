@@ -22,7 +22,7 @@
 #include <QDir>
 #include <QDebug>
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #endif
 #include "utilities/qutils.h"

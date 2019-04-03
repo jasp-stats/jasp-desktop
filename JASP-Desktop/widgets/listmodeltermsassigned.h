@@ -29,19 +29,17 @@ class ListModelTermsAssigned : public ListModelAssignedInterface
 public:
 	ListModelTermsAssigned(QMLListView* listView, bool onlyOneTerm = false);
 	
-	virtual void initTerms(const Terms& terms) OVERRIDE;
-	
-	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
-	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
-	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
+	void	initTerms(const Terms& terms)														override;
+	bool	canAddTerms(Terms *terms)													const	override;
+	Terms*	addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
+	void	removeTerms(const QList<int> &indices)												override;
 
 public slots:
-	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) OVERRIDE;
+	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) override;
 	
 private:	
-	bool _onlyOneTerm;
-
-	Terms _tempTermsToRemove;
+	bool	_onlyOneTerm;
+	Terms	_tempTermsToRemove;
 
 };
 

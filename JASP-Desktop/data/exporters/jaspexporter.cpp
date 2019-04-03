@@ -49,7 +49,7 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	int errorCode = archive_write_open_filename_w(a, boost::nowide::widen(path.c_str()).c_str());
 #else
 	int errorCode = archive_write_open_filename(a, path.c_str());

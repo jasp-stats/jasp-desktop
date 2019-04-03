@@ -1,13 +1,18 @@
 QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
+QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
+
 include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 include(../R_HOME.pri)
 
+TEMPLATE = app
+
 CONFIG += c++11
+CONFIG -= app_bundle
 
 DESTDIR = ..
 
@@ -15,13 +20,7 @@ windows:TARGET = JASP
    macx:TARGET = JASP
   linux:{ exists(/app/lib/*) {TARGET = org.jasp.JASP } else { TARGET = jasp }}
 
-
-TEMPLATE = app
-
 DEPENDPATH = ..
-
-CONFIG -= app_bundle
-
 INCLUDEPATH += ../JASP-Common/
 
 #exists(/app/lib/*) should only be true when building flatpak
@@ -41,6 +40,7 @@ windows:CONFIG(ReleaseBuild) {
 
 windows:CONFIG(DebugBuild) {
     LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+    CONFIG += console
 }
 
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
@@ -65,7 +65,7 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -127,8 +127,7 @@ windows {
         createVersionWix.commands += $$quote(echo ^<?define MajorVersion=\"$${JASP_VERSION_MAJOR}\" ?^> >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define MinorVersion=\"$${JASP_VERSION_MINOR}\" ?^> >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define BuildVersion=\"$${JASP_VERSION_BUILD}\" ?^> >>  $${WIXFILENAME}) &&
-        createVersionWix.commands += $$quote(echo ^<?define Revision=\"$${JASP_VERSION_REVISION}\" ?^> >>  $${WIXFILENAME}) &&
-        createVersionWix.commands += $$quote(echo ^<?define JaspType=\"$${JASP_VERSION_TYPE}\"?^>^</Include^> >>  $${WIXFILENAME})
+        createVersionWix.commands += $$quote(echo ^<?define Revision=\"$${JASP_VERSION_REVISION}\" ?^>^</Include^> >>  $${WIXFILENAME})
 
         QMAKE_EXTRA_TARGETS += createVersionWix
         POST_TARGETDEPS     += createVersionWix
@@ -311,7 +310,6 @@ HEADERS += \
     widgets/filemenu/osffilesystem.h \
     widgets/filemenu/computerfilesystem.h \
     widgets/filemenu/filesystementry.h \
-    widgets/boundmodel.h \
     widgets/boundqmlcheckbox.h \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
@@ -358,7 +356,6 @@ HEADERS += \
     modules/ribbonmodelfiltered.h \
     utilities/helpmodel.h \
     widgets/lavaansyntaxhighlighter.h \
-    widgets/boundqmllistviewinteraction.h \
     widgets/listmodelinteractionassigned.h \
     gui/preferencesmodel.h \
     widgets/filemenu/actionbuttons.h \
@@ -366,7 +363,14 @@ HEADERS += \
     widgets/filemenu/resourcebuttonsvisible.h \
     widgets/boundqmlrepeatedmeasuresfactors.h \
     widgets/listmodelrepeatedmeasuresfactors.h \
-    widgets/listmodelextracontrols.h
+    widgets/listmodelextracontrols.h \
+    widgets/interactionmodel.h \
+    widgets/listmodelinteractionavailable.h \
+    results/resultmenuentry.h \
+    results/resultmenumodel.h \
+    analysis/jaspdoublevalidator.h \
+    widgets/boundqmlfactorsform.h \
+    widgets/listmodelfactorsform.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -531,7 +535,6 @@ SOURCES += \
     modules/ribbonmodelfiltered.cpp \
     utilities/helpmodel.cpp \
     widgets/lavaansyntaxhighlighter.cpp \
-    widgets/boundqmllistviewinteraction.cpp \
     widgets/listmodelinteractionassigned.cpp \
     gui/preferencesmodel.cpp \
     widgets/filemenu/actionbuttons.cpp \
@@ -539,7 +542,14 @@ SOURCES += \
     widgets/filemenu/resourcebuttonsvisible.cpp \
     widgets/boundqmlrepeatedmeasuresfactors.cpp \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
-    widgets/listmodelextracontrols.cpp
+    widgets/listmodelextracontrols.cpp \
+    widgets/interactionmodel.cpp \
+    widgets/listmodelinteractionavailable.cpp \
+    results/resultmenumodel.cpp \
+    results/resultmenuentry.cpp \
+    analysis/jaspdoublevalidator.cpp \
+    widgets/boundqmlfactorsform.cpp \
+    widgets/listmodelfactorsform.cpp
 
 RESOURCES += \
     html/html.qrc \
@@ -549,5 +559,3 @@ RESOURCES += \
 
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
-
-

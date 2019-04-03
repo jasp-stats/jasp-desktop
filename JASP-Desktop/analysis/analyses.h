@@ -28,6 +28,8 @@
 #include <QAbstractListModel>
 #include <QFileSystemWatcher>
 
+class RibbonModel;
+
 class Analyses : public QAbstractListModel
 {
 	Q_OBJECT
@@ -51,11 +53,11 @@ public:
 
 				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules) {}
 
-	Analysis*	createFromJaspFileEntry(Json::Value analysisData);
-	Analysis*	create(const QString &module, const QString &name, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
+	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
+	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
 
-	Analysis*	create(const QString &module, const QString &name)	{ return create(module, name, _nextId++, AppInfo::version);		}
+	Analysis*	create(const QString &module, const QString &name, const QString &title)	{ return create(module, name, title, _nextId++, AppInfo::version);		}
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry)		{ return create(analysisEntry, _nextId++);						}
 
 	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
@@ -92,7 +94,7 @@ public slots:
 	void refreshAllAnalyses();
 	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
 	void refreshAnalysesUsingColumn(QString col);
-	void analysisClickedHandler(QString analysis, QString ribbon, QString module);
+	void analysisClickedHandler(QString analysisName, QString analysisTitle, QString ribbon, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 	void analysisIdSelectedInResults(int id);
 	void analysesUnselectedInResults();

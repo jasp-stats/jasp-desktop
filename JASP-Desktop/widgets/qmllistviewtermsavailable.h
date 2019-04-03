@@ -20,7 +20,7 @@
 #define QMLLISTVIEWTERMSAVAILABLE_H
 
 #include "qmllistviewdraggable.h"
-#include "listmodeltermsavailable.h"
+#include "listmodelavailableinterface.h"
 
 class ListModelAssignedInterface;
 
@@ -28,11 +28,12 @@ class QMLListViewTermsAvailable : public QMLListViewDraggable
 {
 Q_OBJECT
 public:
-	QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form);
+	QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form, bool isInteractions = false);
 	
-	virtual ListModel*			model() OVERRIDE	{ return _availableModel; }
-	ListModelTermsAvailable*	availableModel()	{ return _availableModel; }
-	virtual void setTermsAreNotVariables() OVERRIDE;
+	ListModel*				model() override			{ return _availableModel; }
+	ListModelAvailableInterface*	availableModel()	{ return _availableModel; }
+	void setTermsAreNotVariables() override;
+	void setTermsAreInteractions() override;
 
 	void addAssignedModel(ListModelAssignedInterface* model);
 	
@@ -40,7 +41,7 @@ public:
 	
 	
 protected:
-	ListModelTermsAvailable* _availableModel;
+	ListModelAvailableInterface* _availableModel;
 	QList<ListModelAssignedInterface*> _assignedModels;
 };
 

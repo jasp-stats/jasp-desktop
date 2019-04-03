@@ -33,20 +33,21 @@ class BoundQMLListViewDraggable : public QMLListViewDraggable, public BoundQMLIt
 public:
 	BoundQMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
-	virtual void setUp() OVERRIDE;
-	
-protected:
-	ListModelAvailableInterface* _availableModel;
+	void						setUp() override;
 	ListModelAssignedInterface* assignedModel();
 	
-	std::string _extraControlVariableName;
-	bool _hasExtraControls	= false;
+protected:
+	ListModelAvailableInterface*		_availableModel;
+	std::string							_extraControlOptionName;
+	bool								_hasExtraControls	= false;
+	std::string							_nuisanceName;
+	bool								_hasNuisanceControl = false;
 	
 	void addExtraOptions(Options* options);
 	
 private:
-	Terms _tempTerms;
-	QVector<QMap<QString, QVariant> > _extraControlColumns;
+	Terms								_tempTerms;
+	QVector<QMap<QString, QVariant> >	_extraControlColumns;
 	
 };
 

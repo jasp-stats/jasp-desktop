@@ -25,7 +25,7 @@ using namespace std;
 
 BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
-	, BoundQMLItem(item, form)
+	, BoundQMLItem()
 {
 	_boundTo = nullptr;
 	_checkedButton = nullptr;
@@ -104,6 +104,11 @@ Option *BoundQMLRadioButtons::createOption()
 bool BoundQMLRadioButtons::isOptionValid(Option *option)
 {
 	return dynamic_cast<OptionList*>(option) != nullptr;
+}
+
+bool BoundQMLRadioButtons::isJsonValid(const Json::Value &optionValue)
+{
+	return optionValue.type() == Json::stringValue;
 }
 
 void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)

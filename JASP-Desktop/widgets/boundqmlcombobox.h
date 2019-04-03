@@ -31,30 +31,33 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 	
 public:
 	BoundQMLComboBox(QQuickItem* item, AnalysisForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
-	
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;	
-	virtual Option* boundTo() OVERRIDE { return _boundTo; }
-	virtual void setUp() OVERRIDE;
-	
-	virtual ListModel* model() OVERRIDE { return _model; }
+	BoundQMLComboBox(QMap<QString, QVariant>& properties, AnalysisForm *form);
+
+	void		initComboBox();
+
+	void		bindTo(Option *option)						override;
+	void		resetQMLItem(QQuickItem *item)				override;
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;	
+	bool		isJsonValid(const Json::Value& optionValue) override;
+	Option*		boundTo()									override { return _boundTo; }
+	void		setUp()										override;
+	ListModel*	model()										override { return _model; }
 	
 	bool hasAllVariablesModel = false;
 
 protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
+	void modelChangedHandler() override;
 	void comboBoxChangeValueSlot(int index);
 
 protected:
-	OptionList *_boundTo;
-	int _currentIndex;
-	QString _currentText;
-	QString _currentColumnType;
-	ListModelTermsAvailable* _model;
-	QMap<QString, QString> _keyToValueMap;
-	QMap<QString, QString> _valueToKeyMap;
+	OptionList*				_boundTo = nullptr;
+	int						_currentIndex = 0;
+	QString					_currentText;
+	QString					_currentColumnType;
+	ListModelTermsAvailable* _model = nullptr;
+	QMap<QString, QString>	_keyToValueMap;
+	QMap<QString, QString>	_valueToKeyMap;
 	
 	void _resetItemWidth();
 	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);

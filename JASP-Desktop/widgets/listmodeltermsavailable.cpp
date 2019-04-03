@@ -19,17 +19,14 @@
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
 #include "../analysis/analysisform.h"
-#include "qmllistviewtermsavailable.h"
 #include <QQmlProperty>
 
 ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
 	: ListModelAvailableInterface(listView)
-	, _addEmptyValue(false)
-	
 {
 }
 
-void ListModelTermsAvailable::initTerms(const Terms &terms)
+void ListModelTermsAvailable::_resetTerms(const Terms &terms)
 {	
 	beginResetModel();
 
@@ -47,9 +44,6 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 			allowed.add(term);
 	}
 	Terms ordered; // present them in a nice order
-
-	if (_addEmptyValue)
-		ordered.add(_emptyValue);
 	
 	ordered.add(suggested);
 	ordered.add(allowed);
@@ -58,85 +52,57 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 	_allTerms.set(ordered);
 	_terms.removeParent();
 	_terms.set(ordered);
-
 	_terms.setSortParent(_allTerms);
 
 	endResetModel();	
 }
 
-QVariant ListModelTermsAvailable::requestInfo(const Term &term, VariableInfo::InfoType info) const
-{
-	return VariableInfoConsumer::requestInfo(term, info);
-}
-
-QVariant ListModelTermsAvailable::data(const QModelIndex &index, int role) const
-{
-	if (_addEmptyValue && role == ListModel::TypeRole && index.row() == 0)
-		return QVariant();
-	else
-		return ListModelAvailableInterface::data(index, role);
-}
-
-void ListModelTermsAvailable::sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)
-{
-	Q_UNUSED(termsAdded);
-	Q_UNUSED(termsRemoved);
-	
-	resetTermsFromSourceModels();
-	emit modelChanged(&_tempAddedTerms, &_tempRemovedTerms);	
-}
-
-void ListModelTermsAvailable::_setChangedTerms(const Terms &newTerms)
-{
-	_tempRemovedTerms.clear();
-	_tempAddedTerms.clear();
-	for (const Term& term : _allTerms)
-	{
-		if (!newTerms.contains(term))
-			_tempRemovedTerms.add(term);
-	}
-	
-	for (const Term& term : newTerms)
-	{
-		if (!_allTerms.contains(term))
-			_tempAddedTerms.add(term);
-	}
-}
-
 void ListModelTermsAvailable::resetTermsFromSourceModels()
 {
-	const QList<ListModel*>& sourceModels = listView()->sourceModels();
-	if (sourceModels.size() == 0)
+	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
+	if (sourceItems.size() == 0)
 		return;
 	
 	beginResetModel();
 	Terms termsAvailable;
+	if (_addEmptyValue)
+		termsAvailable.add(QString());
 	_termSourceModelMap.empty();
-	for (ListModel* sourceModel : sourceModels)
+	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
-		const Terms& terms = sourceModel->terms();
-		for (const Term& term : terms)
-			_termSourceModelMap[term.asQString()] = sourceModel;
-		termsAvailable.add(terms);
-	}
-	
-	_setChangedTerms(termsAvailable);
-	initTerms(termsAvailable);
-	
-	QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(listView());
-	if (qmlAvailableListView)
-	{
-		const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
-		for (ListModelAssignedInterface* modelAssign : assignedModels)
+		ListModel* sourceModel = sourceItem->model;
+		if (sourceModel)
 		{
-			if (!modelAssign->copyTermsWhenDropped())
-				_terms.remove(modelAssign->terms());
+			Terms terms = sourceModel->terms(sourceItem->modelUse);
+			if (sourceItem->discardModel)
+				terms.discardWhatDoesContainTheseComponents(sourceItem->discardModel->terms());
+			for (const Term& term : terms)
+				_termSourceModelMap[term.asQString()] = sourceModel;
+			termsAvailable.add(terms);
 		}
 	}
+	
+	setChangedTerms(termsAvailable);
+	_resetTerms(termsAvailable);
+	removeTermsInAssignedList();
 	endResetModel();
 }
 
 ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)
 {
 	return _termSourceModelMap[term.asQString()];
+}
+
+void ListModelTermsAvailable::initTerms(const Terms& terms) 
+{
+	if (_addEmptyValue)
+	{
+		Terms newTerms;
+		newTerms.add(QString());
+		newTerms.add(terms);
+		ListModelAvailableInterface::initTerms(newTerms);
+	}
+	else
+		ListModelAvailableInterface::initTerms(terms);
+	
 }

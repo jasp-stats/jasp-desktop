@@ -29,15 +29,15 @@ Form
 
 	Group
 	{
-		DoubleField  { name: "tStatistic";	label: qsTr("t"); validation: false  }
-		IntegerField { name: "n1Size";		label: qsTr("Group size")			}
+		DoubleField  { name: "tStatistic";	label: qsTr("t"); negativeValues: true	}
+		IntegerField { name: "n1Size";		label: qsTr("Group size")				}
 	}
 
     Divider { }
 
 	RadioButtonGroup
 	{
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		name: "hypothesis"
 		RadioButton { value: "notEqualToTestValue";		label: qsTr("\u2260 Test value"); checked: true	}
 		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value")						}

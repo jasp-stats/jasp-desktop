@@ -135,12 +135,14 @@ bool ExtractArchive::extractArchiveToFolderFlattened(std::string archiveFilename
 	return _extractArchiveToFolder(archiveFilename, destination, pathModifier);
 }
 
-bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string destination, const std::map<std::string, std::set<std::string>> & folderAndExtensionExemptions)
+/*bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string destination, const std::map<std::string, std::set<std::string>> & folderAndExtensionExemptions)
 {
 	auto fileNameExtractor	= [&](std::string in, std::string & folder, std::string & filename)
 	{
-		std::string beforeLastSlash = in.substr(0, in.find_last_of('/'));
-					folder			= stringUtils::toLower(beforeLastSlash.substr(beforeLastSlash.find_last_of('/') + 1));
+		std::string beforeLastSlash = in.substr(0, in.find_last_of('/')),
+					fullPath		= beforeLastSlash.substr(beforeLastSlash.find_last_of('/') + 1);
+
+					folder			= stringUtils::toLower(fullPath);
 		auto		slashpos		= in.find_last_of('/');
 					filename		= in.substr(slashpos != std::string::npos ? slashpos + 1 : 0);
 
@@ -161,6 +163,9 @@ bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string 
 		if(folder == "r")
 			folder = "R"; //Because we like it like that :)
 
+		if(folder == "help")
+			filename = stringUtils::toLower(filename); //To make life easier on case sensitive filesystems like linux has (HelpModel::showOrTogglePage also expects this)
+
 		return folder + '/' + filename;
 	};
 
@@ -174,7 +179,7 @@ bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string 
 
 	return _extractArchiveToFolder(archiveFilename, destination, pathModifier, fileFilter);
 }
-
+*/
 
 bool ExtractArchive::isFileAnArchive(std::string filename)
 {
@@ -197,7 +202,7 @@ bool ExtractArchive::isFileAnArchive(std::string filename)
 
 std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archiveFilename, std::string desiredTextFileName)
 {
-	std::string dataFromFile = "File not found";
+	std::string dataFromFile = "";
 	struct archive_entry *entry;
 	int flags;
 	int r;
@@ -210,7 +215,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 	archive_read_support_compression_all(a);
 
 	if ((r = archive_read_open_filename(a, archiveFilename.c_str(), 10240)))
-		return "File opening failed";
+		throw std::runtime_error("File opening failed");
 
 	bool keepLooking = true;
 
@@ -250,7 +255,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 	catch(std::runtime_error e)
 	{
 		std::cerr << e.what() << std::endl;
-		dataFromFile = "There was an error reading the request file " + desiredTextFileName + " from archive " + archiveFilename + ", this error was: " + e.what();
+		throw std::runtime_error("There was an error reading the request file " + desiredTextFileName + " from archive " + archiveFilename + ", this error was: " + e.what());
 	}
 
 	archive_read_close(a);

@@ -44,9 +44,12 @@ public:
 
 	void 									setAnalysisEntries(std::vector<Modules::AnalysisEntry*> analysisEntries)	{	_analysisEntries = analysisEntries;	}
 	std::vector<Modules::AnalysisEntry*>	getAnalysisEntries()														{	return _analysisEntries;			}
+	Modules::AnalysisEntry*					getAnalysisEntry(const std::string& name);
 
-	Q_INVOKABLE QString						getFirstAnalysisEntry()														{	return data(index(0), AnalysisFunctionRole).toString();	}
-	Q_INVOKABLE QString						getFunctionName(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
+	Q_INVOKABLE QString						getFirstAnalysisName()														{	return QString::fromStdString(_analysisEntries.at(0)->function());	}
+	Q_INVOKABLE QString						getFirstAnalysisTitle()														{	return QString::fromStdString(_analysisEntries.at(0)->title());	}
+	Q_INVOKABLE QString						getAnalysisName(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
+	Q_INVOKABLE QString						getAnalysisTitle(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->title());	}
 
 private:
 	Modules::AnalysisEntries _analysisEntries;

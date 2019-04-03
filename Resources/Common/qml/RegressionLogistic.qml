@@ -27,6 +27,7 @@ Form
 	
 	VariablesForm
 	{
+		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["nominal", "ordinal"]; singleVariable: true	}
 		DropDown
 		{
@@ -44,7 +45,7 @@ Form
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true; debug: true	}
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Model")
 		
@@ -53,9 +54,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			listWidth: parent.width * 5 / 9
 			
-			availableVariablesList
+			AvailableVariablesList
 			{
 				name: "availableTerms"
 				title: qsTr("Components")
@@ -66,6 +66,7 @@ Form
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
+				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				
 				ExtraControlColumn
@@ -73,13 +74,14 @@ Form
 					type: "CheckBox"
 					name: "isNuisance"
 					title: qsTr("Add to null model")
+					purpose: "nuisance"					
 				}
 			}
 		}
 		
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Statistics")
 		
@@ -102,7 +104,22 @@ Form
 		Group
 		{
 			title: qsTr("Regression Coefficients")
-			CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true			}
+            CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true
+                CheckBox
+                {
+                    name: "coeffEstimatesBootstrapping"; label: qsTr("From")
+                    childrenOnSameRow: true
+                    IntegerField
+                    {
+                        name: "coeffEstimatesBootstrappingReplicates"
+                        defaultValue: 5000
+                        fieldWidth: 50
+                        min: 100
+                        afterLabel: qsTr("bootstraps")
+                    }
+                }
+
+            }
 			CheckBox { name: "stdCoeff";		label: qsTr("Standardized coefficients")			}
 			CheckBox { name: "oddsRatios";		label: qsTr("Odds ratios")						}
 			CheckBox
@@ -115,20 +132,46 @@ Form
 			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")	}
 		}
 
-		Group
-		{
-			title: qsTr("Performance metrics")
-			CheckBox { name: "AUC";			label: qsTr("AUC")					}
-			CheckBox { name: "Sens";		label: qsTr("Sensitivity / Recall")	}
-			CheckBox { name: "Spec";		label: qsTr("Specificity")			}
-			CheckBox { name: "Prec";		label: qsTr("Precision")				}
-			CheckBox { name: "Fmsr";		label: qsTr("F-measure")				}
-			CheckBox { name: "BrierScr";	label: qsTr("Brier score")			}
-			CheckBox { name: "Hmsr";		label: qsTr("H-measure")				}
-		}
+        Group
+        {
+            title: qsTr("Performance metrics")
+            CheckBox { name: "AUC";			label: qsTr("AUC")					}
+            CheckBox { name: "Sens";		label: qsTr("Sensitivity / Recall")	}
+            CheckBox { name: "Spec";		label: qsTr("Specificity")			}
+            CheckBox { name: "Prec";		label: qsTr("Precision")				}
+            CheckBox { name: "Fmsr";		label: qsTr("F-measure")				}
+            CheckBox { name: "BrierScr";	label: qsTr("Brier score")			}
+            CheckBox { name: "Hmsr";		label: qsTr("H-measure")				}
+        }
+
+        Group
+        {   title: qsTr("Residuals")
+            CheckBox
+            {
+                name: "casewiseDiagnostics";	label: qsTr("Casewise diagnostics")
+                RadioButtonGroup
+                {
+                    name: "casewiseDiagnosticsType"
+                    RadioButton
+                    {
+                        value: "residualZ"; label: qsTr("Standard residual >"); checked: true
+                        childrenOnSameRow: true
+                        IntegerField { name: "casewiseDiagnosticsResidualZ"; defaultValue: 3	}
+                    }
+                    RadioButton
+                    {
+                        value: "cooksDistance";	label: qsTr("Cook's distance >")
+                        childrenOnSameRow: true
+                        IntegerField { name: "casewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+                    }
+                    RadioButton { value: "allCases"; label: qsTr("All")										}
+                }
+            }
+        }
+
 	}
 	
-	ExpanderButton
+	Section
 	{
 		title: qsTr("Plots")
 		

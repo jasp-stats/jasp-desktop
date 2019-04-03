@@ -47,6 +47,8 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 
+		version+="-Beta";
+
 #ifdef JASP_DEBUG
 		version+="-Debug";
 #endif
@@ -94,7 +96,7 @@ void AboutDialog::downloadFinished()
 	
 #ifdef __APPLE__
 		downloadfile = "https://static.jasp-stats.org/JASP-" + version + ".dmg";
-#elif __WIN32__
+#elif _WIN32
 		downloadfile = "https://static.jasp-stats.org/JASP-" + version + "-Setup.exe";
 #endif
 

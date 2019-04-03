@@ -37,7 +37,8 @@ FocusScope
 		id			: fileMenuOpenButton
 		width		: height
 		showArrow	: fileMenuModel.visible
-		toolTip		: showArrow ? "Close Menu" : "Open Menu"
+		toolTip		: showArrow ? qsTr("Close Menu") : qsTr("Open Menu" )
+		toolTipVisible: false
 		hamburger	: true
 		z			: 2
 
@@ -70,8 +71,10 @@ FocusScope
 
 		MouseArea
 		{
+			id: ribbonMenuMouseArea
 			anchors.fill: parent
 			enabled:  fileMenuModel.visible  || modulesMenu.opened
+			cursorShape: !mainWindow.datasetLoaded || enabled ? Qt.ArrowCursor : Qt.PointingHandCursor
 
 			onClicked: {
 				fileMenuModel.visible =false;
@@ -85,6 +88,8 @@ FocusScope
 		id			: modulesPlusButton
 		width		: height
 		hamburger	: false
+		toolTip		: qsTr("Show Modules Menu")
+
 		onClicked	:
 		{
 			customMenu.visible	= false;

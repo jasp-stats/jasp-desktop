@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 
 #include "analysis/analysisform.h"
+#include "analysis/jaspdoublevalidator.h"
 
 #include <QDir>
 #include <QDebug>
@@ -113,6 +114,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
 	_preferences			= new PreferencesModel(this);
+	_resultMenuModel		= new ResultMenuModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -122,6 +124,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	qmlRegisterType<DataSetView>		("JASP", 1, 0, "DataSetView");
 	qmlRegisterType<AnalysisForm>		("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<JASPDoubleValidator> ("JASP", 1, 0, "JASPDoubleValidator");
 	qmlRegisterType<ResultsJsInterface>	("JASP", 1, 0, "ResultsJsInterface");
 
 	loadQML();
@@ -154,8 +157,6 @@ void MainWindow::StartOnlineDataManager()
 
 }
 
-#define CONNECT_SHORTCUT(shortcut, method) connect(new QShortcut(QKeySequence(shortcut), this),	&QShortcut::activated,	this,	method);
-
 Q_DECLARE_METATYPE(Column::ColumnType)
 
 void MainWindow::makeConnections()
@@ -181,6 +182,7 @@ void MainWindow::makeConnections()
 	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh,									Qt::QueuedConnection);
 	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
+	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_analyses,				&Analyses::dataSetChanged									);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -201,6 +203,7 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh,								Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showResultsPanel								);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -212,6 +215,9 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
+	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeysSelected							);
+	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::delayedLoadHandler								);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -222,7 +228,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
-	//connect(_analyses,			&Analyses::analysisNameSelected,					_helpModel,				&HelpModel::setAnalysisPagename								); //The user can click the info-button if they want to see some documentation
+	//connect(_analyses,			&Analyses::analysisNameSelected,					_helpModel,				&HelpModel::setAnalysispagePath								); //The user can click the info-button if they want to see some documentation
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -252,6 +258,8 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
+	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
+
 }
 
 
@@ -271,6 +279,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel);
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered);
 	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules);
+	_qml->rootContext()->setContextProperty("resultMenuModel",			_resultMenuModel);
 
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
@@ -285,7 +294,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
-	
+
 	bool debug = false;
 #ifdef JASP_DEBUG
 	debug = true;
@@ -386,9 +395,8 @@ void MainWindow::saveKeysSelected()
 
 void MainWindow::openKeysSelected()
 {
-	std::cout << "openKeysSelected does nothing..."<< std::endl;
+	_fileMenu->showFileMenu();
 }
-
 
 void MainWindow::refreshKeysSelected()
 {
@@ -415,21 +423,6 @@ void MainWindow::syncKeysSelected()
 {
 	_fileMenu->sync();
 }
-
-/*
-void MainWindow::illegalOptionStateChanged(AnalysisForm * form)
-{
-	if (form->hasIllegalValue())
-	{
-		ui->optionsErrorLabel->setText(form->illegalValueMessage());
-		ui->optionsErrorPanel->show();
-	}
-	else
-	{
-		ui->optionsErrorPanel->hide();
-	}
-}*/
-
 
 void MainWindow::packageChanged(DataSetPackage *package)
 {
@@ -629,11 +622,18 @@ void MainWindow::updateShownVariablesModel()
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
+	if (!_IORequestMutex.tryLock())
+	{
+		qDebug() << "Mutex locked!";
+		return;
+	}
+
 	if (event->operation() == FileEvent::FileOpen)
 	{
 		if (_package->isLoaded())
 		{
-			//If this instance has a valid OSF connection save this setting for a new instance
+			_IORequestMutex.unlock();
+			// If this instance has a valid OSF connection save this setting for a new instance
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
 			// begin new instance
@@ -641,10 +641,17 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
+			//_qml->clearComponentCache();
+
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-			_loader.io(event, _package);
-			showProgress();
+			_resultsJsInterface->clearWelcomeScreen();
+
+			_openEvent = event;
+
+			// Wait for JS callback clearing welcome screen to call funtions below in delayedLoadHandler
+			//_loader.io(event, _package);
+			//showProgress(event->type() != Utils::FileType::jasp);
 
 		}
 	}
@@ -668,7 +675,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -677,7 +684,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
@@ -692,11 +699,10 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -748,7 +754,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
-			populateUIfromDataSet();
+			populateUIfromDataSet(event->type() != Utils::FileType::jasp);
 			QString name = QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
 			_currentFilePath = event->path();
@@ -818,7 +824,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_analyses->setVisible(false);
 			_analyses->clear();
 			setDataSetAndPackageInModels(nullptr);
-			_loader.free(_package->dataSet());
+			if (_package->dataSet())
+				_loader.free(_package->dataSet());
 			_package->reset();
 			_resultsJsInterface->resetResults();
 
@@ -838,10 +845,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_applicationExiting = false;
 	}
 
+	_IORequestMutex.unlock();
+
 }
 
 
-void MainWindow::populateUIfromDataSet()
+void MainWindow::populateUIfromDataSet(bool showData)
 {
 	setDataSetAndPackageInModels(_package);
 
@@ -853,8 +862,10 @@ void MainWindow::populateUIfromDataSet()
 	else
 	{
 		_filterModel->init();
-		setDataPanelVisible(true);
+		setDataPanelVisible(showData);
 		setDataAvailable(true);
+		if (!showData)
+			_analyses->setVisible(true);
 	}
 
 	hideProgress();
@@ -865,8 +876,8 @@ void MainWindow::populateUIfromDataSet()
 	if (_package->hasAnalyses())
 	{
 		int corruptAnalyses = 0;
-
 		stringstream corruptionStrings;
+		Analysis* currentAnalysis = nullptr;
 
 		Json::Value analysesData = _package->analysesData();
 		if (analysesData.isNull())
@@ -891,7 +902,7 @@ void MainWindow::populateUIfromDataSet()
 			{
 				try
 				{
-					_analyses->createFromJaspFileEntry(analysisData);
+					currentAnalysis = _analyses->createFromJaspFileEntry(analysisData, _ribbonModel);
 				}
 				catch (Modules::ModuleException modProb)
 				{
@@ -916,6 +927,9 @@ void MainWindow::populateUIfromDataSet()
 			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+
+		if (_analyses->count() == 1)
+			emit currentAnalysis->expandAnalysis();
 	}
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
@@ -947,7 +961,7 @@ void MainWindow::matchComputedColumnsToAnalyses()
 void MainWindow::resultsPageLoaded()
 {
 	std::cout << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
-// #ifdef __WIN32__
+// #ifdef _WIN32
 // 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
 // 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
 // 		ui->webViewResults->setZoomFactor(zoom);
@@ -1019,22 +1033,6 @@ void MainWindow::emptyValuesChangedHandler()
 		_package->resumeEngines();
 		_package->setModified(true);
 		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false);
-	}
-}
-
-
-void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
-{
-	std::cout << "void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry) should be a function of RibbonModel that sends a signal to Analyses (or something)" << std::endl;
-	try
-	{
-		_analyses->create(entry);
-		checkUsedModules(); //Ought to been done all through RibbonModel + Analyses
-	}
-	catch (runtime_error& e)
-	{
-		_fatalError = tq(e.what());
-		fatalError();
 	}
 }
 
@@ -1208,10 +1206,11 @@ void MainWindow::startDataEditor(QString path)
 
 }
 
-void MainWindow::showProgress()
+void MainWindow::showProgress(bool showData)
 {
 	_fileMenu->setVisible(false);
-	setDataPanelVisible(true);
+	if (showData)
+		setDataPanelVisible(true);
 	setDataAvailable(true);
 	setProgressBarVisible(true);
 }
@@ -1385,8 +1384,24 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 void MainWindow::removeAllAnalyses()
 {
-	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
+	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?")) {
+		_resultsJsInterface->removeAnalyses();
 		_analyses->clear();
+	}
+}
+
+void MainWindow::delayedLoadHandler()
+{
+	if (_openEvent)
+	{
+		_loader.io(_openEvent, _package);
+		showProgress(_openEvent->type() != Utils::FileType::jasp);
+		_openEvent = nullptr;
+	}
+	else {
+		std::cerr << "Unable to open file" << std::endl;
+	}
+
 }
 
 void MainWindow::getAnalysesUserData()

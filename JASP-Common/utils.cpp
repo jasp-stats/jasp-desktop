@@ -17,7 +17,7 @@
 
 #include "utils.h"
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include "windows.h"
 #else
 #include <sys/stat.h>
@@ -94,7 +94,7 @@ long Utils::currentSeconds()
 
 long Utils::getFileModificationTime(const std::string &filename)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 
 	wstring wfilename = nowide::widen(filename);
 	HANDLE file = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -140,7 +140,7 @@ long Utils::getFileSize(const string &filename)
 	system::error_code ec;
 	filesystem::path path;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 
 	path = boost::nowide::widen(filename);
 
@@ -159,7 +159,7 @@ long Utils::getFileSize(const string &filename)
 
 void Utils::touch(const string &filename)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 
 	wstring wfilename = nowide::widen(filename);
 	HANDLE file = CreateFile(wfilename.c_str(), FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -195,7 +195,7 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 	filesystem::path n = osPath(newName);
 	system::error_code ec;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	system::error_code er;
 	if (filesystem::exists(n, er)) {
 		filesystem::file_status s = filesystem::status(n);
@@ -222,7 +222,7 @@ bool Utils::removeFile(const string &path)
 
 filesystem::path Utils::osPath(const string &path)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 	return filesystem::path(nowide::widen(path));
 #else
 	return filesystem::path(path);
@@ -231,7 +231,7 @@ filesystem::path Utils::osPath(const string &path)
 
 string Utils::osPath(const filesystem::path &path)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 	return nowide::narrow(path.generic_wstring());
 #else
 	return path.generic_string();
@@ -249,7 +249,7 @@ void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 void Utils::sleep(int ms)
 {
 
-#ifdef __WIN32__
+#ifdef _WIN32
     Sleep(DWORD(ms));
 #else
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };

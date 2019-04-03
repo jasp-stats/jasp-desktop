@@ -3,7 +3,7 @@
 #include "jaspJson.h"
 #include <chrono>
 
-#if defined(__WIN32__) || !defined(JASP_R_INTERFACE_LIBRARY)
+#if defined(_WIN32) || !defined(JASP_R_INTERFACE_LIBRARY)
 #include "lib_json/json_value.cpp" //hacky way to get libjson in the code ^^
 #include "lib_json/json_reader.cpp"
 #include "lib_json/json_writer.cpp"
@@ -320,7 +320,7 @@ void jaspObject::copyDependenciesFromJaspObject(jaspObject * other)
 bool jaspObject::checkDependencies(Json::Value currentOptions)
 {
 	if((_optionMustBe.size() + _optionMustContain.size()) == 0)
-		return false;
+		return true;
 
 	for(auto & keyval : _optionMustBe)
 		if(currentOptions.get(keyval.first, Json::nullValue) != keyval.second)

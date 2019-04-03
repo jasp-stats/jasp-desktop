@@ -29,20 +29,19 @@ class BoundQMLListViewPairs : public BoundQMLListViewDraggable
 public:
 	BoundQMLListViewPairs(QQuickItem* item, AnalysisForm* form);
 	
-	virtual ListModel* model() OVERRIDE	{ return _pairsModel; }
-	virtual Option* boundTo() OVERRIDE	{ return _boundTo; }
-	
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;			
+	ListModel*	model()										override { return _pairsModel; }
+	Option*		boundTo()									override { return _boundTo; }
+	void		bindTo(Option *option)						override;
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;			
+	bool		isJsonValid(const Json::Value& optionValue) override;
 
 protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
+	void modelChangedHandler() override;
 	
 private:
-	OptionVariablesGroups* _boundTo;
+	OptionVariablesGroups*	_boundTo;
 	ListModelPairsAssigned* _pairsModel;
-	
 };
 
 #endif // BOUNDQMLLISTVIEWPAIRS_H

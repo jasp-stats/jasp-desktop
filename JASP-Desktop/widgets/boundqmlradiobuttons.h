@@ -30,12 +30,12 @@ class BoundQMLRadioButtons : public QObject, public BoundQMLItem
 	
 public:
 	BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
-	virtual Option* boundTo() OVERRIDE { return _boundTo; }	
-	
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;	
+	void	bindTo(Option *option)						override;
+	void	unbind()									override;
+	Option* boundTo()									override { return _boundTo; }	
+	Option* createOption()								override;
+	bool	isOptionValid(Option* option)				override;
+	bool	isJsonValid(const Json::Value& optionValue) override;
 
 signals:
 	
@@ -43,9 +43,9 @@ private slots:
 	void radioButtonClickedHandler(const QVariant& button);
     
 protected:
-	OptionList* _boundTo;
+	OptionList*					_boundTo;
 	QMap<QString, QQuickItem *> _buttons;
-	QQuickItem* _checkedButton;
+	QQuickItem*					_checkedButton;
 	
 	void _getRadioButtons(QQuickItem* item, QList<QQuickItem* >& buttons);
 };

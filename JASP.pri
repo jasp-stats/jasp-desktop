@@ -4,7 +4,7 @@
 JASP_R_INTERFACE_TARGET = JASP-R-Interface
 
 JASP_R_INTERFACE_MAJOR_VERSION = 6 # Interface changes
-JASP_R_INTERFACE_MINOR_VERSION = 1 # Code changes
+JASP_R_INTERFACE_MINOR_VERSION = 5 # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -15,9 +15,8 @@ DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 #JASP Version
 JASP_VERSION_MAJOR      = 0
 JASP_VERSION_MINOR      = 9
-JASP_VERSION_REVISION   = 2
+JASP_VERSION_REVISION   = 3
 JASP_VERSION_BUILD      = 0 #Should be incremented or retrieved from somewhere
-JASP_VERSION_TYPE       = release
 
 DEFINES += "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
 DEFINES += "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
@@ -50,7 +49,6 @@ exists(/app/lib/*) {
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
 
-
 windows {
 	message(QT_ARCH $$QT_ARCH)
 	contains(QT_ARCH, i386) {
@@ -74,5 +72,5 @@ exists(/app/lib/*)	{ INSTALLPATH = /app/bin
   INSTALLPATH = /usr/bin
 }
 
-DEFINES += QT_NO_FOREACH #Common Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
+DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
 macx: QMAKE_CXXFLAGS += -Wunused-parameter

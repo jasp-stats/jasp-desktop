@@ -38,7 +38,7 @@ void ListModelTermsAssigned::initTerms(const Terms &terms)
 	if (source() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
-			source()->removeAssignedTerms(_terms);
+			source()->removeTermsInAssignedList();
 	}
 }
 
@@ -68,7 +68,7 @@ bool ListModelTermsAssigned::canAddTerms(Terms *terms) const
 	return true;
 }
 
-Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex)
+Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
 {
 	Terms newTerms;
 	Terms *toSendBack = new Terms;

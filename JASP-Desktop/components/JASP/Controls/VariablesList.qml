@@ -18,16 +18,18 @@
 
 
 import QtQuick 2.11
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.4 as QTCONTROLS
 import QtQml.Models 2.2
 import JASP.Theme 1.0
+import QtQuick.Layouts 1.3
 
 JASPControl
 {
 	id:					variablesList
 	controlType:		"VariablesListView"
 	background:			rectangle
-	implicitWidth:		parent.width
+	width:				parent.width
+	implicitWidth:		width
 	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
 	implicitHeight:		height
 	useControlMouseArea:	false
@@ -35,7 +37,7 @@ JASPControl
 	property var	model
 	property string title
 	property alias	label:				variablesList.title
-	property alias	count:				listView.count	
+	property alias	count:				listView.count
 	property int	columns:			1
 	property string itemType:			"variables"
 	property alias	dropKeys:			dropArea.keys
@@ -43,19 +45,25 @@ JASPControl
 	property bool	draggable:			true
 	property var	source
 	property alias	syncModels:			variablesList.source
-	property bool	singleVariable:			false
+	property bool	singleVariable:		false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
-	property bool	hasSelectedItems:	false; // Binding does not work on array length: listView.selectedItems.length > 0;
+	property alias	selectedItems:		listView.selectedItems
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
 	property bool	showVariableTypeIcon:	true
+	property bool	setWidthInForm:		false
+	property bool	setHeightInForm:	false
+	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
+	
+	property var	interactionControl
+	property bool	addInteractionOptions:	false
 	
 	property var	extraControlColumns:		[]
-	property string extraControlVariableName:	"variable"
+	property string extraControlOptionName:		""
 	property alias	extraControlTitles:	titles.model
 	
 	property int	indexInDroppedListViewOfDraggedItem:	-1
@@ -63,32 +71,26 @@ JASPControl
 	readonly property int rectangleY: rectangle.y
 	
 	signal itemDoubleClicked(int index);
-	signal itemsDropped(var indexes, var dropList, int dropItemIndex);
-	signal removeRowWithControls(int id, string name);
-	signal addRowWithControls(int id, string name, var columns);
-	
-	function selectedItemsChanged()
-	{
-		hasSelectedItems = (listView.selectedItems.length > 0);
-	}
-	
+	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
+	signal hasSelectedItemsChanged();
+
 	function moveSelectedItems(target)
 	{
-		if (!hasSelectedItems) return;
+		if (listView.selectedItems.length === 0) return;
 		
 		var selectedIndexes = [];
 		for (var i = 0; i < listView.selectedItems.length; i++)
 		{
-			var selectedItem = listView.selectedItems[i];            
+			var selectedItem = listView.selectedItems[i];
 			selectedIndexes.push(selectedItem.rank);
 		}
 		
 		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
 		// So we have to clear the selected items list before.
-		listView.clearSelectedItems();
-		itemsDropped(selectedIndexes, target, -1);
-		
-	}    
+		listView.clearSelectedItems(true);
+		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
+		itemsDropped(selectedIndexes, target, -1, assignOption);
+	}
 	
 	DropArea
 	{
@@ -268,7 +270,7 @@ JASPControl
 					{
 						var itemRectangle = itemWrapper.children[0];
 						itemWrapper.forceActiveFocus();
-						listView.clearSelectedItems();
+						listView.clearSelectedItems(false);
 						listView.selectItem(itemRectangle, true);
 						listView.startShiftSelected = listView.currentIndex;
 						listView.endShiftSelected = -1;
@@ -326,7 +328,7 @@ JASPControl
 				if (!added)
 					selectedItems.push(item);
 				
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function removeSelectedItem(item)
@@ -344,7 +346,7 @@ JASPControl
 						break;
 					}
 				}
-				variablesList.selectedItemsChanged();
+				variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectItem(item, selected)
@@ -353,16 +355,17 @@ JASPControl
 					listView.addSelectedItem(item);
 				else
 					listView.removeSelectedItem(item);
-			}        
+			}
 			
-			function clearSelectedItems()
+			function clearSelectedItems(emitSignal)
 			{
 				for (var i = 0; i < selectedItems.length; i++)
 				{
 					selectedItems[i].selected = false;
 				}
 				selectedItems = [];
-				variablesList.selectedItemsChanged();
+				if (emitSignal)
+					variablesList.hasSelectedItemsChanged();
 			}
 			
 			function selectShiftItems(selected)
@@ -403,7 +406,7 @@ JASPControl
 				anchors.horizontalCenter:	parent.horizontalCenter
 				anchors.verticalCenter:		parent.verticalCenter
 				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
-				// when the rectangle is dragged, it gets another parent but it must keep the same size,                
+				// when the rectangle is dragged, it gets another parent but it must keep the same size,
 				height:			listView.cellHeight
 				width:			listView.cellWidth
 				focus:			true
@@ -422,7 +425,7 @@ JASPControl
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			!variablesList.dragOnlyVariables || isVariable
-				property string columnType:			isVariable ? model.columnType : ""
+				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraColumnsModel:		model.extraColumns
 				
 				function setRelative(draggedRect)
@@ -445,15 +448,9 @@ JASPControl
 				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
-				ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
-				
-				ToolTip.delay: 300
-				ToolTip.text: model.name
-				ToolTip.toolTip.background: Rectangle
-				{
-					id:		tooltipRectangle
-					color:	Theme.tooltipBackgroundColor
-				}
+				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
+				QTCONTROLS.ToolTip.delay: 300
+				QTCONTROLS.ToolTip.text: model.name
 				
 				Rectangle
 				{
@@ -475,7 +472,7 @@ JASPControl
 				Text
 				{
 					id:						colName
-					x:						variablesList.showVariableTypeIcon ? 20 : 4
+					x:						(variablesList.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale
 					text:					model.name
 					width:					itemRectangle.width - x
 					elide:					Text.ElideRight
@@ -485,12 +482,12 @@ JASPControl
 					font:					Theme.font
 				}
 				
-				Row
+				RowLayout
 				{
 					anchors.fill:			parent
 					anchors.rightMargin:	10  * preferencesModel.uiScale
 					spacing:				1
-					z:						10 * preferencesModel.uiScale
+					z:						10
 					
 					layoutDirection: Qt.RightToLeft
 					
@@ -500,10 +497,19 @@ JASPControl
 						
 						delegate: Loader
 						{
-							source:			model.path
+							sourceComponent: model.type === "CheckBox" ? extraCheckBoxComponent :
+											(	(model.type === "ComboBox" || model.type === "Dropdown") ? extraComboBoxComponent :
+													(model.type === "IntegerField" ? extraIntegerFieldComponent :
+														extraTextFieldComponent
+													 )
+											 )
 							asynchronous:	false
-							
-							onLoaded:		itemRectangle.extraColumnsModel.controlLoaded(model.name, item)
+							Layout.topMargin:	-2
+
+							property string extraControlColName:    colName.text
+							property var    extraControlModel:      itemRectangle.extraColumnsModel
+							property string extraControlName:       model.name
+							property var    extraControlProperties: model.properties
 						}
 					}
 				}
@@ -537,11 +543,11 @@ JASPControl
 					anchors.fill:	parent
 					drag.target:	parent
 					hoverEnabled:	true
-					cursorShape:	Qt.PointingHandCursor					
+					cursorShape:	Qt.PointingHandCursor
 					
 					onDoubleClicked:
 					{
-						listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+						listView.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 						itemDoubleClicked(index);
 					}
 					
@@ -549,7 +555,7 @@ JASPControl
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 						{
-							listView.clearSelectedItems();
+							listView.clearSelectedItems(false);
 							listView.selectItem(itemRectangle, true);
 						}
 					}
@@ -577,7 +583,7 @@ JASPControl
 							itemWrapper.forceActiveFocus();
 							if (!itemRectangle.selected)
 							{
-								listView.clearSelectedItems();
+								listView.clearSelectedItems(false);
 								listView.selectItem(itemRectangle, true);
 							}
 							else
@@ -587,7 +593,7 @@ JASPControl
 							
 							listView.startShiftSelected = index;
 							listView.endShiftSelected = -1;
-						}                        
+						}
 					}
 					onReleased:
 					{
@@ -615,7 +621,7 @@ JASPControl
 										selectedItem.dragging = true;
 										selectedItem.offsetX = selectedItem.x - itemRectangle.x;
 										selectedItem.offsetY = selectedItem.y - itemRectangle.y;
-										selectedItem.setRelative(itemRectangle);                                
+										selectedItem.setRelative(itemRectangle);
 									}
 								}
 							}
@@ -636,17 +642,93 @@ JASPControl
 							{
 								var dropTarget = itemRectangle.Drag.target.parent
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
-									return;                                
+									return;
 								
-								listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
+								listView.clearSelectedItems(true); // Must be before itemsDropped: listView does not exist anymore afterwards
 								var variablesListName = variablesList.name
-								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);                               
+								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
+								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
 							}
 						}
 					}
 				}
-			}			
+			}
 		}
 	}
-	
+
+	Component
+	{
+		id: extraCheckBoxComponent
+
+		CheckBox
+		{
+			id:			extraCheckBoxControl
+			name:		extraControlName
+			checked:	extraControlProperties["checked"]
+
+			property string controlColName: extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraCheckBoxControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraCheckBoxControl)
+		}
+	}
+
+	Component
+	{
+		id: extraComboBoxComponent
+
+		ComboBox
+		{
+			id:				extraComboxControl
+			name:			extraControlName
+			values:			extraControlProperties["values"]
+			currentIndex:	extraControlProperties["currentIndex"]
+
+			property string controlColName:	extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraComboxControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraComboxControl)
+		}
+	}
+
+	Component
+	{
+		id: extraTextFieldComponent
+
+		TextField
+		{
+			id:				extraTextFieldControl
+			name:			extraControlName
+			defaultValue:	extraControlProperties["defaultValue"]
+
+			property string controlColName: extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraTextFieldControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraTextFieldControl)
+		}
+	}
+
+	Component
+	{
+		id: extraIntegerFieldComponent
+
+		IntegerField
+		{
+			id:				extraIntegerFieldControl
+			name:			extraControlName
+			defaultValue:	extraControlProperties["defaultValue"]
+			min:			extraControlProperties["min"]
+			max:			extraControlProperties["max"]
+
+			property string controlColName: extraControlColName
+			property var	controlModel:	extraControlModel
+
+			Component.onCompleted:		controlModel.controlLoaded(name, extraIntegerFieldControl)
+			Component.onDestruction:	controlModel.controlDestroyed(name, extraIntegerFieldControl)
+		}
+	}
+
 }

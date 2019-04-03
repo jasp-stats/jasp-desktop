@@ -29,16 +29,16 @@ Form
 
 	Group
 	{
-		DoubleField  { name: "tStatistic";	label: qsTr("t"); validation: false	}
-		IntegerField { name: "n1Size";		label: qsTr("Group 1 size")			}
-		IntegerField { name: "n2Size";		label: qsTr("Group 2 size")			}
+		DoubleField  { name: "tStatistic";	label: qsTr("t"); negativeValues: true	}
+		IntegerField { name: "n1Size";		label: qsTr("Group 1 size")				}
+		IntegerField { name: "n2Size";		label: qsTr("Group 2 size")				}
     }
 
     Divider { }
 
 	RadioButtonGroup
 	{
-		title: qsTr("Hypothesis")
+		title: qsTr("Alt. Hypothesis")
 		name: "hypothesis"
 		RadioButton { value: "groupsNotEqual";	label: qsTr("Group 1 \u2260 Group 2"); checked: true	}
 		RadioButton { value: "groupOneGreater";	label: qsTr("Group 1 > Group 2")						}

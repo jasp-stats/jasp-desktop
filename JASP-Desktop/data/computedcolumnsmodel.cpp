@@ -203,8 +203,11 @@ void ComputedColumnsModel::revertToDefaultInvalidatedColumns()
 		}
 }
 
-void ComputedColumnsModel::computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged)
+void ComputedColumnsModel::computeColumnSucceeded(QString columnNameQ, QString warningQ, bool dataChanged)
 {
+	std::string columnName	= columnNameQ.toStdString(),
+				warning		= warningQ.toStdString();
+
 	bool shouldNotifyQML = _currentlySelectedName.toStdString() == columnName;
 
 	if(_computedColumns->setError(columnName, warning) && shouldNotifyQML)
@@ -222,8 +225,11 @@ void ComputedColumnsModel::computeColumnSucceeded(std::string columnName, std::s
 		checkForDependentColumnsToBeSent(columnName);
 }
 
-void ComputedColumnsModel::computeColumnFailed(std::string columnName, std::string error)
+void ComputedColumnsModel::computeColumnFailed(QString columnNameQ, QString errorQ)
 {
+	std::string columnName	= columnNameQ.toStdString(),
+				error		= errorQ.toStdString();
+
 	bool shouldNotifyQML = _currentlySelectedName.toStdString() == columnName;
 
 	if(areLoopDependenciesOk(columnName) && _computedColumns->setError(columnName, error) && shouldNotifyQML)
@@ -373,7 +379,7 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 }
 
 
-ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType)
+ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis)
 {
 	bool success			= false;
 	DataSet	*theData		= _package->dataSet();
@@ -398,6 +404,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	//if(theData != _package->dataSet())
 
 	ComputedColumn  * createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
+	createdColumn->setAnalysis(analysis);
+
 	emit dataSetChanged(_package->dataSet());
 	emit refreshData();
 
@@ -409,12 +417,9 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(QString columnName, Analysis * analysis)
 {
 	if(!_package->isColumnNameFree(columnName.toStdString()))
-		return NULL;
+		return nullptr;
 
-	ComputedColumn * result = createComputedColumn(columnName, (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis);
-	result->setAnalysis(analysis);
-
-	return result;
+	return createComputedColumn(columnName, (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis, analysis);
 }
 
 

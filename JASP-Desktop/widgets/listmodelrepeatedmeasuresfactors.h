@@ -27,30 +27,42 @@ class ListModelRepeatedMeasuresFactors : public ListModel
 public:
 	
 	ListModelRepeatedMeasuresFactors(QMLListView* listView);
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	
+	int rowCount(const QModelIndex &parent = QModelIndex())						const override;
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)			const override;
 	
 	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
 	const Terms& getLevels() const;
-	virtual const Terms& terms() const OVERRIDE;
 	
 public slots:
 	void itemChanged(int row, QVariant value);
 	void itemRemoved(int row);
 		
 protected:
-	struct Factor {
-		QString value;
-		bool isVirtual;
-		bool isLevel;
-		int index;
-		Factor(const QString& _value, bool _isVirtual, bool _isLevel, int _index) :
-			value(_value), isVirtual(_isVirtual), isLevel(_isLevel), index(_index) {}
+	struct Factor
+	{
+		QString		value;
+		bool		isVirtual;
+		bool		isLevel;
+		int			index;
+		Factor*		headFactor;
+		Factor(const QString& _value, bool _isVirtual, bool _isLevel, int _index, Factor* _factor = nullptr) :
+			value(_value), isVirtual(_isVirtual), isLevel(_isLevel), index(_index)
+		{
+			if (_factor)
+				headFactor = _factor;
+			else
+				headFactor = this;
+		}
 	};
-	QList<Factor> _factors;
-	QList<QString> _factorTitles;
-	Terms _allLevelsCombinations;
+	QList<Factor>	_factors;
+	QList<QString>	_factorTitles;
+	Terms			_allLevelsCombinations;
+	QStringList		_getLevels(const Factor& factor);
+	QStringList		_getAllFactors();
+	QString			_giveUniqueName(const QStringList& names, const QString startName);
+
 	
 	void _setAllLevelsCombinations();
 };

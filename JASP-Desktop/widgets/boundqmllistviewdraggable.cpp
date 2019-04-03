@@ -33,9 +33,8 @@
 
 BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)
 	: QMLListViewDraggable(item, form)
-	, BoundQMLItem(item, form) 
+	, BoundQMLItem()
 {
-	_extraControlVariableName = QQmlProperty(_item, "extraControlVariableName").read().toString().toStdString();
 	QStringList extraControlTitles;
 	
 	QList<QVariant> extraControlColumnsVariants = QQmlProperty(_item, "extraControlColumns").read().toList();
@@ -51,27 +50,23 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 			QMetaProperty property = meta->property(i);
 			QString key = QString::fromLatin1(property.name());
 			QVariant value = property.read(extraControlColumnObject);
-			bool addValue = true;
-			switch (QMetaType::Type(property.type()))
+			if (key == "purpose")
 			{
-			case QMetaType::Int:
-				if (value.toInt() == 0) addValue = false;
-				break;
-			case QMetaType::QString:
-				if (value.toString().isEmpty()) addValue = false;
-				if (key == "title")
-				{
-					extraControlTitles.push_back(value.toString());
-					addValue = false;
-				}
-				break;
-			default:
-				addValue = true;
+				if (value.toString() == "nuisance")
+					_hasNuisanceControl = true;
 			}
-			if (addValue)
+			else if (key == "title")
+			{
+				QString title = value.toString();
+				if (!title.isEmpty())
+					extraControlTitles.push_back(value.toString());
+			}
+			else
 				properties[key] = value;
 		}
 
+		if (_hasNuisanceControl)
+			_nuisanceName = properties["name"].toString().toStdString();
 		_extraControlColumns.push_back(properties);
 	}
 	
@@ -91,14 +86,14 @@ void BoundQMLListViewDraggable::setUp()
 	
 	if (!availableModel)
 	{
-		if (sourceModels().empty())
-			addError(QString::fromLatin1("Cannot find source ListView for item ") + name());
+		if (sourceModels().empty() && !_item->property("debug").toBool())
+			addError(QString::fromLatin1("Cannot find source for VariableList ") + name());
 	}
 	else
 	{
 		_availableModel = dynamic_cast<ListModelAvailableInterface*>(availableModel);
 		if (!_availableModel)
-			addError(QString::fromLatin1("Wrong kind of source ListView for item ") + name());
+			addError(QString::fromLatin1("Wrong kind of source for VariableList ") + name());
 		else
 		{
 			_assignedModel->setAvailableModel(_availableModel);
@@ -128,11 +123,24 @@ void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 		QString type = properties["type"].toString();
 		Option* option = nullptr;
 		if (type == "CheckBox")
-			option = new OptionBoolean();
+		{
+			bool checked = (properties.contains("checked") ? properties["checked"].toBool() : false);
+			option = new OptionBoolean(checked);
+		}
 		else if (type == "ComboBox")
-			option = new OptionList(std::vector<std::string>());
+		{
+			QString defaultValue = (properties.contains("value") ? properties["value"].toString() : "");
+			QStringList valueList = (properties.contains("values") ? properties["values"].toStringList() : QStringList());
+			std::vector<std::string> values;
+			for (const QString& oneValue : valueList)
+				values.push_back(oneValue.toStdString());
+			option = new OptionList(values, defaultValue.toStdString());
+		}
 		else if (type == "TextField")
-			option = new OptionString();
+		{
+			QString value = (properties.contains("value") ? properties["value"].toString() : "");
+			option = new OptionString(value.toStdString());
+		}
 		if (option)
 			options->add(properties["name"].toString().toStdString(), option);
 		else

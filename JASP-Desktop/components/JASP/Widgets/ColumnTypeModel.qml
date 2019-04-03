@@ -18,16 +18,20 @@
 
 import QtQuick 2.0
 
-ListModel {
-	ListElement {
+ListModel
+{
+	ListElement
+	{
 		displayText		: "Scale"
 		menuImageSource	: "qrc:/icons/variable-scale.svg"
 	}
-	ListElement {
+	ListElement
+	{
 		displayText		: "Ordinal"
 		menuImageSource	: "qrc:/icons/variable-ordinal.svg"
 	}
-	ListElement {
+	ListElement
+	{
 		displayText		: "Nomial"
 		menuImageSource	: "qrc:/icons/variable-nominal.svg"
 	}

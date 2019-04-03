@@ -31,18 +31,20 @@ class ListModelExtraControls : public QAbstractTableModel
 public:
 	enum ListModelExtraControlsRoles {
         NameRole = Qt::UserRole + 1,
-		PathRole
+		PathRole,
+		TypeRole,
+		PropertiesRole
     };
 	
 	ListModelExtraControls(ListModelAssignedInterface* parent, const QString& colName, const QVector<QMap<QString, QVariant> >& controlColumns);
 	
-	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
-
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE { return 1; }
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	QHash<int, QByteArray>	roleNames()												const override;
+	int						rowCount(const QModelIndex &parent = QModelIndex())		const override;
+	int						columnCount(const QModelIndex &parent = QModelIndex())	const override { return 1; }
+	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	
 	Q_INVOKABLE	void controlLoaded(const QString& name, QVariant item);
+	Q_INVOKABLE void controlDestroyed(const QString& name, QVariant item);
 	const QMap<QString, BoundQMLItem*>&	getBoundItems() const { return _boundItems; } 
 
 private:

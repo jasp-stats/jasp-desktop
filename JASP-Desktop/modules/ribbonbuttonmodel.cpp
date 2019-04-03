@@ -20,6 +20,7 @@
 #include "ribbonbuttonmodel.h"
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
+#include "modules/analysisentry.h"
 
 RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJson)  : QAbstractListModel(parent)
 {
@@ -35,7 +36,13 @@ RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJso
 		std::vector<Modules::RibbonEntry*>	ribbonEntries;
 
 		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
+		{
+#ifndef JASP_DEBUG
+			if (ribbonEntry.get("debug", false).asBool())
+				continue;
+#endif
 			ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, nullptr));
+		}
 
 		setRibbonEntries(ribbonEntries);
 	}
@@ -88,11 +95,11 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	Modules::RibbonEntry* entry = _ribbonEntries.at(index.row());
-    AnalysisMenuModel *menuModel = qobject_cast<AnalysisMenuModel *>(_analysisMenuModels.at(index.row()));
+	AnalysisMenuModel *menuModel = qobject_cast<AnalysisMenuModel *>(_analysisMenuModels.at(index.row()));
 
 	switch(role)
 	{
-	case AnalysisMenuRole:      return QVariant::fromValue(menuModel);
+	case AnalysisMenuRole:		return QVariant::fromValue(menuModel);
 	case DisplayRole:			return QString::fromStdString(entry->title());
 	case IconSourceRole:		return QString::fromStdString(entry->icon());
 	case EnabledAnalysisRole:	{std::cout << "EnabledAnalysisRole not implemented!" << std::endl; return true; }
@@ -185,4 +192,17 @@ void RibbonButtonModel::setModuleName(std::string moduleName)
 Modules::DynamicModule * RibbonButtonModel::myDynamicModule()
 {
 	return !isDynamic() ? nullptr : _dynamicModules->dynamicModule(_moduleName);
+}
+
+Modules::AnalysisEntry *RibbonButtonModel::getAnalysis(const std::string &name)
+{
+	Modules::AnalysisEntry* analysis = nullptr;
+	for (AnalysisMenuModel* analysisMenu : _analysisMenuModels)
+	{
+		analysis = analysisMenu->getAnalysisEntry(name);
+		if (analysis)
+			break;
+	}
+	
+	return analysis;
 }

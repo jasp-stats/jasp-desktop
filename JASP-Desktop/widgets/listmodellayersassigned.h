@@ -27,18 +27,16 @@ class ListModelLayersAssigned : public ListModelAssignedInterface
 public:
 	ListModelLayersAssigned(QMLListView* listView);
 
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
-
-	void initLayers(const std::vector<std::vector<std::string> >& allVariables);
-	std::vector<std::pair<std::string, std::vector<std::string> > > getLayers() const;
+	int			rowCount(const QModelIndex &parent = QModelIndex())							const	override;
+	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
+	Terms*		termsFromIndexes(const QList<int> &indexes)									const	override;	
+	Terms*		addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
+	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
+	void		removeTerms(const QList<int>& indexes)												override;
 	
-	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;	
-	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1)  OVERRIDE;
-	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1) OVERRIDE;		
-	virtual void removeTerms(const QList<int>& indexes) OVERRIDE;
-	
-	
+	void		initLayers(const std::vector<std::vector<std::string> >& allVariables);
+	std::vector<std::pair<std::string, std::vector<std::string> > > getLayers()				const;
+		
 private:
 	int _getLayer(int index, int& realIndex) const;
 	

@@ -1,5 +1,6 @@
 #include "enginerepresentation.h"
 #include "utilities/settings.h"
+#include "gui/messageforwarder.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
 	: QObject(parent), _channel(channel)
@@ -207,9 +208,9 @@ void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 	std::string error		= json.get("error", "").asString();
 	std::string columnName	= json.get("columnName", "").asString();
 
-	if(result == "TRUE")		emit computeColumnSucceeded(columnName, error, true);
-	else if(result == "FALSE")	emit computeColumnSucceeded(columnName, error, false);
-	else						emit computeColumnFailed(columnName, error == "" ? "Unknown Error" : error);
+	if(result == "TRUE")		emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), true);
+	else if(result == "FALSE")	emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), false);
+	else						emit computeColumnFailed(QString::fromStdString(columnName), QString::fromStdString(error == "" ? "Unknown Error" : error));
 }
 
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
@@ -288,13 +289,19 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	switch(status)
 	{
 	case analysisResultStatus::imageSaved:
-		analysis->imageSaved(results);
+		if (results.get("error", "") != "")
+			MessageForwarder::showWarning("Error saving plot", "Unfortunately the plot could not be saved. R returned the following error:\n\n" + results.get("error", "").asString() + "\n\n Please report this error at https://github.com/jasp-stats/jasp-issues");
+		else
+			analysis->imageSaved(results);
 		clearAnalysisInProgress();
 		break;
 
 
 	case analysisResultStatus::imageEdited:
-		analysis->imageEdited(results);
+		if (results.get("errorMessage", "") != "")
+			MessageForwarder::showWarning("Error resizing plot", "Unfortunately the plot could not be resized. R returned the following error:\n\n" + results.get("errorMessage", "").asString() + "\n\n Please report this error at https://github.com/jasp-stats/jasp-issues");
+		else
+			analysis->imageEdited(results);
 		clearAnalysisInProgress();
 		break;
 
@@ -308,7 +315,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		clearAnalysisInProgress();
 
 		for(std::string col : analysis->columnsCreated())
-			emit computeColumnFailed(col, "Analysis had an error..");
+			emit computeColumnFailed(QString::fromStdString(col), "Analysis had an error..");
 		break;
 
 	case analysisResultStatus::exception:
@@ -319,7 +326,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 		//createdColumns and if it succeeded or not should actually be communicated through jaspColumn or something, to be created
 		for(std::string col : analysis->columnsCreated())
-			emit computeColumnSucceeded(col, "", true);
+			emit computeColumnSucceeded(QString::fromStdString(col), "", true);
 		break;
 
 	case analysisResultStatus::running:
@@ -450,8 +457,8 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 
 	moduleStatus moduleRequest	= moduleStatusFromString(json["moduleRequest"].asString());
 	bool succes					= json["succes"].asBool();
-	std::string moduleName		= json["moduleName"].asString();
-	auto getError				= [&](){ return json.get("error", "Unknown error").asString(); };
+	QString moduleName			= QString::fromStdString(json["moduleName"].asString());
+	auto getError				= [&](){ return QString::fromStdString(json.get("error", "Unknown error").asString()); };
 
 	switch(moduleRequest)
 	{

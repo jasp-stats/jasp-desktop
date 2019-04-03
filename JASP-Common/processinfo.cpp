@@ -17,7 +17,7 @@
 
 #include "processinfo.h"
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #include <tlhelp32.h>
 #else
@@ -27,7 +27,7 @@
 unsigned long ProcessInfo::currentPID()
 {
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	return GetCurrentProcessId();
 #else
 	return getpid();
@@ -37,7 +37,7 @@ unsigned long ProcessInfo::currentPID()
 unsigned long ProcessInfo::parentPID()
 {
 
-#ifdef __WIN32__
+#ifdef _WIN32
 
 	HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	PROCESSENTRY32 pe = { 0 };
@@ -68,7 +68,7 @@ unsigned long ProcessInfo::parentPID()
 
 bool ProcessInfo::isParentRunning()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 
     static unsigned long _parentPID = parentPID();
 	static void* _parentHandle = NULL;

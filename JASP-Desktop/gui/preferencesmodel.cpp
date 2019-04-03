@@ -53,7 +53,7 @@ void PreferencesModel::browseSpreadsheetEditor()
 	QString filter = "File Description (*.*)";
 	QString applicationfolder;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	applicationfolder = "c:\\Program Files";
 #elif __APPLE__
 	applicationfolder = "/Applications";
@@ -73,7 +73,7 @@ void PreferencesModel::browseDeveloperFolder()
 	QString defaultfolder = developerFolder();
 	if (defaultfolder.isEmpty())
 	{
-#ifdef __WIN32__
+#ifdef _WIN32
 		defaultfolder = "c:\\";
 #else
 		defaultfolder = "~";

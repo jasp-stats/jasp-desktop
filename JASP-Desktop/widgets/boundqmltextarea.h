@@ -35,32 +35,29 @@ class BoundQMLTextArea : public QObject, public BoundQMLItem
 	enum TextType {Default, Lavaan};
 	
 public:
-	
 	BoundQMLTextArea(QQuickItem* item, AnalysisForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
-	
-	virtual Option* createOption() OVERRIDE;
-	virtual bool isOptionValid(Option* option) OVERRIDE;
-	virtual Option* boundTo() OVERRIDE { return _boundTo; }
-	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
-	
-	virtual void rScriptDoneHandler(const QString &result) OVERRIDE;
+
+	void	bindTo(Option *option)						override;
+	Option* createOption()								override;
+	bool	isOptionValid(Option* option)				override;
+	bool	isJsonValid(const Json::Value& optionValue) override;
+	Option* boundTo()									override { return _boundTo; }
+	void	resetQMLItem(QQuickItem *item)				override;
+	void	rScriptDoneHandler(const QString &result)	override;
 	
 	ListModelTermsAvailable* allVariablesModel() { return _allVariablesModel; }
 
-signals:
-	
 private slots:
 	void checkSyntax();
     
 protected:
-	OptionString *_boundTo;
-	QString _text;
-	TextType _textType;
-	QString _applyScriptInfo;
+	OptionString*				_boundTo;
+	QString						_text;
+	TextType					_textType;
+	QString						_applyScriptInfo;
 	
-	LavaanSyntaxHighlighter *_lavaanHighlighter;
-	ListModelTermsAvailable* _allVariablesModel;
+	LavaanSyntaxHighlighter*	_lavaanHighlighter;
+	ListModelTermsAvailable*	_allVariablesModel;
 };
 
 

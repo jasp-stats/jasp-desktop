@@ -22,33 +22,24 @@
 #include "listmodelavailableinterface.h"
 #include "common.h"
 
-class ListModelTermsAssigned;
-
 class ListModelTermsAvailable : public ListModelAvailableInterface
 {
 	Q_OBJECT	
 public:
 	ListModelTermsAvailable(QMLListView* listView);
+		
+	void		initTerms(const Terms& terms)		override;
+	void		resetTermsFromSourceModels()		override;
 	
-	virtual void initTerms(const Terms &terms) OVERRIDE;
-	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
-	
-	virtual void resetTermsFromSourceModels();
-	virtual ListModel* getSourceModelOfTerm(const Term& term);
-	
-	void setEmptyValue(QString emptyValue)	{ _addEmptyValue = true; _emptyValue = emptyValue; }	
+	ListModel*	getSourceModelOfTerm(const Term& term);
+	void		addEmptyValue() { _addEmptyValue = true; }
 
-public slots:
-	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;
+protected:
+	virtual void _resetTerms(const Terms &terms);
 	
-private:
-	void _setChangedTerms(const Terms& newTerms);
-	Terms _tempRemovedTerms;
-	Terms _tempAddedTerms;
-	
-	bool _addEmptyValue;
-	QString _emptyValue;		
+private:	
+	std::map<QString, ListModel*>	_termSourceModelMap;	
+	bool							_addEmptyValue = false;
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

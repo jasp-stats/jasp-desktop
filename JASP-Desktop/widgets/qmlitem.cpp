@@ -24,11 +24,19 @@
 QMLItem::QMLItem(QQuickItem *item, AnalysisForm* form)
 	: _item(item), _form(form)
 {
-	_name = QQmlProperty(_item, "name").read().toString();
+	_name = getItemProperty("name").toString();
 }
 
-QMLItem::~QMLItem()
+QMLItem::QMLItem(QMap<QString, QVariant> &properties, AnalysisForm *form)
+	: _item(nullptr), _properties(properties), _form(form)
 {
+	_name = getItemProperty("name").toString();
+}
+
+void QMLItem::cleanUp()
+{
+	if (_item)
+		_item->disconnect();	
 }
 
 void QMLItem::resetQMLItem(QQuickItem *item)
@@ -49,3 +57,20 @@ bool QMLItem::addDependency(QMLItem *item)
 	_depends.push_back(item);
 	return true;
 }
+
+void QMLItem::setItemProperty(const QString& name, const QVariant& value)
+{
+	if (_item)
+		_item->setProperty(name.toStdString().c_str(), value);
+	else
+		_properties[name] = value;
+}
+
+QVariant QMLItem::getItemProperty(const QString &name)
+{
+	if (_item)
+		return _item->property(name.toStdString().c_str());
+	else
+		return _properties[name];
+}
+

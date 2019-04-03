@@ -33,26 +33,27 @@ class QMLListViewDraggable : public QMLListView
 public:
 	QMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
 	
-	virtual void setUp() OVERRIDE;
+	void setUp() override;
 	
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
+	
+	void setDropMode(qmlDropMode dropMode);
 
 protected:
-	void setDropMode(qmlDropMode dropMode);
-	
 	ListModelDraggable* _draggableModel;
 	
 private slots:
 	void moveItemsDelayedHandler();
 	void itemDoubleClickedHandler(int index);
-	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex);	
+	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, QString assignOption);	
 	
 private:
 	QList<int> _tempIndexes;
 	ListModelDraggable* _tempDropModel;
 	int _tempDropItemIndex;
+	QString _tempAssignOption;
 	
-	void _moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex);	
+	void _moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, const QString& assignOption = "");	
 };
 
 #endif // QMLLISTVIEWDRAGGABLE_H

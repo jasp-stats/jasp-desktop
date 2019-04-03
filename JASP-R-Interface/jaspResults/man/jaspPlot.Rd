@@ -30,9 +30,7 @@
 		\item{\code{width}:}{Stores the width used to make the plot, will not redraw the plot on change. }
 		\item{\code{height}:}{Stores the height used to make the plot, will not redraw the plot on change. }
 
-		\item{\code{errorMessage}:}{Sets the errormessage on the plot. }
-    \item{\code{error}:}{Sets the exact kind of errortype connected to 'errorMessage' on the plot. }
-    \item{\code{status}:}{Stores the status of the plot, default is complete, set to 'running' if it takes a long time to calculate it. }
+	    \item{\code{status}:}{Stores the status of the plot, default is complete, set to 'running' if it takes a long time to calculate it. }
 
 		\item{\code{filePathPng}:}{The location of the generated png (eps?) file that should be remembered in tempfiles. For internal use mostly. }
 	

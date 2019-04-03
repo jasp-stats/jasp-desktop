@@ -10,7 +10,7 @@ linux:CONFIG += -pipe
 
 DESTDIR = ..
 TARGET = JASPEngine
-CONFIG   += console
+CONFIG   += cmdline
 CONFIG   -= app_bundle
 
 TEMPLATE = app
@@ -71,7 +71,7 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 win32:LIBS += -lole32 -loleaut32
 macx:LIBS += -L$$_R_HOME/lib -lR
@@ -84,7 +84,8 @@ exists(/app/lib/*) {
     InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASPgraphs
 } else {
     InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch --library=$$OUT_PWD/../R/library $$PWD/JASP
-    InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" CMD INSTALL --no-multiarch --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
+    win32:InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$OUT_PWD/../R/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
+    macx:InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
 }
 
 QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage

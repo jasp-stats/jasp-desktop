@@ -80,7 +80,6 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 					if (!syncColumn->isValueEqual(orgColumn, r))
 					{
 						std::cout << "Value Changed, col: " << syncColumnName << ", row " << (r+1) << std::endl;
-						std::cout.flush();
 						changedColumns.push_back(std::pair<int, Column *>(syncColNo, &orgColumn));
 						break;
 					}
@@ -182,7 +181,6 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 			try {
 
 				std::cout << "Enlarge dataset " << std::endl;
-				std::cout.flush();
 
 				dataSet = SharedMemory::enlargeDataSet(dataSet);
 				success = false;
@@ -194,13 +192,11 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 		}
 		catch (std::exception &e)
 		{
-			std::cout << "Exception " << e.what() << "\n";
-			std::cout.flush();
+			std::cout << "Exception " << e.what() << std::endl;
 		}
 		catch (...)
 		{
-			std::cout << "something else\n ";
-			std::cout.flush();
+			std::cout << "something else" << std::endl;
 		}
 	}
 	while ( ! success);

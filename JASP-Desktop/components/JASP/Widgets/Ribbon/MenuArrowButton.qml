@@ -25,7 +25,7 @@ Rectangle
 	id							: ribbonButton
 	width						: implicitWidth
 	height						: implicitHeight
-	implicitHeight				: Theme.ribbonButtonHeight * 0.8
+	implicitHeight				: Theme.ribbonButtonHeight * 0.6
 	implicitWidth				: implicitHeight
 	// radius					: 5
 	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground
@@ -33,12 +33,13 @@ Rectangle
 	property bool	hamburger:	true
 	property bool	showArrow:	false
 	property string	toolTip:	""
+	property bool	toolTipVisible:	toolTip !== "" && mice.containsMouse
 
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			Theme.toolTipTimeout
-	ToolTip.delay:				Theme.toolTipDelay
+	ToolTip.delay:				Theme.toolTipDelay / 5
 	ToolTip.toolTip.font:		Theme.font
-	ToolTip.visible:			toolTip !== "" && mice.containsMouse
+	ToolTip.visible:			toolTipVisible
 	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor }
 
 	signal clicked
@@ -52,7 +53,7 @@ Rectangle
 		scale:				baseScale * (mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1)
 
 
-		property real	baseScale:		0.8 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
+		property real	baseScale:		0.7 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
 
 		property real	baseHeight:		80
 		property real	barThickness:	8 //(Theme.ribbonButtonHeight (2 * Theme.ribbonButtonPadding)) / 7

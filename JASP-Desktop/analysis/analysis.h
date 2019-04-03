@@ -38,7 +38,8 @@ class AnalysisForm;
 class Analysis : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString name READ nameQ NOTIFY nameChanged)
+	Q_PROPERTY(QString name		READ nameQ		NOTIFY nameChanged		)
+	Q_PROPERTY(QString helpFile	READ helpFile	NOTIFY helpFileChanged	)
 	
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
@@ -47,7 +48,7 @@ public:
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, RewriteImgs, Exception, Initializing };
 	void setStatus(Status status);
 
-	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, const Version &version, Json::Value *data);
+	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
 	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry);
 
 	virtual ~Analysis();
@@ -70,6 +71,9 @@ signals:
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestComputedColumnDestruction(	QString columnName);
+
+	void				helpFileChanged(QString helpFile);
+	Q_INVOKABLE void	expandAnalysis();
 
 public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
@@ -139,12 +143,26 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
 	void					runScriptRequestDone(const QString& result, const QString& controlName);	
 
+	QString helpFile() const
+	{
+		return m_helpFile;
+	}
+
 public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
 
 
 	
+	void setHelpFile(QString helpFile)
+	{
+		if (m_helpFile == helpFile)
+			return;
+
+		m_helpFile = helpFile;
+		emit helpFileChanged(m_helpFile);
+	}
+
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
@@ -185,6 +203,7 @@ private:
 	AnalysisForm*			_analysisForm	= nullptr;	
 
 	std::string				_codedReferenceToAnalysisEntry = "";
+	QString m_helpFile;
 };
 
 #endif // ANALYSIS_H

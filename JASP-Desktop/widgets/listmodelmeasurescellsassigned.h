@@ -29,20 +29,20 @@ class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 public:
 	ListModelMeasuresCellsAssigned(QMLListView* listView);
 
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	int			rowCount(const QModelIndex &parent = QModelIndex())							const	override;
+	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
+	Terms*		termsFromIndexes(const QList<int> &indexes)									const	override;	
+	Terms*		addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
+	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
+	void		removeTerms(const QList<int>& indexes) override;
 
-	void initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
+	void		initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
 	
-	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;	
-	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1)  OVERRIDE;
-	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1) OVERRIDE;		
-	virtual void removeTerms(const QList<int>& indexes) OVERRIDE;
 
 	const QList<QString>& variables() const { return _variables; }	
 
 public slots:	
-	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;	
+	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;	
 	
 private:
 	QList<QString> _levels;

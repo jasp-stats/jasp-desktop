@@ -784,7 +784,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std::string> &values, const std::map<std::string, std::string>&labels, bool * changedSomething)
 {
-	if(changedSomething != NULL)
+	if(changedSomething != nullptr)
 		*changedSomething = false;
 
 	std::map<int, std::string>	emptyValuesMap;
@@ -807,7 +807,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 		if (isEmptyValue(value))
 		{
-			if(changedSomething != NULL && *intInputItr != INT_MIN)
+			if(changedSomething != nullptr && *intInputItr != INT_MIN)
 				*changedSomething = true;
 
 			*intInputItr = INT_MIN;
@@ -816,7 +816,10 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 		}
 		else
 		{
-			if(changedSomething != NULL && *intInputItr != map[value])
+			if (map.find(value) == map.end())
+				throw std::runtime_error("Error when reading column " + name() + ": cannot convert it to Nominal Text");
+			
+			if(changedSomething != nullptr && *intInputItr != map[value])
 				*changedSomething = true;
 
 			*intInputItr = map[value];
@@ -828,7 +831,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 	while (nb_values < _rowCount)
 	{
-		if(changedSomething != NULL && *intInputItr != INT_MIN)
+		if(changedSomething != nullptr && *intInputItr != INT_MIN)
 			*changedSomething = true;
 
 		*intInputItr = INT_MIN;
@@ -934,10 +937,7 @@ bool Column::isValueEqual(int row, int value)
 	{
 		bool result = (intValue == value);
 		if (!result)
-		{
 			std::cout << "Value not equal: " << intValue << " " << value << std::endl;
-			std::cout.flush();
-		}
 		return result;
 	}
 
@@ -1160,7 +1160,6 @@ void Column::truncate(int rows)
 			if (itr == _blocks.rend())
 			{
 				std::cout << "Try to erase more blocks than existing!!" << std::endl;
-				std::cout.flush();
 				rowsToDelete = 0;
 				_rowCount = 0;
 			}
@@ -1232,7 +1231,6 @@ int& Column::IntsStruct::operator [](int rowIndex)
 	{
 		std::cout << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
 		std::cout << "Nb of blocks: " << parent->_blocks.size() << std::endl;
-		std::cout.flush();
 	}
 
 	int blockId = itr->first;
