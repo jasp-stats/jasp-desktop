@@ -18,7 +18,7 @@
 #include "engine.h"
 
 #ifdef _WIN32
-void openConsoleOutput()
+void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 {
 
 		FreeConsole();
@@ -28,6 +28,9 @@ void openConsoleOutput()
 
 		// attach the new console to this application's process
 		AttachConsole(GetCurrentProcessId());
+
+		static std::string title = "jaspEngine " + std::to_string(slaveNo) + " for parent JASP at PID " + std::to_string(parentPID);
+		SetConsoleTitleA(title.c_str());
 
 		// reopen the std I/O streams to redirect I/O to the new console
 		freopen("CONOUT$", "w", stdout);
@@ -43,7 +46,7 @@ int main(int argc, char *argv[])
 		unsigned long parentPID = strtoul(argv[2], NULL, 10);
 
 #ifdef _WIN32
-		// openConsoleOutput(); //uncomment to have a console window open per Engine that shows you std out and cerr. (On windows only, on unixes you can just run JASP from a terminal)
+		//openConsoleOutput(slaveNo, parentPID); //uncomment to have a console window open per Engine that shows you std out and cerr. (On windows only, on unixes you can just run JASP from a terminal)
 #endif
 
 		std::cout << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;

@@ -66,14 +66,14 @@ signals:
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(const QString & value);
 
-	void computeColumnSucceeded(		const std::string & columnName, const std::string & warning, bool dataChanged);
-	void computeColumnFailed(			const std::string & columnName, const std::string & error);
+	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
+	void computeColumnFailed(			const QString & columnName, const QString & error);
 
-	void moduleInstallationSucceeded(	const std::string & moduleName);
-	void moduleInstallationFailed(		const std::string & moduleName, const std::string & errorMessage);
-	void moduleLoadingSucceeded(		const std::string & moduleName);
-	void moduleLoadingFailed(			const std::string & moduleName, const std::string & errorMessage);
-	void moduleUninstallingFinished(	const std::string & moduleName);
+	void moduleInstallationSucceeded(	const QString & moduleName);
+	void moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
+	void moduleLoadingSucceeded(		const QString & moduleName);
+	void moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
+	void moduleUninstallingFinished(	const QString & moduleName);
 
 	void refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 
@@ -101,9 +101,9 @@ private slots:
 	void subProcessError(QProcess::ProcessError error);
 	void subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
-	void moduleLoadingFailedHandler(		const std::string & moduleName, const std::string & errorMessage, int channelID);
-	void moduleLoadingSucceededHandler(		const std::string & moduleName, int channelID);
-	void moduleUnloadingFinishedHandler(	const std::string & moduleName, int channelID);
+	void moduleLoadingFailedHandler(		const QString & moduleName, const QString & errorMessage, int channelID);
+	void moduleLoadingSucceededHandler(		const QString & moduleName, int channelID);
+	void moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
 
 	void restartEngines();
 

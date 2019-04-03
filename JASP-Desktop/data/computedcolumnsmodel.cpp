@@ -203,8 +203,11 @@ void ComputedColumnsModel::revertToDefaultInvalidatedColumns()
 		}
 }
 
-void ComputedColumnsModel::computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged)
+void ComputedColumnsModel::computeColumnSucceeded(QString columnNameQ, QString warningQ, bool dataChanged)
 {
+	std::string columnName	= columnNameQ.toStdString(),
+				warning		= warningQ.toStdString();
+
 	bool shouldNotifyQML = _currentlySelectedName.toStdString() == columnName;
 
 	if(_computedColumns->setError(columnName, warning) && shouldNotifyQML)
@@ -222,8 +225,11 @@ void ComputedColumnsModel::computeColumnSucceeded(std::string columnName, std::s
 		checkForDependentColumnsToBeSent(columnName);
 }
 
-void ComputedColumnsModel::computeColumnFailed(std::string columnName, std::string error)
+void ComputedColumnsModel::computeColumnFailed(QString columnNameQ, QString errorQ)
 {
+	std::string columnName	= columnNameQ.toStdString(),
+				error		= errorQ.toStdString();
+
 	bool shouldNotifyQML = _currentlySelectedName.toStdString() == columnName;
 
 	if(areLoopDependenciesOk(columnName) && _computedColumns->setError(columnName, error) && shouldNotifyQML)

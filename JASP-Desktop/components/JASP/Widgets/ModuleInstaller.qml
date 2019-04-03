@@ -102,7 +102,7 @@ Popup
 						{
 							id: folderModel
 
-							nameFilters:		["*.jaspMod"]
+							nameFilters:		["*.tar.gz"]
 							showDotAndDotDot:	true
 							showDirs:			true
 						}
@@ -143,7 +143,7 @@ Popup
 									{
 										if(dynamicModules.isFileAnArchive(filePath))
 										{
-											var textJson			= dynamicModules.getDescriptionFromArchive(filePath)
+											var textJson			= dynamicModules.getDescriptionJsonFromArchive(filePath)
 											descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
 
 											moduleInstallerRect.currentJSON = JSON.parse(textJson)
@@ -157,7 +157,7 @@ Popup
 											var maintainer			= moduleDescription.maintainer
 											var website				= moduleDescription.website
 
-											if(title !== undefined)
+											if(textJson !== undefined && textJson !== "")
 											{
 												descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
 												folderList.currentlySelectedFilePath = filePath
@@ -232,14 +232,10 @@ Popup
 				{
 					if(moduleInstallerRect.currentJSON !== null)
 					{
-						installProgressItem.height = Qt.binding(function() { return moduleInstallerRect.height - (installButton.height + (Theme.generalAnchorMargin * 2) )})
-
-						//installProgressItem.installText = "Installing Module '"+moduleInstallerRect.currentJSON.moduleDescription.title +"'"
-						//text							= installProgressItem.installText + "..."
 						enabled							= false
 						selected						= true
 
-						installProgressItem.moduleBeingInstalled = dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
+						dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
 
 						moduleInstallerPopup.close() //There is no information being shown anyway so lets just close the window now
 					}

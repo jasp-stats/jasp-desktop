@@ -25,8 +25,13 @@ Form {
 
     Rectangle
     {
-        color: "red"
+        color: "yellow"
         width: 100
         height: width
+        Text{
+            text: "Tsja"
+            color: "purple"
+            font.pixelSize: 40
+        }
     }
 }

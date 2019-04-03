@@ -75,9 +75,9 @@ signals:
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
-	void removeDynamicRibbonButtonModel(std::string moduleName)			{ removeRibbonButtonModel(moduleName);				}
+	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
-	void moduleLoadingSucceeded(const std::string & moduleName);
+	void moduleLoadingSucceeded(const QString & moduleName);
 
 private slots:
 	void ribbonButtonModelChanged(RibbonButtonModel* model);

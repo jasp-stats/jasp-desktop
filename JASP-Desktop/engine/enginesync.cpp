@@ -317,6 +317,11 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	std::cout << "R_HOME set to " << rHomePath.toStdString() << std::endl;
 
 #ifdef _WIN32
+	//Windows has *special needs*, so let's make sure it can understand R_HOME later on. Not sure if it is necessary but it couldn't hurt, right?
+	QString rHomeWin = "";
+
+	for(auto & kar : rHome.absolutePath())
+		rHomeWin += kar != '/' ? QString(kar) : "\\";
 
 #if defined(ARCH_32)
 #define ARCH_SUBPATH "i386"
@@ -325,11 +330,11 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #endif
 
 	env.insert("PATH",				programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
-	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("R_HOME",			rHomeWin);
 
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS",			rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS",			rHomeWin + "\\library");
 
 	env.insert("R_ENVIRON",			"something-which-doesnt-exist");
 	env.insert("R_PROFILE",			"something-which-doesnt-exist");
@@ -525,42 +530,42 @@ bool EngineSync::allEnginesResumed()
 	return true;
 }
 
-void EngineSync::moduleLoadingFailedHandler(const std::string & moduleName, const std::string & errorMessage, int channelID)
+void EngineSync::moduleLoadingFailedHandler(const QString & moduleName, const QString & errorMessage, int channelID)
 {
 #ifdef JASP_DEBUG
-	std::cout << "Received EngineSync::moduleLoadingFailedHandler(" << moduleName << ", " << errorMessage << ", " << channelID << ")" << std::endl;
+	std::cout << "Received EngineSync::moduleLoadingFailedHandler(" << moduleName.toStdString() << ", " << errorMessage.toStdString() << ", " << channelID << ")" << std::endl;
 #endif
 
-	if(_requestWideCastModuleName != moduleName)
-		throw std::runtime_error("Unexpected module received in EngineSync::moduleLoadingFailed, expected: " + _requestWideCastModuleName + ", but got: " + moduleName);
+	if(_requestWideCastModuleName != moduleName.toStdString())
+		throw std::runtime_error("Unexpected module received in EngineSync::moduleLoadingFailed, expected: " + _requestWideCastModuleName + ", but got: " + moduleName.toStdString());
 
-	_requestWideCastModuleResults[channelID] = errorMessage.size() == 0 ? "error" : errorMessage;
+	_requestWideCastModuleResults[channelID] = errorMessage.size() == 0 ? "error" : errorMessage.toStdString();
 
 	checkModuleWideCastDone();
 }
 
-void EngineSync::moduleLoadingSucceededHandler(const std::string & moduleName, int channelID)
+void EngineSync::moduleLoadingSucceededHandler(const QString & moduleName, int channelID)
 {
 #ifdef JASP_DEBUG
-	std::cout << "Received EngineSync::moduleLoadingSucceededHandler(" << moduleName << ", " << channelID << ")" << std::endl;
+	std::cout << "Received EngineSync::moduleLoadingSucceededHandler(" << moduleName.toStdString() << ", " << channelID << ")" << std::endl;
 #endif
 
-	if(_requestWideCastModuleName != moduleName)
-		throw std::runtime_error("Unexpected module received in EngineSync::moduleLoadingSucceeded, expected: " + _requestWideCastModuleName + ", but got: " + moduleName);
+	if(_requestWideCastModuleName != moduleName.toStdString())
+		throw std::runtime_error("Unexpected module received in EngineSync::moduleLoadingSucceeded, expected: " + _requestWideCastModuleName + ", but got: " + moduleName.toStdString());
 
 	_requestWideCastModuleResults[channelID] = "succes";
 
 	checkModuleWideCastDone();
 }
 
-void EngineSync::moduleUnloadingFinishedHandler(const std::string & moduleName, int channelID)
+void EngineSync::moduleUnloadingFinishedHandler(const QString & moduleName, int channelID)
 {
 #ifdef JASP_DEBUG
-	std::cout << "Received EngineSync::moduleUnloadingFinishedHandler(" << moduleName << ", " << channelID << ")" << std::endl;
+	std::cout << "Received EngineSync::moduleUnloadingFinishedHandler(" << moduleName.toStdString() << ", " << channelID << ")" << std::endl;
 #endif
 
-	if(_requestWideCastModuleName != moduleName)
-		throw std::runtime_error("Unexpected module received in EngineSync::moduleUnloadingFinishedHandler, expected: " + _requestWideCastModuleName + ", but got: " + moduleName);
+	if(_requestWideCastModuleName != moduleName.toStdString())
+		throw std::runtime_error("Unexpected module received in EngineSync::moduleUnloadingFinishedHandler, expected: " + _requestWideCastModuleName + ", but got: " + moduleName.toStdString());
 
 	_requestWideCastModuleResults[channelID] = "I am an inconsequential message";
 
@@ -588,8 +593,8 @@ void EngineSync::checkModuleWideCastDone()
 			}
 
 
-			if(failed == 0)	emit moduleLoadingSucceeded(_requestWideCastModuleName);
-			else			emit moduleLoadingFailed(_requestWideCastModuleName, compoundedError);
+			if(failed == 0)	emit moduleLoadingSucceeded(QString::fromStdString(_requestWideCastModuleName));
+			else			emit moduleLoadingFailed(QString::fromStdString(_requestWideCastModuleName), QString::fromStdString(compoundedError));
 		}
 
 		resetModuleWideCastVars();

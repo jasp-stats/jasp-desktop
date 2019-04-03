@@ -82,14 +82,16 @@ Item
 			MenuButton
 			{
 				id:					addDeveloperModuleButton
-				text:				"Install Developer Module"
+				text:				folderSelected ? "Install Developer Module" : "Select a Developer Module"
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
-				onClicked: 			dynamicModules.installJASPDeveloperModule()
-				toolTip:			"Install selected developer module"
+				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
+				toolTip:			folderSelected ? "Install selected developer module" : "Select a developer module under Left menu->Preference->Advanced"
 				visible:			preferencesModel.developerMode
+
+				readonly property bool folderSelected: preferencesModel.developerFolder != ""
 			}
 			
 			ToolSeparator

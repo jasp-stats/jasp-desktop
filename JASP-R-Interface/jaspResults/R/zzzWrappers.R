@@ -121,8 +121,8 @@ jaspObjR <- R6Class(
 		
 	),
 	private   = list(
-		jaspObject = NULL,
-		finalize = function() print(paste0("Finalize called on ", class(self)[1L]))
+    jaspObject = NULL
+    #,finalize = function() print(paste0("Finalize called on ", class(self)[1L]))
 	)
 )
 print.jaspObjR <- function(x, ...) {
@@ -159,8 +159,8 @@ jaspContainerR <- R6Class(
 		length = function(value) { if (missing(value)) { private$jaspObject$length } else {stop("property 'length' is read-only!") }}
 	),
 	private   = list(
-		children = list(),
-		finalizer = function() print("Hoi")
+    children = list()
+    #,finalizer = function() print("Hoi")
 	)
 )
 

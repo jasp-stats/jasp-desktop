@@ -202,11 +202,11 @@ void RibbonModel::ribbonButtonModelChanged(RibbonButtonModel* model)
 	emit dataChanged(index(row), index(row));
 }
 
-void RibbonModel::moduleLoadingSucceeded(const std::string & moduleName)
+void RibbonModel::moduleLoadingSucceeded(const QString & moduleName)
 {
 	if(moduleName == "*")
 		return;
 
-	RibbonButtonModel * ribMod = ribbonButtonModel(moduleName);
+	RibbonButtonModel * ribMod = ribbonButtonModel(moduleName.toStdString());
 	ribMod->setEnabled(true);
 }

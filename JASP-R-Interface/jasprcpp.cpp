@@ -371,6 +371,10 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	// Returns string if R result is a string, else returns "null"
 	// Can also load the entire dataset if need be
 
+/*#ifdef JASP_DEBUG
+	std::cout << "jaspRCPP_evalRCode runs: \n" << '"' << rCode << '"' << std::endl;
+#endif*/
+
 	lastErrorMessage = "";
 	rinside->instance()[".rCode"] = rCode;
 	const std::string rCodeTryCatch(""
