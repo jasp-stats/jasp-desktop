@@ -207,6 +207,23 @@
                      USE.NAMES = FALSE)])
 }
 
+.lavToPlotObj <- function(lavResult) {
+  # Create semplot model and unv the names of the manifest variables
+  # Sorry, this code is really ugly but all it does is replace names for plot.
+  semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
+
+  manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
+  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
+
+  lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
+  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- .unv(semPlotMod@Pars$lhs[lhsAreManifest])
+
+  rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
+  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- .unv(semPlotMod@Pars$rhs[rhsAreManifest])
+
+  return(semPlotMod)
+}
+
 ### SEM Function:
 SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	# this line does not work in jasptools :(
@@ -214,6 +231,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	availableVars <- colnames(dheader)
   variables <- .getUsedVars(options$model, availableVars)
   model <- .translateModel(options$model, variables)
+  keep <- NULL
 
   if (options$groupingVariable != "")
     variables <- c(variables, options$groupingVariable)
@@ -274,7 +292,6 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   inputCorrect <- identical(errorCheck, FALSE)
   ######################
 
-
   errorMessage <- ""
   groupVar <- NULL
 
@@ -283,7 +300,6 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
     # TODO (Sacha): No print I presume (Alexander)
     print(class(dataset[[ groupVar ]]))
   }
-
 
   # group equal:
   groupEqual <- ""
@@ -451,7 +467,8 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   meta[[9]]  <- list(name="covcor", type="table")
   meta[[10]] <- list(name="modificationIndices", type="table")
   meta[[11]] <- list(name="mardiasCoefficient", type="table")
-
+  meta[[12]] <- list(name="pathDiagram", type="image")
+  
   results[[".meta"]] <- meta
   results[["title"]] <- "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
 
@@ -853,12 +870,76 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   results[["fit"]][["citation"]] <- list(
     "Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/"
   )
+  
+  # Create path diagram:
+  if (perform == "run" && options$addPathDiagram) {
+    if(!is.null(semResults)) {
+      png() # semplot opens a device even though we specify doNotPlot, so we hack
+      p <- try(silent = FALSE, expr = {
+        semPlot::semPaths(.lavToPlotObj(semResults),
+            what            = ifelse(options$outputpathdiagramstandardizedparameter, "std", "paths"),
+            DoNotPlot       = TRUE,
+            ask             = FALSE,
+            layout          = "tree",
+            color           = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
+            border.width    = 1.5,
+            edge.label.cex  = 0.9,
+            lty             = 2,
+            title           = FALSE
+          )
+      })
+      dev.off()
+    } else {
+      png() # semplot opens a device even though we specify doNotPlot, so we hack
+      p <- try(silent = FALSE, expr = {
+        semPlot::semPaths(
+            object          = .lavToPlotObj(lavModel),
+            what            = "par",
+            DoNotPlot       = TRUE,
+            ask             = FALSE,
+            layout          = "tree",
+            edge.color      = "black",
+            color           = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
+            border.width    = 1.5,
+            edge.label.cex  = 0.9,
+            lty             = 2,
+            title           = FALSE
+          )
+      })
+      dev.off()
+    }
+    
+    if (isTryError(p)) {
+      errorMessage <- .extractErrorMessage(p)
+      results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+    } else {
+      pathDiagram <- list()
+      pathDiagram$title <- "Path Diagram"
+      pathDiagram$width <- options$plotWidth
+      pathDiagram$height <- options$plotHeight
+      if (pathDiagram$height == 0) {
+        pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
+      }
+      pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
+      content <- .writeImage(width = pathDiagram$width, 
+                             height = pathDiagram$height, plot = p, obj = TRUE)
+      
+      pathDiagram[["convertible"]] <- TRUE
+      pathDiagram[["obj"]] <- content[["obj"]]
+      pathDiagram[["data"]] <- content[["png"]]
+      pathDiagram[["status"]] <- "complete"
+      
+      results[["pathDiagram"]] <- pathDiagram
+      keep <- results[["pathDiagram"]][["data"]]
+    }
+  }
+
   # Return
   status <- list(ready=TRUE, error=error, errorMessage=errorMessage)
   if (perform == "run" && status$ready) {
-      retList <- list(results=results, status="complete", state=state)
+      retList <- list(results=results, status="complete", state=state, keep=keep)
   } else {
-      retList <- list(results=results, status="inited", state=state)
+      retList <- list(results=results, status="inited", state=state, keep=keep)
   }
   return(retList)
 }
