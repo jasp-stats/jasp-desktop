@@ -116,5 +116,6 @@
         <file>icons/variable-ordinal-disabled.svg</file>
         <file>icons/variable-scale-disabled.svg</file>
         <file>icons/large-arrow-right.png</file>
+        <file>icons/meta-analysis.svg</file>
     </qresource>
 </RCC>

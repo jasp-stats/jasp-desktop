@@ -16,18 +16,12 @@
 	"ribbonEntries":
 	[
 		{
-			"title": 	"Classical",
-			"icon": 	"analysis-bayesian-ttest.svg",
+			"title": 	"Meta Analysis",
+			"icon": 	"meta-analysis.svg",
 			"analyses":  [
 				{
-					"title":	"Classical",
+					"title":	"Classical Meta Analysis",
 					"function":	"ClassicalMetaAnalysis"
-				},
-				{
-				},
-				{
-					"title":	"QML Classical",
-					"function":	"QMLClassicalMetaAnalysis"
 				}
 			]
 		}
