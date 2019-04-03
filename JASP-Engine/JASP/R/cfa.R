@@ -22,8 +22,10 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 
 ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
-  jaspResults$title <- "Confirmatory Factor Analysis"
+  jaspResults$title <- "Confirmatory Factor Analysis<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
+  jaspResults$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
 
+  
   # Preprocess options
   options <- .cfaPreprocessOptions(options)
   
@@ -174,10 +176,21 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     estimator       = options$estimator
   ))
   
+  
   # Quit analysis on error
   if (inherits(cfaResult[["lav"]], "try-error")) { 
     JASP:::.quitAnalysis(paste("The model could not be estimated. Error message:\n\n", 
                          attr(cfaResult[["lav"]], "condition")$message))
+  }
+  
+  admissible <- .withWarnings(lavaan:::lav_object_post_check(cfaResult[["lav"]]))
+  print(admissible)
+  if (!admissible$value) {
+    JASP:::.quitAnalysis(paste("The model is not admissible:", admissible$warnings[[1]]$message))
+  }
+  
+  if (!cfaResult[["lav"]]@optim$converged) {
+    JASP:::.quitAnalysis("The model could not be estimated due to nonconvergence.")
   }
   
   if (cfaResult[["lav"]]@test[[1]]$df < 0) {
@@ -216,6 +229,16 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   return(cfaResult)
 }
+
+.withWarnings <- function(expr) {
+  myWarnings <- NULL
+  wHandler <- function(w) {
+    myWarnings <<- c(myWarnings, list(w))
+    invokeRestart("muffleWarning")
+  }
+  val <- withCallingHandlers(expr, warning = wHandler)
+  list(value = val, warnings = myWarnings)
+} 
 
 .cfaCalcSpecs <- function(dataset, options) {
   spec <- list()
@@ -765,7 +788,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     for (l in groupLabs) {
       ic <- fv[[l]]$cov
       ic[upper.tri(ic)] <- NA
-      tab <- createJaspTable()
+      tab <- createJaspTable(l)
       for (i in 1:ncol(ic)) {
         nm <- colnames(ic)[i]
         tab$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3")
@@ -800,7 +823,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     for (l in groupLabs) {
       rc <- rv[[l]]$cov
       rc[upper.tri(rc)] <- NA
-      tab <- createJaspTable()
+      tab <- createJaspTable(l)
       for (i in 1:ncol(rc)) {
         nm <- colnames(rc)[i]
         tab$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3;p:.001")
@@ -854,17 +877,23 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     title          = FALSE
   )
   dev.off()
+  
+  # set height depending on whether there is a second-order factor
+  plotwidth  <- 640
+  plotheight <- 320
+  if (length(cfaResult[["spec"]][["soLatents"]]) > 0) plotheight <- 500
 
   if (options$groupvar != "") {
     jaspResults[["plots"]][["pathplot"]] <- createJaspContainer("Model plots", position = 1)
     groupLabs <- cfaResult[["lav"]]@Data@group.label
     for (i in 1:length(groupLabs)) {
       jaspResults[["plots"]][["pathplot"]][[groupLabs[i]]] <-
-        createJaspPlot(pathplot[[i]], title = groupLabs[i], height = 500, width = 640)
+        createJaspPlot(pathplot[[i]], title = groupLabs[i], height = plotheight, width = plotwidth)
       jaspResults[["plots"]][["pathplot"]][[groupLabs[i]]]$dependOnOptions(c("pathplot", "plotmeans", "plotpars"))
     }
   } else {
-    jaspResults[["plots"]][["pathplot"]] <- createJaspPlot(pathplot, title = "Model plot", height = 500, width = 640)
+    jaspResults[["plots"]][["pathplot"]] <- createJaspPlot(pathplot, title = "Model plot", height = plotheight,
+                                                           width = plotwidth)
   }
 
   jaspResults[["plots"]][["pathplot"]]$dependOnOptions(c("pathplot", "plotmeans", "plotpars"))

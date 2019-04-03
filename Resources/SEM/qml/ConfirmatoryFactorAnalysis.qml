@@ -78,16 +78,6 @@ Form
             {
                 GroupBox
                 {
-                    title: qsTr("Additional fit measures")
-                    CheckBox { label: qsTr("AIC")   ; name: "aic"   }
-                    CheckBox { label: qsTr("BIC")   ; name: "bic"   }
-                    CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
-                    CheckBox { label: qsTr("TLI")   ; name: "tli"   }
-                    CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
-                    CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
-                }
-                GroupBox
-                {
                     title: qsTr("Model Options")
                     CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
                     CheckBox { label: qsTr("Assume factors uncorrelated") ; name: "uncorrelatedFactors"    }
@@ -125,19 +115,33 @@ Form
     
 	Section {
         title: qsTr("Additional output")
-        CheckBox { label: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
-        CheckBox { label: qsTr("Residual covariance matrix") ; name: "residCov"   }
-        CheckBox { 
-            label: qsTr("Modification indices")
-            name: "modIndices"
-            DoubleField {
-                label: qsTr("Cutoff")
-                name: "miCutoff"
-                min: 0
-                defaultValue: 3.84
+            GroupBox
+            {
+                title: qsTr("Additional fit measures")
+                CheckBox { label: qsTr("AIC")   ; name: "aic"   }
+                CheckBox { label: qsTr("BIC")   ; name: "bic"   }
+                CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
+                CheckBox { label: qsTr("TLI")   ; name: "tli"   }
+                CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
+                CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
             }
-        }
-        CheckBox { label: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
+            GroupBox
+            {
+                CheckBox { label: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
+                CheckBox { label: qsTr("Residual covariance matrix") ; name: "residCov"   }
+                CheckBox {
+                    label: qsTr("Modification indices")
+                    name: "modIndices"
+                    DoubleField {
+                        label: qsTr("Cutoff")
+                        name: "miCutoff"
+                        min: 0
+                        defaultValue: 3.84
+                    }
+                }
+                CheckBox { label: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
+            }
+
     }
 
 	Section {
@@ -175,18 +179,6 @@ Form
 	Section {
         text: qsTr("Advanced")
         GridLayout {
-            GroupBox {
-                title: qsTr("Options")
-                CheckBox { text: qsTr("Fix manifest intercepts to zero") ; name: "fixManifestInterceptsToZero" }
-                CheckBox { text: qsTr("Fix latent intercepts to zero")   ; name: "fixLatentInterceptsToZero"   ; checked: true }
-                CheckBox { text: qsTr("Omit residual single indicator")  ; name: "omitResidualSingleIndicator" ; checked: true }
-                CheckBox { text: qsTr("Residual variances")              ; name: "residualVariances"           ; checked: true }
-                CheckBox { text: qsTr("Correlate exogenous latents")     ; name: "correlateExogenousLatents"   ; checked: true }
-                CheckBox { text: qsTr("Add thresholdds")                 ; name: "addThresholds"               ; checked: true }
-                CheckBox { text: qsTr("Add scalings parameters")         ; name: "addScalingParameters"        ; checked: true }
-                CheckBox { text: qsTr("Correlate dependent variables")   ; name: "correlateDependentVariables" ; checked: true }
-            }
-
             GroupBox {
                 Layout.fillWidth: true
                 RadioButtonGroup {
@@ -236,6 +228,20 @@ Form
                 RadioButton { text: qsTr("All")     ; name: "all" }
                 RadioButton { text: qsTr("No X")    ; name: "nox" }
             }
+
+            GroupBox {
+                title: qsTr("Options")
+                debug: true
+                CheckBox { text: qsTr("Fix manifest intercepts to zero") ; name: "fixManifestInterceptsToZero" }
+                CheckBox { text: qsTr("Fix latent intercepts to zero")   ; name: "fixLatentInterceptsToZero"   ; checked: true }
+                CheckBox { text: qsTr("Omit residual single indicator")  ; name: "omitResidualSingleIndicator" ; checked: true }
+                CheckBox { text: qsTr("Residual variances")              ; name: "residualVariances"           ; checked: true }
+                CheckBox { text: qsTr("Correlate exogenous latents")     ; name: "correlateExogenousLatents"   ; checked: true }
+                CheckBox { text: qsTr("Add thresholdds")                 ; name: "addThresholds"               ; checked: true }
+                CheckBox { text: qsTr("Add scalings parameters")         ; name: "addScalingParameters"        ; checked: true }
+                CheckBox { text: qsTr("Correlate dependent variables")   ; name: "correlateDependentVariables" ; checked: true }
+            }
+
         }
     }
 }

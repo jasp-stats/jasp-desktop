@@ -20,7 +20,7 @@
 			"icon": 	"sem-latreg.svg",
 			"analyses":  [
 				{
-					"title":	"Lavaan Modeling",
+					"title":	"Structural Equation Modeling",
 					"qml":		"SEMSimple.qml",
 					"function":	"SEMSimple"
 				},
