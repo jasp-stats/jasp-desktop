@@ -209,7 +209,7 @@ Form
 			CheckBox
 			{
 				name: "plotResidualsHistogram";	label: qsTr("Residuals vs. histogram")
-				CheckBox { name: "plotResidualsHistogramStandardized";	label: qsTr("Standardized residuals")	}
+                CheckBox { name: "plotResidualsHistogramStandardized";	label: qsTr("Standardized residuals"); checked: true	}
 			}
 			CheckBox { name: "plotResidualsQQ";			label: qsTr("Q-Q plot standardized residuals")			}
 			CheckBox { name: "plotsPartialRegression";	label: qsTr("Partial plots")								}
