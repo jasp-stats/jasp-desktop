@@ -58,12 +58,18 @@ Form
 		}
 		CheckBox
 		{
-			name: "effectSize"; label: qsTr("Effect Size")
-			CheckBox
-			{
-				name: "effSizeConfidenceIntervalCheckbox"; label: qsTr("Confidence interval")
-				childrenOnSameRow: true
-				PercentField { name: "descriptivesEffectSizeConfidenceIntervalPercent"; defaultValue: 95 }
+			name: "effectSize"; label: qsTr("Effect Sizes")
+			RadioButtonGroup {
+				name: "effectSizesCheckbox";
+				RadioButton { value: "cohensD"; label: qsTr("Cohen's d") ; checked: true }
+				RadioButton { value: "glassD"; label: qsTr("Glass' delta") }
+				RadioButton { value: "hedgesG"; label: qsTr("Hedges' g") }
+				CheckBox
+				{
+					name: "effSizeConfidenceIntervalCheckbox"; label: qsTr("Confidence interval")
+					childrenOnSameRow: true
+					PercentField { name: "descriptivesEffectSizeConfidenceIntervalPercent"; defaultValue: 95 }
+				}
 			}
 		}
 		CheckBox { name: "descriptives";	label: qsTr("Descriptives")								}
@@ -72,7 +78,7 @@ Form
 			name: "descriptivesPlots";		label: qsTr("Descriptives plots")
 			PercentField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
 		}
-		CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke mazimum p-ratio")				}
+		CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")				}
 	}
 
 	RadioButtonGroup

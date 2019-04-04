@@ -134,9 +134,21 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 																				 format = "sf:4;dp:3")
 	}
 	
+		get_name <- function() {
+		# Perhaps more accurate names are pooled, unpooled, pooled corrected (where 'pooling' refers to the s.d.'s).
+		if (options$effectSizesCheckbox == "cohensD") {
+			return("Cohen's d")
+		}	else if (options$effectSizesCheckbox == "glassD") {
+			return("Glass' delta") # Unicode symbol doesn't seem to work, so also made it this in the .qml.
+			# May want to footnote (or something) which data's s.d. is used. (Index 2.)
+		} else if (options$effectSizesCheckbox == "hedgesG") {
+			return("Hedges' g")
+		}
+	}
+
 	if (!wantsWilcox) {
 	  nameOfLocationParameter <- "Mean Difference"
-	  nameOfEffectSize <- "Cohen's d"
+	  nameOfEffectSize <- get_name()
 	} else if (wantsWilcox && onlyTest) {
 	  nameOfLocationParameter <- "Hodges-Lehmann Estimate"
 	  nameOfEffectSize <- "Rank-Biserial Correlation"
@@ -183,19 +195,16 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	## add Cohen's d
 	if (wantsEffect) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
-											 type = "number", format = "sf:4;dp:3")
-  	if (wantsWilcox && wantsStudents && wantsWelchs) {
-  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+											 									 type = "number", format = "sf:4;dp:3")
+  	if (wantsWilcox) {
+  	  if (wantsStudents || wantsWelchs) {
+				.addFootnote(footnotes, symbol = "<em>Note.</em>", text = sprintf("For the Mann-Whitney test,
+  	               effect size is given by the rank biserial correlation. For the other test(s), by %s.", get_name()))
+			}
+			else {
+				.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Mann-Whitney test,
   	               effect size is given by the rank biserial correlation.")
-  	} else if (wantsWilcox && wantsStudents) {
-  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-  	               effect size is given by the rank biserial correlation.")
-  	} else if (wantsWilcox && wantsWelchs) {
-  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-  	               effect size is given by the rank biserial correlation.")
+			}
   	}
 	}
 
@@ -333,7 +342,20 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							  sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
 							}
 							
-							d <- .clean(as.numeric((ms[1] - ms[2]) / sdPooled)) # Cohen's d
+							if (wantsEffect) {
+								# Sources are https://en.wikipedia.org/wiki/Effect_size for now.
+								if (options$effectSizesCheckbox == "cohensD") {
+									d <- .clean(as.numeric((ms[1] - ms[2]) / sdPooled))
+								}	else if (options$effectSizesCheckbox == "glassD") {
+									d <- .clean(as.numeric((ms[1] - ms[2]) / sds[2]))
+									# Should give feedback on which data is considered 2.
+								} else if (options$effectSizesCheckbox == "hedgesG") {
+									hedges_g <- .clean(as.numeric((ms[1] - ms[2]) / sdPooled)) # same as Cohen's d so far
+									# correction_J <- function(a) { gamma(a / 2) / (sqrt(a/2) * (a - 1) / 2) } # supposedly; use approx.
+									d <- 1 - 3 / (4 * (ns[1] + ns[2]) - 9) * hedges_g # less biased / corrected version
+								}
+								
+							}
 							sed <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
 							confIntEffSize <- c(0,0)
 							if (wantsConfidenceEffSize){
@@ -341,6 +363,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							  # Using the non-central t distributions for computing the confidence interval.
 							  # https://cran.r-project.org/web/packages/effsize/index.html
 							  # Same result as MBESS package by Ken Kelley, v4.4.3
+							  # Note that the confidence interval is the same regardless of pooling s.d.'s or (Hedges') correction.
 							  alphaLevels <- sort( c( (1-ciEffSize), ciEffSize ) )
 							  
 							  if (direction == "two.sided") {
