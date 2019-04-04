@@ -109,7 +109,7 @@ jaspObjR <- R6Class(
 		print                          = function()                            {private$jaspObject$print()},
 		printHtml                      = function()                            {private$jaspObject$printHtml()},
 		toHtml                         = function()                            {private$jaspObject$toHtml()},
-		setOptionMustBeDependency      = function(optionName, mustBeThis)	   {private$jaspObject$setOptionMustBeDependency(optionName, mustBeThis)},
+    setOptionMustBeDependency      = function(optionName, mustBeThis)	     {private$jaspObject$setOptionMustBeDependency(optionName, mustBeThis)},
 		setOptionMustContainDependency = function(optionName, mustContainThis) {private$jaspObject$setOptionMustContainDependency(optionName, mustContainThis)},
 		setError                       = function(x)                           {private$jaspObject$setError(x)},
 		getError                       = function()                            {private$jaspObject$getError()}
@@ -117,7 +117,8 @@ jaspObjR <- R6Class(
 	active = list(
 		position = function(x) {if (missing(x)) private$jaspObject$position else private$jaspObject$position <- as.numeric(x)},
 		title    = function(x) {if (missing(x)) private$jaspObject$title    else private$jaspObject$title    <- x},
-		warning  = function(x) {if (missing(x)) private$jaspObject$warning  else private$jaspObject$warning  <- x}
+    warning  = function(x) {if (missing(x)) private$jaspObject$warning  else private$jaspObject$warning  <- x},
+    type     = function() {                 private$jaspObject$type}
 		
 	),
 	private   = list(

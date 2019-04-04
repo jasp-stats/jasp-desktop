@@ -19,6 +19,8 @@ testFunc <- function(jaspResults, dataset, options)
 
     jaspResults[["check0"]]$title <- titel0
 
+    jaspResults[["check0"]]$title <- paste0(jaspResults[["check0"]]$title, ' my type is ', jaspResults[["check0"]]$type)
+
     titel1 <- '1?'
     if(is.null(jaspResults[["check1"]]))
     {
