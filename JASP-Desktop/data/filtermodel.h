@@ -59,7 +59,7 @@ public slots:
 	void processFilterErrorMsg(QString filterErrorMsg, int requestId);
 	void rescanRFilterForColumns();
 
-	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
+	void computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
 
 signals:
 	void rFilterChanged();

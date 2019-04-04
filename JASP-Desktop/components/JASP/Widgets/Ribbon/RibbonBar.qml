@@ -71,14 +71,16 @@ FocusScope
 
 		MouseArea
 		{
-			id: ribbonMenuMouseArea
-			anchors.fill: parent
-			enabled:  fileMenuModel.visible  || modulesMenu.opened
-			cursorShape: !mainWindow.datasetLoaded || enabled ? Qt.ArrowCursor : Qt.PointingHandCursor
+			id				: ribbonMenuMouseArea
+			anchors.fill	: parent
+			enabled			: fileMenuModel.visible || modulesMenu.opened || customMenu.visible
+			cursorShape		: !mainWindow.datasetLoaded || enabled ? Qt.ArrowCursor : Qt.PointingHandCursor
 
-			onClicked: {
-				fileMenuModel.visible =false;
-				modulesMenu.opened = false;
+			onClicked		:
+			{
+				fileMenuModel.visible	= false;
+				modulesMenu.opened		= false;
+				customMenu.visible		= false;
 			}
 		}
 	}

@@ -86,15 +86,15 @@ signals:
 
 	void rCodeReturned(const QString & result, int requestId);
 
-	void computeColumnSucceeded(		const std::string & columnName, const std::string & warning, bool dataChanged);
-	void computeColumnFailed(			const std::string & columnName, const std::string & error);
+	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
+	void computeColumnFailed(			const QString & columnName, const QString & error);
 
-	void moduleInstallationSucceeded(	const std::string & moduleName);
-	void moduleInstallationFailed(		const std::string & moduleName, const std::string & errorMessage);
-	void moduleLoadingSucceeded(		const std::string & moduleName, int channelID);
-	void moduleLoadingFailed(			const std::string & moduleName, const std::string & errorMessage, int channelID);
-	void moduleUnloadingFinished(		const std::string & moduleName, int channelID);
-	void moduleUninstallingFinished(	const std::string & moduleName);
+	void moduleInstallationSucceeded(	const QString & moduleName);
+	void moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
+	void moduleLoadingSucceeded(		const QString & moduleName, int channelID);
+	void moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage, int channelID);
+	void moduleUnloadingFinished(		const QString & moduleName, int channelID);
+	void moduleUninstallingFinished(	const QString & moduleName);
 
 private:
 	void sendPauseEngine();

@@ -39,6 +39,8 @@ public:
 	virtual std::string toHtml() { return ""; }
 			std::string htmlTitle() { return "<h2>" + _title + "</h2>"; }
 
+			std::string type() { return jaspObjectTypeToString(_type); }
+
 			std::string	getWarning()						{ return _warning; }
 			void		setWarning(std::string warning)		{ _warning = warning; _warningSet = true; }
 			bool		getError()							{ return _error; }
@@ -177,6 +179,7 @@ public:
 	void		print()								{ myJaspObject->print(); }
 	void		addMessage(std::string msg)			{ myJaspObject->addMessage(msg); }
 	std::string	toHtml()							{ return myJaspObject->toHtml(); }
+	std::string	type()								{ return myJaspObject->type(); }
 	void		printHtml()							{ jaspPrint(myJaspObject->toHtml()); }
 
 	void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis)				{ myJaspObject->setOptionMustBeDependency(optionName, mustBeThis);				}

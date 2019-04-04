@@ -82,8 +82,8 @@ signals:
 				void	lastCreatedColumnChanged(QString lastCreatedColumn);
 
 public slots:
-				void				computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
-				void				computeColumnFailed(std::string columnName, std::string error);
+				void				computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
+				void				computeColumnFailed(QString columnName, QString error);
 				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
 				ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis * analysis);
 				void				requestComputedColumnDestruction(QString columnName);

@@ -22,8 +22,10 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 
 ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
-  jaspResults$title <- "Confirmatory Factor Analysis"
+  jaspResults$title <- "Confirmatory Factor Analysis<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
+  jaspResults$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
 
+  
   # Preprocess options
   options <- .cfaPreprocessOptions(options)
   
@@ -73,17 +75,26 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   facwoindicators <- sapply(options$factors, function(f) length(f$indicators)) == 0
   options$factors <- options$factors[!facwoindicators]
   
-  sofacwoindicators   <- sapply(options$secondOrder, function(f) length(f$indicators)) == 0
-  options$secondOrder <- options$secondOrder[!sofacwoindicators]
+  # sofacwoindicators   <- sapply(options$secondOrder, function(f) length(f$indicators)) == 0
+  # options$secondOrder <- options$secondOrder[!sofacwoindicators]
+  if (length(options$secondOrder) > 0) {
+    options$secondOrder <- list(list(indicators = options$secondOrder, name = "SecondOrder", title = "Second-Order"))
+  }
   return(options)
 }
 
 .cfaCheckErrors <- function(dataset, options) {
   # TODO (vankesteren) content error checks, e.g., posdef covmat
   
-  vars <- unique(unlist(lapply(options$factors, function(x) x$indicators)))
+  # Number of variables in the factors
+  nvars <- lapply(options$factors, function(x) length(x$indicators))
+  if (all(nvars == 0)) return("No variables")
+  if (any(nvars == 1)) {
+    JASP:::.quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
+  }
   
-  if (length(vars) == 0) return("No variables")
+  
+  vars <- unique(unlist(lapply(options$factors, function(x) x$indicators)))
   
   if (options$groupvar == "") {
     
@@ -102,7 +113,6 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                  varCovData.corFun = stats::cov)
       
     }
-    
   }
   
   return(NULL)
@@ -144,7 +154,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   geq <- .CFAInvariance(options)
   if (options$groupvar == "") grp <- NULL else grp <- .v(options$groupvar)
 
-  cfaResult[["lav"]] <- lavaan::lavaan(
+  cfaResult[["lav"]] <- try(lavaan::lavaan(
     model           = mod,
     data            = dataset,
     group           = grp,
@@ -164,8 +174,30 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     auto.cov.y      = TRUE,
     mimic           = options$mimic,
     estimator       = options$estimator
-  )
-
+  ))
+  
+  
+  # Quit analysis on error
+  if (inherits(cfaResult[["lav"]], "try-error")) { 
+    JASP:::.quitAnalysis(paste("The model could not be estimated. Error message:\n\n", 
+                         attr(cfaResult[["lav"]], "condition")$message))
+  }
+  
+  admissible <- .withWarnings(lavaan:::lav_object_post_check(cfaResult[["lav"]]))
+  print(admissible)
+  if (!admissible$value) {
+    JASP:::.quitAnalysis(paste("The model is not admissible:", admissible$warnings[[1]]$message))
+  }
+  
+  if (!cfaResult[["lav"]]@optim$converged) {
+    JASP:::.quitAnalysis("The model could not be estimated due to nonconvergence.")
+  }
+  
+  if (cfaResult[["lav"]]@test[[1]]$df < 0) {
+    JASP:::.quitAnalysis("The model could not be estimated: No degrees of freedom left.")
+  }
+  
+  
   # Bootstrapping with progress bar
   if (cfaResult[["spec"]]$bootstrap & options$bootstrapNumber > 50) {
     jaspResults$startProgressbar(ceiling(options$bootstrapNumber / 50))
@@ -197,6 +229,16 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   return(cfaResult)
 }
+
+.withWarnings <- function(expr) {
+  myWarnings <- NULL
+  wHandler <- function(w) {
+    myWarnings <<- c(myWarnings, list(w))
+    invokeRestart("muffleWarning")
+  }
+  val <- withCallingHandlers(expr, warning = wHandler)
+  list(value = val, warnings = myWarnings)
+} 
 
 .cfaCalcSpecs <- function(dataset, options) {
   spec <- list()
@@ -382,7 +424,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     groupLabs <- cfaResult[["lav"]]@Data@group.label
     for (i in 1:max(pe$group)) {
       pei <- pe[pe$group == i, ]
-      ests[[groupLabs[i]]] <- createJaspContainer()
+      ests[[groupLabs[i]]] <- createJaspContainer(groupLabs[i])
       ests[[groupLabs[i]]]$copyDependenciesFromJaspObject(ests)
       .cfaParEstToTablesHelper(pei, options, cfaResult[["spec"]], ests[[groupLabs[i]]])
     }
@@ -649,17 +691,17 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     for (i in 1:length(groupLabs)) {
       mic[[groupLabs[i]]] <- createJaspContainer(groupLabs[i])
       mic[[groupLabs[i]]]$copyDependenciesFromJaspObject(mic)
-      .cfaMItoTablesHelper(mi[mi$group == i, ], options, mic[[groupLabs[i]]])
+      .cfaMItoTablesHelper(mi[mi$group == i, ], options, mic[[groupLabs[i]]], cfaResult)
     }
   } else {
-    .cfaMItoTablesHelper(mi, options, mic)
+    .cfaMItoTablesHelper(mi, options, mic, cfaResult)
   }
 }
 
-.cfaMItoTablesHelper <- function(mii, options, jrobject) {
+.cfaMItoTablesHelper <- function(mii, options, jrobject, cfaResult) {
 
   # cross loadings (first order)
-  foc <- mii[mii$op == "=~" & mii$lhs %in% options$latents, c("lhs", "rhs", "mi", "epc")]
+  foc <- mii[mii$op == "=~" & mii$lhs %in% cfaResult[["spec"]]$latents, c("lhs", "rhs", "mi", "epc")]
   foc <- foc[foc$mi > options$miCutoff, ]
 
   if (nrow(foc) > 0) {
@@ -684,7 +726,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # cross loadings (second order)
   if (length(options$secondOrder) > 1) {
-    soc <- mii[mii$op == "=~" & mii$lhs %in% options$soLatents & mii$rhs %in% options$latents,
+    soc <- mii[mii$op == "=~" & mii$lhs %in% options$soLatents & mii$rhs %in% cfaResult[["spec"]]$latents,
                c("lhs", "rhs", "mi", "epc")]
     soc <- soc[soc$mi > options$miCutoff, ]
 
@@ -711,7 +753,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 
   # residual covariances
-  rec <- mii[mii$op == "~~" & !mii$lhs %in% c(options$latents, options$soLatents), c("lhs", "rhs", "mi", "epc")]
+  rec <- mii[mii$op == "~~" & !mii$lhs %in% c(cfaResult[["spec"]]$latents, cfaResult[["spec"]]$soLatents), 
+             c("lhs", "rhs", "mi", "epc")]
   rec <- rec[rec$mi > options$miCutoff, ]
 
   if (nrow(rec) > 0) {
@@ -745,7 +788,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     for (l in groupLabs) {
       ic <- fv[[l]]$cov
       ic[upper.tri(ic)] <- NA
-      tab <- createJaspTable()
+      tab <- createJaspTable(l)
       for (i in 1:ncol(ic)) {
         nm <- colnames(ic)[i]
         tab$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3")
@@ -780,7 +823,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     for (l in groupLabs) {
       rc <- rv[[l]]$cov
       rc[upper.tri(rc)] <- NA
-      tab <- createJaspTable()
+      tab <- createJaspTable(l)
       for (i in 1:ncol(rc)) {
         nm <- colnames(rc)[i]
         tab$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3;p:.001")
@@ -834,17 +877,23 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     title          = FALSE
   )
   dev.off()
+  
+  # set height depending on whether there is a second-order factor
+  plotwidth  <- 640
+  plotheight <- 320
+  if (length(cfaResult[["spec"]][["soLatents"]]) > 0) plotheight <- 500
 
   if (options$groupvar != "") {
     jaspResults[["plots"]][["pathplot"]] <- createJaspContainer("Model plots", position = 1)
     groupLabs <- cfaResult[["lav"]]@Data@group.label
     for (i in 1:length(groupLabs)) {
       jaspResults[["plots"]][["pathplot"]][[groupLabs[i]]] <-
-        createJaspPlot(pathplot[[i]], title = groupLabs[i], height = 500, width = 640)
+        createJaspPlot(pathplot[[i]], title = groupLabs[i], height = plotheight, width = plotwidth)
       jaspResults[["plots"]][["pathplot"]][[groupLabs[i]]]$dependOnOptions(c("pathplot", "plotmeans", "plotpars"))
     }
   } else {
-    jaspResults[["plots"]][["pathplot"]] <- createJaspPlot(pathplot, title = "Model plot", height = 500, width = 640)
+    jaspResults[["plots"]][["pathplot"]] <- createJaspPlot(pathplot, title = "Model plot", height = plotheight,
+                                                           width = plotwidth)
   }
 
   jaspResults[["plots"]][["pathplot"]]$dependOnOptions(c("pathplot", "plotmeans", "plotpars"))

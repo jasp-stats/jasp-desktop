@@ -125,10 +125,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside.parseEvalNT("initEnvironment()");
 
 	std::cout << "R_HOME: " << Rcpp::as<std::string>(rInside.parseEval("R.home('')")) << std::endl;
-
-
-	//rinside->parseEvalNT("print('installing modules!'); install.packages('modules', repos='https://cloud.r-project.org', Ncpus=4, lib='/Users/jorisgoosen/.JASP/library'); print('installing modules worked?'); ");
-
 }
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground)
@@ -370,6 +366,10 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	// Function to evaluate arbitrary R code from C++
 	// Returns string if R result is a string, else returns "null"
 	// Can also load the entire dataset if need be
+
+/*#ifdef JASP_DEBUG
+	std::cout << "jaspRCPP_evalRCode runs: \n" << '"' << rCode << '"' << std::endl;
+#endif*/
 
 	lastErrorMessage = "";
 	rinside->instance()[".rCode"] = rCode;

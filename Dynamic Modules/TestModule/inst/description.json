@@ -1,7 +1,7 @@
 {
 	"moduleDescription" :
 	{
-		"title" : 									"Test Module",
+		"title":									"Test Module",
 		"description": 								"A module to test stuff with.",
 		"version":									1.0,
 		"author":									"Joris Goosen",

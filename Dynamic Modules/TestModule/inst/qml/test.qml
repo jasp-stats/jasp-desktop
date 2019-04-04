@@ -25,8 +25,25 @@ Form {
 
     Rectangle
     {
-        color: "red"
+        color: "yellow"
         width: 100
         height: width
+        Text{
+            text: "Tsja"
+            color: "purple"
+            font.pixelSize: 40
+        }
+    }
+
+    CheckBox
+    {
+        name: "checkbox_0"
+        checked: false
+    }
+
+    CheckBox
+    {
+        name: "checkbox_1"
+        checked: false
     }
 }

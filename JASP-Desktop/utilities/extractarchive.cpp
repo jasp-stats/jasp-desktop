@@ -135,7 +135,7 @@ bool ExtractArchive::extractArchiveToFolderFlattened(std::string archiveFilename
 	return _extractArchiveToFolder(archiveFilename, destination, pathModifier);
 }
 
-bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string destination, const std::map<std::string, std::set<std::string>> & folderAndExtensionExemptions)
+/*bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string destination, const std::map<std::string, std::set<std::string>> & folderAndExtensionExemptions)
 {
 	auto fileNameExtractor	= [&](std::string in, std::string & folder, std::string & filename)
 	{
@@ -179,7 +179,7 @@ bool ExtractArchive::extractJaspModule(std::string archiveFilename, std::string 
 
 	return _extractArchiveToFolder(archiveFilename, destination, pathModifier, fileFilter);
 }
-
+*/
 
 bool ExtractArchive::isFileAnArchive(std::string filename)
 {
@@ -202,7 +202,7 @@ bool ExtractArchive::isFileAnArchive(std::string filename)
 
 std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archiveFilename, std::string desiredTextFileName)
 {
-	std::string dataFromFile = "File not found";
+	std::string dataFromFile = "";
 	struct archive_entry *entry;
 	int flags;
 	int r;
@@ -215,7 +215,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 	archive_read_support_compression_all(a);
 
 	if ((r = archive_read_open_filename(a, archiveFilename.c_str(), 10240)))
-		return "File opening failed";
+		throw std::runtime_error("File opening failed");
 
 	bool keepLooking = true;
 
@@ -255,7 +255,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 	catch(std::runtime_error e)
 	{
 		std::cerr << e.what() << std::endl;
-		dataFromFile = "There was an error reading the request file " + desiredTextFileName + " from archive " + archiveFilename + ", this error was: " + e.what();
+		throw std::runtime_error("There was an error reading the request file " + desiredTextFileName + " from archive " + archiveFilename + ", this error was: " + e.what());
 	}
 
 	archive_read_close(a);

@@ -38,14 +38,14 @@ public:
 
 	void		initializeInstalledModules();
 
-	bool		unpackAndInitializeModule(				const	std::string & moduleZipFilename);
+	bool		unpackAndInstallModule(		const	std::string & moduleZipFilename);
 	void		uninstallModule(			const	std::string & moduleName);
 	std::string	loadModule(					const	std::string & moduleName);
 	bool		initializeModuleFromDir(			std::string   moduleDir);
 	void		unloadModule(				const	std::string & moduleName);
+	bool		initializeModule(					Modules::DynamicModule * module);
 
-	std::string moduleDirectory(			const	std::string & moduleName)	const { return AppDirs::modulesDir().toStdString() + moduleName + '/';	}
-	bool		moduleIsInitialized(		const	std::string & moduleName)	const { return _modules.count(moduleName) > 0;							}
+	std::string moduleDirectory(			const	std::string & moduleName)	const;
 	bool		moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectory(moduleName));	}
 
 	bool		aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
@@ -63,30 +63,35 @@ public:
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 	Modules::AnalysisEntry*	retrieveCorrespondingAnalysisEntry(const std::string & codedReference);
 
-	Q_INVOKABLE bool	isFileAnArchive(			const QString & filepath);
-	Q_INVOKABLE QString getDescriptionFromArchive(	const QString & filepath);
-	Q_INVOKABLE QString	installJASPModule(			const QString & filepath);
-	Q_INVOKABLE	void	uninstallJASPModule(		const QString & moduleName);
+	Q_INVOKABLE bool	isFileAnArchive(				const QString & filepath);
+	Q_INVOKABLE QString getDescriptionJsonFromArchive(	const QString & filepath);
+
+	Q_INVOKABLE void	installJASPModule(				const QString & filepath);
+	Q_INVOKABLE	void	uninstallJASPModule(			const QString & moduleName);
 	Q_INVOKABLE void	installJASPDeveloperModule();
+
+
 
 	int numberOfModules()												{ return _modules.size(); }
 	const std::vector<std::string> & moduleNames() const				{ return _moduleNames; }
 
 	Q_INVOKABLE Modules::DynamicModule*	dynamicModule(QString moduleName) const { return dynamicModule(moduleName.toStdString()); }
 
-	static std::string developmentModuleName() { return "DevelopmentModule"; }
+	static std::string developmentModuleName() { return Modules::DynamicModule::developmentModuleName(); }
+
+	void startWatchingDevelopersModule();
 
 public slots:
-	void installationPackagesSucceeded(	const std::string & moduleName);
-	void installationPackagesFailed(	const std::string & moduleName, const std::string & errorMessage);
-	void loadingSucceeded(				const std::string & moduleName);
-	void loadingFailed(					const std::string & moduleName, const std::string & errorMessage);
+	void installationPackagesSucceeded(	const QString & moduleName);
+	void installationPackagesFailed(	const QString & moduleName, const QString & errorMessage);
+	void loadingSucceeded(				const QString & moduleName);
+	void loadingFailed(					const QString & moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string & moduleName);
 	void registerForLoading(			const std::string & moduleName);
 
 signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
-	void dynamicModuleUninstalled(const std::string & moduleName);
+	void dynamicModuleUninstalled(const QString & moduleName);
 	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
 	void dynamicModuleChanged(Modules::DynamicModule * dynamicModule);
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
@@ -103,7 +108,7 @@ private:
 	void						removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped = false);
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
 	void						devModCopyDescription();
-	void						devModCopyFolder(QString folder, QFileSystemWatcher * & watcher);
+	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
 	void						regenerateDeveloperModuleRPackage();
 
 private:
@@ -120,8 +125,6 @@ private:
 	QDir													_devModSourceDirectory;
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
 														*	_devModRWatcher				= nullptr,
-														*	_devModQmlWatcher			= nullptr,
-														*	_devModIconsWatcher			= nullptr,
 														*	_devModHelpWatcher			= nullptr;
 };
 
