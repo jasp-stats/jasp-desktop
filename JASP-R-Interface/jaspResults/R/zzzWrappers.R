@@ -152,8 +152,23 @@ jaspContainerR <- R6Class(
 			private$jaspObject <- container
 			return()
 		},
-		setField   = function(field, value) {private$jaspObject[[field]] <- value$getJaspObject(); private$children[[field]] <- value},
-		getField   = function(field)        {private$children[[field]]}
+    setField   = function(field, value) {
+      private$jaspObject[[field]] <- value$getJaspObject();
+      private$children[[field]]   <- value;
+    },
+    getField   = function(field) {
+      #maybe changing the dependencies removed this object when we weren't looking!
+      if(is.null(private$jaspObject[[field]]) && !is.null(private$children[[field]]))
+          private$children[[field]] <- NULL
+
+      #other way 'round is also quite possible, we just regenerated jaspResults from state/json and now the R6 class doesn't know anything about it...
+      if(!is.null(private$jaspObject[[field]]) && is.null(private$children[[field]]))
+      {
+        print('I should be recreating some jaspObject here and putting it inside my children but how?')
+      }
+
+      return(private$children[[field]]);
+    }
 	),
 	active    = list(
 		length = function(value) { if (missing(value)) { private$jaspObject$length } else {stop("property 'length' is read-only!") }}
@@ -265,7 +280,6 @@ jaspTableR <- R6Class(
 			} else {
 				checkForJaspResultsInit()
 				jaspObj <- create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
-				# jaspObj <- as(jaspObj, "jaspTableExtended") #We extend it so we may use addColumnInfo and addFootnote. Sadly enough this breaks for tables coming from a container.. This does however work in JASP but I cant get it to work in stand-alone. (This might be fixed by DvB)
 			}
 			
 			if (!is.null(data))
@@ -315,7 +329,9 @@ jaspTableR <- R6Class(
 		setData         = function(data)                 {private$jaspObject$setData(data)},
 		addColumns      = function(cols)                 {private$jaspObject$addColumns(cols)},
 		
-		setExpectedRows = function(x)            {private$jaspObject$setExpectedRows(x)}
+    setExpectedSize    = function(cols, rows)        {private$jaspObject$setExpectedSize(cols, rows)},
+    setExpectedRows    = function(rows)              {private$jaspObject$setExpectedRows(rows)},
+    setExpectedColumns = function(cols)              {private$jaspObject$setExpectedColumns(cols)}
 	),
 	active = list(
 		transpose                = function(x) {if (missing(x)) private$jaspObject$transpose                else private$jaspObject$transpose                <- x},

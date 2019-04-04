@@ -34,4 +34,16 @@ Form {
             font.pixelSize: 40
         }
     }
+
+    CheckBox
+    {
+        name: "checkbox_0"
+        checked: false
+    }
+
+    CheckBox
+    {
+        name: "checkbox_1"
+        checked: false
+    }
 }

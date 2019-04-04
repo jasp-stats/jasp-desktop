@@ -10,7 +10,7 @@
 		"license":									"Whatever"
 	},
 
-	"requiredPackages":	[ { "package": "dyads"} ],
+	"requiredPackages":	[],
 
 	"ribbonEntries":
 	[
