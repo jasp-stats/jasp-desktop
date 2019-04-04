@@ -248,9 +248,16 @@ Item
 		{
 			var control = allJASPControls[i]
 			var isControlList = ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
+			var isControlComboBox = (control instanceof ComboBox)
 			if (isControlList && control.setWidthInForm)
 				// Change the width of the VariablesList only if was not set explicitely
 				control.width = variablesForm.listWidth
+			else if (isControlComboBox && control.controlMinWidth === 0)
+			{
+				control.setLabelAbove = true
+				control.controlMinWidth = variablesForm.listWidth
+			}
+
 			if (!firstControl)
 				minHeightOfAssignedControls += marginBetweenVariablesLists;
 			firstControl = false;

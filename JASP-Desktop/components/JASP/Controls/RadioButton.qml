@@ -105,7 +105,7 @@ JASPControl
 		{
 			id:				label
 			text:			control.text
-			leftPadding:	radioIndicator.width + control.padding
+			leftPadding:	radioIndicator.width + control.spacing
 			font:			Theme.font
 			color:			enabled ? Theme.textEnabled : Theme.textDisabled
         }

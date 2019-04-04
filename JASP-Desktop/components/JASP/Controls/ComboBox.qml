@@ -6,8 +6,8 @@ import JASP.Theme 1.0
 JASPControl {
 	id:					comboBox
 	controlType:		"ComboBox"
-	implicitHeight:		control.height
-	implicitWidth:		control.implicitWidth + (controlLabel.visible ? labelSpacing + controlLabel.implicitWidth : 0)
+	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.implicitHeight : 0)
+	implicitWidth:		control.implicitWidth + ((controlLabel.visible && !setLabelAbove) ? labelSpacing + controlLabel.implicitWidth : 0)
 	width:				implicitWidth
     
 	property alias	control:				control
@@ -30,176 +30,187 @@ JASPControl {
 	property bool	isDirectModel:			false
 	property bool	initialized:			isDirectModel
 	property var	enabledOptions:			[]
+	property bool	setLabelAbove:			false
+	property int	controlMinWidth:		0
     
     signal activated(int index);
+
+	onControlMinWidthChanged: _resetWidth()
 	
 	function resetWidth(value)
 	{
         textMetrics.font = control.font
         textMetrics.text = value
+		_resetWidth()
+	}
+
+	function _resetWidth()
+	{
 		var newWidth = textMetrics.width + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
-		if (newWidth > control.modelWidth)
+		if (controlMinWidth > 0 || newWidth > control.modelWidth)
 		{
-            control.modelWidth = newWidth;
+			control.modelWidth = newWidth;
+			if (control.implicitWidth < controlMinWidth)
+				control.modelWidth += (controlMinWidth - control.implicitWidth);
             comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
         }
     }
     
 	Component.onCompleted: control.activated.connect(activated);
     
-	RowLayout
+	Rectangle
 	{
-        spacing: controlLabel.visible ? labelSpacing : 0
-        
-		Rectangle
+		id: rectangleLabel
+		implicitWidth: controlLabel.implicitWidth
+		implicitHeight: control.implicitHeight
+		color: debug ? Theme.debugBackgroundColor : "transparent"
+		visible: controlLabel.text && comboBox.visible ? true : false
+		Label
 		{
-			implicitWidth: controlLabel.implicitWidth
-			implicitHeight: control.implicitHeight
-			color: debug ? Theme.debugBackgroundColor : "transparent"
-			Label
+			id:			controlLabel
+			font:		Theme.font
+			anchors.verticalCenter: parent.verticalCenter
+			color:		enabled ? Theme.textEnabled : Theme.textDisabled
+		}
+	}
+
+	ComboBox
+	{
+						id:				control
+						anchors.left:	!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
+						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : comboBox.labelSpacing
+						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
+
+						focus:			true
+
+						padding:		2 * preferencesModel.uiScale //Theme.jaspControlPadding
+
+						implicitWidth:	modelWidth + 2 * padding + canvas.width
+						textRole:		comboBox.textRole
+		property int	modelWidth:		30 * preferencesModel.uiScale
+		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
+						font:			Theme.font
+
+		TextMetrics { id: textMetrics }
+
+		contentItem: Item
+		{
+			implicitHeight:				Theme.comboBoxHeight
+			Image
 			{
-				id:			controlLabel
-				visible:	controlLabel.text && comboBox.visible ? true : false
-				font:		Theme.font
-				anchors.verticalCenter: parent.verticalCenter				
-				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+				id:						contentIcon
+				height:					15 * preferencesModel.uiScale
+				width:					15 * preferencesModel.uiScale
+				x:						3  * preferencesModel.uiScale
+				anchors.verticalCenter: parent.verticalCenter
+				source:					!visible ? "" : enabled ? iconFiles[comboBox.currentColumnType] : iconDisabledFiles[comboBox.currentColumnType]
+				visible:				comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
+			}
+
+			Text
+			{
+				x:							(contentIcon.visible ? 23 : 4) * preferencesModel.uiScale
+				text:						control.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? control.currentText : comboBox.currentText)
+				font:						control.font
+				anchors.verticalCenter:		parent.verticalCenter
+				anchors.horizontalCenter:	control.isEmptyValue ? parent.horizontalCenter : undefined
+				color:						(!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
 			}
 		}
-        
-        ComboBox {
-							id:				control
-							focus:			true
-							padding:		2 * preferencesModel.uiScale //Theme.jaspControlPadding
-							implicitWidth:	modelWidth + leftPadding + rightPadding + canvas.width
-							textRole:		comboBox.textRole
-			property int	modelWidth:		30 * preferencesModel.uiScale
-			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
-							font:			Theme.font
-							
-			Layout.leftMargin: controlLabel.visible ? 0 : -labelSpacing
-							
-            
-			TextMetrics { id: textMetrics }
-            
-			contentItem: Item
+
+		indicator: Canvas
+		{
+			id:				canvas
+			x:				control.width - width - 3 //control.spacing
+			y:				control.topPadding + (control.availableHeight - height) / 2
+			width:			12 * preferencesModel.uiScale
+			height:			8  * preferencesModel.uiScale
+			contextType:	"2d"
+
+			Connections {
+				target:				control
+				onPressedChanged:	canvas.requestPaint()
+			}
+
+			onPaint: //Is this really the best way to do whatever it is that is being done here? Maybe we can make a custom QuickItem.
 			{
-				implicitHeight:				Theme.comboBoxHeight
-				Image
-				{
-					id:						contentIcon
-					height:					15 * preferencesModel.uiScale
-					width:					15 * preferencesModel.uiScale
-					x:						3  * preferencesModel.uiScale
-                    anchors.verticalCenter: parent.verticalCenter
-					source:					!visible ? "" : enabled ? iconFiles[comboBox.currentColumnType] : iconDisabledFiles[comboBox.currentColumnType]
-					visible:				comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
-                }
-                
-				Text
-				{
-					x:							(contentIcon.visible ? 23 : 4) * preferencesModel.uiScale
-					text:						control.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? control.currentText : comboBox.currentText)
-					font:						control.font
-					anchors.verticalCenter:		parent.verticalCenter
-					anchors.horizontalCenter:	control.isEmptyValue ? parent.horizontalCenter : undefined
-					color:						(!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
-                }
-            }
-			
-			indicator: Canvas
+				context.reset();
+				context.moveTo(0, 0);
+				context.lineTo(width, 0);
+				context.lineTo(width / 2, height);
+				context.closePath();
+				context.fillStyle = Theme.grayDarker;
+				context.fill();
+			}
+		}
+
+		background: Rectangle
+		{
+			id:				comboBoxBackground
+			border.color:	Theme.borderColor
+			border.width:	1
+			radius:			2
+			color:			enabled ? Theme.controlBackgroundColor : Theme.disableControlBackgroundColor
+		}
+
+		popup: Popup
+		{
+			y:				control.height - 1
+			width:			control.width
+			implicitHeight:	contentItem.implicitHeight
+			padding:		1
+
+			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } }
+			contentItem: ListView
 			{
-				id:				canvas
-				x:				control.width - width - 3 //control.spacing
-				y:				control.topPadding + (control.availableHeight - height) / 2
-				width:			12 * preferencesModel.uiScale
-				height:			8  * preferencesModel.uiScale
-				contextType:	"2d"
-        
-                Connections {
-					target:				control
-					onPressedChanged:	canvas.requestPaint()
-                }
-        
-				onPaint: //Is this really the best way to do whatever it is that is being done here? Maybe we can make a custom QuickItem.
-				{
-                    context.reset();
-                    context.moveTo(0, 0);
-                    context.lineTo(width, 0);
-                    context.lineTo(width / 2, height);
-                    context.closePath();
-                    context.fillStyle = Theme.grayDarker;
-                    context.fill();
-                }
-            }        
+				id: popupView
+				clip:			true
+				implicitHeight:	contentHeight
+				model:			control.popup.visible ? control.delegateModel : null
+				currentIndex:	control.highlightedIndex
+			}
 
 			background: Rectangle
 			{
-				id:				comboBoxBackground
 				border.color:	Theme.borderColor
-				border.width:	1
 				radius:			2
-				color:			enabled ? Theme.controlBackgroundColor : Theme.disableControlBackgroundColor
-            }
-        
-			popup: Popup
+			}
+		}
+
+		delegate: ItemDelegate
+		{
+			height:								Theme.comboBoxHeight
+			highlighted:						control.highlightedIndex === index
+			enabled:							comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
+
+			contentItem: Rectangle
 			{
-				y:				control.height - 1
-				width:			control.width
-				implicitHeight:	contentItem.implicitHeight
-				padding:		1
-        
-				enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } }
-				contentItem: ListView
-				{
-					id: popupView
-					clip:			true
-					implicitHeight:	contentHeight
-					model:			control.popup.visible ? control.delegateModel : null
-					currentIndex:	control.highlightedIndex
-                }
-        
-				background: Rectangle
-				{
-					border.color:	Theme.borderColor
-					radius:			2
-                }
-            }
-			
-			delegate: ItemDelegate
-			{
-				height:								Theme.comboBoxHeight
-				highlighted:						control.highlightedIndex === index
-				enabled:							comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
-				
-				contentItem: Rectangle
-				{
-					id:								itemRectangle
-					anchors.fill:					parent
+				id:								itemRectangle
+				anchors.fill:					parent
 
-					property bool isEmptyValue:		comboBox.addEmptyValue && index <= 0
+				property bool isEmptyValue:		comboBox.addEmptyValue && index <= 0
 
-					Image
-					{
-						id:							delegateIcon
-						x:							1 * preferencesModel.uiScale
-						height:						15 * preferencesModel.uiScale
-						width:						15 * preferencesModel.uiScale
-						source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
-						visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
+				Image
+				{
+					id:							delegateIcon
+					x:							1 * preferencesModel.uiScale
+					height:						15 * preferencesModel.uiScale
+					width:						15 * preferencesModel.uiScale
+					source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
+					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
-						anchors.verticalCenter:		parent.verticalCenter
-                    }
-                    
-                    Text {
-						x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-						text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? model.label : model.name)) : ""
-						font:						Theme.font
-						color:						itemRectangle.isEmptyValue || !enabled ? Theme.grayDarker : Theme.black
-						verticalAlignment:			Text.AlignVCenter
-						anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
-                    }
-                }
-            }			
-        }
+					anchors.verticalCenter:		parent.verticalCenter
+				}
+
+				Text {
+					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
+					text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? model.label : model.name)) : ""
+					font:						Theme.font
+					color:						itemRectangle.isEmptyValue || !enabled ? Theme.grayDarker : Theme.black
+					verticalAlignment:			Text.AlignVCenter
+					anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
+				}
+			}
+		}
     }
 }
