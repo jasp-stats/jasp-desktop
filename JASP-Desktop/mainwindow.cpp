@@ -514,8 +514,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	_resultsJsInterface->analysisChanged(analysis);
 
-	if (_package->isLoaded())
-		_package->setModified(true);
+	setPackageModified();
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 		analysesForComparingDoneAlready();
@@ -1060,12 +1059,17 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	}
 }
 
-void MainWindow::setPackageModified()
+void MainWindow::analysesCountChangedHandler()
 {
-	_package->setModified(true);
+	setAnalysesAvailable(_analyses->count() > 0);
+	setPackageModified();
 }
 
-
+void MainWindow::setPackageModified()
+{
+	if (_package->isLoaded())
+		_package->setModified(true);
+}
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 {
@@ -1212,7 +1216,6 @@ void MainWindow::showProgress(bool showData)
 	_fileMenu->setVisible(false);
 	if (showData)
 		setDataPanelVisible(true);
-	setDataAvailable(true);
 	setProgressBarVisible(true);
 }
 
@@ -1376,10 +1379,6 @@ void MainWindow::setWindowTitle(QString windowTitle)
 void MainWindow::removeAnalysis(Analysis *analysis)
 {
 	_analyses->removeAnalysis(analysis);
-
-	if (_package->isLoaded())
-		_package->setModified(true);
-
 	_resultsJsInterface->removeAnalysis(analysis);
 }
 

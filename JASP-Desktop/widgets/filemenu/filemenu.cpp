@@ -239,7 +239,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 				_Computer->addRecentFolder(event->path());
 			}
 
-			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
+			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
 				setCurrentDataFile(event->dataFilePath());
 
 			// all this stuff is a hack
@@ -262,37 +262,39 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		_Computer->clearFileName();
-		_currentFilePath = "";
-		_currentFileType = Utils::FileType::unknown;
-		_currentFileReadOnly = false;
+		_currentFilePath		= "";
+		_currentFileType		= Utils::FileType::unknown;
+		_currentFileReadOnly	= false;
 		_CurrentFile->setCurrentFileInfo("", Utils::FileType::unknown, false);
 		clearSyncData();
 	}
 		
 	if (event->successful())
 	{
-		if (event->operation() == FileEvent::FileOpen)
+		switch(event->operation())
 		{
-			
-			_actionButtons->setEnabled(ActionButtons::Save, event->type() == Utils::FileType::jasp);
-			_actionButtons->setEnabled(ActionButtons::SaveAs, true);
-			_actionButtons->setEnabled(ActionButtons::ExportResults, true);
-			_actionButtons->setEnabled(ActionButtons::ExportData, true);
-			_actionButtons->setEnabled(ActionButtons::SyncData, true);
-			_actionButtons->setEnabled(ActionButtons::Close, true);
-		}
-		else if (event->operation() == FileEvent::FileSave)
-		{
-			_actionButtons->setEnabled(ActionButtons::Save, true);
-		}
-		else if (event->operation() == FileEvent::FileClose)
-		{
-			_actionButtons->setEnabled(ActionButtons::Save, false);
-			_actionButtons->setEnabled(ActionButtons::SaveAs, false);
-			_actionButtons->setEnabled(ActionButtons::ExportResults, false);
-			_actionButtons->setEnabled(ActionButtons::ExportData, false);
-			_actionButtons->setEnabled(ActionButtons::SyncData, false);
-			_actionButtons->setEnabled(ActionButtons::Close, false);
+		case FileEvent::FileOpen:
+		case FileEvent::FileSave:
+			_actionButtons->setEnabled(ActionButtons::Save,				event->type() == Utils::FileType::jasp || event->operation() == FileEvent::FileSave);
+			_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
+			_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
+			_actionButtons->setEnabled(ActionButtons::ExportData,		true);
+			_actionButtons->setEnabled(ActionButtons::SyncData,			true);
+			_actionButtons->setEnabled(ActionButtons::Close,			true);
+			break;
+
+		case FileEvent::FileClose:
+			_actionButtons->setEnabled(ActionButtons::Save,				false);
+			_actionButtons->setEnabled(ActionButtons::SaveAs,			false);
+			_actionButtons->setEnabled(ActionButtons::ExportResults,	false);
+			_actionButtons->setEnabled(ActionButtons::ExportData,		false);
+			_actionButtons->setEnabled(ActionButtons::SyncData,			false);
+			_actionButtons->setEnabled(ActionButtons::Close,			false);
+			break;
+
+		default:
+			//Do nothing?
+			break;
 		}
 	}
 }

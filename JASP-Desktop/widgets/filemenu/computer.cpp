@@ -164,7 +164,7 @@ void Computer::setListModel(ComputerListModel * listModel)
 
 	_computerListModel = listModel;
 
-	connect(_computerListModel, &ComputerListModel::browseOpen, this, &Computer::browseOpen);
+	connect(_computerListModel, &ComputerListModel::browsePath, this, &Computer::browsePath);
 
 	emit listModelChanged(_computerListModel);
 }

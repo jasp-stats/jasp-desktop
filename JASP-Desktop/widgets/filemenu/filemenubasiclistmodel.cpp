@@ -97,3 +97,8 @@ void FileMenuBasicListModel::openFile(const QString& path)
 	std::cout << "Override basicListModel::openFile!" << std::endl;
 }
 
+void FileMenuBasicListModel::saveFile(const QString& path)
+{
+	std::cout << "Override basicListModel::saveFile!" << std::endl;
+}
+

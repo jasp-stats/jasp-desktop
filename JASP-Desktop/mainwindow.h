@@ -151,7 +151,7 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-	void analysesCountChangedHandler()		{ setAnalysesAvailable(_analyses->count() > 0); }
+	void analysesCountChangedHandler();
 
 signals:
 	void saveJaspFile();
