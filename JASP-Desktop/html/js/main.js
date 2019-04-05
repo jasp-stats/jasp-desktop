@@ -41,10 +41,10 @@ $(document).ready(function () {
         document.body.style.zoom = zoomProcent
     }
 
-	window.clearWelcomeScreen = function () {
+	window.clearWelcomeScreen = function (callDelayedLoad) {
 		$intro.hide();
 		$("#style").attr("href","css/theme-jasp.css");
-		jasp.welcomeScreenIsCleared();
+		jasp.welcomeScreenIsCleared(callDelayedLoad);
 	}
 
 	window.reRenderAnalyses = function () {

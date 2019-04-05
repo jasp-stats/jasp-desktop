@@ -41,6 +41,8 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	//setChannel(new QQmlWebChannel(this));
 	//_analysisMenu = new QMenu(_mainWindow);
 	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
+
+	connect(this, &ResultsJsInterface::welcomeScreenIsCleared, this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
 }
 
 
@@ -273,10 +275,26 @@ void ResultsJsInterface::setResultsMeta(QString str)
 	emit runJavaScript(results);
 }
 
-void ResultsJsInterface::clearWelcomeScreen()
+void ResultsJsInterface::clearWelcomeScreen(bool callDelayedLoad)
 {
-	emit runJavaScript("window.clearWelcomeScreen()");
+	emit runJavaScript("window.clearWelcomeScreen("+QString(callDelayedLoad ? "true)" : "false)"));
 }
+
+void ResultsJsInterface::resetResults()
+{
+	emit resultsPageUrlChanged(_resultsPageUrl);
+	setWelcomeShown(true);
+}
+
+void ResultsJsInterface::setWelcomeShown(bool welcomeShown)
+{
+	if (_welcomeShown == welcomeShown)
+		return;
+
+	_welcomeShown = welcomeShown;
+	emit welcomeShownChanged(_welcomeShown);
+}
+
 
 void ResultsJsInterface::unselect()
 {

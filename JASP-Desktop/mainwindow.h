@@ -174,6 +174,7 @@ signals:
 
 
 private slots:
+	void welcomeScreenIsCleared(bool callDelayedLoad);
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
@@ -204,6 +205,7 @@ private slots:
 	void resetQmlCache();
 
 	void showResultsPanel() { setDataPanelVisible(false); }
+	void analysisAdded(Analysis *analysis);
 
 
 private:

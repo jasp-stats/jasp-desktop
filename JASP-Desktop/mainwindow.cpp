@@ -217,12 +217,13 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeysSelected							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::delayedLoadHandler								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
+	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
 	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
@@ -630,7 +631,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
-		if (_package->isLoaded())
+		if (_package->isLoaded() || _analyses->count() > 0) //If no data is loaded but we have analyses then we probably want to play with summary stats or something. So lets just open in a new instance.
 		{
 			_IORequestMutex.unlock();
 			// If this instance has a valid OSF connection save this setting for a new instance
@@ -645,7 +646,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-			_resultsJsInterface->clearWelcomeScreen();
+			_resultsJsInterface->clearWelcomeScreen(true);
 
 			_openEvent = event;
 
@@ -1384,10 +1385,23 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 void MainWindow::removeAllAnalyses()
 {
-	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?")) {
+	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
+	{
 		_resultsJsInterface->removeAnalyses();
 		_analyses->clear();
 	}
+}
+
+void MainWindow::analysisAdded(Analysis *)
+{
+	if(_resultsJsInterface->welcomeShown())
+		_resultsJsInterface->clearWelcomeScreen(false); //in case we are playing with summary stats or so we do not want to keep seeing the welcome screen
+}
+
+void MainWindow::welcomeScreenIsCleared(bool callDelayedLoad)
+{
+	if(callDelayedLoad)
+		delayedLoadHandler();
 }
 
 void MainWindow::delayedLoadHandler()
@@ -1463,6 +1477,9 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 
 	_analysesAvailable = analysesAvailable;
 	emit analysesAvailableChanged(_analysesAvailable);
+
+	if(!_analysesAvailable && !_package->isLoaded())
+		_resultsJsInterface->resetResults();
 }
 
 void MainWindow::resetQmlCache()

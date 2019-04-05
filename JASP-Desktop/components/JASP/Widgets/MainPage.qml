@@ -211,12 +211,12 @@ Item
 					// It would be much better to have resultsJsInterface be passed directly though..
 					// It also gives you an overview of the functions used in results html
 
-					function openFileTab()							{ resultsJsInterface.openFileTab()							}
-					function saveTextToFile(fileName, html)			{ resultsJsInterface.saveTextToFile(fileName, html)			}
-					function analysisUnselected()					{ resultsJsInterface.analysisUnselected()					}
-					function analysisSelected(id)					{ resultsJsInterface.analysisSelected(id)					}
-					function analysisChangedDownstream(id, model)	{ resultsJsInterface.analysisChangedDownstream(id, model)	}
-					function welcomeScreenIsCleared()				{ resultsJsInterface.welcomeScreenIsCleared()				}
+					function openFileTab()								{ resultsJsInterface.openFileTab()							}
+					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)			}
+					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()					}
+					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)					}
+					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)	}
+					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)}
 
 
 					function showAnalysesMenu(options)
