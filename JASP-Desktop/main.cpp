@@ -204,7 +204,9 @@ int main(int argc, char *argv[])
 	if(!dirTest)
 		//try
 		{
+			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
 			QCoreApplication::setOrganizationName("JASP");
 			QCoreApplication::setOrganizationDomain("jasp-stats.org");
@@ -212,7 +214,7 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 #ifdef _WIN32
-			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it
+			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
 #endif
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
 			return a.exec();

@@ -33,7 +33,7 @@ class ResultsJsInterface : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
-	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged)
+	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged				)
 
 
 public:
