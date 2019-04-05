@@ -2309,56 +2309,86 @@ saveImage <- function(plotName, format, height, width)
   error <- try({
     # Get file size in inches by creating a mock file and closing it
     pngMultip <- .fromRCPP(".ppi") / 96
-    png(filename="dpi.png", width=width * pngMultip,
-        height=height * pngMultip,res=72 * pngMultip)
+    png(
+      filename = "dpi.png",
+      width = width * pngMultip,
+      height = height * pngMultip,
+      res = 72 * pngMultip
+    )
     insize <- dev.size("in")
     dev.off()
     
-    # Open correct graphics device
-    if (format == "eps") {
-      grDevices::cairo_ps(filename=relativePath, width=insize[1],
-                          height=insize[2], bg=backgroundColor)
-    } else if (format == "tiff") {
+    if (ggplot2::is.ggplot(plt) || inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+      plotArgs <- list(
+        filename  = relativePath,
+        plot      = plt,
+        width     = insize[1],
+        height    = insize[2],
+        bg        = backgroundColor,
+        limitsize = FALSE
+      )
+      if (format == "eps") {
+        
+      } else if (format == "pdf") {
+        plotArgs[["bg"]] <- "transparent"
+      } else if (format == "tiff") {
+        plotArgs[["dpi"]] <- 300
+        plotArgs[["compression"]] <- "lzw"
+      } else {
+        stop("unknown format ", format)
+      }
+      do.call(ggplot2::ggsave, plotArgs)
+    } else { # qgraph & base plots
+      # Open correct graphics device
+      if (format == "eps") {
+        grDevices::cairo_ps(
+          filename = relativePath,
+          width = insize[1],
+          height = insize[2],
+          bg = backgroundColor
+        )
+      } else if (format == "tiff") {
+        hiResMultip <- 300 / 72
+        grDevices::tiff(
+          filename    = relativePath,
+          width       = width * hiResMultip,
+          height      = height * hiResMultip,
+          res         = 300,
+          bg          = backgroundColor,
+          compression = "lzw",
+          type        = "cairo"
+        )
+      }
+      else if (format == "pdf") {
+        grDevices::cairo_pdf(
+          filename = relativePath,
+          width = insize[1],
+          height = insize[2],
+          bg = "transparent"
+        )
+      } else { # add optional other formats here in "else if"-statements
+        stop("Format incorrectly specified")
+      }
       
-      hiResMultip <- 300/72
-      grDevices::tiff(filename    = relativePath,
-                      width       = width * hiResMultip,
-                      height      = height * hiResMultip,
-                      res         = 300,
-                      bg          = backgroundColor,
-                      compression = "lzw",
-                      type        = "cairo")
-      
+      # Plot and close graphics device
+      if (inherits(plt, "recordedplot")) {
+        .redrawPlot(plt) #(see below)
+      } else { #qgraph
+        plot(plt)
+      }
+      dev.off()
     }
-    else if (format == "pdf") {
-      grDevices::cairo_pdf(filename=relativePath, width=insize[1], height=insize[2], bg="transparent")
-    } else { # add optional other formats here in "else if"-statements
-      stop("Format incorrectly specified")
-    }
-    
-    # Plot and close graphics device
-    if (inherits(plt, "recordedplot")) {
-      .redrawPlot(plt) #(see below)
-    } else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-      gridExtra::grid.arrange(plt)
-    } else {
-      plot(plt) #ggplots
-    }
-    dev.off()
   })
   # Create output for interpretation by JASP front-end and return it
-  output <- list(
-    status = "imageSaved",
-    results = list(
-      name  = relativePath,
-      error = FALSE
-    )
-  )
+  output <- list(status = "imageSaved",
+                 results = list(name  = relativePath,
+                                error = FALSE))
   if (isTryError(error)) {
     output[["results"]][["error"]] <- TRUE
-    output[["results"]][["errorMessage"]] <- .extractErrorMessage(error)
-	}
-
+    output[["results"]][["errorMessage"]] <-
+      .extractErrorMessage(error)
+  }
+  
   return(toJSON(output))
 }
 
