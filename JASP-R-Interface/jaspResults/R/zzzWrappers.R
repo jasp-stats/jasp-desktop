@@ -101,10 +101,9 @@ jaspObjR <- R6Class(
 	cloneable = FALSE,
 	public    = list(
 		initialize                     = function()                            {stop("You should not create a new jaspObject!")},
-		getJaspObject                  = function()                            {private$jaspObject},
 		addCitation                    = function(x)                           {private$jaspObject$addCitation(x)},
 		addMessage                     = function(x)                           {private$addMessage(x)},
-		copyDependenciesFromJaspObject = function(x)                           {private$jaspObject$copyDependenciesFromJaspObject(x$getJaspObject())},
+		copyDependenciesFromJaspObject = function(x)                           {private$jaspObject$copyDependenciesFromJaspObject(private$getJaspObject(x))},
 		dependOnOptions                = function(x)                           {private$jaspObject$dependOnOptions(x)},
 		print                          = function()                            {private$jaspObject$print()},
 		printHtml                      = function()                            {private$jaspObject$printHtml()},
@@ -118,12 +117,13 @@ jaspObjR <- R6Class(
 		position = function(x) {if (missing(x)) private$jaspObject$position else private$jaspObject$position <- as.numeric(x)},
 		title    = function(x) {if (missing(x)) private$jaspObject$title    else private$jaspObject$title    <- x},
     warning  = function(x) {if (missing(x)) private$jaspObject$warning  else private$jaspObject$warning  <- x},
-    type     = function() {                 private$jaspObject$type}
+    type     = function() {                private$jaspObject$type}
 		
 	),
 	private   = list(
-    jaspObject = NULL
-    #,finalize = function() print(paste0("Finalize called on ", class(self)[1L]))
+    jaspObject = NULL,
+    # NOTE: environments MUST be indexed with $ rather than [[ (otherwise they always returns NULL)
+    getJaspObject = function(R6obj) {R6obj$.__enclos_env__$private$jaspObject}
 	)
 )
 print.jaspObjR <- function(x, ...) {
@@ -136,8 +136,11 @@ jaspContainerR <- R6Class(
 	inherit   = jaspObjR, 
 	cloneable = FALSE,
 	public    = list(
-		initialize = function(title = "", dependencies = NULL, position = NULL) {
-			if (jaspResultsCalledFromJasp()) {
+		initialize = function(title = "", dependencies = NULL, position = NULL, jaspObject = NULL) {
+			if (!is.null(jaspObject)) {
+			  private$jaspObject <- jaspObject
+		      return()
+			} else if (jaspResultsCalledFromJasp()) {
 				container <- jaspResultsModule$create_cpp_jaspContainer(title)
 			} else {
 				checkForJaspResultsInit()
@@ -154,7 +157,7 @@ jaspContainerR <- R6Class(
 			return()
 		},
     setField   = function(field, value) {
-      private$jaspObject[[field]] <- value$getJaspObject();
+      private$jaspObject[[field]] <- private$getJaspObject(value);
       private$children[[field]]   <- value;
     },
     getField   = function(field) {
@@ -163,9 +166,8 @@ jaspContainerR <- R6Class(
           private$children[[field]] <- NULL
 
       #other way 'round is also quite possible, we just regenerated jaspResults from state/json and now the R6 class doesn't know anything about it...
-      if(!is.null(private$jaspObject[[field]]) && is.null(private$children[[field]]))
-      {
-        print('I should be recreating some jaspObject here and putting it inside my children but how?')
+      if(!is.null(private$jaspObject[[field]]) && is.null(private$children[[field]])) {
+        private$children[[field]] <- private$jaspCppToR6(private$jaspObject[[field]])
       }
 
       return(private$children[[field]]);
@@ -175,8 +177,19 @@ jaspContainerR <- R6Class(
 		length = function(value) { if (missing(value)) { private$jaspObject$length } else {stop("property 'length' is read-only!") }}
 	),
 	private   = list(
-    children = list()
-    #,finalizer = function() print("Hoi")
+    children = list(),
+    jaspObject = NULL,
+    jaspCppToR6 = function(cppObj) {
+      return(switch(
+        class(cppObj),
+        "Rcpp_jaspPlot"      = jaspPlotR$new     (jaspObject = cppObj),
+        "Rcpp_jaspTable"     = jaspTableR$new    (jaspObject = cppObj),
+        "Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
+        "Rcpp_jaspState"     = jaspStateR$new    (jaspObject = cppObj),
+        "Rcpp_jaspState"     = jaspHtmlR$new     (jaspObject = cppObj),
+        stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
+      ))
+    }
 	)
 )
 
@@ -193,7 +206,7 @@ jaspResultsR <- R6Class(
 				private$jaspObject = x
 			} else if (inherits(x, "jaspResultsR")) {
 				# this if is needed because JASP and R call jasprResults in different ways
-				private$jaspObject = x$getJaspObject()
+				private$jaspObject = private$getJaspObject(x)
 			} else {
 			  stop("You should not create a new jaspResultsR object!")
 			}
@@ -222,8 +235,11 @@ jaspPlotR <- R6Class(
 	cloneable = FALSE,
 	public = list(
 		initialize = function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, 
-							  dependencies=NULL, position=NULL) {
-			if (jaspResultsCalledFromJasp()) {
+							  dependencies=NULL, position=NULL, jaspObject = NULL) {
+			if (!is.null(jaspObject)) {
+			  private$jaspObject <- jaspObject
+			  return()
+			} else if (jaspResultsCalledFromJasp()) {
 				jaspPlotObj <- jaspResultsModule$create_cpp_jaspPlot(title)
 			} else {
 				checkForJaspResultsInit()
@@ -275,8 +291,11 @@ jaspTableR <- R6Class(
 	inherit   = jaspObjR,
 	cloneable = FALSE,
 	public = list(
-		initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL) {
-			if (jaspResultsCalledFromJasp()) {
+		initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL, jaspObject=NULL) {
+			if (!is.null(jaspObject)) {
+			  private$jaspObject <- jaspObject
+		    return()
+			} else if (jaspResultsCalledFromJasp()) {
 				jaspObj <- jaspResultsModule$create_cpp_jaspTable(title)
 			} else {
 				checkForJaspResultsInit()
@@ -349,9 +368,12 @@ jaspHtmlR <- R6Class(
 	inherit   = jaspObjR,
 	cloneable = FALSE,
 	public = list(
-		initialize = function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL) {
+		initialize = function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL, jaspObject = NULL) {
 			# if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
-			if (jaspResultsCalledFromJasp()) {
+			if (!is.null(jaspObject)) {
+			  private$jaspObject <- jaspObject
+		    return()
+			} else if (jaspResultsCalledFromJasp()) {
 				htmlObj <- jaspResultsModule$create_cpp_jaspHtml(text)
 			} else {
 				checkForJaspResultsInit()
@@ -387,8 +409,11 @@ jaspStateR <- R6Class(
 	inherit   = jaspObjR,
 	cloneable = FALSE,
 	public = list(
-		initialize = function(object=NULL, title="", dependencies=NULL, position=NULL) {
-			if (jaspResultsCalledFromJasp()) {
+		initialize = function(object=NULL, title="", dependencies=NULL, position=NULL, jaspObject = NULL) {
+			if (!is.null(jaspObject)) {
+			  private$jaspObject <- jaspObject
+			  return()
+			} else if (jaspResultsCalledFromJasp()) {
 				stateObj <- jaspResultsModule$create_cpp_jaspState(title)
 			} else {
 				checkForJaspResultsInit()
