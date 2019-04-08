@@ -3,6 +3,7 @@
 	{
 		"title" : 		"Descriptives from a Module",
 		"description": 	"Testing descriptives in a module.",
+		"icon":			"analysis-descriptives.svg",
 		"version":		1,
 		"author":		"Someone",
 		"maintainer":	"Someone <Someone@Somewhere.org>",
@@ -12,19 +13,12 @@
 
 	"requiredPackages":	[],
 
-	"ribbonEntries":
+	"menu":
 	[
 		{
-			"title": 	"Modular Madness",
-			"icon": 	"analysis-descriptives.svg",
-			"analyses":
-			[
-				{
-					"title":	"Modular Madness!!",
-					"qml":		"Descriptives.qml",
-					"function":	"Descriptives"
-				}
-			]
+			"title":	"Modular Madness!!",
+			"qml":		"Descriptives.qml",
+			"function":	"Descriptives"
 		}
 	]
 }

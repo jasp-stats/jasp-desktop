@@ -29,6 +29,8 @@ The description.json file should contain the following fields:
 - `moduleDescription`
   - `title`: text that is shown in the panel where modules can be installed
   - `description`: text that will be shown once the module is shipped with JASP and the user can browse the different modules
+  - `title`: text that is shown on the ribbon below the icon
+  - `icon`: name of the icon found in the icons folder
   - `version`: integer specifying the current version of your module
   - `author`: name of the author
   - `maintainer`: name of the maintainer
@@ -37,14 +39,12 @@ The description.json file should contain the following fields:
 
 - `requiredPackages`: array of of R package names that your analysis depends on and that are not shipped with JASP (see [the package list](https://jasp-stats.org/r-package-list))
 
-- `ribbonEntries`
-  - `title`: text that is shown on the ribbon below the icon
-  - `icon`: name of the icon found in the icons folder
-  - `analyses`
-    - `title`: text that identifies an analysis when the module is clicked on the ribbon
-    - `qml`: name of the qml file associated with an analysis that can be found in the qml folder
-    - `function`: name of the main R function of an analysis located in one of the R files in the R folder
-    
+- `menu`
+  - `title`: text that identifies an analysis when the module is clicked on the ribbon
+  - `function`: name of the main R function of an analysis located in one of the R files in the R folder
+  - `qml`: name of the qml file associated with an analysis that can be found in the qml folder. If no qml is specified, then the function name is taken as qml file name.
+  - `type`: per default the type of the menu item is "analysis". You can specify also "separator" (this draws a horizontal line in the menu) or a "groupTitle" (the title is displayed with bold style). In the later case, you can also specify an icon.
+
  You can add multiple analyses and they will all appear below the ribbon icon of your module. Each analysis should have its own `title`, `qml` file and R `function`.
  
 <details>
@@ -56,6 +56,7 @@ The description.json file should contain the following fields:
     {
       "title" : "Amazing module",
       "description": "This is a totally amazing module.",
+      "icon": "module.svg",
       "version": 1,
       "author": "yourName",
       "maintainer": "yourName <your@name.org>",
@@ -69,24 +70,17 @@ The description.json file should contain the following fields:
 		{ "package": "package3" }
     ],
 
-    "ribbonEntries":
+    "menu":
     [
       {
-        "title": "Module",
-        "icon": "module.svg",
-        "analyses":
-        [
-          {
-            "title": "Analysis Module",
-            "qml": "analysisName.qml",
-            "function": "analysisName"
-          }, 
-	  {
-            "title": "Analysis Module 2",
-            "qml": "analysisName2.qml",
-            "function": "analysisName2"
-          }
-        ]
+        "title": "Analysis Module",
+        "qml": "analysisName.qml",
+        "function": "analysisName"
+      },
+      {
+        "title": "Analysis Module 2",
+        "qml": "analysisName2.qml",
+        "function": "analysisName2"
       }
     ]
   }

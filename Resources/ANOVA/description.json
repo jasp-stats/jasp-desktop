@@ -1,0 +1,46 @@
+{
+	"moduleDescription"  :
+	{
+		"title"          : "ANOVA",
+		"icon"			 : "analysis-classical-anova.svg",
+		"description"    : "This module offers the standard Frequentist and Bayesian ANOVA tests.",
+		"version"        : 1,
+		"author"         : "JASP Team",
+		"maintainer"     : "JASP Team <jasp-stats.org>",
+		"website"        : "jasp-stats.org",
+		"license"        : "GPL (>= 2)",
+		"dynamic"        : false
+	},
+
+	"menu":
+	[
+		{
+			"type":		"analysis",
+			"title":	"ANOVA",
+			"function":	"Anova"
+		},
+		{
+			"title":	"Repeated Measures ANOVA",
+			"function":	"AnovaRepeatedMeasures"
+		},
+		{
+			"title":	"ANCOVA",
+			"function":	"Ancova"
+		},
+		{
+			"type":		"separator"
+		},
+		{
+			"title":	"Bayesian ANOVA",
+			"function":	"AnovaBayesian"
+		},
+		{
+			"title":	"Bayesian Repeated Measures ANOVA",
+			"function":	"AnovaRepeatedMeasuresBayesian"
+		},
+		{
+			"title":	"Bayesian ANCOVA",
+			"function":	"AncovaBayesian"
+		}
+	]
+}

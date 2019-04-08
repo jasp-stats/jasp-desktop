@@ -26,19 +26,21 @@
 
 namespace Modules
 {
-class RibbonEntry;
 class DynamicModule;
 
 class AnalysisEntry
 {
 public:
-	AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRibbonEntry);
+	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule);
+	AnalysisEntry();
 
 	std::string		title()					const { return _title;				}
 	std::string		function()				const { return _function;			}
 	std::string		qml()					const { return _qml;				}
+	std::string		icon()					const { return _icon;				}
+	bool			isSeparator()			const { return _isSeparator;		}
+	bool			isGroupTitle()			const { return _isGroupTitle;		}
 
-	RibbonEntry*	ribbonEntry()			const { return _ribbonEntry;		}
 	DynamicModule*	dynamicModule()			const;
 	std::string		qmlFilePath()			const;
 	std::string		getFullRCall()			const;
@@ -52,8 +54,11 @@ private:
 	std::string		_title		= "",
 					_function	= "",
 					_qml		= "";
+	DynamicModule*	_dynamicModule = nullptr;
+	bool			_isSeparator = false;
+	bool			_isGroupTitle = false;
+	std::string		_icon		= "";
 
-	RibbonEntry*	_ribbonEntry = nullptr;
 };
 
 typedef std::vector<AnalysisEntry*> AnalysisEntries;

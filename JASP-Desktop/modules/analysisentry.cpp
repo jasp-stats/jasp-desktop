@@ -22,16 +22,35 @@
 namespace Modules
 {
 
-AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRibbonEntry) :
+AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule) :
 	_title(				analysisEntry.get("title",				"???").asString()),
 	_function(			analysisEntry.get("function",			"???").asString()),
 	_qml(				analysisEntry.get("qml",				"???").asString()),
-	_ribbonEntry(		parentRibbonEntry)
-{ }
+	_dynamicModule(dynamicModule),
+	_isSeparator(		analysisEntry.get("type",				"analysis").asString() == "separator"),
+	_isGroupTitle(		analysisEntry.get("type",				"analysis").asString() == "groupTitle"),
+	_icon(				analysisEntry.get("icon",				"").asString())
+{
+	if (_qml.empty())
+		_qml = _function;
+	if (_isGroupTitle && _icon.empty())
+		_icon = "large-arrow-right.png";
+}
+
+AnalysisEntry::AnalysisEntry() :
+	_title("???"),
+	_function("???"),
+	_qml("???"),
+	_dynamicModule(nullptr),
+	_isSeparator(true),
+	_isGroupTitle(false),
+	_icon("")
+{
+}
 
 DynamicModule*	AnalysisEntry::dynamicModule() const
 {
-	return _ribbonEntry == nullptr ? nullptr : _ribbonEntry->dynamicModule();
+	return _dynamicModule;
 }
 
 std::string AnalysisEntry::qmlFilePath() const
@@ -72,7 +91,6 @@ Json::Value AnalysisEntry::asJsonForJaspFile()	const
 	json["moduleMaintainer"]	= dynamicModule()->maintainer();
 	json["moduleWebsite"]		= dynamicModule()->website();
 	json["analysisEntry"]		= _title;
-	json["ribbonEntry"]			= _ribbonEntry->title();
 
 	return json;
 }
@@ -80,15 +98,14 @@ Json::Value AnalysisEntry::asJsonForJaspFile()	const
 std::string AnalysisEntry::codedReference() const
 {
 	std::string modName  = dynamicModule()->name(),
-				ribTitle = ribbonEntry()->title(),
-				coded    = modName + '~' + ribTitle + '~' + title();
+				coded    = modName + '~' + title();
 
 	return coded;
 }
 
 std::string	AnalysisEntry::buttonMenuString() const
 {
-	return dynamicModule() == NULL ? function() : codedReference();
+	return dynamicModule() == nullptr ? function() : codedReference();
 }
 
 } // namespace Modules

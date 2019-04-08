@@ -373,11 +373,11 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString ribbonTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisName.toStdString()));
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(analysisName.toStdString()));
 	else							create(module, analysisName, analysisTitle);
 }
 

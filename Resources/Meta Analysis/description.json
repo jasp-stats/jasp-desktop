@@ -3,6 +3,7 @@
 	{
 		"title" : 		"Meta Analysis",
 		"description" : "Meta Analysis module.",
+		"icon":			"meta-analysis.svg",
 		"version":		1,
 		"author":		"JASP Team",
 		"maintainer":	"JASP Team <jasp-stats.org>",
@@ -13,17 +14,10 @@
 
 	"requiredPackages":	[],
 
-	"ribbonEntries":
-	[
+	"menu":  [
 		{
-			"title": 	"Meta Analysis",
-			"icon": 	"meta-analysis.svg",
-			"analyses":  [
-				{
-					"title":	"Classical Meta Analysis",
-					"function":	"ClassicalMetaAnalysis"
-				}
-			]
+			"title":	"Classical Meta Analysis",
+			"function":	"ClassicalMetaAnalysis"
 		}
 	]
 }

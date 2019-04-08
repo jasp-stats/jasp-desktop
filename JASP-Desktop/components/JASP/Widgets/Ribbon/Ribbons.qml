@@ -46,15 +46,15 @@ Item
 		}
 
 
-		delegate: Ribbon
+		delegate: RibbonButton
 		{
-			id:				jaspRibbon
-			model:			ribbonButtonModel
-			height:			jaspRibbons.height
-			separateMe:		index > 0
-			highlighted:	ribbonModelFiltered.highlightedModuleIndex === index
-			module:			moduleName
-			moduleTitle:	ribbonButtonModel.title
+			text:			model.moduleName
+			moduleName:		model.moduleName
+			source:			model.ribbonButton ? ((model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource) : ""
+			menu:			model.ribbonButton ? model.ribbonButton.analysisMenu : undefined
+			enabled:		model.ribbonButton ? (model.ribbonEnabled && (!model.ribbonButton.requiresDataset || mainWindow.datasetLoaded)) : false
+			showTitle:		false
+			visible:		model.ribbonButton ? true : false
 		}
 	}
 
