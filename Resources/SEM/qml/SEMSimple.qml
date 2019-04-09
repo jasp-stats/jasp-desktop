@@ -70,6 +70,7 @@ Form
 		Group
 		{
 			CheckBox { name: "outputAdditionalFitMeasures";				label: qsTr("Additional fit measures")				}
+            CheckBox { name: "outputRSquared";                          label: qsTr("R-Squared")                            }
 			CheckBox { name: "outputFittedCovarianceCorrelations";		label: qsTr("Fitted covariances / correlations")	}
 			CheckBox { name: "outputObservedCovarianceCorrelations";	label: qsTr("Observed covariances / correlations")	}
 			CheckBox { name: "outputResidualCovarianceCorrelations";	label: qsTr("Residual covariances / correlations")	}

@@ -464,10 +464,11 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   meta[[6]]  <- list(name="fitMeasures_RMSEA", type="table")
   meta[[7]]  <- list(name="fitMeasures_RMR", type="table")
   meta[[8]]  <- list(name="fitMeasures_Other", type="table")
-  meta[[9]]  <- list(name="covcor", type="table")
-  meta[[10]] <- list(name="modificationIndices", type="table")
-  meta[[11]] <- list(name="mardiasCoefficient", type="table")
-  meta[[12]] <- list(name="pathDiagram", type="image")
+  meta[[9]]  <- list(name="RSquared", type = "table")
+  meta[[10]] <- list(name="covcor", type="table")
+  meta[[11]] <- list(name="modificationIndices", type="table")
+  meta[[12]] <- list(name="mardiasCoefficient", type="table")
+  meta[[13]] <- list(name="pathDiagram", type="image")
   
   results[[".meta"]] <- meta
   results[["title"]] <- "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
@@ -822,6 +823,28 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
         fitMeasures_Other[['error']] <- list(errorType="badData")
     }
   }
+  
+  ### R squared
+  if (options$outputRSquared) {
+    rsquared <- list()
+    rsquared[["title"]] <- "R-Squared"
+    rsquared[["schema"]] <- list(
+      fields = list(
+        list(name = "var", title = "Variable", type = "string"),
+        list(name = "R2",  title = "R&sup2;",  type = "number", format="dp:3")
+      )
+    )
+    if (!is.null(semResults)) {
+      rsquared[["data"]] <- list()
+      r2 <- lavaan::inspect(semResults, "r2")
+      nm <- names(r2)
+      for (i in 1:length(r2)) {
+        rsquared[["data"]][[i]] <- list(var = .unv(nm[i]), R2 = r2[i])
+      }
+      results[["RSquared"]] <- rsquared
+    } 
+  }
+  
 
   ### Mardia coefficient
   if (options$outputMardiasCoefficients) {
