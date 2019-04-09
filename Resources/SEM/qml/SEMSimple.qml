@@ -70,6 +70,7 @@ Form
 		Group
 		{
 			CheckBox { name: "outputAdditionalFitMeasures";				label: qsTr("Additional fit measures")				}
+            CheckBox { name: "outputRSquared";                          label: qsTr("R-squared")                            }
 			CheckBox { name: "outputFittedCovarianceCorrelations";		label: qsTr("Fitted covariances / correlations")	}
 			CheckBox { name: "outputObservedCovarianceCorrelations";	label: qsTr("Observed covariances / correlations")	}
 			CheckBox { name: "outputResidualCovarianceCorrelations";	label: qsTr("Residual covariances / correlations")	}
@@ -159,7 +160,16 @@ Form
 			CheckBox { name: "addThresholds";				label: qsTr("Add thresholdds");					checked: true	}
 			CheckBox { name: "addScalingParameters";		label: qsTr("Add scalings parameters");			checked: true	}
 			CheckBox { name: "correlateDependentVariables";	label: qsTr("Correlate dependent variables");	checked: true	}
-			CheckBox { name: "addPathDiagram";              text: qsTr("Path diagram");                     checked: false }
+            CheckBox {
+                name: "addPathDiagram";
+                text: qsTr("Path diagram");
+                checked: false
+                CheckBox {
+                    name: "outputpathdiagramstandardizedparameter"
+                    text: qsTr("Show standardized parameters")
+                    checked: false
+                }
+            }
 		}
 
 		RadioButtonGroup
