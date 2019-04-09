@@ -12,6 +12,8 @@ Item {
 	MenuHeader {
 		id: menuHeader
 		headertext:"Data Preferences"
+		helpbutton: true
+		helpfile: "preferences/prefsdata"
 	}
 
 	ScrollView
@@ -28,7 +30,7 @@ Item {
 			width:			scrollPrefs.width
 			spacing:		Theme.rowSpacing
 
-			CheckBox
+			CheckBox  //Synchronize automatically
 			{
 				label:				"Synchronize automatically on data file save"
 				checked:			preferencesModel.dataAutoSynchronization
@@ -36,7 +38,7 @@ Item {
 				//font:				Theme.font
 			}
 
-			Item
+			Item //Use default spreadsheet editor
 			{
 				height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
 				width:	parent.width - Theme.generalAnchorMargin
@@ -111,7 +113,38 @@ Item {
 				}
 			}
 
-			PrefsMissingValues {}
+
+			Item  //Scale threshold
+			{
+				height:		customThreshold.height
+				width:		customThreshold.width + thresholdScale.width
+
+				CheckBox
+				{
+					id:					customThreshold
+					label:				qsTr("Custom threshold between Scale or Nominal")
+					checked:			preferencesModel.customThresholdScale
+					onCheckedChanged:	preferencesModel.customThresholdScale = checked
+					//font:				Theme.font
+				}
+
+				SpinBox
+				{
+					id:					thresholdScale
+					value:				preferencesModel.thresholdScale
+					onValueChanged:		preferencesModel.thresholdScale = value
+					anchors.left:		customThreshold.right
+					anchors.leftMargin: Theme.generalAnchorMargin
+					anchors.verticalCenter: parent.verticalCenter
+					height:				Theme.spinBoxHeight//parent.height
+					visible:			preferencesModel.customThresholdScale
+					font:				Theme.font
+					editable:			true
+				}
+			}
+
+
+			PrefsMissingValues {} //Missing Value List
 		}
 	}
 }
