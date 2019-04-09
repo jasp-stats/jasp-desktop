@@ -1,6 +1,7 @@
 #include "importer.h"
 #include "sharedmemory.h"
 #include <iostream>
+#include "utilities/settings.h"
 
 Importer::Importer(DataSetPackage *packageData)
 {
@@ -133,7 +134,11 @@ void Importer::fillSharedMemoryColumnWithStrings(const std::vector<std::string> 
 	intValues.reserve(values.size());
 	std::map<int, std::string> emptyValuesMap;
 
-	if (ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap) && uniqueValues.size() <= 24)
+	int thresholdScale = Settings::defaultValue(Settings::THRESHOLD_SCALE).toInt();
+	if (Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool())
+		thresholdScale = Settings::value(Settings::THRESHOLD_SCALE).toInt();
+
+	if (ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap) && uniqueValues.size() <= thresholdScale)
 	{
 		column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
 		success = true;

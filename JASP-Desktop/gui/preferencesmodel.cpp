@@ -99,9 +99,11 @@ int		PreferencesModel::customPPI()				const { return Settings::value(Settings::P
 bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND				).toString() == "white";	}
 bool	PreferencesModel::developerMode()			const { return Settings::value(Settings::DEVELOPER_MODE					).toBool();					}
 double	PreferencesModel::uiScale()					const { return Settings::value(Settings::UI_SCALE						).toDouble();				}
+bool	PreferencesModel::customThresholdScale()	const { return Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE		).toBool();					}
+int		PreferencesModel::thresholdScale()			const { return Settings::value(Settings::THRESHOLD_SCALE				).toInt();					}
 
 QStringList PreferencesModel::missingValues()		const
-{
+{;
 	QStringList items = Settings::value(Settings::MISSING_VALUES_LIST).toString().split("|");
 
 	return items;
@@ -230,7 +232,6 @@ void PreferencesModel::setUiScale(double newUiScale)
 	emit uiScaleChanged(newUiScale);
 }
 
-
 void PreferencesModel::zoomIn()
 {
 	setUiScale(uiScale() + 0.1);
@@ -302,6 +303,25 @@ void PreferencesModel::resetMissingValues()
 
 	if(missingValues() != currentValues)
 		emit missingValuesChanged();
+}
+
+void PreferencesModel::setCustomThresholdScale(bool newCustomThresholdScale)
+{
+	if (customThresholdScale() == newCustomThresholdScale)
+		return;
+
+	Settings::setValue(Settings::USE_CUSTOM_THRESHOLD_SCALE, newCustomThresholdScale);
+	emit customThresholdScaleChanged (newCustomThresholdScale);
+}
+
+void PreferencesModel::setThresholdScale(int newThresholdScale)
+{
+	if (thresholdScale() == newThresholdScale)
+		return;
+
+	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
+	emit thresholdScaleChanged(newThresholdScale);
+
 }
 
 void PreferencesModel::updateUtilsMissingValues()

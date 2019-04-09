@@ -183,7 +183,7 @@ Window
 				Menu {
 
 					id: contextMenu
-					width: 100
+					width: 120
 
 					Action {
 						text: "Select All"

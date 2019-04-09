@@ -43,7 +43,7 @@ Item {
 				CheckBox
 				{
 					id:					fixDecs
-					label:				"Fix the number of decimals"
+					label:				qsTr("Fix the number of decimals")
 					checked:			preferencesModel.fixedDecimals
 					onCheckedChanged:	preferencesModel.fixedDecimals = checked
 					//font:				Theme.font
@@ -56,8 +56,8 @@ Item {
 					onValueChanged:		preferencesModel.numDecimals = value
 					anchors.left:		fixDecs.right
 					anchors.leftMargin: Theme.generalAnchorMargin
-					anchors.top:		parent.top
-					height:				parent.height
+					anchors.verticalCenter: parent.verticalCenter
+					height:				Theme.spinBoxHeight//parent.height
 					visible:			preferencesModel.fixedDecimals
 					font:				Theme.font
 				}

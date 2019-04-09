@@ -9,7 +9,7 @@ Item {
 	property bool toolseparator: true
 	property string headertext: ""
 
-	height:30
+	height:Theme.menuItemHeight
 	anchors.top: parent.top
 	anchors.left: parent.left
 	anchors.right: parent.right
@@ -24,7 +24,7 @@ Item {
 
 		anchors.fill: parent
 		font.family: "SansSerif"
-		font.pixelSize: 18
+		font.pixelSize: Theme.fontLabel.pixelSize
 		color: Theme.black
 	}
 
