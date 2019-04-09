@@ -160,7 +160,16 @@ Form
 			CheckBox { name: "addThresholds";				label: qsTr("Add thresholdds");					checked: true	}
 			CheckBox { name: "addScalingParameters";		label: qsTr("Add scalings parameters");			checked: true	}
 			CheckBox { name: "correlateDependentVariables";	label: qsTr("Correlate dependent variables");	checked: true	}
-			CheckBox { name: "addPathDiagram";              text: qsTr("Path diagram");                     checked: false }
+            CheckBox {
+                name: "addPathDiagram";
+                text: qsTr("Path diagram");
+                checked: false
+                CheckBox {
+                    name: "outputpathdiagramstandardizedparameter"
+                    text: qsTr("Show standardized parameters")
+                    checked: false
+                }
+            }
 		}
 
 		RadioButtonGroup
