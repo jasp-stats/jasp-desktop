@@ -716,7 +716,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     focro$addColumnInfo(name = "mi",  title = "Mod. Ind.", type = "number", format = "sf:4;dp:3")
     focro$addColumnInfo(name = "epc", title  = "EPC",      type = "number", format = "sf:4;dp:3")
 
-    focro[["lhs"]] <- foc$lhs
+    focro[["lhs"]] <- .translateFactorNames(foc$lhs, options)
     focro[["op"]]  <- rep("\u2B62", nrow(foc))
     focro[["rhs"]] <- .unv(foc$rhs)
     focro[["mi"]]  <- foc$mi
