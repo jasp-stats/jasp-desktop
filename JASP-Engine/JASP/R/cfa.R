@@ -716,7 +716,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     focro$addColumnInfo(name = "mi",  title = "Mod. Ind.", type = "number", format = "sf:4;dp:3")
     focro$addColumnInfo(name = "epc", title  = "EPC",      type = "number", format = "sf:4;dp:3")
 
-    focro[["lhs"]] <- foc$lhs
+    focro[["lhs"]] <- .translateFactorNames(foc$lhs, options)
     focro[["op"]]  <- rep("\u2B62", nrow(foc))
     focro[["rhs"]] <- .unv(foc$rhs)
     focro[["mi"]]  <- foc$mi
@@ -862,7 +862,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   
   png() # semplot opens a device even though we specify doNotPlot, so we hack.
   pathplot <- semPlot::semPaths(
-    object         = .lavToPlotObj(cfaResult[["lav"]], options),
+    object         = .cfaLavToPlotObj(cfaResult[["lav"]], options),
     DoNotPlot      = TRUE,
     ask            = FALSE,
     layout         = "tree",
@@ -899,7 +899,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults[["plots"]][["pathplot"]]$dependOnOptions(c("pathplot", "plotmeans", "plotpars"))
 }
 
-.lavToPlotObj <- function(lavResult, options) {
+.cfaLavToPlotObj <- function(lavResult, options) {
   # Create semplot model and unv the names of the manifest variables and backtranslate latent variables
   # Sorry, this code is really ugly but all it does is replace names for plot.
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
