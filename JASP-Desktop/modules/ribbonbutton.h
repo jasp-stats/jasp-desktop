@@ -27,46 +27,43 @@
 #include "modules/analysismenumodel.h"
 
 
-class RibbonButtonModel : public QAbstractListModel
+class RibbonButton : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(bool		enabled			READ enabled			WRITE setEnabled			NOTIFY enabledChanged)
 	Q_PROPERTY(bool		requiresDataset	READ requiresDataset	WRITE setRequiresDataset	NOTIFY requiresDatasetChanged)
 	Q_PROPERTY(bool		isDynamic		READ isDynamic			WRITE setIsDynamic			NOTIFY isDynamicChanged)
+	Q_PROPERTY(bool		isCommon		READ isCommon			WRITE setIsCommon			NOTIFY isCommonChanged)
 	Q_PROPERTY(QString	title			READ titleQ				WRITE setTitleQ				NOTIFY titleChanged)
 	Q_PROPERTY(QString	moduleName		READ moduleNameQ									NOTIFY moduleNameChanged)
+	Q_PROPERTY(QString	iconSource		READ iconSource			WRITE setIconSource			NOTIFY iconSourceChanged)
+	Q_PROPERTY(QVariant	analysisMenu	READ analysisMenu									NOTIFY analysisMenuChanged)
 
 public:
-	enum {
-		AnalysisMenuRole = Qt::UserRole,
-		DisplayRole,
-		IconSourceRole,
-		EnabledAnalysisRole //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/82
-	};
 
-									RibbonButtonModel(QObject *parent, Json::Value description);
-									RibbonButtonModel(QObject *parent, Modules::DynamicModule * module);
-
-	int								rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _ribbonEntries.size();	}
-	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
-	virtual	QHash<int, QByteArray>	roleNames()													const override;
-	// Utility functions
+	RibbonButton(QObject *parent, Json::Value description, bool isCommon);
+	RibbonButton(QObject *parent, Modules::DynamicModule * module);
 
 	bool							requiresDataset()											const			{ return _requiresDataset;						}
 	bool							isDynamic()													const			{ return _isDynamicModule;						}
+	bool							isCommon()													const			{ return _isCommonModule;						}
 	std::string						title()														const			{ return _title;								}
 	QString							titleQ()													const			{ return QString::fromStdString(_title);		}
+	QString							iconSource()												const			{ return _iconSource;							}
 	bool							enabled()													const			{ return _enabled;								}
 	std::string						moduleName()												const			{ return _moduleName;							}
 	QString							moduleNameQ()												const			{ return QString::fromStdString(_moduleName);	}
-	void							setRibbonEntries(Modules::RibbonEntries ribbonEntries);
+	void							setMenu(const Modules::AnalysisEntries& ribbonEntries);
 	Modules::DynamicModule*			myDynamicModule();
 	Modules::AnalysisEntry*			getAnalysis(const std::string& name);
+	QVariant						analysisMenu()												const			{ return QVariant::fromValue(_analysisMenuModel); }
 
 public slots:
 	void setRequiresDataset(bool requiresDataset);
 	void setIsDynamic(bool isDynamicModule);
+	void setIsCommon(bool isCommonModule);
 	void setTitle(std::string title);
+	void setIconSource(QString iconSource);
 	void setTitleQ(QString title)									{ setTitle(title.toStdString()); }
 	void setEnabled(bool enabled);
 	void setModuleName(std::string moduleName);
@@ -79,25 +76,30 @@ signals:
 	void enabledChanged();
 	void requiresDatasetChanged();
 	void isDynamicChanged();
+	void isCommonChanged();
 	void titleChanged();
 	void moduleNameChanged();
-	void iChanged(RibbonButtonModel * me);
+	void iChanged(RibbonButton * me);
+	void iconSourceChanged();
+	void analysisMenuChanged();
 
 
 private:
 	void bindYourself();
 
 private:
-	Modules::RibbonEntries			_ribbonEntries;
-	AnalysisMenuModels				_analysisMenuModels;
+	AnalysisMenuModel*				_analysisMenuModel;
+	Modules::AnalysisEntries		_menuEntries;
 
 	bool							_requiresDataset	= true,
 									_isDynamicModule	= true,
+									_isCommonModule		= false,
 									_enabled			= false;
 	std::string						_title				= "",
 									_moduleName			= "";
 	DynamicModules				*	_dynamicModules		= nullptr;
 	Modules::DynamicModule		*	_module				= nullptr;
+	QString							_iconSource;
 };
 
 

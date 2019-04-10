@@ -275,9 +275,7 @@ HEADERS += \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
     modules/dynamicmodules.h \
-    modules/ribbonentry.h \
     modules/ribbonmodel.h \
-    modules/ribbonbuttonmodel.h \
     modules/analysismenumodel.h \
     osf/onlinedataconnection.h \
     osf/onlinedatamanager.h \
@@ -370,7 +368,8 @@ HEADERS += \
     analysis/jaspdoublevalidator.h \
     widgets/boundqmlfactorsform.h \
     widgets/listmodelfactorsform.h \
-    utilities/aboutmodel.h
+    utilities/aboutmodel.h \
+    modules/ribbonbutton.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -456,9 +455,7 @@ SOURCES += \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
     modules/dynamicmodules.cpp \
-    modules/ribbonentry.cpp \
     modules/ribbonmodel.cpp \
-    modules/ribbonbuttonmodel.cpp \
     modules/analysismenumodel.cpp \
     osf/onlinedataconnection.cpp \
     osf/onlinedatamanager.cpp \
@@ -549,7 +546,8 @@ SOURCES += \
     analysis/jaspdoublevalidator.cpp \
     widgets/boundqmlfactorsform.cpp \
     widgets/listmodelfactorsform.cpp \
-    utilities/aboutmodel.cpp
+    utilities/aboutmodel.cpp \
+    modules/ribbonbutton.cpp
 
 RESOURCES += \
     html/html.qrc \

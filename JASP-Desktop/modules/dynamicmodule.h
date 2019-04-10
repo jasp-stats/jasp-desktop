@@ -27,9 +27,9 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QDateTime>
-#include "ribbonentry.h"
 #include "jsonredirect.h"
 #include "enginedefinitions.h"
+#include "analysisentry.h"
 
 namespace Modules
 {
@@ -64,9 +64,9 @@ public:
 
 	~DynamicModule() override
 	{
-		for(auto * entry : _ribbonEntries)
+		for(auto * entry : _menuEntries)
 			delete entry;
-		_ribbonEntries.clear();
+		_menuEntries.clear();
 	}
 
 	static std::string  developmentModuleName()  { return "DevelopmentModule"; }
@@ -93,7 +93,7 @@ public:
 	Json::Value			requiredPackages()	const { return _requiredPackages;						}
 
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
-	std::string			iconFilePath(	const std::string & iconFileName)	const;
+	std::string			iconFilePath()										const;
 	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
 	QString				helpFolderPath()									const;
 
@@ -115,14 +115,10 @@ public:
 	void				setLoadingNeeded();
 	void				setStatus(moduleStatus newStatus);
 
-	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
-
-	RibbonEntry*		ribbonEntry(const std::string & ribbonTitle) const;
-	RibbonEntry*		operator[](const std::string & ribbonTitle) const { return ribbonEntry(ribbonTitle); }
+	const AnalysisEntries menu()		const	{ return _menuEntries; }
 
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName)	const;
 
 	static std::string	moduleNameStripNonAlphaNum(std::string folderName);
 
@@ -187,6 +183,7 @@ private:
 	moduleStatus	_status = moduleStatus::uninitialized;
 	std::string		_name,
 					_title,
+					_icon,
 					_author,
 					_website,
 					_license,
@@ -204,7 +201,7 @@ private:
 					_isDeveloperMod		= false,
 					_initialized		= false;
 	Json::Value		_requiredPackages;
-	RibbonEntries	_ribbonEntries;
+	AnalysisEntries	_menuEntries;
 	const char		*_exposedPostFix	= "_exposed";
 };
 

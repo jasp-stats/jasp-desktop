@@ -33,10 +33,8 @@ Rectangle
 	property alias	source		: backgroundImage.source
 	property bool	enabled		: true
 	property string moduleName	: "???"
-	property string moduleTitle : "???"
-	property string ribbonTitle	: "???"
-	property bool showTitle: true
-	default property var	menu
+	property bool	showTitle	: true
+	property var	menu		: []
 
 	signal clicked
 
@@ -76,7 +74,7 @@ Rectangle
 			anchors.top:		backgroundImage.top
 			source:				"qrc:/icons/toolbutton-menu-indicator.svg"
 			opacity:			ribbonButton.enabled ? 1 : 0.5
-			visible:			ribbonButton.menu.rowCount() > 1
+			visible:			ribbonButton.menu ? ribbonButton.menu.rowCount() > 1 : false
 		}
 
 		Text
@@ -106,20 +104,21 @@ Rectangle
 				if (modulesMenu.opened)		modulesMenu.opened  = false
 
 				if (ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
 				{
 					var functionCall = function (index)
 					{
 						var analysisName = customMenu.props['model'].getAnalysisName(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
 						customMenu.visible = false;
 					}
 
 					var props = {
 						"model"			: ribbonButton.menu,
-						"functionCall"	: functionCall
+						"functionCall"	: functionCall,
+						"hasIcons"		: false
 					};
 
 					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
@@ -127,25 +126,4 @@ Rectangle
 			}
 		}
 	}
-
-	Rectangle
-	{
-		anchors.top:				parent.bottom
-		anchors.horizontalCenter:	parent.horizontalCenter
-		border.color:				Theme.uiBorder
-		border.width:				1
-		color:						Theme.uiBackground
-		visible:					showTitle && (mice.containsMouse && !mice.pressed)
-		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
-		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
-
-		Text
-		{
-			id:						moduleNameText
-			anchors.centerIn:		parent
-			font:					Theme.fontLabel
-			text:					ribbonButton.moduleTitle
-		}
-	}
-
 }

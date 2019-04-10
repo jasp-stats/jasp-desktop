@@ -109,7 +109,7 @@ Item
 
 				Rectangle
 				{
-					visible:			displayText != "Common"
+					visible:			!isCommon
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin

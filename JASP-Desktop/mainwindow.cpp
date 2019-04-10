@@ -50,7 +50,6 @@
 #include "analysis/options/optionvariablesgroups.h"
 #include "qquick/datasetview.h"
 #include "modules/dynamicmodules.h"
-#include "modules/ribbonentry.h"
 #include "modules/analysismenumodel.h"
 
 #include "timers.h"
@@ -109,7 +108,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
-	_ribbonModel			= new RibbonModel(_dynamicModules, { "Common", "Network", "Meta Analysis", "SEM", "Summary Statistics" });
+	_ribbonModel			= new RibbonModel(_dynamicModules,
+									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
+									{ "Network", "Meta Analysis", "SEM", "Summary Statistics" });
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);

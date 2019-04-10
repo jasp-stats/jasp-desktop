@@ -18,7 +18,13 @@
 
 #include <QDebug>
 #include "analysismenumodel.h"
+#include "modules/ribbonbutton.h"
 
+
+AnalysisMenuModel::AnalysisMenuModel(RibbonButton *parent) : QAbstractListModel(parent), _ribbonButton(parent)
+{
+
+}
 
 QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 {
@@ -32,7 +38,11 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 	else if (role == AnalysisFunctionRole)
 		return QString::fromStdString(entry->function());
 	else if (role == MenuImageSourceRole)
-		return "";  // We don't need image for analysis menu. TODO: Move this to (parent) MenuModel
+		return entry->icon().empty() ? QString() : (QString::fromStdString((_ribbonButton->isDynamic() ? "file:" : "qrc:/icons/") + entry->icon()));
+	else if (role == IsSeparatorRole)
+		return entry->isSeparator();
+	else if (role == isGroupTitleRole)
+		return entry->isGroupTitle();
 
 	return QVariant();
 }
@@ -43,10 +53,29 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 	static const auto roles = QHash<int, QByteArray>{
 		{	DisplayRole,            "displayText"		},
 		{	AnalysisFunctionRole,   "analysisEntry"		},
-		{	MenuImageSourceRole,    "menuImageSource"	}
+		{	MenuImageSourceRole,    "menuImageSource"	},
+		{	IsSeparatorRole,		"isSeparator"		},
+		{	isGroupTitleRole,		"isGroupTitle"		}
 	};
 
 	return roles;
+}
+
+void AnalysisMenuModel::setAnalysisEntries(const std::vector<Modules::AnalysisEntry *> &analysisEntries)
+{
+	_analysisEntries.clear();
+
+	Modules::AnalysisEntry* previousEntry = nullptr;
+	for (Modules::AnalysisEntry* entry: analysisEntries)
+	{
+		if (entry->isGroupTitle())
+		{
+			if (previousEntry && !previousEntry->isSeparator() )
+				_analysisEntries.push_back(new Modules::AnalysisEntry());
+		}
+		_analysisEntries.push_back(entry);
+		previousEntry = entry;
+	}
 }
 
 Modules::AnalysisEntry *AnalysisMenuModel::getAnalysisEntry(const std::string& name)

@@ -26,7 +26,7 @@ Form
 {
 	usesJaspResults: false
 
-	IntegerField { label: qsTr("Sample size"); name: "sampleSize" ; min: 3; Layout.columnSpan: 2 }
+	IntegerField { label: qsTr("Sample size"); name: "sampleSize" ; min: 3; Layout.columnSpan: 2; defaultValue: 3 }
 
 	Group
 	{
@@ -38,7 +38,7 @@ Form
 	Group
 	{
 		title: qsTr("Alternative model")
-		IntegerField {	label: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; min: 1 }
+		IntegerField {	label: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; min: 1; defaultValue: 1 }
 		DoubleField {	label: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; max: 0.9999 }
 	}
 

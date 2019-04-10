@@ -3,6 +3,7 @@
 	{
 		"title" : 		"SEM",
 		"description" : "Various SEM procedures in a single module.",
+		"icon":			"sem-latreg.svg",
 		"version":		1,
 		"author":		"JASP Team",
 		"maintainer":	"JASP Team <jasp@jasp-stats.org>",
@@ -17,23 +18,16 @@
 		{ "package": "semPlot" }
 	],
 	
-	"ribbonEntries":
-	[
+	"menu":  [
 		{
-			"title": 	"SEM",
-			"icon": 	"sem-latreg.svg",
-			"analyses":  [
-				{
-					"title":	"Lavaan Modeling",
-					"qml":		"SEMSimple.qml",
-					"function":	"SEMSimple"
-				},
-				{
-					"title":	"Confirmatory Factor Analysis",
-					"qml":		"ConfirmatoryFactorAnalysis.qml",
-					"function":	"ConfirmatoryFactorAnalysis"
-				}
-			]
+			"title":	"Lavaan Modeling",
+			"qml":		"SEMSimple.qml",
+			"function":	"SEMSimple"
+		},
+		{
+			"title":	"Confirmatory Factor Analysis",
+			"qml":		"ConfirmatoryFactorAnalysis.qml",
+			"function":	"ConfirmatoryFactorAnalysis"
 		}
 	]
 }
