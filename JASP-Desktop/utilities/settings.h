@@ -27,10 +27,13 @@ public:
 		IMAGE_BACKGROUND,
 		FIXED_DECIMALS,
 		DEVELOPER_MODE,
-		DEVELOPER_FOLDER
+		DEVELOPER_FOLDER,
+		USE_CUSTOM_THRESHOLD_SCALE,
+		THRESHOLD_SCALE
 	};
 
 	static QVariant value(Settings::Type key);
+	static QVariant defaultValue(Settings::Type key);
 	static void setValue(Settings::Type key, const QVariant &value);
 	static void sync();
 	static void remove(Settings::Type key);

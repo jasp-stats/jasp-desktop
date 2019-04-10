@@ -68,12 +68,13 @@ QtObject {
 	readonly property int indentationLength:			20 * uiScale
 	readonly property int borderRadius:					4  * uiScale
 	readonly property int generalAnchorMargin:			8  * uiScale
-	readonly property int generalMenuMargin:			8  * uiScale
+	readonly property int generalMenuMargin:			12  * uiScale
 	readonly property int rowSpacing:					12 * uiScale
 	readonly property int subOptionOffset:				40 * uiScale
 
 	readonly property int sliderWidth:					4   * uiScale
 	readonly property int sliderLength:					80  * uiScale
+	readonly property int spinBoxHeight:				25  * uiScale
 	readonly property int switchHeight:					15  * uiScale
 	readonly property int shadowRadius:					10  * uiScale
 	readonly property int scrollbarWidth:				8   * uiScale
@@ -102,6 +103,7 @@ QtObject {
 	readonly property real ribbonScaleHovered:			1.1
 
 	readonly property int menuItemHeight:               20  * uiScale
+	readonly property int menuHeaderHeight:             30  * uiScale
 	readonly property real menuSpacing:					1   * uiScale
 	readonly property real menuPadding:					10  * uiScale
 

@@ -2,14 +2,16 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
-
+import JASP.Widgets 1.0
 
 Item {
 
 	property bool toolseparator: true
+	property bool helpbutton: false
 	property string headertext: ""
+	property string helpfile: ""
 
-	height:30
+	height:Theme.menuItemHeight
 	anchors.top: parent.top
 	anchors.left: parent.left
 	anchors.right: parent.right
@@ -24,8 +26,22 @@ Item {
 
 		anchors.fill: parent
 		font.family: "SansSerif"
-		font.pixelSize: 18
+		font.pixelSize: Theme.fontLabel.pixelSize
 		color: Theme.black
+	}
+
+	MenuButton
+	{
+		id:						idHelpButton
+		visible:				helpbutton
+		height:					1.5 * parent.height
+		width:					height
+		iconSource:				"qrc:/images/info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+		onClicked:				helpModel.showOrTogglePage(helpfile)
+		toolTip:				"Show info about these preferences"
+		radius:					height / 2
+		anchors.verticalCenter: headLabel.verticalCenter
+		anchors.right:			parent.right
 	}
 
 	ToolSeparator

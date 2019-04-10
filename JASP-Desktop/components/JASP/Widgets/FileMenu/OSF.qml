@@ -115,7 +115,7 @@ Item
             anchors
             {
                 left: saveFilenameLabel.right
-                leftMargin: 6
+				leftMargin: Theme.generalAnchorMargin
                 top: saveFilenameLabel.top
                 right: parent.right
             }
@@ -132,6 +132,7 @@ Item
                 id: filenameText
 
                 anchors.fill: parent
+				anchors.leftMargin: Theme.itemPadding
                 selectByMouse: true
 
                 text: fileMenuModel.osf.savefilename

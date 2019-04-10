@@ -13,6 +13,8 @@ Item {
 	MenuHeader {
 		id: menuHeader
 		headertext:"Advanced Preferences"
+		helpbutton: true
+		helpfile: "preferences/prefsadvanced"
 	}
 
 	ScrollView
@@ -21,7 +23,7 @@ Item {
 		anchors.top:	menuHeader.bottom
 		anchors.left:	menuHeader.left
 		anchors.right:	menuHeader.right
-		anchors.bottom: menuHeader.bottom
+		anchors.bottom: parent.bottom
 		anchors.topMargin: 2 * Theme.generalMenuMargin
 
 		Column
@@ -51,6 +53,7 @@ Item {
 					width:				customPPISpinBox.x + customPPISpinBox.width
 					height:				customPPISpinBox.height
 					anchors.top:		useDefaultPPICheckbox.bottom
+					anchors.topMargin:	Theme.generalAnchorMargin
 
 					Text
 					{
@@ -72,12 +75,13 @@ Item {
 						stepSize:			16
 						editable:			true
 						font:				Theme.font
-						height:				implicitHeight * preferencesModel.uiScale
+						height:				Theme.spinBoxHeight	//implicitHeight * preferencesModel.uiScale
+						x: uiScaleSoinBox.x
 
 						anchors
 						{
-							left:			customPPILabel.right
-							top:			parent.top
+							//left:			customPPILabel.right
+							verticalCenter:	parent.verticalCenter
 						}
 					}
 				}
@@ -85,8 +89,9 @@ Item {
 
 			Item
 			{
-				height:		uiScaleSlider.height
-				width:		uiScaleSlider.x + uiScaleSlider.width
+				height:		uiScaleSoinBox.height
+				width:		uiScaleSoinBox.x + uiScaleSoinBox.width
+				anchors.topMargin:	Theme.generalAnchorMargin
 
 				Text
 				{
@@ -99,26 +104,26 @@ Item {
 
 				SpinBox
 				{
-					id:					uiScaleSlider
+					id:					uiScaleSoinBox
 					value:				preferencesModel.uiScale * _mult
 					onValueChanged:		preferencesModel.uiScale = value / _mult
 					from:				0.01	* _mult
 					to:					3		* _mult
 					stepSize:			0.1		* _mult
 					font:				Theme.font
-					height:				implicitHeight * preferencesModel.uiScale
+					height:				Theme.spinBoxHeight
 
 					property real	_mult:		Math.pow(10, decimals)
 					property int	decimals:	2
 					property real	realValue:	value / _mult
 
 					validator: JASPDoubleValidator {
-						bottom:	Math.min(uiScaleSlider.from, uiScaleSlider.to)
-						top:		Math.max(uiScaleSlider.from, uiScaleSlider.to)
-						decimals: uiScaleSlider.decimals
+						bottom:	Math.min(uiScaleSoinBox.from, uiScaleSoinBox.to)
+						top:		Math.max(uiScaleSoinBox.from, uiScaleSoinBox.to)
+						decimals: uiScaleSoinBox.decimals
 					}
 
-					textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSlider.decimals)	}
+					textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSoinBox.decimals)	}
 					valueFromText: function(text, locale)	{  return Number.fromLocaleString("en-US", text) * 100								}
 
 					anchors

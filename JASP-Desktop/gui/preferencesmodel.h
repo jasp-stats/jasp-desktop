@@ -24,6 +24,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIChanged					)
 	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
+	Q_PROPERTY(bool			customThresholdScale	READ customThresholdScale		WRITE setCustomThresholdScale		NOTIFY customThresholdScaleChanged		)
+	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
 
 
 public:
@@ -46,11 +48,14 @@ public:
 	QString		developerFolder()			const;
 	QString		fixedDecimalsForJS()		const;
 	QStringList	missingValues()				const;
-	void		missingValuesToStdVector(std::vector<std::string> & out) const;
+	bool		customThresholdScale()		const;
+	int			thresholdScale()			const;
 
+	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+
 
 public slots:
 	void setUiScale(double uiScale);
@@ -66,13 +71,14 @@ public slots:
 	void setDeveloperFolder(QString developerFolder);
 	void setUseDefaultEditor(bool useDefaultEditor);
 	void setDataAutoSynchronization(bool dataAutoSynchronization);
-
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
 	void updateUtilsMissingValues();
 	void removeMissingValue(QString value);
 	void addMissingValue(QString value);
 	void resetMissingValues();
+	void setCustomThresholdScale(bool customThresholdScale);
+	void setThresholdScale(int thresholdScale);
 
 signals:
 	void fixedDecimalsChanged(bool fixedDecimals);
@@ -90,13 +96,15 @@ signals:
 	void missingValuesChanged();
 	void developerModeChanged(bool developerMode);
 	void developerFolderChanged(QString developerFolder);
-
 	void plotPPIChanged(int ppiForPlot);
 	void plotBackgroundChanged(QString background);
+	void customThresholdScaleChanged(bool customThresholdScale);
+	void thresholdScaleChanged(int thresholdScale);
 
 private:
 
 	int _defaultPPI = 192;
+
 };
 
 #endif // PREFERENCESDIALOG_H
