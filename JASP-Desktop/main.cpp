@@ -217,7 +217,9 @@ int main(int argc, char *argv[])
 			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
 #endif
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
-			return a.exec();
+			int exitCode = a.exec();
+			JASPTIMER_PRINTALL();
+			return exitCode;
 		}
 	//	catch(std::exception & e) { std::cerr << "Expection ocurred: " << e.what() << std::endl;  return -1; }
 	//	catch(...) { return -1; }

@@ -39,8 +39,8 @@ FocusScope
 		Rectangle
 		{
 			id:				openCloseButton
-			width:			Theme.splitHandleWidth
-			height:			parent.height + 1
+			width:			Theme.splitHandleWidth + (2 * border.width)
+			height:			parent.height + (1 * border.width)
 			//color:			//mouseArea.containsMouse ? Theme.grayLighter : Theme.uiBackground
 			border.color:	Theme.uiBorder
 			border.width:	1
@@ -53,10 +53,14 @@ FocusScope
 				showArrow:				true
 				pointingLeft:			analysesModel.visible
 				onArrowClicked:			analysesModel.visible = !analysesModel.visible
-				anchors.fill:			parent
-				anchors.leftMargin:		openCloseButton.border.width
-				anchors.rightMargin:	openCloseButton.border.width
-				anchors.topMargin:		-1
+				anchors
+				{
+					fill:			parent
+					leftMargin:		openCloseButton.border.width
+					rightMargin:	openCloseButton.border.width
+					topMargin:		-1
+					//bottomMargin:	-1
+				}
 				toolTipDrag:			mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data"
 				toolTipArrow:			analysesModel.visible		? "Hide options" : "Show options"
 				dragEnabled:			mainWindow.dataAvailable && mainWindow.analysesAvailable

@@ -175,7 +175,9 @@ Item
 					{
 						if(resizeTimer.resizeToThis	!== newWidth)
 						{
+							//if(resizeTimer.running)
 							resizeTimer.stop();
+
 							resizeTimer.resizeToThis = newWidth;
 
 							if(newWidth !== resizeTimer.currentWidth)
@@ -185,7 +187,7 @@ Item
 
 					running:		false
 					repeat:			false
-					interval:		50 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
+					interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
 					onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
 				}
 

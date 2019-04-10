@@ -18,7 +18,7 @@
 
 struct ItemContextualized
 {
-	ItemContextualized(QQmlContext * context = NULL, QQuickItem * item = NULL) : item(item), context(context) {}
+	ItemContextualized(QQmlContext * context = nullptr, QQuickItem * item = nullptr) : item(item), context(context) {}
 
 	QQuickItem * item;
 	QQmlContext * context;
@@ -140,7 +140,7 @@ protected:
 	void buildNewLinesAndCreateNewItems();
 
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
-	float extraColumnWidth() { return _extraColumnItem == NULL ? 0 : _extraColumnItem->width(); }
+	float extraColumnWidth() { return _extraColumnItem == nullptr ? 0 : _extraColumnItem->width(); }
 
 	QQuickItem * createTextItem(int row, int col);
 	void storeTextItem(int row, int col, bool cleanUp = true);
@@ -158,9 +158,11 @@ protected:
 	QQmlContext * setStyleDataRowNumber(	QQmlContext * previousContext, QString text, int row);
 	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError);
 
+	void addLine(float x0, float y0, float x1, float y1);
+
 
 protected:
-	QAbstractTableModel *								_model = NULL;
+	QAbstractTableModel *								_model = nullptr;
 
 	std::vector<QSizeF>									_cellSizes; //[col]
 	std::vector<float>									_colXPositions; //[col][row]
@@ -171,9 +173,9 @@ protected:
 	std::stack<ItemContextualized*>						_columnHeaderStorage;
 	std::map<int, ItemContextualized *>					_columnHeaderItems;
 	std::map<int, std::map<int, ItemContextualized *>>	_cellTextItems;			//[col][row]
-	std::vector<std::pair<QVector2D, QVector2D>>		_lines;
-	QQuickItem											*_leftTopItem = NULL,
-														*_extraColumnItem = NULL;
+	std::vector<float>									_lines;
+	QQuickItem											*_leftTopItem = nullptr,
+														*_extraColumnItem = nullptr;
 
 	bool	_recalculateCellSizes	= false,
 			_ignoreViewpoint		= true;
@@ -184,11 +186,11 @@ protected:
 			_dataWidth				= -1;
 
 
-	QQmlComponent	* _itemDelegate				= NULL;
-	QQmlComponent	* _rowNumberDelegate		= NULL;
-	QQmlComponent	* _columnHeaderDelegate		= NULL;
-	QQmlComponent	* _leftTopCornerDelegate	= NULL;
-	QQmlComponent	* _styleDataCreator			= NULL;
+	QQmlComponent	* _itemDelegate				= nullptr;
+	QQmlComponent	* _rowNumberDelegate		= nullptr;
+	QQmlComponent	* _columnHeaderDelegate		= nullptr;
+	QQmlComponent	* _leftTopCornerDelegate	= nullptr;
+	QQmlComponent	* _styleDataCreator			= nullptr;
 
 	QSGFlatColorMaterial material;
 
@@ -209,9 +211,11 @@ protected:
 
 	std::map<std::string, int> _roleNameToRole;
 
-	float _rowNumberMaxWidth = 0;
-	
-	bool _linesWasChanged = false;
+	float	_rowNumberMaxWidth	= 0;
+	bool	_linesWasChanged	= false;
+	size_t	_linesActualSize	= 0;
+
+	std::map<size_t, std::map<size_t, unsigned char>> _storedLineFlags;
 };
 
 

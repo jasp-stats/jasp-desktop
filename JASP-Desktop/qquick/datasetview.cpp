@@ -4,7 +4,7 @@
 #include <QSGGeometry>
 #include <QSGNode>
 #include <queue>
-
+#include "timers.h"
 
 
 DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont(_font)
@@ -64,7 +64,7 @@ void DataSetView::setRolenames()
 {
 	_roleNameToRole.clear();
 
-	if(_model == NULL) return;
+	if(_model == nullptr) return;
 
 	auto roleNames = _model->roleNames();
 
@@ -75,6 +75,8 @@ void DataSetView::setRolenames()
 
 void DataSetView::calculateCellSizes()
 {
+	JASPTIMER_RESUME(calculateCellSizes);
+
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
 
@@ -99,7 +101,7 @@ void DataSetView::calculateCellSizes()
 	for(auto row : rows)
 		storeRowNumber(row);
 
-	if(_model == NULL) return;
+	if(_model == nullptr) return;
 
 	_cellSizes.resize(_model->columnCount());
 	_colXPositions.resize(_model->columnCount());
@@ -142,12 +144,18 @@ void DataSetView::calculateCellSizes()
 	_recalculateCellSizes = false;
 
 	emit itemSizeChanged();
+
+	JASPTIMER_STOP(calculateCellSizes);
+
+	_storedLineFlags.clear();
 }
 
 void DataSetView::viewportChanged()
 {
-	if(_model == NULL || _viewportX != _viewportX || _viewportY != _viewportY || _viewportW != _viewportW || _viewportH != _viewportH ) //only possible if they are NaN
+	if(_model == nullptr || _viewportX != _viewportX || _viewportY != _viewportY || _viewportW != _viewportW || _viewportH != _viewportH ) //only possible if they are NaN
 		return;
+
+	JASPTIMER_RESUME(viewportChanged);
 
 #ifdef DATASETVIEW_DEBUG_VIEWPORT
 	std::cout << "viewportChanged!\n" <<std::flush;
@@ -157,17 +165,22 @@ void DataSetView::viewportChanged()
 	storeOutOfViewItems();
 	buildNewLinesAndCreateNewItems();
 
+	JASPTIMER_RESUME(updateCalledForRender);
 	update();
+	JASPTIMER_STOP(updateCalledForRender);
 
 	_previousViewportColMin = _currentViewportColMin;
 	_previousViewportColMax = _currentViewportColMax;
 	_previousViewportRowMin = _currentViewportRowMin;
 	_previousViewportRowMax = _currentViewportRowMax;
+
+	JASPTIMER_STOP(viewportChanged);
 }
 
 
 void DataSetView::determineCurrentViewPortIndices()
 {
+	JASPTIMER_RESUME(determineCurrentViewPortIndices);
 	QVector2D leftTop(_viewportX, _viewportY);
 	QVector2D viewSize(_viewportW, _viewportH);
 	QVector2D rightBottom(leftTop + viewSize);
@@ -194,10 +207,13 @@ void DataSetView::determineCurrentViewPortIndices()
 	std::cout << "_previousViewport\tColMin: " << _previousViewportColMin << "\tColMax: " << _previousViewportColMax << "\tRowMin: " << _previousViewportRowMin << "\tRowMax: " << _previousViewportRowMax << "\n";
 	std::cout << "_currentViewport\tColMin: "  << _currentViewportColMin  << "\tColMax: " << _currentViewportColMax  << "\tRowMin: " << _currentViewportRowMin  << "\tRowMax: " << _currentViewportRowMax  << "\n" << std::flush;
 #endif
+	JASPTIMER_STOP(determineCurrentViewPortIndices);
 }
 
 void DataSetView::storeOutOfViewItems()
 {
+	JASPTIMER_RESUME(storeOutOfViewItems);
+
 	int maxRows = _model->rowCount(), maxCols = _model->columnCount();
 	if(
 			_previousViewportRowMin >= 0		&& _previousViewportRowMax >= 0			&& _previousViewportColMin >= 0			&& _previousViewportColMax >= 0 &&
@@ -228,82 +244,126 @@ void DataSetView::storeOutOfViewItems()
 		for(int row=_currentViewportRowMax; row < _previousViewportRowMax; row++)
 			storeRowNumber(row);
 	}
+
+	JASPTIMER_STOP(storeOutOfViewItems);
+}
+
+#define SHOW_ITEMS_PLEASE
+#define ADD_LINES_PLEASE
+
+void DataSetView::addLine(float x0, float y0, float x1, float y1)
+{
+	if(_lines.size() < _linesActualSize + 4)
+		_lines.resize(_lines.size() + 64);
+
+	//_linesActualSize must always be a multiple of 4 because:
+	_lines[_linesActualSize++] = x0;
+	_lines[_linesActualSize++] = y0;
+	_lines[_linesActualSize++] = x1;
+	_lines[_linesActualSize++] = y1;
 }
 
 void DataSetView::buildNewLinesAndCreateNewItems()
 {
-	_lines.clear();
-	_lines.reserve((_currentViewportColMax - _currentViewportColMin) * (_currentViewportRowMax - _currentViewportRowMin) * 4);
+	JASPTIMER_RESUME(buildNewLinesAndCreateNewItems);
+
+	//_lines.clear();
+#ifdef ADD_LINES_PLEASE
+	_linesActualSize = 0;
+	size_t expectedLinesSize = (_currentViewportColMax - _currentViewportColMin) * (_currentViewportRowMax - _currentViewportRowMin) * 4 * 2;
+	if(_lines.size() < expectedLinesSize)
+		_lines.resize(expectedLinesSize);
+	//_lines.reserve(expectedLinesSize);
+#endif
 
 	//and now we should create some new ones!
 
 	float	maxXForVerticalLine	= _viewportX + _viewportW - extraColumnWidth(), //To avoid seeing lines through add computed column button
 			maxYForVerticalLine = _viewportY + _dataRowsMaxHeight;
 
+	JASPTIMER_RESUME(buildNewLinesAndCreateNewItems_GRID);
+
 	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
 		for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 		{
-			QVector2D pos0(_colXPositions[col],					_dataRowsMaxHeight + row * _dataRowsMaxHeight);
-			QVector2D pos1(pos0.x() + _dataColsMaxWidth[col],	pos0.y()+ _dataRowsMaxHeight);
+			float	pos0x(_colXPositions[col]),
+					pos0y(_dataRowsMaxHeight + row * _dataRowsMaxHeight),
+					pos1x(pos0x + _dataColsMaxWidth[col]),
+					pos1y(pos0y + _dataRowsMaxHeight);
 
-			int lineFlags = _model->data(_model->index(row, col), _roleNameToRole["lines"]).toInt();
+			JASPTIMER_RESUME(buildNewLinesAndCreateNewItems_GRID_DATA);
+			if(_storedLineFlags.count(row) == 0 || _storedLineFlags[row].count(col) == 0)
+				_storedLineFlags[row][col] = static_cast<unsigned char>(_model->data(_model->index(row, col), _roleNameToRole["lines"]).toInt());
+			unsigned char lineFlags = _storedLineFlags[row][col];
+			JASPTIMER_STOP(buildNewLinesAndCreateNewItems_GRID_DATA);
 
 			/*
 			 *			---------- up ----------
 			 *			|left|            |right|
 			 *			--------- down ---------
 			 */
-			bool	left	= (lineFlags & 1) > 0	&& pos0.x()  > _rowNumberMaxWidth + _viewportX,
-					right	= (lineFlags & 2) > 0	&& pos1.x()  > _rowNumberMaxWidth + _viewportX,
-					up		= (lineFlags & 4) > 0	&& pos0.y()  > _dataRowsMaxHeight + _viewportY,
-					down	= (lineFlags & 8) > 0	&& pos1.y()  > _dataRowsMaxHeight + _viewportY;
+			bool	left	= (lineFlags & 1) > 0	&& pos0x  > _rowNumberMaxWidth + _viewportX,
+					right	= (lineFlags & 2) > 0	&& pos1x  > _rowNumberMaxWidth + _viewportX,
+					up		= (lineFlags & 4) > 0	&& pos0y  > _dataRowsMaxHeight + _viewportY,
+					down	= (lineFlags & 8) > 0	&& pos1y  > _dataRowsMaxHeight + _viewportY;
 
+#ifdef SHOW_ITEMS_PLEASE
 			createTextItem(row, col);
+#endif
 
 
-			if(up)		_lines.push_back(std::make_pair(QVector2D(pos1.x(),	pos0.y()),	pos0));
-			if(down)	_lines.push_back(std::make_pair(QVector2D(pos0.x(),	pos1.y()),	pos1));
+#ifdef ADD_LINES_PLEASE
+			if(up)		addLine(pos1x, pos0y, pos0x, pos0y);
+			if(down)	addLine(pos0x, pos1y, pos1x, pos1y);
 
 
 			if(left)
 			{
-				if(pos0.x() > maxXForVerticalLine)	_lines.push_back(std::make_pair(QVector2D(pos0.x(),	std::max(pos1.y(), maxYForVerticalLine)),	QVector2D(pos0.x(),	std::max(pos0.y(), maxYForVerticalLine))));
-				else								_lines.push_back(std::make_pair(QVector2D(pos0.x(),	pos1.y()),									pos0));
+				if(pos0x > maxXForVerticalLine)	addLine(pos0x, std::max(pos1y, maxYForVerticalLine),	pos0x, std::max(pos0y, maxYForVerticalLine));
+				else							addLine(pos0x, pos1y,									pos0x, pos0y);
 			}
 
 			if(right)
 			{
-				if(pos1.x() > maxXForVerticalLine)	_lines.push_back(std::make_pair(QVector2D(pos1.x(),	std::max(pos0.y(), maxYForVerticalLine)),	QVector2D(pos1.x(),	std::max(pos1.y(), maxYForVerticalLine))));
-				else								_lines.push_back(std::make_pair(QVector2D(pos1.x(),	pos0.y()),									pos1));
+				if(pos1x > maxXForVerticalLine) addLine(pos1x, std::max(pos0y, maxYForVerticalLine),	pos1x, std::max(pos1y, maxYForVerticalLine));
+				else							addLine(pos1x, pos0y,									pos1x, pos1y);
 			}
+#endif
 		}
 
-	_lines.push_back(std::make_pair(QVector2D(_viewportX + 0.5f,				_viewportY),						QVector2D(_viewportX + 0.5f,				_viewportY + _viewportH)));
-	_lines.push_back(std::make_pair(QVector2D(_viewportX + _rowNumberMaxWidth,	_viewportY),						QVector2D(_viewportX + _rowNumberMaxWidth,	_viewportY + _viewportH)));
+	JASPTIMER_STOP(buildNewLinesAndCreateNewItems_GRID);
 
-	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + 0.5f),					QVector2D(_viewportX + _viewportW,			_viewportY+ 0.5f)));
-	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + _dataRowsMaxHeight),	QVector2D(_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight)));
+#ifdef ADD_LINES_PLEASE
+	addLine(_viewportX + 0.5f,					_viewportY,							_viewportX + 0.5f,					_viewportY + _viewportH);
+	addLine(_viewportX + _rowNumberMaxWidth,	_viewportY,							_viewportX + _rowNumberMaxWidth,	_viewportY + _viewportH);
 
-	if(_extraColumnItem != NULL)
+	addLine(_viewportX,							_viewportY + 0.5f,					_viewportX + _viewportW,			_viewportY+ 0.5f);
+	addLine(_viewportX,							_viewportY + _dataRowsMaxHeight,	_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight);
+
+	if(_extraColumnItem != nullptr)
 	{
-		_lines.push_back(std::make_pair(QVector2D(_viewportX + _viewportW - extraColumnWidth(), _viewportY),		QVector2D(_viewportX + _viewportW - extraColumnWidth(), _viewportY + _dataRowsMaxHeight)));
-		_lines.push_back(std::make_pair(QVector2D(_viewportX + _viewportW, _viewportY),								QVector2D(_viewportX + _viewportW, _viewportY + _dataRowsMaxHeight)));
+		addLine(_viewportX + _viewportW - extraColumnWidth(),	_viewportY,		_viewportX + _viewportW - extraColumnWidth(),	_viewportY + _dataRowsMaxHeight);
+		addLine(_viewportX + _viewportW,						_viewportY,		_viewportX + _viewportW,						_viewportY + _dataRowsMaxHeight);
 	}
-
+#endif
 
 	for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 	{
 		createRowNumber(row);
 
-		QVector2D pos0(_viewportX,						(1 + row) * _dataRowsMaxHeight);
-		QVector2D pos1(_viewportX + _rowNumberMaxWidth, (2 + row) * _dataRowsMaxHeight);
+#ifdef ADD_LINES_PLEASE
+		float	pos0x(_viewportX),
+				pos0y((1 + row) * _dataRowsMaxHeight),
+				pos1x(_viewportX + _rowNumberMaxWidth),
+				pos1y((2 + row) * _dataRowsMaxHeight);
 
-		if(pos0.y() > _dataRowsMaxHeight + _viewportY)
-			_lines.push_back(std::make_pair(QVector2D(pos0.x(), pos0.y()), QVector2D(pos1.x(), pos0.y())));
+		if(pos0y > _dataRowsMaxHeight + _viewportY)
+			addLine(pos0x, pos0y, pos1x, pos0y);
 
 
-		if(row == _model->rowCount() - 1 && pos1.y() > _dataRowsMaxHeight + _viewportY)
-			_lines.push_back(std::make_pair(QVector2D(pos0.x(), pos1.y()), QVector2D(pos1.x(), pos1.y())));
+		if(row == _model->rowCount() - 1 && pos1y > _dataRowsMaxHeight + _viewportY)
+			addLine(pos0x, pos1y, pos1x, pos1y);
+#endif
 	}
 
 	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
@@ -311,44 +371,54 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 		createColumnHeader(col);
 
-		QVector2D pos0(_colXPositions[col],					_viewportY);
-		QVector2D pos1(pos0.x() + _dataColsMaxWidth[col],	pos0.y() + _dataRowsMaxHeight);
+#ifdef ADD_LINES_PLEASE
+		float	pos0x(_colXPositions[col]),
+				pos0y(_viewportY),
+				pos1x(pos0x + _dataColsMaxWidth[col]),
+				pos1y(pos0y + _dataRowsMaxHeight);
 
-		if(pos0.x()  > _rowNumberMaxWidth + _viewportX && pos0.x() < maxXForVerticalLine)
-			_lines.push_back(std::make_pair(QVector2D(pos0.x(), pos0.y()), QVector2D(pos0.x(), pos1.y())));
+		if(pos0x  > _rowNumberMaxWidth + _viewportX && pos0x < maxXForVerticalLine)
+			addLine(pos0x, pos0y, pos0x, pos1y);
 
 
-		if(col == _model->columnCount() - 1 && pos1.x()  > _rowNumberMaxWidth + _viewportX && pos1.x() < maxXForVerticalLine)
-			_lines.push_back(std::make_pair(QVector2D(pos1.x(), pos0.y()), QVector2D(pos1.x(), pos1.y())));
+		if(col == _model->columnCount() - 1 && pos1x  > _rowNumberMaxWidth + _viewportX && pos1x < maxXForVerticalLine)
+			addLine(pos1x, pos0y, pos1x, pos1y);
+#endif
 	}
 
+#ifdef ADD_LINES_PLEASE
 	_linesWasChanged = true;
+#endif
 
 	createleftTopCorner();
 	updateExtraColumnItem();
+
+	JASPTIMER_STOP(buildNewLinesAndCreateNewItems);
 }
 
 QQuickItem * DataSetView::createTextItem(int row, int col)
 {
+	JASPTIMER_RESUME(createTextItem);
 	//std::cout << "createTextItem("<<row<<", "<<col<<") called!\n" << std::flush;
 
-	if((_cellTextItems.count(col) == 0 && _cellTextItems[col].count(row) == 0) || _cellTextItems[col][row] == NULL)
+	if((_cellTextItems.count(col) == 0 && _cellTextItems[col].count(row) == 0) || _cellTextItems[col][row] == nullptr)
 	{
 
-		if(_itemDelegate == NULL)
+		if(_itemDelegate == nullptr)
 		{
 			_itemDelegate = new QQmlComponent(qmlEngine(this));
 			_itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey'; font: dataFont }", QUrl());
 		}
 
-		QQuickItem * textItem = NULL;
-		ItemContextualized * itemCon = NULL;
+		QQuickItem			* textItem	= nullptr;
+		ItemContextualized	* itemCon	= nullptr;
 
 		QModelIndex ind(_model->index(row, col));
 		bool active = _model->data(ind, _roleNameToRole["active"]).toBool();
 
 		if(_textItemStorage.size() > 0)
 		{
+			JASPTIMER_RESUME(createTextItem textItemStorage has something);
 #ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createTextItem("<<row<<", "<<col<<") from storage!\n" << std::flush;
 #endif
@@ -356,14 +426,16 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			textItem = itemCon->item;
 			_textItemStorage.pop();
 			setStyleDataItem(itemCon->context, _model->data(ind).toString(), active, col, row);
+			JASPTIMER_STOP(createTextItem textItemStorage has something);
 		}
 		else
 		{
+			JASPTIMER_RESUME(createTextItem textItemStorage has NOTHING);
 #ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createTextItem("<<row<<", "<<col<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-			itemCon = new ItemContextualized(setStyleDataItem(NULL, _model->data(ind).toString(), active, col, row));
+			itemCon = new ItemContextualized(setStyleDataItem(nullptr, _model->data(ind).toString(), active, col, row));
 			_itemDelegate->create(localIncubator, itemCon->context);
 
             if(localIncubator.isError())
@@ -374,10 +446,14 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 
 			textItem->setParent(this);
 			textItem->setParentItem(this);
+
+			JASPTIMER_STOP(createTextItem textItemStorage has NOTHING);
 		}
 
-		QString name = QString(textItem->metaObject()->className());
-		bool isTextItem = name == "QQuickText";
+		JASPTIMER_RESUME(createTextItem setValues);
+
+		QString		name		= QString(textItem->metaObject()->className());
+		bool		isTextItem	= name == "QQuickText";
 		
 		if (!isTextItem)
 		{
@@ -390,21 +466,27 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		textItem->setVisible(true);
 
 		_cellTextItems[col][row] = itemCon;
+
+		JASPTIMER_STOP(createTextItem setValues);
 	}
+
+	JASPTIMER_STOP(createTextItem);
 
 	return _cellTextItems[col][row]->item;
 }
 
 void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 {
+
 #ifdef DATASETVIEW_DEBUG_CREATION
 	std::cout << "storeTextItem("<<row<<", "<<col<<") in storage!\n" << std::flush;
 #endif
-	if((_cellTextItems.count(col) == 0 && _cellTextItems[col].count(row) == 0) || _cellTextItems[col][row] == NULL) return;
+	if((_cellTextItems.count(col) == 0 && _cellTextItems[col].count(row) == 0) || _cellTextItems[col][row] == nullptr) return;
 
+	JASPTIMER_RESUME(storeTextItem);
 
 	ItemContextualized * textItem = _cellTextItems[col][row];
-	_cellTextItems[col][row] = NULL;
+	_cellTextItems[col][row] = nullptr;
 
 	if(cleanUp)
 	{
@@ -417,6 +499,7 @@ void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 	textItem->item->setVisible(false);
 
 	_textItemStorage.push(textItem);
+	JASPTIMER_STOP(storeTextItem);
 }
 
 
@@ -427,7 +510,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 
 
 
-	if(_rowNumberDelegate == NULL)
+	if(_rowNumberDelegate == nullptr)
 	{
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
         _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
@@ -436,10 +519,10 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		"}", QUrl());
 	}
 
-	QQuickItem * rowNumber = NULL;
-	ItemContextualized * itemCon = NULL;
+	QQuickItem * rowNumber = nullptr;
+	ItemContextualized * itemCon = nullptr;
 
-	if(_rowNumberItems.count(row) == 0  || _rowNumberItems[row] == NULL)
+	if(_rowNumberItems.count(row) == 0  || _rowNumberItems[row] == nullptr)
 	{
 		if(_rowNumberStorage.size() > 0)
 		{
@@ -460,7 +543,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 			std::cout << "createRowNumber("<<row<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-			itemCon = new ItemContextualized(setStyleDataRowNumber(NULL,
+			itemCon = new ItemContextualized(setStyleDataRowNumber(nullptr,
 																   _model->headerData(row, Qt::Orientation::Vertical).toString(),
 																   row));
 
@@ -497,10 +580,10 @@ void DataSetView::storeRowNumber(int row)
 	std::cout << "storeRowNumber("<<row<<") in storage!\n" << std::flush;
 #endif
 
-	if(_rowNumberItems.count(row) == 0  || _rowNumberItems[row] == NULL) return;
+	if(_rowNumberItems.count(row) == 0  || _rowNumberItems[row] == nullptr) return;
 
 	ItemContextualized * rowNumber = _rowNumberItems[row];
-	_rowNumberItems[row] = NULL;
+	_rowNumberItems[row] = nullptr;
 
 	_rowNumberItems.erase(row);
 
@@ -514,7 +597,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 {
 	//std::cout << "createColumnHeader("<<col<<") called!\n" << std::flush;
 
-	if(_columnHeaderDelegate == NULL)
+	if(_columnHeaderDelegate == nullptr)
 	{
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
         _columnHeaderDelegate->setData("import QtQuick 2.9\nItem {\n"
@@ -524,10 +607,10 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 	}
 
 
-	QQuickItem * columnHeader = NULL;
-	ItemContextualized * itemCon = NULL;
+	QQuickItem * columnHeader = nullptr;
+	ItemContextualized * itemCon = nullptr;
 
-	if(_columnHeaderItems.count(col) == 0  || _columnHeaderItems[col] == NULL)
+	if(_columnHeaderItems.count(col) == 0  || _columnHeaderItems[col] == nullptr)
 	{
 		if(_columnHeaderStorage.size() > 0)
 		{
@@ -553,7 +636,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 			itemCon = new ItemContextualized(setStyleDataColumnHeader(
-												NULL,
+												nullptr,
 												_model->headerData(col, Qt::Orientation::Horizontal).toString(),
 												col,
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
@@ -592,10 +675,10 @@ void DataSetView::storeColumnHeader(int col)
 	std::cout << "storeColumnHeader("<<col<<") in storage!\n" << std::flush;
 #endif
 
-	if(_columnHeaderItems.count(col) == 0  || _columnHeaderItems[col] == NULL) return;
+	if(_columnHeaderItems.count(col) == 0  || _columnHeaderItems[col] == nullptr) return;
 
 	ItemContextualized * columnHeader = _columnHeaderItems[col];
-	_columnHeaderItems[col] = NULL;
+	_columnHeaderItems[col] = nullptr;
 
 	_columnHeaderItems.erase(col);
 
@@ -607,10 +690,10 @@ void DataSetView::storeColumnHeader(int col)
 QQuickItem * DataSetView::createleftTopCorner()
 {
 	//std::cout << "createleftTopCorner() called!\n" << std::flush;
-	if(_leftTopItem == NULL)
+	if(_leftTopItem == nullptr)
 	{
 
-		if(_leftTopCornerDelegate == NULL)
+		if(_leftTopCornerDelegate == nullptr)
 		{
 			_leftTopCornerDelegate = new QQmlComponent(qmlEngine(this));
             _leftTopCornerDelegate->setData("import QtQuick 2.9\nItem {}", QUrl());
@@ -641,7 +724,7 @@ QQuickItem * DataSetView::createleftTopCorner()
 void DataSetView::updateExtraColumnItem()
 {
 	//std::cout << "createleftTopCorner() called!\n" << std::flush;
-	if(_extraColumnItem == NULL)
+	if(_extraColumnItem == nullptr)
 		return;
 
 	_extraColumnItem->setHeight(_dataRowsMaxHeight);
@@ -651,7 +734,7 @@ void DataSetView::updateExtraColumnItem()
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, QString text, bool active, int column, int row)
 {
-	if(previousContext == NULL)
+	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
 	previousContext->setContextProperty("itemText",			text);
@@ -667,7 +750,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, QStri
 
 QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, QString text, int row)
 {
-	if(previousContext == NULL)
+	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
 	previousContext->setContextProperty("rowIndex",			row);
@@ -680,7 +763,7 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 
 QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, QString computedError)
 {
-	if(previousContext == NULL)
+	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
 	previousContext->setContextProperty("headerText",			text);
@@ -698,7 +781,7 @@ void DataSetView::setItemDelegate(QQmlComponent * newDelegate)
 {
 	if(newDelegate != _itemDelegate)
 	{
-		if(_itemDelegate != NULL)
+		if(_itemDelegate != nullptr)
 			delete _itemDelegate;
 		_itemDelegate = newDelegate;
 		emit itemDelegateChanged();
@@ -709,7 +792,7 @@ void DataSetView::setRowNumberDelegate(QQmlComponent * newDelegate)
 {
 	if(newDelegate != _rowNumberDelegate)
 	{
-		if(_rowNumberDelegate != NULL)
+		if(_rowNumberDelegate != nullptr)
 			delete _rowNumberDelegate;
 		_rowNumberDelegate = newDelegate;
 		emit rowNumberDelegateChanged();
@@ -721,7 +804,7 @@ void DataSetView::setColumnHeaderDelegate(QQmlComponent * newDelegate)
 {
 	if(newDelegate != _columnHeaderDelegate)
 	{
-		if(_columnHeaderDelegate != NULL)
+		if(_columnHeaderDelegate != nullptr)
 			delete _columnHeaderDelegate;
 		_columnHeaderDelegate = newDelegate;
 		emit columnHeaderDelegateChanged();
@@ -733,11 +816,11 @@ void DataSetView::setLeftTopCornerItem(QQuickItem * newItem)
 {
 	if(newItem != _leftTopItem)
 	{
-		if(_leftTopItem != NULL)
+		if(_leftTopItem != nullptr)
 			delete _leftTopItem;
 		_leftTopItem = newItem;
 
-		if(_leftTopItem != NULL)
+		if(_leftTopItem != nullptr)
 		{
 
 			_leftTopItem->setParent(this);
@@ -765,11 +848,11 @@ void DataSetView::setExtraColumnItem(QQuickItem * newItem)
 {
 	if(newItem != _extraColumnItem)
 	{
-		if(_extraColumnItem != NULL)
+		if(_extraColumnItem != nullptr)
 			delete _extraColumnItem;
 		_extraColumnItem = newItem;
 
-		if(_extraColumnItem != NULL)
+		if(_extraColumnItem != nullptr)
 		{
 
 			_extraColumnItem->setParent(this);
@@ -836,6 +919,7 @@ void DataSetView::myParentChanged(QQuickItem * newParentItem)
 
 QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
+	//JASPTIMER_RESUME(updatePaintNode);
 	if (width() <= 0 || height() <= 0) {
 		delete oldNode;
 		return 0;
@@ -846,7 +930,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	const QRectF rect = boundingRect();
 
 
-	const int linesPerNode = 1000; //Or something? should be multiple of 2 though
+	const int linesPerNode = 512;
 
 	if(!oldNode)
 		oldNode = new QSGNode();
@@ -854,16 +938,14 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		return oldNode;
 	
 	
-	
-	
 	QSGGeometryNode * currentNode = static_cast<QSGGeometryNode*>(oldNode->firstChild());
 
 
-	for(int lineIndex=0; lineIndex<_lines.size();)
+	for(int lineIndex=0; lineIndex<_linesActualSize;)
 	{
 		bool justAdded = false;
 		
-		if(currentNode == NULL)
+		if(currentNode == nullptr)
 		{
 			currentNode = new QSGGeometryNode;
 
@@ -874,22 +956,31 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 			justAdded = true;
 		}
 
-		int geomSize = std::min(linesPerNode, (int)(_lines.size() - lineIndex));
+		int geomSize = std::min(linesPerNode, (int)(_linesActualSize - lineIndex) / 4); //_lines is floats x, y, x, y so each set of 4 is a single line.
 		geomSize *= 2;
 		
 		QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), geomSize);
 		geometry->setLineWidth(1);
 		geometry->setDrawingMode(GL_LINES);
+
+		/*float * vertexData = (float*)geometry->vertexData();
+
+		memcpy(vertexData, _lines.data() + lineIndex, geomSize * 2);
+		lineIndex += 2 * geomSize;
+*/
+
 		QSGGeometry::Point2D *points = geometry->vertexDataAsPoint2D();
 
 		for(int geomIndex=0; geomIndex<geomSize; geomIndex+=2)
 		{
-			points[geomIndex  ].x = _lines[lineIndex].first.x() + rect.left();
-			points[geomIndex  ].y = _lines[lineIndex].first.y() + rect.top();
-			points[geomIndex+1].x = _lines[lineIndex].second.x() + rect.left();
-			points[geomIndex+1].y = _lines[lineIndex].second.y() + rect.top();
-			lineIndex++;
+			points[geomIndex    ].x = _lines[lineIndex + 0];
+			points[geomIndex    ].y = _lines[lineIndex + 1];
+			points[geomIndex + 1].x = _lines[lineIndex + 2];
+			points[geomIndex + 1].y = _lines[lineIndex + 3];
+			lineIndex += 4;
 		}
+
+
 
 		currentNode->setGeometry(geometry);
 		
@@ -902,7 +993,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	std::queue<QSGGeometryNode*> killThem;
 
-	while(currentNode != NULL) //superfluous children! Lets kill em
+	while(currentNode != nullptr) //superfluous children! Lets kill em
 	{
 		killThem.push(currentNode);
 		currentNode = static_cast<QSGGeometryNode*>(currentNode->nextSibling());
@@ -917,6 +1008,8 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	}
 
 	_linesWasChanged = false;
+
+	//JASPTIMER_STOP(updatePaintNode);
 
 	return oldNode;
 }

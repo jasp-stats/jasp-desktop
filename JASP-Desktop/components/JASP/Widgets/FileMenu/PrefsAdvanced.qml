@@ -37,7 +37,7 @@ Item {
 				CheckBox
 				{
 					id:					useDefaultPPICheckbox
-					label:				"Use default PPI (Pixels per Inch) in plots: " + preferencesModel.defaultPPI
+					label:				"Use PPI (Pixels per Inch) of screen in plots: " + preferencesModel.defaultPPI
 					checked:			preferencesModel.useDefaultPPI
 					onCheckedChanged:	preferencesModel.useDefaultPPI = checked
 					//font:				Theme.font
