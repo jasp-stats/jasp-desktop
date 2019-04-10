@@ -858,22 +858,6 @@ void MainWindow::populateUIfromDataSet(bool showData)
 {
 	setDataSetAndPackageInModels(_package);
 
-	if(_package->dataSet()->rowCount() == 0)
-	{
-		setDataPanelVisible(false);
-		setDataAvailable(false);
-	}
-	else
-	{
-		_filterModel->init();
-		setDataPanelVisible(showData);
-		setDataAvailable(true);
-		if (!showData)
-			_analyses->setVisible(true);
-	}
-
-	hideProgress();
-
 	bool errorFound = false;
 	stringstream errorMsg;
 
@@ -936,6 +920,22 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			emit currentAnalysis->expandAnalysis();
 	}
 
+
+	if(_package->dataSet()->rowCount() == 0)
+	{
+		setDataPanelVisible(false);
+		setDataAvailable(false);
+	}
+	else
+	{
+		_filterModel->init();
+		setDataPanelVisible(showData);
+		setDataAvailable(true);
+		_analyses->setVisible(!showData);
+	}
+
+	hideProgress();
+
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
 	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
 
@@ -980,13 +980,13 @@ void MainWindow::resultsPageLoaded()
 	if (!_engineSync->engineStarted())
 		_engineSync->start(_preferences->plotPPI());
 
+	_resultsViewLoaded = true;
+
 	if (_openOnLoadFilename != "")
 	{
 		_fileMenu->open(_openOnLoadFilename);
 		_openOnLoadFilename = "";
 	}
-
-	_resultsViewLoaded = true;
 }
 
 

@@ -166,7 +166,7 @@ Item
 
 				Timer
 				{
-					id:				resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
+					id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
 
 					property real resizeToThis: -1
 					property real currentWidth: giveResultsSomeSpace.width

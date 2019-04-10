@@ -145,9 +145,10 @@ void DataSetView::calculateCellSizes()
 
 	emit itemSizeChanged();
 
-	JASPTIMER_STOP(calculateCellSizes);
-
 	_storedLineFlags.clear();
+	_storedDisplayText.clear();
+
+	JASPTIMER_STOP(calculateCellSizes);
 }
 
 void DataSetView::viewportChanged()
@@ -185,21 +186,27 @@ void DataSetView::determineCurrentViewPortIndices()
 	QVector2D viewSize(_viewportW, _viewportH);
 	QVector2D rightBottom(leftTop + viewSize);
 
+	_currentViewportColMax = -1;
+	_currentViewportColMin = -1;
+
 	float cumulative = 0;
 	for(int col=0; col<_model->columnCount() && _currentViewportColMax == -1; col++)
 	{
-		if(_currentViewportColMax == -1 && cumulative > rightBottom.x())	_currentViewportColMax = col;
+		if(_currentViewportColMax == -1 && cumulative > rightBottom.x())						_currentViewportColMax = col;
+
+		float prevCum = cumulative;
 		cumulative += _dataColsMaxWidth[col];
-		if(_currentViewportColMin == -1 && cumulative > leftTop.x())		_currentViewportColMin = col;
+
+		if(_currentViewportColMin == -1 && cumulative > leftTop.x() && prevCum < leftTop.x())	_currentViewportColMin = col;
 	}
 
 	if(_currentViewportColMax == -1)
 		_currentViewportColMax = _model->columnCount();
 
-	_currentViewportColMin = std::max(0,						_currentViewportColMin - _viewportMargin);
+	_currentViewportColMin = std::max(0,									_currentViewportColMin - _viewportMargin);
 	_currentViewportColMax = std::max(0, std::min(_model->columnCount(),	_currentViewportColMax + _viewportMargin));
 
-	_currentViewportRowMin = std::max(0, qRound(leftTop.y()		/ _dataRowsMaxHeight) - 1);
+	_currentViewportRowMin = std::max(0, qRound(leftTop.y()	/ _dataRowsMaxHeight) - 1);
 	_currentViewportRowMax = std::max(0, std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount()));
 
 #ifdef DATASETVIEW_DEBUG_VIEWPORT
@@ -425,7 +432,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			itemCon = _textItemStorage.top();
 			textItem = itemCon->item;
 			_textItemStorage.pop();
-			setStyleDataItem(itemCon->context, _model->data(ind).toString(), active, col, row);
+			setStyleDataItem(itemCon->context, active, col, row);
 			JASPTIMER_STOP(createTextItem textItemStorage has something);
 		}
 		else
@@ -435,7 +442,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			std::cout << "createTextItem("<<row<<", "<<col<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-			itemCon = new ItemContextualized(setStyleDataItem(nullptr, _model->data(ind).toString(), active, col, row));
+			itemCon = new ItemContextualized(setStyleDataItem(nullptr, active, col, row));
 			_itemDelegate->create(localIncubator, itemCon->context);
 
             if(localIncubator.isError())
@@ -732,18 +739,21 @@ void DataSetView::updateExtraColumnItem()
 	_extraColumnItem->setY(_viewportY);
 }
 
-QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, QString text, bool active, int column, int row)
+QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)
 {
+	if(_storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
+		_storedDisplayText[row][col] = _model->data(_model->index(row, col)).toString();
+
+	QString text = _storedDisplayText[row][col];
+
 	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
 	previousContext->setContextProperty("itemText",			text);
 	previousContext->setContextProperty("itemActive",		active);
-	previousContext->setContextProperty("columnIndex",		column);
-	previousContext->setContextProperty("rowIndex",			row);
+	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
+	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
 	previousContext->setContextProperty("dataFont",			_font);
-
-
 
 	return previousContext;
 }
@@ -930,7 +940,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	const QRectF rect = boundingRect();
 
 
-	const int linesPerNode = 512;
+	const int linesPerNode = 2048;
 
 	if(!oldNode)
 		oldNode = new QSGNode();
@@ -963,13 +973,13 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		geometry->setLineWidth(1);
 		geometry->setDrawingMode(GL_LINES);
 
-		/*float * vertexData = (float*)geometry->vertexData();
+		float * vertexData = static_cast<float*>(geometry->vertexData());
 
-		memcpy(vertexData, _lines.data() + lineIndex, geomSize * 2);
+		memcpy(vertexData, _lines.data() + lineIndex, geomSize * 2 * sizeof(float));
 		lineIndex += 2 * geomSize;
-*/
 
-		QSGGeometry::Point2D *points = geometry->vertexDataAsPoint2D();
+
+		/*QSGGeometry::Point2D *points = geometry->vertexDataAsPoint2D();
 
 		for(int geomIndex=0; geomIndex<geomSize; geomIndex+=2)
 		{
@@ -978,7 +988,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 			points[geomIndex + 1].x = _lines[lineIndex + 2];
 			points[geomIndex + 1].y = _lines[lineIndex + 3];
 			lineIndex += 4;
-		}
+		}*/
 
 
 

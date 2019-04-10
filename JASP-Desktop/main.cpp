@@ -216,8 +216,10 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
 			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
 #endif
+			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
 			int exitCode = a.exec();
+			JASPTIMER_STOP("JASP");
 			JASPTIMER_PRINTALL();
 			return exitCode;
 		}

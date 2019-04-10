@@ -154,7 +154,7 @@ protected:
 	QQuickItem *	createleftTopCorner();
 	void			updateExtraColumnItem();
 
-	QQmlContext * setStyleDataItem(			QQmlContext * previousContext, QString text, bool active, int column, int row);
+	QQmlContext * setStyleDataItem(			QQmlContext * previousContext, bool active, size_t col, size_t row);
 	QQmlContext * setStyleDataRowNumber(	QQmlContext * previousContext, QString text, int row);
 	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError);
 
@@ -215,7 +215,8 @@ protected:
 	bool	_linesWasChanged	= false;
 	size_t	_linesActualSize	= 0;
 
-	std::map<size_t, std::map<size_t, unsigned char>> _storedLineFlags;
+	std::map<size_t, std::map<size_t, unsigned char>>	_storedLineFlags;
+	std::map<size_t, std::map<size_t, QString>>			_storedDisplayText;
 };
 
 
