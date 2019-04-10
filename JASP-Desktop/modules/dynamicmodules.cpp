@@ -236,7 +236,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 Modules::DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
 {
 	if(theSet.size() == 0)
-		return NULL;
+		return nullptr;
 
 	std::string installMe = *theSet.begin();
 	theSet.erase(installMe);

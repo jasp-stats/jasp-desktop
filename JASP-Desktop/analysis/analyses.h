@@ -95,7 +95,7 @@ public slots:
 	void refreshAllAnalyses();
 	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
 	void refreshAnalysesUsingColumn(QString col);
-	void analysisClickedHandler(QString analysisName, QString analysisTitle, QString ribbon, QString module);
+	void analysisClickedHandler(QString analysisName, QString analysisTitle, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 	void analysisIdSelectedInResults(int id);
 	void analysesUnselectedInResults();
