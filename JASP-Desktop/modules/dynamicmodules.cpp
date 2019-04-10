@@ -28,7 +28,7 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 {
 	connect(this, &DynamicModules::stopEngines, this, &DynamicModules::enginesStopped, Qt::QueuedConnection);
 
-	_modulesInstallDirectory = AppDirs::modulesDir().toStdString();
+	_modulesInstallDirectory = AppDirs::modulesDir().toStdWString();
 
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
 		boost::filesystem::create_directories(_modulesInstallDirectory);
@@ -181,9 +181,6 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 	std::string modulePath	= moduleDirectory(moduleName);
 
-
-
-
 	if(_modules.count(moduleName) > 0)
 	{
 		unloadModule(moduleName);
@@ -206,7 +203,8 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	std::cout << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ", engines " << (enginesStopped ? "stopped" : "started") << ")" << std::endl;
 #endif
 
-	std::string modulePath	= moduleDirectory(moduleName);
+
+	std::wstring modulePath	= moduleDirectoryW(moduleName);
 
 	try
 	{
@@ -217,7 +215,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	catch (boost::filesystem::filesystem_error & e)
 	{
 		if(enginesStopped)
-			MessageForwarder::showWarning("Something went wrong removing files for module " + moduleName + " at path '" + modulePath + "' and the error was: " + e.what());
+			MessageForwarder::showWarning("Something went wrong removing files for module " + moduleName + " at path '" + moduleDirectory(moduleName) + "' and the error was: " + e.what());
 		else
 		{
 #ifdef JASP_DEBUG
@@ -613,4 +611,9 @@ void DynamicModules::enginesStopped()
 std::string DynamicModules::moduleDirectory(const std::string & moduleName)	const
 {
 	return AppDirs::modulesDir().toStdString() + moduleName + '/';
+}
+
+std::wstring DynamicModules::moduleDirectoryW(const std::string & moduleName)	const
+{
+	return AppDirs::modulesDir().toStdWString() + QString::fromStdString(moduleName).toStdWString() + L'/';
 }

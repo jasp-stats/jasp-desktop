@@ -69,7 +69,8 @@ public:
 		_ribbonEntries.clear();
 	}
 
-	static std::string developmentModuleName() { return "DevelopmentModule"; }
+	static std::string  developmentModuleName()  { return "DevelopmentModule"; }
+	static std::wstring developmentModuleNameW() { return L"DevelopmentModule"; }
 
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(_name);			}

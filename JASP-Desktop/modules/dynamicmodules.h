@@ -46,7 +46,8 @@ public:
 	bool		initializeModule(					Modules::DynamicModule * module);
 
 	std::string moduleDirectory(			const	std::string & moduleName)	const;
-	bool		moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectory(moduleName));	}
+	std::wstring moduleDirectoryW(			const	std::string & moduleName)	const;
+	bool		moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
 
 	bool		aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
 	bool		aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
@@ -77,7 +78,7 @@ public:
 
 	Q_INVOKABLE Modules::DynamicModule*	dynamicModule(QString moduleName) const { return dynamicModule(moduleName.toStdString()); }
 
-	static std::string developmentModuleName() { return Modules::DynamicModule::developmentModuleName(); }
+	static std::string  developmentModuleName()  { return Modules::DynamicModule::developmentModuleName(); }
 
 	void startWatchingDevelopersModule();
 
