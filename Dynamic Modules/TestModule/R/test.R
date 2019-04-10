@@ -26,11 +26,13 @@ testFunc <- function(jaspResults, dataset, options)
     {
       titel1 <- 'check1 bestaat niet! Dus die maken we nu'
 
-      jaspResults[["check1"]] <- createJaspTable(title="Check 1 tafel!", dependencies=c('checkbox_1'))
+      jaspResults[["check1"]] <- createJaspTable(title='Check 1 tafel!', dependencies=c('checkbox_1'))
       jaspResults[["check1"]]$setExpectedSize(5, 5)
     }
     else
       titel1 <- 'check1 bestaat!'
 
     jaspResults[["check1"]]$title <- titel1
+
+    jaspResults[["klikMe"]] <- createJaspHtml('<a href="http://jasp-stats.org">jasp!</a>')
 }
