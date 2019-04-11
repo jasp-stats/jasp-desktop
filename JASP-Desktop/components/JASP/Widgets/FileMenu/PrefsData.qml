@@ -126,6 +126,7 @@ Item {
 					checked:			preferencesModel.customThresholdScale
 					onCheckedChanged:	preferencesModel.customThresholdScale = checked
 					//font:				Theme.font
+					toolTip:			qsTr("This will determine if, when importing new data, a column will be interpreted as a Scale column (When there are more unique integers then specified) or Ordinal.")
 				}
 
 				SpinBox

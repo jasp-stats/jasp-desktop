@@ -26,7 +26,8 @@ const Settings::Setting Settings::Values[] = {
 	{"developerMode",				false},
 	{"developerFolder",				""},
 	{"CustomThresholdScale",		false},
-	{"ThresholdScale",				10}
+	{"ThresholdScale",				10},
+	{"devModeRegenDescEtc",			true}
 };
 
 QVariant Settings::value(Settings::Type key)

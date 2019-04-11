@@ -26,6 +26,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
 	Q_PROPERTY(bool			customThresholdScale	READ customThresholdScale		WRITE setCustomThresholdScale		NOTIFY customThresholdScaleChanged		)
 	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
+	Q_PROPERTY(bool			devModRegenDESC			READ devModRegenDESC			WRITE setDevModRegenDESC			NOTIFY devModRegenDESCChanged			)
 
 
 public:
@@ -50,11 +51,14 @@ public:
 	QStringList	missingValues()				const;
 	bool		customThresholdScale()		const;
 	int			thresholdScale()			const;
+	bool		devModRegenDESC()			const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+
+
 
 
 public slots:
@@ -79,6 +83,7 @@ public slots:
 	void resetMissingValues();
 	void setCustomThresholdScale(bool customThresholdScale);
 	void setThresholdScale(int thresholdScale);
+	void setDevModRegenDESC(bool devModRegenDESC);
 
 signals:
 	void fixedDecimalsChanged(bool fixedDecimals);
@@ -100,9 +105,9 @@ signals:
 	void plotBackgroundChanged(QString background);
 	void customThresholdScaleChanged(bool customThresholdScale);
 	void thresholdScaleChanged(int thresholdScale);
+	void devModRegenDESCChanged(bool devModRegenDESC);
 
 private:
-
 	int _defaultPPI = 192;
 
 };

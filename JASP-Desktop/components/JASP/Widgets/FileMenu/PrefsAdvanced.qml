@@ -39,11 +39,12 @@ Item {
 				CheckBox
 				{
 					id:					useDefaultPPICheckbox
-					label:				"Use PPI (Pixels per Inch) of screen in plots: " + preferencesModel.defaultPPI
+					label:				"Use PPI of screen in plots: " + preferencesModel.defaultPPI
 					checked:			preferencesModel.useDefaultPPI
 					onCheckedChanged:	preferencesModel.useDefaultPPI = checked
 					//font:				Theme.font
 					height:				implicitHeight * preferencesModel.uiScale
+					toolTip:			qsTr("Use the Pixels per Inch of your screen to render your plots")
 				}
 
 				Item
@@ -100,6 +101,7 @@ Item {
 					font:						Theme.font
 					color:						Theme.textEnabled
 					anchors.verticalCenter:		parent.verticalCenter
+					//toolTip:					qsTr("Change the scale of the entire interface, can also be done through Ctrl/Cmd + '+' or '-'")
 				}
 
 				SpinBox
@@ -112,6 +114,7 @@ Item {
 					stepSize:			0.1		* _mult
 					font:				Theme.font
 					height:				Theme.spinBoxHeight
+
 
 					property real	_mult:		Math.pow(10, decimals)
 					property int	decimals:	2
@@ -145,6 +148,7 @@ Item {
 					text:				qsTr("White")
 					checked:			preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = checked
+					toolTip:			"This makes the background of all plots white, quite useful if you want to use it in LaTeX or submit it to a journal."
 				}
 
 				RadioButton
@@ -153,6 +157,7 @@ Item {
 					text:				qsTr("Transparent")
 					checked:			!preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
+					toolTip:			"This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white."
 				}
 			}
 
@@ -167,6 +172,7 @@ Item {
 					label:				qsTr("Developer mode")
 					checked:			preferencesModel.developerMode
 					onCheckedChanged:	preferencesModel.developerMode = checked
+					toolTip:			"To use JASP Modules enable this option"
 				}
 
 				Item
@@ -174,7 +180,7 @@ Item {
 					id:					editDeveloperFolder
 					visible:			preferencesModel.developerMode
 					width:				parent.width
-					height:				browseDeveloperFolderButton.height
+					height:				browseDeveloperFolderButton.height + overwriteDescriptionEtc.height
 					anchors.top:		developerMode.bottom
 
 
@@ -185,16 +191,17 @@ Item {
 						onClicked:			preferencesModel.browseDeveloperFolder()
 						anchors.left:		parent.left
 						anchors.leftMargin: Theme.subOptionOffset
+						toolTip:			qsTr("Browse to your JASP Module folder")
 					}
 
 					Rectangle
 					{
+						id:					developerFolderTextRect
 						anchors
 						{
 							left:			browseDeveloperFolderButton.right
 							right:			parent.right
 							top:			parent.top
-							bottom:			parent.bottom
 						}
 
 						height:				browseDeveloperFolderButton.height
@@ -225,6 +232,24 @@ Item {
 								onCustomEditorChanged:	developerFolderText = preferencesModel.developerFolder
 							}
 
+						}
+					}
+
+					CheckBox
+					{
+						id:					overwriteDescriptionEtc
+						label:				qsTr("Regenerate package metadata every time (DESCRIPTION & NAMESPACE)")
+						checked:			preferencesModel.devModRegenDESC
+						onCheckedChanged:	preferencesModel.devModRegenDESC = checked
+						//font:				Theme.font
+						height:				implicitHeight * preferencesModel.uiScale
+						toolTip:			qsTr("Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
+
+						anchors
+						{
+							left:			parent.left
+							leftMargin:		Theme.subOptionOffset
+							top:			developerFolderTextRect.bottom
 						}
 					}
 				}

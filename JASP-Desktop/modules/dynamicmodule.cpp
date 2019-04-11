@@ -152,13 +152,13 @@ void DynamicModule::generateRPackageMetadata(QDir packageDir)
 	QFile	descriptionFile(packageDir.absoluteFilePath("DESCRIPTION")),
 			namespaceFile(	packageDir.absoluteFilePath("NAMESPACE"));
 
-	if(!descriptionFile.exists())
+	if(!descriptionFile.exists() || Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC).toBool())
 	{
 		descriptionFile.open(QFile::WriteOnly	| QFile::Truncate);
 		descriptionFile.write(generateDescriptionFileForRPackage().c_str());
 	}
 
-	if(!namespaceFile.exists())
+	if(!namespaceFile.exists() || Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC).toBool())
 	{
 		namespaceFile.open(QFile::WriteOnly		| QFile::Truncate);
 		namespaceFile.write(generateNamespaceFileForRPackage().c_str());
