@@ -90,12 +90,13 @@ Item
 	{
 		id		: fileExportDialog
 		visible	: showfiledialog && loggedin
-		height	: visible ? 90 : 0
+		height	: visible ? 30 : 0
 
-		anchors.left		: menuHeader.left
-		anchors.right		: menuHeader.right
-		anchors.top			: firstSeparator.bottom
-		anchors.topMargin	: Theme.generalMenuMargin
+		anchors.left			: menuHeader.left
+		anchors.right			: menuHeader.right
+		anchors.top				: firstSeparator.bottom
+		anchors.topMargin		: Theme.generalMenuMargin
+		anchors.bottomMargin	: Theme.generalMenuMargin
 
 		Label
 		{
@@ -127,7 +128,8 @@ Item
 				left		: saveFilenameLabel.right
 				leftMargin	: Theme.generalAnchorMargin
 				top			: saveFilenameLabel.top
-				right		: parent.right
+				right		: saveFilenameButton.left
+				rightMargin	: Theme.generalAnchorMargin
 			}
 
 			TextInput
@@ -156,8 +158,7 @@ Item
 			text	: qsTr("Save")
 
 			anchors.right		: parent.right
-			anchors.top			: saveFilenameInput.bottom
-			anchors.topMargin	: Theme.generalMenuMargin
+			anchors.top			: parent.top
 
 			onClicked	:
 			{
@@ -172,9 +173,10 @@ Item
 		orientation	: Qt.Horizontal
 		visible		: fileExportDialog.visible
 
-		anchors.top		: fileExportDialog.bottom
-		anchors.left	: menuHeader.left
-		anchors.right	: menuHeader.right
+		anchors.top			: fileExportDialog.bottom
+		anchors.topMargin	: Theme.generalAnchorMargin
+		anchors.left		: menuHeader.left
+		anchors.right		: menuHeader.right
 	}
 
 	RectangularButton
@@ -186,12 +188,113 @@ Item
 		height	: 30
 		visible	: showfiledialog && loggedin && !processing
 
-		anchors.left	: menuHeader.left
-		anchors.top		: secondSeparator.bottom
+		anchors.left		: menuHeader.left
+		anchors.top			: secondSeparator.bottom
+		anchors.topMargin	: Theme.generalAnchorMargin
 
 		onClicked	:
 		{
-			fileMenuModel.osf.newFolderClicked()
+			newDirectoryButton.visible = false
+		}
+	}
+
+	Item
+	{
+		id		: folderExportDialog
+		visible	: !newDirectoryButton.visible && showfiledialog && loggedin && !processing
+		height	: visible ? 30 : 0
+
+		anchors.left		: menuHeader.left
+		anchors.right		: menuHeader.right
+		anchors.top			: secondSeparator.bottom
+		anchors.topMargin	: Theme.generalMenuMargin
+
+		Label
+		{
+			id 		: saveFoldernameLabel
+			text	: qsTr("Foldername")
+
+			width	: 80
+			height	: 30
+			color 	: Theme.black
+			font	: Theme.font
+
+			anchors.top			: parent.top
+			anchors.left		: parent.left
+			anchors.rightMargin	: Theme.generalAnchorMargin
+			verticalAlignment	: Text.AlignVCenter
+		}
+
+		Rectangle
+		{
+			id		: saveFoldernameInput
+			height	: saveFoldernameLabel.height
+			clip	: true
+
+			color			: Theme.white
+			border.width	: foldernameText.activeFocus ? 5 : 1
+			border.color	: foldernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+
+			anchors
+			{
+				left		: saveFoldernameLabel.right
+				leftMargin	: Theme.generalAnchorMargin
+				top			: saveFoldernameLabel.top
+				right		: saveFoldernameButton.left
+				rightMargin	: Theme.generalAnchorMargin
+			}
+
+			TextInput
+			{
+				id				: foldernameText
+				selectByMouse	: true
+				text			: fileMenuModel.osf.savefilename
+				font.pixelSize	: 14
+
+				anchors.fill		: parent
+				anchors.leftMargin	: Theme.itemPadding
+				anchors.rightMargin	: Theme.itemPadding
+				verticalAlignment	: Text.AlignVCenter
+
+				onAccepted	:
+				{
+					fileMenuModel.osf.saveFile(foldernameText.text)
+				}
+			}
+		}
+
+		RectangularButton
+		{
+			id		: saveFoldernameButton
+			width	: 30
+			height	: 30
+			text	: "+"
+
+			anchors.top			: parent.top
+			anchors.right		: cancelCreateFolderButton.left
+			anchors.rightMargin : Theme.generalAnchorMargin
+
+			onClicked	:
+			{
+				fileMenuModel.osf.newFolderClicked()
+			}
+		}
+
+		RectangularButton
+		{
+			id		: cancelCreateFolderButton
+			width	: 30
+			height	: 30
+			text	: "x"
+
+			anchors.top			: parent.top
+			anchors.right		: parent.right
+
+			onClicked	:
+			{
+				foldernameText.clear()
+				newDirectoryButton.visible = true;
+			}
 		}
 	}
 
@@ -221,7 +324,7 @@ Item
 
 		anchors
 		{
-			top				: fileExportDialog.visible ? newDirectoryButton.bottom :  firstSeparator.bottom
+			top				: fileExportDialog.visible ? (newDirectoryButton.visible ? newDirectoryButton.bottom : folderExportDialog.bottom) :  firstSeparator.bottom
 			bottom			: parent.bottom
 			left			: menuHeader.left
 			right			: menuHeader.right
