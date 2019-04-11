@@ -27,9 +27,9 @@ public:
 	static DialogResponse showSaveDiscardCancel(QString title, QString message);
 	static DialogResponse showYesNoCancel(QString title, QString message, QString YesButtonText = "Yes", QString NoButtonText = "No", QString CancelButtonText = "Cancel");
 
-	static QString openFileBrowse(QString caption, QString browsePath, QString filter);
-	static QString saveFileBrowse(QString caption, QString browsePath, QString filter, QString * selectedFilter = nullptr);
-	static QString openFolderBrowse(QString caption, QString browsePath);
+	static QString browseOpenFile(QString caption, QString browsePath, QString filter);
+	static QString browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter = nullptr);
+	static QString browseOpenFolder(QString caption, QString browsePath);
 
 
 signals:

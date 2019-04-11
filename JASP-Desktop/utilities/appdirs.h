@@ -30,6 +30,7 @@ public:
 	static QString analysisDefaultsDir();
 	static QString userRLibrary();
 	static QString modulesDir();
+	static QString documents();
 };
 
 #endif // APPDIRS_H

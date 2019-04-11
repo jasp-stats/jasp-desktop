@@ -61,7 +61,7 @@ void PreferencesModel::browseSpreadsheetEditor()
 	applicationfolder = "/usr/bin";
 #endif
 
-	QString filename = MessageForwarder::openFileBrowse("Select a file...", applicationfolder, filter);
+	QString filename = MessageForwarder::browseOpenFile("Select a file...", applicationfolder, filter);
 
 	if (filename != "")
 		setCustomEditor(filename);
@@ -80,7 +80,7 @@ void PreferencesModel::browseDeveloperFolder()
 #endif
 	}
 
-	QString folder = MessageForwarder::openFolderBrowse("Select a folder...", defaultfolder);
+	QString folder = MessageForwarder::browseOpenFolder("Select a folder...", defaultfolder);
 
 	if (!folder.isEmpty())
 		setDeveloperFolder(folder);

@@ -48,38 +48,38 @@ Window
 		focus:	true
 		Shortcut
 		{
-			sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+"]
-			onActivated: mainWindow.zoomInKeysSelected()
+			sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="]
+			onActivated: mainWindow.zoomInKeyPressed()
 		}
 		Shortcut
 		{
 			sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"]
-			onActivated: mainWindow.zoomOutKeysSelected();
+			onActivated: mainWindow.zoomOutKeyPressed();
 		}
 		Shortcut
 		{
-			sequences: ["Ctrl+\="]
-			onActivated: mainWindow.zoomEqualKeysSelected();
+			sequences: ["Ctrl+0"]
+			onActivated: mainWindow.zoomResetKeyPressed();
 		}
 		Shortcut
 		{
 			sequences: ["Ctrl+S"]
-			onActivated: mainWindow.saveKeysSelected();
+			onActivated: mainWindow.saveKeyPressed();
 		}
 		Shortcut
 		{
 			sequences: ["Ctrl+O"]
-			onActivated: mainWindow.openKeysSelected();
+			onActivated: mainWindow.openKeyPressed();
 		}
 		Shortcut
 		{
 			sequences: ["Ctrl+Y"]
-			onActivated: mainWindow.syncKeysSelected();
+			onActivated: mainWindow.syncKeyPressed();
 		}
 		Shortcut
 		{
 			sequences: ["Ctrl+R"]
-			onActivated: mainWindow.refreshKeysSelected();
+			onActivated: mainWindow.refreshKeyPressed();
 		}
 
 		RibbonBar

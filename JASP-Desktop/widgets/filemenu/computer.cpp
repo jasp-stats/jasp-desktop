@@ -37,7 +37,7 @@ FileEvent *Computer::browseOpen(const QString &path)
 	if (_mode == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
 
-	QString finalPath = MessageForwarder::openFileBrowse("Open", browsePath, filter);
+	QString finalPath = MessageForwarder::browseOpenFile("Open", browsePath, filter);
 
 	FileEvent *event = new FileEvent(this, _mode);
 
@@ -97,7 +97,7 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 		throw std::runtime_error("Wrong FileEvent type for saving!");
 	}
 
-	QString finalPath = MessageForwarder::saveFileBrowse(caption, browsePath, filter);
+	QString finalPath = MessageForwarder::browseSaveFile(caption, browsePath, filter);
 	FileEvent *event = new FileEvent(this, mode);
 
 	if (finalPath != "")

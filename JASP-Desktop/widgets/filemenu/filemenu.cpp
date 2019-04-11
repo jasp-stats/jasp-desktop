@@ -149,7 +149,7 @@ void FileMenu::sync()
 					"Do you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data."))
 			return;
 
-		path =  MessageForwarder::openFileBrowse("Find Data File", "", "Data File (*.csv *.txt *.sav *.ods)");
+		path =  MessageForwarder::browseOpenFile("Find Data File", "", "Data File (*.csv *.txt *.sav *.ods)");
 	}
 
 	dataSetOpenCurrentRequestHandler(path);

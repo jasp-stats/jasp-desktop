@@ -216,7 +216,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
-	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeysSelected							);
+	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
 
@@ -392,39 +392,37 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (rd) rd->close();
 }*/
 
-void MainWindow::saveKeysSelected()
+void MainWindow::saveKeyPressed()
 {
 	if (_package->isModified()) _fileMenu->save();
 }
 
-
-void MainWindow::openKeysSelected()
+void MainWindow::openKeyPressed()
 {
 	_fileMenu->showFileMenu();
 }
 
-void MainWindow::refreshKeysSelected()
+void MainWindow::refreshKeyPressed()
 {
 	_analyses->refreshAllAnalyses();
 }
 
-void MainWindow::zoomInKeysSelected()
+void MainWindow::zoomInKeyPressed()
 {
 	_preferences->zoomIn();
 }
 
-void MainWindow::zoomOutKeysSelected()
+void MainWindow::zoomOutKeyPressed()
 {
 	_preferences->zoomOut();
 }
 
-void MainWindow::zoomEqualKeysSelected()
+void MainWindow::zoomResetKeyPressed()
 {
 	_preferences->zoomReset();
 }
 
-
-void MainWindow::syncKeysSelected()
+void MainWindow::syncKeyPressed()
 {
 	_fileMenu->sync();
 }
@@ -547,7 +545,7 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 	parser.parse(utf8, root);
 
 	QString selectedFilter;
-	QString finalPath = MessageForwarder::saveFileBrowse("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
+	QString finalPath = MessageForwarder::browseSaveFile("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
 
 	if (!finalPath.isEmpty())
 	{
@@ -1142,7 +1140,7 @@ void MainWindow::startDataEditorHandler()
 				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
 			}
 
-			path = MessageForwarder::saveFileBrowse(caption, name, filter);
+			path = MessageForwarder::browseSaveFile(caption, name, filter);
 
 			if (path == "")
 				return;
@@ -1159,7 +1157,7 @@ void MainWindow::startDataEditorHandler()
 			QString caption = "Find Data File";
 			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
 
-			path = MessageForwarder::openFileBrowse(caption, "", filter);
+			path = MessageForwarder::browseOpenFile(caption, "", filter);
 			if (path == "")
 				return;
 
@@ -1505,4 +1503,9 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 void MainWindow::resetQmlCache()
 {
 	_qml->clearComponentCache();
+}
+
+QString MainWindow::browseOpenFileDocuments(QString caption, QString filter)
+{
+	return MessageForwarder::browseOpenFile(caption, AppDirs::documents(), filter);
 }

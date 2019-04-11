@@ -70,3 +70,8 @@ QString AppDirs::modulesDir()
 
 	return path;
 }
+
+QString AppDirs::documents()
+{
+	return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+}

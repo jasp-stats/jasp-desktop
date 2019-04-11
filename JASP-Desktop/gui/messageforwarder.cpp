@@ -52,17 +52,17 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 	}
 }
 
-QString MessageForwarder::openFileBrowse(QString caption, QString browsePath, QString filter)
+QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter)
 {
 	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
 }
 
-QString MessageForwarder::saveFileBrowse(QString caption, QString browsePath, QString filter, QString * selectedFilter)
+QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
 {
 	return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
 }
 
-QString MessageForwarder::openFolderBrowse(QString caption, QString browsePath)
+QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)
 {
 	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 }

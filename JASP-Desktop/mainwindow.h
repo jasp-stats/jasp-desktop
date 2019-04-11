@@ -87,8 +87,6 @@ public:
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
-	Q_INVOKABLE bool checkPackageModifiedBeforeClosing();
-
 public slots:
 	void setImageBackgroundHandler(QString value);
 	void setProgressBarVisible(bool progressBarVisible);
@@ -102,17 +100,23 @@ public slots:
 	void setDataAvailable(bool dataAvailable);
 	void setAnalysesAvailable(bool analysesAvailable);
 
+	bool checkPackageModifiedBeforeClosing();
 	void startDataEditorHandler();
-	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
+
 	void showAbout();
 
-	void saveKeysSelected();
-	void openKeysSelected();
-	void syncKeysSelected();
-	void refreshKeysSelected();
-	void zoomInKeysSelected();
-	void zoomOutKeysSelected();
-	void zoomEqualKeysSelected();
+	void saveKeyPressed();
+	void openKeyPressed();
+	void syncKeyPressed();
+	void refreshKeyPressed();
+	void zoomInKeyPressed();
+	void zoomOutKeyPressed();
+	void zoomResetKeyPressed();
+
+	//For qml:
+	void showWarning(QString title, QString msg)								{ MessageForwarder::showWarning(title, msg); }
+	QString browseOpenFile(QString caption, QString browsePath, QString filter) { return MessageForwarder::browseOpenFile(caption, browsePath, filter); }
+	QString browseOpenFileDocuments(QString caption, QString filter);
 
 private:
 	void makeConnections();
