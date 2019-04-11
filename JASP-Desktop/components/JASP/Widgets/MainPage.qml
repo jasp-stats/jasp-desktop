@@ -31,9 +31,9 @@ Item
 
 	onWidthChanged:
 	{
-		if(!panelSplit.shouldShowInputOutput)							data.width = panelSplit.width
-		else if(data.wasMaximized)										data.maximizeData();
-		else if(panelSplit.width < data.width + Theme.splitHandleWidth)	data.width = panelSplit.width - Theme.splitHandleWidth
+		if(!panelSplit.shouldShowInputOutput)										data.width = splitViewContainer.width
+		else if(data.wasMaximized)													return; //wasMaximized binds!
+		else if(splitViewContainer.width <= data.width + Theme.splitHandleWidth)	data.maximizeData();
 	}
 
 	OLD.SplitView
@@ -68,10 +68,13 @@ Item
 					mainWindow.dataPanelVisible = false;
 					width = 0;
 				}
+
+				if(data.width !== data.maxWidth)
+					data.wasMaximized = false;
 			}
 
-			function maximizeData()	{ data.width = data.maxWidth;	}
-			function minimizeData()	{ data.width = 0;				}
+			function maximizeData()	{ data.width = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
+			function minimizeData()	{ data.width = 0;													data.wasMaximized = false; }
 
 			Connections
 			{
@@ -147,7 +150,7 @@ Item
 			onWidthChanged:
 			{
 				resizeTimer.resizer(giveResultsSomeSpace.width);
-				data.wasMaximized = data.width === data.maxWidth;
+				//data.wasMaximized = data.width === data.maxWidth;
 			}
 
 

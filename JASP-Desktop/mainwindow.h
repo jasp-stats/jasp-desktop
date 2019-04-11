@@ -87,6 +87,7 @@ public:
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
+	Q_INVOKABLE bool checkPackageModifiedBeforeClosing();
 
 public slots:
 	void setImageBackgroundHandler(QString value);

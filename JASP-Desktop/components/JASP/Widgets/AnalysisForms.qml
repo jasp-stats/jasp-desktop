@@ -40,7 +40,7 @@ FocusScope
 		{
 			id:				openCloseButton
 			width:			Theme.splitHandleWidth + (2 * border.width)
-			height:			parent.height + (1 * border.width)
+			height:			parent.height
 			//color:			//mouseArea.containsMouse ? Theme.grayLighter : Theme.uiBackground
 			border.color:	Theme.uiBorder
 			border.width:	1
@@ -58,7 +58,7 @@ FocusScope
 					fill:			parent
 					leftMargin:		openCloseButton.border.width
 					rightMargin:	openCloseButton.border.width
-					topMargin:		-1
+					//topMargin:		-1
 					//bottomMargin:	-1
 				}
 				toolTipDrag:			mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data"

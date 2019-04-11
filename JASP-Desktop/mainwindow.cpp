@@ -745,6 +745,18 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 }
 
 
+///Returns true if the caller can go ahead and close up shop.
+bool MainWindow::checkPackageModifiedBeforeClosing()
+{
+	if(!_package->isModified())
+		return true;
+
+	QString title = windowTitle();
+	title.chop(1);
+
+	return MessageForwarder::showYesNo("Workspace has changes", "Your workspace " + title + " has unsaved changes.\n\nDo you still want to quit JASP?");
+}
+
 void MainWindow::closeVariablesPage()
 {
 	_levelsTableModel->setChosenColumn(-1);
