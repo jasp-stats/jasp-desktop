@@ -324,7 +324,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   }
 
   if (usesJaspResults) {
-    results <- jaspResults$getResults()
+    results <- jaspResults$.__enclos_env__$private$getResults()
     .transferPlotsFromjaspResults()
   }
   

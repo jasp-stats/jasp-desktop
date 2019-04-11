@@ -183,7 +183,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
 
   jaspResults <- jaspResultsR$new(jaspResultsModule$create_cpp_jaspResults(name, .retrieveState()))
-  jaspResults$setOptions(options)
+  jaspResults$.__enclos_env__$private$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)
   options     <- rjson::fromJSON(options)
@@ -216,8 +216,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
     errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", analysisResult$message, "\" } }", sep="")
 
-    jaspResults$setErrorMessage(analysisResult$message)
-    jaspResults$send()
+    jaspResults$.__enclos_env__$private$setErrorMessage(analysisResult$message)
+    jaspResults$.__enclos_env__$private$send()
 
     return(errorResponse)
 
@@ -233,8 +233,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
     errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 
-    jaspResults$setErrorMessage(errorMessage)
-    jaspResults$send()
+    jaspResults$.__enclos_env__$private$setErrorMessage(errorMessage)
+    jaspResults$.__enclos_env__$private$send()
 
     return(errorResponse)
 
@@ -242,13 +242,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   else
   {
     newState <- list()
-    newState[["figures"]]         <- jaspResults$getPlotObjectsForState()
-    newState[["other"]]           <- jaspResults$getOtherObjectsForState()
-    jaspResults$relativePathKeep  <- .saveState(newState)$relativePath
+    newState[["figures"]]         <- jaspResults$.__enclos_env__$private$getPlotObjectsForState()
+    newState[["other"]]           <- jaspResults$.__enclos_env__$private$getOtherObjectsForState()
+    jaspResults$.__enclos_env__$private$setRelativePathKeep(.saveState(newState)$relativePath)
 
-    returnThis <- list(keep=jaspResults$getKeepList()) #To keep the old keep-code functional we return it like this
+    returnThis <- list(keep=jaspResults$.__enclos_env__$private$getKeepList()) #To keep the old keep-code functional we return it like this
 
-    jaspResults$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
+    jaspResults$.__enclos_env__$private$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
 
 
   json <- try({ toJSON(returnThis) })
