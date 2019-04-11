@@ -22,16 +22,6 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: true
-	
-	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"         ; defaultValue: 300 }
-	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"       ; defaultValue: 300 }
-	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"          ; defaultValue: 430 }
-	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"        ; defaultValue: 350 }
-	DoubleField  { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"; defaultValue: 0.950 }
-	DoubleField  { visible: false; name: "posteriorEstimatesMCMCIterations"          ; defaultValue: 10000 }
-//	CheckBox     { visible: false; name: "posteriorEstimates"  }
-	CheckBox     { visible: false; name: "posteriorDistribution"  }
 	
 	VariablesForm
 	{
@@ -85,13 +75,13 @@ Form
 		{
 			height: 200
 			
-			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]; width: parent.width / 4 }
+			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
 			AssignedVariablesList
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
 				listViewType: "Interaction"
-				width: parent.width * 5 / 9
+
 				
 				ExtraControlColumn
 				{
@@ -115,13 +105,21 @@ Form
             GroupBox
             {
                 title: qsTr("Tables")
-                CheckBox { text: qsTr("Effects"); name: "singleModelEffects"}
+                CheckBox { text: qsTr("Estimates"); name: "singleModelEstimates"}
             }
 
             GroupBox
             {
                 title: qsTr("Plots")
-                CheckBox { text: qsTr("Marginal posteriors");    name: "singleModelPosteriorPlot"}
+                CheckBox { 
+                    text: qsTr("Marginal posteriors");    name: "singleModelPosteriorPlot"
+                    RadioButtonGroup
+                    {
+                        name: "groupPosterior"
+                        RadioButton { value: "grouped";		text: qsTr("Group levels in single plot"); checked: true}
+                        RadioButton { value: "individual";	text: qsTr("Individual plot per level")                 }
+                    }
+                }
                 CheckBox { text: qsTr("Q-Q plot of residuals");  name: "singleModelqqPlot" }
                 CheckBox { text: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
@@ -131,7 +129,7 @@ Form
         VariablesForm
         {
             height: 200
-            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]; width: parent.width / 4 }
+            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
             AssignedVariablesList
             {
                 title: qsTr("Specific model terms")
@@ -164,7 +162,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 140
+
 			AvailableVariablesList { name: "descriptivePlotsVariables" ;	title: qsTr("Factors"); source: "fixedFactors" }
 			AssignedVariablesList { name: "plotHorizontalAxis";				title: qsTr("Horizontal axis");	singleVariable: true }
 			AssignedVariablesList { name: "plotSeparateLines";				title: qsTr("Separate lines");	singleVariable: true }
@@ -208,7 +206,8 @@ Form
 					text: qsTr("No. samples")
 					defaultValue: 1e4
 					fieldWidth: 50
-                    intValidator { bottom: 100; top: 1e7 }
+                    min: 100
+                    max: 1e7
 				}
 			}
 		}
@@ -227,7 +226,8 @@ Form
 					text: qsTr("No. samples")
 					defaultValue: 1e3
 					fieldWidth: 50
-                    intValidator { bottom: 100; top: 1e7 }
+                    min: 100
+                    max: 1e7
 				}
 			}
 		}

@@ -21,15 +21,14 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: true
 
-	PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"   ; defaultValue: 95 }
-	IntegerField { visible: false; name: "posteriorEstimatesMCMCIterations"             ; defaultValue: 1 }
+//	PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"   ; defaultValue: 95 }
+//	IntegerField { visible: false; name: "posteriorEstimatesMCMCIterations"             ; defaultValue: 1 }
 
-	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"             ; defaultValue: 300 }
-	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"           ; defaultValue: 300 }
-	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"              ; defaultValue: 450 }
-	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"            ; defaultValue: 350 }
+//	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"             ; defaultValue: 300 }
+//	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"           ; defaultValue: 300 }
+//	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"              ; defaultValue: 450 }
+//	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"            ; defaultValue: 350 }
 
 
 	VariablesForm
@@ -114,13 +113,11 @@ Form
 				name: "components"
 				title: qsTr("Components")
 				source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]
-				width: parent.width / 4
 			}
 			AssignedVariablesList
 			{
 				name: "modelTerms"
 				title: qsTr("Model terms")
-				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 
 				ExtraControlColumn {
@@ -137,29 +134,37 @@ Form
     {
         text: qsTr("Single Model Inference")
 
-        GridLayout
-        {
+//        GridLayout
+//        {
 
             GroupBox
             {
                 title: qsTr("Tables")
-                CheckBox { text: qsTr("Effects"); name: "singleModelEffects"}
+                CheckBox { text: qsTr("Estimates"); name: "singleModelEstimates"}
             }
 
             GroupBox
             {
                 title: qsTr("Plots")
-                CheckBox { text: qsTr("Marginal posteriors");    name: "singleModelPosteriorPlot"}
+                CheckBox { 
+                    text: qsTr("Marginal posteriors");    name: "singleModelPosteriorPlot"
+                    RadioButtonGroup
+                    {
+                        name: "groupPosterior"
+                        RadioButton { value: "grouped";		text: qsTr("Group levels in single plot"); checked: true}
+                        RadioButton { value: "individual";	text: qsTr("Individual plot per level")                 }
+                    }
+                }
                 CheckBox { text: qsTr("Q-Q plot of residuals");  name: "singleModelqqPlot" }
                 CheckBox { text: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
-        }
+//        }
 
         VariablesForm
         {
             height: 200
-            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]; width: parent.width / 4 }
+            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
             AssignedVariablesList
             {
                 title: qsTr("Specific model terms")
@@ -177,7 +182,7 @@ Form
 		{
 			height: 200
             AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "postHocTestsVariables"; width: parent.width / 4;}
+			AssignedVariablesList {  name: "postHocTestsVariables"}
 		}
 
 		Group
@@ -236,7 +241,8 @@ Form
 					text: qsTr("No. samples")
 					defaultValue: 1e4
 					fieldWidth: 50
-                    intValidator { bottom: 100; top: 1e7 }
+                    min: 100
+                    max: 1e7
 				}
 			}
 		}
@@ -255,7 +261,8 @@ Form
 					text: qsTr("No. samples")
 					defaultValue: 1e3
 					fieldWidth: 50
-                    intValidator { bottom: 100; top: 1e7 }
+                    min: 100
+                    max: 1e7
 				}
 			}
 		}

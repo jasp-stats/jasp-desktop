@@ -23,10 +23,10 @@
   # the main workhorse of the Bayesian ANOVA, ANCOVA, and Repeated Measures.
 
   analysisType <- match.arg(analysisType)
-  dataset <- .BANOVAreadData(dataset, options, analysisType)
-  errors  <- .BANOVAerrorhandling(dataset, options, analysisType)
+  dataset  <- .BANOVAreadData(dataset, options, analysisType)
+  dataInfo <- .BANOVAerrorhandling(dataset, options, analysisType)
 
-  model <- .BANOVAestimateModels(jaspResults, dataset, options, errors, analysisType)
+  model <- .BANOVAestimateModels(jaspResults, dataset, options, dataInfo, analysisType)
   model[["posteriors"]] <- .BANOVAestimatePosteriors(jaspResults, dataset, options, model)
 
   .BANOVAeffectsTable  (jaspResults, options, model)
@@ -43,7 +43,7 @@
   .BANOVAsmi(jaspResults, dataset, options, model)
 
   # descriptives
-  .BANOVAdescriptives(jaspResults, dataset, options, errors, analysisType)
+  .BANOVAdescriptives(jaspResults, dataset, options, dataInfo, analysisType)
 
   return()
 }
@@ -64,9 +64,8 @@
     noVariables <- !hasDV
   }
 
-  errors <- NULL
   if (!noVariables) {
-    errors <- .hasErrors(
+    .hasErrors(
       dataset = dataset,
       perform = "run",
       type    = c("infinity", "observations", "variance", "factorLevels"),
@@ -79,7 +78,7 @@
       exitAnalysisIfErrors = TRUE
     )
   }
-  return(list(noVariables = noVariables, errors = errors, hasIV = hasIV, hasDV = hasDV))
+  return(list(noVariables = noVariables, hasIV = hasIV, hasDV = hasDV))
 }
 
 # model comparison ----
@@ -92,7 +91,7 @@
     stateObj$completelyReused <- TRUE # means that posteriors won't need to be resampled
     return(stateObj)
   } else if (errors$noVariables) {
-    modelTable <- .BANOVAinitModelComparisonTable(options, NULL)
+    modelTable <- .BANOVAinitModelComparisonTable(options)
     jaspResults[["tableModelComparison"]] <- modelTable
     return(list(analysisType = analysisType))
   } else if (!is.null(stateObj)) {
@@ -103,7 +102,10 @@
 
       # if the statement above is TRUE then no new variables were added
       # and the only change is in the Bayes factor type or the ordering
-      modelTable <- .BANOVAinitModelComparisonTable(options, stateObj$models)
+      modelTable <- .BANOVAinitModelComparisonTable(options)
+      modelTable[["Models"]] <- c("Null model", sapply(stateObj$models, `[[`, "title"))
+      nmodels <- length(stateObj$models)
+      modelTable[["P(M)"]]   <- rep(1 / (nmodels + 1), nmodels + 1L)
       internalTableObj <- .BANOVAfinalizeInternalTable(options, stateObj$internalTableObj$internalTable)
       modelTable$setData(internalTableObj$table)
       jaspResults[["tableModelComparison"]] <- modelTable
@@ -134,7 +136,7 @@
     #   fixedFactors <- colnames(dataset)[-idx]
 
   } else if (analysisType == "ANCOVA") {
-    rscaleCont <- options$priorCovariates
+    rscaleCont <- options[["priorCovariatesEffects"]]
   } else {
     rscaleCont <- "medium" # sqrt(2)/4
   }
@@ -256,7 +258,9 @@
           rscaleCont   = rscaleCont,
           iterations   = bfIterations))
         if (isTryError(bf)) {
-          .quitAnalysis("Bayes factor is undefined -- the null model could not be computed")
+          modelName <- .unvf(strsplit(.BANOVAas.character.formula(model.list[[m]]), "~ ")[[1L]][2L])
+          .quitAnalysis(sprintf("Bayes factor could not be computed for model: %s.\nThe error message was: %s.",
+                                modelName, .extractErrorMessage(bf)))
         } else {
           # delete the data object -- otherwise it gets saved in the state
           bf@data <- data.frame()
@@ -270,19 +274,19 @@
     modelObject[[m]]$bf <- bf
 
     if (!is.null(bf)) {
-      if (isTryError(bf)) {
-        message <- .extractErrorMessage(bf)
-        modelObject[[m]]$error.message <- "Bayes factor could not be computed"
-      } else {
+      # if (isTryError(bf)) {
+      #   message <- .extractErrorMessage(bf)
+      #   modelObject[[m]]$error.message <- paste("Bayes factor computation failed with error:", message)
+      # } else {
         # bfObj can have a modified denominator, but the saved objects are always compared against intercept only
-        bfObj <- modelObject[[m]]$bf
-        if (anyNuisance)
-          bfObj <- bfObj / modelObject[[1L]]$bf
+      bfObj <- modelObject[[m]]$bf
+      if (anyNuisance)
+        bfObj <- bfObj / modelObject[[1L]]$bf
 
-        internalTable[m, "BF10"]    <- bfObj@bayesFactor[, "bf"] # always LogBF10!
-        internalTable[m, "error %"] <- bfObj@bayesFactor[, "error"]
-        modelObject[[m]]$ready <- TRUE
-      }
+      internalTable[m, "BF10"]    <- bfObj@bayesFactor[, "bf"] # always LogBF10!
+      internalTable[m, "error %"] <- bfObj@bayesFactor[, "error"]
+      modelObject[[m]]$ready <- TRUE
+      # }
 
       modelTable[["BF10"]]    <- .recodeBFtype(internalTable[, "BF10"],
                                                newBFtype = options$bayesFactorType,
@@ -338,7 +342,6 @@
   }
 
   effectsTable <- createJaspTable(title = title)
-  jaspResults[["tableEffects"]] <- effectsTable
   effectsTable$position <- 2
   effectsTable$dependOnOptions(c(
     "effects", "effectsType", "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects",
@@ -361,15 +364,14 @@
   effectsTable$addColumnInfo(name = "BFInclusion",  type = "number", format = "sf:4;dp:3", title = inclusion.title)
 
   if (options$effectsType == "matchedModels") {
-    effectsTable$addFootnote(message = paste0("Compares models that contain the effect to equivalent models stripped",
-                                              "of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."),
+    effectsTable$addFootnote(message = paste("Compares models that contain the effect to equivalent models stripped",
+                                             "of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."),
                              symbol = "<em>Note.</em>")
   }
-
-  if (is.null(model$models)) {
-    effectsTable$setExpectedRows(1L)
+  
+  jaspResults[["tableEffects"]] <- effectsTable
+  if (is.null(model$models))
     return()
-  }
 
   effects.matrix <- model$effects
   no.effects <- ncol(effects.matrix)
@@ -427,14 +429,17 @@
   # FIXME: remove .clean after this is handled by jaspResults
   effectsTable[["BFInclusion"]] <- switch(
     options$bayesFactorType,
-    "LogBF10" = sapply(log(bfIncl), .clean),
-    "BF01"    = sapply(1 / bfIncl,  .clean),
-    "BF10"    = sapply(bfIncl,      .clean)
+    # "LogBF10" = sapply(log(bfIncl), .clean),
+    # "BF01"    = sapply(1 / bfIncl,  .clean),
+    # "BF10"    = sapply(bfIncl,      .clean)
+    "LogBF10" = log(bfIncl),
+    "BF01"    = 1 / bfIncl,
+    "BF10"    = bfIncl  
   )
   return()
 }
 
-.BANOVAinitModelComparisonTable <- function(options, modelObject = NULL) {
+.BANOVAinitModelComparisonTable <- function(options) {
 
   # function that creates an empty JASP table to be filled later
   modelTable <- createJaspTable(title = "Model Comparison")
@@ -465,12 +470,6 @@
   modelTable$addColumnInfo(name = "BF10",      type = "number", format = "sf:4;dp:3", title = bf.title)
   modelTable$addColumnInfo(name = "error %",   type = "number", format = "sf:4;dp:3")
 
-  if (!is.null(modelObject)) {
-    modelTable[["Models"]] <- c("Null model", sapply(modelObject, `[[`, "title"))
-    modelTable[["P(M)"]]   <- rep(1 / (length(modelObject) + 1), length(modelObject) + 1L)
-  } else {
-    modelTable$setExpectedRows(1L)
-  }
   return(modelTable)
 }
 
@@ -572,7 +571,6 @@
 
   estsTable <- createJaspTable(title = "Model Averaged Posterior Summary")
   estsTable$position <- 3
-  jaspResults[["tablePosteriorEstimates"]] <- estsTable
   estsTable$dependOnOptions(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
     "fixedMCMCSamples", "bayesFactorType", "modelTerms", "fixedFactors", "posteriorEstimates",
@@ -586,19 +584,18 @@
   estsTable$addColumnInfo(name = "SD",       type = "number", format = "sf:4;dp:3")
   estsTable$addColumnInfo(name = "Lower",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
   estsTable$addColumnInfo(name = "Upper",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
-
-  if (is.null(model[["posteriors"]])) {
-    estsTable$setExpectedRows(1L)
-    return()
+  
+  if (!is.null(model[["posteriors"]])) {
+    .BANOVAfillEstimatesTable(
+      jaspTable   = estsTable,
+      mus         = model$posteriors$weightedMeans,
+      sds         = model$posteriors$weightedSds,
+      cri         = model$posteriors$weightedCRIs,
+      hasNoLevels = model$posteriors$allContinuous,
+      isRandom    = model$posteriors$isRandom
+    )
   }
-  .BANOVAfillEstimatesTable(
-    jaspTable   = estsTable,
-    mus         = model$posteriors$weightedMeans,
-    sds         = model$posteriors$weightedSds,
-    cri         = model$posteriors$weightedCRIs,
-    hasNoLevels = model$posteriors$allContinuous,
-    isRandom    = model$posteriors$isRandom
-  )
+  jaspResults[["tablePosteriorEstimates"]] <- estsTable
   return()
 }
 
@@ -687,9 +684,85 @@
                             y = c(densities[, ind, "y"]),
                             g = rep(xNames[ind], each = nrow(densities)))
 
-    # make prior posterior plot
-    df <- data.frame(x = densities[, i, "x"],
-                     y = densities[, i, "y"])
+      xBreaks <- JASPgraphs::getPrettyAxisBreaks(dfLines$x)
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, dfLines$y))
+      breaksYmax <- yBreaks[length(yBreaks)]
+      obsYmax <- max(dfLines$y)
+      newymax <- max(1.25 * obsYmax, breaksYmax)
+
+      lInd <- length(ind)
+      if (lInd == 1L) {
+        plusmin <- 0
+        showLegend <- FALSE
+      } else {
+        # some jitter in CRI height
+        showLegend <- TRUE
+        plusmin <- rep(-1, lInd)
+        plusmin[seq(2, lInd, 2)] <- 0
+        if (lInd > 2)
+          plusmin[seq(3, lInd, 3)] <- 1
+      }
+
+      dfCri <- data.frame(
+        xmin = cris[ind, 1L],
+        xmax = cris[ind, 2L],
+        y = (newymax - obsYmax)/2 + obsYmax + plusmin * (newymax - obsYmax) / 10,
+        g = xNames[ind]
+      )
+      
+      if (showLegend) {
+        # if two distributions are remarkably similar, i.e., have nearly identical credible intervals, 
+        # we add a linetype aestethic
+        tol <- 1e-4
+        distMin <- which(stats::dist(dfCri$xmin) < tol)
+        distMax <- which(stats::dist(dfCri$xmin) < tol)
+        distBoth <- intersect(distMin, distMax)
+        if (length(distBoth) > 0) {
+          aesLine <- ggplot2::aes(x = x, y = y, g = g, color = g, linetype = g)
+          aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g, color = g, linetype = g)
+        } else {
+          aesLine <- ggplot2::aes(x = x, y = y, g = g, color = g)
+          aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g, color = g)
+        }
+      } else {
+        # don't use color for single density plots (covariates)
+        aesLine <- ggplot2::aes(x = x, y = y, g = g)
+        aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g)
+      }
+      
+      
+      maxheight <- min(newymax - dfCri$y[1:min(lInd, 3)])
+      xlab <- nms[i]
+      # ggplot doesn't like our fancy unicode * so we need to remove it
+      # some word hopefully no user every uses
+      keyword <- "myTemporaryMagicReplacementKeyWord"
+      # change the encoding and remove all *
+      xlab <- iconv(xlab, from = "UTF-8", to = "ASCII", sub = keyword)
+      # remove our keyword
+      xlab <- unlist(strsplit(xlab, keyword))
+      # remove empty spaces and add a x over our *
+      xlab <- paste(xlab[xlab != ""], collapse = " x ")
+
+      ncolLegend <- ceiling(lInd / 14)
+      guideLegend <- ggplot2::guide_legend(title = "Level", keywidth = 0.25, keyheight = 0.1, default.unit = "inch", 
+                                           ncol = ncolLegend)
+      p <- ggplot2::ggplot(data = dfLines, mapping = aesLine) +
+        ggplot2::geom_line(size = 1.1) + 
+        ggplot2::geom_errorbarh(data = dfCri, mapping = aesErrorbar, height = maxheight, size = 1.1, 
+                                inherit.aes = FALSE) + 
+        ggplot2::scale_x_continuous(name = xlab,      breaks = xBreaks, limits = range(xBreaks)) +
+        ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = c(0, newymax)) + 
+        colorspace::scale_color_discrete_qualitative() + 
+        ggplot2::scale_linetype() + 
+        ggplot2::guides(color = guideLegend, linetype = guideLegend)
+      p <- JASPgraphs::themeJasp(p, legend.position = if (showLegend) "right" else "none")
+
+      plot <- createJaspPlot(title = nms[i], width = 400, height = 400, plot = p)
+      # plot$dependOnOptions("dependent") # gotta depend on something
+      container[[allParamNames[i]]] <- plot
+    }
+  } else {
+    for (i in indices) {
 
     p <- JASPgraphs::PlotPriorAndPosterior(
       dfLines    = df,
@@ -769,17 +842,17 @@
 
   postHocCollection <- createJaspContainer(title = "Post Hoc Tests")
   postHocCollection$position <- 7
-  jaspResults[["collectionPosthoc"]] <- postHocCollection
   postHocCollection$addCitation("Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.")
   postHocCollection$addCitation("Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427.")
+  postHocCollection$dependOnOptions("postHocTestsNullControl")
 
   # the same footnote for all the tables
-  footnote <-
-    "The posterior odds have been corrected for multiple testing by
+  footnote <- gsub("[\r\n\t]", "", 
+    "The posterior odds have been corrected for multiple testing by 
 		fixing to 0.5 the prior probability that the null hypothesis holds
 		across all comparisons (Westfall, Johnson, & Utts, 1997). Individual
 		comparisons are based on the default t-test with a Cauchy (0, r =
-		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected."
+		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected.")
 
   if (options$bayesFactorType == "BF10") {
     bf.title <- "BF<sub>10, U</sub>"
@@ -800,10 +873,10 @@
     dependent <- options[["dependent"]]
   }
 
+  jaspResults[["collectionPosthoc"]] <- postHocCollection
   for (posthoc.var in posthoc.variables) {
 
     postHocTable <- createJaspTable(title = paste0("Post Hoc Comparisons - ", posthoc.var))
-    postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
 
     postHocTable$addColumnInfo(name = "(I)",            type = "string",                      title = "", combine=TRUE)
     postHocTable$addColumnInfo(name = "(J)",            type = "string",                      title = "")
@@ -811,13 +884,14 @@
     postHocTable$addColumnInfo(name = "Posterior Odds", type = "number", format = "sf:4;dp:3")
     postHocTable$addColumnInfo(name = "BF",             type = "number", format = format,     title = bf.title)
     postHocTable$addColumnInfo(name = "error %",        type = "number", format = "sf:4;dp:3")
+    
+    postHocTable$setOptionMustContainDependency("postHocTestsVariables", posthoc.var)
 
     postHocTable$addFootnote(symbol = "<em>Note.</em>", message = footnote)
+    postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
 
-    if (is.null(model$models)) {
-      postHocTable$setExpectedRows(1L)
+    if (is.null(model$models))
       next
-    }
 
     fixed <- unlist(c(options$fixedFactors, sapply(options$repeatedMeasuresFactors, `[[`, "name")))
     if (model$analysisType == "RM-ANOVA" && posthoc.var %in% fixed && !posthoc.var %in% options$betweenSubjectFactors) {
@@ -836,7 +910,8 @@
     pairs <- utils::combn(variable.levels, 2)
 
     allSplits <- split(dataset[[.v(dependent)]], dataset[[.v(posthoc.var)]])
-
+    
+    errMessages <- NULL
     for (i in 1:ncol(pairs)) {
 
       if (options$postHocTestsNullControl && !is.null(model$models)) {
@@ -849,8 +924,15 @@
         if (isTryError(ttest)) {
 
           priorOdds <- postOdds <- logBF <- error <- "NaN"
-          message <- .extractErrorMessage(ttest)
-          postHocTable$addFootnote(symbol = "<em>Note.</em>", message = message)
+          errorMsg <- .extractErrorMessage(ttest)
+          if (errorMsg %in% names(errMessages)) {
+            errMessages[[errorMsg]][["row_names"]] <- c(errMessages[[errorMsg]][["row_names"]], i)
+          } else {
+            errMessages[[errorMsg]] <- list(
+              message = if (endsWith(errorMsg, ".")) errorMsg else paste0(errorMsg, "."),
+              row_names = i
+            )
+          }
 
         } else {
 
@@ -880,7 +962,17 @@
         "BF"             = logBF,
         "error %"        = error
       )
-      postHocTable$addRows(row)
+      postHocTable$addRows(row, rowNames = paste0("row", i))
+    }
+
+    if (!is.null(errMessages)) {
+      print(errMessages)
+      # postHocTable$.__enclos_env__$private$jaspObject$setRowNames(paste0("row", 1:ncol(pairs)))
+      for (i in seq_along(errMessages))
+        postHocTable$addFootnote(symbol    = "<em>Note.</em>", 
+                                 message   = errMessages[[i]][["message"]], 
+                                 row_names = paste0("row", errMessages[[i]][["row_names"]]))
+      
     }
   }
   return()
@@ -929,20 +1021,6 @@
     idx <- match(c("dependent", "subject"), colnames(dataset))
     colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
 
-    # options$dependent <- "dependent"
-    # options$randomFactors <- "subject"
-    # variable.names <- names(dataset)
-    # i <- which(variable.names == "dependent")
-    # j <- which(variable.names == "subject")
-    # variable.names[i] <- .v("dependent")
-    # variable.names[j] <- .v("subject")
-    # names (dataset) <- variable.names
-    # variable.names <- variable.names [-c (i,j)]
-
-    # if (length(variable.names) > 0)
-    # 	options$fixedFactors <- as.list(.unv(variable.names))
-    #
-    # options$modelTerms[[length(options$modelTerms) + 1]] <- list(components = "subject", isNuisance = TRUE)
   }
   return(dataset)
 }
@@ -966,9 +1044,9 @@
 
 }
 
-.BANOVAdescriptivesTable <- function(jaspResults, dataset, options, errors, analysisType) {
+.BANOVAdescriptivesTable <- function(jaspContainer, dataset, options, errors, analysisType) {
 
-  if (!options[["descriptives"]] || !is.null(jaspResults[["tableDescriptives"]]))
+  if (!options[["descriptives"]] || !is.null(jaspContainer[["tableDescriptives"]]))
     return()
 
   if (analysisType == "RM-ANOVA") {
@@ -986,16 +1064,16 @@
   }
 
   descriptivesTable <- createJaspTable(title = title)
-  jaspResults[["tableDescriptives"]] <- descriptivesTable
   descriptivesTable$position <- 1
   descriptivesTable$dependOnOptions(c("dependent", "fixedFactors", "betweenSubjectFactors", "descriptives",
                                       "credibleInterval"))
 
-  # internal names: change " " into "." because R does that to dataframe names.
-  # Add a . in case variable is "Mean", "SD" or "N"
-  nms <- paste0(gsub(pattern = " ", ".", fixed), ".")
+  # internal names use base64 so they don't have " " which R changes into "." because R does that to dataframe names.
+  # Also adds a . in case the base64 is magically "Mean", "SD" or "N"
+  fixedB64 <- .v(fixed)
+  nmsB64 <- paste0(fixedB64, ".")
   for (i in seq_along(fixed)) {
-    descriptivesTable$addColumnInfo(name = nms[i], type = "string", title = fixed[i], combine = TRUE)
+    descriptivesTable$addColumnInfo(name = nmsB64[i], type = "string", title = fixed[i], combine = TRUE)
   }
 
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
@@ -1004,38 +1082,38 @@
   descriptivesTable$addColumnInfo(name = "N",     type = "number", format = "dp:0")
   descriptivesTable$addColumnInfo(name = "Lower", type = "number", format = "sf:4;dp:3", overtitle = overTitle)
   descriptivesTable$addColumnInfo(name = "Upper", type = "number", format = "sf:4;dp:3", overtitle = overTitle)
+  jaspContainer[["tableDescriptives"]] <- descriptivesTable
 
-  if (errors$noVariables) {
-    descriptivesTable$setExpectedRows(1L)
+  if (errors$noVariables) 
     return()
-  }
 
-  fixedB64     <- .v(fixed)
   dependentB64 <- .v(dependent)
+
+  # order the data to show
+  dataset2 <- dataset[do.call(order, dataset[, fixedB64, drop = FALSE]), c(dependentB64, fixedB64)]
 
   # by pasting the fixedFactors together we obtain the unique indices to group on. This excludes
   # non-existent combinations. A "." is added to deal with the level "".
-  ind <- apply(dataset[, fixedB64, drop = FALSE], 1L, paste0, ".", collapse = "")
+  ind <- apply(dataset2[, fixedB64, drop = FALSE], 1L, paste0, ".", collapse = "")
 
   # temporary function to calculate all descriptives
   tmpFun <- function(data, fixedB64, dependentB64, cri) {
 
     row <- list()
     for (j in fixedB64)
-      row[[paste0(.unv(j), ".")]] <- as.character(data[1L, j])
+      row[[paste0(j, ".")]] <- as.character(data[1L, j])
 
     N <- nrow(data)
     row[["N"]] <- N
 
     if (N == 0L) {
 
-      row[["Mean"]] <- ""
-      row[["SD"]]   <- ""
+      row[["Mean"]] <- row[["SD"]] <- NA
 
     } else if (N == 1L) {
 
       row[["Mean"]] <- data[[dependentB64]]
-      row[["SD"]] <- row[["Lower"]] <- row[["Upper"]] <- ""
+      row[["SD"]] <- row[["Lower"]] <- row[["Upper"]] <- NA
 
     } else {
 
@@ -1051,27 +1129,40 @@
   }
 
   # apply tempFun on each subset defined by ind
-  rows <- by(dataset, ind, tmpFun, fixedB64 = fixedB64, 
+  rows <- by(dataset2, ind, tmpFun, fixedB64 = fixedB64,
              dependentB64 = dependentB64, cri = options[["credibleInterval"]])
 
   # do.call(rbind, rows) turns rows into a data.frame (from a list) for jaspResults
   data <- do.call(rbind.data.frame, rows)
+
+  # add footnote if there are unobserved combinations
+  nObserved <- nrow(data)
+  nPossible <- prod(sapply(dataset2[, fixedB64], nlevels))
+  if (nObserved != nPossible) {
+    descriptivesTable$addFootnote(
+      symbol = "<em>Note.</em>", 
+      message = sprintf(
+        "Some combinations of factors are not observed and hence omitted (%d out of %d combinations are unobserved).",
+        nPossible - nObserved, nPossible
+      )
+    )
+  }
 
   descriptivesTable$setData(data)
 
   return()
 }
 
-.BANOVAdescriptivesPlots <- function(jaspResults, dataset, options, errors, analysisType) {
+.BANOVAdescriptivesPlots <- function(jaspContainer, dataset, options, errors, analysisType) {
 
   if (length(options[["plotHorizontalAxis"]]) == 0L
       || options[["plotHorizontalAxis"]] == ""
-      || !is.null(jaspResults[["containerDescriptivesPlots"]]))
+      || !is.null(jaspContainer[["containerDescriptivesPlots"]]))
     return()
 
   descriptivesPlotContainer <- createJaspContainer(title = "Descriptives plots")
   descriptivesPlotContainer$position <- 2
-  jaspResults[["containerDescriptivesPlots"]] <- descriptivesPlotContainer
+  jaspContainer[["containerDescriptivesPlots"]] <- descriptivesPlotContainer
 
   # either Bayesian or Frequentist anova
   if (is.null(options$confidenceIntervalInterval)) { # TRUE implies Bayesian
@@ -1156,7 +1247,6 @@
       title <- "Descriptives Plot"
     }
     descriptivesPlot <- createJaspPlot(title = title)
-    descriptivesPlot$copyDependenciesFromJaspObject(descriptivesPlotContainer)
     descriptivesPlotContainer[[title]] <- descriptivesPlot
 
     if (options$plotSeparateLines != "") {
@@ -1719,28 +1809,44 @@
   datOneHot <- model.matrix(formula, data = dataset[c(dvs, ivs)],
                             contrasts.arg = lapply(dataset[ivs][idx], contrasts, contrasts = FALSE))
 
-  if (length(dim(posterior)) == 3L) {
-    # we're doing model averaged inference
+  nobs <- nrow(datOneHot)
 
-    # sample from the BMA posterior
-    samples <- matrix(NA, nrow = nIter, ncol = ncol(posterior))
-    for (i in seq_len(ncol(posterior))) {
-      samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
+  # size of 1 numeric element in bits
+  doubleSize <- as.numeric(utils::object.size(double(2)) - utils::object.size(double(1)))
+  # 1073741824 is 1   GB in bytes
+  # 536870912  is 512 MB in bytes
+  # the size of an empty matrix is ignored here
+  useMatmult <- ((doubleSize * nobs * nIter) / 536870912.0) <= 1
+
+  if (useMatmult) {
+    if (length(dim(posterior)) == 3L) {
+      # we're doing model averaged inference
+      
+      # sample from the BMA posterior
+      samples <- matrix(NA, nrow = nIter, ncol = ncol(posterior))
+      for (i in seq_len(ncol(posterior))) {
+        samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
+      }
+      
+      preds <- tcrossprod(datOneHot, samples)
+      
+    } else {
+      # TODO: ensure that column order is always correct for both!
+      # otherwise we're doing inference for a single model
+      preds <- tcrossprod(datOneHot, posterior)
     }
-
-    preds <- tcrossprod(datOneHot, samples)
-
+    
+    # calculate residuals (correctly recycles dat[[dvs]])
+    resid <- dataset[[dvs]] - preds
+    
+    rsq <- .BANOVAcomputeRsq(dataset[[dvs]], preds)
+    # eta <- .BANOVAcomputeEtasq(dat[[dvs]], preds)
+    
   } else {
-    # TODO: ensure that column order is always correct for both!
-    # otherwise we're doing inference for a single model
-    preds <- tcrossprod(datOneHot, posterior)
+    # slow but memory efficient stuff
+    
+    
   }
-
-  # calculate residuals (correctly recycles dat[[dvs]])
-  resid <- dataset[[dvs]] - preds
-
-  rsq <- .BANOVAcomputeRsq(dataset[[dvs]], preds)
-  # eta <- .BANOVAcomputeEtasq(dat[[dvs]], preds)
 
   return(list(resid = resid, preds = preds, rsq = rsq))
 }
@@ -1769,16 +1875,22 @@
     preds <- matrix(preds, ncol = 1L)
 
   # definition from http://www.stat.columbia.edu/~gelman/research/unpublished/bayes_R2.pdf
-  ee <- matrixStats::colVars(preds)
-  ff <- matrixStats::colVars(obs - preds)
+  colVars2 <- function(x) {matrixStats::colVars(sweep(x, 2L, matrixStats::colMeans2(x)))}
+  ee <- colVars2(preds)
+  ff <- colVars2(obs - preds)
   gg <- ee / (ee + ff)
+  if (anyNA(gg)) {
+    idx <- is.na(gg)
+    if (all(idx)) {
+      # this means that either the posterior sampling failed or the input data is bogus.
+      .quitAnalysis("All predictions had zero variance. Check the predictors for anomalies or increase the number of posterior samples.")
+    } else {
+      # this shouldn't happen, but is necessary because otherwise stuff will crash downstream.
+      gg[is.na(gg)] <- mean(gg, na.rm = TRUE)
+    }
+  }
   return(gg)
 
-  # mu <- mean(obs)
-  # n <- length(obs)
-  # sstot <- var(obs)
-  # ssreg <- colMeans((preds - mu)^2) * (n / (n - 1))
-  # return(ssreg / sstot)
 }
 
 .BANOVAcomputeEtasq <- function(obs, preds) {
@@ -1810,7 +1922,8 @@
     silent = TRUE)
 
   if (isTryError(out))
-    .quitAnalysis("An unknown error occured in BayesFactor::enumerateGeneralModels.")
+    .quitAnalysis(paste("The following error occured in BayesFactor::enumerateGeneralModels:", 
+                        .extractErrorMessage(out)))
 
   if (is.null(nuisance)) {
     return(c(list(NULL), out))
@@ -1909,10 +2022,10 @@
 
 }
 
-# .BANOVAas.character.formula <- function(x, ...) {
-#   # we could also extend the S3 function as.character
-#   Reduce(paste, trimws(deparse(x)))
-# }
+.BANOVAas.character.formula <- function(x, ...) {
+  # we could also extend the S3 function as.character
+  Reduce(paste, trimws(deparse(x)))
+}
 
 .BANOVAreorderFormulas <- function(x) {
 
@@ -1922,7 +2035,7 @@
   # and a ~ b + c != a ~ c + b
   # so without this function the state does not get reused whenever a user modifies the nuisance terms
   if (is.null(x))
-    return("NULL")
+    return("NULL") # as a string so it can become one big character vector for match()
 
   s <- strsplit(attr(stats::terms.formula(x), "term.labels"), ":")
   for (i in which(lengths(s) > 1L))
@@ -1936,8 +2049,8 @@
   # TODO: allCOntinuous is missing in singleModel
   # checks of .BANOVAsmiQqPlot and others are wrong
   userWantsSMI <- options$singleModelPosteriorPlot || options$singleModelqqPlot || options$singleModelrsqPlot ||
-    options$singleModelEffects
-  if (!(options[["singleModelEffects"]] || userWantsSMI))
+    options$singleModelEstimates
+  if (!(options[["singleModelEstimates"]] || userWantsSMI))
     return()
 
   if (!is.null(jaspResults[["collectionSingleModel"]])) {
@@ -1956,7 +2069,7 @@
   if (is.null(singleModel) && length(options$singleModelTerms) > 0L && userWantsSMI) {
     singleModel <- try(.BANOVAsmiSamplePosterior(dataset, options, model[["analysisType"]]))
     if (isTryError(singleModel)) {
-      # singleModelContainer$setError(paste("Error in single model inference:", .extractErrorMessage(singleModel)))
+      singleModelContainer$setError(paste("Error in single model inference:", .extractErrorMessage(singleModel)))
       singleModel <- NULL
     } else {
       singleModelState <- createJaspState(object = singleModel)
@@ -1965,7 +2078,7 @@
     }
   }
 
-  .BANOVAsmiEffects(singleModelContainer, options, singleModel)
+  .BANOVAsmiEstimates(singleModelContainer, options, singleModel)
   .BANOVAsmiQqPlot (singleModelContainer, options, singleModel)
   .BANOVAsmiRsqPlot(singleModelContainer, options, singleModel)
 
@@ -1987,11 +2100,11 @@
 
   if (analysisType == "RM-ANOVA") {
     dependent <- "dependent"
-    rscaleCont <- options[["priorCovariates"]]
+    rscaleCont <- options[["priorCovariatesEffects"]]
     randomFactors <- "subject"
     modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
   } else if (analysisType == "ANCOVA") {
-    rscaleCont <- options[["priorCovariates"]]
+    rscaleCont <- options[["priorCovariatesEffects"]]
   } else {
     rscaleCont <- "medium" # sqrt(2)/4
   }
@@ -2026,6 +2139,12 @@
     colnames(samples)[-1L] <- paste0(cnms, "-", cnms)
   }
 
+  # find out which parameters are random
+  isRandom <- logical(ncol(samples))
+  idx <- which(types == "random")
+  for (i in idx)
+    isRandom <- isRandom | startsWith(colnames(samples), names(types)[i])
+
   means <- colMeans(samples)
   sds <- matrixStats::colSds(samples)
   names(means) <- names(sds) <- colnames(samples)
@@ -2050,19 +2169,18 @@
   return(list(
     means = means, sds = sds, CRIs = cri, densities = densities$fit,
     residSumStats = residSumStats, rsqDens = rsqDens, rsqCri = rsqCri,
-    allContinuous = allContinuous
+    allContinuous = allContinuous, isRandom = isRandom
   ))
 }
 
-.BANOVAsmiEffects <- function(jaspContainer, options, model) {
+.BANOVAsmiEstimates <- function(jaspContainer, options, model) {
 
-  if (!is.null(jaspContainer[["SMItablePosteriorEstimates"]]) || !options[["singleModelEffects"]])
+  if (!is.null(jaspContainer[["SMItablePosteriorEstimates"]]) || !options[["singleModelEstimates"]])
     return()
 
   estsTable <- createJaspTable(title = "Single Model Posterior Summary")
   estsTable$position <- 1
-  jaspContainer[["SMItablePosteriorEstimates"]] <- estsTable
-  estsTable$dependOnOptions("singleModelEffects", "credibleInterval")
+  estsTable$dependOnOptions(c("singleModelEstimates", "credibleInterval"))
 
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   estsTable$addColumnInfo(name = "Variable", type = "string")
@@ -2072,17 +2190,17 @@
   estsTable$addColumnInfo(name = "Lower",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
   estsTable$addColumnInfo(name = "Upper",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
 
-  if (is.null(model) || estsTable$getError()) {
-    estsTable$setExpectedRows(1L)
-    return()
+  if (!(is.null(model) || estsTable$getError())) {
+    .BANOVAfillEstimatesTable(
+      jaspTable   = estsTable,
+      mus         = model$means,
+      sds         = model$sds,
+      cri         = model$CRIs,
+      hasNoLevels = model$allContinuous,
+      isRandom    = model$isRandom
+    )
   }
-  .BANOVAfillEstimatesTable(
-    jaspTable   = estsTable,
-    mus         = model$means,
-    sds         = model$sds,
-    cri         = model$CRIs,
-    hasNoLevels = model$allContinuous
-  )
+  jaspContainer[["SMItablePosteriorEstimates"]] <- estsTable
   return()
 
 }
@@ -2102,9 +2220,11 @@
                                                             plot = NULL)
   } else {
     .BANOVAfillPosteriorPlotContainer(
-      container = posteriorPlotContainer,
-      densities = model$densities[, -1L, ],
-      cris      = model$CRIs[-1L, ]
+      container       = posteriorPlotContainer,
+      densities       = model$densities[, -1L, ], # omit intercept
+      cris            = model$CRIs[-1L, ],        # omit intercept
+      isRandom        = model$isRandom[-1L],      # omit intercept
+      groupParameters = identical(options[["groupPosterior"]], "grouped")
     )
   }
   return()
