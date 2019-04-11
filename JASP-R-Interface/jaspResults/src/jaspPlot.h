@@ -43,7 +43,7 @@ class jaspPlot_Interface : public jaspObject_Interface
 public:
 	jaspPlot_Interface(jaspObject * dataObj) : jaspObject_Interface(dataObj) {}
 
-	void addFootnote(std::string message, std::string symbol = "")	{ ((jaspPlot*)myJaspObject)->addFootnote(message, symbol); }
+	void addFootnote(std::string message)	{ ((jaspPlot*)myJaspObject)->addFootnote(message); }
 	void setPlotObject(Rcpp::RObject plotObject)					{ ((jaspPlot*)myJaspObject)->setPlotObject(plotObject); }
 	Rcpp::RObject getPlotObject()									{ return ((jaspPlot*)myJaspObject)->getPlotObject(); }
 

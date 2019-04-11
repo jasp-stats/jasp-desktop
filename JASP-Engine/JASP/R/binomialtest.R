@@ -17,9 +17,6 @@
 
 BinomialTest <- function(jaspResults, dataset, options, ...) {
 
-  # Set title
-  jaspResults$title <- "Binomial Test"
-
   # Read dataset
   dataset <- .binomReadData(dataset, options)
 
@@ -160,7 +157,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   # Save results to state
   jaspResults[["stateBinomResults"]] <- createJaspState(results)
-  jaspResults[["stateBinomResults"]]$dependOnOptions(
+  jaspResults[["stateBinomResults"]]$dependOn(
     c("variables", "testValue", "hypothesis", "confidenceIntervalInterval", "descriptivesPlotsConfidenceInterval")
   )
 
@@ -199,8 +196,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   # Create table
   binomialTable <- createJaspTable(title = "Binomial Test")
-  jaspResults[["binomialTable"]] <- binomialTable
-  binomialTable$dependOnOptions(c("variables", "testValue", "hypothesis", "confidenceInterval",
+  binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                                   "confidenceIntervalInterval", "VovkSellkeMPR"))
 
   binomialTable$showSpecifiedColumnsOnly <- TRUE
@@ -210,24 +206,24 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
   binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
   binomialTable$addColumnInfo(name = "total",      title = "Total",      type = "integer")
-  binomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number", format = "sf:4")
-  binomialTable$addColumnInfo(name = "p",          title = "p",          type = "number", format = "dp:3;p:.001")
+  binomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
+  binomialTable$addColumnInfo(name = "p",          title = "p",          type = "pvalue")
 
   if (options$VovkSellkeMPR) {
-    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number", format = "sf:4")
+    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
   }
 
   if (options$confidenceInterval) {
-    binomialTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number", format = "sf:4",
+    binomialTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
       overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
-    binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
+    binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
       overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
   }
+  
+  jaspResults[["binomialTable"]] <- binomialTable
 
-  if (!is.null(errors) && errors == "No variables") {
-    binomialTable$setExpectedRows(1)
+  if (!is.null(errors) && errors == "No variables")
     return()
-  }
 
   for (variable in options$variables) {
     for (level in binomResults[["spec"]][["levels"]][[variable]]) {
@@ -257,7 +253,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   if (is.null(jaspResults[["containerPlots"]])) {
     jaspResults[["containerPlots"]] <- createJaspContainer("Descriptives Plots")
-    jaspResults[["containerPlots"]]$dependOnOptions("descriptivesPlots")
+    jaspResults[["containerPlots"]]$dependOn("descriptivesPlots")
   }
 }
 
@@ -275,14 +271,13 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
     if (!is.null(pct[[variable]])) next
 
     pct[[variable]] <- createJaspContainer(variable)
-    pct[[variable]]$setOptionMustContainDependency("variables", variable)
-    pct[[variable]]$dependOnOptions(c("testValue", "descriptivesPlotsConfidenceInterval"))
+    pct[[variable]]$dependOn(options=c("testValue", "descriptivesPlotsConfidenceInterval"), optionContainsValue=list(variables=variable))
 
 
     for (level in binomResults[["spec"]][["levels"]][[variable]]) {
       descriptivesPlot <- .binomPlotHelper(binomResults[["binom"]][[variable]][[level]]$plotDat, options$testValue)
       pct[[variable]][[level]] <- createJaspPlot(plot = descriptivesPlot, title = level, width = 160, height = 320)
-      pct[[variable]][[level]]$dependOnOptions("descriptivesPlots")
+      pct[[variable]][[level]]$dependOn("descriptivesPlots")
     }
 
   }

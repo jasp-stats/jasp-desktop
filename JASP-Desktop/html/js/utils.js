@@ -2,7 +2,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
     /**
      * Prepares the columns of a table to the required format
      * @param column
-     * @param type           column type - string, number, ...
+     * @param type           column type - string, number, pvalue, integer, ...
      * @param format         decimal format, p-value format
      * @param alignNumbers
      * @param combine
