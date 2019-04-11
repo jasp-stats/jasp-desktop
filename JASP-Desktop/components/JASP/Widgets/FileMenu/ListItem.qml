@@ -64,6 +64,7 @@ Rectangle
 				hoverEnabled:		true
 				cursorShape:		Qt.PointingHandCursor
 				onClicked:			rectTitleAndDescripton.openStuff(model)
+				onDoubleClicked:	{}
 
 			}
 
@@ -105,6 +106,7 @@ Rectangle
 				hoverEnabled:	true
 
 				onClicked:		rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
+				onDoubleClicked:{}
 				cursorShape:	Qt.PointingHandCursor
 			}
 
@@ -158,6 +160,7 @@ Rectangle
 			hoverEnabled:		true
 			cursorShape:		Qt.PointingHandCursor
 			onClicked:			rectTitleAndDescripton.openStuff(model)
+			onDoubleClicked:	{}
 		}
 
 		ToolTip
@@ -211,6 +214,7 @@ Rectangle
 			anchors.fill:		parent
 			hoverEnabled:		true
 			onClicked:			rectTitleAndDescripton.openStuff(model)
+			onDoubleClicked:	{}
 			cursorShape:		Qt.PointingHandCursor
 		}
 	}
