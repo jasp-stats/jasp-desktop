@@ -31,6 +31,7 @@ QtObject {
 	readonly property color grayDarker:			Qt.darker(gray, 1.5)
 	readonly property color grayLighter:		"#d4d4d4"
 	readonly property color grayMuchLighter:	"#ECECEC"
+	readonly property color grayVeryMuchLighter:"#F4F6F7"
 	readonly property color blue:				"#419BF9"
 	readonly property color blueDarker:			"#0069D9"
 	readonly property color blueLighter:		"#97C4F2"
@@ -51,6 +52,12 @@ QtObject {
 	readonly property color buttonColorHovered:			uiBackground
 	readonly property color buttonBorderColorHovered:	black
 	readonly property color buttonColorPressed:			gray
+	readonly property color buttonMenuColorPressed:		gray
+	readonly property color buttonMenuColorFocus:		grayLighter
+	readonly property color buttonMenuColorSelected:	grayLighter
+	readonly property color buttonMenuColorHovered:		grayMuchLighter
+	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
+
 
 	readonly property color itemHighlight:				blueMuchLighter
 
@@ -83,6 +90,7 @@ QtObject {
 	readonly property int textFieldWidth:				200 * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
+	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
@@ -98,7 +106,7 @@ QtObject {
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
 	readonly property int maximumFlickVelocity:			400
-	readonly property int fileMenuSlideDuration:		200
+	readonly property int fileMenuSlideDuration:		150
 
 	readonly property real ribbonScaleHovered:			1.1
 
