@@ -36,7 +36,7 @@ Rectangle
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				!rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 
 		Image
 		{

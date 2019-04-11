@@ -20,14 +20,9 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-Rectangle
+FocusScope
 {
 	id: filterButtonRoot
-
-	color:			_pressed ? Theme.buttonColorPressed :	_showHovered ? Theme.buttonColorHovered			: Theme.buttonColor
-	border.color:											_showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
-	border.width:	1
-
 
 	property string	text:				""
 	property string	toolTip:			""
@@ -41,8 +36,11 @@ Rectangle
 	property bool	iconLeft:			true
 
 	property real	_scaledDim:			32 * preferencesModel.uiScale
-	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
+	property bool	_showHovered:		filterButtonRoot.enabled && filterButtonRoot.hovered
 	property alias	_pressed:			buttonMouseArea.pressed
+	property alias  color:				rect.color
+	property alias	border:				rect.border
+	property alias	radius:				rect.radius
 
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
@@ -63,6 +61,18 @@ Rectangle
 
 	signal clicked()
 
+
+Rectangle
+{
+	id: rect
+
+	color:			_pressed ? Theme.buttonColorPressed :	_showHovered ? Theme.buttonColorHovered			: Theme.buttonColor
+	border.color:											_showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+	border.width:	1
+	focus: true
+	width: parent.width
+	height: parent.height
+
 	MouseArea
 	{
 		id:							buttonMouseArea
@@ -70,7 +80,7 @@ Rectangle
 		acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
 		hoverEnabled:				true
 		cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-		onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.focus = true; } //else mouse.accepted = false;
+		onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.forceActiveFocus(); } //else mouse.accepted = false;
 		visible:					filterButtonRoot.enabled
 		//propagateComposedEvents:	true
 	}
@@ -122,4 +132,5 @@ Rectangle
 
 		elide:	Text.ElideMiddle
 	}
+}
 }
