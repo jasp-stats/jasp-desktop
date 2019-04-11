@@ -26,14 +26,14 @@
 #include "gui/messageforwarder.h"
 
 OSF::OSF(QObject *parent): FileMenuObject(parent)
-{				
-	
+{
+
 	setBreadCrumbs(new OSFBreadCrumbsListModel(this, QChar('/')));
-	
+
 	_model = new OSFFileSystem(parent , OSFFileSystem::rootelementname);
-	
+
 	setListModel(new OSFListModel(this, _model, _osfBreadCrumbsListModel));
-	
+
 	connect(_model,						&OSFFileSystem::authenticationSuccess,			this,			&OSF::updateUserDetails);
 	connect(_model,						&OSFFileSystem::authenticationFail,				this,			&OSF::authenticationeFailed);
 	connect(_model,						&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
@@ -42,7 +42,7 @@ OSF::OSF(QObject *parent): FileMenuObject(parent)
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&OSF::startProcessing);
 	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
 	connect(this,						&OSF::openFileRequest,							this,			&OSF::notifyDataSetOpened);
-	
+
 	_mRememberMe = Settings::value(Settings::OSF_REMEMBER_ME).toBool();
 	_mUserName = Settings::value(Settings::OSF_USERNAME).toString();
 	_mPassword = decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
@@ -145,23 +145,23 @@ void OSF::setUsername(const QString &username)
 
 	_mUserName = username;
 	emit usernameChanged();
-	
+
 	if (_mRememberMe)
 		Settings::setValue(Settings::OSF_USERNAME, _mUserName);
 	else
 		Settings::remove(Settings::OSF_USERNAME);
-	
-	Settings::sync();	
+
+	Settings::sync();
 }
 
 void OSF::setPassword(const QString &password)
-{		
+{
 	if (_mPassword == password)
 		return;
 
 	_mPassword = password;
 	emit passwordChanged();
-		
+
 	if (_mRememberMe)
 	{
 		//Save password encrypted in settings
@@ -171,8 +171,8 @@ void OSF::setPassword(const QString &password)
 	else
 		Settings::remove(Settings::OSF_PASSWORD);
 
-	Settings::sync();	
-	
+	Settings::sync();
+
 }
 
 void OSF::setOnlineDataManager(OnlineDataManager *odm)
@@ -188,7 +188,7 @@ void OSF::attemptToConnect()
 {
 	setProcessing(true);
 	_model->attemptToConnect();
-	setLoggedin(_model->isAuthenticated());	
+	setLoggedin(_model->isAuthenticated());
 }
 
 void OSF::setCurrentFileName(QString currentFileName)
@@ -254,7 +254,7 @@ void OSF::openSaveFile(const QString &nodePath, const QString &filename)
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
 	FileEvent *event = new FileEvent(this, _mode);
-	
+
 	setProcessing(true);
 
 	if (event->setPath(nodePath + "#file://" + filename))
@@ -263,7 +263,7 @@ void OSF::openSaveFile(const QString &nodePath, const QString &filename)
 		{
 
 			setSavefilename(filename);
-			
+
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
 		}
 	}
@@ -291,7 +291,7 @@ void OSF::openSaveCompleted(FileEvent* event)
 	{
 		_model->refresh();
 	}
-	
+
 	setProcessing(false);
 }
 
@@ -300,22 +300,22 @@ void OSF::updateUserDetails()
 {
 	if (_model->isAuthenticated())
 	{
-	
+
 		OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
 
 		userNode->initialise();
 
 		connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
-		
+
 		setLoggedin(true);
-		
+
 	}
 	else
 	{
 		setLoggedin(false);
-		
+
 	}
-	
+
 }
 
 void OSF::newFolderCreated()
@@ -325,7 +325,7 @@ void OSF::newFolderCreated()
 	if (node->error())	MessageForwarder::showWarning("", "An error occured and the folder could not be created.");
 	else
 		_model->refresh();
-	
+
 	setProcessing(false);
 }
 
@@ -342,22 +342,27 @@ void OSF::newFolderClicked()
 		return;
 	}
 
-	bool ok;
+	bool ok = true;
 	QString name = "New folder";
 
 
-	do
-	{
+	if (checkEntryName(name, "Folder", false) == false) {
 		std::cerr << "Qname = QInputDialog::getText(this, \"New folder\", \"New folder name\", QLineEdit::Normal, name, &ok);" << std::endl;
 		throw std::runtime_error("No Inputdialog available cause were in QML");
 	}
-	while(ok && checkEntryName(name, "Folder", false) == false);
+
+	// do
+	// {
+	// 	std::cerr << "Qname = QInputDialog::getText(this, \"New folder\", \"New folder name\", QLineEdit::Normal, name, &ok);" << std::endl;
+	// 	throw std::runtime_error("No Inputdialog available cause were in QML");
+	// }
+	// while(checkEntryName(name, "Folder", false) == false);
 
 
 	if (ok)
 	{
 		setProcessing(true);
-		
+
 		emit newFolderRequested(name);
 
 		if (_model->hasFolderEntry(name.toLower()) == false)
@@ -383,10 +388,10 @@ void OSF::resetOSFListModel()
 void OSF::logoutClicked()
 {
 	_model->clearAuthentication();
-	//_logoutButton->hide();	
+	//_logoutButton->hide();
 	_model->refresh();
 	_osfBreadCrumbsListModel->indexChanged(0);
-	
+
 	setLoggedin(false);
 	setProcessing(false);
 }
@@ -398,7 +403,7 @@ void OSF::loginRequested(const QString &username, const QString &password)
 		MessageForwarder::showWarning("Login", "User or password cannot be empty.");
 		return;
 	}
-	
+
 	setProcessing(true);
 	_model->authenticate(username, password);
 
@@ -413,7 +418,7 @@ void OSF::saveFile(const QString &name)
 {
 	_mSaveFileName = name;
 	saveClicked();
-	
+
 }
 
 void OSF::startProcessing()

@@ -6,25 +6,26 @@ import JASP.Theme 1.0
 Item
 {
 	id:			rect
-	
+
 	MenuHeader {
 		id: menuHeader
 
 		headertext:		qsTr("Data Library")
 		toolseparator:	false
 	}
-	
+
 	BreadCrumbs
 	{
 		id:				datalibrarybreadcrumbs
-		
+
 		model :			fileMenuModel.datalibrary.breadcrumbsmodel
-		
+
 		width:			rect.width
 		height:			40
 		anchors
 		{
 			top:		menuHeader.bottom
+			topMargin	: 30
 			left:		parent.left
 			right:		parent.right
 			leftMargin:	Theme.generalMenuMargin
@@ -32,7 +33,7 @@ Item
 
 		onCrumbButtonClicked: model.indexChanged(modelIndex)
 	}
-	
+
 	ToolSeparator
 	{
 		id:				secondseparator
@@ -42,7 +43,7 @@ Item
 		width:			rect.width
 		orientation:	Qt.Horizontal
 	}
-	
+
 	FileList
 	{
 		id:			datalibrarylist
@@ -60,4 +61,3 @@ Item
 		}
 	}
 }
-
