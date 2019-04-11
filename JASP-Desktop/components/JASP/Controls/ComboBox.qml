@@ -32,21 +32,35 @@ JASPControl {
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
+	property bool	setWidthInForm:			true
     
     signal activated(int index);
 
 	onControlMinWidthChanged: _resetWidth()
 	
-	function resetWidth(value)
+	function resetWidth(values)
 	{
-        textMetrics.font = control.font
-        textMetrics.text = value
-		_resetWidth()
+		if (typeof(values) === "undefined")
+		{
+			values = []
+			for (var index = 0 ; index < control.count; index++)
+				values.push(control.textAt(index))
+		}
+
+		textMetrics.font = control.font
+		var maxWidth = 0
+		for (var i = 0; i < values.length; i++)
+		{
+			textMetrics.text = values[i]
+			if (textMetrics.width > maxWidth)
+				maxWidth = textMetrics.width;
+		}
+		_resetWidth(maxWidth)
 	}
 
-	function _resetWidth()
+	function _resetWidth(maxWidth)
 	{
-		var newWidth = textMetrics.width + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
+		var newWidth = maxWidth + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
 		if (controlMinWidth > 0 || newWidth > control.modelWidth)
 		{
 			control.modelWidth = newWidth;
@@ -85,9 +99,10 @@ JASPControl {
 
 						padding:		2 * preferencesModel.uiScale //Theme.jaspControlPadding
 
-						implicitWidth:	modelWidth + 2 * padding + canvas.width
+						implicitWidth:	modelWidth + extraWidth
 						textRole:		comboBox.textRole
 		property int	modelWidth:		30 * preferencesModel.uiScale
+		property int	extraWidth:		5 * padding + canvas.width
 		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
 						font:			Theme.font
 
