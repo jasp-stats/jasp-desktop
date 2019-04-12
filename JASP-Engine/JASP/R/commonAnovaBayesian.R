@@ -27,6 +27,7 @@
   dataInfo <- .BANOVAerrorhandling(dataset, options, analysisType)
 
   model <- .BANOVAestimateModels(jaspResults, dataset, options, dataInfo, analysisType)
+  print(model)
   model[["posteriors"]] <- .BANOVAestimatePosteriors(jaspResults, dataset, options, model)
 
   .BANOVAeffectsTable  (jaspResults, options, model)
@@ -87,7 +88,7 @@
 
   # also makes the model comparison table
   stateObj <- jaspResults[["tableModelComparisonState"]]$object
-  if (!is.null(jaspResults[["tableModelComparison"]])) {
+  if (!is.null(jaspResults[["tableModelComparison"]]) && !is.null(stateObj)) {
     stateObj$completelyReused <- TRUE # means that posteriors won't need to be resampled
     return(stateObj)
   } else if (errors$noVariables) {
@@ -640,6 +641,7 @@
   posteriorPlotContainer <- createJaspContainer(title = "Model Averaged Posterior Distributions")
   jaspResults[["posteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$dependOnOptions(c("posteriorPlot", "modelTerms", "credibleInterval"))
+  posteriorPlotContainer$setOptionMustContainDependency("groupPosterior", options[["groupPosterior"]])
   posteriorPlotContainer$position <- 4
 
   if (is.null(model$models)) {
@@ -837,14 +839,20 @@
 # Post hoc comparison ----
 .BANOVAnullControlPostHocTable <- function(jaspResults, dataset, options, model) {
 
-  if (!is.null(jaspResults[["collectionPosthoc"]]) || length(options$postHocTestsVariables) == 0L)
+
+  if (length(options$postHocTestsVariables) == 0L)
     return()
 
-  postHocCollection <- createJaspContainer(title = "Post Hoc Tests")
-  postHocCollection$position <- 7
-  postHocCollection$addCitation("Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.")
-  postHocCollection$addCitation("Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427.")
-  postHocCollection$dependOnOptions("postHocTestsNullControl")
+  postHocCollection <- jaspResults[["collectionPosthoc"]]
+  if (is.null(postHocCollection)) {
+    postHocCollection <- createJaspContainer(title = "Post Hoc Tests")
+    postHocCollection$position <- 7
+    postHocCollection$addCitation("Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.")
+    postHocCollection$addCitation("Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427.")
+    postHocCollection$dependOnOptions(c("dependent", "repeatedMeasuresCells", "postHocTestsNullControl", 
+                                        "bayesFactorType"))
+    jaspResults[["collectionPosthoc"]] <- postHocCollection
+  }
 
   # the same footnote for all the tables
   footnote <- gsub("[\r\n\t]", "", 
@@ -854,27 +862,30 @@
 		comparisons are based on the default t-test with a Cauchy (0, r =
 		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected.")
 
-  if (options$bayesFactorType == "BF10") {
+  if (options[["bayesFactorType"]] == "BF10") {
     bf.title <- "BF<sub>10, U</sub>"
-    format   <- "sf:4;dp:3"#;log10"
-  } else if (options$bayesFactorType == "BF01") {
+    format   <- "sf:4;dp:3"
+  } else if (options[["bayesFactorType"]] == "BF01") {
     bf.title <- "BF<sub>01, U</sub>"
-    format   <- "sf:4;dp:3"#;log10"
-  } else if (options$bayesFactorType == "LogBF10") {
+    format   <- "sf:4;dp:3"
+  } else if (options[["bayesFactorType"]] == "LogBF10") {
     bf.title <- "Log(BF<sub>10, U</sub>)"
     format   <- "sf:4;dp:3"
   }
 
   priorWidth <- 1 / sqrt(2)
-  posthoc.variables <- unlist(options$postHocTestsVariables)
+  posthoc.variables <- unlist(options[["postHocTestsVariables"]])
   if (model[["analysisType"]] == "RM-ANOVA") {
     dependent <- "dependent"
   } else {
     dependent <- options[["dependent"]]
   }
 
-  jaspResults[["collectionPosthoc"]] <- postHocCollection
   for (posthoc.var in posthoc.variables) {
+
+    # does the table already exist?
+    if (!is.null(postHocCollection[[paste0("postHoc_", posthoc.var)]]))
+      next
 
     postHocTable <- createJaspTable(title = paste0("Post Hoc Comparisons - ", posthoc.var))
 
@@ -885,14 +896,15 @@
     postHocTable$addColumnInfo(name = "BF",             type = "number", format = format,     title = bf.title)
     postHocTable$addColumnInfo(name = "error %",        type = "number", format = "sf:4;dp:3")
     
+    postHocTable$addFootnote(symbol = "<em>Note.</em>", message = footnote)
+    
     postHocTable$setOptionMustContainDependency("postHocTestsVariables", posthoc.var)
 
-    postHocTable$addFootnote(symbol = "<em>Note.</em>", message = footnote)
-    postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
-
-    if (is.null(model$models))
+    if (is.null(model$models)) { # only show empty table
+      postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
       next
-
+    }
+    
     fixed <- unlist(c(options$fixedFactors, sapply(options$repeatedMeasuresFactors, `[[`, "name")))
     if (model$analysisType == "RM-ANOVA" && posthoc.var %in% fixed && !posthoc.var %in% options$betweenSubjectFactors) {
       variable.levels <- options$repeatedMeasuresFactors[[which(lapply(options$repeatedMeasuresFactors, function(x) x$name) == posthoc.var)]]$levels
@@ -910,7 +922,7 @@
     pairs <- utils::combn(variable.levels, 2)
 
     allSplits <- split(dataset[[.v(dependent)]], dataset[[.v(posthoc.var)]])
-    
+
     errMessages <- NULL
     for (i in 1:ncol(pairs)) {
 
@@ -937,8 +949,8 @@
         } else {
 
           pH0 <- 0.5^(2 / length(variable.levels))
-          logBF <- ttest@bayesFactor$bf
-          if (options$bayesFactorType == "BF01") {
+          logBF <- ttest@bayesFactor$bf # <- log(BF10)
+          if (options[["bayesFactorType"]] == "BF01") {
             priorOdds <- pH0 / (1 - pH0)
             logBF <- -logBF
           } else {
@@ -966,14 +978,13 @@
     }
 
     if (!is.null(errMessages)) {
-      print(errMessages)
-      # postHocTable$.__enclos_env__$private$jaspObject$setRowNames(paste0("row", 1:ncol(pairs)))
       for (i in seq_along(errMessages))
         postHocTable$addFootnote(symbol    = "<em>Note.</em>", 
                                  message   = errMessages[[i]][["message"]], 
                                  row_names = paste0("row", errMessages[[i]][["row_names"]]))
       
     }
+    postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
   }
   return()
 }
@@ -2215,6 +2226,8 @@
   jaspContainer[["SMIposteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$position <- 2
   posteriorPlotContainer$dependOnOptions("singleModelPosteriorPlot")
+  posteriorPlotContainer$setOptionMustContainDependency("singleModelGroupPosterior", 
+                                                        options[["singleModelGroupPosterior"]])
   if (is.null(model) || posteriorPlotContainer$getError()) {
     posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Posterior distribution", width = 400, height = 400,
                                                             plot = NULL)

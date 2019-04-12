@@ -150,7 +150,7 @@ Form
                     text: qsTr("Marginal posteriors");    name: "singleModelPosteriorPlot"
                     RadioButtonGroup
                     {
-                        name: "groupPosterior"
+                        name: "singleModelGroupPosterior"
                         RadioButton { value: "grouped";		text: qsTr("Group levels in single plot"); checked: true}
                         RadioButton { value: "individual";	text: qsTr("Individual plot per level")                 }
                     }
