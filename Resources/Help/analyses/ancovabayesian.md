@@ -56,7 +56,8 @@ To create a descriptive plot, place the independent variable on the horizontal a
 #### Advanced Options: 
 - Prior: Here it is possible to set the prior distributions for the fixed and random effect sizes. 
     - r scale fixed effects: The shape parameter of the prior distribution for the fixed effects. This is set to 0.5 by default, but this can be changed into the desired value.  
-    - r scale random effects: The shape parameter of the prior distribution for the random effects. This is set to 1 by default, but this can be changed into the desired value.  
+    - r scale random effects: The shape parameter of the prior distribution for the random effects. This is set to 1 by default, but this can be changed into the desired value. 
+    - r scale covariates: The shape parameter of the prior distirbution for the covariates. This is set to 0.354 by default, but this can be changed into the desired value. 
 - Samples: Here, it is possible to set the sample size used to calculate the posterior and error %.  
     - Auto: If this option is selected, a sample size of 10000 will be used. This option is selected by default. 
     - Manual: If this option is selected, the sample size can be manually specified. When selecting this option a sample size of 10000 is used by default. 
