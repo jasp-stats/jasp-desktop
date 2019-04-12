@@ -2733,11 +2733,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       guide <- ggplot2::guide_legend(nrow = nrowsInLegend)
       p <- p + ggplot2::guides(fill = guide, shape = guide, color = guide)
       
-      p <- JASPgraphs::themeJasp(p, legend.position="right") + ggplot2::theme(
-        # should probably become JASPgraphs defaults
-        legend.key.size = grid::unit(1, "cm"), 
-        legend.justification = "top"
-      )
+      p <- JASPgraphs::themeJasp(p, legend.position="right")
       
       if (nPlots > 1) {
         descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")

@@ -11,6 +11,7 @@ themeJasp = function(graph,
                      horizontal = FALSE,
                      legend.title = "auto",
                      legend.position = getGraphOption("legend.position"),
+                     legend.justification = "top",
                      axisTickLength = getGraphOption("axisTickLength"),
                      axisTickWidth = getGraphOption("axisTickWidth"),
                      xyMargin = "auto") {
@@ -113,7 +114,7 @@ themeJasp = function(graph,
 
     graph <- graph + themeJaspRaw(legend.position = legend.position, xMargin = xMargin, yMargin = yMargin,
                                   axis.title.cex = axis.title.cex, family = family,
-                                  fontsize = fontsize, legend.title = legend.title,
+                                  fontsize = fontsize, legend.title = legend.title, legend.justification = legend.justification,
                                   axisTickLength = axisTickLength, axisTickWidth = axisTickWidth)
 
     return(graph)
@@ -131,6 +132,7 @@ themeJaspRaw = function(legend.position = "none",
                         axisTickLength = getGraphOption("axisTickLength"),
                         axisTickWidth = getGraphOption("axisTickWidth"),
                         fontsize = getGraphOption("fontsize"),
+                        legend.justification = "top",
                         legend.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5),
                         Xvjust = NULL, Yvjust = NULL) {
 
@@ -146,8 +148,8 @@ themeJaspRaw = function(legend.position = "none",
         # axis.ticks.y = y_custom(size = 1.25, color = "black"),
         axis.title = ggplot2::element_text(family = family, size = axis.title.cex*fontsize),
         axis.ticks = ggplot2::element_line(size = axisTickWidth, color = "black"), # tick width
-        axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15)),
-        axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10)),
+        axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15, b = 5)),
+        axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10, l = 5)),
         axis.text.x = ggplot2::element_text(family = family, colour = "black", size = fontsize,
                                             margin = ggplot2::margin(t = 7), vjust = Xvjust),
         axis.text.y = ggplot2::element_text(family = family, colour = "black", size = fontsize,
@@ -156,8 +158,9 @@ themeJaspRaw = function(legend.position = "none",
         # legend
         legend.background     = element_rect(color = "transparent", fill = "transparent"),
         legend.box.background = element_rect(color = "transparent", fill = "transparent"),
+        legend.justification  = legend.justification,
         legend.key            = element_rect(color = "transparent", fill = "transparent"),
-        legend.key.size       = unit(2, "cm"),
+        legend.key.size       = unit(1, "cm"), 
         legend.text           = element_text(family = family, size = legend.cex*fontsize),
         legend.title          = legend.title, # ggplot2::element_text(family = family, size = fontsize, hjust = 0.5),
         legend.position       = legend.position,
