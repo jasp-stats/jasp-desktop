@@ -100,7 +100,7 @@ Because the jasp-required-files folder contains binary files as well as R packag
 	
 	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder. From the buildfolder or Jasp root folder:  
 	\> cd <JASP>\build-release-64  
-	\> mklink /D R ..\ jasp-required-files\R  
+	\> mklink /D R ..\jasp-required-files\R  
 	\> cd \<JASP\>    
 	\> mklink /D boost_1_64_0 .\jasp-required-files\boost_1_64_0  
 		
@@ -124,9 +124,9 @@ You will now have QtCreator in \<QTINSTALLDIR\>\Tools\QtCreator\bin\qtcreator.ex
 For following updates of Qt you can use the MaintenanceTool for Qt in \<QTINSTALLDIR\>\MaintenanceTool.exe (and in your start menu).  
 
 
-7. Install Microsoft Visual Studio 2017  
+7. Install Microsoft Visual Studio 2017 (not 2019)
 	Go to https://www.visualstudio.com/downloads/  
-	Download Community version  
+	Download Community version
 	Start vs_community_.. from your download folder.  
 	Choose all the default options.	 
 	For components to install only choose the Desktop development with C++ option:  
