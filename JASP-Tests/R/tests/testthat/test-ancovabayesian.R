@@ -19,7 +19,7 @@ test_that("Main table results match", {
   options$fixedFactors <- "facGender"
   options$randomFactors <- "facFive"
   options$covariates <- "contGamma"
-  options$priorCovariates <- 0.3
+  options$priorCovariatesEffects <- 0.3
   options$priorRandomEffects <- 1.2
   options$modelTerms <- list(
     list(components="facGender", isNuisance=FALSE),

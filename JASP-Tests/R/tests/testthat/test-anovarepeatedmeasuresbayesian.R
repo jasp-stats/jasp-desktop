@@ -27,7 +27,7 @@ test_that("Main table results match", {
     list(components="contcor1", isNuisance=FALSE),
     list(components=c("RM Factor 1", "facGender"), isNuisance=FALSE)
   )
-  options$priorCovariates <- 0.3
+  options$priorCovariatesEffects <- 0.3
   options$priorFixedEffects <- 0.8
   options$priorRandomEffects <- 0.8
 

@@ -23,14 +23,6 @@ import JASP.Widgets 1.0
 Form
 {
 	
-//	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
-//	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
-//	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 430 }
-//	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"    ; defaultValue: 350 }
-	
-//	CheckBox { visible: false; name: "posteriorEstimates";  }
-//	CheckBox { visible: false; name: "posteriorDistribution";  }
-	
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		

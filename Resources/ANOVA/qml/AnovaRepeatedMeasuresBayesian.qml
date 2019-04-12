@@ -22,15 +22,6 @@ import JASP.Widgets 1.0
 Form
 {
 
-//	PercentField { visible: false; name: "posteriorEstimatesCredibleIntervalInterval"   ; defaultValue: 95 }
-//	IntegerField { visible: false; name: "posteriorEstimatesMCMCIterations"             ; defaultValue: 1 }
-
-//	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"             ; defaultValue: 300 }
-//	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"           ; defaultValue: 300 }
-//	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"              ; defaultValue: 450 }
-//	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"            ; defaultValue: 350 }
-
-
 	VariablesForm
 	{
 		height: 520
@@ -134,8 +125,8 @@ Form
     {
         text: qsTr("Single Model Inference")
 
-//        GridLayout
-//        {
+        GridLayout
+        {
 
             GroupBox
             {
@@ -159,7 +150,7 @@ Form
                 CheckBox { text: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
-//        }
+        }
 
         VariablesForm
         {

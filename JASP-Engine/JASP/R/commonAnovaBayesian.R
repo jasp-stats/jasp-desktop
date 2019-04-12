@@ -125,16 +125,11 @@
   fixedFactors  <- options$fixedFactors
 
   if (analysisType == "RM-ANOVA") {
-    rscaleCont <- options$priorCovariates
+    rscaleCont <- options[["priorCovariatesEffects"]]
     modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
 
     dependent     <- "dependent"
     randomFactors <- "subject"
-
-    # idx <- match(c("dependent", "subject"), colnames(dataset))
-    # colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
-    # if (length(colnames(dataset)[-idx]) > 0)
-    #   fixedFactors <- colnames(dataset)[-idx]
 
   } else if (analysisType == "ANCOVA") {
     rscaleCont <- options[["priorCovariatesEffects"]]
