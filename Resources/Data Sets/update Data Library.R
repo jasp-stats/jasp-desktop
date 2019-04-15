@@ -187,12 +187,13 @@ debugdata <- data.frame(name = "Debug Dataset (JASP Team, 2017)",
                         path = "../debug.csv",
                         description = "For testing. Readme: is.gd/jaspdata",
                         kind = "file",
+						debug ="true",
                         children = "NULL")
 
 index$children <- rbind(index$children, debugdata)
 
 jsonIndex <- jsonlite::toJSON(index, pretty = TRUE)
-write(jsonIndex, "indexdebug.json")
+#write(jsonIndex, "indexdebug.json")
 
 
 ############################
