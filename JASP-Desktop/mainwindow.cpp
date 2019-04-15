@@ -1167,7 +1167,7 @@ void MainWindow::startDataEditorHandler()
 
 		}
 		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
-		//connect(event, SIGNAL(completed(FileEvent*)), _backStage, SLOT(setSyncFile(FileEvent*)));
+		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
 		event->setPath(path);
 		_loader.io(event, _package);
 		showProgress();

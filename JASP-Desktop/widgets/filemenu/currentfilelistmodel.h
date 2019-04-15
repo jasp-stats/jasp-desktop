@@ -21,7 +21,8 @@ signals:
 	void syncFile(FileEvent *event);
 
 public slots:
-	void syncFile(const QString& path);	
+	void openFile(const QString& path) override;
+
 	
 	
 private:

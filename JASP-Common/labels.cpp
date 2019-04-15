@@ -176,9 +176,14 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 	
 	for (auto elt : valuesToAdd)
 	{
-		maxLabelKey++;
-		add(maxLabelKey, elt.second, true);
-		result[elt.first] = maxLabelKey;
+		const std::string& newLabel = elt.first;
+		const std::string& shortLabel = elt.second;
+		if (mapValuesToAdd.find(shortLabel) != mapValuesToAdd.end())
+		{
+			maxLabelKey++;
+			add(maxLabelKey, shortLabel, true);
+			result[newLabel] = maxLabelKey;
+		}
 	}
 
 	for (Label& label : _labels)
