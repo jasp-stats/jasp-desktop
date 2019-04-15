@@ -55,6 +55,11 @@ Analysis::~Analysis()
 	delete _options;
 }
 
+void Analysis::clearOptions()
+{
+	_options->clear();
+}
+
 bool Analysis::checkAnalysisEntry()
 {
 	try
@@ -104,6 +109,11 @@ void Analysis::imageEdited(const Json::Value & results)
 	emit imageEditedSignal(this);
 }
 
+
+void Analysis::reload()
+{
+	_analyses->reload(this);
+}
 
 void Analysis::refresh()
 {

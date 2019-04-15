@@ -161,12 +161,29 @@ void Analyses::clear()
 	emit countChanged();
 }
 
+void Analyses::reload(Analysis *analysis)
+{
+	size_t i = 0;
+	for (; i < _orderedIds.size(); i++)
+		if (_analysisMap[_orderedIds[i]] == analysis) break;
+
+	if (i < _orderedIds.size())
+	{
+		int ind = int(i);
+		// Force the loader to load again the QML file
+		beginRemoveRows(QModelIndex(), ind, ind);
+		endRemoveRows();
+		beginInsertRows(QModelIndex(), ind, ind);
+		endInsertRows();
+	}
+	else
+		std::cout << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+}
+
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
 	emit emptyQMLCache();
-	beginResetModel();
-	endResetModel();
-	selectAnalysis(analysis);
+	reload(analysis);
 }
 
 Json::Value Analyses::asJson() const
@@ -184,11 +201,11 @@ void Analyses::removeAnalysis(Analysis *analysis)
 {
 	size_t id = analysis->id();
 
-	long indexAnalysis = -1;
+	int indexAnalysis = -1;
 	for(size_t i=_orderedIds.size(); i>0; i--)
 		if(_orderedIds[i-1] == id)
 		{
-			indexAnalysis = long(i) - 1;
+			indexAnalysis = int(i) - 1;
 			break;
 		}
 

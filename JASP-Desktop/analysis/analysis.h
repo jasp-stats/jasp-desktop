@@ -54,6 +54,7 @@ public:
 	virtual ~Analysis();
 
 	void				resetOptionsFromJASPFile()			{ _optionsDotJASP.clear();	}
+	void				clearOptions();
 	Options				*options()					const	{ return _options;			}
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
@@ -117,6 +118,7 @@ public:
 			AnalysisForm	*	form()				const	{ return _analysisForm;					}
 
 			void		refresh();
+			void		reload();
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
