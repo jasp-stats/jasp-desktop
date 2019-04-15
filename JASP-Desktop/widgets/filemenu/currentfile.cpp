@@ -14,8 +14,7 @@ CurrentFile::CurrentFile(QObject *parent): FileMenuObject(parent)
 	_currentFileType = Utils::FileType::unknown;
 	_currentFileReadOnly = false;
 	
-	_currentFileListModel->setCurrentFilePath(_currentFilePath);
-	
+	_currentFileListModel->setCurrentFilePath(_currentFilePath);	
 }
 
 CurrentFile::~CurrentFile()
@@ -33,6 +32,7 @@ void CurrentFile::setCurrentFilePath(const QString &path)
 void CurrentFile::setCurrentDataFilePath(const QString &path)
 {
 	_currentDataFilePath = path;
+	_currentFileListModel->setCurrentFilePath(_currentDataFilePath);
 }
 
 void CurrentFile::setCurrentFileType(const Utils::FileType &type)
@@ -100,7 +100,7 @@ QString CurrentFile::getCurrentDataFolder()
 
 QString CurrentFile::getHeaderText()
 {
-	return QString("Double-click on the file below to synchronize or use " + getShortCutKey() + "-Y");
+	return QString("Click on the file below to synchronize or use " + getShortCutKey() + "-Y");
 }
 
 
@@ -114,6 +114,8 @@ void CurrentFile::setListModel(CurrentFileListModel * listModel)
 {
 	if (_currentFileListModel == listModel)
 		return;
+
+	connect(_currentFileListModel, &CurrentFileListModel::syncFile, this, &CurrentFile::syncFile);
 
 	_currentFileListModel = listModel;
 	emit listModelChanged(_currentFileListModel);
