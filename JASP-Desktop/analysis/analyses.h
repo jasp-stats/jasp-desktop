@@ -62,6 +62,7 @@ public:
 
 	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
+	void		reload(Analysis* analysis);
 
 	void		setAnalysesUserData(Json::Value userData);
 	void		refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames);
