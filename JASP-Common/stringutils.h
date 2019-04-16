@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 class stringUtils
 {
@@ -79,6 +80,29 @@ public:
 	inline static std::string toLower(std::string input)
 	{
 		std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+		return input;
+	}
+
+	inline static std::string replaceBy(std::string input, const std::string & replaceThis, const std::string & withThis)
+	{
+		size_t len = replaceThis.size();
+
+		for(size_t curPos = 0; curPos + len < input.size() && curPos != std::string::npos; curPos = input.find_first_of(replaceThis, curPos))
+		{
+			std::cout << "curPos: " << curPos << " input: " << input << std::endl;
+			input.replace(curPos, len, withThis);
+			curPos += len;
+		}
+
+		return input;
+	}
+
+	inline static std::string escapeHtmlStuff(std::string input)
+	{
+		input = replaceBy(input, "<", "&lt;");
+		input = replaceBy(input, ">", "&gt;");
+		input = replaceBy(input, "&", "&amp;");
+
 		return input;
 	}
 

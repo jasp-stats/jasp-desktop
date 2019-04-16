@@ -220,7 +220,7 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 		out << "export(" << analysis->function() << ")\n";
 
 	for(Json::Value & pkgV : _requiredPackages)
-		out << standardRIndent << "import('" << pkgV["package"].asString() << "');\n";
+		out << standardRIndent << "import('" << ( _requiredPackages.isArray() ? pkgV.asString() : pkgV["package"].asString()) << "');\n";
 
 	return out.str();
 }
