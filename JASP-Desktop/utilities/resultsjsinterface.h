@@ -53,7 +53,7 @@ public:
 	QVariant	&getAllUserData();
 
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
-	double			zoom()				const { return _webViewZoom;	}
+	double			zoom()				const { return _webEngineZoom;	}
 	bool			welcomeShown()		const { return _welcomeShown;	}
 
 	Q_INVOKABLE void purgeClipboard();
@@ -97,7 +97,7 @@ signals:
 	void getAllUserDataCompleted();
 	void resultsPageUrlChanged(QUrl resultsPageUrl);
 	void runJavaScript(QString js);
-	void zoomChanged(double zoom);
+	void zoomChanged();
 	void resultsPageLoadedSignal();
 	void welcomeShownChanged(bool welcomeShown);
 
@@ -109,6 +109,8 @@ public slots:
 	void setResultsPageUrl(QString resultsPageUrl);
 	void resultsPageLoaded(bool success);
 	void setWelcomeShown(bool welcomeShown);
+	void setZoomInWebEngine();
+
 private:
 	void setGlobalJsValues();
 	QString escapeJavascriptString(const QString &str);
@@ -118,7 +120,7 @@ private slots:
 	void welcomeScreenIsClearedHandler(bool) { setWelcomeShown(false); }
 
 private:
-	double			_webViewZoom = 1.0;
+	double			_webEngineZoom = 1.0;
 	Json::Value		_resultsMeta;
 	QVariant		_allUserData;
 	QString			_resultsPageUrl = "qrc:///core/index.html";

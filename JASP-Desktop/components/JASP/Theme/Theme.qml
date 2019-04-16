@@ -112,7 +112,7 @@ QtObject {
 	readonly property real ribbonScaleHovered:			1.1
 
 	readonly property int menuItemHeight:               20  * uiScale
-	readonly property int menuHeaderHeight:             30  * uiScale
+	readonly property int menuHeaderHeight:             40  * uiScale
 	readonly property real menuSpacing:					1   * uiScale
 	readonly property real menuPadding:					10  * uiScale
 

@@ -29,6 +29,8 @@ Item
 	property var props	: undefined
 	property bool hasIcons: true
 
+	property real _iconPad: 5 * Theme.uiScale
+
 	onPropsChanged:
 	{
 		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
@@ -63,7 +65,8 @@ Item
 
 			onItemAdded:
 			{
-				if (index === 0) {
+				if (index === 0)
+				{
 					menuRectangle.width = 0;
 					menuRectangle.height = 0;
 				}
@@ -71,7 +74,8 @@ Item
 				menuRectangle.width = Math.max(item.width, menuRectangle.width);
 				menuRectangle.height += (item.height + Theme.menuSpacing)
 
-				if (index === count - 1) {
+				if (index === count - 1)
+				{
 					menuRectangle.height += (Theme.menuPadding - Theme.menuSpacing)
 					menu.resizeElements(menuRectangle.width);
 				}
@@ -105,12 +109,12 @@ Item
 						Rectangle
 						{
 							id		: menuItemImage
-							height	: menuItem.height - 5 * Theme.uiScale // 5 = smallerBy
-							width	: menuItem.height - 5 * Theme.uiScale
+							height	: menuItem.height - menu._iconPad
+							width	: menuItem.height - menu._iconPad
 							color	: menuItem.color
 
 							anchors.left			: parent.left
-							anchors.leftMargin		: 5 * Theme.uiScale
+							anchors.leftMargin		: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
 
 							Image
@@ -132,7 +136,7 @@ Item
 							verticalAlignment	: Text.AlignVCenter
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
-							anchors.leftMargin	: 5 * Theme.uiScale
+							anchors.leftMargin	: menu._iconPad
 						}
 
 						MouseArea
@@ -155,7 +159,7 @@ Item
 					{
 						id		: menuItem
 						width	: initWidth
-						height	: Theme.menuItemHeight
+						height	: Theme.menuHeaderHeight
 						color	: Theme.white
 
 						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * Theme.uiScale
@@ -164,12 +168,12 @@ Item
 						Rectangle
 						{
 							id		: menuItemImage
-							height	: menuItem.height - 5 * Theme.uiScale // 5 = smallerBy
-							width	: menuItem.height - 5 * Theme.uiScale
+							height	: menuItem.height - menu._iconPad
+							width	: menuItem.height - menu._iconPad
 							color	: Theme.white
 
 							anchors.left			: parent.left
-							anchors.leftMargin		: 5 * Theme.uiScale
+							anchors.leftMargin		: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
 
 							Image
@@ -187,7 +191,7 @@ Item
 							text				: displayText
 							font				: Theme.fontLabel
 							anchors.left		: menuImageSource ? menuItemImage.right : menuItem.left
-							anchors.leftMargin	: 5 * Theme.uiScale
+							anchors.leftMargin	: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
 						}
 					}
@@ -196,11 +200,7 @@ Item
 				Component
 				{
 					id	: menuSeparator
-
-					ToolSeparator
-					{
-						orientation	: Qt.Horizontal
-					}
+					ToolSeparator { orientation	: Qt.Horizontal }
 				}
 			}
 		}

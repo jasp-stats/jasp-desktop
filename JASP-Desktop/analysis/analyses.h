@@ -134,6 +134,7 @@ signals:
 	void dataSetChanged();
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
+	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(QString columnName);
 
 

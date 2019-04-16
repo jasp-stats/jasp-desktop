@@ -40,9 +40,6 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynami
 		_isGroupTitle = true;
 	else
 		_isAnalysis = true;
-
-	if (_isGroupTitle && _icon.empty())
-		_icon = "large-arrow-right.png";
 }
 
 AnalysisEntry::AnalysisEntry() :
@@ -70,7 +67,7 @@ std::string AnalysisEntry::qmlFilePath() const
 std::string AnalysisEntry::icon() const
 {
 	if(_icon == "")
-		return "";
+		return _isGroupTitle ? "qrc:/icons/large-arrow-right.png" : "";
 
 	return _dynamicModule != nullptr ? "file:" + _dynamicModule->iconFilePath(_icon) : "qrc:/icons/" + _icon;
 }

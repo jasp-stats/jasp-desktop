@@ -71,6 +71,7 @@ signals:
 	void				resultsChangedSignal(	Analysis * analysis);
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
+	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(	QString columnName);
 
 	void				helpFileChanged(QString helpFile);
@@ -162,8 +163,9 @@ protected:
 
 private:
 	void					optionsChangedHandler(Option *option);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
-	void					requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(QString::fromStdString(columnName)); }
+	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
+	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(QString::fromStdString(columnName), this, colType); }
+	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(QString::fromStdString(columnName)); }
 
 protected:
 	Status					_status			= Initializing;

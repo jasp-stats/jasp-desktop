@@ -481,6 +481,7 @@ void DynamicModules::devModCopyDescription()
 			QFile	srcFileChanged(src.absoluteFilePath()),
 					dstFileChanged(dst.absoluteFilePath());
 
+			this->_modules[this->developmentModuleName()]->reloadDescription();
 			this->regenerateDeveloperModuleRPackage();
 		}
 		else

@@ -86,6 +86,7 @@ public slots:
 				void				computeColumnFailed(QString columnName, QString error);
 				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
 				ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis * analysis);
+				void				requestColumnCreation(QString columnName, Analysis * analysis, int columnType);
 				void				requestComputedColumnDestruction(QString columnName);
 				void				recomputeColumn(std::string columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);

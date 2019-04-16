@@ -43,19 +43,24 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	//_analysisMenu = new QMenu(_mainWindow);
 	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
 
-	connect(this, &ResultsJsInterface::welcomeScreenIsCleared, this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
+	connect(this, &ResultsJsInterface::welcomeScreenIsCleared,	this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
+	connect(this, &ResultsJsInterface::zoomChanged,				this, &ResultsJsInterface::setZoomInWebEngine);
+
+	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
 }
 
 void ResultsJsInterface::setZoom(double zoom)
 {
-	if(zoom == _webViewZoom)
+	if(zoom == _webEngineZoom)
 		return;
 
-	_webViewZoom = zoom;
-	emit zoomChanged(zoom);
+	_webEngineZoom = zoom;
+	emit zoomChanged();
+}
 
-	QString js = "window.setZoom(" + QString::number(zoom) + ")";
-	emit runJavaScript(js);
+void ResultsJsInterface::setZoomInWebEngine()
+{
+	emit runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
 }
 
 
@@ -71,7 +76,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 
 		emit resultsPageLoadedSignal();
 
-		setZoom(Settings::value(Settings::UI_SCALE).toDouble());
+		emit zoomChanged();
 	}
 }
 

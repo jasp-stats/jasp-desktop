@@ -11,6 +11,7 @@ ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent
 	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnUsesRCodeChanged		);
 	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnNameSelectedChanged	);
 	connect(_analyses,	&Analyses::requestComputedColumnCreation,		this, &ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
+	connect(_analyses,	&Analyses::requestColumnCreation,				this, &ComputedColumnsModel::requestColumnCreation,				Qt::UniqueConnection);
 	connect(_analyses,	&Analyses::requestComputedColumnDestruction,	this, &ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 	connect(_analyses,	&Analyses::analysisRemoved,						this, &ComputedColumnsModel::analysisRemoved					);
 
@@ -402,15 +403,21 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	}
 	while (!success);
 
-	//if(theData != _package->dataSet())
+	bool createActualComputedColumn = computeType != ComputedColumn::computedType::analysisNotComputed;
 
-	ComputedColumn  * createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
-	createdColumn->setAnalysis(analysis);
+	ComputedColumn  * createdColumn = nullptr;
+
+	if(createActualComputedColumn)
+	{
+		createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
+		createdColumn->setAnalysis(analysis);
+	}
 
 	emit dataSetChanged(_package->dataSet());
 	emit refreshData();
 
-	setLastCreatedColumn(name);
+	if(createActualComputedColumn)
+		setLastCreatedColumn(name);
 
 	return createdColumn;
 }
@@ -421,6 +428,12 @@ ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(QString col
 		return nullptr;
 
 	return createComputedColumn(columnName, (int)Column::ColumnTypeScale, ComputedColumn::computedType::analysis, analysis);
+}
+
+void ComputedColumnsModel::requestColumnCreation(QString columnName, Analysis * analysis, int columnType)
+{
+	if(_package->isColumnNameFree(columnName.toStdString()))
+		createComputedColumn(columnName, columnType, ComputedColumn::computedType::analysisNotComputed, analysis);
 }
 
 
