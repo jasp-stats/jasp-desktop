@@ -238,7 +238,7 @@ At this point we start using `jaspResults` which was passed into our function at
 	    .binomCheckErrors(dataset, options, ready)
     }
     
-    if (is.null(jaspResults[["binomialTable"]])
+    if (is.null(jaspResults[["binomialTable"]]))
       .binomTableMain(jaspResults, dataset, options, ready)
   ```
 
@@ -253,7 +253,7 @@ Unfortunately, we cannot just create a data.frame and call it a day. There is so
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
   ```
   
@@ -266,7 +266,7 @@ Now we need to specify the analysis options on which the table depends. If the v
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
     
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -282,7 +282,7 @@ Many analyses in JASP are based on the work of others and it is important we giv
 	<summary>Code</summary>
 	
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
     
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -310,7 +310,7 @@ We'll also have to specify what columns our table will have. Some columns are al
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -344,7 +344,7 @@ Another setting you may consider tweaking is whether JASP should display all col
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -383,7 +383,7 @@ Optionally, we can tell JASP how many rows (and columns if you did not specify t
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -428,7 +428,7 @@ If we wish to display a message about the table output we can do so with a footn
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -475,7 +475,7 @@ The markup part of the table is complete and we can now give it to `jaspResults`
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -528,7 +528,7 @@ If we are indeed ready, then it is time to fill the table with computed results.
 	<summary>Code</summary>
   
   ```r
-  .binomTableMain(jaspResults, dataset, options, ready) {
+  .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
@@ -598,7 +598,7 @@ Oftentimes, we need to add one row for each dependent variable or for each predi
                             p             = p,
                             VovkSellkeMPR = vovkSellkeMPR,
                             lowerCI       = lowerCI,
-                            upperCI       = upperCI
+                            upperCI       = upperCI)
     }
     
     return()
@@ -620,7 +620,7 @@ It's entirely possible that an analysis still crashes even after our error check
 
       results <- try(<calculate our results with stats::binom.test>)
       
-      if (inherits(results, "try-error") {
+      if (inherits(results, "try-error")) {
         errorMessage <- as.character(results)
         binomialTable$setError(errorMessage)
         return()
@@ -634,7 +634,7 @@ It's entirely possible that an analysis still crashes even after our error check
                             p             = results$p,
                             VovkSellkeMPR = results$vovkSellkeMPR,
                             lowerCI       = results$lowerCI,
-                            upperCI       = results$upperCI
+                            upperCI       = results$upperCI)
     }
     
     return()
@@ -663,10 +663,10 @@ We have one table so far, let's create a plot, too. This will be the final outpu
       .binomCheckErrors(dataset, options, ready)
     }
     
-    if (is.null(jaspResults[["binomialTable"]])
+    if (is.null(jaspResults[["binomialTable"]]))
       .binomTableMain(jaspResults, dataset, options, ready)
       
-    if (is.null(jaspResults[["binomialPlot"]])
+    if (is.null(jaspResults[["binomialPlot"]]))
       .binomPlotDescriptives(jaspResults, dataset, options, ready)
       
     return()
@@ -1025,7 +1025,7 @@ There are multiple approaches to the way you can write an analysis (e.g., comput
                                   p             = p,
                                   VovkSellkeMPR = vovkSellkeMPR,
                                   lowerCI       = lowerCI,
-                                  upperCI       = upperCI
+                                  upperCI       = upperCI)
     }
     
     return(results)
@@ -1092,7 +1092,7 @@ Time to compute results that we will be able to store in the state:
                                   p             = p,
                                   VovkSellkeMPR = vovkSellkeMPR,
                                   lowerCI       = lowerCI,
-                                  upperCI       = upperCI
+                                  upperCI       = upperCI)
     } # end for-loop
   ```
   
@@ -1123,7 +1123,7 @@ We computed our results and are ready to use them to fill any table and plot tha
                                   p             = p,
                                   VovkSellkeMPR = vovkSellkeMPR,
                                   lowerCI       = lowerCI,
-                                  upperCI       = upperCI
+                                  upperCI       = upperCI)
     }
     
     binomResults$object <- results
@@ -1176,7 +1176,7 @@ At this point we have the functionality to compute the binomial results whenever
     if (!ready)
       return()
       
-    if (is.null(jaspResults[["binomResults"]])
+    if (is.null(jaspResults[["binomResults"]]))
       .binomComputeResults(jaspResults, dataset, options)
     
     binomResults <- jaspResults[["binomResults"]]$object
@@ -1208,7 +1208,7 @@ And now we can call `.binomFillTableMain()` with the added `binomResults` argume
                             p             = results$p,
                             VovkSellkeMPR = results$vovkSellkeMPR,
                             lowerCI       = results$lowerCI,
-                            upperCI       = results$upperCI
+                            upperCI       = results$upperCI)
     }
     
     return()
