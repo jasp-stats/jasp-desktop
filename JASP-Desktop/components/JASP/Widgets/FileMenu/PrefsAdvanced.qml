@@ -169,7 +169,7 @@ Item {
 				CheckBox
 				{
 					id:					developerMode
-					label:				qsTr("Developer mode")
+					label:				qsTr("Developer mode (Beta version)")
 					checked:			preferencesModel.developerMode
 					onCheckedChanged:	preferencesModel.developerMode = checked
 					toolTip:			"To use JASP Modules enable this option"
