@@ -62,7 +62,7 @@ Popup
 			RectangularButton
 			{
 				id:					browseButton
-				iconSource:			"qrc:///icons/folder.png"
+				iconSource:			"qrc:///icons/folder.svg"
 				showIconAndText:	true
 				width:				height
 				height:				installButton.height

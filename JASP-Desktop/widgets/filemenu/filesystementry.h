@@ -58,7 +58,7 @@ public:
 			{ FileSystemEntry::CSV,		"qrc:/icons/spreadsheet.svg"	},
 			{ FileSystemEntry::SPSS,	"qrc:/icons/spreadsheet.svg"	},
 			{ FileSystemEntry::Other,	"qrc:/icons/spreadsheet.svg"	},
-			{ FileSystemEntry::Folder,	"qrc:/icons/folder.png"			} };
+			{ FileSystemEntry::Folder,	"qrc:/icons/folder.svg"			} };
 
 		return icons;
 	}

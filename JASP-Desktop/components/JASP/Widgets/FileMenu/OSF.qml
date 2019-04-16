@@ -97,8 +97,6 @@ Item
 		visible	: fileExportDialog.visible && loggedin
 
 		// Icons made by "https://www.flaticon.com/authors/smashicons"
-		// iconSource		: "qrc:///icons/create-folder.png"
-		// showIconAndText	: true
 
 		anchors.right		: menuHeader.right
 		anchors.top			: firstSeparator.bottom
