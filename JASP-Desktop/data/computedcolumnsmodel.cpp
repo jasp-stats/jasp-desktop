@@ -12,6 +12,7 @@ ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent
 	connect(this,		&ComputedColumnsModel::datasetLoadedChanged,	this, &ComputedColumnsModel::computeColumnNameSelectedChanged	);
 	connect(_analyses,	&Analyses::requestComputedColumnCreation,		this, &ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
 	connect(_analyses,	&Analyses::requestComputedColumnDestruction,	this, &ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
+	connect(_analyses,	&Analyses::analysisRemoved,						this, &ComputedColumnsModel::analysisRemoved					);
 
 }
 
@@ -470,4 +471,16 @@ void ComputedColumnsModel::setLastCreatedColumn(QString lastCreatedColumn)
 
 	_lastCreatedColumn = lastCreatedColumn;
 	emit lastCreatedColumnChanged(_lastCreatedColumn);
+}
+
+void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
+{
+	std::set<QString> colsToRemove;
+
+	for(auto * col : *_computedColumns)
+		if(col->analysis() == analysis)
+			colsToRemove.insert(QString::fromStdString(col->name()));
+
+	for(const QString & col : colsToRemove)
+		requestComputedColumnDestruction(col);
 }

@@ -398,10 +398,15 @@ std::string	DynamicModule::qmlFilePath(const std::string & qmlFileName)	const
 	else				return moduleRLibrary().toStdString() + "/" + _name + "/qml/" + qmlFileName;
 }
 
-std::string	DynamicModule::iconFilePath()	const
+std::string DynamicModule::iconFolder() const
 {
-	if(_isDeveloperMod)	return _modulePackage + "/inst/icons/" + _icon;
-	else				return moduleRLibrary().toStdString() + "/" + _name + "/icons/" + _icon;
+	if(_isDeveloperMod)	return _modulePackage + "/inst/icons/";
+	else				return moduleRLibrary().toStdString() + "/" + _name + "/icons/";
+}
+
+std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
+{
+	return iconFolder() + (whichIcon == "" ? _icon : whichIcon);
 }
 
 QString DynamicModule::helpFolderPath() const

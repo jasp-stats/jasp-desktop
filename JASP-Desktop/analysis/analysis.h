@@ -111,6 +111,7 @@ public:
 			int					revision()			const	{ return _revision;						}
 			bool				isVisible()			const	{ return _visible;						}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;				}
+			QString				helpFile()			const	{ return _helpFile;						}
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;				}
 	const	Json::Value		&	getImgResults()		const	{ return _imgResults;					}
 			DataSet			*	getDataSet()		const;
@@ -133,7 +134,8 @@ public:
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isInited()			const { return status() == Inited;		}
 	bool isFinished()		const { return status() == Complete || status() == Error || status() == Exception; }
-	
+
+
 	void initialized(AnalysisForm* form, bool isNewAnalysis);
 
 	performType				desiredPerformTypeFromAnalysisStatus() const;
@@ -145,25 +147,14 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
 	void					runScriptRequestDone(const QString& result, const QString& controlName);	
 
-	QString helpFile() const
-	{
-		return m_helpFile;
-	}
+
 
 public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
-
-
+	void					setHelpFile(QString helpFile);
 	
-	void setHelpFile(QString helpFile)
-	{
-		if (m_helpFile == helpFile)
-			return;
 
-		m_helpFile = helpFile;
-		emit helpFileChanged(m_helpFile);
-	}
 
 protected:
 	int						callback(Json::Value results);
@@ -205,7 +196,7 @@ private:
 	AnalysisForm*			_analysisForm	= nullptr;	
 
 	std::string				_codedReferenceToAnalysisEntry = "";
-	QString m_helpFile;
+	QString					_helpFile;
 };
 
 #endif // ANALYSIS_H

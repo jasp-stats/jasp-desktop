@@ -37,7 +37,7 @@ public:
 	std::string		title()					const { return _title;				}
 	std::string		function()				const { return _function;			}
 	std::string		qml()					const { return _qml;				}
-	std::string		icon()					const { return _icon;				}
+	std::string		icon()					const;
 	bool			isSeparator()			const { return _isSeparator;		}
 	bool			isGroupTitle()			const { return _isGroupTitle;		}
 	bool			isAnalysis()			const { return _isAnalysis;			}

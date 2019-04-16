@@ -33,18 +33,15 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 
 	Modules::AnalysisEntry* entry = _analysisEntries.at(index.row());
 
-	if	(role == DisplayRole)
-		return QString::fromStdString(entry->title());
-	else if (role == AnalysisFunctionRole)
-		return QString::fromStdString(entry->function());
-	else if (role == MenuImageSourceRole)
-		return entry->icon().empty() ? QString() : (QString::fromStdString((_ribbonButton->isDynamic() ? "file:" : "qrc:/icons/") + entry->icon()));
-	else if (role == IsSeparatorRole)
-		return entry->isSeparator();
-	else if (role == isGroupTitleRole)
-		return entry->isGroupTitle();
-
-	return QVariant();
+	switch(role)
+	{
+	case DisplayRole:				return QString::fromStdString(entry->title());
+	case AnalysisFunctionRole:		return QString::fromStdString(entry->function());
+	case MenuImageSourceRole:		return QString::fromStdString(entry->icon());
+	case IsSeparatorRole:			return entry->isSeparator();
+	case isGroupTitleRole:			return entry->isGroupTitle();
+	default:						return QVariant();
+	}
 }
 
 

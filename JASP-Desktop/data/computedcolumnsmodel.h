@@ -89,14 +89,15 @@ public slots:
 				void				requestComputedColumnDestruction(QString columnName);
 				void				recomputeColumn(std::string columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);
+				void				analysisRemoved(Analysis * analysis);
 
 private:
 
-	QString				_currentlySelectedName	= "",
-						_lastCreatedColumn		= "";
-	ComputedColumns		*_computedColumns		= nullptr;
-	DataSetPackage		*_package				= nullptr;
-	Analyses			*_analyses				= nullptr;
+	QString					_currentlySelectedName	= "",
+							_lastCreatedColumn		= "";
+	ComputedColumns		*	_computedColumns		= nullptr;
+	DataSetPackage		*	_package				= nullptr;
+	Analyses			*	_analyses				= nullptr;
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

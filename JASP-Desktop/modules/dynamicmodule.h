@@ -93,7 +93,8 @@ public:
 	Json::Value			requiredPackages()	const { return _requiredPackages;						}
 
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
-	std::string			iconFilePath()										const;
+	std::string			iconFilePath(std::string whichIcon = "")			const;
+	std::string			iconFolder()										const;
 	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
 	QString				helpFolderPath()									const;
 

@@ -331,3 +331,12 @@ void Analysis::setName(std::string name)
 	_name = name;
 	emit nameChanged();
 }
+
+void Analysis::setHelpFile(QString helpFile)
+{
+ if (_helpFile == helpFile)
+	 return;
+
+ _helpFile = helpFile;
+ emit helpFileChanged(_helpFile);
+}

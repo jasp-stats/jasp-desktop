@@ -67,6 +67,14 @@ std::string AnalysisEntry::qmlFilePath() const
 	return dynamicModule()->qmlFilePath(_qml);
 }
 
+std::string AnalysisEntry::icon() const
+{
+	if(_icon == "")
+		return "";
+
+	return _dynamicModule != nullptr ? "file:" + _dynamicModule->iconFilePath(_icon) : "qrc:/icons/" + _icon;
+}
+
 std::string AnalysisEntry::getFullRCall() const
 {
 	return dynamicModule()->rModuleCall(_function);
