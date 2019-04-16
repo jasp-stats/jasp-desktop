@@ -37,7 +37,7 @@ RectangularButton
 	Timer
 	{
         id: delayOnhoverTimer
-		interval: 800
+		interval: Theme.hoverTime
         running: false
         repeat: false
         onTriggered: {

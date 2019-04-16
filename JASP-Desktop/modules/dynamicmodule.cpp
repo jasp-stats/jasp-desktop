@@ -29,7 +29,7 @@ namespace Modules
 {
 
 ModuleException::ModuleException(std::string moduleName, std::string problemDescription)
-	: std::runtime_error("Module " + moduleName + " had a problem: " + problemDescription)
+	: std::runtime_error("Module \"" + moduleName + "\" had a problem: " + problemDescription)
 {}
 
 const char * standardRIndent = "  ";

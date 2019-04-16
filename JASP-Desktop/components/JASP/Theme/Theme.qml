@@ -106,6 +106,7 @@ QtObject {
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
 	readonly property int maximumFlickVelocity:			400
+	readonly property int hoverTime:					400
 	readonly property int fileMenuSlideDuration:		150
 
 	readonly property real ribbonScaleHovered:			1.1

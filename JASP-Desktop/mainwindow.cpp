@@ -886,10 +886,12 @@ void MainWindow::populateUIfromDataSet(bool showData)
 		else
 		{
 			Json::Value analysesDataList = analysesData;
-			if (!analysesData.isArray()) {
+			if (!analysesData.isArray())
+			{
 				analysesDataList = analysesData.get("analyses", Json::arrayValue);
 				Json::Value meta = analysesData.get("meta", Json::nullValue);
-				if ( ! meta.isNull())
+
+				if (!meta.isNull())
 				{
 					QString results = tq(analysesData["meta"].toStyledString());
 					_resultsJsInterface->setResultsMeta(results);

@@ -46,20 +46,28 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
-		QString name				= QString::fromStdString(analysisData["name"].asString());
-		QString module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
+		QString			name				= QString::fromStdString(analysisData["name"].asString()),
+						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
 
-		Json::Value &optionsJson	= analysisData["options"];
-		Json::Value &versionJson	= analysisData["version"];
+		Json::Value &	optionsJson	= analysisData["options"],
+					&	versionJson	= analysisData["version"];
 
-		Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-		Modules::AnalysisEntry*		analysisEntry = ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
-		QString title				= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
+		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
+		QString			title			= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
-		analysis					= create(module, name, title, id, version, &optionsJson, status, false);
+						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
 	}
 	else
-		analysis = create(_dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status, false);
+	{
+		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
+				analysis			= create(analysisEntry, id, status, false);
+		auto *	dynMod				= analysisEntry->dynamicModule();
+
+		if(!dynMod->loaded())
+			dynMod->setLoadingNeeded();
+
+	}
 
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
