@@ -41,6 +41,7 @@ public:
 		DynamicRole,
 		CommonRole,
 		ModuleNameRole,
+		ModuleTitleRole,
 		ModuleRole
 	};
 

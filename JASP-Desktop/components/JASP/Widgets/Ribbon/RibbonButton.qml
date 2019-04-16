@@ -33,7 +33,6 @@ Rectangle
 	property alias	source		: backgroundImage.source
 	property bool	enabled		: true
 	property string moduleName	: "???"
-	property bool	showTitle	: true
 	property var	menu		: []
 
 	signal clicked

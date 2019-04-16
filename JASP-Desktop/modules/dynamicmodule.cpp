@@ -172,7 +172,7 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 
 	out << "Package: "		<< _name <<
 		"\nType: Package"
-		"\nTitle: "			<< _name << " Module for JASP"
+		"\nTitle: "			<< _title << " Module for JASP"
 		"\nVersion: "		<< _version <<
 		"\nDate: "			<< QDateTime::currentDateTime().toString("yyyy-MM-dd").toStdString() <<
 		"\nAuthor: "		<< _author <<
@@ -217,7 +217,8 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 	std::stringstream out;
 
 	for(const AnalysisEntry * analysis : _menuEntries)
-		out << "export(" << analysis->function() << ")\n";
+		if(analysis->isAnalysis())
+			out << "export(" << analysis->function() << ")\n";
 
 	for(Json::Value & pkgV : _requiredPackages)
 		out << standardRIndent << "import('" << ( _requiredPackages.isArray() ? pkgV.asString() : pkgV["package"].asString()) << "');\n";
@@ -338,7 +339,8 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 	R << standardRIndent << "import('" << _name << "');\n\n";
 
 	for(const AnalysisEntry * analysis : _menuEntries)
-		R << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
+		if(analysis->isAnalysis())
+			R << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
 	R << "})\n";
 
 	if(shouldReturnSucces)
@@ -435,7 +437,7 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::stri
 		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
 
 	for (AnalysisEntry * menuEntry : _menuEntries)
-		if (menuEntry->function() == analysisFunc)
+		if (menuEntry->isAnalysis() && menuEntry->function() == analysisFunc)
 			return menuEntry;
 
 	throw Modules::ModuleException(_name, "Cannot find analysis function: " + analysisFunc);

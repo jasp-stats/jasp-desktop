@@ -36,6 +36,7 @@ class RibbonButton : public QObject
 	Q_PROPERTY(bool		isCommon		READ isCommon			WRITE setIsCommon			NOTIFY isCommonChanged)
 	Q_PROPERTY(QString	title			READ titleQ				WRITE setTitleQ				NOTIFY titleChanged)
 	Q_PROPERTY(QString	moduleName		READ moduleNameQ									NOTIFY moduleNameChanged)
+	Q_PROPERTY(QString	moduleTitle		READ titleQ											NOTIFY titleChanged)
 	Q_PROPERTY(QString	iconSource		READ iconSource			WRITE setIconSource			NOTIFY iconSourceChanged)
 	Q_PROPERTY(QVariant	analysisMenu	READ analysisMenu									NOTIFY analysisMenuChanged)
 

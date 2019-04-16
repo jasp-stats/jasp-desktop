@@ -87,7 +87,7 @@ public:
 	{
 		size_t len = replaceThis.size();
 
-		for(size_t curPos = 0; curPos + len < input.size() && curPos != std::string::npos; curPos = input.find_first_of(replaceThis, curPos))
+		for(std::string::size_type curPos = input.find_first_of(replaceThis); curPos + len < input.size() && curPos != std::string::npos; curPos = input.find_first_of(replaceThis, curPos))
 		{
 			std::cout << "curPos: " << curPos << " input: " << input << std::endl;
 			input.replace(curPos, len, withThis);
@@ -99,9 +99,9 @@ public:
 
 	inline static std::string escapeHtmlStuff(std::string input)
 	{
+		input = replaceBy(input, "&", "&amp;");
 		input = replaceBy(input, "<", "&lt;");
 		input = replaceBy(input, ">", "&gt;");
-		input = replaceBy(input, "&", "&amp;");
 
 		return input;
 	}

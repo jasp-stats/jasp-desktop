@@ -3,20 +3,21 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
-JASPControl {
+JASPControl
+{
 	id:					textArea
 	controlType:		"TextArea"
 	implicitHeight:		Theme.defaultTextAreaHeight
 	implicitWidth:		parent.width
 	
-	property alias	control:		control
-	property alias	text:			control.text
+	property alias	control:			control
+	property alias	text:				control.text
     property string textType
-    property string applyScriptInfo
-	property alias	infoText:		infoText.text
-	property bool	hasScriptError:	false
-	property alias	font:			control.font
-	property alias	textDocument:	control.textDocument
+	property string applyScriptInfo:	""
+	property alias	infoText:			infoText.text
+	property bool	hasScriptError:		false
+	property alias	font:				control.font
+	property alias	textDocument:		control.textDocument
     
     signal applyRequest()
     
@@ -32,38 +33,14 @@ JASPControl {
 			id:				control
 			selectByMouse:	true
 			font:			Theme.font
-			color:			enabled ? Theme.textEnabled : Theme.textDisabled
+			color:			textArea.enabled ? Theme.textEnabled : Theme.textDisabled
 			wrapMode:		TextArea.Wrap
 
 			background:		Rectangle
 			{
 				border.width:	1
 				border.color:	Theme.borderColor
-				color:			enabled ? Theme.White : Theme.whiteBroken
-                
-				Text
-				{
-					id:						infoText
-					z:						2
-					anchors.bottom:			parent.bottom
-					anchors.right:			parent.right
-					anchors.margins:		4 * preferencesModel.uiScale
-					leftPadding:			5 * preferencesModel.uiScale
-					rightPadding:			leftPadding
-					bottomPadding:			3 * preferencesModel.uiScale
-					topPadding:				bottomPadding
-					text:					textArea.applyScriptInfo
-					font:					Theme.font
-					horizontalAlignment:	Text.AlignHCenter
-					verticalAlignment:		Text.AlignVCenter
-					color:					!enabled ? Theme.textDisabled : textArea.hasScriptError ? Theme.textEnabled : Theme.grayDarker
-                }
-                
-				Rectangle
-				{
-					anchors.fill:	infoText
-					color:			textArea.hasScriptError ? Theme.errorMessagesBackgroundColor : "transparent"
-                }
+				color:			textArea.enabled ? Theme.White : Theme.whiteBroken
 
             }
             
@@ -89,4 +66,29 @@ JASPControl {
     
         ScrollBar.vertical: ScrollBar { }
     }    
+
+	Text
+	{
+		id:						infoText
+		z:						2
+		anchors.bottom:			parent.bottom
+		anchors.right:			parent.right
+		anchors.margins:		4 * preferencesModel.uiScale
+		leftPadding:			5 * preferencesModel.uiScale
+		rightPadding:			leftPadding
+		bottomPadding:			3 * preferencesModel.uiScale
+		topPadding:				bottomPadding
+		text:					textArea.applyScriptInfo
+		font:					Theme.font
+		horizontalAlignment:	Text.AlignHCenter
+		verticalAlignment:		Text.AlignVCenter
+		color:					!enabled ? Theme.textDisabled : textArea.hasScriptError ? Theme.textEnabled : Theme.grayDarker
+
+		Rectangle
+		{
+			z:				-1
+			anchors.fill:	infoText
+			color:			textArea.hasScriptError ? Theme.errorMessagesBackgroundColor : "transparent"
+		}
+	}
 }

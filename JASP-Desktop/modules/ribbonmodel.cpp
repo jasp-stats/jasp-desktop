@@ -98,6 +98,7 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 	case DynamicRole:		return ribbonButtonModelAt(row)->isDynamic();
 	case CommonRole:		return ribbonButtonModelAt(row)->isCommon();
 	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleNameQ();
+	case ModuleTitleRole:	return ribbonButtonModelAt(row)->titleQ();
 	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->myDynamicModule());
 	case ClusterRole:		//To Do!
 	default:				return QVariant();
@@ -115,6 +116,7 @@ QHash<int, QByteArray> RibbonModel::roleNames() const
 		{ DynamicRole,		"isDynamic"			},
 		{ CommonRole,		"isCommon"			},
 		{ ModuleNameRole,	"moduleName"		},
+		{ ModuleTitleRole,	"moduleTitle"		},
 		{ ModuleRole,		"dynamicModule"		} };
 
 	return roles;
