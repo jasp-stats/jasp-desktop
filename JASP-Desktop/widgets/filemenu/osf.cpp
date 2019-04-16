@@ -74,6 +74,11 @@ QString OSF::savefilename()
 	return _mSaveFileName;
 }
 
+QString OSF::savefoldername()
+{
+	return _mSaveFolderName;
+}
+
 QString OSF::username()
 {
 	return _mUserName;
@@ -101,6 +106,12 @@ void OSF::setSavefilename(const QString &savefilename)
 {
 	_mSaveFileName = savefilename;
 	emit savefilenameChanged();
+}
+
+void OSF::setSavefoldername(const QString &savefoldername)
+{
+	_mSaveFolderName = savefoldername;
+	emit savefoldernameChanged();
 }
 
 void OSF::setShowfiledialog(const bool showdialog)

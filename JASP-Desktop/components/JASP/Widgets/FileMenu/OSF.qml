@@ -184,11 +184,15 @@ Item
 		id		: newDirectoryButton
 		text	: qsTr("Create Folder")
 
-		width	: 120
+		width	: 160
 		height	: 30
 		visible	: showfiledialog && loggedin && !processing
 
-		anchors.left		: menuHeader.left
+		// Icons made by "https://www.flaticon.com/authors/icongeek26"
+		iconSource		: "qrc:///icons/create-folder.png"
+		showIconAndText	: true
+
+		anchors.right		: menuHeader.right
 		anchors.top			: secondSeparator.bottom
 		anchors.topMargin	: Theme.generalAnchorMargin
 
@@ -202,7 +206,7 @@ Item
 	{
 		id		: folderExportDialog
 		visible	: !newDirectoryButton.visible && showfiledialog && loggedin && !processing
-		height	: visible ? 30 : 0
+		height	: visible ? newDirectoryButton.height : 0
 
 		anchors.left		: menuHeader.left
 		anchors.right		: menuHeader.right

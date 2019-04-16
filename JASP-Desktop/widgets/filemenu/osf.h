@@ -28,11 +28,12 @@
 class OSF: public FileMenuObject
 {
 	Q_OBJECT
-	
+
 	Q_PROPERTY(	bool	loggedin		READ loggedin		WRITE setLoggedin		NOTIFY loggedinChanged)
 	Q_PROPERTY(	bool	processing		READ processing		WRITE setProcessing		NOTIFY processingChanged)
 	Q_PROPERTY(	bool	showfiledialog	READ showfiledialog WRITE setShowfiledialog NOTIFY showfiledialogChanged)
-	Q_PROPERTY(	QString	savefilename	READ savefilename	WRITE setSavefilename	NOTIFY savefilenameChanged)	
+	Q_PROPERTY(	QString	savefilename	READ savefilename	WRITE setSavefilename	NOTIFY savefilenameChanged)
+	Q_PROPERTY(	QString savefoldername	READ savefoldername	WRITE setSavefoldername	NOTIFY savefoldernameChanged)
 	Q_PROPERTY(	bool	rememberme		READ rememberme		WRITE setRememberme		NOTIFY remembermeChanged)
 	Q_PROPERTY(	QString	username		READ username		WRITE setUsername		NOTIFY usernameChanged)
 	Q_PROPERTY(	QString	password		READ password		WRITE setPassword		NOTIFY passwordChanged)
@@ -40,26 +41,28 @@ class OSF: public FileMenuObject
 	Q_PROPERTY(OSFListModel * listModel					READ listModel		WRITE setListModel		NOTIFY listModelChanged)
 	Q_PROPERTY(OSFBreadCrumbsListModel * breadCrumbs	READ breadCrumbs	WRITE setBreadCrumbs	NOTIFY breadCrumbsChanged)
 
-	
+
 public:
 	explicit OSF(QObject *parent = nullptr);
-	
-	bool loggedin();	
+
+	bool loggedin();
 	bool rememberme();
 	bool processing();
 	bool showfiledialog();
 	QString savefilename();
+	QString savefoldername();
 	QString username();
 	QString password();
-	
-	void setLoggedin(const bool loggedin);	
+
+	void setLoggedin(const bool loggedin);
 	void setRememberme(const bool rememberme);
 	void setProcessing(const bool processing);
-	void setSavefilename(const QString &savefilename);	
+	void setSavefilename(const QString &savefilename);
+	void setSavefoldername(const QString &savefoldername);
 	void setShowfiledialog(const bool showdialog);
-	void setUsername(const QString &username);		
-	void setPassword(const QString &password);	
-		
+	void setUsername(const QString &username);
+	void setPassword(const QString &password);
+
 	void setOnlineDataManager(OnlineDataManager *odm);
 	Q_INVOKABLE void attemptToConnect();
 	void setCurrentFileName(QString currentFileName);
@@ -74,6 +77,7 @@ signals:
 	void remembermeChanged();
 	void processingChanged();
 	void savefilenameChanged();
+	void savefoldernameChanged();
 	void showfiledialogChanged();
 	void usernameChanged();
 	void passwordChanged();
@@ -93,7 +97,7 @@ private slots:
 	void updateUserDetails();
 	void newFolderCreated();
 	void resetOSFListModel();
-	
+
 public slots:
 	void logoutClicked();
 	void loginRequested(const QString &username, const QString &password);
@@ -103,18 +107,18 @@ public slots:
 	void stopProcessing();
 	void newFolderClicked();
 	void closeFileDialog();
-	
+
 	void setListModel(OSFListModel * listModel);
 	void setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs);
 
 private:
-	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);	
-	
+	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);
+
 	OnlineDataManager		*_odm						= nullptr;
 	OSFListModel			*_osfListModel				= nullptr;
 	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel	= nullptr;
 	OSFFileSystem			*_model						= nullptr;
-	
+
 	bool	_mLoggedin,
 			_mRememberMe,
 			_mProcessing,
@@ -122,6 +126,7 @@ private:
 
 	QString	_currentFileName,
 			_mSaveFileName,
+			_mSaveFolderName,
 			_mUserName,
 			_mPassword;
 };
