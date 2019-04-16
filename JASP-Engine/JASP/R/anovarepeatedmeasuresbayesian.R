@@ -17,7 +17,6 @@
 
 AnovaRepeatedMeasuresBayesian <- function(jaspResults, dataset, options, ...) {
 
-  jaspResults$title <- "Bayesian Repeated Measures ANOVA"
   .BANOVArunAnalysis(jaspResults, dataset, options, "RM-ANOVA")
 
 }

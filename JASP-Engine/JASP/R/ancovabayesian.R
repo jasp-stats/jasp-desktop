@@ -17,7 +17,6 @@
 
 AncovaBayesian <- function(jaspResults, dataset, options, ...) {
 
-  jaspResults$title <- "Bayesian ANCOVA"
   .BANOVArunAnalysis(jaspResults, dataset, options, "ANCOVA")
 
 }

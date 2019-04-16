@@ -17,7 +17,6 @@
 
 AnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
-  jaspResults$title <- "Bayesian ANOVA"
   .BANOVArunAnalysis(jaspResults, dataset, options, "ANOVA")
 
 }

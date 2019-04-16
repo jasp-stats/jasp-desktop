@@ -27,7 +27,6 @@
   dataInfo <- .BANOVAerrorhandling(dataset, options, analysisType)
 
   model <- .BANOVAestimateModels(jaspResults, dataset, options, dataInfo, analysisType)
-  print(model)
   model[["posteriors"]] <- .BANOVAestimatePosteriors(jaspResults, dataset, options, model)
 
   .BANOVAeffectsTable  (jaspResults, options, model)
@@ -339,13 +338,12 @@
 
   effectsTable <- createJaspTable(title = title)
   effectsTable$position <- 2
-  effectsTable$dependOnOptions(c(
+  effectsTable$dependOn(c(
     "effects", "effectsType", "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects",
     "sampleModeNumAcc", "fixedNumAcc", "bayesFactorType", "modelTerms", "fixedFactors"
   ))
 
-  effectsTable$addCitation("Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].")
-  effectsTable$addCitation("Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
+  effectsTable$addCitation(.BANOVAcitations[1:2])
 
   inclusion.title <- switch(
     options$bayesFactorType,
@@ -355,9 +353,9 @@
   )
 
   effectsTable$addColumnInfo(name = "Effects",      type = "string")
-  effectsTable$addColumnInfo(name = "P(incl)",      type = "number", format = "sf:4;dp:3")
-  effectsTable$addColumnInfo(name = "P(incl|data)", type = "number", format = "sf:4;dp:3")
-  effectsTable$addColumnInfo(name = "BFInclusion",  type = "number", format = "sf:4;dp:3", title = inclusion.title)
+  effectsTable$addColumnInfo(name = "P(incl)",      type = "number")
+  effectsTable$addColumnInfo(name = "P(incl|data)", type = "number")
+  effectsTable$addColumnInfo(name = "BFInclusion",  type = "number", title = inclusion.title)
 
   if (options$effectsType == "matchedModels") {
     effectsTable$addFootnote(message = paste("Compares models that contain the effect to equivalent models stripped",
@@ -440,9 +438,8 @@
   # function that creates an empty JASP table to be filled later
   modelTable <- createJaspTable(title = "Model Comparison")
   modelTable$position <- 1L
-  modelTable$addCitation("Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].")
-  modelTable$addCitation("Rouder, J. N., Morey, R. D., Speckman, P. L., & Province, J. M. (2012). Default Bayes factors for ANOVA designs. Journal of Mathematical Psychology, 56, 356-374.")
-  modelTable$dependOnOptions(c(
+  modelTable$addCitation(.BANOVAcitations[1:2])
+  modelTable$dependOn(c(
     "dependent", "randomFactors", "covariates", "priorFixedEffects", "priorRandomEffects", "sampleModeNumAcc",
     "fixedNumAcc", "bayesFactorType", "bayesFactorOrder", "modelTerms", "fixedFactors", "betweenSubjectFactors",
     "repeatedMeasuresFactors", "repeatedMeasuresCells"
@@ -460,11 +457,11 @@
   }
 
   modelTable$addColumnInfo(name = "Models",    type = "string")
-  modelTable$addColumnInfo(name = "P(M)",      type = "number", format = "sf:4;dp:3")
-  modelTable$addColumnInfo(name = "P(M|data)", type = "number", format = "sf:4;dp:3")
-  modelTable$addColumnInfo(name = "BFM",       type = "number", format = "sf:4;dp:3", title = bfm.title)
-  modelTable$addColumnInfo(name = "BF10",      type = "number", format = "sf:4;dp:3", title = bf.title)
-  modelTable$addColumnInfo(name = "error %",   type = "number", format = "sf:4;dp:3")
+  modelTable$addColumnInfo(name = "P(M)",      type = "number")
+  modelTable$addColumnInfo(name = "P(M|data)", type = "number")
+  modelTable$addColumnInfo(name = "BFM",       type = "number", title = bfm.title)
+  modelTable$addColumnInfo(name = "BF10",      type = "number", title = bf.title)
+  modelTable$addColumnInfo(name = "error %",   type = "number")
 
   return(modelTable)
 }
@@ -547,12 +544,12 @@
     posteriorsCRI <- .BANOVAcomputePosteriorCRI(dataset, options, model, posteriors)
 
     statePosteriors <- createJaspState(object = posteriors)
-    statePosteriors$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
+    statePosteriors$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
     jaspResults[["statePosteriors"]] <- statePosteriors
 
     statePosteriorsCRI <- createJaspState(object = posteriorsCRI)
-    statePosteriorsCRI$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
-    statePosteriorsCRI$dependOnOptions("credibleInterval")
+    statePosteriorsCRI$dependOn(options = "credibleInterval", 
+                                optionsFromObject = jaspResults[["tableModelComparisonState"]])
     jaspResults[["statePosteriorCRI"]] <- statePosteriorsCRI
 
   }
@@ -567,7 +564,7 @@
 
   estsTable <- createJaspTable(title = "Model Averaged Posterior Summary")
   estsTable$position <- 3
-  estsTable$dependOnOptions(c(
+  estsTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
     "fixedMCMCSamples", "bayesFactorType", "modelTerms", "fixedFactors", "posteriorEstimates",
     "repeatedMeasuresFactors", "credibleInterval"
@@ -576,10 +573,10 @@
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   estsTable$addColumnInfo(name = "Variable", type = "string")
   estsTable$addColumnInfo(name = "Level",    type = "string")
-  estsTable$addColumnInfo(name = "Mean",     type = "number", format = "sf:4;dp:3")
-  estsTable$addColumnInfo(name = "SD",       type = "number", format = "sf:4;dp:3")
-  estsTable$addColumnInfo(name = "Lower",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
-  estsTable$addColumnInfo(name = "Upper",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
+  estsTable$addColumnInfo(name = "Mean",     type = "number")
+  estsTable$addColumnInfo(name = "SD",       type = "number")
+  estsTable$addColumnInfo(name = "Lower",    type = "number", overtitle = overTitle)
+  estsTable$addColumnInfo(name = "Upper",    type = "number", overtitle = overTitle)
   
   if (!is.null(model[["posteriors"]])) {
     .BANOVAfillEstimatesTable(
@@ -635,26 +632,29 @@
 
   posteriorPlotContainer <- createJaspContainer(title = "Model Averaged Posterior Distributions")
   jaspResults[["posteriorPlot"]] <- posteriorPlotContainer
-  posteriorPlotContainer$dependOnOptions(c("posteriorPlot", "modelTerms", "credibleInterval"))
-  posteriorPlotContainer$setOptionMustContainDependency("groupPosterior", options[["groupPosterior"]])
+  posteriorPlotContainer$dependOn(
+    options = c("posteriorPlot", "modelTerms", "credibleInterval"),
+    optionContainsValue = options["groupPosterior"]
+  )
   posteriorPlotContainer$position <- 4
 
   if (is.null(model$models)) {
     posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Posterior distribution", width = 400, height = 400,
                                                             plot = NULL)
   } else {
-    posteriorPlotContainer$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
+    posteriorPlotContainer$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
     .BANOVAfillPosteriorPlotContainer(
-      container = posteriorPlotContainer,
-      densities = model$posterior$weightedDensities[, -1L, ], # omit intercept
-      cris      = model$posterior$weightedCRIs[-1L, ],        # omit intercept
-      isRandom  = model$posteriors$isRandom[-1L]              # omit intercept
+      container       = posteriorPlotContainer,
+      densities       = model$posterior$weightedDensities[, -1L, ], # omit intercept
+      cris            = model$posterior$weightedCRIs[-1L, ],        # omit intercept
+      isRandom        = model$posteriors$isRandom[-1L],             # omit intercept
+      groupParameters = identical(options[["groupPosterior"]], "grouped")
     )
   }
   return()
 }
 
-.BANOVAfillPosteriorPlotContainer <- function(container, densities, cris, isRandom = NULL) {
+.BANOVAfillPosteriorPlotContainer <- function(container, densities, cris, isRandom = NULL, groupParameters = FALSE) {
 
   allParamNames <- colnames(densities)
 
@@ -755,22 +755,25 @@
       p <- JASPgraphs::themeJasp(p, legend.position = if (showLegend) "right" else "none")
 
       plot <- createJaspPlot(title = nms[i], width = 400, height = 400, plot = p)
-      # plot$dependOnOptions("dependent") # gotta depend on something
       container[[allParamNames[i]]] <- plot
     }
   } else {
     for (i in indices) {
 
-    p <- JASPgraphs::PlotPriorAndPosterior(
-      dfLines    = df,
-      xName      = xNames[i],
-      CRI        = cris[i, ],
-      drawCRItxt = FALSE
-    )
+      # make prior posterior plot
+      df <- data.frame(x = densities[, i, "x"],
+                       y = densities[, i, "y"])
 
-    plot <- createJaspPlot(title = plotTitles[i], width = 400, height = 400, plot = p)
-    plot$dependOnOptions("dependent") # gotta depend on something
-    container[[allParamNames[i]]] <- plot
+      p <- JASPgraphs::PlotPriorAndPosterior(
+        dfLines    = df,
+        xName      = xNames[i],
+        CRI        = cris[i, ],
+        drawCRItxt = FALSE
+      )
+
+      plot <- createJaspPlot(title = plotTitles[i], width = 400, height = 400, plot = p)
+      container[[allParamNames[i]]] <- plot
+    }
   }
   return()
 
@@ -794,10 +797,10 @@
       lower     = model[["posteriors"]][["weightedResidSumStats"]][,"cri.2.5%"],
       upper     = model[["posteriors"]][["weightedResidSumStats"]][,"cri.97.5%"]
     )
-    plot$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
+    plot$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
   }
 
-  plot$dependOnOptions(c("qqPlot", "modelTerms", "credibleInterval"))
+  plot$dependOn(c("qqPlot", "modelTerms", "credibleInterval"))
   plot$position <- 5
   jaspResults[["QQplot"]] <- plot
   return()
@@ -822,10 +825,10 @@
     df <- data.frame(x = dd$x, y = dd$y)
     xName <- expression(R^2)
     plot$plotObject <- JASPgraphs::PlotPriorAndPosterior(dfLines = df, xName = xName, CRI = rsqCri, drawCRItxt = FALSE)
-    plot$copyDependenciesFromJaspObject(jaspResults[["tableModelComparisonState"]])
+    plot$dependOn(jaspObject = jaspResults[["tableModelComparisonState"]])
   }
 
-  plot$dependOnOptions(c("rsqPlot", "modelTerms", "credibleInterval"))
+  plot$dependOn(c("rsqPlot", "modelTerms", "credibleInterval"))
   plot$position <- 6
   jaspResults[["rsqplot"]] <- plot
   return()
@@ -834,7 +837,6 @@
 # Post hoc comparison ----
 .BANOVAnullControlPostHocTable <- function(jaspResults, dataset, options, model) {
 
-
   if (length(options$postHocTestsVariables) == 0L)
     return()
 
@@ -842,10 +844,8 @@
   if (is.null(postHocCollection)) {
     postHocCollection <- createJaspContainer(title = "Post Hoc Tests")
     postHocCollection$position <- 7
-    postHocCollection$addCitation("Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.")
-    postHocCollection$addCitation("Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427.")
-    postHocCollection$dependOnOptions(c("dependent", "repeatedMeasuresCells", "postHocTestsNullControl", 
-                                        "bayesFactorType"))
+    postHocCollection$addCitation(.BANOVAcitations[3:4])
+    postHocCollection$dependOn(c("dependent", "repeatedMeasuresCells", "postHocTestsNullControl", "bayesFactorType"))
     jaspResults[["collectionPosthoc"]] <- postHocCollection
   }
 
@@ -857,15 +857,13 @@
 		comparisons are based on the default t-test with a Cauchy (0, r =
 		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected.")
 
+  bfTxt <- if (options[["postHocTestsNullControl"]]) ", U" else ""
   if (options[["bayesFactorType"]] == "BF10") {
-    bf.title <- "BF<sub>10, U</sub>"
-    format   <- "sf:4;dp:3"
+    bf.title <- paste0("BF<sub>10", bfTxt, "</sub>")
   } else if (options[["bayesFactorType"]] == "BF01") {
-    bf.title <- "BF<sub>01, U</sub>"
-    format   <- "sf:4;dp:3"
+    bf.title <- paste0("BF<sub>01", bfTxt, "</sub>")
   } else if (options[["bayesFactorType"]] == "LogBF10") {
-    bf.title <- "Log(BF<sub>10, U</sub>)"
-    format   <- "sf:4;dp:3"
+    bf.title <- paste0("Log(BF<sub>10", bfTxt, "</sub>)")
   }
 
   priorWidth <- 1 / sqrt(2)
@@ -884,17 +882,18 @@
 
     postHocTable <- createJaspTable(title = paste0("Post Hoc Comparisons - ", posthoc.var))
 
-    postHocTable$addColumnInfo(name = "(I)",            type = "string",                      title = "", combine=TRUE)
-    postHocTable$addColumnInfo(name = "(J)",            type = "string",                      title = "")
-    postHocTable$addColumnInfo(name = "Prior Odds",     type = "number", format = "sf:4;dp:3")
-    postHocTable$addColumnInfo(name = "Posterior Odds", type = "number", format = "sf:4;dp:3")
-    postHocTable$addColumnInfo(name = "BF",             type = "number", format = format,     title = bf.title)
-    postHocTable$addColumnInfo(name = "error %",        type = "number", format = "sf:4;dp:3")
-    
-    postHocTable$addFootnote(symbol = "<em>Note.</em>", message = footnote)
-    
-    postHocTable$setOptionMustContainDependency("postHocTestsVariables", posthoc.var)
+    postHocTable$addColumnInfo(name = "(I)",            type = "string", title = "", combine=TRUE)
+    postHocTable$addColumnInfo(name = "(J)",            type = "string", title = "")
+    postHocTable$addColumnInfo(name = "Prior Odds",     type = "number")
+    postHocTable$addColumnInfo(name = "Posterior Odds", type = "number")
+    postHocTable$addColumnInfo(name = "BF",             type = "number", title = bf.title)
+    postHocTable$addColumnInfo(name = "error %",        type = "number")
 
+    postHocTable$dependOn(optionContainsValue = list("postHocTestsVariables" = posthoc.var))
+
+    if (options[["postHocTestsNullControl"]])
+      postHocTable$addFootnote(symbol = "<em>Note.</em>", message = footnote)
+      
     if (is.null(model$models)) { # only show empty table
       postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
       next
@@ -921,7 +920,7 @@
     errMessages <- NULL
     for (i in 1:ncol(pairs)) {
 
-      if (options$postHocTestsNullControl && !is.null(model$models)) {
+      if (!is.null(model$models)) {
 
         x <- na.omit(allSplits[[pairs[1L, i]]])
         y <- na.omit(allSplits[[pairs[2L, i]]])
@@ -943,7 +942,12 @@
 
         } else {
 
-          pH0 <- 0.5^(2 / length(variable.levels))
+          if (options[["postHocTestsNullControl"]]) {
+            pH0 <- 0.5^(2 / length(variable.levels))
+          } else {
+            pH0 <- 0.5
+          }
+          
           logBF <- ttest@bayesFactor$bf # <- log(BF10)
           if (options[["bayesFactorType"]] == "BF01") {
             priorOdds <- pH0 / (1 - pH0)
@@ -1039,7 +1043,7 @@
   descriptivesContainer <- jaspResults[["descriptivesContainer"]]
   if (is.null(descriptivesContainer)) {
     descriptivesContainer <- createJaspContainer()
-    descriptivesContainer$dependOnOptions(c("dependent", "repeatedMeasuresCells"))
+    descriptivesContainer$dependOn(c("dependent", "repeatedMeasuresCells"))
     descriptivesContainer$position <- 900 # always last
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
   }
@@ -1071,8 +1075,8 @@
 
   descriptivesTable <- createJaspTable(title = title)
   descriptivesTable$position <- 1
-  descriptivesTable$dependOnOptions(c("dependent", "fixedFactors", "betweenSubjectFactors", "descriptives",
-                                      "credibleInterval"))
+  descriptivesTable$dependOn(c("dependent", "fixedFactors", "betweenSubjectFactors", "descriptives", 
+                               "credibleInterval"))
 
   # internal names use base64 so they don't have " " which R changes into "." because R does that to dataframe names.
   # Also adds a . in case the base64 is magically "Mean", "SD" or "N"
@@ -1083,11 +1087,11 @@
   }
 
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
-  descriptivesTable$addColumnInfo(name = "Mean",  type = "number", format = "sf:4;dp:3")
-  descriptivesTable$addColumnInfo(name = "SD",    type = "number", format = "sf:4;dp:3")
+  descriptivesTable$addColumnInfo(name = "Mean",  type = "number")
+  descriptivesTable$addColumnInfo(name = "SD",    type = "number")
   descriptivesTable$addColumnInfo(name = "N",     type = "number", format = "dp:0")
-  descriptivesTable$addColumnInfo(name = "Lower", type = "number", format = "sf:4;dp:3", overtitle = overTitle)
-  descriptivesTable$addColumnInfo(name = "Upper", type = "number", format = "sf:4;dp:3", overtitle = overTitle)
+  descriptivesTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
+  descriptivesTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
   jaspContainer[["tableDescriptives"]] <- descriptivesTable
 
   if (errors$noVariables) 
@@ -1143,12 +1147,12 @@
 
   # add footnote if there are unobserved combinations
   nObserved <- nrow(data)
-  nPossible <- prod(sapply(dataset2[, fixedB64], nlevels))
+  nPossible <- prod(sapply(dataset2[, fixedB64, drop = FALSE], nlevels))
   if (nObserved != nPossible) {
     descriptivesTable$addFootnote(
       symbol = "<em>Note.</em>", 
       message = sprintf(
-        "Some combinations of factors are not observed and hence omitted (%d out of %d combinations are unobserved).",
+        "Some combinations of factors are not observed and hence omitted (%.0fd out of %.0f combinations are unobserved).",
         nPossible - nObserved, nPossible
       )
     )
@@ -1175,7 +1179,7 @@
     plotErrorBars <- options$plotCredibleInterval
     errorBarType  <- "confidenceInterval"
     conf.interval <- options$plotCredibleIntervalInterval
-    descriptivesPlotContainer$dependOnOptions(c("dependent", "plotCredibleInterval", "plotCredibleIntervalInterval"))
+    descriptivesPlotContainer$dependOn(c("dependent", "plotCredibleInterval", "plotCredibleIntervalInterval"))
 
   } else {
     plotErrorBars <- options$plotErrorBars
@@ -1183,9 +1187,8 @@
     conf.interval <- options$confidenceIntervalInterval
   }
 
-  descriptivesPlotContainer$setOptionMustContainDependency("plotHorizontalAxis", options$plotHorizontalAxis)
-  descriptivesPlotContainer$setOptionMustContainDependency("plotSeparateLines",  options$plotSeparateLines)
-  descriptivesPlotContainer$setOptionMustContainDependency("plotSeparatePlots",  options$plotSeparatePlots)
+  opts <- c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots")
+  descriptivesPlotContainer$dependOn(optionContainsValue = options[opts])
 
   if (errors$noVariables) {
     descriptivesPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Descriptives Plot")
@@ -1255,12 +1258,11 @@
     descriptivesPlot <- createJaspPlot(title = title)
     descriptivesPlotContainer[[title]] <- descriptivesPlot
 
+    descriptivesPlot$height <- 300
     if (options$plotSeparateLines != "") {
-      descriptivesPlot$width  <- options$plotWidthDescriptivesPlotLegend
-      descriptivesPlot$height <- options$plotHeightDescriptivesPlotLegend
+      descriptivesPlot$width <- 430
     } else {
-      descriptivesPlot$width  <- options$plotWidthDescriptivesPlotNoLegend
-      descriptivesPlot$height <- options$plotHeightDescriptivesPlotNoLegend
+      descriptivesPlot$width <- 300
     }
 
     if (options$plotSeparatePlots != "") {
@@ -2063,7 +2065,7 @@
     singleModelContainer <- jaspResults[["containerSingleModel"]]
   } else {
     singleModelContainer <- createJaspContainer(title = "Single Model Inference")
-    singleModelContainer$dependOnOptions(c(
+    singleModelContainer$dependOn(c(
       "singleModelTerms", "dependent", "sampleModeMCMC", "fixedMCMCSamples", "priorCovariatesEffects",
       "priorFixedEffects", "priorRandomEffects", "repeatedMeasuresCells"
     ))
@@ -2079,7 +2081,7 @@
       singleModel <- NULL
     } else {
       singleModelState <- createJaspState(object = singleModel)
-      singleModelState$copyDependenciesFromJaspObject(singleModelContainer)
+      singleModelState$dependOn(optionsFromObject = singleModelContainer)
       jaspResults[["singleModelState"]] <- singleModelState
     }
   }
@@ -2186,15 +2188,15 @@
 
   estsTable <- createJaspTable(title = "Single Model Posterior Summary")
   estsTable$position <- 1
-  estsTable$dependOnOptions(c("singleModelEstimates", "credibleInterval"))
+  estsTable$dependOn(c("singleModelEstimates", "credibleInterval"))
 
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   estsTable$addColumnInfo(name = "Variable", type = "string")
   estsTable$addColumnInfo(name = "Level",    type = "string")
-  estsTable$addColumnInfo(name = "Mean",     type = "number", format = "sf:4;dp:3")
-  estsTable$addColumnInfo(name = "SD",       type = "number", format = "sf:4;dp:3")
-  estsTable$addColumnInfo(name = "Lower",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
-  estsTable$addColumnInfo(name = "Upper",    type = "number", format = "sf:4;dp:3", overtitle = overTitle)
+  estsTable$addColumnInfo(name = "Mean",     type = "number")
+  estsTable$addColumnInfo(name = "SD",       type = "number")
+  estsTable$addColumnInfo(name = "Lower",    type = "number", overtitle = overTitle)
+  estsTable$addColumnInfo(name = "Upper",    type = "number", overtitle = overTitle)
 
   if (!(is.null(model) || estsTable$getError())) {
     .BANOVAfillEstimatesTable(
@@ -2220,9 +2222,8 @@
   posteriorPlotContainer <- createJaspContainer(title = "Posterior Distributions")
   jaspContainer[["SMIposteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$position <- 2
-  posteriorPlotContainer$dependOnOptions("singleModelPosteriorPlot")
-  posteriorPlotContainer$setOptionMustContainDependency("singleModelGroupPosterior", 
-                                                        options[["singleModelGroupPosterior"]])
+  posteriorPlotContainer$dependOn(options = "singleModelPosteriorPlot",
+                                  optionContainsValue = options["singleModelGroupPosterior"])
   if (is.null(model) || posteriorPlotContainer$getError()) {
     posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Posterior distribution", width = 400, height = 400,
                                                             plot = NULL)
@@ -2259,7 +2260,7 @@
     plot        = p,
     aspectRatio = 1
   )
-  plot$dependOnOptions("singleModelqqPlot")
+  plot$dependOn("singleModelqqPlot")
   plot$position <- 3
   jaspContainer[["QQplot"]] <- plot
   return()
@@ -2286,8 +2287,16 @@
     plot        = p,
     aspectRatio = 1
   )
-  plot$dependOnOptions("singleModelrsqPlot")
+  plot$dependOn("singleModelrsqPlot")
   plot$position <- 4
   jaspContainer[["smirsqplot"]] <- plot
   return()
 }
+
+# Citations ----
+.BANOVAcitations <- c(
+  "MoreyEtal2015"    = "Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
+  "RouderEtal2012"   = "Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.",
+  "Jeffreys1938"     = "Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.",
+  "WestfallEtal1997" = "Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427."
+)
