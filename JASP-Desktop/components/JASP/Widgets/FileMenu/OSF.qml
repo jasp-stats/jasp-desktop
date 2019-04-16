@@ -86,114 +86,22 @@ Item
 	}
 
 	/////////////////////////// File dialog to save in OSF ////////////////////////////////////
-	Item
-	{
-		id		: fileExportDialog
-		visible	: showfiledialog && loggedin
-		height	: visible ? 30 : 0
-
-		anchors.left			: menuHeader.left
-		anchors.right			: menuHeader.right
-		anchors.top				: firstSeparator.bottom
-		anchors.topMargin		: Theme.generalMenuMargin
-		anchors.bottomMargin	: Theme.generalMenuMargin
-
-		Label
-		{
-			id 		: saveFilenameLabel
-			text	: qsTr("Filename")
-
-			width	: 80
-			height	: 30
-			color 	: Theme.black
-			font	: Theme.font
-
-			anchors.top			: parent.top
-			anchors.left		: parent.left
-			verticalAlignment	: Text.AlignVCenter
-		}
-
-		Rectangle
-		{
-			id		: saveFilenameInput
-			height	: saveFilenameLabel.height
-			clip	: true
-
-			color			: Theme.white
-			border.width	: filenameText.activeFocus ? 5 : 1
-			border.color	: filenameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
-
-			anchors
-			{
-				left		: saveFilenameLabel.right
-				leftMargin	: Theme.generalAnchorMargin
-				top			: saveFilenameLabel.top
-				right		: saveFilenameButton.left
-				rightMargin	: Theme.generalAnchorMargin
-			}
-
-			TextInput
-			{
-				id				: filenameText
-				selectByMouse	: true
-				text			: fileMenuModel.osf.savefilename
-				font.pixelSize	: 14
-
-				anchors.fill		: parent
-				anchors.leftMargin	: Theme.itemPadding
-				verticalAlignment	: Text.AlignVCenter
-
-				onAccepted	:
-				{
-					fileMenuModel.osf.saveFile(filenameText.text)
-				}
-			}
-		}
-
-		RectangularButton
-		{
-			id		: saveFilenameButton
-			width	: 60
-			height	: 30
-			text	: qsTr("Save")
-
-			anchors.right		: parent.right
-			anchors.top			: parent.top
-
-			onClicked	:
-			{
-				fileMenuModel.osf.saveFile(filenameText.text)
-			}
-		}
-	}
-
-	ToolSeparator
-	{
-		id			: secondSeparator
-		orientation	: Qt.Horizontal
-		visible		: fileExportDialog.visible
-
-		anchors.top			: fileExportDialog.bottom
-		anchors.topMargin	: Theme.generalAnchorMargin
-		anchors.left		: menuHeader.left
-		anchors.right		: menuHeader.right
-	}
 
 	RectangularButton
 	{
 		id		: newDirectoryButton
 		text	: qsTr("Create Folder")
 
-		width	: 160
+		width	: 120
 		height	: 30
-		visible	: showfiledialog && loggedin && !processing
+		visible	: fileExportDialog.visible && loggedin
 
 		// Icons made by "https://www.flaticon.com/authors/smashicons"
-		iconSource		: "qrc:///icons/create-folder.png"
-		showIconAndText	: true
+		// iconSource		: "qrc:///icons/create-folder.png"
+		// showIconAndText	: true
 
 		anchors.right		: menuHeader.right
-		anchors.top			: secondSeparator.bottom
+		anchors.top			: firstSeparator.bottom
 		anchors.topMargin	: Theme.generalAnchorMargin
 
 		onClicked	:
@@ -210,7 +118,7 @@ Item
 
 		anchors.left		: menuHeader.left
 		anchors.right		: menuHeader.right
-		anchors.top			: secondSeparator.bottom
+		anchors.top			: firstSeparator.bottom
 		anchors.topMargin	: Theme.generalMenuMargin
 
 		Label
@@ -272,7 +180,9 @@ Item
 			id		: saveFoldernameButton
 			width	: 30
 			height	: 30
-			text	: "+"
+			iconSource	: "qrc:///icons/create-folder.png"
+
+			enabled : foldernameText.text.length > 0
 
 			anchors.top			: parent.top
 			anchors.right		: cancelCreateFolderButton.left
@@ -290,7 +200,7 @@ Item
 			id		: cancelCreateFolderButton
 			width	: 30
 			height	: 30
-			text	: "x"
+			iconSource	: "qrc:/images/close-button.png"
 
 			anchors.top			: parent.top
 			anchors.right		: parent.right
@@ -302,6 +212,90 @@ Item
 			}
 		}
 	}
+
+	Item
+	{
+		id		: fileExportDialog
+		visible	: showfiledialog && loggedin
+		height	: visible ? 30 : 0
+
+		anchors.left			: menuHeader.left
+		anchors.right			: menuHeader.right
+		anchors.top				: newDirectoryButton.visible ? newDirectoryButton.bottom : folderExportDialog.bottom
+		anchors.topMargin		: Theme.generalMenuMargin
+		anchors.bottomMargin	: Theme.generalMenuMargin
+
+		Label
+		{
+			id 		: saveFilenameLabel
+			text	: qsTr("Filename")
+
+			width	: 80
+			height	: 30
+			color 	: Theme.black
+			font	: Theme.font
+
+			anchors.top			: parent.top
+			anchors.left		: parent.left
+			verticalAlignment	: Text.AlignVCenter
+		}
+
+		Rectangle
+		{
+			id		: saveFilenameInput
+			height	: saveFilenameLabel.height
+			clip	: true
+
+			color			: Theme.white
+			border.width	: filenameText.activeFocus ? 5 : 1
+			border.color	: filenameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+
+			anchors
+			{
+				left		: saveFilenameLabel.right
+				leftMargin	: Theme.generalAnchorMargin
+				top			: saveFilenameLabel.top
+				right		: saveFilenameButton.left
+				rightMargin	: Theme.generalAnchorMargin
+			}
+
+			TextInput
+			{
+				id				: filenameText
+				selectByMouse	: true
+				text			: fileMenuModel.osf.savefilename
+				font.pixelSize	: 14
+
+				anchors.fill		: parent
+				anchors.leftMargin	: Theme.itemPadding
+				verticalAlignment	: Text.AlignVCenter
+
+				onAccepted	:
+				{
+					fileMenuModel.osf.saveFile(filenameText.text)
+				}
+			}
+		}
+
+		RectangularButton
+		{
+			id		: saveFilenameButton
+			width	: saveFoldernameButton.width + cancelCreateFolderButton.width + Theme.generalAnchorMargin
+			height	: 30
+			text	: qsTr("Save")
+
+			enabled	: filenameText.text.length > 0
+
+			anchors.right		: parent.right
+			anchors.top			: parent.top
+
+			onClicked	:
+			{
+				fileMenuModel.osf.saveFile(filenameText.text)
+			}
+		}
+	}
+
 
 	Item
 	{
@@ -329,7 +323,7 @@ Item
 
 		anchors
 		{
-			top				: fileExportDialog.visible ? (newDirectoryButton.visible ? newDirectoryButton.bottom : folderExportDialog.bottom) :  firstSeparator.bottom
+			top				: fileExportDialog.visible ? fileExportDialog.bottom :  firstSeparator.bottom
 			bottom			: parent.bottom
 			left			: menuHeader.left
 			right			: menuHeader.right
@@ -344,7 +338,7 @@ Item
 		visible	: !loggedin && !processing
 
 		anchors.horizontalCenter	: parent.horizontalCenter
-		anchors.top					: secondSeparator.bottom
+		anchors.top					: firstSeparator.bottom
 		anchors.topMargin			: 40
 	}
 }

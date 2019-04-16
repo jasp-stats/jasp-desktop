@@ -272,7 +272,6 @@ void OSF::openSaveFile(const QString &nodePath, const QString &filename)
 	{
 		if (storedata)
 		{
-
 			setSavefilename(filename);
 
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
@@ -338,7 +337,6 @@ void OSF::newFolderCreated()
 	else
 		_model->refresh();
 
-	qDebug() << "newFolderCreated";
 	setSavefoldername(QString());
 	setProcessing(false);
 }
@@ -356,20 +354,8 @@ void OSF::newFolderClicked()
 		return;
 	}
 
-	bool ok = true;
 	QString name = savefoldername();
-
-	qDebug() << "-------------------------";
-	qDebug() << name;
-	qDebug() << "-------------------------";
-
-	if (checkEntryName(name, "Folder", false) == false) {
-		ok = false;
-
-		std::cerr << "Qname = QInputDialog::getText(this, \"New folder\", \"New folder name\", QLineEdit::Normal, name, &ok);" << std::endl;
-		throw std::runtime_error("No Inputdialog available cause were in QML");
-	}
-
+	bool ok = checkEntryName(name, "Folder", false);
 
 	if (ok)
 	{
