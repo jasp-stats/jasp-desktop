@@ -545,7 +545,7 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
             if (tableDataExists) {
                 row = rowData[rowNo];
                 content = row[columnName] === null ? '' : row[columnName];
-            }          
+            }
 
             let cell = { content: content };
 
@@ -764,4 +764,15 @@ function camelize (str) {
         if (+match === 0) return "";
         return index == 0 ? match.toLowerCase() : match.toUpperCase();
     });
+}
+
+function cleanCellContent (str) {
+	/**
+     * Format text to compatible html code
+     * Some sequences result in "Malformed byte sequence" error (specific to windows)
+     * @param str - string
+     */
+
+    // TODO: Find all such sequences
+    return str.replace('\u00A0', ' ')
 }

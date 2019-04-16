@@ -584,10 +584,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		}
 
 		if (columnHeaders.length > 0) {
-			
+
 			var hasOvertitles = false;
 			var hasAdjacentOvertitles = false;
-			
+
 			// If we have multiple adjacent overtitles, we should make small
 			// breaks in the line under the overTitle to indicate end of old and
 			// start of new overTitle. NB: with this option, the line is not copied
@@ -675,7 +675,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 				span *= 2  // times 2, because of footnote markers
 
-				chunks.push('<th colspan="' + span + '" class="' + cell.type + '">' + cell.content)
+				chunks.push('<th colspan="' + span + '" class="' + cell.type + '">' + cleanCellContent(cell.content))
 				if (cell.footnotes)
 					chunks.push(cell.footnotes.join(' '))
 				chunks.push('</th>')
