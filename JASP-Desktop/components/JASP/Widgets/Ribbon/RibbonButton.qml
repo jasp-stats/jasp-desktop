@@ -117,7 +117,7 @@ Rectangle
 					var props = {
 						"model"			: ribbonButton.menu,
 						"functionCall"	: functionCall,
-						"hasIcons"		: false
+						"hasIcons"		: ribbonButton.menu.hasIcons()
 					};
 
 					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
