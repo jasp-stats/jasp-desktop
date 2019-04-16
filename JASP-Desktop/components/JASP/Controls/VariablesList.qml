@@ -428,7 +428,7 @@ JASPControl
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? (model.columnType === "nominalText" ? "nominal" : model.columnType) : ""
 				property var extraColumnsModel:		model.extraColumns
 
-				enabled: !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
+				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
 				
 				function setRelative(draggedRect)
 				{
