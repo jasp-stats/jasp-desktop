@@ -333,10 +333,13 @@ void OSF::newFolderCreated()
 {
 	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
 
-	if (node->error())	MessageForwarder::showWarning("", "An error occured and the folder could not be created.");
+	if (node->error())
+		MessageForwarder::showWarning("", "An error occured and the folder could not be created.");
 	else
 		_model->refresh();
 
+	qDebug() << "newFolderCreated";
+	setSavefoldername(QString());
 	setProcessing(false);
 }
 
@@ -354,20 +357,18 @@ void OSF::newFolderClicked()
 	}
 
 	bool ok = true;
-	QString name = "New folder";
+	QString name = savefoldername();
 
+	qDebug() << "-------------------------";
+	qDebug() << name;
+	qDebug() << "-------------------------";
 
 	if (checkEntryName(name, "Folder", false) == false) {
+		ok = false;
+
 		std::cerr << "Qname = QInputDialog::getText(this, \"New folder\", \"New folder name\", QLineEdit::Normal, name, &ok);" << std::endl;
 		throw std::runtime_error("No Inputdialog available cause were in QML");
 	}
-
-	// do
-	// {
-	// 	std::cerr << "Qname = QInputDialog::getText(this, \"New folder\", \"New folder name\", QLineEdit::Normal, name, &ok);" << std::endl;
-	// 	throw std::runtime_error("No Inputdialog available cause were in QML");
-	// }
-	// while(checkEntryName(name, "Folder", false) == false);
 
 
 	if (ok)
@@ -430,6 +431,12 @@ void OSF::saveFile(const QString &name)
 	_mSaveFileName = name;
 	saveClicked();
 
+}
+
+void OSF::saveFolder(const QString &name)
+{
+	_mSaveFolderName = name;
+	newFolderClicked();
 }
 
 void OSF::startProcessing()

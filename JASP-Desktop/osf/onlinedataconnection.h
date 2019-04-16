@@ -26,7 +26,6 @@ public:
 
 private slots:
 	void actionFinished();
-	void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 signals:
 	void finished();

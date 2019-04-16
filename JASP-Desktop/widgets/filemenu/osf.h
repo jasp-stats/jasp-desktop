@@ -103,6 +103,7 @@ public slots:
 	void loginRequested(const QString &username, const QString &password);
 	void openFile(const QString &name);
 	void saveFile(const QString &name);
+	void saveFolder(const QString &name);
 	void startProcessing();
 	void stopProcessing();
 	void newFolderClicked();

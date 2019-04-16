@@ -188,7 +188,7 @@ Item
 		height	: 30
 		visible	: showfiledialog && loggedin && !processing
 
-		// Icons made by "https://www.flaticon.com/authors/icongeek26"
+		// Icons made by "https://www.flaticon.com/authors/smashicons"
 		iconSource		: "qrc:///icons/create-folder.png"
 		showIconAndText	: true
 
@@ -252,7 +252,7 @@ Item
 			{
 				id				: foldernameText
 				selectByMouse	: true
-				text			: fileMenuModel.osf.savefilename
+				text			: fileMenuModel.osf.savefoldername
 				font.pixelSize	: 14
 
 				anchors.fill		: parent
@@ -262,7 +262,7 @@ Item
 
 				onAccepted	:
 				{
-					fileMenuModel.osf.saveFile(foldernameText.text)
+					fileMenuModel.osf.saveFolder(foldernameText.text)
 				}
 			}
 		}
@@ -280,7 +280,8 @@ Item
 
 			onClicked	:
 			{
-				fileMenuModel.osf.newFolderClicked()
+				fileMenuModel.osf.saveFolder(foldernameText.text)
+				newDirectoryButton.visible = true;
 			}
 		}
 

@@ -36,7 +36,7 @@ public:
 			associated_datafile = "";
 
 	EntryType entryType;
-	
+
 	static inline EntryType getEntryTypeFromPath(const QString &path)
 	{
 		Utils::FileType basefiletype = Utils::getTypeFromFileName(path.toStdString());
@@ -58,7 +58,7 @@ public:
 			{ FileSystemEntry::CSV,		"qrc:/icons/spreadsheet.svg"	},
 			{ FileSystemEntry::SPSS,	"qrc:/icons/spreadsheet.svg"	},
 			{ FileSystemEntry::Other,	"qrc:/icons/spreadsheet.svg"	},
-			{ FileSystemEntry::Folder,	"qrc:/icons/folder.svg"			} };
+			{ FileSystemEntry::Folder,	"qrc:/icons/folder.png"			} };
 
 		return icons;
 	}
