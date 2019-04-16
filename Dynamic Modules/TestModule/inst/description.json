@@ -3,7 +3,7 @@
 	{
 		"title":									"Test Module",
 		"description": 								"A module to test stuff with.",
-		"version":									1.0,
+		"version":									"1.0",
 		"author":									"Joris Goosen",
 		"maintainer":								"Joris Goosen <Joris@JorisGoosen.nl>",
 		"website":									"",

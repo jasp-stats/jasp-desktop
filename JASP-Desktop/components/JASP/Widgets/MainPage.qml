@@ -45,12 +45,12 @@ Item
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidth : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
-		property bool shouldShowInputOutput:		!mainWindow.dataAvailable || mainWindow.analysesAvailable
+		property bool shouldShowInputOutput:		(!mainWindow.progressBarVisible && !mainWindow.dataAvailable) || mainWindow.analysesAvailable
 
 		DataPanel
 		{
 			id:						data
-			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
+			visible:				mainWindow.progressBarVisible || mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
 
 			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
@@ -59,14 +59,17 @@ Item
 
 			onWidthChanged:
 			{
-				var iAmBig = width > 0;
-				if(iAmBig !== mainWindow.dataPanelVisible)
-					mainWindow.dataPanelVisible = iAmBig
-
-				if(fakeEmptyDataForSumStatsEtc)
+				if(!mainWindow.progressBarVisible)
 				{
-					mainWindow.dataPanelVisible = false;
-					width = 0;
+					var iAmBig = width > 0;
+					 if(iAmBig !== mainWindow.dataPanelVisible)
+						mainWindow.dataPanelVisible = iAmBig
+
+					if(fakeEmptyDataForSumStatsEtc)
+					{
+						mainWindow.dataPanelVisible = false;
+						width = 0;
+					}
 				}
 
 				if(data.width !== data.maxWidth)

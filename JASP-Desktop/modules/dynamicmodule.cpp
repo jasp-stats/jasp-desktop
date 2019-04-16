@@ -122,9 +122,9 @@ void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
 		_website						= moduleDescription.get("website",			"Unknown").asString();
 		_maintainer						= moduleDescription.get("maintainer",		"JASP Team <info@jasp-stats.org>").asString();
 		_description					= moduleDescription.get("description",		"The R Code belonging to module " + _name).asString();
-		_version						= moduleDescription.get("version",			0).asInt();
+		_version						= moduleDescription.get("version",			"0.0.0").asString();
 
-		setRequiredPackages(descriptionJson["requiredPackages"]);
+		setRequiredPackages(descriptionJson.get("requiredPackages", Json::arrayValue));
 
 		for(auto * ribbonEntry : _ribbonEntries)
 			delete ribbonEntry;
@@ -172,13 +172,14 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 	out << "Package: "		<< _name <<
 		"\nType: Package"
 		"\nTitle: "			<< _name << " Module for JASP"
-		"\nVersion: "		<< std::to_string(_version) << ".0"
+		"\nVersion: "		<< _version <<
 		"\nDate: "			<< QDateTime::currentDateTime().toString("yyyy-MM-dd").toStdString() <<
 		"\nAuthor: "		<< _author <<
 		"\nWebsite: "		<< _website <<
 		"\nMaintainer: "	<< _maintainer <<
 		"\nDescription: "	<< _description <<
 		"\nLicense: "		<< _license;
+
 
 	if(_requiredPackages.isArray() && _requiredPackages.size() > 0)
 	{
@@ -188,12 +189,21 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 		for(Json::Value & pkgV : _requiredPackages)
 		{
 			if(!first) out << ", ";
-			out << pkgV["package"].asString();
 
-			if(!pkgV["version"].isNull())
-				out << " (>= " << pkgV["version"].asString() << ")";
+			if(pkgV.isObject())
+			{
+				out << pkgV["package"].asString();
 
-			first = false;
+				if(!pkgV["version"].isNull())
+					out << " (>= " << pkgV["version"].asString() << ")";
+
+				first = false;
+			}
+			else if(pkgV.isString())
+			{
+				out << pkgV.asString();
+				first = false;
+			}
 		}
 	}
 
@@ -410,8 +420,8 @@ RibbonEntry* DynamicModule::ribbonEntry(const std::string & ribbonTitle) const
 
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const
 {
-	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString();
-	int			moduleVersion	= jsonFromJaspFile.get("moduleVersion", -1).asInt();
+	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString(),
+				moduleVersion	= jsonFromJaspFile.get("moduleVersion", "0.0.1337").asString();
 
 	if(moduleName != name())
 		throw ModuleException(name(), "Tried to load an AnalysisEntry for module (" + moduleName +") from me...");

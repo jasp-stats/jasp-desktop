@@ -77,7 +77,7 @@ public:
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
 	bool				requiresDataset()	const { return _requiresDataset;						}
 	std::string			author()			const { return _author;									}
-	int					version()			const { return _version;								}
+	std::string			version()			const { return _version;								}
 	std::string			website()			const { return _website;								}
 	std::string			license()			const { return _license;								}
 	std::string			maintainer()		const { return _maintainer;								}
@@ -184,7 +184,6 @@ private:
 private:
 	//QDir			_generatedPackageFolder;
 	QFileInfo		_moduleFolder;
-	int				_version;
 	moduleStatus	_status = moduleStatus::uninitialized;
 	std::string		_name,
 					_title,
@@ -195,7 +194,8 @@ private:
 					_installLog			= "",
 					_maintainer,
 					_description,
-					_modulePackage		= "";
+					_modulePackage		= "",
+					_version;
 	bool			_requiresDataset	= true,
 					_installing			= false,
 					_installed			= false,
