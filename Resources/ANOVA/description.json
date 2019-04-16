@@ -27,6 +27,10 @@
 			"function":	"Ancova"
 		},
 		{
+			"title":	"MANOVA",
+			"function":	"Manova"
+		},
+		{
 			"title":	"-"
 		},
 		{
