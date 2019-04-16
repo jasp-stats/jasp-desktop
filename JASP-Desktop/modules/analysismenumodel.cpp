@@ -61,6 +61,7 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 void AnalysisMenuModel::setAnalysisEntries(const std::vector<Modules::AnalysisEntry *> &analysisEntries)
 {
 	_analysisEntries.clear();
+	_hasIcons = false;
 
 	Modules::AnalysisEntry* previousEntry = nullptr;
 	for (Modules::AnalysisEntry* entry: analysisEntries)
@@ -69,6 +70,11 @@ void AnalysisMenuModel::setAnalysisEntries(const std::vector<Modules::AnalysisEn
 		{
 			if (previousEntry && !previousEntry->isSeparator() )
 				_analysisEntries.push_back(new Modules::AnalysisEntry());
+		}
+		else if (entry->isAnalysis())
+		{
+			if (entry->icon() != "???" && entry->icon() != "")
+				_hasIcons = true;
 		}
 		_analysisEntries.push_back(entry);
 		previousEntry = entry;

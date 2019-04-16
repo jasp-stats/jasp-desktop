@@ -123,7 +123,8 @@ void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
 		_website						= moduleDescription.get("website",			"Unknown").asString();
 		_maintainer						= moduleDescription.get("maintainer",		"JASP Team <info@jasp-stats.org>").asString();
 		_description					= moduleDescription.get("description",		"The R Code belonging to module " + _name).asString();
-		_version						= moduleDescription.get("version",			"0.0.0").asString();
+		auto jsonVer					= moduleDescription.get("version",			"0.0.0");
+		_version						= jsonVer.isString() ? jsonVer.asString() : "0.0.0";
 
 		setRequiredPackages(descriptionJson.get("requiredPackages", Json::arrayValue));
 
