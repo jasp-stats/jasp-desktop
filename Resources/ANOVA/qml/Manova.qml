@@ -17,8 +17,8 @@
 //
 
 import QtQuick 2.8
+import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
-import JASP.Widgets 1.0
 
 Form
 {
@@ -49,8 +49,10 @@ Form
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
+		CheckBox { name: "includeIntercept";		label: qsTr("Include intercept"); checked: false }
 		
 	}
+	
 	
 	Section
 	{
@@ -58,15 +60,20 @@ Form
 		
 		Group
 		{
-			title: qsTr("Type")
+			title: qsTr("Test")
 			CheckBox { name: "testPillai";		label: qsTr("Pillai"); checked: true }
 			CheckBox { name: "testWilks";		label: qsTr("Wilks"); checked: false }
 			CheckBox { name: "testHotellingLawley";	label: qsTr("Hotelling-Lawley"); checked: false }
 			CheckBox { name: "testRoy";		label: qsTr("Roy"); checked: false }
 		}
 		
-		CheckBox { name: "includeIntercept";		label: qsTr("Include intercept"); checked: false }
-		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
+		Group
+		{
+			title: qsTr("Display")
+			CheckBox { name: "includeAnovaTables"; label: qsTr("ANOVA tables") }
+			CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
+		}
+
 	
 	}
 	
