@@ -37,7 +37,7 @@ Item {
 	{
 		id:						idHelpButton
 		visible:				helpbutton
-		height:					1.5 * parent.height
+		height:					headLabel.height
 		width:					height
 		iconSource:				"qrc:/images/info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
 		onClicked:				helpModel.showOrTogglePage(helpfile)
