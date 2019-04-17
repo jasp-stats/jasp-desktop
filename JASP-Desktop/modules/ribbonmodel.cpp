@@ -187,6 +187,30 @@ Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string& moduleName, 
 	return analysis;
 }
 
+QString RibbonModel::getModuleNameFromAnalysisName(const QString analysisName)
+{
+	QString result = "Common";
+	std::string searchName = analysisName.toStdString();
+	// This function is needed for old JASP file: they still have a reference to the common mondule that does not exist anymore.
+	for (const std::string& myModuleName : _moduleNames)
+	{
+		RibbonButton* button = _buttonModelsByName[myModuleName];
+		for (const std::string& name : button->getAllAnalysisNames())
+		{
+			if (name == searchName)
+			{
+				result = QString::fromStdString(myModuleName);
+				break;
+			}
+		}
+		if (result != "Common")
+			break;
+
+	}
+
+	return result;
+}
+
 void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)
 {
 	if(ribbonButtonModelIndex < 0)

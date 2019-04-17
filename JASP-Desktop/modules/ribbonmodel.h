@@ -68,6 +68,8 @@ public:
 
 	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
 	Modules::AnalysisEntry*		getAnalysis(const std::string& moduleName, const std::string& analysisName);
+
+	QString						getModuleNameFromAnalysisName(const QString analysisName);
 	
 signals:
 	void currentButtonModelChanged();
