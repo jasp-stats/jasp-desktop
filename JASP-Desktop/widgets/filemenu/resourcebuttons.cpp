@@ -2,14 +2,14 @@
 
 ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 	_data({
-		{ButtonType::RecentFiles,	"Recent Files",	false,	"./RecentFiles.qml"		},
-		{ButtonType::CurrentFile,	"Current File",	false,	"./CurrentFile.qml"		},
-		{ButtonType::Computer,		"Computer",		false,	"./Computer.qml"		},
-		{ButtonType::OSF,			"OSF",			false,	"./OSF.qml"				},
-		{ButtonType::DataLibrary,	"Data Library",	false,	"./DataLibrary.qml"		},
-		{ButtonType::PrefsData,		"Data",			false,	"./PrefsData.qml"		},
-		{ButtonType::PrefsResults,	"Results",		false,	"./PrefsResults.qml"	},
-		{ButtonType::PrefsAdvanced,	"Advanced",		false,	"./PrefsAdvanced.qml"	}
+		{ButtonType::RecentFiles,	"Recent Files",	false,	"./RecentFiles.qml"		, true},
+		{ButtonType::CurrentFile,	"Current File",	false,	"./CurrentFile.qml"		, false},
+		{ButtonType::Computer,		"Computer",		false,	"./Computer.qml"		, true},
+		{ButtonType::OSF,			"OSF",			false,	"./OSF.qml"				, true},
+		{ButtonType::DataLibrary,	"Data Library",	false,	"./DataLibrary.qml"		, true},
+		{ButtonType::PrefsData,		"Data",			false,	"./PrefsData.qml"		, true},
+		{ButtonType::PrefsResults,	"Results",		false,	"./PrefsResults.qml"	, true},
+		{ButtonType::PrefsAdvanced,	"Advanced",		false,	"./PrefsAdvanced.qml"	, true}
 	})
 {
 	for(size_t i=0; i<_data.size(); i++)
@@ -31,6 +31,8 @@ QVariant ResourceButtons::data(const QModelIndex &index, int role)	const
 	case TypeRole:			return _data[size_t(index.row())].button;
 	case VisibleRole:		return _data[size_t(index.row())].visible;
 	case QmlRole:			return _data[size_t(index.row())].qml;
+	case EnabledRole:		return _data[size_t(index.row())].enabled;
+
 	default:				return QVariant();
 	}
 }
@@ -58,7 +60,8 @@ QHash<int, QByteArray>	ResourceButtons::roleNames() const
 		{ NameRole,		"nameRole"		},
 		{ TypeRole,		"typeRole"		},
 		{ VisibleRole,	"visibleRole"	},
-		{ QmlRole,		"qmlRole"		} };
+		{ QmlRole,		"qmlRole"		},
+		{ EnabledRole,	"enabledRole"	}};
 
 	return roles;
 }
@@ -85,6 +88,15 @@ void ResourceButtons::setOnlyTheseButtonsVisible(std::set<ButtonType> buttons)
 		if(row.qml == currentQML() && !row.visible)
 			setCurrentQML("");
 	}
+}
+
+void ResourceButtons::setButtonEnabled(ResourceButtons::ButtonType button, bool enabled)
+{
+	size_t buttonIndex = _buttonToIndex[button];
+	QModelIndex modelIndex = index(int(buttonIndex), 0);
+	_data[buttonIndex].enabled = enabled;
+
+	emit dataChanged(modelIndex, modelIndex, {EnabledRole});
 }
 
 

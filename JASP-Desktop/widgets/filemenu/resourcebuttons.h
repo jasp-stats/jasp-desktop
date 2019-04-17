@@ -11,13 +11,14 @@ class ResourceButtons : public QAbstractListModel
 {
 	Q_OBJECT
 	Q_PROPERTY(QString currentQML READ currentQML WRITE setCurrentQML NOTIFY currentQMLChanged)
+
 public:
 	//["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
 	enum ButtonType {RecentFiles, CurrentFile, Computer, OSF, DataLibrary, PrefsData, PrefsResults, PrefsAdvanced};
 
-	struct DataRow { ButtonType button; QString name; bool visible; QString qml; };
+	struct DataRow { ButtonType button; QString name; bool visible; QString qml; bool enabled; };
 
-	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole };
+	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole, EnabledRole };
 
 	explicit ResourceButtons(QObject *parent = nullptr);
 
@@ -28,6 +29,7 @@ public:
 	QHash<int, QByteArray>	roleNames()															const	override;
 
 	void					setOnlyTheseButtonsVisible(std::set<ButtonType> buttons = {});
+	void					setButtonEnabled(ButtonType button, bool enabled);
 
 	QString					qml(ResourceButtons::ButtonType button);
 

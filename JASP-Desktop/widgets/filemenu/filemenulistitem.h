@@ -12,7 +12,8 @@ enum FileMenuListItemType {
 	AssociatedDataFileRole,
 	IconSourceRole,
 	DataIconSourceRole,
-	DirRole
+	DirRole,
+	ActionRole
 };
 
 const QHash<int, QByteArray> FileMenuListItemTypeRoleNames = {
@@ -23,7 +24,8 @@ const QHash<int, QByteArray> FileMenuListItemTypeRoleNames = {
 	{ AssociatedDataFileRole,	"associated_datafile"	},
 	{ IconSourceRole,			"iconsource"			},
 	{ DataIconSourceRole,		"dataiconsource"		},
-	{ DirRole,					"dirpath"				}
+	{ DirRole,					"dirpath"				},
+	{ ActionRole,				"action"				}
 };
 
 #endif // FILEMENULISTITEM_H

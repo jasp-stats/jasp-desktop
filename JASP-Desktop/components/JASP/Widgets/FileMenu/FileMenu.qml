@@ -236,6 +236,7 @@ FocusScope
 						height: resourceButtonHeight
 						anchors.leftMargin: 3
 						anchors.left: parent.left
+						enabled: enabledRole
 
 						MenuButton
 						{
