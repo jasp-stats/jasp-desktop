@@ -36,7 +36,7 @@ public:
 			associated_datafile = "";
 
 	EntryType entryType;
-	
+
 	static inline EntryType getEntryTypeFromPath(const QString &path)
 	{
 		Utils::FileType basefiletype = Utils::getTypeFromFileName(path.toStdString());
