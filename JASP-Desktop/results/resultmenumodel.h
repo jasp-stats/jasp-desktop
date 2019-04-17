@@ -35,7 +35,8 @@ public:
 		DisplayRole,
 		NameRole,
 		MenuImageSourceRole,
-		JSFunctionRole
+		JSFunctionRole,
+		IsSeparatorRole
 	};
 
 	ResultMenuModel(QObject *parent) : QAbstractListModel(parent) {}

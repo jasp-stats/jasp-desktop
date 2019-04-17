@@ -85,9 +85,9 @@ Item
 			{
 				sourceComponent :
 				{
-					if (model.isSeparator)
+					if (model.isSeparator !== undefined && model.isSeparator)
 						return menuSeparator;
-					else if (model.isGroupTitle)
+					else if (model.isGroupTitle !== undefined && model.isGroupTitle)
 						return menuGroupTitle;
 					return menuDelegate
 				}
