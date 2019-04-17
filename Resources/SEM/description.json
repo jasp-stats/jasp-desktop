@@ -19,6 +19,11 @@
 			"title":	"Structural Equation Modeling",
 			"qml":		"SEMSimple.qml",
 			"function":	"SEMSimple"
-		}
+		},
+        {
+            "title":	"Mediation Analysis",
+            "qml":		"MediationAnalysis.qml",
+            "function":	"MediationAnalysis"
+        }
 	]
 }
