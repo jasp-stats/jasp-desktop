@@ -67,6 +67,9 @@ void Options::remove(string name)
 
 void Options::clear()
 {
+	for(OptionNamed opt : _options)
+		opt.second->clear();
+
 	_options.clear();
 }
 

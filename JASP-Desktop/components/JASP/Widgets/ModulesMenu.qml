@@ -90,6 +90,7 @@ Item
 				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
 				toolTip:			folderSelected ? "Install selected developer module" : "Select a developer module under Left menu->Preference->Advanced"
 				visible:			preferencesModel.developerMode
+				enabled:			dynamicModules.developersModuleInstallButtonEnabled
 
 				readonly property bool folderSelected: preferencesModel.developerFolder != ""
 			}

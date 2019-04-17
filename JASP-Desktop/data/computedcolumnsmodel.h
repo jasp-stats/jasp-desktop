@@ -80,6 +80,7 @@ signals:
 				void	refreshData();
 				void	showAnalysisForm(Analysis *analysis);
 				void	lastCreatedColumnChanged(QString lastCreatedColumn);
+				void	dataColumnAdded(QString columnName);
 
 public slots:
 				void				computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);

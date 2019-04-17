@@ -185,7 +185,6 @@ private slots:
 	void analysisImageSavedHandler(Analysis* analysis);
 
 	void removeAllAnalyses();
-	void updateShownVariablesModel();
 
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);

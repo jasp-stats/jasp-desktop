@@ -31,6 +31,8 @@ class DynamicModules : public QObject
 {
 	Q_OBJECT
 
+	Q_PROPERTY(bool developersModuleInstallButtonEnabled READ developersModuleInstallButtonEnabled WRITE setDevelopersModuleInstallButtonEnabled NOTIFY developersModuleInstallButtonEnabledChanged)
+
 public:
 	explicit DynamicModules(QObject *parent) ;
 
@@ -82,6 +84,8 @@ public:
 
 	void startWatchingDevelopersModule();
 
+	bool developersModuleInstallButtonEnabled() const { return _developersModuleInstallButtonEnabled; }
+
 public slots:
 	void installationPackagesSucceeded(	const QString & moduleName);
 	void installationPackagesFailed(	const QString & moduleName, const QString & errorMessage);
@@ -89,6 +93,7 @@ public slots:
 	void loadingFailed(					const QString & moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string & moduleName);
 	void registerForLoading(			const std::string & moduleName);
+	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 
 signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
@@ -101,6 +106,8 @@ signals:
 	void restartEngines();
 
 	void reloadHelpPage();
+
+	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
 
 private slots:
 	void enginesStopped();
@@ -127,6 +134,7 @@ private:
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
+	bool													_developersModuleInstallButtonEnabled = true;
 };
 
 #endif // DYNAMICMODULES_H

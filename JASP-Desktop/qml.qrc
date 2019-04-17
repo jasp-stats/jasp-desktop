@@ -106,5 +106,6 @@
         <file>components/JASP/Controls/ComputedColumnField.qml</file>
         <file>components/JASP/Widgets/AboutWindow.qml</file>
         <file>components/JASP/Widgets/FileMenu/MenuHeader.qml</file>
+        <file>components/JASP/Controls/AddColumnField.qml</file>
     </qresource>
 </RCC>

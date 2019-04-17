@@ -149,14 +149,20 @@ void ComputedColumnsModel::sendCode(QString code)
 
 void ComputedColumnsModel::validate(QString columnName)
 {
-	(*_computedColumns)[columnName.toStdString()].validate();
-	emitHeaderDataChanged(columnName);
+	try
+	{
+		(*_computedColumns)[columnName.toStdString()].validate();
+		emitHeaderDataChanged(columnName);
+	} catch(columnNotFound & ){}
 }
 
 void ComputedColumnsModel::invalidate(QString columnName)
 {
-	(*_computedColumns)[columnName.toStdString()].invalidate();
-	emitHeaderDataChanged(columnName);
+	try
+	{
+		(*_computedColumns)[columnName.toStdString()].invalidate();
+		emitHeaderDataChanged(columnName);
+	} catch(columnNotFound & ){}
 }
 
 void ComputedColumnsModel::invalidateDependents(std::string columnName)
@@ -412,12 +418,14 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 		createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
 		createdColumn->setAnalysis(analysis);
 	}
+	else
+		computedColumnsPointer()->createColumn(name.toStdString(), (Column::ColumnType)columnType);
 
 	emit dataSetChanged(_package->dataSet());
 	emit refreshData();
 
-	if(createActualComputedColumn)
-		setLastCreatedColumn(name);
+	if(createActualComputedColumn)		setLastCreatedColumn(name);
+	else								emit dataColumnAdded(name);
 
 	return createdColumn;
 }

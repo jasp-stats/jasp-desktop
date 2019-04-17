@@ -262,6 +262,9 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 	MessageForwarder::showWarning("Installation of Module " + moduleName + " failed", "The installation of Module "+ moduleName+ " failed with the following errormessage:\n"+errorMessage);
 
 	uninstallModule(moduleName.toStdString());
+
+	if(moduleName.toStdString() == developmentModuleName())
+		setDevelopersModuleInstallButtonEnabled(true);
 }
 
 void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
@@ -282,6 +285,9 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 		if(wasInitialized)
 			emit dynamicModuleChanged(dynMod);
 		startWatchingDevelopersModule();
+
+		setDevelopersModuleInstallButtonEnabled(true);
+
 	}
 }
 
@@ -373,6 +379,8 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 
 void DynamicModules::installJASPDeveloperModule()
 {
+	setDevelopersModuleInstallButtonEnabled(false);
+
 	_devModSourceDirectory = QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
 
 	std::string origin	= _devModSourceDirectory.absolutePath().toStdString(),
@@ -617,4 +625,13 @@ std::string DynamicModules::moduleDirectory(const std::string & moduleName)	cons
 std::wstring DynamicModules::moduleDirectoryW(const std::string & moduleName)	const
 {
 	return AppDirs::modulesDir().toStdWString() + QString::fromStdString(moduleName).toStdWString() + L'/';
+}
+
+void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled)
+{
+	if (_developersModuleInstallButtonEnabled == developersModuleInstallButtonEnabled)
+		return;
+
+	_developersModuleInstallButtonEnabled = developersModuleInstallButtonEnabled;
+	emit developersModuleInstallButtonEnabledChanged(_developersModuleInstallButtonEnabled);
 }

@@ -33,6 +33,11 @@ void OptionComputedColumn::setValue(const std::string &newValue)
 
 }
 
+void OptionComputedColumn::clear()
+{
+	setValue("");
+}
+
 Option *OptionComputedColumn::clone() const
 {
 	return new OptionComputedColumn(_value, _computed, _columnType);

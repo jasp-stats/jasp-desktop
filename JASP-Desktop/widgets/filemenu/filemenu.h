@@ -108,6 +108,7 @@ public slots:
 	void showFileMenu();
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
+	void dataColumnAdded(QString columnName);
 
 private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }

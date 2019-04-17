@@ -333,6 +333,21 @@ void FileMenu::setSyncFile(FileEvent *event)
 		setCurrentDataFile(event->path());
 }
 
+void FileMenu::dataColumnAdded(QString columnName)
+{
+	if(_CurrentFile->getCurrentDataFilePath() != "" && checkSyncFileExists(_CurrentFile->getCurrentDataFilePath()))
+	{
+		//Ok a column was added to the data but we already have a sync file so we should re-generate the data!
+
+		FileEvent * event = new FileEvent(this, FileEvent::FileGenerateData);
+
+		connect(event, &FileEvent::completed, this, &FileMenu::setSyncFile);
+		event->setPath(_CurrentFile->getCurrentDataFilePath());
+
+		dataSetIORequestHandler(event);
+	}
+}
+
 void FileMenu::fileOperationClicked(const ActionButtons::FileOperation action)
 {
 	setFileoperation(action);
@@ -387,6 +402,7 @@ void FileMenu::dataSetOpenCurrentRequestHandler(QString path)
 bool FileMenu::checkSyncFileExists(const QString &path)
 {
 	bool exists = path.startsWith("http") ? true : (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0);
+
     if (!exists)
 	{
         int attempts = 1;
@@ -397,7 +413,8 @@ bool FileMenu::checkSyncFileExists(const QString &path)
             exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
         }
     }
-    if (!exists)
+
+	if (!exists)
     {
 #ifdef JASP_DEBUG
         std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;

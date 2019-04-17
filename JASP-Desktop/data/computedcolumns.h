@@ -14,6 +14,7 @@ public:
 
 						ComputedColumns(DataSetPackage * package = NULL) { setPackage(package); }
 	ComputedColumn *	createComputedColumn(std::string name, Column::ColumnType type, ComputedColumn::computedType desiredType);
+	void				createColumn(std::string name, Column::ColumnType type);
 	void				removeComputedColumn(std::string name);
 	void				refreshColumnPointers();
 	void				setPackage(DataSetPackage * package) { _package = package; }
