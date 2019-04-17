@@ -42,6 +42,7 @@ public:
 	bool hasIntValue() const;
 	int value() const;
     void setLabel(const std::string &label);
+	void setValue(int value);
 	Label& operator=(const Label &label);
 
 	bool filterAllows() const { return _filterAllow; }

@@ -72,7 +72,12 @@ int Label::value() const
 }
 
 void Label::setLabel(const std::string &label) {
-    _setLabel(label);
+	_setLabel(label);
+}
+
+void Label::setValue(int value)
+{
+	_intValue = value;
 }
 
 Label &Label::operator=(const Label &label)
