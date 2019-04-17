@@ -33,9 +33,15 @@ std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
 };
 
 ResultMenuEntry::ResultMenuEntry(QString displayText, QString name, QString menuImageSource, QString jsFunction)
+	: _displayText(displayText)
+	, _name(name)
+	, _menuImageSource(menuImageSource)
+	, _jsFunction(jsFunction)
+	, _isSeparator(false)
 {
-	_displayText		= displayText;
-	_name				= name;
-	_menuImageSource	= menuImageSource;
-	_jsFunction			= jsFunction;
+}
+
+ResultMenuEntry::ResultMenuEntry()
+{
+	_isSeparator = true;
 }

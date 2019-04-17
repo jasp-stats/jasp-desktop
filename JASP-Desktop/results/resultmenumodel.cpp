@@ -26,7 +26,7 @@ QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 	if (index.row() >= rowCount())
 		return QVariant();
 
-	ResultMenuEntry entry = _resultMenuEntries.at(index.row());
+	ResultMenuEntry entry = _resultMenuEntries.at(size_t(index.row()));
 
 	if		(role == DisplayRole)
 		return entry.displayText();
@@ -36,6 +36,8 @@ QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 		return entry.menuImageSource();
 	else if	(role == JSFunctionRole)
 		return entry.jsFunction();
+	else if (role == IsSeparatorRole)
+		return entry.isSeparator();
 
 	return QVariant();
 }
@@ -47,7 +49,8 @@ QHash<int, QByteArray> ResultMenuModel::roleNames() const
 		{	DisplayRole,			"displayText"		},
 		{	NameRole,				"name"				},
 		{	MenuImageSourceRole,	"menuImageSource"	},
-		{	JSFunctionRole,			"jsFunction"		}
+		{	JSFunctionRole,			"jsFunction"		},
+		{	IsSeparatorRole,		"isSeparator"		}
 	};
 
 	return roles;
@@ -65,7 +68,7 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 	beginResetModel();
 	std::vector<ResultMenuEntry> entries;
 
-	ResultMenuEntry separator("???", "", "", "");
+	ResultMenuEntry separator;
 
 	for (auto const& x : ResultMenuEntry::AllResultEntries) {
 

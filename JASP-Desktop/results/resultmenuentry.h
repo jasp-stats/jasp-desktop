@@ -32,11 +32,13 @@ public:
 					QString name,
 					QString menuImageSource,
 					QString jsFunction);
+	ResultMenuEntry();
 
 	QString	displayText()						const	{	return _displayText;			}
 	QString	name()								const	{	return _name;					}
 	QString	menuImageSource()					const	{	return _menuImageSource;		}
 	QString	jsFunction()						const	{	return _jsFunction;				}
+	bool	isSeparator()						const	{	return _isSeparator;			}
 
 	void	setDisplayText(QString displayText)			{	_displayText = displayText;		}
 	void	setImageSource(QString imageSource)			{	_menuImageSource = imageSource;	}
@@ -47,6 +49,7 @@ private:
 			_name,
 			_menuImageSource,
 			_jsFunction;
+	bool	_isSeparator = false;
 };
 
 #endif // RESULTMENUENTRY_H
