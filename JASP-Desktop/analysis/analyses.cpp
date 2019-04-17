@@ -136,9 +136,11 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
 	connect(analysis, &Analysis::rewriteImagesSignal,				this, &Analyses::analysisRewriteImages				);
 	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
+	connect(analysis, &Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
+
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{

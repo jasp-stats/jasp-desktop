@@ -47,17 +47,18 @@ QtObject {
 	readonly property color uiBackground:				grayMuchLighter
 	readonly property color uiBorder:					grayDarker
 
-	readonly property color buttonColor:				grayLighter
-	readonly property color buttonBorderColor:			grayLighter
-	readonly property color buttonColorHovered:			uiBackground
+	readonly property color buttonColor:				grayMuchLighter
+	readonly property color buttonBorderColor:			gray
+	readonly property color buttonColorHovered:			grayLighter
 	readonly property color buttonBorderColorHovered:	black
 	readonly property color buttonColorPressed:			gray
+
 	readonly property color buttonMenuColorPressed:		gray
 	readonly property color buttonMenuColorFocus:		grayLighter
 	readonly property color buttonMenuColorSelected:	grayLighter
 	readonly property color buttonMenuColorHovered:		grayMuchLighter
-	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
 
+	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
 
 	readonly property color itemHighlight:				blueMuchLighter
 
@@ -112,7 +113,8 @@ QtObject {
 	readonly property real ribbonScaleHovered:			1.1
 
 	readonly property int menuItemHeight:               20  * uiScale
-	readonly property int menuHeaderHeight:             40  * uiScale
+	readonly property int menuGroupTitleHeight:         40  * uiScale
+	readonly property int menuHeaderHeight:             30  * uiScale
 	readonly property real menuSpacing:					1   * uiScale
 	readonly property real menuPadding:					10  * uiScale
 

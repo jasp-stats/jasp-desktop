@@ -78,6 +78,7 @@ void Analysis::bindOptionHandlers()
 {
 	_options->changed.connect(							boost::bind( &Analysis::optionsChangedHandler,						this, _1));
 	_options->requestComputedColumnCreation.connect(	boost::bind( &Analysis::requestComputedColumnCreationHandler,		this, _1));
+	_options->requestColumnCreation.connect(			boost::bind( &Analysis::requestColumnCreationHandler,				this, _1, _2));
 	_options->requestComputedColumnDestruction.connect(	boost::bind( &Analysis::requestComputedColumnDestructionHandler,	this, _1));
 }
 

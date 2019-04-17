@@ -49,6 +49,7 @@ void BoundQMLTextInput::initTextInput()
 	else if (type == "percent")			_inputType = TextInputType::PercentIntputType;
 	else if (type == "integerArray")	_inputType = TextInputType::IntegerArrayInputType;
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
+	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
 	else								_inputType = TextInputType::StringInputType;
 
 	if (_item)
@@ -125,6 +126,7 @@ void BoundQMLTextInput::bindTo(Option *option)
 		break;
 
 	case TextInputType::ComputedColumnType:
+	case TextInputType::AddColumnType:
 		_option = _computedColumn = dynamic_cast<OptionComputedColumn *>(option);
 		_value	= QString::fromStdString(_computedColumn->value());
 		break;
@@ -151,10 +153,17 @@ Option *BoundQMLTextInput::createOption()
 	case TextInputType::ComputedColumnType:
 	{
 		option = new OptionComputedColumn();
-
 		option->requestComputedColumnCreation.connect(		boost::bind( &Option::notifyRequestComputedColumnCreation,		form()->options(), _1));
 		option->requestComputedColumnDestruction.connect(	boost::bind( &Option::notifyRequestComputedColumnDestruction,	form()->options(), _1));
+		break;
+	}
+	case TextInputType::AddColumnType:
+	{
+		QString colTypeProp		= getItemProperty("columnType").toString();
+		auto	colType = Column::columnTypeFromString(colTypeProp.toStdString());
+				option = new OptionComputedColumn("", false, colType);
 
+		option->requestColumnCreation.connect(boost::bind( &Option::notifyRequestColumnCreation, form()->options(), _1, _2));
 		break;
 	}
 	case TextInputType::StringInputType:
@@ -173,6 +182,7 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::NumberInputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
 	case TextInputType::PercentIntputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
 	case TextInputType::IntegerArrayInputType:	return dynamic_cast<OptionIntegerArray*>(option)	!= nullptr;
+	case TextInputType::AddColumnType:
 	case TextInputType::ComputedColumnType:		return dynamic_cast<OptionComputedColumn*>(option)	!= nullptr;
 	case TextInputType::StringInputType:
 	default:									return dynamic_cast<OptionString*>(option)			!= nullptr;
@@ -251,6 +261,7 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 		break;
 	}
 	case TextInputType::ComputedColumnType:
+	case TextInputType::AddColumnType:
 		dynamic_cast<OptionComputedColumn*>(option)->setValue(text.toStdString());
 		break;
 

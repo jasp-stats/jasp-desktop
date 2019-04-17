@@ -29,7 +29,7 @@ Item
 	property var props	: undefined
 	property bool hasIcons: true
 
-	property real _iconPad: 5 * Theme.uiScale
+	property real _iconPad: 5 * preferencesModel.uiScale
 
 	onPropsChanged:
 	{
@@ -103,7 +103,7 @@ Item
 						height	: Theme.menuItemHeight
 						color	: mouseArea.pressed ? Theme.blueMuchLighter : mouseArea.containsMouse ? Theme.grayLighter : Theme.white
 
-						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * Theme.uiScale
+						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
 						Rectangle
@@ -159,10 +159,10 @@ Item
 					{
 						id		: menuItem
 						width	: initWidth
-						height	: Theme.menuHeaderHeight
+						height	: Theme.menuGroupTitleHeight
 						color	: Theme.white
 
-						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * Theme.uiScale
+						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
 
 						Rectangle

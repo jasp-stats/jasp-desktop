@@ -36,7 +36,7 @@ Rectangle
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				!rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 
 		Image
 		{
@@ -184,7 +184,7 @@ Rectangle
 		anchors.top:		rectTitle.bottom
 		anchors.margins:	height > 0 ? 1 : 0
 
-		color:				rectTitleAndDescripton.allHovered ? Theme.white : Theme.uiBackground
+		color:				rectTitleAndDescripton.color//allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 		visible:			model.description !== ""
 
 		Text

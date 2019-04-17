@@ -66,11 +66,13 @@ public:
 
 
 	boost::signals2::signal<void				(Option *)>											changed;
+	boost::signals2::signal<void				(std::string, int)>									requestColumnCreation;
 	boost::signals2::signal<void				(std::string)>										requestComputedColumnDestruction;
 	boost::signals2::signal<ComputedColumn *	(std::string), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
 
-	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)		{ return requestComputedColumnCreation(columnName); }
-	void				notifyRequestComputedColumnDestruction(std::string columnName)	{ requestComputedColumnDestruction(columnName); }
+	void				notifyRequestColumnCreation(std::string columnName, int columnType)	{ return requestColumnCreation(columnName, columnType); }
+	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)			{ return requestComputedColumnCreation(columnName); }
+	void				notifyRequestComputedColumnDestruction(std::string columnName)		{ requestComputedColumnDestruction(columnName); }
 	
 protected:
 	void				notifyChanged();

@@ -6,18 +6,21 @@ import JASP.Widgets 1.0
 
 Item {
 
-	property bool toolseparator: true
-	property bool helpbutton: false
-	property string headertext: ""
-	property string helpfile: ""
+	property bool toolseparator:	true
+	property bool helpbutton:		false
+	property string headertext:		""
+	property string helpfile:		""
 
-	height:Theme.menuItemHeight
-	anchors.top: parent.top
-	anchors.left: parent.left
-	anchors.right: parent.right
-	anchors.leftMargin: Theme.generalMenuMargin
-	anchors.rightMargin: Theme.generalMenuMargin
-	anchors.topMargin: Theme.generalMenuMargin
+	height:				Theme.menuHeaderHeight
+	anchors
+	{
+		top:			parent.top
+		left:			parent.left
+		right:			parent.right
+		leftMargin:		Theme.generalMenuMargin
+		rightMargin:	Theme.generalMenuMargin
+		topMargin:		Theme.generalMenuMargin
+	}
 
 	Label
 	{
@@ -46,13 +49,13 @@ Item {
 
 	ToolSeparator
 	{
-		id: firstSeparator
+		id:				firstSeparator
 
-		anchors.top: headLabel.bottom
-		width: parent.width
+		anchors.top:	headLabel.bottom
+		width:			parent.width
 
-		orientation: Qt.Horizontal
-		visible: toolseparator
+		orientation:	Qt.Horizontal
+		visible:		toolseparator
 	}
 
 }
