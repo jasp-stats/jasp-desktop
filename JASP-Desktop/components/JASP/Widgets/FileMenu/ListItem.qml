@@ -114,7 +114,7 @@ Rectangle
 			{
 				id:			datafileToolTip
 				delay:		500
-				text:		toolTipText(model.type, model.associated_datafile, "datafileMouseArea")
+				text:		toolTipText(model.action, model.type, model.associated_datafile, "datafileMouseArea")
 				visible:	datafileMouseArea.containsMouse
 				font:		Theme.font
 			}
@@ -167,7 +167,7 @@ Rectangle
 		{
 			id:			commonToolTip
 			delay:		500
-			text:		toolTipText(model.type, model.associated_datafile, "commonMouseArea")
+			text:		toolTipText(model.action, model.type, model.associated_datafile, "commonMouseArea")
 			visible:	rectTitleAndDescripton.mainHovered
 			font:		Theme.font
 		}
@@ -219,17 +219,20 @@ Rectangle
 		}
 	}
 
-	function toolTipText(type, associated_datafile, mousearea)
+	function toolTipText(action, type, associated_datafile, mousearea)
 	{
+		if (action === "sync")
+			return qsTr("Synchronize with this Data File");
+
 		//model type: JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5
 
 		if (type === 3)
-			return "Navigate to folder"
+			return qsTr("Navigate to folder")
 
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
-			return "Open JASP file"
+			return qsTr("Open JASP file")
 
-		return "Open data file"
+		return qsTr("Open data file")
 
 	}
 }

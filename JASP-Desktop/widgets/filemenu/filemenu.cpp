@@ -270,6 +270,8 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		_CurrentFile->setCurrentFileInfo("", Utils::FileType::unknown, false);
 		clearSyncData();
 	}
+
+	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_CurrentFile->getCurrentDataFilePath().isEmpty());
 		
 	if (event->successful())
 	{

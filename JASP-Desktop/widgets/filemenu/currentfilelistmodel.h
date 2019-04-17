@@ -18,7 +18,7 @@ public:
 	void					setCurrentFilePath(const QString &newcurrent);
 	
 signals:
-	void syncFile(FileEvent *event);
+	void syncCurrentFile(FileEvent *event);
 
 public slots:
 	void openFile(const QString& path) override;

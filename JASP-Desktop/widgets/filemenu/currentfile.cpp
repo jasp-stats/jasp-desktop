@@ -115,8 +115,8 @@ void CurrentFile::setListModel(CurrentFileListModel * listModel)
 	if (_currentFileListModel == listModel)
 		return;
 
-	connect(_currentFileListModel, &CurrentFileListModel::syncFile, this, &CurrentFile::syncFile);
-
 	_currentFileListModel = listModel;
+	connect(_currentFileListModel, &CurrentFileListModel::syncCurrentFile, this, &CurrentFile::syncFile);
+
 	emit listModelChanged(_currentFileListModel);
 }

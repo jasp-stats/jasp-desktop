@@ -33,7 +33,7 @@ public:
 	QString	name,
 			path,
 			description,
-			associated_datafile = "";
+			associatedDataFile = "";
 
 	EntryType entryType;
 

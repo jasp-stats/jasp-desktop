@@ -21,8 +21,6 @@ public:
 	QHash<int, QByteArray>	roleNames()																			const	override { return FileMenuListItemTypeRoleNames; }
 	Qt::ItemFlags			flags(const QModelIndex& index)														const	override;
 
-	bool fileOpener() { return _forOpening; }
-
 public slots:
 	virtual void changePath(const QString& name, const QString& path);
 	virtual void changePathCrumbIndex(const int& index);
@@ -32,7 +30,7 @@ public slots:
 
 protected:
 	FileSystemModel *_model = nullptr;
-	bool			_forOpening = true;
+	bool			_openFileWhenClicked = true;
 };
 
 #endif // FILEMENUBASICLISTMODEL_H

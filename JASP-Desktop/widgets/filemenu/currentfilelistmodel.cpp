@@ -6,6 +6,7 @@
 CurrentFileListModel::CurrentFileListModel(QObject *parent)
 	: FileMenuBasicListModel(parent, new CurrentFileFileSystem(parent))
 {
+	_openFileWhenClicked = false;
 	_fsbmCurrentFile = static_cast<CurrentFileFileSystem*>(_model);
 	_fsbmCurrentFile->refresh();	
 }
@@ -33,5 +34,5 @@ void CurrentFileListModel::openFile(const QString &path)
 	FileEvent *event = new FileEvent(this->parent(), FileEvent::FileSyncData);
 	event->setPath(path);
 
-	emit syncFile(event);
+	emit syncCurrentFile(event);
 }

@@ -102,7 +102,7 @@ FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntr
 	}
 
 	entry.description	= "";
-	entry.associated_datafile = "";
+	entry.associatedDataFile = "";
 
 	return entry;
 }
@@ -115,7 +115,7 @@ FileSystemEntry FileSystemModel::createEntry(const QString &path, const QString 
 	entry.path					= path;
 	entry.description			= description;
 	entry.entryType				= type;
-	entry.associated_datafile	= associated_datafile;
+	entry.associatedDataFile	= associated_datafile;
 
 	return entry;
 }
