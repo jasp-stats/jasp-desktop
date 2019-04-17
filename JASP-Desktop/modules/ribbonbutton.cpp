@@ -180,3 +180,15 @@ Modules::AnalysisEntry *RibbonButton::getAnalysis(const std::string &name)
 	
 	return analysis;
 }
+
+std::vector<std::string> RibbonButton::getAllAnalysisNames() const
+{
+	std::vector<std::string> allAnalyses;
+	for (Modules::AnalysisEntry* menuEntry : _menuEntries)
+	{
+		if (menuEntry->isAnalysis())
+			allAnalyses.push_back(menuEntry->function());
+	}
+
+	return allAnalyses;
+}

@@ -49,6 +49,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		QString			name				= QString::fromStdString(analysisData["name"].asString()),
 						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
 
+		// An old JASP file may still have references to the old Common module.
+		if (module == "Common")
+			module = ribbonModel->getModuleNameFromAnalysisName(name);
+
 		Json::Value &	optionsJson	= analysisData["options"],
 					&	versionJson	= analysisData["version"];
 
