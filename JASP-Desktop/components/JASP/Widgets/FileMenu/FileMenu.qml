@@ -65,7 +65,7 @@ FocusScope
 	property int resourceButtonHeight: 1.5 * actionButtionHeight
 	property int nbColumns: selectedActionMenu ? (selectedActionMenu.hasResourceMenu ? 2 : 1) : 2
 	property int colWidths: 150 * preferencesModel.uiScale
-	property var selectedActionMenu
+	property var selectedActionMenu: false
 
 	focus: fileMenuModel.visible
 

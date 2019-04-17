@@ -32,7 +32,7 @@ ListModel
 	}
 	ListElement
 	{
-		displayText		: "Nomial"
+		displayText		: "Nominal"
 		menuImageSource	: "qrc:/icons/variable-nominal.svg"
 	}
 }

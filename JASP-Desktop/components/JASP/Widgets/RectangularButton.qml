@@ -62,75 +62,75 @@ FocusScope
 	signal clicked()
 
 
-Rectangle
-{
-	id: rect
-
-	color:			_pressed ? Theme.buttonColorPressed :	_showHovered ? Theme.buttonColorHovered			: Theme.buttonColor
-	border.color:											_showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
-	border.width:	1
-	focus: true
-	width: parent.width
-	height: parent.height
-
-	MouseArea
+	Rectangle
 	{
-		id:							buttonMouseArea
-		anchors.fill:				parent
-		acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
-		hoverEnabled:				true
-		cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-		onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.forceActiveFocus(); } //else mouse.accepted = false;
-		visible:					filterButtonRoot.enabled
-		//propagateComposedEvents:	true
+		id: rect
+
+		color:			_pressed || selected ? Theme.buttonColorPressed :	_showHovered ?				Theme.buttonColorHovered		: Theme.buttonColor
+		border.color:														_showHovered || selected ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+		border.width:	1
+		focus: true
+		width: parent.width
+		height: parent.height
+
+		MouseArea
+		{
+			id:							buttonMouseArea
+			anchors.fill:				parent
+			acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
+			hoverEnabled:				true
+			cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+			onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.forceActiveFocus(); } //else mouse.accepted = false;
+			visible:					filterButtonRoot.enabled
+			//propagateComposedEvents:	true
+		}
+
+		Image
+		{
+			id: buttonIcon
+			x:	!filterButtonRoot.showIconAndText ?
+					(parent.width / 2) - (width / 2) :
+					filterButtonRoot.iconLeft ?
+						filterButtonRoot.buttonPadding :
+						parent.width - (width + filterButtonRoot.buttonPadding)
+
+			y:	(parent.height / 2) - (height / 2)
+
+			width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
+			height: filterButtonRoot.height - (2 * buttonPadding)
+
+			sourceSize.width:	Math.max(48, width  * 2)
+			sourceSize.height:	Math.max(48, height * 2)
+
+			visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
+			source:		filterButtonRoot.iconSource
+		}
+
+		Text
+		{
+			id: buttonText
+			x:	filterButtonRoot.centerText ?
+					(parent.width / 2) - (width / 2) :
+					!buttonIcon.visible || !filterButtonRoot.iconLeft ?
+						filterButtonRoot.buttonPadding :
+						buttonIcon.x + buttonIcon.width
+
+
+			y:	(parent.height / 2) - (height / 2)
+
+			text:		filterButtonRoot.text
+			visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
+			color:		textColor == "default" ? (filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled) : textColor
+
+
+			font:	Theme.font
+			//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
+
+			height: contentHeight
+			width:	Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
+
+
+			elide:	Text.ElideMiddle
+		}
 	}
-
-	Image
-	{
-		id: buttonIcon
-		x:	!filterButtonRoot.showIconAndText ?
-				(parent.width / 2) - (width / 2) :
-				filterButtonRoot.iconLeft ?
-					filterButtonRoot.buttonPadding :
-					parent.width - (width + filterButtonRoot.buttonPadding)
-
-		y:	(parent.height / 2) - (height / 2)
-
-		width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
-		height: filterButtonRoot.height - (2 * buttonPadding)
-
-		sourceSize.width:	Math.max(48, width  * 2)
-		sourceSize.height:	Math.max(48, height * 2)
-
-		visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
-		source:		filterButtonRoot.iconSource
-	}
-
-	Text
-	{
-		id: buttonText
-		x:	filterButtonRoot.centerText ?
-				(parent.width / 2) - (width / 2) :
-				!buttonIcon.visible || !filterButtonRoot.iconLeft ?
-					filterButtonRoot.buttonPadding :
-					buttonIcon.x + buttonIcon.width
-
-
-		y:	(parent.height / 2) - (height / 2)
-
-		text:		filterButtonRoot.text
-		visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-		color:		textColor == "default" ? (filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled) : textColor
-
-
-		font:	Theme.font
-		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
-
-		height: contentHeight
-		width:	Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
-
-
-		elide:	Text.ElideMiddle
-	}
-}
 }

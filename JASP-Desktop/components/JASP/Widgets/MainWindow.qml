@@ -152,7 +152,8 @@ Window
 
 			onContainsMouseChanged: if(containsMouse) ribbonModel.highlightedModuleIndex = -1
 
-			anchors.fill:	parent
+			anchors.fill:		parent
+			anchors.topMargin:	ribbon.height
 
 			//Rectangle { id: purpleDebugRect; color: "purple"; anchors.fill: parent }
 

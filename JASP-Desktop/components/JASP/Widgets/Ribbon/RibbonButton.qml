@@ -101,9 +101,6 @@ Rectangle
 
 			onClicked		:
 			{
-				if (fileMenuModel.visible)	fileMenuModel.visible = false
-				if (modulesMenu.opened)		modulesMenu.opened    = false
-
 				if (ribbonButton.menu.rowCount() === 1)
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
