@@ -2,16 +2,16 @@
 Result Preferences
 =========
 
-Regarding calculation analyses results in JASP you can choose the following options:
+Regarding analyses results in JASP you can choose the following options:
 (All these settings will remain after restarting JASP.)
 
 ### Display exact p-values
 
 This is where you specify to use exact p-values or not.
-This means that the result p-value are sometimes showed as scientific notation
-and otherwise as a rounded value.
+This means that the result p-value is sometimes showed in scientific notation
+and sometimes as a rounded value.
 
 ### Fix the number of decimals
 
-This is where you specify the number of decimals
-in calculated values that JASP will show in the results pane.
+The represents the number of decimals from a calculated value
+that JASP will show in the results pane.

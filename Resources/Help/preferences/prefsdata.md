@@ -2,7 +2,7 @@
 Data Preferences
 =========
 
-Regarding data handling in JASP you can choose the following options.
+Regarding data handling in JASP you can choose the following options:
 (All these settings will remain after restarting JASP.)
 
 ### Synchronize automatically on data file save.
@@ -11,7 +11,7 @@ If you change a loaded data file in JASP from outside JASP
 (e.g. in your preferred editor see below), this checkbox determines
 if results in JASP are automatically synchronized or not.
 You can also start the synchronization manually from the main menu
-or using the keyboard shortcuts Cmd + Y (Mac) or Ctrl + Y (Windows)
+or using the keyboard shortcuts &#8984; + Y (on MacOS) or Ctrl + Y (on Windows)
 
 ### Use default spreadsheet editor.
 
@@ -28,7 +28,7 @@ gets the Nominal type else it will get the Scale type. This threshold value can 
 
 ### Missing Value List
 
-In this list you can specify if a data is treated as missing value or as real data.
+In this list you can specify if your data should be treated as missing value or as real data.
 All the values in the 'Missing Value List' are treated as missing values.
 You can delete values from this list by selecting them and pressing the minus button.
 Reset will give you all the default values back.

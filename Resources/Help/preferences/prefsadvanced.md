@@ -2,7 +2,7 @@
 Advanced Preferences
 =========
 
-With the advanced parameters in JASP you can specify the following options.
+With the advanced parameters in JASP you can specify the following options:
 (All these settings will remain after restarting JASP.)
 
 ### Use PPI (Pixels pre inch) of screen in plots
