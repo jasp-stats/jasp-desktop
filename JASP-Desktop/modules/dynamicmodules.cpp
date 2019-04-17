@@ -176,7 +176,6 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 		_devModDescriptionWatcher	= nullptr;
 		_devModRWatcher				= nullptr;
-		_devModSourceDirectory		= QDir();
 	}
 
 	std::string modulePath	= moduleDirectory(moduleName);
@@ -394,7 +393,13 @@ void DynamicModules::installJASPDeveloperModule()
 	}
 
 	if(moduleIsInstalled(name))
+	{
 		uninstallModule(name);
+
+		stopEngines();
+		_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+		restartEngines();
+	}
 
 	QDir destQDir(QString::fromStdString(dest));
 
