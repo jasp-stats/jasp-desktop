@@ -60,6 +60,12 @@ body
     margin-top: 30pt;
 }
 
+#onderkant
+{
+   height: 120pt;
+   display: block;
+}
+
 #titel
 {
     text-align: center;

@@ -94,6 +94,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				checkTimeOut(argc, argv, save ? 4 : 3, timeOut);
 			}
 			else if(argFirst.find("--remote-debugging-port=")	== std::string::npos &&
+					argFirst.find("-platform")					== std::string::npos &&
 					argFirst.find("-qmljsdebugger")				== std::string::npos) //only other excepted argument
 			{
 				std::cout	<< "JASP can be started without arguments, or the following: filename {--unitTest {--save} {--timeOut=10}} | --unitTestRecursive folder {--save} {--timeOut=10}\n"
