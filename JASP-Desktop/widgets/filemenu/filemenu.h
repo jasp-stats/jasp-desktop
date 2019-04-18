@@ -79,10 +79,10 @@ public:
 	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
 	ActionButtons::FileOperation	fileoperation()				const	{ return _fileoperation;			}
-	DataLibrary					*	datalibrary()				const	{ return _DataLibrary;				}
-	CurrentFile					*	currentFile()				const	{ return _CurrentFile;				}
-	RecentFiles					*	recentFiles()				const	{ return _RecentFiles;				}
-	Computer					*	computer()					const	{ return _Computer;					}
+	DataLibrary					*	datalibrary()				const	{ return _dataLibrary;				}
+	CurrentFile					*	currentFile()				const	{ return _currentDataFile;				}
+	RecentFiles					*	recentFiles()				const	{ return _recentFiles;				}
+	Computer					*	computer()					const	{ return _computer;					}
 	OSF							*	osf()						const	{ return _OSF;						}
 	bool							visible()					const	{ return _visible;					}
 	ActionButtons				*	actionButtons()				const	{ return _actionButtons;			}
@@ -122,11 +122,11 @@ private:
 
 private:
 	OnlineDataManager			*	_odm						= nullptr;
-	CurrentFile					*	_CurrentFile				= nullptr;
-	RecentFiles					*	_RecentFiles				= nullptr;
-	Computer					*	_Computer					= nullptr;
+	CurrentFile					*	_currentDataFile			= nullptr;
+	RecentFiles					*	_recentFiles				= nullptr;
+	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
-	DataLibrary					*	_DataLibrary				= nullptr;
+	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;
 	ResourceButtonsVisible		*	_resourceButtonsVisible		= nullptr;
