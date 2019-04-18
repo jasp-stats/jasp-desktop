@@ -890,12 +890,11 @@ Json::Value footnotes::convertToJSON() const
 
 void footnotes::convertFromJSON_SetFields(Json::Value footnotes)
 {
-	if (!footnotes.isNull())
+	if (footnotes.isArray())
 	{
-		for(Json::Value::UInt i=0; i<footnotes.size(); i++)
+		for (Json::Value & footnote : footnotes)
 		{
-			const Json::Value &	footnote	= footnotes[i];
-			const std::string	text		= footnote["text"].asString();
+			const std::string text = footnote["text"].asString();
 			
 			_data[text].symbol	= footnote["symbol"].asString();
 			_data[text].rows	= jaspJson::ArrayJson_to_SetJson(footnote["rows"]);
@@ -909,11 +908,8 @@ void footnotes::insert(std::string text, std::string symbol, std::vector<Json::V
 	if (_data[text].symbol.empty())
 		_data[text].symbol = symbol;
 	
-	for (int i=0; i<colNames.size(); i++)
-		_data[text].cols.insert(colNames[i]);
-		
-	for (int i=0; i<rowNames.size(); i++)
-		_data[text].rows.insert(rowNames[i]);
+	_data[text].cols.insert(colNames.begin(), colNames.end());
+	_data[text].rows.insert(rowNames.begin(), rowNames.end());		
 }
 
 

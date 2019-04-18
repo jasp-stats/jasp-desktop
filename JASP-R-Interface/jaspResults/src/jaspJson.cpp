@@ -88,7 +88,7 @@ Json::Value jaspJson::SetJson_to_ArrayJson(std::set<Json::Value> set)
 std::set<Json::Value> jaspJson::ArrayJson_to_SetJson(Json::Value arr)
 {
 	std::set<Json::Value> set;
-	for(auto val: arr)
+	for(auto & val: arr)
 		set.insert(val);
 	return set;
 }
