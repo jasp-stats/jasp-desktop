@@ -331,14 +331,14 @@ void FileMenu::setSyncFile(FileEvent *event)
 
 void FileMenu::dataColumnAdded(QString columnName)
 {
-	if(_CurrentFile->getCurrentDataFilePath() != "" && checkSyncFileExists(_CurrentFile->getCurrentDataFilePath()))
+	if(_currentDataFile->getCurrentFilePath() != "" && checkSyncFileExists(_currentDataFile->getCurrentFilePath()))
 	{
 		//Ok a column was added to the data but we already have a sync file so we should re-generate the data!
 
 		FileEvent * event = new FileEvent(this, FileEvent::FileGenerateData);
 
 		connect(event, &FileEvent::completed, this, &FileMenu::setSyncFile);
-		event->setPath(_CurrentFile->getCurrentDataFilePath());
+		event->setPath(_currentDataFile->getCurrentFilePath());
 
 		dataSetIORequestHandler(event);
 	}
