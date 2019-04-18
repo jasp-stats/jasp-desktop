@@ -47,9 +47,7 @@ Manova <- function(jaspResults, dataset, options) {
   if (!is.null(jaspResults[["stateManovaResults"]])) return(jaspResults[["stateManovaResults"]]$object)
   
   # This will be the object that we fill with results
-  results <- list()
-  
-  results[["manova"]] <- list()
+  results <- list(manova = list())
   
   dependentVariables <- unlist(options$dependent)
   randomFactors <- unlist(options$fixedFactors)
@@ -128,8 +126,10 @@ Manova <- function(jaspResults, dataset, options) {
   manovaContainer$dependOn(c("dependent", "fixedFactors", "testPillai", "testWilks",
                          "testHotellingLawley", "testRoy", "includeIntercept",
                          "VovkSellkeMPR", "modelTerms", "includeAnovaTables"))
+
+  allTests <- if(is.null(names(manovaResults$manova))) "Pillai" else names(manovaResults$manova)
   
-  for (thisTest in names(manovaResults$manova)) {
+  for (thisTest in allTests) {
     
     # Create table
     manovaTable <- createJaspTable(title = paste0("MANOVA: ", thisTest, " Test"))
@@ -142,18 +142,19 @@ Manova <- function(jaspResults, dataset, options) {
     manovaTable$addColumnInfo(name = "appF",    title = "Approx. F",      type = "number")
     manovaTable$addColumnInfo(name = "testStat",title = "Test statistic",     type = "number")
     manovaTable$addColumnInfo(name = "dfNum",   title = "Num df",      type = "integer")
-    manovaTable$addColumnInfo(name = "dfDen",   title = "Den df",      type = "integer")
+    manovaTable$addColumnInfo(name = "dfDen",   title = "Den df",      type = "number")
     manovaTable$addColumnInfo(name = "p",       title = "p",          type = "pvalue")
     
     if (options$VovkSellkeMPR) {
       manovaTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
     }
     
+    jaspResults[["manovaContainer"]][[thisTest]] <- manovaTable
+    
     if (!is.null(errors) && errors == "No variables")
       return()
     
-    jaspResults[["manovaContainer"]][[thisTest]] <- manovaTable
-    
+
     for (case in names(manovaResults[["manova"]][[thisTest]])) {
       row <- manovaResults[["manova"]][[thisTest]][[case]]
       if (case == "Residuals") 
@@ -170,7 +171,7 @@ Manova <- function(jaspResults, dataset, options) {
 
 .uniAnovaTables <- function(jaspResults, dataset, options, manovaResults, errors) {
   
-  if (!is.null(jaspResults[["anovaContainer"]]) | !options$includeAnovaTables) return()
+  if (!is.null(jaspResults[["anovaContainer"]]) || !options$includeAnovaTables) return()
   
   anovaContainer <- createJaspContainer(title = "ANOVA")
   jaspResults[["anovaContainer"]] <- anovaContainer
@@ -214,8 +215,7 @@ Manova <- function(jaspResults, dataset, options) {
     for (case in rownames(manovaResults[["anova"]][[thisVar]])) {
       row <- as.list(manovaResults[["anova"]][[thisVar]][case, ])
       row["cases"] <- case
-      row["VovkSellkeMPR"] <- ifelse(case == "Residuals            ", 
-                                     "", .VovkSellkeMPR(row[["Pr(>F)"]]))
+      row["VovkSellkeMPR"] <- if(trimws(case) == "Residuals") "" else .VovkSellkeMPR(row[["Pr(>F)"]])
       anovaTable$addRows(row, rowNames = paste0(thisVar, " - ", case))
     }
     
@@ -230,40 +230,19 @@ Manova <- function(jaspResults, dataset, options) {
 .manovaCheckErrors <- function(dataset, options) {
   
   # Check if results can be computed
-  if ((length(options$dependent) < 2) | length(options$fixedFactors) == 0)
+  if ((length(options$dependent) < 2) || length(options$fixedFactors) == 0)
     return("No variables")
   
-  # Error Check 1: Number of levels of the variables
-  .hasErrors(
-    dataset              = dataset,
-    perform              = "run",
-    type                 = "factorLevels",
-    factorLevels.target  = options$fixedFactors,
-    factorLevels.amount  = "< 2",
-    exitAnalysisIfErrors = TRUE
-  )
-  
-  # Error check 2: < 2 observations for a level of a variable
-  for (depVariable in options$dependent) {
-
-    depColumn <- dataset[[.v(depVariable)]]
-    depData   <- depColumn[!is.na(depColumn)]
-    
-    for (facVariable in options$fixedFactors) {
-    
-      facColumn <- dataset[[.v(facVariable)]]
-      facData   <- facColumn[!is.na(facColumn)]
-      levels <- levels(facData)
-      
-      for (level in levels) {
-        .hasErrors(
-          dataset              = depData[depData == level],
-          perform              = "run",
-          type                 = "observations",
-          observations.amount  = "< 2",
-          exitAnalysisIfErrors = TRUE
-        )
-      }
-    }
+  # Error check
+  for(i in length(options$modelTerms):1) {
+    .hasErrors(
+      dataset = dataset, 
+      type = c('observations', 'variance', 'infinity', 'varCovData', 'factorLevels'),
+      all.target = options$dependent, 
+      all.grouping = options$modelTerms[[i]][['components']],
+      factorLevels.amount  = "< 2",
+      observations.amount = c('< 2'), 
+      exitAnalysisIfErrors = TRUE)
   }
+
 }
