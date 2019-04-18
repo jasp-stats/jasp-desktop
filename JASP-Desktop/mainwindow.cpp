@@ -737,13 +737,27 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 ///Returns true if the caller can go ahead and close up shop.
 bool MainWindow::checkPackageModifiedBeforeClosing()
 {
+	if(_savingForClose)
+		return false; //Come on user, be patient!
+
 	if(!_package->isModified())
 		return true;
 
 	QString title = windowTitle();
 	title.chop(1);
 
-	return MessageForwarder::showYesNo("Workspace has changes", "Your workspace " + title + " has unsaved changes.\n\nDo you still want to quit JASP?");
+	switch(MessageForwarder::showSaveDiscardCancel("Workspace has changes", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
+	{
+	case MessageForwarder::DialogResponse::Save:
+		_fileMenu->save();
+		_savingForClose = true;
+		[[clang::fallthrough]];
+
+	case MessageForwarder::DialogResponse::Cancel:		return false;
+
+	default:											[[clang::fallthrough]];
+	case MessageForwarder::DialogResponse::Discard:		return true;
+	}
 }
 
 void MainWindow::closeVariablesPage()
@@ -810,6 +824,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if(testingAndSaving)
 				std::cerr << "Tested and saved " << event->path().toStdString() << " succesfully!" << std::endl;
 
+			if(_savingForClose)
+				exit(0);
+
 		}
 		else
 		{
@@ -817,6 +834,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if(testingAndSaving)
 				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;
+
+			if(_savingForClose)
+				_savingForClose = false; //User should get to try again.
 		}
 
 		if(testingAndSaving)

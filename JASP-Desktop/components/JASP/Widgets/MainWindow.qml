@@ -107,12 +107,15 @@ Window
 				var point			= item.mapToItem(null, 0, 0);
 				customMenu.x		= point.x + x_offset;
 				customMenu.y		= point.y + y_offset;
-				var rightX = customMenu.x + customMenu.width + 2;
-				var bottomY = customMenu.y + customMenu.height + 2
+				var rightX			= customMenu.x + customMenu.width + 2;
+				var bottomY			= customMenu.y + customMenu.height + 2;
+
 				if (rightX > mainWindowRoot.width)
 					customMenu.x -= (rightX - mainWindowRoot.width);
+
 				if (bottomY > mainWindowRoot.height)
 					customMenu.y -= (bottomY - mainWindowRoot.height);
+
 				customMenu.visible	= true;
 			}
 		}

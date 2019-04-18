@@ -240,6 +240,7 @@ private:
 	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
+	FileEvent					*	_openEvent				= nullptr;
 
 	QSettings						_settings;
 
@@ -265,14 +266,15 @@ private:
 									_analysesVisible		= false,
 									_datasetLoaded			= false,
 									_dataAvailable			= false,
-									_analysesAvailable		= false;
+									_analysesAvailable		= false,
+									_savingForClose			= false;
 
 	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles,
 									_iconInactiveFiles,
 									_iconDisabledFiles;
 	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
-	FileEvent *_openEvent = nullptr;;
+
 };
 
 #endif // MAINWIDGET_H

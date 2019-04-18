@@ -169,7 +169,7 @@ const QString &FileEvent::message() const
 void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
-	connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(chainedComplete(FileEvent*)));
+	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
 }
 
 void FileEvent::chainedComplete(FileEvent *event)
