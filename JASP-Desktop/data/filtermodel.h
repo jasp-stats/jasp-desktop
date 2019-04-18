@@ -39,7 +39,7 @@ public:
 
 
 	Q_INVOKABLE void resetRFilter()				{ setRFilter(DEFAULT_FILTER); }
-	void		checkForSendFilter(bool justCameFromGeneratedFilterUpdate = false);
+	void		sendGeneratedAndRFilter();
 
 	void updateStatusBar();
 	void reset();
@@ -94,6 +94,8 @@ private:
 
 	int				_lastSentRequestId	= 0;
 
+	bool _setGeneratedFilter(const QString& newGeneratedFilter);
+	bool _setRFilter(const QString& newRFilter);
 
 };
 

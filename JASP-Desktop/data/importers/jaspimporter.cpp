@@ -86,7 +86,6 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	Json::Value jsonFilterConstructor = metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON);
 	packageData->setFilterConstructorJson(jsonFilterConstructor.isObject() ? jsonFilterConstructor.toStyledString() : jsonFilterConstructor.asString());
-	packageData->setRefreshAnalysesAfterFilter(false);
 	
 	Json::Value &emptyValuesJson = metaData["emptyValues"];
 	if (emptyValuesJson.isNull())
