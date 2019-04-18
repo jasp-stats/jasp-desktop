@@ -23,13 +23,6 @@ std::string jaspPlot::dataToString(std::string prefix)
 		prefix << "status:      "	<< _status << "\n" ;//<<
 		//prefix << "has plot:    "	<< (_plotObjSerialized.size() > 0 ? "yes" : "no") << "\n";
 
-	if(_footnotes.size() > 0)
-	{
-		out << prefix << "footnotes:   \n";
-		for(int i=0; i<_footnotes.size(); i++)
-			out << prefix << "\t[" << i << "]:\t(" << _footnotes[i]["symbol"] << ") " << _footnotes[i]["text"] << "\n";
-	}
-
 	return out.str();
 }
 
@@ -55,23 +48,9 @@ Json::Value jaspPlot::dataEntry()
 		data["status"]                  = _status;
 	}
 	data["name"]		= getUniqueNestedName();
-	data["footnotes"]	= _footnotes;
 
 	return data;
 }
-
-void jaspPlot::addFootnote(std::string message, std::string symbol)
-{
-	Json::Value footnote(Json::objectValue);
-
-	footnote["text"]	= message;
-	footnote["symbol"]	= symbol;
-	footnote["cols"]	= Json::nullValue;
-	footnote["rows"]	= Json::nullValue;
-
-	_footnotes.append(footnote);
-}
-
 
 void jaspPlot::initEnvName()
 {
@@ -120,7 +99,6 @@ Json::Value jaspPlot::convertToJSON()
 	obj["status"]				= _status;
 	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
-	obj["footnotes"]			= _footnotes;
 	obj["environmentName"]		= _envName;
 
 	return obj;
@@ -137,7 +115,6 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_status			= in.get("status",			"complete").asString();
 	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
-	_footnotes		= in.get("footnotes",		Json::arrayValue);
 	_envName		= in.get("environmentName",	_envName).asString();
 	/*JASP_OBJECT_TIMERBEGIN
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();
@@ -161,20 +138,6 @@ std::string jaspPlot::toHtml()
 	}
 	else
 		out << "<img src=\"" << _filePathPng << "\" height=\"" << _height << "\" width=\"" << _width << "\" alt=\"a plot called " << _title << "\">";
-
-
-	if(_footnotes.size() > 0)
-	{
-		out << "<h4>footnotes</h4>" "\n" "<ul>";
-
-		for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
-		{
-			std::string sym = _footnotes[i]["symbol"].asString() ;
-			out << "<li>" << (sym == "" ? "" : "<i>(" + sym  + ")</i> " ) << _footnotes[i]["text"].asString() << "</li>" "\n";
-		}
-
-		out << "</ul>\n";
-	}
 
 	out << "</div>\n";
 

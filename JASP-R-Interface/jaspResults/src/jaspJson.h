@@ -57,6 +57,8 @@ public:
 
 	static Json::Value RcppVector_to_ArrayJson(Rcpp::RObject obj, bool throwError=true) { return VectorJson_to_ArrayJson(RcppVector_to_VectorJson(obj, throwError)); }
 	static Json::Value VectorJson_to_ArrayJson(std::vector<Json::Value> vec);
+	static Json::Value SetJson_to_ArrayJson(std::set<Json::Value> set);
+	static std::set<Json::Value> ArrayJson_to_SetJson(Json::Value arr);
 	static std::vector<Json::Value> RList_to_VectorJson(Rcpp::List obj);
 
 	static std::vector<Json::Value> RcppVector_to_VectorJson(Rcpp::RObject obj, bool throwError=false)

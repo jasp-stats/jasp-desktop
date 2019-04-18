@@ -210,7 +210,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   binomialTable$addColumnInfo(name = "p",          title = "p",          type = "pvalue")
 
   if (options$VovkSellkeMPR) {
-    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
+    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR", type = "number")
   }
 
   if (options$confidenceInterval) {
@@ -234,7 +234,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   # Add footnote: VovkSellkeMPR
   if (options$VovkSellkeMPR) {
-    binomialTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+    binomialTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A", colNames="VovkSellkeMPR")
   }
 
   # Add footnote: Alternative hypothesis
@@ -244,7 +244,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
                     "less"      = .messages("footnote", "binomLess",    value = options$testValue)
   )
 
-  binomialTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+  binomialTable$addFootnote(message = message)
 }
 
 .binomContainerPlots <- function(jaspResults, dataset, options, binomResults, errors) {

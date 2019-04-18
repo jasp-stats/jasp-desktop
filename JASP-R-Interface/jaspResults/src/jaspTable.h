@@ -20,6 +20,25 @@ struct jaspColRowCombination
 
 };
 
+struct footnotes
+{
+	struct tableFields
+	{
+		std::set<Json::Value>	rows, cols;
+		std::string				symbol;
+		
+		Json::Value rowsToJSON() const; 
+		Json::Value colsToJSON() const;
+	};
+	
+	void		insert(std::string text, std::string symbol, std::vector<Json::Value> colNames, std::vector<Json::Value> rowNames);
+	void		convertFromJSON_SetFields(Json::Value footnotes);
+	Json::Value	convertToJSON() const; 
+	
+	private:
+		std::map<std::string, tableFields> _data;
+};
+
 class jaspTable : public jaspObject
 {
 public:
@@ -366,7 +385,7 @@ public:
 	std::set<std::string>	_specifiedColumns;
 
 private:
-	Json::Value								_footnotes = Json::arrayValue;
+	footnotes 								_footnotes;
 	std::vector<std::vector<Json::Value>>	_data;	//First columns, then rows.
 	std::vector<jaspColRowCombination>		_colRowCombinations;
 	size_t									_expectedColumnCount	= 0,

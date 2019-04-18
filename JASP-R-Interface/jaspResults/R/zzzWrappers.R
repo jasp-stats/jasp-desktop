@@ -421,8 +421,7 @@ jaspPlotR <- R6Class(
 			
 			private$jaspObject <- jaspPlotObj
 			return()
-		},
-		addFootnote = function(footnote) private$jaspObject$addFootnote(footnote)
+		}
 	),
 	active = list(
 		plotObject  = function(x) if (missing(x)) private$jaspObject$plotObject   else private$jaspObject$plotObject   <- x,
@@ -481,24 +480,29 @@ jaspTableR <- R6Class(
 		},
 		addColumns  = function(cols) private$jaspObject$addColumns(cols),
 		setData     = function(data) private$jaspObject$setData(data),
-		addFootnote = function(message = "", symbol = NULL, col_names = NULL, row_names = NULL) {
-			private$jaspObject$addFootnoteHelper(message, symbol, col_names, row_names)
+		addFootnote = function(message = "", symbol = NULL, colNames = NULL, rowNames = NULL) {
+			if (is.null(colNames) && is.null(rowNames) && is.null(symbol)
+					&& !grepl("^<.*?>note\\.?</.*?>", message, ignore.case=TRUE))
+				symbol <- "<em>Note.</em>"
+			private$jaspObject$addFootnoteHelper(message, symbol, colNames, rowNames)
 		},
 		addColumnInfo = function(name = NULL, title = NULL, overtitle = NULL, type = NULL, format = NULL, combine = NULL) {
-			permittedTypes <- c("integer", "number", "pvalue", "string")
-			if (!type %in% permittedTypes)
-				stop("type must be ", paste0("`", permittedTypes, "`", collapse=", "), " (provided type: `", type, "`)")
-			if (is.null(format) && type == "number")
-				format <- "sf:4;dp:3"
-			else if (type == "pvalue")
-				format <- "dp:3;p:.001"		
+			if (!is.null(type)) {
+				permittedTypes <- c("integer", "number", "pvalue", "string")
+				if (!type %in% permittedTypes)
+					stop("type must be ", paste0("`", permittedTypes, "`", collapse=", "), " (provided type: `", type, "`)")
+				if (is.null(format) && type == "number")
+					format <- "sf:4;dp:3"
+				else if (type == "pvalue")
+					format <- "dp:3;p:.001"
+			}
 			private$jaspObject$addColumnInfoHelper(name, title, type, format, combine, overtitle)
 		},
-		addRows = function(row, rowNames = NULL) {
+		addRows = function(rows, rowNames = NULL) {
 			if (is.null(rowNames))
-				private$jaspObject$addRows(row) 
+				private$jaspObject$addRows(rows) 
 			else
-				private$jaspObject$addRows(row, rowNames)
+				private$jaspObject$addRows(rows, rowNames)
 		},
 		setExpectedSize = function(rows=NULL, cols=NULL) {
 			inputTypes <- c(mode(rows), mode(cols))

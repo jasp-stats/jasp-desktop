@@ -77,6 +77,21 @@ Json::Value jaspJson::VectorJson_to_ArrayJson(std::vector<Json::Value> vec)
 	return array;
 }
 
+Json::Value jaspJson::SetJson_to_ArrayJson(std::set<Json::Value> set)
+{
+	Json::Value array(Json::arrayValue);
+	for(auto val: set)
+		array.append(val);
+	return array;
+}
+
+std::set<Json::Value> jaspJson::ArrayJson_to_SetJson(Json::Value arr)
+{
+	std::set<Json::Value> set;
+	for(auto & val: arr)
+		set.insert(val);
+	return set;
+}
 
 std::vector<Json::Value> jaspJson::RList_to_VectorJson(Rcpp::List obj)
 {

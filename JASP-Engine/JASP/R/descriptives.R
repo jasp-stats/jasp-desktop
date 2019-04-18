@@ -221,10 +221,10 @@ Descriptives <- function(jaspResults, dataset, options)
 
 
   if (shouldAddNominalTextFootnote)
-    stats$addFootnote(message="Not all values are available for <i>Nominal Text</i> variables", symbol="<i>Note.</i>")
+    stats$addFootnote(message="Not all values are available for <i>Nominal Text</i> variables")
 
   if(shouldAddModeMoreThanOnceFootnote)
-    stats$addFootnote(message="More than one mode exists, only the first is reported", col_names="Mode")
+    stats$addFootnote(message="More than one mode exists, only the first is reported", colNames="Mode")
 
   return(stats)
 }
