@@ -6,6 +6,7 @@ import JASP.Widgets 1.0
 
 RectangularButton
 {
+	id: root
 	property bool clickOnHover: false
 	property bool clickWhenFocussed: true;
 	property bool isIcon: true
@@ -15,20 +16,18 @@ RectangularButton
 	{
 		if (isIcon)
 		{
-			if (_pressed || _showHovered) return Theme.buttonColorPressed
-			else return "transparent"
+			if (_pressed || _showHovered)	return Theme.buttonColorPressed
+			else							return "transparent"
 		}
-		else
+		else if (_pressed)					return Theme.buttonMenuColorPressed;
+		else if (selected)
 		{
-			if (_pressed) return Theme.buttonMenuColorPressed;
-			else if (selected)
-			{
-				if (activeFocus) return Theme.buttonMenuColorFocus;
-				else return Theme.buttonMenuColorSelected;
-			}
-			else if (_showHovered) return Theme.buttonMenuColorHovered;
-			else return "transparent";
+			if (activeFocus)				return Theme.buttonMenuColorFocus;
+			else							return Theme.buttonMenuColorSelected;
 		}
+		else if (_showHovered)				return Theme.buttonMenuColorHovered;
+		else								return "transparent";
+
 	}
 
 	border.width:	0
@@ -36,38 +35,24 @@ RectangularButton
 
 	Timer
 	{
-        id: delayOnhoverTimer
-		interval: Theme.hoverTime
-        running: false
-        repeat: false
-        onTriggered: {
-			if (hovered) forceActiveFocus();
-        }
+		id:				delayOnhoverTimer
+		interval:		Theme.hoverTime
+		running:		false
+		repeat:			false
+		onTriggered:	if (hovered && root.hasSubMenu) forceActiveFocus();
     }
 
-	Keys.onSpacePressed: { clicked();  event.accepted = true;}
-	Keys.onEnterPressed: { clicked();  event.accepted = true;}
-	Keys.onReturnPressed: { clicked();  event.accepted = true;}
+	Keys.onSpacePressed:	{ clicked();  event.accepted = true;}
+	Keys.onEnterPressed:	{ clicked();  event.accepted = true;}
+	Keys.onReturnPressed:	{ clicked();  event.accepted = true;}
 
-	onHoveredChanged:
-	{
-		if (clickOnHover)
-		{
-			if (hovered)
-				delayOnhoverTimer.start()
-			else
-				delayOnhoverTimer.stop()
-		}
-    }
+	onHoveredChanged:	if (clickOnHover)
+						{
+							if (hovered)	delayOnhoverTimer.start()
+							else			delayOnhoverTimer.stop()
+						}
 
-	onActiveFocusChanged:
-	{
-		if (clickOnHover)
-		{
-			if (activeFocus && clickWhenFocussed)
-				clicked()
-		}
-	}
+	onActiveFocusChanged:	if (clickOnHover && activeFocus && clickWhenFocussed)	clicked()
 
 	Image
 	{

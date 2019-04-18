@@ -26,11 +26,11 @@ Window
 	title:				"About JASP"
 
 	Image {
-		id:topWave
-		anchors.top:parent.top
-		anchors.left:parent.left
-		anchors.right:parent.right
-		height: parent.height/4
+		id:				topWave
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		anchors.right:	parent.right
+		height:			parent.height/4
 
 		source: "qrc:/core/img/jasp-wave-down-blue-120.svg"
 	}
@@ -47,9 +47,12 @@ Window
 		anchors.topMargin: 25
 
 		Image {
-			anchors.fill: parent
-			fillMode: Image.PreserveAspectFit
-			source: "qrc:/core/img/jasp-logo-black.svg"
+			anchors.fill:		parent
+			fillMode:			Image.PreserveAspectFit
+			source:				"qrc:/core/img/jasp-logo-black.svg"
+			sourceSize.width:	width * 2
+			sourceSize.height:	height * 2
+			mipmap:				true
 		}
 	}
 
