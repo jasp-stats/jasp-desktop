@@ -73,7 +73,7 @@ Form
 			name: "descriptivesPlots";						label: qsTr("Descriptives plots")
 			PercentField { name: "descriptivesPlotsConfidenceInterval";	label: qsTr("Confidence interval"); defaultValue: 95 }
 		}
-		CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke mazimum p-ratio")						}
+		CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")						}
 	}
 
 	RadioButtonGroup
