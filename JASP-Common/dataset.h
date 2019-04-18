@@ -53,7 +53,7 @@ public:
 	std::string toString();
 	std::vector<std::string> resetEmptyValues(emptyValsType emptyValuesMap);
 
-	void				setFilterVector(std::vector<bool> filterResult);
+	bool				setFilterVector(std::vector<bool> filterResult);
 	const BoolVector&	filterVector()		const	{ return _filterVector; }
 	int					filteredRowCount()	const	{ return _filteredRowCount; }
 

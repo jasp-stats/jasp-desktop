@@ -298,7 +298,6 @@ HEADERS += \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
     widgets/filemenu/recentfiles.h \
-    widgets/filemenu/currentfile.h \
     widgets/filemenu/computer.h \
     widgets/filemenu/osf.h \
     widgets/filemenu/datalibrarybreadcrumbsmodel.h \
@@ -369,7 +368,8 @@ HEADERS += \
     widgets/boundqmlfactorsform.h \
     widgets/listmodelfactorsform.h \
     utilities/aboutmodel.h \
-    modules/ribbonbutton.h
+    modules/ribbonbutton.h \
+    widgets/filemenu/currentdatafile.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -477,7 +477,6 @@ SOURCES += \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
     widgets/filemenu/recentfiles.cpp \
-    widgets/filemenu/currentfile.cpp \
     widgets/filemenu/computer.cpp \
     widgets/filemenu/osf.cpp \
     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp \
@@ -547,7 +546,8 @@ SOURCES += \
     widgets/boundqmlfactorsform.cpp \
     widgets/listmodelfactorsform.cpp \
     utilities/aboutmodel.cpp \
-    modules/ribbonbutton.cpp
+    modules/ribbonbutton.cpp \
+    widgets/filemenu/currentdatafile.cpp
 
 RESOURCES += \
     html/html.qrc \

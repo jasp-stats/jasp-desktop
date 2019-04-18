@@ -24,7 +24,7 @@ Item
 		x:				modulesMenu.opened ? 0 : width
 		width:			340 * preferencesModel.uiScale
 		height:			modulesMenu.height
-		color:			Theme.uiBackground
+		color:			Theme.fileMenuColorBackground
 		border.width:	1
 		border.color:	Theme.uiBorder
 

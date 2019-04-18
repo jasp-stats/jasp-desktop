@@ -69,9 +69,9 @@ FocusScope
 		color:			_pressed || selected ? Theme.buttonColorPressed :	_showHovered ?				Theme.buttonColorHovered		: Theme.buttonColor
 		border.color:														_showHovered || selected ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 		border.width:	1
-		focus: true
-		width: parent.width
-		height: parent.height
+		focus:			true
+		width:			parent.width
+		height:			parent.height
 
 		MouseArea
 		{
@@ -127,7 +127,7 @@ FocusScope
 			//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
 
 			height: contentHeight
-			width:	Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
+			width:	implicitWidth //Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
 
 
 			elide:	Text.ElideMiddle

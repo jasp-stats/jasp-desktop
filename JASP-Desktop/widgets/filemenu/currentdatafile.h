@@ -23,14 +23,14 @@
 #include "filemenuobject.h"
 #include "currentfilelistmodel.h"
 
-class CurrentFile : public FileMenuObject
+class CurrentDataFile : public FileMenuObject
 {
 	Q_OBJECT
 	Q_PROPERTY(CurrentFileListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit CurrentFile(QObject *parent = nullptr);
-	~CurrentFile();
+	explicit CurrentDataFile(QObject *parent = nullptr);
+	~CurrentDataFile();
 	
 	void setCurrentFilePath(const QString &path);	
 	bool isOnlineFile(const QString &path);

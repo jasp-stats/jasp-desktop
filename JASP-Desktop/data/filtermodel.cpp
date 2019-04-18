@@ -34,16 +34,12 @@ void FilterModel::init()
 void FilterModel::setRFilter(QString newRFilter)
 {
 	if (_setRFilter(newRFilter))
-	{
 		sendGeneratedAndRFilter();
-		refreshAllAnalyses();
-	}
 }
 
 bool FilterModel::_setRFilter(const QString& newRFilter)
 {
-	bool result = newRFilter != _rFilter;
-	if (result)
+	if(newRFilter != _rFilter)
 	{
 		bool oldHasFilter = hasFilter();
 
@@ -53,9 +49,11 @@ bool FilterModel::_setRFilter(const QString& newRFilter)
 			emit hasFilterChanged();
 
 		emit rFilterChanged();
+
+		return true;
 	}
 
-	return result;
+	return false;
 }
 
 void FilterModel::setConstructedJSON(QString newConstructedJSON)
@@ -96,22 +94,19 @@ void FilterModel::setConstructedR(QString newConstructedR)
 void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
 {
 	if (_setGeneratedFilter(newGeneratedFilter))
-	{
-		sendGeneratedAndRFilter();
-		refreshAllAnalyses();
-	}
+		sendGeneratedAndRFilter();	
 }
 
 bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
 {
-	bool result = newGeneratedFilter != _generatedFilter;
-	if (result)
+	if (newGeneratedFilter != _generatedFilter)
 	{
 		_generatedFilter = newGeneratedFilter;
 		emit generatedFilterChanged();
+		return true;
 	}
 
-	return result;
+	return false;
 }
 
 
@@ -121,11 +116,12 @@ void FilterModel::processFilterResult(std::vector<bool> filterResult, int reques
 		return;
 
 	_package->setDataFilter(_rFilter.toStdString()); //store the filter that was last used and actually gave results.
-	_package->dataSet()->setFilterVector(filterResult);
-
-	emit filterUpdated();
-
-	updateStatusBar();
+	if(_package->dataSet()->setFilterVector(filterResult))
+	{
+		refreshAllAnalyses();
+		emit filterUpdated();
+		updateStatusBar();
+	}
 }
 
 

@@ -25,7 +25,7 @@
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
 	_recentFiles			= new RecentFiles(parent);
-	_currentDataFile			= new CurrentFile(parent);
+	_currentDataFile			= new CurrentDataFile(parent);
 	_computer				= new Computer(parent);
 	_OSF					= new OSF(parent);
 	_dataLibrary			= new DataLibrary(parent);

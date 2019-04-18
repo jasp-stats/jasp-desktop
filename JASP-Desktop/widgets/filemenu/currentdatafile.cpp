@@ -1,11 +1,11 @@
-#include "currentfile.h"
+#include "currentdatafile.h"
 #include "utilities/qutils.h"
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QFileInfo>
 #include <QDir>
 
-CurrentFile::CurrentFile(QObject *parent): FileMenuObject(parent)
+CurrentDataFile::CurrentDataFile(QObject *parent): FileMenuObject(parent)
 {	
 	setListModel(new CurrentFileListModel(this));
 	
@@ -13,53 +13,53 @@ CurrentFile::CurrentFile(QObject *parent): FileMenuObject(parent)
 	_currentFileListModel->setCurrentFilePath(_currentFilePath);	
 }
 
-CurrentFile::~CurrentFile()
+CurrentDataFile::~CurrentDataFile()
 {
 }
 
-void CurrentFile::setCurrentFilePath(const QString &path)
+void CurrentDataFile::setCurrentFilePath(const QString &path)
 {
 	_currentFilePath = path;
 	_currentFileListModel->setCurrentFilePath(_currentFilePath);
 	
 }
 
-bool CurrentFile::isOnlineFile(const QString &path)
+bool CurrentDataFile::isOnlineFile(const QString &path)
 {
 	return path.startsWith("http");
 }
 
-CurrentFileListModel *CurrentFile::getCurrentFileListModel()
+CurrentFileListModel *CurrentDataFile::getCurrentFileListModel()
 {
 	return _currentFileListModel;
 }
 
 // Slots 
 
-QString CurrentFile::getCurrentFilePath()
+QString CurrentDataFile::getCurrentFilePath()
 {
 	return _currentFilePath;
 }
 
-QString CurrentFile::getHeaderText()
+QString CurrentDataFile::getHeaderText()
 {
 	return QString("Click on the file below to synchronize or use " + getShortCutKey() + "-Y");
 }
 
 
-void CurrentFile::syncFile(FileEvent *event)
+void CurrentDataFile::syncFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);
 }
 
 
-void CurrentFile::setListModel(CurrentFileListModel * listModel)
+void CurrentDataFile::setListModel(CurrentFileListModel * listModel)
 {
 	if (_currentFileListModel == listModel)
 		return;
 
 	_currentFileListModel = listModel;
-	connect(_currentFileListModel, &CurrentFileListModel::syncCurrentFile, this, &CurrentFile::syncFile);
+	connect(_currentFileListModel, &CurrentFileListModel::syncCurrentFile, this, &CurrentDataFile::syncFile);
 
 	emit listModelChanged(_currentFileListModel);
 }

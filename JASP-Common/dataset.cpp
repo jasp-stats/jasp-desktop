@@ -93,12 +93,22 @@ vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > emptyVal
 	return colChanged;
 }
 
-void DataSet::setFilterVector(std::vector<bool> filterResult)
+bool DataSet::setFilterVector(std::vector<bool> filterResult)
 {
+	bool changed = false;
+
 	_filteredRowCount = 0;
+
 	for(size_t i=0; i<filterResult.size(); i++)
+	{
+		if(_filterVector[i] != filterResult[i])
+			changed = true;
+
 		if((_filterVector[i] = filterResult[i])) //economy
 			_filteredRowCount++;
+	}
+
+	return changed;
 }
 
 bool DataSet::allColumnsPassFilter() const
