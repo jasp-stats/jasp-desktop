@@ -54,6 +54,7 @@ public:
 	virtual ~Analysis();
 
 	void				resetOptionsFromJASPFile()			{ _optionsDotJASP.clear();	}
+	void				clearOptions();
 	Options				*options()					const	{ return _options;			}
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
@@ -70,6 +71,7 @@ signals:
 	void				resultsChangedSignal(	Analysis * analysis);
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
+	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(	QString columnName);
 
 	void				helpFileChanged(QString helpFile);
@@ -110,6 +112,7 @@ public:
 			int					revision()			const	{ return _revision;						}
 			bool				isVisible()			const	{ return _visible;						}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;				}
+			QString				helpFile()			const	{ return _helpFile;						}
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;				}
 	const	Json::Value		&	getImgResults()		const	{ return _imgResults;					}
 			DataSet			*	getDataSet()		const;
@@ -117,6 +120,7 @@ public:
 			AnalysisForm	*	form()				const	{ return _analysisForm;					}
 
 			void		refresh();
+			void		reload();
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
@@ -131,7 +135,8 @@ public:
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isInited()			const { return status() == Inited;		}
 	bool isFinished()		const { return status() == Complete || status() == Error || status() == Exception; }
-	
+
+
 	void initialized(AnalysisForm* form, bool isNewAnalysis);
 
 	performType				desiredPerformTypeFromAnalysisStatus() const;
@@ -143,25 +148,14 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
 	void					runScriptRequestDone(const QString& result, const QString& controlName);	
 
-	QString helpFile() const
-	{
-		return m_helpFile;
-	}
+
 
 public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
-
-
+	void					setHelpFile(QString helpFile);
 	
-	void setHelpFile(QString helpFile)
-	{
-		if (m_helpFile == helpFile)
-			return;
 
-		m_helpFile = helpFile;
-		emit helpFileChanged(m_helpFile);
-	}
 
 protected:
 	int						callback(Json::Value results);
@@ -169,8 +163,9 @@ protected:
 
 private:
 	void					optionsChangedHandler(Option *option);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
-	void					requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(QString::fromStdString(columnName)); }
+	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
+	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(QString::fromStdString(columnName), this, colType); }
+	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(QString::fromStdString(columnName)); }
 
 protected:
 	Status					_status			= Initializing;
@@ -203,7 +198,7 @@ private:
 	AnalysisForm*			_analysisForm	= nullptr;	
 
 	std::string				_codedReferenceToAnalysisEntry = "";
-	QString m_helpFile;
+	QString					_helpFile;
 };
 
 #endif // ANALYSIS_H

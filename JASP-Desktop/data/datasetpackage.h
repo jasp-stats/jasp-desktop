@@ -59,11 +59,9 @@ public:
 			uint			dataFileTimestamp()				const	{ return _dataFileTimestamp;			}
 	const	Version&		dataArchiveVersion()			const	{ return _dataArchiveVersion;			}
 	const	std::string&	filterConstructorJson()			const	{ return _filterConstructorJSON;		}
-			bool			refreshAnalysesAfterFilter()	const	{ return _refreshAnalysesAfterFilter;	}
 
 
 			void			setDataArchiveVersion(Version archiveVersion)	{ _dataArchiveVersion			= archiveVersion;	}
-			void			setRefreshAnalysesAfterFilter(bool refresh)		{ _refreshAnalysesAfterFilter	= refresh;			}
 			void			setFilterConstructorJson(std::string json)		{ _filterConstructorJSON		= json;				}
 			void			setAnalysesData(Json::Value analysesData)		{ _analysesData					= analysesData;		}
 			void			setArchiveVersion(Version archiveVersion)		{ _archiveVersion				= archiveVersion;	}
@@ -116,7 +114,6 @@ private:
 
 	bool				_isArchive					= false,
 						_dataFileReadOnly,
-						_refreshAnalysesAfterFilter = true,
 						_isModified					= false,
 						_isLoaded					= false,
 						_analysesHTMLReady			= false;

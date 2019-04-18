@@ -31,6 +31,8 @@ class DynamicModules : public QObject
 {
 	Q_OBJECT
 
+	Q_PROPERTY(bool developersModuleInstallButtonEnabled READ developersModuleInstallButtonEnabled WRITE setDevelopersModuleInstallButtonEnabled NOTIFY developersModuleInstallButtonEnabledChanged)
+
 public:
 	explicit DynamicModules(QObject *parent) ;
 
@@ -46,7 +48,8 @@ public:
 	bool		initializeModule(					Modules::DynamicModule * module);
 
 	std::string moduleDirectory(			const	std::string & moduleName)	const;
-	bool		moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectory(moduleName));	}
+	std::wstring moduleDirectoryW(			const	std::string & moduleName)	const;
+	bool		moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
 
 	bool		aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
 	bool		aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
@@ -77,9 +80,11 @@ public:
 
 	Q_INVOKABLE Modules::DynamicModule*	dynamicModule(QString moduleName) const { return dynamicModule(moduleName.toStdString()); }
 
-	static std::string developmentModuleName() { return Modules::DynamicModule::developmentModuleName(); }
+	static std::string  developmentModuleName()  { return Modules::DynamicModule::developmentModuleName(); }
 
 	void startWatchingDevelopersModule();
+
+	bool developersModuleInstallButtonEnabled() const { return _developersModuleInstallButtonEnabled; }
 
 public slots:
 	void installationPackagesSucceeded(	const QString & moduleName);
@@ -88,6 +93,7 @@ public slots:
 	void loadingFailed(					const QString & moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string & moduleName);
 	void registerForLoading(			const std::string & moduleName);
+	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 
 signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
@@ -100,6 +106,8 @@ signals:
 	void restartEngines();
 
 	void reloadHelpPage();
+
+	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
 
 private slots:
 	void enginesStopped();
@@ -126,6 +134,7 @@ private:
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
+	bool													_developersModuleInstallButtonEnabled = true;
 };
 
 #endif // DYNAMICMODULES_H

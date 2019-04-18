@@ -18,6 +18,7 @@ Rectangle
 	property bool mainHovered:		descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
 	property bool allHovered:		mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
 	property bool hasBreadCrumbs:	false
+	focus:true
 
 	function openStuff(model)
 	{
@@ -63,6 +64,7 @@ Rectangle
 				hoverEnabled:		true
 				cursorShape:		Qt.PointingHandCursor
 				onClicked:			rectTitleAndDescripton.openStuff(model)
+				onDoubleClicked:	{}
 
 			}
 
@@ -104,6 +106,7 @@ Rectangle
 				hoverEnabled:	true
 
 				onClicked:		rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
+				onDoubleClicked:{}
 				cursorShape:	Qt.PointingHandCursor
 			}
 
@@ -111,7 +114,7 @@ Rectangle
 			{
 				id:			datafileToolTip
 				delay:		500
-				text:		toolTipText(model.type, model.associated_datafile, "datafileMouseArea")
+				text:		toolTipText(model.action, model.type, model.associated_datafile, "datafileMouseArea")
 				visible:	datafileMouseArea.containsMouse
 				font:		Theme.font
 			}
@@ -157,13 +160,14 @@ Rectangle
 			hoverEnabled:		true
 			cursorShape:		Qt.PointingHandCursor
 			onClicked:			rectTitleAndDescripton.openStuff(model)
+			onDoubleClicked:	{}
 		}
 
 		ToolTip
 		{
 			id:			commonToolTip
 			delay:		500
-			text:		toolTipText(model.type, model.associated_datafile, "commonMouseArea")
+			text:		toolTipText(model.action, model.type, model.associated_datafile, "commonMouseArea")
 			visible:	rectTitleAndDescripton.mainHovered
 			font:		Theme.font
 		}
@@ -180,7 +184,7 @@ Rectangle
 		anchors.top:		rectTitle.bottom
 		anchors.margins:	height > 0 ? 1 : 0
 
-		color:				rectTitleAndDescripton.allHovered ? Theme.white : Theme.uiBackground
+		color:				rectTitleAndDescripton.color//allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 		visible:			model.description !== ""
 
 		Text
@@ -210,21 +214,25 @@ Rectangle
 			anchors.fill:		parent
 			hoverEnabled:		true
 			onClicked:			rectTitleAndDescripton.openStuff(model)
+			onDoubleClicked:	{}
 			cursorShape:		Qt.PointingHandCursor
 		}
 	}
 
-	function toolTipText(type, associated_datafile, mousearea)
+	function toolTipText(action, type, associated_datafile, mousearea)
 	{
+		if (action === "sync")
+			return qsTr("Synchronize with this Data File");
+
 		//model type: JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5
 
 		if (type === 3)
-			return "Navigate to folder"
+			return qsTr("Navigate to folder")
 
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
-			return "Open JASP file"
+			return qsTr("Open JASP file")
 
-		return "Open data file"
+		return qsTr("Open data file")
 
 	}
 }

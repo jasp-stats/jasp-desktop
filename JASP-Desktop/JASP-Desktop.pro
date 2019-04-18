@@ -56,7 +56,7 @@ $$JASPTIMER_USED {
     windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc141-mt-1_64
     windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_64
     linux:                          LIBS += -lboost_timer
-    macx:                           LIBS += -lboost_timer-clang-mt-1_64
+    macx:                           LIBS += -lboost_timer-clang-mt-1_64 -lboost_chrono-clang-mt-1_64
 }
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
@@ -271,14 +271,11 @@ HEADERS += \
     engine/enginesync.h \
     engine/rscriptstore.h \
     gui/aboutdialog.h \
-    gui/aboutdialogjsinterface.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
     modules/dynamicmodules.h \
-    modules/ribbonentry.h \
     modules/ribbonmodel.h \
-    modules/ribbonbuttonmodel.h \
     modules/analysismenumodel.h \
     osf/onlinedataconnection.h \
     osf/onlinedatamanager.h \
@@ -301,7 +298,6 @@ HEADERS += \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
     widgets/filemenu/recentfiles.h \
-    widgets/filemenu/currentfile.h \
     widgets/filemenu/computer.h \
     widgets/filemenu/osf.h \
     widgets/filemenu/datalibrarybreadcrumbsmodel.h \
@@ -370,7 +366,10 @@ HEADERS += \
     results/resultmenumodel.h \
     analysis/jaspdoublevalidator.h \
     widgets/boundqmlfactorsform.h \
-    widgets/listmodelfactorsform.h
+    widgets/listmodelfactorsform.h \
+    utilities/aboutmodel.h \
+    modules/ribbonbutton.h \
+    widgets/filemenu/currentdatafile.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -452,14 +451,11 @@ SOURCES += \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
     gui/aboutdialog.cpp \
-    gui/aboutdialogjsinterface.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
     modules/dynamicmodules.cpp \
-    modules/ribbonentry.cpp \
     modules/ribbonmodel.cpp \
-    modules/ribbonbuttonmodel.cpp \
     modules/analysismenumodel.cpp \
     osf/onlinedataconnection.cpp \
     osf/onlinedatamanager.cpp \
@@ -481,7 +477,6 @@ SOURCES += \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
     widgets/filemenu/recentfiles.cpp \
-    widgets/filemenu/currentfile.cpp \
     widgets/filemenu/computer.cpp \
     widgets/filemenu/osf.cpp \
     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp \
@@ -549,7 +544,10 @@ SOURCES += \
     results/resultmenuentry.cpp \
     analysis/jaspdoublevalidator.cpp \
     widgets/boundqmlfactorsform.cpp \
-    widgets/listmodelfactorsform.cpp
+    widgets/listmodelfactorsform.cpp \
+    utilities/aboutmodel.cpp \
+    modules/ribbonbutton.cpp \
+    widgets/filemenu/currentdatafile.cpp
 
 RESOURCES += \
     html/html.qrc \

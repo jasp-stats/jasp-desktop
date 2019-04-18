@@ -4,21 +4,22 @@
 
 void FilterModel::reset()
 {
-	setGeneratedFilter(QString::fromStdString(labelFilterGenerator(NULL).generateFilter()));
+	_setGeneratedFilter(QString::fromStdString(labelFilterGenerator(nullptr).generateFilter()));
 	setConstructedJSON(DEFAULT_FILTER_JSON);
-	setRFilter(DEFAULT_FILTER);
+	_setRFilter(DEFAULT_FILTER);
+	sendGeneratedAndRFilter();
 }
 
 void FilterModel::setDataSetPackage(DataSetPackage * package)
 {
 	_package = package;
 
-	if(_package != NULL)
+	if(_package != nullptr)
 	{
-		setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
-
+		_setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
 		setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
-		setRFilter(QString::fromStdString(_package->dataFilter()));
+		_setRFilter(QString::fromStdString(_package->dataFilter()));
+		sendGeneratedAndRFilter();
 	}
 	else
 		reset();
@@ -26,10 +27,17 @@ void FilterModel::setDataSetPackage(DataSetPackage * package)
 
 void FilterModel::init()
 {
-	checkForSendFilter();
+	sendGeneratedAndRFilter();
 }
 
+
 void FilterModel::setRFilter(QString newRFilter)
+{
+	if (_setRFilter(newRFilter))
+		sendGeneratedAndRFilter();
+}
+
+bool FilterModel::_setRFilter(const QString& newRFilter)
 {
 	if(newRFilter != _rFilter)
 	{
@@ -40,10 +48,12 @@ void FilterModel::setRFilter(QString newRFilter)
 		if(oldHasFilter != hasFilter())
 			emit hasFilterChanged();
 
-		checkForSendFilter();
-
 		emit rFilterChanged();
+
+		return true;
 	}
+
+	return false;
 }
 
 void FilterModel::setConstructedJSON(QString newConstructedJSON)
@@ -67,7 +77,7 @@ void FilterModel::setConstructedJSON(QString newConstructedJSON)
 		emit constructedJSONChanged();
 	}
 
-	if(_package != NULL)
+	if(_package != nullptr)
 		_package->setFilterConstructorJson(newConstructedJSON.toStdString());
 }
 
@@ -81,31 +91,37 @@ void FilterModel::setConstructedR(QString newConstructedR)
 		emit updateGeneratedFilterWithR(_constructedR);
 	}
 }
-
 void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
 {
-	if(newGeneratedFilter != _generatedFilter)
+	if (_setGeneratedFilter(newGeneratedFilter))
+		sendGeneratedAndRFilter();	
+}
+
+bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
+{
+	if (newGeneratedFilter != _generatedFilter)
 	{
 		_generatedFilter = newGeneratedFilter;
-
-		checkForSendFilter(true);
-
 		emit generatedFilterChanged();
+		return true;
 	}
+
+	return false;
 }
 
 
 void FilterModel::processFilterResult(std::vector<bool> filterResult, int requestId)
 {
-	if((requestId > -1 && requestId < _lastSentRequestId) || _package == NULL || _package->dataSet() == NULL)
+	if((requestId > -1 && requestId < _lastSentRequestId) || _package == nullptr || _package->dataSet() == nullptr)
 		return;
 
 	_package->setDataFilter(_rFilter.toStdString()); //store the filter that was last used and actually gave results.
-	_package->dataSet()->setFilterVector(filterResult);
-
-	emit filterUpdated();
-
-	updateStatusBar();
+	if(_package->dataSet()->setFilterVector(filterResult))
+	{
+		refreshAllAnalyses();
+		emit filterUpdated();
+		updateStatusBar();
+	}
 }
 
 
@@ -115,18 +131,15 @@ void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
 		setFilterErrorMsg(filterErrorMsg);
 }
 
-void FilterModel::checkForSendFilter(bool justCameFromGeneratedFilterUpdate)
+void FilterModel::sendGeneratedAndRFilter()
 {
-	if(!justCameFromGeneratedFilterUpdate || (_package != NULL && _package->refreshAnalysesAfterFilter()))
-	{
-		setFilterErrorMsg("");
-		emit sendFilter(_generatedFilter, _rFilter, ++_lastSentRequestId);
-	}
+	setFilterErrorMsg("");
+	emit sendFilter(_generatedFilter, _rFilter, ++_lastSentRequestId);
 }
 
 void FilterModel::updateStatusBar()
 {
-	if(_package == NULL || _package->dataSet() == NULL)
+	if(_package == nullptr || _package->dataSet() == nullptr)
 	{
 		setStatusBarText("No data loaded!");
 		return;
@@ -140,11 +153,6 @@ void FilterModel::updateStatusBar()
 	if(hasFilter())	ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
 
 	setStatusBarText(QString::fromStdString(ss.str()));
-
-	if(_package->refreshAnalysesAfterFilter()) //After loading a JASP package we do not want to rerun all analyses because it might take very long
-		refreshAllAnalyses();
-
-	_package->setRefreshAnalysesAfterFilter(true);
 }
 
 void FilterModel::rescanRFilterForColumns()
@@ -155,5 +163,5 @@ void FilterModel::rescanRFilterForColumns()
 void FilterModel::computeColumnSucceeded(QString columnName, QString, bool dataChanged)
 {
 	if(dataChanged && (_columnsUsedInConstructedFilter.count(columnName.toStdString()) > 0 || _columnsUsedInRFilter.count(columnName.toStdString()) > 0))
-		checkForSendFilter();
+		sendGeneratedAndRFilter();
 }

@@ -50,7 +50,7 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr);
-				void			bindTo(Options *options, DataSet *dataSet, const Json::Value& oldVersionOptions);
+				void			bindTo();
 				void			unbind();
 
 				void			runRScript(QString script, QString controlName);
@@ -81,6 +81,8 @@ public:
 	void		clearErrors()							{ _errorMessages.clear(); _setErrorMessages(); }
 
 	Options*	options() { return _options; }
+
+	Q_INVOKABLE void reset();
 
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);

@@ -29,7 +29,7 @@ namespace Modules
 {
 
 ModuleException::ModuleException(std::string moduleName, std::string problemDescription)
-	: std::runtime_error("Module " + moduleName + " had a problem: " + problemDescription)
+	: std::runtime_error("Module \"" + moduleName + "\" had a problem: " + problemDescription)
 {}
 
 const char * standardRIndent = "  ";
@@ -116,22 +116,24 @@ void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
 	{
 		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
 		_title							= moduleDescription.get("title",			_name).asString();
+		_icon							= moduleDescription.get("icon",				"").asString();
 		_author							= moduleDescription.get("author",			"Unknown").asString();
 		_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
 		_license						= moduleDescription.get("license",			"Unknown").asString();
 		_website						= moduleDescription.get("website",			"Unknown").asString();
 		_maintainer						= moduleDescription.get("maintainer",		"JASP Team <info@jasp-stats.org>").asString();
 		_description					= moduleDescription.get("description",		"The R Code belonging to module " + _name).asString();
-		_version						= moduleDescription.get("version",			0).asInt();
+		auto jsonVer					= moduleDescription.get("version",			"0.0.0");
+		_version						= jsonVer.isString() ? jsonVer.asString() : "0.0.0";
 
-		setRequiredPackages(descriptionJson["requiredPackages"]);
+		setRequiredPackages(descriptionJson.get("requiredPackages", Json::arrayValue));
 
-		for(auto * ribbonEntry : _ribbonEntries)
-			delete ribbonEntry;
-		_ribbonEntries.clear();
+		for(auto * menuEntry : _menuEntries)
+			delete menuEntry;
+		_menuEntries.clear();
 
-		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
-			_ribbonEntries.push_back(new RibbonEntry(ribbonEntry, this));
+		for(Json::Value & menuEntry : descriptionJson["menu"])
+			_menuEntries.push_back(new AnalysisEntry(menuEntry, this));
 
 		emit descriptionReloaded(this);
 	}
@@ -152,13 +154,13 @@ void DynamicModule::generateRPackageMetadata(QDir packageDir)
 	QFile	descriptionFile(packageDir.absoluteFilePath("DESCRIPTION")),
 			namespaceFile(	packageDir.absoluteFilePath("NAMESPACE"));
 
-	if(!descriptionFile.exists())
+	if(!descriptionFile.exists() || Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC).toBool())
 	{
 		descriptionFile.open(QFile::WriteOnly	| QFile::Truncate);
 		descriptionFile.write(generateDescriptionFileForRPackage().c_str());
 	}
 
-	if(!namespaceFile.exists())
+	if(!namespaceFile.exists() || Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC).toBool())
 	{
 		namespaceFile.open(QFile::WriteOnly		| QFile::Truncate);
 		namespaceFile.write(generateNamespaceFileForRPackage().c_str());
@@ -171,14 +173,15 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 
 	out << "Package: "		<< _name <<
 		"\nType: Package"
-		"\nTitle: "			<< _name << " Module for JASP"
-		"\nVersion: "		<< std::to_string(_version) << ".0"
+		"\nTitle: "			<< _title << " Module for JASP"
+		"\nVersion: "		<< _version <<
 		"\nDate: "			<< QDateTime::currentDateTime().toString("yyyy-MM-dd").toStdString() <<
 		"\nAuthor: "		<< _author <<
 		"\nWebsite: "		<< _website <<
 		"\nMaintainer: "	<< _maintainer <<
 		"\nDescription: "	<< _description <<
 		"\nLicense: "		<< _license;
+
 
 	if(_requiredPackages.isArray() && _requiredPackages.size() > 0)
 	{
@@ -188,12 +191,21 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 		for(Json::Value & pkgV : _requiredPackages)
 		{
 			if(!first) out << ", ";
-			out << pkgV["package"].asString();
 
-			if(!pkgV["version"].isNull())
-				out << " (>= " << pkgV["version"].asString() << ")";
+			if(pkgV.isObject())
+			{
+				out << pkgV["package"].asString();
 
-			first = false;
+				if(!pkgV["version"].isNull())
+					out << " (>= " << pkgV["version"].asString() << ")";
+
+				first = false;
+			}
+			else if(pkgV.isString())
+			{
+				out << pkgV.asString();
+				first = false;
+			}
 		}
 	}
 
@@ -205,12 +217,12 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 {
 	std::stringstream out;
 
-	for(RibbonEntry * ribbon : _ribbonEntries)
-		for(const AnalysisEntry * analysis : ribbon->analysisEntries())
+	for(const AnalysisEntry * analysis : _menuEntries)
+		if(analysis->isAnalysis())
 			out << "export(" << analysis->function() << ")\n";
 
 	for(Json::Value & pkgV : _requiredPackages)
-		out << standardRIndent << "import('" << pkgV["package"].asString() << "');\n";
+		out << standardRIndent << "import('" << ( _requiredPackages.isArray() ? pkgV.asString() : pkgV["package"].asString()) << "');\n";
 
 	return out.str();
 }
@@ -327,8 +339,8 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 	R << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
 	R << standardRIndent << "import('" << _name << "');\n\n";
 
-	for(RibbonEntry * ribbon : _ribbonEntries)
-		for(const AnalysisEntry * analysis : ribbon->analysisEntries())
+	for(const AnalysisEntry * analysis : _menuEntries)
+		if(analysis->isAnalysis())
 			R << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
 	R << "})\n";
 
@@ -387,10 +399,15 @@ std::string	DynamicModule::qmlFilePath(const std::string & qmlFileName)	const
 	else				return moduleRLibrary().toStdString() + "/" + _name + "/qml/" + qmlFileName;
 }
 
-std::string	DynamicModule::iconFilePath(const std::string & iconFileName)	const
+std::string DynamicModule::iconFolder() const
 {
-	if(_isDeveloperMod)	return _modulePackage + "/inst/icons/" + iconFileName;
-	else				return moduleRLibrary().toStdString() + "/" + _name + "/icons/" + iconFileName;
+	if(_isDeveloperMod)	return _modulePackage + "/inst/icons/";
+	else				return moduleRLibrary().toStdString() + "/" + _name + "/icons/";
+}
+
+std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
+{
+	return iconFolder() + (whichIcon == "" ? _icon : whichIcon);
 }
 
 QString DynamicModule::helpFolderPath() const
@@ -399,19 +416,10 @@ QString DynamicModule::helpFolderPath() const
 	else				return moduleRLibrary() + "/" + QString::fromStdString(_name) + "/help/";
 }
 
-RibbonEntry* DynamicModule::ribbonEntry(const std::string & ribbonTitle) const
-{
-	for(RibbonEntry * entry : _ribbonEntries)
-		if(entry->title() == ribbonTitle)
-			return entry;
-
-	throw ModuleException(name(), "Couldn't find RibbonEntry " + ribbonTitle);
-}
-
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const
 {
-	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString();
-	int			moduleVersion	= jsonFromJaspFile.get("moduleVersion", -1).asInt();
+	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString(),
+				moduleVersion	= jsonFromJaspFile.get("moduleVersion", "0.0.1337").asString();
 
 	if(moduleName != name())
 		throw ModuleException(name(), "Tried to load an AnalysisEntry for module (" + moduleName +") from me...");
@@ -419,32 +427,26 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 	if(moduleVersion != version())
 		std::cerr << "Loading analysis based on different version of module(" << moduleName << "), but going ahead anyway. Analysis based on version: " << moduleVersion << " and actual loaded version of module is: " << version() << std::endl;
 
-	std::string ribbonTitle = jsonFromJaspFile.get("ribbonEntry", "RibbonEntry's title wasn't actually specified!").asString();
+	std::string analysisTitle = jsonFromJaspFile.get("analysisEntry", "AnalysisEntry's title wasn't actually specified!").asString();
 
-	return ribbonEntry(ribbonTitle)->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
+	return retrieveCorrespondingAnalysisEntry(analysisTitle);
 }
 
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & codedReference) const
 {
-
 	auto parts = stringUtils::splitString(codedReference, '~');
 
-	if(parts.size() != 3)
-		throw Modules::ModuleException("No module", "This isnt a coded reference");
+	std::string moduleName		= parts.size() > 1 ? parts[0] : "",
+				analysisFunc	= parts.size() > 1 ? parts[1] : parts[0];
 
-	std::string moduleName		= parts[0],
-				ribbonTitle		= parts[1],
-				analysisTitle	= parts[2];
-
-	if(_name != moduleName)
+	if(!moduleName.empty() && _name != moduleName)
 		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
 
-	return retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
-}
+	for (AnalysisEntry * menuEntry : _menuEntries)
+		if (menuEntry->isAnalysis() && menuEntry->function() == analysisFunc)
+			return menuEntry;
 
-AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName) const
-{
-	return ribbonEntry(ribbonTitle)->analysisEntry(analysisName);
+	throw Modules::ModuleException(_name, "Cannot find analysis function: " + analysisFunc);
 }
 
 void DynamicModule::setInstallLog(std::string installLog)

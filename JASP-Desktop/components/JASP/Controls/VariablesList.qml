@@ -425,8 +425,10 @@ JASPControl
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			!variablesList.dragOnlyVariables || isVariable
-				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
+				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? (model.columnType === "nominalText" ? "nominal" : model.columnType) : ""
 				property var extraColumnsModel:		model.extraColumns
+
+				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
 				
 				function setRelative(draggedRect)
 				{
@@ -436,7 +438,7 @@ JASPControl
 				
 				color:
 				{
-					if (!itemRectangle.draggable)												return Theme.controlBackgroundColor;
+					if (!itemRectangle.draggable)											return Theme.controlBackgroundColor;
 					else if (itemRectangle.selected)											return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
 					else if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return Theme.itemSelectedColor;
 					else if (mouseArea.containsMouse)											return Theme.itemHoverColor;

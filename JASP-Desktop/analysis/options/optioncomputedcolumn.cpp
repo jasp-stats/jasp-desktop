@@ -23,11 +23,22 @@ void OptionComputedColumn::setValue(const std::string &newValue)
 
 	OptionString::setValue(columnName);
 
-	if(columnName != "" && requestComputedColumnCreation(columnName) == NULL)
-		OptionString::setValue("");
+	if(columnName != "")
+	{
+		if(!_computed)
+			requestColumnCreation(columnName, _columnType);
+		else if(requestComputedColumnCreation(columnName) == NULL)
+			OptionString::setValue("");
+	}
+
+}
+
+void OptionComputedColumn::clear()
+{
+	setValue("");
 }
 
 Option *OptionComputedColumn::clone() const
 {
-	return new OptionComputedColumn(_value);
+	return new OptionComputedColumn(_value, _computed, _columnType);
 }

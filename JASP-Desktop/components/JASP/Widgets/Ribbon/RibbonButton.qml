@@ -25,7 +25,7 @@ import JASP.Theme 1.0
 Rectangle
 {
 	id		: ribbonButton
-	width	: (innerText.width > backgroundImage.width ? innerText.width : backgroundImage.width) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
+	width	: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
 	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	color	: mice.pressed ? Theme.grayLighter : "transparent"
 
@@ -33,10 +33,9 @@ Rectangle
 	property alias	source		: backgroundImage.source
 	property bool	enabled		: true
 	property string moduleName	: "???"
-	property string moduleTitle : "???"
-	property string ribbonTitle	: "???"
-	property bool showTitle: true
-	default property var	menu
+	property var	menu		: []
+
+	property real _imgIndWidth: backgroundImage.width + (menuIndicator.visible ? (menuIndicator.width + menuIndicator.anchors.leftMargin) * 2 : 0)
 
 	signal clicked
 
@@ -67,28 +66,28 @@ Rectangle
 
 		Image
 		{
-			id: menuIndicatior
+			id: menuIndicator
 
 			anchors.left:		backgroundImage.right
-			anchors.leftMargin: 5
+			anchors.leftMargin: 5   * preferencesModel.uiScale
 			height:				0.3 * backgroundImage.height
-			width:				height
+			width:				visible ? height : 0
 			anchors.top:		backgroundImage.top
 			source:				"qrc:/icons/toolbutton-menu-indicator.svg"
 			opacity:			ribbonButton.enabled ? 1 : 0.5
-			visible:			ribbonButton.menu.rowCount() > 1
+			visible:			ribbonButton.menu ? ribbonButton.menu.rowCount() > 1 : false
 		}
 
 		Text
 		{
 			id	: innerText
 
-			anchors.horizontalCenter	: parent.horizontalCenter
+			anchors.horizontalCenter	: backgroundImage.horizontalCenter
 			anchors.top					: backgroundImage.bottom
 			anchors.topMargin:			5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
 			font						: Theme.font
-			renderType:					Text.QtRendering //Because this might be transform and be ugly if done natively
+			renderType					: Text.QtRendering //Because this might be transform and be ugly if done natively
 		}
 
 		MouseArea
@@ -102,24 +101,22 @@ Rectangle
 
 			onClicked		:
 			{
-				if (fileMenuModel.visible)	fileMenuModel.visible = false
-				if (modulesMenu.opened)		modulesMenu.opened  = false
-
 				if (ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.ribbonTitle, ribbonButton.moduleName)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
 				{
 					var functionCall = function (index)
 					{
 						var analysisName = customMenu.props['model'].getAnalysisName(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.ribbonTitle, ribbonButton.moduleName)
+						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
 						customMenu.visible = false;
 					}
 
 					var props = {
 						"model"			: ribbonButton.menu,
-						"functionCall"	: functionCall
+						"functionCall"	: functionCall,
+						"hasIcons"		: ribbonButton.menu.hasIcons()
 					};
 
 					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
@@ -127,25 +124,4 @@ Rectangle
 			}
 		}
 	}
-
-	Rectangle
-	{
-		anchors.top:				parent.bottom
-		anchors.horizontalCenter:	parent.horizontalCenter
-		border.color:				Theme.uiBorder
-		border.width:				1
-		color:						Theme.uiBackground
-		visible:					showTitle && (mice.containsMouse && !mice.pressed)
-		height:						moduleNameText.implicitHeight + ( 2 * Theme.ribbonButtonPadding)
-		width:						moduleNameText.implicitWidth  + ( 2 * Theme.ribbonButtonPadding)
-
-		Text
-		{
-			id:						moduleNameText
-			anchors.centerIn:		parent
-			font:					Theme.fontLabel
-			text:					ribbonButton.moduleTitle
-		}
-	}
-
 }

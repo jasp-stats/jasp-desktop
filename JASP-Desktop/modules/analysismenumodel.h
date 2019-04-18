@@ -24,6 +24,8 @@
 
 #include "modules/analysisentry.h"
 
+class RibbonButton;
+
 
 class AnalysisMenuModel : public QAbstractListModel
 {
@@ -33,16 +35,18 @@ public:
 	enum {
 		DisplayRole,
 		AnalysisFunctionRole,
-		MenuImageSourceRole
+		MenuImageSourceRole,
+		IsSeparatorRole,
+		isGroupTitleRole
 	};
 
-	AnalysisMenuModel(QObject *parent) : QAbstractListModel(parent) {}
+	AnalysisMenuModel(RibbonButton *parent);
 
 	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _analysisEntries.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>			roleNames()													const override;
 
-	void 									setAnalysisEntries(std::vector<Modules::AnalysisEntry*> analysisEntries)	{	_analysisEntries = analysisEntries;	}
+	void 									setAnalysisEntries(const std::vector<Modules::AnalysisEntry*> &analysisEntries);
 	std::vector<Modules::AnalysisEntry*>	getAnalysisEntries()														{	return _analysisEntries;			}
 	Modules::AnalysisEntry*					getAnalysisEntry(const std::string& name);
 
@@ -50,11 +54,12 @@ public:
 	Q_INVOKABLE QString						getFirstAnalysisTitle()														{	return QString::fromStdString(_analysisEntries.at(0)->title());	}
 	Q_INVOKABLE QString						getAnalysisName(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
 	Q_INVOKABLE QString						getAnalysisTitle(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->title());	}
+	Q_INVOKABLE bool						hasIcons()												const				{	return _hasIcons; }
 
 private:
-	Modules::AnalysisEntries _analysisEntries;
+	Modules::AnalysisEntries	_analysisEntries;
+	RibbonButton*				_ribbonButton;
+	bool						_hasIcons = false;
 };
-
-typedef std::vector<AnalysisMenuModel*> AnalysisMenuModels;
 
 #endif

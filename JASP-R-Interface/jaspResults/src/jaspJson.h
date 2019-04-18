@@ -1,6 +1,7 @@
 #pragma once
 #include "jaspObject.h"
 #include <limits>
+#include "stringutils.h"
 
 class jaspJson : public jaspObject
 {
@@ -56,6 +57,8 @@ public:
 
 	static Json::Value RcppVector_to_ArrayJson(Rcpp::RObject obj, bool throwError=true) { return VectorJson_to_ArrayJson(RcppVector_to_VectorJson(obj, throwError)); }
 	static Json::Value VectorJson_to_ArrayJson(std::vector<Json::Value> vec);
+	static Json::Value SetJson_to_ArrayJson(std::set<Json::Value> set);
+	static std::set<Json::Value> ArrayJson_to_SetJson(Json::Value arr);
 	static std::vector<Json::Value> RList_to_VectorJson(Rcpp::List obj);
 
 	static std::vector<Json::Value> RcppVector_to_VectorJson(Rcpp::RObject obj, bool throwError=false)
@@ -115,8 +118,8 @@ template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<INTSXP>(
 template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<LGLSXP>(Rcpp::Vector<LGLSXP> obj, int row)					{ return (bool)(obj[row]) == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
 template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<LGLSXP>(Rcpp::MatrixColumn<LGLSXP> obj, int row)		{ return (bool)(obj[row]) == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<STRSXP>(Rcpp::Vector<STRSXP> obj, int row)					{ return obj[row] == NA_STRING			? "" : Json::Value((std::string)(obj[row]));	}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(Rcpp::MatrixColumn<STRSXP> obj, int row)		{ return obj[row] == NA_STRING			? "" : Json::Value((std::string)(obj[row]));	}
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<STRSXP>(Rcpp::Vector<STRSXP> obj, int row)					{ return obj[row] == NA_STRING			? "" : Json::Value(stringUtils::escapeHtmlStuff((std::string)(obj[row])));	}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(Rcpp::MatrixColumn<STRSXP> obj, int row)		{ return obj[row] == NA_STRING			? "" : Json::Value(stringUtils::escapeHtmlStuff((std::string)(obj[row])));	}
 
 
 #define TO_INFINITY_AND_BEYOND																					\

@@ -350,6 +350,12 @@ void AnalysisForm::addListView(QMLListView* listView, const map<QString, QString
 	_setUpRelatedModels(relationMap);
 }
 
+void AnalysisForm::reset()
+{
+	_analysis->clearOptions();
+	_analysis->reload();
+}
+
 void AnalysisForm::_setErrorMessages()
 {
 	if (_errorMessagesItem)
@@ -404,13 +410,14 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 	}
 }
 
-void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value& optionsFromJASPFile)
+void AnalysisForm::bindTo()
 {
 	if (_options != nullptr)
 		unbind();
 
-	_dataSet = dataSet;
-	_options = options;
+	const Json::Value& optionsFromJASPFile = _analysis->optionsFromJASPFile();
+	_dataSet = _analysis->getDataSet();
+	_options = _analysis->options();
 	QVector<ListModelAvailableInterface*> availableModels;
 
 	_options->blockSignals(true);
@@ -423,7 +430,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 		if (boundControl)
 		{
 			std::string name = boundControl->name().toStdString();
-			Option* option   = options->get(name);
+			Option* option   = _options->get(name);
 
 			if (option && !boundControl->isOptionValid(option))
 			{
@@ -459,7 +466,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet, const Json::Value&
 							option->set(optionValue);
 					}
 				}
-				options->add(name, option);
+				_options->add(name, option);
 			}
 
 			boundControl->bindTo(option);
@@ -525,7 +532,7 @@ void AnalysisForm::_formCompletedHandler()
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 		_parseQML();
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
-		bindTo(_analysis->options(), _analysis->getDataSet(), _analysis->optionsFromJASPFile());
+		bindTo();
 		_analysis->resetOptionsFromJASPFile();
 		_analysis->initialized(this, isNewAnalysis);
 	}

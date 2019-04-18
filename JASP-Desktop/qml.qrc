@@ -71,7 +71,6 @@
         <file>components/JASP/Widgets/FilterConstructor/OperatorVerticalDrag.qml</file>
         <file>components/JASP/Widgets/FilterConstructor/String.qml</file>
         <file>components/JASP/Widgets/FilterConstructor/StringDrag.qml</file>
-        <file>components/JASP/Widgets/Ribbon/Ribbon.qml</file>
         <file>components/JASP/Widgets/Ribbon/RibbonButton.qml</file>
         <file>components/JASP/Controls/JASPScrollBar.qml</file>
         <file>components/JASP/Widgets/MainWindow.qml</file>
@@ -105,5 +104,8 @@
         <file>components/JASP/Widgets/SplitHandle.qml</file>
         <file>components/JASP/Controls/AvailableVariablesList.qml</file>
         <file>components/JASP/Controls/ComputedColumnField.qml</file>
+        <file>components/JASP/Widgets/AboutWindow.qml</file>
+        <file>components/JASP/Widgets/FileMenu/MenuHeader.qml</file>
+        <file>components/JASP/Controls/AddColumnField.qml</file>
     </qresource>
 </RCC>

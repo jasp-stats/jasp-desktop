@@ -183,7 +183,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
 
   jaspResults <- jaspResultsR$new(jaspResultsModule$create_cpp_jaspResults(name, .retrieveState()))
-  jaspResults$setOptions(options)
+  jaspResults$.__enclos_env__$private$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)
   options     <- rjson::fromJSON(options)
@@ -198,9 +198,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     on.exit(setwd(oldwd))
   }
 
-  #print("analysis    <- eval(parse(text=functionCall)), analysis: ");
   analysis    <- eval(parse(text=functionCall))
-  #print(analysis)
 
   dataset <- NULL
   if (! is.null(dataKey)) {
@@ -218,8 +216,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
     errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", analysisResult$message, "\" } }", sep="")
 
-    jaspResults$setErrorMessage(analysisResult$message)
-    jaspResults$send()
+    jaspResults$.__enclos_env__$private$setErrorMessage(analysisResult$message)
+    jaspResults$.__enclos_env__$private$send()
 
     return(errorResponse)
 
@@ -235,8 +233,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
     errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 
-    jaspResults$setErrorMessage(errorMessage)
-    jaspResults$send()
+    jaspResults$.__enclos_env__$private$setErrorMessage(errorMessage)
+    jaspResults$.__enclos_env__$private$send()
 
     return(errorResponse)
 
@@ -244,13 +242,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   else
   {
     newState <- list()
-    newState[["figures"]]         <- jaspResults$getPlotObjectsForState()
-    newState[["other"]]           <- jaspResults$getOtherObjectsForState()
-    jaspResults$relativePathKeep  <- .saveState(newState)$relativePath
+    newState[["figures"]]         <- jaspResults$.__enclos_env__$private$getPlotObjectsForState()
+    newState[["other"]]           <- jaspResults$.__enclos_env__$private$getOtherObjectsForState()
+    jaspResults$.__enclos_env__$private$setRelativePathKeep(.saveState(newState)$relativePath)
 
-    returnThis <- list(keep=jaspResults$getKeepList()) #To keep the old keep-code functional we return it like this
+    returnThis <- list(keep=jaspResults$.__enclos_env__$private$getKeepList()) #To keep the old keep-code functional we return it like this
 
-    jaspResults$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
+    jaspResults$.__enclos_env__$private$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
 
 
   json <- try({ toJSON(returnThis) })
@@ -2298,66 +2296,99 @@ as.list.footnotes <- function(footnotes) {
 # not .saveImage() because RInside (interface to CPP) cannot handle that
 saveImage <- function(plotName, format, height, width)
 {
+  state           <- .retrieveState()     # Retrieve plot object from state
+  plt             <- state[["figures"]][[plotName]][["obj"]]
+  
+  location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
+  backgroundColor <- .fromRCPP(".imageBackground")
+  
+  # create file location string
+  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+  relativePath <- paste0("temp.", format)
+  
   error <- try({
-    state           <- .retrieveState()     # Retrieve plot object from state
-    plt             <- state[["figures"]][[plotName]][["obj"]]
-    
-    location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
-    backgroundColor <- .fromRCPP(".imageBackground")
-    
-    # create file location string
-    location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
-    relativePath <- paste0("temp.", format)
-    
     # Get file size in inches by creating a mock file and closing it
     pngMultip <- .fromRCPP(".ppi") / 96
-    png(filename="dpi.png", width=width * pngMultip,
-        height=height * pngMultip,res=72 * pngMultip)
+    png(
+      filename = "dpi.png",
+      width = width * pngMultip,
+      height = height * pngMultip,
+      res = 72 * pngMultip
+    )
     insize <- dev.size("in")
     dev.off()
     
-    # Open correct graphics device
-    if (format == "eps") {
-      grDevices::cairo_ps(filename=relativePath, width=insize[1],
-                          height=insize[2], bg=backgroundColor)
-    } else if (format == "tiff") {
+    if (ggplot2::is.ggplot(plt) || inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+      plotArgs <- list(
+        filename  = relativePath,
+        plot      = plt,
+        width     = insize[1],
+        height    = insize[2],
+        bg        = backgroundColor,
+        limitsize = FALSE
+      )
+      if (format == "eps") {
+        
+      } else if (format == "pdf") {
+        plotArgs[["bg"]] <- "transparent"
+      } else if (format == "tiff") {
+        plotArgs[["dpi"]] <- 300
+        plotArgs[["compression"]] <- "lzw"
+      } else {
+        stop("unknown format ", format)
+      }
+      do.call(ggplot2::ggsave, plotArgs)
+    } else { # qgraph & base plots
+      # Open correct graphics device
+      if (format == "eps") {
+        grDevices::cairo_ps(
+          filename = relativePath,
+          width = insize[1],
+          height = insize[2],
+          bg = backgroundColor
+        )
+      } else if (format == "tiff") {
+        hiResMultip <- 300 / 72
+        grDevices::tiff(
+          filename    = relativePath,
+          width       = width * hiResMultip,
+          height      = height * hiResMultip,
+          res         = 300,
+          bg          = backgroundColor,
+          compression = "lzw",
+          type        = "cairo"
+        )
+      }
+      else if (format == "pdf") {
+        grDevices::cairo_pdf(
+          filename = relativePath,
+          width = insize[1],
+          height = insize[2],
+          bg = "transparent"
+        )
+      } else { # add optional other formats here in "else if"-statements
+        stop("Format incorrectly specified")
+      }
       
-      hiResMultip <- 300/72
-      grDevices::tiff(filename    = relativePath,
-                      width       = width * hiResMultip,
-                      height      = height * hiResMultip,
-                      res         = 300,
-                      bg          = backgroundColor,
-                      compression = "lzw",
-                      type        = "cairo")
-      
+      # Plot and close graphics device
+      if (inherits(plt, "recordedplot")) {
+        .redrawPlot(plt) #(see below)
+      } else { #qgraph
+        plot(plt)
+      }
+      dev.off()
     }
-    else if (format == "pdf") {
-      grDevices::cairo_pdf(filename=relativePath, width=insize[1], height=insize[2], bg="transparent")
-    } else { # add optional other formats here in "else if"-statements
-      stop("Format incorrectly specified")
-    }
-    
-    # Plot and close graphics device
-    if (inherits(plt, "recordedplot")) {
-      .redrawPlot(plt) #(see below)
-    } else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-      gridExtra::grid.arrange(plt)
-    } else {
-      plot(plt) #ggplots
-    }
-    dev.off()
   })
   # Create output for interpretation by JASP front-end and return it
-  output <- list(
-    status = "imageSaved",
-    results = list(
-      name  = relativePath
-    )
-  )
-  if (isTryError(error))
-    output[["results"]][["error"]] <- .extractErrorMessage(error)
-
+  output <- list(status = "imageSaved",
+                 results = list(name  = relativePath,
+                                error = FALSE))
+  if (isTryError(error)) {
+    output[["results"]][["error"]] <- TRUE
+    output[["results"]][["errorMessage"]] <-
+      .extractErrorMessage(error)
+  }
+  
   return(toJSON(output))
 }
 
@@ -2730,7 +2761,11 @@ editImage <- function(plotName, type, height, width) {
   # error checks
   if (isTryError(results) || is.null(results)) {
     response[["results"]][["error"]] <- TRUE
-    response[["results"]][["errorMessage"]] <- .extractErrorMessage(results)
+    if (is.null(results))
+      errorMessage <- "no plot object was found"
+    else
+      errorMessage <- .extractErrorMessage(results)
+    response[["results"]][["errorMessage"]] <- errorMessage
   } else {
     # adjust the state of the analysis and save it
     state[["figures"]][[plotName]]  <- list(obj=results[["obj"]], width=results[["width"]], height=results[["height"]])

@@ -26,29 +26,29 @@ JASPControl
 	controlType:			"RadioButton"
 	isBound:				false
 	implicitWidth:			childrenOnSameRow
-								? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
-								: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
+							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+							: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
 	implicitHeight:			childrenOnSameRow
-								? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
-								: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
+							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:			focusIndicator
 	childControlsArea:		childControlsArea
-	
-	default property alias	content:				childControlsArea.children
-			property alias	control:				control
 
-			property alias	childrenArea:			childControlsArea
-			property alias	text:					control.text
-			property alias	label:					control.text
-			property alias	checked:				control.checked
-			property alias	value:					radioButton.name
-			property var	buttonGroup:			null
-			property bool	childrenOnSameRow:	false
-			property alias	columns:				childControlsArea.columns
-			property bool	enableChildrenOnChecked: true
-			property bool	indentChildren:			true
-			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
-	
+	default property alias	content:				childControlsArea.children
+	property alias	control:				control
+
+	property alias	childrenArea:			childControlsArea
+	property alias	text:					control.text
+	property alias	label:					control.text
+	property alias	checked:				control.checked
+	property alias	value:					radioButton.name
+	property var	buttonGroup:			null
+	property bool	childrenOnSameRow:		false
+	property alias	columns:				childControlsArea.columns
+	property bool	enableChildrenOnChecked: true
+	property bool	indentChildren:			true
+	property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
+
 	function click()
 	{
 		if (!checked)
@@ -57,7 +57,7 @@ JASPControl
 			control.clicked()
 		}
 	}
-	
+
 	RadioButton
 	{
 		id:					control
@@ -69,7 +69,7 @@ JASPControl
 		{
 			id:				radioIndicator
 			width:			height
-			height:			label.height
+			height:			Math.floor(Math.round(label.height) / 2) * 2
 			x:				control.padding
 			y:				control.padding
 
@@ -81,13 +81,13 @@ JASPControl
 			Rectangle
 			{
 				anchors.centerIn:	parent
-				width:				parent.width / 2
-				height:				parent.height / 2
+				width:				Math.round(parent.width / 4) * 2
+				height:				width
 				radius:				width
 				visible:			control.checked
 				color:				Theme.controlBackgroundColor
-            }
-        }
+			}
+		}
 
 		Rectangle
 		{
@@ -108,15 +108,14 @@ JASPControl
 			leftPadding:	radioIndicator.width + control.spacing
 			font:			Theme.font
 			color:			enabled ? Theme.textEnabled : Theme.textDisabled
-        }
+		}
 
 		background: Rectangle
 		{
 			color: "transparent"
 		}
+	}
 
-    }
-	
 	GridLayout
 	{
 		id:				childControlsArea
@@ -125,9 +124,9 @@ JASPControl
 		columns:		childrenOnSameRow ? children.length : 1
 		rowSpacing:		Theme.rowGroupSpacing
 		columnSpacing:	Theme.columnGridSpacing
-		
+
 		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + radioIndicator.width + control.spacing
-    }
+	}
 
 	Component.onCompleted:
 	{
@@ -146,9 +145,7 @@ JASPControl
 				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
 				childControlsArea.anchors.left = control.left
 				childControlsArea.anchors.leftMargin = indentChildren ? childControlsArea.childControlsPadding : 0
-			}				
+			}
 		}
-		
 	}
-	
 }

@@ -34,11 +34,12 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case PathRole:					return item.path;
 	case DescriptionRole:			return item.description;
 	case TypeRole:					return item.entryType;
-	case AssociatedDataFileRole:	return QFileInfo(item.associated_datafile).fileName();
+	case AssociatedDataFileRole:	return QFileInfo(item.associatedDataFile).fileName();
 	case IconSourceRole:			return FileSystemEntry::sourcesIcons()[item.entryType];
 	case DataIconSourceRole:		return FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
 	//case DirRole:					return QFileInfo (item.associated_datafile).path() + QDir::separator();
 	case DirRole:					return QFileInfo (item.path).path() + QDir::separator();
+	case ActionRole:				return _openFileWhenClicked ? "open" : "sync";
 	default:						return QStringLiteral("Me know nothing");
 	}
 
@@ -60,7 +61,7 @@ bool FileMenuBasicListModel::setData(const QModelIndex &index, const QVariant &v
 		case PathRole:					item.path					= value.toString();									break;
 		case DescriptionRole:			item.description			= value.toString();									break;
 		case TypeRole:					item.entryType				= static_cast<FileSystemEntry::EntryType> (value.toInt());	break;
-		case AssociatedDataFileRole:	item.associated_datafile	= value.toString();									break;
+		case AssociatedDataFileRole:	item.associatedDataFile	= value.toString();									break;
 		case IconSourceRole:			//Do nothing
 		case DataIconSourceRole:
 		case DirRole:					break;
@@ -95,5 +96,10 @@ void FileMenuBasicListModel::changePathCrumbIndex(const int& index)
 void FileMenuBasicListModel::openFile(const QString& path)
 {
 	std::cout << "Override basicListModel::openFile!" << std::endl;
+}
+
+void FileMenuBasicListModel::saveFile(const QString& path)
+{
+	std::cout << "Override basicListModel::saveFile!" << std::endl;
 }
 

@@ -8,8 +8,6 @@ public:
 
 	~jaspPlot();
 
-	void addFootnote(std::string message, std::string symbol = "");
-
 	float		_aspectRatio;
 	int			_width,
 				_height;
@@ -34,7 +32,6 @@ private:
 	void initEnvName();
 
 	//Rcpp::Vector<RAWSXP> _plotObjSerialized;
-	Json::Value _footnotes = Json::arrayValue;
 };
 
 
@@ -43,7 +40,6 @@ class jaspPlot_Interface : public jaspObject_Interface
 public:
 	jaspPlot_Interface(jaspObject * dataObj) : jaspObject_Interface(dataObj) {}
 
-	void addFootnote(std::string message, std::string symbol = "")	{ ((jaspPlot*)myJaspObject)->addFootnote(message, symbol); }
 	void setPlotObject(Rcpp::RObject plotObject)					{ ((jaspPlot*)myJaspObject)->setPlotObject(plotObject); }
 	Rcpp::RObject getPlotObject()									{ return ((jaspPlot*)myJaspObject)->getPlotObject(); }
 

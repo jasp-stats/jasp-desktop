@@ -27,6 +27,7 @@
 
 #include "utilities/qutils.h"
 #include "sharedmemory.h"
+#include "timers.h"
 
 using namespace std;
 
@@ -90,16 +91,25 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 	if (_dataSet == NULL || _dataSet->synchingData())
 		return QVariant();
 
+	JASPTIMER_RESUME(DataSetTableModel::data);
+
 	int column = index.column();
 
+	QVariant returnThis;
 
 	if(column > -1 && column < columnCount())
 	{
-		if(role == Qt::DisplayRole)
-			return tq(_dataSet->column(column)[index.row()]);
-		else if(role == (int)specialRoles::active)
-			return getRowFilter(index.row());
-		else if(role == (int)specialRoles::lines)
+		switch(role)
+		{
+		case Qt::DisplayRole:
+			returnThis = tq(_dataSet->column(column)[index.row()]);
+			break;
+
+		case (int)specialRoles::active:
+			returnThis = getRowFilter(index.row());
+			break;
+
+		case (int)specialRoles::lines:
 		{
 			bool	iAmActive = getRowFilter(index.row()),
 					//aboveMeIsActive = index.row() > 0				&& data(this->index(index.row() - 1, index.column()), (int)specialRoles::active).toBool();
@@ -111,16 +121,18 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 					down	= iAmActive && !belowMeIsActive,
 					right	= iAmActive && index.column() == columnCount() - 1; //always draw left line and right line only if last col
 
-			return	(left ?		1 : 0) +
-					(right ?	2 : 0) +
-					(up ?		4 : 0) +
-					(down ?		8 : 0);
+			returnThis =	(left ?		1 : 0) +
+							(right ?	2 : 0) +
+							(up ?		4 : 0) +
+							(down ?		8 : 0);
+			break;
 		}
-
-
+		}
 	}
 
-    return QVariant();
+	JASPTIMER_STOP(DataSetTableModel::data);
+
+	return returnThis;
 }
 
 QVariant DataSetTableModel::columnTitle(int column) const

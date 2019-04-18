@@ -34,7 +34,7 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 	Q_OBJECT
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, ComputedColumnType };
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, ComputedColumnType, AddColumnType };
 
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
 	BoundQMLTextInput(QMap<QString, QVariant>& properties, AnalysisForm *form);

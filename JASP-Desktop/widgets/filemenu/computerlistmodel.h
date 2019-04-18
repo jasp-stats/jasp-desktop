@@ -19,10 +19,10 @@ public:
 	void					refresh();
 
 public slots:
-	void changePath(const QString& name, const QString& path) override { emit browseOpen(path); }
+	void changePath(const QString& name, const QString& path) override { emit browsePath(path); }
 
 signals:
-	void browseOpen(const QString & path);
+	void browsePath(const QString & path);
 					
 private:
 	ComputerFileSystem *_fsbmRecentFolders;

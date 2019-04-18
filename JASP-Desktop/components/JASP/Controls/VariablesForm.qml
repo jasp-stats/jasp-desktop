@@ -81,7 +81,7 @@ Item
 				if (interactionAssign)
 				{
 					allAssignedVariablesList[index].interactionControl = item.interactionControl
-					item.interactionControl.resetWidth("Main Effects")
+					item.interactionControl.resetWidth(["Main Effects"])
 					item.interactionControl.activated.connect(item.setState)
 				}
 			}
@@ -252,7 +252,7 @@ Item
 			if (isControlList && control.setWidthInForm)
 				// Change the width of the VariablesList only if was not set explicitely
 				control.width = variablesForm.listWidth
-			else if (isControlComboBox && control.controlMinWidth === 0)
+			else if (isControlComboBox && control.setWidthInForm)
 			{
 				control.setLabelAbove = true
 				control.controlMinWidth = variablesForm.listWidth

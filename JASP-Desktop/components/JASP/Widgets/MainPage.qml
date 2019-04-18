@@ -31,8 +31,9 @@ Item
 
 	onWidthChanged:
 	{
-		if(!panelSplit.shouldShowInputOutput)							data.width = panelSplit.width
-		else if(panelSplit.width < data.width + Theme.splitHandleWidth)	data.width = panelSplit.width - Theme.splitHandleWidth
+		if(!panelSplit.shouldShowInputOutput)										data.width = splitViewContainer.width
+		else if(data.wasMaximized)													return; //wasMaximized binds!
+		else if(splitViewContainer.width <= data.width + Theme.splitHandleWidth)	data.maximizeData();
 	}
 
 	OLD.SplitView
@@ -44,34 +45,39 @@ Item
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidth : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
-		property bool shouldShowInputOutput:		!mainWindow.dataAvailable || mainWindow.analysesAvailable
+		property bool shouldShowInputOutput:		(!mainWindow.progressBarVisible && !mainWindow.dataAvailable) || mainWindow.analysesAvailable
 
 		DataPanel
 		{
 			id:						data
-			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
+			visible:				mainWindow.progressBarVisible || mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
 
 			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
+			property bool wasMaximized:					false
 
 			onWidthChanged:
 			{
-				var iAmBig = width > 0;
-				if(iAmBig !== mainWindow.dataPanelVisible)
-					mainWindow.dataPanelVisible = iAmBig
-
-				if(fakeEmptyDataForSumStatsEtc)
+				if(!mainWindow.progressBarVisible)
 				{
-					mainWindow.dataPanelVisible = false;
-					width = 0;
+					var iAmBig = width > 0;
+					 if(iAmBig !== mainWindow.dataPanelVisible)
+						mainWindow.dataPanelVisible = iAmBig
+
+					if(fakeEmptyDataForSumStatsEtc)
+					{
+						mainWindow.dataPanelVisible = false;
+						width = 0;
+					}
 				}
+
+				if(data.width !== data.maxWidth)
+					data.wasMaximized = false;
 			}
 
-			function maximizeData()
-			{
-				data.width = data.maxWidth
-			}
+			function maximizeData()	{ data.width = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
+			function minimizeData()	{ data.width = 0;													data.wasMaximized = false; }
 
 			Connections
 			{
@@ -79,7 +85,7 @@ Item
 				onDataPanelVisibleChanged:
 				{
 					if(mainWindow.dataPanelVisible && data.width === 0)		data.maximizeData();
-					else if(!mainWindow.dataPanelVisible && data.width > 0)	data.width = 0
+					else if(!mainWindow.dataPanelVisible && data.width > 0)	data.minimizeData();
 				}
 			}
 		}
@@ -113,7 +119,7 @@ Item
 			}
 		}
 
-		Item
+		Rectangle
 		{
 			id:						giveResultsSomeSpace
 			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
@@ -122,6 +128,7 @@ Item
 			z:						3
 			visible:				panelSplit.shouldShowInputOutput
 			onVisibleChanged:		if(visible) width = Theme.resultWidth; else data.maximizeData()
+			color:					analysesModel.currentAnalysisIndex !== -1 ? Theme.uiBackground : Theme.white
 
 			Connections
 			{
@@ -143,21 +150,63 @@ Item
 				}
 			}
 
+			onWidthChanged:
+			{
+				resizeTimer.resizer(giveResultsSomeSpace.width);
+				//data.wasMaximized = data.width === data.maxWidth;
+			}
+
 
 			WebEngineView
 			{
 				id:						resultsView
 
-				anchors.fill:			parent
-				anchors.rightMargin:	panelSplit.hackySplitHandlerHideWidth
+				anchors
+				{
+					left:				parent.left
+					top:				parent.top
+					bottom:				parent.bottom
+				}
+
+				width: resizeTimer.currentWidth - panelSplit.hackySplitHandlerHideWidth
+
+				Timer
+				{
+					id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
+
+					property real resizeToThis: -1
+					property real currentWidth: giveResultsSomeSpace.width
+
+					function resizer(newWidth)
+					{
+						if(resizeTimer.resizeToThis	!== newWidth)
+						{
+							//if(resizeTimer.running)
+							resizeTimer.stop();
+
+							resizeTimer.resizeToThis = newWidth;
+
+							if(newWidth !== resizeTimer.currentWidth)
+								resizeTimer.start();
+						}
+					}
+
+					running:		false
+					repeat:			false
+					interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
+					onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
+				}
+
+
 				url:					resultsJsInterface.resultsPageUrl
-				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
+				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
 				onContextMenuRequested: request.accepted = true
+				onNavigationRequested:	request.action = request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl ? WebEngineNavigationRequest.AcceptRequest : WebEngineNavigationRequest.IgnoreRequest
 
 				Connections
 				{
-					target:				resultsJsInterface
-					onRunJavaScript:	resultsView.runJavaScript(js)
+					target:					resultsJsInterface
+					onRunJavaScript:		resultsView.runJavaScript(js)
 				}
 
 				webChannel.registeredObjects: [ resultsJsInterfaceInterface ]
@@ -168,15 +217,15 @@ Item
 					WebChannel.id:	"jasp"
 
 					// Yeah I know this "resultsJsInterfaceInterface" looks a bit stupid but this honestly seems like the best way to make the current resultsJsInterface functions available to javascript without rewriting (more of) the structure of JASP-Desktop right now.
-					// It would be much better to have resultsJsInterface be passed irectly though..
+					// It would be much better to have resultsJsInterface be passed directly though..
 					// It also gives you an overview of the functions used in results html
 
-					function openFileTab()							{ resultsJsInterface.openFileTab()							}
-					function saveTextToFile(fileName, html)			{ resultsJsInterface.saveTextToFile(fileName, html)			}
-					function analysisUnselected()					{ resultsJsInterface.analysisUnselected()					}
-					function analysisSelected(id)					{ resultsJsInterface.analysisSelected(id)					}
-					function analysisChangedDownstream(id, model)	{ resultsJsInterface.analysisChangedDownstream(id, model)	}
-					function welcomeScreenIsCleared()				{ resultsJsInterface.welcomeScreenIsCleared()					}
+					function openFileTab()								{ resultsJsInterface.openFileTab()							}
+					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)			}
+					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()					}
+					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)					}
+					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)	}
+					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)}
 
 
 					function showAnalysesMenu(options)

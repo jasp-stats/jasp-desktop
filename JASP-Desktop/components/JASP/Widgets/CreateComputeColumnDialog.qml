@@ -42,7 +42,7 @@ Popup
 			width: Math.max(computeColumnIconRow.width, title.width) + 20
 			color: Theme.uiBackground
 			//radius: 20
-			border.color: Theme.black
+			border.color: Theme.uiBorder
 			border.width: 1
 
 		/*	Component.onCompleted: reset()
@@ -238,9 +238,9 @@ Popup
 						//radius:	10
 
 						property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
-						color: iAmSelected ? Theme.white : popupIconComputeMouseArea.useThisColor
+						color: iAmSelected ? Theme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
 
-						border.color: iAmSelected ? Theme.black : "lightGray"
+						border.color: iAmSelected ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
 						border.width: 1
 
 						Item
@@ -284,7 +284,7 @@ Popup
 							hoverEnabled: true
 							cursorShape: Qt.PointingHandCursor
 
-							property color useThisColor: containsMouse ? Theme.white : "lightGray"
+							property color useThisColor: containsMouse ? Theme.buttonColorHovered : Theme.buttonColor
 
 							onClicked:
 							{

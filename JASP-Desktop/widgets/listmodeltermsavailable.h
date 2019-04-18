@@ -33,9 +33,6 @@ public:
 	
 	ListModel*	getSourceModelOfTerm(const Term& term);
 	void		addEmptyValue() { _addEmptyValue = true; }
-
-protected:
-	virtual void _resetTerms(const Terms &terms);
 	
 private:	
 	std::map<QString, ListModel*>	_termSourceModelMap;	

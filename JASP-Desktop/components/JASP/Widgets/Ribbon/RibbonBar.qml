@@ -37,16 +37,14 @@ FocusScope
 		id			: fileMenuOpenButton
 		width		: height
 		showArrow	: fileMenuModel.visible
-		toolTip		: showArrow ? qsTr("Close Menu") : qsTr("Open Menu" )
-		toolTipVisible: false
 		hamburger	: true
 		z			: 2
 
-		onClicked	:
+		onClicked:
 		{
 			customMenu.visible		= false;
 			fileMenuModel.visible	= !fileMenuModel.visible;
-			modulesMenu.opened = false;
+			modulesMenu.opened		= false;
 		}
 
 		anchors
@@ -76,11 +74,14 @@ FocusScope
 			enabled			: fileMenuModel.visible || modulesMenu.opened || customMenu.visible
 			cursorShape		: !mainWindow.datasetLoaded || enabled ? Qt.ArrowCursor : Qt.PointingHandCursor
 
-			onClicked		:
+			propagateComposedEvents: true
+
+			onClicked:
 			{
 				fileMenuModel.visible	= false;
 				modulesMenu.opened		= false;
 				customMenu.visible		= false;
+				mouse.accepted			= false;
 			}
 		}
 	}

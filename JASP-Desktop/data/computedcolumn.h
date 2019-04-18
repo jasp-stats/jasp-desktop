@@ -10,7 +10,7 @@ class Analysis;
 class ComputedColumn
 {
 public:
-	enum class computedType { rCode, constructorCode, analysis};
+	enum class computedType { rCode, constructorCode, analysis, analysisNotComputed};
 
 			ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Column * col, computedType kindOfCode = computedType::constructorCode)
 			: _computedColumns(allComputedColumns), _codeType(kindOfCode), _name(col->name()), _outputColumn(col)

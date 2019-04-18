@@ -23,35 +23,24 @@
 #include "filemenuobject.h"
 #include "currentfilelistmodel.h"
 
-class CurrentFile : public FileMenuObject
+class CurrentDataFile : public FileMenuObject
 {
 	Q_OBJECT
 	Q_PROPERTY(CurrentFileListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit CurrentFile(QObject *parent = nullptr);
-	~CurrentFile();
+	explicit CurrentDataFile(QObject *parent = nullptr);
+	~CurrentDataFile();
 	
-	void setCurrentFilePath(const QString &path);
-	void setCurrentDataFilePath(const QString &path);
-    void setCurrentFileInfo(const QString &path, const Utils::FileType &type, const bool & readonly);
-	void setCurrentFileType(const Utils::FileType &type);
-	void setCurrentFileReadOnly(const bool & readonly);
-	
-	Utils::FileType getCurrentFileType();	
-	bool isCurrentFileReadOnly();
+	void setCurrentFilePath(const QString &path);	
 	bool isOnlineFile(const QString &path);
 		
 	//Special
 	CurrentFileListModel * getCurrentFileListModel();
-
 	CurrentFileListModel * listModel() const { return _currentFileListModel; }
 
 public slots:
 	QString getCurrentFilePath();
-	QString getCurrentDataFilePath();
-	QString getCurrentDataFileName();
-	QString getCurrentDataFolder();
 	QString getHeaderText();		
 	void syncFile(FileEvent *event);
 	
@@ -62,11 +51,7 @@ signals:
 private:
 	CurrentFileListModel *_currentFileListModel = nullptr;
 	
-	QString _currentFilePath,
-			_currentDataFilePath;
-
-	Utils::FileType _currentFileType;
-	bool _currentFileReadOnly;
+	QString _currentFilePath;
 
 };
 

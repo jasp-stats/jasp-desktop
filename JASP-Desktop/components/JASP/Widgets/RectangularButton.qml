@@ -20,19 +20,13 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-Rectangle
+FocusScope
 {
 	id: filterButtonRoot
-
-	color:			_pressed ? Theme.buttonColorPressed :	_showHovered ? Theme.buttonColorHovered			: Theme.buttonColor
-	border.color:											_showHovered ? Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
-	border.width:	1
-
 
 	property string	text:				""
 	property string	toolTip:			""
 	property string textColor:			"default"
-	property bool	enabled:			true
 	property bool	selected:			false
 	property string	iconSource:			""
 	property real	buttonPadding:		6 * preferencesModel.uiScale
@@ -42,8 +36,11 @@ Rectangle
 	property bool	iconLeft:			true
 
 	property real	_scaledDim:			32 * preferencesModel.uiScale
-	property bool	_showHovered:		(filterButtonRoot.enabled && filterButtonRoot.hovered) || filterButtonRoot.selected
+	property bool	_showHovered:		filterButtonRoot.enabled && filterButtonRoot.hovered
 	property alias	_pressed:			buttonMouseArea.pressed
+	property alias  color:				rect.color
+	property alias	border:				rect.border
+	property alias	radius:				rect.radius
 
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
@@ -64,63 +61,76 @@ Rectangle
 
 	signal clicked()
 
-	MouseArea
+
+	Rectangle
 	{
-		id:							buttonMouseArea
-		anchors.fill:				parent
-		acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
-		hoverEnabled:				true
-		cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-		onClicked:					if(filterButtonRoot.enabled) filterButtonRoot.clicked(); //else mouse.accepted = false;
-		visible:					filterButtonRoot.enabled
-		//propagateComposedEvents:	true
-	}
+		id: rect
 
-	Image
-	{
-		id: buttonIcon
-		x:	!filterButtonRoot.showIconAndText ?
-				(parent.width / 2) - (width / 2) :
-				filterButtonRoot.iconLeft ?
-					filterButtonRoot.buttonPadding :
-					parent.width - (width + filterButtonRoot.buttonPadding)
+		color:			_pressed || selected ? Theme.buttonColorPressed :	_showHovered ?				Theme.buttonColorHovered		: Theme.buttonColor
+		border.color:														_showHovered || selected ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+		border.width:	1
+		focus:			true
+		width:			parent.width
+		height:			parent.height
 
-		y:	(parent.height / 2) - (height / 2)
+		MouseArea
+		{
+			id:							buttonMouseArea
+			anchors.fill:				parent
+			acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
+			hoverEnabled:				true
+			cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+			onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.forceActiveFocus(); } //else mouse.accepted = false;
+			visible:					filterButtonRoot.enabled
+			//propagateComposedEvents:	true
+		}
 
-		width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
-		height: filterButtonRoot.height - (2 * buttonPadding)
+		Image
+		{
+			id: buttonIcon
+			x:	!filterButtonRoot.showIconAndText ?
+					(parent.width / 2) - (width / 2) :
+					filterButtonRoot.iconLeft ?
+						filterButtonRoot.buttonPadding :
+						parent.width - (width + filterButtonRoot.buttonPadding)
 
-		sourceSize.width:	Math.max(48, width  * 2)
-		sourceSize.height:	Math.max(48, height * 2)
+			y:	(parent.height / 2) - (height / 2)
 
-		visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
-		source:		filterButtonRoot.iconSource
-	}
+			width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
+			height: filterButtonRoot.height - (2 * buttonPadding)
 
-	Text
-	{
-		id: buttonText
-		x:	filterButtonRoot.centerText ?
-				(parent.width / 2) - (width / 2) :
-				!buttonIcon.visible || !filterButtonRoot.iconLeft ?
-					filterButtonRoot.buttonPadding :
-					buttonIcon.x + buttonIcon.width
+			sourceSize.width:	Math.max(48, width  * 2)
+			sourceSize.height:	Math.max(48, height * 2)
 
+			visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
+			source:		filterButtonRoot.iconSource
+		}
 
-		y:	(parent.height / 2) - (height / 2)
-
-		text:		filterButtonRoot.text
-		visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-		color:		textColor == "default" ? (filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled) : textColor
-
-
-		font:	Theme.font
-		//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
-
-		height: contentHeight
-		width:	Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
+		Text
+		{
+			id: buttonText
+			x:	filterButtonRoot.centerText ?
+					(parent.width / 2) - (width / 2) :
+					!buttonIcon.visible || !filterButtonRoot.iconLeft ?
+						filterButtonRoot.buttonPadding :
+						buttonIcon.x + buttonIcon.width
 
 
-		elide:	Text.ElideMiddle
+			y:	(parent.height / 2) - (height / 2)
+
+			text:		filterButtonRoot.text
+			visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
+			color:		textColor == "default" ? (filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled) : textColor
+
+
+			font:	Theme.font
+			//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
+
+			height: contentHeight
+			width:	implicitWidth //Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))
+
+
+			elide:	Text.ElideMiddle
+		}
 	}
 }

@@ -27,9 +27,9 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QDateTime>
-#include "ribbonentry.h"
 #include "jsonredirect.h"
 #include "enginedefinitions.h"
+#include "analysisentry.h"
 
 namespace Modules
 {
@@ -64,19 +64,20 @@ public:
 
 	~DynamicModule() override
 	{
-		for(auto * entry : _ribbonEntries)
+		for(auto * entry : _menuEntries)
 			delete entry;
-		_ribbonEntries.clear();
+		_menuEntries.clear();
 	}
 
-	static std::string developmentModuleName() { return "DevelopmentModule"; }
+	static std::string  developmentModuleName()  { return "DevelopmentModule"; }
+	static std::wstring developmentModuleNameW() { return L"DevelopmentModule"; }
 
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(_name);			}
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
 	bool				requiresDataset()	const { return _requiresDataset;						}
 	std::string			author()			const { return _author;									}
-	int					version()			const { return _version;								}
+	std::string			version()			const { return _version;								}
 	std::string			website()			const { return _website;								}
 	std::string			license()			const { return _license;								}
 	std::string			maintainer()		const { return _maintainer;								}
@@ -92,7 +93,8 @@ public:
 	Json::Value			requiredPackages()	const { return _requiredPackages;						}
 
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
-	std::string			iconFilePath(	const std::string & iconFileName)	const;
+	std::string			iconFilePath(std::string whichIcon = "")			const;
+	std::string			iconFolder()										const;
 	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
 	QString				helpFolderPath()									const;
 
@@ -114,14 +116,10 @@ public:
 	void				setLoadingNeeded();
 	void				setStatus(moduleStatus newStatus);
 
-	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
-
-	RibbonEntry*		ribbonEntry(const std::string & ribbonTitle) const;
-	RibbonEntry*		operator[](const std::string & ribbonTitle) const { return ribbonEntry(ribbonTitle); }
+	const AnalysisEntries menu()		const	{ return _menuEntries; }
 
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisName)	const;
 
 	static std::string	moduleNameStripNonAlphaNum(std::string folderName);
 
@@ -183,10 +181,10 @@ private:
 private:
 	//QDir			_generatedPackageFolder;
 	QFileInfo		_moduleFolder;
-	int				_version;
 	moduleStatus	_status = moduleStatus::uninitialized;
 	std::string		_name,
 					_title,
+					_icon,
 					_author,
 					_website,
 					_license,
@@ -194,7 +192,8 @@ private:
 					_installLog			= "",
 					_maintainer,
 					_description,
-					_modulePackage		= "";
+					_modulePackage		= "",
+					_version;
 	bool			_requiresDataset	= true,
 					_installing			= false,
 					_installed			= false,
@@ -203,7 +202,7 @@ private:
 					_isDeveloperMod		= false,
 					_initialized		= false;
 	Json::Value		_requiredPackages;
-	RibbonEntries	_ribbonEntries;
+	AnalysisEntries	_menuEntries;
 	const char		*_exposedPostFix	= "_exposed";
 };
 

@@ -24,7 +24,17 @@ import JASP.Theme 1.0
 Item
 {
 	id					: menu
+	width				: menuRectangle.width
+	height				: menuRectangle.height
 	property var props	: undefined
+	property bool hasIcons: true
+
+	property real _iconPad: 5 * preferencesModel.uiScale
+
+	onPropsChanged:
+	{
+		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+	}
 
 	function resizeElements(newWidth)
 	{
@@ -55,7 +65,8 @@ Item
 
 			onItemAdded:
 			{
-				if (index === 0) {
+				if (index === 0)
+				{
 					menuRectangle.width = 0;
 					menuRectangle.height = 0;
 				}
@@ -63,7 +74,8 @@ Item
 				menuRectangle.width = Math.max(item.width, menuRectangle.width);
 				menuRectangle.height += (item.height + Theme.menuSpacing)
 
-				if (index === count - 1) {
+				if (index === count - 1)
+				{
 					menuRectangle.height += (Theme.menuPadding - Theme.menuSpacing)
 					menu.resizeElements(menuRectangle.width);
 				}
@@ -73,9 +85,10 @@ Item
 			{
 				sourceComponent :
 				{
-					if (displayText === "???")
-						return menuSeparator
-
+					if (model.isSeparator !== undefined && model.isSeparator)
+						return menuSeparator;
+					else if (model.isGroupTitle !== undefined && model.isGroupTitle)
+						return menuGroupTitle;
 					return menuDelegate
 				}
 
@@ -86,24 +99,27 @@ Item
 					Rectangle
 					{
 						id		: menuItem
-						width	: menuItemImage.width + menuItemText.implicitWidth + 16 * Theme.uiScale
-								// 16 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
+						width	: initWidth
 						height	: Theme.menuItemHeight
 						color	: mouseArea.pressed ? Theme.blueMuchLighter : mouseArea.containsMouse ? Theme.grayLighter : Theme.white
+
+						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
+						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
 						Rectangle
 						{
 							id		: menuItemImage
-							height	: menuItem.height - 5 * Theme.uiScale // 5 = smallerBy
-							width	: menuItem.height - 5 * Theme.uiScale
+							height	: menuItem.height - menu._iconPad
+							width	: menuItem.height - menu._iconPad
 							color	: menuItem.color
 
 							anchors.left			: parent.left
-							anchors.leftMargin		: 3 * Theme.uiScale
+							anchors.leftMargin		: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
 
 							Image
 							{
+								visible		: menu.hasIcons
 								height		: parent.height
 								width		: parent.width
 								source		: menuImageSource
@@ -119,10 +135,8 @@ Item
 							font				: Theme.font
 							verticalAlignment	: Text.AlignVCenter
 
-							anchors.left		: menuItemImage.right
-							anchors.leftMargin	: 5 * Theme.uiScale
-							anchors.right		: parent.right
-							anchors.rightMargin	: 3 * Theme.uiScale
+							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
+							anchors.leftMargin	: menu._iconPad
 						}
 
 						MouseArea
@@ -130,7 +144,55 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		: menu.props['functionCall'](index)
+							onClicked		:
+							{
+								menu.props['functionCall'](index)
+							}
+						}
+					}
+				}
+				Component
+				{
+					id: menuGroupTitle
+
+					Rectangle
+					{
+						id		: menuItem
+						width	: initWidth
+						height	: Theme.menuGroupTitleHeight
+						color	: Theme.white
+
+						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
+
+
+						Rectangle
+						{
+							id		: menuItemImage
+							height	: menuItem.height - menu._iconPad
+							width	: menuItem.height - menu._iconPad
+							color	: Theme.white
+
+							anchors.left			: parent.left
+							anchors.leftMargin		: menu._iconPad
+							anchors.verticalCenter	: parent.verticalCenter
+
+							Image
+							{
+								height		: parent.height
+								width		: parent.width
+								source		: menuImageSource
+								fillMode	: Image.PreserveAspectFit
+							}
+						}
+
+						Text
+						{
+							id					: menuItemText
+							text				: displayText
+							font				: Theme.fontLabel
+							anchors.left		: menuImageSource ? menuItemImage.right : menuItem.left
+							anchors.leftMargin	: menu._iconPad
+							anchors.verticalCenter	: parent.verticalCenter
 						}
 					}
 				}
@@ -138,11 +200,7 @@ Item
 				Component
 				{
 					id	: menuSeparator
-
-					ToolSeparator
-					{
-						orientation	: Qt.Horizontal
-					}
+					ToolSeparator { orientation	: Qt.Horizontal }
 				}
 			}
 		}

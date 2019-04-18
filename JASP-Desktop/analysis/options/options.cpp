@@ -62,7 +62,15 @@ void Options::remove(string name)
 					_options.end(),
 					[name](const OptionNamed& p) { return p.first == name; }),
 				_options.end()
-	);
+				);
+}
+
+void Options::clear()
+{
+	for(OptionNamed opt : _options)
+		opt.second->clear();
+
+	_options.clear();
 }
 
 void Options::optionsChanged(Option *)

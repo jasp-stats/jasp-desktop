@@ -97,7 +97,7 @@ JASPControl
 		TextField
 		{
 			id:						control
-			text:					textField.value
+			//text:					textField.value //Isn't this circular? control.text: textField.value == property alias value: control.text...
 			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
 			focus:					true

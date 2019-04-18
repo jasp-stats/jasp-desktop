@@ -25,7 +25,7 @@
 #include <QVector>
 
 #include "widgets/filemenu/recentfiles.h"
-#include "widgets/filemenu/currentfile.h"
+#include "widgets/filemenu/currentdatafile.h"
 #include "widgets/filemenu/computer.h"
 #include "widgets/filemenu/osf.h"
 #include "widgets/filemenu/datalibrary.h"
@@ -43,7 +43,7 @@ class FileMenu : public QObject
 
 	Q_PROPERTY(ActionButtons::FileOperation fileoperation		READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged		)
 	Q_PROPERTY(DataLibrary *  datalibrary						READ datalibrary													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(CurrentFile * currentFile						READ currentFile													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(CurrentDataFile * currentFile						READ currentFile													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(RecentFiles * recentFiles						READ recentFiles													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(Computer * computer								READ computer														NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(OSF * osf										READ osf															NOTIFY dummyChangedNotifier		)
@@ -73,21 +73,21 @@ public:
 	void			setDataFileWatcher(bool watch);
 	
 	void			setSaveMode(FileEvent::FileMode mode);
-	Utils::FileType getCurrentFileType() const { return _currentFileType; }
-	QString			getCurrentFilePath() const { return _currentFilePath; }
+	Utils::FileType getCurrentFileType()	const { return _currentFileType; }
+	QString			getCurrentFilePath()	const { return _currentFilePath; }
 	QString			getDefaultOutFileName();
 	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
-	ActionButtons::FileOperation	fileoperation()				const	{ return _fileoperation;			}
-	DataLibrary					*	datalibrary()				const	{ return _DataLibrary;				}
-	CurrentFile					*	currentFile()				const	{ return _CurrentFile;				}
-	RecentFiles					*	recentFiles()				const	{ return _RecentFiles;				}
-	Computer					*	computer()					const	{ return _Computer;					}
-	OSF							*	osf()						const	{ return _OSF;						}
-	bool							visible()					const	{ return _visible;					}
-	ActionButtons				*	actionButtons()				const	{ return _actionButtons;			}
-	ResourceButtons				*	resourceButtons()			const	{ return _resourceButtons;			}
-	ResourceButtonsVisible		*	resourceButtonsVisible()	const	{ return _resourceButtonsVisible;	}
+	ActionButtons::FileOperation		fileoperation()				const	{ return _fileoperation;			}
+	DataLibrary						*	datalibrary()				const	{ return _dataLibrary;				}
+	CurrentDataFile					*	currentFile()				const	{ return _currentDataFile;			}
+	RecentFiles						*	recentFiles()				const	{ return _recentFiles;				}
+	Computer						*	computer()					const	{ return _computer;					}
+	OSF								*	osf()						const	{ return _OSF;						}
+	bool								visible()					const	{ return _visible;					}
+	ActionButtons					*	actionButtons()				const	{ return _actionButtons;			}
+	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}
+	ResourceButtonsVisible			*	resourceButtonsVisible()	const	{ return _resourceButtonsVisible;	}
 
 signals:
 	void fileoperationChanged();
@@ -95,6 +95,7 @@ signals:
 	void exportSelected(QString filename);
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
+	void showAbout();
 
 public slots:
 	void analysisAdded(Analysis *analysis);
@@ -106,6 +107,8 @@ public slots:
 	void setVisible(bool visible);
 	void showFileMenu();
 	void resourceButtonClicked(const int buttonType);
+	void showAboutRequest();
+	void dataColumnAdded(QString columnName);
 
 private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }
@@ -119,11 +122,11 @@ private:
 
 private:
 	OnlineDataManager			*	_odm						= nullptr;
-	CurrentFile					*	_CurrentFile				= nullptr;
-	RecentFiles					*	_RecentFiles				= nullptr;
-	Computer					*	_Computer					= nullptr;
+	CurrentDataFile					*	_currentDataFile			= nullptr;
+	RecentFiles					*	_recentFiles				= nullptr;
+	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
-	DataLibrary					*	_DataLibrary				= nullptr;
+	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;
 	ResourceButtonsVisible		*	_resourceButtonsVisible		= nullptr;

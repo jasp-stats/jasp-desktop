@@ -40,14 +40,14 @@
 #include "engine/enginesync.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonmodel.h"
-#include "modules/ribbonbuttonmodel.h"
+#include "modules/ribbonbutton.h"
 #include "modules/ribbonmodelfiltered.h"
-#include "modules/ribbonentry.h"
 #include "gui/preferencesmodel.h"
 #include "results/resultmenumodel.h"
 #include "utilities/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
+#include "utilities/aboutmodel.h"
 #include "variablespage/levelstablemodel.h"
 #include "variablespage/labelfiltergenerator.h"
 #include "widgets/filemenu/filemenu.h"
@@ -86,7 +86,6 @@ public:
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
-
 public slots:
 	void setImageBackgroundHandler(QString value);
 	void setProgressBarVisible(bool progressBarVisible);
@@ -100,16 +99,23 @@ public slots:
 	void setDataAvailable(bool dataAvailable);
 	void setAnalysesAvailable(bool analysesAvailable);
 
+	bool checkPackageModifiedBeforeClosing();
 	void startDataEditorHandler();
-	void showWarning(QString title, QString msg) { MessageForwarder::showWarning(title, msg); } //for qml
 
-	void saveKeysSelected();
-	void openKeysSelected();
-	void syncKeysSelected();
-	void refreshKeysSelected();
-	void zoomInKeysSelected();
-	void zoomOutKeysSelected();
-	void zoomEqualKeysSelected();
+	void showAbout();
+
+	void saveKeyPressed();
+	void openKeyPressed();
+	void syncKeyPressed();
+	void refreshKeyPressed();
+	void zoomInKeyPressed();
+	void zoomOutKeyPressed();
+	void zoomResetKeyPressed();
+
+	//For qml:
+	void showWarning(QString title, QString msg)								{ MessageForwarder::showWarning(title, msg); }
+	QString browseOpenFile(QString caption, QString browsePath, QString filter) { return MessageForwarder::browseOpenFile(caption, browsePath, filter); }
+	QString browseOpenFileDocuments(QString caption, QString filter);
 
 private:
 	void makeConnections();
@@ -151,7 +157,7 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-	void analysesCountChangedHandler()		{ setAnalysesAvailable(_analyses->count() > 0); }
+	void analysesCountChangedHandler();
 
 signals:
 	void saveJaspFile();
@@ -174,11 +180,11 @@ signals:
 
 
 private slots:
+	void welcomeScreenIsCleared(bool callDelayedLoad);
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
 	void removeAllAnalyses();
-	void updateShownVariablesModel();
 
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
@@ -204,6 +210,7 @@ private slots:
 	void resetQmlCache();
 
 	void showResultsPanel() { setDataPanelVisible(false); }
+	void analysisAdded(Analysis *analysis);
 
 
 private:
@@ -230,8 +237,10 @@ private:
 	QApplication				*	_application 			= nullptr;
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
+	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
+	FileEvent					*	_openEvent				= nullptr;
 
 	QSettings						_settings;
 
@@ -257,14 +266,15 @@ private:
 									_analysesVisible		= false,
 									_datasetLoaded			= false,
 									_dataAvailable			= false,
-									_analysesAvailable		= false;
+									_analysesAvailable		= false,
+									_savingForClose			= false;
 
 	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles,
 									_iconInactiveFiles,
 									_iconDisabledFiles;
 	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
-	FileEvent *_openEvent = nullptr;;
+
 };
 
 #endif // MAINWIDGET_H

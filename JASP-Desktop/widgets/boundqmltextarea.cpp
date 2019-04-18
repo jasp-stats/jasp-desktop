@@ -26,14 +26,11 @@
 #include <QDebug>
 
 BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, QObject(form)
-	, BoundQMLItem()
+	: QMLItem(item, form), QObject(form), BoundQMLItem()
 {
-	_boundTo = nullptr;
-	_lavaanHighlighter = nullptr;
-	_allVariablesModel = nullptr;
+
 	QString textType = _item->property("textType").toString();
+
 	if (textType == "lavaan")
 	{
 		_textType = TextType::Lavaan;
@@ -45,16 +42,16 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 		_applyScriptInfo = "Ctrl + Enter to apply";
 #endif
 		_item->setProperty("applyScriptInfo", _applyScriptInfo);
-		
+
 		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
 		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-		
+
 		QFont font(family);
 		font.setStyleHint(QFont::Monospace);
 		font.setPointSize(10);
 		_item->setProperty("font", font);
-		
-				
+
+
 		QVariant textDocumentVariant = _item->property("textDocument");
 		QQuickTextDocument* textDocumentQQuick = textDocumentVariant.value<QQuickTextDocument *>();
 		if (textDocumentQQuick)
@@ -62,11 +59,29 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 			QTextDocument* doc = textDocumentQQuick->textDocument();
 			_lavaanHighlighter = new LavaanSyntaxHighlighter(doc);
 			//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
-			
+
 		}
 		else
 			qDebug() << "No document object found!";
-	
+	}
+	else if (textType == "model")
+	{
+		_textType = TextType::Model;
+
+#ifdef __APPLE__
+		_applyScriptInfo = "\u2318 + Enter to apply";
+#else
+		_applyScriptInfo = "Ctrl + Enter to apply";
+#endif
+		_item->setProperty("applyScriptInfo", _applyScriptInfo);
+
+		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+
+		QFont font(family);
+		font.setStyleHint(QFont::Monospace);
+		font.setPointSize(10);
+		_item->setProperty("font", font);
 	}
 	else
 		_textType = TextType::Default;

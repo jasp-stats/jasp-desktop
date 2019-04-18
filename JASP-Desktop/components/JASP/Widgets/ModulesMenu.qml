@@ -24,7 +24,7 @@ Item
 		x:				modulesMenu.opened ? 0 : width
 		width:			340 * preferencesModel.uiScale
 		height:			modulesMenu.height
-		color:			Theme.uiBackground
+		color:			Theme.fileMenuColorBackground
 		border.width:	1
 		border.color:	Theme.uiBorder
 
@@ -90,6 +90,7 @@ Item
 				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
 				toolTip:			folderSelected ? "Install selected developer module" : "Select a developer module under Left menu->Preference->Advanced"
 				visible:			preferencesModel.developerMode
+				enabled:			dynamicModules.developersModuleInstallButtonEnabled
 
 				readonly property bool folderSelected: preferencesModel.developerFolder != ""
 			}
@@ -109,7 +110,7 @@ Item
 
 				Rectangle
 				{
-					visible:			displayText != "Common"
+					visible:			!isCommon
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin

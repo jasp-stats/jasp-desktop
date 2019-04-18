@@ -26,7 +26,7 @@ SET ARCH=64
 
 SET BUILDSTYLE=%3
 
-if NOT "%3"=="partial" (
+if "%3"=="" (
 SET BUILDSTYLE=full
 )
 
@@ -71,7 +71,7 @@ if "%QTVER%"=="" (
     SET "QTVER=%QTVER_DEFAULT%"
     echo Using default QTVER "%QTVER_DEFAULT%", to change set the QTVER environment variable to your preferred version
 ) else (
-    echo JASP_BQTVERASE_DIR: "%QTVER%"
+    echo QTVER: "%QTVER%"
 )
 
 if "%RTOOLSDIR%"=="" (
@@ -184,6 +184,8 @@ SET PATH=%MINGWDIR%;%QTVCDIR%;%PATH%
 rem you uncomment the following goto to skip building JASP, but it assumes that you did in fact build it previously in the normal location (see BUILDSTYLE argument though)
 rem goto skipbuilding
 rem goto copyR
+
+if "%BUILDSTYLE%"=="wix" GOTO skipbuilding
 
 
 rem We are not updating the sources from this script. if we are running from buildbot it will update the sources for us and

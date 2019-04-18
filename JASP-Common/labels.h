@@ -46,6 +46,7 @@ public:
 	int add(const std::string &display);
 	int add(int key, const std::string &display, bool filterAllows);
 	void removeValues(std::set<int> valuesToRemove);
+	std::map<std::string, int> resetLabelValues();
 	bool syncInts(const std::set<int> &values);
 	bool syncInts(std::map<int, std::string> &values);
 	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);

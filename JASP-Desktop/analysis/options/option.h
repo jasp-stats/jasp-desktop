@@ -55,6 +55,7 @@ public:
 	virtual void		set(const Json::Value& value)	= 0;
 	virtual Json::Value asJSON() const					= 0;
 	virtual Option		*clone() const					= 0;
+	virtual void		clear() {}
 
 	virtual std::set<std::string> usedVariables()										{ return std::set<std::string>(); }
 	virtual void		removeUsedVariable(std::string)									{}
@@ -66,11 +67,13 @@ public:
 
 
 	boost::signals2::signal<void				(Option *)>											changed;
+	boost::signals2::signal<void				(std::string, int)>									requestColumnCreation;
 	boost::signals2::signal<void				(std::string)>										requestComputedColumnDestruction;
 	boost::signals2::signal<ComputedColumn *	(std::string), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
 
-	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)		{ return requestComputedColumnCreation(columnName); }
-	void				notifyRequestComputedColumnDestruction(std::string columnName)	{ requestComputedColumnDestruction(columnName); }
+	void				notifyRequestColumnCreation(std::string columnName, int columnType)	{ return requestColumnCreation(columnName, columnType); }
+	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)			{ return requestComputedColumnCreation(columnName); }
+	void				notifyRequestComputedColumnDestruction(std::string columnName)		{ requestComputedColumnDestruction(columnName); }
 	
 protected:
 	void				notifyChanged();

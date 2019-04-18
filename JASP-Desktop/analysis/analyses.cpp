@@ -46,20 +46,32 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
-		QString name				= QString::fromStdString(analysisData["name"].asString());
-		QString module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
+		QString			name				= QString::fromStdString(analysisData["name"].asString()),
+						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
 
-		Json::Value &optionsJson	= analysisData["options"];
-		Json::Value &versionJson	= analysisData["version"];
+		// An old JASP file may still have references to the old Common module.
+		if (module == "Common")
+			module = ribbonModel->getModuleNameFromAnalysisName(name);
 
-		Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-		Modules::AnalysisEntry*		analysisEntry = ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
-		QString title				= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+		Json::Value &	optionsJson	= analysisData["options"],
+					&	versionJson	= analysisData["version"];
+
+		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
+		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
+		QString			title			= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
-		analysis					= create(module, name, title, id, version, &optionsJson, status, false);
+						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
 	}
 	else
-		analysis = create(_dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]), id, status, false);
+	{
+		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
+				analysis			= create(analysisEntry, id, status, false);
+		auto *	dynMod				= analysisEntry->dynamicModule();
+
+		if(!dynMod->loaded())
+			dynMod->setLoadingNeeded();
+
+	}
 
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
@@ -124,9 +136,11 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
 	connect(analysis, &Analysis::rewriteImagesSignal,				this, &Analyses::analysisRewriteImages				);
 	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
+	connect(analysis, &Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
+
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{
@@ -161,12 +175,29 @@ void Analyses::clear()
 	emit countChanged();
 }
 
+void Analyses::reload(Analysis *analysis)
+{
+	size_t i = 0;
+	for (; i < _orderedIds.size(); i++)
+		if (_analysisMap[_orderedIds[i]] == analysis) break;
+
+	if (i < _orderedIds.size())
+	{
+		int ind = int(i);
+		// Force the loader to load again the QML file
+		beginRemoveRows(QModelIndex(), ind, ind);
+		endRemoveRows();
+		beginInsertRows(QModelIndex(), ind, ind);
+		endInsertRows();
+	}
+	else
+		std::cout << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+}
+
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
 	emit emptyQMLCache();
-	beginResetModel();
-	endResetModel();
-	selectAnalysis(analysis);
+	reload(analysis);
 }
 
 Json::Value Analyses::asJson() const
@@ -184,11 +215,11 @@ void Analyses::removeAnalysis(Analysis *analysis)
 {
 	size_t id = analysis->id();
 
-	long indexAnalysis = -1;
+	int indexAnalysis = -1;
 	for(size_t i=_orderedIds.size(); i>0; i--)
 		if(_orderedIds[i-1] == id)
 		{
-			indexAnalysis = long(i) - 1;
+			indexAnalysis = int(i) - 1;
 			break;
 		}
 
@@ -373,11 +404,11 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString ribbonTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(ribbonTitle.toStdString(), analysisName.toStdString()));
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(analysisName.toStdString()));
 	else							create(module, analysisName, analysisTitle);
 }
 

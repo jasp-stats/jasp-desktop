@@ -55,6 +55,11 @@ Analysis::~Analysis()
 	delete _options;
 }
 
+void Analysis::clearOptions()
+{
+	_options->clear();
+}
+
 bool Analysis::checkAnalysisEntry()
 {
 	try
@@ -73,6 +78,7 @@ void Analysis::bindOptionHandlers()
 {
 	_options->changed.connect(							boost::bind( &Analysis::optionsChangedHandler,						this, _1));
 	_options->requestComputedColumnCreation.connect(	boost::bind( &Analysis::requestComputedColumnCreationHandler,		this, _1));
+	_options->requestColumnCreation.connect(			boost::bind( &Analysis::requestColumnCreationHandler,				this, _1, _2));
 	_options->requestComputedColumnDestruction.connect(	boost::bind( &Analysis::requestComputedColumnDestructionHandler,	this, _1));
 }
 
@@ -104,6 +110,11 @@ void Analysis::imageEdited(const Json::Value & results)
 	emit imageEditedSignal(this);
 }
 
+
+void Analysis::reload()
+{
+	_analyses->reload(this);
+}
 
 void Analysis::refresh()
 {
@@ -320,4 +331,13 @@ void Analysis::setName(std::string name)
 
 	_name = name;
 	emit nameChanged();
+}
+
+void Analysis::setHelpFile(QString helpFile)
+{
+ if (_helpFile == helpFile)
+	 return;
+
+ _helpFile = helpFile;
+ emit helpFileChanged(_helpFile);
 }

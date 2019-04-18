@@ -26,6 +26,7 @@
 #endif
 
 #include "utilities/qutils.h"
+#include "utilities/aboutmodel.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include <functional>
@@ -41,19 +42,25 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	//setChannel(new QQmlWebChannel(this));
 	//_analysisMenu = new QMenu(_mainWindow);
 	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
-}
 
+	connect(this, &ResultsJsInterface::welcomeScreenIsCleared,	this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
+	connect(this, &ResultsJsInterface::zoomChanged,				this, &ResultsJsInterface::setZoomInWebEngine);
+
+	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
+}
 
 void ResultsJsInterface::setZoom(double zoom)
 {
-	if(zoom == _webViewZoom)
+	if(zoom == _webEngineZoom)
 		return;
 
-	_webViewZoom = zoom;
-	emit zoomChanged(zoom);
+	_webEngineZoom = zoom;
+	emit zoomChanged();
+}
 
-	QString js = "window.setZoom(" + QString::number(zoom) + ")";
-	emit runJavaScript(js);
+void ResultsJsInterface::setZoomInWebEngine()
+{
+	emit runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
 }
 
 
@@ -61,13 +68,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
 	if (succes)
 	{
-		QString version = tq(AppInfo::version.asString());
-
-		version+="-Beta";
-
-#ifdef JASP_DEBUG
-		version+="-Debug";
-#endif
+		QString version = AboutModel::getJaspVersion();
 
 		emit runJavaScript("window.setAppVersion('" + version + "')");
 
@@ -75,7 +76,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 
 		emit resultsPageLoadedSignal();
 
-		setZoom(Settings::value(Settings::UI_SCALE).toDouble());
+		emit zoomChanged();
 	}
 }
 
@@ -273,10 +274,26 @@ void ResultsJsInterface::setResultsMeta(QString str)
 	emit runJavaScript(results);
 }
 
-void ResultsJsInterface::clearWelcomeScreen()
+void ResultsJsInterface::clearWelcomeScreen(bool callDelayedLoad)
 {
-	emit runJavaScript("window.clearWelcomeScreen()");
+	emit runJavaScript("window.clearWelcomeScreen("+QString(callDelayedLoad ? "true)" : "false)"));
 }
+
+void ResultsJsInterface::resetResults()
+{
+	emit resultsPageUrlChanged(_resultsPageUrl);
+	setWelcomeShown(true);
+}
+
+void ResultsJsInterface::setWelcomeShown(bool welcomeShown)
+{
+	if (_welcomeShown == welcomeShown)
+		return;
+
+	_welcomeShown = welcomeShown;
+	emit welcomeShownChanged(_welcomeShown);
+}
+
 
 void ResultsJsInterface::unselect()
 {

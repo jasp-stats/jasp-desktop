@@ -18,10 +18,11 @@ public:
 	void					setCurrentFilePath(const QString &newcurrent);
 	
 signals:
-	void syncFile(FileEvent *event);
+	void syncCurrentFile(FileEvent *event);
 
 public slots:
-	void syncFile(const QString& path);	
+	void openFile(const QString& path) override;
+
 	
 	
 private:

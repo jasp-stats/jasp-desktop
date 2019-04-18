@@ -98,12 +98,13 @@ FocusScope
 		anchors.right: parent.right
 
 
-		Rectangle {
+		Rectangle
+		{
 			id: computeColumnEditRectangle
 			color: Theme.white
 
 			border.width: 1
-			border.color: "lightGrey"
+			border.color: Theme.grayLighter
 
 			property real desiredMinimumHeight: computedColumnContainer.minimumHeightTextBoxes
 
@@ -115,12 +116,12 @@ FocusScope
 			{
 				id: computeColumnEdit
 
-				anchors.top: parent.top
-				anchors.left: parent.left
-				anchors.right: parent.right
-				height: Math.max(contentHeight + 30, parent.height - 10)
-				selectByMouse: true
-				onActiveFocusChanged: if(!activeFocus) deselect()
+				anchors.top:			parent.top
+				anchors.left:			parent.left
+				anchors.right:			parent.right
+				height:					Math.max(contentHeight + 30, parent.height - 10)
+				selectByMouse:			true
+				onActiveFocusChanged:	if(!activeFocus) deselect()
 
 				property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 

@@ -50,7 +50,6 @@
 #include "analysis/options/optionvariablesgroups.h"
 #include "qquick/datasetview.h"
 #include "modules/dynamicmodules.h"
-#include "modules/ribbonentry.h"
 #include "modules/analysismenumodel.h"
 
 #include "timers.h"
@@ -109,10 +108,13 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
-	_ribbonModel			= new RibbonModel(_dynamicModules, { "Common", "Network", "Meta Analysis", "SEM", "Summary Statistics" });
+	_ribbonModel			= new RibbonModel(_dynamicModules,
+									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
+									{ "Network", "Meta Analysis", "SEM", "Summary Statistics" });
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
+	_aboutModel				= new AboutModel(this);
 	_preferences			= new PreferencesModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
 
@@ -201,9 +203,9 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataSetChanged,				_tableModel,			&DataSetTableModel::dataSetChanged							);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh,								Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showResultsPanel								);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -215,14 +217,15 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
-	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeysSelected							);
+	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::delayedLoadHandler								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
+	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
 	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
@@ -232,6 +235,7 @@ void MainWindow::makeConnections()
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
+	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
@@ -285,6 +289,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel);
+	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel);
 	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
@@ -309,6 +314,7 @@ void MainWindow::loadQML()
 	_qml->addImportPath("qrc:///components");
 
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 }
 
@@ -387,39 +393,37 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (rd) rd->close();
 }*/
 
-void MainWindow::saveKeysSelected()
+void MainWindow::saveKeyPressed()
 {
 	if (_package->isModified()) _fileMenu->save();
 }
 
-
-void MainWindow::openKeysSelected()
+void MainWindow::openKeyPressed()
 {
 	_fileMenu->showFileMenu();
 }
 
-void MainWindow::refreshKeysSelected()
+void MainWindow::refreshKeyPressed()
 {
 	_analyses->refreshAllAnalyses();
 }
 
-void MainWindow::zoomInKeysSelected()
+void MainWindow::zoomInKeyPressed()
 {
 	_preferences->zoomIn();
 }
 
-void MainWindow::zoomOutKeysSelected()
+void MainWindow::zoomOutKeyPressed()
 {
 	_preferences->zoomOut();
 }
 
-void MainWindow::zoomEqualKeysSelected()
+void MainWindow::zoomResetKeyPressed()
 {
 	_preferences->zoomReset();
 }
 
-
-void MainWindow::syncKeysSelected()
+void MainWindow::syncKeyPressed()
 {
 	_fileMenu->sync();
 }
@@ -490,7 +494,7 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 	setDataSetAndPackageInModels(package);
 
 	_labelFilterGenerator->regenerateFilter();
-	_filterModel->checkForSendFilter();
+	_filterModel->sendGeneratedAndRFilter();
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
@@ -513,8 +517,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	_resultsJsInterface->analysisChanged(analysis);
 
-	if (_package->isLoaded())
-		_package->setModified(true);
+	setPackageModified();
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 		analysesForComparingDoneAlready();
@@ -543,7 +546,7 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 	parser.parse(utf8, root);
 
 	QString selectedFilter;
-	QString finalPath = MessageForwarder::saveFileBrowse("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
+	QString finalPath = MessageForwarder::browseSaveFile("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
 
 	if (!finalPath.isEmpty())
 	{
@@ -610,16 +613,6 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 }
 
-void MainWindow::updateShownVariablesModel()
-{
-	//if(_currentOptionsWidget != nullptr)
-		//_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
-
-#ifdef JASP_DEBUG
-	std::cout << "void MainWindow::updateShownVariablesModel() does not do anything anymore because connectToAvailableVariablesModel is gone, this however is no problem if any new added columns show up in you analysisform. If they do It is probably also nice to remove this warning and function etc!" << std::endl;
-#endif
-}
-
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (!_IORequestMutex.tryLock())
@@ -630,7 +623,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
-		if (_package->isLoaded())
+		if (_package->isLoaded() || _analyses->count() > 0) //If no data is loaded but we have analyses then we probably want to play with summary stats or something. So lets just open in a new instance.
 		{
 			_IORequestMutex.unlock();
 			// If this instance has a valid OSF connection save this setting for a new instance
@@ -645,7 +638,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-			_resultsJsInterface->clearWelcomeScreen();
+			_resultsJsInterface->clearWelcomeScreen(true);
 
 			_openEvent = event;
 
@@ -741,6 +734,32 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 }
 
 
+///Returns true if the caller can go ahead and close up shop.
+bool MainWindow::checkPackageModifiedBeforeClosing()
+{
+	if(_savingForClose)
+		return false; //Come on user, be patient!
+
+	if(!_package->isModified())
+		return true;
+
+	QString title = windowTitle();
+	title.chop(1);
+
+	switch(MessageForwarder::showSaveDiscardCancel("Workspace has changes", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
+	{
+	case MessageForwarder::DialogResponse::Save:
+		_fileMenu->save();
+		_savingForClose = true;
+		[[clang::fallthrough]];
+
+	case MessageForwarder::DialogResponse::Cancel:		return false;
+
+	default:											[[clang::fallthrough]];
+	case MessageForwarder::DialogResponse::Discard:		return true;
+	}
+}
+
 void MainWindow::closeVariablesPage()
 {
 	_levelsTableModel->setChosenColumn(-1);
@@ -805,6 +824,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if(testingAndSaving)
 				std::cerr << "Tested and saved " << event->path().toStdString() << " succesfully!" << std::endl;
 
+			if(_savingForClose)
+				exit(0);
+
 		}
 		else
 		{
@@ -812,6 +834,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if(testingAndSaving)
 				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;
+
+			if(_savingForClose)
+				_savingForClose = false; //User should get to try again.
 		}
 
 		if(testingAndSaving)
@@ -854,22 +879,6 @@ void MainWindow::populateUIfromDataSet(bool showData)
 {
 	setDataSetAndPackageInModels(_package);
 
-	if(_package->dataSet()->rowCount() == 0)
-	{
-		setDataPanelVisible(false);
-		setDataAvailable(false);
-	}
-	else
-	{
-		_filterModel->init();
-		setDataPanelVisible(showData);
-		setDataAvailable(true);
-		if (!showData)
-			_analyses->setVisible(true);
-	}
-
-	hideProgress();
-
 	bool errorFound = false;
 	stringstream errorMsg;
 
@@ -888,10 +897,12 @@ void MainWindow::populateUIfromDataSet(bool showData)
 		else
 		{
 			Json::Value analysesDataList = analysesData;
-			if (!analysesData.isArray()) {
+			if (!analysesData.isArray())
+			{
 				analysesDataList = analysesData.get("analyses", Json::arrayValue);
 				Json::Value meta = analysesData.get("meta", Json::nullValue);
-				if ( ! meta.isNull())
+
+				if (!meta.isNull())
 				{
 					QString results = tq(analysesData["meta"].toStyledString());
 					_resultsJsInterface->setResultsMeta(results);
@@ -931,6 +942,22 @@ void MainWindow::populateUIfromDataSet(bool showData)
 		if (_analyses->count() == 1)
 			emit currentAnalysis->expandAnalysis();
 	}
+
+
+	if(_package->dataSet()->rowCount() == 0)
+	{
+		setDataPanelVisible(false);
+		setDataAvailable(false);
+	}
+	else
+	{
+		_filterModel->init();
+		setDataPanelVisible(showData);
+		setDataAvailable(true);
+		_analyses->setVisible(!showData);
+	}
+
+	hideProgress();
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
 	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
@@ -976,13 +1003,13 @@ void MainWindow::resultsPageLoaded()
 	if (!_engineSync->engineStarted())
 		_engineSync->start(_preferences->plotPPI());
 
+	_resultsViewLoaded = true;
+
 	if (_openOnLoadFilename != "")
 	{
 		_fileMenu->open(_openOnLoadFilename);
 		_openOnLoadFilename = "";
 	}
-
-	_resultsViewLoaded = true;
 }
 
 
@@ -1059,12 +1086,17 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	}
 }
 
-void MainWindow::setPackageModified()
+void MainWindow::analysesCountChangedHandler()
 {
-	_package->setModified(true);
+	setAnalysesAvailable(_analyses->count() > 0);
+	setPackageModified();
 }
 
-
+void MainWindow::setPackageModified()
+{
+	if (_package->isLoaded())
+		_package->setModified(true);
+}
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 {
@@ -1121,7 +1153,7 @@ void MainWindow::startDataEditorHandler()
 				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
 			}
 
-			path = MessageForwarder::saveFileBrowse(caption, name, filter);
+			path = MessageForwarder::browseSaveFile(caption, name, filter);
 
 			if (path == "")
 				return;
@@ -1138,7 +1170,7 @@ void MainWindow::startDataEditorHandler()
 			QString caption = "Find Data File";
 			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
 
-			path = MessageForwarder::openFileBrowse(caption, "", filter);
+			path = MessageForwarder::browseOpenFile(caption, "", filter);
 			if (path == "")
 				return;
 
@@ -1148,13 +1180,18 @@ void MainWindow::startDataEditorHandler()
 
 		}
 		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
-		//connect(event, SIGNAL(completed(FileEvent*)), _backStage, SLOT(setSyncFile(FileEvent*)));
+		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
 		event->setPath(path);
 		_loader.io(event, _package);
 		showProgress();
 	}
 	else
 		startDataEditor(path);
+}
+
+void MainWindow::showAbout()
+{
+	_aboutModel->setVisible(true);
 }
 
 
@@ -1211,7 +1248,6 @@ void MainWindow::showProgress(bool showData)
 	_fileMenu->setVisible(false);
 	if (showData)
 		setDataPanelVisible(true);
-	setDataAvailable(true);
 	setProgressBarVisible(true);
 }
 
@@ -1375,19 +1411,28 @@ void MainWindow::setWindowTitle(QString windowTitle)
 void MainWindow::removeAnalysis(Analysis *analysis)
 {
 	_analyses->removeAnalysis(analysis);
-
-	if (_package->isLoaded())
-		_package->setModified(true);
-
 	_resultsJsInterface->removeAnalysis(analysis);
 }
 
 void MainWindow::removeAllAnalyses()
 {
-	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?")) {
+	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
+	{
 		_resultsJsInterface->removeAnalyses();
 		_analyses->clear();
 	}
+}
+
+void MainWindow::analysisAdded(Analysis *)
+{
+	if(_resultsJsInterface->welcomeShown())
+		_resultsJsInterface->clearWelcomeScreen(false); //in case we are playing with summary stats or so we do not want to keep seeing the welcome screen
+}
+
+void MainWindow::welcomeScreenIsCleared(bool callDelayedLoad)
+{
+	if(callDelayedLoad)
+		delayedLoadHandler();
 }
 
 void MainWindow::delayedLoadHandler()
@@ -1463,9 +1508,17 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 
 	_analysesAvailable = analysesAvailable;
 	emit analysesAvailableChanged(_analysesAvailable);
+
+	if(!_analysesAvailable && !_package->isLoaded())
+		_resultsJsInterface->resetResults();
 }
 
 void MainWindow::resetQmlCache()
 {
 	_qml->clearComponentCache();
+}
+
+QString MainWindow::browseOpenFileDocuments(QString caption, QString filter)
+{
+	return MessageForwarder::browseOpenFile(caption, AppDirs::documents(), filter);
 }

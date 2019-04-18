@@ -28,7 +28,7 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 {
 	connect(this, &DynamicModules::stopEngines, this, &DynamicModules::enginesStopped, Qt::QueuedConnection);
 
-	_modulesInstallDirectory = AppDirs::modulesDir().toStdString();
+	_modulesInstallDirectory = AppDirs::modulesDir().toStdWString();
 
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
 		boost::filesystem::create_directories(_modulesInstallDirectory);
@@ -176,13 +176,9 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 		_devModDescriptionWatcher	= nullptr;
 		_devModRWatcher				= nullptr;
-		_devModSourceDirectory		= QDir();
 	}
 
 	std::string modulePath	= moduleDirectory(moduleName);
-
-
-
 
 	if(_modules.count(moduleName) > 0)
 	{
@@ -206,7 +202,8 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	std::cout << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ", engines " << (enginesStopped ? "stopped" : "started") << ")" << std::endl;
 #endif
 
-	std::string modulePath	= moduleDirectory(moduleName);
+
+	std::wstring modulePath	= moduleDirectoryW(moduleName);
 
 	try
 	{
@@ -217,7 +214,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	catch (boost::filesystem::filesystem_error & e)
 	{
 		if(enginesStopped)
-			MessageForwarder::showWarning("Something went wrong removing files for module " + moduleName + " at path '" + modulePath + "' and the error was: " + e.what());
+			MessageForwarder::showWarning("Something went wrong removing files for module " + moduleName + " at path '" + moduleDirectory(moduleName) + "' and the error was: " + e.what());
 		else
 		{
 #ifdef JASP_DEBUG
@@ -238,7 +235,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 Modules::DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
 {
 	if(theSet.size() == 0)
-		return NULL;
+		return nullptr;
 
 	std::string installMe = *theSet.begin();
 	theSet.erase(installMe);
@@ -264,6 +261,9 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 	MessageForwarder::showWarning("Installation of Module " + moduleName + " failed", "The installation of Module "+ moduleName+ " failed with the following errormessage:\n"+errorMessage);
 
 	uninstallModule(moduleName.toStdString());
+
+	if(moduleName.toStdString() == developmentModuleName())
+		setDevelopersModuleInstallButtonEnabled(true);
 }
 
 void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
@@ -284,6 +284,9 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 		if(wasInitialized)
 			emit dynamicModuleChanged(dynMod);
 		startWatchingDevelopersModule();
+
+		setDevelopersModuleInstallButtonEnabled(true);
+
 	}
 }
 
@@ -314,7 +317,7 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	if(_modules.count(moduleName) > 0)
 		return _modules[moduleName]->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 
-	throw Modules::ModuleException(moduleName, "Couldn't find Module " + moduleName +", to use this JASP file you will need to install that first.\nTry the module's website: "  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  " or, if that doesn't help, you could try to contact the module's maintainer: " + jsonFromJaspFile.get("moduleAuthor", "the JASP team").asString());
+	throw Modules::ModuleException(moduleName, "Module is not available, to load this JASP file properly you will need to install it first and then retry.\nIf you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or, if that doesn't help, you could try to contact the module's maintainer: \"" + jsonFromJaspFile.get("moduleMaintainer", "the JASP team").asString() + "\".");
 }
 
 Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const std::string & codedReference)
@@ -375,6 +378,8 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 
 void DynamicModules::installJASPDeveloperModule()
 {
+	setDevelopersModuleInstallButtonEnabled(false);
+
 	_devModSourceDirectory = QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
 
 	std::string origin	= _devModSourceDirectory.absolutePath().toStdString(),
@@ -388,7 +393,13 @@ void DynamicModules::installJASPDeveloperModule()
 	}
 
 	if(moduleIsInstalled(name))
+	{
 		uninstallModule(name);
+
+		stopEngines();
+		_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+		restartEngines();
+	}
 
 	QDir destQDir(QString::fromStdString(dest));
 
@@ -483,6 +494,7 @@ void DynamicModules::devModCopyDescription()
 			QFile	srcFileChanged(src.absoluteFilePath()),
 					dstFileChanged(dst.absoluteFilePath());
 
+			this->_modules[this->developmentModuleName()]->reloadDescription();
 			this->regenerateDeveloperModuleRPackage();
 		}
 		else
@@ -613,4 +625,18 @@ void DynamicModules::enginesStopped()
 std::string DynamicModules::moduleDirectory(const std::string & moduleName)	const
 {
 	return AppDirs::modulesDir().toStdString() + moduleName + '/';
+}
+
+std::wstring DynamicModules::moduleDirectoryW(const std::string & moduleName)	const
+{
+	return AppDirs::modulesDir().toStdWString() + QString::fromStdString(moduleName).toStdWString() + L'/';
+}
+
+void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled)
+{
+	if (_developersModuleInstallButtonEnabled == developersModuleInstallButtonEnabled)
+		return;
+
+	_developersModuleInstallButtonEnabled = developersModuleInstallButtonEnabled;
+	emit developersModuleInstallButtonEnabledChanged(_developersModuleInstallButtonEnabled);
 }

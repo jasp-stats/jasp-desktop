@@ -32,7 +32,7 @@ class BoundQMLTextArea : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
 	
-	enum TextType {Default, Lavaan};
+	enum TextType {Default, Lavaan, Model};
 	
 public:
 	BoundQMLTextArea(QQuickItem* item, AnalysisForm* form);
@@ -51,13 +51,13 @@ private slots:
 	void checkSyntax();
     
 protected:
-	OptionString*				_boundTo;
+	OptionString*				_boundTo = nullptr;
 	QString						_text;
 	TextType					_textType;
 	QString						_applyScriptInfo;
 	
-	LavaanSyntaxHighlighter*	_lavaanHighlighter;
-	ListModelTermsAvailable*	_allVariablesModel;
+	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
+	ListModelTermsAvailable*	_allVariablesModel = nullptr;
 };
 
 

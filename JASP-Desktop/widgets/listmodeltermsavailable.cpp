@@ -26,7 +26,7 @@ ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
 {
 }
 
-void ListModelTermsAvailable::_resetTerms(const Terms &terms)
+void ListModelTermsAvailable::initTerms(const Terms &terms)
 {	
 	beginResetModel();
 
@@ -44,7 +44,10 @@ void ListModelTermsAvailable::_resetTerms(const Terms &terms)
 			allowed.add(term);
 	}
 	Terms ordered; // present them in a nice order
-	
+
+	if (_addEmptyValue)
+		ordered.add(QString());
+
 	ordered.add(suggested);
 	ordered.add(allowed);
 	ordered.add(forbidden);
@@ -54,7 +57,8 @@ void ListModelTermsAvailable::_resetTerms(const Terms &terms)
 	_terms.set(ordered);
 	_terms.setSortParent(_allTerms);
 
-	endResetModel();	
+	removeTermsInAssignedList();
+	endResetModel();
 }
 
 void ListModelTermsAvailable::resetTermsFromSourceModels()
@@ -65,8 +69,6 @@ void ListModelTermsAvailable::resetTermsFromSourceModels()
 	
 	beginResetModel();
 	Terms termsAvailable;
-	if (_addEmptyValue)
-		termsAvailable.add(QString());
 	_termSourceModelMap.empty();
 	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
@@ -83,26 +85,11 @@ void ListModelTermsAvailable::resetTermsFromSourceModels()
 	}
 	
 	setChangedTerms(termsAvailable);
-	_resetTerms(termsAvailable);
-	removeTermsInAssignedList();
+	initTerms(termsAvailable);
 	endResetModel();
 }
 
 ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)
 {
 	return _termSourceModelMap[term.asQString()];
-}
-
-void ListModelTermsAvailable::initTerms(const Terms& terms) 
-{
-	if (_addEmptyValue)
-	{
-		Terms newTerms;
-		newTerms.add(QString());
-		newTerms.add(terms);
-		ListModelAvailableInterface::initTerms(newTerms);
-	}
-	else
-		ListModelAvailableInterface::initTerms(terms);
-	
 }

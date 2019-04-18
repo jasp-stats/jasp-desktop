@@ -277,7 +277,7 @@ multi_meta_analysis <-
       
       jaspResults[['anova_table']]$setColTypes(list(` ` = "string", `Q` = "number", `df` = "number", `p` = "number"))
       jaspResults[['anova_table']]$setColFormats(list(` ` = "", `Q` = "sf:4", `df` = "sf:2", `p` = "dp:4"))
-      jaspResults[['anova_table']]$addFootnote(message = attr(anova_df,"heading")[2], symbol = "", col_names="Q")
+      jaspResults[['anova_table']]$addFootnote(message = attr(anova_df,"heading")[2], symbol = "", colNames="Q")
       
   }
 
@@ -302,7 +302,7 @@ multi_meta_analysis <-
       
       # Add footnotes to the analysis result
       
-      jaspResults[['coef']]$addFootnote(message = "Wald test.", col_names=if (exists('test')) test else 'z')
+      jaspResults[['coef']]$addFootnote(message = "Wald test.", colNames=if (exists('test')) test else 'z')
       
       # Add citation reference list
       
@@ -471,7 +471,7 @@ multi_meta_analysis <-
       jaspResults[['funnel_asymmetry_test']]$dependOnOptions("funnelPlotAsymmetry")
       
       if (regtest_table)
-        jaspResults[['funnel_asymmetry_test']]$addFootnote(message = "Egger's test is not yet implemented.", symbol = "(!)", col_names="")
+        jaspResults[['funnel_asymmetry_test']]$addFootnote(message = "Egger's test is not yet implemented.", symbol = "(!)", colNames="")
       
       
     }
@@ -513,7 +513,7 @@ multi_meta_analysis <-
       
       # Markup influential cases in a footnote
       
-      jaspResults[['diagnostics']]$addFootnote(message = "Potentially influential.", symbol = "*", col_names="")
+      jaspResults[['diagnostics']]$addFootnote(message = "Potentially influential.", symbol = "*", colNames="")
 
   }
     

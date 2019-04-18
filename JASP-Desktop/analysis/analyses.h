@@ -62,6 +62,7 @@ public:
 
 	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
+	void		reload(Analysis* analysis);
 
 	void		setAnalysesUserData(Json::Value userData);
 	void		refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames);
@@ -94,7 +95,7 @@ public slots:
 	void refreshAllAnalyses();
 	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
 	void refreshAnalysesUsingColumn(QString col);
-	void analysisClickedHandler(QString analysisName, QString analysisTitle, QString ribbon, QString module);
+	void analysisClickedHandler(QString analysisName, QString analysisTitle, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 	void analysisIdSelectedInResults(int id);
 	void analysesUnselectedInResults();
@@ -133,6 +134,7 @@ signals:
 	void dataSetChanged();
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
+	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(QString columnName);
 
 

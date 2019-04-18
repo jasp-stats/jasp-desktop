@@ -35,8 +35,8 @@ using namespace std;
 AsyncLoader::AsyncLoader(QObject *parent) :
 	QObject(parent)
 { 
-	connect(this, SIGNAL(beginLoad(FileEvent*, DataSetPackage*)), this, SLOT(loadTask(FileEvent*, DataSetPackage*)));
-	connect(this, SIGNAL(beginSave(FileEvent*, DataSetPackage*)), this, SLOT(saveTask(FileEvent*, DataSetPackage*)));
+	connect(this, &AsyncLoader::beginLoad, this, &AsyncLoader::loadTask);
+	connect(this, &AsyncLoader::beginSave, this, &AsyncLoader::saveTask);
 }
 
 void AsyncLoader::io(FileEvent *event, DataSetPackage *package)

@@ -6,11 +6,9 @@
 CurrentFileListModel::CurrentFileListModel(QObject *parent)
 	: FileMenuBasicListModel(parent, new CurrentFileFileSystem(parent))
 {
+	_openFileWhenClicked = false;
 	_fsbmCurrentFile = static_cast<CurrentFileFileSystem*>(_model);
-	_fsbmCurrentFile->refresh();
-	
-	connect(this, SIGNAL(syncFile(FileEvent *)), parent, SLOT(syncFile(FileEvent *)));
-	std::cout << "CurrentFileListModel is SIGNAL SLOTTING WITH Macros with it's parent... that isnt safe you know." << std::endl;
+	_fsbmCurrentFile->refresh();	
 }
 
 CurrentFileFileSystem *CurrentFileListModel::getCurrentFileFSBModel()
@@ -28,10 +26,13 @@ void CurrentFileListModel::setCurrentFilePath(const QString &newcurrent)
 	endResetModel();	
 }
 
-void CurrentFileListModel::syncFile(const QString &path)
+void CurrentFileListModel::openFile(const QString &path)
 {
+	if (path.isEmpty())
+		return;
+
 	FileEvent *event = new FileEvent(this->parent(), FileEvent::FileSyncData);
 	event->setPath(path);
 
-	emit syncFile(event);
+	emit syncCurrentFile(event);
 }

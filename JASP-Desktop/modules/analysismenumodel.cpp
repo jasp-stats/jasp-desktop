@@ -18,7 +18,13 @@
 
 #include <QDebug>
 #include "analysismenumodel.h"
+#include "modules/ribbonbutton.h"
 
+
+AnalysisMenuModel::AnalysisMenuModel(RibbonButton *parent) : QAbstractListModel(parent), _ribbonButton(parent)
+{
+
+}
 
 QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 {
@@ -27,14 +33,15 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 
 	Modules::AnalysisEntry* entry = _analysisEntries.at(index.row());
 
-	if	(role == DisplayRole)
-		return QString::fromStdString(entry->title());
-	else if (role == AnalysisFunctionRole)
-		return QString::fromStdString(entry->function());
-	else if (role == MenuImageSourceRole)
-		return "";  // We don't need image for analysis menu. TODO: Move this to (parent) MenuModel
-
-	return QVariant();
+	switch(role)
+	{
+	case DisplayRole:				return QString::fromStdString(entry->title());
+	case AnalysisFunctionRole:		return QString::fromStdString(entry->function());
+	case MenuImageSourceRole:		return QString::fromStdString(entry->icon());
+	case IsSeparatorRole:			return entry->isSeparator();
+	case isGroupTitleRole:			return entry->isGroupTitle();
+	default:						return QVariant();
+	}
 }
 
 
@@ -43,10 +50,35 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 	static const auto roles = QHash<int, QByteArray>{
 		{	DisplayRole,            "displayText"		},
 		{	AnalysisFunctionRole,   "analysisEntry"		},
-		{	MenuImageSourceRole,    "menuImageSource"	}
+		{	MenuImageSourceRole,    "menuImageSource"	},
+		{	IsSeparatorRole,		"isSeparator"		},
+		{	isGroupTitleRole,		"isGroupTitle"		}
 	};
 
 	return roles;
+}
+
+void AnalysisMenuModel::setAnalysisEntries(const std::vector<Modules::AnalysisEntry *> &analysisEntries)
+{
+	_analysisEntries.clear();
+	_hasIcons = false;
+
+	Modules::AnalysisEntry* previousEntry = nullptr;
+	for (Modules::AnalysisEntry* entry: analysisEntries)
+	{
+		if (entry->isGroupTitle())
+		{
+			if (previousEntry && !previousEntry->isSeparator() )
+				_analysisEntries.push_back(new Modules::AnalysisEntry());
+		}
+		else if (entry->isAnalysis())
+		{
+			if (entry->icon() != "???" && entry->icon() != "")
+				_hasIcons = true;
+		}
+		_analysisEntries.push_back(entry);
+		previousEntry = entry;
+	}
 }
 
 Modules::AnalysisEntry *AnalysisMenuModel::getAnalysisEntry(const std::string& name)

@@ -1,7 +1,7 @@
 Guide to writing an analysis interface in QML
 =============================================
 
-QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components. It also gives the possiblility to insert JavaScript expressions to dynamically alter the interface based on actions a user makes. To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satify most analysis creators, although you can always add your own. 
+QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components. It also gives the possiblility to insert JavaScript expressions to dynamically alter the interface based on actions a user makes. To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satify most analysis creators, although you can always [add your own](#advance-usage). 
 
 Table of Contents:
 - [Components](#components)
@@ -29,6 +29,7 @@ Table of Contents:
   * [1. Specifying Imports](#1-specifying-imports)
   * [2. Adding the Form](#2-adding-the-form)
   * [3. Adding the Components](#3-adding-the-components)
+- [Advanced Usage](#advanced-usage)
 
 
 ## Components
@@ -708,3 +709,10 @@ It's now a matter of mixing and matching the previously shown components to crea
   ![Image example](/Docs/development/img/qml-guide/general_example.png)
     
 </details>
+
+## Advanced Usage
+QML is a very flexible format, besides giving you access to all of the built-in components and our JASP-components that are detailed under [components](#components) you can also add your own components! If you add a qml-file to the [qml directory](#jasp-adding-module.md#qml), for instance `Example.qml`, then it will be treated as a component by all other files in the directory. Make sure to give the file an actual capital as first letter though, otherwise qml will not see it as a component. Then you can use it in another qml file simply by adding `Example { id: yourExampleComponent }` and set any of the properties the root-component of your component if desired.
+
+This will give you the opportunity to create reusable parts, for instance, each of your analyses might share a common core. You could add this to a `Core.qml` and then this could be part of each analysis and be exactly the same everywhere. If you then also make sure to have a common function in R that uses the options specified in the `Core.qml`-component you can reuse that as well. 
+
+The possibilities here are rather extended and possibly even endless. See [the Qt QML tutorials](https://doc.qt.io/qt-5/qml-tutorial.html) or the [official documentation](https://doc.qt.io/qt-5/qtqml-index.html) for more information on this.

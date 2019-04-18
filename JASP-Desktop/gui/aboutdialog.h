@@ -25,9 +25,6 @@
 #include <QUrl>
 #include <QTimer>
 
-#include "aboutdialogjsinterface.h"
-
-class AboutDialogJsInterface;
 
 class AboutDialog : public QObject
 {
@@ -49,7 +46,6 @@ private:
 	QNetworkAccessManager	*m_network_manager;	// make the HTTP GET request
 	QNetworkReply			*m_network_reply;
 	QByteArray				*m_pBuffer;
-	AboutDialogJsInterface	*m_aboutDialogJsInterface;
 	QTimer					*delayedVersionCheck = nullptr;
 	
 };

@@ -4,100 +4,148 @@ import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
 
-ScrollView
-{
-	id:					scrollPrefs
+
+Item {
+
 	anchors.fill:		parent
-	anchors.margins:	Theme.generalAnchorMargin
 
-	Column
+	MenuHeader {
+		id: menuHeader
+		headertext:"Data Preferences"
+		helpbutton: true
+		helpfile: "preferences/prefsdata"
+	}
+
+	ScrollView
 	{
-		width:			scrollPrefs.width
-		spacing:		Theme.rowSpacing
+		id:				scrollPrefs
+		anchors.top:	menuHeader.bottom
+		anchors.left:	menuHeader.left
+		anchors.right:	menuHeader.right
+		anchors.bottom: menuHeader.bottom
+		anchors.topMargin: 2 * Theme.generalMenuMargin
 
-		CheckBox
+		Column
 		{
-			label:				"Synchronize automatically on data file save"
-			checked:			preferencesModel.dataAutoSynchronization
-			onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-			//font:				Theme.font
-		}
+			width:			scrollPrefs.width
+			spacing:		Theme.rowSpacing
 
-		Item
-		{
-			height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
-			width:	parent.width - Theme.generalAnchorMargin
-
-			CheckBox
+			CheckBox  //Synchronize automatically
 			{
-				id:					useDefaultEditor
-				label:				"Use default spreadsheet editor"
-				checked:			preferencesModel.useDefaultEditor
-				onCheckedChanged:	preferencesModel.useDefaultEditor = checked
+				label:				"Synchronize automatically on data file save"
+				checked:			preferencesModel.dataAutoSynchronization
+				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
 				//font:				Theme.font
 			}
 
-			Item
+			Item //Use default spreadsheet editor
 			{
-				id:					editCustomEditor
-				visible:			!preferencesModel.useDefaultEditor
-				width:				parent.width
-				height:				browseEditorButton.height
-				anchors.top:		useDefaultEditor.bottom
+				height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
+				width:	parent.width - Theme.generalAnchorMargin
 
-
-				RectangularButton
+				CheckBox
 				{
-					id:					browseEditorButton
-					text:				"Select custom editor"
-					onClicked:			preferencesModel.browseSpreadsheetEditor()
-					anchors.left:		parent.left
-					anchors.leftMargin: Theme.subOptionOffset
+					id:					useDefaultEditor
+					label:				"Use default spreadsheet editor"
+					checked:			preferencesModel.useDefaultEditor
+					onCheckedChanged:	preferencesModel.useDefaultEditor = checked
+					//font:				Theme.font
 				}
 
-				Rectangle
+				Item
 				{
-					anchors
+					id:					editCustomEditor
+					visible:			!preferencesModel.useDefaultEditor
+					width:				parent.width
+					height:				browseEditorButton.height
+					anchors.top:		useDefaultEditor.bottom
+
+
+					RectangularButton
 					{
-						left:			browseEditorButton.right
-						right:			parent.right
-						top:			parent.top
-						bottom:			parent.bottom
+						id:					browseEditorButton
+						text:				"Select custom editor"
+						onClicked:			preferencesModel.browseSpreadsheetEditor()
+						anchors.left:		parent.left
+						anchors.leftMargin: Theme.subOptionOffset
 					}
 
-					height:				browseEditorButton.height
-					color:				Theme.white
-					border.color:		Theme.buttonBorderColor
-					border.width:		1
-
-					TextInput
+					Rectangle
 					{
-						id:					customEditorText
-						text:				preferencesModel.customEditor
-						clip:				true
-						font:				Theme.font
-						onTextChanged:		preferencesModel.customEditor = text
-						color:				Theme.textEnabled
-
 						anchors
 						{
-							left:			parent.left
+							left:			browseEditorButton.right
 							right:			parent.right
-							verticalCenter:	parent.verticalCenter
-							margins:		Theme.generalAnchorMargin
+							top:			parent.top
+							bottom:			parent.bottom
 						}
 
-						Connections
+						height:				browseEditorButton.height
+						color:				Theme.white
+						border.color:		Theme.buttonBorderColor
+						border.width:		1
+
+						TextInput
 						{
-							target:					preferencesModel
-							onCustomEditorChanged:	customEditorText = preferencesModel.customEditor
-						}
+							id:					customEditorText
+							text:				preferencesModel.customEditor
+							clip:				true
+							font:				Theme.font
+							onTextChanged:		preferencesModel.customEditor = text
+							color:				Theme.textEnabled
 
+							anchors
+							{
+								left:			parent.left
+								right:			parent.right
+								verticalCenter:	parent.verticalCenter
+								margins:		Theme.generalAnchorMargin
+							}
+
+							Connections
+							{
+								target:					preferencesModel
+								onCustomEditorChanged:	customEditorText = preferencesModel.customEditor
+							}
+
+						}
 					}
 				}
 			}
-		}
 
-		PrefsMissingValues {}
+
+			Item  //Scale threshold
+			{
+				height:		customThreshold.height
+				width:		customThreshold.width + thresholdScale.width
+
+				CheckBox
+				{
+					id:					customThreshold
+					label:				qsTr("Custom threshold between Scale or Nominal")
+					checked:			preferencesModel.customThresholdScale
+					onCheckedChanged:	preferencesModel.customThresholdScale = checked
+					//font:				Theme.font
+					toolTip:			qsTr("This will determine if, when importing new data, a column will be interpreted as a Scale column (When there are more unique integers then specified) or Nominal.")
+				}
+
+				SpinBox
+				{
+					id:					thresholdScale
+					value:				preferencesModel.thresholdScale
+					onValueChanged:		preferencesModel.thresholdScale = value
+					anchors.left:		customThreshold.right
+					anchors.leftMargin: Theme.generalAnchorMargin
+					anchors.verticalCenter: parent.verticalCenter
+					height:				Theme.spinBoxHeight//parent.height
+					visible:			preferencesModel.customThresholdScale
+					font:				Theme.font
+					editable:			true
+				}
+			}
+
+
+			PrefsMissingValues {} //Missing Value List
+		}
 	}
 }

@@ -27,6 +27,15 @@ ComputedColumn * ComputedColumns::createComputedColumn(std::string name, Column:
 	return newComputedColumn;
 }
 
+void ComputedColumns::createColumn(std::string name, Column::ColumnType type)
+{
+	Column			* column			= columns().createColumn(name);
+	column->setDefaultValues(type);
+
+	refreshColumnPointers();
+	setPackageModified();
+}
+
 void ComputedColumns::removeComputedColumn(std::string name)
 {
 	for(auto it=_computedColumns.begin(); it != _computedColumns.end(); it++)

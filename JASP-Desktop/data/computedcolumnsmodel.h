@@ -80,23 +80,26 @@ signals:
 				void	refreshData();
 				void	showAnalysisForm(Analysis *analysis);
 				void	lastCreatedColumnChanged(QString lastCreatedColumn);
+				void	dataColumnAdded(QString columnName);
 
 public slots:
 				void				computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
 				void				computeColumnFailed(QString columnName, QString error);
 				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
 				ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis * analysis);
+				void				requestColumnCreation(QString columnName, Analysis * analysis, int columnType);
 				void				requestComputedColumnDestruction(QString columnName);
 				void				recomputeColumn(std::string columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);
+				void				analysisRemoved(Analysis * analysis);
 
 private:
 
-	QString				_currentlySelectedName	= "",
-						_lastCreatedColumn		= "";
-	ComputedColumns		*_computedColumns		= nullptr;
-	DataSetPackage		*_package				= nullptr;
-	Analyses			*_analyses				= nullptr;
+	QString					_currentlySelectedName	= "",
+							_lastCreatedColumn		= "";
+	ComputedColumns		*	_computedColumns		= nullptr;
+	DataSetPackage		*	_package				= nullptr;
+	Analyses			*	_analyses				= nullptr;
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

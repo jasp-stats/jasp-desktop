@@ -7,94 +7,193 @@ import FileOperation 1.0
 
 FocusScope
 {
-	id:			fileMenu
+	id: fileMenu
 
-	width:		slidePart.width
-	height:		600
-	z:			1
-	visible:	fileMenuAnimation.running ? actionMenu.x + actionMenu.width > 0 : fileMenuModel.visible
+	function updateNavigationKeys()
+	{
+		for (var i = 0; i < actionRepeaterId.count; i++)
+		{
+			var nextActElt = (i < (actionRepeaterId.count- 1) ? actionRepeaterId.itemAt(i + 1) : actionRepeaterId.itemAt(0)).children[0]
+			actionRepeaterId.itemAt(i).children[0].KeyNavigation.down = nextActElt
+			actionRepeaterId.itemAt(i).children[0].KeyNavigation.tab = nextActElt
+			actionRepeaterId.itemAt(i).children[0].KeyNavigation.right = resourceRepeaterId.itemAt(0).children[0]
+		}
 
+		for (var j = 0; j < resourceRepeaterId.count; j++)
+		{
+			var nextResElt = (j < (resourceRepeaterId.count- 1) ? resourceRepeaterId.itemAt(j + 1) : resourceRepeaterId.itemAt(0)).children[0]
+			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.down = nextResElt
+			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.tab = nextResElt
+			if (selectedActionMenu)
+				resourceRepeaterId.itemAt(j).children[0].KeyNavigation.left = selectedActionMenu
+		}
+	}
 
-	property int action_button_height:		35 * preferencesModel.uiScale
-	property int resource_button_height:	1.5 * action_button_height
-	property int colWidths:					150 * preferencesModel.uiScale
+	function waitForClickButton(typeRole)
+	{
+		if (typeRole === FileOperation.Close)
+			return true
+		if (typeRole === FileOperation.Save)
+			return true
+		if (typeRole === FileOperation.About)
+			return true
+		return false
+	}
+
+	function actionHasSubmenu(typeRole)
+	{
+		return !waitForClickButton(typeRole)
+	}
+
+	function showToolSeperator(typeRole)
+	{
+		if (typeRole === FileOperation.Close)
+			return true
+		if (typeRole === FileOperation.Preferences)
+			return true
+		if (typeRole === FileOperation.About)
+			return true
+		return false
+	}
+
+	width: slidePart.width
+	height: 600
+	z: 1
+	visible: fileMenuAnimation.running ? actionMenu.x + actionMenu.width > 0 : fileMenuModel.visible
+
+	property int actionButtionHeight: 35 * preferencesModel.uiScale
+	property int resourceButtonHeight: 1.5 * actionButtionHeight
+	property int nbColumns: selectedActionMenu ? (selectedActionMenu.hasResourceMenu ? 2 : 1) : 2
+	property int colWidths: 150 * preferencesModel.uiScale
+	property var selectedActionMenu: false
+
+	focus: fileMenuModel.visible
 
 	Item
 	{
-		id:		slidePart
-		x:		fileMenuModel.visible ? 0 : -(colWidths * 2)
-		width:	(resourceScreen.x + resourceScreen.width)
-		height:	fileMenu.height
+		id: slidePart
 
-		Behavior on x { PropertyAnimation { id: fileMenuAnimation; duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		x: 0
+		width: !fileMenuModel.visible ? 0 : resourceScreen.x + resourceScreen.width
+		height: fileMenu.height
+		clip: true
+
+		Behavior on width
+		{
+			PropertyAnimation
+			{
+				id: fileMenuAnimation
+				duration: Theme.fileMenuSlideDuration
+				easing.type: Easing.OutCubic
+			}
+		}
 
 		MouseArea
 		{
-			id:				gottaCatchEmAll //Clicks that is
-			anchors.fill:	parent
-			z:				-6
+			id: gottaCatchEmAll //Clicks that is
+			anchors.fill: parent
+			z: -6
 		}
 
 		Rectangle
 		{
+			id: actionMenu
+			anchors.left: parent.left
+			width: fileMenu.colWidths //fileMenuModel.visible ?  : 0
+			height: parent.height
 
-			id:				actionMenu
-			color:			Theme.uiBackground
-			anchors.left:	parent.left
-			width:			fileMenu.colWidths //fileMenuModel.visible ?  : 0
-			height:			parent.height
-			border.width:	1
-			border.color:	Theme.uiBorder
+			color: Theme.fileMenuColorBackground
+			border.width: 1
+			border.color: Theme.uiBorder
 
+			onVisibleChanged:
+			{
+				if (visible) {
+					actionRepeaterId.itemAt(0).getButton().forceActiveFocus()
+				}
+			}
 
 			Column
 			{
-				id:					fileAction
-				spacing:			4
-				width:				parent.width - Theme.generalAnchorMargin
+				id: fileAction
+				spacing: 4
+				width: parent.width - Theme.generalAnchorMargin
 
 				anchors
 				{
-					top:				parent.top
-					topMargin:			5
-					horizontalCenter:	parent.horizontalCenter
+					top: parent.top
+					topMargin: 5
+					horizontalCenter: parent.horizontalCenter
 				}
 
 				Repeater
 				{
+					id: actionRepeaterId
 
-					model:					fileMenuModel.actionButtons
+					model: fileMenuModel.actionButtons
 
-					Item{
-
+					Item
+					{
 						id: itemActionMenu
-						width: parent.width-6
-						anchors.left:parent.left
-						height: action_button_height + actionToolSeperator.height
+						width: parent.width - 6
+						anchors.left: parent.left
+						height: actionButtionHeight + actionToolSeperator.height
+						enabled: enabledRole
+
+						function getButton()
+						{
+							return actionMenuButton
+						}
 
 						MenuButton
 						{
-							id:					actionMenuButton
-							text:				nameRole
-							selected:			fileMenuModel.fileoperation === typeRole
-							width:				itemActionMenu.width
-							height:				action_button_height
-							anchors.leftMargin: 3
-							anchors.left:		itemActionMenu.left
-							onClicked:			fileMenuModel.actionButtons.buttonClicked(typeRole)
-							enabled:			enabledRole
+							clickOnHover: true
+							isIcon: false
+							hasSubMenu: hasResourceMenu
 
+							id: actionMenuButton
+							width: itemActionMenu.width
+							height: actionButtionHeight
+							anchors.leftMargin: 3
+							anchors.left: itemActionMenu.left
+
+							text: nameRole
+							selected: selectedActionMenu === actionMenuButton
+
+							property bool hasResourceMenu: actionHasSubmenu(typeRole)
+							property int myTypeRole: typeRole
+							clickWhenFocussed: !waitForClickButton(typeRole)
+
+							onActiveFocusChanged:
+							{
+								if (activeFocus)
+								{
+									selectedActionMenu = actionMenuButton
+									updateNavigationKeys()
+								}
+							}
+
+							onClicked:
+							{
+								if (typeRole === FileOperation.About)
+									fileMenuModel.showAboutRequest()
+								else
+									fileMenuModel.actionButtons.buttonClicked(typeRole)
+								updateNavigationKeys()
+							}
 						}
 
 						ToolSeparator
 						{
 							id: actionToolSeperator
 							anchors.top: actionMenuButton.bottom
-							width : actionMenuButton.width
-							anchors.topMargin: typeRole===FileOperation.Close ? 3 : 0
-							anchors.left:	actionMenuButton.leftß
+							width: actionMenuButton.width
+							anchors.topMargin: showToolSeperator(
+												   typeRole) ? 3 : 0
+							anchors.left: actionMenuButton.left
+
 							orientation: Qt.Horizontal
-							visible: typeRole===FileOperation.Close
+							visible: showToolSeperator(typeRole)
 						}
 					}
 				}
@@ -103,47 +202,60 @@ FocusScope
 
 		Rectangle
 		{
-			id:				locationMenu
-			color:			Theme.uiBackground
+			id: resourceMenu
+			width: fileMenu.colWidths
+			anchors.left: actionMenu.right
+			height: parent.height
 
-			width:			fileMenu.colWidths
-
-			anchors.left:	actionMenu.right
-			height:			parent.height
-
-			border.width:	1
-			border.color:	Theme.uiBorder
-
-			//Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.InOutSine  } }
+			color: Theme.fileMenuColorBackground
+			border.width: 1
+			border.color: Theme.uiBorder
 
 			Column
 			{
-				id: fileLocation
+				id: resourceLocation
 
-				anchors.top:				parent.top
-				anchors.topMargin:			5
-				anchors.horizontalCenter:	parent.horizontalCenter
-				spacing:					6
-				width:						parent.width - Theme.generalAnchorMargin
+				anchors.top: parent.top
+				anchors.topMargin: 5
+				anchors.horizontalCenter: parent.horizontalCenter
+				width: parent.width - Theme.generalAnchorMargin
+
+				spacing: 6
 
 				Repeater
 				{
-					model:					fileMenuModel.resourceButtonsVisible
+					id: resourceRepeaterId
 
-					MenuButton
+					model: fileMenuModel.resourceButtonsVisible
+
+					Item
 					{
-						id:					resourceButton
-						text:				nameRole
-						width:				parent.width-6
-						height:				resource_button_height
+
+						id: itemResourceMenu
+						width: parent.width - 6
+						height: resourceButtonHeight
 						anchors.leftMargin: 3
-						anchors.left:		parent.left
-						selected:			qmlRole === fileMenuModel.resourceButtons.currentQML
-						onClicked:			fileMenuModel.resourceButtonsVisible.clicked(typeRole)
+						anchors.left: parent.left
+						enabled: enabledRole
+
+						MenuButton
+						{
+							id: resourceButton
+							isIcon: false
+							hasSubMenu: true
+							width: parent.width
+							height: parent.height
+							anchors.left: parent.left
+
+							text: nameRole
+							clickOnHover: true
+							selected: activeFocus
+
+							onClicked: fileMenuModel.resourceButtonsVisible.clicked(typeRole)
+						}
+
 					}
-
 				}
-
 			}
 		}
 
@@ -151,54 +263,59 @@ FocusScope
 
 		Item
 		{
-			id:			dropShadow
-			y:			0
-			x:			resourceScreen.x + resourceScreen.width
-			height:		resourceScreen.height
-			width:		Theme.shadowRadius
-			visible:	resourceScreen.visible
+			id: dropShadow
+
+			y: 0
+			x: resourceScreen.x + resourceScreen.width
+			height: resourceScreen.height
+			width: Theme.shadowRadius
+
+			visible: resourceScreen.visible
 
 			Rectangle
 			{
 				anchors.centerIn: parent
-				rotation:	-90
-				gradient:	Gradient {
-					GradientStop { position: 0.0; color: Theme.shadow }
-					GradientStop { position: 1.0; color: "transparent" } }
-				height:		dropShadow.width
-				width:		dropShadow.height
+				height: dropShadow.width
+				width: dropShadow.height
+
+				rotation: -90
+				gradient: Gradient
+				{
+					GradientStop
+					{
+						position: 0.0
+						color: Theme.shadow
+					}
+					GradientStop
+					{
+						position: 1.0
+						color: "transparent"
+					}
+				}
 			}
 		}
 
 		Rectangle
 		{
+			property real otherColumnsWidth: fileMenu.colWidths * fileMenu.nbColumns
+			property bool aButtonVisible: selectedActionMenu && selectedActionMenu.hasResourceMenu && fileMenuModel.resourceButtons.currentQML !== ''
+
 			id: resourceScreen
 
-			property real	otherColumnsWidth: fileMenu.colWidths * 2
+			x: otherColumnsWidth
+			width: aButtonVisible ? fileMenu.parent.width - otherColumnsWidth : 0
+			height: parent.height
 
-			//anchors.left:	locationMenu.right
-
-			x:				otherColumnsWidth - (aButtonVisible && fileMenuModel.visible ? 0 : width)
-			width:			Math.min(mainWindowRoot.width - otherColumnsWidth, 800 * preferencesModel.uiScale)
-			height:			parent.height
-			visible:		fileMenuModel.visible || x + width > otherColumnsWidth + 1
-
-			border.width:	1
-			border.color:	Theme.grayDarker
-			color:			Theme.uiBackground
-			z:				-2
-
-			property bool aButtonVisible:	fileMenuModel.resourceButtons.currentQML !== ''
-
-			Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
-
-			onXChanged: if(x + width <= otherColumnsWidth && !fileMenuModel.visible) fileMenuModel.resourceButtons.currentQML = ""
+			border.width: 1
+			border.color: Theme.grayDarker
+			color: Theme.fileMenuColorBackground
+			z: -2
 
 			Loader
 			{
-				id:					showSelectedSubScreen
-				anchors.fill:		parent
-				source:				fileMenuModel.resourceButtons.currentQML
+				id: showSelectedSubScreen
+				anchors.fill: parent
+				source: fileMenuModel.resourceButtons.currentQML
 			}
 		}
 	}

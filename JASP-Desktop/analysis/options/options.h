@@ -42,6 +42,7 @@ public:
 
 	void		add(std::string name, Option *option);
 	void		remove(std::string name);
+	void		clear()	override;
 	size_t		size()									const				{ return _options.size(); }
 
 	Option*		get(std::string name)					const;

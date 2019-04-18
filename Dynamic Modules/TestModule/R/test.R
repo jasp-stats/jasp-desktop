@@ -19,18 +19,20 @@ testFunc <- function(jaspResults, dataset, options)
 
     jaspResults[["check0"]]$title <- titel0
 
-    jaspResults[["check0"]]$title <- paste0(jaspResults[["check0"]]$title, ' my type is ', jaspResults[["check0"]]$type)
+    jaspResults[["check0"]]$title <- paste0(jaspResults[["check0"]]$title)
 
     titel1 <- '1?'
     if(is.null(jaspResults[["check1"]]))
     {
       titel1 <- 'check1 bestaat niet! Dus die maken we nu'
 
-      jaspResults[["check1"]] <- createJaspTable(title="Check 1 tafel!", dependencies=c('checkbox_1'))
+      jaspResults[["check1"]] <- createJaspTable(title='Check 1 tafel!', dependencies=c('checkbox_1'))
       jaspResults[["check1"]]$setExpectedSize(5, 5)
     }
     else
       titel1 <- 'check1 bestaat!'
 
     jaspResults[["check1"]]$title <- titel1
+
+    jaspResults[["klikMe"]] <- createJaspHtml('<a href="http://jasp-stats.org">jasp!</a>')
 }

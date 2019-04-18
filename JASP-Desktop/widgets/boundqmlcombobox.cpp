@@ -272,19 +272,7 @@ void BoundQMLComboBox::_resetItemWidth()
 		return;
 
 	const Terms& terms = _model->terms();
-	int maxLength = 0;
-	QString maxValue;
-	for (const Term& term : terms)
-	{
-		int length = term.asQString().length();
-		if (length > maxLength)
-		{
-			maxLength = length;
-			maxValue = term.asQString();
-		}
-	}
-	
-	QMetaObject::invokeMethod(_item, "resetWidth", Q_ARG(QVariant, QVariant(maxValue)));	
+	QMetaObject::invokeMethod(_item, "resetWidth", Q_ARG(QVariant, QVariant(terms.asQList())));
 }
 
 void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool setOption)

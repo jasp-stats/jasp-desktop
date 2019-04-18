@@ -59,10 +59,47 @@ Popup
 
 			property var currentJSON: null
 
+			RectangularButton
+			{
+				id:					browseButton
+				iconSource:			"qrc:///icons/folder.svg"
+				showIconAndText:	true
+				width:				height
+				height:				installButton.height
+				text:				qsTr("Browse for JASP Module");
+				anchors
+				{
+					top:		parent.top
+					left:		parent.left
+					right:		closeButtonCross.left
+					margins:	Theme.generalAnchorMargin
+				}
+
+				function browse() { return mainWindow.browseOpenFileDocuments(qsTr("Select a JASP Module"), "*.tar.gz"); }
+
+
+				onClicked:		descriptionViewer.currentlySelectedFilePath = browse();
+			}
+
+			RectangularButton
+			{
+				id:				closeButtonCross
+				iconSource:		"qrc:/images/cross.png"
+				width:			height
+				height:			installButton.height
+				anchors
+				{
+					top:		parent.top
+					right:		parent.right
+					margins:	Theme.generalAnchorMargin
+				}
+				onClicked:	moduleInstallerPopup.close()
+			}
+
 			Item
 			{
 				id:					fileBrowseArea
-				anchors.top:		parent.top
+				anchors.top:		browseButton.bottom
 				anchors.left:		parent.left
 				anchors.right:		parent.right
 				anchors.bottom:		installButton.top
@@ -75,116 +112,7 @@ Popup
 
 				Rectangle
 				{
-					id:					folderRect
-					anchors.top:		parent.top
-					anchors.left:		parent.left
-					anchors.right:		parent.horizontalCenter
-					anchors.bottom:		parent.bottom
-					anchors.margins:	Theme.generalAnchorMargin
-
-
-
-					color:			Theme.whiteBroken
-					border.color:	Theme.grayLighter
-					border.width:	1
-
-					ListView
-					{
-						id:					folderList
-						anchors.fill:		parent
-						anchors.margins:	Theme.generalAnchorMargin
-						clip:				true
-						spacing:			Theme.rowSpacing
-
-						property string currentlySelectedFilePath: ""
-
-						FolderListModel
-						{
-							id: folderModel
-
-							nameFilters:		["*.tar.gz"]
-							showDotAndDotDot:	true
-							showDirs:			true
-						}
-
-						Component
-						{
-							id: fileDelegate
-
-							RectangularButton
-							{
-								id:					fileDelegateRect
-								height:				32
-								width:				folderList.width - (Theme.generalAnchorMargin * 2)
-								x:					Theme.generalAnchorMargin
-								showIconAndText:	true
-								centerText:			false
-
-								border.color:		Theme.grayDarker
-								border.width:		1
-								selected:			folderList.currentlySelectedFilePath !== "" && folderList.currentlySelectedFilePath === filePath
-								enabled:			!selected
-
-								property int margins: 4
-
-
-								iconSource: fileIsDir			? "qrc:///icons/folder.svg"			: "qrc:///icons/JASP_logo_green.svg"
-								toolTip:	selected			? "Currently selected JASP Module"	: fileIsDir	? "a folder, click to enter" : "a JASP Module, click it to see more information"
-								text:		fileName === ".."	? fileName + " (directory up)"		: fileName
-
-
-								onClicked:
-								{
-									folderList.currentlySelectedFilePath = ""
-
-									if(fileIsDir)
-										folderModel.folder = "file:" + filePath
-									else
-									{
-										if(dynamicModules.isFileAnArchive(filePath))
-										{
-											var textJson			= dynamicModules.getDescriptionJsonFromArchive(filePath)
-											descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
-
-											moduleInstallerRect.currentJSON = JSON.parse(textJson)
-
-											var moduleDescription	= moduleInstallerRect.currentJSON.moduleDescription
-
-											var title				= moduleDescription.title
-											var description			= moduleDescription.description
-											var version				= moduleDescription.version
-											var author				= moduleDescription.author
-											var maintainer			= moduleDescription.maintainer
-											var website				= moduleDescription.website
-
-											if(textJson !== undefined && textJson !== "")
-											{
-												descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
-												folderList.currentlySelectedFilePath = filePath
-											}
-
-										}
-										else
-											descriptionViewer.text = filePath + " is not a JASP Module!"
-									}
-
-								}
-
-							}
-
-						}
-
-						model:		folderModel
-						delegate:	fileDelegate
-					}
-				}
-
-				Rectangle
-				{
-					anchors.top:		parent.top
-					anchors.left:		folderRect.right
-					anchors.right:		parent.right
-					anchors.bottom:		parent.bottom
+					anchors.fill:		parent
 					anchors.margins:	Theme.generalAnchorMargin
 
 					color:				Theme.whiteBroken
@@ -194,14 +122,57 @@ Popup
 
 					Text
 					{
-						id: descriptionViewer
+						id:					descriptionViewer
 						anchors.fill:		parent
 						anchors.margins:	Theme.generalAnchorMargin
-						text:				"<i>Click a JASP Module to see more information here</i>"
+						text:				defaultText
 						textFormat:			Text.StyledText
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
 						onLinkActivated:	Qt.openUrlExternally(link)
 						clip:				true
+
+						property string currentlySelectedFilePath: browseButton.browse()
+						property string defaultText: "<i>Browse for a JASP Module to see more information here</i>"
+
+						onCurrentlySelectedFilePathChanged: if(currentlySelectedFilePath !== "") showDescription();
+
+						function showDescription()
+						{
+							var filePath = currentlySelectedFilePath;
+
+							if(filePath === "")
+							{
+								descriptionViewer.text = descriptionViewer.defaultText;
+								return;
+							}
+
+							if(dynamicModules.isFileAnArchive(filePath))
+							{
+								var textJson			= dynamicModules.getDescriptionJsonFromArchive(filePath)
+								descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
+
+								moduleInstallerRect.currentJSON = JSON.parse(textJson)
+
+								var moduleDescription	= moduleInstallerRect.currentJSON.moduleDescription
+
+								var title				= moduleDescription.title
+								var description			= moduleDescription.description
+								var version				= moduleDescription.version
+								var author				= moduleDescription.author
+								var maintainer			= moduleDescription.maintainer
+								var website				= moduleDescription.website
+
+								if(textJson !== undefined && textJson !== "")
+									descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
+								else
+									descriptionViewer.currentlySelectedFilePath = "";
+							}
+							else
+							{
+								descriptionViewer.text = filePath + " is not a JASP Module!"
+								descriptionViewer.currentlySelectedFilePath = "";
+							}
+						}
 
 						MouseArea
 						{
@@ -219,8 +190,8 @@ Popup
 				anchors
 				{
 					left:		parent.left
-					right:		closeButtonCross.left
-					bottom:		installProgressItem.top
+					right:		parent.right
+					bottom:		parent.bottom
 					margins:	Theme.generalAnchorMargin
 				}
 				enabled:			moduleInstallerRect.currentJSON !== null
@@ -235,57 +206,9 @@ Popup
 						enabled							= false
 						selected						= true
 
-						dynamicModules.installJASPModule(folderList.currentlySelectedFilePath)
+						dynamicModules.installJASPModule(descriptionViewer.currentlySelectedFilePath)
 
 						moduleInstallerPopup.close() //There is no information being shown anyway so lets just close the window now
-					}
-				}
-			}
-
-			RectangularButton
-			{
-				id:				closeButtonCross
-				iconSource:		"qrc:/images/cross.png"
-				width:			height
-				height:			installButton.height
-				anchors
-				{
-					right:		parent.right
-					bottom:		installProgressItem.top
-					margins:	Theme.generalAnchorMargin
-				}
-				onClicked:	moduleInstallerPopup.close()
-			}
-
-			Item
-			{
-				id:				installProgressItem
-
-				property string moduleBeingInstalled: ""
-				anchors.left:	parent.left
-				anchors.right:	parent.right
-				anchors.bottom: parent.bottom
-
-				Behavior on height { PropertyAnimation {} }
-
-				height: 0
-				visible: height > 0
-
-				Rectangle
-				{
-					anchors.fill:		parent
-					anchors.margins:	Theme.generalAnchorMargin
-
-					color:				Theme.whiteBroken
-					border.color:		Theme.grayLighter
-					border.width:		1
-
-					Text
-					{
-						anchors.fill:		parent
-						anchors.margins:	Theme.generalAnchorMargin
-						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
-						text:				installProgressItem.moduleBeingInstalled === "" ? "" : dynamicModules.dynamicModule(installProgressItem.moduleBeingInstalled).installLog
 					}
 				}
 			}

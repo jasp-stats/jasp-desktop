@@ -61,7 +61,7 @@ void PreferencesModel::browseSpreadsheetEditor()
 	applicationfolder = "/usr/bin";
 #endif
 
-	QString filename = MessageForwarder::openFileBrowse("Select a file...", applicationfolder, filter);
+	QString filename = MessageForwarder::browseOpenFile("Select a file...", applicationfolder, filter);
 
 	if (filename != "")
 		setCustomEditor(filename);
@@ -80,28 +80,31 @@ void PreferencesModel::browseDeveloperFolder()
 #endif
 	}
 
-	QString folder = MessageForwarder::openFolderBrowse("Select a folder...", defaultfolder);
+	QString folder = MessageForwarder::browseOpenFolder("Select a folder...", defaultfolder);
 
 	if (!folder.isEmpty())
 		setDeveloperFolder(folder);
 		
 }
 
-bool	PreferencesModel::fixedDecimals()			const { return Settings::value(Settings::FIXED_DECIMALS					).toBool();					}
-int		PreferencesModel::numDecimals()				const { return Settings::value(Settings::NUM_DECIMALS					).toInt();					}
-bool	PreferencesModel::exactPValues()			const { return Settings::value(Settings::EXACT_PVALUES					).toBool();					}
-bool	PreferencesModel::dataAutoSynchronization()	const { return Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION		).toBool();					}
-bool	PreferencesModel::useDefaultEditor()		const { return Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR	).toBool();					}
-QString	PreferencesModel::customEditor()			const { return Settings::value(Settings::SPREADSHEET_EDITOR_NAME		).toString();				}
-QString PreferencesModel::developerFolder()			const {	return Settings::value(Settings::DEVELOPER_FOLDER				).toString();				}
-bool	PreferencesModel::useDefaultPPI()			const { return Settings::value(Settings::PPI_USE_DEFAULT				).toBool();					}
-int		PreferencesModel::customPPI()				const { return Settings::value(Settings::PPI_CUSTOM_VALUE				).toInt();					}
-bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND				).toString() == "white";	}
-bool	PreferencesModel::developerMode()			const { return Settings::value(Settings::DEVELOPER_MODE					).toBool();					}
-double	PreferencesModel::uiScale()					const { return Settings::value(Settings::UI_SCALE						).toDouble();				}
+bool	PreferencesModel::fixedDecimals()			const { return Settings::value(Settings::FIXED_DECIMALS								).toBool();					}
+int		PreferencesModel::numDecimals()				const { return Settings::value(Settings::NUM_DECIMALS								).toInt();					}
+bool	PreferencesModel::exactPValues()			const { return Settings::value(Settings::EXACT_PVALUES								).toBool();					}
+bool	PreferencesModel::dataAutoSynchronization()	const { return Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION					).toBool();					}
+bool	PreferencesModel::useDefaultEditor()		const { return Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR				).toBool();					}
+QString	PreferencesModel::customEditor()			const { return Settings::value(Settings::SPREADSHEET_EDITOR_NAME					).toString();				}
+QString PreferencesModel::developerFolder()			const {	return Settings::value(Settings::DEVELOPER_FOLDER							).toString();				}
+bool	PreferencesModel::useDefaultPPI()			const { return Settings::value(Settings::PPI_USE_DEFAULT							).toBool();					}
+int		PreferencesModel::customPPI()				const { return Settings::value(Settings::PPI_CUSTOM_VALUE							).toInt();					}
+bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND							).toString() == "white";	}
+bool	PreferencesModel::developerMode()			const { return Settings::value(Settings::DEVELOPER_MODE								).toBool();					}
+double	PreferencesModel::uiScale()					const { return Settings::value(Settings::UI_SCALE									).toDouble();				}
+bool	PreferencesModel::customThresholdScale()	const { return Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE					).toBool();					}
+int		PreferencesModel::thresholdScale()			const { return Settings::value(Settings::THRESHOLD_SCALE							).toInt();					}
+bool	PreferencesModel::devModRegenDESC()			const { return Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC	).toBool();					}
 
 QStringList PreferencesModel::missingValues()		const
-{
+{;
 	QStringList items = Settings::value(Settings::MISSING_VALUES_LIST).toString().split("|");
 
 	return items;
@@ -223,13 +226,14 @@ void PreferencesModel::setDeveloperFolder(QString newDeveloperFolder)
 
 void PreferencesModel::setUiScale(double newUiScale)
 {
+	newUiScale = std::max(0.2, newUiScale);
+
 	if (std::abs(uiScale() - newUiScale) < 0.001)
 		return;
 
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
 	emit uiScaleChanged(newUiScale);
 }
-
 
 void PreferencesModel::zoomIn()
 {
@@ -304,6 +308,25 @@ void PreferencesModel::resetMissingValues()
 		emit missingValuesChanged();
 }
 
+void PreferencesModel::setCustomThresholdScale(bool newCustomThresholdScale)
+{
+	if (customThresholdScale() == newCustomThresholdScale)
+		return;
+
+	Settings::setValue(Settings::USE_CUSTOM_THRESHOLD_SCALE, newCustomThresholdScale);
+	emit customThresholdScaleChanged (newCustomThresholdScale);
+}
+
+void PreferencesModel::setThresholdScale(int newThresholdScale)
+{
+	if (thresholdScale() == newThresholdScale)
+		return;
+
+	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
+	emit thresholdScaleChanged(newThresholdScale);
+
+}
+
 void PreferencesModel::updateUtilsMissingValues()
 {
 	missingValuesToStdVector(Utils::_currentEmptyValues);
@@ -318,4 +341,13 @@ void PreferencesModel::missingValuesToStdVector(std::vector<std::string> & out)	
 
 	for(size_t i=0; i<out.size(); i++)
 		out[i] = currentValues[int(i)].toStdString();
+}
+
+void PreferencesModel::setDevModRegenDESC(bool newDevModRegenDESC)
+{
+	if (devModRegenDESC() == newDevModRegenDESC)
+		return;
+
+	Settings::setValue(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC, newDevModRegenDESC);
+	emit devModRegenDESCChanged(newDevModRegenDESC);
 }

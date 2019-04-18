@@ -633,6 +633,22 @@ std::string Engine::callback(const std::string &results, int progress)
 	return "{ \"status\" : \"ok\" }";
 }
 
+bool Engine::isColumnNameOk(std::string columnName)
+{
+	if(columnName == "")
+		return false;
+
+	try
+	{
+		provideDataSet()->columns().findIndexByName(columnName);
+		return true;
+	}
+	catch(columnNotFound &)
+	{
+		return false;
+	}
+}
+
 bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels)
 {
 	std::map<int, int> uniqueInts;

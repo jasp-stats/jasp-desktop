@@ -2708,7 +2708,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       if (options$plotErrorBars) {
         
         pd <- ggplot2::position_dodge(.2)
-        p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
+        p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
                                                     ymax=ciUpper),
                                        colour="black", width=.2, position=pd)
         
@@ -2720,14 +2720,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       p <- p + ggplot2::geom_line(position=pd, size = .7) +
         ggplot2::geom_point(position=pd, size=4) +
-        ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
-        ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
-        ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+        ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100))) +
+        ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112)) +
+        ggplot2::scale_color_manual(values = rep("black",200)) +
         ggplot2::ylab(options$labelYAxis) +
         ggplot2::xlab(options$plotHorizontalAxis) +
         ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
         base_breaks_y(summaryStat, options$plotErrorBars) +
         base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
+      
+      nrowsInLegend <- min(10, nlevels(as.factor(summaryStatSubset[["plotSeparateLines"]])))
+      guide <- ggplot2::guide_legend(nrow = nrowsInLegend)
+      p <- p + ggplot2::guides(fill = guide, shape = guide, color = guide)
       
       p <- JASPgraphs::themeJasp(p, legend.position="right")
       

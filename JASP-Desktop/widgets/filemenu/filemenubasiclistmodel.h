@@ -25,9 +25,12 @@ public slots:
 	virtual void changePath(const QString& name, const QString& path);
 	virtual void changePathCrumbIndex(const int& index);
 	virtual void openFile(const QString& path);
+	virtual void saveFile(const QString& path);
+
 
 protected:
 	FileSystemModel *_model = nullptr;
+	bool			_openFileWhenClicked = true;
 };
 
 #endif // FILEMENUBASICLISTMODEL_H

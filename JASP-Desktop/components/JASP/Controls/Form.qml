@@ -133,24 +133,24 @@ AnalysisForm
 		{
 			var previousExpander = null;
 			getJASPControls(jaspControls, contentArea, true);
-			for (var i = 0; i < jaspControls.length; i++) {
-				var next = i >= (jaspControls.length-1) ? 0 : i+1;
+
+			for (var i = 0; i < jaspControls.length; i++)
 				if (jaspControls[i].controlType !== "Expander")
-					jaspControls[i].KeyNavigation.tab = jaspControls[next];
-				else {
+					jaspControls[i].KeyNavigation.tab = jaspControls[(i + 1) % jaspControls.length];
+				else
+				{
 					if (previousExpander)
 						previousExpander.nextExpander = jaspControls[i];
 					previousExpander = jaspControls[i];
 				}
-			}
 			
 			if (previousExpander)
 				previousExpander.nextExpander = jaspControls[0];
 			
-			for (i = 0; i < jaspControls.length; i++) {
+			for (i = 0; i < jaspControls.length; i++)
 				if (jaspControls[i].indent)
 					jaspControls[i].L.Layout.leftMargin = Theme.indentationLength
-			}
+
 			
 			formCompleted();
 		}

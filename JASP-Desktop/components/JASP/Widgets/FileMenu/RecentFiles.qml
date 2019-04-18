@@ -7,27 +7,9 @@ Item
 {
 	id:			rect
 
-	Label
-	{
-		id:headLabel
-		width:400
-		height:30
-		anchors.top: parent.top
-		anchors.left: parent.left  //Position Recent Files label
-		anchors.leftMargin: 12
-		anchors.topMargin: 12
-		text: "Recent Files"
-		font.family: "SansSerif"
-		font.pixelSize: 18
-		color: Theme.black
-	}
-
-	ToolSeparator
-	{
-		id: firstSeparator
-		anchors.top: headLabel.bottom
-		width: rect.width
-		orientation: Qt.Horizontal
+	MenuHeader {
+		id: menuHeader
+		headertext: qsTr("Recent Files")
 	}
 
 	FileList {
@@ -37,14 +19,12 @@ Item
 
 		anchors
 		{
-			top:			firstSeparator.bottom
-			left:			parent.left
-			right:			parent.right
+			top:			menuHeader.bottom
+			left:			menuHeader.left
+			right:			menuHeader.right
 			bottom:			parent.bottom
-			leftMargin:		12  //Position datalibrary items
-			topMargin:		Theme.generalAnchorMargin
+			topMargin:		2 * Theme.generalMenuMargin
 			bottomMargin:	Theme.generalAnchorMargin
-			rightMargin:	Theme.generalAnchorMargin
 		}
 	}
 }

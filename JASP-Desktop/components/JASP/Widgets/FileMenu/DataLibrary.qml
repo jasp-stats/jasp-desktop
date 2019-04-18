@@ -6,52 +6,44 @@ import JASP.Theme 1.0
 Item
 {
 	id:			rect
-	
-	Label
-	{
-		id:				headlabel
 
-		height:			30
-		anchors
-		{
-			top:		parent.top
-			left:		parent.left  //Position Datalibrary label
-			right:		parent.right
-			leftMargin: 12
-			topMargin:	12
-		}
+	MenuHeader {
+		id: menuHeader
 
-		text:	"Data Library"
-		font:	Theme.fontLabel
+		headertext:		qsTr("Data Library")
+		toolseparator:	false
 	}
-	
+
 	BreadCrumbs
 	{
 		id:				datalibrarybreadcrumbs
-		
+
 		model :			fileMenuModel.datalibrary.breadcrumbsmodel
-		
+
 		width:			rect.width
 		height:			40
 		anchors
 		{
-			top:		headlabel.bottom
+			top:		menuHeader.bottom
+			topMargin	: 30
 			left:		parent.left
 			right:		parent.right
-			leftMargin:	12  //Position datalibrary breadcrumbs
+			leftMargin:	Theme.generalMenuMargin
 		}
 
 		onCrumbButtonClicked: model.indexChanged(modelIndex)
 	}
-	
+
 	ToolSeparator
 	{
 		id:				secondseparator
+		anchors.left:	menuHeader.left
+		anchors.right:	menuHeader.right
 		anchors.top:	datalibrarybreadcrumbs.bottom
 		width:			rect.width
 		orientation:	Qt.Horizontal
 	}
-	
+
 	FileList
 	{
 		id:			datalibrarylist
@@ -61,14 +53,11 @@ Item
 		anchors
 		{
 			top:			secondseparator.bottom
-			bottom:			parent.bottom
-			left:			parent.left
-			right:			parent.right
-			leftMargin:		12  //Position datalibrary items
-			topMargin:		Theme.generalAnchorMargin
-			bottomMargin:	Theme.generalAnchorMargin
-			rightMargin:	Theme.generalAnchorMargin
+            bottom:	parent.bottom
+            left:			menuHeader.left
+            right:		menuHeader.right
+            topMargin:		Theme.generalMenuMargin
+            bottomMargin:	Theme.generalMenuMargin
 		}
 	}
 }
-

@@ -24,12 +24,20 @@ const Settings::Setting Settings::Values[] = {
 	{"ImageBackground",				"white"},
 	{"fixedDecimals",				false},
 	{"developerMode",				false},
-	{"developerFolder",				""}
+	{"developerFolder",				""},
+	{"CustomThresholdScale",		false},
+	{"ThresholdScale",				10},
+	{"devModeRegenDescEtc",			true}
 };
 
 QVariant Settings::value(Settings::Type key)
 {
 	return getSettings()->value(Settings::Values[key].type, Settings::Values[key].defaultValue);
+}
+
+QVariant Settings::defaultValue(Settings::Type key)
+{
+	return Settings::Values[key].defaultValue;
 }
 
 void Settings::setValue(Settings::Type key, const QVariant &value)
