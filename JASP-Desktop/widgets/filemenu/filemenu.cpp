@@ -24,20 +24,20 @@
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
-	_RecentFiles			= new RecentFiles(parent);
-	_CurrentFile			= new CurrentFile(parent);
-	_Computer				= new Computer(parent);
+	_recentFiles			= new RecentFiles(parent);
+	_currentDataFile			= new CurrentFile(parent);
+	_computer				= new Computer(parent);
 	_OSF					= new OSF(parent);
-	_DataLibrary			= new DataLibrary(parent);
+	_dataLibrary			= new DataLibrary(parent);
 	_actionButtons			= new ActionButtons(this);
 	_resourceButtons		= new ResourceButtons(this);
 	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
 
-	connect(_RecentFiles,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_CurrentFile,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_Computer,			&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_recentFiles,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_currentDataFile,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_computer,			&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_OSF,				&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_DataLibrary,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_actionButtons,		&ActionButtons::buttonClickedSignal,	this, &FileMenu::fileOperationClicked);
 	connect(&_watcher,			&QFileSystemWatcher::fileChanged,		this, &FileMenu::dataFileModifiedHandler);
 	connect(_resourceButtons,	&ResourceButtons::clicked,				this, &FileMenu::resourceButtonClicked);
@@ -91,7 +91,7 @@ void FileMenu::setSaveMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
 
-	_Computer->setMode(_mode);
+	_computer->setMode(_mode);
 	
 	_OSF->setMode(_mode);
 	_OSF->setCurrentFileName(getDefaultOutFileName());
@@ -118,7 +118,7 @@ FileEvent *FileMenu::save()
 
 	if (_currentFileType != Utils::FileType::jasp || _currentFileReadOnly)
 	{
-		event = _Computer->browseSave();
+		event = _computer->browseSave();
 		if (event->isCompleted())
 			return event;
 	}
@@ -140,7 +140,7 @@ FileEvent *FileMenu::save()
 
 void FileMenu::sync()
 {
-	QString path = _CurrentFile->getCurrentDataFilePath();
+	QString path = _currentDataFile->getCurrentFilePath();
 
 	if (path.isEmpty())
 	{
@@ -167,17 +167,15 @@ FileEvent *FileMenu::close()
 
 void FileMenu::setCurrentDataFile(const QString &path)
 {
-	QString currentPath = _CurrentFile->getCurrentDataFilePath();
+	QString currentPath = _currentDataFile->getCurrentFilePath();
 	if (!currentPath.isEmpty())
 		_watcher.removePath(currentPath);
 
 	bool setCurrentPath = true;
-	bool enableCurrentTab = false;
 	if (!path.isEmpty())
 	{
 		if (checkSyncFileExists(path))
 		{
-			enableCurrentTab = true;
 			int sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
 			if (sync > 0)
 				_watcher.addPath(path);
@@ -187,15 +185,15 @@ void FileMenu::setCurrentDataFile(const QString &path)
 	}
 
 	if (setCurrentPath)
-		_CurrentFile->setCurrentDataFilePath(path);
+		_currentDataFile->setCurrentFilePath(path);
 }
 
 void FileMenu::setDataFileWatcher(bool watch)
 {
-	QString path = _CurrentFile->getCurrentFilePath();
+	QString path = _currentDataFile->getCurrentFilePath();
 	if (!path.isEmpty())
 	{
-		if (watch && !_CurrentFile->isOnlineFile(path))
+		if (watch && !_currentDataFile->isOnlineFile(path))
 			_watcher.addPath(path);
 		else
 			_watcher.removePath(path);
@@ -237,8 +235,8 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			//  don't add examples to the recent list
 			if (!event->isReadOnly())
 			{
-				_RecentFiles->pushRecentFilePath(event->path());
-				_Computer->addRecentFolder(event->path());
+				_recentFiles->pushRecentFilePath(event->path());
+				_computer->addRecentFolder(event->path());
 			}
 
 			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
@@ -246,12 +244,11 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
-			_Computer->setFileName(info.baseName());
+			_computer->setFileName(info.baseName());
 
 			_currentFilePath		= event->path();
 			_currentFileType		= event->type();
 			_currentFileReadOnly	= event->isReadOnly();
-			_CurrentFile->setCurrentFileInfo(event->path(), event->type(), event->isReadOnly());
 			_OSF->setProcessing(false);
 		}
 	}
@@ -263,15 +260,14 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		_Computer->clearFileName();
+		_computer->clearFileName();
 		_currentFilePath		= "";
 		_currentFileType		= Utils::FileType::unknown;
 		_currentFileReadOnly	= false;
-		_CurrentFile->setCurrentFileInfo("", Utils::FileType::unknown, false);
 		clearSyncData();
 	}
 
-	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_CurrentFile->getCurrentDataFilePath().isEmpty());
+	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_currentDataFile->getCurrentFilePath().isEmpty());
 		
 	if (event->successful())
 	{
@@ -429,7 +425,7 @@ bool FileMenu::checkSyncFileExists(const QString &path)
 void FileMenu::clearSyncData()
 {
 	setDataFileWatcher(false); // must be done before setting the current to empty.
-	_CurrentFile->setCurrentDataFilePath(QString());
+	_currentDataFile->setCurrentFilePath(QString());
 }
 
 bool FileMenu::clearOSFFromRecentList(QString path)
