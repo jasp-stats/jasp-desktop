@@ -17,6 +17,7 @@
 //
 
 #include "filesystemmodel.h"
+#include <QDir>
 
 FileSystemModel::FileSystemModel(QObject *parent) : QObject(parent)
 {
@@ -28,8 +29,11 @@ const FileSystemModel::FileSystemEntryList &FileSystemModel::entries() const
 	return _entries;
 }
 
-void FileSystemModel::setPath(QString path)
+void FileSystemModel::setPath(QString inpath)
 {
+
+	QString path = QDir::toNativeSeparators(inpath);
+
 	_path = path;
 
 	refresh();
@@ -47,8 +51,10 @@ const QString &FileSystemModel::rootPath() const
 	return _rootPath;
 }
 
-bool FileSystemModel::contains(const QString &path) const
+bool FileSystemModel::contains(const QString &inpath) const
 {
+	QString path = QDir::toNativeSeparators(inpath);
+
 	for (const FileSystemEntry &entry : _entries)
 	{
 		if (entry.path == path)
@@ -58,8 +64,10 @@ bool FileSystemModel::contains(const QString &path) const
 	return false;
 }
 
-bool FileSystemModel::hasFileEntry(QString name, QString &path)
+bool FileSystemModel::hasFileEntry(QString name, QString &inpath)
 {
+	QString path = QDir::toNativeSeparators(inpath);
+
 	for (int i =0; i < _entries.length(); i++)
 	{
 		if (_entries[i].entryType != FileSystemEntry::Folder && _entries[i].name.toLower() == name) {
@@ -80,10 +88,12 @@ bool FileSystemModel::hasFolderEntry(QString name)
 	return false;
 }
 
-FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntry::EntryType type)
+FileSystemEntry FileSystemModel::createEntry(const QString &inpath, FileSystemEntry::EntryType type)
 {
 	FileSystemEntry entry;
 	entry.entryType = type;
+
+	QString path = QDir::toNativeSeparators(inpath);
 
 	int index = path.lastIndexOf("/");
 	if (index == -1)
@@ -107,9 +117,11 @@ FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntr
 	return entry;
 }
 
-FileSystemEntry FileSystemModel::createEntry(const QString &path, const QString &name, const QString &description, FileSystemEntry::EntryType type, const QString &associated_datafile)
+FileSystemEntry FileSystemModel::createEntry(const QString &inpath, const QString &name, const QString &description, FileSystemEntry::EntryType type, const QString &associated_datafile)
 {
 	FileSystemEntry entry;
+
+	QString path = QDir::toNativeSeparators(inpath);
 
 	entry.name					= name;
 	entry.path					= path;
