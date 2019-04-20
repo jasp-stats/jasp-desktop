@@ -632,10 +632,7 @@
 
   posteriorPlotContainer <- createJaspContainer(title = "Model Averaged Posterior Distributions")
   jaspResults[["posteriorPlot"]] <- posteriorPlotContainer
-  posteriorPlotContainer$dependOn(
-    options = c("posteriorPlot", "modelTerms", "credibleInterval"),
-    optionContainsValue = options["groupPosterior"]
-  )
+  posteriorPlotContainer$dependOn(c("posteriorPlot", "modelTerms", "credibleInterval", "groupPosterior"))
   posteriorPlotContainer$position <- 4
 
   if (is.null(model$models)) {
@@ -825,7 +822,7 @@
     df <- data.frame(x = dd$x, y = dd$y)
     xName <- expression(R^2)
     plot$plotObject <- JASPgraphs::PlotPriorAndPosterior(dfLines = df, xName = xName, CRI = rsqCri, drawCRItxt = FALSE)
-    plot$dependOn(jaspObject = jaspResults[["tableModelComparisonState"]])
+    plot$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
   }
 
   plot$dependOn(c("rsqPlot", "modelTerms", "credibleInterval"))
@@ -1152,7 +1149,7 @@
     descriptivesTable$addFootnote(
       symbol = "<em>Note.</em>", 
       message = sprintf(
-        "Some combinations of factors are not observed and hence omitted (%.0fd out of %.0f combinations are unobserved).",
+        "Some combinations of factors are not observed and hence omitted (%g out of %g combinations are unobserved).",
         nPossible - nObserved, nPossible
       )
     )
@@ -1187,8 +1184,7 @@
     conf.interval <- options$confidenceIntervalInterval
   }
 
-  opts <- c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots")
-  descriptivesPlotContainer$dependOn(optionContainsValue = options[opts])
+  descriptivesPlotContainer$dependOn(c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots", "labelYAxis"))
 
   if (errors$noVariables) {
     descriptivesPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Descriptives Plot")
@@ -1199,8 +1195,12 @@
   groupVars <- groupVars[groupVars != ""]
   groupVarsV <- .v(groupVars)
   dependentV <- .v(options$dependent)
-  if (analysisType == "RM-ANOVA")
+  if (analysisType == "RM-ANOVA") {
     dependentV <- .v("dependent")
+    yLabel <- options[["labelYAxis"]]
+  } else {
+    yLabel <- options[["dependent"]]
+  }
 
   summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
                             conf.interval = conf.interval, na.rm = TRUE, .drop = FALSE,
@@ -1307,8 +1307,7 @@
       ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
       ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
       ggplot2::scale_color_manual(values = rep("black",200),guide=guideLegend) +
-      ggplot2::ylab(options$dependent) +
-      ggplot2::xlab(options$plotHorizontalAxis) +
+      ggplot2::labs(y = yLabel, x = options[["plotHorizontalAxis"]]) +
       base_breaks_y(summaryStat, plotErrorBars) +
       base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
@@ -2222,8 +2221,7 @@
   posteriorPlotContainer <- createJaspContainer(title = "Posterior Distributions")
   jaspContainer[["SMIposteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$position <- 2
-  posteriorPlotContainer$dependOn(options = "singleModelPosteriorPlot",
-                                  optionContainsValue = options["singleModelGroupPosterior"])
+  posteriorPlotContainer$dependOn(c("singleModelPosteriorPlot", "singleModelGroupPosterior"))
   if (is.null(model) || posteriorPlotContainer$getError()) {
     posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Posterior distribution", width = 400, height = 400,
                                                             plot = NULL)
