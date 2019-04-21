@@ -1364,6 +1364,9 @@
   weightedMeans <- weights <- numeric(nparam)
   names(weights) <- names(weightedMeans) <- allParamNames
   allContinuous <- TRUE
+  
+  h <- (1 - options[["credibleInterval"]]) / 2
+  probs <- c(h, 1-h)
 
   jaspResults$startProgressbar(nmodels)
   for (i in seq_len(nmodels)) {
@@ -1411,7 +1414,7 @@
       statistics[[i]]$names  <- nms # <- these are the names for all objects within one sublist
       statistics[[i]]$mean   <- .colMeans                (samples, m = nIter, n = NCOL(samples))
       statistics[[i]]$var    <- matrixStats::colVars     (samples)
-      statistics[[i]]$cri    <- matrixStats::colQuantiles(samples, probs = c(0.025, 0.975))
+      statistics[[i]]$cri    <- matrixStats::colQuantiles(samples, probs = probs)
 
       statistics[[i]]$approx <- .BANOVAfitDensity(samples = samples)
       statistics[[i]]$types  <- types
@@ -1818,42 +1821,43 @@
 
   nobs <- nrow(datOneHot)
 
-  # size of 1 numeric element in bits
-  doubleSize <- as.numeric(utils::object.size(double(2)) - utils::object.size(double(1)))
+  # possible switch for memory efficient alternatives:
+  # size of 1 numeric element in bytes
+  # doubleSize <- as.numeric(utils::object.size(double(2)) - utils::object.size(double(1)))
   # 1073741824 is 1   GB in bytes
   # 536870912  is 512 MB in bytes
   # the size of an empty matrix is ignored here
-  useMatmult <- ((doubleSize * nobs * nIter) / 536870912.0) <= 1
+  # useMatmult <- ((doubleSize * nobs * nIter) / 536870912.0) <= 1
 
-  if (useMatmult) {
-    if (length(dim(posterior)) == 3L) {
-      # we're doing model averaged inference
-      
-      # sample from the BMA posterior
-      samples <- matrix(NA, nrow = nIter, ncol = ncol(posterior))
-      for (i in seq_len(ncol(posterior))) {
-        samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
-      }
-      
-      preds <- tcrossprod(datOneHot, samples)
-      
-    } else {
-      # TODO: ensure that column order is always correct for both!
-      # otherwise we're doing inference for a single model
-      preds <- tcrossprod(datOneHot, posterior)
+  # if (useMatmult) {
+  if (length(dim(posterior)) == 3L) {
+    # we're doing model averaged inference
+    
+    # sample from the BMA posterior
+    samples <- matrix(NA, nrow = nIter, ncol = ncol(posterior))
+    for (i in seq_len(ncol(posterior))) {
+      samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
     }
     
-    # calculate residuals (correctly recycles dat[[dvs]])
-    resid <- dataset[[dvs]] - preds
-    
-    rsq <- .BANOVAcomputeRsq(dataset[[dvs]], preds)
-    # eta <- .BANOVAcomputeEtasq(dat[[dvs]], preds)
+    preds <- tcrossprod(datOneHot, samples)
     
   } else {
+    # TODO: ensure that column order is always correct for both!
+    # otherwise we're doing inference for a single model
+    preds <- tcrossprod(datOneHot, posterior)
+  }
+  
+  # calculate residuals (correctly recycles dat[[dvs]])
+  resid <- dataset[[dvs]] - preds
+  
+  rsq <- .BANOVAcomputeRsq(dataset[[dvs]], preds)
+    # eta <- .BANOVAcomputeEtasq(dat[[dvs]], preds)
+    
+  # } else {
     # slow but memory efficient stuff
     
     
-  }
+  # }
 
   return(list(resid = resid, preds = preds, rsq = rsq))
 }
@@ -2157,13 +2161,14 @@
   names(means) <- names(sds) <- colnames(samples)
 
   h <- (1 - options[["credibleInterval"]]) / 2
-  cri <- matrixStats::colQuantiles(samples, probs = c(h, 1 - h))
+  probs <- c(h, 1-h)
+  cri <- matrixStats::colQuantiles(samples, probs = probs)
 
   densities <- .BANOVAfitDensity(samples, 2^9, FALSE)
 
   tmp  <- .BANOVAgetSMIResidRsq(samples, dataset, formula, nIter)
   residmeans  <- rowMeans(tmp$resid)
-  residquants <- matrixStats::rowQuantiles(tmp$resid, probs = c(0.025, 0.975))
+  residquants <- matrixStats::rowQuantiles(tmp$resid, probs = c(h, 1-h))
 
   # all information for q-q plot of residuals
   residSumStats <- matrix(c(residmeans, residquants), nrow = length(residmeans), ncol = 3L,
@@ -2171,7 +2176,7 @@
 
   # all information for r-squared density plot
   rsqDens <- density(tmp$rsq, n = 2^11, from = 0, to = 1)
-  rsqCri <- quantile(tmp$rsq, probs   = c(0.025, 0.975))
+  rsqCri <- quantile(tmp$rsq, probs = probs)
 
   return(list(
     means = means, sds = sds, CRIs = cri, densities = densities$fit,
