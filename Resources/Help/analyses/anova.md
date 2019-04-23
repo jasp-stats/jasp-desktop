@@ -19,10 +19,10 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
 - Components and model terms 
     - Components: All the independent variables that can be included in the model. 
     - Model terms: The independent variables included in the model. By default all the main effects and interaction effects of the specified independent variables are included in the model.  
-- Sum of Squares 
-    - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, containing the order in the model. 
-    - Type II: Hierarchical/Partially sequential sum of squares. It is the reduction of error when a factor is added to the model that includes all the other factors, except the factors where the added factor is part of. Therefore, it does not include interactions. 
-    - Type III: Partial sum of squares. It is the reduction of error when a factors is added at last to the model, a model that includes all the other factors, including interactions with this factor. This type is selected by default. 
+- Sum of Squares: There are different types of the Sum of Squares. The choice of the type is important when there is more than one factor, and when the data is unbalanced. In an unbalanced design the different levels of the independent variable do not contain an equal number of observations (e.g., one group contains more obsevations than another group). In this scenario the Sum of Squares type can influence the results.
+    - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, containing the order in the model. The results depend on the order of the factors in the model. This is important to consider when the model contains more than one factor. 
+    - Type II: Hierarchical/Partially sequential sum of squares. It is the reduction of error when a factor is added to the model that includes all the other factors, except the factors where the added factor is part of. Therefore, it does not include interactions. Langsrud (2003) advises to apply this type for an ANOVA with unbalanced data. 
+    - Type III: Partial sum of squares. It is the reduction of error when a factors is added at last to the model, a model that includes all the other factors, including interactions with this factor. This type is often selected, because it takes interactions into account (Langsrud, 2003). This type is selected by default. 
 
 #### Assumption Checks: 
 - Homogeneity tests: By selecting this option, it will be checked whether the variance of the dependent variable is equal between the groups by performing Levene's test of equal variances.
@@ -81,9 +81,9 @@ To create a descriptive plot, place the independent variable on the horizontal a
 - Display: 
     - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables. 
     - Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified. 
-        - &eta;<sup>2</sup> : When this option is selected, the Eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies. (reference)      
-        - partial &eta;<sup>2</sup> : When this option is selected, the Partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies. 
-        - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small. 
+        - &eta;<sup>2</sup> : When this option is selected, the Eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).      
+        - partial &eta;<sup>2</sup> : When this option is selected, the Partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018). 
+        - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018). 
     - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this [blogpost](https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/). 
 
 #### Simple Main Effects: 
@@ -224,4 +224,5 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### Example 
 --- 
-For an example go to `file`-->`data library`-->`ANOVA`-->`Erotic Pictures and Love`.
+For an example go to `file`-->`data library`-->`ANOVA`-->`Erotic Pictures and Love`. 
+For more details about ANOVA in JASP, watch this [video](https://www.youtube.com/watch?v=nlAhWQmG5Iw&feature=youtu.be). 
