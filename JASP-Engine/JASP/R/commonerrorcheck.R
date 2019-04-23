@@ -550,7 +550,7 @@
   }
   idx <- which(lower.tri(dataset, diag = FALSE), arr.ind = TRUE) # index for the lower triangle of the matrix
   bad <- (1 - abs(dataset[idx])) <= sqrt(.Machine$double.eps)    # check if correlations are awfully close to -1 or 1
-  if (any(bad) == TRUE) {
+  if (identical(any(bad), TRUE)) {
     pairsIdxCol <- idx[bad, , drop = FALSE][, "col"] # index for colnames of pairs of highly correlated variables
     pairsIdxRow <- idx[bad, , drop = FALSE][, "row"] # index for rownames of pairs of highly correlated variables
     vars <- list("var1" = .unvf(colnames(dataset)[pairsIdxCol]), "var2" = .unvf(rownames(dataset)[pairsIdxRow]))
@@ -597,10 +597,10 @@
     corFun <- stats::cor
 
   if (is.null(grouping)) {
-    dataset <- list(dataset)
+    dataset <- list(dataset[, .v(target)])
   } else {
-    groupingData <- dataset[[.v(grouping)]]
-    dataset[[.v(grouping)]] <- NULL
+    groupingData <- dataset[, .v(grouping)]
+    dataset <- dataset[, .v(target)]
     dataset <- split(dataset, groupingData)
   }
   for (d in seq_along(dataset)) {
