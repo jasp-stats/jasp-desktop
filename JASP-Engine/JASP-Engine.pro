@@ -121,7 +121,7 @@ OTHER_FILES  += \
 	JASP/R/binomialtest.R \
 	JASP/R/binomialtestbayesian.R \
 	JASP/R/common.R \
-	JASP/R/commonbayesianlinearmodels.R \
+	JASP/R/commonAnovaBayesian.R \
 	JASP/R/commonerrorcheck.R \
 	JASP/R/commonglm.R \
 	JASP/R/commonmessages.R \
