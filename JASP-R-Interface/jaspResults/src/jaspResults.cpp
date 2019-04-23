@@ -409,8 +409,24 @@ void jaspResults::progressbarTick()
 	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progress == 100)
 	{
 		send();
-		_progressbarLastUpdateTime = curTime;
+		
+		if (progress == 100)
+			resetProgressbar();
+		else
+			_progressbarLastUpdateTime = curTime;
 	}
+}
+
+void jaspResults::resetProgressbar()
+{
+	_progressbarExpectedTicks      = 100;
+	_progressbarLastUpdateTime     = -1;
+	_progressbarTicks              = 0;
+	_progressbarBetweenUpdatesTime = 500;
+	_sendingFeedbackLastTime       = -1;
+	_sendingFeedbackInterval       = 500;
+	
+	_response["progress"] = -1;
 }
 
 //implementation here in jaspResults.cpp to make sure we have access to all constructors

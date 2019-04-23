@@ -57,6 +57,7 @@ public:
 
 	void startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs = 500);
 	void progressbarTick();
+	void resetProgressbar();
 
 	static Rcpp::RObject	getObjectFromEnv(std::string envName);
 	static void				setObjectInEnv(std::string envName, Rcpp::RObject obj);
