@@ -119,5 +119,6 @@
         <file>icons/large-arrow-right.png</file>
         <file>icons/meta-analysis.svg</file>
         <file>icons/sem-latreg.svg</file>
+        <file>icons/edit-pencil.svg</file>
     </qresource>
 </RCC>

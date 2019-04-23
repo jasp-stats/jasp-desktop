@@ -44,10 +44,13 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	Analysis *analysis;
 
+
+
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
 		QString			name				= QString::fromStdString(analysisData["name"].asString()),
-						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
+						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
+						title				= QString::fromStdString(analysisData.get("title", "").asString());
 
 		// An old JASP file may still have references to the old Common module.
 		if (module == "Common")
@@ -58,14 +61,17 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
-		QString			title			= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+
+		if(title == "")
+			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
 						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
 	}
 	else
 	{
+		std::string title			= analysisData.get("title", "").asString();
 		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-				analysis			= create(analysisEntry, id, status, false);
+				analysis			= create(analysisEntry, id, status, false, title);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
 		if(!dynMod->loaded())
@@ -89,9 +95,9 @@ Analysis* Analyses::create(const QString &module, const QString &name, const QSt
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title)
 {
-	Analysis *analysis = new Analysis(this, id, analysisEntry);
+	Analysis *analysis = new Analysis(this, id, analysisEntry, title);
 
 	analysis->setStatus(status);
 	analysis->setResults(analysisEntry->getDefaultResults());

@@ -557,3 +557,6 @@ RESOURCES += \
 
    unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
+
+DISTFILES += \
+    resources/CC-Attributions.txt

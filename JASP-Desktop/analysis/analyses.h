@@ -55,10 +55,10 @@ public:
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
+	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "");
 
 	Analysis*	create(const QString &module, const QString &name, const QString &title)	{ return create(module, name, title, _nextId++, AppInfo::version);		}
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry)		{ return create(analysisEntry, _nextId++);						}
+	Analysis*	create(Modules::AnalysisEntry * analysisEntry)								{ return create(analysisEntry, _nextId++);						}
 
 	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();

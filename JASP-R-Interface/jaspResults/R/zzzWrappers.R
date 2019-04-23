@@ -102,24 +102,24 @@ jaspResultsR <- R6Class(
 		initialize = function(x) {
 			if (!missing(x) && isS4(x) && inherits(x, "Rcpp_jaspResultsClass"))
 				private$jaspObject = x
-			else if (inherits(x, "jaspResultsR"))
-				# this if is needed because JASP and R call jasprResults in different ways
+      else if (inherits(x, "jaspResultsR")) # this if is needed because JASP and R call jasprResults in different ways
 				private$jaspObject = private$getJaspObject(x)
 			else
 			  stop("You should not create a new jaspResultsR object!")
 		},
+
 		addCitation = function(x) {
 			if (!is.character(x)) 
 				stop("Citation must be a character (vector)")
 			for (i in seq_along(x))
 				private$jaspObject$addCitation(x[i])
 		},
+
 		startProgressbar = function(ntick, updateMs) {
-			if (missing(updateMs))
-				private$jaspObject$startProgressbar(ntick)
-			else 
-				private$jaspObject$startProgressbar(ntick, updateMs)
+      if (missing(updateMs))  private$jaspObject$startProgressbar(ntick)
+      else            				private$jaspObject$startProgressbar(ntick, updateMs)
 		},
+
 		progressbarTick = function()	private$jaspObject$progressbarTick(),
 		print           = function()	private$jaspObject$print(),
 		printHtml       = function()	private$jaspObject$printHtml(),
@@ -164,8 +164,7 @@ jaspResultsR <- R6Class(
 		getKeepList             = function()        private$jaspObject$getKeepList(),
 		complete                = function()        private$jaspObject$complete(),
 		getPlotObjectsForState  = function()        private$jaspObject$getPlotObjectsForState(),
-		getOtherObjectsForState = function()        private$jaspObject$getOtherObjectsForState(),
-		setRelativePathKeep     = function(x)       private$jaspObject$relativePathKeep <- x
+    getOtherObjectsForState = function()        private$jaspObject$getOtherObjectsForState()
 	)
 )
 
@@ -176,7 +175,7 @@ jaspResultsR <- R6Class(
 `[[.jaspResultsR`   <- function(x, field)
 	x$.__enclos_env__$private$getField(field)
 	
-print.jaspResultsR <- function(x, ...) 	# TODO: make this a pretty summary print
+print.jaspResultsR <- function(x, ...) 	# TODO: make this a pretty summary print (But please do this in std::string jaspObject::toString() and the overrides)
 	x$print()
 
 jaspObjR <- R6Class(

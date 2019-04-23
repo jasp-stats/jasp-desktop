@@ -29,11 +29,18 @@
 
 #include <QDebug>
 
-Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data)
-	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(title), _version(version), _analyses(analyses)
+Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
+	QObject(analyses),
+	_options(new Options()),
+	_id(id),
+	_module(module),
+	_name(name),
+	_title(title),
+	_version(version),
+	_analyses(analyses)
 {
 	if (data)
-		// We cannot set the options now because it needs sometimes more information from the QML file
+		// We cannot set the options now because it sometimes needs more information from the QML file
 		// (especially with OptionsTable that needs a template information).
 		_optionsDotJASP = *data;
 
@@ -41,9 +48,16 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry)
-	: QObject(analyses), _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()),
-	  _moduleData(analysisEntry), _dynamicModule(_moduleData->dynamicModule()), _version(AppInfo::version), _analyses(analyses)
+Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title) :
+	  QObject(analyses),
+	  _options(new Options()),
+	  _id(id),
+	  _name(analysisEntry->title()),
+	  _title(title == "" ? analysisEntry->title() : title),
+	  _version(AppInfo::version),
+	  _moduleData(analysisEntry),
+	  _dynamicModule(_moduleData->dynamicModule()),
+	  _analyses(analyses)
 {
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
 	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
@@ -335,9 +349,23 @@ void Analysis::setName(std::string name)
 
 void Analysis::setHelpFile(QString helpFile)
 {
- if (_helpFile == helpFile)
-	 return;
+	if (_helpFile == helpFile)
+		return;
 
- _helpFile = helpFile;
- emit helpFileChanged(_helpFile);
+	_helpFile = helpFile;
+	emit helpFileChanged(_helpFile);
+}
+
+void Analysis::setTitle(std::string title)
+{
+	if(title == "")
+		title = _name;
+
+	if (_title == title)
+		return;
+
+	_title = title;
+	emit titleChanged();
+
+	optionsChangedHandler();
 }

@@ -749,9 +749,13 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 	switch(MessageForwarder::showSaveDiscardCancel("Workspace has changes", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
 	{
 	case MessageForwarder::DialogResponse::Save:
-		_fileMenu->save();
-		_savingForClose = true;
-		[[clang::fallthrough]];
+	{
+		FileEvent * saveEvent = _fileMenu->save();
+
+		if(saveEvent->isCompleted())	return saveEvent->successful();
+		else							_savingForClose = true;
+	}
+	[[clang::fallthrough]];
 
 	case MessageForwarder::DialogResponse::Cancel:		return false;
 

@@ -21,42 +21,39 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 {
     if (identical(.Platform$OS.type, "windows"))
             compiler::enableJIT(0)
-    dataKey <- fromJSON(dataKey)
-    options <- fromJSON(options)
+
+    dataKey     <- fromJSON(dataKey)
+    options     <- fromJSON(options)
     resultsMeta <- fromJSON(resultsMeta)
-    stateKey <- fromJSON(stateKey)
+    stateKey    <- fromJSON(stateKey)
 
 
   if (base::exists(".requestStateFileNameNative")) {
-    location <- .fromRCPP(".requestStateFileNameNative")
-    root <- location$root
-    base::Encoding(root) <- "UTF-8"
-    oldwd <- getwd()
+    location              <- .fromRCPP(".requestStateFileNameNative")
+    root                  <- location$root
+    base::Encoding(root)  <- "UTF-8"
+    oldwd                 <- getwd()
     setwd(root)
     on.exit(setwd(oldwd))
   }
 
-  analysis <- eval(parse(text=name))
+  analysis      <- eval(parse(text=name))
 
-  env <- new.env()
-  env$callback <- callback
-  env$time <- Sys.time()
-  env$i <- 1
+  env           <- new.env()
+  env$callback  <- callback
+  env$time      <- Sys.time()
+  env$i         <- 1
 
-  if (perform == "init") {
-
+  if (perform == "init")
     the.callback <- function(...) list(status="ok")
-
-  } else {
-
+  else {
     the.callback <- function(...) {
-
       t <- Sys.time()
 
       cat(paste("Callback", env$i, ":", t - env$time, "\n"))
 
-      env$time <- t
-      env$i <- env$i + 1
+      env$time  <- t
+      env$i     <- env$i + 1
 
       return(env$callback(...))
     }
@@ -65,10 +62,8 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
   dataset <- NULL
   if (! is.null(dataKey)) {
     cols <- .getDataSetCols(dataKey, options)
-    if (perform == "run")
-      dataset <- do.call(.readDataSetToEnd, cols)
-    else
-      dataset <- do.call(.readDataSetHeader, cols)
+    if (perform == "run") dataset <- do.call(.readDataSetToEnd, cols)
+    else                  dataset <- do.call(.readDataSetHeader, cols)
   }
 
   oldState <- NULL
@@ -84,12 +79,11 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
     }
 
-    results <- list()
-    results[["results"]] <- emptyResults
+    results                         <- list()
+    results[["results"]]            <- emptyResults
+    results[["status"]]             <- "inited"
     results[["results"]][["title"]] <- title
-    results[["status"]] <- "inited"
-
-    json <- try({ toJSON(results) })
+    json                            <- try({ toJSON(results) })
 
     if (inherits(results, "try-error"))
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
@@ -165,7 +159,9 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
       results <- .addCitationToResults(results)
     }
 
+    results[["results"]][["title"]] <- title
 		json <- try({ toJSON(results) })
+
     if (class(json) == "try-error")
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
     else
@@ -177,23 +173,24 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
-
-	if (identical(.Platform$OS.type, "windows"))
+  if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 
+  jaspResultsCPP        <- jaspResultsModule$create_cpp_jaspResults(name, .retrieveState())
+  jaspResults           <- jaspResultsR$new(jaspResultsCPP)
+  jaspResultsCPP$title  <- title
 
-  jaspResults <- jaspResultsR$new(jaspResultsModule$create_cpp_jaspResults(name, .retrieveState()))
-  jaspResults$.__enclos_env__$private$setOptions(options)
+  jaspResultsCPP$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)
   options     <- rjson::fromJSON(options)
   stateKey    <- rjson::fromJSON(stateKey)
 
   if (base::exists(".requestStateFileNameNative")) {
-    location <- .fromRCPP(".requestStateFileNameNative")
-    root <- location$root
-    base::Encoding(root) <- "UTF-8"
-    oldwd <- getwd()
+    location              <- .fromRCPP(".requestStateFileNameNative")
+    root                  <- location$root
+    base::Encoding(root)  <- "UTF-8"
+    oldwd                 <- getwd()
     setwd(root)
     on.exit(setwd(oldwd))
   }
@@ -202,7 +199,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
   dataset <- NULL
   if (! is.null(dataKey)) {
-    cols <- .getDataSetCols(dataKey, options)
+    cols    <- .getDataSetCols(dataKey, options)
     dataset <- do.call(.readDataSetToEnd, cols)
   }
 
@@ -216,8 +213,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
     errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", analysisResult$message, "\" } }", sep="")
 
-    jaspResults$.__enclos_env__$private$setErrorMessage(analysisResult$message)
-    jaspResults$.__enclos_env__$private$send()
+    jaspResultsCPP$setErrorMessage(analysisResult$message)
+    jaspResultsCPP$send()
 
     return(errorResponse)
 
@@ -233,22 +230,22 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
     errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 
-    jaspResults$.__enclos_env__$private$setErrorMessage(errorMessage)
-    jaspResults$.__enclos_env__$private$send()
+    jaspResultsCPP$setErrorMessage(errorMessage)
+    jaspResultsCPP$send()
 
     return(errorResponse)
 
   }
   else
   {
-    newState <- list()
-    newState[["figures"]]         <- jaspResults$.__enclos_env__$private$getPlotObjectsForState()
-    newState[["other"]]           <- jaspResults$.__enclos_env__$private$getOtherObjectsForState()
-    jaspResults$.__enclos_env__$private$setRelativePathKeep(.saveState(newState)$relativePath)
+    newState                        <- list()
+    newState[["figures"]]           <- jaspResultsCPP$getPlotObjectsForState()
+    newState[["other"]]             <- jaspResultsCPP$getOtherObjectsForState()
+    jaspResultsCPP$relativePathKeep <- .saveState(newState)$relativePath
 
-    returnThis <- list(keep=jaspResults$.__enclos_env__$private$getKeepList()) #To keep the old keep-code functional we return it like this
+    returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
 
-    jaspResults$.__enclos_env__$private$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
+    jaspResultsCPP$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
 
 
   json <- try({ toJSON(returnThis) })
@@ -263,20 +260,19 @@ initEnvironment <- function() {
 	Sys.setlocale("LC_CTYPE", "UTF-8")
 	packages <- c("BayesFactor") # Add any package that needs pre-loading
 
-	for (package in packages) {
-		if (base::isNamespaceLoaded(package) == FALSE) {
+  for (package in packages)
+    if (base::isNamespaceLoaded(package) == FALSE)
 			try(base::loadNamespace(package), silent=TRUE)
-		}
-	}
+
+
 
 	if (base::exists(".requestTempRootNameNative")) {
 		paths <- .fromRCPP(".requestTempRootNameNative")
 		root = paths$root
 		base::Encoding(root) <- "UTF-8"
 		setwd(root)
-	} else {
+  } else
 		print("Could not set the working directory!")
-	}
 }
 
 

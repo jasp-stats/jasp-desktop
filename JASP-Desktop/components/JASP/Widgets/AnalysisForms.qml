@@ -137,7 +137,6 @@ FocusScope
 						{
 							myIndex:			index
 							myID:				model.analysisID
-							analysisTitle:		model.displayText
 							myAnalysis:         model.analysis
 							formQmlUrl:			model.formPath
 						}

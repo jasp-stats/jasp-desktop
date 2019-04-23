@@ -114,7 +114,7 @@ FileEvent *FileMenu::open(const QString &path)
 
 FileEvent *FileMenu::save()
 {
-	FileEvent *event;
+	FileEvent *event = nullptr;
 
 	if (_currentFileType != Utils::FileType::jasp || _currentFileReadOnly)
 	{

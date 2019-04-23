@@ -80,7 +80,7 @@ FocusScope
 			acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
 			hoverEnabled:				true
 			cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-			onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.forceActiveFocus(); } //else mouse.accepted = false;
+			onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.forceActiveFocus(); filterButtonRoot.clicked(); }
 			visible:					filterButtonRoot.enabled
 			//propagateComposedEvents:	true
 		}

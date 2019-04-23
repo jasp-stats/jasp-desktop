@@ -437,16 +437,16 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::stri
 	auto parts = stringUtils::splitString(codedReference, '~');
 
 	std::string moduleName		= parts.size() > 1 ? parts[0] : "",
-				analysisFunc	= parts.size() > 1 ? parts[1] : parts[0];
+				analysisTitle	= parts.size() > 1 ? parts[1] : parts[0];
 
 	if(!moduleName.empty() && _name != moduleName)
 		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
 
 	for (AnalysisEntry * menuEntry : _menuEntries)
-		if (menuEntry->isAnalysis() && menuEntry->function() == analysisFunc)
+		if (menuEntry->isAnalysis() && menuEntry->title() == analysisTitle)
 			return menuEntry;
 
-	throw Modules::ModuleException(_name, "Cannot find analysis function: " + analysisFunc);
+	throw Modules::ModuleException(_name, "Cannot find analysis with title " + analysisTitle + "...");
 }
 
 void DynamicModule::setInstallLog(std::string installLog)
