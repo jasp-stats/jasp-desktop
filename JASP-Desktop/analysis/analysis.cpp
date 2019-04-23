@@ -113,7 +113,12 @@ void Analysis::imageEdited(const Json::Value & results)
 
 void Analysis::reload()
 {
-	_analyses->reload(this);
+    _analyses->reload(this);
+}
+
+void Analysis::exportResults()
+{
+    emit _analyses->analysesExportResults();
 }
 
 void Analysis::refresh()

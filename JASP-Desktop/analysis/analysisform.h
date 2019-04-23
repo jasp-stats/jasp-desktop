@@ -83,6 +83,7 @@ public:
 	Options*	options() { return _options; }
 
 	Q_INVOKABLE void reset();
+    Q_INVOKABLE void exportResults();
 
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);

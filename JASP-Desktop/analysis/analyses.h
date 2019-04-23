@@ -132,6 +132,7 @@ signals:
 	void visibleChanged(				bool		visible);
 	void emptyQMLCache();
 	void dataSetChanged();
+    void analysesExportResults();
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);

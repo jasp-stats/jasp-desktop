@@ -38,6 +38,7 @@ public:
 	void addRecentFolder(const QString &path);
 
 	ComputerListModel * listModel() const { return _computerListModel; }
+    void analysesExportResults();
 
 protected:
 	//bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
