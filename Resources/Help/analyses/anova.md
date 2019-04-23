@@ -18,7 +18,12 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
 #### Model: 
 - Components and model terms 
     - Components: All the independent variables that can be included in the model. 
-    - Model terms: The independent variables included in the model. By default all the main effects and interaction effects of the specified independent variables are included in the model.  
+    - Model terms: The independent variables included in the model. By default all the main effects and interaction effects of the specified independent variables are included in the model. 
+<details>
+	<summary><b>Add interaction </b></summary>
+	<img src="gif/interaction_effect_anova.gif"/>
+</details>
+
 - Sum of Squares: There are different types of the Sum of Squares. The choice of the type is important when there is more than one factor, and when the data is unbalanced. In an unbalanced design the different levels of the independent variable do not contain an equal number of observations (e.g., one group contains more obsevations than another group). In this scenario the Sum of Squares type can influence the results.
     - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, containing the order in the model. The results depend on the order of the factors in the model. This is important to consider when the model contains more than one factor. 
     - Type II: Hierarchical/Partially sequential sum of squares. It is the reduction of error when a factor is added to the model that includes all the other factors, except the factors where the added factor is part of. Therefore, it does not include interactions. Langsrud (2003) advises to apply this type for an ANOVA with unbalanced data. 
@@ -32,7 +37,12 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
     - Welch: If the homogeneity assumption is not met, this correction could be used. This correction is only available for one-way ANOVA. - Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the data are normally distributed and linear.  
 
 #### Contrasts: 
-For every independent variable a specific contrast can be selected by clicking on `none` in the right column.   
+For every independent variable a specific contrast can be selected by clicking on `none` in the right column. 
+<details>
+	<summary><b> </b></summary>
+	<img src="gif/contrasts_anova.gif"/>
+</details>
+ 
 - Factors: These are the independent variables included in the analysis (i.e., the variables placed in the `Fixed Factors` box).  
 - Contrasts: Contrasts enable the analysis of planned comparisons. There are different contrasts that allow for different types of comparisons.
     - none: By selecting this option, no contrasts are calculated. This option is selected by default. 
@@ -87,7 +97,12 @@ To create a descriptive plot, place the independent variable on the horizontal a
     - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this [blogpost](https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/). 
 
 #### Simple Main Effects: 
-When the results contain a significant interaction, the main effects can be misleading. To solve this, the simple main effects can be calculated. The simple main effects represent the effect of one independent variable for each level of the other independent variable, by conducting an ANOVA for each subset of the data as specified by the moderator variables.  
+When the results contain a significant interaction, the main effects can be misleading. To solve this, the simple main effects can be calculated. The simple main effects represent the effect of one independent variable for each level of the other independent variable, by conducting an ANOVA for each subset of the data as specified by the moderator variables. 
+<details>
+	<summary><b> </b></summary>
+	<img src="gif/SimpleMainEffects_anova.gif"/>
+</details>
+
 - Factors: This box contains all the independent variables included in the analysis. 
 - Simple effect factor: In this box the independent variable can be placed to determine the effect of this variable. 
 - Moderator factor 1: In this box the independent variable that will represent the different levels can be placed. 
