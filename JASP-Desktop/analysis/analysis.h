@@ -126,6 +126,7 @@ public:
 
 			void		refresh();
 			void		reload();
+            void        exportResults();
 	virtual void		abort();
 
 			Json::Value asJSON()		const;

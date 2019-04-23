@@ -353,7 +353,12 @@ void AnalysisForm::addListView(QMLListView* listView, const map<QString, QString
 void AnalysisForm::reset()
 {
 	_analysis->clearOptions();
-	_analysis->reload();
+    _analysis->reload();
+}
+
+void AnalysisForm::exportResults()
+{
+    _analysis->exportResults();
 }
 
 void AnalysisForm::_setErrorMessages()

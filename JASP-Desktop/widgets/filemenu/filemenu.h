@@ -109,6 +109,7 @@ public slots:
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
 	void dataColumnAdded(QString columnName);
+    void analysesExportResults();
 
 private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }

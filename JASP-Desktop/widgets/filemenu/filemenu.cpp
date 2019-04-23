@@ -341,7 +341,12 @@ void FileMenu::dataColumnAdded(QString columnName)
 		event->setPath(_currentDataFile->getCurrentFilePath());
 
 		dataSetIORequestHandler(event);
-	}
+    }
+}
+
+void FileMenu::analysesExportResults()
+{
+    _computer->analysesExportResults();
 }
 
 void FileMenu::fileOperationClicked(const ActionButtons::FileOperation action)
