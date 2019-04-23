@@ -22,7 +22,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 
 	dependent.variable <- unlist(options$dependent)
-	wls.weight <- unlist(options$wlsWeight)
+	wls.weight <- unlist(options$wlsWeights)
 	independent.variables <- NULL
 	to.be.read.variables.factors <- NULL
 	if (length(options$covariates) > 0){
@@ -44,8 +44,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (is.null(dataset)) {
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(	columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric,
-											exclude.na.listwise=c(to.be.read.variables.numeric, to.be.read.variables.factors)	)
+			dataset <- .readDataSetToEnd(	columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
 		} else {
 			dataset <- .readDataSetHeader(columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
 		}
@@ -55,94 +54,23 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	###		    DATA QUALITY CHECK  	 ##
 	#######################################
 
-	list.of.errors <- list()
-
-
-	if (perform == "run" && dependent.variable != "") {
-
-		#check weights
-		if (options$wlsWeight != "") {
-
-			weight.base64 <- .v(wls.weight)
-			min.weight <- min(dataset[[ weight.base64 ]])
-
-			if (is.finite(min.weight)) {
-
-				if (min.weight <= 0) {
-
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- there are nonpositive weights encountered"
-				}
-
-			} else {
-
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- the weights contain infinities"
-			}
-		}
-
-		#check for data
-		number.of.rows <- length( dataset[[ .v(dependent.variable) ]])
-		number.of.columns <- 1 + length(independent.variables)
-		x <- matrix(0, number.of.rows, number.of.columns)
-		x[,1] <- as.numeric( dataset[[ .v(dependent.variable) ]])
-
-		if (number.of.columns > 1){
-
-			for (i in 1:(number.of.columns - 1)) {
-				x[,i+1] <- as.numeric( dataset[[ .v(independent.variables[ i ]) ]])
-			}
-		}
-
-		#check on number of valid observations.
-		n.valid.cases <- nrow(x)
-
-		if (n.valid.cases == 0) {
-
-			list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are
-			excluded)"
-		}
-
-		#check for variance in variables.
-		number.of.values.vars <- sapply(1:ncol(x),function(i){length(unique(x[,i]))})
-		indicator <- which(number.of.values.vars <= 1)
-
-		if (length(indicator) != 0 ){
-
-			if (number.of.values.vars[1] <= 1){
-
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- the dependent variable contains all the same value (the variance is zero)"
-
-			} else {
-
-				if (length(indicator) == 1){
-
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", independent.variables[indicator-1] ," contain(s) all the
-						same value (the variance is zero)",sep="")
-
-				} else {
-
-					var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", var.names, " contain(s) all the same value (their variance
-						is zero)", sep="")
-				}
-			}
-		}
-
-		#check for Inf's in dataset.
-		column.sums <- colSums(x,na.rm=TRUE)
-		indicator <- which(is.infinite(column.sums))
-
-		if (length(indicator) > 0 ){
-
-			if ( 1%in%indicator){
-
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- "Least squares regression model is undefined -- the dependent variable contains infinity"
-
-			} else {
-
-				var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- paste("Least squares regression model undefined -- the independent variable(s) ",var.names, " contain(s) infinity",sep="")
-			}
-		}
+	if (perform == "run") {
+	  
+	  if (dependent.variable != "") {
+  		.hasErrors(dataset, type = c("infinity", "variance", "observations"), 
+  								all.target = list.variables, observations.amount = "< 2",
+  								exitAnalysisIfErrors = TRUE)
+  								
+  		#check weights
+  		if (options$wlsWeights != "")
+  			.hasErrors(dataset, type = c("infinity", "limits", "observations"), 
+  									all.target = options$wlsWeights, limits.min = 1, observations.amount = "< 2",
+  	  							exitAnalysisIfErrors = TRUE)
+	  }
+	  
+	  #remove NA listwise
+	  dataset <- dataset[complete.cases(dataset), , drop=FALSE]
+	  
 	}
 
 	#######################################
@@ -150,6 +78,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 
 	results <- list()
+	list.of.errors <- list()
 
 	.meta <-  list(
 		list(name = "title", type = "title"),
