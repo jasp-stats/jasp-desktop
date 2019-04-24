@@ -47,6 +47,12 @@ Form
             name:  "dependent"
             allowedColumns: []
         }
+        AssignedVariablesList
+        {
+            title: "Confounders"
+            name:  "confounds"
+            allowedColumns: []
+        }
     }
 
 
