@@ -1,5 +1,6 @@
- # ANOVA 
----
+ANOVA 
+==========================
+
 ANOVA allows the user to analyze the difference among three, or more, group means.
 
 ### Assumptions 
