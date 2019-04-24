@@ -59,11 +59,7 @@ Form
 			CheckBox
 			{
 				name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
-				PercentField
-				{
-					name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval");
-					defaultValue: 95
-				}
+				CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
 				DropDown { name: "test"; label: qsTr("Test"); values: [ "z", "knha"]; }
 			}
 			CheckBox { name: "regressionCoefficientsCovarianceMatrix"; text: qsTr("Covariance matrix") }

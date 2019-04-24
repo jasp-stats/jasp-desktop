@@ -125,7 +125,7 @@ Form
 			CheckBox
 			{
 				name: "coeffCI";				label: qsTr("Confidence intervals")
-				PercentField {	name: "coeffCIInterval"; label: "Interval"; defaultValue: 95	}
+				CIField {	name: "coeffCIInterval"; label: "Interval" }
 				CheckBox {		name: "coeffCIOR";		label: qsTr("Odds ratio scale")		}
 			}
 			CheckBox { name: "robustSEOpt";		label: qsTr("Robust standard errors")		}
@@ -181,7 +181,7 @@ Form
 			CheckBox
 			{
 				name: "estimatesPlotsOpt"; label: qsTr("Display conditional estimates plots")
-				PercentField {	name: "estimatesPlotsCI";	label: qsTr("Confidence interval"); defaultValue: 95 }
+				CIField {	name: "estimatesPlotsCI";	label: qsTr("Confidence interval") }
 				CheckBox {		name: "showPoints";			label: qsTr("Show data points")						}
 			}
 		}

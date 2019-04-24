@@ -48,7 +48,7 @@ Form
         }
         CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
         CheckBox { name: "descriptives";       label: qsTr("Descriptives") }
-        PercentField { name: "credibleInterval";	label: qsTr("Credible interval"); defaultValue: 95 }
+        CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
     }
 
     RadioButtonGroup
@@ -184,7 +184,7 @@ Form
 			{
 				name: "plotCredibleInterval"; label: qsTr("Credible interval")
 				childrenOnSameRow: true
-				PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95 }
+				CIField { name: "plotCredibleIntervalInterval" }
 			}
 		}
 	}

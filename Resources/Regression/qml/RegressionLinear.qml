@@ -110,7 +110,7 @@ Form
 				{
 					name: "regressionCoefficientsConfidenceIntervals"; label: qsTr("Confidence intervals")
 					childrenOnSameRow: true
-					PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; defaultValue: 95 }
+					CIField { name: "regressionCoefficientsConfidenceIntervalsInterval" }
 				}
 				CheckBox { name: "regressionCoefficientsCovarianceMatrix"; label: qsTr("Covariance matrix") }
 			}

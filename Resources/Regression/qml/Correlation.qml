@@ -46,7 +46,7 @@ Form
 		CheckBox
 		{
 			name: "confidenceIntervals";		label: qsTr("Confidence intervals")
-			PercentField { name: "confidenceIntervalsInterval"; label: qsTr("Interval"); defaultValue: 95 }
+			CIField { name: "confidenceIntervalsInterval"; label: qsTr("Interval") }
 		}
 		CheckBox { name: "VovkSellkeMPR";		label: qsTr("Vovk-Sellke maximum p-ratio")			}
 	}

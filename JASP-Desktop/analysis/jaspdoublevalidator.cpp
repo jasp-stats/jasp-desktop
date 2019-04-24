@@ -26,6 +26,10 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 		// allow empty field or standalone minus sign
 		return QValidator::Intermediate;
 	}
+
+	if (s.contains("-") && bottom() >= 0)
+		return QValidator::Invalid; 
+	
 	// check length of decimal places
 	QChar point = locale().decimalPoint();
 	if (s.indexOf(point) != -1)

@@ -13,6 +13,7 @@
     "IntegerField",
     "DoubleField",
     "PercentField",
+    "CIField",
     "TextField",
     "CheckBox",
     "Slider",
@@ -120,24 +121,36 @@ extractData <- function (element, ...) {
 }
 
 
-extractData.IntegerField <- function(element) {
+extractData.IntegerField <- function(element, defaultValue = 0) {
   regMatch <- "default.*?:([+-]?([0-9]*[.])?[0-9]+)"
   matchTable <- stringr::str_match(element, regMatch)
   default <- as.numeric(matchTable[2])
+  if (is.na(default)) {
+    default <- defaultValue
+  }
   extractData.default(element, default)
 }
 
 
-extractData.DoubleField <- function(element) {
-  extractData.IntegerField(element)
+extractData.DoubleField <- function(element, defaultValue = 0) {
+  extractData.IntegerField(element, defaultValue)
 }
 
 
-extractData.PercentField <- function(element) {
+extractData.PercentField <- function(element, defaultValue = 50) {
   regMatch <- "default.*?:([+-]?([0-9]*[.])?[0-9]+)"
   matchTable <- stringr::str_match(element, regMatch)
-  default <- as.numeric(matchTable[2]) / 100
+  default <- as.numeric(matchTable[2])
+  if (is.na(default)) {
+    default <- defaultValue
+  }
+  default <- default / 100
   extractData.default(element, default)
+}
+
+
+extractData.CIField <- function(element, defaultValue = 95) {
+  extractData.PercentField(element, defaultValue)
 }
 
 

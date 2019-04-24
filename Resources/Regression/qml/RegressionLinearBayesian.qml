@@ -63,12 +63,11 @@ Form {
 
 		}
 
-		PercentField
+		CIField
 		{
 			name: "posteriorSummaryPlotCredibleIntervalValue"
 			label: qsTr("Credible interval")
 			enabled: postSummaryTable.checked || postSummaryPlot.checked
-			defaultValue: 95
 		}
 	}
 
