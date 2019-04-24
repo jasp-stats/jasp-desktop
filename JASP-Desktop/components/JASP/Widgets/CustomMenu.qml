@@ -189,7 +189,7 @@ Item
 						{
 							id					: menuItemText
 							text				: displayText
-							font				: Theme.fontLabel
+							font				: Theme.fontGroupTitle
 							anchors.left		: menuImageSource ? menuItemImage.right : menuItem.left
 							anchors.leftMargin	: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter

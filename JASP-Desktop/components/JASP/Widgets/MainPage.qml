@@ -226,6 +226,7 @@ Item
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)					}
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)	}
 					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)}
+					function analysisTitleChanged(id, title)			{ resultsJsInterface.analysisTitleChanged(id, title)		}
 
 
 					function showAnalysesMenu(options)

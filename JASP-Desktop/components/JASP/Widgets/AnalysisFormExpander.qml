@@ -80,7 +80,7 @@ Rectangle
 				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
-			height:			expanderRectangle.height / 1.5
+			height:			analysisTitle.height * 0.88 //expanderRectangle.height / 1.5
 			width:			height
 			source:			"qrc:/icons/large-arrow-right.png"
 			sourceSize
@@ -88,6 +88,7 @@ Rectangle
 				width:	expanderIcon.width * 2
 				height:	expanderIcon.height * 2
 			}
+
 		}
 
 		Item

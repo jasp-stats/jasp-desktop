@@ -86,7 +86,7 @@ Rectangle
 			anchors.top					: backgroundImage.bottom
 			anchors.topMargin:			5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
-			font						: Theme.font
+			font						: Theme.fontRibbon
 			renderType					: Text.QtRendering //Because this might be transform and be ugly if done natively
 		}
 

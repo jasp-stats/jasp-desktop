@@ -28,7 +28,7 @@ Item {
 		text:			headertext
 
 		anchors.fill:	parent
-		font:			Theme.fontLabel
+		font:			Theme.fontGroupTitle
 		color:			Theme.black
 	}
 

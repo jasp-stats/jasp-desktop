@@ -527,3 +527,10 @@ void Analyses::setVisible(bool visible)
 		unselectAnalysis();
 }
 
+void Analyses::analysisTitleChanged(int id, QString title)
+{
+	Analysis * analysis = get(id);
+
+	if(analysis != nullptr)
+		analysis->setTitleQ(title);
+}

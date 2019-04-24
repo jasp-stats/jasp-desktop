@@ -68,6 +68,7 @@ signals:
 	Q_INVOKABLE void analysisSaveImage(int id, QString options);
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 	Q_INVOKABLE void analysisSelected(int id);
+	Q_INVOKABLE void analysisTitleChanged(int id, QString title);
 	Q_INVOKABLE void removeAnalysisRequest(int id);
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();

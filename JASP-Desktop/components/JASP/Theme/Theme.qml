@@ -121,13 +121,25 @@ QtObject {
 	property font font
 	font.bold:		false
 	font.underline:	false
-	font.pixelSize:	14 * uiScale
+	font.pixelSize:	12 * uiScale
 	font.family:	"SansSerif"
+
+	property font fontRibbon
+	fontRibbon.bold:		false
+	fontRibbon.underline:	false
+	fontRibbon.pixelSize:	14 * uiScale
+	fontRibbon.family:	"SansSerif"
+
+	property font fontGroupTitle
+	fontGroupTitle.bold:		true
+	fontGroupTitle.underline:	false
+	fontGroupTitle.pixelSize:	14 * uiScale
+	fontGroupTitle.family:		"SansSerif"
 
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false
-	fontLabel.pixelSize:	16 * uiScale
+	fontLabel.pixelSize:	18 * uiScale
 	fontLabel.family:		"SansSerif"
 
 	readonly property color borderColor:					gray

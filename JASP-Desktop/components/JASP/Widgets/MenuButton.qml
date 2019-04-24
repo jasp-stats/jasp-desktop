@@ -56,14 +56,17 @@ RectangularButton
 
 	Image
 	{
-		anchors.verticalCenter: parent.verticalCenter
-		anchors.right: parent.right
-		anchors.rightMargin: Theme.generalAnchorMargin
-		height: Theme.subMenuIconHeight
-		width: height
-		source: "qrc:/icons/large-arrow-right.png"
-		visible: hasSubMenu
-		opacity: enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
+		anchors.verticalCenter:	parent.verticalCenter
+		anchors.right:			parent.right
+		anchors.rightMargin:	Theme.generalAnchorMargin
+		height:					Theme.subMenuIconHeight
+		width:					height
+		source:					"qrc:/icons/large-arrow-right.png"
+		visible:				hasSubMenu
+		opacity:				enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
+		smooth:					true
+		sourceSize.width:		width * 2
+		sourceSize.height:		height * 2
 	}
 
 }

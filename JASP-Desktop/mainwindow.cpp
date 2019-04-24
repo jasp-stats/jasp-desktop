@@ -216,6 +216,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChanged,			_analyses,				&Analyses::analysisTitleChanged								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
@@ -1093,12 +1094,11 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 void MainWindow::analysesCountChangedHandler()
 {
 	setAnalysesAvailable(_analyses->count() > 0);
-	setPackageModified();
 }
 
 void MainWindow::setPackageModified()
 {
-	if (_package->isLoaded())
+	//if (_package->isLoaded())
 		_package->setModified(true);
 }
 
@@ -1514,7 +1514,12 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 	emit analysesAvailableChanged(_analysesAvailable);
 
 	if(!_analysesAvailable && !_package->isLoaded())
+	{
 		_resultsJsInterface->resetResults();
+		_package->setModified(false);
+	}
+	else
+		_package->setModified(true);
 }
 
 void MainWindow::resetQmlCache()

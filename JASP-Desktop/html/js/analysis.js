@@ -76,7 +76,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.viewNotes = { list: [] };
 
-		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
+		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar  jasp-title-toolbar" })
 
 		this.progressbar = new JASPWidgets.Progressbar();
 
@@ -549,6 +549,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		}
 		return($result);
+	},
+
+	editTitleClicked: function () {
+		var id = this.model.get("id");
+		this.toolbar.startEdit(function(title) { console.log("CALLBACK!"); jasp.analysisTitleChanged(id, title); } );
 	},
 
 	createChild: function (result, status, metaEntry) {
