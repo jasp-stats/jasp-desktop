@@ -1,5 +1,6 @@
-# ANCOVA 
----
+ANCOVA 
+=== 
+
 ANCOVA allows the user to analyze the difference between multiple group means, while adjusting for the effect of variables that have an influence on the dependent variable but are not part of the experimental manipulation (i.e., covariates). 
 
 ### Assumptions 
