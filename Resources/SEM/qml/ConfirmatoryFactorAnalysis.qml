@@ -34,6 +34,8 @@ Form
 	Section
 	{
 		title: qsTr("Second-order factor")
+        debug: true
+
         VariablesForm
         {
             id: secondorder
