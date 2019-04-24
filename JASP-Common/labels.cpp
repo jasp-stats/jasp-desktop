@@ -75,16 +75,26 @@ void Labels::removeValues(std::set<int> valuesToRemove)
 				_labels.end());
 }
 
-std::map<string, int> Labels::resetLabelValues()
+std::map<string, int> Labels::_resetLabelValues(int& maxValue)
 {
 	std::map<string, int> result;
-	int labelValue = 0;
+	map<int, string> &orgStringValues = getOrgStringValues();
+	map<int, string> newOrgStringValues;
+	int labelValue = 1;
 	for (Label& label : _labels)
 	{
-		label.setValue(labelValue);
+		int oldLabelValue = label.value();
+		if (orgStringValues.find(oldLabelValue) != orgStringValues.end())
+			newOrgStringValues[labelValue] = orgStringValues[oldLabelValue];
+		if (oldLabelValue != labelValue)
+			label.setValue(labelValue);
 		result[label.text()] = labelValue;
 		labelValue++;
 	}
+
+	orgStringValues.clear();
+	orgStringValues.insert(newOrgStringValues.begin(), newOrgStringValues.end());
+	maxValue = labelValue - 1;
 
 	return result;
 }
@@ -189,17 +199,7 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 	if (valuesToRemove.size() > 0)
 	{
 		removeValues(valuesToRemove);
-		maxLabelKey = 0;
-		if (_labels.size() > 0)
-		{
-			result = resetLabelValues();
-			for (const Label &label : _labels)
-			{
-				int labelValue = label.value();
-				if (labelValue > maxLabelKey)
-					maxLabelKey = labelValue;
-			}
-		}
+		result = _resetLabelValues(maxLabelKey);
 	}
 	
 	for (auto elt : valuesToAdd)
