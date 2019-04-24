@@ -70,7 +70,7 @@ If there is a significant effect of the independent variable, the analysis can b
     -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted.  
     <details>
 	<summary><b>Adjust level labels </b></summary>
-	<img src="/LabelEditing.gif"/>
+	<img src="gif/LabelEditing.gif"/>
     </details>
     
     -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The p-values are corrected with the Bonferroni and Holm methods.
