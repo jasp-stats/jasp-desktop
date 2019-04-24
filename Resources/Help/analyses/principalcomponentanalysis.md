@@ -1,5 +1,6 @@
-# Principal Component Analysis 
----
+Principal Component Analysis 
+===
+
 Principcal Component Analysis is used to represent the data in smaller components than the dataset originally consisted of. The components are chosedn such that they explain most of the variance in the original dataset. 
 
 ### Input 
