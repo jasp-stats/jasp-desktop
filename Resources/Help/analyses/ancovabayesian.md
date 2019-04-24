@@ -30,7 +30,7 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
     - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded. 
    <details>
   <summary><b> </b></summary>
-  <img src="gif/inclusion_bayes_anova.gif"/>
+  <img src="analyses/gif/inclusion_bayes_anova.gif"/>
 </details> 
 
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
@@ -40,7 +40,7 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 - Compare to best model: The models used for the analysis constructed under the option `Model` will be compared to the best model included in the analysis. 
 <details>
   <summary><b> </b></summary>
-  <img src="gif/banova_simplebestcrop.gif"/>
+  <img src="analyses/gif/banova_simplebestcrop.gif"/>
 </details>
 
 #### Model 
@@ -52,7 +52,7 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 If there is a significant effect of the independent variable when the covariate is accounted for, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
 <details>
   <summary><b> </b></summary>
-  <img src="gif/bayes_posthoc_anova.gif"/>
+  <img src="analyses/gif/bayes_posthoc_anova.gif"/>
 </details>
 
 Then it is possible to select:
