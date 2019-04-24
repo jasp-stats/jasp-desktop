@@ -9,7 +9,7 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
 - The variance of the dependent variable is the same for every group. This is called homogeneity of variances. 
 - The groups are independent. 
 
-## Input 
+### Input 
 --- 
 #### Assignment Box 
 - 'Dependent Variable': The variable of interest. Also called the outcome variable. 
