@@ -11,7 +11,7 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
 
 ## Input 
 --- 
-### Assignment Box 
+#### Assignment Box 
 - 'Dependent Variable': The variable of interest. Also called the outcome variable. 
 - Fixed Factors: The variables that are manipulated/define the different groups. Also called the independent variables.   
 - WLS Weights: Weighted Least Squares, here the variable specifying which points have more weight and are therefore considered more informative can be placed. For this last option it is important to know the weights a priori. This option is primarily used when the errors are heteroskedastic.   
