@@ -24,13 +24,12 @@ Item {
 
 	Label
 	{
-		id:headLabel
-		text: headertext
+		id:				headLabel
+		text:			headertext
 
-		anchors.fill: parent
-		font.family: "SansSerif"
-		font.pixelSize: Theme.fontLabel.pixelSize
-		color: Theme.black
+		anchors.fill:	parent
+		font:			Theme.fontLabel
+		color:			Theme.black
 	}
 
 	MenuButton
