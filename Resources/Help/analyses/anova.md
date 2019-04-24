@@ -20,7 +20,7 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
     - Components: All the independent variables that can be included in the model. 
     - Model terms: The independent variables included in the model. By default all the main effects and interaction effects of the specified independent variables are included in the model. 
 <details>
-  <summary><b> </b></summary>
+  <summary><b>Add interaction </b></summary>
   <img src="gif/interaction_effect_anova.gif"/>
 </details>
 
