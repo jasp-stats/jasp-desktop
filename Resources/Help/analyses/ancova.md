@@ -11,9 +11,9 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 - The covariate and the experiment effect have to be independent. 
 - Homogeneity of the regression slopes, meaning that the effect of the covariate on the dependent variable is not allowed to differ between groups.  
 
-## Input 
+### Input 
 --- 
-### Assignment Box 
+#### Assignment Box 
 - Dependent Variable: The variable of interest. Also called the outcome variable. 
 - Fixed Factors: The variables that are manipulated/define the different groups. Also called the independent variables.  
 - Covariates: In this box the variable that is the covariate can be placed. Covariates are continuous variables that have an influence on the dependent variable but are not part of the experimental manipulation.  
