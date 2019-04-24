@@ -32,6 +32,6 @@ TextField
     
 					inputType:			"number"
 					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals }
-					value:				Number.parseFloat(defaultValue);
+					lastValidValue:		defaultValue
 					fieldWidth:			Theme.numericFieldWidth
 }

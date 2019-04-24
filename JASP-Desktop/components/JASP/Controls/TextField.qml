@@ -35,7 +35,8 @@ JASPControl
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
-	property alias	defaultValue:		control.text
+	property string	defaultValue:		""
+	property string lastValidValue:		defaultValue
 	property int	fieldWidth:			Theme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
@@ -60,6 +61,8 @@ JASPControl
 			if (KeyNavigation.tab)
 				KeyNavigation.tab.forceActiveFocus();
 		}
+		
+		lastValidValue = control.text
 		editingFinished();
 	}
 	
@@ -97,6 +100,7 @@ JASPControl
 		TextField
 		{
 			id:						control
+			text:					textField.lastValidValue
 			//text:					textField.value //Isn't this circular? control.text: textField.value == property alias value: control.text...
 			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
@@ -121,12 +125,40 @@ JASPControl
 				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
 				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
-				border.width: 2
+				border.width: 3
 				border.color: control.acceptableInput ? "transparent" : Theme.red
 				anchors.centerIn: parent
 				opacity: debug ? .3 : 1
 				visible: textField.useExternalBorder
 				radius: Theme.jaspControlHighlightWidth
+			}
+			
+			onActiveFocusChanged: {
+				if (!control.acceptableInput)
+					text = textField.lastValidValue
+			}
+			
+			PropertyAnimation
+			{
+				id: redToNormal
+				target: textField.background
+				property: "border.color"
+				to: Theme.focusBorderColor
+				duration: 350
+				onStopped: textField.background.border.color = control.activeFocus ? Theme.focusBorderColor : "transparent"
+			}
+			
+			Keys.onReturnPressed:
+			{
+				if (!control.acceptableInput)
+				{
+					textField.background.border.color = Theme.red;
+					redToNormal.start()
+				}
+				else
+				{
+					event.accepted = false;
+				}
 			}
 		}
 		
