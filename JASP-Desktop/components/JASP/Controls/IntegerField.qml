@@ -32,7 +32,7 @@ TextField
     
 					inputType:		"integer"
 					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
-					value:			Number.parseInt(defaultValue);
+					lastValidValue:	defaultValue;
 					cursorShape:	Qt.IBeamCursor
 					fieldWidth:		Theme.numericFieldWidth
 }
