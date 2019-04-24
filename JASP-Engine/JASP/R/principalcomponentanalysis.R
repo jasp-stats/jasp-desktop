@@ -16,6 +16,7 @@
 #
 
 
+
 PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 																			callback = function(...) list(status="ok"), state = NULL, ...) { 
 	return(mainFunctionPCAEFA(type = "pca", dataset = NULL, options, perform = "run",
@@ -279,7 +280,7 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 
 	# Create JASP table:
 	Loadings <- list()
-	Loadings[["title"]] <- "Component Loadings"
+        Loadings[["title"]] <- ifelse(type == "pca","Component Loadings", "Factor Loadings")
  	Loadings[["schema"]] <- list(fields = list())
 
 	if (options$rotationMethod == "orthogonal") {

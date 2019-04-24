@@ -43,6 +43,9 @@ Rectangle {
 			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
 			property alias	label:				label
 
+			property var	_allTextFields:		[]
+
+
 	Label
 	{
 		id:				label
@@ -69,6 +72,15 @@ Rectangle {
 		rowSpacing:			control.rowSpacing
 		columnSpacing:		control.columnSpacing
     }
+
+	Connections
+	{
+		id: alignTextFieldSignal
+		target: undefined
+		enabled: false
+		onXChanged: _alignTextField();
+	}
+
     
 	Component.onCompleted:
 	{
@@ -79,23 +91,41 @@ Rectangle {
             if (control.debug)
 				childControls[i].setDebugState();
 		}
-		
-		if (alignTextFields)
+
+		for (i = 0; i < contentArea.children.length; i++)
 		{
-            var textFieldsControls = [];
-            var maxX = 0;
-			for (i = 0; i < contentArea.children.length; i++)
+			var child = contentArea.children[i];
+			if (child.hasOwnProperty('controlType') && child.controlType === 'TextField')
+				_allTextFields.push(child)
+		}
+
+		_alignTextField()
+	}
+
+	function _alignTextField()
+	{
+		if (alignTextFields && _allTextFields.length > 1)
+		{
+			var i;
+			var xMax = 0;
+			var longestControl;
+			for (i = 0; i < _allTextFields.length; i++)
 			{
-                var child = contentArea.children[i];
-				if (child.hasOwnProperty('controlType') && child.controlType === 'TextField')
+				_allTextFields[i].controlXOffset = 0;
+				if (xMax < _allTextFields[i].control.x)
 				{
-                    textFieldsControls.push(child);
-                    if (maxX < child.control.x) maxX = child.control.x;
-                }
+					longestControl = _allTextFields[i].control;
+					xMax = _allTextFields[i].control.x;
+				}
             }
             
-			for (i = 0; i < textFieldsControls.length; i++)
-                textFieldsControls[i].control.L.Layout.leftMargin = maxX - textFieldsControls[i].control.x;
-        }
+			alignTextFieldSignal.target = longestControl;
+			for (i = 0; i < _allTextFields.length; i++)
+			{
+				if (_allTextFields[i].control !== longestControl)
+					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].control.x);
+			}
+			alignTextFieldSignal.enabled = true;
+		}
     }
 }
