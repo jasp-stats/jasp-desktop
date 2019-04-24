@@ -21,10 +21,11 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 #### Model: 
 - Components and model terms 
     - Components: All the independent variables and covariates that can be included in the model. 
-    - Model terms: The independent variables and covariates included in the model. By default all the main effects and interaction effects of the specified independent variables, and the covariates are included in the model. <details>
-	                                                                                    <summary><b>Add interaction </b></summary>
-	                                                                                    <img src="/interaction_effect_anova.gif"/>
-                                                                                      </details>
+    - Model terms: The independent variables and covariates included in the model. By default all the main effects and interaction effects of the specified independent variables, and the covariates are included in the model.
+<details>
+  <summary><b>Add interaction </b></summary>
+  <img src="gif/interaction_effect_anova.gif"/>
+</details>
                                                                                       
 - Sum of Squares: There are different types of the Sum of Squares. The choice of the type is important when there is more than one factor, and when the data is unbalanced. In an unbalanced design the different levels of the independent variable do not contain an equal number of observations (e.g., one group contains more obsevations than another group). In this scenario the Sum of Squares type can influence the results.   
     - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, containing the order in the model. The results depend on the order of the factors in the model. This is important to consider when the model contains more than one factor. 
