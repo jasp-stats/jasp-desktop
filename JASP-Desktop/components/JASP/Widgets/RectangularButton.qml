@@ -41,6 +41,7 @@ FocusScope
 	property alias  color:				rect.color
 	property alias	border:				rect.border
 	property alias	radius:				rect.radius
+	property alias	font:				buttonText.font
 
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :

@@ -7,7 +7,8 @@ Item
 {
 	id:			rect
 
-	MenuHeader {
+	MenuHeader
+	{
 		id: menuHeader
 
 		headertext:		qsTr("Data Library")
@@ -21,11 +22,10 @@ Item
 		model :			fileMenuModel.datalibrary.breadcrumbsmodel
 
 		width:			rect.width
-		height:			40
+		height:			40 * preferencesModel.uiScale
 		anchors
 		{
 			top:		menuHeader.bottom
-			topMargin	: 30
 			left:		parent.left
 			right:		parent.right
 			leftMargin:	Theme.generalMenuMargin
@@ -46,16 +46,16 @@ Item
 
 	FileList
 	{
-		id:			datalibrarylist
-		cppModel:	fileMenuModel.datalibrary.listModel
-		hasBreadCrumbs : true
+		id:				datalibrarylist
+		cppModel:		fileMenuModel.datalibrary.listModel
+		hasBreadCrumbs:	true
 
 		anchors
 		{
 			top:			secondseparator.bottom
-            bottom:	parent.bottom
+			bottom:			parent.bottom
             left:			menuHeader.left
-            right:		menuHeader.right
+			right:			menuHeader.right
             topMargin:		Theme.generalMenuMargin
             bottomMargin:	Theme.generalMenuMargin
 		}

@@ -61,10 +61,9 @@ Item
 		visible	: loggedin
 
 		width	: rect.width
-		height	: loggedin ? 40 : 0
+		height	: (loggedin ? 40 : 0) * preferencesModel.uiScale
 
 		anchors.top			: menuHeader.bottom
-		anchors.topMargin	: 30
 		anchors.left		: menuHeader.left
 		anchors.right		: parent.right
 
@@ -92,8 +91,8 @@ Item
 		id		: newDirectoryButton
 		text	: qsTr("Create Folder")
 
-		width	: 120
-		height	: 30
+		width	: 120 * preferencesModel.uiScale
+		height	: 30  * preferencesModel.uiScale
 		visible	: fileExportDialog.visible && loggedin
 
 		// Icons made by "https://www.flaticon.com/authors/smashicons"
@@ -124,8 +123,8 @@ Item
 			id 		: saveFoldernameLabel
 			text	: qsTr("Foldername")
 
-			width	: 80
-			height	: 30
+			width	: 80 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			color 	: Theme.black
 			font	: Theme.font
 
@@ -159,7 +158,7 @@ Item
 				id				: foldernameText
 				selectByMouse	: true
 				text			: fileMenuModel.osf.savefoldername
-				font.pixelSize	: 14
+				font			: Theme.fontRibbon
 
 				anchors.fill		: parent
 				anchors.leftMargin	: Theme.itemPadding
@@ -176,8 +175,8 @@ Item
 		RectangularButton
 		{
 			id		: saveFoldernameButton
-			width	: 30
-			height	: 30
+			width	: 30 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			iconSource	: "qrc:///icons/create-folder.png"
 
 			enabled : foldernameText.text.length > 0
@@ -196,8 +195,8 @@ Item
 		RectangularButton
 		{
 			id		: cancelCreateFolderButton
-			width	: 30
-			height	: 30
+			width	: 30 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			iconSource	: "qrc:/images/close-button.png"
 
 			anchors.top			: parent.top
@@ -215,7 +214,7 @@ Item
 	{
 		id		: fileExportDialog
 		visible	: showfiledialog && loggedin
-		height	: visible ? 30 : 0
+		height	: visible ? 30 * preferencesModel.uiScale : 0
 
 		anchors.left			: menuHeader.left
 		anchors.right			: menuHeader.right
@@ -228,8 +227,8 @@ Item
 			id 		: saveFilenameLabel
 			text	: qsTr("Filename")
 
-			width	: 80
-			height	: 30
+			width	: 80 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			color 	: Theme.black
 			font	: Theme.font
 
@@ -262,7 +261,7 @@ Item
 				id				: filenameText
 				selectByMouse	: true
 				text			: fileMenuModel.osf.savefilename
-				font.pixelSize	: 14
+				font			: Theme.fontRibbon
 
 				anchors.fill		: parent
 				anchors.leftMargin	: Theme.itemPadding
@@ -279,7 +278,7 @@ Item
 		{
 			id		: saveFilenameButton
 			width	: saveFoldernameButton.width + cancelCreateFolderButton.width + Theme.generalAnchorMargin
-			height	: 30
+			height	: 30 * preferencesModel.uiScale
 			text	: qsTr("Save")
 
 			enabled	: filenameText.text.length > 0
@@ -299,7 +298,7 @@ Item
 	{
 		visible	: processing
 		width	: animation.width;
-		height	: animation.height + 8
+		height	: animation.height + 8 * preferencesModel.uiScale
 
 		anchors.horizontalCenter	: osfList.horizontalCenter
 		anchors.verticalCenter		: osfList.verticalCenter
@@ -337,6 +336,6 @@ Item
 
 		anchors.horizontalCenter	: parent.horizontalCenter
 		anchors.top					: firstSeparator.bottom
-		anchors.topMargin			: 40
+		anchors.topMargin			: 40 * preferencesModel.uiScale
 	}
 }

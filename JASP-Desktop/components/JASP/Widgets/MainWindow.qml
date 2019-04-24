@@ -118,6 +118,8 @@ Window
 
 				customMenu.visible	= true;
 			}
+
+			visible: false
 		}
 
 		FileMenu
@@ -158,7 +160,26 @@ Window
 			anchors.fill:		parent
 			anchors.topMargin:	ribbon.height
 
-			//Rectangle { id: purpleDebugRect; color: "purple"; anchors.fill: parent }
+			propagateComposedEvents: true
+
+			Rectangle
+			{
+				id:				darkeningBackgroundRect;
+				color:			Theme.black;
+				anchors.fill:	parent;
+				opacity:		visible ? 0.4 : 0.0
+				visible:		fileMenuModel.visible || modulesMenu.opened
+
+				Behavior on opacity
+				{
+					PropertyAnimation
+					{
+						id:				darkeningBackgroundRectDarkening
+						duration:		Theme.fileMenuSlideDuration
+						easing.type:	Easing.OutCubic
+					}
+				}
+			}
 
 			onClicked:
 			{

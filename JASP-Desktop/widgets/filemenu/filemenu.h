@@ -96,6 +96,7 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
+	void actionButtonSelected(const ActionButtons::FileOperation action);
 
 public slots:
 	void analysisAdded(Analysis *analysis);
@@ -103,7 +104,7 @@ public slots:
 	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
 	void dataSetIOCompleted(FileEvent *event);
 	void dataFileModifiedHandler(QString path);
-	void fileOperationClicked(const ActionButtons::FileOperation action);
+	void actionButtonClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
 	void showFileMenu();
 	void resourceButtonClicked(const int buttonType);

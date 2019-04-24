@@ -38,6 +38,7 @@ JASPControl
 			property alias	control:				control
 			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
+			property alias	font:					control.font
 			property alias	label:					control.text
 			property alias	checked:				control.checked
 			property bool	childrenOnSameRow:	false
@@ -96,7 +97,7 @@ JASPControl
 		{
 			id:					label
 			text:				control.text
-			font:				Theme.font
+			font:				control.font
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter
         }

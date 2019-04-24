@@ -124,6 +124,7 @@ Item
 						checked:			ribbonEnabled
 						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
 						enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
+						font:				Theme.fontRibbon
 
 						toolTip:			!isDynamic ? ""
 												: dynamicModule.installing ? "Installing:\n" + dynamicModule.installLog

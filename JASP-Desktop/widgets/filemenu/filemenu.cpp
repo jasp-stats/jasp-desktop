@@ -34,11 +34,11 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
 
 	connect(_recentFiles,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_currentDataFile,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
+	connect(_currentDataFile,	&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_computer,			&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_OSF,				&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_actionButtons,		&ActionButtons::buttonClickedSignal,	this, &FileMenu::fileOperationClicked);
+	connect(_actionButtons,		&ActionButtons::buttonClickedSignal,	this, &FileMenu::actionButtonClicked);
 	connect(&_watcher,			&QFileSystemWatcher::fileChanged,		this, &FileMenu::dataFileModifiedHandler);
 	connect(_resourceButtons,	&ResourceButtons::clicked,				this, &FileMenu::resourceButtonClicked);
 
@@ -349,7 +349,7 @@ void FileMenu::analysesExportResults()
     _computer->analysesExportResults();
 }
 
-void FileMenu::fileOperationClicked(const ActionButtons::FileOperation action)
+void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 {
 	setFileoperation(action);
 	
@@ -366,10 +366,13 @@ void FileMenu::fileOperationClicked(const ActionButtons::FileOperation action)
 		else
 			setSaveMode(FileEvent::FileSave);			
 		break;
+
 	case ActionButtons::FileOperation::Close:
-		close();
-		setSaveMode(FileEvent::FileOpen);
+		//setSaveMode(FileEvent::FileOpen); Let QML handle this:
+		emit actionButtonSelected(ActionButtons::Open);
+		close(); //After selecting open-button to make menu less ugly
 		break;
+
 	default:
 		break;
 	}

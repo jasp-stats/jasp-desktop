@@ -7,10 +7,12 @@ import JASP.Widgets 1.0
 RectangularButton
 {
 	id: root
-	property bool clickOnHover: false
-	property bool clickWhenFocussed: true;
-	property bool isIcon: true
-	property bool hasSubMenu: false
+	property bool clickOnHover:			false
+	property bool clickWhenFocussed:	true;
+	property bool isIcon:				true
+	property bool hasSubMenu:			false
+
+	font: Theme.fontRibbon
 
 	color:
 	{
