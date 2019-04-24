@@ -25,14 +25,23 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 - Log(BF<sub>10</sub>) : By selecting this option the natural logarithm of BF<sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> will be displayed in the output. 
 
 #### Output: 
-- Effects: By selecting this option, the effect of each component in the models will be calculated. 
+- Effects: By selecting this option, the effect of each component in the models will be calculated.   
     - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
-    - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded.  
+    - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded. 
+   <details>
+  <summary><b> </b></summary>
+  <img src="gif/inclusion_bayes_anova.gif"/>
+</details> 
+
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
 
 #### Order: 
 - Compare to null model: The models used for the analysis constructed under the option `Model` will be compared to the model containing the grand mean and the random factors, called the null model. This option is selected by default. 
 - Compare to best model: The models used for the analysis constructed under the option `Model` will be compared to the best model included in the analysis. 
+<details>
+  <summary><b> </b></summary>
+  <img src="gif/banova_simplebestcrop.gif"/>
+</details>
 
 #### Model 
 - Components: All the independent variables that can be included in the model. 
@@ -40,7 +49,13 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 - Add to null model: The independent variables included in the model can be selected to add to the null model.  
 
 #### Post Hoc Tests 
-If there is a significant effect of the independent variable when the covariate is accounted for, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. Then it is possible to select:
+If there is a significant effect of the independent variable when the covariate is accounted for, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
+<details>
+  <summary><b> </b></summary>
+  <img src="gif/bayes_posthoc_anova.gif"/>
+</details>
+
+Then it is possible to select:
 - Correction 
     - Null control: When selecting this option, the prior odds will be corrected for multiple testing. This option is selected by default. At the moment, no output will be generated for the post hoc test when this option is not selected. 
 
@@ -111,5 +126,5 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### Example 
 --- 
-For an example see Van den Bergh et al. (2019). Manuscript submitted for publication.
+For a very detailed example see Van den Bergh et al. (2019).
 
