@@ -22,13 +22,13 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 - Log(BF<sub>10</sub>) : By selecting this option the natural logarithm of BF<sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> will be displayed in the output. 
 
 #### Output: 
-- Effects: <img align="right" src="https://jasp-stats.org/wp-content/uploads/2018/01/inclusionBayesANOVA.gif" width="60%" height="60%" /> By selecting this option, the effect of each component in the models will be calculated. 
+- Effects: <img align="right" src="gif/inclusion_bayes_anova.gif" width="60%" height="60%" /> By selecting this option, the effect of each component in the models will be calculated. 
     - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
     - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded.  
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
 
 #### Order:  
-- Compare to null model: <img align="right" src="https://jasp-stats.org/wp-content/uploads/2017/10/anovaSimpleBestCrop.gif" width="60%" height="60%" /> The models used for the analysis constructed under the option `Model` will be compared to the model containing the grand mean and the random factors, called the null model. This option is selected by default. 
+- Compare to null model: <img align="right" src="gif/banova_simplebestcrop.gif" width="60%" height="60%" /> The models used for the analysis constructed under the option `Model` will be compared to the model containing the grand mean and the random factors, called the null model. This option is selected by default. 
 - Compare to best model: The models used for the analysis constructed under the option `Model` will be compared to the best model included in the analysis. 
 
 #### Model 
@@ -37,7 +37,7 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 - Add to null model: The independent variables included in the model can be selected to add to the null model.  
 
 #### Post Hoc Tests 
-If <img align="right" src="https://jasp-stats.org/wp-content/uploads/2018/01/bayesPostHocANOVA.gif" width="60%" height="60%" /> there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. Then it is possible to select:
+If <img align="right" src="gif/bayes_posthoc_anova.gif" width="60%" height="60%" /> there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. Then it is possible to select:
 - Correction 
     - Null control: When selecting this option, the prior odds will be corrected for multiple testing. This option is selected by default. At the moment, no output will be generated for the post hoc test when this option is not selected. 
 
