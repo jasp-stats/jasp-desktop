@@ -21,7 +21,7 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
     - Model terms: The independent variables included in the model. By default all the main effects and interaction effects of the specified independent variables are included in the model. 
 <details>
 	<summary><b>Add interaction </b></summary>
-	<img src="gif/interaction_effect_anova.gif"/>
+	<img src="/interaction_effect_anova.gif"/>
 </details>
 
 - Sum of Squares: There are different types of the Sum of Squares. The choice of the type is important when there is more than one factor, and when the data is unbalanced. In an unbalanced design the different levels of the independent variable do not contain an equal number of observations (e.g., one group contains more obsevations than another group). In this scenario the Sum of Squares type can influence the results.
@@ -67,7 +67,12 @@ If there is a significant effect of the independent variable, the analysis can b
 - Type: Different types of post hoc tests can be selected. 
     -  Standard: Pairwise t-tests are performed. All the corrections can be applied to this method. This option is selected by default. 
     -  Games-Howell: This method can be used when equal group/level variances are not assumed. The p-values are corrected with the Tukey method.
-    -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted. This [GIF](https://jasp-stats.org/wp-content/uploads/2018/01/LabelEditing.gif) illustrates how to adjust the level labels. 
+    -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted.  
+    <details>
+	<summary><b>Adjust level labels </b></summary>
+	<img src="/LabelEditing.gif"/>
+    </details>
+    
     -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The p-values are corrected with the Bonferroni and Holm methods.
 
 #### Descriptive Plots:  
