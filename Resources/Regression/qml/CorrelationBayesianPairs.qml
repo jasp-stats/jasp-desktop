@@ -41,7 +41,7 @@ Form
 	CheckBox
 	{
 		name: "credibleInterval"; label: qsTr("Credible intervals")
-		PercentField { name: "ciValue";	label: qsTr("Interval"); defaultValue: 95; debug: true }
+		CIField { name: "ciValue";	label: qsTr("Interval"); debug: true }
 	}
 
 	RadioButtonGroup

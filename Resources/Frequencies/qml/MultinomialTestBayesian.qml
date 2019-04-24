@@ -69,7 +69,7 @@ Form
 				{
 					name				: "credibleInterval"; label: qsTr("Confidence interval")
 					childrenOnSameRow	: true
-					PercentField { name: "credibleIntervalInterval"; defaultValue: 95	}
+					CIField { name: "credibleIntervalInterval" }
 				}
 			}
 		}
@@ -92,7 +92,7 @@ Form
 			{
 				name	: "descriptivesPlot"
 				label	: qsTr("Descriptives plot")
-				PercentField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+				CIField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Confidence interval") }
 			}
 		}
 	}

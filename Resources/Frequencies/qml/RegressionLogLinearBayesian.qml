@@ -72,12 +72,7 @@ Form
 			CheckBox
 			{
 				name: "regressionCoefficientsCredibleIntervals"; label: qsTr("Credible intervals")
-				PercentField
-				{
-					name: "regressionCoefficientsCredibleIntervalsInterval"
-					label: qsTr("Interval");
-					defaultValue: 95
-				}
+				CIField { name: "regressionCoefficientsCredibleIntervalsInterval"; label: qsTr("Interval") }
 			}
 		}
 
@@ -98,7 +93,7 @@ Form
 				CheckBox
 				{
 					name: "regressionCoefficientsSubmodelCredibleIntervals"; label: qsTr("Credible intervals")
-					PercentField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; label: qsTr("Interval"); defaultValue: 95 }
+					CIField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; label: qsTr("Interval") }
 				}
 			}
 		}

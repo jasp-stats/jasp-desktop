@@ -69,7 +69,7 @@ Form {
 		CheckBox
 		{
 			name: "descriptivesPlots";			label: qsTr("Descriptives plots")
-			PercentField { name: "descriptivesPlotsCredibleInterval";	label: qsTr("Credible interval"); defaultValue: 95 }
+			CIField { name: "descriptivesPlotsCredibleInterval";	label: qsTr("Credible interval") }
 		}
 	}
 

@@ -21,20 +21,14 @@ import JASP.Controls 1.0
 import JASP.Theme 1.0
 import JASP 1.0
 
-TextField
+PercentField
 {
-	property int	defaultValue:	50
-	property bool	showPercent:	true
-	property int	decimals:		0
-	property int	min:			0
-	property int	max:			100
-    
-	id:					percentField
-	inputType:			"percent"
-	fieldWidth:			Theme.font.pixelSize * (percentField.decimals + 3)
-	validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max; decimals: percentField.decimals; notation: DoubleValidator.StandardNotation}
+	property int	defaultValue:	95
+	property int	decimals:		1
+      
+	id:					ciField
+	fieldWidth:			Theme.font.pixelSize * (ciField.decimals + 3)
+	validator:			JASPDoubleValidator { id: doubleValidator; bottom: 0 + 1E-10; top: 100 - 1E-10; decimals: ciField.decimals; notation: DoubleValidator.StandardNotation}
 
 	lastValidValue:		defaultValue
-	afterLabel:			showPercent ? "%" : ""
-	cursorShape:		Qt.IBeamCursor	
 }

@@ -95,7 +95,7 @@ Form
 		{
 			name: "confidenceIntervalsContrast"; label: qsTr("Confidence intervals")
 			childrenOnSameRow: true
-			PercentField {	name: "confidenceIntervalIntervalContrast"; defaultValue: 95 }
+			CIField {	name: "confidenceIntervalIntervalContrast" }
 		}
 	}
 	
@@ -117,7 +117,7 @@ Form
             {
                 name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
                 childrenOnSameRow: true
-                PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
+                CIField {name: "confidenceIntervalIntervalPostHoc" }
             }
             CheckBox
             {
@@ -182,7 +182,7 @@ Form
 					{
 						value: "confidenceInterval";		label: qsTr("Confidence Interval"); checked: true
 						childrenOnSameRow: true
-						PercentField { name: "confidenceIntervalInterval";	label: qsTr("Interval"); defaultValue: 95 }
+						CIField { name: "confidenceIntervalInterval";	label: qsTr("Interval") }
 					}
 					RadioButton { value: "standardError";	label: qsTr("Standard error") }
 				}

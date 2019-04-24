@@ -48,7 +48,7 @@ Form
 			CheckBox
 			{
 				name: "oddsRatio"; label: qsTr("Log odds ratio (2x2 only)")
-				PercentField { name: "oddsRatioConfidenceIntervalInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+				CIField { name: "oddsRatioConfidenceIntervalInterval"; label: qsTr("Confidence interval") }
 			}
 			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio") }
 		}

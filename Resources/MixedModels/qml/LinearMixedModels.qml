@@ -194,7 +194,7 @@ Form
 		{
 			label: qsTr("Confidence intervals"); name: "confidenceIntervalsContrast"
 			childrenOnSameRow: true
-			PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95 }
+			CIField { name: "confidenceIntervalIntervalContrast" }
 		}
 	}
 
