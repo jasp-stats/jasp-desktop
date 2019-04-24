@@ -162,12 +162,14 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	Json::Value &columnsDesc = dataSetDesc["fields"];
 	int i = 0;
+	std::map<std::string, std::map<int, int> > mapNominalTextValues;
 
 	for (Json::Value columnDesc : columnsDesc)
 	{
 		std::string name					= columnDesc["name"].asString();
 		Json::Value &orgStringValuesDesc	= columnDesc["orgStringValues"];
 		Json::Value &labelsDesc				= columnDesc["labels"];
+		std::map<int, int>& mapValues		= mapNominalTextValues[name];	// This is needed for old JASP file where factor keys where not filled in the right way
 
 		if (labelsDesc.isNull() &&  ! xData.isNull())
 		{
@@ -183,13 +185,14 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		do {
 			try {
 				Column &column = packageData->dataSet()->column(i);
+				Column::ColumnType columnType = parseColumnType(columnDesc["measureType"].asString());
 
 				column.setName(name);
-				column.setColumnType(parseColumnType(columnDesc["measureType"].asString()));
+				column.setColumnType(columnType);
 
 				Labels &labels = column.labels();
 				labels.clear();
-				int k = 0;
+				int index = 1;
 				for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
 				{
 					Json::Value keyValueFilterPair = *iter;
@@ -197,19 +200,27 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 					int key			= keyValueFilterPair.get(zero, Json::nullValue).asInt();
 					std::string val = keyValueFilterPair.get(1, Json::nullValue).asString();
 					bool fil		= keyValueFilterPair.get(2, true).asBool();
+					int labelValue	= key;
+					if (columnType == Column::ColumnTypeNominalText)
+					{
+						labelValue = index;
+						mapValues[key] = labelValue;
+					}
 
-					labels.add(key, val, fil);
+					labels.add(labelValue, val, fil);
 
-					k++;
+					index++;
 				}
 
 				if (!orgStringValuesDesc.isNull())
 				{
 					for (Json::Value keyValuePair : orgStringValuesDesc)
 					{
-						int zero	= 0;
-						int key		= keyValuePair.get(zero, Json::nullValue).asInt();
-						labels.setOrgStringValues(key, keyValuePair.get(1, Json::nullValue).asString());
+						int zero		= 0; // ???
+						int key			= keyValuePair.get(zero, Json::nullValue).asInt();
+						std::string val = keyValuePair.get(1, Json::nullValue).asString();
+						key = mapValues[key];
+						labels.setOrgStringValues(key, val);
 					}
 				}
 				success = true;
@@ -249,6 +260,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		Column &column					= packageData->dataSet()->column(c);
 		Column::ColumnType columnType	= column.columnType();
 		int typeSize					= (columnType == Column::ColumnTypeScale) ? sizeof(double) : sizeof(int);
+		std::map<int, int>& mapValues	= mapNominalTextValues[column.name()];
 
 		for (int r = 0; r < rowCount; r++)
 		{
@@ -258,8 +270,15 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 			if (errorCode != 0 || size != typeSize)
 				throw std::runtime_error("Could not read 'data.bin' in JASP archive.");
 
-			if (columnType == Column::ColumnTypeScale)	column.setValue(r, *(double*)buff);
-			else										column.setValue(r, *(int*)buff);
+			if (columnType == Column::ColumnTypeScale)
+				column.setValue(r, *(double*)buff);
+			else
+			{
+				int value = *(int*)buff;
+				if (columnType == Column::ColumnTypeNominalText && value != INT_MIN)
+					value = mapValues[value];
+				column.setValue(r, value);
+			}
 
 			progress = 50 + (50 * ((c * rowCount) + (r + 1)) / (columnCount * rowCount));
 			if (progress != lastProgress)

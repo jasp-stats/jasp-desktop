@@ -46,7 +46,6 @@ public:
 	int add(const std::string &display);
 	int add(int key, const std::string &display, bool filterAllows);
 	void removeValues(std::set<int> valuesToRemove);
-	std::map<std::string, int> resetLabelValues();
 	bool syncInts(const std::set<int> &values);
 	bool syncInts(std::map<int, std::string> &values);
 	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
@@ -84,6 +83,7 @@ private:
 	void _setNewStringForLabel(Label &label, const std::string &display);
 	std::string _getValueFromLabel(const Label &label) const;
 	std::string _getOrgValueFromLabel(const Label &label) const;
+	std::map<std::string, int> _resetLabelValues(int &maxValue);
 
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;
