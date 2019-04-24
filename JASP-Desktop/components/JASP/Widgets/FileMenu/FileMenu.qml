@@ -9,6 +9,8 @@ FocusScope
 {
 	id: fileMenu
 
+	Keys.onEscapePressed: fileMenuModel.visible = false;
+
 	function updateNavigationKeys()
 	{
 		for (var i = 0; i < actionRepeaterId.count; i++)
@@ -69,6 +71,13 @@ FocusScope
 
 	focus: fileMenuModel.visible
 
+	MouseArea
+	{
+		id: gottaCatchEmAll //Clicks that is
+		anchors.fill: parent
+		z: -6
+	}
+
 	Item
 	{
 		id: slidePart
@@ -86,13 +95,6 @@ FocusScope
 				duration: Theme.fileMenuSlideDuration
 				easing.type: Easing.OutCubic
 			}
-		}
-
-		MouseArea
-		{
-			id: gottaCatchEmAll //Clicks that is
-			anchors.fill: parent
-			z: -6
 		}
 
 		Rectangle
@@ -303,7 +305,7 @@ FocusScope
 			id: resourceScreen
 
 			x: otherColumnsWidth
-			width: aButtonVisible ? fileMenu.parent.width - otherColumnsWidth : 0
+			width: !aButtonVisible ? 0 : Math.min(fileMenu.parent.width - otherColumnsWidth, 600 * preferencesModel.uiScale)
 			height: parent.height
 
 			border.width: 1
