@@ -79,6 +79,7 @@ The scree plot provides information on how much variance in the data, indicated 
 - Kaiser criterion: The horizontal line at the eigenvalue of 1 represents the Kaiser criterion. According to this criterion, only factors with values above this line (at an eigenvalue of 1) should be included in the model. 
 
 ### References 
+---
 - Brown, T. A. (2014). Confirmatory factor analysis for applied research.     
     Guilford Publications. 
 - Hayton, J. C., Allen, D. G., & Scarpello, V. (2004). Factor retention     
@@ -89,4 +90,5 @@ The scree plot provides information on how much variance in the data, indicated 
     exploratory factor analysis. Best practices in quantitative methods, 86-99.
 
 ### Example 
+---
 For an example go to `File`-->`Data library`-->`Factor`-->`G Factor`. For more details about Exploratory Factor Analysis in JASP, watch this [video](https://www.youtube.com/watch?v=dUPzMBqcMjo&feature=youtu.be). 
