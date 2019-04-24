@@ -1,5 +1,6 @@
-# Exploratory Factor Analysis 
---- 
+Exploratory Factor Analysis 
+=== 
+
 With Exploratory Factor Analysis it is possible to identify the factors underlying the data. The factors capture the common variance in the data. 
 
 ### Input 
