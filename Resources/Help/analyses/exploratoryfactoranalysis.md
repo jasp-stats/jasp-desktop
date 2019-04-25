@@ -22,6 +22,7 @@ Here the rotation method to apply to the factors can be set.
     - quartimax: Orthogonal rotation method quartimax. In this rotation method, the number of factors that is  necessary to explain each variable is minimized. 
     - bentlerT: Orthogonal rotation method bentlerT. 
     - equamax: Orthogonal rotation method equamax. This is a combination of varimax and quartimax. 
+    - varimin: Orthogonal rotation method varimin. 
 - Oblique: This method produces factors that allow for correlation between the factors. This method is selected by default. Several possibilities are available: 
     - promax: Oblique rotation method promax. This method is selected by default. 
     - oblimin: Oblique rotation method oblimin. 
