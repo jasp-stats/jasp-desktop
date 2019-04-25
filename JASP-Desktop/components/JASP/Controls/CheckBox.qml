@@ -97,7 +97,7 @@ JASPControl
 		{
 			id:					label
 			text:				control.text
-			font:				control.font
+			font:				Theme.font
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter
         }
