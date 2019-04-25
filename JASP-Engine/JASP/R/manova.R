@@ -127,7 +127,9 @@ Manova <- function(jaspResults, dataset, options) {
                          "testHotellingLawley", "testRoy", "includeIntercept",
                          "VovkSellkeMPR", "modelTerms", "includeAnovaTables"))
 
-  allTests <- if(is.null(names(manovaResults$manova))) "Pillai" else names(manovaResults$manova)
+  if(is.null(names(manovaResults$manova))) return()
+  
+  allTests <- names(manovaResults$manova)
   
   for (thisTest in allTests) {
     
