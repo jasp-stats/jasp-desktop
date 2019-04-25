@@ -123,13 +123,48 @@ Rectangle
 		}
 	}
 
+	property bool clickingAllowed: true
+
+	function clickWhenAllowed()
+	{
+		if(clickingAllowed)
+		{
+			clickingAllowed = false;
+			ribbonButton.clicked();
+			blockDoubleClicksTimer.start();
+		}
+
+
+	}
+
 	MouseArea
 	{
-		id				: mice
-		anchors.fill	: parent
-		hoverEnabled	: true
-		acceptedButtons	: Qt.LeftButton
-		onClicked		: ribbonButton.clicked()
-		cursorShape		: Qt.PointingHandCursor
+		id						: mice
+		anchors.fill			: parent
+		hoverEnabled			: true
+		acceptedButtons			: Qt.LeftButton
+		onClicked				: { itsHoverTime.stop(); ribbonButton.clickWhenAllowed();  }
+		cursorShape				: Qt.PointingHandCursor
+		onContainsMouseChanged	: if(containsMouse) itsHoverTime.start(); else itsHoverTime.stop();
+	}
+
+	Timer
+	{
+		id:				itsHoverTime
+		interval:		Theme.hoverTime
+		repeat:			false
+		running:		false
+
+		onTriggered:	ribbonButton.clickWhenAllowed();
+	}
+
+	Timer
+	{
+		id:				blockDoubleClicksTimer
+		interval:		Theme.fileMenuSlideDuration
+		repeat:			false
+		running:		false
+
+		onTriggered:	ribbonButton.clickingAllowed = true;
 	}
 }

@@ -15,17 +15,20 @@ FocusScope
 	{
 		for (var i = 0; i < actionRepeaterId.count; i++)
 		{
-			var nextActElt = (i < (actionRepeaterId.count- 1) ? actionRepeaterId.itemAt(i + 1) : actionRepeaterId.itemAt(0)).children[0]
-			actionRepeaterId.itemAt(i).children[0].KeyNavigation.down = nextActElt
-			actionRepeaterId.itemAt(i).children[0].KeyNavigation.tab = nextActElt
-			actionRepeaterId.itemAt(i).children[0].KeyNavigation.right = resourceRepeaterId.itemAt(0).children[0]
+			var nextActElt = (i < (actionRepeaterId.count - 1) ? actionRepeaterId.itemAt(i + 1) : actionRepeaterId.itemAt(0)).children[0]
+
+			actionRepeaterId.itemAt(i).children[0].KeyNavigation.down	= nextActElt
+			actionRepeaterId.itemAt(i).children[0].KeyNavigation.tab	= nextActElt
+			actionRepeaterId.itemAt(i).children[0].KeyNavigation.right	= resourceRepeaterId.count > 0 ? resourceRepeaterId.itemAt(0).children[0] : null
 		}
 
 		for (var j = 0; j < resourceRepeaterId.count; j++)
 		{
 			var nextResElt = (j < (resourceRepeaterId.count- 1) ? resourceRepeaterId.itemAt(j + 1) : resourceRepeaterId.itemAt(0)).children[0]
-			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.down = nextResElt
-			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.tab = nextResElt
+
+			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.down	= nextResElt
+			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.tab	= nextResElt
+
 			if (selectedActionMenu !== null)
 				resourceRepeaterId.itemAt(j).children[0].KeyNavigation.left = selectedActionMenu
 		}
@@ -51,11 +54,11 @@ FocusScope
 	z:			1
 	visible:	fileMenuAnimation.running ? actionMenu.x + actionMenu.width > 0 : fileMenuModel.visible
 
-	property int actionButtionHeight:	35 * preferencesModel.uiScale
-	property int resourceButtonHeight:	1.5 * actionButtionHeight
-	property int nbColumns:				selectedActionMenu !== null ? (selectedActionMenu.hasResourceMenu ? 2 : 1) : 2
-	property int colWidths:				150 * preferencesModel.uiScale
-	property var selectedActionMenu:	null
+	property int  actionButtionHeight:		35 * preferencesModel.uiScale
+	property int  resourceButtonHeight:		1.5 * actionButtionHeight
+	property int  nbColumns:				1 + (selectedActionMenu !== null && selectedActionMenu.hasResourceMenu ? 1 : 0 )
+	property int  colWidths:				150 * preferencesModel.uiScale
+	property var  selectedActionMenu:		null
 
 	focus: fileMenuModel.visible
 
@@ -127,10 +130,10 @@ FocusScope
 						{
 							id:				actionMenuButton
 
-							isIcon:			false
-							hasSubMenu:		hasResourceMenu
-							clickOnHover:	true
-							clickWhenFocussed: !waitForClickButton(typeRole)
+							isIcon:				false
+							hasSubMenu:			hasResourceMenu
+							clickOnHover:		true
+							clickWhenFocussed:	!waitForClickButton(typeRole)
 
 							width:			itemActionMenu.width
 							height:			actionButtionHeight
@@ -143,14 +146,15 @@ FocusScope
 							text:			nameRole
 							selected:		selectedActionMenu === actionMenuButton
 
-							property bool hasResourceMenu: actionHasSubmenu(typeRole)
-							property int myTypeRole: typeRole
+							property bool hasResourceMenu:	actionHasSubmenu(typeRole)
+							property int myTypeRole:		typeRole
 
 							onActiveFocusChanged:
 							{
 								if (activeFocus)
 								{
 									selectedActionMenu = actionMenuButton
+									fileMenuModel.fileoperation = typeRole
 									updateNavigationKeys()
 								}
 							}
@@ -204,7 +208,9 @@ FocusScope
 			border.color:	Theme.uiBorder
 			z:				1
 
-			property bool hasButtons: fileMenuModel.resourceButtonsVisible.length > 0
+			property bool hasButtons: resourceRepeaterId.count > 0
+
+			visible: hasButtons
 
 			Column
 			{
@@ -322,6 +328,10 @@ FocusScope
 					easing.type:	Easing.OutCubic
 				}
 			}
+
+			onXChanged:
+				if(resourceScreen.x === resourceScreen.desiredX && resourceScreen.currentQML === "" && resourceScreen.previousQML !== "")
+					resourceScreen.previousQML = "";
 
 			Connections
 			{

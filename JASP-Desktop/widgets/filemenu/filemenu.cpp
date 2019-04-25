@@ -368,9 +368,8 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 		break;
 
 	case ActionButtons::FileOperation::Close:
-		//setSaveMode(FileEvent::FileOpen); Let QML handle this:
-		emit actionButtonSelected(ActionButtons::Open);
 		close(); //After selecting open-button to make menu less ugly
+		emit actionButtonSelected(ActionButtons::Open);
 		break;
 
 	default:

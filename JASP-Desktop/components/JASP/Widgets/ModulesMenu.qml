@@ -16,7 +16,7 @@ FocusScope
 
 	property bool opened: false //should be from some model
 
-	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1
+	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
 
 	Keys.onEscapePressed: if(opened)
 	{

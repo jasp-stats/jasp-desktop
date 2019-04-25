@@ -85,6 +85,7 @@ void ResourceButtons::setOnlyTheseButtonsVisible(std::set<ButtonType> buttons)
 	for(const DataRow & row : _data)
 	{
 		setVisible(row.button, buttons.count(row.button) > 0);
+
 		if(row.qml == currentQML() && !row.visible)
 			setCurrentQML("");
 	}

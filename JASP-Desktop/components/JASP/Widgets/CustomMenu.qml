@@ -31,10 +31,7 @@ Item
 
 	property real _iconPad: 5 * preferencesModel.uiScale
 
-	onPropsChanged:
-	{
-		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
-	}
+	onPropsChanged:	hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
 
 	function resizeElements(newWidth)
 	{
@@ -47,7 +44,7 @@ Item
 	{
 		id		: menuRectangle
 		z		: menuShadow.z + 1
-		color	: Theme.white
+		color	: Theme.fileMenuColorBackground
 	}
 
 	Column
@@ -85,10 +82,9 @@ Item
 			{
 				sourceComponent :
 				{
-					if (model.isSeparator !== undefined && model.isSeparator)
-						return menuSeparator;
-					else if (model.isGroupTitle !== undefined && model.isGroupTitle)
-						return menuGroupTitle;
+					if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
+					else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
+
 					return menuDelegate
 				}
 
@@ -101,30 +97,28 @@ Item
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuItemHeight
-						color	: mouseArea.pressed ? Theme.blueMuchLighter : mouseArea.containsMouse ? Theme.grayLighter : Theme.white
+						color	: mouseArea.pressed ? Theme.buttonMenuColorHovered : mouseArea.containsMouse ? Theme.buttonMenuColorPressed : "transparent" //pressed and hovered seem switched, because they are! I think it looks better here
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
-						Rectangle
+						Image
 						{
 							id		: menuItemImage
+							visible : menu.hasIcons
+
 							height	: menuItem.height - menu._iconPad
 							width	: menuItem.height - menu._iconPad
-							color	: menuItem.color
+
+							source					: menuImageSource
+							smooth					: true
+							sourceSize.width		: width * 2
+							sourceSize.height		: height * 2
+							fillMode				: Image.PreserveAspectFit
 
 							anchors.left			: parent.left
 							anchors.leftMargin		: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
-
-							Image
-							{
-								visible		: menu.hasIcons
-								height		: parent.height
-								width		: parent.width
-								source		: menuImageSource
-								fillMode	: Image.PreserveAspectFit
-							}
 						}
 
 						Text
@@ -144,10 +138,7 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		:
-							{
-								menu.props['functionCall'](index)
-							}
+							onClicked		: menu.props['functionCall'](index)
 						}
 					}
 				}
@@ -155,34 +146,30 @@ Item
 				{
 					id: menuGroupTitle
 
-					Rectangle
+					Item
 					{
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuGroupTitleHeight
-						color	: Theme.white
 
 						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
 
-						Rectangle
+						Image
 						{
 							id		: menuItemImage
 							height	: menuItem.height - menu._iconPad
 							width	: menuItem.height - menu._iconPad
-							color	: Theme.white
+
+							source					: menuImageSource
+							smooth					: true
+							sourceSize.width		: width * 2
+							sourceSize.height		: height * 2
+							fillMode				: Image.PreserveAspectFit
 
 							anchors.left			: parent.left
 							anchors.leftMargin		: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
-
-							Image
-							{
-								height		: parent.height
-								width		: parent.width
-								source		: menuImageSource
-								fillMode	: Image.PreserveAspectFit
-							}
 						}
 
 						Text
