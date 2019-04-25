@@ -34,7 +34,7 @@ using namespace std;
 DataSetTableModel::DataSetTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-	_dataSet = NULL;
+	_dataSet = nullptr;
 }
 
 QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon() const
@@ -62,7 +62,7 @@ QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon() const
 void DataSetTableModel::setDataSetPackage(DataSetPackage *package)
 {
     beginResetModel();
-	_dataSet = package == NULL ? NULL : package->dataSet();
+	_dataSet = package == nullptr ? nullptr : package->dataSet();
 	_package = package;
     endResetModel();
 
@@ -72,7 +72,7 @@ void DataSetTableModel::setDataSetPackage(DataSetPackage *package)
 
 int DataSetTableModel::rowCount(const QModelIndex &parent) const
 {
-	if (_dataSet == NULL)
+	if (_dataSet == nullptr)
 		return 0;
 
 	return parent.isValid() ? 0 : _dataSet->rowCount();
@@ -80,7 +80,7 @@ int DataSetTableModel::rowCount(const QModelIndex &parent) const
 
 int DataSetTableModel::columnCount(const QModelIndex &parent) const
 {
-	if (_dataSet == NULL)
+	if (_dataSet == nullptr)
 		return 0;
 
 	return parent.isValid() ? 0 : _dataSet->columnCount();
@@ -88,7 +88,7 @@ int DataSetTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 {
-	if (_dataSet == NULL || _dataSet->synchingData())
+	if (_dataSet == nullptr || _dataSet->synchingData())
 		return QVariant();
 
 	JASPTIMER_RESUME(DataSetTableModel::data);
@@ -137,7 +137,7 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 
 QVariant DataSetTableModel::columnTitle(int column) const
 {
-	if(column >= 0 && size_t(column) < _dataSet->columnCount())
+	if(_dataSet != nullptr && column >= 0 && size_t(column) < _dataSet->columnCount())
 	{
 		QString value = tq(_dataSet->column(column).name());
 		return QVariant(value);
@@ -148,7 +148,7 @@ QVariant DataSetTableModel::columnTitle(int column) const
 
 QVariant DataSetTableModel::columnIcon(int column) const
 {
-	if(column >= 0 && size_t(column) < _dataSet->columnCount())
+	if(_dataSet != nullptr && column >= 0 && size_t(column) < _dataSet->columnCount())
 	{
 		Column &columnref = _dataSet->column(column);
 		return QVariant(columnref.columnType());
@@ -159,14 +159,14 @@ QVariant DataSetTableModel::columnIcon(int column) const
 
 bool DataSetTableModel::columnHasFilter(int column) const
 {
-	if(_dataSet != NULL && column >= 0 && size_t(column) < _dataSet->columnCount())
+	if(_dataSet != nullptr && column >= 0 && size_t(column) < _dataSet->columnCount())
 		return _dataSet->column(column).hasFilter();
 	return false;
 }
 
 bool DataSetTableModel::columnUsedInEasyFilter(int column) const
 {
-	if(_dataSet != NULL && size_t(column) < _dataSet->columnCount())
+	if(_dataSet != nullptr && size_t(column) < _dataSet->columnCount())
 	{
 		std::string colName = _dataSet->column(column).name();
 		return columnNameUsedInEasyFilter.count(colName) > 0 && columnNameUsedInEasyFilter.at(colName);
@@ -176,7 +176,7 @@ bool DataSetTableModel::columnUsedInEasyFilter(int column) const
 
 int DataSetTableModel::columnsFilteredCount()
 {
-	if(_dataSet == NULL) return 0;
+	if(_dataSet == nullptr) return 0;
 
 	int colsFiltered = 0;
 
@@ -228,7 +228,7 @@ int DataSetTableModel::getMaximumColumnWidthInCharacters(size_t columnIndex) con
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
-	if (_dataSet == NULL)
+	if (_dataSet == nullptr)
 		return QVariant();
 
 	if (role == Qt::DisplayRole)
@@ -283,7 +283,7 @@ QHash<int, QByteArray> DataSetTableModel::roleNames() const
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	/*if (_dataSet == NULL)
+	/*if (_dataSet == nullptr)
 		return false;
 
 	bool ok;
@@ -312,7 +312,7 @@ Qt::ItemFlags DataSetTableModel::flags(const QModelIndex &index) const
 
 bool DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newColumnType)
 {
-	if (_dataSet == NULL)
+	if (_dataSet == nullptr)
 		return true;
 
 	bool changed = _dataSet->column(columnIndex).changeColumnType(newColumnType);

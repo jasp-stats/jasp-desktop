@@ -5,7 +5,7 @@ import JASP.Theme		1.0
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
-Item
+FocusScope
 {
 	id:			modulesMenu
 
@@ -17,6 +17,12 @@ Item
 	property bool opened: false //should be from some model
 
 	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1
+
+	Keys.onEscapePressed: if(opened)
+	{
+		opened = false;
+		focus = false;
+	}
 
 	Rectangle
 	{

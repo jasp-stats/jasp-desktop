@@ -124,7 +124,7 @@ void DataSetView::calculateCellSizes()
 
 	setHeaderHeight(_model->columnCount() == 0 ? 0 : _cellSizes[0].height() + _itemVerticalPadding * 2);
 
-	float w=_rowNumberMaxWidth;
+	float w = _rowNumberMaxWidth;
 	for(int col=0; col<_model->columnCount(); col++)
 		w += _dataColsMaxWidth[col];
 
@@ -203,8 +203,8 @@ void DataSetView::determineCurrentViewPortIndices()
 	if(_currentViewportColMax == -1)
 		_currentViewportColMax = _model->columnCount();
 
-	_currentViewportColMin = std::max(0,									_currentViewportColMin - _viewportMargin);
-	_currentViewportColMax = std::max(0, std::min(_model->columnCount(),	_currentViewportColMax + _viewportMargin));
+	_currentViewportColMin = std::max(0,										_currentViewportColMin - _viewportMargin);
+	_currentViewportColMax = std::max(0, std::min(_model->columnCount(),		_currentViewportColMax + _viewportMargin));
 
 	_currentViewportRowMin = std::max(0, qRound(leftTop.y()	/ _dataRowsMaxHeight) - 1);
 	_currentViewportRowMax = std::max(0, std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount()));
@@ -274,13 +274,11 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 {
 	JASPTIMER_RESUME(buildNewLinesAndCreateNewItems);
 
-	//_lines.clear();
 #ifdef ADD_LINES_PLEASE
 	_linesActualSize = 0;
 	size_t expectedLinesSize = (_currentViewportColMax - _currentViewportColMin) * (_currentViewportRowMax - _currentViewportRowMin) * 4 * 2;
 	if(_lines.size() < expectedLinesSize)
 		_lines.resize(expectedLinesSize);
-	//_lines.reserve(expectedLinesSize);
 #endif
 
 	//and now we should create some new ones!
@@ -564,8 +562,6 @@ QQuickItem * DataSetView::createRowNumber(int row)
 
 		//rowNumber->setProperty("text", QString::fromStdString(std::to_string(row + 1))); //Nobody wants zero-based rows...
 
-		rowNumber->setY(_dataRowsMaxHeight * (1 + row));
-		rowNumber->setZ(-3);
 		rowNumber->setHeight(_dataRowsMaxHeight);
 		rowNumber->setWidth(_rowNumberMaxWidth);
 
@@ -577,6 +573,8 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		rowNumber = _rowNumberItems[row]->item;
 
 	rowNumber->setX(_viewportX);
+	rowNumber->setY(_dataRowsMaxHeight * (1 + row));
+	rowNumber->setZ(-3);
 
 	return _rowNumberItems[row]->item;
 }
@@ -659,7 +657,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 			columnHeader->setParentItem(this);
 		}
 
-		columnHeader->setZ(-3);
+
 		columnHeader->setHeight(_dataRowsMaxHeight);
 		columnHeader->setWidth(_dataColsMaxWidth[col]);
 
@@ -672,6 +670,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 
 	columnHeader->setX(_colXPositions[col]);
 	columnHeader->setY(_viewportY);
+	columnHeader->setZ(-3);
 
 	return columnHeader;
 }
@@ -942,11 +941,8 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	const int linesPerNode = 2048;
 
-	if(!oldNode)
-		oldNode = new QSGNode();
-	else if(!_linesWasChanged)
-		return oldNode;
-	
+	if(!oldNode)				oldNode = new QSGNode();
+	else if(!_linesWasChanged)	return oldNode;
 	
 	QSGGeometryNode * currentNode = static_cast<QSGGeometryNode*>(oldNode->firstChild());
 
