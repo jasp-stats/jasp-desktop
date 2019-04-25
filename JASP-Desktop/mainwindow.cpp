@@ -617,17 +617,10 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
-	if (!_IORequestMutex.tryLock())
-	{
-		qDebug() << "Mutex locked!";
-		return;
-	}
-
 	if (event->operation() == FileEvent::FileOpen)
 	{
 		if (_package->isLoaded() || _analyses->count() > 0) //If no data is loaded but we have analyses then we probably want to play with summary stats or something. So lets just open in a new instance.
 		{
-			_IORequestMutex.unlock();
 			// If this instance has a valid OSF connection save this setting for a new instance
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
@@ -875,9 +868,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		else
 			_applicationExiting = false;
 	}
-
-	_IORequestMutex.unlock();
-
 }
 
 
