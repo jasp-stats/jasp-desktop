@@ -58,7 +58,7 @@ Item
 		Repeater
 		{
 			id		: repeater
-            model	: menu.props === undefined ? undefined : menu.props["model"]
+			model	: menu.props === undefined ? undefined : menu.props["model"]
 
 			onItemAdded:
 			{
@@ -105,8 +105,6 @@ Item
 						Image
 						{
 							id		: menuItemImage
-							visible : menu.hasIcons
-
 							height	: menuItem.height - menu._iconPad
 							width	: menuItem.height - menu._iconPad
 
