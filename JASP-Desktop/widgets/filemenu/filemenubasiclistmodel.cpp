@@ -1,6 +1,7 @@
 #include "filemenubasiclistmodel.h"
 #include <QFileInfo>
 #include <QDir>
+#include <QTimer>
 
 FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystemModel * model) : QAbstractListModel(parent), _model(model)
 {
@@ -101,5 +102,23 @@ void FileMenuBasicListModel::openFile(const QString& path)
 void FileMenuBasicListModel::saveFile(const QString& path)
 {
 	std::cout << "Override basicListModel::saveFile!" << std::endl;
+}
+
+QMutex FileMenuBasicListModel::_opening;
+
+bool FileMenuBasicListModel::mayOpen()
+{
+	if (_opening.tryLock())
+	{
+		QTimer::singleShot(1000, this, &FileMenuBasicListModel::resetOpening);
+		return true;
+	}
+	else
+		return false;
+}
+
+void FileMenuBasicListModel::resetOpening()
+{
+	_opening.unlock();
 }
 
