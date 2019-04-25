@@ -18,12 +18,24 @@ Rectangle
 	property bool mainHovered:		descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
 	property bool allHovered:		mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
 	property bool hasBreadCrumbs:	false
+	property bool opening:			false
 	focus:true
 
 	function openStuff(model)
 	{
+		if (opening)
+			return;
+
+		opening = true
 		if (model.type === 3)	rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
 		else					rectTitleAndDescripton.cppModel.openFile(model.path)
+	}
+
+	Timer
+	{
+		id: waitOpening
+		interval: 1000
+		onTriggered: opening = false
 	}
 
 	Rectangle

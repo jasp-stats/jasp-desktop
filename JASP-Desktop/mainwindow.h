@@ -255,7 +255,6 @@ private:
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
-	QMutex							_IORequestMutex;
 
 	bool							_applicationExiting		= false,
 									_resultsViewLoaded		= false,
