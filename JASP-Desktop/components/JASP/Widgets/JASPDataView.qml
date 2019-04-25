@@ -18,6 +18,7 @@ FocusScope
 	property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 	property alias itemVerticalPadding:		theView.itemVerticalPadding
 	property alias font:					theView.font
+	property alias rowNumberWidth:			theView.rowNumberWidth
 
 	JASPMouseAreaToolTipped
 	{

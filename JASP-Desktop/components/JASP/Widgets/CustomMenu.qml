@@ -97,7 +97,7 @@ Item
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuItemHeight
-						color	: mouseArea.pressed ? Theme.buttonMenuColorHovered : mouseArea.containsMouse ? Theme.buttonMenuColorPressed : "transparent" //pressed and hovered seem switched, because they are! I think it looks better here
+						color	: mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy

@@ -31,11 +31,15 @@
 
 #include "./convertedstringcontainer.h"
 
+#include "timers.h"
+
 namespace spss
 {
 
 ImportDataSet* SPSSImporter::loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progress)
 {
+	JASPTIMER_RESUME(SPSSImporter::loadFile);
+
 	// Open the file.
 	SPSSStream stream(locator.c_str(), std::ios::in | std::ios::binary);
 
@@ -204,6 +208,8 @@ ImportDataSet* SPSSImporter::loadFile(const std::string &locator, boost::functio
 
 	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " std::string cells.");
 
+
+	JASPTIMER_STOP(SPSSImporter::loadFile);
 
 	// bail if unknown number of cases.
 	if (dataset->hasNoCases())

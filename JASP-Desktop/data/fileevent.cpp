@@ -24,36 +24,22 @@
 #include <QTimer>
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
-	: QObject(parent)
+	: QObject(parent), _operation(fileMode)
 {
-	_readOnly = false;
-	_chainedTo = nullptr;
-	_operation = fileMode;
-	_last_error = "Unkown error";
-	switch (fileMode)
+	switch (_operation)
 	{
-	case FileEvent::FileExportResults:
-		_exporter = new ResultExporter();
-		break;
-	case FileEvent::FileExportData:
-		_exporter = new DataExporter(true);
-		break;
-	case FileEvent::FileGenerateData:
-		_exporter = new DataExporter(false);
-		break;
-	case FileEvent::FileSave:
-		_exporter = new JASPExporter();
-		break;
-	default:
-		_exporter = nullptr;
+	case FileEvent::FileExportResults:	_exporter = new ResultExporter();		break;
+	case FileEvent::FileExportData:		_exporter = new DataExporter(true);		break;
+	case FileEvent::FileGenerateData:	_exporter = new DataExporter(false);	break;
+	case FileEvent::FileSave:			_exporter = new JASPExporter();			break;
+	default:							_exporter = nullptr;					break;
 	}
 }
 
 FileEvent::~FileEvent()
 {
-	if (_exporter != nullptr) {
-		delete _exporter;
-	}
+	delete _exporter;
+	_exporter = nullptr;
 }
 
 void FileEvent::setDataFilePath(const QString &path)
@@ -64,106 +50,49 @@ void FileEvent::setDataFilePath(const QString &path)
 bool FileEvent::setPath(const QString &path)
 {
 	_path = path;
-	bool result = true;
-	Utils::FileType filetype = Utils::getTypeFromFileName(path.toStdString());
+	_type = Utils::getTypeFromFileName(path.toStdString());
 
-
-    if (filetype == Utils::unknown)
+	if(_exporter != nullptr)
 	{
-		if (_exporter != nullptr) {
-			filetype = _exporter->getDefaultFileType();
-			_path.append('.');
-			_path.append(Utils::getFileTypeString(filetype));
-		}
-	}
-
-	if (_exporter != nullptr)
-	{
-		result = _exporter->isFileTypeAllowed(filetype);
-		if (result)
+		if (_type == Utils::unknown)
 		{
-			_exporter->setFileType(filetype);
+			_type = _exporter->getDefaultFileType();
+			_path.append('.' + QString(Utils::getFileTypeString(_type)));
 		}
-		else
+		else if(!_exporter->isFileTypeAllowed(_type)) //Because an exporter should always support it's own default
 		{
 			_last_error = "File must be of type ";
-			bool first = true;
-			bool last = false;
+
 			Utils::FileTypeVector allowedFileTypes = _exporter->getAllowedFileTypes();
-			for (Utils::FileTypeVector::const_iterator it = allowedFileTypes.begin(); it != allowedFileTypes.end(); it++) {
-				Utils::FileTypeVector::const_iterator next = it; next++;
-				if (next == allowedFileTypes.end()) last = true;
-				if (last && !first) _last_error.append(" or ");
-				if (!last && !first) _last_error.append(", ");
-				_last_error.append(Utils::getFileTypeString(*it));
-				first = false;
+
+			for (size_t i=0; i< allowedFileTypes.size(); i++)
+			{
+				if(i > 0)
+				{
+					if (i == allowedFileTypes.size() - 1)	_last_error.append(" or ");
+					else									_last_error.append(", ");
+				}
+
+				_last_error.append(Utils::getFileTypeString(allowedFileTypes[i]));
 			}
+
+			return false;
 		}
+
+		_exporter->setFileType(_type);
 	}
 
-	_type = filetype;
-
-	return result;
+	return true;
 
 }
 
-QString FileEvent::getLastError() const {
-	return _last_error;
-}
-
-void FileEvent::setReadOnly()
+void FileEvent::setComplete(bool success, const QString & message)
 {
-	_readOnly = true;
-}
-
-FileEvent::FileMode FileEvent::operation() const
-{
-	return _operation;
-}
-
-Utils::FileType FileEvent::type() const
-{
-	return _type;
-}
-
-
-const QString &FileEvent::path() const
-{
-	return _path;
-}
-
-const QString &FileEvent::dataFilePath() const
-{
-	return _dataFilePath;
-}
-
-bool FileEvent::isReadOnly() const
-{
-	return _readOnly;
-}
-
-void FileEvent::setComplete(bool success, const QString &message)
-{
-	_isComplete = true;
-	_success = success;
-	_message = message;
+	_completed	= true;
+	_success	= success;
+	_message	= message;
 
 	emit completed(this);
-}
-
-bool FileEvent::isCompleted() const
-{
-	return _isComplete;
-}
-
-bool FileEvent::successful() const
-{
-	return _success;
-}
-
-const QString &FileEvent::message() const
-{
-	return _message;
 }
 
 void FileEvent::chain(FileEvent *event)
@@ -172,12 +101,3 @@ void FileEvent::chain(FileEvent *event)
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
 }
 
-void FileEvent::chainedComplete(FileEvent *event)
-{
-	setComplete(event->successful(), event->message());
-}
-
-bool FileEvent::IsOnlineNode() const
-{
-	return _path.startsWith("http");
-}

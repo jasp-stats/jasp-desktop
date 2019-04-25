@@ -629,18 +629,12 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
-			//_qml->clearComponentCache();
-
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
+			JASPTIMER_RESUME(Delayed Load);
 			_resultsJsInterface->clearWelcomeScreen(true);
 
-			_openEvent = event;
-
-			// Wait for JS callback clearing welcome screen to call funtions below in delayedLoadHandler
-			//_loader.io(event, _package);
-			//showProgress(event->type() != Utils::FileType::jasp);
-
+			_openEvent = event; //Used in delayedLoadHandler
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -747,7 +741,7 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 	{
 		FileEvent * saveEvent = _fileMenu->save();
 
-		if(saveEvent->isCompleted())	return saveEvent->successful();
+		if(saveEvent->isCompleted())	return saveEvent->isSuccessful();
 		else							_savingForClose = true;
 	}
 	[[clang::fallthrough]];
@@ -770,7 +764,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			populateUIfromDataSet(event->type() != Utils::FileType::jasp);
 			QString name = QFileInfo(event->path()).baseName();
@@ -813,7 +807,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		bool testingAndSaving = resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave();
 
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			QString name = QFileInfo(event->path()).baseName();
 
@@ -843,7 +837,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			_analyses->setVisible(false);
 			_analyses->clear();
@@ -1194,7 +1188,7 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
 	hideProgress();
 
-	if (event->successful())
+	if (event->isSuccessful())
 	{
 		_package->setDataFilePath(event->path().toStdString());
 		_package->setDataFileReadOnly(false);
@@ -1437,11 +1431,11 @@ void MainWindow::delayedLoadHandler()
 		_loader.io(_openEvent, _package);
 		showProgress(_openEvent->type() != Utils::FileType::jasp);
 		_openEvent = nullptr;
-	}
-	else {
-		std::cerr << "Unable to open file" << std::endl;
-	}
 
+		JASPTIMER_STOP(Delayed Load);
+	}
+	else
+		std::cerr << "Unable to open file" << std::endl;
 }
 
 void MainWindow::getAnalysesUserData()

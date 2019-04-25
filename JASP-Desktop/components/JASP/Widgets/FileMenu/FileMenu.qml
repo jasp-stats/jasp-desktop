@@ -15,7 +15,7 @@ FocusScope
 	{
 		for (var i = 0; i < actionRepeaterId.count; i++)
 		{
-			var nextActElt = (i < (actionRepeaterId.count - 1) ? actionRepeaterId.itemAt(i + 1) : actionRepeaterId.itemAt(0)).children[0]
+			var nextActElt = actionRepeaterId.itemAt((i + 1) % actionRepeaterId.count).children[0]
 
 			actionRepeaterId.itemAt(i).children[0].KeyNavigation.down	= nextActElt
 			actionRepeaterId.itemAt(i).children[0].KeyNavigation.tab	= nextActElt
@@ -24,7 +24,7 @@ FocusScope
 
 		for (var j = 0; j < resourceRepeaterId.count; j++)
 		{
-			var nextResElt = (j < (resourceRepeaterId.count- 1) ? resourceRepeaterId.itemAt(j + 1) : resourceRepeaterId.itemAt(0)).children[0]
+			var nextResElt = resourceRepeaterId.itemAt((j + 1) % resourceRepeaterId.count).children[0]
 
 			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.down	= nextResElt
 			resourceRepeaterId.itemAt(j).children[0].KeyNavigation.tab	= nextResElt
@@ -57,17 +57,25 @@ FocusScope
 	property int  actionButtionHeight:		35 * preferencesModel.uiScale
 	property int  resourceButtonHeight:		1.5 * actionButtionHeight
 	property int  nbColumns:				1 + (selectedActionMenu !== null && selectedActionMenu.hasResourceMenu ? 1 : 0 )
-	property int  colWidths:				150 * preferencesModel.uiScale
+	property int  colWidths:				150
 	property var  selectedActionMenu:		null
 
-	focus: fileMenuModel.visible
+	//focus: fileMenuModel.visible
+
+	Connections
+	{
+		target:				fileMenuModel
+		onVisibleChanged:	if(fileMenuModel.visible) fileMenu.forceActiveFocus(); else fileMenu.focus = false;
+	}
 
 	Item
 	{
 		id:		slidePart
 
-		x:		!fileMenuModel.visible ? -(resourceScreen.otherColumnsWidth + resourceScreen.width) : 0
-		width:	resourceScreen.x + resourceScreen.width
+		property real desiredX: !fileMenuModel.visible ? -(resourceScreen.otherColumnsWidth + resourceScreen.width) : 0
+
+		x:		desiredX
+		width:	(fileMenu.nbColumns * fileMenu.colWidths * preferencesModel.uiScale) + (resourceScreen.aButtonVisible ? resourceScreen.width : 0)
 		height: fileMenu.height
 
 		Behavior on x
@@ -84,7 +92,7 @@ FocusScope
 		{
 			id:				actionMenu
 			anchors.left:	parent.left
-			width:			fileMenu.colWidths //fileMenuModel.visible ?  : 0
+			width:			fileMenu.colWidths * preferencesModel.uiScale
 			height:			parent.height
 			z:				2
 
@@ -92,7 +100,7 @@ FocusScope
 			border.width:	1
 			border.color:	Theme.uiBorder
 
-			onVisibleChanged:	if (visible) actionRepeaterId.itemAt(0).getButton().forceActiveFocus()
+			onVisibleChanged: if (visible && selectedActionMenu === null) actionRepeaterId.itemAt(0).getButton().forceActiveFocus()
 
 			Column
 			{
@@ -130,7 +138,6 @@ FocusScope
 						{
 							id:				actionMenuButton
 
-							isIcon:				false
 							hasSubMenu:			hasResourceMenu
 							clickOnHover:		true
 							clickWhenFocussed:	!waitForClickButton(typeRole)
@@ -159,12 +166,6 @@ FocusScope
 								}
 							}
 
-							Connections
-							{
-								target: fileMenuModel
-								onActionButtonSelected: if(typeRole === action) actionMenuButton.forceActiveFocus(); //If setting from cpp!
-							}
-
 							onClicked:
 							{
 								if (typeRole === FileOperation.About)
@@ -178,6 +179,8 @@ FocusScope
 									updateNavigationKeys()
 								}
 							}
+
+							Keys.onLeftPressed: fileMenuModel.visible = false;
 						}
 
 						ToolSeparator
@@ -198,10 +201,22 @@ FocusScope
 
 		Rectangle
 		{
-			id:				resourceMenu
-			width:			fileMenu.colWidths
-			anchors.left:	actionMenu.right
-			height:			parent.height
+			id:					resourceMenu
+
+			width:				fileMenu.colWidths * preferencesModel.uiScale
+			height:				parent.height
+			anchors.left:		actionMenu.right
+			anchors.leftMargin: hasButtons ? 0 : - fileMenu.colWidths * preferencesModel.uiScale
+
+			Behavior on anchors.leftMargin
+			{
+				PropertyAnimation
+				{
+					id:				resourceMenuAnimation
+					duration:		Theme.fileMenuSlideDuration
+					easing.type:	Easing.OutCubic
+				}
+			}
 
 			color:			Theme.fileMenuColorBackground
 			border.width:	1
@@ -225,9 +240,8 @@ FocusScope
 
 				Repeater
 				{
-					id: resourceRepeaterId
-
-					model: fileMenuModel.resourceButtonsVisible
+					id:		resourceRepeaterId
+					model:	fileMenuModel.resourceButtonsVisible
 
 					Item
 					{
@@ -242,7 +256,6 @@ FocusScope
 						MenuButton
 						{
 							id:				resourceButton
-							isIcon:			false
 							hasSubMenu:		true
 							width:			parent.width
 							height:			parent.height
@@ -259,8 +272,6 @@ FocusScope
 				}
 			}
 		}
-
-		focus: true
 
 		Item
 		{
@@ -299,11 +310,11 @@ FocusScope
 
 		Rectangle
 		{
-			property real otherColumnsWidth: fileMenu.colWidths * fileMenu.nbColumns
-			property bool aButtonVisible: selectedActionMenu !== null && selectedActionMenu.hasResourceMenu && fileMenuModel.resourceButtons.currentQML !== ''
+			property real otherColumnsWidth:	fileMenu.colWidths * fileMenu.nbColumns * preferencesModel.uiScale
+			property bool aButtonVisible:		selectedActionMenu !== null && selectedActionMenu.hasResourceMenu && fileMenuModel.resourceButtons.currentQML !== ''
 
-			property real desiredWidth: Math.min(mainWindowRoot.width - otherColumnsWidth, 600 * preferencesModel.uiScale)
-			property real desiredX:     otherColumnsWidth - (aButtonVisible ? 0 : desiredWidth)
+			property real desiredWidth:			Math.min(mainWindowRoot.width - otherColumnsWidth, 600 * preferencesModel.uiScale)
+			property real desiredX:				otherColumnsWidth - (aButtonVisible ? 0 : desiredWidth)
 
 			property string previousQML: ""
 			property string currentQML: ""
@@ -348,6 +359,8 @@ FocusScope
 				id:					showSelectedSubScreen
 				anchors.fill:		parent
 				source:				resourceScreen.currentQML === "" && resourceScreen.x > resourceScreen.desiredX ? resourceScreen.previousQML : resourceScreen.currentQML
+
+				onLoaded:			if(resourceScreen.currentQML !== "") forceActiveFocus();
 			}
 		}
 

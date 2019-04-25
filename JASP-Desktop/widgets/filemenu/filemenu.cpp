@@ -161,7 +161,6 @@ FileEvent *FileMenu::close()
 	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
 	dataSetIORequestHandler(event);
 
-	setFileoperation(ActionButtons::FileOperation::Open);
 	return event;
 }
 
@@ -230,7 +229,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			//  don't add examples to the recent list
 			if (!event->isReadOnly())
@@ -254,7 +253,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
-		if (event->successful())		setCurrentDataFile(event->dataFilePath());
+		if (event->isSuccessful())		setCurrentDataFile(event->dataFilePath());
 		else
 			std::cout << "Sync failed: " << event->getLastError().toStdString() << std::endl;
 	}
@@ -269,7 +268,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_currentDataFile->getCurrentFilePath().isEmpty());
 		
-	if (event->successful())
+	if (event->isSuccessful())
 	{
 		switch(event->operation())
 		{
@@ -325,7 +324,7 @@ void FileMenu::analysisAdded(Analysis *analysis)
 
 void FileMenu::setSyncFile(FileEvent *event)
 {
-	if (event->successful())
+	if (event->isSuccessful())
 		setCurrentDataFile(event->path());
 }
 
@@ -369,7 +368,8 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 
 	case ActionButtons::FileOperation::Close:
 		close(); //After selecting open-button to make menu less ugly
-		emit actionButtonSelected(ActionButtons::Open);
+		//actionButtonClicked(ActionButtons::Open);
+		emit actionButtonSelected(ActionButtons::FileOperation::Open); //Sends a signal to qml to make *it* select the button to avoid racin
 		break;
 
 	default:

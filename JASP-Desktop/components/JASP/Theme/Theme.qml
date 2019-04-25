@@ -29,7 +29,7 @@ QtObject {
 	readonly property color black:				"black"
 	readonly property color gray:				"#d1d1d1"
 	readonly property color grayDarker:			Qt.darker(gray, 1.5)
-	readonly property color grayLighter:		"#d4d4d4"
+	readonly property color grayLighter:		"#E0E0E0"
 	readonly property color grayMuchLighter:	"#ECECEC"
 	readonly property color grayVeryMuchLighter:"#F4F6F7"
 	readonly property color blue:				"#419BF9"
@@ -47,16 +47,11 @@ QtObject {
 	readonly property color uiBackground:				grayMuchLighter
 	readonly property color uiBorder:					grayDarker
 
-	readonly property color buttonColor:				grayMuchLighter
-	readonly property color buttonBorderColor:			gray
+	readonly property color buttonColor:				uiBackground
 	readonly property color buttonColorHovered:			grayLighter
-	readonly property color buttonBorderColorHovered:	black
 	readonly property color buttonColorPressed:			gray
-
-	readonly property color buttonMenuColorPressed:		gray
-	readonly property color buttonMenuColorFocus:		grayLighter
-	readonly property color buttonMenuColorSelected:	grayLighter
-	readonly property color buttonMenuColorHovered:		grayMuchLighter
+	readonly property color buttonBorderColor:			gray
+	readonly property color buttonBorderColorHovered:	black
 
 	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
 

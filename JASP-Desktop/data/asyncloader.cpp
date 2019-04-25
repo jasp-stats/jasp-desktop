@@ -88,7 +88,7 @@ void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 	_currentEvent = event;
 	_currentPackage = package;
 
-	if (event->IsOnlineNode())
+	if (event->isOnlineNode())
 		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
 	else
 		this->loadPackage("asyncloader");
@@ -100,7 +100,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 	_currentEvent = event;
 
 	QString path = event->path();
-	if (event->IsOnlineNode())
+	if (event->isOnlineNode())
 		path = _odm->getLocalPath(path);
 
 	QString tempPath = path + QString(".tmp");
@@ -119,7 +119,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 			delay += sleepTime;
 		}
 
-		Exporter *exporter = event->getExporter();
+		Exporter *exporter = event->exporter();
 		if (exporter)
 		{
 			exporter->saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
@@ -130,7 +130,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
-		if (event->IsOnlineNode())
+		if (event->isOnlineNode())
 			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, tq(package->id())), Q_ARG(QString, tq(package->initialMD5())));
 		else
 			event->setComplete();
@@ -186,7 +186,7 @@ void AsyncLoader::loadPackage(QString id)
 			string path = fq(_currentEvent->path());
 			string extension = "";
 
-			if (_currentEvent->IsOnlineNode())
+			if (_currentEvent->isOnlineNode())
 			{
 				//Find file extension in the OSF
 				extension=".jasp"; //default
@@ -239,7 +239,7 @@ void AsyncLoader::loadPackage(QString id)
 			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
 				_currentPackage->setDataFilePath(_currentEvent->path().toStdString());
-				_currentPackage->setDataFileTimestamp(_currentEvent->IsOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t());
+				_currentPackage->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t());
 			}
 			_currentPackage->setDataFileReadOnly(_currentEvent->isReadOnly());
 			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath()));
@@ -291,7 +291,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 		{
 			string path = fq(_currentEvent->path());
 
-			if (_currentEvent->IsOnlineNode())
+			if (_currentEvent->isOnlineNode())
 			{
 				dataNode = _odm->getActionDataNode(id);
 

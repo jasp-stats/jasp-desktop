@@ -1,17 +1,18 @@
 import QtQuick 2.0
 import JASP.Theme 1.0
 
-ListView {
-	id: listOfStuff
-	property string __debugName: "ElementView"
-	//clip: true
+ListView
+{
+	id:						listOfStuff
+	width:					0
+	spacing:				4
+	maximumFlickVelocity:	Theme.maximumFlickVelocity
 
-	property real maxWidth: 300 * preferencesModel.uiScale
-	property real widthMargin: 10
-	spacing: 4
-	maximumFlickVelocity: Theme.maximumFlickVelocity
+	property string	__debugName:	"ElementView"
+	property real	maxWidth:		300 * preferencesModel.uiScale
+	property real	widthMargin:	10
 
-	property int _recalculateWidth: 0 //To trigger a recalculation of the width from the delegates
+	property int	_recalculateWidth: 0 //To trigger a recalculation of the width from the delegates
 
 	onMaxWidthChanged:
 	{

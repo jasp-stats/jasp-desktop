@@ -36,7 +36,6 @@ FocusScope
 	property bool	iconLeft:			true
 
 	property real	_scaledDim:			32 * preferencesModel.uiScale
-	property bool	_showHovered:		filterButtonRoot.enabled && filterButtonRoot.hovered
 	property alias	_pressed:			buttonMouseArea.pressed
 	property alias  color:				rect.color
 	property alias	border:				rect.border
@@ -67,8 +66,8 @@ FocusScope
 	{
 		id: rect
 
-		color:			_pressed || selected ? Theme.buttonColorPressed :	_showHovered ?				Theme.buttonColorHovered		: Theme.buttonColor
-		border.color:														_showHovered || selected ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+		color:			(_pressed || selected) ? Theme.buttonColorPressed :	filterButtonRoot.hovered ?					Theme.buttonColorHovered		: Theme.buttonColor
+		border.color:														(filterButtonRoot.hovered || selected) ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 		border.width:	1
 		focus:			true
 		width:			parent.width
@@ -78,10 +77,10 @@ FocusScope
 		{
 			id:							buttonMouseArea
 			anchors.fill:				parent
-			acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
+			acceptedButtons:			Qt.LeftButton
 			hoverEnabled:				true
-			cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-			onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.forceActiveFocus(); filterButtonRoot.clicked(); }
+			cursorShape:				Qt.PointingHandCursor
+			onClicked:					{ filterButtonRoot.forceActiveFocus(); filterButtonRoot.clicked(); }
 			visible:					filterButtonRoot.enabled
 			//propagateComposedEvents:	true
 		}

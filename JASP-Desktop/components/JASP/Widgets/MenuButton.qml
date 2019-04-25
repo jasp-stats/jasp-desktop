@@ -9,29 +9,11 @@ RectangularButton
 	id: root
 	property bool clickOnHover:			false
 	property bool clickWhenFocussed:	true;
-	property bool isIcon:				true
 	property bool hasSubMenu:			false
 
 	font: Theme.fontRibbon
 
-	color:
-	{
-		if (isIcon)
-		{
-			if (_pressed || _showHovered)	return Theme.buttonColorPressed
-			else							return "transparent"
-		}
-		else if (_pressed)					return Theme.buttonMenuColorPressed;
-		else if (selected)
-		{
-			if (activeFocus)				return Theme.buttonMenuColorFocus;
-			else							return Theme.buttonMenuColorSelected;
-		}
-		else if (_showHovered)				return Theme.buttonMenuColorHovered;
-		else								return "transparent";
-
-	}
-
+	color: (_pressed || selected) ? Theme.buttonColorPressed : root.hovered ? Theme.buttonColorHovered : "transparent"
 	border.width:	0
 	centerText:		false
 

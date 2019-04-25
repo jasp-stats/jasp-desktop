@@ -36,81 +36,25 @@ FocusScope
 			onDoubleClicked:	__myRoot.doubleClicked()
 
 			leftTopCornerItem:
-				Rectangle
+				RectangularButton
 				{
-					id:		filterToggleButton
-					color:	Theme.uiBackground
-					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-					//					GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
-
-					ToolTip.text:		filterWindow.opened ? "Hide filter" : "Show filter"
-					ToolTip.timeout:	4500
-					ToolTip.delay:		500
-					ToolTip.visible:	filterToggleButtonMouseArea.containsMouse
-
-					Image
-					{
-						source:				"qrc:/images/filter.png"
-						sourceSize.width:	width * 2
-						sourceSize.height:	height * 2
-						width:				height
-
-						anchors.top:				parent.top
-						anchors.bottom:				parent.bottom
-						anchors.horizontalCenter:	parent.horizontalCenter
-						anchors.margins:			4
-
-
-					}
-
-					MouseArea
-					{
-						id:				filterToggleButtonMouseArea
-						anchors.fill:	parent
-						onClicked:		filterWindow.toggle()
-						hoverEnabled:	true
-						cursorShape:	Qt.PointingHandCursor
-					}
+					id:				filterToggleButton
+					width:			dataTableView.rowNumberWidth
+					toolTip:		filterWindow.opened ? "Hide filter" : "Show filter"
+					iconSource:		"qrc:/images/filter.png"
+					onClicked:		filterWindow.toggle()
+					border.width:	0
 				}
 
 			extraColumnItem:
-				Rectangle
+				RectangularButton
 				{
-					id:		addColumnButton
-					width:	40
-					color:	Theme.uiBackground
-					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-					//					GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
-
-					ToolTip.text:		"Add computed column"
-					ToolTip.timeout:	4500
-					ToolTip.delay:		500
-					ToolTip.visible:	addColumnButtonMouseArea.containsMouse
-
-					Image
-					{
-						source:				"qrc:/icons/addition-sign.svg"
-						sourceSize.width:	width * 2
-						sourceSize.height:	height * 2
-						width:				height
-
-						anchors.top:				parent.top
-						anchors.bottom:				parent.bottom
-						anchors.horizontalCenter:	parent.horizontalCenter
-						anchors.margins:	4
-
-					}
-
-					MouseArea
-					{
-						id:				addColumnButtonMouseArea
-						anchors.fill:	parent
-						onClicked:		createComputeDialog.open()
-						hoverEnabled:	true
-						cursorShape:	Qt.PointingHandCursor
-					}
-
-
+					id:				addColumnButton
+					width:			40
+					toolTip:		"Add computed column"
+					iconSource:		"qrc:/icons/addition-sign.svg"
+					onClicked:		createComputeDialog.open()
+					border.width:	0
 				}
 
 			rowNumberDelegate:

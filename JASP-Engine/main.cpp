@@ -16,6 +16,7 @@
 //
 
 #include "engine.h"
+#include "timers.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -51,8 +52,11 @@ int main(int argc, char *argv[])
 
 		std::cout << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
 
+		JASPTIMER_START(Engine Starting);
 		Engine e(slaveNo, parentPID);
 		e.run();
+
+		JASPTIMER_PRINTALL();
 
 		std::cout << "jaspEngine " << slaveNo << " child of " << parentPID << " stops." << std::endl;
 		return 0;

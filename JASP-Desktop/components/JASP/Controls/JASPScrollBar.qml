@@ -36,7 +36,7 @@ Item {
 	property int minimumLength				: 16 * preferencesModel.uiScale
 	property string bkColor					: Theme.white; //Use JASPTheme when available!
 	property string fgColor					: Theme.black;
-	property string pressedColor			: "#72a0cc";
+	property string pressedColor			: Theme.blueLighter;
 	property bool outerradius				: false;
 	property bool innerradius				: false;
 	property bool showarrows				: false;

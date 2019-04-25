@@ -38,10 +38,12 @@ Item
 		text: fileMenuModel.currentFile.getHeaderText()	//For shorcut key
 	}
 	 
-	FileList {
-		id:			currentFileList
-		cppModel:	fileMenuModel.currentFile.listModel
+	FileList
+	{
+		id:				currentFileList
+		cppModel:		fileMenuModel.currentFile.listModel
 		hasBreadCrumbs: false
+		focus:			true
 
 		anchors
 		{

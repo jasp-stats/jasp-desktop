@@ -77,7 +77,7 @@ FocusScope
 	Text
 	{
 		id: computeColumnTitle
-		text: computedColumnsInterface.computeColumnNameSelected !== "" ? computedColumnsInterface.computeColumnNameSelected : "Select a column"
+		text: computedColumnsInterface.computeColumnNameSelected !== "" ? "Computed Column: " + computedColumnsInterface.computeColumnNameSelected : "Select a column"
 		anchors.top: parent.top
 		anchors.horizontalCenter: parent.horizontalCenter
 

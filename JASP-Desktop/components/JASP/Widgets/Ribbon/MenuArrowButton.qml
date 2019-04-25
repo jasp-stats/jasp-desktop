@@ -161,7 +161,7 @@ Rectangle
 	Timer
 	{
 		id:				blockDoubleClicksTimer
-		interval:		Theme.fileMenuSlideDuration
+		interval:		Theme.fileMenuSlideDuration * 2
 		repeat:			false
 		running:		false
 

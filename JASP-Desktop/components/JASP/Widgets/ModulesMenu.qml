@@ -18,10 +18,16 @@ FocusScope
 
 	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
 
-	Keys.onEscapePressed: if(opened)
+	Keys.onEscapePressed: closeAndUnfocus();
+	Keys.onRightPressed:  closeAndUnfocus();
+
+	function closeAndUnfocus()
 	{
-		opened = false;
-		focus = false;
+		if(opened)
+		{
+			opened = false;
+			focus = false;
+		}
 	}
 
 	Rectangle

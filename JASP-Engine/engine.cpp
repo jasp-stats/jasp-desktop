@@ -29,6 +29,8 @@
 
 #include "rbridge.h"
 
+#include "timers.h"
+
 void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
 bool PollMessagesFunctionForJaspResults()
 {
@@ -53,10 +55,13 @@ Engine * Engine::_EngineInstance = NULL;
 
 Engine::Engine(int slaveNo, unsigned long parentPID) : _slaveNo(slaveNo), _parentPID(parentPID)
 {
+	JASPTIMER_START(Engine Constructor);
 	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
 
+	JASPTIMER_START(TempFiles Attach);
 	TempFiles::attach(parentPID);
+	JASPTIMER_STOP(TempFiles Attach);
 
 	rbridge_setDataSetSource(			boost::bind(&Engine::provideDataSet,				this));
 	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
@@ -72,7 +77,11 @@ Engine::Engine(int slaveNo, unsigned long parentPID) : _slaveNo(slaveNo), _paren
 
 	//usleep(10000000);
 
+	JASPTIMER_STOP(Engine Constructor);
+
+	JASPTIMER_START(rbridge_init);
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
+	JASPTIMER_STOP(rbridge_init);
 }
 
 Engine::~Engine()
@@ -85,6 +94,7 @@ Engine::~Engine()
 
 void Engine::run()
 {
+	JASPTIMER_START(Engine::run startup);
 #if defined(QT_DEBUG) || defined(__linux__)
 	if (_slaveNo == 0)
 	{
@@ -100,9 +110,16 @@ void Engine::run()
 	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
+	JASPTIMER_STOP(Engine::run startup);
+
+	bool firstLoop = true;
+
 	while(_currentEngineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
 		receiveMessages(100);
+
+		if(firstLoop)
+			JASPTIMER_STOP(Engine Starting);
 
 		switch(_currentEngineState)
 		{

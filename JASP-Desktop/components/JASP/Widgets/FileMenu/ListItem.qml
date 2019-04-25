@@ -10,15 +10,17 @@ Rectangle
 	width:			300 //Should be set from ListView
 	height:			rectTitle.height + rectDescription.height + 3
 	border.width:	1
-	border.color:	rectTitleAndDescripton.allHovered ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
+	border.color:	allHovered ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
 	color:			rectTitle.color
 
 	property var cppModel:			undefined
 
 	property bool mainHovered:		descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
 	property bool allHovered:		mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
+	property bool mainPressed:		descriptionMouseArea.pressed || fileEntryMouseArea.pressed
+	property bool allPressed:		mainPressed || firstFileOrFolderMouseArea.pressed || datafileMouseArea.pressed
 	property bool hasBreadCrumbs:	false
-	focus:true
+
 
 	function openStuff(model)
 	{
@@ -42,7 +44,7 @@ Rectangle
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				rectTitleAndDescripton.allPressed ? Theme.buttonColorPressed : rectTitleAndDescripton. allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 
 		Image
 		{

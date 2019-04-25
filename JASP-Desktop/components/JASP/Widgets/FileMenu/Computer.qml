@@ -39,10 +39,12 @@ Item
 		orientation: Qt.Horizontal
 	}
 
-	FileList {
-		id:			computerList
-		cppModel:	fileMenuModel.computer.listModel
+	FileList
+	{
+		id:				computerList
+		cppModel:		fileMenuModel.computer.listModel
 		hasBreadCrumbs: false
+		focus:			true
 
 		anchors
 		{

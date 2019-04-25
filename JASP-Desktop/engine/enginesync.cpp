@@ -484,26 +484,40 @@ void EngineSync::stopEngines()
 
 void EngineSync::pause()
 {
+	JASPTIMER_RESUME(EngineSync::pause);
+
 	//make sure we process any received messages first.
+	JASPTIMER_RESUME(EngineSync::pause process before pause);
 	for(auto engine : _engines)
 		engine->process();
+	JASPTIMER_STOP(EngineSync::pause process before pause);
 
+	JASPTIMER_RESUME(EngineSync::pause actual pause);
 	for(EngineRepresentation * e : _engines)
 		e->pauseEngine();
+	JASPTIMER_STOP(EngineSync::pause actual pause);
 
+	JASPTIMER_RESUME(EngineSync::pause wait for pause answer);
 	while(!allEnginesPaused())
 		for (auto * engine : _engines)
 			engine->process();
+	JASPTIMER_STOP(EngineSync::pause wait for pause answer);
+
+	JASPTIMER_STOP(EngineSync::pause);
 }
 
 void EngineSync::resume()
 {
+	JASPTIMER_RESUME(EngineSync::resume);
+
 	for(auto * engine : _engines)
 		engine->resumeEngine();
 
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
 			engine->process();
+
+	JASPTIMER_STOP(EngineSync::resume);
 }
 
 bool EngineSync::allEnginesStopped()
