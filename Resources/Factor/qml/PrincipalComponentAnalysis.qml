@@ -41,7 +41,7 @@ Form
 	RadioButtonGroup
 	{
 		name: "factorMethod"
-		title: qsTr("Number of Factors")
+		title: qsTr("Number of Components")
 		RadioButton
 		{
 			value: "parallelAnalysis"; label: qsTr("Parallel Analysis"); checked: true
@@ -54,7 +54,7 @@ Form
 		RadioButton
 		{
 			value: "manual"; label: qsTr("Manual")
-			IntegerField { name: "numberOfFactors"; label: qsTr("Number of Factors"); defaultValue: 1; min: 1 }
+			IntegerField { name: "numberOfFactors"; label: qsTr("Number of Components"); defaultValue: 1; min: 1 }
 		}
 	}
 
@@ -88,7 +88,7 @@ Form
 		Group
 		{
 			title: qsTr("Includes tables")
-			CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")	}
+			CheckBox { name: "incl_correlations";	label: qsTr("Component correlations")	}
 			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")			}
 			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")			}
 		}
