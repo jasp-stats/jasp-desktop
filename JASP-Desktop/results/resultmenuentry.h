@@ -20,13 +20,16 @@
 #ifndef RESULTMENUENTRY_H
 #define RESULTMENUENTRY_H
 
-#include <QString>
 #include <map>
+#include <QString>
+#include <QStringList>
+
 
 class ResultMenuEntry
 {
 public:
 	static std::map<QString, ResultMenuEntry> AllResultEntries;
+	static QStringList EntriesOrder;
 
 	ResultMenuEntry(QString displayText,
 					QString name,

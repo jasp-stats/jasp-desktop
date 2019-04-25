@@ -19,7 +19,7 @@
 #include "resultmenuentry.h"
 
 std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
-	{	"hasCollapse",				ResultMenuEntry("",					"hasCollapse",				"",									"window.collapseMenuClicked();")	},
+    {	"hasCollapse",				ResultMenuEntry("",					"hasCollapse",				"",									"window.collapseMenuClicked();")	},
 	{	"hasEditTitle",				ResultMenuEntry("Edit Title",		"hasEditTitle",				"",									"window.editTitleMenuClicked();")	},
 	{	"hasCopy",					ResultMenuEntry("Copy",				"hasCopy",					"qrc:/icons/copy.png",				"window.copyMenuClicked();")		},
 	{	"hasLaTeXCode",				ResultMenuEntry("Copy LaTeX",		"hasLaTeXCode",				"qrc:/icons/code-icon.png",			"window.latexCodeMenuClicked();")	},
@@ -31,6 +31,9 @@ std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
 	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",		"hasRemoveAllAnalyses",		"",									"")									},
 	{	"hasRefreshAllAnalyses",	ResultMenuEntry("Refresh All",		"hasRefreshAllAnalyses",	"",									"")									},
 };
+
+QStringList ResultMenuEntry::EntriesOrder = {"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg",
+                                             "hasEditImg", "hasNotes", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses"};
 
 ResultMenuEntry::ResultMenuEntry(QString displayText, QString name, QString menuImageSource, QString jsFunction)
 	: _displayText(displayText)
