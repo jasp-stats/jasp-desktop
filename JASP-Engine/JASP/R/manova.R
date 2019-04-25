@@ -230,7 +230,7 @@ Manova <- function(jaspResults, dataset, options) {
 .manovaCheckErrors <- function(dataset, options) {
   
   # Check if results can be computed
-  if ((length(options$dependent) < 2) || length(options$fixedFactors) == 0)
+  if ((length(options$dependent) < 2) || length(options$fixedFactors) == 0 || length(options$modelTerms) == 0)
     return("No variables")
   
   # Error check
