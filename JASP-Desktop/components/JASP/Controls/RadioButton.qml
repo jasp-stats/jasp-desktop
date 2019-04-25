@@ -93,8 +93,8 @@ JASPControl
 		{
 			id: focusIndicator
 			anchors.centerIn: radioIndicator
-			width: radioIndicator.width + Theme.jaspControlHighlightWidth
-			height: radioIndicator.height + Theme.jaspControlHighlightWidth
+			width: Math.floor(Math.round(radioIndicator.width + Theme.jaspControlHighlightWidth) / 2) * 2
+			height: Math.floor(Math.round(radioIndicator.height + Theme.jaspControlHighlightWidth) / 2) * 2
 			radius: width
 			color: "transparent"
 			border.width: 0
