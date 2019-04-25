@@ -241,7 +241,7 @@ Manova <- function(jaspResults, dataset, options) {
       all.target = options$dependent, 
       all.grouping = options$modelTerms[[i]][['components']],
       factorLevels.amount  = "< 2",
-      observations.amount = c('< 2'), 
+      observations.amount = paste("<", length(options$dependent)+1), 
       exitAnalysisIfErrors = TRUE)
   }
 
