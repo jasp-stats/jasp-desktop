@@ -127,13 +127,17 @@ Manova <- function(jaspResults, dataset, options) {
                          "testHotellingLawley", "testRoy", "includeIntercept",
                          "VovkSellkeMPR", "modelTerms", "includeAnovaTables"))
 
-  if(is.null(names(manovaResults$manova))) return()
+  # Set up the different tests for Manova
+  allTests <- c("Pillai", "Wilks", "Hotelling-Lawley", "Roy") 
+  whichTests <- allTests[c(options$testPillai, 
+                           options$testWilks, 
+                           options$testHotellingLawley, 
+                           options$testRoy)]
   
-  allTests <- names(manovaResults$manova)
   nameStatistic <- c(Pillai = "Trace<sub>Pillai</sub>", Wilks = "Wilk's \u039B",
                      `Hotelling-Lawley` = "Trace<sub>H-L</sub>", Roy = "Largest Root")
   
-  for (thisTest in allTests) {
+  for (thisTest in whichTests) {
     
     # Create table
     manovaTable <- createJaspTable(title = paste0("MANOVA: ", thisTest, " Test"))
@@ -156,7 +160,7 @@ Manova <- function(jaspResults, dataset, options) {
     jaspResults[["manovaContainer"]][[thisTest]] <- manovaTable
     
     if (!is.null(errors) && errors == "No variables")
-      return()
+      next
     
 
     for (case in names(manovaResults[["manova"]][[thisTest]])) {
