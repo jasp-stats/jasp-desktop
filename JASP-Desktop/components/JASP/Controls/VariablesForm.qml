@@ -37,21 +37,20 @@ Item
 			property var	allJASPControls:				[]
 			property bool	debug:							false
 			property int	marginBetweenVariablesLists:	8 * preferencesModel.uiScale
+			property int	minimumHeightVariablesLists:	25 * preferencesModel.uiScale
 			property bool	formInitialized:				false
-			property double uiScale:						preferencesModel.uiScale
-			property double previousUiScale:				-1
+
+			property double	_lastListWidth:					0
 	
 
 	Item { id: items }
 	
-	onUiScaleChanged: {
-		if (formInitialized)
+	onListWidthChanged:
+	{
+		if (formInitialized && listWidth > 0 && listWidth != _lastListWidth)
 		{
-			if (previousUiScale !== uiScale)
-			{
-				previousUiScale = uiScale
-				setControlsSize()
-			}
+			_lastListWidth = listWidth;
+			setControlsSize();
 		}
 	}
 	
@@ -277,8 +276,8 @@ Item
         // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
         if (changeableHeightControls.length > 0) {
             var controlHeight = (availableVariablesList.height - minHeightOfAssignedControls) / changeableHeightControls.length;
-            if (controlHeight < 25)
-                controlHeight = 25; // Set a minimum height
+			if (controlHeight < minimumHeightVariablesLists)
+				controlHeight = minimumHeightVariablesLists; // Set a minimum height
             for (i = 0; i < changeableHeightControls.length; i++) {
                 changeableHeightControls[i].height = changeableHeightControls[i].title ? (Theme.variablesListTitle + controlHeight) : controlHeight;
             }

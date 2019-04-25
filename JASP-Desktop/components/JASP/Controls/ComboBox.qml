@@ -36,38 +36,39 @@ JASPControl {
     
     signal activated(int index);
 
-	onControlMinWidthChanged: _resetWidth()
-	
+	onControlMinWidthChanged: _resetWidth(textMetrics.width)
+
 	function resetWidth(values)
 	{
-		if (typeof(values) === "undefined")
-		{
-			values = []
-			for (var index = 0 ; index < control.count; index++)
-				values.push(control.textAt(index))
-		}
-
-		textMetrics.font = control.font
 		var maxWidth = 0
+		var maxValue = ""
+		textMetrics.initialized = false;
+
+		if (addEmptyValue)
+			values.push(placeholderText)
+
 		for (var i = 0; i < values.length; i++)
 		{
 			textMetrics.text = values[i]
 			if (textMetrics.width > maxWidth)
-				maxWidth = textMetrics.width;
+			{
+				maxWidth = textMetrics.width
+				maxValue = values[i]
+			}
 		}
+
+		textMetrics.text = maxValue;
+		textMetrics.initialized = true;
 		_resetWidth(maxWidth)
 	}
 
 	function _resetWidth(maxWidth)
 	{
 		var newWidth = maxWidth + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
-		if (controlMinWidth > 0 || newWidth > control.modelWidth)
-		{
-			control.modelWidth = newWidth;
-			if (control.implicitWidth < controlMinWidth)
-				control.modelWidth += (controlMinWidth - control.implicitWidth);
-            comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
-        }
+		control.modelWidth = newWidth;
+		if (control.implicitWidth < controlMinWidth)
+			control.modelWidth += (controlMinWidth - control.implicitWidth);
+		comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
     }
     
 	Component.onCompleted: control.activated.connect(activated);
@@ -106,7 +107,19 @@ JASPControl {
 		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
 						font:			Theme.font
 
-		TextMetrics { id: textMetrics }
+		TextMetrics
+		{
+			id: textMetrics
+			font: control.font
+
+			property bool initialized: false
+
+			onWidthChanged:
+			{
+				if (initialized)
+					_resetWidth(width)
+			}
+		}
 
 		contentItem: Item
 		{
