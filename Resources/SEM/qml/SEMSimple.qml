@@ -23,12 +23,9 @@ Form
 {
 	usesJaspResults: false
 	columns: 1
-	Group
-	{
-		title: qsTr("Enter lavaan syntax below")
-	}
 	TextArea
 	{
+		title: qsTr("Enter lavaan syntax below")
 		name: "model"
 		textType: "lavaan"
 	}
