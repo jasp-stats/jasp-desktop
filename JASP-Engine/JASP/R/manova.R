@@ -130,6 +130,8 @@ Manova <- function(jaspResults, dataset, options) {
   if(is.null(names(manovaResults$manova))) return()
   
   allTests <- names(manovaResults$manova)
+  nameStatistic <- c(Pillai = "Trace<sub>Pillai</sub>", Wilks = "Wilk's \u039B",
+                     `Hotelling-Lawley` = "Trace<sub>H-L</sub>", Roy = "Largest Root")
   
   for (thisTest in allTests) {
     
@@ -139,13 +141,13 @@ Manova <- function(jaspResults, dataset, options) {
     manovaTable$showSpecifiedColumnsOnly <- TRUE
     
     # Add columns to table
-    manovaTable$addColumnInfo(name = "cases",   title = "Cases", type = "string")
-    manovaTable$addColumnInfo(name = "df",      title = "df",      type = "integer")
-    manovaTable$addColumnInfo(name = "appF",    title = "Approx. F",      type = "number")
-    manovaTable$addColumnInfo(name = "testStat",title = "Test statistic",     type = "number")
-    manovaTable$addColumnInfo(name = "dfNum",   title = "Num df",      type = "integer")
-    manovaTable$addColumnInfo(name = "dfDen",   title = "Den df",      type = "number")
-    manovaTable$addColumnInfo(name = "p",       title = "p",          type = "pvalue")
+    manovaTable$addColumnInfo(name = "cases",   title = "Cases",                  type = "string")
+    manovaTable$addColumnInfo(name = "df",      title = "df",                     type = "integer")
+    manovaTable$addColumnInfo(name = "appF",    title = "Approx. F",              type = "number")
+    manovaTable$addColumnInfo(name = "testStat",title = nameStatistic[thisTest],  type = "number")
+    manovaTable$addColumnInfo(name = "dfNum",   title = "Num df",                 type = "integer")
+    manovaTable$addColumnInfo(name = "dfDen",   title = "Den df",                 type = "number")
+    manovaTable$addColumnInfo(name = "p",       title = "p",                      type = "pvalue")
     
     if (options$VovkSellkeMPR) {
       manovaTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
