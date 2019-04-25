@@ -26,7 +26,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleVariable: true	}
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleVariable: true; allowedColumns: ["scale"]	}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }			
 	}
 	
