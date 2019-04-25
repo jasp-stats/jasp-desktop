@@ -8,7 +8,7 @@ Principcal Component Analysis is used to represent the data in smaller component
 #### Asssignment Box: 
 - Included Variables: In this box the variables to perform the principal component analysis on are selected. 
 
-#### Number of Factors: 
+#### Number of Components: 
 Here it is decided on how many components the rotation is applied to. Several methods can be used:   
 - Parallell Analysis: Components are selected on the basis of parallell analysis. With this method, components are selected when their eigenvalue is bigger than the parallel average random eigenvalue. This method is selected by default. 
 - Eigenvalues: Components are selected when they have a certain eigenvalue. By default components are selected that have an eigenvalue above 1. 
@@ -22,6 +22,7 @@ Here the rotation method to apply to the components can be set. Rotation ensures
     - quartimax: Orthogonal rotation method quartimax. In this rotation method, the number of components that is  necessary to explain each variable is minimized. 
     - bentlerT: Orthogonal rotation method bentlerT. 
     - equamax: Orthogonal rotation method equamax. This is a combination of varimax and quartimax. 
+    - varimin: Orthogonal rotation method varimin. 
 - Oblique: This method produces components that allow for correlation between the components. This method is selected by default. Several possibilities are available.  
     - promax: Oblique rotation method promax. This method is selected by default. 
     - oblimin: Oblique rotation method oblimin. 
@@ -33,7 +34,7 @@ Here the rotation method to apply to the components can be set. Rotation ensures
 #### Output Options: 
 - Highlight: This option allows the adjustment of the width of the arrows in the path diagram. By default, arrows become wider when their value is 0.4 or higher. 
 - Include Tables: 
-    - Factor correlations: When selecting this option, a table with the correlations between the components will be displayed. 
+    - Component correlations: When selecting this option, a table with the correlations between the components will be displayed. 
     - Path diagram: By selecting this option, a visual representation of the direction and strength of the relation between the variable and component will be displayed. 
     - Scree plot: When selecting this option, a scree plot will be displayed. The scree plot provides information on how much variance in the data, indicated by the eigenvalue, is explained by each component. A scree plot can be used to decide how many components should be selected.  
 - Missing values: 
