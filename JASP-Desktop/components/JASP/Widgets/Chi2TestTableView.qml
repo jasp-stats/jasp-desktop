@@ -26,8 +26,8 @@ Item
 	id				: chi2TestTableView
 	width			: parent.width
 	implicitWidth	: width
-	height			: 200
-	implicitHeight	: height
+	height			: implicitHeight
+	implicitHeight	: 200 * preferencesModel.uiScale
 
 	property	alias	name				: tableView.name
 	property	alias	source				: tableView.source

@@ -41,7 +41,8 @@ JASPControl
 	Button
 	{
 		id:	control
-        
+
+		font: Theme.font
 		Image
 		{
 			id:					image
