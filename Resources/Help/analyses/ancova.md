@@ -59,6 +59,7 @@ For every independent variable a specific contrast can be selected by clicking o
 If there is a significant effect of the independent variable when the covariate is accounted for, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. Then it is possible to select:    
 - Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be presented. The used measure for the effect size is Cohen's d. The effect size will only be presented for the post hoc type `Standard`. 
 - Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.  
+- From `...` bootstraps: By selecting this option, the bootstrapped post hoc test is applied. By default the number of replications is set to 1000. This can be changed into the desired number. 
 - Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
     - Tukey: Compare all possible pairs of group means. This correction can be used when the groups of the independent variable have an equal sample size and variance. This method is commonly used and is selected by default. 
     - Scheffe: Adjusting significance levels in a linear regression, to account for multiple comparisons. This method is considered to be quite conservative. 
@@ -91,6 +92,7 @@ To create a descriptive plot, place the independent variable on the horizontal a
         - None: When this option is selected, no adjustment will be applied. 
         - Bonferroni: Bonferroni correction of the confidence intervals. 
         - Sidak: Sidak correction of the confidence intervals. 
+- From `...` bootstraps: When this option is selected, the bootstrapped marginal means are calculated. By default, the number of replications is set to 1000. This can be changed into the desired number. 
 - Display: 
     - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables. 
     - Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified. 
@@ -196,6 +198,16 @@ Dunn's Post Hoc Comparisons
 - p<sub>bonf</sub>: Bonferroni's corrected p-value for multiple comparisons.  
 - p<sub>holm</sub>: Holm's corrected p-value for multiple comparisons. 
 
+#### Post Hoc Tests via Bootstrapping 
+Bootstrapped Post Hoc Comparisons - Independent Variable: 
+- The first two columns represent the levels/group of the independent variable that are compared with each other. 
+- Mean Difference: The estimate of the mean difference between the levels. This estimate is based on the median of the bootstrap distribution. 
+- Bias: The bias. 
+- SE: The standard error of the mean difference. 
+- 95% bca CI for Mean Difference: The bias corrected accelerated confidence interval of the mean difference between the compared levels. By default this is set to 95%. 
+  - Lower: The lower bound of the confidence interval. 
+  - Upper: The upper bound of the confidence interval. 
+
 #### Marginal Means: 
 Marginal Means - Independent Variable: 
 - The first column contains the levels of the independent variable. 
@@ -205,6 +217,16 @@ Marginal Means - Independent Variable:
 - Upper CI: The upper bound of the confidence interval. 
 - t: The value for the t-statistic. 
 - p: The p-value. 
+
+#### Marginal Means via Bootstrapping 
+Bootstrapped Marginal Means - Independent Variable: 
+- Independent variable: This column contains all the levels of the independent variables. 
+- Marginal Mean: The estimate of the marginal mean for each level of the independent variable. This mean is adjusted for all the other variables in the model. The estimate is based on the median of the bootstrap distribution. 
+- Bias: The bias. 
+- SE: The standard error of the mean difference. 
+- 95% bca CI for Mean Difference: The bias corrected accelerated confidence interval of the mean difference between the compared levels. By default this is set to 95%. 
+  - Lower: The lower bound of the confidence interval. 
+  - Upper: The upper bound of the confidence interval.
 
 Simple Main Effects - Independent Variable: 
 - The first column contains the levels of the other independent variable included in the analysis (if present).  
