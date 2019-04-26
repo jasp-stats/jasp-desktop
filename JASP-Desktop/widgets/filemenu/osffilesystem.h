@@ -21,6 +21,7 @@
 
 #include <QPushButton>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QMap>
 
 #include "filesystemmodel.h"
@@ -67,13 +68,13 @@ public:
 signals:
 	void userDataChanged();
 	void stopProcessing();
+	void newLoginRequired();
 	
 private slots:
 	void gotProjects();
 	void gotFilesAndFolders();
 
 private:
-
 	void setAuthenticated(bool value);
 
 	QString getRelationshipUrl(QJsonObject nodeObject, QString name);
@@ -95,6 +96,7 @@ private:
 	void loadFilesAndFolders(QUrl url, int level);
 	void parseFilesAndFolders(QUrl url, int level, bool recursive = false);
 	void parseProjects(QUrl url, bool recursive = false);
+	void handleNetworkReplyError(QNetworkReply* reply);
 
 	int _level = 0;
 

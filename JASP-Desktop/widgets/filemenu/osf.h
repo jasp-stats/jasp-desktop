@@ -108,6 +108,7 @@ public slots:
 	void stopProcessing();
 	void newFolderClicked();
 	void closeFileDialog();
+	void newLoginRequired();
 
 	void setListModel(OSFListModel * listModel);
 	void setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs);

@@ -29,7 +29,7 @@ public:
 	void		initAuthentication(OnlineDataManager::Provider provider);
 	void		clearAuthenticationOnExit(OnlineDataManager::Provider provider);
 	AuthData	getAuthData(OnlineDataManager::Provider provider);
-	bool		authenticationSuccessful(OnlineDataManager::Provider provider) const;
+	bool		login(OnlineDataManager::Provider provider) const;
 
 	void		savePasswordFromAuthData(OnlineDataManager::Provider provider);
 	void		savePassword(OnlineDataManager::Provider provider, QString password);

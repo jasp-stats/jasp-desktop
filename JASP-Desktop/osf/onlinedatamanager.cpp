@@ -42,13 +42,13 @@ OnlineDataManager::~OnlineDataManager()
 {
 }
 
-bool OnlineDataManager::authenticationSuccessful(OnlineDataManager::Provider provider) const
+bool OnlineDataManager::login(OnlineDataManager::Provider provider) const
 {
 	if (_authList.contains(provider) == false)
 		return false;
 
 	if (provider == OnlineDataManager::OSF)
-		return OnlineUserNodeOSF::authenticationSuccessful(getNetworkAccessManager(provider));
+		return OnlineUserNodeOSF::login(getNetworkAccessManager(provider));
 
 	return false;
 }

@@ -34,19 +34,24 @@ OSF::OSF(QObject *parent): FileMenuObject(parent)
 
 	setListModel(new OSFListModel(this, _model, _osfBreadCrumbsListModel));
 
-	connect(_model,						&OSFFileSystem::authenticationSuccess,			this,			&OSF::updateUserDetails);
-	connect(_model,						&OSFFileSystem::authenticationFail,				this,			&OSF::authenticationeFailed);
+	connect(_model,						&OSFFileSystem::authenticationSucceeded,		this,			&OSF::updateUserDetails);
+	connect(_model,						&OSFFileSystem::authenticationFailed,			this,			&OSF::authenticationeFailed);
 	connect(_model,						&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
 	connect(_model,						&OSFFileSystem::entriesChanged,					this,			&OSF::resetOSFListModel);
 	connect(_model,						&OSFFileSystem::stopProcessing,					this,			&OSF::stopProcessing);
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&OSF::startProcessing);
-	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
+	connect(_model,						&OSFFileSystem::newLoginRequired,				this,			&OSF::newLoginRequired);
+
 	connect(this,						&OSF::openFileRequest,							this,			&OSF::notifyDataSetOpened);
+	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
+
 
 	_mRememberMe = Settings::value(Settings::OSF_REMEMBER_ME).toBool();
 	_mUserName = Settings::value(Settings::OSF_USERNAME).toString();
 	_mPassword = decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
+
 	setShowfiledialog(false);
+	setProcessing(false);
 }
 
 bool OSF::loggedin()
@@ -197,9 +202,12 @@ void OSF::setOnlineDataManager(OnlineDataManager *odm)
 
 void OSF::attemptToConnect()
 {
-	setProcessing(true);
-	_model->attemptToConnect();
-	setLoggedin(_model->isAuthenticated());
+	if (!processing())
+	{
+		setProcessing(true);
+		_model->attemptToConnect();
+		setLoggedin(_model->isAuthenticated());
+	}
 }
 
 void OSF::setCurrentFileName(QString currentFileName)
@@ -231,8 +239,7 @@ void OSF::notifyDataSetOpened(QString path)
 
 void OSF::authenticationeFailed(QString message)
 {
-	MessageForwarder::showWarning("Login", message);
-
+	//MessageForwarder::showWarning("Login", message);
 }
 
 void OSF::saveClicked()
@@ -310,20 +317,17 @@ void OSF::updateUserDetails()
 {
 	if (_model->isAuthenticated())
 	{
-
 		OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
 
 		userNode->initialise();
 
-		connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
+		connect(userNode, &OnlineDataNode::finished , this, &OSF::userDetailsReceived);
 
 		setLoggedin(true);
-
 	}
 	else
 	{
 		setLoggedin(false);
-
 	}
 
 }
@@ -366,7 +370,7 @@ void OSF::newFolderClicked()
 		if (_model->hasFolderEntry(name.toLower()) == false)
 		{
 			OnlineDataNode *node = _odm->createNewFolderAsync(_model->currentNodeData().nodePath + "#folder://" + name, name, "createNewFolder");
-			connect(node, SIGNAL(finished()), this, SLOT(newFolderCreated()));
+			connect(node, &OnlineDataNode::finished , this, &OSF::newFolderCreated);
 		}
 	}
 }
@@ -374,6 +378,16 @@ void OSF::newFolderClicked()
 void OSF::closeFileDialog()
 {
 	setShowfiledialog(false);
+}
+
+void OSF::newLoginRequired()
+{
+	std::cout << "New Login Required " << std::endl;
+	_model->clearAuthentication();
+	_model->refresh();
+	_osfBreadCrumbsListModel->indexChanged(0);
+	setLoggedin(false);
+	setProcessing(false);
 }
 
 void OSF::resetOSFListModel()

@@ -32,6 +32,8 @@
 #include "osf/onlinedatamanager.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
+#include <gui/messageforwarder.h>
+#include <iostream>
 
 const QString OSFFileSystem::rootelementname = "Projects";
 
@@ -71,7 +73,7 @@ void OSFFileSystem::attemptToConnect()
 	if ( _isAuthenticated == false && _dataManager != NULL )
 	{
 		emit processingEntries();
-		bool authsuccess = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
+		bool authsuccess = _dataManager->login(OnlineDataManager::OSF);
 		setAuthenticated(authsuccess);
 		if (!authsuccess)
 			emit entriesChanged();
@@ -96,7 +98,7 @@ void OSFFileSystem::authenticate(const QString &username, const QString &passwor
 
 		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
 
-		success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
+		success = _dataManager->login(OnlineDataManager::OSF);
 
 		if (success)
 			_dataManager->savePassword(OnlineDataManager::OSF, password);
@@ -115,14 +117,14 @@ void OSFFileSystem::setAuthenticated(bool value)
 	if (value)
 	{
 		_isAuthenticated = true;
-		emit authenticationSuccess();
+		emit authenticationSucceeded();
 		refresh();
 	}
 	else
 	{
 		emit stopProcessing();
 		_isAuthenticated = false;
-		emit authenticationFail("Username and/or password are not correct. Please try again.");		
+		emit authenticationFailed("Username and/or password are not correct. Please try again.");
 	}
 }
 
@@ -181,7 +183,26 @@ void OSFFileSystem::parseProjects(QUrl url, bool recursive) {
 
 	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), this, SLOT(gotProjects()));
+	connect(reply, &QNetworkReply::finished, this, &OSFFileSystem::gotProjects);
+}
+
+void OSFFileSystem::handleNetworkReplyError(QNetworkReply* reply)
+{
+	QNetworkReply::NetworkError error = reply->error();
+
+	if (error != QNetworkReply::NoError)
+	{
+		QString err = reply->errorString();
+		if(error == QNetworkReply::AuthenticationRequiredError)
+			err = "Username and/or password are not correct. Please try again.";
+		else if (error == QNetworkReply::HostNotFoundError)
+			err = "OSF service not found. Please check your internet connection.";
+		else if (error == QNetworkReply::TimeoutError)
+			err = "Connection Timeout error. Please check your internet connection.";
+		std::cout << err.toStdString() << std::endl;
+		//MessageForwarder::showWarning("OSF Error", err);
+	}
+
 }
 
 void OSFFileSystem::gotProjects()
@@ -242,8 +263,12 @@ void OSFFileSystem::gotProjects()
 		else
 			emit entriesChanged();
 	}
-
-
+	else
+	{
+		handleNetworkReplyError(reply);
+		emit newLoginRequired();
+		emit stopProcessing();
+	}
 
 	reply->deleteLater();
 }
@@ -264,7 +289,7 @@ void OSFFileSystem::parseFilesAndFolders(QUrl url, int level, bool recursive)
 
 	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), this, SLOT(gotFilesAndFolders()));
+	connect(reply, &QNetworkReply::finished, this, &OSFFileSystem::gotFilesAndFolders);
 }
 
 void OSFFileSystem::gotFilesAndFolders()
@@ -376,7 +401,12 @@ void OSFFileSystem::gotFilesAndFolders()
 			parseFilesAndFolders(QUrl(nextContentList.toString()), _level + 1, true);
 		else
 			finished = true;
-
+	}
+	else
+	{
+		handleNetworkReplyError(reply);
+		emit newLoginRequired();
+		emit stopProcessing();
 	}
 
 	if (finished)

@@ -66,8 +66,9 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 	endInit(success);
 }
 
-bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
+bool OnlineUserNodeOSF::login(QNetworkAccessManager *manager)
 {
+
 	QUrl url = QUrl("https://api.osf.io/v2/users/me/");
 
 	QEventLoop loop;
@@ -82,10 +83,23 @@ bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
 	loop.exec();
 
 	QNetworkReply::NetworkError error = reply->error();
-	if (error != QNetworkReply::NoError && error != QNetworkReply::AuthenticationRequiredError) //Authorisation message will be shown later on
-		MessageForwarder::showWarning("OSF Warning", reply->errorString());
+
+	//Handle error here, reply deleted afterwards
+	if (error != QNetworkReply::NoError)
+	{
+		QString err = reply->errorString();
+		if(error == QNetworkReply::AuthenticationRequiredError)
+				err = "Username and/or password are not correct. Please try again.";
+		else if (error == QNetworkReply::HostNotFoundError)
+			err = "OSF service not found. Please check your internet connection.";
+		else if (error == QNetworkReply::TimeoutError)
+			err = "Connection Timeout error. Please check your internet connection.";
+		MessageForwarder::showWarning("OSF Error", err);
+	}
 
 	delete reply;
 
-	return error == false;
+	return error == QNetworkReply::NoError;
 }
+
+
