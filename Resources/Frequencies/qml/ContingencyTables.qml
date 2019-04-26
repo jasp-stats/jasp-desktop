@@ -74,7 +74,7 @@ Form
 		Group
 		{
 			debug: true
-			title: qsTr("Nominal by interval")
+			title: qsTr("Nominal By Interval")
 			CheckBox { name: "byIntervalEta"; label: qsTr("Eta") }
 		}
 		

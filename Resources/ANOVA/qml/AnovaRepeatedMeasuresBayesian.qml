@@ -116,7 +116,7 @@ Form
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				listViewType: "Interaction"
 
 				ExtraControlColumn {
@@ -166,7 +166,7 @@ Form
             AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
             AssignedVariablesList
             {
-                title: qsTr("Specific model terms")
+				title: qsTr("Specific Model Terms")
                 name: "singleModelTerms"
                 listViewType: "Interaction"
             }
@@ -200,9 +200,9 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis");	singleVariable: true }
-			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleVariable: true }
-			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleVariable: true }
+			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal Axis");	singleVariable: true }
+			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
+			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate Plots");	singleVariable: true }
 		}
 
 		TextField { name: "labelYAxis"; label: qsTr("Label y-axis"); fieldWidth: 200 }
@@ -229,7 +229,7 @@ Form
         RadioButtonGroup
 		{
 			name: "sampleModeNumAcc"
-			title: qsTr("Numerical accuracy")
+			title: qsTr("Numerical Accuracy")
             RadioButton { value: "auto";	label: qsTr("Auto"); checked: true }
 			RadioButton
 			{
@@ -249,7 +249,7 @@ Form
         RadioButtonGroup
 		{
 			name: "sampleModeMCMC"
-			title: qsTr("Posterior samples")
+			title: qsTr("Posterior Samples")
             RadioButton { value: "auto";	label: qsTr("Auto"); checked: true }
 			RadioButton
 			{

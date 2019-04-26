@@ -53,7 +53,7 @@ Form {
         text: qsTr("Model options")
         GridLayout {
             GroupBox {
-                title: qsTr("Additional fit measures")
+				title: qsTr("Additional Fit Measures")
                 CheckBox { text: qsTr("AIC")   ; name: "aic"   }
                 CheckBox { text: qsTr("BIC")   ; name: "bic"   }
                 CheckBox { text: qsTr("SRMR")  ; name: "srmr"  }

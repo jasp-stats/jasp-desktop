@@ -82,7 +82,7 @@ Form {
 	RadioButtonGroup
 	{
 		name: "shownModels"
-		title: qsTr("Limit no. models shown")
+		title: qsTr("Limit No. Models Shown")
 		RadioButton { value: "unlimited"; label: qsTr("No") }
 		RadioButton { 
 			value: "limited"
@@ -118,7 +118,7 @@ Form {
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				ExtraControlColumn {
@@ -208,7 +208,7 @@ Form {
 			RadioButtonGroup
 			{
 				name: "modelPrior"
-				title: qsTr("Model prior")
+				title: qsTr("Model Prior")
 				RadioButton
 				{
 					value: "beta.binomial"; label: qsTr("Beta binomial"); checked: true
@@ -229,7 +229,7 @@ Form {
 			RadioButtonGroup
 			{
 				name: "samplingMethod"
-				title: qsTr("Sampling method")
+				title: qsTr("Sampling Method")
 				RadioButton
 				{
 					value: "BAS"; label: qsTr("BAS"); checked: true
@@ -246,7 +246,7 @@ Form {
 
 			Group
 			{
-				title: qsTr("Numerical accuracy")
+				title: qsTr("Numerical Accuracy")
 				IntegerField
 				{
 					name: "nSimForCRI"

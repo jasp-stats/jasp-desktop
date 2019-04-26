@@ -94,7 +94,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Grouping variable")
+			title: qsTr("Grouping Variable")
 			DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or source: it takes all variables per default
 			Group
 			{
