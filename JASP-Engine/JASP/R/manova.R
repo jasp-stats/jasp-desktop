@@ -204,12 +204,12 @@ Manova <- function(jaspResults, dataset, options) {
     anovaTable$showSpecifiedColumnsOnly <- TRUE
     
     # Add columns to table
-    anovaTable$addColumnInfo(name = "cases",   title = "Cases", type = "string")
-    anovaTable$addColumnInfo(name = "Df",      title = "df",      type = "integer")
-    anovaTable$addColumnInfo(name = "Sum Sq",    title = "Sum of Squares",      type = "number")
-    anovaTable$addColumnInfo(name = "Mean Sq",title = "Mean Square",     type = "number")
-    anovaTable$addColumnInfo(name = "F value",   title = "F",      type = "number")
-    anovaTable$addColumnInfo(name = "Pr(>F)",       title = "p",          type = "pvalue")
+    anovaTable$addColumnInfo(name = "cases",    title = "Cases",          type = "string")
+    anovaTable$addColumnInfo(name = "Sum Sq",   title = "Sum of Squares", type = "number")
+    anovaTable$addColumnInfo(name = "Df",       title = "df",             type = "integer")
+    anovaTable$addColumnInfo(name = "Mean Sq",  title = "Mean Square",    type = "number")
+    anovaTable$addColumnInfo(name = "F value",  title = "F",              type = "number")
+    anovaTable$addColumnInfo(name = "Pr(>F)",   title = "p",              type = "pvalue")
     
     if (options$VovkSellkeMPR) {
       anovaTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
