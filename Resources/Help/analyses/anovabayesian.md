@@ -24,11 +24,11 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 #### Output: 
 - Effects: By selecting this option, the effect of each component in the models will be calculated. 
     - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
-    - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded.  
-   <details>
-  <summary><b>GIF demonstration </b></summary>
-  <img src="analyses/gif/inclusion_bayes_anova.gif"/>
-</details> 
+    - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded.      
+      <details>
+        <summary><b>GIF demonstration </b></summary>
+        <img src="analyses/gif/inclusion_bayes_anova.gif"/>
+      </details> 
 
 - Estimates: 
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
@@ -68,7 +68,7 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
   - Specific model terms: 
 
 #### Post Hoc Tests 
-If <img align="right" src="analyses/gif/bayes_posthoc_anova.gif" width="60%" height="60%" /> there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
+If there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
 <details>
   <summary><b>GIF demonstration </b></summary>
   <img src="analyses/gif/bayes_posthoc_anova.gif"/>
@@ -148,7 +148,7 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### Example 
 --- 
-For a very detailed example see Van den Bergh et al. (2019).
-For an example of a Bayesian One-Way ANOVA go to `File`-->`Data Library`-->`ANOVA`-->`Pain Thresholds`. 
-For an example of a Bayesian Two-Way ANOVA go to `File`-->`Data Library`-->`ANOVA`-->`Singers`. 
-For more details about these examples see Wagenmakers et al. (2018). 
+- For a very detailed example see Van den Bergh et al. (2019).
+- For an example of a Bayesian One-Way ANOVA go to `File`-->`Data Library`-->`ANOVA`-->`Pain Thresholds`. 
+- For an example of a Bayesian Two-Way ANOVA go to `File`-->`Data Library`-->`ANOVA`-->`Singers`. 
+- For more details about the last two examples see Wagenmakers et al. (2018). 
