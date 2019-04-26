@@ -143,7 +143,7 @@ Test for Equality of Variances (Levene's):
 - p: The p-value. If the p-value is significant, this means that the group variances of the dependent variable are not equal (i.e., the assumption of homogeneity is not met).  
 - VS-MPR: Vovk-Sellke Maximum *p*-ratio. 
 
-#### Q-Q Plot: 
+##### Q-Q Plot: 
 With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed. 
 
 #### Contrasts: 
