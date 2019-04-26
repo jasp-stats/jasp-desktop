@@ -162,6 +162,7 @@ private:
 	 
 	 QFileSystemWatcher				_QMLFileWatcher;
 	 
+	 void							_makeBackwardCompatible(RibbonModel* ribbonModel, Version& version, Json::Value& analysisData);
 	 void							_analysisQMLFileChanged(Analysis* analysis);
 	 
 

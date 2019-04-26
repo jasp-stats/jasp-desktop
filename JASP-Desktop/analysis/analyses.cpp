@@ -35,6 +35,32 @@
 using namespace std;
 
 
+void Analyses::_makeBackwardCompatible(RibbonModel* ribbonModel, Version &version, Json::Value &analysisData)
+{
+	Version			V0_9_3('0', '9', '3', '0');
+
+	if (version <= V0_9_3)
+	{
+		std::string module = analysisData["module"].asString();
+		if (module.empty())
+			module = "Common";
+
+		// An old JASP file may still have references to the old Common module.
+		if (module == "Common")
+		{
+			QString	name = QString::fromStdString(analysisData["name"].asString());
+			module = ribbonModel->getModuleNameFromAnalysisName(name).toStdString();
+		}
+		else if (module == "MetaAnalysis")
+			module = "Meta Analysis";
+		else if (module == "SummaryStats")
+			module = "Summary Statistics";
+
+		analysisData["module"] = module;
+	}
+}
+
+
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
@@ -44,22 +70,19 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	Analysis *analysis;
 
-
-
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
+		Json::Value	&	versionJson		= analysisData["version"];
+		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
+		_makeBackwardCompatible(ribbonModel, version, analysisData);
+
+
 		QString			name				= QString::fromStdString(analysisData["name"].asString()),
 						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
 						title				= QString::fromStdString(analysisData.get("title", "").asString());
 
-		// An old JASP file may still have references to the old Common module.
-		if (module == "Common")
-			module = ribbonModel->getModuleNameFromAnalysisName(name);
+		Json::Value &	optionsJson	= analysisData["options"];
 
-		Json::Value &	optionsJson	= analysisData["options"],
-					&	versionJson	= analysisData["version"];
-
-		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 
 		if(title == "")
