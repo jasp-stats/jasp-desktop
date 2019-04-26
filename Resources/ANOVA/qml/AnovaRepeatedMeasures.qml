@@ -114,7 +114,7 @@ Form
 				CheckBox { name: "sphericityGreenhouseGeisser";	label: qsTr("Greenhouse-Geisser");	checked: true }
 				CheckBox { name: "sphericityHuynhFeldt";		label: qsTr("Huynth-Feidt");			checked: true }
 			}
-			CheckBox { name: "homogeneityTests"; label: qsTr("Homogeneity Tests") }
+			CheckBox { name: "homogeneityTests"; label: qsTr("Homogeneity tests") }
 		}
 	}
 	
@@ -138,7 +138,7 @@ Form
 		
         CheckBox
         {
-            name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+			name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
             childrenOnSameRow: true
             CIField {name: "confidenceIntervalIntervalPostHoc" }
         }
@@ -146,7 +146,7 @@ Form
 		Group
 		{
 			columns: 2
-			CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size")						}
+			CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size")						}
 			CheckBox { name: "postHocTestPooledError";	label: qsTr("Pool error term for RM factors")	}
 		}
 		
@@ -187,7 +187,7 @@ Form
 					name: "errorBarType"
 					RadioButton
 					{
-						value: "confidenceInterval"; label: qsTr("Confidence Interval"); checked: true
+						value: "confidenceInterval"; label: qsTr("Confidence interval"); checked: true
 						childrenOnSameRow: true
 						CIField { name: "confidenceIntervalInterval"; label: qsTr("Interval") }
 					}

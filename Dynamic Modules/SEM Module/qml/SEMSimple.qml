@@ -39,7 +39,7 @@ Form
 		RadioButton
 		{
 			value: "varcov"; label: qsTr("Variance-covariance matrix")
-			IntegerField { name: "SampleSize"; label: qsTr("Sample Size"); defaultValue: 0 }
+			IntegerField { name: "SampleSize"; label: qsTr("Sample size"); defaultValue: 0 }
 		}
 	}
 	
@@ -106,8 +106,8 @@ Form
 				CheckBox { name: "eq_means";				label: qsTr("Means")				}
 				CheckBox { name: "eq_thresholds";			label: qsTr("Threashold")			}
 				CheckBox { name: "eq_regressions";			label: qsTr("Regressions")			}
-				CheckBox { name: "eq_variances";			label: qsTr("Latent Variances")		}
-				CheckBox { name: "eq_lvcovariances";		label: qsTr("Latent Covariances")	}
+				CheckBox { name: "eq_variances";			label: qsTr("Latent variances")		}
+				CheckBox { name: "eq_lvcovariances";		label: qsTr("Latent covariances")	}
 			}
 		}
 
@@ -133,11 +133,11 @@ Form
 			DropDown
 			{
 				name: "factorStandardisation"
-				label: qsTr("Factor Scaling")
+				label: qsTr("Factor scaling")
 				values:
 				[
-					{ label: "Factor Loadings"    , value: "factorLoadings"		},
-					{ label: "Residual Variance"  , value: "residualVariance"	},
+					{ label: "Factor loadings"    , value: "factorLoadings"		},
+					{ label: "Residual variance"  , value: "residualVariance"	},
 					{ label: "None"               , value: "none"				}
 				]
 			}

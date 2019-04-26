@@ -47,10 +47,10 @@ Form {
 			enabled: postSummaryTable.checked || postSummaryPlot.checked
 			indexDefaultValue: 3
 			values: [
-				{ label: "Best model",			value: "best"		},
-				{ label: "Most complex model",	value: "complex"	},
-				{ label: "Median model",		value: "median"		},
-				{ label: "Model averaged",		value: "averaged"	}
+				{ label: qsTr("Best model"),			value: "best"		},
+				{ label: qsTr("Most complex model"),	value: "complex"	},
+				{ label: qsTr("Median model"),			value: "median"		},
+				{ label: qsTr("Model averaged"),		value: "averaged"	}
 			]
 		}
 

@@ -45,7 +45,7 @@ Form
 	//		AssignedVariablesList { name: "test";	title: qsTr("Test"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	//	}
 
-	DropDown { name: "labels_variable"; label: qsTr("Case Labels"); values: allAvailableVariables; }
+	DropDown { name: "labels_variable"; label: qsTr("Case labels"); values: allAvailableVariables; }
 
 
 	Section

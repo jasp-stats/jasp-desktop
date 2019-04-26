@@ -58,7 +58,7 @@ Form
 		}
 		CheckBox
 		{
-			name: "effectSize"; label: qsTr("Effect Size")
+			name: "effectSize"; label: qsTr("Effect size")
 			CheckBox
 			{
 				name: "effSizeConfidenceIntervalCheckbox"; label: qsTr("Confidence interval")
