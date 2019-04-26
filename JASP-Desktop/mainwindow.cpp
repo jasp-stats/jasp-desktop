@@ -217,7 +217,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChanged,			_analyses,				&Analyses::analysisTitleChanged								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
+	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu										);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
@@ -402,7 +402,7 @@ void MainWindow::saveKeyPressed()
 
 void MainWindow::openKeyPressed()
 {
-	_fileMenu->showFileMenu();
+	_fileMenu->showFileOpenMenu();
 }
 
 void MainWindow::refreshKeyPressed()

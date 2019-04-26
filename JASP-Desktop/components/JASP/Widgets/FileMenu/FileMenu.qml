@@ -60,7 +60,7 @@ FocusScope
 	property int  colWidths:				150
 	property var  selectedActionMenu:		null
 
-	//focus: fileMenuModel.visible
+	onSelectedActionMenuChanged:	updateNavigationKeys();
 
 	Connections
 	{
@@ -100,8 +100,6 @@ FocusScope
 			border.width:	1
 			border.color:	Theme.uiBorder
 
-			onVisibleChanged: if (visible && selectedActionMenu === null) actionRepeaterId.itemAt(0).getButton().forceActiveFocus()
-
 			Column
 			{
 				id: fileAction
@@ -124,62 +122,34 @@ FocusScope
 					Item
 					{
 						id:				itemActionMenu
-						width:			parent.width - 6
+						width:			parent.width - (6 * preferencesModel.uiScale)
 						anchors.left:	parent.left
 						height:			actionButtionHeight + actionToolSeperator.height
 						enabled:		enabledRole
 
-						function getButton()
-						{
-							return actionMenuButton
-						}
-
 						MenuButton
 						{
-							id:				actionMenuButton
+							id:					actionMenuButton
 
 							hasSubMenu:			hasResourceMenu
 							clickOnHover:		true
 							clickWhenFocussed:	!waitForClickButton(typeRole)
 
-							width:			itemActionMenu.width
-							height:			actionButtionHeight
+							width:				itemActionMenu.width
+							height:				actionButtionHeight
 							anchors
 							{
-								leftMargin: 3
+								leftMargin: 3  * preferencesModel.uiScale
 								left:		itemActionMenu.left
 							}
 
 							text:			nameRole
-							selected:		selectedActionMenu === actionMenuButton
+							selected:		selectedRole
 
 							property bool hasResourceMenu:	actionHasSubmenu(typeRole)
-							property int myTypeRole:		typeRole
 
-							onActiveFocusChanged:
-							{
-								if (activeFocus)
-								{
-									selectedActionMenu = actionMenuButton
-									fileMenuModel.fileoperation = typeRole
-									updateNavigationKeys()
-								}
-							}
-
-							onClicked:
-							{
-								if (typeRole === FileOperation.About)
-								{
-									fileMenuModel.showAboutRequest()
-									fileMenuModel.visible = false;
-								}
-								else
-								{
-									fileMenuModel.actionButtons.buttonClicked(typeRole)
-									updateNavigationKeys()
-								}
-							}
-
+							onSelectedChanged: if(selected) selectedActionMenu = actionMenuButton;
+							onClicked:			fileMenuModel.actionButtons.selectedAction = typeRole
 							Keys.onLeftPressed: fileMenuModel.visible = false;
 						}
 
@@ -188,7 +158,7 @@ FocusScope
 							id:					actionToolSeperator
 							anchors.top:		actionMenuButton.bottom
 							width:				actionMenuButton.width
-							anchors.topMargin:	showToolSeperator(typeRole) ? 3 : 0
+							anchors.topMargin:	(showToolSeperator(typeRole) ? 3 : 0)  * preferencesModel.uiScale
 							anchors.left:		actionMenuButton.left
 
 							orientation:		Qt.Horizontal
@@ -247,9 +217,9 @@ FocusScope
 					{
 
 						id:					itemResourceMenu
-						width:				parent.width - 6
+						width:				parent.width - (6 * preferencesModel.uiScale)
 						height:				resourceButtonHeight
-						anchors.leftMargin: 3
+						anchors.leftMargin: 3 * preferencesModel.uiScale
 						anchors.left:		parent.left
 						enabled:			enabledRole
 

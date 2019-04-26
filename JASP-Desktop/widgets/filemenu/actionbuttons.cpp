@@ -1,6 +1,7 @@
 #include "actionbuttons.h"
 #include <QObject>
 #include <QtQml>
+#include <iostream>
 
 //property variant actionbuttons:			["Open", "Save","Save As", "Export Results", "Export Data","Sync Data", "Close"]
 
@@ -36,7 +37,8 @@ QVariant ActionButtons::data(const QModelIndex &index, int role)	const
 	case NameRole:			return _data[size_t(index.row())].name;
 	case TypeRole:			return _data[size_t(index.row())].operation;
 	case EnabledRole:		return _data[size_t(index.row())].enabled;
-	default:				return QVariant();
+	case SelectedRole:		return _data[size_t(index.row())].operation == _selected;
+	default:				throw std::runtime_error("Unknown role for actionButtons!");
 	}
 }
 
@@ -62,22 +64,31 @@ QHash<int, QByteArray>	ActionButtons::roleNames() const
 	static const QHash<int, QByteArray> roles = {
 		{ NameRole,		"nameRole"		},
 		{ TypeRole,		"typeRole"		},
-		{ EnabledRole,	"enabledRole"	} };
+		{ EnabledRole,	"enabledRole"	},
+		{ SelectedRole,	"selectedRole"	}};
 
 	return roles;
-}
-
-void ActionButtons::buttonClicked(int fileOperation)
-{
-	if(fileOperation < Open || fileOperation > About)
-		throw std::runtime_error("This should not be happening!");
-
-	FileOperation op = static_cast<FileOperation>(fileOperation);
-
-	emit buttonClickedSignal(op);
 }
 
 void ActionButtons::setEnabled(FileOperation operation, bool enabledState)
 {
 	setData(index(int(_opToIndex[operation]), 0), enabledState, EnabledRole);
+}
+
+void ActionButtons::setSelectedAction(FileOperation selectedAction)
+{
+	if (_selected == selectedAction)
+		return;
+
+	std::cout << "action button selected!" << std::endl;
+
+	QModelIndex	oldIndex = index(_opToIndex[_selected]),
+				newIndex = index(_opToIndex[selectedAction]);
+
+	_selected = selectedAction;
+
+	emit dataChanged(oldIndex, oldIndex);
+	emit dataChanged(newIndex, newIndex);
+
+	emit selectedActionChanged(_selected);
 }

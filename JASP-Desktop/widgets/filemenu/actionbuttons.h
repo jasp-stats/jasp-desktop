@@ -7,13 +7,16 @@
 class ActionButtons : public QAbstractListModel
 {
 	Q_OBJECT
+
+	Q_PROPERTY(FileOperation selectedAction READ selectedAction WRITE setSelectedAction NOTIFY selectedActionChanged)
+
 public:
 	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, About};
 	Q_ENUM(FileOperation)
 
 	struct DataRow { FileOperation operation; QString name; bool enabled; };
 
-	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, EnabledRole };
+	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, EnabledRole, SelectedRole };
 
 	explicit ActionButtons(QObject *parent = nullptr);
 
@@ -23,19 +26,19 @@ public:
 	bool					setData(const QModelIndex &index, const QVariant &value, int role)			override;
 	QHash<int, QByteArray>	roleNames()															const	override;
 
-
-	Q_INVOKABLE void buttonClicked(int fileOperation);
-
+	FileOperation selectedAction() const { return _selected; }
 
 signals:
-	void buttonClickedSignal(ActionButtons::FileOperation selectedOperation);
+	void selectedActionChanged(FileOperation selectedAction);
 
 public slots:
 	void setEnabled(ActionButtons::FileOperation operation, bool enabledState);
+	void setSelectedAction(FileOperation selectedAction);
 
 private:
 	std::vector<DataRow>				_data;
 	std::map<FileOperation, size_t>		_opToIndex;
+	FileOperation						_selected = Open;
 };
 
 #endif // ACTIONBUTTONS_H

@@ -62,6 +62,7 @@ public:
 	virtual ~FileMenu() {}
 	
 	void		setFileoperation(const ActionButtons::FileOperation fo);
+	void		setResourceButtonsVisibleFor(ActionButtons::FileOperation fo);
 
 	void		setOnlineDataManager(OnlineDataManager *odm);
 	FileEvent *	open(const QString &filepath);
@@ -96,7 +97,6 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
-	void actionButtonSelected(const ActionButtons::FileOperation action);
 
 public slots:
 	void analysisAdded(Analysis *analysis);
@@ -106,7 +106,7 @@ public slots:
 	void dataFileModifiedHandler(QString path);
 	void actionButtonClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
-	void showFileMenu();
+	void showFileOpenMenu();
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
 	void dataColumnAdded(QString columnName);

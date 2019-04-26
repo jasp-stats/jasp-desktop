@@ -38,7 +38,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	connect(_computer,			&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_OSF,				&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
 	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_actionButtons,		&ActionButtons::buttonClickedSignal,	this, &FileMenu::actionButtonClicked);
+	connect(_actionButtons,		&ActionButtons::selectedActionChanged,	this, &FileMenu::actionButtonClicked);
 	connect(&_watcher,			&QFileSystemWatcher::fileChanged,		this, &FileMenu::dataFileModifiedHandler);
 	connect(_resourceButtons,	&ResourceButtons::clicked,				this, &FileMenu::resourceButtonClicked);
 
@@ -52,14 +52,22 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
-	setFileoperation(ActionButtons::Open);
+	setResourceButtonsVisibleFor(ActionButtons::Open);
 }
 
 void FileMenu::setFileoperation(ActionButtons::FileOperation fo)
 {
+	if(_fileoperation == fo)
+		return;
+
 	_fileoperation = fo;
 	emit fileoperationChanged();
 
+	setResourceButtonsVisibleFor(fo);
+}
+
+void FileMenu::setResourceButtonsVisibleFor(ActionButtons::FileOperation fo)
+{
 	switch (fo)
 	{
 	case ActionButtons::FileOperation::Open:
@@ -349,7 +357,7 @@ void FileMenu::analysesExportResults()
 }
 
 void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
-{
+{	
 	setFileoperation(action);
 	
 	switch (action)
@@ -367,11 +375,14 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 		break;
 
 	case ActionButtons::FileOperation::Close:
-		close(); //After selecting open-button to make menu less ugly
-		//actionButtonClicked(ActionButtons::Open);
-		emit actionButtonSelected(ActionButtons::FileOperation::Open); //Sends a signal to qml to make *it* select the button to avoid racin
+		close();
+		_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 		break;
 
+	case ActionButtons::FileOperation::About:
+		setVisible(false);
+		showAboutRequest();
+		break;
 	default:
 		break;
 	}
@@ -449,8 +460,8 @@ void FileMenu::setVisible(bool visible)
 	emit visibleChanged(_visible);
 }
 
-void FileMenu::showFileMenu()
+void FileMenu::showFileOpenMenu()
 {
 	setVisible(true);
-	_actionButtons->buttonClicked(ActionButtons::Open);
+	_actionButtons->setSelectedAction(ActionButtons::Open);
 }
