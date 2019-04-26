@@ -157,7 +157,7 @@ Form
             }
         }
 
-        CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size") }
+		CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size") }
 		
 		Group
 		{
@@ -204,7 +204,7 @@ Form
 					name: "errorBarType"
 					RadioButton
 					{
-                        value: "confidenceInterval"; label: qsTr("Confidence Intervals"); checked: true
+						value: "confidenceInterval"; label: qsTr("Confidence intervals"); checked: true
 						childrenOnSameRow: true
                         CIField { name: "confidenceIntervalInterval" }
 					}

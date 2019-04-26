@@ -130,7 +130,7 @@ Form
 			debug: true
 			CheckBox { name: "residualsUnstandardized";			label: qsTr("Unstandardized")		}
 			CheckBox { name: "residualsStandardized";			label: qsTr("Standardized")			}
-			CheckBox { name: "residualsAdjustedStandardized";	label: qsTr("Adjusted Standardized")	}
+			CheckBox { name: "residualsAdjustedStandardized";	label: qsTr("Adjusted standardized")	}
 		}
 	}
 	

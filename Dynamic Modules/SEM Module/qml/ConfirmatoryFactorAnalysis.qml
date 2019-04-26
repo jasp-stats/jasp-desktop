@@ -74,7 +74,7 @@ Form
                 CheckBox { label: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true }
 				ComboBox
 				{
-                    label: qsTr("Factor Scaling")
+					label: qsTr("Factor scaling")
                     name: "identify"
                     values: [
                         { label: "Factor variances",  value: "factor"  },

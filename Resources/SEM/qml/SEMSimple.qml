@@ -35,11 +35,11 @@ Form
 		title: qsTr("Data")
 		name: "Data"
 		columns: 2
-		RadioButton { value: "raw"; label: qsTr("raw"); checked: true }
+		RadioButton { value: "raw"; label: qsTr("Raw"); checked: true }
 		RadioButton
 		{
 			value: "varcov"; label: qsTr("Variance-covariance matrix")
-			IntegerField { name: "SampleSize"; label: qsTr("Sample Size"); defaultValue: 0 }
+			IntegerField { name: "SampleSize"; label: qsTr("Sample size"); defaultValue: 0 }
 		}
 	}
   
@@ -133,12 +133,12 @@ Form
 			DropDown
 			{
 				name: "factorStandardisation"
-				label: qsTr("Factor Scaling")
+				label: qsTr("Factor scaling")
 				values:
 				[
-					{ label: "Factor Loadings"    , value: "factorLoadings"		},
-					{ label: "Residual Variance"  , value: "residualVariance"	},
-					{ label: "None"               , value: "none"				}
+					{ label: qsTr("Factor loadings")    , value: "factorLoadings"	},
+					{ label: qsTr("Residual variance")  , value: "residualVariance"	},
+					{ label: qsTr("None")               , value: "none"				}
 				]
 			}
 		}

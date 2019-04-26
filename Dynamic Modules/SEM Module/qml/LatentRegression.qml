@@ -67,7 +67,7 @@ Form {
                 CheckBox { text: qsTr("Assume factors uncorrelated") ; name: "uncorrelatedFactors"    }
                 CheckBox { text: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true }
                 ComboBox {
-                    label.text: qsTr("Factor Scaling")
+					label.text: qsTr("Factor scaling")
                     name: "identify"
                     model: ListModel {
                         ListElement { key: "Factor loadings" ; value: "factor"  }

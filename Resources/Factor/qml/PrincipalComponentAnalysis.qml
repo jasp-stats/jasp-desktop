@@ -44,7 +44,7 @@ Form
 		title: qsTr("Number of Components")
 		RadioButton
 		{
-			value: "parallelAnalysis"; label: qsTr("Parallel Analysis"); checked: true
+			value: "parallelAnalysis"; label: qsTr("Parallel analysis"); checked: true
 		}
 		RadioButton
 		{
@@ -54,7 +54,7 @@ Form
 		RadioButton
 		{
 			value: "manual"; label: qsTr("Manual")
-			IntegerField { name: "numberOfFactors"; label: qsTr("Number of Components"); defaultValue: 1; min: 1 }
+			IntegerField { name: "numberOfFactors"; label: qsTr("Number of components"); defaultValue: 1; min: 1 }
 		}
 	}
 

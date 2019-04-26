@@ -89,9 +89,9 @@ Form
                         label: qsTr("Factor Scaling")
                         name: "identify"
                         values: [
-                            { label: "Factor variances",  value: "factor"  },
-                            { label: "Marker variable",  value: "marker"  },
-                            { label: "Effects coding",   value: "effects" }
+							{ label: qsTr("Factor variances"),	value: "factor"  },
+							{ label: qsTr("Marker variable"),	value: "marker"  },
+							{ label: qsTr("Effects coding"),	value: "effects" }
                         ]
                     }
                 }

@@ -108,24 +108,6 @@ Form
 		}
 	}
 	
-	Section
-	{
-		title: qsTr("Post Hoc Tests")
-		
-		VariablesForm
-		{
-			height: 200
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
-			AssignedVariablesList {  name: "postHocTestsVariables" }
-		}
-		
-		Group
-		{
-			title: qsTr("Correction")
-			CheckBox { name: "postHocTestsNullControl"; label: qsTr("Null control"); checked: true }
-		}
-	}
-    
     Section
     {
         title: qsTr("Single Model Inference")
@@ -161,8 +143,7 @@ Form
         {
             height: 200
 
-            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", 'covariates'];
-            }
+			AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", 'covariates'] }
             AssignedVariablesList
             {
                 title: qsTr("Specific model terms")
@@ -171,7 +152,25 @@ Form
             }
         }
     }
-	
+
+	Section
+	{
+		title: qsTr("Post Hoc Tests")
+
+		VariablesForm
+		{
+			height: 200
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
+			AssignedVariablesList {  name: "postHocTestsVariables" }
+		}
+
+		Group
+		{
+			title: qsTr("Correction")
+			CheckBox { name: "postHocTestsNullControl"; label: qsTr("Null control"); checked: true }
+		}
+	}
+
 	Section
 	{
 		title: qsTr("Descriptives Plots")

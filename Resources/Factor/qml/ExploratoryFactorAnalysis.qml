@@ -40,7 +40,7 @@ Form
 	{
 		name: "factorMethod"
 		title: qsTr("Number of Factors")
-		RadioButton { value: "parallelAnalysis";	label: qsTr("Parallel Analysis");  checked: true	}
+		RadioButton { value: "parallelAnalysis";	label: qsTr("Parallel analysis");  checked: true	}
 		RadioButton
 		{
 			value: "eigenValues";					label: qsTr("Eigenvalues")
@@ -49,7 +49,7 @@ Form
 		RadioButton
 		{
 			value: "manual";						label: qsTr("Manual")
-			IntegerField { name: "numberOfFactors"; label: qsTr("Number of Factors"); defaultValue: 1; min: 1 }
+			IntegerField { name: "numberOfFactors"; label: qsTr("Number of factors"); defaultValue: 1; min: 1 }
 		}
 	}
 

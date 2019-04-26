@@ -180,7 +180,7 @@ Form
 					name: "errorBarType"
 					RadioButton
 					{
-						value: "confidenceInterval";		label: qsTr("Confidence Interval"); checked: true
+						value: "confidenceInterval";		label: qsTr("Confidence interval"); checked: true
 						childrenOnSameRow: true
 						CIField { name: "confidenceIntervalInterval";	label: qsTr("Interval") }
 					}

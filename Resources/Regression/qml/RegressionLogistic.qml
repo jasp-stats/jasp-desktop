@@ -34,10 +34,10 @@ Form
 			name: "method"
 			label: qsTr("Method")
 			values: [
-				{ label: "Enter",		value: "enter"},
-				{ label: "Backward",	value: "backward"},
-				{ label: "Forward",		value: "forward"},
-				{ label: "Stepwise",	value: "stepwise"}
+				{ label: qsTr("Enter"),		value: "enter"},
+				{ label: qsTr("Backward"),	value: "backward"},
+				{ label: qsTr("Forward"),	value: "forward"},
+				{ label: qsTr("Stepwise"),	value: "stepwise"}
 			]
 		}
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]									}
