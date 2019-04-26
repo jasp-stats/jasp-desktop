@@ -1394,6 +1394,14 @@
       return()
   }
 
+	# sometimes BayesFactor fails and returns NaN, e.g. BayesFactor::ttest.tstat(t = 10, n1 = 5, n2 = 0, nullInterval = NULL, rscale = 0.0005)
+	# we'll remove up to 5% of the NaN's and otherwise just return an error for the plot
+	validValues <- is.finite(BF10)
+	if (sum(validValues) < (0.95 * length(BF10)))
+		stop("could not calculate enough valid Bayes Factors for different values of the prior")
+
+	BF10 <- BF10[validValues]
+	rValues <- rValues[validValues]
 
   # maximum BF value
   maxBF10 <- max(BF10)

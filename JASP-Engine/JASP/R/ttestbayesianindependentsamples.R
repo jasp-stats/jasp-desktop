@@ -652,7 +652,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 									plot[["obj"]] <- content[["obj"]]
 									plot[["data"]] <- content[["png"]]
 
-								})
+							})
+								
+							if (isTryError(p)) {
+								errorMessage <- .extractErrorMessage(p)
+								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+							}
 
 						}
 

@@ -26,7 +26,7 @@ Form
 {
 	usesJaspResults: false
 
-	IntegerField { name: "sampleSize"; label: qsTr("Sample size"); intValidator.bottom: 2 }
+	IntegerField { name: "sampleSize"; label: qsTr("Sample size") }
 
     Divider { }
 
@@ -37,7 +37,7 @@ Form
 		Layout.columnSpan: 2
 		RadioButton
 		{
-			value: "pearsonRho"; label: qsTr("Pearson's rho"); childrenOnSameRow: true
+			value: "pearsonRho"; label: qsTr("Pearson's rho"); checked: true; childrenOnSameRow: true
 			DoubleField { name: "pearsonRhoValue"; defaultValue: 0; min: -1; max: 1 }
 		}
 		RadioButton
