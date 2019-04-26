@@ -208,13 +208,13 @@ JASPControl {
 		delegate: ItemDelegate
 		{
 			height:								Theme.comboBoxHeight
-			highlighted:						control.highlightedIndex === index
 			enabled:							comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
 
 			contentItem: Rectangle
 			{
 				id:								itemRectangle
 				anchors.fill:					parent
+				color:							comboBox.currentIndex === index ? Theme.itemSelectedColor : (control.highlightedIndex === index ? Theme.itemHoverColor : Theme.controlBackgroundColor)
 
 				property bool isEmptyValue:		comboBox.addEmptyValue && index <= 0
 
@@ -234,7 +234,7 @@ JASPControl {
 					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
 					text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? model.label : model.name)) : ""
 					font:						Theme.font
-					color:						itemRectangle.isEmptyValue || !enabled ? Theme.grayDarker : Theme.black
+					color:						itemRectangle.isEmptyValue || !enabled ? Theme.grayDarker : (comboBox.currentIndex === index ? Theme.white : Theme.black)
 					verticalAlignment:			Text.AlignVCenter
 					anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
 				}
