@@ -28,10 +28,10 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 - Effects: By selecting this option, the effect of each component in the models will be calculated.   
     - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
     - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded. 
-   <details>
-  <summary><b>GIF demonstration </b></summary>
-  <img src="analyses/gif/inclusion_bayes_anova.gif"/>
-</details> 
+      <details>
+        <summary><b>GIF demonstration </b></summary>
+        <img src="analyses/gif/inclusion_bayes_anova.gif"/>
+      </details> 
 
 - Estimates: 
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
