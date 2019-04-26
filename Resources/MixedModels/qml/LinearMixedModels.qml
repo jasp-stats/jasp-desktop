@@ -89,7 +89,7 @@ Form
 			}
 			AssignedVariablesList
 			{
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				name: "modelTerms"
 				listViewType: "Interaction"
 			}
@@ -155,9 +155,9 @@ Form
 		{
 			height: 170
 			AvailableVariablesList {		title: qsTr("Factors")		  ; name: "descriptivePlotsVariables" ; source: ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"	; singleVariable: true }
-			AssignedVariablesList {		 title: qsTr("Separate lines")   ; name: "plotSeparateLines"	 ; singleVariable: true }
-			AssignedVariablesList {		 title: qsTr("Separate plots")   ; name: "plotSeparatePlots"	 ; singleVariable: true }
+			AssignedVariablesList {  title: qsTr("Horizontal Axis")  ; name: "plotHorizontalAxis"	; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Separate Lines")   ; name: "plotSeparateLines"	 ; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Separate Plots")   ; name: "plotSeparatePlots"	 ; singleVariable: true }
 		}
 	}
 
@@ -252,20 +252,20 @@ Form
 		{
 			height: 170
 			AvailableVariablesList {		title: qsTr("Factors")			  ; name: "effectsVariables"	  ; source:  ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"		  ; singleVariable: true }
-			AssignedVariablesList {		 title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"	; singleVariable: true }
-			AssignedVariablesList {		 title: qsTr("Moderator factor 2")   ; name: "moderatorFactorTwo"	; singleVariable: true }
+			AssignedVariablesList {  title: qsTr("Simple Effect Factor") ; name: "simpleFactor"		  ; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Moderator Factor 1")   ; name: "moderatorFactorOne"	; singleVariable: true }
+			AssignedVariablesList {		 title: qsTr("Moderator Factor 2")   ; name: "moderatorFactorTwo"	; singleVariable: true }
 		}
 	}
 
 	Section
 	{
-		title: qsTr("Non parametrics")
+		title: qsTr("Non Parametrics")
 
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList {		title: qsTr("Kruskal-Wallis test")  ; name: "kruskalVariablesAvailable";  source:  ["fixedFactors", "randomFactors"] }
+			AvailableVariablesList {		title: qsTr("Kruskal-Wallis Test")  ; name: "kruskalVariablesAvailable";  source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "kruskalVariablesAssigned" }
 		}
 	}

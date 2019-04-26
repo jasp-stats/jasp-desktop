@@ -87,7 +87,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Assumption checks")
+		title: qsTr("Assumption Checks")
 		CheckBox { name: "normalityTests";		label: qsTr("Normality") }
 	}
 

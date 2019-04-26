@@ -62,7 +62,7 @@ Form
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				ExtraControlColumn

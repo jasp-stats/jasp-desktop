@@ -70,7 +70,7 @@ Form
 			AvailableVariablesList { name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
 			AssignedVariablesList
 			{
-				name: "withinModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction"
+				name: "withinModelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction"
 			}
 		}
 		
@@ -169,9 +169,9 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");			source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal axis"); singleVariable: true }
-			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate lines");	singleVariable: true }
-			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleVariable: true }
+			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal Axis"); singleVariable: true }
+			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
+			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate Plots");	singleVariable: true }
 		}
 		
 		TextField { name: "labelYAxis"; label: qsTr("Label y-axis"); fieldWidth: 200 }
@@ -206,7 +206,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Marginal means")
+			title: qsTr("Marginal Means")
 			
 			VariablesForm
 			{
@@ -269,9 +269,9 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple effect factor");	singleVariable: true }
-			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator factor 1");		singleVariable: true }
-			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2");		singleVariable: true }
+			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple Effect Factor");	singleVariable: true }
+			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1");		singleVariable: true }
+			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator Factor 2");		singleVariable: true }
 		}
 		
 		CheckBox { name: "poolErrorTermSimpleEffects"; label: qsTr("Pool error terms") }
@@ -286,7 +286,7 @@ Form
 			height: 150
 			AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "friedmanWithinFactor";		title: qsTr("RM Factor") }
-			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional grouping factor"); singleVariable: true }
+			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional Grouping Factor"); singleVariable: true }
 		}
 		
 		CheckBox { name: "conoverTest"; label: qsTr("Conover's post hoc tests") }

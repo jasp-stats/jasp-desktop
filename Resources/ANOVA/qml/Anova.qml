@@ -48,7 +48,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
+			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction" }
 		}
 		
 		DropDown
@@ -164,9 +164,9 @@ Form
 		{
 			height: 150
 			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleVariable: true }
-			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines");	singleVariable: true }
-			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots");	singleVariable: true }
+			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true }
+			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
+			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots");	singleVariable: true }
 		}
 		
 		Group
@@ -255,9 +255,9 @@ Form
 		{
 			height: 170
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors")				; source:  ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple effect factor") ; singleVariable: true }
-			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator factor 1")	; singleVariable: true }
-			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2")	; singleVariable: true }
+			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple Effect Factor") ; singleVariable: true }
+			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1")	; singleVariable: true }
+			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator Factor 2")	; singleVariable: true }
 		}
 	}
 	

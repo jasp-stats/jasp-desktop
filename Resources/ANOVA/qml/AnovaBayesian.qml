@@ -87,7 +87,7 @@ Form
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				listViewType: "Interaction"
 
 				
@@ -140,7 +140,7 @@ Form
             AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
             AssignedVariablesList
             {
-                title: qsTr("Specific model terms")
+				title: qsTr("Specific Model Terms")
                 name: "singleModelTerms"
                 listViewType: "Interaction"
             }
@@ -172,9 +172,9 @@ Form
 		{
 
 			AvailableVariablesList { name: "descriptivePlotsVariables" ;	title: qsTr("Factors"); source: "fixedFactors" }
-			AssignedVariablesList { name: "plotHorizontalAxis";				title: qsTr("Horizontal axis");	singleVariable: true }
-			AssignedVariablesList { name: "plotSeparateLines";				title: qsTr("Separate lines");	singleVariable: true }
-			AssignedVariablesList { name: "plotSeparatePlots";				title: qsTr("Separate plots");	singleVariable: true }
+			AssignedVariablesList { name: "plotHorizontalAxis";				title: qsTr("Horizontal Axis");	singleVariable: true }
+			AssignedVariablesList { name: "plotSeparateLines";				title: qsTr("Separate Lines");	singleVariable: true }
+			AssignedVariablesList { name: "plotSeparatePlots";				title: qsTr("Separate Plots");	singleVariable: true }
 		}
 		
 		Group
@@ -203,7 +203,7 @@ Form
         RadioButtonGroup
 		{
 			name: "sampleModeNumAcc"
-			title: qsTr("Numerical accuracy")
+			title: qsTr("Numerical Accuracy")
             RadioButton { value: "auto";	label: qsTr("Auto"); checked: true }
 			RadioButton
 			{
@@ -223,7 +223,7 @@ Form
         RadioButtonGroup
 		{
 			name: "sampleModeMCMC"
-			title: qsTr("Posterior samples")
+			title: qsTr("Posterior Samples")
             RadioButton { value: "auto";	label: qsTr("Auto"); checked: true }
 			RadioButton
 			{

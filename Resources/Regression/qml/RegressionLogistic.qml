@@ -65,7 +65,7 @@ Form
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				
@@ -134,7 +134,7 @@ Form
 
         Group
         {
-            title: qsTr("Performance metrics")
+			title: qsTr("Performance Metrics")
             CheckBox { name: "AUC";			label: qsTr("AUC")					}
             CheckBox { name: "Sens";		label: qsTr("Sensitivity / Recall")	}
             CheckBox { name: "Spec";		label: qsTr("Specificity")			}
@@ -177,7 +177,7 @@ Form
 		
 		Group
 		{
-			title: qsTr("Inferential plots")
+			title: qsTr("Inferential Plots")
 			CheckBox
 			{
 				name: "estimatesPlotsOpt"; label: qsTr("Display conditional estimates plots")
@@ -188,7 +188,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Residual plots")
+			title: qsTr("Residual Plots")
 			CheckBox { name: "predictedPlotOpt";		label: qsTr("Predicted - residual plot")			}
 			CheckBox { name: "predictorPlotsOpt";		label: qsTr("Predictor - residual plots")		}
 			CheckBox { name: "squaredPearsonPlotOpt";	label: qsTr("Squared Pearson residuals plot")	}
@@ -197,7 +197,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "residualType"
-			title: qsTr("Residual type")
+			title: qsTr("Residual Type")
 			RadioButton { value: "deviance";	label: qsTr("Deviance");	checked: true   }
 			RadioButton { value: "pearson";		label: qsTr("Pearson")					}
 		}

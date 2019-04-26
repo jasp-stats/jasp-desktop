@@ -47,7 +47,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
+			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction" }
 		}
 		CheckBox { name: "includeIntercept";		label: qsTr("Include intercept"); checked: true }
 		

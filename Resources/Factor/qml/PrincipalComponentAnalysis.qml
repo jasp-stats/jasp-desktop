@@ -87,7 +87,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Includes tables")
+			title: qsTr("Includes Tables")
 			CheckBox { name: "incl_correlations";	label: qsTr("Component correlations")	}
 			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")			}
 			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")			}
@@ -96,7 +96,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "missingValues"
-			title: qsTr("Missing values")
+			title: qsTr("Missing Values")
 			RadioButton { value: "pairwise";		label: qsTr("Exclude cases pairwise"); checked: true	}
 			RadioButton { value: "listwise";		label: qsTr("Exclude cases listwise")				}
 		}
