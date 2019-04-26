@@ -42,9 +42,10 @@ public:
 	void pauseEngine();
 	void resumeEngine();
 	void restartEngine(QProcess * jaspEngineProcess);
-	bool paused()	const { return _engineState == engineState::paused;												}
-	bool resumed()	const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
-	bool stopped()  const { return _engineState == engineState::stopped;											}
+	bool paused()		const { return _engineState == engineState::paused;												}
+	bool initializing()	const { return _engineState == engineState::initializing;										}
+	bool resumed()		const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
+	bool stopped()		const { return _engineState == engineState::stopped;											}
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr; }
 
@@ -109,7 +110,7 @@ private:
 	QProcess*	_slaveProcess		= nullptr;
 	IPCChannel*	_channel			= nullptr;
 	Analysis*	_analysisInProgress = nullptr;
-	engineState	_engineState		= engineState::idle;
+	engineState	_engineState		= engineState::initializing;
 	int			_ppi				= 96;
 	QString		_imageBackground	= "white";
 	bool		_pauseRequested		= false,

@@ -153,6 +153,7 @@ private:
 	void loadRibbonQML();
 	void loadQML();
 
+	bool enginesInitializing();
 	void pauseEngines();
 	void resumeEngines();
 

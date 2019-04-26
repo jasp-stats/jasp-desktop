@@ -28,6 +28,7 @@
 
 #define DEFAULT_FILTER "# Add filters using R syntax here, see question mark for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
 #define DEFAULT_FILTER_JSON "{\"formulas\":[]}"
+#define DEFAULT_FILTER_GEN "generatedFilter <- rep(TRUE, rowcount)"
 
 class DataSetPackage
 {
@@ -96,8 +97,9 @@ public:
 										  std::vector<std::string> &			missingColumns,
 										  std::map<std::string, std::string> &	changeNameColumns,
 										  bool									rowCountChanged)>		dataChanged;
-			boost::signals2::signal<void ()>															pauseEngines,
+			boost::signals2::signal<void()>																pauseEngines,
 																										resumeEngines;
+			boost::signals2::signal<bool()>																enginesInitializing;
 
 private:
 	DataSet			*	_dataSet = nullptr;

@@ -163,10 +163,11 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 
 void MainWindow::makeConnections()
 {
-	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,		this,	_1));
-	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
-	_package->pauseEngines.connect(		boost::bind(&MainWindow::pauseEngines,			this));
-	_package->resumeEngines.connect(	boost::bind(&MainWindow::resumeEngines,			this));
+	_package->isModifiedChanged.connect(	boost::bind(&MainWindow::packageChanged,		this,	_1));
+	_package->dataChanged.connect(			boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
+	_package->enginesInitializing.connect(	boost::bind(&MainWindow::enginesInitializing,	this));
+	_package->pauseEngines.connect(			boost::bind(&MainWindow::pauseEngines,			this));
+	_package->resumeEngines.connect(		boost::bind(&MainWindow::resumeEngines,			this));
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
@@ -941,7 +942,6 @@ void MainWindow::populateUIfromDataSet(bool showData)
 	}
 	else
 	{
-		_filterModel->init();
 		setDataPanelVisible(showData);
 		setDataAvailable(true);
 		_analyses->setVisible(!showData);
@@ -1339,6 +1339,11 @@ void MainWindow::finishSavingComparedResults()
 	{
 		_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
+}
+
+bool MainWindow::enginesInitializing()
+{
+	return _engineSync->allEnginesInitializing();
 }
 
 void MainWindow::pauseEngines()

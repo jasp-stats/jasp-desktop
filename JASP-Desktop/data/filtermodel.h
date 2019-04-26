@@ -82,7 +82,7 @@ signals:
 
 private:
 	DataSetPackage	*_package;
-	QString			_generatedFilter,
+	QString			_generatedFilter	= DEFAULT_FILTER_GEN,
 					_rFilter			= DEFAULT_FILTER,
 					_constructedJSON	= DEFAULT_FILTER_JSON,
 					_constructedR		= "",

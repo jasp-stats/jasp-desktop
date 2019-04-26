@@ -401,7 +401,7 @@ void EngineRepresentation::sendPauseEngine()
 
 void EngineRepresentation::resumeEngine()
 {
-	if(_engineState != engineState::paused && _engineState != engineState::stopped)
+	if(_engineState != engineState::paused && _engineState != engineState::stopped && _engineState != engineState::initializing)
 		throw std::runtime_error("Attempt to resume engine made but it isn't paused or stopped");
 
 	_pauseRequested			= false;
@@ -426,7 +426,7 @@ void EngineRepresentation::processEnginePausedReply()
 
 void EngineRepresentation::processEngineResumedReply()
 {
-	if(_engineState != engineState::resuming)
+	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
 		throw std::runtime_error("Received an unexpected engine resumed reply!");
 
 	_engineState = engineState::idle;

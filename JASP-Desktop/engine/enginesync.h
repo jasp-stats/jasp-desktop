@@ -45,6 +45,7 @@ public:
 
 	void start(int ppi);
 	bool engineStarted()			{ return _engineStarted; }
+	bool allEnginesInitializing();
 
 public slots:
 	void sendFilter(	const QString & generatedFilter,	const QString & filter,			int requestID);

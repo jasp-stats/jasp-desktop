@@ -4,10 +4,13 @@
 
 void FilterModel::reset()
 {
-	_setGeneratedFilter(QString::fromStdString(labelFilterGenerator(nullptr).generateFilter()));
-	setConstructedJSON(DEFAULT_FILTER_JSON);
-	_setRFilter(DEFAULT_FILTER);
-	sendGeneratedAndRFilter();
+	bool gChanged = _setGeneratedFilter(DEFAULT_FILTER_GEN);
+					setConstructedJSON(DEFAULT_FILTER_JSON);
+	bool rChanged = _setRFilter(DEFAULT_FILTER);
+
+	if(gChanged || rChanged)
+		sendGeneratedAndRFilter();
+
 }
 
 void FilterModel::setDataSetPackage(DataSetPackage * package)
@@ -16,20 +19,16 @@ void FilterModel::setDataSetPackage(DataSetPackage * package)
 
 	if(_package != nullptr)
 	{
-		_setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
-		setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
-		_setRFilter(QString::fromStdString(_package->dataFilter()));
-		sendGeneratedAndRFilter();
+		bool gChanged = _setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
+						setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
+		bool rChanged = _setRFilter(QString::fromStdString(_package->dataFilter()));
+
+		if(gChanged || rChanged)
+			sendGeneratedAndRFilter();
 	}
 	else
 		reset();
 }
-
-void FilterModel::init()
-{
-	sendGeneratedAndRFilter();
-}
-
 
 void FilterModel::setRFilter(QString newRFilter)
 {

@@ -773,7 +773,12 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	bool * arrayPointer = NULL;
 
-	jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
+	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();\n"
+								 "rowcount <- " + std::to_string(rowCount) +  ";\n"
+								 "attach(data);\n"
+								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);\n";
+
+	jaspRCPP_runScript(setupFilterEnv.c_str());//first we load the data to be filtered
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 

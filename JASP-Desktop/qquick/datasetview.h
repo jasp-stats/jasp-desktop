@@ -130,7 +130,7 @@ public slots:
 
 	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)	{ calculateCellSizes(); }
 	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
-	void modelAboutToBeReset()																{}
+	void modelAboutToBeReset()																{ _storedLineFlags.clear(); _storedDisplayText.clear(); }
 	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
 
 protected:

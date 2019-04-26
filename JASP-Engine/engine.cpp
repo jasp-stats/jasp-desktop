@@ -110,16 +110,11 @@ void Engine::run()
 	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
-	JASPTIMER_STOP(Engine::run startup);
-
-	bool firstLoop = true;
+	sendEngineResumed(); //Then the desktop knows we've finished init.
 
 	while(_currentEngineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
 		receiveMessages(100);
-
-		if(firstLoop)
-			JASPTIMER_STOP(Engine Starting);
 
 		switch(_currentEngineState)
 		{

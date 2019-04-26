@@ -12,7 +12,10 @@ Importer::~Importer() {}
 
 void Importer::loadDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
 {
-	_packageData->pauseEngines();
+	bool enginesLoaded = !_packageData->enginesInitializing();
+
+	if(enginesLoaded)
+		_packageData->pauseEngines();
 
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
@@ -34,7 +37,8 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 	}
 
 	delete importDataSet;
-	_packageData->resumeEngines();
+	if(enginesLoaded)
+		_packageData->resumeEngines();
 }
 
 void Importer::syncDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progress)
@@ -252,7 +256,10 @@ void Importer::_syncPackage(
 		bool										rowCountChanged)
 
 {
-	_packageData->pauseEngines();
+	bool enginesLoaded = !_packageData->enginesInitializing();
+
+	if(enginesLoaded)
+		_packageData->pauseEngines();
 	_packageData->dataSet()->setSynchingData(true);
 
 	std::vector<std::string>			_changedColumns;
@@ -329,5 +336,7 @@ void Importer::_syncPackage(
 
 	_packageData->dataSet()->setSynchingData(false);
 	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
-	_packageData->resumeEngines();
+
+	if(enginesLoaded)
+		_packageData->resumeEngines();
 }
