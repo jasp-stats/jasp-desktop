@@ -21,9 +21,11 @@
 #include <QQmlEngine>
 #include <QFileInfo>
 
+
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
 #include "gui/messageforwarder.h"
+#include "osf/onlineusernodeosf.h"
 
 OSF::OSF(QObject *parent): FileMenuObject(parent)
 {
@@ -188,6 +190,24 @@ void OSF::setPassword(const QString &password)
 		Settings::remove(Settings::OSF_PASSWORD);
 
 	Settings::sync();
+
+}
+
+void OSF::checkErrorMessageOSF(QNetworkReply *reply)
+{
+	QNetworkReply::NetworkError error = reply->error();
+
+	if (error != QNetworkReply::NoError)
+	{
+		QString err = reply->errorString();
+		if(error == QNetworkReply::AuthenticationRequiredError)
+			err = "Username and/or password are not correct. Please try again.";
+		else if (error == QNetworkReply::HostNotFoundError)
+			err = "OSF service not available. Please check your internet connection.";
+		else if (error == QNetworkReply::TimeoutError)
+			err = "Connection Timeout error. Please check your internet connection.";
+		MessageForwarder::showWarning("OSF Error", err);
+	}
 
 }
 
@@ -382,11 +402,23 @@ void OSF::closeFileDialog()
 
 void OSF::newLoginRequired()
 {
-	std::cout << "New Login Required " << std::endl;
 	_model->clearAuthentication();
 	_model->refresh();
 	_osfBreadCrumbsListModel->indexChanged(0);
 	setLoggedin(false);
+	setProcessing(false);
+}
+
+void OSF::handleAuthenticationResult(bool success)
+{
+	_model->updateAuthentication(success);
+
+	if(!success)
+	{
+		_odm->removePassword(OnlineDataManager::OSF);
+		Settings::sync();
+	}
+
 	setProcessing(false);
 }
 
@@ -400,7 +432,6 @@ void OSF::resetOSFListModel()
 void OSF::logoutClicked()
 {
 	_model->clearAuthentication();
-	//_logoutButton->hide();
 	_model->refresh();
 	_osfBreadCrumbsListModel->indexChanged(0);
 
@@ -410,6 +441,7 @@ void OSF::logoutClicked()
 
 void OSF::loginRequested(const QString &username, const QString &password)
 {
+
 	if  (password == "" || username =="" )
 	{
 		MessageForwarder::showWarning("Login", "User or password cannot be empty.");
@@ -417,7 +449,15 @@ void OSF::loginRequested(const QString &username, const QString &password)
 	}
 
 	setProcessing(true);
-	_model->authenticate(username, password);
+
+	_odm->saveUsername(OnlineDataManager::OSF, username);
+	_odm->savePassword(OnlineDataManager::OSF, password);
+	_odm->setAuthentication(OnlineDataManager::OSF, username, password);
+
+	OnlineUserNodeOSF *userNode = (OnlineUserNodeOSF *)_odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+	userNode->login();
+
+	connect(userNode, &OnlineUserNodeOSF::authenticationResult, this, &OSF::handleAuthenticationResult);
 
 }
 

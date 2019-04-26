@@ -30,6 +30,8 @@
 
 #include "filesystementry.h"
 #include "osf/onlinedatamanager.h"
+#include "osf/onlineusernodeosf.h"
+#include "widgets/filemenu/osf.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
 #include <gui/messageforwarder.h>
@@ -73,43 +75,31 @@ void OSFFileSystem::attemptToConnect()
 	if ( _isAuthenticated == false && _dataManager != NULL )
 	{
 		emit processingEntries();
-		bool authsuccess = _dataManager->login(OnlineDataManager::OSF);
-		setAuthenticated(authsuccess);
-		if (!authsuccess)
-			emit entriesChanged();
+
+		OnlineUserNodeOSF *userNode = (OnlineUserNodeOSF *)_dataManager->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+		userNode->login();
+		connect(userNode, &OnlineUserNodeOSF::authenticationResult, this, &OSFFileSystem::handleAuthenticationResult);
 	}
-	
+	else emit stopProcessing();
+}
+
+void OSFFileSystem::handleAuthenticationResult(bool authsuccess)
+{
+	setAuthenticated(authsuccess);
+	if (!authsuccess)
+		emit entriesChanged();
 	emit stopProcessing();
+}
+
+void OSFFileSystem::updateAuthentication(bool authenticated)
+{
+	setAuthenticated(authenticated);
 }
 
 
 bool OSFFileSystem::requiresAuthentication() const
 {
 	return true;
-}
-
-void OSFFileSystem::authenticate(const QString &username, const QString &password)
-{
-	bool success = false;
-
-	if (_dataManager && username!="")
-	{
-		_dataManager->saveUsername(OnlineDataManager::OSF, username);
-
-		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
-
-		success = _dataManager->login(OnlineDataManager::OSF);
-
-		if (success)
-			_dataManager->savePassword(OnlineDataManager::OSF, password);
-		else
-			_dataManager->removePassword(OnlineDataManager::OSF);
-	}
-
-
-	Settings::sync();
-
-	setAuthenticated(success);
 }
 
 void OSFFileSystem::setAuthenticated(bool value)
@@ -188,21 +178,7 @@ void OSFFileSystem::parseProjects(QUrl url, bool recursive) {
 
 void OSFFileSystem::handleNetworkReplyError(QNetworkReply* reply)
 {
-	QNetworkReply::NetworkError error = reply->error();
-
-	if (error != QNetworkReply::NoError)
-	{
-		QString err = reply->errorString();
-		if(error == QNetworkReply::AuthenticationRequiredError)
-			err = "Username and/or password are not correct. Please try again.";
-		else if (error == QNetworkReply::HostNotFoundError)
-			err = "OSF service not found. Please check your internet connection.";
-		else if (error == QNetworkReply::TimeoutError)
-			err = "Connection Timeout error. Please check your internet connection.";
-		std::cout << err.toStdString() << std::endl;
-		//MessageForwarder::showWarning("OSF Error", err);
-	}
-
+	OSF::checkErrorMessageOSF(reply);
 }
 
 void OSFFileSystem::gotProjects()
@@ -414,6 +390,7 @@ void OSFFileSystem::gotFilesAndFolders()
 
 	reply->deleteLater();
 }
+
 
 QString OSFFileSystem::getRelationshipUrl(QJsonObject nodeObject, QString name)
 {

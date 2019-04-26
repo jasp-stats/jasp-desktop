@@ -9,6 +9,7 @@
 #include <QEventLoop>
 #include <stdexcept>
 #include <gui/messageforwarder.h>
+#include "widgets/filemenu/osf.h"
 
 
 using namespace std;
@@ -32,6 +33,7 @@ void OnlineUserNodeOSF::initialise() {
 
 	connect(reply, SIGNAL(finished()), this, SLOT(nodeInfoReceived()));
 }
+
 
 
 void OnlineUserNodeOSF::nodeInfoReceived() {
@@ -66,40 +68,29 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 	endInit(success);
 }
 
-bool OnlineUserNodeOSF::login(QNetworkAccessManager *manager)
+void OnlineUserNodeOSF::login()
 {
 
 	QUrl url = QUrl("https://api.osf.io/v2/users/me/");
 
-	QEventLoop loop;
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
 
-	QNetworkReply* reply = manager->get(request);
+	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	connect(reply, &QNetworkReply::finished , this, &OnlineUserNodeOSF::handleLogin);
 
-	loop.exec();
-
-	QNetworkReply::NetworkError error = reply->error();
-
-	//Handle error here, reply deleted afterwards
-	if (error != QNetworkReply::NoError)
-	{
-		QString err = reply->errorString();
-		if(error == QNetworkReply::AuthenticationRequiredError)
-				err = "Username and/or password are not correct. Please try again.";
-		else if (error == QNetworkReply::HostNotFoundError)
-			err = "OSF service not found. Please check your internet connection.";
-		else if (error == QNetworkReply::TimeoutError)
-			err = "Connection Timeout error. Please check your internet connection.";
-		MessageForwarder::showWarning("OSF Error", err);
-	}
-
-	delete reply;
-
-	return error == QNetworkReply::NoError;
 }
 
+void OnlineUserNodeOSF::handleLogin()
+{
+	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
+	OSF::checkErrorMessageOSF(reply);
+
+	reply->deleteLater();
+
+	emit authenticationResult(reply->error() == QNetworkReply::NoError);
+
+}

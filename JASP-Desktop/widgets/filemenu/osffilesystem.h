@@ -57,9 +57,9 @@ public:
 	OnlineNodeData getNodeData(QString key);
 	void setOnlineDataManager(OnlineDataManager *odm);
 	void attemptToConnect();
+	void updateAuthentication(bool authenticated);
 
 	bool requiresAuthentication() const OVERRIDE;
-	void authenticate(const QString &username, const QString &password) OVERRIDE;
 	bool isAuthenticated() const OVERRIDE;
 	void clearAuthentication() OVERRIDE;
 
@@ -73,6 +73,9 @@ signals:
 private slots:
 	void gotProjects();
 	void gotFilesAndFolders();
+
+public slots:
+	void handleAuthenticationResult(bool);
 
 private:
 	void setAuthenticated(bool value);
