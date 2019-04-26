@@ -29,29 +29,51 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
     - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
     - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded. 
    <details>
-  <summary><b> </b></summary>
+  <summary><b>GIF demonstration </b></summary>
   <img src="analyses/gif/inclusion_bayes_anova.gif"/>
 </details> 
 
+- Estimates: 
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
-
+  - Credible interval: By default this is set to 95%. 
+ 
 #### Order: 
 - Compare to null model: The models used for the analysis constructed under the option `Model` will be compared to the model containing the grand mean and the random factors, called the null model. This option is selected by default. 
 - Compare to best model: The models used for the analysis constructed under the option `Model` will be compared to the best model included in the analysis. 
 <details>
-  <summary><b> </b></summary>
+  <summary><b>GIF demonstration </b></summary>
   <img src="analyses/gif/banova_simplebestcrop.gif"/>
 </details>
+
+#### Plots: 
+- Model averaged posteriors: 
+  - Group levels in single plot: 
+  - Individual plot per level: 
+- Q-Q plot of residuals: 
+- Posterior R<sup>2</sup>: 
 
 #### Model 
 - Components: All the independent variables that can be included in the model. 
 - Model terms: The independent variables included in the model. By default all the fixed factors are located in this box.  
 - Add to null model: The independent variables included in the model can be selected to add to the null model.  
 
+#### Single Model Inference 
+- Tables: 
+  - Estimate: 
+- Plots: 
+  - Marginal posteriors: 
+    - Group levels in single plot: 
+    - Individual plot per level: 
+  - Q-Q plot of residuals: 
+  - Posterior R<sup>2</sup>
+- Assignment Box: 
+  - Components: 
+  - Specific model terms: 
+
 #### Post Hoc Tests 
 If there is a significant effect of the independent variable when the covariate is accounted for, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
 <details>
-  <summary><b> </b></summary>
+  <summary><b>GIF demonstration </b></summary>
   <img src="analyses/gif/bayes_posthoc_anova.gif"/>
 </details>
 
@@ -73,7 +95,11 @@ To create a descriptive plot, place the independent variable on the horizontal a
     - r scale fixed effects: The shape parameter of the prior distribution for the fixed effects. This is set to 0.5 by default, but this can be changed into the desired value.  
     - r scale random effects: The shape parameter of the prior distribution for the random effects. This is set to 1 by default, but this can be changed into the desired value. 
     - r scale covariates: The shape parameter of the prior distirbution for the covariates. This is set to 0.354 by default, but this can be changed into the desired value. 
-- Samples: Here, it is possible to set the sample size used to calculate the posterior and error %.  
+- Numerical accuracy: 
+  - Auto: 
+  - Manual: 
+    - No. samples: By default this is set to 10000. 
+- Posterior Samples: Here, it is possible to set the sample size used to calculate the posterior and error %.  
     - Auto: If this option is selected, a sample size of 10000 will be used. This option is selected by default. 
     - Manual: If this option is selected, the sample size can be manually specified. When selecting this option a sample size of 10000 is used by default. 
 
