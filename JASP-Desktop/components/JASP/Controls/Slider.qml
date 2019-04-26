@@ -9,9 +9,9 @@ JASPControl
 {
 	id:					slider
 	controlType:		"Slider"
-	implicitHeight:		control.height + (controlLabel.visible ? labelSpacing + controlLabel.implicitWidth : 0)
-	implicitWidth:		control.width
-    
+	implicitHeight:		columnLayout.implicitHeight
+	implicitWidth:		columnLayout.implicitWidth
+
 	property alias	control:		textField
 	property int	labelSpacing:	4 * preferencesModel.uiScale
 	property int	decimals:		2
