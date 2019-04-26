@@ -170,7 +170,7 @@ Form
 		{
 			title: qsTr("Tuning parameters")
 			visible: [0, 3, 5, 7].includes(estimator.currentIndex)
-			DoubleField { name: "tuningParameter"; label: qsTr("VSalue"); defaultValue: 0.5; max: 1 }
+			DoubleField { name: "tuningParameter"; label: qsTr("Value"); defaultValue: 0.5; max: 1 }
 		}
 
 		RadioButtonGroup
