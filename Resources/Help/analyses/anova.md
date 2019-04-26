@@ -21,7 +21,7 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
     - Components: All the independent variables that can be included in the model. 
     - Model terms: The independent variables included in the model. By default all the main effects and interaction effects of the specified independent variables are included in the model. 
 <details>
-  <summary><b>Add interaction </b></summary>
+  <summary><b>GIF demonstration: Add interaction </b></summary>
   <img src="analyses/gif/interaction_effect_anova.gif"/>
 </details>
 
@@ -41,7 +41,7 @@ ANOVA allows the user to analyze the difference among three, or more, group mean
 #### Contrasts: 
 For every independent variable a specific contrast can be selected by clicking on `none` in the right column. 
 <details>
-  <summary><b> </b></summary>
+  <summary><b>GIF demonstration </b></summary>
   <img src="analyses/gif/contrasts_anova.gif"/>
 </details>
  
@@ -70,10 +70,11 @@ If there is a significant effect of the independent variable, the analysis can b
 - Type: Different types of post hoc tests can be selected. 
     -  Standard: Pairwise t-tests are performed. All the corrections can be applied to this method. This option is selected by default. 
     -  Games-Howell: This method can be used when equal group/level variances are not assumed. The p-values are corrected with the Tukey method.
-    -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted.  <details>
-	                                                                  <summary><b>Adjust level labels </b></summary>
-	                                                                  <img src="analyses/gif/LabelEditing.gif"/>
-                                                                      </details>
+    -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted.
+      <details>
+	  <summary><b>GIF demonstration: Adjust level labels </b></summary>
+	  <img src="analyses/gif/LabelEditing.gif"/>
+      </details>
     
     -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The p-values are corrected with the Bonferroni and Holm methods.
 
@@ -102,12 +103,12 @@ To create a descriptive plot, place the independent variable on the horizontal a
         - &eta;<sup>2</sup> : When this option is selected, the Eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).      
         - partial &eta;<sup>2</sup> : When this option is selected, the Partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018). 
         - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018). 
-    - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this [blogpost](https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/). 
+    - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/" target="_blank">blogpost</a>. 
 
 #### Simple Main Effects: 
 When the results contain a significant interaction, the main effects can be misleading. To solve this, the simple main effects can be calculated. The simple main effects represent the effect of one independent variable for each level of the other independent variable, by conducting an ANOVA for each subset of the data as specified by the moderator variables. 
 <details>
-	<summary><b> </b></summary>
+	<summary><b>GIF demonstration </b></summary>
 	<img src="analyses/gif/SimpleMainEffects_anova.gif"/>
 </details>
 
@@ -268,4 +269,4 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 ### Example 
 --- 
 For an example go to `file`-->`data library`-->`ANOVA`-->`Erotic Pictures and Love`. 
-For more details about ANOVA in JASP, watch this [video](https://www.youtube.com/watch?v=nlAhWQmG5Iw&feature=youtu.be). 
+For more details about ANOVA in JASP, watch this <a href="https://youtube.com/watch?v=nlAhWQmG5Iw&feature=youtu.be" target="_blank">video</a>. 
