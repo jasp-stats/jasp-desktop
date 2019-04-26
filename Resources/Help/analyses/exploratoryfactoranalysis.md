@@ -93,4 +93,4 @@ The scree plot provides information on how much variance in the data, indicated 
 
 ### Example 
 ---
-For an example go to `File`-->`Data library`-->`Factor`-->`G Factor`. For more details about Exploratory Factor Analysis in JASP, watch this [video](https://www.youtube.com/watch?v=dUPzMBqcMjo&feature=youtu.be). 
+For an example go to `File`-->`Data library`-->`Factor`-->`G Factor`. For more details about Exploratory Factor Analysis in JASP, watch this <a href="https://www.youtube.com/watch?v=dUPzMBqcMjo&feature=youtu.be" target="_blank">video</a>. 
