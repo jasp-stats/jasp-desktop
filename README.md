@@ -48,6 +48,7 @@
 #### Building
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
   - [Rebasing your Repository](Docs/development/git-guide.md)
+  - [Nightly versions of JASP here](http://static.jasp-stats.org/Nightlies/) (built fresh every night)
 
 #### Modules
   - [Creating a Module](Docs/development/jasp-adding-module.md)
