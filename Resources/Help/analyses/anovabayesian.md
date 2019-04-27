@@ -118,6 +118,24 @@ To create a descriptive plot, place the independent variable on the horizontal a
 - P(incl|data): This column contains the posterior inclusion probability. This is the summed posterior probability, calculated by adding the posterior probability of each model where the component is in. 
 - BF<sub>inclusion</sub> : This column contains the change from prior inclusion odds to posterior inclusion odds for each component averaged by all the models the component is in. 
 
+#### Model Averaged Posterior Summary 
+- Variable: This column contains all the variables and interactions included in the models. 
+- Level: The levels/groups of the variables and interactions included in the model. 
+- Mean: The mean 
+- SD: The standard deviation. 
+- % Credible Interval: The credible interval of the mean. By default, this is set to 95%. 
+  - Lower: The lower bound of the credible interval of the mean. 
+  - Upper: The upper bound of the credible interval of the mean. 
+
+#### Model Averaged Posterior Distributions 
+For each factor, and interaction the posterior distributions per level is displayed, with on the x-axis the independent variable and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
+
+#### Model Averaged Q-Q plot 
+With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed.
+
+#### Model Averaged Posterior R<sup>2</sup> 
+The density of the R<sup>2</sup> with the R<sup>2</sup> on the x-axis and the density on the y-axis. 
+
 #### Post Hoc Tests: 
 - Post Hoc Comparisons - Independent Variable: 
     - The first columns contain the levels of the independent variable that are compared with each other. 
@@ -127,12 +145,20 @@ To create a descriptive plot, place the independent variable on the horizontal a
     - BF<sub>01, U</sub> : This column contains the Bayes factor quantifying evidence for the null hypothesis/null model relative to the alternative hypothesis, while uncorrected for multiple testing. 
     - error % : The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor. 
 
+#### Single Model Inference 
+- Posterior Distributions:  
+- Q-Q plot: 
+- Posterior R<sup>2</sup>
+
 #### Descriptives: 
 - Descriptives - dependent variable:
     - Independent variables: The levels of the independent variable(s) included in the analysis. If more than 1, the descriptives will be displayed for each combination of levels of the independent variables.
-    - Mean: The mean per level or, if more than 1 independent variable, the mean per combination of levels.
+    - Mean: The mean per level or, if more than 1 independent variable, the mean per combination of levels of the dependent variable.
     - SD: The standard deviation.
     - N: The sample size.
+    - % Credible Interval: The credible interval of the mean. By default, this is set to 95%. 
+      - Lower: The lower bound of the credible interval of the mean. 
+      - Upper: The upper bound of the credible interval of the mean. 
 
 #### Descriptives Plot: 
 Independent variable on the x-axis and dependent variable on the y-axis. If other independent variables are included, either different lines representing different values of the other independent variable are displayed in the same plot, or different plots representing different values of the other independent variable are displayed.
