@@ -39,7 +39,7 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 
 #### Contrasts: 
 For every independent variable a specific contrast can be selected by clicking on `none` in the right column. <details>
-	                                                                                                            <summary><b>GIF demonstration </b></summary>
+	                                                                                                            <summary><b>GIF demonstration: Select contrast </b></summary>
 	                                                                                                            <img src="analyses/gif/contrasts_anova.gif"/>
                                                                                                               </details>
                                                                                                               
@@ -106,7 +106,7 @@ To create a descriptive plot, place the independent variable on the horizontal a
 #### Simple Main Effects: 
 When the results contain a significant interaction, the main effects can be misleading. To solve this, the simple main effects can be calculated. The simple main effects represent the effect of one independent variable for each level of the other independent variable, by conducting an ANOVA for each subset of the data as specified by the moderator variables. 
 <details>
-	<summary><b>GIF demonstration </b></summary>
+	<summary><b>GIF demonstration: Simple main effects </b></summary>
 	<img src="analyses/gif/simplemaineffects_anova.gif"/>
 </details>
 
@@ -266,5 +266,5 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### Example 
 --- 
-For an example go to `File`-->`Data Library`-->`ANOVA`-->`Viagra`. 
-For more details about ANCOVA in JASP, watch this video: <a href="https://www.youtube.com/watch?v=Jxrq_T8InBY&feature=youtu.be" target="_blank">https://www.youtube.com/watch?v=Jxrq_T8InBY&feature=youtu.be</a>. 
+- For an example go to `File`-->`Data Library`-->`ANOVA`-->`Viagra`. 
+- For more details about ANCOVA in JASP, watch this video: <a href="https://www.youtube.com/watch?v=Jxrq_T8InBY&feature=youtu.be" target="_blank">https://www.youtube.com/watch?v=Jxrq_T8InBY&feature=youtu.be</a>. 
