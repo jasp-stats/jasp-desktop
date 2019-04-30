@@ -971,6 +971,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
             })
 
+            if (isTryError(p)) {
+              errorMessage <- .extractErrorMessage(p)
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+            }
+
           }
 
           plot[["status"]] <- "complete"

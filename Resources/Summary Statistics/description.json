@@ -33,7 +33,7 @@
 		},
 		{
 			"title"   : "Regression",
-			"icon"    : "analysis-bayesian-crosstabs.svg"
+			"icon"    : "analysis-bayesian-regression.svg"
 		},
 		{
 			"title"   : "Bayesian Correlation Pairs",
@@ -45,7 +45,7 @@
 		},
 		{
 			"title"   : "Frequencies",
-			"icon"    : "analysis-bayesian-regression.svg"
+			"icon"    : "analysis-bayesian-crosstabs.svg"
 		},
 		{
 			"title"   : "Bayesian Binomial Test",
