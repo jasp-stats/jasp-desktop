@@ -135,10 +135,10 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 	# Create fit measures tables:
 	results[["goodnessOfFit"]] <- .goodnessOfFit(analysisResults, options, perform)
 	# Create factor correlation table:
-	results[["factorLoadings"]] <- .getLoadings(analysisResults, dataset, options, perform, "pca")
+	results[["factorLoadings"]] <- .getLoadings(analysisResults, dataset, options, perform, type)
 
 	if (options$incl_correlations) {
-		results[["factorCorrelations"]] <- .getFactorCorrelations(analysisResults, options, perform, "pca")
+		results[["factorCorrelations"]] <- .getFactorCorrelations(analysisResults, options, perform, type)
 	}
 
 	if (type == "efa" && options$incl_fitIndices) {
@@ -164,7 +164,7 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 	# Scree plot:
 	if (isTRUE(options$incl_screePlot)) {
 		p <- try(silent = FALSE, expr = {
-			.screePlot(dataset, options, perform, oldPlot = state[["screePlot"]],"pca")
+			.screePlot(dataset, options, perform, oldPlot = state[["screePlot"]], type)
 		})
 
 		if (isTryError(p)) {
@@ -279,12 +279,21 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 
 	# Create JASP table:
 	Loadings <- list()
-	Loadings[["title"]] <- "Component Loadings"
+	Loadings[["title"]] <- ifelse(type == "pca", "Component Loadings", "Factor Loadings")
  	Loadings[["schema"]] <- list(fields = list())
-
+	footnotes <- .newFootnotes()
+	
+	message <- "Applied rotation method is "
 	if (options$rotationMethod == "orthogonal") {
+		
+		if (tolower(options$orthogonalSelector) == "none")
+			message <- "No rotation method applied."
+		else
+			message <- paste0(message, options$orthogonalSelector, ".")
+			
 		Rotation <- options$orthogonalSelector
 	} else {
+		message <- paste0(message, options$obliqueSelector, ".")
 		Rotation <- options$obliqueSelector
 	}
 
@@ -296,7 +305,6 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 		colName = "Factor"
 	}
 	
-	footnotes <- .newFootnotes()
 	# Extract loadings:
 	if (is.null(analysisResults) || isTryError(analysisResults)) {
 		if (is.null(options$numberOfFactors)){
@@ -312,9 +320,8 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 
 	} else {
 
-		message <- analysisResults$message
-		.addFootnote(footnotes, symbol = "", text = message)
-
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
+		
 		analysisResults <- analysisResults$Results
 		loadingsMatrix <- as.matrix(loadings(analysisResults))
 
@@ -334,6 +341,7 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 	}
 
 	Loadings[["data"]] <- list()
+	Loadings[["footnotes"]] <- as.list(footnotes)
 
 	# Add rows:
 	if (nrow(loadingsMatrix)==0) {
@@ -662,14 +670,19 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 
 	}else{
 		analysisResults <- analysisResults$Results
-
+		
+		if (analysisResults$dof < 0)
+			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = .addFootnote <- "Degrees of freedom below 0, model is unidentified.")
+			
 		Fits <- list(
 			CHI = .DotIfNULLPCAEFA(analysisResults$STATISTIC),
 			PVAL = .DotIfNULLPCAEFA(analysisResults$PVAL),
 			DF = .DotIfNULLPCAEFA(analysisResults$dof)
 		)
 	}
-
+	
+	goodnessOfFit[["footnotes"]] <- as.list(footnotes)
+	
 	# Create and fill the row(s):
 	goodnessOfFit[["data"]] <- list(
 		list(
