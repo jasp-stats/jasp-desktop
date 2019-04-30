@@ -2303,6 +2303,7 @@ saveImage <- function(plotName, format, height, width)
   relativePath <- paste0("temp.", format)
   
   error <- try({
+		
     # Get file size in inches by creating a mock file and closing it
     pngMultip <- .fromRCPP(".ppi") / 96
     png(
@@ -2313,67 +2314,75 @@ saveImage <- function(plotName, format, height, width)
     )
     insize <- dev.size("in")
     dev.off()
-    
-    if (ggplot2::is.ggplot(plt) || inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-      plotArgs <- list(
-        filename  = relativePath,
-        plot      = plt,
-        width     = insize[1],
-        height    = insize[2],
-        bg        = backgroundColor,
-        limitsize = FALSE
-      )
-      if (format == "eps") {
-        
-      } else if (format == "pdf") {
-        plotArgs[["bg"]] <- "transparent"
-      } else if (format == "tiff") {
-        plotArgs[["dpi"]] <- 300
-        plotArgs[["compression"]] <- "lzw"
-      } else {
-        stop("unknown format ", format)
-      }
-      do.call(ggplot2::ggsave, plotArgs)
-    } else { # qgraph & base plots
-      # Open correct graphics device
-      if (format == "eps") {
-        grDevices::cairo_ps(
-          filename = relativePath,
-          width = insize[1],
-          height = insize[2],
-          bg = backgroundColor
-        )
-      } else if (format == "tiff") {
-        hiResMultip <- 300 / 72
-        grDevices::tiff(
-          filename    = relativePath,
-          width       = width * hiResMultip,
-          height      = height * hiResMultip,
-          res         = 300,
-          bg          = backgroundColor,
-          compression = "lzw",
-          type        = "cairo"
-        )
-      }
-      else if (format == "pdf") {
-        grDevices::cairo_pdf(
-          filename = relativePath,
-          width = insize[1],
-          height = insize[2],
-          bg = "transparent"
-        )
-      } else { # add optional other formats here in "else if"-statements
-        stop("Format incorrectly specified")
-      }
+		
+		# Even though OSX is usually cairo able, the cairo devices should not be used as plot fonts are not scaled well.
+		# On the other hand, Windows should use a cairo (eps/pdf) device as the standard devices use a wrong R_HOME for some reason.
+		# Consequently on Windows you will get encoding/font errors because the devices cannot find their resources.
+		if (capabilities("aqua"))
+			type <- "quartz"
+		else if (capabilities("cairo"))
+			type <- "cairo"
+		else
+			type <- "Xlib"
+
+		# Open correct graphics device
+		if (format == "eps") {
+
+			if (type == "cairo")
+				device <- grDevices::cairo_ps
+			else
+				device <- grDevices::postscript
+					
+			device(
+				relativePath,
+				width = insize[1],
+				height = insize[2],
+				bg = backgroundColor
+			)
+			
+		} else if (format == "tiff") {
+			
+			hiResMultip <- 300 / 72
+			grDevices::tiff(
+				relativePath,
+				width       = width * hiResMultip,
+				height      = height * hiResMultip,
+				res         = 300,
+				bg          = backgroundColor,
+				compression = "lzw",
+				type        = type
+			)
+			
+		} else if (format == "pdf") {
+			
+			if (type == "cairo")
+				device <- grDevices::cairo_pdf
+			else
+				device <- grDevices::pdf
+					
+			device(
+				relativePath,
+				width = insize[1],
+				height = insize[2],
+				bg = "transparent"
+			)
+			
+		} else { # add optional other formats here in "else if"-statements
+		
+			stop("Format incorrectly specified")
+			
+		}
       
-      # Plot and close graphics device
-      if (inherits(plt, "recordedplot")) {
-        .redrawPlot(plt) #(see below)
-      } else { #qgraph
-        plot(plt)
-      }
-      dev.off()
-    }
+		# Plot and close graphics device
+		if (inherits(plt, "recordedplot")) {
+			.redrawPlot(plt)
+		} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+			gridExtra::grid.arrange(plt)
+		} else {
+			plot(plt)
+		}
+		dev.off()
+
   })
   # Create output for interpretation by JASP front-end and return it
   output <- list(status = "imageSaved",
