@@ -26,7 +26,7 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
     - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
     - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded.      
       <details>
-        <summary><b>GIF demonstration </b></summary>
+        <summary><b>GIF demonstration: Select effects </b></summary>
         <img src="analyses/gif/inclusion_bayes_anova.gif"/>
       </details> 
 
@@ -38,7 +38,7 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 - Compare to null model: The models used for the analysis constructed under the option `Model` will be compared to the model containing the grand mean and the random factors, called the null model. This option is selected by default. 
 - Compare to best model: The models used for the analysis constructed under the option `Model` will be compared to the best model included in the analysis. 
 <details>
-  <summary><b>GIF demonstration </b></summary>
+  <summary><b>GIF demonstration: Select order </b></summary>
   <img src="analyses/gif/banova_simplebestcrop.gif"/>
 </details>
 
@@ -70,7 +70,7 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 #### Post Hoc Tests 
 If there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
 <details>
-  <summary><b>GIF demonstration </b></summary>
+  <summary><b>GIF demonstration:  Post hoc test</b></summary>
   <img src="analyses/gif/bayes_posthoc_anova.gif"/>
 </details>
 
