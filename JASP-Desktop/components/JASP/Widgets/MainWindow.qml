@@ -30,8 +30,8 @@ Window
 	height:		768
 
 
-	minimumWidth:	640
-	minimumHeight:	480
+	minimumWidth:	800
+	minimumHeight:	600
 
 	onVisibleChanged: if(!visible) helpModel.visible = false
 
