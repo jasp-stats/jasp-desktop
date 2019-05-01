@@ -420,17 +420,7 @@ $(document).ready(function () {
 		var id = $(event.currentTarget).attr("id")
 		var idAsInt = parseInt(id.substring(3))
 
-		if (selectedAnalysisId == idAsInt && noteClicked === false) {
-				window.unselect()
-				jasp.analysisUnselected()
-		}
-		else if (selectedAnalysisId !== idAsInt && noteClicked === true) {
-			if (selectedAnalysisId !== -1) {
-				window.unselect()
-				jasp.analysisUnselected()
-			}
-		}
-		else {
+		if ((selectedAnalysisId == idAsInt && noteClicked === true) || (selectedAnalysisId !== idAsInt && noteClicked === false)) {
 			window.select(idAsInt)
 			jasp.analysisSelected(idAsInt)
 		}
