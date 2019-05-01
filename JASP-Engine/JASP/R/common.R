@@ -2754,21 +2754,26 @@ editImage <- function(plotName, type, height, width) {
     results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE)
   )
 
-  # error checks
   if (isTryError(results) || is.null(results)) {
-    response[["results"]][["error"]] <- TRUE
+		
     if (is.null(results))
       errorMessage <- "no plot object was found"
     else
       errorMessage <- .extractErrorMessage(results)
+			
+    response[["results"]][["error"]]        <- TRUE
     response[["results"]][["errorMessage"]] <- errorMessage
+		
   } else {
-    # adjust the state of the analysis and save it
-    state[["figures"]][[plotName]]  <- list(obj=results[["obj"]], width=results[["width"]], height=results[["height"]])
-    key                             <- attr(x = state, which = "key")
-    state                           <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
+		
+    state[["figures"]][[plotName]][["width"]]  <- width
+    state[["figures"]][[plotName]][["height"]] <- height
+		
+    key                <- attr(x = state, which = "key")
     attr(state, "key") <- key
+		
     .saveState(state)
+		
   }
 
   toJSON(response)

@@ -317,7 +317,7 @@ void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)
 			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
 			{
 				std::string envName = Rcpp::as<std::string>(plotInfo["envName"]);
-				(*_RStorageEnv)[envName] = plotInfo["obj"];
+				(*_RStorageEnv)[envName] = plotInfo;
 			}
 	}
 

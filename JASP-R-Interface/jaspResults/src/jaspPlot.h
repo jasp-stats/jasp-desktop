@@ -30,6 +30,7 @@ public:
 
 private:
 	void initEnvName();
+	void setChangedDimensionsFromStateObject();
 
 	//Rcpp::Vector<RAWSXP> _plotObjSerialized;
 };
