@@ -411,6 +411,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     sizeMan        = round(8*exp(-n_totl/80)+1)
   )
   dev.off()
+  
+  # post-process plot
+  pp <- .medPlotPostProcess(pp, options)
 
   jaspResults[["plot"]] <- createJaspPlot(pp, title = "Path plot", width = 600, height = 400)
 }
@@ -431,6 +434,24 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   semPlotMod@Pars$rhs <- .unv(semPlotMod@Pars$rhs)
 
   return(semPlotMod)
+}
+
+.medPlotPostProcess <- function(plt, options) {
+  confounds_idx <- which(plt$graphAttributes$Nodes$names %in% options$confounds)
+  predictor_idx <- which(plt$graphAttributes$Nodes$names %in% options$predictor)
+  dependent_idx <- which(plt$graphAttributes$Nodes$names %in% options$dependent)
+  
+  # remove focus from confounder edges
+  confound_edges <- plt$Edgelist$from %in% confounds_idx
+  plt$graphAttributes$Edges$labels[confound_edges] <- ""
+  plt$graphAttributes$Edges$lty[confound_edges] <- 3
+  plt$graphAttributes$Edges$color[confound_edges] <- "#888888FF"
+  
+  # place direct effect edge labels at 1/3
+  direct_edges <- plt$Edgelist$from %in% predictor_idx & plt$Edgelist$to %in% dependent_idx
+  plt$graphAttributes$Edges$edge.label.position[direct_edges] <- 1/3
+  
+  return(plt)
 }
 
 .medSyntax <- function(jaspResults, medResult, options, errors) {
