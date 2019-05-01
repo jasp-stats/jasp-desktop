@@ -224,8 +224,8 @@ Marginal Means - Independent Variable:
 Bootstrapped Marginal Means - Independent Variable: 
 - Independent variable: This column contains all the levels of the independent variables. 
 - Marginal Mean: The estimate of the marginal mean for each level of the independent variable. This mean is adjusted for all the other variables in the model. The estimate is based on the median of the bootstrap distribution. 
-- Bias: The average difference between the bootstrapped mean differences and the estimated mean difference. 
-- SE: The standard error of the bootstrapped mean differences. 
+- Bias: The average difference between the bootstrapped marginal mean and the estimated marginal mean. 
+- SE: The standard error of the bootstrapped marginal means.  
 - 95% bca CI for Mean Difference: The bias corrected accelerated confidence interval of the mean difference between the compared levels. By default this is set to 95%. 
   - Lower: The lower bound of the confidence interval. 
   - Upper: The upper bound of the confidence interval.
