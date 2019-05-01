@@ -61,6 +61,7 @@ void jaspPlot::initEnvName()
 
 void jaspPlot::setPlotObject(Rcpp::RObject obj)
 {
+	Rcpp::List plotInfo = Rcpp::List::create(Rcpp::_["obj"] = obj, Rcpp::_["width"] = _width, Rcpp::_["height"] = _height);
 	_filePathPng = "";
 
 	if(!obj.isNULL())
@@ -81,12 +82,36 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 			_status = "complete";
 	}
 
-	jaspResults::setObjectInEnv(_envName, obj);
+	jaspResults::setObjectInEnv(_envName, plotInfo);
 }
 
 Rcpp::RObject jaspPlot::getPlotObject()
 {
-	return jaspResults::getObjectFromEnv(_envName);
+	Rcpp::RObject plotInfo = jaspResults::getObjectFromEnv(_envName);
+	if (!plotInfo.isNULL() || !Rcpp::is<Rcpp::List>(plotInfo))
+	{
+		
+		Rcpp::List plotInfoList = Rcpp::as<Rcpp::List>(plotInfo);
+		if (plotInfoList.containsElementNamed("obj"))
+			return Rcpp::as<Rcpp::RObject>(plotInfoList["obj"]);
+			
+	}
+	return R_NilValue;
+}
+
+void jaspPlot::setChangedDimensionsFromStateObject()
+{
+	Rcpp::RObject plotInfo = jaspResults::getObjectFromEnv(_envName);
+	if (plotInfo.isNULL() || !Rcpp::is<Rcpp::List>(plotInfo))
+		return;
+	
+	Rcpp::List plotInfoList = Rcpp::as<Rcpp::List>(plotInfo);
+	
+	if (plotInfoList.containsElementNamed("width"))
+		_width = Rcpp::as<int>(plotInfoList["width"]);
+	
+	if (plotInfoList.containsElementNamed("height"))
+		_height = Rcpp::as<int>(plotInfoList["height"]);
 }
 
 Json::Value jaspPlot::convertToJSON()
@@ -116,6 +141,9 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
 	_envName		= in.get("environmentName",	_envName).asString();
+	
+	setChangedDimensionsFromStateObject();
+	
 	/*JASP_OBJECT_TIMERBEGIN
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();
 	_plotObjSerialized = Rcpp::Vector<RAWSXP>(jsonPlotObjStr.begin(), jsonPlotObjStr.end());
