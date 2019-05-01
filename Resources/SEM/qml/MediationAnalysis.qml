@@ -58,18 +58,51 @@ Form
 
 	Section
 	{
-        title: qsTr("Model options")
+        title: qsTr("Options")
         ColumnLayout {
-            GridLayout
+            GroupBox
             {
-                GroupBox
-                {
-                    title: qsTr("Model Options")
-                    CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
-                    CheckBox { label: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true ; visible: false }
+                CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
+                CheckBox { label: qsTr("Standardized estimates")      ; name: "std" }
+            }
+            GroupBox
+            {
+                title: qsTr("Parameter estimates")
+                CheckBox { label: qsTr("Show direct effects");          name: "showdir";    checked: true }
+                CheckBox { label: qsTr("Show indirect effects");        name: "showind";    checked: true }
+                CheckBox { label: qsTr("Show total indirect effects");  name: "showtotind"; checked: true }
+                CheckBox { label: qsTr("Show total effects");           name: "showtot";    checked: true }
+                CheckBox { label: qsTr("Show residual covariances");    name: "showres";    checked: true }
+            }
+
+        }
+        GroupBox
+        {
+            title: qsTr("Confidence intervals")
+            CIField {
+                text: qsTr("Width")
+                name: "ciWidth"
+            }
+            RadioButtonGroup {
+                title: qsTr("Method")
+                name: "se"
+                RadioButton { text: qsTr("Standard")  ; name: "standard" ; checked: true }
+                RadioButton { text: qsTr("Robust")    ; name: "robust" }
+                RadioButton {
+                    text: qsTr("Bootstrap")
+                    name: "bootstrap"
+                    IntegerField {
+                        text: qsTr("Replications")
+                        name: "bootstrapNumber"
+                        defaultValue: 1000
+                        min: 1
+                        max: 100000
+                    }
                 }
             }
         }
+
+
     }
     
 	Section {
@@ -116,25 +149,6 @@ Form
             }
 
             RadioButtonGroup {
-                title: qsTr("Error Calculation")
-                name: "se"
-                RadioButton { text: qsTr("Standard")  ; name: "standard" ; checked: true }
-                RadioButton { text: qsTr("Robust")    ; name: "robust" }
-                RadioButton { 
-                    text: qsTr("Bootstrap") 
-                    name: "bootstrap" 
-                    IntegerField {
-                        text: qsTr("Bootstrap samples")
-                        name: "bootstrapNumber"
-                        defaultValue: 1000
-                        min: 1
-                        max: 1000000
-                    }
-                }
-                
-            }
-
-            RadioButtonGroup {
                 title: qsTr("Estimator")
                 name: "estimator"
                 RadioButton { text: qsTr("Auto") ; name: "default"; checked: true }
@@ -144,29 +158,6 @@ Form
                 RadioButton { text: qsTr("ULS")  ; name: "ULS"      }
                 RadioButton { text: qsTr("DWLS") ; name: "DWLS"     }
             }
-
-            RadioButtonGroup {
-                title: qsTr("Standardization")
-                name: "std"
-                RadioButton { text: qsTr("None")    ; name: "none"; checked: true }
-                RadioButton { text: qsTr("Latents") ; name: "lv"  }
-                RadioButton { text: qsTr("All")     ; name: "all" }
-                RadioButton { text: qsTr("No X")    ; name: "nox" }
-            }
-
-            GroupBox {
-                title: qsTr("Options")
-                debug: true
-                CheckBox { text: qsTr("Fix manifest intercepts to zero") ; name: "fixManifestInterceptsToZero" }
-                CheckBox { text: qsTr("Fix latent intercepts to zero")   ; name: "fixLatentInterceptsToZero"   ; checked: true }
-                CheckBox { text: qsTr("Omit residual single indicator")  ; name: "omitResidualSingleIndicator" ; checked: true }
-                CheckBox { text: qsTr("Residual variances")              ; name: "residualVariances"           ; checked: true }
-                CheckBox { text: qsTr("Correlate exogenous latents")     ; name: "correlateExogenousLatents"   ; checked: true }
-                CheckBox { text: qsTr("Add thresholdds")                 ; name: "addThresholds"               ; checked: true }
-                CheckBox { text: qsTr("Add scalings parameters")         ; name: "addScalingParameters"        ; checked: true }
-                CheckBox { text: qsTr("Correlate dependent variables")   ; name: "correlateDependentVariables" ; checked: true }
-            }
-
         }
     }
 }
