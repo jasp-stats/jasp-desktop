@@ -102,7 +102,7 @@ Item
 				onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
 				pointingLeft:	mainWindow.dataPanelVisible
 				showArrow:		mainWindow.dataAvailable
-				toolTipArrow:	mainWindow.dataPanelVisible ? "Hide data"   : "Maximize data"
+				toolTipArrow:	mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data") : ""
 				toolTipDrag:	mainWindow.dataPanelVisible ? "Resize data" : "Drag to show data"
 				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}

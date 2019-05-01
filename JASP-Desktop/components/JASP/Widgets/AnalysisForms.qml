@@ -61,7 +61,7 @@ FocusScope
 					//topMargin:		-1
 					//bottomMargin:	-1
 				}
-				toolTipDrag:			mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data"
+				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data") : ""
 				toolTipArrow:			analysesModel.visible		? "Hide options" : "Show options"
 				dragEnabled:			mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
