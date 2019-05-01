@@ -132,7 +132,7 @@ FocusScope
 
 						hoverEnabled:		true
 						ToolTip.visible:	containsMouse
-						ToolTip.text:		"Click here to change columntype"
+						ToolTip.text:		"Click here to change column type"
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
 						cursorShape:		Qt.PointingHandCursor
