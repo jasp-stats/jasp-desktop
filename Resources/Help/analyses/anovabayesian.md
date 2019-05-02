@@ -30,7 +30,7 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
         <img src="analyses/gif/inclusion_bayes_anova.gif"/>
       </details> 
 
-- Estimates: 
+- Estimates: By selecting this option, a table with the model averaged posterior summary will be provided. This table includes information about the model averaged posterior mean of each level of the fixed factors and their interactions, the standard deviation, and the credible interval. 
 - Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
   - Credible interval: By default this is set to 95%. 
 
@@ -43,11 +43,11 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 </details>
 
 #### Plots: 
-- Model averaged posteriors: 
-  - Group levels in single plot: 
-  - Individual plot per level: 
-- Q-Q plot of residuals: 
-- Posterior R<sup>2</sup>: 
+- Model averaged posteriors: By selecting this option, plots illustrating the model averaged posterior distribution of each fixed factor, and interaction will be generated. 
+  - Group levels in single plot: When this option is selected, one plot for each factor will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in the same plot.  
+  - Individual plot per level: When this option is selected, a plot for each level of the factors will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in a different plot. 
+- Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the data are normally distributed and linear. 
+- Posterior R<sup>2</sup>: By selecting this option, a plot of the posterior distribution of the R<sup>2</sup> (i.e., explained variance) will be shown. 
 
 #### Model 
 - Components: All the independent variables that can be included in the model. 
@@ -55,17 +55,18 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 - Add to null model: The independent variables included in the model can be selected to add to the null model.  
 
 #### Single Model Inference 
+Here, a single model can be specified to obtain information about the posterior of this specific model, including a table with the posterior summary and plots of the marginal posterior. 
 - Tables: 
-  - Estimate: 
+  - Estimate: A table with the posterior summary for the single model, specified in the assignment box, will be provided. This table provides information about the single model posterior mean of each level of the fixed factors and their interaction included in the model, the standard deviation, and the credible interval. This is different from the `estimate` option in Output, since the  `estimates` option provides the posterior summary averaged over all the models included in the analysis while this option gives the posterior summary for only the single specified model. 
 - Plots: 
-  - Marginal posteriors: 
-    - Group levels in single plot: 
-    - Individual plot per level: 
-  - Q-Q plot of residuals: 
-  - Posterior R<sup>2</sup>
-- Assignment Box: 
-  - Components: 
-  - Specific model terms: 
+  - Marginal posteriors:  By selecting this option, plots illustrating the posterior distribution of each fixed factor, and interaction included in the single model will be generated. 
+    - Group levels in single plot: When this option is selected, one plot for each factor will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in the same plot.
+    - Individual plot per level: When this option is selected, a plot for each level of the factors will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in a different plot. 
+  - Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the data are normally distributed and linear. 
+  - Posterior R<sup>2</sup>: By selecting this option, a plot of the posterior distribution of the R<sup>2</sup> (i.e., explained variance) for the specified model will be shown. 
+- Assignment Box: Here, the single model is specified. 
+  - Components: This box contains all the factors included in the model. 
+  - Specific model terms: Place the factors that should be included in the model in this box. 
 
 #### Post Hoc Tests 
 If there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
@@ -91,13 +92,12 @@ To create a descriptive plot, place the independent variable on the horizontal a
 - Prior: Here it is possible to set the prior distributions for the fixed and random effect sizes. 
     - r scale fixed effects: The shape parameter of the prior distribution for the fixed effects. This is set to 0.5 by default, but this can be changed into the desired value.  
     - r scale random effects: The shape parameter of the prior distribution for the random effects. This is set to 1 by default, but this can be changed into the desired value. 
-- Numerical accuracy: 
-  - Auto: 
-  - Manual: 
-    - No. samples: By default this is set to 10000. 
-- Posterior Samples: Here, it is possible to set the sample size used to calculate the posterior and error %.  
-    - Auto: If this option is selected, a sample size of 10000 will be used. This option is selected by default. 
-    - Manual: If this option is selected, the sample size can be manually specified. When selecting this option a sample size of 10000 is used by default.
+- Numerical accuracy: The number of steps to calculate the integral for the Bayes factor. 
+  - Auto: If this option is selected, 10000 steps will be used. This option is selected by default. 
+  - Manual: If this option is selected, the number of steps can be manually specified. The number of steps is set to 10000 by default. 
+- Posterior Samples: It is possible to set the he number of Markov Chain Monte Carlo samples, used to calculate the posterior and error %.  
+    - Auto: If this option is selected, 10000 samples will be used. This option is selected by default. 
+    - Manual: If this option is selected, the number of samples can be specified manually. When selecting this option a sample size of 1000 is used by default.
 
 ### Output 
 --- 
@@ -119,22 +119,22 @@ To create a descriptive plot, place the independent variable on the horizontal a
 - BF<sub>inclusion</sub> : This column contains the change from prior inclusion odds to posterior inclusion odds for each component averaged by all the models the component is in. 
 
 #### Model Averaged Posterior Summary 
-- Variable: This column contains all the variables and interactions included in the models. 
-- Level: The levels/groups of the variables and interactions included in the model. 
-- Mean: The mean 
-- SD: The standard deviation. 
+- Variable: This column contains all the fixed factors and their interactions included in the models. The first row contains information about the intercept. 
+- Level: Each level of the factor and combination of levels of the interactions that are included in the model. 
+- Mean: The model averaged mean. For the factors, this is the deviation from the intercept for each level of the factor. Together, the level means for a factor are equal to zero.  
+- SD: The standard deviation of the model averaged mean. 
 - % Credible Interval: The credible interval of the mean. By default, this is set to 95%. 
   - Lower: The lower bound of the credible interval of the mean. 
   - Upper: The upper bound of the credible interval of the mean. 
 
 #### Model Averaged Posterior Distributions 
-For each factor, and interaction the posterior distributions per level is displayed, with on the x-axis the independent variable and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
+For each factor, and interaction the model averaged posterior distributions per level is displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
 
 #### Model Averaged Q-Q plot 
 With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed.
 
 #### Model Averaged Posterior R<sup>2</sup> 
-The density of the R<sup>2</sup> with the R<sup>2</sup> on the x-axis and the density on the y-axis. 
+The model averaged density of the R<sup>2</sup> (i.e., explained variance), with the R<sup>2</sup> on the x-axis and the density on the y-axis. 
 
 #### Post Hoc Tests: 
 - Post Hoc Comparisons - Independent Variable: 
@@ -146,9 +146,23 @@ The density of the R<sup>2</sup> with the R<sup>2</sup> on the x-axis and the de
     - error % : The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor. 
 
 #### Single Model Inference 
-- Posterior Distributions:  
-- Q-Q plot: 
-- Posterior R<sup>2</sup>
+- Single Model Posterior Summary: 
+  - Variable: This column contains all the factors and interactions included in the models. The first row contains information about the intercept. 
+  - Level: Each level of the factors and combination of levels of the interactions that are included in the single model.
+  - Mean: The single model mean. For the factors, this is the deviation from the intercept for each level of the factor. Together, the level means for a factor are equal to zero.  
+  - SD: The standard deviation of the single model mean. 
+  - % Credible Interval: The credible interval of the mean. By default, this is set to 95%. 
+    - Lower: The lower bound of the credible interval of the mean. 
+    - Upper: The upper bound of the credible interval of the mean.  
+
+##### Posterior Distributions 
+For each factor and interaction the single model posterior distributions per level is displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
+
+##### Q-Q plot 
+With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed.
+
+##### Posterior R<sup>2</sup>
+The single model density of the R<sup>2</sup> (i.e., explained variance), with the R<sup>2</sup> on the x-axis and the density on the y-axis. 
 
 #### Descriptives: 
 - Descriptives - dependent variable:
