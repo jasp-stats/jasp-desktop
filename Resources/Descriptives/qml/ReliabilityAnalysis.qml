@@ -28,7 +28,7 @@ Form
 	{
 		height: 300
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "scale"] }
 	}
 	
 	Group
