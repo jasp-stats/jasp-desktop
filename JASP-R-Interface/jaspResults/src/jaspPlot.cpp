@@ -88,7 +88,7 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 Rcpp::RObject jaspPlot::getPlotObject()
 {
 	Rcpp::RObject plotInfo = jaspResults::getObjectFromEnv(_envName);
-	if (!plotInfo.isNULL() || !Rcpp::is<Rcpp::List>(plotInfo))
+	if (!plotInfo.isNULL() && Rcpp::is<Rcpp::List>(plotInfo))
 	{
 		
 		Rcpp::List plotInfoList = Rcpp::as<Rcpp::List>(plotInfo);
