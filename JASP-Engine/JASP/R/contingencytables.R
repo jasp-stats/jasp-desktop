@@ -1360,7 +1360,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	row.col.proportions <- list()
 	row.proportions <- list()
 	row.count[["type[counts]"]] <- "Count"
-	row.count[["type[proportions]"]] <- "% of Total"
+	row.count[["type[proportions]"]] <- "% of total"
 
 
 	if (perform == "run" && status$error == FALSE && status$ready) {
@@ -1507,7 +1507,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 			if (options$percentagesTotal) {
 
-				row.proportions[["type[proportions]"]] <- " % of Total"
+				row.proportions[["type[proportions]"]] <- " % of total"
 
 				proportions <- as.list(proportions.matrix[i,])
 				proportions <- .clean(proportions)
