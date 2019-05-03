@@ -272,9 +272,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   if (ciRequested) {
       descriptivesTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
-                                      overtitle = paste0(100 * options$ciInterval, "% ", ciColumnName))
+                                      overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
       descriptivesTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
-                                      overtitle = paste0(100 * options$ciInterval, "% ", ciColumnName))
+                                      overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
     } 
 
   jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
@@ -298,7 +298,6 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   
   descriptivesTable$setData(descDF)
 }
-
 
 #' Create Descriptives plot for Multinomial Bayesian Test
 #'
