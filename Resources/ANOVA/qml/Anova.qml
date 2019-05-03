@@ -115,7 +115,7 @@ Form
         {
             CheckBox
             {
-                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
                 childrenOnSameRow: true
                 CIField {name: "confidenceIntervalIntervalPostHoc" }
             }
@@ -182,7 +182,7 @@ Form
 					{
 						value: "confidenceInterval";		label: qsTr("Confidence interval"); checked: true
 						childrenOnSameRow: true
-						CIField { name: "confidenceIntervalInterval";	label: qsTr("Interval") }
+						CIField { name: "confidenceIntervalInterval" }
 					}
 					RadioButton { value: "standardError";	label: qsTr("Standard error") }
 				}
@@ -195,11 +195,10 @@ Form
 		title: qsTr("Additional Options")
 		columns: 1
 		
-		Label { text: qsTr("Marginal means") }
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: "modelTerms"; showVariableTypeIcon: false }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: "modelTerms"; showVariableTypeIcon: false }
 			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
 		}
 
@@ -226,8 +225,8 @@ Form
 				label: qsTr("Confidence interval adjustment")
 				values: [
 					{ label: "None",		value: "none"},
-					{ label: "Bonferro",	value: "bonferroni"},
-					{ label: "Sidak",		value: "sidak"}
+					{ label: "Bonferroni",	value: "bonferroni"},
+					{ label: "Šidák",		value: "sidak"}
 				]
 			}
 		}
@@ -265,11 +264,10 @@ Form
 	{
 		title: qsTr("Nonparametrics")
 		
-		Label { text: qsTr("Kruskal-Wallis test") }
 		VariablesForm
 		{
 			height: 170
-			AvailableVariablesList { name: "kruskalVariablesAvailable" ; source:  ["fixedFactors", "randomFactors"] }
+			AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis Test"); source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "kruskalVariablesAssigned" }
 		}
 	}	

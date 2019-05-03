@@ -138,7 +138,7 @@ Form
         {
             CheckBox
             {
-                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
                 childrenOnSameRow: true
                 CIField {name: "confidenceIntervalIntervalPostHoc" }
             }
@@ -219,11 +219,10 @@ Form
 		title: qsTr("Additional Options")
 		columns: 1
 		
-		Label { text: qsTr("Marginal means") }
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: [{ name: "modelTerms", discard: "covariates" }] }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: [{ name: "modelTerms", discard: "covariates" }] }
 			AssignedVariablesList {	 name: "marginalMeansTerms" }
 		}
 		
@@ -250,8 +249,8 @@ Form
 				label: qsTr("Confidence interval adjustment")
 				values: [
 					{ label: "None",		value: "none"},
-					{ label: "Bonferro",	value: "bonferroni"},
-					{ label: "Sidak",		value: "sidak"}
+					{ label: "Bonferroni",	value: "bonferroni"},
+					{ label: "Šidák",		value: "sidak"}
 				]
 			}
 		}
@@ -293,11 +292,10 @@ Form
 		
 		Group
 		{
-			Label { text: qsTr("Kruskal-Wallis test") }
 			VariablesForm
 			{
 				height: 200
-				AvailableVariablesList { name: "kruskalVariablesAvailable"; source: "fixedFactors" }
+				AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis Test"); source: "fixedFactors" }
 				AssignedVariablesList {	name: "kruskalVariablesAssigned" }
 			}
 		}

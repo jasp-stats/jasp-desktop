@@ -714,28 +714,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(name="F", type="number", format="sf:4;dp:3"),
     list(name="p", type="number", format="dp:3;p:.001"))
   
-  if (options$homogeneityCorrections && !is.null(corrections)) {
-    fields <- list(
-      list(name="Cases", type="string"),
-      list(name="cor", type="string", title="Homogeneity Correction"),
-      list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
-      list(name="df", type="number", format="sf:4;dp:3"),
-      list(name="Mean Square", type="number", format="sf:4;dp:3"),
-      list(name="F", type="number", format="sf:4;dp:3"),
-      list(name="p", type="number", format="dp:3;p:.001"))
-  }
-  
-  
-  if (options$homogeneityCorrections && !is.null(corrections)) {
-    fields <- list(
-      list(name="Cases", type="string"),
-      list(name="cor", type="string", title="Homogeneity Correction"),
-      list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
-      list(name="df", type="number", format="sf:4;dp:3"),
-      list(name="Mean Square", type="number", format="sf:4;dp:3"),
-      list(name="F", type="number", format="sf:4;dp:3"),
-      list(name="p", type="number", format="dp:3;p:.001"))
-  }
+  if (options$homogeneityCorrections && !is.null(corrections))
+    fields <- append(fields, list(list(name="cor", type="string", title="Homogeneity Correction")), 1)
   
   
   if (options$VovkSellkeMPR) {
@@ -2710,7 +2690,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       list(name="p", title="p<sub>dunnett</sub>", type="number", format="dp:3;p:.001"))
     
     if (options$confidenceIntervalsPostHoc) {
-      thisOverTitle <- paste(options$confidenceIntervalIntervalContrast*100, "% CI for Mean Difference", sep = "")
+      thisOverTitle <- paste(options$confidenceIntervalIntervalPostHoc*100, "% CI for Mean Difference", sep = "")
       fields <- list(
         list(name="Comparison",title="", type="string"),
         list(name="Mean Difference", type="number", format="sf:4;dp:3"),
@@ -2736,7 +2716,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       
       dunnettFit <- multcomp::glht(dunAOV, linfct=multcomp::mcp(Group="Dunnett"))
       dunnettResult <- summary(dunnettFit)[["test"]]
-      dunnettConfInt <- confint(dunnettFit, level = options$confidenceIntervalIntervalContrast)
+      dunnettConfInt <- confint(dunnettFit, level = options$confidenceIntervalIntervalPostHoc)
       
       for (i in 1:(nLevels-1)) {
         
