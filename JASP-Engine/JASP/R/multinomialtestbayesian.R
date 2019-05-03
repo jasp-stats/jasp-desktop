@@ -25,7 +25,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   multinomialResults <- .computeMultinomialResults(jaspResults, dataset, options)
 
   .createMultBayesMainTable(jaspResults, options, multinomialResults)
-  .createMultBayesDescriptivesTable(jaspResults, options, multinomialResults, ciRequested = options$credibleInterval, ciInterval  = options$credibleIntervalInterval)
+  .createMultBayesDescriptivesTable(jaspResults, options, multinomialResults)
   .createMultBayesDescriptivesPlot(jaspResults, options, multinomialResults)
 
   return()
@@ -216,24 +216,32 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 #' @param jaspResults
 #' @param options user input options
 #' @param multinomialResults results table from .computeMultinomialResults() function
-#' @param ciLabel     Bayesian: 'Credible Interval'             ; frequentist: 'Confidence Interval'
-#' @param ciRequested Bayesian: options$credibleInterval        ; frequentist: options$confidenceInterval
-#' @param ciInterval  Bayesian: options$credibleIntervalInterval; frequentist: options$confidenceIntervalInterval
+#' @param bayesianAnalaysis set TRUE for Bayesian multinomial and FALSE for frequentist multinomial
 #'
 #' @return descriptivesTable descriptives table
-.createMultBayesDescriptivesTable <- function(jaspResults, options, multinomialResults, ciLabel = c("Credible Interval", "Confidence Interval"),
-                                              ciRequested, ciInterval){
+.createMultBayesDescriptivesTable <- function(jaspResults, options, multinomialResults, bayesianAnalysis = TRUE){
 
   if(!options[["descriptives"]])
     return()
 
   # Create table
   descriptivesTable                          <- createJaspTable(title = "Descriptives")
-  if(ciLabel == "Credible Interval"){
+
+  # settings for Bayesian and frequentist analysis
+  if(bayesianAnalysis){
+    ciRequested   <- options$credibleInterval
+    ciInterval    <- options$credibleIntervalInterval
+    ciColumnName  <- "Credible Interval"
+    tableFootnote <- "Credible intervals are based on independent binomial distributions with flat priors."
     descriptivesTable$dependOn(c("countProp", "descriptives", "credibleIntervalInterval"))
   } else {
+    ciRequested   <- options$confidenceInterval
+    ciInterval    <- options$confidenceIntervalInterval 
+    ciColumnName  <- "Confidence Interval"
+    tableFootnote <- "Confidence intervals are based on independent binomial distributions."
     descriptivesTable$dependOn(c("countProp", "descriptives", "confidenceIntervalInterval"))
   }
+
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   descriptivesTable$position                 <- 2
 
@@ -264,9 +272,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   if (ciRequested) {
       descriptivesTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
-                                      overtitle = paste0(100 * options$ciInterval, "% ", ciLabel))
+                                      overtitle = paste0(100 * options$ciInterval, "% ", ciColumnName))
       descriptivesTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
-                                      overtitle = paste0(100 * options$ciInterval, "% ", ciLabel))
+                                      overtitle = paste0(100 * options$ciInterval, "% ", ciColumnName))
     } 
 
   jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
@@ -283,22 +291,11 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   if(ciRequested){
-    if(ciLabel == "Credible Interval") {
-      ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
-      descDF <- cbind(descDF, ciInfo)
-      descriptivesTable$addFootnote(message = "Credible intervals are based on independent binomial distributions with flat priors.",
-                                    symbol = "<em>Note.</em>")
-    }   
-    # If function is used in frequentist multinomial test adjust table footnotes
-  } else {
-    if(ciLabel == "Confidence Interval") {
-      ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
-      descDF <- cbind(descDF, ciInfo)
-      descriptivesTable$addFootnote(message = "Confidence intervals are based on independent binomial distributions.",
-                                    symbol = "<em>Note.</em>") 
-    }    
-  }
-
+    ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
+    descDF <- cbind(descDF, ciInfo)
+    descriptivesTable$addFootnote(message = tableFootnote, symbol = "<em>Note.</em>")
+  } 
+  
   descriptivesTable$setData(descDF)
 }
 
