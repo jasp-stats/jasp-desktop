@@ -631,6 +631,10 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     variable <- "Invalid counts: "
   }
 
+  if (!all(counts == as.integer(counts))) {
+    .quitAnalysis(paste0(variable, "variable must contain only integer values."))
+  }
+
   if (nlevels != length(counts)) {
     .quitAnalysis(paste0(variable, "variable does not match the number of levels of factor."))
   }
