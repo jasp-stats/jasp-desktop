@@ -112,7 +112,7 @@ Form
 				columns: 3
 				CheckBox { name: "sphericityNone";				label: qsTr("None");					checked: true }
 				CheckBox { name: "sphericityGreenhouseGeisser";	label: qsTr("Greenhouse-Geisser");	checked: true }
-				CheckBox { name: "sphericityHuynhFeldt";		label: qsTr("Huynth-Feidt");			checked: true }
+				CheckBox { name: "sphericityHuynhFeldt";		label: qsTr("Huynh-Feldt");			checked: true }
 			}
 			CheckBox { name: "homogeneityTests"; label: qsTr("Homogeneity tests") }
 		}
@@ -189,7 +189,7 @@ Form
 					{
 						value: "confidenceInterval"; label: qsTr("Confidence interval"); checked: true
 						childrenOnSameRow: true
-						CIField { name: "confidenceIntervalInterval"; label: qsTr("Interval") }
+						CIField { name: "confidenceIntervalInterval" }
 					}
 					RadioButton { value: "standardError"; label: qsTr("Standard error") }
 				}
