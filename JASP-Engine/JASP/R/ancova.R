@@ -179,16 +179,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
   }
   
-  if(is.null(statePostHocBoots) && options$postHocTestsBootstrapping){
+  if(is.null(statePostHocBoots)){
     
     result <- .anovaPostHocBootstrappingTable(dataset, options, perform, model, status, statePostHocBoots, singular)
     results[["posthocBoots"]] <- list(collection=result$result, title = "Post Hoc Tests via Bootstrapping")
     status <- result$status
     statePostHocBoots <- result$statePostHocBoots
     
-  } else if(options$postHocTestsBootstrapping){
+  } else{
     
-    result[['posthocBoots']] <- list(collection=statePostHoc, title = "Post Hoc Tests via Bootstrapping")
+    result[['posthocBoots']] <- list(collection=statePostHocBoots, title = "Post Hoc Tests via Bootstrapping")
     
   }
   
@@ -212,7 +212,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateMarginalMeansBoots)
     results[["marginalMeansBoots"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
     status <- result$status
-    stateMarginalMeans <- result$stateMarginalMeans
+    stateMarginalMeansBoots <- result$stateMarginalMeans
     
   } else if(options[['marginalMeansBootstrapping']]) {
     
@@ -1464,8 +1464,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaPostHocBootstrappingTable <- function(dataset, options, perform, model, status, statePostHocBoots, singular) {
 
-  if (!length(options$postHocTestsVariables))
-    return (list(result=NULL, status=status))
+  if (!length(options$postHocTestsVariables) || !options$postHocTestsBootstrapping)
+    return (list(result=NULL, status=status, statePostHocBoots = NULL))
   
   postHocVariables <- unlist(options$postHocTestsVariables, recursive = FALSE)
   postHocVariablesListV <- unname(lapply(postHocVariables, .v))
@@ -1594,8 +1594,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       row[["lwrBound"]] <- lwrBound
       row[["uprBound"]] <- uprBound
       
-      postHocTable[["status"]] <- "complete"
-      
       
       if(length(rows) == 0)  {
         row[[".isNewGroup"]] <- TRUE
@@ -1668,7 +1666,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
   fields[[length(fields)+1]] <- list(name="SD", type="number", format="sf:4;dp:3")
-  fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
+  fields[[length(fields)+1]] <- list(name="N", type="integer")
   
   descriptives.table[["schema"]] <- list(fields=fields)
   
