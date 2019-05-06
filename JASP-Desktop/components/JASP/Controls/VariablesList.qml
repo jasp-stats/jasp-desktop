@@ -424,7 +424,7 @@ JASPControl
 				property bool isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
-				property bool draggable:			!variablesList.dragOnlyVariables || isVariable
+				property bool draggable:			variablesList.draggable && (!variablesList.dragOnlyVariables || isVariable)
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? (model.columnType === "nominalText" ? "nominal" : model.columnType) : ""
 				property var extraColumnsModel:		model.extraColumns
 
@@ -486,7 +486,8 @@ JASPControl
 				
 				RowLayout
 				{
-					anchors.fill:			parent
+					anchors.verticalCenter:	parent.verticalCenter
+					anchors.right:			parent.right
 					anchors.rightMargin:	10  * preferencesModel.uiScale
 					spacing:				1
 					z:						10
@@ -506,8 +507,8 @@ JASPControl
 													 )
 											 )
 							asynchronous:	false
-							Layout.topMargin:	-2
 
+							property double extraControlHeight:		itemRectangle.height
 							property string extraControlColName:    colName.text
 							property var    extraControlModel:      itemRectangle.extraColumnsModel
 							property string extraControlName:       model.name
@@ -549,8 +550,11 @@ JASPControl
 					
 					onDoubleClicked:
 					{
-						listView.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
-						itemDoubleClicked(index);
+						if (itemRectangle.draggable)
+						{
+							listView.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+							itemDoubleClicked(index);
+						}
 					}
 					
 					onClicked:
@@ -686,6 +690,7 @@ JASPControl
 			name:			extraControlName
 			values:			extraControlProperties["values"]
 			currentIndex:	extraControlProperties["currentIndex"]
+			control.implicitHeight:	extraControlHeight * 9/10
 
 			property string controlColName:	extraControlColName
 			property var	controlModel:	extraControlModel
