@@ -2505,7 +2505,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
   fields[[length(fields)+1]] <- list(name="SD", type="number", format="sf:4;dp:3")
-  fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
+  fields[[length(fields)+1]] <- list(name="N", type="integer")
   
   descriptives.table[["schema"]] <- list(fields=fields)
   
