@@ -52,13 +52,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   ## Retrieve State
   anovaModel <- state$model
   statePostHoc <- state$statePostHoc
-  statePostHocBoots <- state$statePostHocBoots
+  stateBootsPostHoc <- state$stateBootsPostHoc
   stateqqPlot <- state$stateqqPlot
   stateDescriptivesPlot <- state$stateDescriptivesPlot
   stateContrasts <- state$stateContrasts
   stateLevene <- state$stateLevene
   stateMarginalMeans <- state$stateMarginalMeans
-  stateMarginalMeansBoots <- state$stateMarginalMeansBoots
+  stateBootsMarginalMeans <- state$stateBootsMarginalMeans
   stateSimpleEffects <- state$stateSimpleEffects
   stateDescriptivesTable <- state$stateDescriptivesTable
   stateKruskal <- state$stateKruskal
@@ -179,21 +179,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
   }
   
-  if(is.null(statePostHocBoots)){
+  if(is.null(stateBootsPostHoc) && options[['postHocTestsBootstrapping']]){
     
-    result <- .anovaPostHocBootstrappingTable(dataset, options, perform, model, status, statePostHocBoots, singular)
-    results[["posthocBoots"]] <- list(collection=result$result, title = "Post Hoc Tests via Bootstrapping")
+    result <- .anovabootsPostHoctrappingTable(dataset, options, perform, model, status, stateBootsPostHoc, singular)
+    results[["bootsPostHoc"]] <- list(collection=result$result, title = "Post Hoc Tests via Bootstrapping")
     status <- result$status
-    statePostHocBoots <- result$statePostHocBoots
+    stateBootsPostHoc <- result$stateBootsPostHoc
+    
+  } else if(options[['postHocTestsBootstrapping']]){
+    
+    results[['bootsPostHoc']] <- list(collection=stateBootsPostHoc, title = "Post Hoc Tests via Bootstrapping")
     
   } else{
-    
-    result[['posthocBoots']] <- list(collection=statePostHocBoots, title = "Post Hoc Tests via Bootstrapping")
-    
+    results[['bootsPostHoc']] <- list(collection=NULL, title = "Post Hoc Tests via Bootstrapping")
   }
   
   ## Create Marginal Means Table
-  
   if (is.null(stateMarginalMeans)) {
     
     result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
@@ -207,17 +208,19 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     
   }
   
-  if(is.null(stateMarginalMeansBoots) && options[['marginalMeansBootstrapping']]){
+  if(is.null(stateBootsMarginalMeans) && options[['marginalMeansBootstrapping']]){
     
-    result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateMarginalMeansBoots)
-    results[["marginalMeansBoots"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
+    result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateBootsMarginalMeans)
+    results[["bootsMarginalMeans"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
     status <- result$status
-    stateMarginalMeansBoots <- result$stateMarginalMeans
+    stateBootsMarginalMeans <- result$stateMarginalMeans
     
   } else if(options[['marginalMeansBootstrapping']]) {
     
-    results[['marginalMeansBoots']] <- list(collection=stateMarginalMeansBoots, title = "Marginal Means via Bootstrapping")
+    results[['bootsMarginalMeans']] <- list(collection=stateBootsMarginalMeans, title = "Marginal Means via Bootstrapping")
     
+  } else{
+    results[['bootsMarginalMeans']] <- list(collection=NULL, title = "Marginal Means via Bootstrapping")
   }
   
   ## Create Simple Effects Table
@@ -298,9 +301,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
     list(name="contrasts", type="collection", meta="table"),
     list(name="posthoc", type="collection", meta="table"),
-    list(name="posthocBoots", type="collection", meta="table"),
+    list(name="bootsPostHoc", type="collection", meta="table"),
     list(name="marginalMeans", type="collection", meta="table"),
-    list(name="marginalMeansBoots", type="collection", meta="table"),
+    list(name="bootsMarginalMeans", type="collection", meta="table"),
     list(name="simpleEffects", type="table"),
     list(name="kruskal", type="table")
   )
@@ -323,14 +326,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     model = anovaModel,
     options = options,
     statePostHoc = statePostHoc,
-    statePostHocBoots = statePostHocBoots,
+    stateBootsPostHoc = stateBootsPostHoc,
     stateqqPlot = stateqqPlot,
     stateDescriptivesPlot = stateDescriptivesPlot,
     stateContrasts = stateContrasts,
     stateLevene = stateLevene,
     stateDescriptivesTable = stateDescriptivesTable,
     stateMarginalMeans = stateMarginalMeans,
-    stateMarginalMeansBoots = stateMarginalMeansBoots,
+    stateBootsMarginalMeans = stateBootsMarginalMeans,
     stateSimpleEffects = stateSimpleEffects,
     stateKruskal = stateKruskal
   )
@@ -345,8 +348,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                      "postHocTestsTypeDunnett", "postHocTestsTypeGames", "postHocTestsTukey",
                      "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsBonferroni", "postHocTestsSidak",
                      "postHocTestEffectSize", "confidenceIntervalIntervalPostHoc", "confidenceIntervalsPostHoc"),
-    statePostHocBoots = c(defaults, "postHocTestsVariables", 
-                          "postHocTestsBootstrapping", "postHocTestsBootstrappingReplicates",
+    stateBootsPostHoc = c(defaults, "postHocTestsVariables", "postHocTestsBootstrappingReplicates",
                           "confidenceIntervalIntervalPostHoc"),
     stateqqPlot = c(defaults, "qqPlot", "plotWidthQQPlot", "plotHeightQQPlot"),
     stateDescriptivesPlot = c(defaults, "plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots",
@@ -355,8 +357,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     stateLevene = c(defaults, "homogeneityTests", "VovkSellkeMPR"),
     stateDescriptivesTable = c(defaults, "descriptives"),
     stateMarginalMeans = c(defaults, "marginalMeansTerms", "marginalMeansCompareMainEffects", "marginalMeansCIAdjustment"),
-    stateMarginalMeansBoots = c(defaults, "marginalMeansTerms", 
-                                "marginalMeansBootstrapping", "marginalMeansBootstrappingReplicates"),
+    stateBootsMarginalMeans = c(defaults, "marginalMeansTerms", "marginalMeansBootstrappingReplicates"),
     stateSimpleEffects = c(defaults, "simpleFactor", "moderatorFactorOne", "moderatorFactorTwo"),
     stateKruskal = c(defaults, "kruskalVariablesAssigned"))
   
@@ -1368,7 +1369,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       uprBound <- "."
       lwrBound <- "."
       
-      if (length(mainPostResults) == 1 | any(class(mainPostResults) == "try-error")) {
+      if (length(mainPostResults) == 1){
+        
+      } else if(any(class(mainPostResults) == "try-error")) {
         
         .addFootnote(footnotes, 
                      symbol = "<i>Note.</i>", 
@@ -1426,7 +1429,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       row[["lwrBound"]] <- lwrBound
       row[["uprBound"]] <- uprBound
       
-      postHocTable[["status"]] <- "complete"
+      #postHocTable[["status"]] <- "complete"
       
       
       if(length(rows) == 0)  {
@@ -1462,10 +1465,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   list(result=postHocTables, status=status)
 }
 
-.anovaPostHocBootstrappingTable <- function(dataset, options, perform, model, status, statePostHocBoots, singular) {
+.anovabootsPostHoctrappingTable <- function(dataset, options, perform, model, status, stateBootsPostHoc, singular) {
 
-  if (!length(options$postHocTestsVariables) || !options$postHocTestsBootstrapping)
-    return (list(result=NULL, status=status, statePostHocBoots = NULL))
+  if (!length(options$postHocTestsVariables))
+    return (list(result=NULL, status=status, statebootsPostHoc = NULL))
   
   postHocVariables <- unlist(options$postHocTestsVariables, recursive = FALSE)
   postHocVariablesListV <- unname(lapply(postHocVariables, .v))
@@ -1481,7 +1484,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                               TRUE, FALSE)
     
     postHocTable[["title"]] <- paste("Bootstrapped Post Hoc Comparisons - ", thisVarName, sep="")
-    postHocTable[["name"]] <- paste("postHoc_", thisVarName, sep="")
+    postHocTable[["name"]] <- paste("bootsPostHoc_", thisVarName, sep="")
     
     postHocInterval  <- options$confidenceIntervalIntervalPostHoc
     
@@ -1628,15 +1631,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   if (perform == "init" || status$error || !status$ready) {
     
-    statePostHocBoots <- NULL
+    stateBootsPostHoc <- NULL
     
   } else {
     
-    statePostHocBoots <- postHocTables
+    stateBootsPostHoc <- postHocTables
     
   }
   
-  list(result=postHocTables, status=status, statePostHocBoots = statePostHocBoots)
+  list(result=postHocTables, status=status, stateBootsPostHoc = stateBootsPostHoc)
 }
 
 .anovaDescriptivesTable <- function(dataset, options, perform, status, stateDescriptivesTable) {
@@ -2026,7 +2029,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 .anovaMarginalMeansBootstrapping <- function(dataset, options, perform, model, status, singular, stateMarginalMeans) {
   
   if (is.null(options$marginalMeansTerms))
-    return (list(result=NULL, status=status))
+    return (list(result=NULL, status=status, stateMarginalMeans = NULL))
   
   terms <- options$marginalMeansTerms
   
