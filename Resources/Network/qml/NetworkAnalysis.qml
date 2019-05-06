@@ -65,8 +65,8 @@ Form
 	Group
 	{
 		title: qsTr("Tables")
-		CheckBox { name: "tableCentrality";			label: qsTr("Centrality tabel")					}
-		CheckBox { name: "tableClustering";			label: qsTr("Clustering tabel")					}
+		CheckBox { name: "tableCentrality";			label: qsTr("Centrality table")					}
+		CheckBox { name: "tableClustering";			label: qsTr("Clustering table")					}
 		CheckBox { name: "tableWeightsMatrix";		label: qsTr("Weights matrix")					}
 		CheckBox
 		{
