@@ -1321,7 +1321,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       fields[[length(fields) + 1]] <- list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
     
     if(options$postHocTestsSidak)
-      fields[[length(fields) + 1]] <- list(name="sidak",title="p<sub>šidák</sub>", type="number", format="dp:3;p:.001")
+      fields[[length(fields) + 1]] <- list(name="sidak",title="p<sub>sidak</sub>", type="number", format="dp:3;p:.001")
     
     postHocTable[["schema"]] <- list(fields=fields)
     
