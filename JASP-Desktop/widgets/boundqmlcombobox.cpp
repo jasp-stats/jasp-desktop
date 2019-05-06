@@ -149,7 +149,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 		std::vector<std::string> options = _getOptionValues();
 		_boundTo->resetOptions(options, index);
 		
-		_setCurrentValue(index, false, false);
+		_setCurrentValue(index, true, false);
 		
 		_resetItemWidth();
 	}
