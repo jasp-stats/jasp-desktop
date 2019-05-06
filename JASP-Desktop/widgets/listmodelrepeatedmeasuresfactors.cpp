@@ -297,7 +297,7 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 	
 	beginResetModel();
 	
-	Factor& factor = _factors[row];
+	const Factor& factor = _factors[row];
 	
 	if (!factor.isVirtual)
 	{
@@ -314,8 +314,8 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 				_factors.removeAt(row);
 				while (row < _factors.length())
 				{
-					factor = _factors.at(row);
-					if (factor.isLevel)
+					const Factor& factor2 = _factors.at(row);
+					if (factor2.isLevel)
 						_factors.removeAt(row);
 					else
 						break;
