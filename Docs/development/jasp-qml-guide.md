@@ -135,7 +135,7 @@ Properties
 - `name`: string identifier (in your R code you will be able to retrieve the value of the dropdown through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the dropdown
 - `values`: array of (named) values that is shown in the dropdown list, in the case of an unnamed array the value and the label are the same, but when a named array is provided the label shown to the user can be different from the value send to R (see example below)
-- `indexDefaultValue`: [optional, default: `1`] integer specifying the index of the dropdown item that is selected by default, take note that this is zero-based
+- `indexDefaultValue`: [optional, default: `0`] integer specifying the index of the dropdown item that is selected by default, take note that the numbering starts at zero
 - `source`: if `values` is empty, you can use the name of a VariablesList (see [Variable Specification](#variable-specification)) to set the source of the values of the DropDown.
 
 <details>
@@ -158,9 +158,9 @@ Properties
     label: qsTr("Sum of squares")
     values:
     [
-      { label: "Type \u2160"; value: "type1"}
-      { label: "Type \u2161"; value: "type2"}
-      { label: "Type \u2162"; value: "type3"}
+      { label: "Type \u2160", value: "type1"},
+      { label: "Type \u2161", value: "type2"},
+      { label: "Type \u2162", value: "type3"}
     ]
   }
   ```
@@ -176,7 +176,7 @@ Properties
 - `value`: [optional, default: `0.5`] default value
 - `min`: [optional, default: `0`] minimum value
 - `max`: [optional, default: `1`] maximum value
-- `vertical`: [optional, default: true] set whether the slider should be displayed vertically or horizontally
+- `vertical`: [optional, default: `true`] set whether the slider should be displayed vertically or horizontally
 
 <details>
 	<summary>Examples</summary>
