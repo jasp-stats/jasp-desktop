@@ -385,6 +385,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 	}
+	# show a footnote if this is TRUE
+	interceptOnlyModelIsBest <- dependent.variable != "" && perform == "run" && options$method != "enter" &&
+	  length(options$modelTerm) > 0L && length(lm.model) == 1L && length(lm.model[[1L]][["variables"]]) == 0L
 
 	### check for errors
 	if (! is.null(independent.variables) && ! is.null(dependent.variable)) {
@@ -866,6 +869,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			}
 		}
 		anova[["data"]] <- anova.result
+		if (interceptOnlyModelIsBest) {
+		  text <- "The model with an intercept is selected as the best model. No meaningful information can be shown."
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = text)
+		}
 		anova[["footnotes"]] <- as.list(footnotes)
 
 		results[["anova"]] <- anova
@@ -1881,6 +1888,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			covmatrix[["error"]] <- list(errorType="badData")
 
 		covmatrix[["data"]] <- covmatrix.rows
+		if (interceptOnlyModelIsBest) {
+		  footnotes <- .newFootnotes()
+		  text <- "The model with an intercept is selected as the best model. No meaningful information can be shown."
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = text)
+		  covmatrix[["footnotes"]] <- c(covmatrix[["footnotes"]], as.list(footnotes))
+		}
 
 		results[["coefficient covariances"]] <- covmatrix
 	}
