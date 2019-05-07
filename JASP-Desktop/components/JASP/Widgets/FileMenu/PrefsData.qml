@@ -122,11 +122,13 @@ Item {
 				CheckBox
 				{
 					id:					customThreshold
-					label:				qsTr("Custom threshold between Scale or Nominal")
+					label:				qsTr("Import threshold between Nominal or Scale")
 					checked:			preferencesModel.customThresholdScale
 					onCheckedChanged:	preferencesModel.customThresholdScale = checked
-					//font:				Theme.font
-					toolTip:			qsTr("This will determine if, when importing new data, a column will be interpreted as a Scale column (When there are more unique integers then specified) or Nominal.")
+					ToolTip.delay:		500
+					ToolTip.timeout:	6000 //Some longer to read carefully
+					toolTip:			qsTr("Threshold number of unique integers before classifying a variable as 'scale'.\nYou need to reload your data to take effect! Check help for more info.")
+
 				}
 
 				SpinBox
@@ -143,7 +145,6 @@ Item {
 					editable:			true
 				}
 			}
-
 
 			PrefsMissingValues {} //Missing Value List
 		}
