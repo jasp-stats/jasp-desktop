@@ -642,4 +642,8 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   if(any(counts < 0)){
     .quitAnalysis(paste0(variable, "variable contains negative values"))
   }
+
+  if (!all(counts == round(counts))) {
+    .quitAnalysis(paste0(variable, "variable must contain only integer values."))
+  }
 }

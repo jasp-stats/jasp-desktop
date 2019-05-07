@@ -216,16 +216,32 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 #' @param jaspResults
 #' @param options user input options
 #' @param multinomialResults results table from .computeMultinomialResults() function
+#' @param bayesianAnalaysis set TRUE for Bayesian multinomial and FALSE for frequentist multinomial
 #'
 #' @return descriptivesTable descriptives table
-.createMultBayesDescriptivesTable <- function(jaspResults, options, multinomialResults){
+.createMultBayesDescriptivesTable <- function(jaspResults, options, multinomialResults, bayesianAnalysis = TRUE){
 
   if(!options[["descriptives"]])
     return()
 
   # Create table
   descriptivesTable                          <- createJaspTable(title = "Descriptives")
-  descriptivesTable$dependOn(c("countProp", "descriptives", "credibleIntervalInterval"))
+
+  # settings for Bayesian and frequentist analysis
+  if(bayesianAnalysis){
+    ciRequested   <- options$credibleInterval
+    ciInterval    <- options$credibleIntervalInterval
+    ciColumnName  <- "Credible Interval"
+    tableFootnote <- "Credible intervals are based on independent binomial distributions with flat priors."
+    descriptivesTable$dependOn(c("countProp", "descriptives", "credibleIntervalInterval"))
+  } else {
+    ciRequested   <- options$confidenceInterval
+    ciInterval    <- options$confidenceIntervalInterval 
+    ciColumnName  <- "Confidence Interval"
+    tableFootnote <- "Confidence intervals are based on independent binomial distributions."
+    descriptivesTable$dependOn(c("countProp", "descriptives", "confidenceIntervalInterval"))
+  }
+
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   descriptivesTable$position                 <- 2
 
@@ -254,12 +270,12 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     }
   }
 
-  if (options$credibleInterval) {
-    descriptivesTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
-                                    overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
-    descriptivesTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
-                                    overtitle = paste0(100 * options$credibleIntervalInterval, "% Credible Interval"))
-  }
+  if (ciRequested) {
+      descriptivesTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
+                                      overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
+      descriptivesTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
+                                      overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
+    } 
 
   jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
 
@@ -274,16 +290,14 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     descDF[nms] <- apply(descDF[nms], 2, as.integer)
   }
 
-  if(options$credibleInterval) {
+  if(ciRequested){
     ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
     descDF <- cbind(descDF, ciInfo)
-    descriptivesTable$addFootnote(message = "Credible intervals are based on marginal beta distributions.",
-                                  symbol = "<em>Note.</em>")
-  }
-
+    descriptivesTable$addFootnote(message = tableFootnote, symbol = "<em>Note.</em>")
+  } 
+  
   descriptivesTable$setData(descDF)
 }
-
 
 #' Create Descriptives plot for Multinomial Bayesian Test
 #'
@@ -313,27 +327,19 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 #' @param counts
 #' @param credibleInterval
 #'
-#' @return medianCI median credible interval as data frame
+#' @return credibleIntervals credible intervals as data frame
 .multComputeCIs <- function(counts, credibleInterval) {
 
-  # based on marginal beta distributions with uniform Dirichlet prior
+  # based on marginal beta distributions with uniform Dirichlet prior 
   N             <- sum(counts)
-  observedProps <- counts/N
-  alphas        <- rep(1, length(counts))
-  lower         <- (1 - credibleInterval)/2
-  upper         <- 1 - lower
 
-  medianCI           <- matrix(NA, ncol = 2, nrow = length(counts))
-  colnames(medianCI) <- c('lowerCI', 'upperCI')
+  credibleIntervals           <- matrix(NA, ncol = 2, nrow = length(counts))
+  colnames(credibleIntervals) <- c('lowerCI', 'upperCI')
   for(i in seq_along(counts)){
-    k <- counts[i]
-    a <- alphas[i]
-    b <- sum(alphas[-i])
-
-    medianCI[i, ] <- qbeta(c(lower, upper), a + k, b + N - k)
+   # credible intervals are identical to frequentist confidence intervals
+    credibleIntervals[i, ] <- (binom.test(counts[i], N, conf.level = credibleInterval))$conf.int
   }
-
-  return(as.data.frame(medianCI))
+  return(as.data.frame(credibleIntervals))
 }
 
 
