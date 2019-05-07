@@ -31,6 +31,7 @@
 
   .BANOVAeffectsTable  (jaspResults, options, model)
   .BANOVAestimatesTable(jaspResults, options, model)
+  .BANOVArsquaredTable (jaspResults, options, model)
 
   # model averaged plots
   .BANOVAposteriorPlot(jaspResults, dataset, options, model)
@@ -347,9 +348,9 @@
 
   inclusion.title <- switch(
     options$bayesFactorType,
-    "LogBF10" = "Log(BF<sub>Inclusion, 10</sub>)",
-    "BF01"    = "BF<sub>Inclusion, 01</sub>",
-    "BF10"    = "BF<sub>Inclusion, 10</sub>"
+    "LogBF10" = "Log(BF<sub>Inclusion</sub>)",
+    "BF01"    = "BF<sub>Exclusion</sub>",
+    "BF10"    = "BF<sub>Inclusion</sub>"
   )
 
   effectsTable$addColumnInfo(name = "Effects",      type = "string")
@@ -525,7 +526,8 @@
 # posterior inference ----
 .BANOVAestimatePosteriors <- function(jaspResults, dataset, options, model) {
 
-  userNeedsPosteriorSamples <- options$posteriorEstimates || options$posteriorPlot || options$qqPlot || options$rsqPlot
+  userNeedsPosteriorSamples <- options$posteriorEstimates || options$posteriorPlot || options$qqPlot || 
+    options$rsqPlot || options$criTable
   if (is.null(model$models) || !userNeedsPosteriorSamples)
     return()
 
@@ -621,6 +623,42 @@
     table <- table[, -2L]
   jaspTable$setData(table)
   return()
+}
+
+.BANOVArsquaredTable <- function(jaspResults, options, model) {
+
+  if (!is.null(jaspResults[["tableBMACRI"]]) || !options[["criTable"]])
+    return()
+  
+  criTable <- createJaspTable(title = "Model Averaged R\u00B2")
+  criTable$position <- 3.5
+  criTable$dependOn(c(
+    "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
+    "fixedMCMCSamples", "bayesFactorType", "modelTerms", "fixedFactors", "criTable",
+    "repeatedMeasuresFactors", "credibleInterval"
+  ))
+  
+  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  criTable$addColumnInfo(name = "rsq",   type = "string", title = "")
+  criTable$addColumnInfo(name = "Mean",  type = "number")
+  criTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
+  criTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+  
+  if (!is.null(model[["posteriors"]])) {
+    cri <- model[["posteriors"]][["weightedRsqCri"]]
+    df <- data.frame(
+      rsq   = "R\u00B2",
+      Mean  = model[["posteriors"]][["weightedRsqMean"]],
+      Lower = cri[1L],
+      Upper = cri[2L]
+    )
+    criTable$setData(df)
+  } else {
+    criTable[["rsq"]] <- "R\u00B2"
+  }
+  jaspResults[["tableBMACRI"]] <- criTable
+  return()
+  
 }
 
 # Plots wrappers ----
@@ -1593,7 +1631,8 @@
 
   # compute residuals and r-squared
   # sample from the joint posterior over models and parameters
-  tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, weights)
+  tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, weights, model,
+                                posterior$levelInfo)
   means  <- rowMeans(tmp$resid)
   h <- (1 - cri) / 2
   quants <- matrixStats::rowQuantiles(tmp$resid, probs = c(h, 1 - h))
@@ -1632,10 +1671,11 @@
   # all information for r-squared density plot
   weightedRsqDens <- density(tmp$rsq, n = 2^11, from = 0, to = 1)
   weightedRsqCri <- quantile(tmp$rsq, probs   = c(h, 1 - h))
+  weightedRsqMean <- mean(tmp$rsq)
   
   return(list(
     weightedCRIs = weightedCRIs, weightedResidSumStats = weightedResidSumStats, 
-    weightedRsqDens = weightedRsqDens, weightedRsqCri = weightedRsqCri
+    weightedRsqDens = weightedRsqDens, weightedRsqCri = weightedRsqCri, weightedRsqMean = weightedRsqMean
   ))
 }
 
@@ -1792,7 +1832,7 @@
   return(samples)
 }
 
-.BANOVAgetSMIResidRsq <- function(posterior, dataset, formula, nIter, prop0) {
+.BANOVAgetSMIResidRsq <- function(posterior, dataset, formula, nIter, prop0, model = NULL, levelInfo = NULL) {
 
   # @param posterior  object from Bayesfactor package, or SxPx2 array of weighted densities
   # @param dataset    dataset
@@ -1834,9 +1874,28 @@
     # we're doing model averaged inference
     
     # sample from the BMA posterior
-    samples <- matrix(NA, nrow = nIter, ncol = ncol(posterior))
-    for (i in seq_len(ncol(posterior))) {
-      samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
+    effects <- unname(model$effects)
+    modelIdx <- sample(nrow(effects), nIter, TRUE, model$postProbs)
+    samples <- matrix(0, nrow = nIter, ncol = ncol(posterior))
+    
+    counts <- cumsum(levelInfo$levelCounts)+1L
+    idx <- 0L # selects which variable is sampled (so parameters 0, 1 are within the variable contBinom)
+    if (!is.null(model)) {
+      for (i in seq_len(ncol(posterior))) {
+        if (idx == 0L) {
+          idx <- idx + 1L
+          samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"])
+        } else {
+          if (i > counts[idx])
+            idx <- idx + 1L
+          mult <- effects[modelIdx, idx]
+          samples[mult, i] <- .BANOVAreSample(n = sum(mult), x = posterior[, i, "x"], y = posterior[, i, "y"])
+        }
+      }
+    } else {
+      for (i in seq_len(ncol(posterior))) {
+        samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
+      }
     }
     
     preds <- tcrossprod(datOneHot, samples)
@@ -2223,7 +2282,7 @@
   if (!is.null(jaspContainer[["SMIposteriorPlot"]]) || !options$singleModelPosteriorPlot)
     return()
 
-  posteriorPlotContainer <- createJaspContainer(title = "Posterior Distributions")
+  posteriorPlotContainer <- createJaspContainer(title = "Single Model Posterior Distributions")
   jaspContainer[["SMIposteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$position <- 2
   posteriorPlotContainer$dependOn(c("singleModelPosteriorPlot", "singleModelGroupPosterior"))

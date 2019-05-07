@@ -36,7 +36,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Output")
+		title: qsTr("Tables")
 		CheckBox
 		{
             name: "effects"; label: qsTr("Effects");
@@ -48,6 +48,7 @@ Form
 			}
 		}
         CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
+        CheckBox { name: "criTable";           label: qsTr("Model Averaged R\u00B2") }
         CheckBox { name: "descriptives";       label: qsTr("Descriptives") }
         CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
     }
@@ -112,6 +113,19 @@ Form
     {
         title: qsTr("Single Model Inference")
 
+        VariablesForm
+        {
+            height: 200
+
+			AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", 'covariates'] }
+            AssignedVariablesList
+            {
+				title: qsTr("Specific Model Terms")
+                name: "singleModelTerms"
+                listViewType: "Interaction"
+            }
+        }
+
         GridLayout
         {
 
@@ -119,6 +133,7 @@ Form
             {
                 title: qsTr("Tables")
                 CheckBox { label: qsTr("Estimates"); name: "singleModelEstimates"}
+                CheckBox { label: qsTr("R\u00B2");   name: "singleModelCriTable" }
             }
 
             GroupBox
@@ -136,21 +151,7 @@ Form
                 CheckBox { label: qsTr("Q-Q plot of residuals");  name: "singleModelqqPlot" }
                 CheckBox { label: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
-
-        }
-
-        VariablesForm
-        {
-            height: 200
-
-			AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", 'covariates'] }
-            AssignedVariablesList
-            {
-				title: qsTr("Specific Model Terms")
-                name: "singleModelTerms"
-                listViewType: "Interaction"
-            }
-        }
+        }       
     }
 
 	Section
@@ -202,9 +203,9 @@ Form
 		Group
 		{
 			title: qsTr("Prior")
-			DoubleField { name: "priorFixedEffects";		label: qsTr("r scale fixed effects");	defaultValue: 0.5;	fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorRandomEffects";		label: qsTr("r scale random effects");	defaultValue: 1;	fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorCovariatesEffects";	label: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 50; max: 2; decimals: 1 }
+			DoubleField { name: "priorFixedEffects";		label: qsTr("r scale fixed effects");	defaultValue: 0.5;	 fieldWidth: 75; max: 2; decimals: 1 }
+			DoubleField { name: "priorRandomEffects";		label: qsTr("r scale random effects");	defaultValue: 1;	 fieldWidth: 75; max: 2; decimals: 1 }
+			DoubleField { name: "priorCovariatesEffects";	label: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 75; max: 2; decimals: 1 }
 		}
 
         RadioButtonGroup

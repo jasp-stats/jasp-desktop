@@ -60,7 +60,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Output")
+		title: qsTr("Tables")
 		CheckBox
 		{
 			name: "effects"; label: qsTr("Effects")
@@ -72,6 +72,7 @@ Form
 			}
 		}
         CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
+        
         CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
         CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
     }
@@ -133,6 +134,18 @@ Form
     {
         title: qsTr("Single Model Inference")
 
+        VariablesForm
+        {
+            height: 200
+            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
+            AssignedVariablesList
+            {
+				title: qsTr("Specific Model Terms")
+                name: "singleModelTerms"
+                listViewType: "Interaction"
+            }
+        }
+
         GridLayout
         {
 
@@ -158,18 +171,6 @@ Form
                 CheckBox { label: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
-        }
-
-        VariablesForm
-        {
-            height: 200
-            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
-            AssignedVariablesList
-            {
-				title: qsTr("Specific Model Terms")
-                name: "singleModelTerms"
-                listViewType: "Interaction"
-            }
         }
     }
 
@@ -221,9 +222,9 @@ Form
 		Group
 		{
 			title: qsTr("Prior")
-			DoubleField { name: "priorFixedEffects";	label: qsTr("r scale fixed effects"); defaultValue: 0.5; fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorRandomEffects";	label: qsTr("r scale random effects"); defaultValue: 1; fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorCovariates";		label: qsTr("r scale covariates"); defaultValue: 0.354; fieldWidth: 50; max: 2; decimals: 1 }
+			DoubleField { name: "priorFixedEffects";	label: qsTr("r scale fixed effects");  defaultValue: 0.5;   fieldWidth: 75; max: 2; decimals: 1 }
+			DoubleField { name: "priorRandomEffects";	label: qsTr("r scale random effects"); defaultValue: 1;     fieldWidth: 75; max: 2; decimals: 1 }
+			DoubleField { name: "priorCovariates";		label: qsTr("r scale covariates");     defaultValue: 0.354; fieldWidth: 75; max: 2; decimals: 1 }
 		}
 
         RadioButtonGroup

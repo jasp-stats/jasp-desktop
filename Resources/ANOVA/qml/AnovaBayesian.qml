@@ -35,7 +35,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Output")
+		title: qsTr("Tables")
         CheckBox
         {
             name: "effects"; label: qsTr("Effects");
@@ -47,6 +47,7 @@ Form
             }
         }
         CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
+        CheckBox { name: "criTable";           label: qsTr("Model Averaged R\u00B2") }
         CheckBox { name: "descriptives";       label: qsTr("Descriptives") }
         CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
     }
@@ -107,6 +108,18 @@ Form
     {
         title: qsTr("Single Model Inference")
 
+        VariablesForm
+        {
+            height: 200
+            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
+            AssignedVariablesList
+            {
+				title: qsTr("Specific Model Terms")
+                name: "singleModelTerms"
+                listViewType: "Interaction"
+            }
+        }
+
         GridLayout
         {
 
@@ -132,18 +145,6 @@ Form
                 CheckBox { label: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
-        }
-
-        VariablesForm
-        {
-            height: 200
-            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
-            AssignedVariablesList
-            {
-				title: qsTr("Specific Model Terms")
-                name: "singleModelTerms"
-                listViewType: "Interaction"
-            }
         }
     }
 	Section
