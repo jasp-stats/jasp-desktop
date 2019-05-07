@@ -65,7 +65,7 @@ Here, a single model can be specified to obtain information about the posterior 
   - Marginal posteriors:  By selecting this option, plots illustrating the posterior distribution of each fixed factor, interaction, and covariate included in the single model will be generated. 
     - Group levels in single plot: When this option is selected, one plot for each factor  will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in the same plot.
     - Individual plot per level: When this option is selected, a plot for each level of the factors will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in a different plot. 
-  - Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the data are normally distributed and linear. 
+  - Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the residuals are normally distributed and linear. 
   - Posterior R<sup>2</sup>: By selecting this option, a plot of the posterior distribution of the R<sup>2</sup> (i.e., explained variance) for the specified model will be shown. 
 - Assignment Box: Here, the single model is specified. 
   - Components: This box contains all the factors and covariates included in the model. 
@@ -131,7 +131,7 @@ To create a descriptive plot, place the independent variable on the horizontal a
   - Upper: The upper bound of the credible interval of the mean. 
 
 #### Model Averaged Posterior Distributions 
-For each factor, interaction, and covariate the model averaged posterior distributions per level is displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
+For each factor, interaction, and covariate, the model averaged posterior distributions per level are displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
 
 #### Model Averaged Q-Q plot 
 With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed.
@@ -159,7 +159,7 @@ The model averaged density of the R<sup>2</sup> (i.e., explained variance), with
     - Upper: The upper bound of the credible interval of the mean.  
 
 ##### Posterior Distributions 
-For each factor, interaction, and covariate the single model posterior distributions per level is displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
+For each factor, interaction, and covariate, the single model posterior distributions per level are displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
 
 ##### Q-Q plot 
 With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed.
