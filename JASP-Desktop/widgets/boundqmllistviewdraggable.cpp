@@ -28,7 +28,7 @@
 
 #include <QQuickItem>
 #include <QQmlProperty>
-#include <QDebug>
+
 #include <QTimer>
 
 BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)

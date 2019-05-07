@@ -1,6 +1,7 @@
 #include "enginerepresentation.h"
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "log.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
 	: QObject(parent), _channel(channel)
@@ -19,9 +20,7 @@ void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 
 EngineRepresentation::~EngineRepresentation()
 {
-#ifdef JASP_DEBUG
-	std::cout << "~EngineRepresentation()" << std::endl;
-#endif
+	Log::log() << "~EngineRepresentation()" << std::endl;
 
 	if(_slaveProcess != nullptr)
 	{
@@ -34,11 +33,17 @@ EngineRepresentation::~EngineRepresentation()
 	_channel = nullptr;
 }
 
+void EngineRepresentation::sendString(std::string str)
+{
+#ifdef PRINT_ENGINE_MESSAGES
+	Log::log() << "sending to jaspEngine: " << str << "\n" << std::endl;
+#endif
+	_channel->send(str);
+}
+
 void EngineRepresentation::jaspEngineProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-#ifdef JASP_DEBUG
-	std::cout << "jaspEngine for channel " << engineChannelID() << " finished!" << std::endl;
-#endif
+	Log::log() << "jaspEngine for channel " << engineChannelID() << " finished!" << std::endl;
 
 	_slaveProcess = nullptr;
 }
@@ -77,7 +82,7 @@ void EngineRepresentation::process()
 	if (_channel->receive(data))
 	{
 #ifdef PRINT_ENGINE_MESSAGES
-		std::cout << "message received" <<std::endl;
+		Log::log() << "message received" <<std::endl;
 #endif
 
 		Json::Value json;
@@ -98,6 +103,7 @@ void EngineRepresentation::process()
 		case engineState::resuming:			processEngineResumedReply();		break;
 		case engineState::stopped:			processEngineStoppedReply();		break;
 		case engineState::moduleRequest:	processModuleRequestReply(json);	break;
+		case engineState::logCfg:			processLogCfgReply();				break;
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
@@ -117,9 +123,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	QString dataFilter = filterStore->script == "" ? "*" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
 
-#ifdef JASP_DEBUG
-	std::cout << "sending filter with requestID " << filterStore->requestId << " to engine" << std::endl;
-#endif
+	Log::log() << "sending filter with requestID " << filterStore->requestId << " to engine" << std::endl;
 
 	sendString(json.toStyledString());
 }
@@ -131,7 +135,7 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 	_engineState = engineState::idle;
 
 #ifdef PRINT_ENGINE_MESSAGES
-			std::cout << "msg is filter reply" << std::endl << std::flush;
+			Log::log() << "msg is filter reply" << std::endl << std::flush;
 #endif
 
 	int requestId = json.get("requestId", -1).asInt();
@@ -175,10 +179,7 @@ void EngineRepresentation::processRCodeReply(Json::Value & json)
 
 	emit rCodeReturned(QString::fromStdString(rCodeResult), requestId);
 
-#ifdef JASP_DEBUG
-		std::cout << "rCode reply for request (" << requestId << ") returned: " << rCodeResult << " with error: '" << json.get("rCodeError", "no error") << "'\n" <<  std::flush;
-#endif
-
+	Log::log() << "rCode reply for request (" << requestId << ") returned: " << rCodeResult << " with error: '" << json.get("rCodeError", "no error") << "'\n" <<  std::flush;
 }
 
 
@@ -216,7 +217,7 @@ void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 {
 #ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "send request for analysis-id #" << analysis->id() << " to jaspEngine on channel #" << channelNumber() << std::endl;
+	Log::log() << "send request for analysis-id #" << analysis->id() << " to jaspEngine on channel #" << channelNumber() << std::endl;
 #endif
 
 	setAnalysisInProgress(analysis);
@@ -225,7 +226,7 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 	_channel->send(json.toStyledString());
 
 #ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "sending: " << json.toStyledString() << std::endl;
+	Log::log() << "sending: " << json.toStyledString() << std::endl;
 #endif
 
 	if(analysis->isAborted())
@@ -267,7 +268,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		return;
 
 #ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "Analysis reply: " << json.toStyledString() << std::endl;
+	Log::log() << "Analysis reply: " << json.toStyledString() << std::endl;
 #endif
 
 	int id						= json.get("id",		-1).asInt();
@@ -355,24 +356,20 @@ void EngineRepresentation::sendStopEngine()
 	_engineState			= engineState::stopRequested;
 	json["typeRequest"]		= engineStateToString(_engineState);
 
-#ifdef JASP_DEBUG
-	std::cout << "informing engine that it ought to stop" << std::endl;
-#endif
+	Log::log() << "informing engine that it ought to stop" << std::endl;
 
 	sendString(json.toStyledString());
 }
 
 void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 {
-#ifdef JASP_DEBUG
-	std::cout << "informing engine that it ought to restart" << std::endl;
-#endif
+	Log::log() << "informing engine that it ought to restart" << std::endl;
 
 	if(_slaveProcess != nullptr && _slaveProcess != jaspEngineProcess)
 	{
 		_slaveProcess->kill();
 		delete _slaveProcess;
-		std::cout << "EngineRepresentation::restartEngine says: Engine already has jaspEngine process!" << std::endl;
+		Log::log() << "EngineRepresentation::restartEngine says: Engine already has jaspEngine process!" << std::endl;
 	}
 
 	sendString("");
@@ -392,9 +389,7 @@ void EngineRepresentation::sendPauseEngine()
 	_engineState			= engineState::pauseRequested;
 	json["typeRequest"]		= engineStateToString(_engineState);
 
-#ifdef JASP_DEBUG
-	std::cout << "informing engine that it ought to pause for a bit" << std::endl;
-#endif
+	Log::log() << "informing engine that it ought to pause for a bit" << std::endl;
 
 	sendString(json.toStyledString());
 }
@@ -409,9 +404,7 @@ void EngineRepresentation::resumeEngine()
 	Json::Value json		= Json::Value(Json::objectValue);
 	json["typeRequest"]		= engineStateToString(_engineState);
 
-#ifdef JASP_DEBUG
-	std::cout << "informing engine that it may resume" << std::endl;
-#endif
+	Log::log() << "informing engine that it may resume" << std::endl;
 
 	sendString(json.toStyledString());
 }
@@ -483,7 +476,7 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 void EngineRepresentation::ppiChanged(int newPPI)
 {
 	_ppi = newPPI;
-	std::cout << "ppi for engineRep set to: " << _ppi << std::endl;
+	Log::log() << "ppi for engineRep set to: " << _ppi << std::endl;
 
 	rerunRunningAnalysis();
 }
@@ -499,4 +492,25 @@ void  EngineRepresentation::rerunRunningAnalysis()
 {
 	if(_engineState == engineState::analysis && _analysisInProgress != nullptr)
 		_analysisInProgress->refresh();
+}
+
+void EngineRepresentation::sendLogCfg()
+{
+	Log::log() << "EngineRepresentation::sendLogCfg()" << std::endl;
+
+	if(_engineState != engineState::idle)
+		throw std::runtime_error("EngineRepresentation::sendLogCfg() expects to be run from an idle engine.");
+
+	_engineState		= engineState::logCfg;
+	Json::Value msg		= Log::createLogCfgMsg();
+	msg["typeRequest"]	= engineStateToString(_engineState);
+
+	sendString(msg.toStyledString());
+}
+
+void EngineRepresentation::processLogCfgReply()
+{
+	_engineState = engineState::idle;
+
+	emit logCfgReplyReceived(channelNumber());
 }

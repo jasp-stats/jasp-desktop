@@ -22,6 +22,7 @@
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
 #include "utilities/appdirs.h"
+#include "log.h"
 
 
 DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
@@ -198,10 +199,7 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped)
 {
-#ifdef JASP_DEBUG
-	std::cout << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ", engines " << (enginesStopped ? "stopped" : "started") << ")" << std::endl;
-#endif
-
+	Log::log() << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ", engines " << (enginesStopped ? "stopped" : "started") << ")" << std::endl;
 
 	std::wstring modulePath	= moduleDirectoryW(moduleName);
 
@@ -217,9 +215,8 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 			MessageForwarder::showWarning("Something went wrong removing files for module " + moduleName + " at path '" + moduleDirectory(moduleName) + "' and the error was: " + e.what());
 		else
 		{
-#ifdef JASP_DEBUG
-			std::cout << "Probably some library was still loaded in R... Let's stop the engines!" << std::endl;
-#endif
+			Log::log() << "Probably some library was still loaded in R... Let's stop the engines!" << std::endl;
+
 			stopEngines();
 			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 			removeUninstalledModuleFolder(moduleName, true);
@@ -268,7 +265,7 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 
 void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 {
-	std::cout << "Installing packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
+	Log::log() << "Installing packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
 	_modules[moduleName.toStdString()]->setInstallingSucces(true);
 
 	auto *dynMod = _modules[moduleName.toStdString()];
@@ -293,7 +290,7 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 
 void DynamicModules::loadingFailed(const QString & moduleName, const QString & errorMessage)
 {
-	std::cout << "Loading packages for module (" << moduleName.toStdString() << ") failed because of: " << errorMessage.toStdString() << std::endl;
+	Log::log() << "Loading packages for module (" << moduleName.toStdString() << ") failed because of: " << errorMessage.toStdString() << std::endl;
 	if(moduleName != "*")
 	{
 		_modules[moduleName.toStdString()]->setLoadingSucces(false);
@@ -304,7 +301,7 @@ void DynamicModules::loadingFailed(const QString & moduleName, const QString & e
 
 void DynamicModules::loadingSucceeded(const QString & moduleName)
 {
-	std::cout << "Loading packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
+	Log::log() << "Loading packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
 
 	if(moduleName != "*")
 		_modules[moduleName.toStdString()]->setLoadingSucces(true);
@@ -488,9 +485,8 @@ void DynamicModules::devModCopyDescription()
 
 		if(src.exists()) //file changed because it still exists
 		{
-#ifdef JASP_DEBUG
-		std::cout << "Watched file " << descJson.toStdString() << " was modified." << std::endl;
-#endif
+			Log::log() << "Watched file " << descJson.toStdString() << " was modified." << std::endl;
+
 			QFile	srcFileChanged(src.absoluteFilePath()),
 					dstFileChanged(dst.absoluteFilePath());
 
@@ -573,9 +569,7 @@ void DynamicModules::devModWatchFolder(QString folder, QFileSystemWatcher * & wa
 
 	connect(watcher, &QFileSystemWatcher::directoryChanged, [=, &watcher](QString path)
 	{
-#ifdef JASP_DEBUG
-		std::cout << "Watched folder " << folder.toStdString() << " had a changed directory (file added or removed) on path: " << path.toStdString() << std::endl;
-#endif
+		Log::log() << "Watched folder " << folder.toStdString() << " had a changed directory (file added or removed) on path: " << path.toStdString() << std::endl;
 
 		if(folder.toUpper() == "R")
 			this->regenerateDeveloperModuleRPackage();

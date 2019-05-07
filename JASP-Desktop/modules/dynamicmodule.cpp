@@ -24,6 +24,7 @@
 #include "utilities/extractarchive.h"
 #include "tempfiles.h"
 #include <locale>
+#include "log.h"
 
 namespace Modules
 {
@@ -231,7 +232,7 @@ Json::Value	DynamicModule::requestJsonForPackageInstallationRequest()
 {
 	if(!installNeeded())
 	{
-		std::cout << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") is already installed!" << std::endl;
+		Log::log() << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") is already installed!" << std::endl;
 	}
 
 	Json::Value requestJson(Json::objectValue);
@@ -273,9 +274,8 @@ void DynamicModule::unpackage()
 {
 	if(_modulePackage == "")
 	{
-#ifdef JASP_DEBUG
-		std::cout << "DynamicModule::unpackage has some trouble because _modulePackage is empty..." << std::endl;
-#endif
+		Log::log() << "DynamicModule::unpackage has some trouble because _modulePackage is empty..." << std::endl;
+
 		setInstallLog("Installing module " + _name + " failed because package filepath was not specified");
 		setStatus(moduleStatus::error);
 		return;
@@ -286,9 +286,7 @@ void DynamicModule::unpackage()
 
 	ExtractArchive::extractArchiveToFolder(_modulePackage, tmpDir);
 
-#ifdef JASP_DEBUG
-	std::cout << "Unpacked module to folder " << tmpDir << std::endl;
-#endif
+	Log::log() << "Unpacked module to folder " << tmpDir << std::endl;
 
 	_modulePackage = modDir;
 }
@@ -300,9 +298,8 @@ std::string DynamicModule::generateModuleInstallingR()
 
 	if(_modulePackage == "")
 	{
-#ifdef JASP_DEBUG
-		std::cout << "generateModuleInstallingR has some trouble because package was not unpacked anywehere..." << std::endl;
-#endif
+		Log::log() << "generateModuleInstallingR has some trouble because package was not unpacked anywehere..." << std::endl;
+
 		setInstallLog("Installing module " + _name + " failed because package filepath was not specified");
 		setStatus(moduleStatus::error);
 		return "stop('No package specified!')";
@@ -323,9 +320,7 @@ std::string DynamicModule::generateModuleInstallingR()
 		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, find.package(package='" << _name << "'));\n"
 		<< "};\n" "return('"+succesResultString()+"');";
 
-#ifdef JASP_DEBUG
-	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
-#endif
+	Log::log() << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
 
 	return R.str();
 }
@@ -339,18 +334,28 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 	R << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
 	R << standardRIndent << "import('" << _name << "');\n\n";
 
+	size_t maxL = 0;
 	for(const AnalysisEntry * analysis : _menuEntries)
 		if(analysis->isAnalysis())
-			R << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
+			maxL = std::max(analysis->function().size(), maxL);
+
+	auto filler = [](size_t spaces)
+	{
+		std::stringstream out;
+		for(int i=0; i<spaces; i++)
+			out << " ";
+		return out.str();
+	};
+
+	for(const AnalysisEntry * analysis : _menuEntries)
+		if(analysis->isAnalysis())
+			R << standardRIndent << analysis->function() << _exposedPostFix << filler(maxL - analysis->function().size()) << " <- function(...) " << analysis->function() << "(...)\n";
 	R << "})\n";
 
 	if(shouldReturnSucces)
 		R << "return('"+succesResultString()+"')";
 
-
-#ifdef JASP_DEBUG
-	std::cout << "DynamicModule(" << _name << ")::generateModuleLoadingR() generated:\n" << R.str() << std::endl;
-#endif
+	Log::log() << "DynamicModule(" << _name << ")::generateModuleLoadingR() generated:\n" << R.str() << std::endl;
 
 	return R.str();
 }
@@ -361,10 +366,7 @@ std::string DynamicModule::generateModuleUnloadingR()
 
 	out << _name << " <- NULL; gc(); return('"+succesResultString()+"')";
 
-
-#ifdef JASP_DEBUG
-	std::cout << "DynamicModule(" << _name << ")::generateModuleUnloadingR() generated:\n" << out.str() << std::endl;
-#endif
+	Log::log() << "DynamicModule(" << _name << ")::generateModuleUnloadingR() generated:\n" << out.str() << std::endl;
 
 	return out.str();
 }
@@ -559,7 +561,7 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	case moduleStatus::loadingNeeded:			emit registerForLoading(_name);			break;
 	case moduleStatus::installNeeded:			emit registerForInstalling(_name);		break;
 	case moduleStatus::error:
-		std::cout << "Just set an error on the status of module "<< _name << std::endl;	break;
+		Log::log() << "Just set an error on the status of module "<< _name << std::endl;	break;
 	default:																			break;
 	}
 }

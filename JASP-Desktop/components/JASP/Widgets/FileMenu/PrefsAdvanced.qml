@@ -77,7 +77,7 @@ Item {
 						editable:			true
 						font:				Theme.font
 						height:				Theme.spinBoxHeight	//implicitHeight * preferencesModel.uiScale
-						x: uiScaleSoinBox.x
+						x: uiScaleSpinBox.x
 
 						anchors
 						{
@@ -90,8 +90,8 @@ Item {
 
 			Item
 			{
-				height:		uiScaleSoinBox.height
-				width:		uiScaleSoinBox.x + uiScaleSoinBox.width
+				height:		uiScaleSpinBox.height
+				width:		uiScaleSpinBox.x + uiScaleSpinBox.width
 				anchors.topMargin:	Theme.generalAnchorMargin
 
 				Text
@@ -106,7 +106,7 @@ Item {
 
 				SpinBox
 				{
-					id:					uiScaleSoinBox
+					id:					uiScaleSpinBox
 					value:				preferencesModel.uiScale * _mult
 					onValueChanged:		preferencesModel.uiScale = value / _mult
 					from:				0.01	* _mult
@@ -121,12 +121,12 @@ Item {
 					property real	realValue:	value / _mult
 
 					validator: JASPDoubleValidator {
-						bottom:	Math.min(uiScaleSoinBox.from, uiScaleSoinBox.to)
-						top:		Math.max(uiScaleSoinBox.from, uiScaleSoinBox.to)
-						decimals: uiScaleSoinBox.decimals
+						bottom:	Math.min(uiScaleSpinBox.from, uiScaleSpinBox.to)
+						top:		Math.max(uiScaleSpinBox.from, uiScaleSpinBox.to)
+						decimals: uiScaleSpinBox.decimals
 					}
 
-					textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSoinBox.decimals)	}
+					textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSpinBox.decimals)	}
 					valueFromText: function(text, locale)	{  return Number.fromLocaleString("en-US", text) * 100								}
 
 					anchors
@@ -172,7 +172,7 @@ Item {
 					label:				qsTr("Developer mode (Beta version)")
 					checked:			preferencesModel.developerMode
 					onCheckedChanged:	preferencesModel.developerMode = checked
-					toolTip:			"To use JASP Modules enable this option"
+					toolTip:			qsTr("To use JASP Modules enable this option")
 				}
 
 				Item
@@ -254,6 +254,67 @@ Item {
 					}
 				}
 			}
+
+			CheckBox
+			{
+				id:					logToFile
+				label:				qsTr("Log to file")
+				checked:			preferencesModel.logToFile
+				onCheckedChanged:	preferencesModel.logToFile = checked
+				toolTip:			qsTr("To store debug-logs of JASP in a file, check this box.")
+			}
+
+			Item
+			{
+				x:					Theme.subOptionOffset
+				height:				maxLogFilesSpinBox.height
+				width:				showLogs.x + showLogs.width
+				enabled:			preferencesModel.logToFile
+
+				Text
+				{
+					id:							maxLogFilesLabel
+					text:						qsTr("Max logfiles to keep: ")
+					font:						Theme.font
+					color:						enabled ? Theme.textEnabled : Theme.textDisabled
+					anchors.verticalCenter:		parent.verticalCenter
+					//toolTip:					qsTr("Change the scale of the entire interface, can also be done through Ctrl/Cmd + '+' or '-'")
+				}
+
+				SpinBox
+				{
+					id:					maxLogFilesSpinBox
+					value:				preferencesModel.logFilesMax
+					onValueChanged:		preferencesModel.logFilesMax = value
+					from:				5 //Less than 5 makes no sense as on release you get 1 for JASP-Desktop and 4 from the Engines
+					to:					100
+					stepSize:			1
+					font:				Theme.font
+					height:				Theme.spinBoxHeight
+
+					anchors
+					{
+						leftMargin:	Theme.generalAnchorMargin
+						left:		maxLogFilesLabel.right
+						top:		showLogs.top
+						bottom:		showLogs.bottom
+					}
+				}
+
+				RectangularButton
+				{
+					id:			showLogs
+					text:		qsTr("Show logs")
+					onClicked:	mainWindow.showLogFolder();
+					anchors
+					{
+						margins:	Theme.generalAnchorMargin
+						left:		maxLogFilesSpinBox.right
+					}
+				}
+			}
+
+
 		}
 	}
 }

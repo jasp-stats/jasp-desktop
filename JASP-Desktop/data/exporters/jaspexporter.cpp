@@ -31,7 +31,7 @@
 #include "version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
-#include <QDebug>
+
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");

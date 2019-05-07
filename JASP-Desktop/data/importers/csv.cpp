@@ -19,7 +19,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <iostream>
+
 #include <cstring>
 #include <stdexcept>
 
@@ -77,7 +77,7 @@ void CSV::open()
 		_status = Empty;
 	}
 
-	//std::cout << "encoding : " << _encoding << " delimeters : " << _delim << std::endl;
+	//Log::log() << "encoding : " << _encoding << " delimeters : " << _delim << std::endl;
 }
 
 bool CSV::readRaw()

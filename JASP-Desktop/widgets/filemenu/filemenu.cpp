@@ -21,6 +21,7 @@
 #include <QFileInfo>
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "log.h"
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
@@ -263,7 +264,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->isSuccessful())		setCurrentDataFile(event->dataFilePath());
 		else
-			std::cout << "Sync failed: " << event->getLastError().toStdString() << std::endl;
+			Log::log() << "Sync failed: " << event->getLastError().toStdString() << std::endl;
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -430,9 +431,7 @@ bool FileMenu::checkSyncFileExists(const QString &path)
 
 	if (!exists)
     {
-#ifdef JASP_DEBUG
-        std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
-#endif
+        Log::log() << "Sync file does not exist: " << path.toStdString() << std::endl;
 		clearSyncData();
 	}
 

@@ -1,7 +1,8 @@
 #include "importer.h"
 #include "sharedmemory.h"
-#include <iostream>
+
 #include "utilities/settings.h"
+#include "log.h"
 
 Importer::Importer(DataSetPackage *packageData)
 {
@@ -84,7 +85,7 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 				for (int r = 0; r < orgRowCount; r++)
 					if (!syncColumn->isValueEqual(orgColumn, r))
 					{
-						std::cout << "Value Changed, col: " << syncColumnName << ", row " << (r+1) << std::endl;
+						Log::log() << "Value Changed, col: " << syncColumnName << ", row " << (r+1) << std::endl;
 						changedColumns.push_back(std::pair<int, Column *>(syncColNo, &orgColumn));
 						break;
 					}
@@ -189,7 +190,7 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 		{
 			try {
 
-				std::cout << "Enlarge dataset " << std::endl;
+				Log::log() << "Enlarge dataset " << std::endl;
 
 				dataSet = SharedMemory::enlargeDataSet(dataSet);
 				success = false;
@@ -201,11 +202,11 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 		}
 		catch (std::exception &e)
 		{
-			std::cout << "Exception " << e.what() << std::endl;
+			Log::log() << "Exception " << e.what() << std::endl;
 		}
 		catch (...)
 		{
-			std::cout << "something else" << std::endl;
+			Log::log() << "something else" << std::endl;
 		}
 	}
 	while ( ! success);
@@ -241,8 +242,8 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 				throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");
 			}
 		}
-		catch (std::exception e)	{ std::cout << "n " << e.what() << std::endl;		}
-		catch (...)					{ std::cout << "something else\n " << std::endl;	}
+		catch (std::exception e)	{ Log::log() << "n " << e.what() << std::endl;		}
+		catch (...)					{ Log::log() << "something else\n " << std::endl;	}
 
 	} while (success == false);
 }
@@ -271,9 +272,9 @@ void Importer::_syncPackage(
 		std::string newColName	= changeNameColumnIt.first;
 		Column *changedCol		= changeNameColumnIt.second;
 		missingColumns.erase(changedCol->name());
-#ifdef JASP_DEBUG
-		std::cout << "Column name changed, from: " << changedCol->name() << " to " << newColName << std::endl;
-#endif
+
+		Log::log() << "Column name changed, from: " << changedCol->name() << " to " << newColName << std::endl;
+
 		_changeNameColumns[changedCol->name()] = newColName;
 		changedCol->setName(newColName);
 	}
@@ -291,9 +292,8 @@ void Importer::_syncPackage(
 	{
 		for (auto indexColChanged : changedColumns)
 		{
-#ifdef JASP_DEBUG
-			std::cout << "Column changed " << indexColChanged.first << std::endl;
-#endif
+			Log::log() << "Column changed " << indexColChanged.first << std::endl;
+
 			//Column &column		= _packageData->dataSet()->column(indexColChanged.first);
 			std::string colName	= tempChangedNameList[indexColChanged.first];//indexColChanged.second->name();
 			_changedColumns.push_back(colName);
@@ -309,9 +309,8 @@ void Importer::_syncPackage(
 		for (auto it = newColumns.begin(); it != newColumns.end(); ++it, ++colNo)
 		{
 			increaseDataSetColCount(syncDataSet->rowCount());
-#ifdef JASP_DEBUG
-			std::cout << "New column " << it->first << std::endl;
-#endif
+			Log::log() << "New column " << it->first << std::endl;
+
 			initColumn(_packageData->dataSet()->columnCount() - 1, syncDataSet->getColumn(it->first));
 		}
 	}
@@ -325,9 +324,8 @@ void Importer::_syncPackage(
 
 			if(!_packageData->isColumnComputed(columnName))
 			{
-#ifdef JASP_DEBUG
-				std::cout << "Column deleted " << columnName << std::endl;
-#endif
+				Log::log() << "Column deleted " << columnName << std::endl;
+
 				_missingColumns.push_back(columnName);
 				_packageData->removeColumn(columnName);
 			}

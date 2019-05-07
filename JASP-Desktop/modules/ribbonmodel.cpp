@@ -16,9 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include <QDebug>
+
 #include "ribbonmodel.h"
 #include "dirs.h"
+#include "log.h"
 
 RibbonModel::RibbonModel(DynamicModules * dynamicModules, std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 	: QAbstractListModel(dynamicModules), _dynamicModules(dynamicModules)
@@ -44,14 +45,14 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 {
 	if(!modulePath.exists())
 	{
-		std::cout << "Path " << modulePath.absoluteFilePath().toStdString() << " does not exist!" << std::flush;
+		Log::log() << "Path " << modulePath.absoluteFilePath().toStdString() << " does not exist!" << std::flush;
 		return;
 	}
 
 	QFile descriptionFile(modulePath.absoluteFilePath() + "/description.json");
 	if(!descriptionFile.exists())
 	{
-		std::cout << "Could not find description.json file in " << modulePath.absoluteFilePath().toStdString() << std::flush;
+		Log::log() << "Could not find description.json file in " << modulePath.absoluteFilePath().toStdString() << std::flush;
 		return;
 	}
 
@@ -63,7 +64,7 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 	if(Json::Reader().parse(descriptionTxt, descriptionJson))
 		addRibbonButtonModel(new RibbonButton(this, descriptionJson, isCommon));
 	else
-		std::cout << "Error when reading description.json of " << modulePath.filePath().toStdString() << std::flush;
+		Log::log() << "Error when reading description.json of " << modulePath.filePath().toStdString() << std::flush;
 }
 
 void RibbonModel::addRibbonButtonModel(RibbonButton* model)

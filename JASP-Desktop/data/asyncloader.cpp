@@ -18,7 +18,7 @@
 
 #include "asyncloader.h"
 
-#include <iostream>
+
 #include <fstream>
 #include <QTimer>
 #include <QFileInfo>
@@ -28,7 +28,8 @@
 #include "utilities/qutils.h"
 #include "utils.h"
 #include "osf/onlinedatamanager.h"
-#include <QDebug>
+#include "log.h"
+
 
 using namespace std;
 
@@ -137,14 +138,14 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 	}
 	catch (runtime_error e)
 	{
-		std::cout << "Runtime Exception in saveTask: " << e.what() << std::endl;
+		Log::log() << "Runtime Exception in saveTask: " << e.what() << std::endl;
 
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
-		std::cout << "Exception in saveTask: " << e.what() << std::endl;
+		Log::log() << "Exception in saveTask: " << e.what() << std::endl;
 
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
@@ -182,7 +183,7 @@ void AsyncLoader::loadPackage(QString id)
 
 		try
 		{
-			qDebug() << "loadPackage";
+			Log::log()  << "AsyncLoader::loadPackage(" << id.toStdString() << ")" << std::endl;
 			string path = fq(_currentEvent->path());
 			string extension = "";
 
@@ -250,7 +251,7 @@ void AsyncLoader::loadPackage(QString id)
 		}
 		catch (runtime_error e)
 		{
-			std::cout << "Runtime Exception in loadPackage: " << e.what() << std::endl;
+			Log::log() << "Runtime Exception in loadPackage: " << e.what() << std::endl;
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -258,7 +259,7 @@ void AsyncLoader::loadPackage(QString id)
 		}
 		catch (exception e)
 		{
-			std::cout << "Exception in loadPackage: " << e.what() << std::endl;
+			Log::log() << "Exception in loadPackage: " << e.what() << std::endl;
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -313,7 +314,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 		}
 		catch (runtime_error e)
 		{
-			std::cout << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
+			Log::log() << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -321,7 +322,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 		}
 		catch (exception e)
 		{
-			std::cout << "Exception in uploadFileFinished: " << e.what() << std::endl;
+			Log::log() << "Exception in uploadFileFinished: " << e.what() << std::endl;
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);

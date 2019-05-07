@@ -22,7 +22,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
-#include <QDebug>
+
 
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
@@ -35,6 +35,7 @@
 #include "tempfiles.h"
 #include "timers.h"
 #include "utilities/appdirs.h"
+#include "log.h"
 
 using namespace boost::interprocess;
 
@@ -101,6 +102,7 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded								);
 			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler								);
 			connect(_engines[i],	&EngineRepresentation::moduleUninstallingFinished,		this,			&EngineSync::moduleUninstallingFinished									);
+			connect(_engines[i],	&EngineRepresentation::logCfgReplyReceived,				this,			&EngineSync::logCfgReplyReceived										);
 			connect(this,			&EngineSync::ppiChanged,								this,			&EngineSync::refreshAllPlots,					Qt::QueuedConnection	);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
@@ -110,7 +112,7 @@ void EngineSync::start(int ppi)
 	}
 	catch (interprocess_exception e)
 	{
-		qDebug() << "interprocess exception! " << e.what() << "\n";
+		Log::log()  << "interprocess exception! " << e.what() <<  std::endl;
 		throw e;
 	}
 
@@ -130,17 +132,16 @@ void EngineSync::restartEngines()
 	if(_engineStarted)
 		return;
 
-#ifdef JASP_DEBUG
-	std::cout << "restarting engines!" << std::endl;
-#endif
+	Log::log() << "restarting engines!" << std::endl;
 
 	for(size_t i=0; i<_engines.size(); i++)
 	{
 		_engines[i]->restartEngine(startSlaveProcess(i));
-		std::cout << "restarted engine " << i << " but should still reload any active (dynamic) modules!"<< std::endl;
+		Log::log() << "restarted engine " << i << " but should still reload any active (dynamic) modules!"<< std::endl;
 	}
 
 	setModuleWideCastVars(_dynamicModules->getJsonForReloadingActiveModules());
+	logCfgRequest();
 
 	_engineStarted = true;
 }
@@ -150,6 +151,7 @@ void EngineSync::process()
 	for (auto engine : _engines)
 		engine->process();
 	
+	processLogCfgRequests();
 	processScriptQueue();
 	processDynamicModules();
 	ProcessAnalysisRequests();
@@ -159,9 +161,7 @@ void EngineSync::sendFilter(const QString & generatedFilter, const QString & fil
 {
 	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
 	{
-#ifdef JASP_DEBUG
-		std::cout << "waiting filter  with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
-#endif
+		Log::log() << "waiting filter  with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
 		_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
 	}
@@ -290,7 +290,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	QString engineExe		= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
 
 	QStringList args;
-	args << QString::number(no) << QString::number(ProcessInfo::currentPID());
+	args << QString::number(no) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
 
 	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
 
@@ -314,7 +314,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #endif
 
 	QDir rHome(rHomePath);
-	std::cout << "R_HOME set to " << rHomePath.toStdString() << std::endl;
+	Log::log() << "R_HOME set to " << rHomePath.toStdString() << std::endl;
 
 #ifdef _WIN32
 	//Windows has *special needs*, so let's make sure it can understand R_HOME later on. Not sure if it is necessary but it couldn't hurt, right?
@@ -409,7 +409,7 @@ void EngineSync::heartbeatTempFiles()
 
 void EngineSync::subProcessStarted()
 {
-	std::cout << "Engine process started" << std::endl;
+	Log::log() << "Engine process started" << std::endl;
 }
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
@@ -417,7 +417,7 @@ void EngineSync::subProcessError(QProcess::ProcessError error)
 	if(!_engineStarted)
 		return;
 
-	std::cout << "Engine error: " << error << std::endl;
+	Log::log() << "Engine error: " << error << std::endl;
 	emit engineTerminated();
 
 }
@@ -429,7 +429,7 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 	if(exitCode != 0 || exitStatus == QProcess::ExitStatus::CrashExit)
 	{
-		std::cout << "subprocess finished" << exitCode << std::endl;
+		Log::log() << "subprocess finished" << exitCode << std::endl;
 		emit engineTerminated();
 
 	}
@@ -473,13 +473,9 @@ void EngineSync::stopEngines()
 	while(stillRunning && timeout > QDateTime::currentSecsSinceEpoch()); //Let's give good old jaspEngines some time to shutdown gracefully
 
 	if(stillRunning)
-		std::cout << "Waiting for engine to stop took longer than timeout.." << std::endl;
-#ifdef JASP_DEBUG
+		Log::log() << "Waiting for engine to stop took longer than timeout.." << std::endl;
 	else
-		std::cout << "Engines stopped" << std::endl;
-#endif
-
-
+		Log::log() << "Engines stopped" << std::endl;
 }
 
 void EngineSync::pause()
@@ -548,9 +544,7 @@ bool EngineSync::allEnginesInitializing()
 
 void EngineSync::moduleLoadingFailedHandler(const QString & moduleName, const QString & errorMessage, int channelID)
 {
-#ifdef JASP_DEBUG
-	std::cout << "Received EngineSync::moduleLoadingFailedHandler(" << moduleName.toStdString() << ", " << errorMessage.toStdString() << ", " << channelID << ")" << std::endl;
-#endif
+	Log::log() << "Received EngineSync::moduleLoadingFailedHandler(" << moduleName.toStdString() << ", " << errorMessage.toStdString() << ", " << channelID << ")" << std::endl;
 
 	if(_requestWideCastModuleName != moduleName.toStdString())
 		throw std::runtime_error("Unexpected module received in EngineSync::moduleLoadingFailed, expected: " + _requestWideCastModuleName + ", but got: " + moduleName.toStdString());
@@ -562,9 +556,7 @@ void EngineSync::moduleLoadingFailedHandler(const QString & moduleName, const QS
 
 void EngineSync::moduleLoadingSucceededHandler(const QString & moduleName, int channelID)
 {
-#ifdef JASP_DEBUG
-	std::cout << "Received EngineSync::moduleLoadingSucceededHandler(" << moduleName.toStdString() << ", " << channelID << ")" << std::endl;
-#endif
+	Log::log() << "Received EngineSync::moduleLoadingSucceededHandler(" << moduleName.toStdString() << ", " << channelID << ")" << std::endl;
 
 	if(_requestWideCastModuleName != moduleName.toStdString())
 		throw std::runtime_error("Unexpected module received in EngineSync::moduleLoadingSucceeded, expected: " + _requestWideCastModuleName + ", but got: " + moduleName.toStdString());
@@ -576,9 +568,7 @@ void EngineSync::moduleLoadingSucceededHandler(const QString & moduleName, int c
 
 void EngineSync::moduleUnloadingFinishedHandler(const QString & moduleName, int channelID)
 {
-#ifdef JASP_DEBUG
-	std::cout << "Received EngineSync::moduleUnloadingFinishedHandler(" << moduleName.toStdString() << ", " << channelID << ")" << std::endl;
-#endif
+	Log::log() << "Received EngineSync::moduleUnloadingFinishedHandler(" << moduleName.toStdString() << ", " << channelID << ")" << std::endl;
 
 	if(_requestWideCastModuleName != moduleName.toStdString())
 		throw std::runtime_error("Unexpected module received in EngineSync::moduleUnloadingFinishedHandler, expected: " + _requestWideCastModuleName + ", but got: " + moduleName.toStdString());
@@ -640,4 +630,24 @@ void EngineSync::refreshAllPlots(int)
 			inProgress.insert(engine->analysisInProgress());
 
 	emit refreshAllPlotsExcept(inProgress);
+}
+
+
+void EngineSync::logCfgRequest()
+{
+	for(EngineRepresentation * e : _engines)
+		_logCfgRequested.insert(e->channelNumber());
+}
+
+void EngineSync::logCfgReplyReceived(size_t channelNr)
+{
+	_logCfgRequested.erase(channelNr);
+}
+
+void EngineSync::processLogCfgRequests()
+{
+	for(size_t channelNr : _logCfgRequested)
+		if(_engines[channelNr]->isIdle())
+			_engines[channelNr]->sendLogCfg();
+
 }

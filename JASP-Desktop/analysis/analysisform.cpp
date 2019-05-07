@@ -18,7 +18,7 @@
 
 #include "analysisform.h"
 
-#include <QDebug>
+
 #include <boost/bind.hpp>
 
 #include "options/bound.h"
@@ -26,7 +26,7 @@
 
 #include <QQmlProperty>
 #include <QQmlContext>
-#include <QDebug>
+
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmlslider.h"
@@ -49,6 +49,7 @@
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
 #include "mainwindow.h"
+#include "log.h"
 
 using namespace std;
 
@@ -82,9 +83,7 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	catch(columnNotFound e) {} //just return an empty QVariant right?
 	catch(std::exception e)
 	{
-#ifdef JASP_DEBUG
-		std::cout << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
-#endif
+		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
 		throw e;
 	}
 	return QVariant();
@@ -117,11 +116,8 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
 	if (item)
 		item->rScriptDoneHandler(result);
-#ifdef JASP_DEBUG
 	else
-		std::cout << "Unknown item " << controlName.toStdString() << std::endl;
-#endif
-	
+		Log::log() << "Unknown item " << controlName.toStdString() << std::endl;
 }
 
 void AnalysisForm::_parseQML()
@@ -283,7 +279,7 @@ void AnalysisForm::_parseQML()
 	_setUpItems();
 
 	if (!_errorMessagesItem)
-		qDebug() << "No errorMessages Item found!!!";
+		Log::log()  << "No errorMessages Item found!" << std::endl;
 
 	_setErrorMessages();
 }

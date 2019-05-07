@@ -25,6 +25,7 @@
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QTimer>
+#include "log.h"
 
 BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
@@ -76,7 +77,7 @@ void BoundQMLTableView::bindTo(Option *option)
 
 	}
 	else
-		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
+		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
 }
 
 

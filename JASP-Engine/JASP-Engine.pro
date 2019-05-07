@@ -88,6 +88,8 @@ exists(/app/lib/*) {
     unix:InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
 }
 
+InstallJASPgraphsRPackage.depends
+
 QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
 POST_TARGETDEPS     += InstallJASPgraphsRPackage
 

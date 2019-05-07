@@ -55,6 +55,8 @@ public slots:
 	void resume();
 	void refreshAllPlots(int = 0);
 	void stopEngines();
+	void logCfgRequest();
+	void logToFileChanged(bool logToFile) { logCfgRequest(); }
 
 	
 signals:
@@ -85,6 +87,7 @@ private:
 	bool		allEnginesResumed();
 	QProcess*	startSlaveProcess(int no);
 	void		processScriptQueue();
+	void		processLogCfgRequests();
 	void		processDynamicModules();
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
@@ -108,11 +111,13 @@ private slots:
 
 	void restartEngines();
 
+	void logCfgReplyReceived(size_t channelNr);
+
 private:
-	Analyses		*_analyses;
-	bool			_engineStarted = false;
-	DataSetPackage	*_package;
-	DynamicModules	*_dynamicModules = nullptr;;
+	Analyses		*_analyses			= nullptr;
+	bool			_engineStarted		= false;
+	DataSetPackage	*_package			= nullptr;
+	DynamicModules	*_dynamicModules	= nullptr;
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::vector<EngineRepresentation*>	_engines;
@@ -121,9 +126,10 @@ private:
 	std::string _memoryName,
 				_engineInfo;
 
-	std::string					_requestWideCastModuleName	= "";
-	Json::Value					_requestWideCastModuleJson	= Json::nullValue;
+	std::string					_requestWideCastModuleName		= "";
+	Json::Value					_requestWideCastModuleJson		= Json::nullValue;
 	std::map<int, std::string>	_requestWideCastModuleResults;
+	std::set<size_t>			_logCfgRequested				= {};
 };
 
 #endif // ENGINESYNC_H

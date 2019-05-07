@@ -1,6 +1,7 @@
 #include "computedcolumnsmodel.h"
 #include "utilities/jsonutilities.h"
 #include "sharedmemory.h"
+#include "log.h"
 
 ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent)
 	: QObject(parent), _analyses(analyses)
@@ -404,8 +405,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 			try {	theData = SharedMemory::enlargeDataSet(theData);	}
 			catch (std::exception &e)	{	throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
 		}
-		catch (std::exception e)	{	std::cout << "ComputedColumnsModel::createComputedColum std::exception: " << e.what()	<< std::endl; 	}
-		catch (...)					{	std::cout << "ComputedColumnsModel::createComputedColum some other exception\n "		<< std::endl;	}
+		catch (std::exception e)	{	Log::log() << "ComputedColumnsModel::createComputedColum std::exception: " << e.what()	<< std::endl; 	}
+		catch (...)					{	Log::log() << "ComputedColumnsModel::createComputedColum some other exception\n "		<< std::endl;	}
 	}
 	while (!success);
 

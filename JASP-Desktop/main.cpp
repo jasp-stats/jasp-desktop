@@ -16,96 +16,127 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include <QDebug>
+
 #include <QDir>
 
 #include "utilities/application.h"
 #include <QQuickWindow>
 
-void checkTimeOut(int argc, char *argv[], int index, int & timeOut)
-{
-	const int defaultTimeOut = 10;
-	timeOut = defaultTimeOut;
-
-	const std::string	timeOutIdent	= "--timeOut=";
-
-	if(argc > index)
-	{
-		std::string timeOutArg = argv[index];
-
-		if(timeOutArg.substr(0, timeOutIdent.size()) == timeOutIdent)
-		{
-			std::string time			= timeOutArg.substr(timeOutIdent.size());
-			size_t		convertedChars	= 0;
-
-			try								{ timeOut = std::stoi(time, &convertedChars); }
-			catch(std::invalid_argument &)	{}
-			catch(std::out_of_range &)		{}
-
-			if(convertedChars == 0)
-				timeOut = defaultTimeOut;
-		}
-	}
-}
-
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
-					saveArg			= "--save";
+					saveArg			= "--save",
+					timeOutArg		= "--timeout=";
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile)
 {
 	filePath	= "";
 	unitTest	= false,
 	dirTest		= false;
 	save		= false;
+	logToFile	= false;
+	timeOut		= 10;
 
-	if (argc > 1)
+	bool letsExplainSomeThings = false;
+
+	std::vector<std::string> args(argv + 1, argv + argc); // make the arguments a little less annoying to work with
+
+	for(int arg = 0; arg < args.size(); arg++)
 	{
-		std::string argFirst = argv[1];
-
-		if (argFirst[0] != '-')
+		if(args[arg] == saveArg)
+			save = true;
+		else if(args[arg] == "--logToFile")
+			logToFile = true;
+		else if(args[arg] == "--unitTestRecursive")
 		{
-					filePath	= argFirst;
-			bool	isJaspFile	= filePath.size() >= jaspExtension.size()  &&  filePath.substr(filePath.size() - jaspExtension.size()) == jaspExtension;
-					unitTest	= isJaspFile && argc > 2 && argv[2] == unitTestArg;
-					save		= unitTest && argc > 3 && argv[3] == saveArg;
-
-			checkTimeOut(argc, argv, save ? 4 : 3, timeOut);
-
-		}
-		else
-		{
-			if(argFirst == "--unitTestRecursive")
+			if(arg >= args.size() - 1)
+				letsExplainSomeThings = true;
+			else
 			{
-				std::string argFolder = argv[2];
-
-				QDir folder(QString::fromStdString(argFolder));
+				QDir folder(QString::fromStdString(args[arg + 1]));
 
 				if(!folder.exists())
 				{
-					std::cerr << "Folder for dir unittest " << argFolder << " does not exist!" << std::endl;
+					std::cerr << "Folder for unitTestRecursive " << args[arg + 1] << " does not exist!" << std::endl;
 					exit(1);
 				}
 
-				dirTest		= true;
-				filePath	= argFolder;
-				save		= argc > 3 && argv[3] == saveArg;
-
-				checkTimeOut(argc, argv, save ? 4 : 3, timeOut);
-			}
-			else if(argFirst.find("--remote-debugging-port=")	== std::string::npos &&
-					argFirst.find("-platform")					== std::string::npos &&
-					argFirst.find("-qmljsdebugger")				== std::string::npos) //only other excepted argument
-			{
-				std::cout	<< "JASP can be started without arguments, or the following: filename {--unitTest {--save} {--timeOut=10}} | --unitTestRecursive folder {--save} {--timeOut=10}\n"
-							<< "If a filename is supplied JASP will try to load it. If --unitTest is specified JASP will refresh all analyses in the JASP file and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
-							<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
-							<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
-							<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes."
-							<< std::endl;
-				exit(1);
+				dirTest = true;
+				filePath = args[arg + 1];
 			}
 		}
+		else if(args[arg] == unitTestArg)
+		{
+			if(arg >= args.size() - 1)
+				letsExplainSomeThings = true;
+			else
+			{
+				filePath = args[arg + 1];
+
+				QFileInfo testMe(QString::fromStdString(filePath));
+
+				if(!testMe.exists())
+				{
+					std::cerr << "File for unitTest " << filePath << " does not exist!" << std::endl;
+					letsExplainSomeThings = true;
+				}
+
+				bool	isJaspFile	= filePath.size() >= jaspExtension.size()  &&  filePath.substr(filePath.size() - jaspExtension.size()) == jaspExtension;
+
+				if(!isJaspFile)
+				{
+					std::cerr << "File for unitTest " << filePath << " is not a JASP file!" << std::endl;
+					letsExplainSomeThings = true;
+				}
+
+				unitTest = true;
+			}
+		}
+		else if(args[arg].size() > timeOutArg.size() && args[arg].substr(0, timeOutArg.size()) == timeOutArg)
+		{
+			std::string time			= timeOutArg.substr(timeOutArg.size());
+			size_t		convertedChars	= 0;
+			int			convertedTime	= 0;
+			try								{ convertedTime = std::stoi(time, &convertedChars); }
+			catch(std::invalid_argument &)	{}
+			catch(std::out_of_range &)		{}
+
+			if(convertedChars > 0)
+				timeOut = convertedTime;
+		}
+		else
+		{
+			const std::string remoteDebuggingPort = "--remote-debugging-port=";
+
+			if(args[arg] == "-platform")
+				arg++; // because it is always followed by the actual platform one wants to use (minimal for example)
+			else if(!(args[arg] == "-qmljsdebugger" || (args[arg].size() > remoteDebuggingPort.size() && args[arg].substr(0, remoteDebuggingPort.size()) == remoteDebuggingPort))) //Just making sure it isnt something else that should be allowed.
+			{
+				//if it isn't anything else it must be a file to open right?
+
+				QFileInfo openMe(QString::fromStdString(args[arg]));
+
+				if(openMe.exists())
+					filePath = args[arg];
+				else
+				{
+					std::cerr << "File to open " << args[arg] << " does not exist!" << std::endl;
+					letsExplainSomeThings = true;
+				}
+			}
+		}
+	}
+
+	if(letsExplainSomeThings)
+	{
+		std::cout	<< "JASP can be started without arguments, or the following: { filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile } \n"
+					<< "If a filename is supplied JASP will try to load it. \nIf --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
+					<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
+					<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
+					<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes.\n"
+					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
+					<< std::flush;
+
+		exit(1);
 	}
 }
 
@@ -146,7 +177,7 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 #ifdef SEPARATE_PROCESS
 				QProcess subJasp;
 				subJasp.setProgram(argv[0]);
-				QStringList arguments({file.absoluteFilePath(), "--unitTest"});
+				QStringList arguments({"--unitTest", file.absoluteFilePath()});
 
 				if(save)
 					arguments << "--save";
@@ -195,10 +226,11 @@ int main(int argc, char *argv[])
 	std::string filePath;
 	bool		unitTest,
 				dirTest,
-				save;
+				save,
+				logToFile;
 	int			timeOut;
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile);
 
 	QString filePathQ(QString::fromStdString(filePath));
 
@@ -218,7 +250,7 @@ int main(int argc, char *argv[])
 			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
 #endif
 			JASPTIMER_START("JASP");
-			Application a(argc, argv, filePathQ, unitTest, timeOut, save);
+			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
 			int exitCode = a.exec();
 			JASPTIMER_STOP("JASP");
 			JASPTIMER_PRINTALL();

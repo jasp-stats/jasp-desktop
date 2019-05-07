@@ -18,6 +18,7 @@
 #include "labels.h"
 #include "iostream"
 
+#include "log.h"
 
 using namespace std;
 
@@ -138,7 +139,7 @@ bool Labels::syncInts(const std::set<int> &values)
 		}
 		else
 		{
-			std::cout << "Remove label " << label.text() << std::endl;
+			Log::log() << "Remove label " << label.text() << std::endl;
 			valuesToRemove.insert(value);
 		}
 	}
@@ -262,10 +263,10 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 			return label;
 	}
 
-	std::cout << "Cannot find entry " << index << std::endl;
+	Log::log() << "Cannot find entry " << index << std::endl;
 	for(const Label &label: _labels)
 	{
-		std::cout << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
+		Log::log() << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
 	}
 	throw runtime_error("Cannot find this entry");
 }
@@ -274,7 +275,7 @@ bool Labels::setLabelFromRow(int row, const string &display)
 {
 	if (row >= (int)_labels.size() || row < 0)
 	{
-		std::cout << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
+		Log::log() << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return false;
 	}
 
@@ -337,7 +338,7 @@ string Labels::getValueFromRow(int row)
 {
 	if (row >= (int)_labels.size())
 	{
-		std::cout << "Get value with wrong row: " << row << ", size: " << _labels.size() << std::endl;
+		Log::log() << "Get value with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return "";
 	}
 	const Label &label = _labels.at(row);
@@ -353,7 +354,7 @@ std::string Labels::getLabelFromRow(int row)
 {
 	if (row >= (int)_labels.size())
 	{
-		std::cout << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
+		Log::log() << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return "";
 	}
 	Label &label = _labels.at(row);

@@ -49,6 +49,7 @@ RectangularButton
 		visible:				hasSubMenu
 		opacity:				enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
 		smooth:					true
+		mipmap:					true
 		sourceSize.width:		width * 2
 		sourceSize.height:		height * 2
 	}

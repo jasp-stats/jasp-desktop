@@ -20,16 +20,14 @@
 
 #include <QFile>
 #include <QDir>
-
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonArray>
 #include <QJsonObject>
 
-#include <QDebug>
-
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
+#include "log.h"
 
 const QString DataLibraryFileSystem::rootelementname = "Categories";
 
@@ -83,11 +81,11 @@ void DataLibraryFileSystem::loadRootElements()
 	{
 		QJsonObject file_or_folder = value.toObject();
 
-		QString path = file_or_folder["path"].toString();
-		QString name = file_or_folder["name"].toString();
-		QString description = file_or_folder["description"].toString();
-		QString type = file_or_folder["kind"].toString();
-		QString debug =  file_or_folder["debug"].toString();
+		QString path		= file_or_folder["path"].toString(),
+				name		= file_or_folder["name"].toString(),
+				description = file_or_folder["description"].toString(),
+				type		= file_or_folder["kind"].toString(),
+				debug		= file_or_folder["debug"].toString();
 #ifndef JASP_DEBUG
 		if (debug.toLower() == "true") continue;		
 #endif	
@@ -191,14 +189,14 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 
 	if ( ! index.exists())
 	{
-		qDebug() << "BackStageForm::loadExamples();  index not found\n";
+		Log::log()  << "BackStageForm::loadExamples();  index not found" << std::endl;
 		return NULL;
 	}
 
 	index.open(QFile::ReadOnly);
 	if ( ! index.isOpen())
 	{
-		qDebug() << "BackStageForm::loadExamples();  index could not be opened\n";
+		Log::log()  << "BackStageForm::loadExamples();  index could not be opened" << std::endl;
 		return NULL;
 	}
 
@@ -208,7 +206,7 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 
 	if (error.error != QJsonParseError::NoError)
 	{
-		qDebug() << "BackStageForm::loadExamples();  JSON parse error : " << error.errorString() << "\n";
+		Log::log()  << "BackStageForm::loadExamples();  JSON parse error : " << error.errorString().toStdString()  << std::endl;
 		return NULL;
 	}
 

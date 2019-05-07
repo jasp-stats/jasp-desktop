@@ -1,7 +1,7 @@
 #include "actionbuttons.h"
 #include <QObject>
 #include <QtQml>
-#include <iostream>
+#include "log.h"
 
 //property variant actionbuttons:			["Open", "Save","Save As", "Export Results", "Export Data","Sync Data", "Close"]
 
@@ -80,7 +80,7 @@ void ActionButtons::setSelectedAction(FileOperation selectedAction)
 	if (_selected == selectedAction)
 		return;
 
-	std::cout << "action button selected!" << std::endl;
+	Log::log() << "action button selected!" << std::endl;
 
 	QModelIndex	oldIndex = index(_opToIndex[_selected]),
 				newIndex = index(_opToIndex[selectedAction]);

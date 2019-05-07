@@ -23,21 +23,18 @@ import JASP.Theme 1.0
 
 Item
 {
-	id					: menu
-	width				: menuRectangle.width
-	height				: menuRectangle.height
-	property var props	: undefined
-	property bool hasIcons: true
-
-	property real _iconPad: 5 * preferencesModel.uiScale
-
-	onPropsChanged:	hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+	id						: menu
+	width					: menuRectangle.width
+	height					: menuRectangle.height
+	property var props		: undefined
+	property bool hasIcons	: true
+	property real _iconPad	: 5 * preferencesModel.uiScale
+	onPropsChanged			: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
 
 	function resizeElements(newWidth)
 	{
-		for (var i = 0; i < repeater.count; ++i) {
+		for (var i = 0; i < repeater.count; ++i)
 			repeater.itemAt(i).width = newWidth;
-		}
 	}
 
 	Rectangle
@@ -64,11 +61,11 @@ Item
 			{
 				if (index === 0)
 				{
-					menuRectangle.width = 0;
+					menuRectangle.width  = 0;
 					menuRectangle.height = 0;
 				}
 
-				menuRectangle.width = Math.max(item.width, menuRectangle.width);
+				menuRectangle.width   = Math.max(item.width, menuRectangle.width);
 				menuRectangle.height += (item.height + Theme.menuSpacing)
 
 				if (index === count - 1)
@@ -105,13 +102,12 @@ Item
 						Image
 						{
 							id		: menuItemImage
-							height	: menuItem.height - menu._iconPad
+							height	: menuItem.height - (2 * menu._iconPad)
 							width	: menuItem.height - menu._iconPad
 
 							source					: menuImageSource
 							smooth					: true
-							sourceSize.width		: width * 2
-							sourceSize.height		: height * 2
+							mipmap					: true
 							fillMode				: Image.PreserveAspectFit
 
 							anchors.left			: parent.left
@@ -125,10 +121,10 @@ Item
 							text				: displayText
 							height				: menuItem.height
 							font				: Theme.font
-							verticalAlignment	: Text.AlignVCenter
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
 							anchors.leftMargin	: menu._iconPad
+							anchors.verticalCenter:  parent.verticalCenter
 						}
 
 						MouseArea
@@ -140,6 +136,7 @@ Item
 						}
 					}
 				}
+
 				Component
 				{
 					id: menuGroupTitle
@@ -152,22 +149,25 @@ Item
 
 						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
-
 						Image
 						{
-							id		: menuItemImage
-							height	: menuItem.height - menu._iconPad
-							width	: menuItem.height - menu._iconPad
+							id					: menuItemImage
+							height				: parent.height - (menu._iconPad * 2)
+							width				: height
 
-							source					: menuImageSource
-							smooth					: true
-							sourceSize.width		: width * 2
-							sourceSize.height		: height * 2
-							fillMode				: Image.PreserveAspectFit
+							source				: menuImageSource
+							smooth				: true
+							mipmap				: true
+							fillMode			: Image.PreserveAspectFit
+							visible				: menuImageSource !== ""
 
-							anchors.left			: parent.left
-							anchors.leftMargin		: menu._iconPad
-							anchors.verticalCenter	: parent.verticalCenter
+							anchors
+							{
+								top				: parent.top
+								left			: parent.left
+								bottom			: parent.bottom
+								leftMargin		: visible ? menu._iconPad : 0
+							}
 						}
 
 						Text
@@ -175,9 +175,12 @@ Item
 							id					: menuItemText
 							text				: displayText
 							font				: Theme.fontGroupTitle
-							anchors.left		: menuImageSource ? menuItemImage.right : menuItem.left
-							anchors.leftMargin	: menu._iconPad
-							anchors.verticalCenter	: parent.verticalCenter
+							anchors
+							{
+								left			: menuItemImage.right
+								leftMargin		: menu._iconPad
+								verticalCenter	: parent.verticalCenter
+							}
 						}
 					}
 				}

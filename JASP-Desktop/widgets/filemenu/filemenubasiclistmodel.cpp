@@ -2,6 +2,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QTimer>
+#include "log.h"
 
 FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystemModel * model) : QAbstractListModel(parent), _model(model)
 {
@@ -86,22 +87,22 @@ Qt::ItemFlags FileMenuBasicListModel::flags(const QModelIndex &index) const
 
 void FileMenuBasicListModel::changePath(const QString& name, const QString& path)
 {
-	std::cout << "Override basicListModel::changePath!" << std::endl;
+	Log::log() << "Override basicListModel::changePath!" << std::endl;
 }
 
 void FileMenuBasicListModel::changePathCrumbIndex(const int& index)
 {
-	std::cout << "Override basicListModel::changePathCrumbIndex!" << std::endl;
+	Log::log() << "Override basicListModel::changePathCrumbIndex!" << std::endl;
 }
 
 void FileMenuBasicListModel::openFile(const QString& path)
 {
-	std::cout << "Override basicListModel::openFile!" << std::endl;
+	Log::log() << "Override basicListModel::openFile!" << std::endl;
 }
 
 void FileMenuBasicListModel::saveFile(const QString& path)
 {
-	std::cout << "Override basicListModel::saveFile!" << std::endl;
+	Log::log() << "Override basicListModel::saveFile!" << std::endl;
 }
 
 QMutex FileMenuBasicListModel::_opening;

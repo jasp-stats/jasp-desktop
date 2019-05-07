@@ -23,7 +23,8 @@
 #include <QQuickItem>
 #include <QQuickTextDocument>
 #include <QFontDatabase>
-#include <QDebug>
+#include "log.h"
+
 
 BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form), QObject(form), BoundQMLItem()
@@ -62,7 +63,7 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 
 		}
 		else
-			qDebug() << "No document object found!";
+			Log::log()  << "No document object found!" << std::endl;
 	}
 	else if (textType == "model")
 	{
@@ -100,7 +101,7 @@ void BoundQMLTextArea::bindTo(Option *option)
 		_item->setProperty("text", _text);
 	}
 	else
-		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
+		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
 }
 
 Option *BoundQMLTextArea::createOption()

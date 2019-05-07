@@ -19,7 +19,8 @@
 #include "boundqmlradiobuttons.h"
 #include <QQmlProperty>
 #include <QQuickItem>
-#include <QDebug>
+#include "log.h"
+
 
 using namespace std;
 
@@ -67,7 +68,7 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 
 	if (_boundTo == nullptr)
 	{
-		qDebug() << "could not bind to OptionList in BoundQuickRadioButtons";
+		Log::log()  << "could not bind to OptionList in BoundQuickRadioButtons" << std::endl;
 		return;
 	}
 
@@ -79,7 +80,7 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 		{
 			addError(QString::fromLatin1("No radio button corresponding to name ") + QString::fromStdString(value));
 			QStringList names = _buttons.keys();
-			qDebug() << "Known button: " << names.join(',');
+			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
 		else
 			QQmlProperty(button, "checked").write(true);

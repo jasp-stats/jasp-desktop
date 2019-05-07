@@ -19,7 +19,7 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
-#include <iostream>
+
 
 #include <QSettings>
 #include <QApplication>
@@ -116,48 +116,48 @@ public slots:
 	QString browseOpenFile(QString caption, QString browsePath, QString filter) { return MessageForwarder::browseOpenFile(caption, browsePath, filter); }
 	QString browseOpenFileDocuments(QString caption, QString filter);
 
+	void	openFolderExternally(QDir folder);
+	void	showLogFolder();
+
 private:
 	void makeConnections();
+	void initLog();
 	void initQWidgetGUIParts();
-	void StartOnlineDataManager();
+	void startOnlineDataManager();
+	void startDataEditor(QString path);
+	void loadRibbonQML();
+	void loadQML();
 
+	void delayedLoadHandler();
+	void checkUsedModules();
 
 	void packageChanged(DataSetPackage *package);
 	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged);
+	void setDataSetAndPackageInModels(DataSetPackage *package);
+	void setPackageModified();
 	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged);
 
-	void setDataSetAndPackageInModels(DataSetPackage *package);
 	bool closeRequestCheck(bool &isSaving);
-
-	void removeAnalysis(Analysis *analysis);
-
-	void getAnalysesUserData();
-	Json::Value getResultsMeta();
-
-	void startDataEditor(QString path);
-	void checkUsedModules();
-	void setPackageModified();
 	void saveTextToFileHandler(const QString &filename, const QString &data);
-	void analysisChangedDownstreamHandler(int id, QString options);
-	void analysisSaveImageHandler(int id, QString options);
-	void analysisEditImageHandler(int id, QString options);
-	void removeAnalysisRequestHandler(int id);
-	void delayedLoadHandler();
-	void matchComputedColumnsToAnalyses();
+
+	void		removeAnalysis(Analysis *analysis);
+	void		getAnalysesUserData();
+	void		analysesCountChangedHandler();
+	void		analysisChangedDownstreamHandler(int id, QString options);
+	void		analysisSaveImageHandler(int id, QString options);
+	void		analysisEditImageHandler(int id, QString options);
+	void		removeAnalysisRequestHandler(int id);
+	void		matchComputedColumnsToAnalyses();
+	Json::Value getResultsMeta();
 
 	void startComparingResults();
 	void analysesForComparingDoneAlready();
 	void finishComparingResults();
 	void finishSavingComparedResults();
 
-	void loadRibbonQML();
-	void loadQML();
-
 	bool enginesInitializing();
 	void pauseEngines();
 	void resumeEngines();
-
-	void analysesCountChangedHandler();
 
 signals:
 	void saveJaspFile();
@@ -172,8 +172,6 @@ signals:
 	void analysesVisibleChanged(bool analysesVisible);
 	void windowTitleChanged(QString windowTitle);
 	void screenPPIChanged(int screenPPI);
-
-	//void showWarning(QString title, QString message);
 	void datasetLoadedChanged(bool datasetLoaded);
 	void dataAvailableChanged(bool dataAvailable);
 	void analysesAvailableChanged(bool analysesAvailable);
@@ -181,37 +179,33 @@ signals:
 
 private slots:
 	void welcomeScreenIsCleared(bool callDelayedLoad);
+	void resultsPageLoaded();
+	void showResultsPanel() { setDataPanelVisible(false); }
+
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
-
 	void removeAllAnalyses();
 
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet(bool showData);
-
 	void startDataEditorEventCompleted(FileEvent *event);
+	void dataSetChanged(DataSet * dataSet);
+	void analysisAdded(Analysis *analysis);
 
 	void fatalError();
-
 	void emptyValuesChangedHandler();
 
 	void closeVariablesPage();
-
 	void showProgress(bool showData = true);
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
-	void dataSetChanged(DataSet * dataSet);
-	void unitTestTimeOut();
-
-	void saveJaspFileHandler();
-	void resultsPageLoaded();
 	void resetQmlCache();
-
-	void showResultsPanel() { setDataPanelVisible(false); }
-	void analysisAdded(Analysis *analysis);
-
+	void unitTestTimeOut();
+	void saveJaspFileHandler();
+	void logToFileChanged(bool logToFile);
+	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);

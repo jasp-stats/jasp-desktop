@@ -2,6 +2,7 @@
 #include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
+#include "log.h"
 
 DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : FileMenuBasicListModel(parent, new DataLibraryFileSystem(parent,  DataLibraryFileSystem::rootelementname )), _dataLibraryBreadCrumbsListModel(crumbs)
 {
@@ -9,7 +10,7 @@ DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrum
 	_fsbmDataLibrary->refresh();
 
 	connect(this, SIGNAL(openFile(FileEvent *)), parent, SLOT(openFile(FileEvent *)));	//connect(_dataLibraryBreadCrumbsListModel, SIGNAL(indexChanged(const int &)), this, SLOT(changePath(const int &)));
-	std::cout << "DataLibraryListModel is connecting to it's parent through the SIGNAL and SLOT Macros! DANGEROUS ;)" << std::endl;
+	Log::log() << "DataLibraryListModel is connecting to it's parent through the SIGNAL and SLOT Macros! DANGEROUS ;)" << std::endl;
 }
 
 void DataLibraryListModel::changePath(const QString &name, const QString &path)

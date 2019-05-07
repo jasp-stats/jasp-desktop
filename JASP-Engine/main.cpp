@@ -17,6 +17,7 @@
 
 #include "engine.h"
 #include "timers.h"
+#include "log.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -41,16 +42,27 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 
 int main(int argc, char *argv[])
 {
-	if(argc > 2)
+	if(argc > 4)
 	{
-		unsigned long slaveNo	= strtoul(argv[1], NULL, 10);
-		unsigned long parentPID = strtoul(argv[2], NULL, 10);
+		unsigned long	slaveNo			= strtoul(argv[1], NULL, 10),
+						parentPID		= strtoul(argv[2], NULL, 10);
+		std::string		logFileBase		= argv[3],
+						logFileWhere	= argv[4];
 
 #ifdef _WIN32
 		//openConsoleOutput(slaveNo, parentPID); //uncomment to have a console window open per Engine that shows you std out and cerr. (On windows only, on unixes you can just run JASP from a terminal)
 #endif
 
-		std::cout << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
+		Log::logFileNameBase = logFileBase;
+		Log::initRedirects();
+		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");
+		Log::setWhere(logTypeFromString(logFileWhere));
+
+		Log::log() << "Log and possible redirects initialized!" << std::endl;
+
+		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
+
+		//usleep(6000000);
 
 		JASPTIMER_START(Engine Starting);
 		Engine e(slaveNo, parentPID);
@@ -58,10 +70,10 @@ int main(int argc, char *argv[])
 
 		JASPTIMER_PRINTALL();
 
-		std::cout << "jaspEngine " << slaveNo << " child of " << parentPID << " stops." << std::endl;
+		Log::log() << "jaspEngine " << slaveNo << " child of " << parentPID << " stops." << std::endl;
 		return 0;
 	}
 
-	std::cout << "jaspEngine does not have all required information to run, it needs slaveNo as first argument and parent PID as second!" << std::endl;
+	Log::log() << "jaspEngine does not have all required information to run, it needs slaveNo as first argument and parent PID as second!" << std::endl;
 	return 1;
 }

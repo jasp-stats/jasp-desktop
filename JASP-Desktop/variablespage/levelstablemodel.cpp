@@ -3,7 +3,7 @@
 
 #include <boost/container/vector.hpp>
 #include <algorithm>
-#include <QDebug>
+
 #include <QColor>
 
 #include "utilities/qutils.h"

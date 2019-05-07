@@ -21,7 +21,8 @@
 #include "tempfiles.h"
 
 #include <sstream>
-#include <iostream>
+
+#include "log.h"
 
 using namespace std;
 using namespace boost;
@@ -68,9 +69,7 @@ DataSet *SharedMemory::enlargeDataSet(DataSet *)
 {
 	size_t extraSize = _memory->get_size();
 
-#ifdef JASP_DEBUG
-	std::cout << "SharedMemory::enlargeDataSet to " << extraSize << std::endl;
-#endif
+	Log::log() << "SharedMemory::enlargeDataSet to " << extraSize << std::endl;
 
 	delete _memory;
 

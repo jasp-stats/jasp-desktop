@@ -34,6 +34,12 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
 
+				//Custom parseEvals to make sure sink is set (to capcode.c_str()ture output)
+void			jaspRCPP_parseEvalQNT(const std::string & code);
+RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
+void			jaspRCPP_logString(const std::string & code);
+SEXP			jaspRCPP_CreateCaptureConnection();
+
 const char * jaspRCPP_requestJaspResultsRelativeFilePath();
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);

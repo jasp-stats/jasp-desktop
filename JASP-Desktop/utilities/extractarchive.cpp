@@ -1,9 +1,9 @@
 #include "extractarchive.h"
-#include <iostream>
+
 #include <cstring>
 #include <sstream>
 #include "stringutils.h"
-
+#include "log.h"
 
 int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
 {
@@ -26,7 +26,7 @@ int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
 
 		if (r < ARCHIVE_OK)
 		{
-			std::cerr << "Problem copying data in archive: " << archive_error_string(aw) << std::endl;
+			Log::log() << "Problem copying data in archive: " << archive_error_string(aw) << std::endl;
 			return (r);
 		}
 	}
@@ -67,7 +67,7 @@ bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::s
 				break;
 
 			if (r < ARCHIVE_OK)
-				std::cerr << "Problem reading archive " << archiveFilename << ": " << archive_error_string(a) << std::endl;
+				Log::log() << "Problem reading archive " << archiveFilename << ": " << archive_error_string(a) << std::endl;
 
 			if (r < ARCHIVE_WARN)
 				throw std::runtime_error("Error reading archive " + archiveFilename + ": " + archive_error_string(a));
@@ -82,13 +82,13 @@ bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::s
 				r = archive_write_header(ext, entry);
 
 				if (r < ARCHIVE_OK)
-					std::cerr << "Problem writing header from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
+					Log::log() << "Problem writing header from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
 				else if (archive_entry_size(entry) > 0)
 				{
 					r = copy_data(a, ext);
 
 					if (r < ARCHIVE_OK)
-						std::cerr << "Problem writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
+						Log::log() << "Problem writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
 
 					if (r < ARCHIVE_WARN)
 						throw std::runtime_error("Error writing archive " + archiveFilename + ": " + archive_error_string(ext));
@@ -97,7 +97,7 @@ bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::s
 				r = archive_write_finish_entry(ext);
 
 				if (r < ARCHIVE_OK)
-					std::cerr << "Problem finishing writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
+					Log::log() << "Problem finishing writing data from archive " << archiveFilename << ": " << archive_error_string(ext) << std::endl;
 
 				if (r < ARCHIVE_WARN)
 					throw std::runtime_error("Error finishing writing archive " + archiveFilename + ": " + archive_error_string(ext));
@@ -106,7 +106,7 @@ bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::s
 	}
 	catch(std::runtime_error e)
 	{
-		std::cerr << e.what() << std::endl;
+		Log::log() << e.what() << std::endl;
 		returnThis = false;
 	}
 
@@ -228,7 +228,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 				break;
 
 			if (r < ARCHIVE_OK)
-				std::cerr << "Problem reading archive " << archiveFilename << ": " << archive_error_string(a) << std::endl;
+				Log::log() << "Problem reading archive " << archiveFilename << ": " << archive_error_string(a) << std::endl;
 
 			if (r < ARCHIVE_WARN)
 				throw std::runtime_error("Error reading archive " + archiveFilename + ": " + archive_error_string(a));
@@ -254,7 +254,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 	}
 	catch(std::runtime_error e)
 	{
-		std::cerr << e.what() << std::endl;
+		Log::log() << e.what() << std::endl;
 		throw std::runtime_error("There was an error reading the request file " + desiredTextFileName + " from archive " + archiveFilename + ", this error was: " + e.what());
 	}
 

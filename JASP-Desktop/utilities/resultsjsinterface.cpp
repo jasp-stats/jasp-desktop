@@ -39,10 +39,6 @@
 
 ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
-	//setChannel(new QQmlWebChannel(this));
-	//_analysisMenu = new QMenu(_mainWindow);
-	std::cout << "connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding); not being done anymore" << std::endl;
-
 	connect(this, &ResultsJsInterface::welcomeScreenIsCleared,	this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
 	connect(this, &ResultsJsInterface::zoomChanged,				this, &ResultsJsInterface::setZoomInWebEngine);
 
@@ -84,44 +80,6 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 void ResultsJsInterface::purgeClipboard()
 {
 	TempFiles::purgeClipboard();
-}
-
-void ResultsJsInterface::simulatedMouseClick(int x, int y, int count)
-{
-#ifdef JASP_DEBUG
-	std::cout << "We are NOT going to do weird stuff like simulating mouse clicks to operate an internal webbrowser...." << std::endl;
-#endif
-
-	/*
-	int diff = count;
-	while (diff >= 2)
-	{
-		QMouseEvent * clickEvent = new QMouseEvent ((QEvent::MouseButtonDblClick), QPoint(x * _webViewZoom, y * _webViewZoom),
-			Qt::LeftButton,
-			Qt::LeftButton,
-			Qt::NoModifier   );
-
-		qApp->postEvent((QObject*)_webViewResults,(QEvent *)clickEvent);
-
-		diff -= 2;
-	}
-
-	if (diff != 0)
-	{
-		QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x * _webViewZoom, y * _webViewZoom),
-			Qt::LeftButton,
-			Qt::LeftButton,
-			Qt::NoModifier   );
-
-		qApp->postEvent((QObject*)_webViewResults,(QEvent *)clickEvent1);
-
-		QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x * _webViewZoom, y * _webViewZoom),
-			Qt::LeftButton,
-			Qt::LeftButton,
-			Qt::NoModifier   );
-
-		qApp->postEvent((QObject*)_webViewResults,(QEvent *)clickEvent2);
-	}*/
 }
 
 void ResultsJsInterface::setExactPValuesHandler(bool exact)

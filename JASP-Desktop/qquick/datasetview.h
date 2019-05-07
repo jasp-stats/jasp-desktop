@@ -7,7 +7,7 @@
 #include <vector>
 #include <stack>
 #include <QSGFlatColorMaterial>
-#include <iostream>
+
 #include <map>
 #include <QFontMetricsF>
 #include <QtQml>

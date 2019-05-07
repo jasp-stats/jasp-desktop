@@ -20,11 +20,16 @@
 
 #include <QFileOpenEvent>
 #include <QString>
-#include <iostream>
 
-Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save) :
-	QApplication(argc, argv)
+#include "log.h"
+#include "settings.h"
+
+Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save, bool logToFile)
+	: QApplication(argc, argv)
 {
+	if(logToFile)
+		Settings::setValue(Settings::LOG_TO_FILE, true);
+
 	_mainWindow = new MainWindow(this);
 
 	QStringList args = QApplication::arguments();
@@ -42,21 +47,19 @@ Application::~Application()
 	{
 		delete _mainWindow;
 	}
-	catch(...)
-	{
-	}
+	catch(...){}
 }
 
 bool Application::notify(QObject *receiver, QEvent *event)
 {
 	try
 	{
-		//qDebug() << "Application::notify: " << receiver->objectName() << " with event: " << event << "\n";
+		//Log::log()  << "Application::notify: " << receiver->objectName() << " with event: " << event  << std::endl;
 		return QApplication::notify(receiver, event);
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "Error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << std::endl;
+		Log::log() << "Error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << std::endl;
 		throw e;
 	}
 }

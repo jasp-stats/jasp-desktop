@@ -37,6 +37,8 @@
 #define STDCALL
 #endif
 
+#include <stdio.h>
+
 extern "C" {
 
 struct RBridgeColumn {
@@ -100,11 +102,13 @@ struct RBridgeCallBacks {
 	DataSetRowCount				dataSetRowCount;
 };
 
-typedef void (*sendFuncDef)(const char *);
-typedef bool (*pollMessagesFuncDef)();
+typedef void	(*sendFuncDef)			(const char *);
+typedef bool	(*pollMessagesFuncDef)	();
+typedef int		(*logFlushDef)			();
+typedef size_t	(*logWriteDef)			(const void * buf, size_t len);
 
 // Calls from rbridge to jaspRCPP
-RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction);
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction);
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
@@ -127,12 +131,6 @@ RBRIDGE_TO_JASP_INTERFACE const char *	STDCALL jaspRCPP_runScriptReturnString(co
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getLastErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
-
-#ifndef _WIN32
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getRConsoleOutput();
-RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_clearRConsoleOutput();
-#endif
-
 
 } // extern "C"
 

@@ -19,7 +19,7 @@
 #define DATASET_H
 
 #include <map>
-#include <iostream>
+
 #include "columns.h"
 
 typedef boost::interprocess::allocator<bool, boost::interprocess::managed_shared_memory::segment_manager> BoolAllocator;

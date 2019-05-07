@@ -21,7 +21,7 @@
 #include <QStringList>
 #include <QFileInfo>
 #include <QEvent>
-#include <QDebug>
+
 
 CurrentFileFileSystem::CurrentFileFileSystem(QObject *parent)
 	: FileSystemModel(parent)

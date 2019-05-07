@@ -34,8 +34,9 @@
 #include "filereader.h"
 #include "tempfiles.h"
 #include "../exporters/jaspexporter.h"
-#include <iostream>
+
 #include "resultstesting/compareresults.h"
+#include "log.h"
 
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {	
@@ -152,8 +153,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 			}
 			catch(std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory"); }
 		}
-		catch(std::exception e)	{ std::cout << "n " << e.what() << std::endl;	}
-		catch(...)					{ std::cout << "something else" << std::endl;	}
+		catch(std::exception e)	{ Log::log() << "n " << e.what() << std::endl;	}
+		catch(...)					{ Log::log() << "something else" << std::endl;	}
 	}
 	while(!success);
 
@@ -234,8 +235,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				}
 				catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");		}
 			}
-			catch (std::exception e)		{ std::cout << "n " << e.what() << std::endl;	}
-			catch (...)						{ std::cout << "something else" << std::endl;	}
+			catch (std::exception e)		{ Log::log() << "n " << e.what() << std::endl;	}
+			catch (...)						{ Log::log() << "something else" << std::endl;	}
 		} while (success == false);
 
 		progress = 50 * i / columnCount;

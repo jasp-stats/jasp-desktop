@@ -48,7 +48,8 @@ SOURCES += \
 	version.cpp \
   enginedefinitions.cpp \
   timers.cpp \
-    stringutils.cpp
+    stringutils.cpp \
+    log.cpp
 
 HEADERS += \
 	appinfo.h \
@@ -88,7 +89,8 @@ HEADERS += \
   enginedefinitions.h \
   timers.h \
   enumutilities.h \
-    stringutils.h
+    stringutils.h \
+    log.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)

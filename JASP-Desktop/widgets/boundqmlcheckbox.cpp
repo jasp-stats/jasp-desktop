@@ -20,6 +20,7 @@
 #include "../analysis/analysisform.h"
 #include <QQmlProperty>
 #include <QQuickItem>
+#include "log.h"
 
 BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
@@ -49,7 +50,7 @@ void BoundQMLCheckBox::bindTo(Option *option)
 		setItemProperty("checked", _checked);
 	}
 	else
-		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
+		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
 }
 
 bool BoundQMLCheckBox::isOptionValid(Option* option)

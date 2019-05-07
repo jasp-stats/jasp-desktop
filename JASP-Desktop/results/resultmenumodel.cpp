@@ -18,7 +18,7 @@
 
 #include "results/resultmenumodel.h"
 
-#include <QDebug>
+
 
 
 QVariant ResultMenuModel::data(const QModelIndex &index, int role) const

@@ -26,10 +26,11 @@
 
 #include <QFile>
 #include <QTimer>
-#include <QDebug>
+
 
 #include "utils.h"
 #include "tempfiles.h"
+#include "log.h"
 
 
 using namespace std;
@@ -180,7 +181,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 		if (!_QMLFileWatcher.files().contains(filePath))
 		{
 			if (!_QMLFileWatcher.addPath(filePath))
-				qDebug() << "Could not watch: " << filePath;
+				Log::log()  << "Could not watch: " << filePath.toStdString() << std::endl;
 		}
 		connect(&_QMLFileWatcher, &QFileSystemWatcher::fileChanged, [=] () { this->_analysisQMLFileChanged(analysis); });
 	}
@@ -220,7 +221,7 @@ void Analyses::reload(Analysis *analysis)
 		endInsertRows();
 	}
 	else
-		std::cout << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
 }
 
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
@@ -452,7 +453,7 @@ void Analyses::rCodeReturned(QString result, int requestId)
 		pair.first->runScriptRequestDone(result, pair.second);
 	}
 	else
-		qDebug() << "Unkown Returned Rcode request ID " << requestId;
+		Log::log()  << "Unkown Returned Rcode request ID " << requestId << std::endl;
 }
 
 void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName)

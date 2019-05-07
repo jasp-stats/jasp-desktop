@@ -58,18 +58,14 @@ public:
 	void processEnginePausedReply();
 	void processEngineStoppedReply();
 	void processEngineResumedReply();
+	void processLogCfgReply();
+
+	void sendLogCfg();
+
+	size_t channelNumber()								{ return _channel->channelNumber(); }
 
 
-	int channelNumber()								{ return _channel->channelNumber(); }
-
-
-	void sendString(std::string str)
-	{
-#ifdef PRINT_ENGINE_MESSAGES
-		std::cout << "sending to jaspEngine: " << str << "\n" << std::endl;
-#endif
-		_channel->send(str);
-	}
+	void sendString(std::string str);
 
 	int engineChannelID()							{ return _channel->channelNumber(); }
 
@@ -96,6 +92,8 @@ signals:
 	void moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage, int channelID);
 	void moduleUnloadingFinished(		const QString & moduleName, int channelID);
 	void moduleUninstallingFinished(	const QString & moduleName);
+
+	void logCfgReplyReceived(int channelNr);
 
 private:
 	void sendPauseEngine();

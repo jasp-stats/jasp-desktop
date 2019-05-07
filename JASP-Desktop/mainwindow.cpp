@@ -22,7 +22,7 @@
 #include "analysis/jaspdoublevalidator.h"
 
 #include <QDir>
-#include <QDebug>
+
 #include <QFile>
 #include <QFileInfo>
 #include <QShortcut>
@@ -56,6 +56,7 @@
 #include "resultstesting/compareresults.h"
 #include "widgets/filemenu/filemenu.h"
 #include "gui/messageforwarder.h"
+#include "log.h"
 
 using namespace std;
 
@@ -96,16 +97,23 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
-	_resultsJsInterface		= new ResultsJsInterface();
+
+	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
+	_dynamicModules			= new DynamicModules(this);
+	_analyses				= new Analyses(this, _dynamicModules);
+	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
+
+	initLog(); //initLog needs _preferences and _engineSync!
+
+	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
+
+	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
 	_tableModel				= new DataSetTableModel();
 	_levelsTableModel		= new LevelsTableModel(this);
 	_labelFilterGenerator	= new labelFilterGenerator(_package, this);
 	_columnsModel			= new ColumnsModel(this);
-	_dynamicModules			= new DynamicModules(this);
-	_analyses				= new Analyses(this, _dynamicModules);
-	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
 	_ribbonModel			= new RibbonModel(_dynamicModules,
@@ -115,25 +123,29 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
-	_preferences			= new PreferencesModel(this);
+
 	_resultMenuModel		= new ResultMenuModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
 
-	StartOnlineDataManager();
+	startOnlineDataManager();
 
 	makeConnections();
 
-	qmlRegisterType<DataSetView>		("JASP", 1, 0, "DataSetView");
-	qmlRegisterType<AnalysisForm>		("JASP", 1, 0, "AnalysisForm");
-	qmlRegisterType<JASPDoubleValidator> ("JASP", 1, 0, "JASPDoubleValidator");
-	qmlRegisterType<ResultsJsInterface>	("JASP", 1, 0, "ResultsJsInterface");
+	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
+	qmlRegisterType<AnalysisForm>			("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
+	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
 
 	loadQML();
 
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
+
+	_engineSync->start(_preferences->plotPPI());
+
+	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -149,7 +161,7 @@ MainWindow::~MainWindow()
 	}
 }
 
-void MainWindow::StartOnlineDataManager()
+void MainWindow::startOnlineDataManager()
 {
 	_loader.moveToThread(&_loaderThread);
 	_loaderThread.start();
@@ -320,6 +332,50 @@ void MainWindow::loadQML()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 }
+
+void MainWindow::initLog()
+{
+	assert(_engineSync != nullptr && _preferences != nullptr);
+
+	Log::logFileNameBase = (AppDirs::logDir() + "JASP "  + getSortableTimestamp()).toStdString();
+	Log::initRedirects();
+	Log::setLogFileName(Log::logFileNameBase + " Desktop.log");
+	Log::setLoggingToFile(_preferences->logToFile());
+	logRemoveSuperfluousFiles(_preferences->logFilesMax());
+
+	connect(_preferences, &PreferencesModel::logToFileChanged,		this,			&MainWindow::logToFileChanged									); //Not connecting preferences directly to Log to keep it Qt-free (for Engine/R-Interface)
+	connect(_preferences, &PreferencesModel::logToFileChanged,		_engineSync,	&EngineSync::logToFileChanged,			Qt::QueuedConnection	);
+	connect(_preferences, &PreferencesModel::logFilesMaxChanged,	this,			&MainWindow::logRemoveSuperfluousFiles							);
+}
+
+void MainWindow::logToFileChanged(bool logToFile)
+{
+	Log::setLoggingToFile(logToFile);
+}
+
+void MainWindow::logRemoveSuperfluousFiles(int maxFilesToKeep)
+{
+	QDir logFileDir(AppDirs::logDir());
+
+	QFileInfoList logs = logFileDir.entryInfoList({"*.log"}, QDir::Filter::Files, QDir::SortFlag::Name | QDir::SortFlag::Reversed);
+
+	if(logs.size() < maxFilesToKeep)
+		return;
+
+	for(int i=logs.size() - 1; i >= maxFilesToKeep; i--)
+		logFileDir.remove(logs[i].fileName());
+}
+
+void MainWindow::openFolderExternally(QDir folder)
+{
+	QDesktopServices::openUrl(QUrl::fromLocalFile(folder.absolutePath()));
+}
+
+void MainWindow::showLogFolder()
+{
+	openFolderExternally(AppDirs::logDir());
+}
+
 
 void MainWindow::open(QString filepath)
 {
@@ -589,9 +645,7 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 
 	if (!finalPath.isEmpty())
 	{
-#ifdef JASP_DEBUG
-		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
-#endif
+		Log::log() << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
 
 		if (QFile::exists(finalPath))
 			QFile::remove(finalPath);
@@ -977,7 +1031,7 @@ void MainWindow::matchComputedColumnsToAnalyses()
 
 void MainWindow::resultsPageLoaded()
 {
-	std::cout << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
+	Log::log() << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
 // #ifdef _WIN32
 // 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
 // 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
@@ -988,10 +1042,6 @@ void MainWindow::resultsPageLoaded()
 //
 // 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
 // #endif
-
-
-	if (!_engineSync->engineStarted())
-		_engineSync->start(_preferences->plotPPI());
 
 	_resultsViewLoaded = true;
 
@@ -1129,7 +1179,7 @@ void MainWindow::startDataEditorHandler()
 					filter = "CSV Files (*.csv)",
 					name = windowTitle();
 
-			std::cout << "Currently startDataEditorHandler treats title as: " << name.toStdString() << std::endl;
+			Log::log() << "Currently startDataEditorHandler treats title as: " << name.toStdString() << std::endl;
 
 			if (name.endsWith("*"))
 			{
@@ -1254,7 +1304,7 @@ void MainWindow::setProgressStatus(QString status, int progress)
 
 void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 {
-	std::cout << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
+	Log::log() << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
 	resultXmlCompare::compareResults::theOne()->enableTestMode();
 
 	if(save)
@@ -1493,9 +1543,7 @@ void MainWindow::setDataAvailable(bool dataAvailable)
 
 void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 {
-#ifdef JASP_DEBUG
-	std::cout << "MainWindow::setAnalysesAvailable(" << (analysesAvailable ? "true" : "false") << ")" << std::endl;
-#endif
+	Log::log() << "MainWindow::setAnalysesAvailable(" << (analysesAvailable ? "true" : "false") << ")" << std::endl;
 
 	if (_analysesAvailable == analysesAvailable)
 		return;

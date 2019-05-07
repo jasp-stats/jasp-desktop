@@ -17,7 +17,7 @@
 //
 
 #include "listmodeldraggable.h"
-#include <QDebug>
+
 
 ListModelDraggable::ListModelDraggable(QMLListView* listView)
 	: ListModel(listView)

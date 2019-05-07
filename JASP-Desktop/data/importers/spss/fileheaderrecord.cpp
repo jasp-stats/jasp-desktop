@@ -23,7 +23,7 @@
 #include "spssimportdataset.h"
 
 #include <assert.h>
-#include <iostream>
+#include "log.h"
 
 using namespace std;
 using namespace boost;
@@ -81,7 +81,7 @@ void FileHeaderRecord::process(SPSSImporter* importer, SPSSImportDataSet *datase
 {
 	if (dataset->columnCount() != 0)
 	{
-        std::cout << "This file appears to have more than one file header record.\n"
+        Log::log() << "This file appears to have more than one file header record.\n"
 				"  Only the last one found will be used." << endl;
 		dataset->clear();
 	}

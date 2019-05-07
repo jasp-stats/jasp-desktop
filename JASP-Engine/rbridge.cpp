@@ -21,7 +21,7 @@
 #include "sharedmemory.h"
 #include "appinfo.h"
 #include "tempfiles.h"
-#include <iostream>
+#include "log.h"
 
 DataSet		*rbridge_dataSet = NULL;
 RCallback	rbridge_callback = NULL;
@@ -41,6 +41,18 @@ boost::function<bool(const std::string&, const	std::vector<std::string>&)							
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
 
+
+size_t _logWriteFunction(const void * buf, size_t len)
+{
+	try {
+		if(len > 0)
+			Log::log().write(static_cast<const char *>(buf), len);
+	} catch (...) {
+		Log::log() << "there was a problem writing to buffer from R"<< std::flush;
+	}
+
+	return len;
+}
 
 void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
 {
@@ -62,10 +74,16 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_dataSetRowCount
 	};
 
-	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks, sendToDesktopFunction, pollMessagesFunction);
-#ifdef JASP_DEBUG
-	std::cout << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
-#endif
+	jaspRCPP_init(
+					AppInfo::getBuildYear().c_str(),
+					AppInfo::version.asString().c_str(),
+					&callbacks,
+					sendToDesktopFunction,
+					pollMessagesFunction,
+					[](){ Log::log().flush(); return 0;},
+					_logWriteFunction
+	);
+	Log::log() << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
 }
 
 void rbridge_setDataSetSource(			boost::function<DataSet* ()> source)												{	rbridge_dataSetSource			= source; }
@@ -680,7 +698,7 @@ bool rbridge_columnUsedInFilter(const char * columnName)
 
 std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 {
-	//std::cout << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl << std::flush;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl << std::flush;
 
 	std::string filterBase64 = filterCode;
 
@@ -712,7 +730,7 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 		}
 	}
 
-	//std::cout << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl << std::flush;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl << std::flush;
 
 	return filterBase64;
 }

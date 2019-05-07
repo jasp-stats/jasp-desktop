@@ -5,7 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
-#include <iostream>
+
 
 class stringUtils
 {
@@ -89,7 +89,6 @@ public:
 
 		for(std::string::size_type curPos = input.find_first_of(replaceThis); curPos + len < input.size() && curPos != std::string::npos; curPos = input.find_first_of(replaceThis, curPos))
 		{
-			std::cout << "curPos: " << curPos << " input: " << input << std::endl;
 			input.replace(curPos, len, withThis);
 			curPos += len;
 		}

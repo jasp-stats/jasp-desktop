@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include <QDebug>
+
 #include "analysismenumodel.h"
 #include "modules/ribbonbutton.h"
 

@@ -27,7 +27,7 @@
 #include "analyses.h"
 #include "analysisform.h"
 
-#include <QDebug>
+
 
 Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
 	QObject(analyses),

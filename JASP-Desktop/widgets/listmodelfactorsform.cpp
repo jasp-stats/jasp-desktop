@@ -22,9 +22,9 @@
 #include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
 #include "boundqmllistviewterms.h"
-
+#include "log.h"
 #include <QQuickItem>
-#include <QDebug>
+
 
 using namespace std;
 
@@ -48,7 +48,7 @@ QVariant ListModelFactorsForm::data(const QModelIndex &index, int role) const
 
 	if (row >= _factors.length())	
 	{
-		qDebug() << "Unknown row " << row << " in ListModelFactorsForm";
+		Log::log()  << "Unknown row " << row << " in ListModelFactorsForm" << std::endl;
 		return QVariant();
 	}
 	
@@ -163,14 +163,14 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 {
 	if (index >= _factors.length())
 	{
-		qDebug() << "Factor added with wrong index: " << index << ". Max index: " << _factors.length();
+		Log::log()  << "Factor added with wrong index: " << index << ". Max index: " << _factors.length() << std::endl;
 		return;
 	}
 	
 	QQuickItem *quickItem = qobject_cast<QQuickItem *>(item.value<QObject *>());
 	if (!quickItem)
 	{
-		qDebug() << "No quick Item found in factorAdded!";
+		Log::log()  << "No quick Item found in factorAdded!" << std::endl;
 		return;
 	}
 	

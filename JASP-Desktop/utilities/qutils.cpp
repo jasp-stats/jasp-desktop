@@ -20,7 +20,7 @@
 
 #include <QStringList>
 
-
+#include <QDateTime>
 #include "simplecrypt.h"
 #include "simplecryptkey.h"
 
@@ -89,4 +89,9 @@ QString decrypt(const QString &input)
 	SimpleCrypt crypto(key); //some random number
 	
 	return crypto.decryptToString(input);
+}
+
+QString getSortableTimestamp()
+{
+	return QDateTime::currentDateTime().toString("yyyy-MM-dd hh_mm_ss"); //This order gets an easy alphanumeric sort by default and sadly enough the character : is not allowed on unix/macx
 }

@@ -21,8 +21,9 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
+#include "log.h"
 
-#include <QDebug>
+
 
 using namespace std;
 
@@ -44,7 +45,7 @@ QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int ro
 	
 	if (row >= _factors.length())
 	{
-		qDebug() << "Unknown row " << row << " in ListModelFactors. Length is " << _factors.length();
+		Log::log()  << "Unknown row " << row << " in ListModelFactors. Length is " << _factors.length() << std::endl;
 		return QVariant();
 	}
 	
@@ -189,7 +190,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 {
 	if (row >= _factors.length())
 	{
-		qDebug() << "Index " << row << " in ListModelFactors is greater than the maximum " << _factors.length();
+		Log::log()  << "Index " << row << " in ListModelFactors is greater than the maximum " << _factors.length() << std::endl;
 		return;
 	}
 
@@ -291,7 +292,7 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 {
 	if (row >= _factors.length())
 	{
-		qDebug() << "Row " << row << " in ListModelFactors is greater than the maximum " << _factors.length();
+		Log::log()  << "Row " << row << " in ListModelFactors is greater than the maximum " << _factors.length() << std::endl;
 		return;
 	}
 	

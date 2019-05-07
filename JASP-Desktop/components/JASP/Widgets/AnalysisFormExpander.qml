@@ -162,7 +162,7 @@ Rectangle
 		{
 			id:					editButton
 			width:				height
-			iconSource:			"qrc:/icons/edit-pencil.svg" // Icon made by Chanut from https://www.flaticon.com/
+			iconSource:			"qrc:/icons/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
 			enabled:			expanderButton.expanded
 			onClicked:			analysisTitleInput.startEditing();
 			toolTip:			"Edit the title of this analysis"
@@ -173,7 +173,7 @@ Rectangle
 				top:		parent.top
 				right:		helpButton.left
 				bottom:		parent.bottom
-				margins:	6 * preferencesModel.uiScale
+				margins:	4 * preferencesModel.uiScale
 			}
 		}
 
@@ -192,7 +192,7 @@ Rectangle
 				top:		parent.top
 				right:		closeButton.left
 				bottom:		parent.bottom
-				margins:	6 * preferencesModel.uiScale
+				margins:	editButton.anchors.margins
 			}
 		}
 
@@ -211,7 +211,7 @@ Rectangle
 				top:		parent.top
 				right:		parent.right
 				bottom:		parent.bottom
-				margins:	6 * preferencesModel.uiScale
+				margins:	editButton.anchors.margins
 			}
 		}
 	}
