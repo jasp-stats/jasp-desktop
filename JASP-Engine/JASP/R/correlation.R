@@ -542,7 +542,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                             if ( ! variable.statuses[[row]]$unplotable) {
                                 plotMat[[row, col]] <- .plotMarginalCor(dataset[[variables[row]]]) + adjMargin # plot marginal (histogram with density estimator)
                             } else {
-                                plotMat[[row, col]] <- .displayError(variable.statuses[[row]]$plottingError, cexText=cexText) + adjMargin
+                                errorMessagePlot <- paste0("Undefined density:", "\n", variable.statuses[[row]]$plottingError)
+                                plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                             }
                         } else {
 
@@ -561,7 +562,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 plotMat[[row, col]] <- .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) + adjMargin # plot scatterplot
                             } else {
                                 errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
                                 plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                             }
                         } else {
@@ -583,7 +584,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                                   pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) + adjMargin # plot r= ...
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                    errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
                                     plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                                 }
                             } else {
@@ -607,7 +608,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                                   # }
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                    errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
                                     plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                                 }
                             } else {
@@ -933,7 +934,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
             plot.margin = grid::unit(c(2,1,1,2), "cm"),
             axis.text.x =ggplot2::element_blank(),
             axis.title = ggplot2::element_blank()) +
-        ggplot2::annotate("text", x = 4, y = 25, label = errorMessage, size = 9)
+        ggplot2::annotate("text", x = 0, y = 0, label = errorMessage, size = 5) +
+        ggplot2::xlim(-30, 30) +
+        ggplot2::ylim(-30, 30)
     return(p)
 }
 
