@@ -103,24 +103,23 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
   },
   error=function(e) e)
+	
+	if (inherits(results, "error")) {		
+		
+		if (inherits(results, "validationError")) {
+			errorStatus <- "validationError"
+			errorMessage <- results$message
+		} else {
+			errorStatus <- "fatalError"
+			error <- .sanitizeForJson(results)
 
-  if (inherits(results, "expectedError")) {
+			stackTrace <- .sanitizeForJson(results$stackTrace)
+			stackTrace <- paste(stackTrace, collapse="<br><br>")
 
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
-
-    errorResponse
-
-  } else if (inherits(results, "error")) {
-
-    error <- .sanitizeForJson(results)
-
-    stackTrace <- .sanitizeForJson(results$stackTrace)
-    stackTrace <- paste(stackTrace, collapse="<br><br>")
-
-    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-
-    errorResponse
+			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
+		}
+		
+		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
 
   } else if (is.null(results)) {
 
@@ -209,32 +208,22 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
       error=function(e) e
     )
 
-  if (inherits(analysisResult, "expectedError")) {
-
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", analysisResult$message, "\" } }", sep="")
-
-    jaspResultsCPP$setErrorMessage(analysisResult$message)
+  if (inherits(analysisResult, "error")) {		
+		
+		if (inherits(analysisResult, "validationError")) {
+			errorStatus <- "validationError"
+			errorMessage <- analysisResult$message
+		} else {
+			errorStatus <- "fatalError"
+			
+			error <- .sanitizeForJson(analysisResult)
+			stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
+			stackTrace <- paste(stackTrace, collapse="<br><br>")
+			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
+		}
+		
+		jaspResultsCPP$setErrorMessage(errorMessage, errorStatus)
     jaspResultsCPP$send()
-
-    return(errorResponse)
-
-  }
-  else if (inherits(analysisResult, "error"))
-  {
-
-    error <- .sanitizeForJson(analysisResult)
-
-    stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
-    stackTrace <- paste(stackTrace, collapse="<br><br>")
-
-    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-
-    jaspResultsCPP$setErrorMessage(errorMessage)
-    jaspResultsCPP$send()
-
-    return(errorResponse)
-
   }
   else
   {
@@ -246,13 +235,6 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
 
     jaspResultsCPP$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
-
-
-  json <- try({ toJSON(returnThis) })
-  if (class(json) == "try-error")
-    return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
-  else
-    return(json)
   }
 }
 

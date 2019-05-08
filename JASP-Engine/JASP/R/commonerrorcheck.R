@@ -17,10 +17,10 @@
 
 .quitAnalysis <- function(message) {
   # Function to gracefully exit an analysis when continuing to run is nonsensical.
-  # Comparable to stop(message), except this does not raise an exception.
+  # Comparable to stop(message), except this raises an validationError.
   # Arg message: String with the reason why the analysis has ended.
   
-  e <- structure(class = c('expectedError', 'error', 'condition'),
+  e <- structure(class = c('validationError', 'error', 'condition'),
                  list(message=message, call=sys.call(-1)))
   stop(e)
 }

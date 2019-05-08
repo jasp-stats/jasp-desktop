@@ -46,7 +46,7 @@ class Analysis : public QObject
 
 public:
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, RewriteImgs, Exception, Initializing };
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
 
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
@@ -140,7 +140,7 @@ public:
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isInited()			const { return status() == Inited;		}
-	bool isFinished()		const { return status() == Complete || status() == Error || status() == Exception; }
+	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
 
 
 	void initialized(AnalysisForm* form, bool isNewAnalysis);

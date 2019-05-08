@@ -530,7 +530,7 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 	case Status::running:
 	case Status::changed:	return analysisResultStatus::running;
 	case Status::complete:	return analysisResultStatus::complete;
-	default:				return analysisResultStatus::error;
+	default:				return analysisResultStatus::fatalError;
 	}
 }
 

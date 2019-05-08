@@ -241,13 +241,13 @@ Json::Value jaspResults::dataEntry()
 
 
 
-void jaspResults::setErrorMessage(std::string msg)
+void jaspResults::setErrorMessage(std::string msg, std::string errorStatus)
 {
 	if(msg.find(analysisChangedErrorMessage) != std::string::npos)
 		return; //we do not wanna report analysis changed as an error I think
 
 	errorMessage = msg;
-	setStatus("error");
+	setStatus(errorStatus);
 }
 
 Rcpp::List jaspResults::getPlotObjectsForState()

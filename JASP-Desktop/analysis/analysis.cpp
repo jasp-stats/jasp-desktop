@@ -176,11 +176,11 @@ Analysis::Status Analysis::parseStatus(std::string name)
 	else if (name == "complete")		return Analysis::Complete;
 	else if (name == "initializing")	return Analysis::Initializing;
 	else if (name == "RewriteImgs")		return Analysis::RewriteImgs;
-	else if (name == "exception")		return Analysis::Exception;
+	else if (name == "validationError")	return Analysis::ValidationError;
 	else if (name == "aborted")			return Analysis::Aborted;
 	else if (name == "SaveImg")			return Analysis::SaveImg;
 	else if (name == "EditImg")			return Analysis::EditImg;
-	else								return Analysis::Error;
+	else								return Analysis::FatalError;
 }
 
 void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
@@ -216,9 +216,9 @@ Json::Value Analysis::asJSON() const
 	case Analysis::SaveImg:			status = "SaveImg";			break;
 	case Analysis::EditImg:			status = "EditImg";			break;
 	case Analysis::RewriteImgs:		status = "RewriteImgs";		break;
-	case Analysis::Exception:		status = "exception";		break;
+	case Analysis::ValidationError:	status = "validationError";	break;
 	case Analysis::Initializing:	status = "initializing";	break;
-	default:						status = "error";			break;
+	default:						status = "fatalError";	break;
 	}
 
 	analysisAsJson["status"]	= status;

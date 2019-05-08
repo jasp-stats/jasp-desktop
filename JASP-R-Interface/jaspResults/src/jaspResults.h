@@ -39,7 +39,7 @@ public:
 	void saveResults();
 
 	void loadResults();
-	void setErrorMessage(std::string msg);
+	void setErrorMessage(std::string msg, std::string errorStatus);
 	void changeOptions(std::string opts);
 	void setOptions(std::string opts);
 	void pruneInvalidatedData();
@@ -104,15 +104,16 @@ public:
 
 	void		send()								{ ((jaspResults*)myJaspObject)->send();								}
 	void		complete()							{ ((jaspResults*)myJaspObject)->complete();							}
-	void		setErrorMessage(std::string msg)	{ ((jaspResults*)myJaspObject)->setErrorMessage(msg);				}
 	Rcpp::List	getOtherObjectsForState()			{ return ((jaspResults*)myJaspObject)->getOtherObjectsForState();	}
 	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState();	}
 	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList();				}
 	void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick();					}
 	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults();				}
-
-	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks); }
-	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs); }
+	
+	void		setErrorMessage(std::string msg, std::string errorStatus)			{ ((jaspResults*)myJaspObject)->setErrorMessage(msg, errorStatus);							}
+	
+	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks);							}
+	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs);	}
 
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }

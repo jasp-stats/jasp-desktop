@@ -250,59 +250,59 @@ test_that("Analysis handles errors", {
   options$covariates <- "contGamma"
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Inf dependent check")
+  expect_identical(results[["status"]], "validationError", label="Inf dependent check")
 
   options$dependent <- "contNormal"
   options$covariates <- "debInf"
   options$modelTerms <- list(list(components="debInf", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Inf covariate check")
+  expect_identical(results[["status"]], "validationError", label="Inf covariate check")
 
   options$covariates <- "contGamma"
   options$wlsWeights <- "debInf"
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Inf wlsWeights check")
+  expect_identical(results[["status"]], "validationError", label="Inf wlsWeights check")
 
   options$dependent <- "debSame"
   options$covariates <- "contGamma"
   options$wlsWeights <- ""
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="No variance dependent check")
+  expect_identical(results[["status"]], "validationError", label="No variance dependent check")
 
   options$dependent <- "contNormal"
   options$covariates <- "debSame"
   options$modelTerms <- list(list(components="debSame", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="No variance covariate check")
+  expect_identical(results[["status"]], "validationError", label="No variance covariate check")
 
   options$dependent <- "contGamma"
   options$covariates <- "contcor1"
   options$wlsWeights <- "contNormal"
   options$modelTerms <- list(list(components="contcor1", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Negative wlsWeights check")
+  expect_identical(results[["status"]], "validationError", label="Negative wlsWeights check")
 
   options$dependent <- "debNaN"
   options$covariates <- "contcor1"
   options$wlsWeights <- ""
   options$modelTerms <- list(list(components="contcor1", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Too few obs dependent check")
+  expect_identical(results[["status"]], "validationError", label="Too few obs dependent check")
 
   options$dependent <- "contGamma"
   options$covariates <- "debNaN"
   options$modelTerms <- list(list(components="debNaN", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Too few obs covariate check")
+  expect_identical(results[["status"]], "validationError", label="Too few obs covariate check")
 
   options$dependent <- "contGamma"
   options$covariates <- "contNormal"
   options$wlsWeights <- "debNaN"
   options$modelTerms <- list(list(components="contNormal", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["status"]], "error", label="Too few obs wlsWeights check")
+  expect_identical(results[["status"]], "validationError", label="Too few obs wlsWeights check")
   
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "contNormal"
@@ -313,7 +313,7 @@ test_that("Analysis handles errors", {
   )
   results <- jasptools::run("RegressionLinear", "test.csv", options)
   results$results$errorMessage
-  expect_identical(results[["status"]], "error", label="Perfect correlation check")
+  expect_identical(results[["status"]], "validationError", label="Perfect correlation check")
 })
 
 # Below are the unit tests for Andy Field's book

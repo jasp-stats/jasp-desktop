@@ -548,7 +548,32 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			$result.append(itemView.$el);
 
 		}
-		return($result);
+	},
+	
+	setErrorOnPreviousResults: function (errorMessage, status, $lastResult, $result) {
+		if (errorMessage == null) // parser.parse() in the engine was unable to parse the R error message
+			errorMessage = "An unknown error occurred.";
+
+		errorMessage = errorMessage.replace(/\n/g, '<br>');
+		errorMessage = errorMessage.replace(/  /g, '&nbsp;&nbsp;');
+
+		if ($lastResult.hasClass("error-state"))
+			$result.append($lastResult.find(".jasp-analysis").not(".error-state").clone())
+		else
+			$result.append($lastResult.clone());
+
+		$result.find(".status").removeClass("waiting running");
+		$result.addClass('error-state');
+
+		$result.append('<div class="' + status + ' analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "fatalError" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + errorMessage + '</div>');
+	},
+	
+	setHeightErroredAnalysis: function ($result) {
+		// the error box has an absolute position and unknown height, we need to manually verify the container height
+		var $selectedAnalysis = $result.find(".jasp-analysis");
+		var errorBoxHeight = $result.find(".analysis-error-message").outerHeight();	
+		if ($selectedAnalysis.height() < errorBoxHeight)
+			$selectedAnalysis.height(errorBoxHeight);
 	},
 
 	editTitleClicked: function () {
@@ -633,27 +658,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			$innerElement.removeClass("error-state");
 			meta = results[".meta"]
 			if (meta)
-				$innerElement = this.createResultsViewFromMeta(results, meta, $innerElement);
+				this.createResultsViewFromMeta(results, meta, $innerElement);
 		} else {
 			var status = this.model.get("status");
-			var error = results.errorMessage
-			if (error == null) // parser.parse() in the engine was unable to parse the R error message
-				error = "An unknown error occurred."
-
-			error = error.replace(/\n/g, '<br>')
-			error = error.replace(/  /g, '&nbsp;&nbsp;')
-
-			$innerElement.append($tempClone.clone());
-			$innerElement.find('.analysis-error').remove();
-			$innerElement.addClass('error-state');
-			if (status === "exception") $innerElement.addClass("exception");
-			$innerElement.find(".status").removeClass("waiting running");
-
-			$innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
-			if ($innerElement.find('.jasp-display-item').length > 3) {
-				$innerElement.find('.analysis-error').addClass('analysis-error-top-max');
-			}
-
+			var errorMessage = results.errorMessage
+			this.setErrorOnPreviousResults(errorMessage, status, $tempClone, $innerElement);
 		}
 
 		if (this.titleRequest)
@@ -678,12 +687,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$tempClone.replaceWith($innerElement);
 		$tempClone.empty();
-
-		var errorBoxHeight = $innerElement.find(".analysis-error").outerHeight(true);
-		var $selectedAnalysis = $innerElement.find(".jasp-analysis");
-		if ($selectedAnalysis.height() < errorBoxHeight) {
-			$selectedAnalysis.height(errorBoxHeight);
-		}
+		
+		if (results.error)
+			this.setHeightErroredAnalysis($innerElement);
 
 		return this;
 	},
