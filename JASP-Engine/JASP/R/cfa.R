@@ -440,7 +440,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # First-order factor loadings ----
   # Set up table
-  jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "First-order factor loadings")
+  jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "Factor loadings")
 
   fl1$addColumnInfo(name = "lhs",   title = "Factor",    type = "string", combine = TRUE)
   fl1$addColumnInfo(name = "rhs",   title = "Indicator", type = "string")
@@ -555,7 +555,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fcdat <- pei[pei$op == "~~" & pei$lhs %in% facNames & pei$lhs != pei$rhs, colSel[-c(3)]]
     fcdat$lhs <- .translateFactorNames(fcdat$lhs, options)
     fcdat$rhs <- .translateFactorNames(fcdat$rhs, options)
-    fcdat$op  <- rep("\u2B64", nrow(fcdat))
+    fcdat$op  <- rep("\u2194", nrow(fcdat))
 
     fc$setData(fcdat)
     fc$dependOn(optionsFromObject = jrobject)
@@ -608,7 +608,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = "Confidence Interval")
 
     rescov[["lhs"]]      <- .unv(rc$lhs)
-    rescov[["op"]]       <- rep("\u2B64", nrow(rc))
+    rescov[["op"]]       <- rep("\u2194", nrow(rc))
     rescov[["rhs"]]      <- .unv(rc$rhs)
     rescov[["est"]]      <- rc$est
     rescov[["se"]]       <- rc$se
@@ -705,7 +705,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (nrow(foc) > 0) {
     foc <- as.data.frame(foc)
     foc <- foc[order(foc$mi, decreasing = TRUE), ]
-    jrobject[["First-Order Cross-Loadings"]] <- focro <- createJaspTable("First-order cross-loadings")
+    jrobject[["Cross-Loadings"]] <- focro <- createJaspTable("Cross-loadings")
     focro$dependOn(optionsFromObject = jrobject)
 
     focro$addColumnInfo(name = "lhs", title = "",          type = "string")
@@ -715,7 +715,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     focro$addColumnInfo(name = "epc", title  = "EPC",      type = "number", format = "sf:4;dp:3")
 
     focro[["lhs"]] <- .translateFactorNames(foc$lhs, options)
-    focro[["op"]]  <- rep("\u2B62", nrow(foc))
+    focro[["op"]]  <- rep("\u2192", nrow(foc))
     focro[["rhs"]] <- .unv(foc$rhs)
     focro[["mi"]]  <- foc$mi
     focro[["epc"]] <- foc$epc
@@ -742,7 +742,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 
       socro[["lhs"]] <- soc$lhs
-      socro[["op"]]  <- rep("\u2B62", nrow(soc))
+      socro[["op"]]  <- rep("\u2192", nrow(soc))
       socro[["rhs"]] <- soc$rhs
       socro[["mi"]]  <- soc$mi
       socro[["epc"]] <- soc$epc
@@ -768,7 +768,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     rec <- as.data.frame(rec)
     rec <- rec[order(rec$mi, decreasing = TRUE), ]
     rescov[["lhs"]] <- .unv(rec$lhs)
-    rescov[["op"]]  <- rep("\u2B64", nrow(rec))
+    rescov[["op"]]  <- rep("\u2194", nrow(rec))
     rescov[["rhs"]] <- .unv(rec$rhs)
     rescov[["mi"]]  <- rec$mi
     rescov[["epc"]] <- rec$epc
