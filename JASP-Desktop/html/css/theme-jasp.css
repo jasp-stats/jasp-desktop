@@ -367,6 +367,9 @@ div.jasp-image-image.no-data {
 	background-image: url('images/empty-plot.png') ;
 	background-repeat: no-repeat;
 	background-size: contain;
+	position: relative;
+	max-height: 480px;
+	max-width: 480px;
 }
 
 .error-state {
@@ -399,7 +402,7 @@ div.jasp-image-image.no-data {
 	z-index: 100 ;
 }
 
-.jasp-image-holder .error-message-positioner {
+.jasp-image-image .error-message-positioner {
 
 	position: absolute ;
 	top: 25% ;
