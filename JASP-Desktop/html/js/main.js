@@ -33,6 +33,8 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
+	
+	var wasLastClickNote = false;
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
@@ -401,8 +403,6 @@ $(document).ready(function () {
 		}
 	}
 
-	var wasLastClickNote = false;
-
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
@@ -410,7 +410,10 @@ $(document).ready(function () {
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 
-		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
+		var ignoreSelectionProcess = 
+									(wasLastClickNote === true && noteClicked === false) ||		// save the modified note
+									stacktraceClicked === true ||								// toggle the stack trace
+									(selectedAnalysisId === -1 && wasLastClickNote === true);	// click on a note when no analysis is selected
 
 		wasLastClickNote = noteClicked;
 
@@ -420,19 +423,14 @@ $(document).ready(function () {
 		var id = $(event.currentTarget).attr("id")
 		var idAsInt = parseInt(id.substring(3))
 
-		if (selectedAnalysisId == idAsInt && noteClicked === false) {
-				window.unselect()
-				jasp.analysisUnselected()
-		}
-		else if (selectedAnalysisId !== idAsInt && noteClicked === true) {
-			if (selectedAnalysisId !== -1) {
+		if (selectedAnalysisId !== idAsInt) {
+			if (wasLastClickNote !== true) {
+				window.select(idAsInt)
+				jasp.analysisSelected(idAsInt)
+			} else {
 				window.unselect()
 				jasp.analysisUnselected()
 			}
-		}
-		else {
-			window.select(idAsInt)
-			jasp.analysisSelected(idAsInt)
 		}
 	}
 
