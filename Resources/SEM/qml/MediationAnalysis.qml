@@ -104,7 +104,6 @@ Form
                         values: [
                             { label: qsTr("Percentile"),                value: "perc"         },
                             { label: qsTr("Normal theory"),             value: "norm"         },
-                            { label: qsTr("Basic"),                     value: "basic"        },
                             { label: qsTr("Bias-corrected percentile"), value: "bca.simple"   }
                         ]
                     }

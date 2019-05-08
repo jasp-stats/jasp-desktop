@@ -88,15 +88,16 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (options$se == "bootstrap") {
     jaspResults$startProgressbar(options$bootstrapNumber)
-    medResult@boot <- list(coef = lavaan::bootstrapLavaan(
-      object = medResult,
-      R      = options$bootstrapNumber, 
-      type   = "ordinary", # options$bootstraptype,
-      FUN    = function(x) {
-        jaspResults$progressbarTick()
-        lavaan:::coef(x)
-      }
-    ))
+    
+    boot_1      <- lavaan::bootstrapLavaan(medResult, R = 1)
+    bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
+    bootres[1,] <- boot_1
+    for (i in 2:options$bootstrapNumber) {
+      bootres[i,] <- lavaan::bootstrapLavaan(medResult, 1)
+      jaspResults$progressbarTick()
+    }
+    
+    medResult@boot       <- list(coef = bootres)
     medResult@Options$se <- "bootstrap"
   }
   
@@ -223,7 +224,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!any(options[showOpts])) return()
   
   jaspResults[["parest"]] <- pecont <- createJaspContainer("Parameter estimates")
-  pecont$dependOn(options = showOpts, optionsFromObject = jaspResults[["stateMedResult"]])
+  pecont$dependOn(options = c("ciWidth", "bootCItype"), optionsFromObject = jaspResults[["stateMedResult"]])
 
   if (is.null(medResult)) {
     pecont[["dir"]] <- dirtab <- createJaspTable(title = "Direct effects")
