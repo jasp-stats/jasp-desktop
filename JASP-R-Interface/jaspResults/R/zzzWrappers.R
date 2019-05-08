@@ -165,6 +165,9 @@ jaspResultsR <- R6Class(
 		complete                = function()        private$jaspObject$complete(),
 		getPlotObjectsForState  = function()        private$jaspObject$getPlotObjectsForState(),
     getOtherObjectsForState = function()        private$jaspObject$getOtherObjectsForState()
+	),
+	active = list(
+	  status = function(x) { if (missing(x)) private$jaspObject$status else private$jaspObject$status <- x }
 	)
 )
 

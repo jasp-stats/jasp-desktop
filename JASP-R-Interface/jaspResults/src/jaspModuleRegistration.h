@@ -158,6 +158,9 @@ RCPP_MODULE(jaspResults)
 
 		.method("getKeepList",				&jaspResults_Interface::getKeepList,							"Builds a list of filenames to keep.")
 
+		.property("status",					&jaspResults_Interface::getStatus,
+											&jaspResults_Interface::setStatus,								"The status of the jaspResults object")
+
 		.property("relativePathKeep",		&jaspResults_Interface::getRelativePathKeep,
 											&jaspResults_Interface::setRelativePathKeep,					"The relative path to where state is kept")
 
