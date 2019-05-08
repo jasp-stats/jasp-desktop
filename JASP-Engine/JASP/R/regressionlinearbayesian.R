@@ -449,14 +449,21 @@ RegressionLinearBayesian <- function (
 	}
 
 	# select the type of model prior
-	footnoteInteraction <- NULL
+	footnoteTemp <- NULL
 	pInteraction <- 0.5 # probability of model inclusion conditional on inclusion parents
 	if (options$modelPrior == "beta.binomial") {
 		modelPrior <- BAS::beta.binomial(as.numeric(options$betaBinomialParamA), as.numeric(options$betaBinomialParamB))
+		
+		if (sum(isNuisance) > 0) {
+		  footnoteTemp <- paste("The prior and posterior model probabilities do not correct for the fact that some", 
+		                        "parameters are specified as nuisance. We advice using a different model priors when doing", 
+		                        "a hierarchical regression. This issue will be fixed in a future version of the BAS", 
+		                        "(>1.5.3) package.")
+		}
 		if (hasInteraction) {
-			footnoteInteraction <- paste("Prior model probabilities for models with interaction effects",
-																	 "are obtained from a Bernoulli (p = 0.5) prior.",
-																	 "We advice using a different model prior, or excluding interaction effects.")
+			footnoteTemp <- paste("Prior model probabilities for models with interaction effects are obtained from a", 
+			                      "Bernoulli (p = 0.5) prior. We advice using a different model prior, or excluding", 
+			                      "interaction effects.")
 		}
 	} else if (options$modelPrior == "uniform") {
 		modelPrior <- BAS::uniform()
@@ -511,7 +518,7 @@ RegressionLinearBayesian <- function (
 			bas_lm <- BAS::force.heredity.bas(bas_lm)
 		bas_lm[["interaction"]] <- list(
 			hasInteraction = hasInteraction,
-			footnote = footnoteInteraction,
+			footnote = footnoteTemp,
 			pInteraction = pInteraction
 		)
 		
