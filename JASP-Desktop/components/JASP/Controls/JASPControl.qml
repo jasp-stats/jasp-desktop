@@ -38,7 +38,22 @@ FocusScope
 	property bool	childControlHasFocus:	false
 	
 	activeFocusOnTab: true
-	
+
+	function showControlError(message)
+	{
+		form.showControlError(jaspControl, message, false)
+	}
+
+	function showControlErrorTemporary(message)
+	{
+		form.showControlError(jaspControl, message, true)
+	}
+
+	function clearControlError()
+	{
+		form.clearControlError()
+	}
+
 	function setDebugState()
 	{
 		debug = true

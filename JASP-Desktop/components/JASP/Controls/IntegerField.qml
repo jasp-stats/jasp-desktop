@@ -26,12 +26,13 @@ TextField
 					id:				textField
 	property int	defaultValue:	0
 	property bool	negativeValues:	false
-	property int	min:			negativeValues ? -2147483647 : 0
+	property int	min:			negativeValues ? -2147483647 : 0 // 2^32 - 1
 	property int	max:			2147483647
+	property string inclusive:		"Yes"
 	property alias	intValidator:	intValidator
     
 					inputType:		"integer"
-					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
+					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0; inclusive: textField.inclusive }
 					lastValidValue:	defaultValue;
 					cursorShape:	Qt.IBeamCursor
 					fieldWidth:		Theme.numericFieldWidth

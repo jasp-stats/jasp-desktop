@@ -48,13 +48,12 @@ JASPControl
 	property string	inputType:			"string"
 	property int	labelSpacing:		4 * preferencesModel.uiScale
 	property double controlXOffset:		0
-	
+
 	signal editingFinished()
 	signal textEdited()
 	signal pressed()
 	signal released()
 
-	
 	function keyReturnPressed()
 	{
 		if (activeFocus)
@@ -102,7 +101,6 @@ JASPControl
 		{
 			id:						control
 			text:					textField.lastValidValue
-			//text:					textField.value //Isn't this circular? control.text: textField.value == property alias value: control.text...
 			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
 			focus:					true
@@ -127,16 +125,29 @@ JASPControl
 				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
 				border.width: 3
-				border.color: control.acceptableInput ? "transparent" : Theme.red
+				border.color: control.acceptableInput ? "transparent" : Theme.red // Needed when the QML file has wrong default value
 				anchors.centerIn: parent
 				opacity: debug ? .3 : 1
 				visible: textField.useExternalBorder
 				radius: Theme.jaspControlHighlightWidth
 			}
 			
-			onActiveFocusChanged: {
+			onActiveFocusChanged:
+			{
 				if (!control.acceptableInput)
+				{
+					var msg
+					if (control.validator && (typeof control.validator.validationMessage === "function"))
+						msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
+
 					text = textField.lastValidValue
+					msg += qsTr("Restoring last correct value: %1").arg(text);
+					showControlErrorTemporary(msg)
+					textField.background.border.color = Theme.red;
+					redToNormal.start()
+				}
+				else
+					clearControlError();
 			}
 			
 			PropertyAnimation
@@ -145,7 +156,7 @@ JASPControl
 				target: textField.background
 				property: "border.color"
 				to: Theme.focusBorderColor
-				duration: 350
+				duration: 1000
 				onStopped: textField.background.border.color = control.activeFocus ? Theme.focusBorderColor : "transparent"
 			}
 			
@@ -153,11 +164,14 @@ JASPControl
 			{
 				if (!control.acceptableInput)
 				{
+					if (control.validator && (typeof control.validator.validationMessage === "function"))
+						showControlError(control.validator.validationMessage(beforeLabel.text));
 					textField.background.border.color = Theme.red;
 					redToNormal.start()
 				}
 				else
 				{
+					clearControlError();
 					event.accepted = false;
 				}
 			}
