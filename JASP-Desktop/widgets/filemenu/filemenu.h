@@ -61,7 +61,7 @@ public:
 	explicit FileMenu(QObject *parent = nullptr);
 	virtual ~FileMenu() {}
 	
-	void		setFileoperation(const ActionButtons::FileOperation fo);
+
 	void		setResourceButtonsVisibleFor(ActionButtons::FileOperation fo);
 
 	void		setOnlineDataManager(OnlineDataManager *odm);
@@ -104,6 +104,7 @@ public slots:
 	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
 	void dataSetIOCompleted(FileEvent *event);
 	void dataFileModifiedHandler(QString path);
+	void setFileoperation(const ActionButtons::FileOperation fo);
 	void actionButtonClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
 	void showFileOpenMenu();

@@ -12,8 +12,6 @@ void ResourceButtonsVisible::setResourceButtons(ResourceButtons * ResourceButton
 
 	_resourceButtons = ResourceButtons;
 
-	connect(this, &ResourceButtonsVisible::clicked, _resourceButtons, &ResourceButtons::clicked);
-
 	setSourceModel(_resourceButtons);
 }
 

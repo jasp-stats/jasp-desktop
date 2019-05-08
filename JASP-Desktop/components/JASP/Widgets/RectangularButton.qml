@@ -20,7 +20,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-FocusScope
+Item
 {
 	id: filterButtonRoot
 
@@ -80,7 +80,7 @@ FocusScope
 			acceptedButtons:			Qt.LeftButton
 			hoverEnabled:				true
 			cursorShape:				Qt.PointingHandCursor
-			onClicked:					{ filterButtonRoot.forceActiveFocus(); filterButtonRoot.clicked(); }
+			onClicked:					filterButtonRoot.clicked();
 			visible:					filterButtonRoot.enabled
 			//propagateComposedEvents:	true
 		}

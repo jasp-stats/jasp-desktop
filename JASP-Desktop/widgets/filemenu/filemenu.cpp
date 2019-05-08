@@ -26,7 +26,7 @@
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
 	_recentFiles			= new RecentFiles(parent);
-	_currentDataFile			= new CurrentDataFile(parent);
+	_currentDataFile		= new CurrentDataFile(parent);
 	_computer				= new Computer(parent);
 	_OSF					= new OSF(parent);
 	_dataLibrary			= new DataLibrary(parent);
@@ -34,14 +34,15 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_resourceButtons		= new ResourceButtons(this);
 	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
 
-	connect(_recentFiles,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_currentDataFile,	&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_computer,			&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_OSF,				&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,		this, &FileMenu::dataSetIORequestHandler);
-	connect(_actionButtons,		&ActionButtons::selectedActionChanged,	this, &FileMenu::actionButtonClicked);
-	connect(&_watcher,			&QFileSystemWatcher::fileChanged,		this, &FileMenu::dataFileModifiedHandler);
-	connect(_resourceButtons,	&ResourceButtons::clicked,				this, &FileMenu::resourceButtonClicked);
+	connect(_recentFiles,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
+	connect(_currentDataFile,	&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
+	connect(_computer,			&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
+	connect(_OSF,				&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
+	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
+	connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this, &FileMenu::dataFileModifiedHandler);
+	connect(_actionButtons,		&ActionButtons::buttonClicked,				this, &FileMenu::actionButtonClicked	);
+	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this, &FileMenu::setFileoperation		);
+	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this, &FileMenu::resourceButtonClicked	);
 
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
 	_actionButtons->setEnabled(ActionButtons::Save,				false);
@@ -69,31 +70,7 @@ void FileMenu::setFileoperation(ActionButtons::FileOperation fo)
 
 void FileMenu::setResourceButtonsVisibleFor(ActionButtons::FileOperation fo)
 {
-	switch (fo)
-	{
-	case ActionButtons::FileOperation::Open:
-		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF});
-		break;
-
-	case ActionButtons::FileOperation::SyncData:
-		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF});
-		break;
-
-	case ActionButtons::FileOperation::SaveAs:
-	case ActionButtons::FileOperation::ExportData:
-	case ActionButtons::FileOperation::ExportResults:
-		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::Computer, ResourceButtons::OSF});
-		break;
-
-	case ActionButtons::Preferences:
-		_resourceButtons->setOnlyTheseButtonsVisible({ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsAdvanced});
-		break;
-
-	default:
-		_resourceButtons->setOnlyTheseButtonsVisible();
-		break;
-
-	}
+	_resourceButtons->setOnlyTheseButtonsVisible(_actionButtons->resourceButtonsForButton(fo));
 }
 
 void FileMenu::setSaveMode(FileEvent::FileMode mode)
@@ -359,8 +336,6 @@ void FileMenu::analysesExportResults()
 
 void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 {	
-	setFileoperation(action);
-	
 	switch (action)
 	{
 	case ActionButtons::FileOperation::Open:				setSaveMode(FileEvent::FileOpen);			break;

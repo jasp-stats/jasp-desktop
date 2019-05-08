@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <map>
+#include "resourcebuttons.h"
 
 class ActionButtons : public QAbstractListModel
 {
@@ -14,9 +15,9 @@ public:
 	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, About};
 	Q_ENUM(FileOperation)
 
-	struct DataRow { FileOperation operation; QString name; bool enabled; };
+	struct DataRow { FileOperation operation; QString name; bool enabled; std::set<ResourceButtons::ButtonType> resourceButtons; };
 
-	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, EnabledRole, SelectedRole };
+	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, EnabledRole, SelectedRole, ResourceButtonsRole };
 
 	explicit ActionButtons(QObject *parent = nullptr);
 
@@ -28,8 +29,14 @@ public:
 
 	FileOperation selectedAction() const { return _selected; }
 
+	Q_INVOKABLE	void selectButtonUp();
+	Q_INVOKABLE	void selectButtonDown();
+
+	std::set<ResourceButtons::ButtonType> resourceButtonsForButton(FileOperation button);
+
 signals:
-	void selectedActionChanged(FileOperation selectedAction);
+				void selectedActionChanged(FileOperation selectedAction);
+	Q_INVOKABLE void buttonClicked(FileOperation selectedAction);
 
 public slots:
 	void setEnabled(ActionButtons::FileOperation operation, bool enabledState);

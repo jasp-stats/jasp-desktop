@@ -7,36 +7,35 @@ import JASP.Widgets 1.0
 RectangularButton
 {
 	id: root
-	property bool clickOnHover:			false
-	property bool clickWhenFocussed:	true;
 	property bool hasSubMenu:			false
 
 	font: Theme.fontRibbon
 
-	color: (_pressed || selected) ? Theme.buttonColorPressed : root.hovered ? Theme.buttonColorHovered : "transparent"
+	color: (_pressed || activeFocus) ? Theme.buttonColorPressed : (root.hovered || selected) ? Theme.buttonColorHovered : "transparent"
 	border.width:	0
 	centerText:		false
 
+	signal hoverClicked();
+
 	Timer
 	{
-		id:				delayOnhoverTimer
-		interval:		Theme.hoverTime
-		running:		false
-		repeat:			false
-		onTriggered:	if (hovered && root.hasSubMenu) forceActiveFocus();
+		id:					delayOnhoverTimer
+		interval:			Theme.hoverTime
+		running:			false
+		repeat:				false
+		onTriggered:		if (hovered && root.hasSubMenu) root.hoverClicked();
     }
 
-	Keys.onSpacePressed:	{ clicked();  event.accepted = true;}
-	Keys.onEnterPressed:	{ clicked();  event.accepted = true;}
-	Keys.onReturnPressed:	{ clicked();  event.accepted = true;}
+	Keys.onSpacePressed:	clicked();
+	Keys.onEnterPressed:	clicked();
+	Keys.onReturnPressed:	clicked();
 
-	onHoveredChanged:	if (clickOnHover)
-						{
-							if (hovered)	delayOnhoverTimer.start()
-							else			delayOnhoverTimer.stop()
-						}
-
-	onActiveFocusChanged:	if (clickOnHover && activeFocus && clickWhenFocussed)	clicked()
+	onClicked:				delayOnhoverTimer.stop();
+	onHoveredChanged:		if (hasSubMenu)
+							{
+								if (hovered)	delayOnhoverTimer.start()
+								else			delayOnhoverTimer.stop()
+							}
 
 	Image
 	{
@@ -45,7 +44,7 @@ RectangularButton
 		anchors.rightMargin:	Theme.generalAnchorMargin
 		height:					Theme.subMenuIconHeight
 		width:					height
-		source:					"qrc:/icons/large-arrow-right.png"
+		source:					root.hasSubMenu ? "qrc:/icons/large-arrow-right.png" : ""
 		visible:				hasSubMenu
 		opacity:				enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
 		smooth:					true

@@ -10,15 +10,17 @@
 class ResourceButtons : public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(QString currentQML READ currentQML WRITE setCurrentQML NOTIFY currentQMLChanged)
+	Q_PROPERTY(QString		currentQML		READ currentQML		WRITE setCurrentQML		NOTIFY currentQMLChanged	)
+	Q_PROPERTY(ButtonType	selectedButton	READ selectedButton WRITE setSelectedButton	NOTIFY selectedButtonChanged)
 
 public:
 	//["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
-	enum ButtonType {RecentFiles, CurrentFile, Computer, OSF, DataLibrary, PrefsData, PrefsResults, PrefsAdvanced};
+	enum ButtonType {None, RecentFiles, CurrentFile, Computer, OSF, DataLibrary, PrefsData, PrefsResults, PrefsAdvanced};
+	Q_ENUM(ButtonType)
 
 	struct DataRow { ButtonType button; QString name; bool visible; QString qml; bool enabled; };
 
-	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole, EnabledRole };
+	enum ActionRoles { NameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole, EnabledRole, SelectedRole };
 
 	explicit ResourceButtons(QObject *parent = nullptr);
 
@@ -33,22 +35,27 @@ public:
 
 	QString					qml(ResourceButtons::ButtonType button);
 
-	QString					currentQML() const	{ return _currentQML; }
+	QString					currentQML()		const { return _currentQML;		}
+	ButtonType				selectedButton()	const { return _selectedButton;	}
+
+	Q_INVOKABLE void		selectFirstButtonIfNoneSelected();
+	Q_INVOKABLE	void		selectButtonUp();
+	Q_INVOKABLE	void		selectButtonDown();
 
 signals:
-	Q_INVOKABLE void clicked(int buttonType);
-
 	void currentQMLChanged(QString currentQML);
+	void selectedButtonChanged(ButtonType selectedButton);
 
 public slots:
 	void setVisible(ResourceButtons::ButtonType button, bool visibility);
 	void setCurrentQML(QString currentQML);
-	void clickedHandler(int buttonType) { setCurrentQML(qml(static_cast<ButtonType>(buttonType))); }
+	void setSelectedButton(ButtonType selectedButton);
 
 private:
 	std::vector<DataRow>			_data;
 	std::map<ButtonType, size_t>	_buttonToIndex;
 	QString							_currentQML;
+	ButtonType						_selectedButton = None;
 };
 
 #endif // ResourceButtons_H
