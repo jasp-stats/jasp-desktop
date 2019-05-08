@@ -37,9 +37,11 @@ QtObject {
 	readonly property color blueLighter:		"#97C4F2"
 	readonly property color blueMuchLighter:	"#DCF1FB"
 	readonly property color red:				"#FC625D"
+	readonly property color redDarker:			"#CD0A0A"
 	readonly property color green:				"#36CE4C"
 	readonly property color yellowLight:		"#FFFFCA"
 	readonly property color rose:				"#FFC0CB"
+	readonly property color roseLight:			"#FEF1EC"
 	readonly property color shadow:				"#33000000"
 
 	readonly property color textEnabled:				black
@@ -148,6 +150,8 @@ QtObject {
 	readonly property color disableControlBackgroundColor:	whiteBroken
 	readonly property color rowEvenColor:					controlBackgroundColor
 	readonly property color rowOnevenColor:					whiteBroken
+	readonly property color controlErrorBackgroundColor:	roseLight
+	readonly property color controlErrorTextColor:			redDarker
 
 	readonly property color buttonBackgroundColor:			blue
 	readonly property color tooltipBackgroundColor:			yellowLight

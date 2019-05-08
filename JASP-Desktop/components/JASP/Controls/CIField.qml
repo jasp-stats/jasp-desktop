@@ -28,7 +28,7 @@ PercentField
       
 	id:					ciField
 	fieldWidth:			Theme.font.pixelSize * (ciField.decimals + 3)
-	validator:			JASPDoubleValidator { id: doubleValidator; bottom: 0 + 1E-10; top: 100 - 1E-10; decimals: ciField.decimals; notation: DoubleValidator.StandardNotation}
+	validator:			JASPDoubleValidator { id: doubleValidator; bottom: 0; top: 100; inclusive: "no"; decimals: ciField.decimals; notation: DoubleValidator.StandardNotation}
 
 	lastValidValue:		defaultValue
 }

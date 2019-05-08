@@ -460,7 +460,7 @@ void AnalysisForm::bindTo()
 							}
 							if (labelStr.empty())
 								labelStr = name;
-							addError(tq("Control " + labelStr + " was loaded with a wrong kind of value. Probably the file comes from an older version of JASP.<br>"
+							addError(tq("Control " + labelStr + " was loaded with a wrong kind of value. The file probably comes from an older version of JASP.<br>"
 										+ "That means that the results currently displayed do not correspond to the options selected.<br>Refreshing the analysis may change the results"));
 						}
 						else

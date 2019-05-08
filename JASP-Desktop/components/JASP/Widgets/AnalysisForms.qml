@@ -24,18 +24,6 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
-		/*Item
-		{
-			anchors.centerIn:	parent
-			width:				messageDialog.width
-			height:				messageDialog.height
-			MessageDialog
-			{
-				id: messageDialog
-				title: "Error"
-			}
-		}*/
-
 		Rectangle
 		{
 			id:				openCloseButton
