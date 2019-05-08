@@ -436,7 +436,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # First-order factor loadings ----
   # Set up table
-  jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "First-order factor loadings")
+  jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "Factor loadings")
 
   fl1$addColumnInfo(name = "lhs",   title = "Factor",    type = "string", combine = TRUE)
   fl1$addColumnInfo(name = "rhs",   title = "Indicator", type = "string")
@@ -701,7 +701,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (nrow(foc) > 0) {
     foc <- as.data.frame(foc)
     foc <- foc[order(foc$mi, decreasing = TRUE), ]
-    jrobject[["First-Order Cross-Loadings"]] <- focro <- createJaspTable("First-order cross-loadings")
+    jrobject[["Cross-Loadings"]] <- focro <- createJaspTable("Cross-loadings")
     focro$dependOn(optionsFromObject = jrobject)
 
     focro$addColumnInfo(name = "lhs", title = "",          type = "string")
