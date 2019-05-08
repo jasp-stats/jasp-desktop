@@ -105,11 +105,16 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		}
 		else
 		{
-			const std::string remoteDebuggingPort = "--remote-debugging-port=";
+			const std::string remoteDebuggingPort = "--remote-debugging-port=",
+								qmlJsDebug = "-qmljsdebugger";
+			auto startsWith = [&](const std::string checkThis)
+			{
+				return args[arg].size() > checkThis.size() && args[arg].substr(0, checkThis.size()) == checkThis;
+			};
 
 			if(args[arg] == "-platform")
 				arg++; // because it is always followed by the actual platform one wants to use (minimal for example)
-			else if(!(args[arg] == "-qmljsdebugger" || (args[arg].size() > remoteDebuggingPort.size() && args[arg].substr(0, remoteDebuggingPort.size()) == remoteDebuggingPort))) //Just making sure it isnt something else that should be allowed.
+			else if(!(startsWith(remoteDebuggingPort) || startsWith(qmlJsDebug))) //Just making sure it isnt something else that should be allowed.
 			{
 				//if it isn't anything else it must be a file to open right?
 
