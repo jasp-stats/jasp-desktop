@@ -98,11 +98,19 @@ Form
                         min: 1
                         max: 100000
                     }
+                    DropDown {
+                        label: qsTr("Type")
+                        name: "bootCItype"
+                        values: [
+                            { label: qsTr("Percentile"),                value: "perc"         },
+                            { label: qsTr("Normal theory"),             value: "norm"         },
+                            { label: qsTr("Basic"),                     value: "basic"        },
+                            { label: qsTr("Bias-corrected percentile"), value: "bca.simple"   }
+                        ]
+                    }
                 }
             }
         }
-
-
     }
     
 	Section {

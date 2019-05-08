@@ -251,7 +251,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     return()
   }
 
-  pe <- lavaan::parameterEstimates(medResult, boot.ci.type = "perc", level = options$ciWidth)
+  pe <- lavaan::parameterEstimates(medResult, boot.ci.type = options$bootCItype, 
+                                   level = options$ciWidth)
 
   ## direct effects
   if (options[["showdir"]]) {
@@ -266,13 +267,13 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     dirtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
     dirtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
     dirtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     
     pe_dir <- pe[substr(pe$label, 1, 1) == "c", ]
     dirtab[["lhs"]]      <- .unv(pe_dir$rhs)
-    dirtab[["op"]]       <- rep("\u2B62", nrow(pe_dir))
+    dirtab[["op"]]       <- rep("\u2192", nrow(pe_dir))
     dirtab[["rhs"]]      <- .unv(pe_dir$lhs)
     dirtab[["est"]]      <- pe_dir$est
     dirtab[["se"]]       <- pe_dir$se
@@ -298,16 +299,16 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     indtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
     indtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
     indtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     
     pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
     
     indtab[["x"]]        <- .unv(rep(options$predictor, each = length(options$mediators) * length(options$dependent)))
-    indtab[["op1"]]      <- rep("\u2B62", nrow(pe_ind))
+    indtab[["op1"]]      <- rep("\u2192", nrow(pe_ind))
     indtab[["m"]]        <- .unv(rep(options$mediators, length(options$dependent) * length(options$predictor)))
-    indtab[["op2"]]      <- rep("\u2B62", nrow(pe_ind))
+    indtab[["op2"]]      <- rep("\u2192", nrow(pe_ind))
     indtab[["y"]]        <- .unv(rep(rep(options$dependent, each = length(options$mediators)), length(options$predictor)))
     indtab[["est"]]      <- pe_ind$est
     indtab[["se"]]       <- pe_ind$se
@@ -330,14 +331,14 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     ttitab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
     ttitab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
     ttitab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
     pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
 
     ttitab[["lhs"]]      <- .unv(rep(options$predictor, each = length(options$dependent)))
-    ttitab[["op"]]       <- rep("\u2B62", nrow(pe_tti))
+    ttitab[["op"]]       <- rep("\u2192", nrow(pe_tti))
     ttitab[["rhs"]]      <- .unv(rep(options$dependent, length(options$predictor)))
     ttitab[["est"]]      <- pe_tti$est
     ttitab[["se"]]       <- pe_tti$se
@@ -360,13 +361,13 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     tottab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
     tottab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
     tottab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
     
     tottab[["lhs"]]      <- .unv(rep(options$predictor, length(options$dependent)))
-    tottab[["op"]]       <- rep("\u2B62", nrow(pe_tot))
+    tottab[["op"]]       <- rep("\u2192", nrow(pe_tot))
     tottab[["rhs"]]      <- .unv(rep(options$dependent, each = length(options$predictor)))
     tottab[["est"]]      <- pe_tot$est
     tottab[["se"]]       <- pe_tot$se
@@ -389,16 +390,16 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     restab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
     restab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
     restab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     pe_res <- pe[pe$op == "~~" &
                    pe$lhs != pe$rhs &
                    !.unv(pe$lhs) %in% options$predictor &
                    !.unv(pe$lhs) %in% options$confounds,]
 
     restab[["lhs"]]      <- .unv(pe_res$lhs)
-    restab[["op"]]       <- rep("\u2B64", nrow(pe_res))
+    restab[["op"]]       <- rep("\u2194", nrow(pe_res))
     restab[["rhs"]]      <- .unv(pe_res$rhs)
     restab[["est"]]      <- pe_res$est
     restab[["se"]]       <- pe_res$se
@@ -455,7 +456,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   pp <- .medPlotPostProcess(pp, options)
 
   jaspResults[["plot"]] <- createJaspPlot(pp, title = "Path plot", width = 600, height = 400)
-  jaspResults[["plot"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]])
+  jaspResults[["plot"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]], 
+                                 options = c("pathplot", "plotpars"))
 }
 
 .medPathLayout <- function(n, min = -1, max = 1) {
