@@ -131,6 +131,11 @@ std::ostream & Log::log()
 {
 	switch(_where)
 	{
+#ifndef __clang__
+#ifdef __GNUG__
+	default:				//Gcc is stupid and is not aware that the next three cases cover all
+#endif
+#endif
 	case logType::cout:		return std::cout;
 	case logType::null:
 	{
@@ -138,5 +143,5 @@ std::ostream & Log::log()
 		return nullstream;
 	}
 	case logType::file:		return _logFile;
-	};
+	}
 }
