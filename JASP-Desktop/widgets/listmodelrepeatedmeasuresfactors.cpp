@@ -99,11 +99,11 @@ void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vec
 			_factors.append(factorLevel);
 		}
 		
-		Factor extraLevel(tq("Level ") + levelIndex, true, true, levelIndex, &factorHeader);
+		Factor extraLevel(tq("Level %1").arg(levelIndex), true, true, levelIndex, &factorHeader);
 		_factors.append(extraLevel);
 	}
 	
-	Factor extraFactor(tq("RM Factor ") + factorIndex, true, false, factorIndex);
+	Factor extraFactor(tq("RM Factor %1").arg(factorIndex), true, false, factorIndex);
 	_factors.append(extraFactor);
 
 	endResetModel();
@@ -216,7 +216,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 				_factors.removeAt(row);
 			}
 			else
-				val = tq("Level ") + QString::number(factor.index);
+				val = tq("Level %1").arg(factor.index);
 		}
 		else
 		{
@@ -235,7 +235,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 				}
 			}
 			else
-				val = tq("RM Factor ") + QString::number(factor.index);
+				val = tq("RM Factor %1").arg(factor.index);
 		}
 	}
 
