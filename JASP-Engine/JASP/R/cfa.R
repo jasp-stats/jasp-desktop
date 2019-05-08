@@ -196,25 +196,20 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
 
-  # Bootstrapping with progress bar
-  if (cfaResult[["spec"]]$bootstrap & options$bootstrapNumber > 50) {
-    jaspResults$startProgressbar(ceiling(options$bootstrapNumber / 50))
-    bootres <- lavaan::bootstrapLavaan(cfaResult[["lav"]], 50)
-    jaspResults$progressbarTick()
-    for (i in 1:(floor(options$bootstrapNumber / 50) - 1)) {
-      bootres <- rbind(bootres, lavaan::bootstrapLavaan(cfaResult[["lav"]], 50))
+  # Bootstrapping with interruptible progress bar
+  if (cfaResult[["spec"]]$bootstrap) {
+    jaspResults$startProgressbar(options$bootstrapNumber)
+    
+    boot_1      <- lavaan::bootstrapLavaan(cfaResult[["lav"]], R = 1)
+    bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
+    bootres[1,] <- boot_1
+    for (i in 2:options$bootstrapNumber) {
+      bootres[i,] <- lavaan::bootstrapLavaan(cfaResult[["lav"]], 1)
       jaspResults$progressbarTick()
     }
-    remainder <- options$bootstrapNumber %% 50
-    if (remainder != 0) {
-      bootres <- rbind(bootres, lavaan::bootstrapLavaan(cfaResult[["lav"]], remainder))
-      jaspResults$progressbarTick()
-    }
-
-    cfaResult[["lav"]]@ParTable$se[cfaResult[["lav"]]@ParTable$free != 0] <- apply(bootres, 2, sd)
-    cfaResult[["lav"]]@vcov$se <- "bootstrap"
-    cfaResult[["lav"]]@vcov$information <- "observed"
-    cfaResult[["lav"]]@vcov$vcov <- unname(cov(bootres))
+    
+    cfaResult[["lav"]]@boot       <- list(coef = bootres)
+    cfaResult[["lav"]]@Options$se <- "bootstrap"
   }
 
   # Save cfaResult as state so it's available even when opts don't change
@@ -412,11 +407,12 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   jaspResults[["estimates"]] <- ests <- createJaspContainer("Parameter estimates", position = 2)
   ests$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
-                         "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "std"))
+                  "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "std", "ciWidth"))
 
 
   pe <- lavaan::parameterEstimates(cfaResult[["lav"]], standardized = TRUE, remove.eq = FALSE, remove.system.eq = TRUE,
-                                   remove.ineq = FALSE, remove.def = FALSE, add.attributes = TRUE)
+                                   remove.ineq = FALSE, remove.def = FALSE, add.attributes = TRUE, boot.ci.type = "perc",
+                                   level = options$ciWidth)
 
   if (options$groupvar != "") {
     groupLabs <- cfaResult[["lav"]]@Data@group.label
@@ -440,7 +436,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # First-order factor loadings ----
   # Set up table
-  jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "Factor loadings")
+  jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "First-order factor loadings")
 
   fl1$addColumnInfo(name = "lhs",   title = "Factor",    type = "string", combine = TRUE)
   fl1$addColumnInfo(name = "rhs",   title = "Indicator", type = "string")
@@ -452,9 +448,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fl1$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
 
   fl1$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                    overtitle = "95% Confidence Interval")
+                    overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   fl1$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                    overtitle = "95% Confidence Interval")
+                    overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
   if (options$std != "none")
     fl1$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -483,9 +479,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fl2$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
 
     fl2$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                      overtitle = "95% Confidence Interval")
+                      overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     fl2$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                      overtitle = "95% Confidence Interval")
+                      overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
     if (options$std != "none")
       fl2$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -512,9 +508,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
   fv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = "95% Confidence Interval")
+                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   fv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = "95% Confidence Interval")
+                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
   if (options$std != "none")
     fv$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -542,9 +538,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fc$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
     fc$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = "95% Confidence Interval")
+                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     fc$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = "95% Confidence Interval")
+                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
     if (options$std != "none")
       fc$addColumnInfo(name   = paste0("std.", options$std),
@@ -572,9 +568,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   rv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
   rv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = "95% Confidence Interval")
+                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   rv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = "95% Confidence Interval")
+                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
   if (options$std != "none")
     rv$addColumnInfo(name   = paste0("std.", options$std),
@@ -603,9 +599,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     rescov$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
     rescov$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                         overtitle = "95% Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     rescov$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                         overtitle = "95% Confidence Interval")
+                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
     rescov[["lhs"]]      <- .unv(rc$lhs)
     rescov[["op"]]       <- rep("\u2194", nrow(rc))
@@ -634,9 +630,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       fi$addColumnInfo(name = "pvalue", title = "p",          type = "number", format = "dp:3;p:.001")
 
       fi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                        overtitle = "95% Confidence Interval")
+                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
       fi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                        overtitle = "95% Confidence Interval")
+                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
       if (options$std != "none")
         fi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -659,9 +655,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     vi$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
 
     vi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = "95% Confidence Interval")
+                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     vi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = "95% Confidence Interval")
+                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
 
     if (options$std != "none")
       vi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -705,7 +701,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (nrow(foc) > 0) {
     foc <- as.data.frame(foc)
     foc <- foc[order(foc$mi, decreasing = TRUE), ]
-    jrobject[["Cross-Loadings"]] <- focro <- createJaspTable("Cross-loadings")
+    jrobject[["First-Order Cross-Loadings"]] <- focro <- createJaspTable("First-order cross-loadings")
     focro$dependOn(optionsFromObject = jrobject)
 
     focro$addColumnInfo(name = "lhs", title = "",          type = "string")
