@@ -210,7 +210,7 @@ Form
                             text: qsTr("Bootstrap samples")
                             name: "bootstrapNumber"
                             defaultValue: 1000
-                            min: 1
+                            min: 100
                             max: 1000000
                         }
                     }
