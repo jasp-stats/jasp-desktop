@@ -452,9 +452,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fl1$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
 
   fl1$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                    overtitle = "Confidence Interval")
+                    overtitle = "95% Confidence Interval")
   fl1$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                    overtitle = "Confidence Interval")
+                    overtitle = "95% Confidence Interval")
 
   if (options$std != "none")
     fl1$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -483,9 +483,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fl2$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
 
     fl2$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                      overtitle = "Confidence Interval")
+                      overtitle = "95% Confidence Interval")
     fl2$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                      overtitle = "Confidence Interval")
+                      overtitle = "95% Confidence Interval")
 
     if (options$std != "none")
       fl2$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -512,9 +512,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
   fv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = "Confidence Interval")
+                   overtitle = "95% Confidence Interval")
   fv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = "Confidence Interval")
+                   overtitle = "95% Confidence Interval")
 
   if (options$std != "none")
     fv$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -542,9 +542,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fc$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
     fc$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = "Confidence Interval")
+                     overtitle = "95% Confidence Interval")
     fc$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = "Confidence Interval")
+                     overtitle = "95% Confidence Interval")
 
     if (options$std != "none")
       fc$addColumnInfo(name   = paste0("std.", options$std),
@@ -572,9 +572,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   rv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
   rv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = "Confidence Interval")
+                   overtitle = "95% Confidence Interval")
   rv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = "Confidence Interval")
+                   overtitle = "95% Confidence Interval")
 
   if (options$std != "none")
     rv$addColumnInfo(name   = paste0("std.", options$std),
@@ -603,9 +603,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     rescov$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
 
     rescov$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = "95% Confidence Interval")
     rescov$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                         overtitle = "Confidence Interval")
+                         overtitle = "95% Confidence Interval")
 
     rescov[["lhs"]]      <- .unv(rc$lhs)
     rescov[["op"]]       <- rep("\u2194", nrow(rc))
@@ -634,9 +634,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       fi$addColumnInfo(name = "pvalue", title = "p",          type = "number", format = "dp:3;p:.001")
 
       fi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                        overtitle = "Confidence Interval")
+                        overtitle = "95% Confidence Interval")
       fi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                        overtitle = "Confidence Interval")
+                        overtitle = "95% Confidence Interval")
 
       if (options$std != "none")
         fi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
@@ -659,9 +659,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     vi$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
 
     vi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = "Confidence Interval")
+                     overtitle = "95% Confidence Interval")
     vi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = "Confidence Interval")
+                     overtitle = "95% Confidence Interval")
 
     if (options$std != "none")
       vi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
