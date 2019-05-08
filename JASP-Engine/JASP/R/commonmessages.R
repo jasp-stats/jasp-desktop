@@ -23,7 +23,7 @@
   "The following problem(s) occurred while running the analysis:"
   m$error$grouping <- 
   "after grouping on {{grouping}}"
-  m$error$exception <- 
+  m$error$fatalError <- 
   "This analysis terminated unexpectedly.<br><br>{{error}}<br><div class=stack-trace-selector><span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistance with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
   
   ### Error checks

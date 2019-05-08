@@ -237,8 +237,8 @@ Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analys
 {
 	switch(result)
 	{
-	case analysisResultStatus::error:			return Analysis::Error;
-	case analysisResultStatus::exception:		return Analysis::Exception;
+	case analysisResultStatus::validationError:		return Analysis::ValidationError;
+	case analysisResultStatus::fatalError:		return Analysis::FatalError;
 	case analysisResultStatus::imageSaved:
 	case analysisResultStatus::imageEdited:
 	case analysisResultStatus::imagesRewritten:
@@ -309,7 +309,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		clearAnalysisInProgress();
 		break;
 
-	case analysisResultStatus::error:
+	case analysisResultStatus::validationError:
 		analysis->setResults(results);
 		clearAnalysisInProgress();
 
@@ -317,7 +317,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 			emit computeColumnFailed(QString::fromStdString(col), "Analysis had an error..");
 		break;
 
-	case analysisResultStatus::exception:
+	case analysisResultStatus::fatalError:
 	case analysisResultStatus::inited:
 	case analysisResultStatus::complete:
 		analysis->setResults(results);

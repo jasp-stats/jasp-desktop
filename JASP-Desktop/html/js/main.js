@@ -534,7 +534,7 @@ $(document).ready(function () {
 	$("#results").on("click", ".stack-trace-selector", function() {
 		$(this).next(".stack-trace").slideToggle(function() {
 			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
-			var errorBoxHeight = $(this).parent(".analysis-error").outerHeight(true);
+			var errorBoxHeight = $(this).parent(".analysis-error-message").outerHeight();
 			if ($(this).next(".stack-trace").is(":hidden")) {
 				$selectedInner.css("height", "");
 			}
