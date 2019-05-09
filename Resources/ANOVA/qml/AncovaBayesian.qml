@@ -48,7 +48,7 @@ Form
 			}
 		}
         CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
-        CheckBox { name: "criTable";           label: qsTr("Model Averaged R\u00B2") }
+        CheckBox { name: "criTable";           label: qsTr("Model averaged R\u00B2") }
         CheckBox { name: "descriptives";       label: qsTr("Descriptives") }
         CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
     }
@@ -57,8 +57,9 @@ Form
     {
         title: qsTr("Order")
         name: "bayesFactorOrder"
-        RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model"); checked: true	}
-        RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model")				}
+        RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model"); checked: true}
+        RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model")               }
+        
     }
     
     GroupBox

@@ -32,7 +32,8 @@ test_that("Main table results match", {
   options$priorRandomEffects <- 0.8
 
   refTables <- list(
-    nullModelTop = list(3.47351082631419e+23, 7.78290269354818, "RM Factor 1 + facGender",
+    nullModelTop = list(1, 1.2015680635829e-23, "Null model (incl. subject)", 0.1, 1.33507562620322e-24, "",
+                        3.47351082631419e+23, 7.78290269354818, "RM Factor 1 + facGender",
                         0.1, 0.463739964156508, 9.48562551500826, 2.25207823390771e+23,
                         3.86945112370334, "RM Factor 1", 0.1, 0.300669475839298, 39.106368292494,
                         6.71141299730886e+22, 0.885790984667994, "RM Factor 1 + contcor1",
@@ -42,8 +43,7 @@ test_that("Main table results match", {
                         0.575524732870682, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
                         0.1, 0.0601037278818813, 12.5735601755857, 6.89156615187532e+21,
                         0.0835758191825197, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
-                        0.1, 0.00920076199573587, 11.0628049253349, 1, 1.2015680635829e-23,
-                        "Null model (incl. subject)", 0.1, 1.33507562620322e-24, "",
+                        0.1, 0.00920076199573587, 11.0628049253349, 
                         0.41104359340273, 4.93896854573074e-24, "facGender", 0.1, 5.4877428285897e-25,
                         7.7632364395313, 0.23874600738579, 2.86869577782693e-24, "contcor1",
                         0.1, 3.18743975314103e-25, 16.2455760987563, 0.0921852605167578,

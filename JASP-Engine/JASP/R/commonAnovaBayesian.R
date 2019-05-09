@@ -294,6 +294,15 @@
 
   internalTableObj <- .BANOVAfinalizeInternalTable(options, internalTable)
   modelTable$setData(internalTableObj$table)
+  if (length(internalTableObj[["footnotes"]]) > 0L) {
+    idxRow <- internalTableObj[["footnotes"]][["rows"]]
+    idxCol <- internalTableObj[["footnotes"]][["cols"]]
+    tb <- internalTableObj$table
+    modelTable$addFootnote(message  = internalTableObj[["footnotes"]][["message"]],
+                           symbol   = " <sup>&#10013;</sup>", # latin cross
+                           rowNames = rownames(tb)[idxRow],
+                           colNames = colnames(tb)[idxCol])
+  }
 
   if (anyNuisance) {
     message <- paste("All models include", paste0(.unv(nuisance), collapse = ", "))
@@ -364,19 +373,22 @@
                              symbol = "<em>Note.</em>")
   }
   
-  jaspResults[["tableEffects"]] <- effectsTable
-  if (is.null(model$models))
+  if (is.null(model$models)) {
+    jaspResults[["tableEffects"]] <- effectsTable
     return()
+  }
 
   effects.matrix <- model$effects
   no.effects <- ncol(effects.matrix)
   effectNames <- colnames(model$effects)
 
+  idxNotNan <- c(TRUE, !is.nan(model$postProbs[-1L]))
   if (options$effectsType == "allModels") {
 
     # note that the postInclProb is equivalent to model$posteriors$weights[-1] * (1 - model$postProbs[1])
-    priorInclProb <- colMeans(effects.matrix)
-    postInclProb  <- crossprod(effects.matrix[-1L, , drop = FALSE], model$postProbs[-1L])
+    priorInclProb <- colMeans(effects.matrix[idxNotNan, , drop = FALSE])
+    
+    postInclProb  <- crossprod(effects.matrix[idxNotNan, , drop = FALSE], model$postProbs[idxNotNan])
 
     # deal with numerical error
     postInclProb[postInclProb > 1] <- 1
@@ -403,19 +415,28 @@
 
       # all models that include the effect, without higher order interactions
       idx4 <- idx3 & effects.matrix[, i]
-      priorInclProb[i] <- mean(idx4)
-      postInclProb[i]  <- sum(idx4 * model[["postProbs"]])
+      priorInclProb[i] <- mean(idx4[idxNotNan])
+      postInclProb[i]  <- sum(idx4[idxNotNan] * model[["postProbs"]][idxNotNan])
 
       # the models to consider for the prior/ posterior exclusion probability.
       # idx5 includes models that have: all subcomponents & no higher order interaction & not the effect
       idx5 <- matrixStats::rowAlls(effects.matrix[, idx2, drop = FALSE]) & idx3 & !effects.matrix[, i]
 
-      priorExclProb <- mean(idx5)
-      postExclProb  <- sum(idx5 * model$postProbs)
+      priorExclProb <- mean(idx5[idxNotNan])
+      postExclProb  <- sum(idx5[idxNotNan] * model[["postProbs"]][idxNotNan])
 
       # compute inclusion BF
       bfIncl[i]     <- (postInclProb[i] / postExclProb) / (priorInclProb[i] / priorExclProb)
     }
+  }
+  
+  if (sum(!idxNotNan) > 1L) { # null model is always omitted, so 2 or more omitted indicates some models failed 
+    effectsTable$addFootnote(message = paste(
+      "Some Bayes factors could not be calculated.", 
+      "Inclusion probabilities and Bayes factors are calculated while excluding these models.",
+      "The results may be uninterpretable!"), 
+      symbol = "<b><em>Warning.</em></b>"
+    )
   }
 
   effectsTable[["Effects"]]      <- .unvf(effectNames)
@@ -431,6 +452,7 @@
     "BF01"    = 1 / bfIncl,
     "BF10"    = bfIncl  
   )
+  jaspResults[["tableEffects"]] <- effectsTable
   return()
 }
 
@@ -470,14 +492,15 @@
 .BANOVAfinalizeInternalTable <- function(options, internalTable) {
 
   # function that actually fills in the table created by .BANOVAinitModelComparisonTable
+  footnotes <- NULL
   if (anyNA(internalTable[, "P(M|data)"])) {
     # if TRUE, called from analysis
+    
+    logSumExp <- matrixStats::logSumExp
+    logbfs <- internalTable[, "BF10"]
     if (!anyNA(internalTable[, "BF10"])) {
       # no errors, proceed normally and complete the table
 
-      logSumExp <- matrixStats::logSumExp
-
-      logbfs <- internalTable[, "BF10"]
       logsumbfs <- logSumExp(logbfs)
       internalTable[, "P(M|data)"] <-  exp(logbfs - logsumbfs)
 
@@ -488,7 +511,31 @@
       }
 
     } else {
-      # errors, attempt to salvage some results
+      # create table excluding failed models
+
+      idxGood <- !is.na(logbfs)
+      widxGood <- which(idxGood)
+      logsumbfs <- logSumExp(logbfs[idxGood])
+      internalTable[, "P(M|data)"] <-  exp(logbfs - logsumbfs)
+
+      nmodels <- sum(idxGood)
+      mm <- max(logbfs, na.rm = TRUE)
+      widxBad <- which(!idxGood)
+      for (i in widxGood) {
+        internalTable[i, "BFM"] <- logbfs[i] - logSumExp(logbfs[-c(i, widxBad)]) + log(nmodels - 1L)
+      }
+
+      internalTable[widxBad, "P(M|data)"] <- NaN
+      internalTable[widxBad, "BFM"]       <- NaN
+      internalTable[widxBad, "BF10"]      <- NaN
+      footnotes <- list(
+        message = paste(
+          "<b><em>Warning.</em></b>",
+          "Some Bayes factors could not be calculated.", 
+          "Multi model inference is carried out while excluding these models.",
+          "The results may be uninterpretable!"
+        )
+      )
     }
   } # else: results already computed
 
@@ -506,6 +553,7 @@
   idxNull <- which(o == 1L)
   if (options[["bayesFactorOrder"]] == "nullModelTop") {
     table[idxNull, "error %"] <- NA
+    table <- table[c(idxNull, seq_len(nrow(table))[-idxNull]), ]
   } else {
 
     table[["BF10"]] <- table[["BF10"]] - table[1L, "BF10"]
@@ -519,7 +567,13 @@
   table[["BF10"]] <- .recodeBFtype(table[["BF10"]], newBFtype = options[["bayesFactorType"]], oldBFtype = "LogBF10")
   table[["error %"]] <- 100 * table[["error %"]]
 
-  return(list(table = table, internalTable = internalTable, footnotes = NULL))
+  if (!is.null(footnotes)) {
+    idxNan <- which(is.nan(as.matrix(table[-ncol(table)])), arr.ind = TRUE)
+    footnotes[["rows"]] <- idxNan[, "row"]
+    footnotes[["cols"]] <- idxNan[, "col"]
+  }
+
+  return(list(table = table, internalTable = internalTable, footnotes = footnotes))
 
 }
 
@@ -537,8 +591,13 @@
   if (!is.null(posteriors) && isTRUE(model[["completelyReused"]])) { # can all posterior be reused?
 
     posteriorsCRI <- jaspResults[["statePosteriorsCRI"]]$object
-    if (is.null(posteriorsCRI)) # do we need to recompute credible intervals?
+    if (is.null(posteriorsCRI)) {# do we need to recompute credible intervals?
       posteriorsCRI <- .BANOVAcomputePosteriorCRI(dataset, options, model, posteriors)
+      statePosteriorsCRI <- createJaspState(object = posteriorsCRI)
+      statePosteriorsCRI$dependOn(options = "credibleInterval", 
+                                  optionsFromObject = jaspResults[["tableModelComparisonState"]])
+      jaspResults[["statePosteriorCRI"]] <- statePosteriorsCRI
+    }
 
   } else { # compute posteriors and credible intervals
 
@@ -670,7 +729,8 @@
 
   posteriorPlotContainer <- createJaspContainer(title = "Model Averaged Posterior Distributions")
   jaspResults[["posteriorPlot"]] <- posteriorPlotContainer
-  posteriorPlotContainer$dependOn(c("posteriorPlot", "modelTerms", "credibleInterval", "groupPosterior"))
+  posteriorPlotContainer$dependOn(c("posteriorPlot", "modelTerms", "credibleInterval", "groupPosterior",
+                                    "repeatedMeasuresCells", "dependent"))
   posteriorPlotContainer$position <- 4
 
   if (is.null(model$models)) {
@@ -711,85 +771,92 @@
     for (i in seq_along(indices)) {
 
       ind <- indices[[i]]
-      # make prior posterior plot
-      dfLines <- data.frame(x = c(densities[, ind, "x"]),
-                            y = c(densities[, ind, "y"]),
-                            g = rep(xNames[ind], each = nrow(densities)))
-
-      xBreaks <- JASPgraphs::getPrettyAxisBreaks(dfLines$x)
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, dfLines$y))
-      breaksYmax <- yBreaks[length(yBreaks)]
-      obsYmax <- max(dfLines$y)
-      newymax <- max(1.25 * obsYmax, breaksYmax)
-
-      lInd <- length(ind)
-      if (lInd == 1L) {
-        plusmin <- 0
-        showLegend <- FALSE
-      } else {
-        # some jitter in CRI height
-        showLegend <- TRUE
-        plusmin <- rep(-1, lInd)
-        plusmin[seq(2, lInd, 2)] <- 0
-        if (lInd > 2)
-          plusmin[seq(3, lInd, 3)] <- 1
-      }
-
-      dfCri <- data.frame(
-        xmin = cris[ind, 1L],
-        xmax = cris[ind, 2L],
-        y = (newymax - obsYmax)/2 + obsYmax + plusmin * (newymax - obsYmax) / 10,
-        g = xNames[ind]
-      )
       
-      if (showLegend) {
-        # if two distributions are remarkably similar, i.e., have nearly identical credible intervals, 
-        # we add a linetype aestethic
-        tol <- 1e-4
-        distMin <- which(stats::dist(dfCri$xmin) < tol)
-        distMax <- which(stats::dist(dfCri$xmin) < tol)
-        distBoth <- intersect(distMin, distMax)
-        if (length(distBoth) > 0) {
-          aesLine <- ggplot2::aes(x = x, y = y, g = g, color = g, linetype = g)
-          aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g, color = g, linetype = g)
+      if (all(c(densities[, ind, "y"]) == 0)) { # only TRUE is never sampled and set to 0
+        plot <- createJaspPlot(title = nms[i], width = 400, height = 400)
+        plot$setError(paste("Could not plot posterior distribution.",
+                            "Check if an error occured for models including this parameter."))
+      } else {
+        # make prior posterior plot
+        dfLines <- data.frame(x = c(densities[, ind, "x"]),
+                              y = c(densities[, ind, "y"]),
+                              g = rep(xNames[ind], each = nrow(densities)))
+        
+        xBreaks <- JASPgraphs::getPrettyAxisBreaks(dfLines$x)
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, dfLines$y))
+        breaksYmax <- yBreaks[length(yBreaks)]
+        obsYmax <- max(dfLines$y)
+        newymax <- max(1.25 * obsYmax, breaksYmax)
+        
+        lInd <- length(ind)
+        if (lInd == 1L) {
+          plusmin <- 0
+          showLegend <- FALSE
         } else {
-          aesLine <- ggplot2::aes(x = x, y = y, g = g, color = g)
-          aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g, color = g)
+          # some jitter in CRI height
+          showLegend <- TRUE
+          plusmin <- rep(-1, lInd)
+          plusmin[seq(2, lInd, 2)] <- 0
+          if (lInd > 2)
+            plusmin[seq(3, lInd, 3)] <- 1
         }
-      } else {
-        # don't use color for single density plots (covariates)
-        aesLine <- ggplot2::aes(x = x, y = y, g = g)
-        aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g)
+        
+        dfCri <- data.frame(
+          xmin = cris[ind, 1L],
+          xmax = cris[ind, 2L],
+          y = (newymax - obsYmax)/2 + obsYmax + plusmin * (newymax - obsYmax) / 10,
+          g = xNames[ind]
+        )
+        
+        if (showLegend) {
+          # if two distributions are remarkably similar, i.e., have nearly identical credible intervals, 
+          # we add a linetype aestethic
+          tol <- 1e-4
+          distMin <- which(stats::dist(dfCri$xmin) < tol)
+          distMax <- which(stats::dist(dfCri$xmin) < tol)
+          distBoth <- intersect(distMin, distMax)
+          if (length(distBoth) > 0) {
+            aesLine <- ggplot2::aes(x = x, y = y, g = g, color = g, linetype = g)
+            aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g, color = g, linetype = g)
+          } else {
+            aesLine <- ggplot2::aes(x = x, y = y, g = g, color = g)
+            aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g, color = g)
+          }
+        } else {
+          # don't use color for single density plots (covariates)
+          aesLine <- ggplot2::aes(x = x, y = y, g = g)
+          aesErrorbar <- ggplot2::aes(xmin = xmin, xmax = xmax, y = y, group = g)
+        }
+        
+        
+        maxheight <- min(newymax - dfCri$y[1:min(lInd, 3)])
+        xlab <- nms[i]
+        # ggplot doesn't like our fancy unicode * so we need to remove it
+        # some word hopefully no user every uses
+        keyword <- "myTemporaryMagicReplacementKeyWord"
+        # change the encoding and remove all *
+        xlab <- iconv(xlab, from = "UTF-8", to = "ASCII", sub = keyword)
+        # remove our keyword
+        xlab <- unlist(strsplit(xlab, keyword))
+        # remove empty spaces and add a x over our *
+        xlab <- paste(xlab[xlab != ""], collapse = " x ")
+        
+        ncolLegend <- ceiling(lInd / 14)
+        guideLegend <- ggplot2::guide_legend(title = "Level", keywidth = 0.25, keyheight = 0.1, default.unit = "inch", 
+                                             ncol = ncolLegend)
+        p <- ggplot2::ggplot(data = dfLines, mapping = aesLine) +
+          ggplot2::geom_line(size = 1.1) + 
+          ggplot2::geom_errorbarh(data = dfCri, mapping = aesErrorbar, height = maxheight, size = 1.1, 
+                                  inherit.aes = FALSE) + 
+          ggplot2::scale_x_continuous(name = xlab,      breaks = xBreaks, limits = range(xBreaks)) +
+          ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = c(0, newymax)) + 
+          colorspace::scale_color_discrete_qualitative() + 
+          ggplot2::scale_linetype() + 
+          ggplot2::guides(color = guideLegend, linetype = guideLegend)
+        p <- JASPgraphs::themeJasp(p, legend.position = if (showLegend) "right" else "none")
+        
+        plot <- createJaspPlot(title = nms[i], width = 400, height = 400, plot = p)
       }
-      
-      
-      maxheight <- min(newymax - dfCri$y[1:min(lInd, 3)])
-      xlab <- nms[i]
-      # ggplot doesn't like our fancy unicode * so we need to remove it
-      # some word hopefully no user every uses
-      keyword <- "myTemporaryMagicReplacementKeyWord"
-      # change the encoding and remove all *
-      xlab <- iconv(xlab, from = "UTF-8", to = "ASCII", sub = keyword)
-      # remove our keyword
-      xlab <- unlist(strsplit(xlab, keyword))
-      # remove empty spaces and add a x over our *
-      xlab <- paste(xlab[xlab != ""], collapse = " x ")
-
-      ncolLegend <- ceiling(lInd / 14)
-      guideLegend <- ggplot2::guide_legend(title = "Level", keywidth = 0.25, keyheight = 0.1, default.unit = "inch", 
-                                           ncol = ncolLegend)
-      p <- ggplot2::ggplot(data = dfLines, mapping = aesLine) +
-        ggplot2::geom_line(size = 1.1) + 
-        ggplot2::geom_errorbarh(data = dfCri, mapping = aesErrorbar, height = maxheight, size = 1.1, 
-                                inherit.aes = FALSE) + 
-        ggplot2::scale_x_continuous(name = xlab,      breaks = xBreaks, limits = range(xBreaks)) +
-        ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = c(0, newymax)) + 
-        colorspace::scale_color_discrete_qualitative() + 
-        ggplot2::scale_linetype() + 
-        ggplot2::guides(color = guideLegend, linetype = guideLegend)
-      p <- JASPgraphs::themeJasp(p, legend.position = if (showLegend) "right" else "none")
-
-      plot <- createJaspPlot(title = nms[i], width = 400, height = 400, plot = p)
       container[[allParamNames[i]]] <- plot
     }
   } else {
@@ -835,7 +902,7 @@
     plot$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
   }
 
-  plot$dependOn(c("qqPlot", "modelTerms", "credibleInterval"))
+  plot$dependOn(c("qqPlot", "modelTerms", "credibleInterval", "repeatedMeasuresCells", "dependent"))
   plot$position <- 5
   jaspResults[["QQplot"]] <- plot
   return()
@@ -863,7 +930,7 @@
     plot$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
   }
 
-  plot$dependOn(c("rsqPlot", "modelTerms", "credibleInterval"))
+  plot$dependOn(c("rsqPlot", "modelTerms", "credibleInterval", "repeatedMeasuresCells", "dependent"))
   plot$position <- 6
   jaspResults[["rsqplot"]] <- plot
   return()
@@ -1015,7 +1082,7 @@
       for (i in seq_along(errMessages))
         postHocTable$addFootnote(symbol    = "<em>Note.</em>", 
                                  message   = errMessages[[i]][["message"]], 
-                                 row_names = paste0("row", errMessages[[i]][["row_names"]]))
+                                 rowNames = paste0("row", errMessages[[i]][["row_names"]]))
       
     }
     postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
@@ -1423,7 +1490,11 @@
         # put the dataset back in
         bfObj <- model$models[[i]][[3L]]
         bfObj@data <- dataset
-        samples <- BayesFactor::posterior(bfObj, iterations = nIter)
+        samples <- try(BayesFactor::posterior(bfObj, iterations = nIter))
+        if (isTryError(samples)) {
+          # this may error whenever the Bayes factor couldn't be calculated
+          next
+        }
         types <- samples@model@dataTypes
 
         # BayesFactor stores an internal copy of the dataset, so it can still have old names
@@ -1488,7 +1559,9 @@
   # given the model averaged posterior means calculate the weighted posterior standard deviations
   weightedSds <- 0 * weightedMeans # keeps the names
   r <- nIter / (nIter - 1)
-  for (i in seq_len(nmodels)) {
+  # statistics has length 0 iff the posterior sampling errored
+  widxGoodStatistics <- which(lengths(statistics) > 0L) 
+  for (i in widxGoodStatistics) {
     nms <- statistics[[i]]$names
 
     var <- statistics[[i]]$var # ~ sum((x - mean(x))^2
@@ -1525,7 +1598,7 @@
 
   # get the outermost x-values for each densities this could be vectorized with matrixStats::rowRanges if the
   # data are stored as a matrix but that is memory inefficient
-  for (i in seq_len(nmodels)) {
+  for (i in widxGoodStatistics) {
     nms <- statistics[[i]]$names
     indices <- which(nms %in% allParamNames)
     for (j in indices) {
@@ -1538,7 +1611,7 @@
     weightedDensities[, i, 1L] <- seq(ranges[i, 1], ranges[i, 2], length.out = steps)
   }
 
-  for (i in seq_len(nmodels)) {
+  for (i in widxGoodStatistics) {
     nms <- statistics[[i]]$names
     ind <- match(nms, allParamNames)
     for (j in seq_along(ind)) {
@@ -1555,6 +1628,9 @@
   }
   # postProbs don't sum to one so we renormalize the densities
   weightedDensities[, , 2L] <- sweep(weightedDensities[, , 2L], 2, weights, FUN = `/`)
+
+  # if all model with one parameter failed, the line above introduces NaNs since 0 / 0 is NaN
+  weightedDensities[is.nan(weightedDensities)] <- 0
 
   # # compute weighted CRIs
   # weightedCRIs <- matrix(NA, nparam, 2L, dimnames = list(names(weights), NULL))
@@ -1623,15 +1699,17 @@
   nparam <- length(weights)
   
   # compute weighted CRIs
-  weightedCRIs <- matrix(NA, nparam, 2L, dimnames = list(names(weights), NULL))
+  weightedCRIs <- matrix(0, nparam, 2L, dimnames = list(names(weights), NULL))
   cri <- options[["credibleInterval"]]
   for (i in seq_len(nparam)) {
-    weightedCRIs[i, ] <- .BANOVAapproxCRI(weightedDensities[, i, 1L], weightedDensities[, i, 2L], cri)
+    if (!all(weightedDensities[, i, 2L] == 0)) { # only TRUE if we explicitly set it to 0
+      weightedCRIs[i, ] <- .BANOVAapproxCRI(weightedDensities[, i, 1L], weightedDensities[, i, 2L], cri)
+    } 
   }
 
   # compute residuals and r-squared
   # sample from the joint posterior over models and parameters
-  tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, weights, model,
+  tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, model, 
                                 posterior$levelInfo)
   means  <- rowMeans(tmp$resid)
   h <- (1 - cri) / 2
@@ -1832,19 +1910,21 @@
   return(samples)
 }
 
-.BANOVAgetSMIResidRsq <- function(posterior, dataset, formula, nIter, prop0, model = NULL, levelInfo = NULL) {
+.BANOVAgetSMIResidRsq <- function(posterior, dataset, formula, nIter, model, levelInfo = NULL) {
 
   # @param posterior  object from Bayesfactor package, or SxPx2 array of weighted densities
   # @param dataset    dataset
   # @param formula    the formula for this specific model. Supply the formula of the most complex model for BMA inference.
   # @param nIter      number of posterior samples
+  # @param model      model estimates
+  # @param levelInfo  for each variable, how many levels there are.
   #
   # @return           a list with residuals, predictions, and r-squared
 
   # @details the matrix multiplication in this function allocates an array of nobs * nsamples, which can be enormous.
   # if is more memory efficient to use for loops (but slower in R) to calculate predictions for each observation
   # and posterior sample. This could be done in the future if performance is an issue. However, this likely cannot be
-  # done efficiently in R.
+  # done efficiently in R. For modelAveraged inference, model and levelInfo need to be given.
 
   # here we need the data in a one-hot encoded way
   # first one is dependent variable, rest are independent variables
@@ -1874,30 +1954,43 @@
     # we're doing model averaged inference
     
     # sample from the BMA posterior
-    effects <- unname(model$effects)
-    modelIdx <- sample(nrow(effects), nIter, TRUE, model$postProbs)
+    effects <- model[["effects"]]
+    rownames(effects) <- NULL # drop rownames, otherwise they get copied later on
+    postProbs <- model[["postProbs"]]
+    postProbs[is.na(postProbs)] <- 0
+    modelIdx <- sample(nrow(effects), nIter, TRUE, postProbs) # resample the models according to posterior prob
     samples <- matrix(0, nrow = nIter, ncol = ncol(posterior))
     
-    counts <- cumsum(levelInfo$levelCounts)+1L
-    idx <- 0L # selects which variable is sampled (so parameters 0, 1 are within the variable contBinom)
-    if (!is.null(model)) {
-      for (i in seq_len(ncol(posterior))) {
-        if (idx == 0L) {
-          idx <- idx + 1L
-          samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"])
-        } else {
-          if (i > counts[idx])
-            idx <- idx + 1L
-          mult <- effects[modelIdx, idx]
-          samples[mult, i] <- .BANOVAreSample(n = sum(mult), x = posterior[, i, "x"], y = posterior[, i, "y"])
-        }
-      }
-    } else {
-      for (i in seq_len(ncol(posterior))) {
-        samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"], prop0 = prop0[i])
-      }
-    }
+    # get for each parameter which variable they belong to (e.g., 0 and 1 belong to contBinom)
+    stems <- sapply(strsplit(colnames(posterior), "-"), `[`, 1L) # before - is the variable name
+    bases <- c("mu", names(levelInfo[["levelNames"]])) # all options
+    pos <- match(stems, bases) # lookup parameters in variable names
+  
+    # sort the terms inside bases and colnames(effects) so that they match
+    # NOTE: this cannot be done when creating effects because then the colnames don't match with the formulas...
+    bases <- sapply(strsplit(bases, ":"), function(x) paste0(sort(x), collapse = ":"))
+    cnms <- colnames(effects)
+    cnms <- sapply(strsplit(cnms, ":"), function(x) paste0(sort(x), collapse = ":"))
+    colnames(effects) <- cnms
+    # all(colnames(effects) %in% bases) # should be TRUE
+
+    # which parameters are nuisance?
+    isNuisance <- c(TRUE, bases[-1L] %in% model[["nuisance"]])
     
+    # resample nuisance parameters
+    for (i in which(isNuisance[pos])) {
+      samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"]) 
+    }
+
+    # resample non nuisance parameters
+    for (i in which(!isNuisance[pos])) {
+      idx <- bases[pos[i]] # get the variable from which this parameter comes
+      mult <- effects[modelIdx, idx] # how often models with this variable are sampled
+      nTemp <- sum(mult)
+      if (nTemp > 0L)
+        samples[mult, i] <- .BANOVAreSample(n = sum(mult), x = posterior[, i, "x"], y = posterior[, i, "y"])
+    }
+
     preds <- tcrossprod(datOneHot, samples)
     
   } else {
@@ -2010,17 +2103,17 @@
   nuisance <- NULL
   effects <- NULL
   for (term in modelTerms) {
+    comp <- .v(term$component)
     if (is.null (effects) & is.null (nuisance)){
-      model.formula <- paste0(model.formula,
-                              paste(.v(term$components), collapse = ":"))
+      model.formula <- paste0(model.formula, comp, collapse = ":")
     } else {
       model.formula <- paste0(model.formula, " + ",
-                              paste(.v(term$components), collapse = ":"))
+                              paste(comp, collapse = ":"))
     }
     if (!is.null(term$isNuisance) && term$isNuisance) {
-      nuisance <- c(nuisance, paste(.v(term$components), collapse = ":"))
+      nuisance <- c(nuisance, paste(comp, collapse = ":"))
     } else {
-      effects <- c(effects, paste(.v(term$components), collapse = ":"))
+      effects <- c(effects, paste(comp, collapse = ":"))
     }
   }
   model.formula <- formula (model.formula)
@@ -2109,18 +2202,17 @@
 
   s <- strsplit(attr(stats::terms.formula(x), "term.labels"), ":")
   for (i in which(lengths(s) > 1L))
-    s[[i]] <- sort(s[[i]])
+    s[[i]] <- paste0(sort(s[[i]]), collapse = ":")
   return(paste(all.vars(x)[1L], "~", paste(sort(unlist(s)), collapse = " + ")))
 }
 
 # Single Model Inference (SMI) ----
 .BANOVAsmi <- function(jaspResults, dataset, options, model) {
 
-  # TODO: allCOntinuous is missing in singleModel
-  # checks of .BANOVAsmiQqPlot and others are wrong
-  userWantsSMI <- options$singleModelPosteriorPlot || options$singleModelqqPlot || options$singleModelrsqPlot ||
-    options$singleModelEstimates
-  if (!(options[["singleModelEstimates"]] || userWantsSMI))
+  userWantsSMI <- any(unlist(options[c(
+    "singleModelPosteriorPlot", "singleModelqqPlot", "singleModelrsqPlot", "singleModelEstimates", "singleModelCriTable"
+  )]))
+  if (!userWantsSMI)
     return()
 
   if (!is.null(jaspResults[["collectionSingleModel"]])) {
@@ -2136,10 +2228,10 @@
   }
 
   singleModel <- jaspResults[["singleModelState"]]$object
-  if (is.null(singleModel) && length(options$singleModelTerms) > 0L && userWantsSMI) {
+  if (!is.null(model[["models"]]) && is.null(singleModel) && length(options$singleModelTerms) > 0L && userWantsSMI) {
     singleModel <- try(.BANOVAsmiSamplePosterior(dataset, options, model[["analysisType"]]))
     if (isTryError(singleModel)) {
-      singleModelContainer$setError(paste("Error in single model inference:", .extractErrorMessage(singleModel)))
+      singleModelContainer$setError(paste("Error in single model inference:\n", singleModel))
       singleModel <- NULL
     } else {
       singleModelState <- createJaspState(object = singleModel)
@@ -2149,8 +2241,9 @@
   }
 
   .BANOVAsmiEstimates(singleModelContainer, options, singleModel)
-  .BANOVAsmiQqPlot (singleModelContainer, options, singleModel)
-  .BANOVAsmiRsqPlot(singleModelContainer, options, singleModel)
+  .BANOVAsmiRsquared (singleModelContainer, options, singleModel)
+  .BANOVAsmiQqPlot   (singleModelContainer, options, singleModel)
+  .BANOVAsmiRsqPlot  (singleModelContainer, options, singleModel)
 
   .BANOVAsmiPosteriorPlot(singleModelContainer, dataset, options, singleModel)
 
@@ -2236,10 +2329,11 @@
   # all information for r-squared density plot
   rsqDens <- density(tmp$rsq, n = 2^11, from = 0, to = 1)
   rsqCri <- quantile(tmp$rsq, probs = probs)
+  rsqMean <- mean(tmp$rsq)
 
   return(list(
     means = means, sds = sds, CRIs = cri, densities = densities$fit,
-    residSumStats = residSumStats, rsqDens = rsqDens, rsqCri = rsqCri,
+    residSumStats = residSumStats, rsqDens = rsqDens, rsqCri = rsqCri, rsqMean = rsqMean,
     allContinuous = allContinuous, isRandom = isRandom
   ))
 }
@@ -2353,6 +2447,39 @@
   plot$position <- 4
   jaspContainer[["smirsqplot"]] <- plot
   return()
+}
+
+.BANOVAsmiRsquared <- function(jaspResults, options, model) {
+
+  if (!is.null(jaspResults[["tableSMICRI"]]) || !options[["singleModelCriTable"]])
+    return()
+  
+  criTable <- createJaspTable(title = "Single Model R\u00B2")
+  criTable$position <- 3.5
+  criTable$dependOn(c("singleModelCriTable", "credibleInterval"))
+  
+  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  criTable$addColumnInfo(name = "rsq",   type = "string", title = "")
+  criTable$addColumnInfo(name = "Mean",  type = "number")
+  criTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
+  criTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+
+  if (!is.null(model)) {
+    cri <- model[["rsqCri"]]
+    df <- data.frame(
+      rsq   = "R\u00B2",
+      Mean  = model[["rsqMean"]],
+      Lower = cri[1L],
+      Upper = cri[2L], 
+      row.names = NULL
+    )
+    criTable$setData(df)
+  } else {
+    criTable[["rsq"]] <- "R\u00B2"
+  }
+  jaspResults[["tableSMICRI"]] <- criTable
+  return()
+  
 }
 
 # Citations ----
