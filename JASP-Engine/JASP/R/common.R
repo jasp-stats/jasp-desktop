@@ -224,6 +224,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 		
 		jaspResultsCPP$setErrorMessage(errorMessage, errorStatus)
     jaspResultsCPP$send()
+		
+		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
   }
   else
   {
@@ -235,6 +237,12 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
 
     jaspResultsCPP$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
+		
+		json <- try({ toJSON(returnThis) })
+		if (class(json) == "try-error")
+			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+		else
+			return(json)
   }
 }
 
