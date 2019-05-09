@@ -118,6 +118,9 @@ public:
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }
 
+	void		setStatus(std::string status)		{ ((jaspResults*)myJaspObject)->setStatus(status); }
+	std::string getStatus()							{ return ((jaspResults*)myJaspObject)->getStatus(); }
+
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspResults, std::string,	_relativePathKeep, RelativePathKeep)
 };
 
