@@ -21,9 +21,10 @@ Window
 	property string labelcolor : "#F99800"
 	property string closebuttoncolor : "#50B0E3"
 
-	visible:			aboutModel.visible
-	onVisibleChanged:	aboutModel.visible = visible
-	title:				"About JASP"
+	visible:				aboutModel.visible
+	onVisibleChanged:		aboutModel.visible = visible
+	title:					"About JASP"
+	Keys.onEscapePressed:	aboutModel.visible = false
 
 	Image
 	{
@@ -33,7 +34,7 @@ Window
 		anchors.right:	parent.right
 		height:			parent.height/4
 
-		source: "qrc:/core/img/jasp-wave-down-blue-120.svg"
+		source:		"qrc:/core/img/jasp-wave-down-blue-120.svg"
 	}
 
 	Rectangle
@@ -268,9 +269,13 @@ Window
 
 		MouseArea
 		{
-			onClicked:		aboutModel.visible = false
-			anchors.fill:	parent
-			cursorShape:	Qt.PointingHandCursor
+			onClicked:				aboutModel.visible = false
+			anchors.fill:			parent
+			cursorShape:			Qt.PointingHandCursor
+			focus:					true
+			Keys.onEnterPressed:	aboutModel.visible = false
+			Keys.onReturnPressed:	aboutModel.visible = false
+			Keys.onEscapePressed:	aboutModel.visible = false
 		}
 	}
 

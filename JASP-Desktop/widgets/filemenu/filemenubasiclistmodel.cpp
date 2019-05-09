@@ -111,7 +111,7 @@ bool FileMenuBasicListModel::mayOpen()
 {
 	if (_opening.tryLock())
 	{
-		QTimer::singleShot(1000, this, &FileMenuBasicListModel::resetOpening);
+		QTimer::singleShot(500, this, &FileMenuBasicListModel::resetOpening);
 		return true;
 	}
 	else

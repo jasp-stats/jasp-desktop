@@ -23,11 +23,16 @@ import JASP.Controls 1.0
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
-Rectangle
+FocusScope
 {
 	id: osfLogin
 
-	color: Theme.grayMuchLighter
+	Rectangle
+	{
+		color:			Theme.grayMuchLighter
+		z:				-1
+		anchors.fill:	parent
+	}
 
 	Component.onCompleted:
 	{
@@ -114,31 +119,31 @@ Rectangle
 			anchors.rightMargin: 20 * preferencesModel.uiScale
 			anchors.topMargin  : 30 * preferencesModel.uiScale
 
-			height: 35 * preferencesModel.uiScale
-			width : 100 * preferencesModel.uiScale
-			clip  : true
-			color : Theme.white
+			height		: 35 * preferencesModel.uiScale
+			width		: 100 * preferencesModel.uiScale
+			clip		: true
+			color		: Theme.white
 			border.width: usernameText.activeFocus ? 3 : 1
 			border.color: usernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 
 			TextInput
 			{
-				id: usernameText
+				id					: usernameText
+				text				: fileMenuModel.osf.username
 
-				text:fileMenuModel.osf.username
+				anchors.fill		: parent
+				anchors.leftMargin	: 10 * preferencesModel.uiScale
+				selectByMouse		: true
 
-				anchors.fill      : parent
-				anchors.leftMargin: 10 * preferencesModel.uiScale
-				selectByMouse     : true
+				verticalAlignment	: Text.AlignVCenter
+				font				: Theme.fontRibbon
 
-				verticalAlignment : Text.AlignVCenter
-				font			  : Theme.fontRibbon
+				onTextChanged		: fileMenuModel.osf.username = text
+				onAccepted			: passwordText.focus = true
 
-				onTextChanged	  :	fileMenuModel.osf.username = text
-				onAccepted		  :	passwordText.focus = true
-
-				KeyNavigation.down		: passwordText
-				KeyNavigation.tab		: passwordText
+				KeyNavigation.down	: passwordText
+				KeyNavigation.tab	: passwordText
+				focus				: true
 			}
 		}
 

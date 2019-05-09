@@ -6,7 +6,7 @@ import JASP.Theme 1.0
 ListView
 {
 	property var	cppModel:		undefined
-	property bool	hasBreadCrumbs: false
+	property var	breadCrumbs:	null
 
 	id:						listView
 	maximumFlickVelocity:	Theme.maximumFlickVelocity
@@ -16,11 +16,28 @@ ListView
 	model:					cppModel
 
 
+	Keys.onLeftPressed:
+		if(breadCrumbs !== null)
+		{
+			event.accepted = breadCrumbs.count > 1;
+
+			if(event.accepted)
+				breadCrumbs.crumbButtonClicked(breadCrumbs.count - 2)
+		}
+		else
+			event.accepted = false;
+
+	Connections
+	{
+		target:				listView.model
+		onModelReset:		listView.currentIndex = 0;
+	}
+
 	delegate:	ListItem
 	{
 		width:			listView.width -  (rightscrollbar.width > 0 ? rightscrollbar.width + listView.spacing : 0)
 		cppModel:		listView.cppModel
-		hasBreadCrumbs: listView.hasBreadCrumbs
+		hasBreadCrumbs: listView.breadCrumbs !== null
 	}
 
 	JASPScrollBar

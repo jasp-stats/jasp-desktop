@@ -53,7 +53,13 @@ Rectangle
 			width:		(37 / 28) * height
 			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
 			opacity:	ribbonButton.enabled ? 1 : 0.5
-
+			smooth:		true
+			mipmap:		true
+			sourceSize
+			{
+				width:	backgroundImage.width * 2
+				height:	backgroundImage.height * 2
+			}
 
 			anchors
 			{

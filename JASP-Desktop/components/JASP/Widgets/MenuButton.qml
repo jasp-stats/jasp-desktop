@@ -6,12 +6,12 @@ import JASP.Widgets 1.0
 
 RectangularButton
 {
-	id: root
 	property bool hasSubMenu:			false
+	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered
 
-	font: Theme.fontRibbon
-
-	color: (_pressed || activeFocus) ? Theme.buttonColorPressed : (root.hovered || selected) ? Theme.buttonColorHovered : "transparent"
+	id: root
+	font:			Theme.fontRibbon
+	color:			(_pressed || activeFocus) ? Theme.buttonColorPressed : (showHovered || selected) ? Theme.buttonColorHovered : "transparent"
 	border.width:	0
 	centerText:		false
 
@@ -25,10 +25,6 @@ RectangularButton
 		repeat:				false
 		onTriggered:		if (hovered && root.hasSubMenu) root.hoverClicked();
     }
-
-	Keys.onSpacePressed:	clicked();
-	Keys.onEnterPressed:	clicked();
-	Keys.onReturnPressed:	clicked();
 
 	onClicked:				delayOnhoverTimer.stop();
 	onHoveredChanged:		if (hasSubMenu)

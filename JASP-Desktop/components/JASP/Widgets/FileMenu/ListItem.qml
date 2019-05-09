@@ -3,15 +3,25 @@ import QtQuick.Controls 2.4
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-Rectangle
+FocusScope
 {
 	id: rectTitleAndDescripton
 
 	width:			300 //Should be set from ListView
 	height:			rectTitle.height + rectDescription.height + 3
-	border.width:	1
-	border.color:	allHovered ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
-	color:			rectTitle.color
+
+	property alias color:  rectTitleBackground.color
+	property alias border: rectTitleBackground.border
+
+	Rectangle
+	{
+		id:				rectTitleBackground
+		border.width:	1
+		border.color:	allHovered || rectTitleAndDescripton.activeFocus ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
+		color:			rectTitle.color
+		z:				-1
+		anchors.fill:	parent
+	}
 
 	property var cppModel:			undefined
 
@@ -20,15 +30,16 @@ Rectangle
 	property bool mainPressed:		descriptionMouseArea.pressed || fileEntryMouseArea.pressed
 	property bool allPressed:		mainPressed || firstFileOrFolderMouseArea.pressed || datafileMouseArea.pressed
 	property bool hasBreadCrumbs:	false
+	property bool selected:			ListView.isCurrentItem
 
+	Keys.onEnterPressed:									openStuff(model);
+	Keys.onReturnPressed:									openStuff(model);
+	Keys.onSpacePressed:									openStuff(model);
+	Keys.onRightPressed:			if(model.type === 3)	openStuff(model);
 
 	function openStuff(model)
 	{
-		if (!rectTitleAndDescripton.cppModel.mayOpen())
-		{
-			console.log("Is already opening!");
-			return;
-		}
+		if (!rectTitleAndDescripton.cppModel.mayOpen())	return;
 
 		if (model.type === 3)	rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
 		else					rectTitleAndDescripton.cppModel.openFile(model.path)
@@ -44,7 +55,7 @@ Rectangle
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				rectTitleAndDescripton.allPressed ? Theme.buttonColorPressed : rectTitleAndDescripton. allHovered ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				rectTitleAndDescripton.allPressed || rectTitleAndDescripton.activeFocus ? Theme.buttonColorPressed : rectTitleAndDescripton.allHovered || selected ? Theme.buttonColorHovered : Theme.buttonColor
 
 		Image
 		{

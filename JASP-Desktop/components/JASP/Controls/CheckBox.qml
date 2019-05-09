@@ -56,6 +56,7 @@ JASPControl
 		onCheckedChanged: checkBox.clicked()
 
 		Keys.onReturnPressed: clicked()
+		Keys.onSpacePressed:  clicked()
 
 		indicator: Rectangle
 		{

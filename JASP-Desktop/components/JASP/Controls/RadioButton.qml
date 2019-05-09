@@ -91,14 +91,14 @@ JASPControl
 
 		Rectangle
 		{
-			id: focusIndicator
-			anchors.centerIn: radioIndicator
-			width: Math.floor(Math.round(radioIndicator.width + Theme.jaspControlHighlightWidth) / 2) * 2
-			height: Math.floor(Math.round(radioIndicator.height + Theme.jaspControlHighlightWidth) / 2) * 2
-			radius: width
-			color: "transparent"
-			border.width: 0
-			border.color: "transparent"
+			id:					focusIndicator
+			anchors.centerIn:	radioIndicator
+			width:				Math.floor(Math.round(radioIndicator.width + Theme.jaspControlHighlightWidth) / 2) * 2
+			height:				Math.floor(Math.round(radioIndicator.height + Theme.jaspControlHighlightWidth) / 2) * 2
+			radius:				width
+			color:				"transparent"
+			border.width:		0
+
 		}
 
 		contentItem: Label
@@ -110,10 +110,7 @@ JASPControl
 			color:			enabled ? Theme.textEnabled : Theme.textDisabled
 		}
 
-		background: Rectangle
-		{
-			color: "transparent"
-		}
+		background: Rectangle { color: "transparent" }
 	}
 
 	GridLayout

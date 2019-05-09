@@ -5,60 +5,59 @@ import JASP.Theme 1.0
 
 Item
 {
-	id:			rect
+	id:							rect
+	focus:						true
+	onActiveFocusChanged:		if(activeFocus) datalibrarylist.forceActiveFocus()
 
 	MenuHeader
 	{
-		id: menuHeader
-
-		headertext:		qsTr("Data Library")
-		toolseparator:	false
+		id:						menuHeader
+		headertext:				qsTr("Data Library")
+		toolseparator:			false
 	}
 
 	BreadCrumbs
 	{
-		id:				datalibrarybreadcrumbs
+		id:						datalibrarybreadcrumbs
+		model:					fileMenuModel.datalibrary.breadcrumbsmodel
+		width:					rect.width
+		height:					40 * preferencesModel.uiScale
+		onCrumbButtonClicked:	model.indexChanged(modelIndex)
 
-		model :			fileMenuModel.datalibrary.breadcrumbsmodel
-
-		width:			rect.width
-		height:			40 * preferencesModel.uiScale
 		anchors
 		{
-			top:		menuHeader.bottom
-			left:		parent.left
-			right:		parent.right
-			leftMargin:	Theme.generalMenuMargin
+			top:				menuHeader.bottom
+			left:				parent.left
+			right:				parent.right
+			leftMargin:			Theme.generalMenuMargin
 		}
 
-		onCrumbButtonClicked: model.indexChanged(modelIndex)
 	}
 
 	ToolSeparator
 	{
-		id:				secondseparator
-		anchors.left:	menuHeader.left
-		anchors.right:	menuHeader.right
-		anchors.top:	datalibrarybreadcrumbs.bottom
-		width:			rect.width
-		orientation:	Qt.Horizontal
+		id:						secondseparator
+		anchors.left:			menuHeader.left
+		anchors.right:			menuHeader.right
+		anchors.top:			datalibrarybreadcrumbs.bottom
+		width:					rect.width
+		orientation:			Qt.Horizontal
 	}
 
 	FileList
 	{
-		id:				datalibrarylist
-		cppModel:		fileMenuModel.datalibrary.listModel
-		hasBreadCrumbs:	true
-		focus:			true
+		id:						datalibrarylist
+		cppModel:				fileMenuModel.datalibrary.listModel
+		breadCrumbs:			datalibrarybreadcrumbs
 
 		anchors
 		{
-			top:			secondseparator.bottom
-			bottom:			parent.bottom
-            left:			menuHeader.left
-			right:			menuHeader.right
-            topMargin:		Theme.generalMenuMargin
-            bottomMargin:	Theme.generalMenuMargin
+			top:				secondseparator.bottom
+			bottom:				parent.bottom
+			left:				menuHeader.left
+			right:				menuHeader.right
+			topMargin:			Theme.generalMenuMargin
+			bottomMargin:		Theme.generalMenuMargin
 		}
 	}
 }

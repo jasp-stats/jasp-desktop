@@ -314,10 +314,11 @@ FocusScope
 
 			Loader
 			{
-				id:					showSelectedSubScreen
-				anchors.fill:		parent
-				source:				resourceScreen.currentQML === "" && resourceScreen.x > resourceScreen.desiredX ? resourceScreen.previousQML : resourceScreen.currentQML
-				Keys.onLeftPressed: resourceMenu.forceActiveFocus()
+				id:						showSelectedSubScreen
+				anchors.fill:			parent
+				source:					resourceScreen.currentQML === "" && resourceScreen.x > resourceScreen.desiredX ? resourceScreen.previousQML : resourceScreen.currentQML
+				Keys.onLeftPressed:		resourceMenu.forceActiveFocus()
+				Keys.onEscapePressed:	resourceMenu.forceActiveFocus()
 			}
 		}
 

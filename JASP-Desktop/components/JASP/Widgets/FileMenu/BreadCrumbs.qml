@@ -11,7 +11,7 @@ ListView
 	orientation: ListView.Horizontal
 
 	signal crumbButtonClicked(int modelIndex)
-	
+
 	delegate:
 		Item
 		{

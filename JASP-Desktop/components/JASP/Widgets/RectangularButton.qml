@@ -27,7 +27,7 @@ Item
 	property string	text:				""
 	property string	toolTip:			""
 	property string textColor:			"default"
-	property bool	selected:			false
+	property bool	selected:			activeFocus
 	property string	iconSource:			""
 	property real	buttonPadding:		6 * preferencesModel.uiScale
 	property alias	hovered:			buttonMouseArea.containsMouse
@@ -56,6 +56,10 @@ Item
 	ToolTip.toolTip.font:		Theme.font
 	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
 	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
+
+	Keys.onSpacePressed:	clicked();
+	Keys.onEnterPressed:	clicked();
+	Keys.onReturnPressed:	clicked();
 
 
 

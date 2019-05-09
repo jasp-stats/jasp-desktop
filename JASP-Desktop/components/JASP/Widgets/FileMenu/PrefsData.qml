@@ -5,25 +5,29 @@ import JASP.Theme		1.0
 import JASP.Controls	1.0
 
 
-Item {
+Item
+{
+	focus:					true
+	onActiveFocusChanged:	if(activeFocus) synchronizeDataSave.forceActiveFocus();
 
-	anchors.fill:		parent
-
-	MenuHeader {
-		id: menuHeader
-		headertext:"Data Preferences"
-		helpbutton: true
-		helpfile: "preferences/prefsdata"
+	MenuHeader
+	{
+		id:			menuHeader
+		headertext:	"Data Preferences"
+		helpfile:	"preferences/prefsdata"
 	}
 
 	ScrollView
 	{
-		id:				scrollPrefs
-		anchors.top:	menuHeader.bottom
-		anchors.left:	menuHeader.left
-		anchors.right:	menuHeader.right
-		anchors.bottom: menuHeader.bottom
-		anchors.topMargin: 2 * Theme.generalMenuMargin
+		id:					scrollPrefs
+		anchors.top:		menuHeader.bottom
+		anchors.left:		menuHeader.left
+		anchors.right:		menuHeader.right
+		anchors.bottom:		menuHeader.bottom
+		anchors.topMargin:	2 * Theme.generalMenuMargin
+		focus:				true
+		Keys.onLeftPressed: resourceMenu.forceActiveFocus();
+		focusPolicy:		Qt.WheelFocus
 
 		Column
 		{
@@ -32,10 +36,12 @@ Item {
 
 			CheckBox  //Synchronize automatically
 			{
-				label:				"Synchronize automatically on data file save"
+				id:					synchronizeDataSave
+				label:				qsTr("Synchronize automatically on data file save")
 				checked:			preferencesModel.dataAutoSynchronization
 				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-				//font:				Theme.font
+				KeyNavigation.down:	useDefaultEditor
+				KeyNavigation.tab:	useDefaultEditor
 			}
 
 			Item //Use default spreadsheet editor
@@ -49,7 +55,8 @@ Item {
 					label:				"Use default spreadsheet editor"
 					checked:			preferencesModel.useDefaultEditor
 					onCheckedChanged:	preferencesModel.useDefaultEditor = checked
-					//font:				Theme.font
+					KeyNavigation.down:	browseEditorButton
+					KeyNavigation.tab:	browseEditorButton
 				}
 
 				Item
@@ -68,6 +75,8 @@ Item {
 						onClicked:			preferencesModel.browseSpreadsheetEditor()
 						anchors.left:		parent.left
 						anchors.leftMargin: Theme.subOptionOffset
+						KeyNavigation.down:	customEditorText
+						KeyNavigation.tab:	customEditorText
 					}
 
 					Rectangle
@@ -93,6 +102,8 @@ Item {
 							font:				Theme.font
 							onTextChanged:		preferencesModel.customEditor = text
 							color:				Theme.textEnabled
+							KeyNavigation.down:	customThreshold
+							KeyNavigation.tab:	customThreshold
 
 							anchors
 							{
@@ -128,6 +139,8 @@ Item {
 					ToolTip.delay:		500
 					ToolTip.timeout:	6000 //Some longer to read carefully
 					toolTip:			qsTr("Threshold number of unique integers before classifying a variable as 'scale'.\nYou need to reload your data to take effect! Check help for more info.")
+					KeyNavigation.down:	thresholdScale
+					KeyNavigation.tab:	thresholdScale
 
 				}
 
@@ -136,17 +149,22 @@ Item {
 					id:					thresholdScale
 					value:				preferencesModel.thresholdScale
 					onValueChanged:		preferencesModel.thresholdScale = value
-					anchors.left:		customThreshold.right
-					anchors.leftMargin: Theme.generalAnchorMargin
-					anchors.verticalCenter: parent.verticalCenter
 					height:				Theme.spinBoxHeight//parent.height
 					visible:			preferencesModel.customThresholdScale
 					font:				Theme.font
 					editable:			true
+					KeyNavigation.down:	missingFileList.firstComponent
+					KeyNavigation.tab:	missingFileList.firstComponent
+					anchors
+					{
+						left:			customThreshold.right
+						leftMargin:		Theme.generalAnchorMargin
+						verticalCenter:	parent.verticalCenter
+					}
 				}
 			}
 
-			PrefsMissingValues {} //Missing Value List
+			PrefsMissingValues { id: missingFileList }
 		}
 	}
 }

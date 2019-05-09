@@ -5,17 +5,21 @@ import JASP.Theme 1.0
 
 Item
 {
-	id:			rect
+	id:						rect
+	focus:					true
+	onActiveFocusChanged:	if(activeFocus) recentFilesList.forceActiveFocus()
 
-	MenuHeader {
-		id: menuHeader
-		headertext: qsTr("Recent Files")
+	MenuHeader
+	{
+		id:					menuHeader
+		headertext:			qsTr("Recent Files")
 	}
 
-	FileList {
-		id:			recentFilesList
-		cppModel:	fileMenuModel.recentFiles.listModel
-		hasBreadCrumbs : false
+
+	FileList
+	{
+		id:					recentFilesList
+		cppModel:			fileMenuModel.recentFiles.listModel
 
 		anchors
 		{

@@ -62,6 +62,7 @@ Window
 		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();		sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
 		Shortcut { onActivated: mainWindow.refreshKeyPressed();		sequences: ["Ctrl+R"];											}
 		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();	sequences: ["Ctrl+0"];											}
+		Shortcut { onActivated: mainWindowRoot.close();				sequences: ["Ctrl+Q"];											}
 
 		RibbonBar
 		{
