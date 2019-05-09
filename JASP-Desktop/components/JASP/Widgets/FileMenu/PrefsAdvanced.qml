@@ -81,9 +81,6 @@ Item
 						from:					16
 						to:						2000
 						stepSize:				16
-						editable:				true
-						font:					Theme.font
-						height:					Theme.spinBoxHeight	//implicitHeight * preferencesModel.uiScale
 						x:						uiScaleSpinBox.x
 						KeyNavigation.tab:		uiScaleSpinBox
 						KeyNavigation.down:		uiScaleSpinBox
@@ -116,15 +113,14 @@ Item
 				SpinBox
 				{
 					id:					uiScaleSpinBox
-					value:				preferencesModel.uiScale * _mult
-					onValueChanged:		preferencesModel.uiScale = value / _mult
-					from:				0.01	* _mult
-					to:					3		* _mult
-					stepSize:			0.1		* _mult
-					font:				Theme.font
-					height:				Theme.spinBoxHeight
+					value:				preferencesModel.uiScale //* _mult
+					onValueChanged:		if(value !== "") preferencesModel.uiScale = value /// _mult
+					from:				0.01	//* _mult
+					to:					3		//* _mult
+					stepSize:			0.1		//* _mult
+					decimals:			2
 
-
+/*
 					property real	_mult:		Math.pow(10, decimals)
 					property int	decimals:	2
 					property real	realValue:	value / _mult
@@ -137,7 +133,7 @@ Item
 
 					textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSpinBox.decimals)	}
 					valueFromText: function(text, locale)	{  return Number.fromLocaleString("en-US", text) * 100								}
-
+*/
 					anchors
 					{
 						margins:	Theme.generalAnchorMargin
@@ -319,12 +315,11 @@ Item
 					{
 						id:					maxLogFilesSpinBox
 						value:				preferencesModel.logFilesMax
-						onValueChanged:		preferencesModel.logFilesMax = value
+						onValueChanged:		if(value !== "") preferencesModel.logFilesMax = value
 						from:				5 //Less than 5 makes no sense as on release you get 1 for JASP-Desktop and 4 from the Engines
 						to:					100
+						defaultValue:		10
 						stepSize:			1
-						font:				Theme.font
-						height:				Theme.spinBoxHeight
 						KeyNavigation.tab:	showLogs
 						KeyNavigation.down:	showLogs
 

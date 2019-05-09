@@ -149,10 +149,8 @@ Item
 					id:					thresholdScale
 					value:				preferencesModel.thresholdScale
 					onValueChanged:		preferencesModel.thresholdScale = value
-					height:				Theme.spinBoxHeight//parent.height
 					visible:			preferencesModel.customThresholdScale
-					font:				Theme.font
-					editable:			true
+
 					KeyNavigation.down:	missingFileList.firstComponent
 					KeyNavigation.tab:	missingFileList.firstComponent
 					anchors

@@ -73,7 +73,6 @@ Item
 		color:			(_pressed || selected) ? Theme.buttonColorPressed :	filterButtonRoot.hovered ?					Theme.buttonColorHovered		: Theme.buttonColor
 		border.color:														(filterButtonRoot.hovered || selected) ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 		border.width:	1
-		focus:			true
 		width:			parent.width
 		height:			parent.height
 

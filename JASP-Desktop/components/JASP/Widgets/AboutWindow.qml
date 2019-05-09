@@ -198,10 +198,8 @@ Window
 
 				onPressed:		if (event.button === Qt.RightButton)	contextMenu.popup()
 
-
 				Menu
 				{
-
 					id:		contextMenu
 					width:	120
 

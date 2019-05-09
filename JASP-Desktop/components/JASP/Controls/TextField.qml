@@ -84,16 +84,16 @@ JASPControl
 		
 		Rectangle
 		{
-			implicitWidth: beforeLabel.implicitWidth
-			implicitHeight: control.implicitHeight
-			color: debug ? Theme.debugBackgroundColor : "transparent"
+			implicitWidth:		beforeLabel.implicitWidth
+			implicitHeight:		control.implicitHeight
+			color:				debug ? Theme.debugBackgroundColor : "transparent"
 			Label
 			{
-				id:			beforeLabel
-				visible:	beforeLabel.text && textField.visible ? true : false
-				font:		Theme.font
+				id:						beforeLabel
+				visible:				beforeLabel.text && textField.visible ? true : false
+				font:					Theme.font
 				anchors.verticalCenter: parent.verticalCenter				
-				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+				color:					enabled ? Theme.textEnabled : Theme.textDisabled
 			}
 		}
 		
@@ -124,12 +124,12 @@ JASPControl
 				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
 				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
-				border.width: 3
-				border.color: control.acceptableInput ? "transparent" : Theme.red // Needed when the QML file has wrong default value
-				anchors.centerIn: parent
-				opacity: debug ? .3 : 1
-				visible: textField.useExternalBorder
-				radius: Theme.jaspControlHighlightWidth
+				border.width:		3
+				border.color:		control.acceptableInput ? "transparent" : Theme.red // Needed when the QML file has wrong default value
+				anchors.centerIn:	parent
+				opacity:			debug ? .3 : 1
+				visible:			textField.useExternalBorder
+				radius:				Theme.jaspControlHighlightWidth
 			}
 			
 			onActiveFocusChanged:
@@ -152,12 +152,12 @@ JASPControl
 			
 			PropertyAnimation
 			{
-				id: redToNormal
-				target: textField.background
-				property: "border.color"
-				to: Theme.focusBorderColor
-				duration: 1000
-				onStopped: textField.background.border.color = control.activeFocus ? Theme.focusBorderColor : "transparent"
+				id:			redToNormal
+				target:		textField.background
+				property:	"border.color"
+				to:			Theme.focusBorderColor
+				duration:	1000
+				onStopped:	textField.background.border.color = control.activeFocus ? Theme.focusBorderColor : "transparent"
 			}
 			
 			Keys.onReturnPressed:
@@ -181,17 +181,17 @@ JASPControl
 		{
 			// This is a way to set the property implicitHeight only if fieldHeight is set
 			// If not, implicitHeight should keep its implicit binding.
-			target: control
-			property: "implicitHeight"
-			value: textField.fieldHeight
-			when: textField.fieldHeight != 0
+			target:		control
+			property:	"implicitHeight"
+			value:		textField.fieldHeight
+			when:		textField.fieldHeight != 0
 		}
 		
 		Rectangle
 		{
-			implicitWidth: afterLabel.implicitWidth
-			implicitHeight: control.implicitHeight
-			color: debug ? Theme.debugBackgroundColor : "transparent"
+			implicitWidth:	afterLabel.implicitWidth
+			implicitHeight:	control.implicitHeight
+			color:			debug ? Theme.debugBackgroundColor : "transparent"
 			Label
 			{
 				id:			afterLabel

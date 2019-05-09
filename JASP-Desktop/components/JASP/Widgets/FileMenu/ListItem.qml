@@ -30,7 +30,6 @@ FocusScope
 	property bool mainPressed:		descriptionMouseArea.pressed || fileEntryMouseArea.pressed
 	property bool allPressed:		mainPressed || firstFileOrFolderMouseArea.pressed || datafileMouseArea.pressed
 	property bool hasBreadCrumbs:	false
-	property bool selected:			ListView.isCurrentItem
 
 	Keys.onEnterPressed:									openStuff(model);
 	Keys.onReturnPressed:									openStuff(model);
@@ -55,7 +54,7 @@ FocusScope
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				rectTitleAndDescripton.allPressed || rectTitleAndDescripton.activeFocus ? Theme.buttonColorPressed : rectTitleAndDescripton.allHovered || selected ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				rectTitleAndDescripton.allPressed || rectTitleAndDescripton.activeFocus ? Theme.buttonColorPressed : rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 
 		Image
 		{

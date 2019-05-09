@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 
 JASPControl
 {
-	id: checkBox
+	id:					checkBox
 	controlType:		"CheckBox"
 	implicitWidth:		childrenOnSameRow
 							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
@@ -50,13 +50,13 @@ JASPControl
 
 	CheckBox
 	{
-		id:			control
-		padding:	Theme.jaspControlPadding
-		focus:		true
-		onCheckedChanged: checkBox.clicked()
+		id:						control
+		padding:				Theme.jaspControlPadding
+		focus:					true
+		onCheckedChanged:		checkBox.clicked()
 
-		Keys.onReturnPressed: clicked()
-		Keys.onSpacePressed:  clicked()
+		Keys.onReturnPressed:	checked = !checked
+		Keys.onEnterPressed:	checked = !checked
 
 		indicator: Rectangle
 		{

@@ -79,7 +79,7 @@ QtObject {
 
 	readonly property int sliderWidth:					4   * uiScale
 	readonly property int sliderLength:					80  * uiScale
-	readonly property int spinBoxHeight:				25  * uiScale
+	readonly property int spinBoxHeight:				30  * uiScale
 	readonly property int switchHeight:					15  * uiScale
 	readonly property int shadowRadius:					10  * uiScale
 	readonly property int scrollbarWidth:				8   * uiScale
@@ -88,6 +88,7 @@ QtObject {
 	readonly property int textFieldWidth:				200 * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
+	readonly property int spinBoxWidth:					50  * uiScale
 	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale

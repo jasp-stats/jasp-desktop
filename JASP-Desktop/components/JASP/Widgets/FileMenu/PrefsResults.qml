@@ -65,10 +65,8 @@ FocusScope
 					id:						numDecs
 					value:					preferencesModel.numDecimals
 					onValueChanged:			preferencesModel.numDecimals = value
-					height:					Theme.spinBoxHeight//parent.height
 					visible:				preferencesModel.fixedDecimals
-					font:					Theme.font
-					editable:				true
+
 					KeyNavigation.tab:		displayExactPVals
 					KeyNavigation.backtab:	fixDecs
 					KeyNavigation.down:		displayExactPVals
