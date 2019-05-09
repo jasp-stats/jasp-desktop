@@ -153,7 +153,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var id = '#' + image.name.replace(/[^A-Za-z0-9]/g, '-');
 		if (image.error && image.resized) {
 			ctx.restoreSize(); // sets the properties of the model
-			this.resizeImageContainer(id, ctx.model.get("oldHeight"), ctx.model.get("oldWidth"));
+			this.resizeImageContainer(id, ctx.model.get("preResizeHeight"), ctx.model.get("preResizeWidth"));
 		} else if (image.resized) {
 			this.resizeImageContainer(id, image.height, image.width)
 			this.insertNewImage(id, image.name);
