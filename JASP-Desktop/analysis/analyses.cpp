@@ -161,6 +161,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
 	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
 	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
+	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
 	connect(analysis, &Analysis::saveImageSignal,					this, &Analyses::analysisSaveImage					);
 	connect(analysis, &Analysis::editImageSignal,					this, &Analyses::analysisEditImage					);
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
@@ -551,10 +552,18 @@ void Analyses::setVisible(bool visible)
 		unselectAnalysis();
 }
 
-void Analyses::analysisTitleChanged(int id, QString title)
+void Analyses::analysisTitleChangedFromResults(int id, QString title)
 {
 	Analysis * analysis = get(id);
 
 	if(analysis != nullptr)
 		analysis->setTitleQ(title);
+}
+
+void Analyses::setChangedAnalysisTitle()
+{
+    Analysis * analysis = dynamic_cast<Analysis*>(QObject::sender());
+
+    if (analysis != nullptr)
+        emit analysisTitleChanged(analysis);
 }

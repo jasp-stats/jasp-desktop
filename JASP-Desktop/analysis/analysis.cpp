@@ -364,13 +364,13 @@ void Analysis::setHelpFile(QString helpFile)
 void Analysis::setTitle(std::string title)
 {
 	if(title == "")
-		title = _name;
+		title = _title;
 
 	if (_title == title)
 		return;
 
+	_results["title"] = title;
 	_title = title;
+	
 	emit titleChanged();
-
-	optionsChangedHandler();
 }
