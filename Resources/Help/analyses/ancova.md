@@ -8,16 +8,16 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 - The independent variables are categorical, the dependent variable is continuous. 
 - The variance of the dependent variable is the same for every group. This is called homogeneity of variances. 
 - The groups are independent. 
-- The covariate and the experiment effect have to be independent. 
-- Homogeneity of the regression slopes, meaning that the effect of the covariate on the dependent variable is not allowed to differ between groups.  
+- The covariate and the experiment effect are independent. 
+- The effect of the covariate on the dependent variable does differ between groups. This is called Homogeneity of the regression slopes. 
 
 ### Input 
 --- 
 #### Assignment Box 
 - Dependent Variable: The variable of interest. Also called the outcome variable. 
 - Fixed Factors: The variables that are manipulated/define the different groups. Also called the independent variables.  
-- Covariates: In this box the variable that is the covariate can be placed. Covariates are continuous variables that have an influence on the dependent variable but are not part of the experimental manipulation.  
-- WLS Weights: Weighted Least Squares, here the variable specifying which points have more weight and are therefore considered more informative can be placed. For this last option it is important to know the weights a priori. This option is primarily used when the errors are heteroskedastic.    
+- Covariates: In this box the variable that is the covariate can be selected. Covariates are continuous variables that have an influence on the dependent variable but are not part of the experimental manipulation.  
+- WLS Weights: Weighted Least Squares, here the variable specifying which points have more weight and are therefore considered more informative can be selected. For this last option it is important to know the weights a priori. This option is primarily used when the errors are heteroskedastic.    
 
 #### Model: 
 - Components and model terms 
@@ -43,7 +43,7 @@ For every independent variable a specific contrast can be selected by clicking o
 	                                                                                                            <img src="analyses/gif/contrasts_anova.gif"/>
                                                                                                               </details>
                                                                                                               
-- Factors: These are the independent variables included in the analysis (i.e., the variables placed in the `Fixed Factors` box).  
+- Factors: These are the independent variables included in the analysis (i.e., the variables selected in the `Fixed Factors` box).  
 - Contrasts: Contrasts enable the analysis of planned comparisons. There are different contrasts that allow for different types of comparisons.
     - none: By selecting this option, no contrasts are calculated. This option is selected by default. 
     - deviation: By selecting this contrast, the mean of each level of the independent variable is compared with the overall mean (the mean when all the levels are taken together). 
@@ -57,7 +57,7 @@ For every independent variable a specific contrast can be selected by clicking o
 
 #### Post Hoc Tests: 
 If there is a significant effect of the independent variable when the covariate is accounted for, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. Then it is possible to select:    
-- Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be presented. The used measure for the effect size is Cohen's d. The effect size will only be presented for the post hoc type `Standard`. 
+- Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be displayed. The used measure for the effect size is Cohen's d. The effect size will only be displayed for the post hoc type `Standard`. 
 - Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.  
 - From `...` bootstraps: By selecting this option, the bootstrapped post hoc test is applied. By default the number of replications is set to 1000. This can be changed into the desired number. 
 - Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
@@ -96,7 +96,7 @@ To create a descriptive plot, place the independent variable on the horizontal a
         - Sidak: Sidak correction of the confidence intervals. 
 - From `...` bootstraps: When this option is selected, the bootstrapped marginal means are calculated. By default, the number of replications is set to 1000. This can be changed into the desired number. 
 - Display: 
-    - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables. 
+    - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the independent variables. 
     - Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified. 
         - &eta;<sup>2</sup> : When this option is selected, the Eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).       
         - partial &eta;<sup>2</sup> : When this option is selected, the Partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018). 
@@ -111,9 +111,9 @@ When the results contain a significant interaction, the main effects can be misl
 </details>
 
 - Factors: This box contains all the independent variables included in the analysis. 
-- Simple effect factor: In this box the independent variable can be placed to determine the effect of this variable. 
-- Moderator factor 1: In this box the independent variable that will represent the different levels can be placed. 
-- Moderator factor 2: In this box an additional independent variable can be placed (optional, that will add other levels to distinguish the effects from. 
+- Simple effect factor: In this box the independent variable can be selected to determine the effect of this variable. 
+- Moderator factor 1: In this box the independent variable that will represent the different levels can be selected. 
+- Moderator factor 2: In this box an additional independent variable can be selected (optional, that will add other levels to distinguish the effects from. 
 
 #### Nonparametrics: 
 - Kruskal-Wallis test: The Kruskal-Wallis test is a non-parametric ANOVA and can be used to compare two or more groups. This test is a rank-based one-way ANOVA. The Kruskal-Wallis test can be performed when one of the following assumptions is not met: normality of the dependent variable, no outliers, homogeneity of the variance between the groups. To perform the test, move the independent variables from the left column to the right column. 
@@ -142,7 +142,7 @@ Test for Equality of Variances (Levene's)
 - VS-MPR: Vovk-Sellke Maximum *p*-ratio.  
 
 ##### Q-Q Plot: 
-With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed. 
+With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are displayed on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed. 
 
 #### Contrasts: 
 Deviation/Simple/Difference/Helmert/Repeated/Polynomial Contrast: 
