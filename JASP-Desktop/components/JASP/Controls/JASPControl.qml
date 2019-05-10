@@ -95,7 +95,7 @@ FocusScope
 		State
 		{
 			name: "hasFocus"
-			when: jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
+			when: focusIndicator && jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
 			PropertyChanges
 			{
 				target:			focusIndicator
