@@ -119,12 +119,12 @@ Item
 						{
 							id					: menuItemText
 							text				: displayText
-							height				: menuItem.height
 							font				: Theme.font
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
 							anchors.leftMargin	: menu._iconPad
 							anchors.verticalCenter:  parent.verticalCenter
+
 						}
 
 						MouseArea
