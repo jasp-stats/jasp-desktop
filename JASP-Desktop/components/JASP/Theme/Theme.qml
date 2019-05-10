@@ -84,7 +84,7 @@ QtObject {
 	readonly property int shadowRadius:					10  * uiScale
 	readonly property int scrollbarWidth:				8   * uiScale
 	readonly property int scrollbarBoxWidth:			12  * uiScale
-	readonly property int comboBoxHeight:				18  * uiScale
+	readonly property int comboBoxHeight:				20  * uiScale
 	readonly property int textFieldWidth:				200 * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
