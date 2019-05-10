@@ -76,6 +76,14 @@ $(document).ready(function () {
 		}
 	}
 
+	window.changeTitle = function(id, title) {
+		var selectedAnalysis = analyses.getAnalysis(id);
+		if (selectedAnalysis !== undefined) {
+			selectedAnalysis.toolbar.setTitle(title);
+			selectedAnalysis.toolbar.render();
+		}
+	}
+
 	window.setAppVersion = function (version) {
 		$(".app-version").text("Version " + version);
 	}

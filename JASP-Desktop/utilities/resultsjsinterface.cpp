@@ -205,6 +205,14 @@ void ResultsJsInterface::displayMessageFromResults(QString msg)
 	MessageForwarder::showWarning("Results Warning", msg);
 }
 
+void ResultsJsInterface::changeTitle(Analysis *analysis)
+{
+    int id = analysis->id();
+    QString title = analysis->titleQ();
+
+    emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + title + "')");
+}
+
 void ResultsJsInterface::showAnalysis(int id)
 {
 	emit runJavaScript("window.select(" % QString::number(id) % ")");

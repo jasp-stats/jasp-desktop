@@ -107,7 +107,8 @@ public slots:
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
-	void analysisTitleChanged(int id, QString title);
+	void setChangedAnalysisTitle();
+	void analysisTitleChangedFromResults(int id, QString title);
 
 signals:
 	void analysesUnselected();
@@ -122,6 +123,7 @@ signals:
 	void analysisImageEdited(			Analysis *	source);
 	void analysisRewriteImages(			Analysis *	source);
 	void analysisResultsChanged(		Analysis *	source);
+	void analysisTitleChanged(			Analysis *  source);
 	void analysisOptionsChanged(		Analysis *	source);
 	void analysisNameSelected(			QString		name);
 	void sendRScript(					QString		script, int requestID);

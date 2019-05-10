@@ -901,7 +901,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		element.off("paste");
 
-		if (saveTitle)	this.title = element.text();
+		if (saveTitle)	this.setTitle(element.text());
 		else			element.html(this.title);
 
 		this._editEnding = false;
@@ -911,6 +911,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			this["callback"](this.title);
 			this["callback"] = null;
 		}
+	},
+	
+	setTitle: function(title) {
+		this.title = title;
 	},
 
 	_looseFocus: function () {
