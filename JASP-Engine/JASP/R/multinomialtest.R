@@ -643,7 +643,13 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     .quitAnalysis(paste0(variable, "variable contains negative values"))
   }
 
-  if (!all(counts == round(counts))) {
+  # only applies for observed counts, expected counts can be proportions
+  if (!expectedCounts & !all(counts == round(counts))) {
     .quitAnalysis(paste0(variable, "variable must contain only integer values."))
+  }
+
+  # a vector which is too big, ittakes up too much memory
+  if (sum(counts > 6e8)) {
+    .quitAnalysis(paste0(variable, "vector is too big."))
   }
 }

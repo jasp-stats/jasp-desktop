@@ -39,7 +39,7 @@ Form
 	{
 		id		: hypothesisGroup
 		name	: "hypothesis"
-		title	: qsTr("Alt. Hypothesis")
+        title	: qsTr("Test Values")
 		Layout.columnSpan: 2
 
 		RadioButton { value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
