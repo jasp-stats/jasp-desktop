@@ -17,7 +17,7 @@ public:
 	void addRecentFilePath(const QString &newpath);
 
 signals:
-	void openFile(FileEvent *event);
+	void openFileEvent(FileEvent *event);
 
 public slots:
 	void openFile(const QString& path) override;
