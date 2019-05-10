@@ -27,24 +27,24 @@ test_that("Main table results match", {
     list(components="contcor1", isNuisance=FALSE),
     list(components=c("RM Factor 1", "facGender"), isNuisance=FALSE)
   )
-  options$priorCovariatesEffects <- 0.3
+  options$priorCovariates <- 0.3
   options$priorFixedEffects <- 0.8
   options$priorRandomEffects <- 0.8
 
   refTables <- list(
-    nullModelTop = list(1, 1.2015680635829e-23, "Null model (incl. subject)", 0.1, 1.33507562620322e-24, "",
-                        3.47351082631419e+23, 7.78290269354818, "RM Factor 1 + facGender",
-                        0.1, 0.463739964156508, 9.48562551500826, 2.25207823390771e+23,
-                        3.86945112370334, "RM Factor 1", 0.1, 0.300669475839298, 39.106368292494,
-                        6.71141299730886e+22, 0.885790984667994, "RM Factor 1 + contcor1",
+    nullModelTop = list(1, 1.2015680635829e-23, "Null model (incl. subject)", 0.1, 1.33507562620322e-24,
+                        "", 3.47351082631416e+23, 7.78290269354812, "RM Factor 1 + facGender",
+                        0.1, 0.463739964156505, 9.48562551500833, 2.25207823390771e+23,
+                        3.86945112370337, "RM Factor 1", 0.1, 0.300669475839298, 39.106368292494,
+                        6.71141299730886e+22, 0.885790984668, "RM Factor 1 + contcor1",
                         0.1, 0.0896024391009056, 12.887989220175, 5.74376683392463e+22,
                         0.74747150859863, "RM Factor 1 + facGender + contcor1", 0.1,
                         0.0766836310256722, 15.7870140533192, 4.50189687402267e+22,
-                        0.575524732870682, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.575524732870686, "RM Factor 1 + facGender + RM Factor 1<unicode><unicode><unicode>facGender",
                         0.1, 0.0601037278818813, 12.5735601755857, 6.89156615187532e+21,
-                        0.0835758191825197, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
-                        0.1, 0.00920076199573587, 11.0628049253349, 
-                        0.41104359340273, 4.93896854573074e-24, "facGender", 0.1, 5.4877428285897e-25,
+                        0.0835758191825203, "RM Factor 1 + facGender + contcor1 + RM Factor 1<unicode><unicode><unicode>facGender",
+                        0.1, 0.00920076199573587, 11.0628049253349, 0.41104359340273,
+                        4.93896854573074e-24, "facGender", 0.1, 5.4877428285897e-25,
                         7.7632364395313, 0.23874600738579, 2.86869577782693e-24, "contcor1",
                         0.1, 3.18743975314103e-25, 16.2455760987563, 0.0921852605167578,
                         1.10766864970006e-24, "facGender + contcor1", 0.1, 1.23074294411118e-25,
@@ -184,4 +184,53 @@ test_that("Analysis handles errors", {
   # results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
   # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
   #                 label="Too few obs check")
+})
+
+test_that("Analysis fails gracefully if some models error", {
+
+  options <- initOpts()
+  options$covariates = list("contNormal")
+  options$betweenSubjectFactors = list("contBinom")
+  options$effects <- TRUE
+  options$modelTerms = list(list(components = list("RM Factor 1"), isNuisance = FALSE),
+                            list(components = list("contBinom"), isNuisance = FALSE),
+                            list(components = list("contNormal"), isNuisance = FALSE),
+                            list(components = list("RM Factor 1", "contBinom"), isNuisance = FALSE))
+  options$repeatedMeasuresCells = list("contcor1", "contcor2")
+  options$repeatedMeasuresFactors = list(list(levels = list("Level 1", "Level 2"), name = "RM Factor 1"))
+
+  # NOTE: the option below makes BayesFactor return NaN as BF for models with covariates. 
+  # It's a nice hack to test how gracefully the analysis recovers when some but not all BFs could be computed.
+  # A user can never enter NULL here. This hack exists for BayesFactor version 0.9.12.4.2.
+  options$priorCovariates <- NULL
+
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+
+  mainTable <- results[["results"]][["tableModelComparison"]][["data"]]
+  effectsTable <- results[["results"]][["tableEffects"]][["data"]]
+  
+  expect_equal_tables(
+    mainTable, 
+    list(1, 4.08564987058799, "Null model (incl. subject)", 0.1, 0.505296412283417,
+         "", 0.678071126224467, 2.08482465246755, "contBinom", 0.1, 0.342626907354199,
+         11.0544491376076, 0.147479470584362, 0.322085471769318, "RM Factor 1",
+         0.1, 0.0745208473717359, 5.34269802511568, 0.11793325601769,
+         0.253469573641492, "RM Factor 1 + contBinom", 0.1, 0.0595912511546406,
+         30.5049473873051, 0.0355525616238313, 0.0731728469410748, "RM Factor 1 + contBinom + RM Factor 1<unicode><unicode><unicode>contBinom",
+         0.1, 0.0179645818360071, 10.172921412827, 0, 0, 0, "NaN", "NaN",
+         "contNormal", 0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "RM Factor 1 + contNormal",
+         0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "contBinom + contNormal",
+         0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "RM Factor 1 + contBinom + contNormal",
+         0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "RM Factor 1 + contBinom + contNormal + RM Factor 1<unicode><unicode><unicode>contBinom",
+         0.1, "NaN", ""), 
+    label = "Table where some BFs are NaN")
+  
+  expect_equal_tables(
+    effectsTable, 
+    list(0.1195679505763, "RM Factor 1", 0.6, 0.152076680362384, 0.483120883747351,
+         "contBinom", 0.6, 0.420182740344847, "NaN", "contNormal", 0,
+         0, 0.0731728469410748, "RM Factor 1<unicode><unicode><unicode>contBinom",
+         0.2, 0.0179645818360071), 
+    label = "Table where one inclusion BF is NaN")
+  
 })

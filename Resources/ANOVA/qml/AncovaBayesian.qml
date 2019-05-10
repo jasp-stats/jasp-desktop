@@ -206,7 +206,7 @@ Form
 			title: qsTr("Prior")
 			DoubleField { name: "priorFixedEffects";		label: qsTr("r scale fixed effects");	defaultValue: 0.5;	 fieldWidth: 75; max: 2; decimals: 1 }
 			DoubleField { name: "priorRandomEffects";		label: qsTr("r scale random effects");	defaultValue: 1;	 fieldWidth: 75; max: 2; decimals: 1 }
-			DoubleField { name: "priorCovariatesEffects";	label: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 75; max: 2; decimals: 1 }
+            DoubleField { name: "priorCovariates";	        label: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 75; max: 2; decimals: 1 }
 		}
 
         RadioButtonGroup

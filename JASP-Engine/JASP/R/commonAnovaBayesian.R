@@ -125,14 +125,14 @@
   fixedFactors  <- options$fixedFactors
 
   if (analysisType == "RM-ANOVA") {
-    rscaleCont <- options[["priorCovariatesEffects"]]
+    rscaleCont <- options[["priorCovariates"]]
     modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
 
     dependent     <- "dependent"
     randomFactors <- "subject"
 
   } else if (analysisType == "ANCOVA") {
-    rscaleCont <- options[["priorCovariatesEffects"]]
+    rscaleCont <- options[["priorCovariates"]]
   } else {
     rscaleCont <- "medium" # sqrt(2)/4
   }
@@ -357,9 +357,9 @@
 
   inclusion.title <- switch(
     options$bayesFactorType,
-    "LogBF10" = "Log(BF<sub>Inclusion</sub>)",
-    "BF01"    = "BF<sub>Exclusion</sub>",
-    "BF10"    = "BF<sub>Inclusion</sub>"
+    "LogBF10" = "Log(BF<sub>incl</sub>)",
+    "BF01"    = "BF<sub>excl</sub>",
+    "BF10"    = "BF<sub>incl</sub>"
   )
 
   effectsTable$addColumnInfo(name = "Effects",      type = "string")
@@ -627,8 +627,8 @@
   estsTable$position <- 3
   estsTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
-    "fixedMCMCSamples", "bayesFactorType", "modelTerms", "fixedFactors", "posteriorEstimates",
-    "repeatedMeasuresFactors", "credibleInterval"
+    "fixedMCMCSamples", "modelTerms", "fixedFactors", "posteriorEstimates",
+    "repeatedMeasuresFactors", "credibleInterval", "repeatedMeasuresCells"
   ))
 
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
@@ -1832,8 +1832,15 @@
     dimnames = list(NULL, colnames(samples), c("x", "y"))
   )
 
+  n <- nrow(samples)
+  del0 <- (1/(4 * pi))^(1/10) # normal kernel
   for (i in seq_len(nc)) {
-    fits[, i, ] <- do.call(cbind, KernSmooth::bkde(samples[, i], gridsize = gridsize))
+    # bandwidth definition from KernSmooth::bkde, but adjusted when sqrt(var(samples[, i])) is infinite
+    vx <- sqrt(var(samples[, i]))
+    if (is.infinite(vx)) # contWide can cause the variance to be infinite
+      vx <- sqrt(.Machine$double.xmax) # some big number as a fallback
+    bandwidth <- del0 * (243/(35 * n))^(1/5) * vx
+    fits[, i, ] <- do.call(cbind, KernSmooth::bkde(samples[, i], gridsize = gridsize, bandwidth = bandwidth))
   }
   if (getXRange) {
     if (nc == 1L) {
@@ -1899,7 +1906,10 @@
 .BANOVAreSample <- function(n, x, y, prop0 = NULL) {
 
   cdf <- cumsum(y)
-  cdf <- cdf / cdf[length(cdf)]
+  max <- cdf[length(cdf)]
+  if (max == 0) # can't salvage this
+    return(numeric(n))
+  cdf <- cdf / max
   if (!is.null(prop0) && prop0 <= (1 - sqrt(.Machine$double.eps))) {
     i1 <- runif(n) <= prop0
     samples <- numeric(n)
@@ -1976,7 +1986,7 @@
 
     # which parameters are nuisance?
     isNuisance <- c(TRUE, bases[-1L] %in% model[["nuisance"]])
-    
+
     # resample nuisance parameters
     for (i in which(isNuisance[pos])) {
       samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"]) 
@@ -2220,7 +2230,7 @@
   } else {
     singleModelContainer <- createJaspContainer(title = "Single Model Inference")
     singleModelContainer$dependOn(c(
-      "singleModelTerms", "dependent", "sampleModeMCMC", "fixedMCMCSamples", "priorCovariatesEffects",
+      "singleModelTerms", "dependent", "sampleModeMCMC", "fixedMCMCSamples", "priorCovariates",
       "priorFixedEffects", "priorRandomEffects", "repeatedMeasuresCells"
     ))
     jaspResults[["containerSingleModel"]] <- singleModelContainer
@@ -2263,11 +2273,11 @@
 
   if (analysisType == "RM-ANOVA") {
     dependent <- "dependent"
-    rscaleCont <- options[["priorCovariatesEffects"]]
+    rscaleCont <- options[["priorCovariates"]]
     randomFactors <- "subject"
     modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
   } else if (analysisType == "ANCOVA") {
-    rscaleCont <- options[["priorCovariatesEffects"]]
+    rscaleCont <- options[["priorCovariates"]]
   } else {
     rscaleCont <- "medium" # sqrt(2)/4
   }
