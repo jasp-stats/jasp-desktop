@@ -110,6 +110,7 @@ Rectangle
 				text:			expanderButton.myAnalysis != null ? expanderButton.myAnalysis.title : "?";
 				font:			Theme.fontLabel
 				visible:		!analysisTitleInput.visible
+				elide:			Text.ElideMiddle
 
 				anchors
 				{
@@ -126,6 +127,7 @@ Rectangle
 				visible:			false
 				selectByMouse:		true
 				color:				Theme.grayDarker
+				clip:				true
 
 				anchors
 				{

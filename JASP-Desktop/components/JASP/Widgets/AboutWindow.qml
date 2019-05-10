@@ -24,7 +24,6 @@ Window
 	visible:				aboutModel.visible
 	onVisibleChanged:		aboutModel.visible = visible
 	title:					"About JASP"
-	Keys.onEscapePressed:	aboutModel.visible = false
 
 	Image
 	{
