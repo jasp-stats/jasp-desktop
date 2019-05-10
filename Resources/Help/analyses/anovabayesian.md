@@ -14,24 +14,24 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 #### Assignment Box 
 - Dependent Variable: The variable of interest. Also called the outcome variable.
 - Fixed Factors: The variables that are manipulated/define the different groups. Also called the independent variables.
-- Random Factors: In this box the variable that should be inlcuded in all models, including the null model, can be placed. 
+- Random Factors: In this box, the variable that should be inlcuded in all models, including the null model, can be selected. 
 
 #### Bayes Factor:  
-- BF<sub>10</sub>: By selecting this option the Bayes factor will quantify evidence for the alternative hypothesis relative to the null hypothesis. This option is selected by default. 
-- BF<sub>01</sub> : By selecting this option the Bayes factor will quantify evidence for the null hypothesis relative to the alternative hypothesis. This is equal to 1/BF<sub>10</sub>. 
-- Log(BF<sub>10</sub>) : By selecting this option the natural logarithm of BF<sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> will be displayed in the output. 
+- BF<sub>10</sub>: By selecting this option, the Bayes factor will quantify evidence for the alternative hypothesis relative to the null hypothesis. This option is selected by default. 
+- BF<sub>01</sub> : By selecting this option, the Bayes factor will quantify evidence for the null hypothesis relative to the alternative hypothesis. This is equal to 1/BF<sub>10</sub>. 
+- Log(BF<sub>10</sub>) : By selecting this option, the natural logarithm of BF<sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> will be displayed in the output. 
 
 #### Output: 
 - Effects: By selecting this option, the effect of each component in the models will be calculated. 
-    - Across all models: When this option is selected, each model where the component is included will be used. When the option `Effects` is selected, this method is used by default. 
+    - Across all models: When this option is selected, each model where the component is included will be used to estimate the effect of the component. When the option `Effects` is selected, this method is used by default. 
     - Across matched models: When this option is selected, each model with exactly that component will be included in the analysis. Therefore, interactions with the component are excluded.      
       <details>
         <summary><b>GIF demonstration: Select effects </b></summary>
         <img src="analyses/gif/inclusion_bayes_anova.gif"/>
       </details> 
 
-- Estimates: By selecting this option, a table with the model averaged posterior summary will be provided. This table includes information about the model averaged posterior mean of each level of the fixed factors and their interactions, the standard deviation, and the credible interval. 
-- Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be presented for each level combination of the independent variables.
+- Estimates: By selecting this option, a table with the model averaged posterior summary will be displayed. This table includes information about the model averaged posterior mean of each level of the fixed factors and their interactions, the standard deviation, and the credible interval. 
+- Descriptives: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the independent variables.
   - Credible interval: By default this is set to 95%. 
 
 #### Order:  
@@ -43,11 +43,11 @@ The Bayesian ANOVA allows the user to analyze the difference among three, or mor
 </details>
 
 #### Plots: 
-- Model averaged posteriors: By selecting this option, plots illustrating the model averaged posterior distribution of each fixed factor, and interaction will be generated. 
+- Model averaged posteriors: By selecting this option, plots illustrating the model averaged posterior distribution of each fixed factor, and interaction will be displayed. 
   - Group levels in single plot: When this option is selected, one plot for each factor will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in the same plot.  
   - Individual plot per level: When this option is selected, a plot for each level of the factors will be displayed. Therefore, the posterior distribution of each level of the factor will be shown in a different plot. 
-- Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the data are normally distributed and linear. 
-- Posterior R<sup>2</sup>: By selecting this option, a plot of the posterior distribution of the R<sup>2</sup> (i.e., explained variance) will be shown. 
+- Q-Q plot of residuals: Checks the validity of the distributional assumption of the data set. Specifically, the plot illustrates whether the residuals are normally distributed and linear. 
+- Posterior R<sup>2</sup>: By selecting this option, a plot of the posterior distribution of the R<sup>2</sup> (i.e., explained variance) will be displayed. 
 
 #### Model 
 - Components: All the independent variables that can be included in the model. 
@@ -69,7 +69,7 @@ Here, a single model can be specified to obtain information about the posterior 
   - Specific model terms: Place the factors that should be included in the model in this box. 
 
 #### Post Hoc Tests 
-If there is a significant effect of the independent variable, the analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
+The analysis can be followed up by performing a post hoc test to see which specific levels of an independent variable differ from the other levels. To perform a post hoc test, drag the factor name to perform the post hoc test on to the right column. 
 <details>
   <summary><b>GIF demonstration:  Post hoc test</b></summary>
   <img src="analyses/gif/bayes_posthoc_anova.gif"/>
@@ -80,7 +80,7 @@ Then it is possible to select:
     - Null control: When selecting this option, the prior odds will be corrected for multiple testing. This option is selected by default. At the moment, no output will be generated for the post hoc test when this option is not selected. 
 
 #### Descriptives Plots 
-To create a descriptive plot, place the independent variable on the horizontal axis. If there is more than one independent variable, the variables can be displayed in one plot by putting the other variable in the box Separate lines, or the variables can be displayed in separate plots by dragging the other variable in the box Separate plots.
+To create a descriptive plot, place the independent variable on the horizontal axis. If there is more than one independent variable, the variables can be displayed in one plot by selecting the other variable in the box Separate lines, or the variables can be displayed in separate plots by selecting the other variable in the box Separate plots.
 - Factors: The independent variables included in the analysis.
 - Horizontal axis: Place here the independent variable that should be displayed on the horizontal axis of the plot.
 - Separate lines: By placing an independent variable in this box, different lines corresponding to the different levels of the independent variable will be displayed.
@@ -92,7 +92,7 @@ To create a descriptive plot, place the independent variable on the horizontal a
 - Prior: Here it is possible to set the prior distributions for the fixed and random effect sizes. 
     - r scale fixed effects: The shape parameter of the prior distribution for the fixed effects. This is set to 0.5 by default, but this can be changed into the desired value.  
     - r scale random effects: The shape parameter of the prior distribution for the random effects. This is set to 1 by default, but this can be changed into the desired value. 
-- Numerical accuracy: The number of steps to calculate the integral for the Bayes factor. 
+- Numerical accuracy: The number of steps to approximate the integral for the Bayes factor. 
   - Auto: If this option is selected, 10000 steps will be used. This option is selected by default. 
   - Manual: If this option is selected, the number of steps can be manually specified. The number of steps is set to 10000 by default. 
 - Posterior Samples: It is possible to set the he number of Markov Chain Monte Carlo samples, used to calculate the posterior and error %.  
@@ -114,14 +114,14 @@ To create a descriptive plot, place the independent variable on the horizontal a
 
 #### Analysis of Effects - Dependent Variable: 
 - Effects: This column contains the components included in the models. So these are the independent variables and their interaction for example. 
-- P(incl): This column contains the prior inclusion probability. This is the summed prior probability, calculated by adding the prior probability of each model where the component is in. 
-- P(incl|data): This column contains the posterior inclusion probability. This is the summed posterior probability, calculated by adding the posterior probability of each model where the component is in. 
-- BF<sub>inclusion</sub> : This column contains the change from prior inclusion odds to posterior inclusion odds for each component averaged by all the models the component is in. 
+- P(incl): This column contains the prior inclusion probability. This is the summed prior probability, calculated by adding the prior probability of each model that includes the component. 
+- P(incl|data): This column contains the posterior inclusion probability. This is the summed posterior probability, calculated by adding the posterior probability of each model that includes the component. 
+- BF<sub>inclusion</sub> : This column contains the change from prior inclusion odds to posterior inclusion odds for each component averaged by all the models that include the component. 
 
 #### Model Averaged Posterior Summary 
 - Variable: This column contains all the fixed factors and their interactions included in the models. The first row contains information about the intercept. 
 - Level: Each level of the factor and combination of levels of the interactions that are included in the model. 
-- Mean: The model averaged mean. For the factors, this is the deviation from the intercept for each level of the factor. Together, the level means for a factor are equal to zero.  
+- Mean: The model averaged mean. For the factors, this is the deviation from the intercept for each level of the factor. The level means for a factor sum to zero.  
 - SD: The standard deviation of the model averaged mean. 
 - % Credible Interval: The credible interval of the mean. By default, this is set to 95%. 
   - Lower: The lower bound of the credible interval of the mean. 
@@ -131,7 +131,7 @@ To create a descriptive plot, place the independent variable on the horizontal a
 For each factor, and interaction, the model averaged posterior distributions per level are displayed, with on the x-axis the factor and on the y-axis the density. The posterior distribution for each level can either be displayed in the same plot, or by different plots for each level. 
 
 #### Model Averaged Q-Q plot 
-With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the data are normally distributed.
+With Q-Q plot the normality of the residuals can be inspected visually. The theoretical quantiles are presented on the x-axis and standardized residuals on y-axis. The more dots are on the diagonal line, the more the residuals are normally distributed.
 
 #### Model Averaged Posterior R<sup>2</sup> 
 The model averaged density of the R<sup>2</sup> (i.e., explained variance), with the R<sup>2</sup> on the x-axis and the density on the y-axis. 
@@ -140,16 +140,16 @@ The model averaged density of the R<sup>2</sup> (i.e., explained variance), with
 - Post Hoc Comparisons - Independent Variable: 
     - The first columns contain the levels of the independent variable that are compared with each other. 
     - Prior Odds: This column contains the prior odds. The prior odds are corrected for multiple testing. 
-    - Posterior Odds: This column contains the posterior odds. The posterior odds are the prior odds * the Bayes factor. 
+    - Posterior Odds: This column contains the posterior odds. The posterior odds are the prior odds multiplied by the Bayes factor. 
     - BF<sub>10, U</sub> : This column contains the Bayes factor quantifying evidence for the alternative hypothesis relative to the null hypothesis/null model. The Bayes factor is uncorrected for multiple testing. 
-    - BF<sub>01, U</sub> : This column contains the Bayes factor quantifying evidence for the null hypothesis/null model relative to the alternative hypothesis, while uncorrected for multiple testing. 
+    - BF<sub>01, U</sub> : This column contains the Bayes factor quantifying evidence for the null hypothesis/null model relative to the alternative hypothesis. The Bayes factor is uncorrected for multiple testing.
     - error % : The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor. 
 
 #### Single Model Inference 
 - Single Model Posterior Summary: 
   - Variable: This column contains all the factors and interactions included in the models. The first row contains information about the intercept. 
   - Level: Each level of the factors and combination of levels of the interactions that are included in the single model.
-  - Mean: The single model mean. For the factors, this is the deviation from the intercept for each level of the factor. Together, the level means for a factor are equal to zero.  
+  - Mean: The single model mean. For the factors, this is the deviation from the intercept for each level of the factor. The level means for a factor sum to zero.  
   - SD: The standard deviation of the single model mean. 
   - % Credible Interval: The credible interval of the mean. By default, this is set to 95%. 
     - Lower: The lower bound of the credible interval of the mean. 
