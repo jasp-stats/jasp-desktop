@@ -22,17 +22,17 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
+
 Form
 {
-
 	VariablesForm
 	{
-		height	: 170
+		height	: 190
 		marginBetweenVariablesLists	: 15
-		AvailableVariablesList { name: "allVariablesList" }
-		AssignedVariablesList { name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
-		AssignedVariablesList { name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"] }
-		AssignedVariablesList { name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; allowedColumns: ["ordinal", "scale"] }
+		AvailableVariablesList {				name: "allVariablesList" }
+		AssignedVariablesList {					name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"]	}
+		AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; allowedColumns: ["ordinal", "scale"]		}
+		AssignedVariablesList {	id: exProbVar;	name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; allowedColumns: ["ordinal", "scale"]		}
 	}
 
 	RadioButtonGroup
@@ -40,10 +40,12 @@ Form
 		id		: hypothesisGroup
 		name	: "hypothesis"
 		title	: qsTr("Alt. Hypothesis")
+		enabled	: exProbVar.count == 0
+
 		Layout.columnSpan: 2
 
-		RadioButton { value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
-		RadioButton { value: "expectedProbs";	label: qsTr("Expected proportions"); id: expectedProbs			}
+		RadioButton {	value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
+		RadioButton {	value: "expectedProbs";	label: qsTr("Expected proportions"); id: expectedProbs			}
 
 		Chi2TestTableView
 		{
@@ -67,8 +69,9 @@ Form
 				label	: qsTr("Descriptives")
 				CheckBox
 				{
-                    name				: "credibleInterval"; label: qsTr("Credible interval")
+					name				: "credibleInterval"; label: qsTr("Credible interval")
 					childrenOnSameRow	: true
+
 					CIField { name: "credibleIntervalInterval" }
 				}
 			}
@@ -81,6 +84,7 @@ Form
 		{
 			name	: "countProp"
 			title	: qsTr("Display")
+
 			RadioButton { value: "descCounts";	label: qsTr("Counts");	checked: true	}
 			RadioButton { value: "descProps";	label: qsTr("Proportions")				}
 		}
@@ -92,11 +96,11 @@ Form
 			{
 				name	: "descriptivesPlot"
 				label	: qsTr("Descriptives plot")
-                CIField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Credible interval") }
+
+				CIField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Credible interval") }
 			}
 		}
 	}
-
 
 	ExpanderButton
 	{
