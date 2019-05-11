@@ -33,7 +33,7 @@ ABTestBayesian <- function(
     variableOpts <- c("n1", "y1", "n2", "y2")
     priorOpts <- c("normal_mu", "normal_sigma")
     modelOpts <- c(variableOpts, "normal_mu", "normal_sigma", "orEqualTo1Prob", "orLessThan1Prob",
-                   "orGreaterThan1Prob", "numSamples")
+                   "orGreaterThan1Prob", "orNotEqualTo1Prob", "numSamples")
 
     stateKey <- list(
         ab_obj = modelOpts,
