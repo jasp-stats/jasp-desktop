@@ -33,8 +33,8 @@ Form
 		AssignedVariablesList { name: "ES_name";	title: qsTr("Effect Size"); singleVariable: true; allowedColumns: ["scale"] }
 		AssignedVariablesList { name: "SE_name";	title: qsTr("Effect Size Variance"); singleVariable: true; allowedColumns: ["scale"] }
 		AssignedVariablesList { name: "fixedEffects";	title: qsTr("Fixed Effects") }
-		AssignedVariablesList { name: "inner_grouping";	title: qsTr("Inner grouping (Multivariate structure)"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
-		AssignedVariablesList { name: "outer_grouping";	title: qsTr("Outer grouping (Grouping structure)"); singleVariable: false; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "inner_grouping";	title: qsTr("Inner Grouping (Multivariate Structure)"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "outer_grouping";	title: qsTr("Outer Grouping (Grouping Structure)"); singleVariable: false; allowedColumns: ["ordinal", "nominal"] }
 	}
 	
 
@@ -45,7 +45,7 @@ Form
 	//		AssignedVariablesList { name: "test";	title: qsTr("Test"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
 	//	}
 
-	DropDown { name: "labels_variable"; label: qsTr("Case Labels"); values: allAvailableVariables; }
+	DropDown { name: "labels_variable"; label: qsTr("Case labels"); values: allAvailableVariables; }
 
 
 	Section
@@ -81,7 +81,7 @@ Form
 		title: qsTr("Statistics")
 		Group
 		{
-			title: qsTr("Omnibus statistics")
+			title: qsTr("Omnibus Statistics")
 			CheckBox
 			{
 				name: "anova_table"; text: qsTr("Anova Table"); checked: true;

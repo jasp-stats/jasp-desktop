@@ -42,9 +42,10 @@ public:
 	void pauseEngine();
 	void resumeEngine();
 	void restartEngine(QProcess * jaspEngineProcess);
-	bool paused()	const { return _engineState == engineState::paused;												}
-	bool resumed()	const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
-	bool stopped()  const { return _engineState == engineState::stopped;											}
+	bool paused()		const { return _engineState == engineState::paused;												}
+	bool initializing()	const { return _engineState == engineState::initializing;										}
+	bool resumed()		const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
+	bool stopped()		const { return _engineState == engineState::stopped;											}
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr; }
 
@@ -57,18 +58,14 @@ public:
 	void processEnginePausedReply();
 	void processEngineStoppedReply();
 	void processEngineResumedReply();
+	void processLogCfgReply();
+
+	void sendLogCfg();
+
+	size_t channelNumber()								{ return _channel->channelNumber(); }
 
 
-	int channelNumber()								{ return _channel->channelNumber(); }
-
-
-	void sendString(std::string str)
-	{
-#ifdef PRINT_ENGINE_MESSAGES
-		std::cout << "sending to jaspEngine: " << str << "\n" << std::endl;
-#endif
-		_channel->send(str);
-	}
+	void sendString(std::string str);
 
 	int engineChannelID()							{ return _channel->channelNumber(); }
 
@@ -96,6 +93,8 @@ signals:
 	void moduleUnloadingFinished(		const QString & moduleName, int channelID);
 	void moduleUninstallingFinished(	const QString & moduleName);
 
+	void logCfgReplyReceived(int channelNr);
+
 private:
 	void sendPauseEngine();
 	void sendStopEngine();
@@ -109,7 +108,7 @@ private:
 	QProcess*	_slaveProcess		= nullptr;
 	IPCChannel*	_channel			= nullptr;
 	Analysis*	_analysisInProgress = nullptr;
-	engineState	_engineState		= engineState::idle;
+	engineState	_engineState		= engineState::initializing;
 	int			_ppi				= 96;
 	QString		_imageBackground	= "white";
 	bool		_pauseRequested		= false,

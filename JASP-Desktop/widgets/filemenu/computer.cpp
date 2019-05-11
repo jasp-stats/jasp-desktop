@@ -125,7 +125,13 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 
 void Computer::addRecentFolder(const QString &path)
 {
-	_computerListModel->addRecentFolder(path);
+    _computerListModel->addRecentFolder(path);
+}
+
+void Computer::analysesExportResults()
+{
+    _mode = FileEvent::FileExportResults;
+    browseMostRecent();
 }
 
 void Computer::setFileName(const QString &filename)

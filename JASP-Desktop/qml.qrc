@@ -17,6 +17,7 @@
         <file>components/JASP/Controls/JASPControl.qml</file>
         <file>components/JASP/Controls/Label.qml</file>
         <file>components/JASP/Controls/PercentField.qml</file>
+        <file>components/JASP/Controls/CIField.qml</file>
         <file>components/JASP/Controls/RadioButton.qml</file>
         <file>components/JASP/Controls/TextField.qml</file>
         <file>components/JASP/Controls/VariablesList.qml</file>
@@ -107,5 +108,6 @@
         <file>components/JASP/Widgets/AboutWindow.qml</file>
         <file>components/JASP/Widgets/FileMenu/MenuHeader.qml</file>
         <file>components/JASP/Controls/AddColumnField.qml</file>
+        <file>components/JASP/Widgets/SpinBox.qml</file>
     </qresource>
 </RCC>

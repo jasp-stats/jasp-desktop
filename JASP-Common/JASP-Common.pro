@@ -13,7 +13,6 @@ include(../JASP.pri)
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
 
-
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
@@ -49,7 +48,8 @@ SOURCES += \
 	version.cpp \
   enginedefinitions.cpp \
   timers.cpp \
-    stringutils.cpp
+    stringutils.cpp \
+    log.cpp
 
 HEADERS += \
 	appinfo.h \
@@ -89,7 +89,8 @@ HEADERS += \
   enginedefinitions.h \
   timers.h \
   enumutilities.h \
-    stringutils.h
+    stringutils.h \
+    log.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)

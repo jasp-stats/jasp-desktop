@@ -95,7 +95,7 @@ test_that("Analysis handles errors", {
   obj <- results
   obj$results$errorMessage <- NULL # error message can change and shouldn't tested.
   expect_equal(object = obj, expected = structure(list(
-  	status = "error", results = structure(list(title = "error", error = 1L), .Names = c("title", "error"))),
+  	status = "validationError", results = structure(list(title = "error", error = 1L), .Names = c("title", "error"))),
   	.Names = c("status", "results")),
   	label = "Variance check"
   )

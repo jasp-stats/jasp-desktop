@@ -22,15 +22,6 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: false
-	
-	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
-	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
-	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 430 }
-	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"    ; defaultValue: 350 }
-	
-	CheckBox { visible: false; name: "posteriorEstimates";  }
-	CheckBox { visible: false; name: "posteriorDistribution";  }
 	
 	VariablesForm
 	{
@@ -48,7 +39,7 @@ Form
 		title: qsTr("Output")
 		CheckBox
 		{
-			name: "effects"; label: qsTr("Effects")
+            name: "effects"; label: qsTr("Effects");
 			RadioButtonGroup
 			{
 				name: "effectsType"
@@ -56,16 +47,34 @@ Form
 				RadioButton { value: "matchedModels";	label: qsTr("Across matched models")			}
 			}
 		}
-		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
-	}
-
-	RadioButtonGroup
-	{
-		title: qsTr("Order")
-		name: "bayesFactorOrder"
-		RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model"); checked: true	}
-		RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model")					}
-	}
+        CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
+        CheckBox { name: "descriptives";       label: qsTr("Descriptives") }
+        CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
+    }
+		
+    RadioButtonGroup
+    {
+        title: qsTr("Order")
+        name: "bayesFactorOrder"
+        RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model"); checked: true	}
+        RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model")				}
+    }
+    
+    GroupBox
+    {
+        title: qsTr("Plots")
+        CheckBox {
+            label: qsTr("Model averaged posteriors");    name: "posteriorPlot"
+            RadioButtonGroup
+            {
+                name: "groupPosterior"
+                RadioButton { value: "grouped";		label: qsTr("Group levels in single plot"); checked: true}
+                RadioButton { value: "individual";	label: qsTr("Individual plot per level")                 }
+            }
+        }
+        CheckBox { label: qsTr("Q-Q plot of residuals") ;    name: "qqPlot" }
+        CheckBox { label: qsTr("Posterior R\u00B2") ;        name: "rsqPlot"}
+    }
 	
 	Section
 	{
@@ -80,13 +89,11 @@ Form
 				name: "components"
 				title: qsTr("Components")
 				source: ["fixedFactors", "randomFactors", "covariates"]
-				width: parent.width / 4
 			}
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
-				width: parent.width * 5 / 9
+				title: qsTr("Model Terms")
 				listViewType: "Interaction"
 				
 				ExtraControlColumn
@@ -101,35 +108,79 @@ Form
 		}
 	}
 	
+    Section
+    {
+        title: qsTr("Single Model Inference")
+
+        GridLayout
+        {
+
+            GroupBox
+            {
+                title: qsTr("Tables")
+                CheckBox { label: qsTr("Estimates"); name: "singleModelEstimates"}
+            }
+
+            GroupBox
+            {
+                title: qsTr("Plots")
+                CheckBox { 
+                    label: qsTr("Marginal posteriors");    name: "singleModelPosteriorPlot"
+                    RadioButtonGroup
+                    {
+                        name: "singleModelGroupPosterior"
+                        RadioButton { value: "grouped";		label: qsTr("Group levels in single plot"); checked: true}
+                        RadioButton { value: "individual";	label: qsTr("Individual plot per level")                 }
+                    }
+                }
+                CheckBox { label: qsTr("Q-Q plot of residuals");  name: "singleModelqqPlot" }
+                CheckBox { label: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
+            }
+
+        }
+
+        VariablesForm
+        {
+            height: 200
+
+			AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", 'covariates'] }
+            AssignedVariablesList
+            {
+				title: qsTr("Specific Model Terms")
+                name: "singleModelTerms"
+                listViewType: "Interaction"
+            }
+        }
+    }
+
 	Section
 	{
 		title: qsTr("Post Hoc Tests")
-		
+
 		VariablesForm
 		{
 			height: 200
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
-		
+
 		Group
 		{
 			title: qsTr("Correction")
 			CheckBox { name: "postHocTestsNullControl"; label: qsTr("Null control"); checked: true }
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Descriptives Plots")
 		
 		VariablesForm
 		{
-			height: 200
 			AvailableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors")          ; source: "fixedFactors" }
-			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal axis")  ; singleVariable: true }
-			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate lines")	; singleVariable: true }
-			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots")   ; singleVariable: true }
+			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis")  ; singleVariable: true }
+			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate Lines")	; singleVariable: true }
+			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots")   ; singleVariable: true }
 		}
 		
 		Group
@@ -139,7 +190,7 @@ Form
 			{
 				name: "plotCredibleInterval"; label: qsTr("Credible interval")
 				childrenOnSameRow: true
-				PercentField { name: "plotCredibleIntervalInterval"; defaultValue: 95 }
+				CIField { name: "plotCredibleIntervalInterval" }
 			}
 		}
 	}
@@ -156,18 +207,43 @@ Form
 			DoubleField { name: "priorCovariatesEffects";	label: qsTr("r scale covariates");		defaultValue: 0.354; fieldWidth: 50; max: 2; decimals: 1 }
 		}
 
-		RadioButtonGroup
+        RadioButtonGroup
 		{
-			name: "sampleMode"
-			title: qsTr("Samples")
+			name: "sampleModeNumAcc"
+			title: qsTr("Numerical Accuracy")
+            RadioButton { value: "auto";	label: qsTr("Auto"); checked: true }
 			RadioButton
 			{
-				value: "auto";		label: qsTr("Auto");	checked: true
+                value: "manual";	label: qsTr("Manual")
+				IntegerField
+				{
+					name: "fixedNumAcc"
+                    label: qsTr("No. samples")
+					defaultValue: 1e4
+					fieldWidth: 50
+                    min: 100
+                    max: 1e7
+				}
 			}
+		}
+
+        RadioButtonGroup
+		{
+			name: "sampleModeMCMC"
+			title: qsTr("Posterior Samples")
+            RadioButton { value: "auto";	label: qsTr("Auto"); checked: true }
 			RadioButton
 			{
-				value: "manual";	label: qsTr("Manual")
-				IntegerField { name: "fixedSamplesNumber"; label: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 70 }
+                value: "manual";	label: qsTr("Manual")
+				IntegerField
+				{
+					name: "fixedMCMCSamples"
+                    label: qsTr("No. samples")
+					defaultValue: 1e3
+					fieldWidth: 50
+                    min: 100
+                    max: 1e7
+				}
 			}
 		}
 	}

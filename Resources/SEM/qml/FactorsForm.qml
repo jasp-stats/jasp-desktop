@@ -56,7 +56,7 @@ JASPControl
 					id: button
                     Layout.leftMargin:  (factorsFormColumn.width / 3 - width) / 2
                     Layout.rightMargin: (factorsFormColumn.width / 3 - width) / 2
-                    leftSource:         availableVariablesList
+					leftSource:         factorsForm.availableVariablesList
 					rightSource:        factorList
                 }
                 SEM.FactorsList 

@@ -250,68 +250,59 @@ test_that("Analysis handles errors", {
   options$covariates <- "contGamma"
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                   label="Inf dependent check")
+  expect_identical(results[["status"]], "validationError", label="Inf dependent check")
 
   options$dependent <- "contNormal"
   options$covariates <- "debInf"
   options$modelTerms <- list(list(components="debInf", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="Inf covariate check")
+  expect_identical(results[["status"]], "validationError", label="Inf covariate check")
 
   options$covariates <- "contGamma"
   options$wlsWeights <- "debInf"
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="Inf wlsWeights check")
+  expect_identical(results[["status"]], "validationError", label="Inf wlsWeights check")
 
   options$dependent <- "debSame"
   options$covariates <- "contGamma"
   options$wlsWeights <- ""
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="No variance dependent check")
+  expect_identical(results[["status"]], "validationError", label="No variance dependent check")
 
   options$dependent <- "contNormal"
   options$covariates <- "debSame"
   options$modelTerms <- list(list(components="debSame", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="No variance covariate check")
+  expect_identical(results[["status"]], "validationError", label="No variance covariate check")
 
   options$dependent <- "contGamma"
   options$covariates <- "contcor1"
   options$wlsWeights <- "contNormal"
   options$modelTerms <- list(list(components="contcor1", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="Negative wlsWeights check")
+  expect_identical(results[["status"]], "validationError", label="Negative wlsWeights check")
 
   options$dependent <- "debNaN"
   options$covariates <- "contcor1"
   options$wlsWeights <- ""
   options$modelTerms <- list(list(components="contcor1", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="Too few obs dependent check")
+  expect_identical(results[["status"]], "validationError", label="Too few obs dependent check")
 
   options$dependent <- "contGamma"
   options$covariates <- "debNaN"
   options$modelTerms <- list(list(components="debNaN", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="Too few obs covariate check")
+  expect_identical(results[["status"]], "validationError", label="Too few obs covariate check")
 
   options$dependent <- "contGamma"
   options$covariates <- "contNormal"
   options$wlsWeights <- "debNaN"
   options$modelTerms <- list(list(components="contNormal", isNuisance=FALSE))
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
-                  label="Too few obs wlsWeights check")
+  expect_identical(results[["status"]], "validationError", label="Too few obs wlsWeights check")
   
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "contNormal"
@@ -322,20 +313,7 @@ test_that("Analysis handles errors", {
   )
   results <- jasptools::run("RegressionLinear", "test.csv", options)
   results$results$errorMessage
-  expect_equal(results[["results"]], list(title = "error", error = 1, errorMessage = "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear</li></ul><ul><li> Note: The following pair(s) of variables is/are perfectly correlated: debCollin2 and debCollin3. Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>"))
-  
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- c("contcor1", "contcor2", "contWide", "contNarrow")
-  options$modelTerms <- list(
-    list(components="contcor1", isNuisance=FALSE),
-    list(components="contcor2", isNuisance=FALSE),
-    list(components="contWide", isNuisance=FALSE),
-    list(components="contNarrow", isNuisance=FALSE)
-  )
-  options$wlsWeights <- "contExpon"
-  results <- jasptools::run("RegressionLinear", "test.csv", options)
-  expect_equal(results[["results"]], list(title = "error", error = 1, errorMessage = "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear</li></ul>"))
+  expect_identical(results[["status"]], "validationError", label="Perfect correlation check")
 })
 
 # Below are the unit tests for Andy Field's book

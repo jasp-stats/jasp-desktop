@@ -35,6 +35,7 @@ QString stripFirstAndLastChar(QString in, const QString &strip);
 QString getShortCutKey();
 QString encrypt(const QString &input);
 QString decrypt(const QString &input);
+QString getSortableTimestamp();
 
 #define GENERIC_SET_FUNCTION(WHAT_TO_SET, VARIABLE_TO_SET, EMIT_THIS, TYPE)	\
 void set##WHAT_TO_SET(TYPE new##WHAT_TO_SET)								\

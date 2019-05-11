@@ -1813,7 +1813,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 		if (options$percentagesTotal) {
 
-			row.proportions[["type[proportions]"]] <- " % of Total"
+			row.proportions[["type[proportions]"]] <- " % of total"
 
 			proportions <- as.list(proportions.matrix[i,])
 			proportions <- .clean(proportions)

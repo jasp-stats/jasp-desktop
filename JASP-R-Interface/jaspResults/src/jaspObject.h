@@ -48,7 +48,7 @@ public:
 
 			void		print()								{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
 			void		addMessage(std::string msg)			{ _messages.push_back(msg); }
-	virtual void		childrenUpdatedCallbackHandler()	{} ///Can be caugt by jaspResults to send changes and stuff like that.
+	virtual void		childrenUpdatedCallbackHandler()	{} ///Can be called by jaspResults to send changes and stuff like that.
 
 			void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis);
 			void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis);

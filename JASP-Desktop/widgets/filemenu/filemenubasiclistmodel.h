@@ -2,6 +2,8 @@
 #define FILEMENUBASICLISTMODEL_H
 
 #include <QAbstractListModel>
+#include <QMutex>
+
 #include "datalibraryfilesystem.h"
 #include "datalibrarybreadcrumbsmodel.h"
 #include "data/fileevent.h"
@@ -27,10 +29,13 @@ public slots:
 	virtual void openFile(const QString& path);
 	virtual void saveFile(const QString& path);
 
+	bool mayOpen();
 
 protected:
 	FileSystemModel *_model = nullptr;
 	bool			_openFileWhenClicked = true;
+	static QMutex	_opening;
+	void			resetOpening();
 };
 
 #endif // FILEMENUBASICLISTMODEL_H

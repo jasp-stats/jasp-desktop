@@ -19,7 +19,7 @@
 #include "listmodeltermsassigned.h"
 #include "listmodeltermsavailable.h"
 #include <QTimer>
-#include <QDebug>
+
 
 using namespace std;
 

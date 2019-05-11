@@ -33,7 +33,7 @@ Form
     
 	Section
 	{
-		title: qsTr("Second-order factor")
+		title: qsTr("Second-order Factor")
 		SEM.FactorsForm
 		{
             id: secondorder
@@ -53,12 +53,12 @@ Form
 
 	Section
 	{
-        title: qsTr("Model options")
+		title: qsTr("Model Options")
 		GridLayout
 		{
 			GroupBox
 			{
-                title: qsTr("Additional fit measures")
+				title: qsTr("Additional Fit Measures")
                 CheckBox { label: qsTr("AIC")   ; name: "aic"   }
                 CheckBox { label: qsTr("BIC")   ; name: "bic"   }
                 CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
@@ -74,7 +74,7 @@ Form
                 CheckBox { label: qsTr("Fix exogenous covariates")    ; name: "fixExogenousCovariates" ; checked: true }
 				ComboBox
 				{
-                    label: qsTr("Factor Scaling")
+					label: qsTr("Factor scaling")
                     name: "identify"
                     values: [
                         { label: "Factor variances",  value: "factor"  },
@@ -101,7 +101,7 @@ Form
     }
     
 	Section {
-        title: qsTr("Additional output")
+		title: qsTr("Additional Output")
         CheckBox { label: qsTr("Implied covariance matrix")  ; name: "impliedCov" }
         CheckBox { label: qsTr("Residual covariance matrix") ; name: "residCov"   }
         CheckBox { 

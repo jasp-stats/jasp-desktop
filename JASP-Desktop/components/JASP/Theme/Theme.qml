@@ -29,7 +29,7 @@ QtObject {
 	readonly property color black:				"black"
 	readonly property color gray:				"#d1d1d1"
 	readonly property color grayDarker:			Qt.darker(gray, 1.5)
-	readonly property color grayLighter:		"#d4d4d4"
+	readonly property color grayLighter:		"#E0E0E0"
 	readonly property color grayMuchLighter:	"#ECECEC"
 	readonly property color grayVeryMuchLighter:"#F4F6F7"
 	readonly property color blue:				"#419BF9"
@@ -37,9 +37,11 @@ QtObject {
 	readonly property color blueLighter:		"#97C4F2"
 	readonly property color blueMuchLighter:	"#DCF1FB"
 	readonly property color red:				"#FC625D"
+	readonly property color redDarker:			"#CD0A0A"
 	readonly property color green:				"#36CE4C"
 	readonly property color yellowLight:		"#FFFFCA"
 	readonly property color rose:				"#FFC0CB"
+	readonly property color roseLight:			"#FEF1EC"
 	readonly property color shadow:				"#33000000"
 
 	readonly property color textEnabled:				black
@@ -47,16 +49,11 @@ QtObject {
 	readonly property color uiBackground:				grayMuchLighter
 	readonly property color uiBorder:					grayDarker
 
-	readonly property color buttonColor:				grayMuchLighter
-	readonly property color buttonBorderColor:			gray
+	readonly property color buttonColor:				uiBackground
 	readonly property color buttonColorHovered:			grayLighter
-	readonly property color buttonBorderColorHovered:	black
 	readonly property color buttonColorPressed:			gray
-
-	readonly property color buttonMenuColorPressed:		gray
-	readonly property color buttonMenuColorFocus:		grayLighter
-	readonly property color buttonMenuColorSelected:	grayLighter
-	readonly property color buttonMenuColorHovered:		grayMuchLighter
+	readonly property color buttonBorderColor:			gray
+	readonly property color buttonBorderColorHovered:	black
 
 	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
 
@@ -82,15 +79,16 @@ QtObject {
 
 	readonly property int sliderWidth:					4   * uiScale
 	readonly property int sliderLength:					80  * uiScale
-	readonly property int spinBoxHeight:				25  * uiScale
+	readonly property int spinBoxHeight:				30  * uiScale
 	readonly property int switchHeight:					15  * uiScale
 	readonly property int shadowRadius:					10  * uiScale
 	readonly property int scrollbarWidth:				8   * uiScale
 	readonly property int scrollbarBoxWidth:			12  * uiScale
-	readonly property int comboBoxHeight:				18  * uiScale
+	readonly property int comboBoxHeight:				20  * uiScale
 	readonly property int textFieldWidth:				200 * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
+	readonly property int spinBoxWidth:					50  * uiScale
 	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int defaultListHeight:			350 * uiScale
@@ -121,13 +119,25 @@ QtObject {
 	property font font
 	font.bold:		false
 	font.underline:	false
-	font.pixelSize:	14 * uiScale
+	font.pixelSize:	12 * uiScale
 	font.family:	"SansSerif"
+
+	property font fontRibbon
+	fontRibbon.bold:		false
+	fontRibbon.underline:	false
+	fontRibbon.pixelSize:	14 * uiScale
+	fontRibbon.family:	"SansSerif"
+
+	property font fontGroupTitle
+	fontGroupTitle.bold:		true
+	fontGroupTitle.underline:	false
+	fontGroupTitle.pixelSize:	14 * uiScale
+	fontGroupTitle.family:		"SansSerif"
 
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false
-	fontLabel.pixelSize:	16 * uiScale
+	fontLabel.pixelSize:	18 * uiScale
 	fontLabel.family:		"SansSerif"
 
 	readonly property color borderColor:					gray
@@ -141,6 +151,8 @@ QtObject {
 	readonly property color disableControlBackgroundColor:	whiteBroken
 	readonly property color rowEvenColor:					controlBackgroundColor
 	readonly property color rowOnevenColor:					whiteBroken
+	readonly property color controlErrorBackgroundColor:	roseLight
+	readonly property color controlErrorTextColor:			redDarker
 
 	readonly property color buttonBackgroundColor:			blue
 	readonly property color tooltipBackgroundColor:			yellowLight

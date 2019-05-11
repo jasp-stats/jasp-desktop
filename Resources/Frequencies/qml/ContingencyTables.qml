@@ -48,7 +48,7 @@ Form
 			CheckBox
 			{
 				name: "oddsRatio"; label: qsTr("Log odds ratio (2x2 only)")
-				PercentField { name: "oddsRatioConfidenceIntervalInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+				CIField { name: "oddsRatioConfidenceIntervalInterval"; label: qsTr("Confidence interval") }
 			}
 			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
@@ -74,7 +74,7 @@ Form
 		Group
 		{
 			debug: true
-			title: qsTr("Nominal by interval")
+			title: qsTr("Nominal By Interval")
 			CheckBox { name: "byIntervalEta"; label: qsTr("Eta") }
 		}
 		
@@ -130,7 +130,7 @@ Form
 			debug: true
 			CheckBox { name: "residualsUnstandardized";			label: qsTr("Unstandardized")		}
 			CheckBox { name: "residualsStandardized";			label: qsTr("Standardized")			}
-			CheckBox { name: "residualsAdjustedStandardized";	label: qsTr("Adjusted Standardized")	}
+			CheckBox { name: "residualsAdjustedStandardized";	label: qsTr("Adjusted standardized")	}
 		}
 	}
 	

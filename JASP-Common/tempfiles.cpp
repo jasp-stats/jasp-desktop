@@ -24,9 +24,9 @@
 
 #include "base64.h"
 #include "utils.h"
-#include <iostream>
-#include "dirs.h"
 
+#include "dirs.h"
+#include "log.h"
 using namespace std;
 using namespace boost;
 
@@ -81,9 +81,8 @@ void TempFiles::deleteAll(int id)
 
 void TempFiles::deleteOrphans()
 {
-#ifdef JASP_DEBUG
-	std::cout << "TempFiles::deleteOrphans started" << std::endl;
-#endif
+	Log::log() << "TempFiles::deleteOrphans started" << std::endl;
+
 	system::error_code error;
 
 	try {
@@ -103,9 +102,7 @@ void TempFiles::deleteOrphans()
 		{
 			filesystem::path p = itr->path();
 
-#ifdef JASP_DEBUG
-			std::cout << "looking at file " << p.string() << std::endl;
-#endif
+			Log::log() << "looking at file " << p.string() << std::endl;
 
 			if (p.compare(sessionPath) == 0)
 				continue;
@@ -129,12 +126,12 @@ void TempFiles::deleteOrphans()
 
 					if (now - modTime > 70)
 					{
-						std::cout << "Try to delete: " << fileName << std::endl;
+						Log::log() << "Try to delete: " << fileName << std::endl;
 						filesystem::remove(p, error);
 
 						if (error)
 						{
-							std::cout << "Error when deleting File: " << error.message() << std::endl;
+							Log::log() << "Error when deleting File: " << error.message() << std::endl;
 							perror(error.message().c_str());
 						}
 					}

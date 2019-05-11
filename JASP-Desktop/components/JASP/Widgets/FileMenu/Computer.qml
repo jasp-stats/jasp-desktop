@@ -6,43 +6,45 @@ import JASP.Widgets 1.0
 
 Item
 {
-	id:rect
+	id:						rect
+	focus:					true
+	onActiveFocusChanged:	if(activeFocus) computerList.forceActiveFocus()
 
-	MenuHeader {
-		id: menuHeader
-
-		headertext: qsTr("Recent Folders")
-		toolseparator: false
+	MenuHeader
+	{
+		id:					menuHeader
+		headertext:			qsTr("Recent Folders")
+		toolseparator:		false
 	}
 
-	RectangularButton {
-		id: browseButton
-
-		text: qsTr("Browse")
-		anchors.left: menuHeader.left
-		anchors.top: menuHeader.bottom
-
-		onClicked: {
-			fileMenuModel.computer.browseMostRecent();
-		}
+	RectangularButton
+	{
+		id:					browseButton
+		text:				qsTr("Browse")
+		anchors.left:		menuHeader.left
+		anchors.top:		menuHeader.bottom
+		onClicked:			fileMenuModel.computer.browseMostRecent();
+		KeyNavigation.down:	computerList
+		KeyNavigation.tab:	computerList
 	}
 
 	ToolSeparator
 	{
-		id: firstSeparator
+		id:					firstSeparator
 
-		anchors.top: browseButton.bottom
-		anchors.left: menuHeader.left
-		anchors.right: menuHeader.right
-		anchors.topMargin: 8
-		width: rect.width
-		orientation: Qt.Horizontal
+		anchors.top:		browseButton.bottom
+		anchors.left:		menuHeader.left
+		anchors.right:		menuHeader.right
+		anchors.topMargin:	8 * preferencesModel.uiScale
+		width:				rect.width
+		orientation:		Qt.Horizontal
 	}
 
-	FileList {
-		id:			computerList
-		cppModel:	fileMenuModel.computer.listModel
-		hasBreadCrumbs: false
+	FileList
+	{
+		id:					computerList
+		cppModel:			fileMenuModel.computer.listModel
+
 
 		anchors
 		{

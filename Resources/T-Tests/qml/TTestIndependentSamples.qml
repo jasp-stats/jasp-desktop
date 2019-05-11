@@ -53,7 +53,7 @@ Form
 			{
 				name: "meanDiffConfidenceIntervalCheckbox"; label: qsTr("Confidence interval")
 				childrenOnSameRow: true
-				PercentField { name: "descriptivesMeanDiffConfidenceIntervalPercent"; defaultValue: 95 }
+				CIField { name: "descriptivesMeanDiffConfidenceIntervalPercent" }
 			}
 		}
 		CheckBox
@@ -76,7 +76,7 @@ Form
 		CheckBox
 		{
 			name: "descriptivesPlots";		label: qsTr("Descriptives plots")
-			PercentField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+			CIField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence interval") }
 		}
 		CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")				}
 	}
@@ -92,7 +92,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Assumption checks")
+		title: qsTr("Assumption Checks")
 		CheckBox { name: "normalityTests";				label: qsTr("Normality")					}
 		CheckBox { name: "equalityOfVariancesTests";	label: qsTr("Equality of variances")		}
 	}

@@ -102,7 +102,7 @@ Item
 				onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
 				pointingLeft:	mainWindow.dataPanelVisible
 				showArrow:		mainWindow.dataAvailable
-				toolTipArrow:	mainWindow.dataPanelVisible ? "Hide data"   : "Maximize data"
+				toolTipArrow:	mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data") : ""
 				toolTipDrag:	mainWindow.dataPanelVisible ? "Resize data" : "Drag to show data"
 				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
@@ -220,12 +220,13 @@ Item
 					// It would be much better to have resultsJsInterface be passed directly though..
 					// It also gives you an overview of the functions used in results html
 
-					function openFileTab()								{ resultsJsInterface.openFileTab()							}
-					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)			}
-					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()					}
-					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)					}
-					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)	}
-					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)}
+					function openFileTab()								{ resultsJsInterface.openFileTab()                              }
+					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)             }
+					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }
+					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
+					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
+					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)    }
+					function analysisTitleChangedFromResults(id, title)	{ resultsJsInterface.analysisTitleChangedFromResults(id, title) }
 
 
 					function showAnalysesMenu(options)

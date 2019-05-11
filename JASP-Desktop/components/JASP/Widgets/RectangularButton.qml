@@ -20,14 +20,14 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
-FocusScope
+Item
 {
 	id: filterButtonRoot
 
 	property string	text:				""
 	property string	toolTip:			""
 	property string textColor:			"default"
-	property bool	selected:			false
+	property bool	selected:			activeFocus
 	property string	iconSource:			""
 	property real	buttonPadding:		6 * preferencesModel.uiScale
 	property alias	hovered:			buttonMouseArea.containsMouse
@@ -36,11 +36,11 @@ FocusScope
 	property bool	iconLeft:			true
 
 	property real	_scaledDim:			32 * preferencesModel.uiScale
-	property bool	_showHovered:		filterButtonRoot.enabled && filterButtonRoot.hovered
 	property alias	_pressed:			buttonMouseArea.pressed
 	property alias  color:				rect.color
 	property alias	border:				rect.border
 	property alias	radius:				rect.radius
+	property alias	font:				buttonText.font
 
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :
@@ -57,6 +57,10 @@ FocusScope
 	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
 	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
+	Keys.onSpacePressed:	clicked();
+	Keys.onEnterPressed:	clicked();
+	Keys.onReturnPressed:	clicked();
+
 
 
 	signal clicked()
@@ -66,10 +70,9 @@ FocusScope
 	{
 		id: rect
 
-		color:			_pressed || selected ? Theme.buttonColorPressed :	_showHovered ?				Theme.buttonColorHovered		: Theme.buttonColor
-		border.color:														_showHovered || selected ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+		color:			(_pressed || selected) ? Theme.buttonColorPressed :	filterButtonRoot.hovered ?					Theme.buttonColorHovered		: Theme.buttonColor
+		border.color:														(filterButtonRoot.hovered || selected) ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
 		border.width:	1
-		focus:			true
 		width:			parent.width
 		height:			parent.height
 
@@ -77,10 +80,10 @@ FocusScope
 		{
 			id:							buttonMouseArea
 			anchors.fill:				parent
-			acceptedButtons:			filterButtonRoot.enabled ? Qt.LeftButton : Qt.NoButton
+			acceptedButtons:			Qt.LeftButton
 			hoverEnabled:				true
-			cursorShape:				parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-			onClicked:					if(filterButtonRoot.enabled) { filterButtonRoot.clicked(); filterButtonRoot.forceActiveFocus(); } //else mouse.accepted = false;
+			cursorShape:				Qt.PointingHandCursor
+			onClicked:					filterButtonRoot.clicked();
 			visible:					filterButtonRoot.enabled
 			//propagateComposedEvents:	true
 		}

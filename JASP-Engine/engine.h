@@ -56,7 +56,7 @@ public:
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 
-	bool paused() { return _currentEngineState == engineState::paused; }
+	bool paused() { return _engineState == engineState::paused; }
 
 
 private: // Methods:
@@ -65,6 +65,7 @@ private: // Methods:
 	void receiveAnalysisMessage(		const Json::Value & jsonRequest);
 	void receiveComputeColumnMessage(	const Json::Value & jsonRequest);
 	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
+	void receiveLogCfg(					const Json::Value & jsonRequest);
 
 	void runAnalysis();
 	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	Column::ColumnType computeColumnType);
@@ -131,7 +132,7 @@ private: // Data:
 
 	unsigned long _parentPID = 0;
 
-	engineState _currentEngineState = engineState::idle;
+	engineState _engineState = engineState::idle;
 };
 
 #endif // ENGINE_H

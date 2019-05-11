@@ -27,7 +27,7 @@ Item
 	property alias label: titleText.text
 
 	Layout.columnSpan: parent.columns
-	implicitWidth: parent.implicitWidth
+	implicitWidth: parent.width
 	implicitHeight: separator.height
 
 	Rectangle

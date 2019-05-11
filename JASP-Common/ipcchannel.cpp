@@ -20,12 +20,20 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "boost/nowide/convert.hpp"
+#include "log.h"
 
 using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 
-IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _baseName(name + "#" + std::to_string(channelNumber)), _nameControl(name + "_control"), _nameMtS(name + "_MasterToSlave"), _nameStM(name + "_SlaveToMaster"), _channelNumber(channelNumber), _isSlave(isSlave)
+IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
+	:
+	  _baseName(		name + "#" + std::to_string(channelNumber)	),
+	  _nameControl(		name + "_control"							),
+	  _nameMtS(			name + "_MasterToSlave"						),
+	  _nameStM(			name + "_SlaveToMaster"						),
+	  _channelNumber(	channelNumber								),
+	  _isSlave(			isSlave										)
 {
 	_memoryControl			= new interprocess::managed_shared_memory(interprocess::open_or_create, _baseName.c_str(), 4096);
 
@@ -57,17 +65,15 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _bas
 	_dataOut	= _memoryOut->find_or_construct<String>(_dataOutName.c_str())	(_memoryOut->get_segment_manager());
 
 #ifdef __APPLE__
-	_semaphoreIn  = sem_open(_mutexInName.c_str(), O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
+	_semaphoreIn  = sem_open(_mutexInName.c_str(),  O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
 	_semaphoreOut = sem_open(_mutexOutName.c_str(), O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
 
 	if (isSlave == false)
 	{
 		// cleanse the semaphores; they don't seem to reliably initalise to zero.
 
-		while (sem_trywait(_semaphoreIn) == 0)
-			; // do nothing
-		while (sem_trywait(_semaphoreOut) == 0)
-			; // do nothing
+		while (sem_trywait(_semaphoreIn) == 0) ; // do nothing
+		while (sem_trywait(_semaphoreOut) == 0); // do nothing
 
 	}
 #elif defined _WIN32
@@ -112,7 +118,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _bas
 IPCChannel::~IPCChannel()
 {
 #ifdef JASP_DEBUG
-	std::cout << "~IPCChannel() of " << (_isSlave ? "Slave" : "Master") << std::endl;
+	Log::log() << "~IPCChannel() of " << (_isSlave ? "Slave" : "Master") << std::endl;
 #endif
 	if(_isSlave)
 		return;
@@ -156,9 +162,7 @@ void IPCChannel::rebindMemoryInIfSizeChanged()
 {
 	if(_previousSizeIn < *_sizeIn)
 	{
-#ifdef JASP_DEBUG
-		std::cout << "rebindMemoryInIfSizeChanged! Size changed!\n" << std::flush;
-#endif
+		Log::log() << "rebindMemoryInIfSizeChanged! Size changed!\n" << std::flush;
 
 		delete _memoryIn;
 		_previousSizeIn = *_sizeIn;
@@ -173,9 +177,7 @@ void IPCChannel::rebindMemoryInIfSizeChanged()
 
 void IPCChannel::doubleMemoryOut()
 {
-#ifdef JASP_DEBUG
-	std::cout << "IPCChannel::doubleMemoryOut is called and new memsize: ";
-#endif
+	Log::log() << "IPCChannel::doubleMemoryOut is called and new memsize: ";
 
 	std::string memOutName = _isSlave ? _nameStM : _nameMtS;
 
@@ -192,9 +194,7 @@ void IPCChannel::doubleMemoryOut()
 	_dataOut	= _memoryOut->construct<String>(_dataOutName.c_str())(_memoryOut->get_segment_manager());
 	*_sizeOut	= _memoryOut->get_size();
 
-#ifdef JASP_DEBUG
-	std::cout << *_sizeOut << "\n" << std::flush;
-#endif
+	Log::log() << *_sizeOut << "\n" << std::flush;
 }
 
 void IPCChannel::send(string &&data, bool alreadyLockedMutex)
@@ -216,9 +216,7 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 	catch (std::length_error &e)				{ goto retryAfterDoublingMemory; }
 	catch(std::exception & e)
 	{
-#ifdef JASP_DEBUG
-		std::cout << "IPCChannel::send encountered an exception: " << e.what() << std::endl << std::flush;
-#endif
+		Log::log() << "IPCChannel::send encountered an exception: " << e.what() << std::endl << std::flush;
 		throw e; //no need to unlock because this will crash stuff
 	}
 
@@ -235,9 +233,8 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 	return; // return here to avoid going to retryAfterDoublingMemory
 
 retryAfterDoublingMemory:
-#ifdef JASP_DEBUG
-		std::cout << "IPCChannel::send out buffer is too small!\n" << std::flush;
-#endif
+		Log::log() << "IPCChannel::send out buffer is too small!\n" << std::flush;
+
 		doubleMemoryOut();
 
 		send(data, true); //try again!
@@ -259,7 +256,7 @@ bool IPCChannel::receive(string &data, int timeout)
 		}
 		catch(std::exception & e)
 		{
-			std::cout << "IPCChannel::receive encountered an exception: " << e.what() << std::endl << std::flush;
+			Log::log() << "IPCChannel::receive encountered an exception: " << e.what() << std::endl << std::flush;
 			throw e;
 		}
 

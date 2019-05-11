@@ -22,7 +22,7 @@
 #include "analysis/jaspdoublevalidator.h"
 
 #include <QDir>
-#include <QDebug>
+
 #include <QFile>
 #include <QFileInfo>
 #include <QShortcut>
@@ -56,6 +56,7 @@
 #include "resultstesting/compareresults.h"
 #include "widgets/filemenu/filemenu.h"
 #include "gui/messageforwarder.h"
+#include "log.h"
 
 using namespace std;
 
@@ -96,16 +97,23 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
-	_resultsJsInterface		= new ResultsJsInterface();
+
+	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
+	_dynamicModules			= new DynamicModules(this);
+	_analyses				= new Analyses(this, _dynamicModules);
+	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
+
+	initLog(); //initLog needs _preferences and _engineSync!
+
+	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
+
+	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
 	_tableModel				= new DataSetTableModel();
 	_levelsTableModel		= new LevelsTableModel(this);
 	_labelFilterGenerator	= new labelFilterGenerator(_package, this);
 	_columnsModel			= new ColumnsModel(this);
-	_dynamicModules			= new DynamicModules(this);
-	_analyses				= new Analyses(this, _dynamicModules);
-	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
 	_ribbonModel			= new RibbonModel(_dynamicModules,
@@ -115,25 +123,29 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
-	_preferences			= new PreferencesModel(this);
+
 	_resultMenuModel		= new ResultMenuModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
 
-	StartOnlineDataManager();
+	startOnlineDataManager();
 
 	makeConnections();
 
-	qmlRegisterType<DataSetView>		("JASP", 1, 0, "DataSetView");
-	qmlRegisterType<AnalysisForm>		("JASP", 1, 0, "AnalysisForm");
-	qmlRegisterType<JASPDoubleValidator> ("JASP", 1, 0, "JASPDoubleValidator");
-	qmlRegisterType<ResultsJsInterface>	("JASP", 1, 0, "ResultsJsInterface");
+	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
+	qmlRegisterType<AnalysisForm>			("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
+	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
 
 	loadQML();
 
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
+
+	_engineSync->start(_preferences->plotPPI());
+
+	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -149,7 +161,7 @@ MainWindow::~MainWindow()
 	}
 }
 
-void MainWindow::StartOnlineDataManager()
+void MainWindow::startOnlineDataManager()
 {
 	_loader.moveToThread(&_loaderThread);
 	_loaderThread.start();
@@ -163,10 +175,11 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 
 void MainWindow::makeConnections()
 {
-	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,		this,	_1));
-	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
-	_package->pauseEngines.connect(		boost::bind(&MainWindow::pauseEngines,			this));
-	_package->resumeEngines.connect(	boost::bind(&MainWindow::resumeEngines,			this));
+	_package->isModifiedChanged.connect(	boost::bind(&MainWindow::packageChanged,		this,	_1));
+	_package->dataChanged.connect(			boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
+	_package->enginesInitializing.connect(	boost::bind(&MainWindow::enginesInitializing,	this));
+	_package->pauseEngines.connect(			boost::bind(&MainWindow::pauseEngines,			this));
+	_package->resumeEngines.connect(		boost::bind(&MainWindow::resumeEngines,			this));
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
@@ -216,7 +229,8 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileMenu										);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedFromResults,_analyses,				&Analyses::analysisTitleChangedFromResults					);
+	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
@@ -227,11 +241,13 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
 	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
+	connect(_analyses,              &Analyses::analysisTitleChanged,                    _resultsJsInterface,    &ResultsJsInterface::changeTitle							);
 	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
 	//connect(_analyses,			&Analyses::analysisNameSelected,					_helpModel,				&HelpModel::setAnalysispagePath								); //The user can click the info-button if they want to see some documentation
+    connect(_analyses,				&Analyses::analysesExportResults,					_fileMenu,				&FileMenu::analysesExportResults							);
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -318,6 +334,50 @@ void MainWindow::loadQML()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 }
 
+void MainWindow::initLog()
+{
+	assert(_engineSync != nullptr && _preferences != nullptr);
+
+	Log::logFileNameBase = (AppDirs::logDir() + "JASP "  + getSortableTimestamp()).toStdString();
+	Log::initRedirects();
+	Log::setLogFileName(Log::logFileNameBase + " Desktop.log");
+	Log::setLoggingToFile(_preferences->logToFile());
+	logRemoveSuperfluousFiles(_preferences->logFilesMax());
+
+	connect(_preferences, &PreferencesModel::logToFileChanged,		this,			&MainWindow::logToFileChanged									); //Not connecting preferences directly to Log to keep it Qt-free (for Engine/R-Interface)
+	connect(_preferences, &PreferencesModel::logToFileChanged,		_engineSync,	&EngineSync::logToFileChanged,			Qt::QueuedConnection	);
+	connect(_preferences, &PreferencesModel::logFilesMaxChanged,	this,			&MainWindow::logRemoveSuperfluousFiles							);
+}
+
+void MainWindow::logToFileChanged(bool logToFile)
+{
+	Log::setLoggingToFile(logToFile);
+}
+
+void MainWindow::logRemoveSuperfluousFiles(int maxFilesToKeep)
+{
+	QDir logFileDir(AppDirs::logDir());
+
+	QFileInfoList logs = logFileDir.entryInfoList({"*.log"}, QDir::Filter::Files, QDir::SortFlag::Name | QDir::SortFlag::Reversed);
+
+	if(logs.size() < maxFilesToKeep)
+		return;
+
+	for(int i=logs.size() - 1; i >= maxFilesToKeep; i--)
+		logFileDir.remove(logs[i].fileName());
+}
+
+void MainWindow::openFolderExternally(QDir folder)
+{
+	QDesktopServices::openUrl(QUrl::fromLocalFile(folder.absolutePath()));
+}
+
+void MainWindow::showLogFolder()
+{
+	openFolderExternally(AppDirs::logDir());
+}
+
+
 void MainWindow::open(QString filepath)
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode())
@@ -400,7 +460,7 @@ void MainWindow::saveKeyPressed()
 
 void MainWindow::openKeyPressed()
 {
-	_fileMenu->showFileMenu();
+	_fileMenu->showFileOpenMenu();
 }
 
 void MainWindow::refreshKeyPressed()
@@ -586,9 +646,7 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 
 	if (!finalPath.isEmpty())
 	{
-#ifdef JASP_DEBUG
-		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
-#endif
+		Log::log() << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
 
 		if (QFile::exists(finalPath))
 			QFile::remove(finalPath);
@@ -615,17 +673,10 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
-	if (!_IORequestMutex.tryLock())
-	{
-		qDebug() << "Mutex locked!";
-		return;
-	}
-
 	if (event->operation() == FileEvent::FileOpen)
 	{
 		if (_package->isLoaded() || _analyses->count() > 0) //If no data is loaded but we have analyses then we probably want to play with summary stats or something. So lets just open in a new instance.
 		{
-			_IORequestMutex.unlock();
 			// If this instance has a valid OSF connection save this setting for a new instance
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
@@ -634,18 +685,12 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
-			//_qml->clearComponentCache();
-
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
+			JASPTIMER_RESUME(Delayed Load);
 			_resultsJsInterface->clearWelcomeScreen(true);
 
-			_openEvent = event;
-
-			// Wait for JS callback clearing welcome screen to call funtions below in delayedLoadHandler
-			//_loader.io(event, _package);
-			//showProgress(event->type() != Utils::FileType::jasp);
-
+			_openEvent = event; //Used in delayedLoadHandler
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -749,9 +794,13 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 	switch(MessageForwarder::showSaveDiscardCancel("Workspace has changes", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
 	{
 	case MessageForwarder::DialogResponse::Save:
-		_fileMenu->save();
-		_savingForClose = true;
-		[[clang::fallthrough]];
+	{
+		FileEvent * saveEvent = _fileMenu->save();
+
+		if(saveEvent->isCompleted())	return saveEvent->isSuccessful();
+		else							_savingForClose = true;
+	}
+	[[clang::fallthrough]];
 
 	case MessageForwarder::DialogResponse::Cancel:		return false;
 
@@ -771,7 +820,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			populateUIfromDataSet(event->type() != Utils::FileType::jasp);
 			QString name = QFileInfo(event->path()).baseName();
@@ -814,7 +863,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		bool testingAndSaving = resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave();
 
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			QString name = QFileInfo(event->path()).baseName();
 
@@ -844,7 +893,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		if (event->successful())
+		if (event->isSuccessful())
 		{
 			_analyses->setVisible(false);
 			_analyses->clear();
@@ -869,9 +918,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		else
 			_applicationExiting = false;
 	}
-
-	_IORequestMutex.unlock();
-
 }
 
 
@@ -951,7 +997,6 @@ void MainWindow::populateUIfromDataSet(bool showData)
 	}
 	else
 	{
-		_filterModel->init();
 		setDataPanelVisible(showData);
 		setDataAvailable(true);
 		_analyses->setVisible(!showData);
@@ -987,7 +1032,7 @@ void MainWindow::matchComputedColumnsToAnalyses()
 
 void MainWindow::resultsPageLoaded()
 {
-	std::cout << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
+	Log::log() << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
 // #ifdef _WIN32
 // 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
 // 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
@@ -998,10 +1043,6 @@ void MainWindow::resultsPageLoaded()
 //
 // 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
 // #endif
-
-
-	if (!_engineSync->engineStarted())
-		_engineSync->start(_preferences->plotPPI());
 
 	_resultsViewLoaded = true;
 
@@ -1089,12 +1130,11 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 void MainWindow::analysesCountChangedHandler()
 {
 	setAnalysesAvailable(_analyses->count() > 0);
-	setPackageModified();
 }
 
 void MainWindow::setPackageModified()
 {
-	if (_package->isLoaded())
+	//if (_package->isLoaded())
 		_package->setModified(true);
 }
 
@@ -1140,7 +1180,7 @@ void MainWindow::startDataEditorHandler()
 					filter = "CSV Files (*.csv)",
 					name = windowTitle();
 
-			std::cout << "Currently startDataEditorHandler treats title as: " << name.toStdString() << std::endl;
+			Log::log() << "Currently startDataEditorHandler treats title as: " << name.toStdString() << std::endl;
 
 			if (name.endsWith("*"))
 			{
@@ -1199,7 +1239,7 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
 	hideProgress();
 
-	if (event->successful())
+	if (event->isSuccessful())
 	{
 		_package->setDataFilePath(event->path().toStdString());
 		_package->setDataFileReadOnly(false);
@@ -1265,7 +1305,7 @@ void MainWindow::setProgressStatus(QString status, int progress)
 
 void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 {
-	std::cout << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
+	Log::log() << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
 	resultXmlCompare::compareResults::theOne()->enableTestMode();
 
 	if(save)
@@ -1350,6 +1390,11 @@ void MainWindow::finishSavingComparedResults()
 	{
 		_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
+}
+
+bool MainWindow::enginesInitializing()
+{
+	return _engineSync->allEnginesInitializing();
 }
 
 void MainWindow::pauseEngines()
@@ -1442,11 +1487,11 @@ void MainWindow::delayedLoadHandler()
 		_loader.io(_openEvent, _package);
 		showProgress(_openEvent->type() != Utils::FileType::jasp);
 		_openEvent = nullptr;
-	}
-	else {
-		std::cerr << "Unable to open file" << std::endl;
-	}
 
+		JASPTIMER_STOP(Delayed Load);
+	}
+	else
+		std::cerr << "Unable to open file" << std::endl;
 }
 
 void MainWindow::getAnalysesUserData()
@@ -1499,9 +1544,7 @@ void MainWindow::setDataAvailable(bool dataAvailable)
 
 void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 {
-#ifdef JASP_DEBUG
-	std::cout << "MainWindow::setAnalysesAvailable(" << (analysesAvailable ? "true" : "false") << ")" << std::endl;
-#endif
+	Log::log() << "MainWindow::setAnalysesAvailable(" << (analysesAvailable ? "true" : "false") << ")" << std::endl;
 
 	if (_analysesAvailable == analysesAvailable)
 		return;
@@ -1510,7 +1553,12 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 	emit analysesAvailableChanged(_analysesAvailable);
 
 	if(!_analysesAvailable && !_package->isLoaded())
+	{
 		_resultsJsInterface->resetResults();
+		_package->setModified(false);
+	}
+	else
+		_package->setModified(true);
 }
 
 void MainWindow::resetQmlCache()

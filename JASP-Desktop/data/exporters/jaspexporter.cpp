@@ -31,7 +31,7 @@
 #include "version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
-#include <QDebug>
+
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
@@ -237,21 +237,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 		Column &column = dataset->column(i);
 
 		if (column.columnType() != Column::ColumnTypeScale)
-		{
-			for (Column::Ints::iterator iter = column.AsInts.begin(); iter != column.AsInts.end(); iter++)
-			{
-				int value = *iter;
+			for (const int & value : column.AsInts)
 				archive_write_data(a, reinterpret_cast<const char*>(&value), sizeof(int));
-			}
-		}
 		else
-		{
-			for (Column::Doubles::iterator iter = column.AsDoubles.begin(); iter != column.AsDoubles.end(); iter++)
-			{
-				double value = *iter;
+			for (const double & value : column.AsDoubles)
 				archive_write_data(a, reinterpret_cast<const char*>(&value), sizeof(double));
-			}
-		}
 
 		progress = 49 + 50 * int(i / columnCount);
 		if (progress != lastProgress)

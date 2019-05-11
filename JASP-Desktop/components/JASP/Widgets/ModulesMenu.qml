@@ -5,7 +5,7 @@ import JASP.Theme		1.0
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
-Item
+FocusScope
 {
 	id:			modulesMenu
 
@@ -16,7 +16,19 @@ Item
 
 	property bool opened: false //should be from some model
 
-	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1
+	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
+
+	Keys.onEscapePressed: closeAndUnfocus();
+	Keys.onRightPressed:  closeAndUnfocus();
+
+	function closeAndUnfocus()
+	{
+		if(opened)
+		{
+			opened = false;
+			focus = false;
+		}
+	}
 
 	Rectangle
 	{
@@ -124,6 +136,7 @@ Item
 						checked:			ribbonEnabled
 						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
 						enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
+						font:				Theme.fontRibbon
 
 						toolTip:			!isDynamic ? ""
 												: dynamicModule.installing ? "Installing:\n" + dynamicModule.installLog

@@ -35,7 +35,8 @@ JASPControl
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
-	property alias	defaultValue:		control.text
+	property string	defaultValue:		""
+	property string lastValidValue:		defaultValue
 	property int	fieldWidth:			Theme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
@@ -45,14 +46,14 @@ JASPControl
 	property alias	controlLabel:		beforeLabel
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
-	property int	labelSpacing:		4
-	
+	property int	labelSpacing:		4 * preferencesModel.uiScale
+	property double controlXOffset:		0
+
 	signal editingFinished()
 	signal textEdited()
 	signal pressed()
 	signal released()
 
-	
 	function keyReturnPressed()
 	{
 		if (activeFocus)
@@ -60,6 +61,8 @@ JASPControl
 			if (KeyNavigation.tab)
 				KeyNavigation.tab.forceActiveFocus();
 		}
+		
+		lastValidValue = control.text
 		editingFinished();
 	}
 	
@@ -81,31 +84,31 @@ JASPControl
 		
 		Rectangle
 		{
-			implicitWidth: beforeLabel.implicitWidth
-			implicitHeight: control.implicitHeight
-			color: debug ? Theme.debugBackgroundColor : "transparent"
+			implicitWidth:		beforeLabel.implicitWidth
+			implicitHeight:		control.implicitHeight
+			color:				debug ? Theme.debugBackgroundColor : "transparent"
 			Label
 			{
-				id:			beforeLabel
-				visible:	beforeLabel.text && textField.visible ? true : false
-				font:		Theme.font
+				id:						beforeLabel
+				visible:				beforeLabel.text && textField.visible ? true : false
+				font:					Theme.font
 				anchors.verticalCenter: parent.verticalCenter				
-				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+				color:					enabled ? Theme.textEnabled : Theme.textDisabled
 			}
 		}
 		
 		TextField
 		{
 			id:						control
-			//text:					textField.value //Isn't this circular? control.text: textField.value == property alias value: control.text...
+			text:					textField.lastValidValue
 			implicitWidth:			textField.fieldWidth
 			font:					Theme.font
 			focus:					true
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
-			Layout.leftMargin:		beforeLabel.visible ? 0 : -labelSpacing
+			Layout.leftMargin:		beforeLabel.text ? controlXOffset : -labelSpacing
 			
 			padding:				Theme.jaspControlPadding
-			leftPadding:			4 * preferencesModel.uiScale
+			leftPadding:			labelSpacing
 			selectByMouse:			true
 			background: Rectangle
 			{
@@ -121,12 +124,56 @@ JASPControl
 				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
 				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
 				color:				"transparent"
-				border.width: 2
-				border.color: control.acceptableInput ? "transparent" : Theme.red
-				anchors.centerIn: parent
-				opacity: debug ? .3 : 1
-				visible: textField.useExternalBorder
-				radius: Theme.jaspControlHighlightWidth
+				border.width:		3
+				border.color:		control.acceptableInput ? "transparent" : Theme.red // Needed when the QML file has wrong default value
+				anchors.centerIn:	parent
+				opacity:			debug ? .3 : 1
+				visible:			textField.useExternalBorder
+				radius:				Theme.jaspControlHighlightWidth
+			}
+			
+			onActiveFocusChanged:
+			{
+				if (!control.acceptableInput)
+				{
+					var msg
+					if (control.validator && (typeof control.validator.validationMessage === "function"))
+						msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
+
+					text = textField.lastValidValue
+					msg += qsTr("Restoring last correct value: %1").arg(text);
+					showControlErrorTemporary(msg)
+					textField.background.border.color = Theme.red;
+					redToNormal.start()
+				}
+				else
+					clearControlError();
+			}
+			
+			PropertyAnimation
+			{
+				id:			redToNormal
+				target:		textField.background
+				property:	"border.color"
+				to:			Theme.focusBorderColor
+				duration:	1000
+				onStopped:	textField.background.border.color = control.activeFocus ? Theme.focusBorderColor : "transparent"
+			}
+			
+			Keys.onReturnPressed:
+			{
+				if (!control.acceptableInput)
+				{
+					if (control.validator && (typeof control.validator.validationMessage === "function"))
+						showControlError(control.validator.validationMessage(beforeLabel.text));
+					textField.background.border.color = Theme.red;
+					redToNormal.start()
+				}
+				else
+				{
+					clearControlError();
+					event.accepted = false;
+				}
 			}
 		}
 		
@@ -134,17 +181,17 @@ JASPControl
 		{
 			// This is a way to set the property implicitHeight only if fieldHeight is set
 			// If not, implicitHeight should keep its implicit binding.
-			target: control
-			property: "implicitHeight"
-			value: textField.fieldHeight
-			when: textField.fieldHeight != 0
+			target:		control
+			property:	"implicitHeight"
+			value:		textField.fieldHeight
+			when:		textField.fieldHeight != 0
 		}
 		
 		Rectangle
 		{
-			implicitWidth: afterLabel.implicitWidth
-			implicitHeight: control.implicitHeight
-			color: debug ? Theme.debugBackgroundColor : "transparent"
+			implicitWidth:	afterLabel.implicitWidth
+			implicitHeight:	control.implicitHeight
+			color:			debug ? Theme.debugBackgroundColor : "transparent"
 			Label
 			{
 				id:			afterLabel

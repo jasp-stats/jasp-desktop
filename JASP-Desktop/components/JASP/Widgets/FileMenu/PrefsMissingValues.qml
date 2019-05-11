@@ -6,12 +6,14 @@ import JASP.Theme		1.0
 
 Rectangle
 {
-	width:	valuesRectangle.width + (valuesRectangle.anchors.margins * 2)
-	height:	resetButton.y + resetButton.height + missingValuesTitle.anchors.margins
+	width:			valuesRectangle.width + (valuesRectangle.anchors.margins * 2)
+	height:			resetButton.y + resetButton.height + missingValuesTitle.anchors.margins
 
 	border.color:	Theme.grayLighter
 	border.width:	1
 	color:			Theme.uiBackground
+
+	property alias firstComponent: missingValuesList
 
 	Text
 	{
@@ -46,11 +48,13 @@ Rectangle
 		ListView
 		{
 			id:					missingValuesList
+			focus:				true
 			anchors.fill:		parent
 			anchors.margins:	Theme.generalAnchorMargin
 			model:				preferencesModel.missingValues
-			delegate:
-				MenuButton
+			KeyNavigation.tab:	missingValueToAddText
+			KeyNavigation.down:	missingValueToAddText
+			delegate:			MenuButton
 				{
 					id:					hoverphonic
 					width:				missingValuesList.width
@@ -108,7 +112,9 @@ Rectangle
 				clip:				true
 				font:				Theme.font
 				color:				Theme.textEnabled
-
+				KeyNavigation.tab:	addButton
+				KeyNavigation.down:	addButton
+				onAccepted:			addButton.clicked();
 				anchors
 				{
 					left:			parent.left
@@ -126,6 +132,8 @@ Rectangle
 			iconSource:			"qrc:/icons/addition-sign-small.svg"
 			anchors.top:		parent.top
 			anchors.right:		parent.right
+			KeyNavigation.tab:	resetButton
+			KeyNavigation.down:	resetButton
 
 			onClicked:
 			{
@@ -137,16 +145,17 @@ Rectangle
 
 	RectangularButton
 	{
-		id:			resetButton
-		text:		"Reset"
-		onClicked:	preferencesModel.resetMissingValues()
-
+		id:					resetButton
+		text:				"Reset"
+		onClicked:			preferencesModel.resetMissingValues()
+		KeyNavigation.tab:	synchronizeDataSave //PrefsData!
+		KeyNavigation.down:	synchronizeDataSave
 		anchors
 		{
-			top:		addValueItem.bottom
-			left:		parent.left
-			right:		parent.right
-			margins:	Theme.generalAnchorMargin
+			top:			addValueItem.bottom
+			left:			parent.left
+			right:			parent.right
+			margins:		Theme.generalAnchorMargin
 		}
 	}
 }

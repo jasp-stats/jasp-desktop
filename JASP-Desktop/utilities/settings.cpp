@@ -20,14 +20,16 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFRememberMe",				false},
 	{"PPIUseDefault",				false},
 	{"PPICustomValue",				300},
-	{"UIScaleQML",					0.9f},
+	{"UIScaleAll",					1.0f},
 	{"ImageBackground",				"white"},
 	{"fixedDecimals",				false},
 	{"developerMode",				false},
 	{"developerFolder",				""},
 	{"CustomThresholdScale",		false},
 	{"ThresholdScale",				10},
-	{"devModeRegenDescEtc",			true}
+	{"devModeRegenDescEtc",			true},
+	{"logToFile",					false}, //By default do not log to file and when running debug-mode log to stdout and in release to nowhere.
+	{"logFilesMax",					50}
 };
 
 QVariant Settings::value(Settings::Type key)

@@ -17,6 +17,7 @@
 //
 
 #include "jaspdoublevalidator.h"
+#include <math.h>
 
 
 QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
@@ -26,6 +27,10 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 		// allow empty field or standalone minus sign
 		return QValidator::Intermediate;
 	}
+
+	if (s.contains("-") && bottom() >= 0)
+		return QValidator::Invalid; 
+	
 	// check length of decimal places
 	QChar point = locale().decimalPoint();
 	if (s.indexOf(point) != -1)
@@ -42,21 +47,70 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 	if (!isNumber)
 		return QValidator::Invalid;
 
+	bool isMaxExclusive = _inclusive == qmlInclusiveType::No || _inclusive == qmlInclusiveType::MinOnly;
+	bool isMinExclusive = _inclusive == qmlInclusiveType::No || _inclusive == qmlInclusiveType::MaxOnly;
+
 	if (value >= 0)
 	{
-		if (value > top())
+		if (value > top() || (isMaxExclusive && value == top()))
 			return QValidator::Invalid;
-		else if (value < bottom())
+		else if (value < bottom() || (isMinExclusive && value == bottom()))
 			return QValidator::Intermediate;
 	}
 	else
 	{
-		if (value < bottom())
+		if (value < bottom() || (isMinExclusive && value == bottom()))
 			return QValidator::Invalid;
-		else if (value > top())
+		else if (value > top() || (isMaxExclusive && value == top()))
 			return QValidator::Intermediate;
 	}
 
 	return QValidator::Acceptable;
 }
 
+QString	JASPDoubleValidator::validationMessage(const QString& fieldName)
+{
+	QString message = tr("The value must be ");
+	bool hasValidation = false;
+	if (!_isInf(bottom()))
+	{
+		hasValidation = true;
+		if (_inclusive == qmlInclusiveType::Yes || _inclusive == qmlInclusiveType::MinOnly)
+			message += tr("&#8805; %1").arg(bottom());
+		else
+			message += tr("&gt; %1").arg(bottom());
+	}
+
+	if (!_isInf(top()))
+	{
+		if (hasValidation)
+			message += tr(" and ");
+		hasValidation = true;
+		if (_inclusive == qmlInclusiveType::Yes || _inclusive == qmlInclusiveType::MaxOnly)
+			message += tr("&#8804; %1").arg(top());
+		else
+			message += tr("&lt; %1").arg(top());
+	}
+
+	if (!hasValidation)
+		message = tr("No validation error");
+
+	return message;
+}
+
+QString JASPDoubleValidator::_capitalize(const QString& str, bool toCapitalize)
+{
+	QString firstLetter = str.left(1);
+	if (toCapitalize)
+		firstLetter = firstLetter.toUpper();
+	else
+		firstLetter = firstLetter.toLower();
+	return firstLetter + str.right(str.length() - 1);
+}
+
+bool JASPDoubleValidator::_isInf(double value)
+{
+	static int intInfinity = 2147483647; // 2 ^ 32 - 1
+
+	return isinf(value) || int(value) == intInfinity || int(value) == -intInfinity;
+}

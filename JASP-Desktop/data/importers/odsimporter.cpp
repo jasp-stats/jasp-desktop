@@ -24,12 +24,16 @@
 
 #include <QXmlInputSource>
 
+#include "timers.h"
+
 namespace ods
 {
 
 // Implmemtation of Inporter base class.
 ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
 {
+	JASPTIMER_RESUME(ODSImporter::loadFile);
+
 	// Create new data set.
 	ODSImportDataSet * result = new ODSImportDataSet(this);
 
@@ -47,6 +51,8 @@ ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function
 
 	// Build the dictionary for sync.
 	result->buildDictionary();
+
+	JASPTIMER_STOP(ODSImporter::loadFile);
 
 	return result;
 }

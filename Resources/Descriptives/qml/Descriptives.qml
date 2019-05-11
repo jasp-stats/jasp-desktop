@@ -54,9 +54,9 @@ Form
 					name: "splitPlotColour"; label: qsTr("Color"); enableChildrenOnChecked: false
 					Group
 					{
-						CheckBox { name: "splitPlotBoxplot";	label: qsTr("Boxplot Element"); checked: true	}
-						CheckBox { name: "splitPlotViolin";		label: qsTr("Violin Element")					}
-						CheckBox { name: "splitPlotJitter";		label: qsTr("Jitter Element")					}
+						CheckBox { name: "splitPlotBoxplot";	label: qsTr("Boxplot element"); checked: true	}
+						CheckBox { name: "splitPlotViolin";		label: qsTr("Violin element")					}
+						CheckBox { name: "splitPlotJitter";		label: qsTr("Jitter element")					}
 					}
 				}
 			}

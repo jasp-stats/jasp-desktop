@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 
 JASPControl
 {
-	id: checkBox
+	id:					checkBox
 	controlType:		"CheckBox"
 	implicitWidth:		childrenOnSameRow
 							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
@@ -33,28 +33,30 @@ JASPControl
 							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:		focusIndicator
 	childControlsArea:	childControlsArea
-	
+
 	default property alias	content:				childControlsArea.children
 			property alias	control:				control
 			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
+			property alias	font:					label.font
 			property alias	label:					control.text
 			property alias	checked:				control.checked
-			property bool	childrenOnSameRow:	false
+			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
 			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
-	
-    signal clicked();
-		    
+
+	signal clicked();
+
 	CheckBox
 	{
-		id:			control
-		padding:	Theme.jaspControlPadding
-		focus:		true
-		onCheckedChanged: checkBox.clicked()
-		
-		Keys.onReturnPressed: clicked()
+		id:						control
+		padding:				Theme.jaspControlPadding
+		focus:					true
+		onCheckedChanged:		checkBox.clicked()
+
+		Keys.onReturnPressed:	checked = !checked
+		Keys.onEnterPressed:	checked = !checked
 
 		indicator: Rectangle
 		{
@@ -68,7 +70,7 @@ JASPControl
 			border.color:	control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor)					: Theme.disableControlBackgroundColor
 			border.width:	1
 			radius:			Theme.borderRadius
-            
+
 			Text
 			{
 				visible:					control.checked ? true : false
@@ -77,9 +79,9 @@ JASPControl
 				font:						Theme.font
 				anchors.horizontalCenter:	parent.horizontalCenter
 				renderType:					Text.QtRendering //Prettier
-            }
-        }
-		
+			}
+		}
+
 		Rectangle
 		{
 			id: focusIndicator
@@ -91,7 +93,7 @@ JASPControl
 			border.color: "transparent"
 			radius: Theme.jaspControlHighlightWidth
 		}
-        
+
 		contentItem: Label
 		{
 			id:					label
@@ -99,14 +101,14 @@ JASPControl
 			font:				Theme.font
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter
-        }
-		
-		background: Rectangle 
+		}
+
+		background: Rectangle
 		{
 			color: "transparent"
 		}
-    }
-		
+	}
+
 	GridLayout
 	{
 		id:				childControlsArea
@@ -115,9 +117,9 @@ JASPControl
 		columns:		childrenOnSameRow ? children.length : 1
 		rowSpacing:		Theme.rowGroupSpacing
 		columnSpacing:	Theme.columnGridSpacing
-		
+
 		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
-    }
+	}
 
 	Component.onCompleted:
 	{
@@ -135,11 +137,11 @@ JASPControl
 				childControlsArea.anchors.top = control.bottom
 				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
 				childControlsArea.anchors.left = control.left
-				childControlsArea.anchors.leftMargin = childControlsArea.childControlsPadding				
-			}				
+				childControlsArea.anchors.leftMargin = childControlsArea.childControlsPadding
+			}
 		}
-		
+
 	}
-	
-	
+
+
 }

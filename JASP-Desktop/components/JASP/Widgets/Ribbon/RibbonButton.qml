@@ -53,7 +53,13 @@ Rectangle
 			width:		(37 / 28) * height
 			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
 			opacity:	ribbonButton.enabled ? 1 : 0.5
-
+			smooth:		true
+			mipmap:		true
+			sourceSize
+			{
+				width:	backgroundImage.width * 2
+				height:	backgroundImage.height * 2
+			}
 
 			anchors
 			{
@@ -84,9 +90,9 @@ Rectangle
 
 			anchors.horizontalCenter	: backgroundImage.horizontalCenter
 			anchors.top					: backgroundImage.bottom
-			anchors.topMargin:			5 * preferencesModel.uiScale
+			anchors.topMargin			: 5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
-			font						: Theme.font
+			font						: Theme.fontRibbon
 			renderType					: Text.QtRendering //Because this might be transform and be ugly if done natively
 		}
 

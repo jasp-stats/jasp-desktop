@@ -4,12 +4,18 @@ import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
-Item {
+Item
+{
 
-	property bool toolseparator:	true
-	property bool helpbutton:		false
+	property bool	toolseparator:	true
 	property string headertext:		""
 	property string helpfile:		""
+
+	function showHelp()
+	{
+		if(helpfile !== "")
+			helpModel.showOrTogglePage(helpfile);
+	}
 
 	height:				Theme.menuHeaderHeight
 	anchors
@@ -24,19 +30,18 @@ Item {
 
 	Label
 	{
-		id:headLabel
-		text: headertext
+		id:				headLabel
+		text:			headertext
 
-		anchors.fill: parent
-		font.family: "SansSerif"
-		font.pixelSize: Theme.fontLabel.pixelSize
-		color: Theme.black
+		anchors.fill:	parent
+		font:			Theme.fontGroupTitle
+		color:			Theme.black
 	}
 
 	MenuButton
 	{
 		id:						idHelpButton
-		visible:				helpbutton
+		visible:				helpfile !== ""
 		height:					headLabel.height
 		width:					height
 		iconSource:				"qrc:/images/info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/

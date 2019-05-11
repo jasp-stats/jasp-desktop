@@ -21,8 +21,9 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
+#include "log.h"
 
-#include <QDebug>
+
 
 using namespace std;
 
@@ -44,7 +45,7 @@ QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int ro
 	
 	if (row >= _factors.length())
 	{
-		qDebug() << "Unknown row " << row << " in ListModelFactors. Length is " << _factors.length();
+		Log::log()  << "Unknown row " << row << " in ListModelFactors. Length is " << _factors.length() << std::endl;
 		return QVariant();
 	}
 	
@@ -98,11 +99,11 @@ void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vec
 			_factors.append(factorLevel);
 		}
 		
-		Factor extraLevel(tq("Level ") + levelIndex, true, true, levelIndex, &factorHeader);
+		Factor extraLevel(tq("Level %1").arg(levelIndex), true, true, levelIndex, &factorHeader);
 		_factors.append(extraLevel);
 	}
 	
-	Factor extraFactor(tq("RM Factor ") + factorIndex, true, false, factorIndex);
+	Factor extraFactor(tq("RM Factor %1").arg(factorIndex), true, false, factorIndex);
 	_factors.append(extraFactor);
 
 	endResetModel();
@@ -189,7 +190,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 {
 	if (row >= _factors.length())
 	{
-		qDebug() << "Index " << row << " in ListModelFactors is greater than the maximum " << _factors.length();
+		Log::log()  << "Index " << row << " in ListModelFactors is greater than the maximum " << _factors.length() << std::endl;
 		return;
 	}
 
@@ -215,7 +216,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 				_factors.removeAt(row);
 			}
 			else
-				val = tq("Level ") + QString::number(factor.index);
+				val = tq("Level %1").arg(factor.index);
 		}
 		else
 		{
@@ -234,7 +235,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 				}
 			}
 			else
-				val = tq("RM Factor ") + QString::number(factor.index);
+				val = tq("RM Factor %1").arg(factor.index);
 		}
 	}
 
@@ -291,13 +292,13 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 {
 	if (row >= _factors.length())
 	{
-		qDebug() << "Row " << row << " in ListModelFactors is greater than the maximum " << _factors.length();
+		Log::log()  << "Row " << row << " in ListModelFactors is greater than the maximum " << _factors.length() << std::endl;
 		return;
 	}
 	
 	beginResetModel();
 	
-	Factor& factor = _factors[row];
+	const Factor& factor = _factors[row];
 	
 	if (!factor.isVirtual)
 	{
@@ -314,8 +315,8 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 				_factors.removeAt(row);
 				while (row < _factors.length())
 				{
-					factor = _factors.at(row);
-					if (factor.isLevel)
+					const Factor& factor2 = _factors.at(row);
+					if (factor2.isLevel)
 						_factors.removeAt(row);
 					else
 						break;

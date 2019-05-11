@@ -28,7 +28,7 @@ Form
 	{
 		height: 300
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "scale"] }
 	}
 	
 	Group
@@ -93,7 +93,7 @@ Form
 			enabled: chronbach.checked
 			CheckBox {
 				name: "confAlpha"; label: qsTr("Cronbach's α analytical")
-				PercentField { name: "confAlphaLevel"; label: qsTr("Confidence"); defaultValue: 95; decimals: 1 }
+				CIField { name: "confAlphaLevel"; label: qsTr("Confidence"); decimals: 1 }
 			}
 		}
 	}

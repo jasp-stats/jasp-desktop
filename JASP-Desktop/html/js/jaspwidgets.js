@@ -868,15 +868,16 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 	},
 
-	startEdit: function () {
-		this.editing = true;
-		var element = this.$title();
+	startEdit: function (callbackWhenDone) {
+		this.editing	= true;
+		var element		= this.$title();
+
+		this["callback"] = callbackWhenDone;
+
 		element.addClass("toolbar-editing");
 		element[0].setAttribute("contenteditable", true);
-		var offset = element.offset();
-		var posY = offset.top + 5 - $(window).scrollTop() + 3;
-		var posX = offset.left + 5 - $(window).scrollLeft();
-		window.simulateClick(posX, posY, 3);
+
+		element.focus();
 
 		element.on("paste", function (event) {
 			var pastedData = event.originalEvent.clipboardData.getData('text/plain');
@@ -889,23 +890,31 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this._editEnding)
 			return;
 
-		this._editEnding = true;
-		var element = this.$title();
+		this._editEnding	= true;
+		var element			= this.$title();
 		element.removeClass("toolbar-editing");
 
 		element[0].setAttribute("contenteditable", false);
-		this.editing = false;
-		var selection = window.getSelection();
+		this.editing	= false;
+		var selection	= window.getSelection();
 		selection.removeAllRanges();
 
 		element.off("paste");
 
-		if (saveTitle)
-			this.title = element.text();
-		else
-			element.html(this.title);
+		if (saveTitle)	this.setTitle(element.text());
+		else			element.html(this.title);
 
 		this._editEnding = false;
+
+		if(this["callback"] !== undefined && this["callback"] !== null)
+		{
+			this["callback"](this.title);
+			this["callback"] = null;
+		}
+	},
+	
+	setTitle: function(title) {
+		this.title = title;
 	},
 
 	_looseFocus: function () {
@@ -1001,17 +1010,17 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.parent = parent;
 		this.options = {
 
-			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
-			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
-			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
-            hasSaveImg: (parent.isConvertible === undefined || parent.isConvertible()) && parent.saveImageClicked !== undefined,
-            hasEditImg: (parent.isEditable === undefined || parent.isEditable()) && parent.editImageClicked !== undefined,
-			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
-			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
-			hasRemoveAllAnalyses: parent.menuName === 'All',
-			hasRefreshAllAnalyses: parent.menuName === 'All',
-			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
-			hasLaTeXCode: (parent.hasLaTeXCode === undefined || parent.hasLaTeXCode()) && parent.latexCodeMenuClicked !== undefined,
+			hasCopy:				(parent.hasCopy			=== undefined || parent.hasCopy())			&& parent.copyMenuClicked		!== undefined,
+			hasCite:				(parent.hasCitation		=== undefined || parent.hasCitation())		&& parent.citeMenuClicked		!== undefined,
+			hasNotes:				(parent.hasNotes		=== undefined || parent.hasNotes())			&& parent.notesMenuClicked		!== undefined,
+			hasSaveImg:				(parent.isConvertible	=== undefined || parent.isConvertible())	&& parent.saveImageClicked		!== undefined,
+			hasEditImg:				(parent.isEditable		=== undefined || parent.isEditable())		&& parent.editImageClicked		!== undefined,
+			hasEditTitle:			(parent.hasEditTitle	=== undefined || parent.hasEditTitle())		&& parent.editTitleClicked		!== undefined,
+			hasRemove:				(parent.hasRemove		=== undefined || parent.hasRemove())		&& parent.removeMenuClicked		!== undefined,
+			hasCollapse:			(parent.hasCollapse		=== undefined || parent.hasCollapse())		&& parent.collapseMenuClicked	!== undefined,
+			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())		&& parent.latexCodeMenuClicked	!== undefined,
+			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
+			hasRefreshAllAnalyses:	parent.menuName			=== 'All',
 
 			objectName: parent.menuName,
 		};
@@ -1200,7 +1209,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	/**
-	* Returns the DOM tree element whos size attributes with be affected during resizing.
+	* Returns the DOM tree element whose size attributes with be affected during resizing.
 	This allows for the inheriting class to choose another element when required. See image.js
 	* @return {Object} DOM Tree element
 	*/

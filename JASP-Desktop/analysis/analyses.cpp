@@ -26,13 +26,40 @@
 
 #include <QFile>
 #include <QTimer>
-#include <QDebug>
+
 
 #include "utils.h"
 #include "tempfiles.h"
+#include "log.h"
 
 
 using namespace std;
+
+
+void Analyses::_makeBackwardCompatible(RibbonModel* ribbonModel, Version &version, Json::Value &analysisData)
+{
+	Version			V0_9_3('0', '9', '3', '0');
+
+	if (version <= V0_9_3)
+	{
+		std::string module = analysisData["module"].asString();
+		if (module.empty())
+			module = "Common";
+
+		// An old JASP file may still have references to the old Common module.
+		if (module == "Common")
+		{
+			QString	name = QString::fromStdString(analysisData["name"].asString());
+			module = ribbonModel->getModuleNameFromAnalysisName(name).toStdString();
+		}
+		else if (module == "MetaAnalysis")
+			module = "Meta Analysis";
+		else if (module == "SummaryStats")
+			module = "Summary Statistics";
+
+		analysisData["module"] = module;
+	}
+}
 
 
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
@@ -46,26 +73,29 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
-		QString			name				= QString::fromStdString(analysisData["name"].asString()),
-						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
-
-		// An old JASP file may still have references to the old Common module.
-		if (module == "Common")
-			module = ribbonModel->getModuleNameFromAnalysisName(name);
-
-		Json::Value &	optionsJson	= analysisData["options"],
-					&	versionJson	= analysisData["version"];
-
+		Json::Value	&	versionJson		= analysisData["version"];
 		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
+		_makeBackwardCompatible(ribbonModel, version, analysisData);
+
+
+		QString			name				= QString::fromStdString(analysisData["name"].asString()),
+						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
+						title				= QString::fromStdString(analysisData.get("title", "").asString());
+
+		Json::Value &	optionsJson	= analysisData["options"];
+
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
-		QString			title			= analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+
+		if(title == "")
+			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
 						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
 	}
 	else
 	{
+		std::string title			= analysisData.get("title", "").asString();
 		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-				analysis			= create(analysisEntry, id, status, false);
+				analysis			= create(analysisEntry, id, status, false, title);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
 		if(!dynMod->loaded())
@@ -89,9 +119,9 @@ Analysis* Analyses::create(const QString &module, const QString &name, const QSt
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title)
 {
-	Analysis *analysis = new Analysis(this, id, analysisEntry);
+	Analysis *analysis = new Analysis(this, id, analysisEntry, title);
 
 	analysis->setStatus(status);
 	analysis->setResults(analysisEntry->getDefaultResults());
@@ -131,6 +161,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
 	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
 	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
+	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
 	connect(analysis, &Analysis::saveImageSignal,					this, &Analyses::analysisSaveImage					);
 	connect(analysis, &Analysis::editImageSignal,					this, &Analyses::analysisEditImage					);
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
@@ -151,7 +182,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 		if (!_QMLFileWatcher.files().contains(filePath))
 		{
 			if (!_QMLFileWatcher.addPath(filePath))
-				qDebug() << "Could not watch: " << filePath;
+				Log::log()  << "Could not watch: " << filePath.toStdString() << std::endl;
 		}
 		connect(&_QMLFileWatcher, &QFileSystemWatcher::fileChanged, [=] () { this->_analysisQMLFileChanged(analysis); });
 	}
@@ -191,7 +222,7 @@ void Analyses::reload(Analysis *analysis)
 		endInsertRows();
 	}
 	else
-		std::cout << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
 }
 
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
@@ -408,7 +439,7 @@ void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitl
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(analysisName.toStdString()));
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(analysisTitle.toStdString()));
 	else							create(module, analysisName, analysisTitle);
 }
 
@@ -423,7 +454,7 @@ void Analyses::rCodeReturned(QString result, int requestId)
 		pair.first->runScriptRequestDone(result, pair.second);
 	}
 	else
-		qDebug() << "Unkown Returned Rcode request ID " << requestId;
+		Log::log()  << "Unkown Returned Rcode request ID " << requestId << std::endl;
 }
 
 void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName)
@@ -521,3 +552,18 @@ void Analyses::setVisible(bool visible)
 		unselectAnalysis();
 }
 
+void Analyses::analysisTitleChangedFromResults(int id, QString title)
+{
+	Analysis * analysis = get(id);
+
+	if(analysis != nullptr)
+		analysis->setTitleQ(title);
+}
+
+void Analyses::setChangedAnalysisTitle()
+{
+    Analysis * analysis = dynamic_cast<Analysis*>(QObject::sender());
+
+    if (analysis != nullptr)
+        emit analysisTitleChanged(analysis);
+}

@@ -34,7 +34,6 @@ SOURCES += \
     jasprcpp.cpp \
     RInside/MemBuf.cpp \
     RInside/RInside.cpp \
-    rinside_consolelogging.cpp \
     jaspResults/src/jaspHtml.cpp \
     jaspResults/src/jaspObject.cpp \
     jaspResults/src/jaspJson.cpp \
@@ -54,7 +53,6 @@ HEADERS += \
     RInside/RInsideCommon.h \
     RInside/RInsideConfig.h \
     RInside/RInsideEnvVars.h \
-    rinside_consolelogging.h \
     jaspResults/src/jaspHtml.h \
     jaspResults/src/jaspObject.h \
     jaspResults/src/jaspJson.h \

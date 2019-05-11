@@ -22,6 +22,7 @@
 #include <QQuickItem>
 #include <QAbstractListModel>
 #include <QTimer>
+#include "log.h"
 
 BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
@@ -87,7 +88,7 @@ void BoundQMLSlider::sliderMovedSlot()
 
 void BoundQMLSlider::_changeOptionHandler()
 {
-	qDebug() << "Slider set new value: " << _number;
+	Log::log()  << "Slider set new value: " << _number << std::endl;
 	_boundTo->setValue(_number);
 	_changing = false;
 }

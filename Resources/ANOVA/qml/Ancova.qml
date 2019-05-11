@@ -79,7 +79,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", "covariates"] }
-			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
+			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction" }
 		}
 		
 		DropDown
@@ -119,7 +119,7 @@ Form
 		{
 			name: "confidenceIntervalsContrast"; label: qsTr("Confidence intervals")
 			childrenOnSameRow: true
-			PercentField { name: "confidenceIntervalIntervalContrast"; defaultValue: 95 }
+			CIField { name: "confidenceIntervalIntervalContrast" }
 		}
 	}
 	
@@ -138,9 +138,9 @@ Form
         {
             CheckBox
             {
-                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence Intervals")
+                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
                 childrenOnSameRow: true
-                PercentField {name: "confidenceIntervalIntervalPostHoc"; defaultValue: 95 }
+                CIField {name: "confidenceIntervalIntervalPostHoc" }
             }
             CheckBox
             {
@@ -157,7 +157,7 @@ Form
             }
         }
 
-        CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect Size") }
+		CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size") }
 		
 		Group
 		{
@@ -186,10 +186,10 @@ Form
 		VariablesForm {
 			height: 200
             AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");         source: ["fixedFactors", "covariates"]	}
-			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal axis"); singleVariable: true	}
-            AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate lines");  singleVariable: true
+			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true	}
+			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate Lines");  singleVariable: true
                                     allowedColumns: ["ordinal", "nominal"]		}
-            AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate plots");  singleVariable: true
+			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots");  singleVariable: true
                                     allowedColumns: ["ordinal", "nominal"]		}
 		}
 		
@@ -204,9 +204,9 @@ Form
 					name: "errorBarType"
 					RadioButton
 					{
-                        value: "confidenceInterval"; label: qsTr("Confidence Intervals"); checked: true
+						value: "confidenceInterval"; label: qsTr("Confidence intervals"); checked: true
 						childrenOnSameRow: true
-                        PercentField { name: "confidenceIntervalInterval"; defaultValue: 95 }
+                        CIField { name: "confidenceIntervalInterval" }
 					}
 					RadioButton { value: "standardError"; label: qsTr("Standard error") }
 				}
@@ -219,11 +219,10 @@ Form
 		title: qsTr("Additional Options")
 		columns: 1
 		
-		Label { text: qsTr("Marginal means") }
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: [{ name: "modelTerms", discard: "covariates" }] }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: [{ name: "modelTerms", discard: "covariates" }] }
 			AssignedVariablesList {	 name: "marginalMeansTerms" }
 		}
 		
@@ -250,8 +249,8 @@ Form
 				label: qsTr("Confidence interval adjustment")
 				values: [
 					{ label: "None",		value: "none"},
-					{ label: "Bonferro",	value: "bonferroni"},
-					{ label: "Sidak",		value: "sidak"}
+					{ label: "Bonferroni",	value: "bonferroni"},
+					{ label: "Šidák",		value: "sidak"}
 				]
 			}
 		}
@@ -280,9 +279,9 @@ Form
 		{
 			height: 160
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors");	source: "fixedFactors" }
-			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple effect factor"); singleVariable: true }
-			AssignedVariablesList {	name: "moderatorFactorOne";	title: qsTr("Moderator factor 1"); singleVariable: true }
-			AssignedVariablesList {	name: "moderatorFactorTwo";	title: qsTr("Moderator factor 2"); singleVariable: true }
+			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple Effect Factor"); singleVariable: true }
+			AssignedVariablesList {	name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1"); singleVariable: true }
+			AssignedVariablesList {	name: "moderatorFactorTwo";	title: qsTr("Moderator Factor 2"); singleVariable: true }
 		}
 	}
 	
@@ -293,11 +292,10 @@ Form
 		
 		Group
 		{
-			Label { text: qsTr("Kruskal-Wallis test") }
 			VariablesForm
 			{
 				height: 200
-				AvailableVariablesList { name: "kruskalVariablesAvailable"; source: "fixedFactors" }
+				AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis Test"); source: "fixedFactors" }
 				AssignedVariablesList {	name: "kruskalVariablesAssigned" }
 			}
 		}

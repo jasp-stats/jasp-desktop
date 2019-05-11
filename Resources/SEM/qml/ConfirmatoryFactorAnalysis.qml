@@ -33,7 +33,9 @@ Form
     
 	Section
 	{
-		title: qsTr("Second-order factor")
+		title: qsTr("Second-Order Factor")
+        debug: true
+
         VariablesForm
         {
             id: secondorder
@@ -72,7 +74,7 @@ Form
 
 	Section
 	{
-        title: qsTr("Model options")
+		title: qsTr("Model Options")
         ColumnLayout {
             GridLayout
             {
@@ -87,9 +89,9 @@ Form
                         label: qsTr("Factor Scaling")
                         name: "identify"
                         values: [
-                            { label: "Factor variances",  value: "factor"  },
-                            { label: "Marker variable",  value: "marker"  },
-                            { label: "Effects coding",   value: "effects" }
+							{ label: qsTr("Factor variances"),	value: "factor"  },
+							{ label: qsTr("Marker variable"),	value: "marker"  },
+							{ label: qsTr("Effects coding"),	value: "effects" }
                         ]
                     }
                 }
@@ -114,10 +116,10 @@ Form
     }
     
 	Section {
-        title: qsTr("Additional output")
+		title: qsTr("Additional Output")
             GroupBox
             {
-                title: qsTr("Additional fit measures")
+				title: qsTr("Additional Fit Measures")
                 CheckBox { label: qsTr("AIC")   ; name: "aic"   }
                 CheckBox { label: qsTr("BIC")   ; name: "bic"   }
                 CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }

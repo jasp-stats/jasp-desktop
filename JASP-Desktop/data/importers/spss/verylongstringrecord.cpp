@@ -61,14 +61,5 @@ void VeryLongStringRecord::process(SPSSImporter* importer, SPSSImportDataSet *da
 			strLengths.insert(pair<string, size_t>(i->first, atol(i->second.c_str())));
 	}
 	dataset->veryLongColsDat(strLengths);
-
-#ifdef JASP_DEBUG
-//	DEBUG_COUT3("Found ", strLengths.size(), " tuples:");
-//	for (map<string, size_t>::const_iterator i = strLengths.begin(); i != strLengths.end(); i++)
-//	{
-//		DEBUG_COUT5("... name = \"", i->first, "\" value = ", i->second, ".");
-//	}
-#endif
-
 }
 

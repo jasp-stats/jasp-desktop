@@ -22,6 +22,7 @@
 #include <QQuickItem>
 #include <QQmlProperty>
 #include <QTimer>
+#include "log.h"
 
 QMLListViewDraggable::QMLListViewDraggable(QQuickItem* item, AnalysisForm* form)
 	: QMLListView(item, form)
@@ -80,7 +81,7 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	
 	if (!dropModel)
 	{
-		qDebug() << "No drop element!";
+		Log::log()  << "No drop element!" << std::endl;
 		return;
 	}
 	
@@ -146,7 +147,7 @@ void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* t
 	}
 	else
 	{
-		qDebug() << (!targetModel ? "no dropModel" : "no indexes");
+		Log::log()  << (!targetModel ? "no dropModel" : "no indexes") << std::endl;
 	}
 }
 

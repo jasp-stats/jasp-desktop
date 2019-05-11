@@ -43,7 +43,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Model cut-offs")
+		title: qsTr("Model Cut-offs")
 		IntegerField { name: "maxModels";					label: qsTr("Display best") ;  defaultValue: 2; afterLabel: qsTr("models"); min: 2 }
 		DoubleField { name: "posteriorProbabilityCutOff";	label: qsTr("Posterior prob."); defaultValue: 0.1 ; max: 0.5 }
 	}
@@ -57,7 +57,7 @@ Form
 			height: 200
 			
 			AvailableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
-			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); width: parent.width * 5 / 9; listViewType: "Interaction" }
+			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model Terms"); width: parent.width * 5 / 9; listViewType: "Interaction" }
 		}
 	}
 	
@@ -72,12 +72,7 @@ Form
 			CheckBox
 			{
 				name: "regressionCoefficientsCredibleIntervals"; label: qsTr("Credible intervals")
-				PercentField
-				{
-					name: "regressionCoefficientsCredibleIntervalsInterval"
-					label: qsTr("Interval");
-					defaultValue: 95
-				}
+				CIField { name: "regressionCoefficientsCredibleIntervalsInterval"; label: qsTr("Interval") }
 			}
 		}
 
@@ -98,7 +93,7 @@ Form
 				CheckBox
 				{
 					name: "regressionCoefficientsSubmodelCredibleIntervals"; label: qsTr("Credible intervals")
-					PercentField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; label: qsTr("Interval"); defaultValue: 95 }
+					CIField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; label: qsTr("Interval") }
 				}
 			}
 		}

@@ -29,15 +29,15 @@ JASPControl
 	activeFocusOnTab:	false
 	childControlsArea:	contentArea
 
-	default property alias	content:		contentArea.children
-			property alias	buttons:		buttonGroup.buttons
+	default property alias	content:				contentArea.children
+			property alias	buttons:				buttonGroup.buttons
 			property bool	radioButtonsOnSameRow:	false
-			property alias	columns:		contentArea.columns
-			property bool	alignChildrenTopLeft: true
-			property string title:			""
-			property alias	text:			control.title
-			property int	leftPadding:	Theme.groupContentPadding
-			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
+			property alias	columns:				contentArea.columns
+			property bool	alignChildrenTopLeft:	true
+			property string title:					""
+			property alias	text:					control.title
+			property int	leftPadding:			Theme.groupContentPadding
+			property alias	alignChildrenTopLeft:	contentArea.alignChildrenTopLeft
 
     signal clicked(var item)
 

@@ -15,6 +15,23 @@ test_that("Main table results match", {
   )
 })
 
+test_that("Descriptives table results match", {
+  options <- jasptools::analysisOptions("MultinomialTestBayesian")
+  options$factor <- "debString"
+  options$countProp <- "descProps"
+  options$credibleInterval <- TRUE
+  options$descriptives <- TRUE
+  options$credibleIntervalInterval <- 0.10
+  options$priorCounts <- list(list(levels =letters,
+                                   name   = c('Counts'),
+                                   values = rep(1, length(letters))))
+  results <- jasptools::run("MultinomialTestBayesian", "test.csv", options)
+  table <- results[["results"]][["multinomialDescriptivesTable"]][["data"]]
+  expect_equal_tables(table[[1]],
+                      list(0.0384615384615385, "a", 0.0439729779027027, 0.05, 0.0594407448532589)
+  )
+})
+
 test_that("Descriptives plots match", {
   options <- jasptools::analysisOptions("MultinomialTestBayesian")
   options$factor <- "contBinom"

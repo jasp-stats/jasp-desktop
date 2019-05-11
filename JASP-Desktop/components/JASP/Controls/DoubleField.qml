@@ -23,15 +23,17 @@ import JASP 1.0
 
 TextField
 {
+	id: doubleField
 	property double defaultValue:		0
 	property alias	doubleValidator:	doubleValidator
 	property bool	negativeValues:		false
 	property double	min:				negativeValues ? -Infinity : 0
 	property double	max:				Infinity
 	property int	decimals:			3
-    
+	property string inclusive:			"yes"
+
 					inputType:			"number"
-					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals }
-					value:				Number.parseFloat(defaultValue);
+					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals; inclusive: doubleField.inclusive }
+					lastValidValue:		defaultValue
 					fieldWidth:			Theme.numericFieldWidth
 }

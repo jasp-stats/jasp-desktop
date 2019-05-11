@@ -1,6 +1,7 @@
 #include "computedcolumnsmodel.h"
 #include "utilities/jsonutilities.h"
 #include "sharedmemory.h"
+#include "log.h"
 
 ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent)
 	: QObject(parent), _analyses(analyses)
@@ -19,7 +20,7 @@ ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent
 
 QString ComputedColumnsModel::computeColumnRCode()
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return "";
 
 	return QString::fromStdString(_computedColumns->getRCode(_currentlySelectedName.toStdString()));
@@ -27,7 +28,7 @@ QString ComputedColumnsModel::computeColumnRCode()
 
 QString ComputedColumnsModel::computeColumnRCodeCommentStripped()
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return "";
 
 	return QString::fromStdString(_computedColumns->getRCodeCommentStripped(_currentlySelectedName.toStdString()));
@@ -35,7 +36,7 @@ QString ComputedColumnsModel::computeColumnRCodeCommentStripped()
 
 bool ComputedColumnsModel::computeColumnUsesRCode()
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return "";
 
 	return _computedColumns->usesRCode(_currentlySelectedName.toStdString());
@@ -43,7 +44,7 @@ bool ComputedColumnsModel::computeColumnUsesRCode()
 
 QString ComputedColumnsModel::computeColumnJson()
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return "";
 
 	return QString::fromStdString(_computedColumns->getConstructorJson(_currentlySelectedName.toStdString()));
@@ -51,7 +52,7 @@ QString ComputedColumnsModel::computeColumnJson()
 
 QString ComputedColumnsModel::computeColumnError()
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return "";
 
 	return QString::fromStdString(_computedColumns->getError(_currentlySelectedName.toStdString()));
@@ -64,7 +65,7 @@ QString ComputedColumnsModel::computeColumnNameSelected()
 
 void ComputedColumnsModel::setComputeColumnRCode(QString newCode)
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return;
 
 	if(_computedColumns->setRCode(_currentlySelectedName.toStdString(), newCode.toStdString()))
@@ -76,7 +77,7 @@ void ComputedColumnsModel::setComputeColumnRCode(QString newCode)
 
 void ComputedColumnsModel::setComputeColumnJson(QString newJson)
 {
-	if(_currentlySelectedName == "" || _computedColumns == NULL)
+	if(_currentlySelectedName == "" || _computedColumns == nullptr)
 		return;
 
 	if(_computedColumns->setConstructorJson(_currentlySelectedName.toStdString(), newJson.toStdString()))
@@ -100,7 +101,7 @@ void ComputedColumnsModel::setComputeColumnNameSelected(QString newName)
 bool ComputedColumnsModel::areLoopDependenciesOk(std::string columnName)
 {
 
-	return areLoopDependenciesOk(columnName, (*_computedColumns)[columnName].analysis() != NULL ? "" : (*_computedColumns)[columnName].rCodeCommentStripped());
+	return areLoopDependenciesOk(columnName, (*_computedColumns)[columnName].analysis() != nullptr ? "" : (*_computedColumns)[columnName].rCodeCommentStripped());
 }
 
 bool ComputedColumnsModel::areLoopDependenciesOk(std::string columnName, std::string code)
@@ -188,7 +189,7 @@ void ComputedColumnsModel::setDataSetPackage(DataSetPackage * package)
 	DataSetPackage * oldPackage = _package;
 
 	_package = package;
-	_computedColumns = _package == NULL ? NULL : _package->computedColumnsPointer();
+	_computedColumns = _package == nullptr ? nullptr : _package->computedColumnsPointer();
 
 	if(oldPackage != _package)
 		emit datasetLoadedChanged();
@@ -294,7 +295,7 @@ void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnNa
 
 void ComputedColumnsModel::checkForDependentAnalyses(std::string columnName)
 {
-	assert(_analyses != NULL);
+	assert(_analyses != nullptr);
 
 	_analyses->applyToAll([&](Analysis * analysis)
 		{
@@ -404,8 +405,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 			try {	theData = SharedMemory::enlargeDataSet(theData);	}
 			catch (std::exception &e)	{	throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
 		}
-		catch (std::exception e)	{	std::cout << "ComputedColumnsModel::createComputedColum std::exception: " << e.what()	<< std::endl; 	}
-		catch (...)					{	std::cout << "ComputedColumnsModel::createComputedColum some other exception\n "		<< std::endl;	}
+		catch (std::exception e)	{	Log::log() << "ComputedColumnsModel::createComputedColum std::exception: " << e.what()	<< std::endl; 	}
+		catch (...)					{	Log::log() << "ComputedColumnsModel::createComputedColum some other exception\n "		<< std::endl;	}
 	}
 	while (!success);
 
@@ -473,7 +474,7 @@ bool ComputedColumnsModel::showAnalysisFormForColumn(QString columnName)
 	{
 		ComputedColumn * col = &(*_computedColumns)[columnName.toStdString()];
 
-		if(col->analysis() != NULL)
+		if(col->analysis() != nullptr)
 		{
 			emit showAnalysisForm(col->analysis());
 			return true;
@@ -496,6 +497,9 @@ void ComputedColumnsModel::setLastCreatedColumn(QString lastCreatedColumn)
 
 void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 {
+	if(_computedColumns == nullptr)
+		return;
+
 	std::set<QString> colsToRemove;
 
 	for(auto * col : *_computedColumns)

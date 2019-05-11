@@ -6,79 +6,48 @@ import JASP.Widgets 1.0
 
 RectangularButton
 {
-	property bool clickOnHover: false
-	property bool clickWhenFocussed: true;
-	property bool isIcon: true
-	property bool hasSubMenu: false
+	property bool hasSubMenu:			false
+	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered
 
-	color:
-	{
-		if (isIcon)
-		{
-			if (_pressed || _showHovered) return Theme.buttonColorPressed
-			else return "transparent"
-		}
-		else
-		{
-			if (_pressed) return Theme.buttonMenuColorPressed;
-			else if (selected)
-			{
-				if (activeFocus) return Theme.buttonMenuColorFocus;
-				else return Theme.buttonMenuColorSelected;
-			}
-			else if (_showHovered) return Theme.buttonMenuColorHovered;
-			else return "transparent";
-		}
-	}
-
+	id: root
+	font:			Theme.fontRibbon
+	color:			(_pressed || activeFocus) ? Theme.buttonColorPressed : (showHovered || selected) ? Theme.buttonColorHovered : "transparent"
 	border.width:	0
 	centerText:		false
 
+	signal hoverClicked();
+	onHoverClicked:			forceActiveFocus();
+
 	Timer
 	{
-        id: delayOnhoverTimer
-		interval: Theme.hoverTime
-        running: false
-        repeat: false
-        onTriggered: {
-			if (hovered) forceActiveFocus();
-        }
+		id:					delayOnhoverTimer
+		interval:			Theme.hoverTime
+		running:			false
+		repeat:				false
+		onTriggered:		if (hovered && root.hasSubMenu) root.hoverClicked();
     }
 
-	Keys.onSpacePressed: { clicked();  event.accepted = true;}
-	Keys.onEnterPressed: { clicked();  event.accepted = true;}
-	Keys.onReturnPressed: { clicked();  event.accepted = true;}
-
-	onHoveredChanged:
-	{
-		if (clickOnHover)
-		{
-			if (hovered)
-				delayOnhoverTimer.start()
-			else
-				delayOnhoverTimer.stop()
-		}
-    }
-
-	onActiveFocusChanged:
-	{
-		if (clickOnHover)
-		{
-			if (activeFocus && clickWhenFocussed)
-				clicked()
-		}
-	}
+	onClicked:				delayOnhoverTimer.stop();
+	onHoveredChanged:		if (hasSubMenu)
+							{
+								if (hovered)	delayOnhoverTimer.start()
+								else			delayOnhoverTimer.stop()
+							}
 
 	Image
 	{
-		anchors.verticalCenter: parent.verticalCenter
-		anchors.right: parent.right
-		anchors.rightMargin: Theme.generalAnchorMargin
-		height: Theme.subMenuIconHeight
-		width: height
-		source: "qrc:/icons/large-arrow-right.png"
-		visible: hasSubMenu
-		opacity: enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
+		anchors.verticalCenter:	parent.verticalCenter
+		anchors.right:			parent.right
+		anchors.rightMargin:	Theme.generalAnchorMargin
+		height:					Theme.subMenuIconHeight
+		width:					height
+		source:					root.hasSubMenu ? "qrc:/icons/large-arrow-right.png" : ""
+		visible:				hasSubMenu
+		opacity:				enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
+		smooth:					true
+		mipmap:					true
+		sourceSize.width:		width * 2
+		sourceSize.height:		height * 2
 	}
 
 }

@@ -286,7 +286,7 @@ svg > text
 	margin-right: 1.7em ;
 }
 
-.jasp-analysis {
+:not(.error-state) > .jasp-analysis {
 
 	margin: 0 .7em .7em .7em ;
 	padding: 0 1em 1em 1em ;
@@ -367,28 +367,29 @@ div.jasp-image-image.no-data {
 	background-image: url('images/empty-plot.png') ;
 	background-repeat: no-repeat;
 	background-size: contain;
+	position: relative;
+	max-height: 480px;
+	max-width: 480px;
 }
 
 .error-state {
-	color: silver ;
+	color: silver;
+	min-height: 200px;
+	min-width: 500px;
 }
 
-.exception .error-message-box {
+.fatalError.error-message-box {
 	border-width: 3px;
 	border-style: double;
 }
 
-.analysis-error {
+.analysis-error-message {
+	min-width: 400px;
+	max-width: 1000px;
 	position: absolute;
 	top: 60px;
-	left: 40px;
-	right: 40px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.analysis-error.analysis-error-top-max {
-	top: 200px;
+	left: 50px;
+	margin-right: 50px;
 }
 
 .error-message-positioner {
@@ -401,9 +402,7 @@ div.jasp-image-image.no-data {
 	z-index: 100 ;
 }
 
-
-
-.jasp-image-holder .error-message-positioner {
+.jasp-image-image .error-message-positioner {
 
 	position: absolute ;
 	top: 25% ;
@@ -422,10 +421,6 @@ div.jasp-image-image.no-data {
 	border-radius: .4em ;
 	min-width: 300px ;
 	white-space: normal;
-}
-
-.error-message-message {
-
 }
 
 .stack-trace-selector div,

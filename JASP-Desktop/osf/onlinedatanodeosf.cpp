@@ -10,7 +10,7 @@
 #include <QUrlQuery>
 
 #include <stdexcept>
-#include <iostream>
+
 
 using namespace std;
 

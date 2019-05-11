@@ -22,7 +22,7 @@
 #include "interactionmodel.h"
 
 #include <QQmlProperty>
-#include <QDebug>
+
 
 QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form) 
 	: QObject(form)

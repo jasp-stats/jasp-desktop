@@ -1,3 +1,4 @@
+import JASP.Controls 1.0
 import QtQuick.Controls 2.2
 import QtQuick 2.9
 import JASP.Theme 1.0
@@ -119,15 +120,29 @@ Item {
 		anchors.bottom: parent.bottom
 		anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 
-		width: columns.width
+		width: columns.width + columnsLeftScrollBar.width
+
+		JASPScrollBar
+		{
+			id:				columnsLeftScrollBar
+			flickable:		columns
+			manualAnchor:	true
+
+			anchors
+			{
+				top:		parent.top
+				left:		parent.left
+				bottom:		parent.bottom
+			}
+		}
 
 		ElementView
 		{
-			id: columns
-			model: columnsModel
-			anchors.top: parent.top
-			anchors.left: parent.left
-			anchors.bottom: parent.bottom
+			id:				columns
+			model:			columnsModel
+			anchors.top:	parent.top
+			anchors.left:	columnsLeftScrollBar.right
+			anchors.bottom:	parent.bottom
 		}
 	}
 
@@ -306,22 +321,39 @@ Item {
 		anchors.top: columnsRow.bottom
 		anchors.right: parent.right
 		anchors.bottom: parent.bottom
-		anchors.rightMargin: 4
-		//border.width: 1
-		//border.color: "grey"
+		anchors.rightMargin: 4 * preferencesModel.uiScale
 
-		width: functieLijst.width + 4
+		width: functieLijst.width + anchors.rightMargin + functionsRightScrollBar.width
+
+		JASPScrollBar
+		{
+			id:				functionsRightScrollBar
+			flickable:		functieLijst
+			manualAnchor:	true
+
+			anchors
+			{
+				top:			parent.top
+				right:			parent.right
+				bottom:			parent.bottom
+				margins:		functieLijst.anchors.margins
+				bottomMargin:	functieLijst.anchors.bottomMargin
+			}
+		}
 
 		ElementView
 		{
-			id: functieLijst
-			anchors.top: parent.top
-			anchors.right: parent.right
-			anchors.bottom: parent.bottom
-			anchors.margins: 2
-			anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+			id:						functieLijst
+			anchors
+			{
+				top:			parent.top
+				right:			functionsRightScrollBar.left
+				bottom:			parent.bottom
+				margins:		2 * preferencesModel.uiScale
+				bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+			}
 
-			width: 80
+			width:	80 * preferencesModel.uiScale //for init or something?
 		}
 	}
 

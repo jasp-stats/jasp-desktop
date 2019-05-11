@@ -91,7 +91,7 @@ JASPControl
 			columnHeaderDelegate: Rectangle
 			{
 				color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
-				Text { text: headerText; anchors.centerIn: parent }
+				Text { text: headerText; anchors.centerIn: parent; font: Theme.font }
 				MouseArea
 				{
 					anchors.fill: parent
@@ -116,6 +116,7 @@ JASPControl
 					elide:					Text.ElideRight;
 					width:					parent.width
 					height:					parent.width
+					font:					Theme.font
 				}
 
 				ToolTip.visible:			mouseAreaItem.containsMouse

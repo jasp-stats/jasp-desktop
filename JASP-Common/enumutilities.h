@@ -6,7 +6,7 @@
 //Also made sure the methods and map and all are defined only in the cpp file (when defining ENUM_DECLARATION_CPP first that is)
 
 #include <algorithm>
-#include <iostream>
+
 #include <map>
 #include <sstream>
 #include <string>

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include <QDebug>
+
 #include "ribbonbutton.h"
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"

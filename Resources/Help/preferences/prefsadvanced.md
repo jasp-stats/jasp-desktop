@@ -33,3 +33,8 @@ can be added from another specified location.
 The checkbox decides if package metadata should be generated every time.
 Disable this option if you are transforming your R-package to a JASP Module
 or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
+
+### Logging
+You can check the box  "Log to file" and then JASP will start logging to files. You might need to restart JASP to have it fully applied.
+The number in the spinbox "Max logfiles to keep" defines how many logfiles will be kept at maximum to conserve diskspace. Any extra, older, logfiles will be removed.
+These files can be viewed by pressing "Show logs".

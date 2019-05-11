@@ -21,42 +21,39 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 {
     if (identical(.Platform$OS.type, "windows"))
             compiler::enableJIT(0)
-    dataKey <- fromJSON(dataKey)
-    options <- fromJSON(options)
+
+    dataKey     <- fromJSON(dataKey)
+    options     <- fromJSON(options)
     resultsMeta <- fromJSON(resultsMeta)
-    stateKey <- fromJSON(stateKey)
+    stateKey    <- fromJSON(stateKey)
 
 
   if (base::exists(".requestStateFileNameNative")) {
-    location <- .fromRCPP(".requestStateFileNameNative")
-    root <- location$root
-    base::Encoding(root) <- "UTF-8"
-    oldwd <- getwd()
+    location              <- .fromRCPP(".requestStateFileNameNative")
+    root                  <- location$root
+    base::Encoding(root)  <- "UTF-8"
+    oldwd                 <- getwd()
     setwd(root)
     on.exit(setwd(oldwd))
   }
 
-  analysis <- eval(parse(text=name))
+  analysis      <- eval(parse(text=name))
 
-  env <- new.env()
-  env$callback <- callback
-  env$time <- Sys.time()
-  env$i <- 1
+  env           <- new.env()
+  env$callback  <- callback
+  env$time      <- Sys.time()
+  env$i         <- 1
 
-  if (perform == "init") {
-
+  if (perform == "init")
     the.callback <- function(...) list(status="ok")
-
-  } else {
-
+  else {
     the.callback <- function(...) {
-
       t <- Sys.time()
 
       cat(paste("Callback", env$i, ":", t - env$time, "\n"))
 
-      env$time <- t
-      env$i <- env$i + 1
+      env$time  <- t
+      env$i     <- env$i + 1
 
       return(env$callback(...))
     }
@@ -65,10 +62,8 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
   dataset <- NULL
   if (! is.null(dataKey)) {
     cols <- .getDataSetCols(dataKey, options)
-    if (perform == "run")
-      dataset <- do.call(.readDataSetToEnd, cols)
-    else
-      dataset <- do.call(.readDataSetHeader, cols)
+    if (perform == "run") dataset <- do.call(.readDataSetToEnd, cols)
+    else                  dataset <- do.call(.readDataSetHeader, cols)
   }
 
   oldState <- NULL
@@ -84,12 +79,11 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
     }
 
-    results <- list()
-    results[["results"]] <- emptyResults
+    results                         <- list()
+    results[["results"]]            <- emptyResults
+    results[["status"]]             <- "inited"
     results[["results"]][["title"]] <- title
-    results[["status"]] <- "inited"
-
-    json <- try({ toJSON(results) })
+    json                            <- try({ toJSON(results) })
 
     if (inherits(results, "try-error"))
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
@@ -109,24 +103,23 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
   },
   error=function(e) e)
+	
+	if (inherits(results, "error")) {		
+		
+		if (inherits(results, "validationError")) {
+			errorStatus <- "validationError"
+			errorMessage <- results$message
+		} else {
+			errorStatus <- "fatalError"
+			error <- .sanitizeForJson(results)
 
-  if (inherits(results, "expectedError")) {
+			stackTrace <- .sanitizeForJson(results$stackTrace)
+			stackTrace <- paste(stackTrace, collapse="<br><br>")
 
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
-
-    errorResponse
-
-  } else if (inherits(results, "error")) {
-
-    error <- .sanitizeForJson(results)
-
-    stackTrace <- .sanitizeForJson(results$stackTrace)
-    stackTrace <- paste(stackTrace, collapse="<br><br>")
-
-    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-
-    errorResponse
+			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
+		}
+		
+		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
 
   } else if (is.null(results)) {
 
@@ -165,7 +158,9 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
       results <- .addCitationToResults(results)
     }
 
+    results[["results"]][["title"]] <- title
 		json <- try({ toJSON(results) })
+
     if (class(json) == "try-error")
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
     else
@@ -177,23 +172,24 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
-
-	if (identical(.Platform$OS.type, "windows"))
+  if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 
+  jaspResultsCPP        <- jaspResultsModule$create_cpp_jaspResults(name, .retrieveState())
+  jaspResults           <- jaspResultsR$new(jaspResultsCPP)
+  jaspResultsCPP$title  <- title
 
-  jaspResults <- jaspResultsR$new(jaspResultsModule$create_cpp_jaspResults(name, .retrieveState()))
-  jaspResults$.__enclos_env__$private$setOptions(options)
+  jaspResultsCPP$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)
   options     <- rjson::fromJSON(options)
   stateKey    <- rjson::fromJSON(stateKey)
 
   if (base::exists(".requestStateFileNameNative")) {
-    location <- .fromRCPP(".requestStateFileNameNative")
-    root <- location$root
-    base::Encoding(root) <- "UTF-8"
-    oldwd <- getwd()
+    location              <- .fromRCPP(".requestStateFileNameNative")
+    root                  <- location$root
+    base::Encoding(root)  <- "UTF-8"
+    oldwd                 <- getwd()
     setwd(root)
     on.exit(setwd(oldwd))
   }
@@ -202,7 +198,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
   dataset <- NULL
   if (! is.null(dataKey)) {
-    cols <- .getDataSetCols(dataKey, options)
+    cols    <- .getDataSetCols(dataKey, options)
     dataset <- do.call(.readDataSetToEnd, cols)
   }
 
@@ -212,50 +208,41 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
       error=function(e) e
     )
 
-  if (inherits(analysisResult, "expectedError")) {
-
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", analysisResult$message, "\" } }", sep="")
-
-    jaspResults$.__enclos_env__$private$setErrorMessage(analysisResult$message)
-    jaspResults$.__enclos_env__$private$send()
-
-    return(errorResponse)
-
-  }
-  else if (inherits(analysisResult, "error"))
-  {
-
-    error <- .sanitizeForJson(analysisResult)
-
-    stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
-    stackTrace <- paste(stackTrace, collapse="<br><br>")
-
-    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-
-    jaspResults$.__enclos_env__$private$setErrorMessage(errorMessage)
-    jaspResults$.__enclos_env__$private$send()
-
-    return(errorResponse)
-
+  if (inherits(analysisResult, "error")) {		
+		
+		if (inherits(analysisResult, "validationError")) {
+			errorStatus <- "validationError"
+			errorMessage <- analysisResult$message
+		} else {
+			errorStatus <- "fatalError"
+			
+			error <- .sanitizeForJson(analysisResult)
+			stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
+			stackTrace <- paste(stackTrace, collapse="<br><br>")
+			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
+		}
+		
+		jaspResultsCPP$setErrorMessage(errorMessage, errorStatus)
+    jaspResultsCPP$send()
+		
+		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
   }
   else
   {
-    newState <- list()
-    newState[["figures"]]         <- jaspResults$.__enclos_env__$private$getPlotObjectsForState()
-    newState[["other"]]           <- jaspResults$.__enclos_env__$private$getOtherObjectsForState()
-    jaspResults$.__enclos_env__$private$setRelativePathKeep(.saveState(newState)$relativePath)
+    newState                        <- list()
+    newState[["figures"]]           <- jaspResultsCPP$getPlotObjectsForState()
+    newState[["other"]]             <- jaspResultsCPP$getOtherObjectsForState()
+    jaspResultsCPP$relativePathKeep <- .saveState(newState)$relativePath
 
-    returnThis <- list(keep=jaspResults$.__enclos_env__$private$getKeepList()) #To keep the old keep-code functional we return it like this
+    returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
 
-    jaspResults$.__enclos_env__$private$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
-
-
-  json <- try({ toJSON(returnThis) })
-  if (class(json) == "try-error")
-    return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
-  else
-    return(json)
+    jaspResultsCPP$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
+		
+		json <- try({ toJSON(returnThis) })
+		if (class(json) == "try-error")
+			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+		else
+			return(json)
   }
 }
 
@@ -263,20 +250,19 @@ initEnvironment <- function() {
 	Sys.setlocale("LC_CTYPE", "UTF-8")
 	packages <- c("BayesFactor") # Add any package that needs pre-loading
 
-	for (package in packages) {
-		if (base::isNamespaceLoaded(package) == FALSE) {
+  for (package in packages)
+    if (base::isNamespaceLoaded(package) == FALSE)
 			try(base::loadNamespace(package), silent=TRUE)
-		}
-	}
+
+
 
 	if (base::exists(".requestTempRootNameNative")) {
 		paths <- .fromRCPP(".requestTempRootNameNative")
 		root = paths$root
 		base::Encoding(root) <- "UTF-8"
 		setwd(root)
-	} else {
+  } else
 		print("Could not set the working directory!")
-	}
 }
 
 
@@ -2307,6 +2293,7 @@ saveImage <- function(plotName, format, height, width)
   relativePath <- paste0("temp.", format)
   
   error <- try({
+		
     # Get file size in inches by creating a mock file and closing it
     pngMultip <- .fromRCPP(".ppi") / 96
     png(
@@ -2317,67 +2304,75 @@ saveImage <- function(plotName, format, height, width)
     )
     insize <- dev.size("in")
     dev.off()
-    
-    if (ggplot2::is.ggplot(plt) || inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-      plotArgs <- list(
-        filename  = relativePath,
-        plot      = plt,
-        width     = insize[1],
-        height    = insize[2],
-        bg        = backgroundColor,
-        limitsize = FALSE
-      )
-      if (format == "eps") {
-        
-      } else if (format == "pdf") {
-        plotArgs[["bg"]] <- "transparent"
-      } else if (format == "tiff") {
-        plotArgs[["dpi"]] <- 300
-        plotArgs[["compression"]] <- "lzw"
-      } else {
-        stop("unknown format ", format)
-      }
-      do.call(ggplot2::ggsave, plotArgs)
-    } else { # qgraph & base plots
-      # Open correct graphics device
-      if (format == "eps") {
-        grDevices::cairo_ps(
-          filename = relativePath,
-          width = insize[1],
-          height = insize[2],
-          bg = backgroundColor
-        )
-      } else if (format == "tiff") {
-        hiResMultip <- 300 / 72
-        grDevices::tiff(
-          filename    = relativePath,
-          width       = width * hiResMultip,
-          height      = height * hiResMultip,
-          res         = 300,
-          bg          = backgroundColor,
-          compression = "lzw",
-          type        = "cairo"
-        )
-      }
-      else if (format == "pdf") {
-        grDevices::cairo_pdf(
-          filename = relativePath,
-          width = insize[1],
-          height = insize[2],
-          bg = "transparent"
-        )
-      } else { # add optional other formats here in "else if"-statements
-        stop("Format incorrectly specified")
-      }
+		
+		# Even though OSX is usually cairo able, the cairo devices should not be used as plot fonts are not scaled well.
+		# On the other hand, Windows should use a cairo (eps/pdf) device as the standard devices use a wrong R_HOME for some reason.
+		# Consequently on Windows you will get encoding/font errors because the devices cannot find their resources.
+		if (capabilities("aqua"))
+			type <- "quartz"
+		else if (capabilities("cairo"))
+			type <- "cairo"
+		else
+			type <- "Xlib"
+
+		# Open correct graphics device
+		if (format == "eps") {
+
+			if (type == "cairo")
+				device <- grDevices::cairo_ps
+			else
+				device <- grDevices::postscript
+					
+			device(
+				relativePath,
+				width = insize[1],
+				height = insize[2],
+				bg = backgroundColor
+			)
+			
+		} else if (format == "tiff") {
+			
+			hiResMultip <- 300 / 72
+			grDevices::tiff(
+				relativePath,
+				width       = width * hiResMultip,
+				height      = height * hiResMultip,
+				res         = 300,
+				bg          = backgroundColor,
+				compression = "lzw",
+				type        = type
+			)
+			
+		} else if (format == "pdf") {
+			
+			if (type == "cairo")
+				device <- grDevices::cairo_pdf
+			else
+				device <- grDevices::pdf
+					
+			device(
+				relativePath,
+				width = insize[1],
+				height = insize[2],
+				bg = "transparent"
+			)
+			
+		} else { # add optional other formats here in "else if"-statements
+		
+			stop("Format incorrectly specified")
+			
+		}
       
-      # Plot and close graphics device
-      if (inherits(plt, "recordedplot")) {
-        .redrawPlot(plt) #(see below)
-      } else { #qgraph
-        plot(plt)
-      }
-      dev.off()
-    }
+		# Plot and close graphics device
+		if (inherits(plt, "recordedplot")) {
+			.redrawPlot(plt)
+		} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+			gridExtra::grid.arrange(plt)
+		} else {
+			plot(plt)
+		}
+		dev.off()
+
   })
   # Create output for interpretation by JASP front-end and return it
   output <- list(status = "imageSaved",
@@ -2758,21 +2753,26 @@ editImage <- function(plotName, type, height, width) {
     results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE)
   )
 
-  # error checks
   if (isTryError(results) || is.null(results)) {
-    response[["results"]][["error"]] <- TRUE
+		
     if (is.null(results))
       errorMessage <- "no plot object was found"
     else
       errorMessage <- .extractErrorMessage(results)
+			
+    response[["results"]][["error"]]        <- TRUE
     response[["results"]][["errorMessage"]] <- errorMessage
+		
   } else {
-    # adjust the state of the analysis and save it
-    state[["figures"]][[plotName]]  <- list(obj=results[["obj"]], width=results[["width"]], height=results[["height"]])
-    key                             <- attr(x = state, which = "key")
-    state                           <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
+		
+    state[["figures"]][[plotName]][["width"]]  <- width
+    state[["figures"]][[plotName]][["height"]] <- height
+		
+    key                <- attr(x = state, which = "key")
     attr(state, "key") <- key
+		
     .saveState(state)
+		
   }
 
   toJSON(response)
@@ -2853,4 +2853,38 @@ editImage <- function(plotName, type, height, width) {
   }
 
   return(v)
+}
+
+.recodeBFtype <- function(bfOld, newBFtype = c("BF10", "BF01", "LogBF10"), oldBFtype = c("BF10", "BF01", "LogBF10")) {
+
+	# Arguments:
+	# bfOld: the current value of the Bayes factor
+	# newBFtype: the new type of Bayes factor, e.g., BF10, BF01,
+	# oldBFtype: the current type of the Bayes factor, e.g., BF10, BF01,
+
+	newBFtype <- match.arg(newBFtype)
+	oldBFtype <- match.arg(oldBFtype)
+
+	if (oldBFtype == newBFtype)
+		return(bfOld)
+
+	if (oldBFtype == "BF10") {
+		if (newBFtype == "BF01") {
+			return(1 / bfOld)
+		} else {
+			return(log(bfOld))
+		}
+	} else if (oldBFtype == "BF01") {
+		if (newBFtype == "BF10") {
+			return(1 / bfOld)
+		} else {
+			return(log(1 / bfOld))
+		}
+	} else { # log(BF10)
+		if (newBFtype == "BF10") {
+			return(exp(bfOld))
+		} else {
+			return(1 / exp(bfOld))
+		}
+	}
 }

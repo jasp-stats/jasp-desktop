@@ -23,11 +23,16 @@ import JASP.Controls 1.0
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
-Rectangle
+FocusScope
 {
 	id: osfLogin
 
-	color: Theme.grayMuchLighter
+	Rectangle
+	{
+		color:			Theme.grayMuchLighter
+		z:				-1
+		anchors.fill:	parent
+	}
 
 	Component.onCompleted:
 	{
@@ -38,15 +43,16 @@ Rectangle
 	{
 		id: osfLogo
 
-		height: 100
-		width : 100
+		height: 100 * preferencesModel.uiScale
+		width : 100 * preferencesModel.uiScale
 		source: "qrc:/images/osf-logo.png"
+		smooth: true
 
 		sourceSize.width : width  * 2
 		sourceSize.height: height * 2
 
 		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.bottomMargin    : 20
+		anchors.bottomMargin    : 20 * preferencesModel.uiScale
 	}
 
 	Label
@@ -54,14 +60,14 @@ Rectangle
 		id: labelOSF
 
 		width : osfLoginBox.width
-		height: 40
+		height: 40 * preferencesModel.uiScale
 
 		verticalAlignment  : Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: osfLogo.bottom
-		anchors.bottomMargin: 20
+		anchors.bottomMargin: 20 * preferencesModel.uiScale
 
 		text : qsTr("OSF")
 		color: Theme.black
@@ -74,23 +80,24 @@ Rectangle
 
 		text : qsTr("Sign in with your OSF account to continue")
 		color:Theme.black
-		font.pointSize: 11
+		font.pointSize: 11 * preferencesModel.uiScale
+		font.family:	Theme.font.family
 
 		verticalAlignment  : Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top             : labelOSF.bottom
-		anchors.topMargin       : 20
+		anchors.topMargin       : 20 * preferencesModel.uiScale
 	}
 
 	Rectangle
 	{
 		id: osfLoginBox
 
-		// TODO: Should be in Theme?
-		height: 240
-		width : 250
+		// TODO: Should be in Theme? Yes! And probably scaled as well ;)
+		height: 240 * preferencesModel.uiScale
+		width : 250 * preferencesModel.uiScale
 		color : Theme.grayMuchLighter
 
 		border.width: 1
@@ -98,7 +105,7 @@ Rectangle
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: labelExplain.bottom
-		anchors.topMargin: 10
+		anchors.topMargin: 10 * preferencesModel.uiScale
 
 		Rectangle
 		{
@@ -108,40 +115,35 @@ Rectangle
 			anchors.right: parent.right
 			anchors.top  : parent.top
 
-			anchors.leftMargin : 20
-			anchors.rightMargin: 20
-			anchors.topMargin  : 30
+			anchors.leftMargin : 20 * preferencesModel.uiScale
+			anchors.rightMargin: 20 * preferencesModel.uiScale
+			anchors.topMargin  : 30 * preferencesModel.uiScale
 
-			height: 35
-			width : 100
-			clip  : true
-			color : Theme.white
+			height		: 35 * preferencesModel.uiScale
+			width		: 100 * preferencesModel.uiScale
+			clip		: true
+			color		: Theme.white
 			border.width: usernameText.activeFocus ? 3 : 1
 			border.color: usernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 
 			TextInput
 			{
-				id: usernameText
+				id					: usernameText
+				text				: fileMenuModel.osf.username
 
-				text:fileMenuModel.osf.username
+				anchors.fill		: parent
+				anchors.leftMargin	: 10 * preferencesModel.uiScale
+				selectByMouse		: true
 
-				anchors.fill      : parent
-				anchors.leftMargin: 10
-				selectByMouse     : true
+				verticalAlignment	: Text.AlignVCenter
+				font				: Theme.fontRibbon
 
-				verticalAlignment : Text.AlignVCenter
-				font.pixelSize    : 14
+				onTextChanged		: fileMenuModel.osf.username = text
+				onAccepted			: passwordText.focus = true
 
-				onTextChanged:
-				{
-					fileMenuModel.osf.username = text
-				}
-				onAccepted:
-				{
-					passwordText.focus = true
-				}
-				KeyNavigation.down		: passwordText
-				KeyNavigation.tab		: passwordText
+				KeyNavigation.down	: passwordText
+				KeyNavigation.tab	: passwordText
+				focus				: true
 			}
 		}
 
@@ -153,12 +155,12 @@ Rectangle
 			anchors.right : parent.right
 			anchors.top   : usernameInput.bottom
 
-			anchors.leftMargin : 20
-			anchors.rightMargin: 20
-			anchors.topMargin  : 15
+			anchors.leftMargin : 20 * preferencesModel.uiScale
+			anchors.rightMargin: 20 * preferencesModel.uiScale
+			anchors.topMargin  : 15 * preferencesModel.uiScale
 
-			height: 35
-			width : 100
+			height: 35 * preferencesModel.uiScale
+			width : 100 * preferencesModel.uiScale
 			clip  : true
 			color : Theme.white
 
@@ -172,21 +174,15 @@ Rectangle
 				text:fileMenuModel.osf.password
 
 				anchors.fill      : parent
-				anchors.leftMargin: 10
+				anchors.leftMargin: 10 * preferencesModel.uiScale
 				verticalAlignment : Text.AlignVCenter
 				echoMode          : TextInput.Password
 				selectByMouse     : true
-				font.pixelSize    : 14
+				font.pixelSize    : 14 * preferencesModel.uiScale
 
 
-				onTextChanged:
-				{
-					fileMenuModel.osf.password = text;
-				}
-				onAccepted:
-				{
-					fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
-				}
+				onTextChanged:	fileMenuModel.osf.password = text;
+				onAccepted:		fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
 
 				KeyNavigation.up		: usernameText
 				KeyNavigation.backtab	: usernameText
@@ -200,26 +196,23 @@ Rectangle
 		{
 			id: loginButton
 
-			height   : 35
+			height   : 35  * preferencesModel.uiScale
 			text     : qsTr("Sign in")
 			color    : "#5cb85c"  // TODO: Move this to Theme.qml
 			border.width: loginButton.activeFocus ? 3 : 1
 			border.color: loginButton.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
 
-			textColor: "white"
+			textColor: Theme.white
 
 			anchors.top  : passwordInput.bottom
 			anchors.right: parent.right
 			anchors.left : parent.left
 
-			anchors.topMargin  : 15
-			anchors.rightMargin: 20
-			anchors.leftMargin : 20
+			anchors.topMargin  : 15  * preferencesModel.uiScale
+			anchors.rightMargin: 20  * preferencesModel.uiScale
+			anchors.leftMargin : 20  * preferencesModel.uiScale
 
-			onClicked:
-			{
-				fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
-			}
+			onClicked:			fileMenuModel.osf.loginRequested(fileMenuModel.osf.username, fileMenuModel.osf.password)
 
 			KeyNavigation.up		: passwordText
 			KeyNavigation.backtab	: passwordText
@@ -238,14 +231,11 @@ Rectangle
 			anchors.right : parent.right
 			anchors.bottom: parent.bottom
 
-			anchors.bottomMargin: 30
-			anchors.leftMargin  : 20
-			anchors.topMargin   : 10
+			anchors.bottomMargin: 30 * preferencesModel.uiScale
+			anchors.leftMargin  : 20 * preferencesModel.uiScale
+			anchors.topMargin   : 10 * preferencesModel.uiScale
 
-			onCheckedChanged:
-			{
-				fileMenuModel.osf.rememberme = checked
-			}
+			onCheckedChanged:	fileMenuModel.osf.rememberme = checked
 
 			KeyNavigation.up		: loginButton
 			KeyNavigation.backtab	: loginButton
@@ -257,23 +247,24 @@ Rectangle
 		id: linksBox
 
 		width : osfLoginBox.width
-		height: 30
+		height: 30 * preferencesModel.uiScale
 		color : "transparent"
 
 		anchors.top             : osfLoginBox.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.topMargin       : 5
+		anchors.topMargin       : 5 * preferencesModel.uiScale
 
 		Text {
 			id: linkOSF
 
 			text          :'<font color="#257bb2"><u>About the OSF</u></font>'
 			textFormat    : Text.StyledText
-			font.pointSize: 11
+			font.pointSize: 11 * preferencesModel.uiScale
+			font.family:	Theme.font.family
 
 			anchors.left      : parent.left
 			anchors.bottom    : parent.bottom
-			anchors.leftMargin: 5
+			anchors.leftMargin: 5 * preferencesModel.uiScale
 
 			MouseArea
 			{
@@ -290,11 +281,12 @@ Rectangle
 
 			text          :'<font color="#257bb2"><u>Register</u></font>'
 			textFormat    : Text.StyledText
-			font.pointSize: 11
+			font.pointSize: 11 * preferencesModel.uiScale
+			font.family: Theme.font.family
 
 			anchors.bottom     : parent.bottom
 			anchors.right      : parent.right
-			anchors.rightMargin: 5
+			anchors.rightMargin: 5 * preferencesModel.uiScale
 
 			MouseArea
 			{

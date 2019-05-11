@@ -27,13 +27,20 @@
 #include "analyses.h"
 #include "analysisform.h"
 
-#include <QDebug>
 
-Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data)
-	: QObject(analyses), _options(new Options()), _id(id), _module(module), _name(name), _title(title), _version(version), _analyses(analyses)
+
+Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
+	QObject(analyses),
+	_options(new Options()),
+	_id(id),
+	_module(module),
+	_name(name),
+	_title(title),
+	_version(version),
+	_analyses(analyses)
 {
 	if (data)
-		// We cannot set the options now because it needs sometimes more information from the QML file
+		// We cannot set the options now because it sometimes needs more information from the QML file
 		// (especially with OptionsTable that needs a template information).
 		_optionsDotJASP = *data;
 
@@ -41,9 +48,16 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry)
-	: QObject(analyses), _options(new Options()), _id(id), _name(analysisEntry->title()), _title(analysisEntry->title()),
-	  _moduleData(analysisEntry), _dynamicModule(_moduleData->dynamicModule()), _version(AppInfo::version), _analyses(analyses)
+Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title) :
+	  QObject(analyses),
+	  _options(new Options()),
+	  _id(id),
+	  _name(analysisEntry->title()),
+	  _title(title == "" ? analysisEntry->title() : title),
+	  _version(AppInfo::version),
+	  _moduleData(analysisEntry),
+	  _dynamicModule(_moduleData->dynamicModule()),
+	  _analyses(analyses)
 {
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
 	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
@@ -113,7 +127,12 @@ void Analysis::imageEdited(const Json::Value & results)
 
 void Analysis::reload()
 {
-	_analyses->reload(this);
+    _analyses->reload(this);
+}
+
+void Analysis::exportResults()
+{
+    emit _analyses->analysesExportResults();
 }
 
 void Analysis::refresh()
@@ -157,11 +176,11 @@ Analysis::Status Analysis::parseStatus(std::string name)
 	else if (name == "complete")		return Analysis::Complete;
 	else if (name == "initializing")	return Analysis::Initializing;
 	else if (name == "RewriteImgs")		return Analysis::RewriteImgs;
-	else if (name == "exception")		return Analysis::Exception;
+	else if (name == "validationError")	return Analysis::ValidationError;
 	else if (name == "aborted")			return Analysis::Aborted;
 	else if (name == "SaveImg")			return Analysis::SaveImg;
 	else if (name == "EditImg")			return Analysis::EditImg;
-	else								return Analysis::Error;
+	else								return Analysis::FatalError;
 }
 
 void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
@@ -197,9 +216,9 @@ Json::Value Analysis::asJSON() const
 	case Analysis::SaveImg:			status = "SaveImg";			break;
 	case Analysis::EditImg:			status = "EditImg";			break;
 	case Analysis::RewriteImgs:		status = "RewriteImgs";		break;
-	case Analysis::Exception:		status = "exception";		break;
+	case Analysis::ValidationError:	status = "validationError";	break;
 	case Analysis::Initializing:	status = "initializing";	break;
-	default:						status = "error";			break;
+	default:						status = "fatalError";	break;
 	}
 
 	analysisAsJson["status"]	= status;
@@ -335,9 +354,23 @@ void Analysis::setName(std::string name)
 
 void Analysis::setHelpFile(QString helpFile)
 {
- if (_helpFile == helpFile)
-	 return;
+	if (_helpFile == helpFile)
+		return;
 
- _helpFile = helpFile;
- emit helpFileChanged(_helpFile);
+	_helpFile = helpFile;
+	emit helpFileChanged(_helpFile);
+}
+
+void Analysis::setTitle(std::string title)
+{
+	if(title == "")
+		title = _title;
+
+	if (_title == title)
+		return;
+
+	_results["title"] = title;
+	_title = title;
+	
+	emit titleChanged();
 }

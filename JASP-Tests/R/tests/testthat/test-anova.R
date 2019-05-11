@@ -457,7 +457,7 @@ test_that("Field - Chapter 7 results match", {
                            ".", 0.311931949521001, ".", ".", -1.69253241941969, 0.317532419419691,
                            "FALSE"))
   
-  table <- results$results$posthocBoots$collection[[1]]$data
+  table <- results$results$bootsPostHoc$collection[[1]]$data
   expect_equal_tables(table,
                       list(0, 1, -0.769579725829725, -0.00376914898826841, 0.392000159227314,
                            -1.48733254329573, 0.0548973391001531, "TRUE", 0, 2, -1.43536324786325,
@@ -475,7 +475,7 @@ test_that("Field - Chapter 7 results match", {
                            7.33483957533075, "FALSE", 1, 2, 6.125, 0.413679770330811, 5.29016042466926,
                            6.95983957533075, "FALSE"))
   
-  table <- results$results$marginalMeansBoots$collection[[1]]$data
+  table <- results$results$bootsMarginalMeans$collection[[1]]$data
   expect_equal_tables(table, 
                       list(0, 0, 3.5, -0.000576109837874483, 0.609481794897967, 2.17405680747747,
                            4.66824003252126, "TRUE", 0, 1, 4.83974358974359, -0.0233288832082952,

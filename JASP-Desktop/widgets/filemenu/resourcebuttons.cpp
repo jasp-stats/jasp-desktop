@@ -14,8 +14,6 @@ ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 {
 	for(size_t i=0; i<_data.size(); i++)
 		_buttonToIndex[_data[i].button] = i;
-
-	connect(this, &ResourceButtons::clicked, this, &ResourceButtons::clickedHandler);
 }
 //nameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole };
 
@@ -24,14 +22,17 @@ QVariant ResourceButtons::data(const QModelIndex &index, int role)	const
 	if(index.row() < 0 || index.row() > rowCount())
 		return QVariant();
 
+	size_t row = size_t(index.row());
+
 	switch(role)
 	{
 	case Qt::DisplayRole:
-	case NameRole:			return _data[size_t(index.row())].name;
-	case TypeRole:			return _data[size_t(index.row())].button;
-	case VisibleRole:		return _data[size_t(index.row())].visible;
-	case QmlRole:			return _data[size_t(index.row())].qml;
-	case EnabledRole:		return _data[size_t(index.row())].enabled;
+	case NameRole:			return _data[row].name;
+	case TypeRole:			return _data[row].button;
+	case VisibleRole:		return _data[row].visible;
+	case QmlRole:			return _data[row].qml;
+	case EnabledRole:		return _data[row].enabled;
+	case SelectedRole:		return _data[row].button == _selectedButton;
 
 	default:				return QVariant();
 	}
@@ -61,7 +62,8 @@ QHash<int, QByteArray>	ResourceButtons::roleNames() const
 		{ TypeRole,		"typeRole"		},
 		{ VisibleRole,	"visibleRole"	},
 		{ QmlRole,		"qmlRole"		},
-		{ EnabledRole,	"enabledRole"	}};
+		{ EnabledRole,	"enabledRole"	},
+		{ SelectedRole,	"selectedRole"	} };
 
 	return roles;
 }
@@ -85,16 +87,17 @@ void ResourceButtons::setOnlyTheseButtonsVisible(std::set<ButtonType> buttons)
 	for(const DataRow & row : _data)
 	{
 		setVisible(row.button, buttons.count(row.button) > 0);
-		if(row.qml == currentQML() && !row.visible)
-			setCurrentQML("");
+
+		if(row.button == selectedButton() && !row.visible)
+			setSelectedButton(None);
 	}
 }
 
 void ResourceButtons::setButtonEnabled(ResourceButtons::ButtonType button, bool enabled)
 {
-	size_t buttonIndex = _buttonToIndex[button];
-	QModelIndex modelIndex = index(int(buttonIndex), 0);
-	_data[buttonIndex].enabled = enabled;
+	size_t buttonIndex			= _buttonToIndex[button];
+	QModelIndex modelIndex		= index(int(buttonIndex), 0);
+	_data[buttonIndex].enabled	= enabled;
 
 	emit dataChanged(modelIndex, modelIndex, {EnabledRole});
 }
@@ -107,4 +110,73 @@ void ResourceButtons::setCurrentQML(QString currentQML)
 
 	_currentQML = currentQML;
 	emit currentQMLChanged(_currentQML);
+}
+
+void ResourceButtons::setSelectedButton(ButtonType selectedButton)
+{
+	if (_selectedButton == selectedButton)
+		return;
+
+	ButtonType oldButton	= _selectedButton;
+	_selectedButton			= selectedButton;
+
+	if(oldButton != None)
+	{
+		QModelIndex	oldIndex = index(_buttonToIndex[oldButton]);
+		emit dataChanged(oldIndex, oldIndex);
+	}
+
+	if(_selectedButton != None)
+	{
+		QModelIndex	newIndex = index(_buttonToIndex[_selectedButton]);
+		emit dataChanged(newIndex, newIndex);
+		setCurrentQML(qml(_selectedButton));
+	}
+	else
+		setCurrentQML("");
+
+	emit selectedButtonChanged(_selectedButton);
+}
+
+void ResourceButtons::selectFirstButtonIfNoneSelected()
+{
+	if(_selectedButton == None)
+		for(DataRow & rij : _data)
+			if(rij.visible && rij.enabled)
+			{
+				setSelectedButton(rij.button);
+				return;
+			}
+}
+
+void ResourceButtons::selectButtonUp()
+{
+	int idx = _buttonToIndex[_selectedButton];
+
+	for(int move = 1; move < _data.size(); move++)
+	{
+		size_t idxUp = ((_data.size() + idx) - move) % _data.size();
+
+		if(_data[idxUp].visible && _data[idxUp].enabled)
+		{
+			setSelectedButton(_data[idxUp].button);
+			return;
+		}
+	}
+}
+
+void ResourceButtons::selectButtonDown()
+{
+	int idx = _buttonToIndex[_selectedButton];
+
+	for(int move = 1; move < _data.size(); move++)
+	{
+		size_t idxDown = (idx + move) % _data.size();
+
+		if(_data[idxDown].visible && _data[idxDown].enabled)
+		{
+			setSelectedButton(_data[idxDown].button);
+			return;
+		}
+	}
 }

@@ -19,9 +19,6 @@ public:
 	Q_INVOKABLE int filteredRowToOriginal(int filteredRow) const;
 	Q_INVOKABLE int originalRowToFiltered(int originalRow) const;
 
-signals:
-	Q_INVOKABLE void clicked(int buttonType);
-
 private:
 	ResourceButtons		*_resourceButtons = nullptr;
 };

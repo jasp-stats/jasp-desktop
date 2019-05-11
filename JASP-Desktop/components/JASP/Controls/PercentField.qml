@@ -26,14 +26,15 @@ TextField
 	property int	defaultValue:	50
 	property bool	showPercent:	true
 	property int	decimals:		0
-    
+	property int	min:			0
+	property int	max:			100
     
 	id:					percentField
 	inputType:			"percent"
 	fieldWidth:			Theme.font.pixelSize * (percentField.decimals + 3)
-	validator:			JASPDoubleValidator { id: doubleValidator; bottom: 0; top: 100; decimals: percentField.decimals; notation: DoubleValidator.StandardNotation}
+	validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max; decimals: percentField.decimals; notation: DoubleValidator.StandardNotation}
 
-	value:				Number.parseInt(defaultValue);
+	lastValidValue:		defaultValue
 	afterLabel:			showPercent ? "%" : ""
 	cursorShape:		Qt.IBeamCursor	
 }

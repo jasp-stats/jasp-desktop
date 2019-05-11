@@ -631,13 +631,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     }
     
   } else {
-    
+
     if (options$sumOfSquares == "type1" && class(fullModel) != "try-error") {
       
       model <- summary(result)
-      epsilon <- summary(fullModel)$pval.adjustments
+      epsilon <- list()
+      epsilon[['epsilon']] <- summary(fullModel)$pval.adjustments
+      epsilon[['univarTests']] <-  summary(fullModel)[['univariate.tests']]
       mauchly <- summary(fullModel)$sphericity.tests
-      
+
     } else if (options$sumOfSquares == "type1" && class(fullModel) == "try-error") {
       
       model <- summary(result)
@@ -668,9 +670,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   colnames(epsilonTable) <- c("W", "Chi", "df", "p", "GG", "HF", "LB", "twoLevels", "termsNormal")
   
   # get df and n for calculation of approx chi-square for sphericity
-  df <- model[, "num Df"]
-  dfSphericity <- df * (df + 1) / 2 - 1
-  n  <- model[, "den Df"] / df + 1
+  if (options$sumOfSquares == "type1") {
+    df <- epsilon[['univarTests']][, 'num Df']
+    dfSphericity <- df * (df + 1) / 2 - 1
+    n  <- epsilon[['univarTests']][, "den Df"] / df + 1
+    epsilon <- epsilon[['epsilon']]
+  } else {
+    df <- model[, "num Df"]
+    dfSphericity <- df * (df + 1) / 2 - 1
+    n  <- model[, "den Df"] / df + 1
+  }
   
   rownames(epsilonTable) <- termsRM.base64
   if (is.null(rownames(mauchly))) {
@@ -708,7 +717,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       epsilonTable[i,"twoLevels"] <- FALSE
       
     } else {
-      
+
       HF <- epsilon[index, "HF eps"]
       
       if (HF > 1)
@@ -718,7 +727,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         d <- 1 - (2*df^2 + df + 2) / (6*df*(n-1))
         -(n-1)*d*log(W)
       }
-      
+
       epsilonTable[i,"W"] <- mauchly[index,"Test statistic"]
       epsilonTable[i,"Chi"] <- .approxChi(df[[termsRM.base64[i]]], n[[termsRM.base64[i]]], epsilonTable[i, "W"])
       epsilonTable[i,"df"] <- dfSphericity[[termsRM.base64[i]]]
@@ -2496,7 +2505,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
   fields[[length(fields)+1]] <- list(name="SD", type="number", format="sf:4;dp:3")
-  fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
+  fields[[length(fields)+1]] <- list(name="N", type="integer")
   
   descriptives.table[["schema"]] <- list(fields=fields)
   
@@ -4031,3 +4040,4 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   }
   list(result=marginalMeans, status=status, stateMarginalMeansBoots=stateMarginalMeans)
 }
+

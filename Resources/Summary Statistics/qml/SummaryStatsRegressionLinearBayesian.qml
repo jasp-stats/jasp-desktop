@@ -30,14 +30,14 @@ Form
 
 	Group
 	{
-		title: qsTr("Null model")
+		title: qsTr("Null Model")
 		IntegerField {	label: qsTr("Number of covariates"); name: "numberOfCovariatesNull" }
 		DoubleField {	label: qsTr("R-squared");			name: "unadjustedRSquaredNull" ; max: 0.9999 }
 	}
 
 	Group
 	{
-		title: qsTr("Alternative model")
+		title: qsTr("Alternative Model")
 		IntegerField {	label: qsTr("Number of covariates"); name: "numberOfCovariatesAlternative" ; min: 1; defaultValue: 1 }
 		DoubleField {	label: qsTr("R-squared");			name: "unadjustedRSquaredAlternative" ; max: 0.9999 }
 	}

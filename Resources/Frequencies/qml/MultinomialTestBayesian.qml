@@ -67,9 +67,9 @@ Form
 				label	: qsTr("Descriptives")
 				CheckBox
 				{
-					name				: "credibleInterval"; label: qsTr("Confidence interval")
+                    name				: "credibleInterval"; label: qsTr("Credible interval")
 					childrenOnSameRow	: true
-					PercentField { name: "credibleIntervalInterval"; defaultValue: 95	}
+					CIField { name: "credibleIntervalInterval" }
 				}
 			}
 		}
@@ -92,7 +92,7 @@ Form
 			{
 				name	: "descriptivesPlot"
 				label	: qsTr("Descriptives plot")
-				PercentField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+                CIField { name: "descriptivesPlotCredibleInterval"; label: qsTr("Credible interval") }
 			}
 		}
 	}

@@ -19,12 +19,13 @@ In JASP you can open the related datafile by double clicking the data pane.
 This opens your data file in your preferred editor which you can specify here
 or the default editor chosen by your operating system.
 
-### Custom threshold between Scale or Nominal.
+### Import threshold between Scale or Nominal.
 
 Importing data in JASP has a threshold value that determines if a column should be treated
 as a Scale type or as a Nominal type. The default value of this parameter is 10.
-This means the if you have less (or equal) than 10 different integers in the data, the column
-gets the Nominal type else it will get the Scale type. This threshold value can be influenced here.
+This means the if you have fewer (or equal) than 10 different integers in the data, the column
+gets the Nominal type else it will get the Scale type. Be aware that this value is used when
+importing the data, so data needs to be reloaded (or synchronized) to take effect!
 
 ### Missing Value List
 

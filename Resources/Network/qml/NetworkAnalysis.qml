@@ -65,8 +65,8 @@ Form
 	Group
 	{
 		title: qsTr("Tables")
-		CheckBox { name: "tableCentrality";			label: qsTr("Centrality tabel")					}
-		CheckBox { name: "tableClustering";			label: qsTr("Clustering tabel")					}
+		CheckBox { name: "tableCentrality";			label: qsTr("Centrality table")					}
+		CheckBox { name: "tableClustering";			label: qsTr("Clustering table")					}
 		CheckBox { name: "tableWeightsMatrix";		label: qsTr("Weights matrix")					}
 		CheckBox
 		{
@@ -82,7 +82,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "correlationMethod"
-			title: qsTr("Correlation method")
+			title: qsTr("Correlation Method")
 			visible: [0, 1, 2].includes(estimator.currentIndex)
 			RadioButton { value: "auto";	label: qsTr("Auto"); checked: true	}
 			RadioButton { value: "cor";		label: qsTr("Cor")					}
@@ -93,7 +93,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "normalizeCentrality"
-			title: qsTr("Centrality measures")
+			title: qsTr("Centrality Measures")
 			visible: estimator.currentIndex === 0
 			RadioButton { value: "normalized";	label: qsTr("Normalized"); checked: true }
 			RadioButton { value: "relative" ;	label: qsTr("Relative")					}
@@ -111,7 +111,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "missingValues"
-			title: qsTr("Missing values")
+			title: qsTr("Missing Values")
 			visible: [0, 1, 2].includes(estimator.currentIndex)
 			RadioButton { value: "pairwise";	label: qsTr("Exclude pairwise"); checked: true	}
 			RadioButton { value: "listwise";	label: qsTr("Exclude listwise")					}
@@ -120,7 +120,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "sampleSize"
-			title: qsTr("Sample size")
+			title: qsTr("Sample Size")
 			visible: estimator.currentIndex === 0
 			RadioButton { value: "maximum";	label: qsTr("Maximum"); checked: true	}
 			RadioButton { value: "minimim";	label: qsTr("Minimum")					}
@@ -168,9 +168,9 @@ Form
 
 		Group
 		{
-			title: qsTr("Tuning parameters")
+			title: qsTr("Tuning Parameters")
 			visible: [0, 3, 5, 7].includes(estimator.currentIndex)
-			DoubleField { name: "tuningParameter"; label: qsTr("value"); defaultValue: 0.5; max: 1 }
+			DoubleField { name: "tuningParameter"; label: qsTr("Value"); defaultValue: 0.5; max: 1 }
 		}
 
 		RadioButtonGroup
@@ -194,7 +194,7 @@ Form
 					values: [
 						{ label: "Significant", value: "sig"		},
 						{ label: "Bonferroni",	value: "bonferroni"	},
-						{ label: "locfdr",		value: "locfdr"		},
+						{ label: "Locfdr",		value: "locfdr"		},
 						{ label: "Holm",		value: "holm"		},
 						{ label: "Hochberg",	value: "hochberg"	},
 						{ label: "Hommel",		value: "hommel"		},
@@ -236,7 +236,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "BootstrapType"
-			title: qsTr("Bootstrap type")
+			title: qsTr("Bootstrap Type")
 			Layout.rowSpan: 2
 			RadioButton { value: "nonparametric";	label: qsTr("Nonparametic"); checked: true	}
 			RadioButton { value: "case";			label: qsTr("Case")							}
@@ -262,7 +262,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
-			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color nodes by"); singleVariable: true }
+			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true }
 		}
 		
 		Group
@@ -329,7 +329,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "graphSize";
-			title: qsTr("Network size")
+			title: qsTr("Network Size")
 			RadioButton { value: "graphSizeFixed";	label: qsTr("Fixed ratio"); checked: true	}
 			RadioButton { value: "graphSizeFree";	label: qsTr("Free")							}
 		}
@@ -337,7 +337,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "showVariableNames";
-			title: qsTr("Show variable names")
+			title: qsTr("Show Variable Names")
 			RadioButton { value: "In nodes";		label: qsTr("In nodes");	 checked: true	}
 			RadioButton { value: "In legend";		label: qsTr("In legend")					}
 		}
@@ -345,7 +345,7 @@ Form
 		RadioButtonGroup
 		{
 			name: "showMgmVariableType";
-			title: qsTr("Show variable type")
+			title: qsTr("Show Variable Type")
 			visible: [7].includes(estimator.currentIndex)
 			RadioButton { value: "mgmNoShow";		label: qsTr("Don't show")						}
 			RadioButton { value: "mgmNodeColor";	label: qsTr("Using node color")					}

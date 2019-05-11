@@ -22,7 +22,7 @@
 
 #include <QAbstractListModel>
 #include <QStringList>
-#include <QDebug>
+
 
 #include "modules/ribbonbutton.h"
 

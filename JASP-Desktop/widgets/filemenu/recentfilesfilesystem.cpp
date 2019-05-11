@@ -17,11 +17,10 @@
 //
 
 #include "recentfilesfilesystem.h"
-
 #include <QStringList>
 #include <QFileInfo>
 #include <QEvent>
-#include <QDebug>
+#include "log.h"
 #include "utilities/settings.h"
 
 RecentFilesFileSystem::RecentFilesFileSystem(QObject *parent)
@@ -112,7 +111,7 @@ QStringList RecentFilesFileSystem::load()
 		// oddly, under linux, loading a setting value of type StringList which has
 		// only a single string in it, gives you just a string. we QVariant::String is acceptable too
 
-		qDebug() << "BackStageForm::loadRecents();  setting 'recentItems' is not a QStringList";
+		Log::log()  << "BackStageForm::loadRecents();  setting 'recentItems' is not a QStringList" << std::endl;
 		return QStringList();
 	}
 

@@ -26,7 +26,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleVariable: true	}
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts (optional)"); singleVariable: true; allowedColumns: ["scale"]	}
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); itemType: "fixedFactors"; allowedColumns: ["ordinal", "nominal"] }			
 	}
 	
@@ -38,7 +38,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
-			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model terms"); width: parent.width * 5 / 9; listViewType: "Interaction" }
+			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model Terms"); width: parent.width * 5 / 9; listViewType: "Interaction" }
 		}
 	}
 	
@@ -53,7 +53,7 @@ Form
 			CheckBox
 			{
 				name: "regressionCoefficientsConfidenceIntervals";	label: qsTr("Confidence intervals")
-				PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval"); defaultValue: 95 }
+				CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
 			}
 		}
 		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }

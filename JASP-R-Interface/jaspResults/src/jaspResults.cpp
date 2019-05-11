@@ -161,7 +161,8 @@ void jaspResults::checkForAnalysisChanged()
 	if((*_ipccPollFunc)())
 	{
 		setStatus("changed");
-		Rf_error(analysisChangedErrorMessage.c_str());
+	  static Rcpp::Function stop("stop");
+		stop(analysisChangedErrorMessage);
 	}
 }
 
@@ -241,13 +242,13 @@ Json::Value jaspResults::dataEntry()
 
 
 
-void jaspResults::setErrorMessage(std::string msg)
+void jaspResults::setErrorMessage(std::string msg, std::string errorStatus)
 {
 	if(msg.find(analysisChangedErrorMessage) != std::string::npos)
 		return; //we do not wanna report analysis changed as an error I think
 
 	errorMessage = msg;
-	setStatus("error");
+	setStatus(errorStatus);
 }
 
 Rcpp::List jaspResults::getPlotObjectsForState()
@@ -317,7 +318,7 @@ void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)
 			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
 			{
 				std::string envName = Rcpp::as<std::string>(plotInfo["envName"]);
-				(*_RStorageEnv)[envName] = plotInfo["obj"];
+				(*_RStorageEnv)[envName] = plotInfo;
 			}
 	}
 
@@ -409,8 +410,24 @@ void jaspResults::progressbarTick()
 	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progress == 100)
 	{
 		send();
-		_progressbarLastUpdateTime = curTime;
+		
+		if (progress == 100)
+			resetProgressbar();
+		else
+			_progressbarLastUpdateTime = curTime;
 	}
+}
+
+void jaspResults::resetProgressbar()
+{
+	_progressbarExpectedTicks      = 100;
+	_progressbarLastUpdateTime     = -1;
+	_progressbarTicks              = 0;
+	_progressbarBetweenUpdatesTime = 500;
+	_sendingFeedbackLastTime       = -1;
+	_sendingFeedbackInterval       = 500;
+	
+	_response["progress"] = -1;
 }
 
 //implementation here in jaspResults.cpp to make sure we have access to all constructors

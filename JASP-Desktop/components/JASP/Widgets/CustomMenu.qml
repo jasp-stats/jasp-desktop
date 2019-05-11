@@ -23,31 +23,25 @@ import JASP.Theme 1.0
 
 Item
 {
-	id					: menu
-	width				: menuRectangle.width
-	height				: menuRectangle.height
-	property var props	: undefined
-	property bool hasIcons: true
-
-	property real _iconPad: 5 * preferencesModel.uiScale
-
-	onPropsChanged:
-	{
-		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
-	}
+	id						: menu
+	width					: menuRectangle.width
+	height					: menuRectangle.height
+	property var props		: undefined
+	property bool hasIcons	: true
+	property real _iconPad	: 5 * preferencesModel.uiScale
+	onPropsChanged			: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
 
 	function resizeElements(newWidth)
 	{
-		for (var i = 0; i < repeater.count; ++i) {
+		for (var i = 0; i < repeater.count; ++i)
 			repeater.itemAt(i).width = newWidth;
-		}
 	}
 
 	Rectangle
 	{
 		id		: menuRectangle
 		z		: menuShadow.z + 1
-		color	: Theme.white
+		color	: Theme.fileMenuColorBackground
 	}
 
 	Column
@@ -61,17 +55,17 @@ Item
 		Repeater
 		{
 			id		: repeater
-            model	: menu.props === undefined ? undefined : menu.props["model"]
+			model	: menu.props === undefined ? undefined : menu.props["model"]
 
 			onItemAdded:
 			{
 				if (index === 0)
 				{
-					menuRectangle.width = 0;
+					menuRectangle.width  = 0;
 					menuRectangle.height = 0;
 				}
 
-				menuRectangle.width = Math.max(item.width, menuRectangle.width);
+				menuRectangle.width   = Math.max(item.width, menuRectangle.width);
 				menuRectangle.height += (item.height + Theme.menuSpacing)
 
 				if (index === count - 1)
@@ -85,10 +79,9 @@ Item
 			{
 				sourceComponent :
 				{
-					if (model.isSeparator !== undefined && model.isSeparator)
-						return menuSeparator;
-					else if (model.isGroupTitle !== undefined && model.isGroupTitle)
-						return menuGroupTitle;
+					if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
+					else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
+
 					return menuDelegate
 				}
 
@@ -101,42 +94,37 @@ Item
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuItemHeight
-						color	: mouseArea.pressed ? Theme.blueMuchLighter : mouseArea.containsMouse ? Theme.grayLighter : Theme.white
+						color	: mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
-						Rectangle
+						Image
 						{
 							id		: menuItemImage
-							height	: menuItem.height - menu._iconPad
+							height	: menuItem.height - (2 * menu._iconPad)
 							width	: menuItem.height - menu._iconPad
-							color	: menuItem.color
+
+							source					: menuImageSource
+							smooth					: true
+							mipmap					: true
+							fillMode				: Image.PreserveAspectFit
 
 							anchors.left			: parent.left
 							anchors.leftMargin		: menu._iconPad
 							anchors.verticalCenter	: parent.verticalCenter
-
-							Image
-							{
-								visible		: menu.hasIcons
-								height		: parent.height
-								width		: parent.width
-								source		: menuImageSource
-								fillMode	: Image.PreserveAspectFit
-							}
 						}
 
 						Text
 						{
 							id					: menuItemText
 							text				: displayText
-							height				: menuItem.height
 							font				: Theme.font
-							verticalAlignment	: Text.AlignVCenter
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
 							anchors.leftMargin	: menu._iconPad
+							anchors.verticalCenter:  parent.verticalCenter
+
 						}
 
 						MouseArea
@@ -144,44 +132,41 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		:
-							{
-								menu.props['functionCall'](index)
-							}
+							onClicked		: menu.props['functionCall'](index)
 						}
 					}
 				}
+
 				Component
 				{
 					id: menuGroupTitle
 
-					Rectangle
+					Item
 					{
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuGroupTitleHeight
-						color	: Theme.white
 
 						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
-
-						Rectangle
+						Image
 						{
-							id		: menuItemImage
-							height	: menuItem.height - menu._iconPad
-							width	: menuItem.height - menu._iconPad
-							color	: Theme.white
+							id					: menuItemImage
+							height				: parent.height - (menu._iconPad * 2)
+							width				: height
 
-							anchors.left			: parent.left
-							anchors.leftMargin		: menu._iconPad
-							anchors.verticalCenter	: parent.verticalCenter
+							source				: menuImageSource
+							smooth				: true
+							mipmap				: true
+							fillMode			: Image.PreserveAspectFit
+							visible				: menuImageSource !== ""
 
-							Image
+							anchors
 							{
-								height		: parent.height
-								width		: parent.width
-								source		: menuImageSource
-								fillMode	: Image.PreserveAspectFit
+								top				: parent.top
+								left			: parent.left
+								bottom			: parent.bottom
+								leftMargin		: visible ? menu._iconPad : 0
 							}
 						}
 
@@ -189,10 +174,13 @@ Item
 						{
 							id					: menuItemText
 							text				: displayText
-							font				: Theme.fontLabel
-							anchors.left		: menuImageSource ? menuItemImage.right : menuItem.left
-							anchors.leftMargin	: menu._iconPad
-							anchors.verticalCenter	: parent.verticalCenter
+							font				: Theme.fontGroupTitle
+							anchors
+							{
+								left			: menuItemImage.right
+								leftMargin		: menu._iconPad
+								verticalCenter	: parent.verticalCenter
+							}
 						}
 					}
 				}

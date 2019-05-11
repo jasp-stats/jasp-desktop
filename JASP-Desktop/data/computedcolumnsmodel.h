@@ -21,7 +21,7 @@ class ComputedColumnsModel : public QObject
 public:
 	explicit	ComputedColumnsModel(Analyses * analyses, QObject * parent);
 
-				bool	datasetLoaded()					{ return _package != NULL; }
+				bool	datasetLoaded()					{ return _package != nullptr; }
 				QString	computeColumnRCode();
 				QString computeColumnRCodeCommentStripped();
 				QString computeColumnError();

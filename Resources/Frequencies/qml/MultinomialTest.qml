@@ -66,7 +66,7 @@ Form
 			{
 				name: "confidenceInterval"; label: qsTr("Confidence interval")
 				childrenOnSameRow: true
-				PercentField { name: "confidenceIntervalInterval"; defaultValue: 95	}
+				CIField { name: "confidenceIntervalInterval" }
 			}
 		}
 		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Dellke maximum p-ratio")		}
@@ -88,7 +88,7 @@ Form
 			CheckBox
 			{
 				name: "descriptivesPlot"; label: qsTr("Descriptives plot")
-				PercentField { name: "descriptivesPlotConfidenceInterval"; label: qsTr("Confidence interval"); defaultValue: 95 }
+				CIField { name: "descriptivesPlotConfidenceInterval"; label: qsTr("Confidence interval") }
 			}
 		}
 	}

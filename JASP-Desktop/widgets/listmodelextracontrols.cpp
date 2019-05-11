@@ -23,7 +23,8 @@
 #include "boundqmlcheckbox.h"
 #include "boundqmltextinput.h"
 
-#include <QDebug>
+#include "log.h"
+
 #include <QQuickItem>
 
 ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* parent, const QString& colName, const QVector<QMap<QString, QVariant> >& controlColumns) 
@@ -66,7 +67,7 @@ ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* paren
 			boundItem = new BoundQMLTextInput(controlColumn,  _assignedModel->listView()->form());
 		}
 		else
-			std::cout << "Control type " << type.toStdString() << " not supported in TableView" << std::flush;
+			Log::log() << "Control type " << type.toStdString() << " not supported in TableView" << std::flush;
 
 		if (boundItem)
 		{
@@ -119,10 +120,10 @@ void ListModelExtraControls::controlLoaded(const QString& name, QVariant item)
 			boundItem->resetQMLItem(quickItem);
 		}
 		else
-			std::cout << "controlLoaded: Cannot find bound item " << name.toStdString() << std::flush;
+			Log::log() << "controlLoaded: Cannot find bound item " << name.toStdString() << std::flush;
 	}
 	else
-		std::cout << "Quick Item not found" << std::flush;
+		Log::log() << "Quick Item not found" << std::flush;
 
 }
 
@@ -136,6 +137,6 @@ void ListModelExtraControls::controlDestroyed(const QString &name, QVariant item
 			boundItem->resetQMLItem(nullptr);
 	}
 	else
-		std::cout << "controlDestroyed: Cannot find bound item " << name.toStdString() << std::flush;
+		Log::log() << "controlDestroyed: Cannot find bound item " << name.toStdString() << std::flush;
 
 }

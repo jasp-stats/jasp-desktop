@@ -24,18 +24,6 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
-		/*Item
-		{
-			anchors.centerIn:	parent
-			width:				messageDialog.width
-			height:				messageDialog.height
-			MessageDialog
-			{
-				id: messageDialog
-				title: "Error"
-			}
-		}*/
-
 		Rectangle
 		{
 			id:				openCloseButton
@@ -61,7 +49,7 @@ FocusScope
 					//topMargin:		-1
 					//bottomMargin:	-1
 				}
-				toolTipDrag:			mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data"
+				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data") : ""
 				toolTipArrow:			analysesModel.visible		? "Hide options" : "Show options"
 				dragEnabled:			mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
@@ -137,7 +125,6 @@ FocusScope
 						{
 							myIndex:			index
 							myID:				model.analysisID
-							analysisTitle:		model.displayText
 							myAnalysis:         model.analysis
 							formQmlUrl:			model.formPath
 						}

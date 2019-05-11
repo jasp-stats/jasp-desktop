@@ -62,7 +62,7 @@ Form
 			AssignedVariablesList
 			{
 				name: "modelTerms"
-				title: qsTr("Model terms")
+				title: qsTr("Model Terms")
 				width: parent.width * 5 / 9
 				listViewType: "Interaction"
 				ExtraControlColumn
@@ -110,7 +110,7 @@ Form
 				{
 					name: "regressionCoefficientsConfidenceIntervals"; label: qsTr("Confidence intervals")
 					childrenOnSameRow: true
-					PercentField { name: "regressionCoefficientsConfidenceIntervalsInterval"; defaultValue: 95 }
+					CIField { name: "regressionCoefficientsConfidenceIntervalsInterval" }
 				}
 				CheckBox { name: "regressionCoefficientsCovarianceMatrix"; label: qsTr("Covariance matrix") }
 			}

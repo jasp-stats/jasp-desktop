@@ -125,11 +125,45 @@ Rectangle
 
 	MouseArea
 	{
-		id				: mice
-		anchors.fill	: parent
-		hoverEnabled	: true
-		acceptedButtons	: Qt.LeftButton
-		onClicked		: ribbonButton.clicked()
-		cursorShape		: Qt.PointingHandCursor
+		id						: mice
+		anchors.fill			: parent
+		hoverEnabled			: true
+		acceptedButtons			: Qt.LeftButton
+		onClicked				: ribbonButton.clicked(); //{ itsHoverTime.stop(); ribbonButton.clickWhenAllowed();  }
+		cursorShape				: Qt.PointingHandCursor
+		//onContainsMouseChanged	: if(containsMouse) itsHoverTime.start(); else itsHoverTime.stop();
 	}
+
+	/* Hmm, hover works a bit weird, disabling it.
+	property bool clickingAllowed: true
+
+	function clickWhenAllowed()
+	{
+		if(clickingAllowed)
+		{
+			clickingAllowed = false;
+			ribbonButton.clicked();
+			blockDoubleClicksTimer.start();
+		}
+	}
+
+	Timer
+	{
+		id:				itsHoverTime
+		interval:		Theme.hoverTime * 2
+		repeat:			false
+		running:		false
+
+		onTriggered:	ribbonButton.clickWhenAllowed();
+	}
+
+	Timer
+	{
+		id:				blockDoubleClicksTimer
+		interval:		Theme.fileMenuSlideDuration * 4
+		repeat:			false
+		running:		false
+
+		onTriggered:	ribbonButton.clickingAllowed = true;
+	}*/
 }

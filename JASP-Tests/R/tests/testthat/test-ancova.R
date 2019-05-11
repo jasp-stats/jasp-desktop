@@ -320,7 +320,7 @@ test_that("Field - Chapter 6 results match", {
   
   
   # marginal means bootstrapping
-  table <- results$results$marginalMeansBoots$collection[[1]]$data
+  table <- results$results$bootsMarginalMeans$collection[[1]]$data
   expect_equal_tables(table,
                       list(1, 2.89513297007949, 0.00291277082733199, 0.454016672951108, 2.24194236484924,
                            4.40152013882763, "TRUE", 2, 4.7532347036809, 0.0469177160983509,
@@ -349,7 +349,7 @@ test_that("Field - Chapter 6 results match", {
                            0.932499470707816, -2.45500025326293, 1.57659783922026, "FALSE"))
   
   # post hoc bootstrap
-  table <- results$results$posthocBoots$collection[[1]]$data
+  table <- results$results$bootsPostHoc$collection[[1]]$data
   expect_equal_tables(table,
                       list(1, 2, -1.78324124481148, -0.0194100366350722, 0.538336190074754,
                            -2.83630538964887, -0.858078871455782, "TRUE", 1, 3, -2.18556663740395,

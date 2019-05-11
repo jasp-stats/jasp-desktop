@@ -47,7 +47,12 @@ Rectangle
 		acceptedButtons:	Qt.NoButton
 		hoverEnabled:		true
 		z:					-20
-		anchors.fill:		parent
+		anchors
+		{
+			fill:			parent
+			leftMargin:		-1 //this makes sure we're overlapping all of the Splitview and don't get the Qt::SplitHCursor when there is no data
+			rightMargin:	-1
+		}
 		cursorShape:		handleRoot.dragEnabled ? Qt.SplitHCursor : Qt.ArrowCursor //Take into account resizing? styleData.resizing
 		onPositionChanged:	mouse.accepted = true
 	}

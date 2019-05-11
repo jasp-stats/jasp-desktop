@@ -28,6 +28,7 @@
 
 #define DEFAULT_FILTER "# Add filters using R syntax here, see question mark for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
 #define DEFAULT_FILTER_JSON "{\"formulas\":[]}"
+#define DEFAULT_FILTER_GEN "generatedFilter <- rep(TRUE, rowcount)"
 
 class DataSetPackage
 {
@@ -36,30 +37,29 @@ class DataSetPackage
 public:
 			DataSetPackage();
 
-			void			reset();
-			void			storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)	{ _emptyValuesMap[columnName] = emptyValues;	}
-			void			resetEmptyValues()																	{ _emptyValuesMap.clear();											}
+			void				reset();
+			void				storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)	{ _emptyValuesMap[columnName] = emptyValues;	}
+			void				resetEmptyValues()																	{ _emptyValuesMap.clear();											}
 
-			std::string		id()							const	{ return _id;							}
-			bool			isReady()						const	{ return _analysesHTMLReady;			}
-			DataSet			*dataSet()								{ return _dataSet;						}
-			bool			isLoaded()						const	{ return _isLoaded;						}
-			bool			isArchive()						const	{ return _isArchive;					}
-			bool			isModified()					const	{ return _isModified;					}
-			std::string		dataFilter()					const	{ return _dataFilter;					}
-			std::string		initialMD5()					const	{ return _initialMD5;					}
-			bool			hasAnalyses()					const	{ return _analysesData.size() > 0;		}
-			std::string		dataFilePath()					const	{ return _dataFilePath;					}
-	const	std::string&	analysesHTML()					const	{ return _analysesHTML;					}
-	const	Json::Value&	analysesData()					const	{ return _analysesData;					}
-	const	std::string&	warningMessage()				const	{ return _warningMessage;				}
-	const	Version&		archiveVersion()				const	{ return _archiveVersion;				}
-	const	emptyValsType&	emptyValuesMap()				const	{ return _emptyValuesMap;				}
-			bool			dataFileReadOnly()				const	{ return _dataFileReadOnly;				}
-			uint			dataFileTimestamp()				const	{ return _dataFileTimestamp;			}
-	const	Version&		dataArchiveVersion()			const	{ return _dataArchiveVersion;			}
-	const	std::string&	filterConstructorJson()			const	{ return _filterConstructorJSON;		}
-
+			std::string			id()								const	{ return _id;							}
+			bool				isReady()							const	{ return _analysesHTMLReady;			}
+			DataSet			*	dataSet()									{ return _dataSet;						}
+			bool				isLoaded()							const	{ return _isLoaded;						}
+			bool				isArchive()							const	{ return _isArchive;					}
+			bool				isModified()						const	{ return _isModified;					}
+			std::string			dataFilter()						const	{ return _dataFilter;					 }
+			std::string			initialMD5()						const	{ return _initialMD5;					  }
+			bool				hasAnalyses()						const	{ return _analysesData.size() > 0;		   }
+			std::string			dataFilePath()						const	{ return _dataFilePath;						}
+	const	std::string		&	analysesHTML()						const	{ return _analysesHTML;						 }
+	const	Json::Value		&	analysesData()						const	{ return _analysesData;						  }
+	const	std::string		&	warningMessage()					const	{ return _warningMessage;					   }
+	const	Version			&	archiveVersion()					const	{ return _archiveVersion;						}
+	const	emptyValsType	&	emptyValuesMap()					const	{ return _emptyValuesMap;						 }
+			bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						  }
+			uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					   }
+	const	Version			&	dataArchiveVersion()				const	{ return _dataArchiveVersion;						}
+	const	std::string		&	filterConstructorJson()				const	{ return _filterConstructorJSON;					}
 
 			void			setDataArchiveVersion(Version archiveVersion)	{ _dataArchiveVersion			= archiveVersion;	}
 			void			setFilterConstructorJson(std::string json)		{ _filterConstructorJSON		= json;				}
@@ -97,11 +97,12 @@ public:
 										  std::vector<std::string> &			missingColumns,
 										  std::map<std::string, std::string> &	changeNameColumns,
 										  bool									rowCountChanged)>		dataChanged;
-			boost::signals2::signal<void ()>															pauseEngines,
+			boost::signals2::signal<void()>																pauseEngines,
 																										resumeEngines;
+			boost::signals2::signal<bool()>																enginesInitializing;
 
 private:
-	DataSet				*_dataSet = NULL;
+	DataSet			*	_dataSet = nullptr;
 	emptyValsType		_emptyValuesMap;
 
 	std::string			_analysesHTML,

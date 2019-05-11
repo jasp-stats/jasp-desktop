@@ -91,7 +91,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	    
 	    optsForSampling <- c(
 	      "variables", "groupingVariable", "wilcoxTest", "wilcoxonSamplesNumber",
-	      "missingValues", "priorWidth", "wilcoxonChainsNumber"
+	      "missingValues", "priorWidth"
 	    )
 	    
 	    change <- .diff(env[["options"]], response[["options"]])
@@ -222,7 +222,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
 					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
 					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-					diff$wilcoxonSamplesNumber == FALSE && diff$wilcoxonChainsNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+					diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -235,7 +235,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
 							diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
 							diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-							diff$wilcoxonSamplesNumber == FALSE && diff$wilcoxonChainsNumber == FALSE && !options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
+							diff$wilcoxonSamplesNumber == FALSE && !options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# if the requested plot already exists use it
@@ -652,7 +652,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 									plot[["obj"]] <- content[["obj"]]
 									plot[["data"]] <- content[["png"]]
 
-								})
+							})
+								
+							if (isTryError(p)) {
+								errorMessage <- .extractErrorMessage(p)
+								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+							}
 
 						}
 

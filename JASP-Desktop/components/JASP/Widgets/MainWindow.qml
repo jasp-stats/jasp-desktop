@@ -30,8 +30,8 @@ Window
 	height:		768
 
 
-	minimumWidth:	640
-	minimumHeight:	480
+	minimumWidth:	800
+	minimumHeight:	600
 
 	onVisibleChanged: if(!visible) helpModel.visible = false
 
@@ -39,48 +39,30 @@ Window
 
 	onDevicePixelRatioChanged: if(devicePixelRatio > 0) mainWindow.screenPPI = devicePixelRatio * 96
 
-	onClosing: close.accepted = mainWindow.checkPackageModifiedBeforeClosing();
+	onClosing:
+	{
+		close.accepted = mainWindow.checkPackageModifiedBeforeClosing();
+
+		if(close.accepted)
+		{
+			aboutModel.visible = false;
+			helpModel.visible  = false;
+		}
+	}
 
 	Item
 	{
 		anchors.fill: parent
-
 		focus:	true
-		Shortcut
-		{
-			sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="]
-			onActivated: mainWindow.zoomInKeyPressed()
-		}
-		Shortcut
-		{
-			sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"]
-			onActivated: mainWindow.zoomOutKeyPressed();
-		}
-		Shortcut
-		{
-			sequences: ["Ctrl+0"]
-			onActivated: mainWindow.zoomResetKeyPressed();
-		}
-		Shortcut
-		{
-			sequences: ["Ctrl+S"]
-			onActivated: mainWindow.saveKeyPressed();
-		}
-		Shortcut
-		{
-			sequences: ["Ctrl+O"]
-			onActivated: mainWindow.openKeyPressed();
-		}
-		Shortcut
-		{
-			sequences: ["Ctrl+Y"]
-			onActivated: mainWindow.syncKeyPressed();
-		}
-		Shortcut
-		{
-			sequences: ["Ctrl+R"]
-			onActivated: mainWindow.refreshKeyPressed();
-		}
+
+		Shortcut { onActivated: mainWindow.saveKeyPressed();		sequences: ["Ctrl+S"];											}
+		Shortcut { onActivated: mainWindow.openKeyPressed();		sequences: ["Ctrl+O"];											}
+		Shortcut { onActivated: mainWindow.syncKeyPressed();		sequences: ["Ctrl+Y"];											}
+		Shortcut { onActivated: mainWindow.zoomInKeyPressed();		sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	}
+		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();		sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
+		Shortcut { onActivated: mainWindow.refreshKeyPressed();		sequences: ["Ctrl+R"];											}
+		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();	sequences: ["Ctrl+0"];											}
+		Shortcut { onActivated: mainWindowRoot.close();				sequences: ["Ctrl+Q"];											}
 
 		RibbonBar
 		{
@@ -118,6 +100,8 @@ Window
 
 				customMenu.visible	= true;
 			}
+
+			visible: false
 		}
 
 		FileMenu
@@ -158,7 +142,26 @@ Window
 			anchors.fill:		parent
 			anchors.topMargin:	ribbon.height
 
-			//Rectangle { id: purpleDebugRect; color: "purple"; anchors.fill: parent }
+			propagateComposedEvents: true
+
+			Rectangle
+			{
+				id:				darkeningBackgroundRect;
+				color:			Theme.black;
+				anchors.fill:	parent;
+				opacity:		visible ? 0.4 : 0.0
+				visible:		fileMenuModel.visible || modulesMenu.opened
+
+				Behavior on opacity
+				{
+					PropertyAnimation
+					{
+						id:				darkeningBackgroundRectDarkening
+						duration:		Theme.fileMenuSlideDuration
+						easing.type:	Easing.OutCubic
+					}
+				}
+			}
 
 			onClicked:
 			{

@@ -18,7 +18,7 @@
 
 #include "results/resultmenumodel.h"
 
-#include <QDebug>
+
 
 
 QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
@@ -59,8 +59,6 @@ QHash<int, QByteArray> ResultMenuModel::roleNames() const
 
 void ResultMenuModel::setOptions(QString options, QStringList selected)
 {
-	// FIXME:
-
 	Json::Value menuOptions;
 	Json::Reader parser;
 	parser.parse(options.toStdString(), menuOptions);
@@ -69,15 +67,15 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 	std::vector<ResultMenuEntry> entries;
 
 	ResultMenuEntry separator;
+	int numEntries = ResultMenuEntry::EntriesOrder.size();
 
-	for (auto const& x : ResultMenuEntry::AllResultEntries) {
-
-		QString key    = x.first;
+	for (int i = 0; i < numEntries; ++i) {
+		QString key = ResultMenuEntry::EntriesOrder.at(i);
 
 		if (!selected.contains(key))
 			continue;
 
-		ResultMenuEntry entry = x.second;
+		ResultMenuEntry entry = ResultMenuEntry::AllResultEntries.find(key)->second;
 
 		if (key == "hasCollapse") {
 			Json::Value collapseOptions = menuOptions["collapseOptions"];

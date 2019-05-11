@@ -229,7 +229,8 @@ FocusScope
 
 		//orientation: Qt.Vertical
 
-        Rectangle {
+		Rectangle
+		{
 			id: filterEditRectangle
 			color: Theme.white
 

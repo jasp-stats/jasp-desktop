@@ -27,7 +27,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			customThresholdScale	READ customThresholdScale		WRITE setCustomThresholdScale		NOTIFY customThresholdScaleChanged		)
 	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
 	Q_PROPERTY(bool			devModRegenDESC			READ devModRegenDESC			WRITE setDevModRegenDESC			NOTIFY devModRegenDESCChanged			)
-
+	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
+	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -52,6 +53,8 @@ public:
 	bool		customThresholdScale()		const;
 	int			thresholdScale()			const;
 	bool		devModRegenDESC()			const;
+	bool		logToFile()					const;
+	int			logFilesMax()				const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
@@ -84,6 +87,8 @@ public slots:
 	void setCustomThresholdScale(bool customThresholdScale);
 	void setThresholdScale(int thresholdScale);
 	void setDevModRegenDESC(bool devModRegenDESC);
+	void setLogToFile(bool logToFile);
+	void setLogFilesMax(int logFilesMax);
 
 signals:
 	void fixedDecimalsChanged(bool fixedDecimals);
@@ -106,10 +111,11 @@ signals:
 	void customThresholdScaleChanged(bool customThresholdScale);
 	void thresholdScaleChanged(int thresholdScale);
 	void devModRegenDESCChanged(bool devModRegenDESC);
+	void logToFileChanged(bool logToFile);
+	void logFilesMaxChanged(int logFilesMax);
 
 private:
 	int _defaultPPI = 192;
-
 };
 
 #endif // PREFERENCESDIALOG_H

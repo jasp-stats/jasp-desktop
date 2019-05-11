@@ -4,9 +4,10 @@
 
 void FilterModel::reset()
 {
-	_setGeneratedFilter(QString::fromStdString(labelFilterGenerator(nullptr).generateFilter()));
+	_setGeneratedFilter(DEFAULT_FILTER_GEN);
 	setConstructedJSON(DEFAULT_FILTER_JSON);
 	_setRFilter(DEFAULT_FILTER);
+
 	sendGeneratedAndRFilter();
 }
 
@@ -19,17 +20,12 @@ void FilterModel::setDataSetPackage(DataSetPackage * package)
 		_setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
 		setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
 		_setRFilter(QString::fromStdString(_package->dataFilter()));
+
 		sendGeneratedAndRFilter();
 	}
 	else
 		reset();
 }
-
-void FilterModel::init()
-{
-	sendGeneratedAndRFilter();
-}
-
 
 void FilterModel::setRFilter(QString newRFilter)
 {

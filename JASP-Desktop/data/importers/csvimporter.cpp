@@ -18,8 +18,7 @@
 #include "csvimporter.h"
 #include "csvimportcolumn.h"
 #include "csv.h"
-
-
+#include "timers.h"
 using namespace std;
 
 CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
@@ -29,6 +28,8 @@ CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 
 ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
+	JASPTIMER_RESUME(CSVImporter::loadFile);
+
 	ImportDataSet* result = new ImportDataSet(this);
 	vector<string> colNames;
 	CSV csv(locator);
@@ -114,6 +115,8 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 
 	// Build dictionary for sync.
 	result->buildDictionary();
+
+	JASPTIMER_STOP(CSVImporter::loadFile);
 
 	return result;
 }

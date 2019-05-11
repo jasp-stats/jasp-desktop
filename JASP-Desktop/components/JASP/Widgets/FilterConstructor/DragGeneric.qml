@@ -1,8 +1,9 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
+import JASP.Theme 1.0
 
-
-MouseArea {
+MouseArea
+{
 	//Rectangle { color: "transparent"; border.color: "purple"; border.width: 1; anchors.fill: parent } //debug for size of the drags
 
 	id: mouseArea
@@ -53,7 +54,19 @@ MouseArea {
 	cursorShape: (containsMouse && shownChild.shouldDrag(mouseX, mouseY)) || drag.active  ? Qt.PointingHandCursor : Qt.ArrowCursor
 	acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-	property bool shouldShowHoverOutline: false
+	property bool shouldShowHoverOutline:	false
+	property bool showHighlight:			shownChild !== null ? !shownChild.acceptsDrops : false
+
+	Rectangle
+	{
+		color:				Theme.blueMuchLighter
+		visible:			parent.showHighlight && parent.containsMouse
+		z:					-6
+		anchors.centerIn:	parent
+		radius:				4 * preferencesModel.uiScale
+		height:				parent.height + radius
+		width:				parent.width  + radius
+	}
 
 	onPositionChanged:
 	{

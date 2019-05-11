@@ -70,12 +70,12 @@ Form
 			CheckBox
 			{
 				name: "oddsRatio";	label: qsTr("Log odds ratio (2x2 only)")
-				PercentField { name: "oddsRatioCredibleIntervalInterval"; label: qsTr("Credible interval"); defaultValue: 95 }
+				CIField { name: "oddsRatioCredibleIntervalInterval"; label: qsTr("Credible interval") }
 			}
 			CheckBox
 			{
 				name: "effectSize"; label: qsTr("Cramer's V"); debug: true
-				PercentField { name: "effectSizeCredibleIntervalInterval"; label: qsTr("Credible interval"); defaultValue: 95; debug: true }
+				CIField { name: "effectSizeCredibleIntervalInterval"; label: qsTr("Credible interval"); debug: true }
 			}
 		}
 

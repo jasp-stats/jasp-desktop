@@ -12,8 +12,9 @@
 .tafel
 {
     display: inline-block;
-    
+    background-color: #FFFFFFE6;    
 }
+
 
 h1
 {
@@ -58,6 +59,12 @@ body
 {
     height: 60pt;
     margin-top: 30pt;
+}
+
+#onderkant
+{
+   height: 120pt;
+   display: block;
 }
 
 #titel

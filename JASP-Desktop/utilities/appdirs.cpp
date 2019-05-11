@@ -20,7 +20,7 @@
 
 #include <QApplication>
 #include <QDir>
-#include <QDebug>
+
 
 #ifdef _WIN32
 #include <windows.h>
@@ -74,4 +74,17 @@ QString AppDirs::modulesDir()
 QString AppDirs::documents()
 {
 	return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+}
+
+QString AppDirs::logDir()
+{
+	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	path += "/Logs/";
+
+	QDir log(path);
+
+	if(!log.exists())
+		log.mkpath(".");
+
+	return path;
 }

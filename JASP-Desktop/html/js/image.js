@@ -101,13 +101,15 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	},
 
 	onResized: function (w, h) {
-		if (this.resizer.isResizing()) {
+		if (this.resizer.isResizing() && !this.resizeEventTriggered) {
+			this.resizeEventTriggered = true;
 			var args = { name: this.model.get("data"), width: w, height: h, type: "resize" };
 			this.model.trigger("EditImage:clicked", args);
 		}
 	},
 
 	onResizeStart: function (w, h) {
+		this.resizeEventTriggered = false;
 		this.setBackupValues(w, h);
 		this.model.trigger("analysis:resizeStarted", this);
 		this.$el.addClass("jasp-image-resizable");
@@ -118,12 +120,12 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	},
 
 	setBackupValues: function(w, h) {
-		this.model.set({ oldWith: w, oldHeight: h });
+		this.model.set({ preResizeWidth: w, preResizeHeight: h });
 	},
 
 	restoreSize: function() {
-		var width = this.model.get("oldWith");
-		var height = this.model.get("oldHeight");
+		var width = this.model.get("preResizeWidth");
+		var height = this.model.get("preResizeHeight");
 		this.model.set({ width: width, height: height });
 	},
 
@@ -161,7 +163,8 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			html += 'background-image : url(\'' + url + '?x=' + Math.random() + '\'); '
 			html += 'background-size : 100% 100%">'
 		} else {
-			html += '<div class="jasp-image-image no-data">';
+			if (height > 100 && width > 100)
+				html += '<div class="jasp-image-image no-data">';
 		}
 
 		if (error && error.errorMessage) {
@@ -189,7 +192,9 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			width: width,
 			height: height
 		});
-		this.resizer.render();
+		
+		if (data)
+			this.resizer.render();
 
 		return this;
 	},

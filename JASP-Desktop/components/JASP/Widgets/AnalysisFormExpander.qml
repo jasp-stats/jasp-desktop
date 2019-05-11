@@ -18,7 +18,6 @@ Rectangle
 
 	property alias		myIndex:			loader.myIndex
 	property alias		myID:				loader.myID
-	property alias		analysisTitle:		loader.analysisTitle
 	property alias		myAnalysis:         loader.myAnalysis
 	property string		formQmlUrl:			undefined
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
@@ -81,7 +80,7 @@ Rectangle
 				leftMargin:		10 * preferencesModel.uiScale
 				verticalCenter:	parent.verticalCenter
 			}
-			height:			expanderRectangle.height / 1.5
+			height:			analysisTitle.height * 0.88 //expanderRectangle.height / 1.5
 			width:			height
 			source:			"qrc:/icons/large-arrow-right.png"
 			sourceSize
@@ -89,19 +88,94 @@ Rectangle
 				width:	expanderIcon.width * 2
 				height:	expanderIcon.height * 2
 			}
+
 		}
 
-		Text
+		Item
 		{
-			id:			label
-			text:		analysisTitle
-			font:		Theme.fontLabel
+			id:			analysisTitleItem
+			height:		analysisTitle.height
+
 			anchors
 			{
 				left:			expanderIcon.right
-				right:			helpButton.left
-				leftMargin:		10 * preferencesModel.uiScale
+				right:			editButton.left
+				leftMargin:		expanderIcon.anchors.leftMargin
 				verticalCenter:	parent.verticalCenter
+			}
+
+			Text
+			{
+				id:				analysisTitle
+				text:			expanderButton.myAnalysis != null ? expanderButton.myAnalysis.title : "?";
+				font:			Theme.fontLabel
+				visible:		!analysisTitleInput.visible
+				elide:			Text.ElideMiddle
+
+				anchors
+				{
+					left:			parent.left
+					right:			parent.right
+					verticalCenter:	parent.verticalCenter
+				}
+			}
+
+			TextInput
+			{
+				id:					analysisTitleInput
+				font:				Theme.fontLabel
+				visible:			false
+				selectByMouse:		true
+				color:				Theme.grayDarker
+				clip:				true
+
+				anchors
+				{
+					left:			parent.left
+					right:			parent.right
+					verticalCenter:	parent.verticalCenter
+				}
+
+
+				Keys.onEscapePressed: 	stopEditing(false);
+				Keys.onEnterPressed:	stopEditing(true);
+				Keys.onReturnPressed: 	stopEditing(true);
+				onActiveFocusChanged:	if(!activeFocus && visible)	stopEditing(true);
+
+				function startEditing()
+				{
+					text	= analysisTitle.text;
+					visible = true;
+
+					forceActiveFocus();
+				}
+
+				function stopEditing(storeChangedValue)
+				{
+					if(storeChangedValue && expanderButton.myAnalysis != null)
+						expanderButton.myAnalysis.title = text;
+
+					visible = false;
+				}
+			}
+		}
+
+		MenuButton
+		{
+			id:					editButton
+			width:				height
+			iconSource:			"qrc:/icons/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
+			enabled:			expanderButton.expanded
+			onClicked:			analysisTitleInput.startEditing();
+			toolTip:			"Edit the title of this analysis"
+			radius:				height
+			opacity:			enabled ? 1 : 0.5
+			anchors
+			{
+				top:		parent.top
+				right:		helpButton.left
+				bottom:		parent.bottom
+				margins:	4 * preferencesModel.uiScale
 			}
 		}
 
@@ -120,7 +194,7 @@ Rectangle
 				top:		parent.top
 				right:		closeButton.left
 				bottom:		parent.bottom
-				margins:	6 * preferencesModel.uiScale
+				margins:	editButton.anchors.margins
 			}
 		}
 
@@ -139,7 +213,7 @@ Rectangle
 				top:		parent.top
 				right:		parent.right
 				bottom:		parent.bottom
-				margins:	6 * preferencesModel.uiScale
+				margins:	editButton.anchors.margins
 			}
 		}
 	}
@@ -194,7 +268,6 @@ Rectangle
 	
 			property int		myIndex:			-1
 			property int		myID:				-1
-			property string		analysisTitle:		"???"
 			property var		myAnalysis:         null
 		}
 	}

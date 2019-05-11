@@ -38,18 +38,19 @@ class AnalysisForm;
 class Analysis : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString name		READ nameQ		NOTIFY nameChanged		)
-	Q_PROPERTY(QString helpFile	READ helpFile	NOTIFY helpFileChanged	)
+	Q_PROPERTY(QString name		READ nameQ						NOTIFY nameChanged		)
+	Q_PROPERTY(QString helpFile	READ helpFile					NOTIFY helpFileChanged	)
+	Q_PROPERTY(QString title	READ titleQ		WRITE setTitleQ	NOTIFY titleChanged		)
 	
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
 public:
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, RewriteImgs, Exception, Initializing };
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
 
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
-	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry);
+	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "");
 
 	virtual ~Analysis();
 
@@ -75,7 +76,10 @@ signals:
 	void				requestComputedColumnDestruction(	QString columnName);
 
 	void				helpFileChanged(QString helpFile);
+	void				titleChanged();
+
 	Q_INVOKABLE void	expandAnalysis();
+
 
 public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
@@ -89,38 +93,40 @@ public:
 	void rewriteImages();
 	void imagesRewritten();
 
-	void setRFile(const std::string &file)				{ _rfile = file;							}
-	void setVisible(bool visible)						{ _visible = visible;						}
-	void setUserData(Json::Value userData)				{ _userData = userData;						}
-	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;					}
-	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;		}
+	void setRFile(const std::string &file)				{ _rfile = file;								}
+	void setVisible(bool visible)						{ _visible = visible;							}
+	void setUserData(Json::Value userData)				{ _userData = userData;							}
+	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;						}
+	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
 
 	bool checkAnalysisEntry();
 	
 	//getters
-	const	Json::Value		&	results()			const	{ return _results;						}
-	const	Json::Value		&	userData()			const	{ return _userData;						}
-	const	std::string		&	name()				const	{ return _name;							}
-	const	QString				nameQ()				const	{ return QString::fromStdString(_name);	}
-	const	Version			&	version()			const	{ return _version;						}
-	const	std::string		&	title()				const	{ return _title;						}
-	const	std::string		&	rfile()				const	{ return _rfile;						}
-	const	std::string		&	module()			const	{ return _module;						}
-			size_t				id()				const	{ return _id;							}
-			bool				usesJaspResults()	const	{ return _useJaspResults;				}
-			Status				status()			const	{ return _status;						}
-			int					revision()			const	{ return _revision;						}
-			bool				isVisible()			const	{ return _visible;						}
-			bool				isRefreshBlocked()	const	{ return _refreshBlocked;				}
-			QString				helpFile()			const	{ return _helpFile;						}
-	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;				}
-	const	Json::Value		&	getImgResults()		const	{ return _imgResults;					}
+	const	Json::Value		&	results()			const	{ return _results;							}
+	const	Json::Value		&	userData()			const	{ return _userData;							}
+	const	std::string		&	name()				const	{ return _name;								}
+	const	QString				nameQ()				const	{ return QString::fromStdString(_name);		}
+	const	Version			&	version()			const	{ return _version;							}
+	const	std::string		&	title()				const	{ return _title;							}
+			QString				titleQ()			const	{ return QString::fromStdString(_title);	}
+	const	std::string		&	rfile()				const	{ return _rfile;							}
+	const	std::string		&	module()			const	{ return _module;							}
+			size_t				id()				const	{ return _id;								}
+			bool				usesJaspResults()	const	{ return _useJaspResults;					}
+			Status				status()			const	{ return _status;							}
+			int					revision()			const	{ return _revision;							}
+			bool				isVisible()			const	{ return _visible;							}
+			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
+			QString				helpFile()			const	{ return _helpFile;							}
+	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;					}
+	const	Json::Value		&	getImgResults()		const	{ return _imgResults;						}
 			DataSet			*	getDataSet()		const;
-	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;				}
-			AnalysisForm	*	form()				const	{ return _analysisForm;					}
+	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
+			AnalysisForm	*	form()				const	{ return _analysisForm;						}
 
 			void		refresh();
 			void		reload();
+            void        exportResults();
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
@@ -134,7 +140,7 @@ public:
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isInited()			const { return status() == Inited;		}
-	bool isFinished()		const { return status() == Complete || status() == Error || status() == Exception; }
+	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
 
 
 	void initialized(AnalysisForm* form, bool isNewAnalysis);
@@ -148,21 +154,19 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
 	void					runScriptRequestDone(const QString& result, const QString& controlName);	
 
-
-
 public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
 	void					setHelpFile(QString helpFile);
-	
-
+	void					setTitleQ(QString title) { setTitle(title.toStdString()); }
+	void					setTitle(std::string title);
 
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
 
 private:
-	void					optionsChangedHandler(Option *option);
+	void					optionsChangedHandler(Option *option = nullptr);
 	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
 	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(QString::fromStdString(columnName), this, colType); }
 	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(QString::fromStdString(columnName)); }

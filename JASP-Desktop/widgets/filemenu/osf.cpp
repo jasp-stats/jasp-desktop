@@ -297,7 +297,7 @@ void OSF::userDetailsReceived()
 void OSF::openSaveCompleted(FileEvent* event)
 {
 
-	if (event->successful())
+	if (event->isSuccessful())
 	{
 		_model->refresh();
 	}

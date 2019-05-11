@@ -3,34 +3,47 @@ import QtQuick.Controls 2.4
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
-FocusScope
+ListView
 {
-	property alias  cppModel: listView.cppModel
-	property alias  hasBreadCrumbs: listView.hasBreadCrumbs
+	property var	cppModel:		undefined
+	property var	breadCrumbs:	null
 
-	ListView
-	{
-		property var cppModel: undefined
-		property bool hasBreadCrumbs: false
+	id:						listView
+	maximumFlickVelocity:	Theme.maximumFlickVelocity
+	clip:					true
 
-		id:						listView
-		maximumFlickVelocity:	Theme.maximumFlickVelocity
-		clip:					true
-		anchors.fill: parent
+	spacing:				10
+	model:					cppModel
 
-		spacing:				10
-		model:					cppModel
 
-		delegate:	ListItem
+	Keys.onLeftPressed:
+		if(breadCrumbs !== null)
 		{
-			width:		listView.width -  (rightscrollbar.width > 0 ? rightscrollbar.width + listView.spacing : 0)
-			cppModel:	listView.cppModel
-			hasBreadCrumbs: listView.hasBreadCrumbs
-		}
+			event.accepted = breadCrumbs.count > 1;
 
-		JASPScrollBar {
-			id:				rightscrollbar
-			flickable:		parent
+			if(event.accepted)
+				breadCrumbs.crumbButtonClicked(breadCrumbs.count - 2)
 		}
+		else
+			event.accepted = false;
+
+	Connections
+	{
+		target:				listView.model
+		onModelReset:		listView.currentIndex = 0;
+	}
+
+	delegate:	ListItem
+	{
+		width:					listView.width -  (rightscrollbar.width > 0 ? rightscrollbar.width + listView.spacing : 0)
+		cppModel:				listView.cppModel
+		hasBreadCrumbs:			listView.breadCrumbs !== null
+		onAllHoveredChanged:	if(allHovered) { listView.currentIndex = index; forceActiveFocus(); }
+	}
+
+	JASPScrollBar
+	{
+		id:				rightscrollbar
+		flickable:		parent
 	}
 }

@@ -23,9 +23,9 @@ Form
 {
 	usesJaspResults: false
 	columns: 1
-
 	TextArea
 	{
+		title: qsTr("Enter lavaan syntax below")
 		name: "model"
 		textType: "lavaan"
 	}
@@ -35,11 +35,11 @@ Form
 		title: qsTr("Data")
 		name: "Data"
 		columns: 2
-		RadioButton { value: "raw"; label: qsTr("raw"); checked: true }
+		RadioButton { value: "raw"; label: qsTr("Raw"); checked: true }
 		RadioButton
 		{
 			value: "varcov"; label: qsTr("Variance-covariance matrix")
-			IntegerField { name: "SampleSize"; label: qsTr("Sample Size"); defaultValue: 0 }
+			IntegerField { name: "SampleSize"; label: qsTr("Sample size"); defaultValue: 0 }
 		}
 	}
   
@@ -94,20 +94,20 @@ Form
 
 		Group
 		{
-			title: qsTr("Grouping variable")
+			title: qsTr("Grouping Variable")
 			DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or source: it takes all variables per default
 			Group
 			{
-				title: qsTr("Equality Constraits")
+				title: qsTr("Equality Constraints")
 				CheckBox { name: "eq_loadings";				label: qsTr("Loadings")				}
 				CheckBox { name: "eq_intercepts";			label: qsTr("Intercepts")			}
 				CheckBox { name: "eq_residuals";			label: qsTr("Residuals")			}
 				CheckBox { name: "eq_residualcovariances";	label: qsTr("Residual covariances")	}
 				CheckBox { name: "eq_means";				label: qsTr("Means")				}
-				CheckBox { name: "eq_thresholds";			label: qsTr("Threashold")			}
+				CheckBox { name: "eq_thresholds";			label: qsTr("Threshold")			}
 				CheckBox { name: "eq_regressions";			label: qsTr("Regressions")			}
-				CheckBox { name: "eq_variances";			label: qsTr("Latent Variances")		}
-				CheckBox { name: "eq_lvcovariances";		label: qsTr("Latent Covariances")	}
+				CheckBox { name: "eq_variances";			label: qsTr("Latent variances")		}
+				CheckBox { name: "eq_lvcovariances";		label: qsTr("Latent covariances")	}
 			}
 		}
 
@@ -133,12 +133,12 @@ Form
 			DropDown
 			{
 				name: "factorStandardisation"
-				label: qsTr("Factor Scaling")
+				label: qsTr("Factor scaling")
 				values:
 				[
-					{ label: "Factor Loadings"    , value: "factorLoadings"		},
-					{ label: "Residual Variance"  , value: "residualVariance"	},
-					{ label: "None"               , value: "none"				}
+					{ label: qsTr("Factor loadings")    , value: "factorLoadings"	},
+					{ label: qsTr("Residual variance")  , value: "residualVariance"	},
+					{ label: qsTr("None")               , value: "none"				}
 				]
 			}
 		}
@@ -157,7 +157,7 @@ Form
 			CheckBox { name: "omitResidualSingleIndicator";	label: qsTr("Omit residual single indicator");	checked: true	}
 			CheckBox { name: "residualVariances";			label: qsTr("Residual variances");				checked: true	}
 			CheckBox { name: "correlateExogenousLatents";	label: qsTr("Correlate exogenous latents");		checked: true	}
-			CheckBox { name: "addThresholds";				label: qsTr("Add thresholdds");					checked: true	}
+			CheckBox { name: "addThresholds";				label: qsTr("Add thresholds");					checked: true	}
 			CheckBox { name: "addScalingParameters";		label: qsTr("Add scalings parameters");			checked: true	}
 			CheckBox { name: "correlateDependentVariables";	label: qsTr("Correlate dependent variables");	checked: true	}
             CheckBox {

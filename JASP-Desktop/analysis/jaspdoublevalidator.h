@@ -20,14 +20,38 @@
 #define JASPDOUBLEVALIDATOR_H
 
 #include <QDoubleValidator>
-
+#include "analysisqmldefines.h"
+#include "log.h"
 
 class JASPDoubleValidator : public QDoubleValidator
 {
+	Q_OBJECT
+
+	Q_PROPERTY(QString inclusive READ inclusive	WRITE setInclusive	NOTIFY inclusiveChanged	)
+
 public:
 	JASPDoubleValidator (QObject* parent = nullptr) : QDoubleValidator(parent) {}
 
-	QValidator::State validate(QString& s, int& pos) const override;
+	QValidator::State	validate(QString& s, int& pos) const override;
+
+	Q_INVOKABLE QString	validationMessage(const QString& fieldName);
+
+	QString inclusive() { return _capitalize(qmlInclusiveTypeToQString(_inclusive), false); }
+	void setInclusive(QString inclusive)
+	{
+		try { _inclusive = qmlInclusiveTypeFromQString(_capitalize(inclusive, true));	}
+		catch (...) { Log::log() << "Wrong Inclusive type " << inclusive.toStdString() << std::flush; }
+	}
+
+signals:
+	void inclusiveChanged();
+
+protected:
+	qmlInclusiveType	_inclusive = qmlInclusiveType::Yes;
+
+private:
+	QString _capitalize(const QString& str, bool toCapitalize = true);
+	bool	_isInf(double value);
 };
 
 #endif // JASPDOUBLEVALIDATOR_H

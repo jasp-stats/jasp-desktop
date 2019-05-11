@@ -50,19 +50,19 @@ public:								\
  */
 #ifdef JASP_DEBUG
 
-#include <iostream>
+#include "log.h"
 
-#define DEBUG_COUT1(z)	std::cout << z << std::endl
-#define DEBUG_COUT2(y, z)	std::cout << y << z << std::endl
-#define DEBUG_COUT3(x, y, z) std::cout << x << y << z << std::endl
-#define DEBUG_COUT4(w, x, y, z) std::cout << w << x << y << z << std::endl
-#define DEBUG_COUT5(v, w, x, y, z) std::cout << v << w << x << y << z << std::endl
-#define DEBUG_COUT6(u, v, w, x, y, z) std::cout << u << v << w << x << y << z << std::endl
-#define DEBUG_COUT7(t, u, v, w, x, y, z) std::cout << t << u << v << w << x << y << z << std::endl
-#define DEBUG_COUT8(s, t, u, v, w, x, y, z) std::cout << s << t << u << v << w << x << y << z << std::endl
-#define DEBUG_COUT9(r, s, t, u, v, w, x, y, z) std::cout << r << s << t << u << v << w << x << y << z << std::endl
-#define DEBUG_COUT10(q, r, s, t, u, v, w, x, y, z) std::cout << q << r << s << t << u << v << w << x << y << z << std::endl
-#define DEBUG_COUT11(p, q, r, s, t, u, v, w, x, y, z) std::cout << p << q << r << s << t << u << v << w << x << y << z << std::endl
+#define DEBUG_COUT1(z)	Log::log() << z << std::endl
+#define DEBUG_COUT2(y, z)	Log::log() << y << z << std::endl
+#define DEBUG_COUT3(x, y, z) Log::log() << x << y << z << std::endl
+#define DEBUG_COUT4(w, x, y, z) Log::log() << w << x << y << z << std::endl
+#define DEBUG_COUT5(v, w, x, y, z) Log::log() << v << w << x << y << z << std::endl
+#define DEBUG_COUT6(u, v, w, x, y, z) Log::log() << u << v << w << x << y << z << std::endl
+#define DEBUG_COUT7(t, u, v, w, x, y, z) Log::log() << t << u << v << w << x << y << z << std::endl
+#define DEBUG_COUT8(s, t, u, v, w, x, y, z) Log::log() << s << t << u << v << w << x << y << z << std::endl
+#define DEBUG_COUT9(r, s, t, u, v, w, x, y, z) Log::log() << r << s << t << u << v << w << x << y << z << std::endl
+#define DEBUG_COUT10(q, r, s, t, u, v, w, x, y, z) Log::log() << q << r << s << t << u << v << w << x << y << z << std::endl
+#define DEBUG_COUT11(p, q, r, s, t, u, v, w, x, y, z) Log::log() << p << q << r << s << t << u << v << w << x << y << z << std::endl
 
 #else
 

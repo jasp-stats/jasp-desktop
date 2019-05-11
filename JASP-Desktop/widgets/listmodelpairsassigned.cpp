@@ -17,8 +17,9 @@
 //
 
 #include "listmodelpairsassigned.h"
+#include "log.h"
 
-#include <QDebug>
+
 
 using namespace std;
 
@@ -40,7 +41,7 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 {
 	if ( ! index.isValid())
 	{
-		qDebug() << "Data invalid!";
+		Log::log()  << "ListModelPairsAssigned::data: Data invalid!" << std::endl;
 		return QVariant();
 	}
 
@@ -56,7 +57,7 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 			return result;
 		}
 		else
-			qDebug() << "ListModelPairsAssigned: row " << realRow << " out of range " << _terms.size();
+			Log::log()  << "ListModelPairsAssigned::data: row " << realRow << " out of range " << _terms.size() << std::endl;
 	}
 	else
 		return ListModelAssignedInterface::data(index, role);

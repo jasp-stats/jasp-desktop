@@ -39,19 +39,22 @@ Item
 
 	RectangularButton
 	{
-		id		: logoutButton
-		text	: qsTr("Logout")
-		visible	: loggedin
+		id					: logoutButton
+		text				: qsTr("Logout")
+		visible				: loggedin
 
 		anchors.right		: parent.right
 		anchors.top			: parent.top
 		anchors.rightMargin	: Theme.generalMenuMargin
 		anchors.topMargin	: Theme.generalMenuMargin
-
-		onClicked	:
-		{
-			fileMenuModel.osf.logoutClicked();
-		}
+		onClicked			: fileMenuModel.osf.logoutClicked()
+		KeyNavigation.tab	: newDirectoryButton.visible ?
+									newDirectoryButton :
+									foldernameText.visible ?
+										foldernameText :
+										filenameText.visible ?
+											filenameText :
+											osfList
 	}
 
 	BreadCrumbs
@@ -61,17 +64,13 @@ Item
 		visible	: loggedin
 
 		width	: rect.width
-		height	: loggedin ? 40 : 0
+		height	: (loggedin ? 40 : 0) * preferencesModel.uiScale
 
 		anchors.top			: menuHeader.bottom
-		anchors.topMargin	: 30
 		anchors.left		: menuHeader.left
 		anchors.right		: parent.right
 
-		onCrumbButtonClicked	:
-		{
-			fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
-		}
+		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
 	}
 
 	ToolSeparator
@@ -92,8 +91,8 @@ Item
 		id		: newDirectoryButton
 		text	: qsTr("Create Folder")
 
-		width	: 120
-		height	: 30
+		width	: 120 * preferencesModel.uiScale
+		height	: 30  * preferencesModel.uiScale
 		visible	: fileExportDialog.visible && loggedin
 
 		// Icons made by "https://www.flaticon.com/authors/smashicons"
@@ -101,11 +100,8 @@ Item
 		anchors.right		: menuHeader.right
 		anchors.top			: firstSeparator.bottom
 		anchors.topMargin	: Theme.generalAnchorMargin
-
-		onClicked	:
-		{
-			newDirectoryButton.visible = false
-		}
+		onClicked			: { newDirectoryButton.visible = false; foldernameText.focus = true; }
+		KeyNavigation.tab	: filenameText
 	}
 
 	Item
@@ -124,8 +120,8 @@ Item
 			id 		: saveFoldernameLabel
 			text	: qsTr("Foldername")
 
-			width	: 80
-			height	: 30
+			width	: 80 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			color 	: Theme.black
 			font	: Theme.font
 
@@ -159,25 +155,23 @@ Item
 				id				: foldernameText
 				selectByMouse	: true
 				text			: fileMenuModel.osf.savefoldername
-				font.pixelSize	: 14
+				font			: Theme.fontRibbon
 
 				anchors.fill		: parent
 				anchors.leftMargin	: Theme.itemPadding
 				anchors.rightMargin	: Theme.itemPadding
 				verticalAlignment	: Text.AlignVCenter
 
-				onAccepted	:
-				{
-					fileMenuModel.osf.saveFolder(foldernameText.text)
-				}
+				onAccepted			: saveFoldernameButton.clicked()
+				KeyNavigation.tab	: saveFoldernameButton
 			}
 		}
 
 		RectangularButton
 		{
 			id		: saveFoldernameButton
-			width	: 30
-			height	: 30
+			width	: 30 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			iconSource	: "qrc:///icons/create-folder.png"
 
 			enabled : foldernameText.text.length > 0
@@ -185,28 +179,30 @@ Item
 			anchors.top			: parent.top
 			anchors.right		: cancelCreateFolderButton.left
 			anchors.rightMargin : Theme.generalAnchorMargin
-
-			onClicked	:
+			KeyNavigation.tab	: cancelCreateFolderButton
+			onClicked			:
 			{
 				fileMenuModel.osf.saveFolder(foldernameText.text)
-				newDirectoryButton.visible = true;
+				newDirectoryButton.visible	= true
+				filenameText.focus			= true
 			}
 		}
 
 		RectangularButton
 		{
-			id		: cancelCreateFolderButton
-			width	: 30
-			height	: 30
-			iconSource	: "qrc:/images/close-button.png"
-
+			id					: cancelCreateFolderButton
+			width				: 30 * preferencesModel.uiScale
+			height				: 30 * preferencesModel.uiScale
+			iconSource			: "qrc:/images/close-button.png"
 			anchors.top			: parent.top
 			anchors.right		: parent.right
+			KeyNavigation.tab	: filenameText
 
 			onClicked	:
 			{
 				foldernameText.clear()
-				newDirectoryButton.visible = true;
+				newDirectoryButton.visible  = true;
+				filenameText.focus			= true
 			}
 		}
 	}
@@ -215,7 +211,7 @@ Item
 	{
 		id		: fileExportDialog
 		visible	: showfiledialog && loggedin
-		height	: visible ? 30 : 0
+		height	: visible ? 30 * preferencesModel.uiScale : 0
 
 		anchors.left			: menuHeader.left
 		anchors.right			: menuHeader.right
@@ -228,8 +224,8 @@ Item
 			id 		: saveFilenameLabel
 			text	: qsTr("Filename")
 
-			width	: 80
-			height	: 30
+			width	: 80 * preferencesModel.uiScale
+			height	: 30 * preferencesModel.uiScale
 			color 	: Theme.black
 			font	: Theme.font
 
@@ -262,11 +258,12 @@ Item
 				id				: filenameText
 				selectByMouse	: true
 				text			: fileMenuModel.osf.savefilename
-				font.pixelSize	: 14
+				font			: Theme.fontRibbon
 
 				anchors.fill		: parent
 				anchors.leftMargin	: Theme.itemPadding
 				verticalAlignment	: Text.AlignVCenter
+				KeyNavigation.tab	: saveFilenameButton
 
 				onAccepted	:
 				{
@@ -277,15 +274,14 @@ Item
 
 		RectangularButton
 		{
-			id		: saveFilenameButton
-			width	: saveFoldernameButton.width + cancelCreateFolderButton.width + Theme.generalAnchorMargin
-			height	: 30
-			text	: qsTr("Save")
-
-			enabled	: filenameText.text.length > 0
-
+			id					: saveFilenameButton
+			width				: saveFoldernameButton.width + cancelCreateFolderButton.width + Theme.generalAnchorMargin
+			height				: 30 * preferencesModel.uiScale
+			text				: qsTr("Save")
+			enabled				: filenameText.text.length > 0
 			anchors.right		: parent.right
 			anchors.top			: parent.top
+			KeyNavigation.tab	: osfList
 
 			onClicked	:
 			{
@@ -299,7 +295,7 @@ Item
 	{
 		visible	: processing
 		width	: animation.width;
-		height	: animation.height + 8
+		height	: animation.height + 8 * preferencesModel.uiScale
 
 		anchors.horizontalCenter	: osfList.horizontalCenter
 		anchors.verticalCenter		: osfList.verticalCenter
@@ -313,11 +309,12 @@ Item
 
 	FileList
 	{
-		id				: osfList
-
-		visible			: loggedin && !processing
-		cppModel		: fileMenuModel.osf.listModel
-		hasBreadCrumbs	: true
+		id					: osfList
+		visible				: loggedin && !processing
+		focus				: visible
+		cppModel			: fileMenuModel.osf.listModel
+		breadCrumbs			: osfbreadcrumbs
+		KeyNavigation.tab	: logoutButton
 
 		anchors
 		{
@@ -330,13 +327,15 @@ Item
 		}
 	}
 
+
 	OSFLogin
 	{
-		id		: osfLogin
-		visible	: !loggedin && !processing
+		id:			osfLogin
+		visible:	!loggedin && !processing
+		focus:		visible
 
 		anchors.horizontalCenter	: parent.horizontalCenter
 		anchors.top					: firstSeparator.bottom
-		anchors.topMargin			: 40
+		anchors.topMargin			: 40 * preferencesModel.uiScale
 	}
 }
