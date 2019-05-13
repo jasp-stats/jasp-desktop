@@ -210,7 +210,7 @@ void ResultsJsInterface::changeTitle(Analysis *analysis)
     int id = analysis->id();
     QString title = analysis->titleQ();
 
-    emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + title + "')");
+    emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + escapeJavascriptString(title) + "')");
 }
 
 void ResultsJsInterface::showAnalysis(int id)
