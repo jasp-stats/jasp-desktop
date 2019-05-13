@@ -55,11 +55,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 
 	if (perform == "run") {
-	  
+			
 	  if (dependent.variable != "") {
-  		.hasErrors(dataset, type = c("infinity", "variance", "observations"), 
+  		.hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions"), 
   								all.target = list.variables, observations.amount = "< 2",
-  								exitAnalysisIfErrors = TRUE)
+  								modelInteractions.modelTerms = options$modelTerms, exitAnalysisIfErrors = TRUE)
   								
   		#check weights
   		if (options$wlsWeights != "")
@@ -169,42 +169,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		includes.nuisance <- (length(variables.in.null.model) > 0)
 		lm.fit.index.one.model <- 1 + as.numeric(includes.nuisance && (!identical(variables.in.model,variables.in.null.model)))
 
-	}
-
-
-	if (length(options$modelTerms) > 0) {
-
-		max.no.components <- max(sapply (options$modelTerms, function(term){length (term$components)}))
-
-		if (max.no.components > 1) {
-
-			# In case of interactions, check whether all main effects and lower-order interaction terms are in the model
-
-			for (term in options$modelTerms) {
-
-				components <- term$components
-
-				if (length (components) > 1) {
-
-					no.children <- 2^length (components) - 1
-					inclusion <- sapply (options$modelTerms, function (terms) {
-
-							term.components <- terms$components
-
-							if (sum (term.components %in% components) == length (term.components)) {
-								return (TRUE)
-							}
-							return (FALSE)
-						})
-
-					if (sum (inclusion) != no.children) {
-
-						error.message <- "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
-						list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-					}
-				}
-			}
-		}
 	}
 
 	if (dependent.variable != "") {
