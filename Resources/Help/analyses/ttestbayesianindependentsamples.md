@@ -60,7 +60,7 @@ The independent samples t-test allows you to test the null hypothesis that the p
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that Group one < Group two
 - **error %**: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor.
 
-###$ Group Descriptives:
+#### Group Descriptives:
 - *N*: Sample size
 - *Mean*: Sample mean
 - *SD*: Sample standard deviation
