@@ -29,7 +29,7 @@ Form {
 		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
 	}
 
-	AddColumnField
+	ComputedColumnField
 	{
 		label: "Test adding this column:"
 		name: "addedColumn"

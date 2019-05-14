@@ -260,7 +260,8 @@ private:
 									_datasetLoaded			= false,
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
-									_savingForClose			= false;
+									_savingForClose			= false,
+									_progressShowsItself	= false;
 
 	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles,

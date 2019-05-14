@@ -728,7 +728,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	{
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -989,16 +989,13 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			emit currentAnalysis->expandAnalysis();
 	}
 
+	setDataAvailable(_package->dataSet()->rowCount() > 0);
 
-	if(_package->dataSet()->rowCount() == 0)
-	{
+	if(!_dataAvailable)
 		setDataPanelVisible(false);
-		setDataAvailable(false);
-	}
-	else
+	else if(_progressShowsItself)
 	{
 		setDataPanelVisible(showData);
-		setDataAvailable(true);
 		_analyses->setVisible(!showData);
 	}
 
@@ -1273,8 +1270,9 @@ void MainWindow::startDataEditor(QString path)
 
 void MainWindow::showProgress(bool showData)
 {
+	_progressShowsItself = showData;
 	_fileMenu->setVisible(false);
-	if (showData)
+	if (_progressShowsItself)
 		setDataPanelVisible(true);
 	setProgressBarVisible(true);
 }
