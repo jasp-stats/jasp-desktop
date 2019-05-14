@@ -18,7 +18,7 @@ public:
 	void					clear()									override;
 	Json::Value				asJSON()						const	override;
 	Option*					clone()							const	override;
-	std::set<std::string>	columnsCreated()						override	{ return _value != "" ?  std::set<std::string>({_value}) : std::set<std::string>(); }
+	std::set<std::string>	columnsCreated()						override	{ return _value != "" && _computed ?  std::set<std::string>({_value}) : std::set<std::string>(); }
 
 private:
 	bool _computed;

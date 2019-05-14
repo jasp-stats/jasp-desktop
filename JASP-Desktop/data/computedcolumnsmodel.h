@@ -16,7 +16,7 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(QString	computeColumnNameSelected	READ computeColumnNameSelected		WRITE setComputeColumnNameSelected		NOTIFY computeColumnNameSelectedChanged )
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY datasetLoadedChanged				)
-	Q_PROPERTY(QString lastCreatedColumn			READ lastCreatedColumn														NOTIFY lastCreatedColumnChanged			)
+	Q_PROPERTY(QString	lastCreatedColumn			READ lastCreatedColumn														NOTIFY lastCreatedColumnChanged			)
 
 public:
 	explicit	ComputedColumnsModel(Analyses * analyses, QObject * parent);
