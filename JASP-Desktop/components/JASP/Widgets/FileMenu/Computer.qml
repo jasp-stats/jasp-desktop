@@ -15,6 +15,12 @@ Item
 		id:					menuHeader
 		headertext:			qsTr("Recent Folders")
 		toolseparator:		false
+
+		anchors
+		{
+			top:			parent.top
+			margins:		Theme.generalMenuMargin
+		}
 	}
 
 	RectangularButton

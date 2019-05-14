@@ -1,8 +1,9 @@
-import "qrc:/components/JASP/Controls/"
-import QtQuick 2.9
-import QtQuick.Window 2.3
-import QtQuick.Controls 2.2
-import JASP 1.0
+import QtQuick			2.9
+import QtQuick.Window	2.3
+import QtQuick.Controls	2.2
+import JASP.Theme		1.0
+import JASP.Controls	1.0
+import JASP				1.0
 
 FocusScope
 {
@@ -93,8 +94,6 @@ FocusScope
 
 		contentWidth:	theView.width
 		contentHeight:	theView.height
-
-		//flickDeceleration: 4000
 
 		clip: true
 

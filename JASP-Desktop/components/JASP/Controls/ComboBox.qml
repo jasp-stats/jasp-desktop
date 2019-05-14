@@ -4,17 +4,17 @@ import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 
-JASPControl {
+JASPControl
+{
 	id:					comboBox
 	controlType:		"ComboBox"
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
-	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? labelSpacing + controlLabel.width : 0)
+	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? Theme.labelSpacing + controlLabel.width : 0)
 	width:				implicitWidth
 	background:			useExternalBorder ? externalControlBackground : control.background
 
     
 	property alias	control:				control
-	property int	labelSpacing:			4 * preferencesModel.uiScale
 	property alias	controlLabel:			controlLabel
 	property alias	label:					controlLabel.text
 	property string	currentText				//Am i empty or what?
@@ -97,7 +97,7 @@ JASPControl {
 	{
 						id:				control
 						anchors.left:	!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
-						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : comboBox.labelSpacing
+						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : Theme.labelSpacing
 						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
 
 						focus:			true

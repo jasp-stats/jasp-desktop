@@ -109,5 +109,6 @@
         <file>components/JASP/Widgets/FileMenu/MenuHeader.qml</file>
         <file>components/JASP/Controls/AddColumnField.qml</file>
         <file>components/JASP/Widgets/SpinBox.qml</file>
+        <file>components/JASP/Widgets/FileMenu/PrefsGroupRect.qml</file>
     </qresource>
 </RCC>
