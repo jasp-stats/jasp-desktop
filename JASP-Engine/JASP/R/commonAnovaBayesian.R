@@ -396,38 +396,16 @@
     bfIncl <- (postInclProb / (1 - postInclProb)) / (priorInclProb / (1 - priorInclProb))
 
   } else {
-    # this method is inspired by this post: https://www.cogsci.nl/blog/interpreting-bayesian-repeated-measures-in-jasp
 
-    priorInclProb <- postInclProb <- bfIncl <- numeric(length(effectNames))
-    for (i in seq_along(effectNames)) {
-      effect <- effectNames[i]
+    tmp <- .BANOVAcomputMatchedInclusion(
+      effectNames, effects.matrix, model$interactions.matrix,
+      rep(1 / nrow(effects.matrix), nrow(effects.matrix)), 
+      model$postProbs
+    )
+    priorInclProb <- tmp[["priorInclProb"]]
+    postInclProb  <- tmp[["postInclProb"]]
+    bfIncl        <- tmp[["bfIncl"]]
 
-      # get all higher order interactions of which this effect is a component
-      # e.g., V1 is a component of V1:V2
-      idx1 <- which(model$interactions.matrix[effect, ])
-
-      # get all models that exclude the predictor, but that always include the lower order main effects
-      # e.g., V1:V2 is compared against models that always include V1 and V2
-      idx2 <- which(model$interactions.matrix[, effect]) # if effect is V1:V2, idx3 contains c(V1, V2)
-
-      # idx3 is FALSE if a model contains higher order interactions of effect, TRUE otherwise
-      idx3 <- !matrixStats::rowAnys(effects.matrix[, idx1, drop = FALSE])
-
-      # all models that include the effect, without higher order interactions
-      idx4 <- idx3 & effects.matrix[, i]
-      priorInclProb[i] <- mean(idx4[idxNotNan])
-      postInclProb[i]  <- sum(idx4[idxNotNan] * model[["postProbs"]][idxNotNan])
-
-      # the models to consider for the prior/ posterior exclusion probability.
-      # idx5 includes models that have: all subcomponents & no higher order interaction & not the effect
-      idx5 <- matrixStats::rowAlls(effects.matrix[, idx2, drop = FALSE]) & idx3 & !effects.matrix[, i]
-
-      priorExclProb <- mean(idx5[idxNotNan])
-      postExclProb  <- sum(idx5[idxNotNan] * model[["postProbs"]][idxNotNan])
-
-      # compute inclusion BF
-      bfIncl[i]     <- (postInclProb[i] / postExclProb) / (priorInclProb[i] / priorExclProb)
-    }
   }
   
   if (sum(!idxNotNan) > 1L) { # null model is always omitted, so 2 or more omitted indicates some models failed 
@@ -442,18 +420,55 @@
   effectsTable[["Effects"]]      <- .unvf(effectNames)
   effectsTable[["P(incl)"]]      <- priorInclProb
   effectsTable[["P(incl|data)"]] <- postInclProb
-  # FIXME: remove .clean after this is handled by jaspResults
   effectsTable[["BFInclusion"]] <- switch(
     options$bayesFactorType,
-    # "LogBF10" = sapply(log(bfIncl), .clean),
-    # "BF01"    = sapply(1 / bfIncl,  .clean),
-    # "BF10"    = sapply(bfIncl,      .clean)
     "LogBF10" = log(bfIncl),
     "BF01"    = 1 / bfIncl,
     "BF10"    = bfIncl  
   )
   jaspResults[["tableEffects"]] <- effectsTable
   return()
+}
+
+.BANOVAcomputMatchedInclusion <- function(effectNames, effects.matrix, interactions.matrix,
+                                          priorProbs, postProbs) {
+  # this method is inspired by this post: https://www.cogsci.nl/blog/interpreting-bayesian-repeated-measures-in-jasp
+ 
+  priorInclProb <- postInclProb <- bfIncl <- numeric(length(effectNames))
+  for (i in seq_along(effectNames)) {
+    effect <- effectNames[i]
+    
+    # get all higher order interactions of which this effect is a component
+    # e.g., V1 is a component of V1:V2
+    idx1 <- which(interactions.matrix[effect, ])
+    
+    # get all models that exclude the predictor, but that always include the lower order main effects
+    # e.g., V1:V2 is compared against models that always include V1 and V2
+    idx2 <- which(interactions.matrix[, effect]) # if effect is V1:V2, idx3 contains c(V1, V2)
+    
+    # idx3 is FALSE if a model contains higher order interactions of effect, TRUE otherwise
+    idx3 <- !matrixStats::rowAnys(effects.matrix[, idx1, drop = FALSE])
+    
+    # all models that include the effect, without higher order interactions
+    idx4 <- idx3 & effects.matrix[, i]
+    priorInclProb[i] <- sum(idx4 * priorProbs)
+    postInclProb[i]  <- sum(idx4 * postProbs)
+    
+    # the models to consider for the prior/ posterior exclusion probability.
+    # idx5 includes models that have: all subcomponents & no higher order interaction & not the effect
+    idx5 <- matrixStats::rowAlls(effects.matrix[, idx2, drop = FALSE]) & idx3 & !effects.matrix[, i]
+    
+    priorExclProb <- sum(idx5 * priorProbs)
+    postExclProb  <- sum(idx5 * postProbs)
+    
+    # compute inclusion BF
+    bfIncl[i]     <- (postInclProb[i] / postExclProb) / (priorInclProb[i] / priorExclProb)
+  }
+  return(list(
+    priorInclProb = priorInclProb,
+    postInclProb  = postInclProb,
+    bfIncl        = bfIncl
+  ))
 }
 
 .BANOVAinitModelComparisonTable <- function(options) {

@@ -39,7 +39,14 @@ Form {
 		title: qsTr("Output")
 		columns: 2
 
-		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable }
+		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable
+            RadioButtonGroup
+            {
+                name: "effectsType"
+                RadioButton { value: "allModels";		label: qsTr("Across all models");   checked: true	}
+                RadioButton { value: "matchedModels";	label: qsTr("Across matched models")				}
+            }
+        }
 
 		DropDown
 		{
