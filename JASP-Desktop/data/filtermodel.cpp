@@ -8,7 +8,8 @@ void FilterModel::reset()
 	setConstructedJSON(DEFAULT_FILTER_JSON);
 	_setRFilter(DEFAULT_FILTER);
 
-	sendGeneratedAndRFilter();
+	if(_package != nullptr && _package->dataSet() != nullptr && _package->dataSet()->rowCount() > 0)
+		sendGeneratedAndRFilter();
 }
 
 void FilterModel::setDataSetPackage(DataSetPackage * package)

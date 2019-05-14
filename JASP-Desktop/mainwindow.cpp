@@ -1032,18 +1032,6 @@ void MainWindow::matchComputedColumnsToAnalyses()
 
 void MainWindow::resultsPageLoaded()
 {
-	Log::log() << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
-// #ifdef _WIN32
-// 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
-// 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
-// 		ui->webViewResults->setZoomFactor(zoom);
-// 		ui->webViewHelp->setZoomFactor(zoom);
-// 		ppi = verticalDpi;
-// 		_resultsJsInterface->setZoom(zoom);
-//
-// 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
-// #endif
-
 	_resultsViewLoaded = true;
 
 	if (_openOnLoadFilename != "")

@@ -304,8 +304,9 @@ void FileMenu::dataSetIORequestHandler(FileEvent *event)
 
 void FileMenu::analysisAdded(Analysis *analysis)
 {
-	_actionButtons->setEnabled(ActionButtons::SaveAs, true);
-	_actionButtons->setEnabled(ActionButtons::ExportResults, true);
+	_actionButtons->setEnabled(ActionButtons::Close,			true);
+	_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
+	_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
 }
 
 void FileMenu::setSyncFile(FileEvent *event)

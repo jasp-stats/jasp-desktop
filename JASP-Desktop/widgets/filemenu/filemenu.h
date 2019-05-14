@@ -43,7 +43,7 @@ class FileMenu : public QObject
 
 	Q_PROPERTY(ActionButtons::FileOperation fileoperation		READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged		)
 	Q_PROPERTY(DataLibrary *  datalibrary						READ datalibrary													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(CurrentDataFile * currentFile						READ currentFile													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(CurrentDataFile * currentFile					READ currentFile													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(RecentFiles * recentFiles						READ recentFiles													NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(Computer * computer								READ computer														NOTIFY dummyChangedNotifier		)
 	Q_PROPERTY(OSF * osf										READ osf															NOTIFY dummyChangedNotifier		)
