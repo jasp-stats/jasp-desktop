@@ -34,6 +34,9 @@ public:
 	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
 	const Terms& getLevels() const;
+
+private:
+	void updateLatestLevelIndex(int startindex);
 	
 public slots:
 	void itemChanged(int row, QVariant value);
