@@ -23,17 +23,6 @@ import JASP.Widgets 1.0
 Form {
     id: form
 
-   VariablesForm
-	{
-		AvailableVariablesList { name: "allVariablesList" }
-		AssignedVariablesList { name: "variables";	title: qsTr("Variables") }
-	}
-
-	ComputedColumnField
-	{
-		label: "Test adding this column:"
-		name: "addedColumn"
-	}
 
     CheckBox
     {

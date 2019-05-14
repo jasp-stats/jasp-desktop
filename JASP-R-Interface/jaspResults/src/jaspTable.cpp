@@ -125,20 +125,13 @@ int jaspTable::pushbackToColumnInData(std::vector<Json::Value> column, std::stri
 
 int jaspTable::getDesiredColumnIndexFromNameForRowAdding(std::string colName, int previouslyAddedUnnamed)
 {
-	int desiredIndex = -1;
-
 	if(colName != "")
-	{
 		for(int possibleColIndex=0; possibleColIndex<_colNames.rowCount(); possibleColIndex++)
 			if(_colNames[possibleColIndex] == colName)
-				desiredIndex = possibleColIndex;
-
-		if(desiredIndex != -1)
-			return desiredIndex;
-	}
+				return possibleColIndex;
 
 	int foundUnnamed = 0;
-	for(int col=0; col<_colNames.rowCount() || col < _data.size(); col++)
+	for(int col=0; col<_colNames.rowCount() || _data.size(); col++)
 		if(_colNames[col] == "")
 		{
 
@@ -148,7 +141,7 @@ int jaspTable::getDesiredColumnIndexFromNameForRowAdding(std::string colName, in
 			foundUnnamed++;
 		}
 
-	return _colNames.rowCount();
+	return std::max(_colNames.rowCount(), _data.size());
 }
 
 void jaspTable::setColumn(std::string columnName, Rcpp::RObject column)
