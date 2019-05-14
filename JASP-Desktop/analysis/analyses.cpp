@@ -89,7 +89,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		if(title == "")
 			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
-						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
+		analysis = create(module, name, title, id, version, &optionsJson, status, false);
+
+		analysis->loadFromJSON(analysisData);
 	}
 	else
 	{

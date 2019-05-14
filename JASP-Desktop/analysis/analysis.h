@@ -130,6 +130,7 @@ public:
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
+			void		loadFromJSON(Json::Value & options);
 			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
 
 	static	Status		parseStatus(std::string name);
@@ -190,6 +191,7 @@ private:
 	size_t					_id;
 	std::string				_module			= "dynamic",
 							_name,
+							_titleDefault,
 							_title,
 							_rfile;
 	bool					_useJaspResults = false;
