@@ -1033,9 +1033,15 @@ void MainWindow::resultsPageLoaded()
 
 	if (_openOnLoadFilename != "")
 	{
-		_fileMenu->open(_openOnLoadFilename);
-		_openOnLoadFilename = "";
+		// this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
+        QTimer::singleShot(500, this, &MainWindow::_openFile);
 	}
+}
+
+void MainWindow::_openFile()
+{
+    _fileMenu->open(_openOnLoadFilename);
+    _openOnLoadFilename = "";
 }
 
 

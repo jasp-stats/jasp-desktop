@@ -159,6 +159,8 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
+    void _openFile();
+
 signals:
 	void saveJaspFile();
 	void imageBackgroundChanged(QString value);
