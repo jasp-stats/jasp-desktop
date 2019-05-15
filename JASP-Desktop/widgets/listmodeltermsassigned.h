@@ -32,14 +32,12 @@ public:
 	void	initTerms(const Terms& terms)														override;
 	bool	canAddTerms(Terms *terms)													const	override;
 	Terms*	addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
-	void	removeTerms(const QList<int> &indices)												override;
 
 public slots:
 	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) override;
 	
 private:	
 	bool	_onlyOneTerm;
-	Terms	_tempTermsToRemove;
 
 };
 

@@ -100,16 +100,3 @@ Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const Q
 	
 	return toSendBack;
 }
-
-void ListModelTermsAssigned::removeTerms(const QList<int> &indices)
-{
-	beginResetModel();
-	_tempTermsToRemove.clear();
-	for (const int &index : indices)
-		_tempTermsToRemove.add(_terms.at(index));
-	
-	_terms.remove(_tempTermsToRemove);
-	endResetModel();	
-
-	emit modelChanged(nullptr, &_tempTermsToRemove);	
-}

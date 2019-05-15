@@ -41,17 +41,19 @@ Terms *ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 	return terms;
 }
 
-void ListModelDraggable::removeTerms(const QList<int> &indexes)
+void ListModelDraggable::removeTerms(const QList<int> &indices)
 {
 	beginResetModel();
+	_tempTermsToRemove.clear();
+	for (const int &index : indices)
+		_tempTermsToRemove.add(_terms.at(index));
 
-	QList<int> sorted = indexes;
-	qSort(sorted.begin(), sorted.end(), qGreater<int>());
-	for (const int &index : sorted)
-		_terms.remove(index);
-
+	_terms.remove(_tempTermsToRemove);
 	endResetModel();
+
+	emit modelChanged(nullptr, &_tempTermsToRemove);
 }
+
 
 void ListModelDraggable::moveTerms(const QList<int> &indexes, int dropItemIndex)
 {
@@ -87,6 +89,8 @@ Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex, const QStri
 		beginResetModel();
 		_terms.add(*terms);
 		endResetModel();
+
+		emit modelChanged(terms, nullptr);
 	}
 
 	return nullptr;
