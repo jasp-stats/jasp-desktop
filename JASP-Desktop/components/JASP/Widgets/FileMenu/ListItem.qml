@@ -60,11 +60,11 @@ FocusScope
 		{
 			id :				firstFileOrFolderImage
 
-			height:				0.95 * parent.height
-			width:				height
-			anchors.left:		rectTitle.left
-			anchors.top:		rectTitle.top
-			anchors.leftMargin: 10 * preferencesModel.uiScale
+			height:					model.type==3 ? 0.75 * parent.height : 0.95 * parent.height  //Tune folder image to file image (wtih topmargin in svg)
+			width:					height
+			anchors.left:			rectTitle.left
+			anchors.verticalCenter: parent.verticalCenter
+			anchors.leftMargin:		model.type==3 ? 5 * preferencesModel.uiScale : 0
 
 			fillMode:	Image.PreserveAspectFit
 			source:		model.iconsource
@@ -83,7 +83,6 @@ FocusScope
 				cursorShape:		Qt.PointingHandCursor
 				onClicked:			rectTitleAndDescripton.openStuff(model)
 				onDoubleClicked:	{}
-
 			}
 
 			ToolTip
