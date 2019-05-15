@@ -433,6 +433,12 @@ void FileMenu::setVisible(bool visible)
 
 	_visible = visible;
 	emit visibleChanged(_visible);
+
+	if(!_visible)
+	{
+		_actionButtons->setSelectedAction(ActionButtons::Open);
+		_resourceButtons->setSelectedButton(ResourceButtons::None);
+	}
 }
 
 void FileMenu::showFileOpenMenu()
