@@ -31,6 +31,8 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QtWebEngine>
+#include <QAction>
+#include <QMenuBar>
 
 #include "utilities/qutils.h"
 #include "utilities/appdirs.h"
@@ -97,6 +99,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
+	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
@@ -152,6 +155,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 MainWindow::~MainWindow()
 {
+	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
+
 	delete _resultsJsInterface;
 	delete _engineSync;
 	if (_package && _package->dataSet())
@@ -389,11 +394,6 @@ void MainWindow::open(QString filepath)
 }
 
 /*
-void MainWindow::resizeEvent(QResizeEvent *event)
-{
-	QMainWindow::resizeEvent(event);
-	adjustOptionsPanelWidth();
-}
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -1561,4 +1561,33 @@ void MainWindow::resetQmlCache()
 QString MainWindow::browseOpenFileDocuments(QString caption, QString filter)
 {
 	return MessageForwarder::browseOpenFile(caption, AppDirs::documents(), filter);
+}
+
+void MainWindow::makeAppleMenu()
+{
+#ifdef __APPLE__
+	//see https://doc.qt.io/qt-5/qmenubar.html#qmenubar-as-a-global-menu-bar
+	QMenuBar	*appleMenuBar	= new QMenuBar(0);
+	QMenu		*quitMenu		= appleMenuBar->addMenu("quit"),
+				*aboutMenu		= appleMenuBar->addMenu("about.JASP"),
+				*prefMenu		= appleMenuBar->addMenu("preferences");
+
+	QAction		*macQuit		= new QAction("Quit JASP",				this),
+				*macAbout		= new QAction("About JASP",				this),
+				*macPreferences = new QAction("Preferences of JASP",	this);
+
+	macQuit->setShortcut(Qt::Key_Close);
+
+	macQuit->setMenuRole(			QAction::QuitRole);
+	macAbout->setMenuRole(			QAction::AboutRole);
+	macPreferences->setMenuRole(	QAction::PreferencesRole);
+
+	connect(macQuit,		&QAction::triggered, [&](){ if(checkPackageModifiedBeforeClosing()) _application->quit(); });
+	connect(macAbout,		&QAction::triggered, [&](){ showAbout(); });
+	connect(macPreferences, &QAction::triggered, [&](){ _fileMenu->showPreferences(); });
+
+	quitMenu->addAction(macQuit);
+	aboutMenu->addAction(macAbout);
+	prefMenu->addAction(macPreferences);
+#endif
 }

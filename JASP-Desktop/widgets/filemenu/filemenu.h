@@ -79,6 +79,8 @@ public:
 	QString			getDefaultOutFileName();
 	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
+	void			showPreferences();
+
 	ActionButtons::FileOperation		fileoperation()				const	{ return _fileoperation;			}
 	DataLibrary						*	datalibrary()				const	{ return _dataLibrary;				}
 	CurrentDataFile					*	currentFile()				const	{ return _currentDataFile;			}

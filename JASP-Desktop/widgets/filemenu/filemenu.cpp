@@ -440,3 +440,9 @@ void FileMenu::showFileOpenMenu()
 	setVisible(true);
 	_actionButtons->setSelectedAction(ActionButtons::Open);
 }
+
+void FileMenu::showPreferences()
+{
+	setVisible(true);
+	_actionButtons->setSelectedAction(ActionButtons::Preferences);
+}

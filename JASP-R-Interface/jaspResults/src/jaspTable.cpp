@@ -1031,7 +1031,6 @@ Json::Value	jaspTable::schemaJson()
 		std::string colName		= getColName(col);
 		std::string colTitle	= _colTitles.containsField(colName) ? _colTitles[colName] : (_colTitles[col] != "" ? _colTitles[col] : colName);
 		std::string colFormat	= _colFormats.containsField(colName) ? _colFormats[colName] : (_colFormats[col] != "" ? _colFormats[col] : "");
-		std::string colType		= deriveColumnType(col);
 
 		field["name"]	= colName;
 		field["title"]	= colTitle;

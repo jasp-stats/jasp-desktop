@@ -211,6 +211,7 @@ private slots:
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
+	void makeAppleMenu();
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
