@@ -24,8 +24,8 @@ This is especially important when copying and/or pasting plots.
 
 This number specifies how the JASP interface will be scaled.
 All menus and results are scaled by this factor.
-You can also use the keyboard shortcuts &#8984; with + or - (on MacOS) or Ctrl with + or - (on Windows) for
-this purpose.
+You can also use the keyboard shortcuts &#8984; with `+`, `-` or `0` (on MacOS) or Ctrl with `+`, `-` or `0` (on Windows & Linux) for
+this purpose. `-` decreases and `+` increases the scale while `0` resets the scaling for you.
 
 ### Max Flick Velocity
 This speed determines, in pixels per second, what the maximum flick / scroll speed is of certain moving elements in JASP.
