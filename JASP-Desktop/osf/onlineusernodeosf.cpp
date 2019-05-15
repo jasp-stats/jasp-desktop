@@ -9,6 +9,7 @@
 #include <QEventLoop>
 #include <stdexcept>
 #include <gui/messageforwarder.h>
+#include "widgets/filemenu/osf.h"
 
 
 using namespace std;
@@ -32,6 +33,7 @@ void OnlineUserNodeOSF::initialise() {
 
 	connect(reply, SIGNAL(finished()), this, SLOT(nodeInfoReceived()));
 }
+
 
 
 void OnlineUserNodeOSF::nodeInfoReceived() {
@@ -66,26 +68,29 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 	endInit(success);
 }
 
-bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
+void OnlineUserNodeOSF::login()
 {
+
 	QUrl url = QUrl("https://api.osf.io/v2/users/me/");
 
-	QEventLoop loop;
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
 
-	QNetworkReply* reply = manager->get(request);
+	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	connect(reply, &QNetworkReply::finished , this, &OnlineUserNodeOSF::handleLogin);
 
-	loop.exec();
+}
 
-	QNetworkReply::NetworkError error = reply->error();
-	if (error != QNetworkReply::NoError && error != QNetworkReply::AuthenticationRequiredError) //Authorisation message will be shown later on
-		MessageForwarder::showWarning("OSF Warning", reply->errorString());
+void OnlineUserNodeOSF::handleLogin()
+{
+	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
-	delete reply;
+	OSF::checkErrorMessageOSF(reply);
 
-	return error == false;
+	reply->deleteLater();
+
+	emit authenticationResult(reply->error() == QNetworkReply::NoError);
+
 }

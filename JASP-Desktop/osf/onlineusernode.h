@@ -15,12 +15,13 @@ class OnlineUserNode: public OnlineNode
 public:
 	OnlineUserNode(QNetworkAccessManager *manager, QString id, QObject *parent = 0);
 
-
 	virtual QString getFullname() const;
 
 	virtual QString getActionPath() const OVERRIDE;
 
 	virtual bool beginAction() OVERRIDE;
+
+	//virtual void signin() = 0;
 
 protected:
 

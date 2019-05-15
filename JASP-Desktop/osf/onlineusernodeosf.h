@@ -12,11 +12,14 @@ public:
 	OnlineUserNodeOSF(QNetworkAccessManager *manager, QString id, QObject *parent = 0);
 
 	virtual void initialise() OVERRIDE;
+	void login() ;
 
-	static bool authenticationSuccessful(QNetworkAccessManager *manager);
+signals:
+	void authenticationResult(bool);
 
 private slots:
 	void nodeInfoReceived();
+	void handleLogin();
 
 };
 
