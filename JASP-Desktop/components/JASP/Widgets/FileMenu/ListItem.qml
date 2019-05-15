@@ -69,7 +69,7 @@ FocusScope
 			fillMode:	Image.PreserveAspectFit
 			source:		model.iconsource
 			mipmap:		true
-			smooth:		true
+
 			sourceSize
 			{
 				width:	firstFileOrFolderImage.width * 2
@@ -111,7 +111,7 @@ FocusScope
 			source:			model.dataiconsource
 			visible :		model.associated_datafile !== ""
 			mipmap:		true
-			smooth:		true
+
 
 			sourceSize
 			{

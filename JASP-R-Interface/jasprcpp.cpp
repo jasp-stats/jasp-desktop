@@ -17,7 +17,7 @@
 
 #include "jasprcpp.h"
 #include "jaspResults/src/jaspResults.h"
-
+#include <fstream>
 
 
 static const	std::string NullString = "null";
@@ -45,6 +45,8 @@ DataSetRowCount				dataSetRowCount;
 
 static logFlushDef			_logFlushFunction		= nullptr;
 static logWriteDef			_logWriteFunction		= nullptr;
+
+static std::string			_R_HOME = "";
 
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
@@ -79,6 +81,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
+	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
 	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
@@ -125,7 +128,9 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
-	std::cout << "R_HOME: " << Rcpp::as<std::string>(rInside.parseEval("R.home('')")) << std::endl;
+	_R_HOME = Rcpp::as<std::string>(rInside.parseEval("R.home('')"));
+
+	std::cout << "R_HOME: " << _R_HOME << std::endl;
 }
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground)
@@ -901,12 +906,43 @@ void jaspRCPP_parseEvalQNT(const std::string & code)
 RInside::Proxy jaspRCPP_parseEval(const std::string & code)
 {
 	jaspRCPP_parseEvalPreface(code);
-	return rinside->parseEval(__sinkMe(code));
+	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code));
 	jaspRCPP_logString("\n");
+	return returnthis;
+}
+
+SEXP jaspRCPP_RunSeparateR(SEXP code)
+{
+	const char *root, *relativePath;
+
+	if (!requestTempFileNameCB("log", &root, &relativePath))
+		Rf_error("Cannot open output file for separate R!");
+
+	static std::string R = _R_HOME + "/bin/Rscript";
+
+	std::string codestr = Rcpp::as<std::string>(code);
+
+	jaspRCPP_parseEvalPreface(codestr);
+	std::string path = std::string(root) + "/" + relativePath;
+	std::string command = R + " -e \"" + codestr + "\" > " + path + " 2>&1 ";
+	system(command.c_str());
+
+	std::ifstream readLog(path);
+	std::stringstream out;
+
+	if(readLog)
+	{
+		out << readLog.rdbuf();
+		readLog.close();
+	}
+
+	jaspRCPP_logString(out.str() + "\n");
+
+	return Rcpp::wrap(out.str());
 }
 
 extern "C" {
-//We need to to the following crazy defines to make sure the header actually gets accepted by the compiler...
+//We need to do the following crazy defines to make sure the header actually gets accepted by the compiler...
 #define class _class
 #define private _private;
 #include "R_ext/Connections.h"

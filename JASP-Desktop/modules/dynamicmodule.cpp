@@ -312,13 +312,14 @@ std::string DynamicModule::generateModuleInstallingR()
 	setInstallLog("Installing module " + _name + ".\n");
 
 	std::string typeInstall = "'source'";
+//<< ".runSeparateR(\"{"
 
-	R	<< "libPathsToUse <- c('" << moduleRLibrary().toStdString()	<< "', .libPaths(.Library));\n"
-		<< "{\n"
-		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "'));\n"
-		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL));\n"
-		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, find.package(package='" << _name << "'));\n"
-		<< "};\n" "return('"+succesResultString()+"');";
+	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths(.Library))";
+
+	R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "'));\n"
+		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL))\");\n" //Running in separate R because otherwise we cannot capture output :s
+		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setRError(loadLog); return('fail'); });\n";
+
 
 	Log::log() << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
 
