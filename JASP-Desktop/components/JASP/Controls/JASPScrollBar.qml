@@ -65,8 +65,8 @@ Item
 		else			flickable.contentX = Math.max (0, Math.min (flickable.contentX + (flickable.width  * movement), flickable.contentWidth  - flickable.width));
 	}
 
-	function scrollDown() { scroll( 0.25); }
-	function scrollUp ()  { scroll(-0.25); }
+	function scrollDown() { scroll( 0.125); }
+	function scrollUp ()  { scroll(-0.125); }
 	
 	Binding
 	{
@@ -103,8 +103,21 @@ Item
 		
 		MouseArea
 		{
-			anchors.fill: parent;
-			onClicked: { }
+			anchors.fill:	parent;
+			onClicked:		{ }
+
+			onWheel:	if(scrollbar.vertical)
+						{
+									if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
+							else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
+							else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
+						} else {
+									if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
+							else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
+							else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
+						}
+
+
 		}
 	}
 
