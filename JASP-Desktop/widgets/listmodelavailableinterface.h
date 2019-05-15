@@ -38,7 +38,10 @@ public:
 			void emitChangedTerms();
 	
 			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;	
-	
+
+signals:
+			void allAvailableTermsChanged(Terms* termsAdded, Terms* termsRemoved);
+
 public slots:
 			void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
 

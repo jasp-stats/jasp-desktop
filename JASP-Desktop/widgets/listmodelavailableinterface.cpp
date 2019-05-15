@@ -44,7 +44,7 @@ void ListModelAvailableInterface::sourceTermsChanged(Terms* termsAdded, Terms* t
 	Q_UNUSED(termsRemoved);
 	
 	resetTermsFromSourceModels();
-	emit modelChanged(&_tempAddedTerms, &_tempRemovedTerms);	
+	emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
 }
 
 
