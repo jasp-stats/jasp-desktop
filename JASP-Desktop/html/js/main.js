@@ -389,43 +389,41 @@ $(document).ready(function () {
 		// Initialize view to defaults and re-render - Clears titles, notebox, etc.
 		analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 	}
+	
+	var ignoreSelectionProcess = function(target) {
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
+		var noteClicked       = $(target).is(".jasp-notes, .jasp-notes *");
+		var toolbarClicked    = $(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *");
+		
+		var ignoreSelection   = (wasLastClickNote === true && noteClicked === false) ||		// save the modified note
+								stacktraceClicked === true ||								// toggle the stack trace
+								toolbarClicked    === true;									// click on an analysis toolbar
+							
+		wasLastClickNote = noteClicked;
+		
+		return ignoreSelection;
+	}
 
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
 
-		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
-		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
-		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
-		wasLastClickNote = noteClicked;
-		if (ignoreSelectionProcess)
+		if (ignoreSelectionProcess(target) || selectedAnalysisId === -1 || $(target).is(".jasp-analysis *, .etch-editor-panel, .etch-editor-panel *") === true)
 			return;
 
-		if (selectedAnalysisId !== -1 && $(target).is(".jasp-analysis *, .etch-editor-panel, .etch-editor-panel *") == false) {
+		window.unselect()
+		jasp.analysisUnselected()
 
-			window.unselect()
-			jasp.analysisUnselected()
-
-			if (showInstructions)
-				hideInstructions()
-		}
+		if (showInstructions)
+			hideInstructions()
 	}
 
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
 
-		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
-		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
-
-		var ignoreSelectionProcess = 
-									(wasLastClickNote === true && noteClicked === false) ||		// save the modified note
-									stacktraceClicked === true ||								// toggle the stack trace
-									(selectedAnalysisId === -1 && wasLastClickNote === true);	// click on a note when no analysis is selected
-
-		wasLastClickNote = noteClicked;
-
-		if (ignoreSelectionProcess || $(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *"))
+		if (ignoreSelectionProcess(target) || (selectedAnalysisId !== -1 && wasLastClickNote === true))
 			return;
 
 		var id = $(event.currentTarget).attr("id")
