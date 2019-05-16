@@ -77,7 +77,6 @@ public:
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
 	QString	windowTitle()			const	{ return _windowTitle;			}
-	bool	analysesVisible()		const	{ return _analysesVisible;		}
 	bool	datasetLoaded()			const	{ return _datasetLoaded;		}
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
@@ -91,7 +90,6 @@ public slots:
 	void setProgressBarProgress(int progressBarProgress);
 	void setProgressBarStatus(QString progressBarStatus);
 	void setDataPanelVisible(bool dataPanelVisible);
-	void setAnalysesVisible(bool analysesVisible);
 	void setDatasetLoaded(bool datasetLoaded);
 	void setWindowTitle(QString windowTitle);
 	void setScreenPPI(int screenPPI);
@@ -259,7 +257,6 @@ private:
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,
-									_analysesVisible		= false,
 									_datasetLoaded			= false,
 									_dataAvailable			= false,
 									_analysesAvailable		= false,

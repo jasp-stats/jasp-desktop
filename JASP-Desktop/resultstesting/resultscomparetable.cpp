@@ -235,8 +235,17 @@ std::string	result::diffToString(const result & other) const
 	if(resultTables.size() != other.resultTables.size())
 	{
 		out << "Results have different count of tables\n";
-		out << "Result old =\n" << toString() << "\n";
-		out << "Result new =\n" << other.toString() << "\n";
+		out << "Old has " << resultTables.size() << " while new has " << other.resultTables.size() << "\nTables compared:\n";
+
+		size_t maxCount = std::max(resultTables.size(), other.resultTables.size());
+
+		for(size_t i=0; i<maxCount; i++)
+			if(i < resultTables.size() && i < other.resultTables.size())
+				out << "Table " << i << ":\n" << resultTables[i].diffToString(other.resultTables[i]) << "\n";
+			else if(i < other.resultTables.size())
+				out << "Table " << i << " is only in new:\n" << other.resultTables[i].toString() << "\n";
+			else
+				out << "Table " << i << " is only in old:\n" << resultTables[i].toString() << "\n";
 	}
 	else
 	{

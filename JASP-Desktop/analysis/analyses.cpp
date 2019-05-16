@@ -258,7 +258,6 @@ void Analyses::removeAnalysis(Analysis *analysis)
 
 	beginRemoveRows(QModelIndex(), indexAnalysis, indexAnalysis);
 	analysis->abort();
-	analysis->setVisible(false);
 	_analysisMap.erase(id);
 	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
 	endRemoveRows();

@@ -844,7 +844,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			}
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
-				startComparingResults();
+				QTimer::singleShot(1000, this, &MainWindow::startComparingResults);
 
 		}
 		else
@@ -985,7 +985,7 @@ void MainWindow::populateUIfromDataSet(bool showData)
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 
-		if (_analyses->count() == 1)
+		if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 			emit currentAnalysis->expandAnalysis();
 	}
 
@@ -996,7 +996,7 @@ void MainWindow::populateUIfromDataSet(bool showData)
 	else if(_progressShowsItself)
 	{
 		setDataPanelVisible(showData);
-		_analyses->setVisible(!showData);
+		_analyses->setVisible(!showData && !resultXmlCompare::compareResults::theOne()->testMode());
 	}
 
 	hideProgress();
@@ -1363,19 +1363,6 @@ void MainWindow::finishComparingResults()
 	}
 }
 
-void MainWindow::saveJaspFileHandler()
-{
-	std::cerr << "saving file!" << std::endl;
-
-	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
-
-	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
-
-	dataSetIORequestHandler(saveEvent);
-
-}
-
-
 void MainWindow::finishSavingComparedResults()
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave())
@@ -1383,6 +1370,18 @@ void MainWindow::finishSavingComparedResults()
 		_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
 }
+
+void MainWindow::saveJaspFileHandler()
+{
+	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
+
+	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
+
+	dataSetIORequestHandler(saveEvent);
+}
+
+
+
 
 bool MainWindow::enginesInitializing()
 {
@@ -1495,15 +1494,6 @@ void MainWindow::getAnalysesUserData()
 	parser.parse(fq(userData.toString()), data);
 
 	_analyses->setAnalysesUserData(data);
-}
-
-void MainWindow::setAnalysesVisible(bool analysesVisible)
-{
-	if (_analysesVisible == analysesVisible)
-		return;
-
-	_analysesVisible = analysesVisible;
-	emit analysesVisibleChanged(_analysesVisible);
 }
 
 void MainWindow::setDatasetLoaded(bool datasetLoaded)

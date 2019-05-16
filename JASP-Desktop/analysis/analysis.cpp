@@ -345,7 +345,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 			json["image"] = getSaveImgOptions();
 		else
 		{
-			json["options"]		= options()->asJSON();
+			json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSON();
 		}
 	}
 

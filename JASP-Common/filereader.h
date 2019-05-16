@@ -94,7 +94,7 @@ public:
 	 * @param errorCode - Success = 0, Error < 0
 	 * @return
 	 */
-	char* readAllData(int blockSize, int &errorCode);
+	std::string readAllData(int blockSize, int &errorCode);
 
 	/**
 	 * @brief close Closes archive/file.

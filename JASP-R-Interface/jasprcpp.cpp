@@ -973,9 +973,7 @@ SEXP jaspRCPP_CreateCaptureConnection()
 
 	SEXP rc = PROTECT(R_new_custom_connection("jaspRCPP_OUT", "w", "jaspRCPP_OUT", &con));
 
-	/* set connection properties */
 	con->incomplete		= FALSE;
-	//con->private		= req;
 	con->canseek		= FALSE;
 	con->canwrite		= TRUE;
 	con->isopen			= TRUE;
