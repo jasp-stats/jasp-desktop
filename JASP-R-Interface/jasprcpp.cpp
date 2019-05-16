@@ -926,6 +926,8 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 		for(char k : input)
 			if(k == '/')
 				output << "\\";
+			else if(k == ' ')
+				output << "\\ ";
 			else
 				output << k;
 		return output.str();
