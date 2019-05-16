@@ -38,10 +38,15 @@ Form
 		RadioButton { value: "Kendall";	label: qsTr("Kendall's tau-b")				}
 	}
 
-	CheckBox
+
+	Group
 	{
-		name: "credibleInterval"; label: qsTr("Credible intervals")
-		CIField { name: "ciValue";	label: qsTr("Interval"); debug: true }
+		title: qsTr("Additional Options")
+		CheckBox
+		{
+			name: "credibleInterval"; label: qsTr("Credible intervals")
+			CIField { name: "ciValue";	label: qsTr("Interval"); debug: true }
+		}
 	}
 
 	RadioButtonGroup
