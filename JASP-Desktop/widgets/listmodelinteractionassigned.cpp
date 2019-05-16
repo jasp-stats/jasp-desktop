@@ -25,12 +25,13 @@
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned)
+ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned, bool mustContainLowerTerms)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
 	_areTermsInteractions = true;
 	_copyTermsWhenDropped = true;
 	_addNewAvailableTermsToAssignedModel = addAvailableTermsToAssigned;
+	_mustContainLowerTerms = mustContainLowerTerms;
 }
 
 void ListModelInteractionAssigned::initTerms(const Terms &terms)
@@ -118,7 +119,7 @@ void ListModelInteractionAssigned::availableTermsChanged(Terms *termsAdded, Term
 	
 	if (termsRemoved && termsRemoved->size() > 0)
 	{
-		removeFactors(*termsRemoved);
+		removeInteractionTerms(*termsRemoved);
 		setTerms();
 	}
 }
