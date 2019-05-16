@@ -918,7 +918,24 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 	if (!requestTempFileNameCB("log", &root, &relativePath))
 		Rf_error("Cannot open output file for separate R!");
 
-	static std::string R = _R_HOME + "/bin/Rscript";
+	auto bendSlashes = [](std::string input)
+	{
+#ifdef WIN32
+		std::stringstream output;
+
+		for(char k : input)
+			if(k == '/')
+				output << "\\";
+			else
+				output << k;
+		return output.str();
+#else
+		return input;
+#endif
+	};
+
+	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/Rscript\"");
+
 
 	std::string codestr = Rcpp::as<std::string>(code);
 
