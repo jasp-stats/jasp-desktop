@@ -1227,7 +1227,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             row[["genEta"]] <- fullModel[["anova_table"]][modelTermsCase, "ges"]
             
             omega <- (SS - (df * MSr)) / (SSt + MSr)
-            fullModel
+
             if (omega < 0) {
               row[["omega"]] <- 0
             } else {
