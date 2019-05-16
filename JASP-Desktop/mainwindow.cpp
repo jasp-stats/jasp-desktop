@@ -996,7 +996,7 @@ void MainWindow::populateUIfromDataSet(bool showData)
 	else if(_progressShowsItself)
 	{
 		setDataPanelVisible(showData);
-		_analyses->setVisible(!showData && !resultXmlCompare::compareResults::theOne()->testMode());
+		_analyses->setVisible(!showData || !resultXmlCompare::compareResults::theOne()->testMode());
 	}
 
 	hideProgress();

@@ -181,7 +181,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	if(usesJaspResults)
 	{
 #ifdef PRINT_ENGINE_MESSAGES
-		std::cout << "result of runJaspResults:\n" << str << std::endl << std::flush;
+		jaspRCPP_logString("result of runJaspResults:\n" + str + "\n");
 #endif
 		jaspObject::destroyAllAllocatedObjects();
 	}
@@ -219,7 +219,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 
 #ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "result of runJaspResults:\n" << str << std::endl << std::flush;
+	jaspRCPP_logString("result of runJaspResults:\n" + str);
 #endif
 
 	jaspObject::destroyAllAllocatedObjects();
@@ -469,7 +469,7 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
 
 void jaspRCPP_returnString(SEXP Message)
 {
-	std::cout << "A message from R: " << static_cast<std::string>(Rcpp::as<Rcpp::String>(Message)) << "\n" << std::flush;
+	jaspRCPP_logString("A message from R: " + static_cast<std::string>(Rcpp::as<Rcpp::String>(Message)) + "\n");
 }
 
 void jaspRCPP_setRWarning(SEXP Message)
@@ -858,7 +858,7 @@ struct jaspRCPP_Connection
 	static Rboolean	open(struct Rconn *)		{ return Rboolean::TRUE;	}
 	static void		close(struct Rconn *)		{}
 	static void		destroy(struct Rconn *)		{}
-	static int		fflush(struct Rconn *)		{ std::cout << std::flush; return 0;	}
+	static int		fflush(struct Rconn *)		{ return 0;	}
 
 	static size_t	write(const void * buf, size_t, size_t len, struct Rconn * = nullptr)
 	{
@@ -944,6 +944,10 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 	jaspRCPP_parseEvalPreface(codestr);
 	std::string path = std::string(root) + "/" + relativePath;
 	std::string command = R + " -e \"" + codestr + "\" > " + path + " 2>&1 ";
+#ifdef WIN32
+	command = '"' + command + '"'; //Because C:\Program\ is apparently not something... :( See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
+#endif
+
 	system(command.c_str());
 
 	std::ifstream readLog(path);
