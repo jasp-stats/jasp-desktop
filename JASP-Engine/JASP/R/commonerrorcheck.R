@@ -643,9 +643,7 @@
     inclusion <- sapply(modelTerms, 
       function(termToFind) {
           componentsToFind <- termToFind$components
-          if (sum(componentsToFind %in% components) == length(componentsToFind))
-            return(TRUE)
-          return(FALSE)
+          return(sum(componentsToFind %in% components) == length(componentsToFind))
       }
     )
 
@@ -668,7 +666,7 @@
   result <- list(error=FALSE, errorVars=NULL)
   
   findNegativeValues <- function(x) {
-    return(any(x < 0))
+    return(any(na.omit(x) < 0))
   }
   
   for (v in target) {
@@ -704,7 +702,7 @@
   result <- list(error=FALSE, errorVars=NULL)
   
   findMissingValues <- function(x) {
-    return(any(is.na(x)))
+    return(anyNA(x))
   }
   
   for (v in target) {
