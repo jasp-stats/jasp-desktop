@@ -255,6 +255,7 @@ Form
 				columns: 3
 				CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
 				CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
+				CheckBox { name: "effectSizeGenEtaSquared";	label: qsTr("general η²")					}
 				CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
 			}
 			CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}

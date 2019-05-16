@@ -32,7 +32,7 @@ Form
 	
 	Group
 	{
-		title: qsTr("Correlation Coefficients")
+		title: qsTr("Correlation Coefficient")
 		CheckBox { name: "pearson";			label: qsTr("Pearson"); checked: true	}
 		CheckBox { name: "spearman";		label: qsTr("Spearman")					}
 		CheckBox { name: "kendallsTauB";	label: qsTr("Kendall's tau-b")			}
@@ -40,6 +40,7 @@ Form
 
 	Group
 	{
+		title: qsTr("Additional Options")
 		CheckBox { name: "displayPairwise";		label: qsTr("Display pairwise table")				}
 		CheckBox { name: "reportSignificance";	label: qsTr("Report significance"); checked: true	}
 		CheckBox { name: "flagSignificant";		label: qsTr("Flag significant correlations")			}
