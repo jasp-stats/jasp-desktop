@@ -1596,6 +1596,10 @@
         xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
         xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
       }
+      
+      if(any(abs(xlim) == Inf)){ # In case qShiftedT fails
+        stop("Cannot plot the posterior - possibly too concentrated near 0.")
+      }
     }
 
     if (oneSided == "left") {
@@ -1608,6 +1612,10 @@
       if (any(is.na(xlim))) {
         xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
         xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
+      }
+      
+      if(any(abs(xlim) == Inf)){ # In case qShiftedT fails
+        stop("Cannot plot the posterior - possibly too concentrated near 0.")
       }
     }
 
