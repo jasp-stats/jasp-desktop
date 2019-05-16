@@ -423,7 +423,7 @@ $(document).ready(function () {
 
 		var target = event.target || event.srcElement;
 
-		if (ignoreSelectionProcess(target) || (selectedAnalysisId !== -1 && wasLastClickNote === true))
+		if (ignoreSelectionProcess(target) || (selectedAnalysisId === -1 && wasLastClickNote === true))
 			return;
 
 		var id = $(event.currentTarget).attr("id")
