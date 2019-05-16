@@ -108,6 +108,7 @@ FocusScope
 	transitions: [
 		Transition
 		{
+			to: "hasFocus"
 			ParallelAnimation
 			{
 				NumberAnimation
