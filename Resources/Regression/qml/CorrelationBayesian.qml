@@ -33,7 +33,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Correlation Coefficients")
+		title: qsTr("Correlation Coefficient")
 		CheckBox { name: "pearson";			label: qsTr("Pearson's rho"); checked: true	}
 		CheckBox { name: "spearman";		label: qsTr("Spearman"); debug: true		}
 		CheckBox { name: "kendallsTauB";	label: qsTr("Kendall's tau-b")				}
@@ -41,6 +41,7 @@ Form
 
 	Group
 	{
+		title: qsTr("Additional Options")
 		CheckBox { name: "reportBayesFactors";	label: qsTr("Report Bayes factors"); checked: true		}
 		CheckBox { name: "flagSupported";		label: qsTr("Flag supported correlations")				}
 		CheckBox
