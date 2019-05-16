@@ -644,7 +644,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   }
 
   # only applies for observed counts, expected counts can be proportions
-  if (!expectedCounts & !all(counts == round(counts))) {
+  if (!expectedCounts && !all(counts == round(counts))) {
     .quitAnalysis(paste0(variable, "variable must contain only integer values."))
   }
 
