@@ -57,6 +57,7 @@ JASPControl
 	property bool	showVariableTypeIcon:	true
 	property bool	setWidthInForm:		false
 	property bool	setHeightInForm:	false
+	property bool	mustContainLowerTerms: true
 	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
 	
 	property var	interactionControl

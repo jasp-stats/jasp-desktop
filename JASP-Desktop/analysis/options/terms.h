@@ -71,6 +71,7 @@ public:
 	void remove(size_t pos, size_t n = 1);
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(const Terms &terms);
+	bool discardWhatDoesContainTheseTerms(const Terms &terms);
 	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = nullptr);
 
 	void clear();

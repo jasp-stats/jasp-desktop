@@ -16,7 +16,6 @@ public:
 	void addFixedFactors(const Terms &terms, bool combineWithExistingTerms = true);
 	void addRandomFactors(const Terms &terms);
 	void addCovariates(const Terms &terms);
-	void removeFactors(const Terms& terms);
 	void removeInteractionTerms(const Terms& terms);
 	void clearInteractions();
 	
@@ -27,7 +26,8 @@ protected:
 	Terms _fixedFactors;
 	Terms _randomFactors;
 	
-	Terms _interactionTerms;	
+	Terms _interactionTerms;
+	bool  _mustContainLowerTerms = true;
 };
 
 #endif // INTERACTIONMODEL_H
