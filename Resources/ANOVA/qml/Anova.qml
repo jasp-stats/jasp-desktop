@@ -106,8 +106,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
-			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: "modelTerms" }
+			AssignedVariablesList {  name: "postHocTestsVariables" }
 
 		}
 
@@ -198,8 +198,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: "modelTerms"; showVariableTypeIcon: false }
-			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: "modelTerms" }
+			AssignedVariablesList {  name: "marginalMeansTerms" }
 		}
 
         CheckBox
