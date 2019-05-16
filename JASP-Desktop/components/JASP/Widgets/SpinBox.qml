@@ -51,12 +51,17 @@ FocusScope
 					Keys.onReturnPressed:	valueField.focus = !valueField.focus;
 					Keys.onEscapePressed:	focus = false;
 
+	signal editingFinished()
+	
+	Component.onCompleted: valueField.onEditingFinished.connect(editingFinished);        
+	
 	function setValue(val)
 	{
 		var pow				= Math.pow(10, decimals);
 		val					= Math.round(val * pow) / pow;
 		val					= Math.min(root.max, Math.max(root.min, val));
 		valueField.text		= String(val);
+		editingFinished()
 		//valueField.focus	= false;
 	}
 
@@ -106,6 +111,7 @@ FocusScope
 		Keys.onEnterPressed:		valueField.processInput()
 		Keys.onEscapePressed:		{ text = root.lastValidValue; focus = false; }
 		onTextChanged:				if(acceptableInput) root.lastValidValue = text
+		selectByMouse:				true
 
 		function processInput()
 		{

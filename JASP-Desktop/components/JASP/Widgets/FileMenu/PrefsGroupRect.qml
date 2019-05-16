@@ -27,7 +27,7 @@ Rectangle
 	Text
 	{
 		id:					titleText
-		font:				Theme.fontGroupTitle
+		font:				Theme.fontPrefOptionsGroupTitle
 		anchors.margins:	text !== "" ? Theme.generalAnchorMargin : 0
 		anchors.top:		parent.top
 		anchors.left:		parent.left

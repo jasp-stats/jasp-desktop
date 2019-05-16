@@ -1,16 +1,14 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts	1.3
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
-import JASP				1.0
 
 ScrollView
 {
 	id:						scrollPrefs
 	focus:					true
-	onActiveFocusChanged:	if(activeFocus) useDefaultPPICheckbox.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) uiScaleSpinBox.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
 	Column
@@ -31,83 +29,19 @@ ScrollView
 
 		PrefsGroupRect
 		{
-			title:				qsTr("Plot options")
-
-			CheckBox
-			{
-				id:					useDefaultPPICheckbox
-				label:				"Use PPI of screen in plots: " + preferencesModel.defaultPPI
-				checked:			preferencesModel.useDefaultPPI
-				onCheckedChanged:	preferencesModel.useDefaultPPI = checked
-				height:				implicitHeight * preferencesModel.uiScale
-				toolTip:			qsTr("Use the Pixels per Inch of your screen to render your plots")
-				focus:				true
-				KeyNavigation.tab:	customPPISpinBox
-				KeyNavigation.down:	customPPISpinBox
-			}
-
-			SpinBox
-			{
-				id:						customPPISpinBox
-				value:					preferencesModel.customPPI
-				onValueChanged:			preferencesModel.customPPI = value
-				from:					16
-				to:						2000
-				stepSize:				16
-
-				KeyNavigation.tab:		whiteBackgroundButton
-				KeyNavigation.down:		whiteBackgroundButton
-				text:					qsTr("Custom PPI: ")
-				enabled:				!preferencesModel.useDefaultPPI
-
-				x:						Theme.subOptionOffset
-			}
-
-
-
-			RadioButtonGroup
-			{
-				title:					qsTr("Image Background Color")
-
-				RadioButton
-				{
-					id:					whiteBackgroundButton
-					text:				qsTr("White")
-					checked:			preferencesModel.whiteBackground
-					onCheckedChanged:	preferencesModel.whiteBackground = checked
-					toolTip:			qsTr("This makes the background of all plots white, quite useful if you want to use it in LaTeX or submit it to a journal.")
-					KeyNavigation.tab:	transparentBackgroundButton
-					KeyNavigation.down:	transparentBackgroundButton
-				}
-
-				RadioButton
-				{
-					id:					transparentBackgroundButton
-					text:				qsTr("Transparent")
-					checked:			!preferencesModel.whiteBackground
-					onCheckedChanged:	preferencesModel.whiteBackground = !checked
-					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
-					KeyNavigation.tab:	uiScaleSpinBox
-					KeyNavigation.down:	uiScaleSpinBox
-				}
-			}
-		}
-
-		PrefsGroupRect
-		{
 			title:						qsTr("User interface options")
 
 			SpinBox
 			{
 				id:						uiScaleSpinBox
-				value:					preferencesModel.uiScale
-				onValueChanged:			if(value !== "") preferencesModel.uiScale = value
-				from:					0.01
-				to:						3
-				stepSize:				0.1
-				decimals:				2
-				text:					qsTr("Scaling: ")
-				toolTip:				qsTr("How big do you want the interface elements (text, buttons etc) to be?")
+				value:					Math.round(preferencesModel.uiScale * 100)
+				onEditingFinished:		preferencesModel.uiScale = value / 100
+				from:					20
+				to:						300
+				stepSize:				10
+				decimals:				0
+				text:					qsTr("Zoom (%): ")
+				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
 
 				KeyNavigation.tab:		uiMaxFlickVelocity
 				KeyNavigation.down:		uiMaxFlickVelocity
@@ -124,8 +58,8 @@ ScrollView
 				to:						3000
 				stepSize:				100
 				decimals:				0
-				text:					qsTr("Max Flick Velocity (pix/s): ")
-				toolTip:				qsTr("Flick velocity is how fast the scrolling can get in the options, dataviewer and other places.")
+				text:					qsTr("Scroll speed (pix/s): ")
+				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
 				widthLabel:				uiScaleSpinBox.widthLabel
 
 				KeyNavigation.tab:		developerMode
@@ -143,7 +77,7 @@ ScrollView
 				label:				qsTr("Developer mode (Beta version)")
 				checked:			preferencesModel.developerMode
 				onCheckedChanged:	preferencesModel.developerMode = checked
-				toolTip:			qsTr("To use JASP Modules enable this option")
+				toolTip:			qsTr("To use JASP Modules enable this option.")
 				KeyNavigation.tab:	browseDeveloperFolderButton
 				KeyNavigation.down:	browseDeveloperFolderButton
 			}
@@ -162,7 +96,7 @@ ScrollView
 					onClicked:			preferencesModel.browseDeveloperFolder()
 					anchors.left:		parent.left
 					anchors.leftMargin: Theme.subOptionOffset
-					toolTip:			qsTr("Browse to your JASP Module folder")
+					toolTip:			qsTr("Browse to your JASP Module folder.")
 					KeyNavigation.tab:	developerFolderText
 					KeyNavigation.down:	developerFolderText
 				}
@@ -289,8 +223,8 @@ ScrollView
 						margins:	Theme.generalAnchorMargin
 						left:		maxLogFilesSpinBox.right
 					}
-					KeyNavigation.tab:	useDefaultPPICheckbox
-					KeyNavigation.down:	useDefaultPPICheckbox
+					KeyNavigation.tab:	uiScaleSpinBox
+					KeyNavigation.down:	uiScaleSpinBox
 				}
 			}
 		}
