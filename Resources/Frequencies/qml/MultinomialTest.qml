@@ -42,10 +42,10 @@ Form
 	{
 		id: hypothesisGroup
 		name: "hypothesis"
-		title: qsTr("Alt. Hypothesis")
+        title: qsTr("Test Values")
 		Layout.columnSpan: 2
-		RadioButton { value: "multinomialTest";	label: qsTr("Multinomial test");	 checked: true	}
-		RadioButton { value: "expectedProbs";	label: qsTr("χ² test"); id: expectedProbs			}
+        RadioButton { value: "multinomialTest";	label: qsTr("Equal proportions (Multinomial test)");	 checked: true	}
+        RadioButton { value: "expectedProbs";	label: qsTr("Expected proportions (χ² test)"); id: expectedProbs			}
 
 		Chi2TestTableView
 		{
