@@ -4,34 +4,30 @@ import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
 
-FocusScope
+ScrollView
 {
+	id:						scrollPrefs
 	focus:					true
 	onActiveFocusChanged:	if(activeFocus) displayExactPVals.forceActiveFocus();
+	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	MenuHeader
+	Column
 	{
-		id:			menuHeader
-		headertext:	"Results Preferences"
-		helpfile:	"preferences/prefsresults"
-	}
+		width:			scrollPrefs.width
+		spacing:		Theme.rowSpacing
 
-	ScrollView
-	{
-		id:					scrollPrefs
-		anchors.top:		menuHeader.bottom
-		anchors.left:		menuHeader.left
-		anchors.right:		menuHeader.right
-		anchors.bottom:		menuHeader.bottom
-		anchors.topMargin:	Theme.generalMenuMargin
-		focus:				true
-		Keys.onLeftPressed: resourceMenu.forceActiveFocus();
-		focusPolicy:		Qt.WheelFocus
+		MenuHeader
+		{
+			id:				menuHeader
+			headertext:		"Results Preferences"
+			helpfile:		"preferences/prefsresults"
+			anchorMe:		false
+			width:			scrollPrefs.width
+		}
 
 		PrefsGroupRect
 		{
-			spacing:		Theme.rowSpacing
-			implicitWidth:	scrollPrefs.width - (Theme.generalAnchorMargin * 2)
+			title:			qsTr("Table options")
 
 			CheckBox
 			{
@@ -40,7 +36,6 @@ FocusScope
 				checked:				preferencesModel.exactPValues
 				onCheckedChanged:		preferencesModel.exactPValues = checked
 				KeyNavigation.tab:		fixDecs
-				KeyNavigation.backtab:	numDecs
 				KeyNavigation.down:		fixDecs
 			}
 
@@ -56,7 +51,6 @@ FocusScope
 					checked:				preferencesModel.fixedDecimals
 					onCheckedChanged:		preferencesModel.fixedDecimals = checked
 					KeyNavigation.tab:		numDecs
-					KeyNavigation.backtab:	displayExactPVals
 					KeyNavigation.down:		numDecs
 				}
 
@@ -67,15 +61,76 @@ FocusScope
 					onValueChanged:			preferencesModel.numDecimals = value
 					visible:				preferencesModel.fixedDecimals
 
-					KeyNavigation.tab:		displayExactPVals
-					KeyNavigation.backtab:	fixDecs
-					KeyNavigation.down:		displayExactPVals
+					KeyNavigation.tab:		useDefaultPPICheckbox
+					KeyNavigation.down:		useDefaultPPICheckbox
 					anchors
 					{
 						left:				fixDecs.right
 						leftMargin:			Theme.generalAnchorMargin
 						verticalCenter:		parent.verticalCenter
 					}
+				}
+			}
+		}
+		
+		PrefsGroupRect
+		{
+			title:				qsTr("Plot options")
+
+			CheckBox
+			{
+				id:					useDefaultPPICheckbox
+				label:				"Use PPI of screen in plots: " + preferencesModel.defaultPPI
+				checked:			preferencesModel.useDefaultPPI
+				onCheckedChanged:	preferencesModel.useDefaultPPI = checked
+				height:				implicitHeight * preferencesModel.uiScale
+				toolTip:			qsTr("Use the Pixels Per Inch of your screen to render your plots.")
+				focus:				true
+				KeyNavigation.tab:	customPPISpinBox
+				KeyNavigation.down:	customPPISpinBox
+			}
+
+			SpinBox
+			{
+				id:						customPPISpinBox
+				value:					preferencesModel.customPPI
+				onValueChanged:			preferencesModel.customPPI = value
+				from:					16
+				to:						2000
+				stepSize:				16
+
+				KeyNavigation.tab:		whiteBackgroundButton
+				KeyNavigation.down:		whiteBackgroundButton
+				text:					qsTr("Custom PPI: ")
+				enabled:				!preferencesModel.useDefaultPPI
+
+				x:						Theme.subOptionOffset
+			}
+
+			RadioButtonGroup
+			{
+				title:					qsTr("Image background color")
+
+				RadioButton
+				{
+					id:					whiteBackgroundButton
+					text:				qsTr("White")
+					checked:			preferencesModel.whiteBackground
+					onCheckedChanged:	preferencesModel.whiteBackground = checked
+					toolTip:			qsTr("This makes the background of all plots white, quite useful if you want to use it in LaTeX or submit it to a journal.")
+					KeyNavigation.tab:	transparentBackgroundButton
+					KeyNavigation.down:	transparentBackgroundButton
+				}
+
+				RadioButton
+				{
+					id:					transparentBackgroundButton
+					text:				qsTr("Transparent")
+					checked:			!preferencesModel.whiteBackground
+					onCheckedChanged:	preferencesModel.whiteBackground = !checked
+					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
+					KeyNavigation.tab:	displayExactPVals
+					KeyNavigation.down:	displayExactPVals
 				}
 			}
 		}

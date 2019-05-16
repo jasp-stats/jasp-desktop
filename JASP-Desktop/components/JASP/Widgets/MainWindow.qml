@@ -201,4 +201,72 @@ Window
 
 		}*/
 	}
+	
+	Item
+	{
+		id:					uiScaleNotifier
+		visible:			uiScaleRect.opacity !== 0
+		width:				100 * preferencesModel.uiScale
+		height:				50 * preferencesModel.uiScale
+		anchors.centerIn:	parent
+				 
+		property double	uiScale: preferencesModel.uiScale
+		
+		property bool	uiScaleIsLoadedFromSettings: false
+		
+		onUiScaleChanged: 
+		{ 
+			if (uiScaleIsLoadedFromSettings)
+			{
+				uiScaleRect.opacity = 0.8
+				uiScaleTimer.restart()
+			}
+			else 
+			{
+				uiScaleIsLoadedFromSettings = true
+			}
+		}
+		
+		Rectangle 
+		{
+			id:					uiScaleRect
+			width:				parent.width
+			height:				parent.height
+			radius:				20
+			color:				Theme.grayDarker
+			opacity:			0
+			z:					100
+			anchors.centerIn:	parent
+			
+			Timer
+			{
+				id:				uiScaleTimer
+				running:		false
+				repeat:			false
+				interval:		750
+				onTriggered:	uiScaleRect.opacity = 0
+			}
+			
+			Behavior on opacity
+			{
+				PropertyAnimation
+				{
+					duration: 50
+				}
+			}
+			
+			Text
+			{
+				color:				Theme.white
+				font:				Theme.fontLabel
+				anchors.centerIn:	parent
+				
+				text: Math.round(uiScaleNotifier.uiScale * 100) + "%"
+			}
+			
+		}
+			
+
+	}
+
 }

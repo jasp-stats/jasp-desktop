@@ -137,6 +137,12 @@ QtObject {
 	fontGroupTitle.pixelSize:	14 * uiScale
 	fontGroupTitle.family:		"SansSerif"
 
+	property font fontPrefOptionsGroupTitle
+	fontPrefOptionsGroupTitle.bold:			true
+	fontPrefOptionsGroupTitle.underline:	false
+	fontPrefOptionsGroupTitle.pixelSize:	13 * uiScale
+	fontPrefOptionsGroupTitle.family:		"SansSerif"
+
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false

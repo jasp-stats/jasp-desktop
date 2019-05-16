@@ -1,17 +1,27 @@
 
-Result Preferences
+Results Preferences
 =========
 
-Regarding analyses results in JASP you can choose the following options:
+Regarding analysis results in JASP you can choose the following options:
 (All these settings will remain after restarting JASP.)
+
+## Table options
 
 ### Display exact p-values
 
-This is where you specify to use exact p-values or not.
-This means that the result p-value is sometimes showed in scientific notation
-and sometimes as a rounded value.
+Here you can specify if p-values should be shown as "< .001" or if an exact value should be given.
 
 ### Fix the number of decimals
 
-The represents the number of decimals from a calculated value
-that JASP will show in the results pane.
+This represents the number of decimals JASP will show for numeric values.
+
+
+## Plot options
+
+### Use PPI (Pixels Per Inch) of screen in plots
+
+Here you can specify the number of pixels per inch your plots should have. By default it uses the value derived from your screen. This value can be increased to create higher quality images.
+
+### Image background colour
+
+This option let's you toggle the background colour of plots between white and transparant. You may find this especially useful when copying and/or pasting plots.
