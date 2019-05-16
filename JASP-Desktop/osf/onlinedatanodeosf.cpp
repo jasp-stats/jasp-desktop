@@ -44,11 +44,20 @@ void OnlineDataNodeOSF::initialise()
 
 void OnlineDataNodeOSF::processUrl(QUrl url)
 {
+	QString progressmsg;
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
 
-	emit progress("Initiating download of "+_expectedName, 0);
+	switch (_preparedAction)
+	{
+		case OnlineDataNodeOSF::Upload: progressmsg="Initiating upload of "; break;
+		case OnlineDataNodeOSF::Download: progressmsg="Initiating download of "; break;
+		case OnlineDataNodeOSF::NewFile: progressmsg="Initiating making new file "; break;
+		case OnlineDataNodeOSF::NewFolder: progressmsg="Initiating making new folder  "; break;
+		default:progressmsg="Initiating osf action "; break;
+	}
+	emit progress(progressmsg + _expectedName, 0);
 
 	QNetworkReply* reply = _manager->get(request);
 
@@ -60,14 +69,25 @@ void OnlineDataNodeOSF::processUrl(QUrl url)
 
 void OnlineDataNodeOSF::nodeInfoReceived() {
 
+	QString progressmsg;
 	QNetworkReply *reply = static_cast<QNetworkReply*>(this->sender());
 
 	bool success = false;
 	bool finished = false;
 
+	switch (_preparedAction)
+	{
+		case OnlineDataNodeOSF::Upload: progressmsg="Upload of "; break;
+		case OnlineDataNodeOSF::Download: progressmsg="Download of "; break;
+		case OnlineDataNodeOSF::NewFile: progressmsg="Creating new file "; break;
+		case OnlineDataNodeOSF::NewFolder: progressmsg="Creating new folder "; break;
+		default:progressmsg="Osf action "; break;
+	}
+
+
 	if (reply->error() != QNetworkReply::NoError)
 	{
-		emit progress("Download of "+_expectedName+" failed because " +reply->errorString(), 0);
+		emit progress(progressmsg + _expectedName + " failed because " + reply->errorString(), 0);
 
 		setError(true, reply->errorString());
 		finished = true;
@@ -83,7 +103,7 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 
 		QJsonObject nodeObject;
 
-		emit progress("Download of "+_expectedName+" in progress", 10);
+		emit progress(progressmsg + _expectedName + " in progress", 10);
 
 
 		if (json.value("data").isArray() && _expectedName != "")
