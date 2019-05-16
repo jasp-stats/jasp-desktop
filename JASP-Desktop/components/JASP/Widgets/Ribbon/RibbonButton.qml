@@ -28,6 +28,7 @@ Rectangle
 	width	: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
 	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	color	: mice.pressed ? Theme.grayLighter : "transparent"
+	z		: 1
 
 	property alias	text		: innerText.text
 	property alias	source		: backgroundImage.source
@@ -105,8 +106,13 @@ Rectangle
 			cursorShape		: Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
 
-			onClicked		:
+			onClicked:
 			{
+				fileMenuModel.visible	= false;
+				modulesMenu.opened		= false;
+				customMenu.visible		= false;
+				mouse.accepted			= false;
+
 				if (ribbonButton.menu.rowCount() === 1)
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
