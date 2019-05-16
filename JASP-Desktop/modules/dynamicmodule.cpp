@@ -439,17 +439,18 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::stri
 {
 	auto parts = stringUtils::splitString(codedReference, '~');
 
-	std::string moduleName		= parts.size() > 1 ? parts[0] : "",
-				analysisTitle	= parts.size() > 1 ? parts[1] : parts[0];
+	std::string moduleName		= parts.size() > 2 ? parts[0] : "",
+				title			= parts.size() > 2 ? parts[1] : parts[0],
+				function		= parts.size() > 2 ? parts[2] : parts[1];
 
 	if(!moduleName.empty() && _name != moduleName)
 		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
 
 	for (AnalysisEntry * menuEntry : _menuEntries)
-		if (menuEntry->isAnalysis() && menuEntry->title() == analysisTitle)
+		if (menuEntry->isAnalysis() && menuEntry->title() == title && menuEntry->function() == function)
 			return menuEntry;
 
-	throw Modules::ModuleException(_name, "Cannot find analysis with title " + analysisTitle + "...");
+	throw Modules::ModuleException(_name, "Cannot find analysis with title " + title + " and function " + function + "...");
 }
 
 void DynamicModule::setInstallLog(std::string installLog)

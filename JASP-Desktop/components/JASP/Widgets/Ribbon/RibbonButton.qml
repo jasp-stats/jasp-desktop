@@ -94,7 +94,7 @@ Rectangle
 			anchors.topMargin			: 5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
 			font						: Theme.fontRibbon
-			renderType					: Text.QtRendering //Because this might be transform and be ugly if done natively
+			renderType					: Text.QtRendering //Because this might be transformed and ugly if done natively
 		}
 
 		MouseArea
@@ -114,12 +114,12 @@ Rectangle
 				mouse.accepted			= false;
 
 				if (ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
 				{
 					var functionCall = function (index)
 					{
-						var analysisName = customMenu.props['model'].getAnalysisName(index);
+						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
 						customMenu.visible = false;

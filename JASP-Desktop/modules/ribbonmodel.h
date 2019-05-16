@@ -72,10 +72,9 @@ public:
 	QString						getModuleNameFromAnalysisName(const QString analysisName);
 	
 signals:
-	void currentButtonModelChanged();
-	Q_INVOKABLE void analysisClickedSignal(QString analysisName, QString analysisTitle, QString module);
-
-	void highlightedModuleIndexChanged(int highlightedModuleIndex);
+				void currentButtonModelChanged();
+	Q_INVOKABLE void analysisClickedSignal(QString analysisFunction, QString analysisTitle, QString module);
+				void highlightedModuleIndexChanged(int highlightedModuleIndex);
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}

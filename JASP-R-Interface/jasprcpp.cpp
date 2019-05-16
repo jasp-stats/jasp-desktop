@@ -941,12 +941,14 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 
 	std::string codestr = Rcpp::as<std::string>(code);
 
-	jaspRCPP_parseEvalPreface(codestr);
+
 	std::string path = std::string(root) + "/" + relativePath;
 	std::string command = R + " -e \"" + codestr + "\" > " + path + " 2>&1 ";
 #ifdef WIN32
 	command = '"' + command + '"'; //Because C:\Program\ is apparently not something... :( See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
 #endif
+
+	jaspRCPP_parseEvalPreface(command);
 
 	system(command.c_str());
 
