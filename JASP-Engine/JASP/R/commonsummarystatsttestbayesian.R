@@ -1490,10 +1490,15 @@
     ylim <- vector("numeric", 2)
 
     ylim[1] <- 0
-    dmax1 <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
-                                                        oneSided = oneSided, options = options),
-                     interval = range(xticks),
-                     maximum = TRUE)$objective
+    dmax1optim <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
+                                                              oneSided = oneSided, options = options),
+                           interval = range(xticks),
+                           maximum = TRUE)$objective
+    # sometimes optimize fails, so we brute force
+    dmax1grid <- max(.dposterior_informative(seq(xlim[1], xlim[2], length.out = 101), t = t, n1 = n1, n2 = n2,
+                                             paired = paired, oneSided = oneSided, options = options), na.rm = TRUE)
+    dmax1 <- max(c(dmax1optim, dmax1grid), na.rm = TRUE)
+    
     dmax2 <- optimize(function(x).dprior_informative(x, oneSided = oneSided, options = options),
                      interval = range(xticks),
                      maximum = TRUE)$objective
