@@ -23,7 +23,6 @@
 #include <map>
 #include <QString>
 #include <QStringList>
-#include <QDebug>
 
 
 class ResultMenuEntry
@@ -48,7 +47,7 @@ public:
 	void	setDisplayText(QString displayText)			{	_displayText = displayText;		}
 	void	setImageSource(QString imageSource)			{	_menuImageSource = imageSource;	}
 	void	setJSFunction(QString jsFunction)			{	_jsFunction = jsFunction;		}
-	void	setEnabled(bool enabled)					{	_isEnabled = enabled;	qDebug() << "enabled " << _displayText << " : " << enabled;		}
+	void	setEnabled(bool enabled)					{	_isEnabled = enabled;			}
 
 private:
 	QString	_displayText,

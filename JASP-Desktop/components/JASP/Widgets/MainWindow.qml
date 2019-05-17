@@ -170,6 +170,11 @@ Window
 				modulesMenu.opened		= false
 				mouse.accepted			= false
 				customMenu.visible		= customMenu.dontCloseMenu
+
+				if (!customMenu.visible) {
+					resultsJsInterface.runJavaScript("window.setSelection(false);")
+				}
+
 			}
 		}
 

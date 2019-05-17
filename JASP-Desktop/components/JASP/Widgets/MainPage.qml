@@ -290,14 +290,12 @@ Item
 					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
 					function pushToClipboard(mime, raw, coded)		{ resultsJsInterface.pushToClipboard(mime, raw, coded)		}
 					function pushImageToClipboard(raw, coded)		{ resultsJsInterface.pushImageToClipboard(raw, coded)		}
-					function simulatedMouseClick(x, y, count)		{ resultsJsInterface.simulatedMouseClick(x, y, count)		}
 					function saveTempImage(index, path, base64)		{ resultsJsInterface.saveTempImage(index, path, base64)		}
 					function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
 					function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
 					function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
 					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
 					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
-
 				}
 			}
 		}
