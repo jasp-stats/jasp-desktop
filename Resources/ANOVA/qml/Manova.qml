@@ -69,6 +69,13 @@ Form
 		
 		Group
 		{
+			title: qsTr("Assumption Checks")
+			CheckBox { name: "boxMTest";			label: qsTr("Homogeneity of covariance matrices")}
+			CheckBox { name: "shapiroTest";			label: qsTr("Multivariate normality")		}
+		}
+		
+		Group
+		{
 			title: qsTr("Display")
 			CheckBox { name: "includeAnovaTables"; label: qsTr("ANOVA tables") }
 			CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }

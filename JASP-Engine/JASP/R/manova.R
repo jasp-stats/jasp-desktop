@@ -35,6 +35,8 @@ Manova <- function(jaspResults, dataset, options) {
 
   .uniAnovaTables(jaspResults, dataset, options, manovaResults, errors)
   
+  .assumptionTables(jaspResults, dataset, options, errors)
+  
   return()
   
 }
@@ -234,6 +236,97 @@ Manova <- function(jaspResults, dataset, options) {
     
   }
 }
+
+.boxComputation <- function(dataset, options, errors) {
+  
+  depData <- dataset[, .v(options$dependent)]
+  grouping <- apply(dataset[, .v(options$fixedFactors)], 1, function(x) as.factor(paste0(x, collapse = "")))
+  
+  # from the biotools package
+  p <- ncol(depData)
+  nlev <- nlevels(grouping)
+  lev <- levels(grouping)
+  dfs <- tapply(grouping, grouping, length) - 1
+  
+  if (any(dfs < p)) 
+    errors <- "Too few observations to calculate statistic. Each (sub)group must have at least as many observations as there are dependent variables."
+  
+  mats <- list() 
+  aux <- list()
+  for(i in 1:nlev) {
+    mats[[i]] <- cov(depData[grouping == lev[i], ])
+    aux[[i]] <- mats[[i]] * dfs[i]
+  }
+
+  names(mats) <- lev
+  pooled <- Reduce("+", aux) / sum(dfs)
+  logdet <- log(unlist(lapply(mats, det)))
+  minus2logM <- sum(dfs) * log(det(pooled)) - sum(logdet * dfs)
+  sum1 <- sum(1 / dfs)
+  Co <- (((2 * p^2) + (3 * p) - 1) / (6 * (p + 1) * (nlev - 1))) * (sum1 - (1 / sum(dfs)))
+  chiSq <- minus2logM * (1 - Co)
+  df <- (choose(p, 2) + p) * (nlev - 1)
+  pval <- pchisq(chiSq, df, lower.tail = FALSE)
+  
+  return(list(ChiSq = chiSq, df = df, p = pval, errors = errors))
+}
+
+.multivariateShapiroComputation <- function(dataset, options) {
+  
+  # From mvnormtest
+  depData <- t(as.matrix(dataset[, .v(options$dependent)]))
+  Us <- apply(depData, 1, mean)
+  R <- depData - Us
+  
+  M.1 <- solve(R %*% t(R), tol = 1e-18)
+  Rmax <- diag(t(R) %*% M.1 %*% R)
+  C <- M.1 %*% R[, which.max(Rmax)]
+  Z <- t(C) %*% depData
+  
+  return(stats::shapiro.test(Z))
+}
+
+.assumptionTables <- function(jaspResults, dataset, options, errors) {
+  
+  if (!is.null(jaspResults[["assumptionsContainer"]]) || (!options$boxMTest && !options$shapiroTest)) return()
+  
+  assumptionsContainer <- createJaspContainer(title = "Assumption Checks")
+  jaspResults[["assumptionsContainer"]] <- assumptionsContainer
+  
+  assumptionsContainer$dependOn(c("dependent", "fixedFactors", "modelTerms", "boxMTest", "shapiroTest"))
+  
+  if (options$boxMTest) {
+    # Make Box test table
+    boxResult <- .boxComputation(dataset, options, errors)
+    boxMTable <- createJaspTable(title = "Box's M-test for Homogeneity of Covariance Matrices")
+    
+    boxMTable$showSpecifiedColumnsOnly <- TRUE
+    
+    boxMTable$addColumnInfo(name = "ChiSq",   title = "\u03C7\u00B2",                  type = "number")
+    boxMTable$addColumnInfo(name = "df",      title = "df",                     type = "integer")
+    boxMTable$addColumnInfo(name = "p",       title = "p",                      type = "pvalue")
+    
+    boxMTable$addRows(boxResult[1:3])
+    
+    jaspResults[["assumptionsContainer"]][["boxMTable"]] <- boxMTable
+  }
+  
+  if (options$shapiroTest) {
+    # Make multivariate normal Shaprio table
+    shapiroResult <- .multivariateShapiroComputation(dataset, options)
+    shapiroTable <- createJaspTable(title = "Shapiro-Wilk Test for Multivariate Normality")
+    
+    shapiroTable$showSpecifiedColumnsOnly <- TRUE
+    
+    shapiroTable$addColumnInfo(name = "Shapiro-Wilk",   title = "W",                  type = "number")
+    shapiroTable$addColumnInfo(name = "p",       title = "p",                      type = "pvalue")
+    
+    shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
+    
+    jaspResults[["assumptionsContainer"]][["shapiroTable"]] <- shapiroTable
+  }
+}
+
 
 .manovaCheckErrors <- function(dataset, options) {
   
