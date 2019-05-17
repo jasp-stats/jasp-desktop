@@ -775,7 +775,7 @@
       if (all(c(densities[, ind, "y"]) == 0)) { # only TRUE is never sampled and set to 0
         plot <- createJaspPlot(title = nms[i], width = 400, height = 400)
         plot$setError(paste("Could not plot posterior distribution.",
-                            "Check if an error occured for models including this parameter."))
+                            "Check if an error occurred for models including this parameter."))
       } else {
         # make prior posterior plot
         dfLines <- data.frame(x = c(densities[, ind, "x"]),
@@ -831,16 +831,11 @@
         
         maxheight <- min(newymax - dfCri$y[1:min(lInd, 3)])
         xlab <- nms[i]
-        # ggplot doesn't like our fancy unicode * so we need to remove it
-        # some word hopefully no user every uses
-        keyword <- "myTemporaryMagicReplacementKeyWord"
-        # change the encoding and remove all *
-        xlab <- iconv(xlab, from = "UTF-8", to = "ASCII", sub = keyword)
-        # remove our keyword
-        xlab <- unlist(strsplit(xlab, keyword))
-        # remove empty spaces and add a x over our *
-        xlab <- paste(xlab[xlab != ""], collapse = " x ")
-        
+        # ggplot doesn't like our fancy unicode * so we need to escape it
+        xlab <- stringi::stri_escape_unicode(xlab)
+        # change escaped version into x
+        xlab <- gsub(pattern = "\\u2009\\u273b\\u2009", replacement = " x ", x = xlab, fixed = TRUE)
+
         ncolLegend <- ceiling(lInd / 14)
         guideLegend <- ggplot2::guide_legend(title = "Level", keywidth = 0.25, keyheight = 0.1, default.unit = "inch", 
                                              ncol = ncolLegend)
