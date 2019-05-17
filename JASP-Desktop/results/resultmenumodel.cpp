@@ -38,6 +38,8 @@ QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 		return entry.jsFunction();
 	else if (role == IsSeparatorRole)
 		return entry.isSeparator();
+	else if (role == IsEnabledRole)
+		return entry.isEnabled();
 
 	return QVariant();
 }
@@ -50,7 +52,8 @@ QHash<int, QByteArray> ResultMenuModel::roleNames() const
 		{	NameRole,				"name"				},
 		{	MenuImageSourceRole,	"menuImageSource"	},
 		{	JSFunctionRole,			"jsFunction"		},
-		{	IsSeparatorRole,		"isSeparator"		}
+		{	IsSeparatorRole,		"isSeparator"		},
+		{	IsEnabledRole,			"isEnabled"			}
 	};
 
 	return roles;
@@ -98,6 +101,7 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 
 				QString jsFunction = QString("window.notesMenuClicked('%1', %2);").arg(QString::fromStdString(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
 				entry.setJSFunction(jsFunction);
+				entry.setEnabled(!noteOption["visible"].asBool());
 
 				entries.push_back(entry);
 			}

@@ -155,7 +155,7 @@ Item
 				// removed the timer as it isn't necessary any longer after a fix to the dataview (see df7a6eb29a66cc9b201818bf0f6bc86ba8e747ca)
 				// the timer creates a lag in resizing which isn't very nice, we should only activate this if we have hard data that we should
 				//resizeTimer.resizer(giveResultsSomeSpace.width);
-				
+
 				//data.wasMaximized = data.width === data.maxWidth;
 			}
 
@@ -241,6 +241,9 @@ Item
 						var optionsJSON  = JSON.parse(options);
 						var functionCall = function (index)
 						{
+							if (customMenu.dontCloseMenu)
+								return;
+
 							customMenu.visible = false;
 							var name = customMenu.props['model'].getName(index);
 
@@ -287,14 +290,12 @@ Item
 					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
 					function pushToClipboard(mime, raw, coded)		{ resultsJsInterface.pushToClipboard(mime, raw, coded)		}
 					function pushImageToClipboard(raw, coded)		{ resultsJsInterface.pushImageToClipboard(raw, coded)		}
-					function simulatedMouseClick(x, y, count)		{ resultsJsInterface.simulatedMouseClick(x, y, count)		}
 					function saveTempImage(index, path, base64)		{ resultsJsInterface.saveTempImage(index, path, base64)		}
 					function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
 					function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
 					function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
 					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
 					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
-
 				}
 			}
 		}

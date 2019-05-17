@@ -1,4 +1,3 @@
-
 'use strict'
 
 var jasp = null;
@@ -9,12 +8,12 @@ $(document).ready(function () {
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
 
-    if (typeof qt !== "undefined")
-        var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
-                // now you retrieve your object
-                jasp = channel.objects.jasp;
-            });
-    var ua = navigator.userAgent.toLowerCase();
+	if (typeof qt !== "undefined")
+		var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
+				// now you retrieve your object
+				jasp = channel.objects.jasp;
+			});
+	var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)
 		$("body").addClass("windows")
@@ -22,8 +21,8 @@ $(document).ready(function () {
 	// Global settings for analysis output. Add here if making new setting.
 	window.globSet = {
 		"pExact" : false,
-        "decimals": "",
-        "tempFolder": ""
+		"decimals": "",
+		"tempFolder": ""
 	}
 
 	var selectedAnalysisId = -1;
@@ -33,15 +32,15 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
-	
+
 	var wasLastClickNote = false;
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
-    window.setZoom = function (zoom) {
-        var zoomProcent = "" + Math.floor(zoom * 100) + "%"
-        document.body.style.zoom = zoomProcent
-    }
+	window.setZoom = function (zoom) {
+		var zoomProcent = "" + Math.floor(zoom * 100) + "%"
+		document.body.style.zoom = zoomProcent
+	}
 
 	window.clearWelcomeScreen = function (callDelayedLoad) {
 		$intro.hide();
@@ -72,7 +71,7 @@ $(document).ready(function () {
 			selectedAnalysis.select();
 			$("body").addClass("selected")
 
-            window.scrollToTopView(selectedAnalysis.$el);
+			window.scrollToTopView(selectedAnalysis.$el);
 		}
 	}
 
@@ -88,13 +87,13 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
-    window.noInstructions = function () {
-        $('#instructions').text("");
-    }
+	window.noInstructions = function () {
+		$('#instructions').text("");
+	}
 
-    window.noPatchinfo = function () {
-        $('#patchinfo').text("");
-    }
+	window.noPatchinfo = function () {
+		$('#patchinfo').text("");
+	}
 
 
 	window.setTextHeight = function (height) {
@@ -115,31 +114,40 @@ $(document).ready(function () {
 		})
 	}
 
+	window.setSelection = function(value) {
+		// remove jaspWidget selection
+		window.menuObject.toolbar.setSelected(value);
+	}
+
 	window.copyMenuClicked = function () {
 		if (window.menuObject.copyMenuClicked | window.menuObject.copyMenuClicked())
 			window.menuObject.toolbar.displayMessage("Copied to clipboard");
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
-    window.saveImageClicked = function () {
-        if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
-            window.menuObject.saveImageClicked();
+	window.saveImageClicked = function () {
+		if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
+			window.menuObject.saveImageClicked();
 
-        window.menuObject = null;
-    }
+		setSelection(false);
+		window.menuObject = null;
+	}
 
-    window.editImageClicked = function () {
-        if (window.menuObject.editImageClicked | window.menuObject.editImageClicked())
-            window.menuObject.editImageClicked();
+	window.editImageClicked = function () {
+		if (window.menuObject.editImageClicked | window.menuObject.editImageClicked())
+			window.menuObject.editImageClicked();
 
-        window.menuObject = null;
-    }
+		setSelection(false);
+		window.menuObject = null;
+	}
 
 	window.collapseMenuClicked = function () {
 		if (window.menuObject.collapseMenuClicked)
 			window.menuObject.collapseMenuClicked();
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
@@ -147,6 +155,7 @@ $(document).ready(function () {
 		if (window.menuObject.editTitleClicked)
 			window.menuObject.editTitleClicked()
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
@@ -154,6 +163,7 @@ $(document).ready(function () {
 		if (window.menuObject.citeMenuClicked | window.menuObject.citeMenuClicked())
 			window.menuObject.toolbar.displayMessage("Citations copied to clipboard");
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
@@ -161,6 +171,7 @@ $(document).ready(function () {
 		if (window.menuObject.latexCodeMenuClicked | window.menuObject.latexCodeMenuClicked())
 			window.menuObject.toolbar.displayMessage("LaTeX code copied to clipboard");
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
@@ -168,6 +179,7 @@ $(document).ready(function () {
 		if (window.menuObject.notesMenuClicked | window.menuObject.notesMenuClicked(noteType, visibility))
 			window.menuObject.toolbar.displayMessage();
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
@@ -175,6 +187,7 @@ $(document).ready(function () {
 		if (window.menuObject.removeMenuClicked)
 			window.menuObject.removeMenuClicked();
 
+		setSelection(false);
 		window.menuObject = null;
 	}
 
@@ -389,19 +402,19 @@ $(document).ready(function () {
 		// Initialize view to defaults and re-render - Clears titles, notebox, etc.
 		analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 	}
-	
+
 	var ignoreSelectionProcess = function(target) {
-		
+
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked       = $(target).is(".jasp-notes, .jasp-notes *");
 		var toolbarClicked    = $(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *");
-		
+
 		var ignoreSelection   = (wasLastClickNote === true && noteClicked === false) ||		// save the modified note
 								stacktraceClicked === true ||								// toggle the stack trace
 								toolbarClicked    === true;									// click on an analysis toolbar
-							
+
 		wasLastClickNote = noteClicked;
-		
+
 		return ignoreSelection;
 	}
 
@@ -440,11 +453,11 @@ $(document).ready(function () {
 		}
 	}
 
-    var analysisChangedDownstreamHandler = function (event, data) {
+	var analysisChangedDownstreamHandler = function (event, data) {
 
-        jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
+		jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
 
-    }
+	}
 
 	window.analysisChanged = function (analysis) {
 
@@ -462,6 +475,7 @@ $(document).ready(function () {
 			analyses.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
+				console.log(options);
 				window.menuObject = obj;
 			});
 
@@ -502,21 +516,22 @@ $(document).ready(function () {
 
 			});
 
-            jaspWidget.on("saveimage", function (id, options) {
+			jaspWidget.on("saveimage", function (id, options) {
 
-                jasp.analysisSaveImage(id, JSON.stringify(options))
+				jasp.analysisSaveImage(id, JSON.stringify(options))
 
-            });
+			});
 
-            jaspWidget.on("editimage", function (id, options) {
+			jaspWidget.on("editimage", function (id, options) {
 
-                jasp.analysisEditImage(id, JSON.stringify(options))
+				jasp.analysisEditImage(id, JSON.stringify(options))
 
-            });
+			});
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
+				console.log(options);
 				window.menuObject = obj;
 			});
 
@@ -588,11 +603,6 @@ var pushImageToClipboard = function (exportContent, exportParams) {
 	jasp.pushImageToClipboard(exportContent.raw, wrapHTML(exportContent.html, exportParams))
 }
 
-var simulateClick = function (x, y, count) {
-
-	jasp.simulatedMouseClick(x, y, count);
-}
-
 var savingId = 0;
 var savingImages = {};
 
@@ -628,7 +638,7 @@ var convertToBase64Begin = function (path, callback, context) {
 window.convertToBase64Done = function (args) {
 	var callbackData = convertToBase64Images[args.id];
 	callbackData.callback.call(callbackData.context, args.result);
-    delete convertToBase64Images[args.id];
+	delete convertToBase64Images[args.id];
 }
 
 

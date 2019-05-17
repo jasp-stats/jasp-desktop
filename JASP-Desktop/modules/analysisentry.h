@@ -41,6 +41,7 @@ public:
 	bool			isSeparator()			const { return _isSeparator;		}
 	bool			isGroupTitle()			const { return _isGroupTitle;		}
 	bool			isAnalysis()			const { return _isAnalysis;			}
+	bool			isEnabled()				const { return _isEnabled;			}
 
 	DynamicModule*	dynamicModule()			const;
 	std::string		qmlFilePath()			const;
@@ -59,6 +60,7 @@ private:
 	bool			_isSeparator = false;
 	bool			_isGroupTitle = false;
 	bool			_isAnalysis = false;
+	bool			_isEnabled = true;
 	std::string		_icon		= "";
 
 };

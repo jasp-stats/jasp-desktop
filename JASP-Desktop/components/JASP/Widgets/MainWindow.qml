@@ -102,6 +102,7 @@ Window
 			}
 
 			visible: false
+			dontCloseMenu: false
 		}
 
 		FileMenu
@@ -168,7 +169,12 @@ Window
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
 				mouse.accepted			= false
-				customMenu.visible		= false
+				customMenu.visible		= customMenu.dontCloseMenu
+
+				if (!customMenu.visible) {
+					resultsJsInterface.runJavaScript("window.setSelection(false);")
+				}
+
 			}
 		}
 
@@ -201,7 +207,7 @@ Window
 
 		}*/
 	}
-	
+
 	Item
 	{
 		id:					uiScaleNotifier
@@ -209,25 +215,25 @@ Window
 		width:				100 * preferencesModel.uiScale
 		height:				50 * preferencesModel.uiScale
 		anchors.centerIn:	parent
-				 
+
 		property double	uiScale: preferencesModel.uiScale
-		
+
 		property bool	uiScaleIsLoadedFromSettings: false
-		
-		onUiScaleChanged: 
-		{ 
+
+		onUiScaleChanged:
+		{
 			if (uiScaleIsLoadedFromSettings)
 			{
 				uiScaleRect.opacity = 0.8
 				uiScaleTimer.restart()
 			}
-			else 
+			else
 			{
 				uiScaleIsLoadedFromSettings = true
 			}
 		}
-		
-		Rectangle 
+
+		Rectangle
 		{
 			id:					uiScaleRect
 			width:				parent.width
@@ -237,7 +243,7 @@ Window
 			opacity:			0
 			z:					100
 			anchors.centerIn:	parent
-			
+
 			Timer
 			{
 				id:				uiScaleTimer
@@ -246,7 +252,7 @@ Window
 				interval:		750
 				onTriggered:	uiScaleRect.opacity = 0
 			}
-			
+
 			Behavior on opacity
 			{
 				PropertyAnimation
@@ -254,18 +260,18 @@ Window
 					duration: 50
 				}
 			}
-			
+
 			Text
 			{
 				color:				Theme.white
 				font:				Theme.fontLabel
 				anchors.centerIn:	parent
-				
+
 				text: Math.round(uiScaleNotifier.uiScale * 100) + "%"
 			}
-			
+
 		}
-			
+
 
 	}
 

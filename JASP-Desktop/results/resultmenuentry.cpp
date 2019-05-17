@@ -41,6 +41,7 @@ ResultMenuEntry::ResultMenuEntry(QString displayText, QString name, QString menu
 	, _menuImageSource(menuImageSource)
 	, _jsFunction(jsFunction)
 	, _isSeparator(false)
+	, _isEnabled(true)
 {
 }
 

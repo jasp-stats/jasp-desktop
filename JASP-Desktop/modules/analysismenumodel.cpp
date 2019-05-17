@@ -40,6 +40,7 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 	case MenuImageSourceRole:		return QString::fromStdString(entry->icon());
 	case IsSeparatorRole:			return entry->isSeparator();
 	case isGroupTitleRole:			return entry->isGroupTitle();
+	case IsEnabledRole:				return entry->isEnabled();
 	default:						return QVariant();
 	}
 }
@@ -52,7 +53,8 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 		{	AnalysisFunctionRole,   "analysisEntry"		},
 		{	MenuImageSourceRole,    "menuImageSource"	},
 		{	IsSeparatorRole,		"isSeparator"		},
-		{	isGroupTitleRole,		"isGroupTitle"		}
+		{	isGroupTitleRole,		"isGroupTitle"		},
+		{	IsEnabledRole,			"isEnabled"			}
 	};
 
 	return roles;
@@ -88,6 +90,6 @@ Modules::AnalysisEntry *AnalysisMenuModel::getAnalysisEntry(const std::string& n
 		if (analysis->function() == name)
 			return analysis;
 	}
-	
+
 	return nullptr;
 }
