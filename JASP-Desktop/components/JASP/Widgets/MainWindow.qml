@@ -26,7 +26,7 @@ Window
 	id:			mainWindowRoot
 	title:		mainWindow.windowTitle
 	visible:	true
-	width:		1024
+	width:		1250 < Screen.width ? 1250 : Screen.width
 	height:		768
 
 
