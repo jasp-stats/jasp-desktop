@@ -155,7 +155,7 @@ Item
 				// removed the timer as it isn't necessary any longer after a fix to the dataview (see df7a6eb29a66cc9b201818bf0f6bc86ba8e747ca)
 				// the timer creates a lag in resizing which isn't very nice, we should only activate this if we have hard data that we should
 				//resizeTimer.resizer(giveResultsSomeSpace.width);
-				
+
 				//data.wasMaximized = data.width === data.maxWidth;
 			}
 
@@ -241,6 +241,9 @@ Item
 						var optionsJSON  = JSON.parse(options);
 						var functionCall = function (index)
 						{
+							if (customMenu.dontCloseMenu)
+								return;
+
 							customMenu.visible = false;
 							var name = customMenu.props['model'].getName(index);
 

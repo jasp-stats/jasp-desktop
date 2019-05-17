@@ -33,7 +33,7 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
-	
+
 	var wasLastClickNote = false;
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
@@ -389,19 +389,19 @@ $(document).ready(function () {
 		// Initialize view to defaults and re-render - Clears titles, notebox, etc.
 		analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 	}
-	
+
 	var ignoreSelectionProcess = function(target) {
-		
+
 		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked       = $(target).is(".jasp-notes, .jasp-notes *");
 		var toolbarClicked    = $(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *");
-		
+
 		var ignoreSelection   = (wasLastClickNote === true && noteClicked === false) ||		// save the modified note
 								stacktraceClicked === true ||								// toggle the stack trace
 								toolbarClicked    === true;									// click on an analysis toolbar
-							
+
 		wasLastClickNote = noteClicked;
-		
+
 		return ignoreSelection;
 	}
 
@@ -462,6 +462,7 @@ $(document).ready(function () {
 			analyses.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
+				console.log(options);
 				window.menuObject = obj;
 			});
 
@@ -517,6 +518,7 @@ $(document).ready(function () {
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
+				console.log(options);
 				window.menuObject = obj;
 			});
 

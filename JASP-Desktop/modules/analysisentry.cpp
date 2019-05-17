@@ -50,6 +50,7 @@ AnalysisEntry::AnalysisEntry() :
 	_isSeparator(true),
 	_isGroupTitle(false),
 	_isAnalysis(false),
+	_isEnabled(true),
 	_icon("")
 {
 }

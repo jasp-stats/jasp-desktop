@@ -23,6 +23,7 @@
 #include <map>
 #include <QString>
 #include <QStringList>
+#include <QDebug>
 
 
 class ResultMenuEntry
@@ -42,17 +43,20 @@ public:
 	QString	menuImageSource()					const	{	return _menuImageSource;		}
 	QString	jsFunction()						const	{	return _jsFunction;				}
 	bool	isSeparator()						const	{	return _isSeparator;			}
+	bool	isEnabled()							const	{	return _isEnabled;				}
 
 	void	setDisplayText(QString displayText)			{	_displayText = displayText;		}
 	void	setImageSource(QString imageSource)			{	_menuImageSource = imageSource;	}
 	void	setJSFunction(QString jsFunction)			{	_jsFunction = jsFunction;		}
+	void	setEnabled(bool enabled)					{	_isEnabled = enabled;	qDebug() << "enabled " << _displayText << " : " << enabled;		}
 
 private:
 	QString	_displayText,
 			_name,
 			_menuImageSource,
 			_jsFunction;
-	bool	_isSeparator = false;
+	bool	_isSeparator = false,
+			_isEnabled = true;
 };
 
 #endif // RESULTMENUENTRY_H

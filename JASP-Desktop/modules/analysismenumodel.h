@@ -37,7 +37,8 @@ public:
 		AnalysisFunctionRole,
 		MenuImageSourceRole,
 		IsSeparatorRole,
-		isGroupTitleRole
+		isGroupTitleRole,
+		IsEnabledRole
 	};
 
 	AnalysisMenuModel(RibbonButton *parent);
