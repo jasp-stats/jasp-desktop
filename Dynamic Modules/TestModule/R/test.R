@@ -1,4 +1,4 @@
-testFunc <- function(jaspResults, dataset, options)
+testFundc <- function(jaspResults, dataset, options)
 {
 	tafel 						<- createJaspTable(title="Ik ben een test");
     jaspResults[['testTafel']]  <- tafel

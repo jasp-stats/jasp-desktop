@@ -485,7 +485,6 @@ void jaspRCPP_setRError(SEXP Message)
 void jaspRCPP_setLog(SEXP Message)
 {
 	lastErrorMessage = Rcpp::as<std::string>(Message);
-	std::cout << "jaspRCPP_setLog receives: '" << lastErrorMessage << "'" << std::endl;
 }
 
 int jaspRCPP_dataSetRowCount()
@@ -911,6 +910,7 @@ RInside::Proxy jaspRCPP_parseEval(const std::string & code)
 	return returnthis;
 }
 
+///This function runs *code* in a separate instance of R, because the output of install.packages (and perhaps other functions) cannot be captured through the outputsink...
 SEXP jaspRCPP_RunSeparateR(SEXP code)
 {
 	const char *root, *relativePath;
@@ -924,12 +924,8 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 		std::stringstream output;
 
 		for(char k : input)
-			if(k == '/')
-				output << "\\";
-			else if(k == ' ')
-				output << "\\ ";
-			else
-				output << k;
+			if(k == '/')	output << "\\";
+			else			output << k;
 		return output.str();
 #else
 		return input;
@@ -945,7 +941,7 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 	std::string path = std::string(root) + "/" + relativePath;
 	std::string command = R + " -e \"" + codestr + "\" > " + path + " 2>&1 ";
 #ifdef WIN32
-	command = '"' + command + '"'; //Because C:\Program\ is apparently not something... :( See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
+	command = '"' + command + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
 #endif
 
 	jaspRCPP_parseEvalPreface(command);
