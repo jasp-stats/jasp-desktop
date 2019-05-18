@@ -21,8 +21,14 @@
 #include <sstream>
 #include <stdio.h>
 
-using namespace std;
+//For https://github.com/jasp-stats/INTERNAL-jasp/issues/264 (major and minor defined by GNU C):
+#ifdef major
+#undef major
+#endif
 
+#ifdef minor
+#undef minor
+#endif
 
 Version::Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build)
 	: major(_major), minor(_minor), revision(_revision), build(_build)
@@ -143,9 +149,9 @@ bool Version::isBeta() const
 	return build >= 101 && build <= 254;
 }
 
-string Version::asString() const
+std::string Version::asString() const
 {
-	stringstream stream;
+	std::stringstream stream;
 
 	stream << (int)major << "." << (int)minor;
 
