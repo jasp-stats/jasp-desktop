@@ -110,5 +110,7 @@
         <file>components/JASP/Controls/AddColumnField.qml</file>
         <file>components/JASP/Widgets/SpinBox.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsGroupRect.qml</file>
+        <file>components/JASP/Widgets/WelcomePage.qml</file>
+        <file>components/JASP/Widgets/UIScaleNotifier.qml</file>
     </qresource>
 </RCC>

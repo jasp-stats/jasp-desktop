@@ -238,7 +238,6 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -687,10 +686,12 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		{
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-			JASPTIMER_RESUME(Delayed Load);
-			_resultsJsInterface->clearWelcomeScreen(true);
+			setWelcomePageVisible(false);
+			_resultsJsInterface->resetResults();
 
-			_openEvent = event; //Used in delayedLoadHandler
+
+			_loader.io(event, _package);
+			showProgress(event->type() != Utils::FileType::jasp);
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -772,7 +773,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		setDataPanelVisible(false);
 		setDataAvailable(false);
-		_resultsJsInterface->resetResults();
+		setWelcomePageVisible(true);
 
 		closeVariablesPage();
 	}
@@ -901,7 +902,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if (_package->dataSet())
 				_loader.free(_package->dataSet());
 			_package->reset();
-			_resultsJsInterface->resetResults();
+			setWelcomePageVisible(true);
 
 			setWindowTitle("JASP");
 
@@ -1380,9 +1381,6 @@ void MainWindow::saveJaspFileHandler()
 	dataSetIORequestHandler(saveEvent);
 }
 
-
-
-
 bool MainWindow::enginesInitializing()
 {
 	return _engineSync->allEnginesInitializing();
@@ -1461,28 +1459,7 @@ void MainWindow::removeAllAnalyses()
 
 void MainWindow::analysisAdded(Analysis *)
 {
-	if(_resultsJsInterface->welcomeShown())
-		_resultsJsInterface->clearWelcomeScreen(false); //in case we are playing with summary stats or so we do not want to keep seeing the welcome screen
-}
-
-void MainWindow::welcomeScreenIsCleared(bool callDelayedLoad)
-{
-	if(callDelayedLoad)
-		delayedLoadHandler();
-}
-
-void MainWindow::delayedLoadHandler()
-{
-	if (_openEvent)
-	{
-		_loader.io(_openEvent, _package);
-		showProgress(_openEvent->type() != Utils::FileType::jasp);
-		_openEvent = nullptr;
-
-		JASPTIMER_STOP(Delayed Load);
-	}
-	else
-		std::cerr << "Unable to open file" << std::endl;
+	setWelcomePageVisible(false);
 }
 
 void MainWindow::getAnalysesUserData()
@@ -1536,8 +1513,8 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 
 	if(!_analysesAvailable && !_package->isLoaded())
 	{
-		_resultsJsInterface->resetResults();
 		_package->setModified(false);
+		setWelcomePageVisible(true);
 	}
 	else
 		_package->setModified(true);
@@ -1580,4 +1557,13 @@ void MainWindow::makeAppleMenu()
 	aboutMenu->addAction(macAbout);
 	prefMenu->addAction(macPreferences);
 #endif
+}
+
+void MainWindow::setWelcomePageVisible(bool welcomePageVisible)
+{
+	if (_welcomePageVisible == welcomePageVisible)
+		return;
+
+	_welcomePageVisible = welcomePageVisible;
+	emit welcomePageVisibleChanged(_welcomePageVisible);
 }

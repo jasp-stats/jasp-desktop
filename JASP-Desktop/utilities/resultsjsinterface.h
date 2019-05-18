@@ -34,7 +34,7 @@ class ResultsJsInterface : public QObject
 	Q_OBJECT
 	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
 	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged				)
-	Q_PROPERTY(bool				welcomeShown	READ welcomeShown							NOTIFY welcomeShownChanged		)
+
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
@@ -48,14 +48,12 @@ public:
 	void exportPreviewHTML();
 	void exportHTML();
 	void resetResults();
-	void clearWelcomeScreen(bool callDelayedLoad);
 
 	Json::Value &getResultsMeta();
 	QVariant	&getAllUserData();
 
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webEngineZoom;	}
-	bool			welcomeShown()		const { return _welcomeShown;	}
 
 	Q_INVOKABLE void purgeClipboard();
 
@@ -74,7 +72,6 @@ signals:
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
 	Q_INVOKABLE void removeAllAnalyses();
-	Q_INVOKABLE void welcomeScreenIsCleared(bool callDelayedLoad);
 
 public slots:
 	void setZoom(double zoom);
@@ -100,7 +97,6 @@ signals:
 	void runJavaScript(QString js);
 	void zoomChanged();
 	void resultsPageLoadedSignal();
-	void welcomeShownChanged(bool welcomeShown);
 
 public slots:
 	void setExactPValuesHandler(bool exact);
@@ -109,7 +105,6 @@ public slots:
 	void exportSelected(const QString &filename);
 	void setResultsPageUrl(QString resultsPageUrl);
 	void resultsPageLoaded(bool success);
-	void setWelcomeShown(bool welcomeShown);
 	void setZoomInWebEngine();
 
 private:
@@ -118,14 +113,12 @@ private:
 
 private slots:
 	void menuHidding();
-	void welcomeScreenIsClearedHandler(bool) { setWelcomeShown(false); }
 
 private:
 	double			_webEngineZoom = 1.0;
 	Json::Value		_resultsMeta;
 	QVariant		_allUserData;
 	QString			_resultsPageUrl = "qrc:///core/index.html";
-	bool			_welcomeShown = true;
 };
 
 

@@ -134,5 +134,12 @@ ScrollView
 				}
 			}
 		}
+
+		Item
+		{
+			id:		extraSpaceForScrolling
+			width:	1
+			height:	1
+		}
 	}
 }

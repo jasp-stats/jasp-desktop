@@ -123,7 +123,6 @@ Item
 		{
 			id:						giveResultsSomeSpace
 			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
-			//Layout.minimumWidth:	Math.max(Theme.minPanelWidth, analyses.width)
 			Layout.fillWidth:		true
 			z:						3
 			visible:				panelSplit.shouldShowInputOutput
@@ -150,15 +149,39 @@ Item
 				}
 			}
 
-			onWidthChanged:
+			/*onWidthChanged:
 			{
 				// removed the timer as it isn't necessary any longer after a fix to the dataview (see df7a6eb29a66cc9b201818bf0f6bc86ba8e747ca)
 				// the timer creates a lag in resizing which isn't very nice, we should only activate this if we have hard data that we should
 				//resizeTimer.resizer(giveResultsSomeSpace.width);
-
-				//data.wasMaximized = data.width === data.maxWidth;
 			}
 
+			Timer
+			{
+				id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
+
+				property real resizeToThis: -1
+				property real currentWidth: giveResultsSomeSpace.width
+
+				function resizer(newWidth)
+				{
+					if(resizeTimer.resizeToThis	!== newWidth)
+					{
+						//if(resizeTimer.running)
+						resizeTimer.stop();
+
+						resizeTimer.resizeToThis = newWidth;
+
+						if(newWidth !== resizeTimer.currentWidth)
+							resizeTimer.start();
+					}
+				}
+
+				running:		false
+				repeat:			false
+				interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
+				onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
+			}*/
 
 			WebEngineView
 			{
@@ -172,34 +195,6 @@ Item
 				}
 
 				width: giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
-
-				Timer
-				{
-					id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
-
-					property real resizeToThis: -1
-					property real currentWidth: giveResultsSomeSpace.width
-
-					function resizer(newWidth)
-					{
-						if(resizeTimer.resizeToThis	!== newWidth)
-						{
-							//if(resizeTimer.running)
-							resizeTimer.stop();
-
-							resizeTimer.resizeToThis = newWidth;
-
-							if(newWidth !== resizeTimer.currentWidth)
-								resizeTimer.start();
-						}
-					}
-
-					running:		false
-					repeat:			false
-					interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
-					onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
-				}
-
 
 				url:					resultsJsInterface.resultsPageUrl
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
@@ -228,7 +223,6 @@ Item
 					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
-					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)    }
 					function analysisTitleChangedFromResults(id, title)	{ resultsJsInterface.analysisTitleChangedFromResults(id, title) }
 
 

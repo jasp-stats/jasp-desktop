@@ -28,8 +28,6 @@ $(document).ready(function () {
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
 
-	var $intro = $("#intro")
-
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 
@@ -40,12 +38,6 @@ $(document).ready(function () {
 	window.setZoom = function (zoom) {
 		var zoomProcent = "" + Math.floor(zoom * 100) + "%"
 		document.body.style.zoom = zoomProcent
-	}
-
-	window.clearWelcomeScreen = function (callDelayedLoad) {
-		$intro.hide();
-		$("#style").attr("href","css/theme-jasp.css");
-		jasp.welcomeScreenIsCleared(callDelayedLoad);
 	}
 
 	window.reRenderAnalyses = function () {
@@ -491,7 +483,8 @@ $(document).ready(function () {
 		}
 
 		var jaspWidget = analyses.getAnalysis(analysis.id);
-		if (jaspWidget == undefined) {
+		if (jaspWidget == undefined)
+		{
 			jaspWidget = new JASPWidgets.AnalysisView({ id: id, className: "jasp-analysis", model: new JASPWidgets.Analysis(analysis) });
 
 			var newItem = jaspWidget.$el;
@@ -550,16 +543,19 @@ $(document).ready(function () {
 		jaspWidget.render();
 	}
 
-	$("#results").on("click", ".stack-trace-selector", function() {
-		$(this).next(".stack-trace").slideToggle(function() {
+	$("#results").on("click", ".stack-trace-selector", function()
+	{
+		$(this).next(".stack-trace").slideToggle(function()
+		{
 			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
 			var errorBoxHeight = $(this).parent(".analysis-error-message").outerHeight();
-			if ($(this).next(".stack-trace").is(":hidden")) {
+
+			if ($(this).next(".stack-trace").is(":hidden"))
 				$selectedInner.css("height", "");
-			}
-			if ($selectedInner.height() < errorBoxHeight) {
+
+			if ($selectedInner.height() < errorBoxHeight)
 				$selectedInner.height(errorBoxHeight);
-			}
+
 		}.bind(this))
 	});
 

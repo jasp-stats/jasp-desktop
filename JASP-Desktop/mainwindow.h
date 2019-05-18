@@ -63,6 +63,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
 	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
 	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
+	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 
 	friend class FileMenu;
 public:
@@ -81,20 +82,23 @@ public:
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
+	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
+
 public slots:
 	void setImageBackgroundHandler(QString value);
-	void setProgressBarVisible(bool progressBarVisible);
 	void setProgressBarProgress(int progressBarProgress);
+	void setProgressBarVisible(bool progressBarVisible);
+	void setWelcomePageVisible(bool welcomePageVisible);
 	void setProgressBarStatus(QString progressBarStatus);
+	void setAnalysesAvailable(bool analysesAvailable);
 	void setDataPanelVisible(bool dataPanelVisible);
+	void setDataAvailable(bool dataAvailable);
 	void setDatasetLoaded(bool datasetLoaded);
 	void setWindowTitle(QString windowTitle);
 	void setScreenPPI(int screenPPI);
-	void setDataAvailable(bool dataAvailable);
-	void setAnalysesAvailable(bool analysesAvailable);
 
 	bool checkPackageModifiedBeforeClosing();
 	void startDataEditorHandler();
@@ -126,7 +130,6 @@ private:
 	void loadRibbonQML();
 	void loadQML();
 
-	void delayedLoadHandler();
 	void checkUsedModules();
 
 	void packageChanged(DataSetPackage *package);
@@ -175,10 +178,9 @@ signals:
 	void datasetLoadedChanged(bool datasetLoaded);
 	void dataAvailableChanged(bool dataAvailable);
 	void analysesAvailableChanged(bool analysesAvailable);
-
+	void welcomePageVisibleChanged(bool welcomePageVisible);
 
 private slots:
-	void welcomeScreenIsCleared(bool callDelayedLoad);
 	void resultsPageLoaded();
 	void showResultsPanel() { setDataPanelVisible(false); }
 
@@ -235,7 +237,6 @@ private:
 	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
-	FileEvent					*	_openEvent				= nullptr;
 
 	QSettings						_settings;
 
@@ -261,14 +262,14 @@ private:
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
 									_savingForClose			= false,
-									_progressShowsItself	= false;
+									_progressShowsItself	= false,
+									_welcomePageVisible		= true;
 
 	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles,
 									_iconInactiveFiles,
 									_iconDisabledFiles;
 	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
-
 };
 
 #endif // MAINWIDGET_H
