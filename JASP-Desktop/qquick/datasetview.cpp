@@ -6,6 +6,7 @@
 #include <queue>
 #include "timers.h"
 
+DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
 DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont(_font)
 {
@@ -34,6 +35,8 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadColumnHeaders);
 
 	setZ(10);
+
+	_lastInstancedDataSetView = this;
 }
 
 void DataSetView::setModel(QAbstractTableModel * model)
@@ -139,8 +142,8 @@ void DataSetView::calculateCellSizes()
 
 	_dataWidth = w;
 
-	setWidth(_dataWidth + extraColumnWidth());
-	setHeight( _dataRowsMaxHeight * (_model->rowCount() + 1));
+	setWidth(	_dataRowsMaxHeight + _dataWidth					);
+	setHeight(	_dataRowsMaxHeight * (_model->rowCount() + 1)	);
 	_recalculateCellSizes = false;
 
 	emit itemSizeChanged();
@@ -513,8 +516,6 @@ QQuickItem * DataSetView::createRowNumber(int row)
 {
 	//Log::log() << "createRowNumber("<<row<<") called!\n" << std::flush;
 
-
-
 	if(_rowNumberDelegate == nullptr)
 	{
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
@@ -736,6 +737,8 @@ void DataSetView::updateExtraColumnItem()
 	_extraColumnItem->setHeight(_dataRowsMaxHeight);
 	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width());
 	_extraColumnItem->setY(_viewportY);
+
+	connect(_extraColumnItem, &QQuickItem::widthChanged, [&](){	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width()); });
 }
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)

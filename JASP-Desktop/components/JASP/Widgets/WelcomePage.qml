@@ -160,7 +160,9 @@ FocusScope
 						verticalAlignment:	Text.AlignVCenter
 						color:				"#23a1df"
 						width:				80 * welcomeRoot.scaler
-						readOnly:			false
+						readOnly:			true
+						selectByKeyboard:	false
+						selectByMouse:		false
 						anchors
 						{
 							verticalCenter:	orangeDot.verticalCenter
@@ -178,7 +180,9 @@ FocusScope
 						verticalAlignment:	Text.AlignVCenter
 						color:				"black"
 						wrapMode:			TextEdit.Wrap
-						readOnly:			false
+						readOnly:			true
+						selectByKeyboard:	false
+						selectByMouse:		false
 						anchors
 						{
 							verticalCenter:	blueKeyword.verticalCenter
@@ -236,13 +240,15 @@ FocusScope
 
 			TextArea
 			{
-				id:			keepInMindBeta
-				text:		qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!")
-				font:		freshAndFunky.font
-				color:		"white"
-				width:		parent.widthOverflowers
-				wrapMode:	TextEdit.Wrap
-				readOnly:	true
+				id:					keepInMindBeta
+				text:				qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!")
+				font:				freshAndFunky.font
+				color:				"white"
+				width:				parent.widthOverflowers
+				wrapMode:			TextEdit.Wrap
+				readOnly:			true
+				selectByKeyboard:	false
+				selectByMouse:		false
 
 				anchors
 				{

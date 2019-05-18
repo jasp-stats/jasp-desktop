@@ -336,6 +336,8 @@ void MainWindow::loadQML()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+
+	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 }
 
 void MainWindow::initLog()

@@ -84,9 +84,10 @@ FocusScope
 
 	Flickable
 	{
-		id: myFlickable
+		id:				myFlickable
 
-		//anchors.fill: parent
+		clip:			true
+
 		anchors.top:	parent.top
 		anchors.left:	parent.left
 		anchors.right:	vertiScroller.left
@@ -95,17 +96,15 @@ FocusScope
 		contentWidth:	theView.width
 		contentHeight:	theView.height
 
-		clip: true
-
 		DataSetView
 		{
-			z: -1
-			id: theView
-			model: null
+			z:			-1
+			id:			theView
+			model:		null
 
-			viewportX:	myFlickable.visibleArea.xPosition * width
-			viewportY:	myFlickable.visibleArea.yPosition * height
-			viewportW:	myFlickable.visibleArea.widthRatio * width
+			viewportX:	myFlickable.visibleArea.xPosition   * width
+			viewportY:	myFlickable.visibleArea.yPosition   * height
+			viewportW:	myFlickable.visibleArea.widthRatio  * width
 			viewportH:	myFlickable.visibleArea.heightRatio * height
 		}
 	}

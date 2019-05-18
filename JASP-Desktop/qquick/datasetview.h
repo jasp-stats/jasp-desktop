@@ -29,30 +29,27 @@ struct ItemContextualized
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT
-	Q_PROPERTY( QAbstractTableModel * model READ model					WRITE setModel					NOTIFY modelChanged )
-	Q_PROPERTY( float itemHorizontalPadding READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )
-	Q_PROPERTY( float itemVerticalPadding	READ itemVerticalPadding	WRITE setItemVerticalPadding	NOTIFY itemVerticalPaddingChanged )
-
-	Q_PROPERTY( float viewportX				READ viewportX				WRITE setViewportX				NOTIFY viewportXChanged )
-	Q_PROPERTY( float viewportY				READ viewportY				WRITE setViewportY				NOTIFY viewportYChanged )
-	Q_PROPERTY( float viewportW				READ viewportW				WRITE setViewportW				NOTIFY viewportWChanged )
-	Q_PROPERTY( float viewportH				READ viewportH				WRITE setViewportH				NOTIFY viewportHChanged )
-
-	Q_PROPERTY( QQmlComponent * itemDelegate			READ itemDelegate			WRITE setItemDelegate			NOTIFY itemDelegateChanged )
-	Q_PROPERTY( QQmlComponent * rowNumberDelegate		READ rowNumberDelegate		WRITE setRowNumberDelegate		NOTIFY rowNumberDelegateChanged )
-	Q_PROPERTY( QQmlComponent * columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged )
-
-	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged )
-	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged )
-
-	Q_PROPERTY( QFont font	MEMBER _font NOTIFY fontChanged)
-
-	Q_PROPERTY( float headerHeight		READ headerHeight							NOTIFY headerHeightChanged )
-	Q_PROPERTY( float rowNumberWidth	READ rowNumberWidth							NOTIFY rowNumberWidthChanged )
+	Q_PROPERTY( QAbstractTableModel * model 			READ model					WRITE setModel					NOTIFY modelChanged					)
+	Q_PROPERTY( float itemHorizontalPadding 			READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )
+	Q_PROPERTY( float itemVerticalPadding				READ itemVerticalPadding	WRITE setItemVerticalPadding	NOTIFY itemVerticalPaddingChanged	)
+	Q_PROPERTY( float viewportX							READ viewportX				WRITE setViewportX				NOTIFY viewportXChanged				)
+	Q_PROPERTY( float viewportY							READ viewportY				WRITE setViewportY				NOTIFY viewportYChanged				)
+	Q_PROPERTY( float viewportW							READ viewportW				WRITE setViewportW				NOTIFY viewportWChanged				)
+	Q_PROPERTY( float viewportH							READ viewportH				WRITE setViewportH				NOTIFY viewportHChanged				)
+	Q_PROPERTY( QQmlComponent * itemDelegate			READ itemDelegate			WRITE setItemDelegate			NOTIFY itemDelegateChanged			)
+	Q_PROPERTY( QQmlComponent * rowNumberDelegate		READ rowNumberDelegate		WRITE setRowNumberDelegate		NOTIFY rowNumberDelegateChanged		)
+	Q_PROPERTY( QQmlComponent * columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged	)
+	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged		)
+	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged		)
+	Q_PROPERTY( QFont font								MEMBER _font												NOTIFY fontChanged					)
+	Q_PROPERTY( float headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
+	Q_PROPERTY( float rowNumberWidth					READ rowNumberWidth											NOTIFY rowNumberWidthChanged		)
 
 
 public:
 	DataSetView(QQuickItem *parent = nullptr);
+
+	static DataSetView * lastInstancedDataSetView() { return _lastInstancedDataSetView; }
 
 	QAbstractTableModel * model() { return _model; }
 	void setModel(QAbstractTableModel * model);
@@ -77,8 +74,8 @@ public:
 	GENERIC_SET_FUNCTION(ViewportW, _viewportW, viewportWChanged, float)
 	GENERIC_SET_FUNCTION(ViewportH, _viewportH, viewportHChanged, float)
 
-	void setItemHorizontalPadding(float newHorizontalPadding)	{ if(newHorizontalPadding != _itemHorizontalPadding)	{ _itemHorizontalPadding = newHorizontalPadding;	emit itemHorizontalPaddingChanged();	update(); }}
-	void setItemVerticalPadding(float newVerticalPadding)		{ if(newVerticalPadding != _itemVerticalPadding)		{ _itemVerticalPadding = newVerticalPadding;		emit itemVerticalPaddingChanged();		update(); }}
+	void setItemHorizontalPadding(float newHorizontalPadding)	{ if(newHorizontalPadding	!= _itemHorizontalPadding)	{ _itemHorizontalPadding	= newHorizontalPadding;		emit itemHorizontalPaddingChanged();	update(); }}
+	void setItemVerticalPadding(float newVerticalPadding)		{ if(newVerticalPadding		!= _itemVerticalPadding)	{ _itemVerticalPadding		= newVerticalPadding;		emit itemVerticalPaddingChanged();		update(); }}
 
 	void setRowNumberDelegate(QQmlComponent * newDelegate);
 	void setColumnHeaderDelegate(QQmlComponent * newDelegate);
@@ -118,6 +115,8 @@ signals:
 	void rowNumberWidthChanged();
 
 public slots:
+	void calculateCellSizes();
+
 	void aContentSizeChanged() { _recalculateCellSizes = true; }
 	void viewportChanged();
 	void myParentChanged(QQuickItem *);
@@ -126,7 +125,6 @@ public slots:
 	void reloadRowNumbers();
 	void reloadColumnHeaders();
 
-	void calculateCellSizes();
 
 	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)	{ calculateCellSizes(); }
 	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
@@ -217,6 +215,8 @@ protected:
 
 	std::map<size_t, std::map<size_t, unsigned char>>	_storedLineFlags;
 	std::map<size_t, std::map<size_t, QString>>			_storedDisplayText;
+
+	static DataSetView * _lastInstancedDataSetView;
 };
 
 
