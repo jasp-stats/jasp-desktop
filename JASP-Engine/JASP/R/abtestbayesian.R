@@ -25,7 +25,7 @@ ABTestBayesian <- function(
     ...
 ) {
 
-    # TODO:
+    # FIXME:
     # 3. Data reading function is inneficient
     # 4. Code repetition in plotting functions
 
@@ -53,7 +53,6 @@ ABTestBayesian <- function(
 
     # Read the selected columns
     if (options$n1 != "" && options$y1 != "" && options$n2 != "" && options$y2 != "") {
-        # FIXME: this function is inefficient. Read only the new columns.
         dataset <- .readData.abTest(perform, options)
     }
 
@@ -302,12 +301,13 @@ ABTestBayesian <- function(
     prior_par <- list(mu_psi = options$normal_mu, sigma_psi = options$normal_sigma, mu_beta = 0, sigma_beta = 1)
 
     # Normalize prior probabilities
-    sum_logor = options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob
+    sum_logor = options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob + options$orNotEqualTo1Prob
     orGreaterThan1Prob <- options$orGreaterThan1Prob / sum_logor
-    orLessThan1Prob <- options$orLessThan1Prob / sum_logor
-    orEqualTo1Prob <- options$orEqualTo1Prob / sum_logor
+    orLessThan1Prob    <- options$orLessThan1Prob / sum_logor
+    orEqualTo1Prob     <- options$orEqualTo1Prob / sum_logor
+    orNotEqualTo1Prob  <- options$orNotEqualTo1Prob / sum_logor
 
-    prior_prob <- c(0, orGreaterThan1Prob, orLessThan1Prob, orEqualTo1Prob)
+    prior_prob <- c(orNotEqualTo1Prob, orGreaterThan1Prob, orLessThan1Prob, orEqualTo1Prob)
     names(prior_prob) <- c("H1", "H+", "H-", "H0")
 
     ab <- try(abtest::ab_test(data = dataset, prior_par = prior_par, prior_prob = prior_prob,
@@ -352,10 +352,11 @@ ABTestBayesian <- function(
     # }
 
     # Normalize prior probabilities
-    sum_logor = options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob
+    sum_logor = options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob + options$orNotEqualTo1Prob
     orGreaterThan1Prob <- options$orGreaterThan1Prob / sum_logor
-    orLessThan1Prob <- options$orLessThan1Prob / sum_logor
-    orEqualTo1Prob <- options$orEqualTo1Prob / sum_logor
+    orLessThan1Prob    <- options$orLessThan1Prob / sum_logor
+    orEqualTo1Prob     <- options$orEqualTo1Prob / sum_logor
+    orNotEqualTo1Prob  <- options$orNotEqualTo1Prob / sum_logor
 
     output.rows <- list()
 
@@ -380,6 +381,15 @@ ABTestBayesian <- function(
         "P(M)" = .clean(orLessThan1Prob)
     )
 
+    if (orNotEqualTo1Prob > 0) {
+        output.rows[[4]] <- list(
+            "Models" = "Log odds ratio ≠ 0",
+            "BF" = .clean(ab_obj$bf[["bf10"]]),
+            "P(M|data)" = ab_obj$post_prob[["H1"]],
+            "P(M)" = .clean(orNotEqualTo1Prob)
+        )
+    }
+
     if (options$bayesFactorOrder == "bestModelTop") {
         ordered <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
 
@@ -387,6 +397,9 @@ ABTestBayesian <- function(
         ordered[[1]]$BF <- .clean(ordered[[1]]$BF / best_model_bf)
         ordered[[2]]$BF <- .clean(ordered[[2]]$BF / best_model_bf)
         ordered[[3]]$BF <- .clean(ordered[[3]]$BF / best_model_bf)
+        if (orNotEqualTo1Prob > 0) {
+            ordered[[4]]$BF <- .clean(ordered[[4]]$BF / best_model_bf)
+        }
 
         output.rows <- ordered
     }
@@ -395,12 +408,18 @@ ABTestBayesian <- function(
         output.rows[[1]]$BF <-.clean(1 / output.rows[[1]]$BF)
         output.rows[[2]]$BF <-.clean(1 / output.rows[[2]]$BF)
         output.rows[[3]]$BF <-.clean(1 / output.rows[[3]]$BF)
+        if (orNotEqualTo1Prob > 0) {
+            output.rows[[4]]$BF <-.clean(1 / output.rows[[4]]$BF)
+        }
 
         # output.rows <- lapply(output.rows, function(x) {x$BF <- .clean(1 / x$BF); return(x)})
     } else if (options$bayesFactorType == "LogBF10") {
         output.rows[[1]]$BF <-.clean(base::log(output.rows[[1]]$BF))
         output.rows[[2]]$BF <-.clean(base::log(output.rows[[2]]$BF))
         output.rows[[3]]$BF <-.clean(base::log(output.rows[[3]]$BF))
+        if (orNotEqualTo1Prob > 0) {
+            output.rows[[4]]$BF <-.clean(base::log(output.rows[[4]]$BF))
+        }
     }
 
     # Add footnotes if necessary
@@ -423,8 +442,6 @@ ABTestBayesian <- function(
     #   List with completed descriptives table; may be inserted in results as is
 
     descriptives <- list()
-    print("status")
-    print(status)
     descriptives[["title"]] <- "Descriptives"
 
     fields <- list(
@@ -521,6 +538,8 @@ ABTestBayesian <- function(
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
     if (!(status$ready && perform == "run")) {
+        emptyPlot[["title"]]  <- title
+        emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)
     }
 
@@ -583,6 +602,8 @@ ABTestBayesian <- function(
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
     if (!(perform == "run")) {
+        emptyPlot[["title"]]  <- title
+        emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)
     }
 
@@ -644,6 +665,8 @@ ABTestBayesian <- function(
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
     if (!(status$ready && perform == "run")) {
+        emptyPlot[["title"]]  <- title
+        emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)
     }
 
