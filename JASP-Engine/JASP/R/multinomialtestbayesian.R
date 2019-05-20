@@ -17,7 +17,7 @@
 
 
 MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
-print("hoi")
+
   dataset            <- .multinomialBayesReadData(dataset, options)
 
   .multinomialBayesCheckErrors(dataset, options)
@@ -300,9 +300,7 @@ print("hoi")
       descriptivesTable$addFootnote(message = paste0("Could not compute ", tolower(ciColumnName), 's.'))
     }
   } 
-
-
-
+  
   descriptivesTable$setData(descDF)
 }
 
@@ -344,7 +342,7 @@ print("hoi")
   
   ciDf   <- data.frame(lowerCI = NA, upperCI = NA)
   for(i in seq_along(counts)){
-    # return results on count scale. If function crashes, return table with NA's
+    # return results on count scale. If function crashes, return table with NaN's
     tryCatch(binomResult <- binom.test(counts[i], N, conf.level = CI)$conf.int * div, 
              error = function(e) {binomResult <<- errorReturn})
     ciDf[i, ] <- binomResult
@@ -368,7 +366,6 @@ print("hoi")
   # Define custom y axis function
   base_breaks_y <- function(x){
     b <- pretty(c(0,x))
-    print(b)
     d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
     list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y,
                                                     xend=xend, yend=yend),
