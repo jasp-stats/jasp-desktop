@@ -45,7 +45,15 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 	bool isNumber;
 	double value = locale().toDouble(s, &isNumber);
 	if (!isNumber)
-		return QValidator::Invalid;
+	{
+		if (s.length() == 1 && s[0] == point)
+		{
+			isNumber = true;
+			value = 0;
+		}
+		else
+			return QValidator::Invalid;
+	}
 
 	bool isMaxExclusive = _inclusive == qmlInclusiveType::No || _inclusive == qmlInclusiveType::MinOnly;
 	bool isMinExclusive = _inclusive == qmlInclusiveType::No || _inclusive == qmlInclusiveType::MaxOnly;
