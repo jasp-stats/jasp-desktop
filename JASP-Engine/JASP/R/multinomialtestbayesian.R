@@ -17,7 +17,7 @@
 
 
 MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
-
+print("hoi")
   dataset            <- .multinomialBayesReadData(dataset, options)
 
   .multinomialBayesCheckErrors(dataset, options)
@@ -96,23 +96,25 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   factorVariable <- multinomialResults$specs$factorVariable
   countVariable  <- multinomialResults$specs$countVariable
   fact           <- dataset[[.v(factorVariable)]]
-  fact           <- as.factor(fact[!is.na(fact)])
+  fact           <- as.factor(fact)
   nlev           <- nlevels(fact)
   prior          <- options$priorCounts[[1]]
   a              <- setNames(prior$values, prior$levels)
 
-  # If applicable, convert counts variable to factor
-  if (!is.null(countVariable)) {
-    counts <- dataset[[.v(countVariable)]]
-    counts <- counts[!is.na(counts)]
-    # Check for invalid counts
+  if (options$counts != "") {
+    counts <- dataset[[.v(options$counts)]]
+    # omit count entries for which factor variable is NA
+    counts <- counts[!is.na(fact)]
+    # check for invalid counts
     .checkCountsMultinomial(counts, nlev)
-    fact <- factor(rep(fact, counts), levels = levels(fact))
+    dataTable        <- counts
+    names(dataTable) <- levels(fact)
+  } else {
+    dataTable <- table(fact)
   }
 
   # Determine observed counts and factor levels
-  t <- table(fact)
-  N <- sum(t)
+  N <- sum(dataTable)
 
   # Extract hypotheses
   hyps  <- .multinomialHypotheses(dataset, options, nlev) # exact equality constraints
@@ -123,28 +125,28 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   multinomialResults$mainTable <- vector('list', length = nhyps)
 
   for(h in 1:nhyps){
-    multinomialResults$mainTable[[nms[h]]] <- .multBayesBfEquality(alphas = a, counts = t, thetas = hyps[[h]])
+    multinomialResults$mainTable[[nms[h]]] <- .multBayesBfEquality(alphas = a, counts = dataTable, thetas = hyps[[h]])
   }
 
   multinomialResults$mainTable[["prior"]]   <- a
   multinomialResults$mainTable[["levels"]]  <- levels(fact)
-  multinomialResults$mainTable[["nlevels"]] <- length(levels(fact))
+  multinomialResults$mainTable[["nlevels"]] <- nlev
   multinomialResults$mainTable[["hypNames"]]<- nms
   multinomialResults$mainTable[["nhyps"]]   <- nhyps
 
   #  Results for descriptives plot
-  multinomialResults$descriptivesPlot[["descProps"]]  <- .multComputeCIs(t, options$descriptivesPlotCredibleInterval)
+  multinomialResults$descriptivesPlot[["descProps"]]  <- .multComputeCIs(dataTable, options$descriptivesPlotCredibleInterval, ifErrorReturn = 0, scale = 'descProbs')
   multinomialResults$descriptivesPlot[["descCounts"]] <- multinomialResults$descriptivesPlot[["descProps"]] * N
-  multinomialResults$descriptivesPlot[["descProps"]][["observed"]]  <- as.numeric(t)/N
-  multinomialResults$descriptivesPlot[["descCounts"]][["observed"]] <- as.numeric(t)
+  multinomialResults$descriptivesPlot[["descProps"]][["observed"]]  <- as.numeric(dataTable)/N
+  multinomialResults$descriptivesPlot[["descCounts"]][["observed"]] <- as.numeric(dataTable)
   multinomialResults$descriptivesPlot[["descProps"]][["fact"]]  <- levels(fact)
   multinomialResults$descriptivesPlot[["descCounts"]][["fact"]] <- levels(fact)
 
   # Results for descriptives table
   multinomialResults$descriptivesTable[["descProps"]][["fact"]]      <- levels(fact)
   multinomialResults$descriptivesTable[["descCounts"]][["fact"]]     <- levels(fact)
-  multinomialResults$descriptivesTable[["descProps"]][["observed"]]  <- as.numeric(t)/N
-  multinomialResults$descriptivesTable[["descCounts"]][["observed"]] <- as.numeric(t)
+  multinomialResults$descriptivesTable[["descProps"]][["observed"]]  <- as.numeric(dataTable)/N
+  multinomialResults$descriptivesTable[["descCounts"]][["observed"]] <- as.numeric(dataTable)
 
   for(h in 1:nhyps) {
     multinomialResults$descriptivesTable[["descProps"]][[nms[h]]]    <- multinomialResults$mainTable[[nms[h]]]$expected/N
@@ -153,8 +155,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   multinomialResults$descriptivesTable[["descProps"]]    <- setNames(as.data.frame(multinomialResults$descriptivesTable[["descProps"]]), c("fact", "observed", nms))
   multinomialResults$descriptivesTable[["descCounts"]]   <- setNames(as.data.frame(multinomialResults$descriptivesTable[["descCounts"]]), c("fact", "observed", nms))
-  multinomialResults$descriptivesTable[["descPropsCI"]]  <- .multComputeCIs(t, options$credibleIntervalInterval)
-  multinomialResults$descriptivesTable[["descCountsCI"]] <- .multComputeCIs(t, options$credibleIntervalInterval) * N
+  multinomialResults$descriptivesTable[["descPropsCI"]]  <- .multComputeCIs(dataTable, options$credibleIntervalInterval, scale = "descProbs")
+  multinomialResults$descriptivesTable[["descCountsCI"]] <- .multComputeCIs(dataTable, options$credibleIntervalInterval, scale = "descCounts") 
 
   # Save results to state
   defaultOptions <- multinomialResults$specs$defaultOptions
@@ -287,15 +289,20 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   descDF <- multinomialResults[["descriptivesTable"]][[options$countProp]]
   if(options$countProp == "descCounts"){
     descDF[nms] <- round(descDF[nms])
-    descDF[nms] <- apply(descDF[nms], 2, as.integer)
   }
 
   if(ciRequested){
     ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
     descDF <- cbind(descDF, ciInfo)
     descriptivesTable$addFootnote(message = tableFootnote, symbol = "<em>Note.</em>")
+    
+    if (any(is.nan(unlist(descDF[, c('lowerCI', 'upperCI')])))){
+      descriptivesTable$addFootnote(message = paste0("Could not compute ", tolower(ciColumnName), 's.'))
+    }
   } 
-  
+
+
+
   descriptivesTable$setData(descDF)
 }
 
@@ -322,26 +329,29 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-#' Helper function - compute credible interval
+#' Helper function - compute credible interval based on independent binomial distributions with flat Beta priors
 #'
 #' @param counts
-#' @param credibleInterval
+#' @param CI
 #'
-#' @return credibleIntervals credible intervals as data frame
-.multComputeCIs <- function(counts, credibleInterval) {
+#' @return ciDf credible/confidence intervals as data frame
+.multComputeCIs <- function(counts, CI, ifErrorReturn = NaN, scale) {
 
-  # based on marginal beta distributions with uniform Dirichlet prior 
-  N             <- sum(counts)
-
-  credibleIntervals           <- matrix(NA, ncol = 2, nrow = length(counts))
-  colnames(credibleIntervals) <- c('lowerCI', 'upperCI')
+  # set function behaviour, if analysis crashes
+  errorReturn <- rep(ifErrorReturn, 2)
+  div         <- ifelse(scale == 'descCounts', sum(counts), 1)
+  N           <- sum(counts)
+  
+  ciDf   <- data.frame(lowerCI = NA, upperCI = NA)
   for(i in seq_along(counts)){
-   # credible intervals are identical to frequentist confidence intervals
-    credibleIntervals[i, ] <- (binom.test(counts[i], N, conf.level = credibleInterval))$conf.int
+    # return results on count scale. If function crashes, return table with NA's
+    tryCatch(binomResult <- binom.test(counts[i], N, conf.level = CI)$conf.int * div, 
+             error = function(e) {binomResult <<- errorReturn})
+    ciDf[i, ] <- binomResult
   }
-  return(as.data.frame(credibleIntervals))
+  
+  return(ciDf)
 }
-
 
 #' Helper function - Generate descriptives plot
 #'
@@ -358,6 +368,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   # Define custom y axis function
   base_breaks_y <- function(x){
     b <- pretty(c(0,x))
+    print(b)
     d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
     list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y,
                                                     xend=xend, yend=yend),
@@ -377,6 +388,13 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   plotFrame <- multinomialResults[["descriptivesPlot"]][[options$countProp]]
   # We need to reverse the factor's levels because of the coord_flip later
   plotFrame$fact <- factor(plotFrame$fact, levels = rev(plotFrame$fact))
+  
+  # Determine y-axis margin: If CIs could not be computed, use observed counts
+  if(all(plotFrame[['upperCI']] == '0')){
+    plotFrame$yAxisMargin <- plotFrame[["observed"]]
+  } else {
+    plotFrame$yAxisMargin <- plotFrame[["upperCI"]]
+  } 
 
   # Create plot
   p <- ggplot2::ggplot(data = plotFrame,
@@ -386,7 +404,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     ggplot2::geom_errorbar(ggplot2::aes(ymin = plotFrame[["lowerCI"]],
                                         ymax = plotFrame[["upperCI"]]),
                            size = 0.75, width = 0.3) +
-    base_breaks_y(plotFrame[["upperCI"]]) +
+    base_breaks_y(plotFrame$yAxisMargin) +
     ggplot2::xlab(factorVariable) +
     ggplot2::ylab(yname) +
     ggplot2::coord_flip()

@@ -162,20 +162,21 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
 
   if (perform == "run" && !is.null(fact)) {
     # first determine the hypotheses
-    f    <- dataset[[.v(fact)]]
-    f    <- as.factor(f[!is.na(f)])
-    nlev <- nlevels(f)
+    factorVariable <- dataset[[.v(fact)]]
+    factorVariable <- as.factor(factorVariable)
+    nlev <- nlevels(factorVariable)
 
     if (options$counts != "") {
-      # convert to "regular" fact
-      c <- dataset[[.v(options$counts)]]
-      c <- c[!is.na(c)]
-      # Check for invalid counts
-      .checkCountsMultinomial(c, nlev)
-      f <- factor(rep(f, c), levels = levels(f))
+      counts <- dataset[[.v(options$counts)]]
+      # omit count entries for which factor variable is NA
+      counts <- counts[!is.na(factorVariable)]
+      # check for invalid counts
+      .checkCountsMultinomial(counts, nlev)
+      dataTable        <- counts
+      names(dataTable) <- levels(factorVariable)
+    } else {
+      dataTable <- table(factorVariable)
     }
-
-    t <- table(f)
 
     hyps <- .multinomialHypotheses(dataset, options, nlev)
 
@@ -185,7 +186,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
       csr <- NULL
       warn <- NULL
       csr <- withCallingHandlers(
-        chisq.test(x = t, p = h, rescale.p = TRUE,
+        chisq.test(x = dataTable, p = h, rescale.p = TRUE,
                    simulate.p.value = options$simulatepval),
         warning = function(w) {
          warn <<- w$message
@@ -405,12 +406,12 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
 
     tableFrame <- data.frame(
       factor = names(chisqResults[[1]][["observed"]]),
-      observed = as.integer(chisqResults[[1]][["observed"]])/div,
+      observed = chisqResults[[1]][["observed"]]/div,
       stringsAsFactors = FALSE
     )
 
     for (r in chisqResults){
-      tableFrame <- cbind(tableFrame, as.integer(r[["expected"]])/div)
+      tableFrame <- cbind(tableFrame, r[["expected"]]/div)
     }
 
     if (length(nms) == 1) {
@@ -419,19 +420,14 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
       colnames(tableFrame)[-(1:2)] <- nms
     }
 
-    # Add confidenceInterval
+    # Add confidenceInterval to the tableFrame
     if (options$confidenceInterval){
-      n <- sum(chisqResults[[1]][["observed"]])
-      # make a list of cis
-      ci <- lapply(chisqResults[[1]][["observed"]], function(l) {
-        bt <- binom.test(l,n,conf.level = options$confidenceIntervalInterval)
-        return(bt$conf.int * n) # on the count scale
-      })
-
-      # add these to the tableFrame
-      ciDf <- t(data.frame(ci))
-      colnames(ciDf) <- c("lowerCI", "upperCI")
-      tableFrame <- cbind(tableFrame, ciDf/div)
+      ciDf       <- .multComputeCIs(chisqResults[[1]][["observed"]], options$confidenceIntervalInterval, 
+                                    scale = options$countProp)
+      tableFrame <- cbind(tableFrame, ciDf)
+      if (any(is.nan(unlist(tableFrame[, c('lowerCI', 'upperCI')])))){
+        .addFootnote(footnotes, symbol = "<em>Note.</em>", "Could not compute confidence intervals.")
+      }
     }
 
     rows <- list()
@@ -488,14 +484,11 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     )
 
     # Calculate confidence interval
-    cl <- options$descriptivesPlotConfidenceInterval
-    n <- sum(chisqResults[[1]][["observed"]])
-    ci <- lapply(chisqResults[[1]][["observed"]], function(l) {
-      bt <- binom.test(l, n, conf.level = cl)
-      return(bt$conf.int * n) # on the count scale
-    })
-    ciDf <- data.frame(t(data.frame(ci)))/div
-    colnames(ciDf) <- c("lowerCI", "upperCI")
+    if (options$descriptivesPlotConfidenceInterval){
+      ciDf       <- .multComputeCIs(chisqResults[[1]][["observed"]], options$descriptivesPlotConfidenceInterval, 
+                                    ifErrorReturn = 0, scale = options$countProp)
+      plotFrame  <- cbind(plotFrame, ciDf)
+    }
 
     # Define custom y axis function
     base_breaks_y <- function(x){
@@ -508,6 +501,13 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
            ggplot2::scale_y_continuous(breaks=b))
     }
 
+    # Determine y-axis margin: If CIs could not be computed, use observed counts
+    if(all(plotFrame[['upperCI']] == '0')){
+      plotFrame$yAxisMargin <- plotFrame[["obs"]]
+    } else {
+      plotFrame$yAxisMargin <- plotFrame[["upperCI"]]
+    } 
+
     # Create plot
     p <- ggplot2::ggplot(data = plotFrame,
                          mapping = ggplot2::aes(x = factor, y = obs)) +
@@ -516,7 +516,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
       ggplot2::geom_errorbar(ggplot2::aes(ymin = ciDf$lowerCI,
                                           ymax = ciDf$upperCI),
                              size = 0.75, width = 0.3) +
-      base_breaks_y(ciDf$upperCI) +
+      base_breaks_y(plotFrame$yAxisMargin) +
       ggplot2::xlab(options$factor) +
       ggplot2::ylab(yname)
 
@@ -631,6 +631,9 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     variable <- "Invalid counts: "
   }
 
+  # discard missing values
+  counts <- counts[!is.na(counts)]
+
   if (nlevels != length(counts)) {
     .quitAnalysis(paste0(variable, "variable does not match the number of levels of factor."))
   }
@@ -646,10 +649,5 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   # only applies for observed counts, expected counts can be proportions
   if (!expectedCounts && !all(counts == round(counts))) {
     .quitAnalysis(paste0(variable, "variable must contain only integer values."))
-  }
-
-  # a vector which is too big, ittakes up too much memory
-  if (sum(counts > 6e8)) {
-    .quitAnalysis(paste0(variable, "vector is too big."))
   }
 }
