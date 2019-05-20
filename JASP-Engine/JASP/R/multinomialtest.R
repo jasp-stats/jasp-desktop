@@ -502,11 +502,12 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     }
 
     # Determine y-axis margin: If CIs could not be computed, use observed counts
-    if(all(plotFrame[['upperCI']] == '0')){
-      plotFrame$yAxisMargin <- plotFrame[["obs"]]
-    } else {
-      plotFrame$yAxisMargin <- plotFrame[["upperCI"]]
-    } 
+    plotFrame$yAxisMargin <- plotFrame$upperCI
+    for(i in 1:nrow(plotFrame)){
+      if(plotFrame$upperCI[i] == '0'){
+        plotFrame$yAxisMargin[i] <- plotFrame$obs[i]
+      }   
+    }
 
     # Create plot
     p <- ggplot2::ggplot(data = plotFrame,
@@ -588,7 +589,6 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     # use only exProbVar
     fact <- dataset[[.v(options$factor)]]
     eProps <- data.frame(dataset[[.v(options$exProbVar)]])
-    rownames(eProps) <- fact
 
     # Reorder to match factor levels
     eProps           <- data.frame(eProps[levels(fact),])

@@ -390,11 +390,12 @@ print("hoi")
   plotFrame$fact <- factor(plotFrame$fact, levels = rev(plotFrame$fact))
   
   # Determine y-axis margin: If CIs could not be computed, use observed counts
-  if(all(plotFrame[['upperCI']] == '0')){
-    plotFrame$yAxisMargin <- plotFrame[["observed"]]
-  } else {
-    plotFrame$yAxisMargin <- plotFrame[["upperCI"]]
-  } 
+  plotFrame$yAxisMargin <- plotFrame$upperCI
+  for(i in 1:nrow(plotFrame)){
+    if(plotFrame$upperCI[i] == '0'){
+      plotFrame$yAxisMargin[i] <- plotFrame$obs[i]
+    }   
+  }
 
   # Create plot
   p <- ggplot2::ggplot(data = plotFrame,
