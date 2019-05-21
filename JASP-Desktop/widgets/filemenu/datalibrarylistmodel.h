@@ -17,7 +17,7 @@ public:
 	void setBreadCrumbsListModel (DataLibraryBreadCrumbsListModel *dataLibraryBreadCrumbsModel);
 
 signals:
-	void openFile(FileEvent *event);
+	void openFileEvent(FileEvent *event);
 
 public slots:
 	void changePath(const QString& name, const QString& path) override;

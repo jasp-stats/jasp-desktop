@@ -2,6 +2,7 @@
 #include <QXmlStreamReader>
 #include <stack>
 #include <iostream>
+#include "log.h"
 
 namespace resultXmlCompare
 {
@@ -47,7 +48,7 @@ result compareResults::convertXmltoResultStruct(const QString &  resultXml)
 {
 	QXmlStreamReader xml(resultXml);
 
-	enum class stateType { nothing, result, table, head, body, foot, row, headercell, bodycell };
+	enum class stateType { nothing, result, table, head, body, foot, row, headercell, bodycell, h2 };
 
 	typedef QXmlStreamReader::TokenType ttype;
 	typedef std::stack<stateType>		typeStack;
@@ -152,16 +153,27 @@ result compareResults::convertXmltoResultStruct(const QString &  resultXml)
 
 				curBlock()->curRow().genBodyCell();
 			}
+
+			if(elementName == "h2")
+				levels.push(stateType::h2);
 			break;
 		}
 
 		case ttype::Characters:
-			if(!xml.isWhitespace() && (topIs(stateType::headercell) || topIs(stateType::bodycell)))
+			if(!xml.isWhitespace())
 			{
-				tableBlock * curBlk = curBlock();
-				curBlk->curRow().curCell().addToValue(xml.text().toString().trimmed().toStdString());
-			}
+				std::string text(xml.text().toString().trimmed().toStdString());
 
+				if(topIs(stateType::h2))
+					if(text == "error")
+						res.setError();
+
+				if(topIs(stateType::headercell) || topIs(stateType::bodycell))
+				{
+					tableBlock * curBlk = curBlock();
+					curBlk->curRow().curCell().addToValue(text);
+				}
+			}
 			break;
 
 		case ttype::EndElement:
@@ -216,6 +228,13 @@ result compareResults::convertXmltoResultStruct(const QString &  resultXml)
 					std::cerr << "found end of table " << curLinePos() << " outside of table!" << std::endl;
 				levels.pop();
 			}
+
+			if(elementName == "h2")
+			{
+				if(!topIs(stateType::h2))
+					std::cerr << "found end of h2 " << curLinePos() << " outside of h2" << std::endl;
+				levels.pop();
+			}
 			break;
 		}
 
@@ -256,11 +275,14 @@ bool compareResults::compare(const QString & resultOld, const QString & resultNe
 
 	succes = oldRes == newRes;
 
-	std::cerr << "The results are " << (succes ? "the same!" : "different...") << std::endl;
+	std::stringstream compareConclusion;
+	compareConclusion << "The results are " << (succes ? "the same!" : "different...") << "\n";
 
 	if(!succes)
-		std::cerr << oldRes.diffToString(newRes) << std::endl;
+		compareConclusion << oldRes.diffToString(newRes) << "\n";
 
+	std::cerr  << compareConclusion.str() << std::endl;
+	Log::log() << compareConclusion.str();
 	return succes;
 }
 

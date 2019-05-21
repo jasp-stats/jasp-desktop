@@ -418,9 +418,10 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 
 	xName <- ifelse(Rotation == "none", "PC", "RC")
 
-	pathDiagram$width <- options$plotWidthPathDiagram
-	pathDiagram$height <- options$plotHeightPathDiagram
-	if (pathDiagram$height==0) {
+	pathDiagram$width <- 480
+	if (length(options$variables) < 2) {
+		pathDiagram$height <- 300
+	} else {
 		pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
 	}
 	pathDiagram$custom <- list(width="plotWidthPathDiagram", height="plotHeightPathDiagram")

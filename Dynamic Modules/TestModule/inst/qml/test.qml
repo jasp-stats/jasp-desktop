@@ -23,17 +23,6 @@ import JASP.Widgets 1.0
 Form {
     id: form
 
-    Rectangle
-    {
-        color: "yellow"
-        width: 100
-        height: width
-        Text{
-            text: "Tsja"
-            color: "purple"
-            font.pixelSize: 40
-        }
-    }
 
     CheckBox
     {

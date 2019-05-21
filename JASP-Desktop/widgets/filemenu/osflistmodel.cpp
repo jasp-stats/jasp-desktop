@@ -22,7 +22,7 @@ void OSFListModel::setFSBModel(OSFFileSystem *model)
 	
 	_model		= model;
 	_fsbmOSF	= model;
-	_fsbmOSF->refresh();
+	//_fsbmOSF->refresh();
 	
 	endResetModel();
 }

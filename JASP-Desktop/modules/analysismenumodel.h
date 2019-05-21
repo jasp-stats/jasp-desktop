@@ -37,7 +37,8 @@ public:
 		AnalysisFunctionRole,
 		MenuImageSourceRole,
 		IsSeparatorRole,
-		isGroupTitleRole
+		isGroupTitleRole,
+		IsEnabledRole
 	};
 
 	AnalysisMenuModel(RibbonButton *parent);
@@ -50,11 +51,11 @@ public:
 	std::vector<Modules::AnalysisEntry*>	getAnalysisEntries()														{	return _analysisEntries;			}
 	Modules::AnalysisEntry*					getAnalysisEntry(const std::string& name);
 
-	Q_INVOKABLE QString						getFirstAnalysisName()														{	return QString::fromStdString(_analysisEntries.at(0)->function());	}
+	Q_INVOKABLE QString						getFirstAnalysisFunction()													{	return QString::fromStdString(_analysisEntries.at(0)->function());	}
 	Q_INVOKABLE QString						getFirstAnalysisTitle()														{	return QString::fromStdString(_analysisEntries.at(0)->title());	}
-	Q_INVOKABLE QString						getAnalysisName(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
+	Q_INVOKABLE QString						getAnalysisFunction(int index)								const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
 	Q_INVOKABLE QString						getAnalysisTitle(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->title());	}
-	Q_INVOKABLE bool						hasIcons()												const				{	return _hasIcons; }
+	Q_INVOKABLE bool						hasIcons()													const			{	return _hasIcons; }
 
 private:
 	Modules::AnalysisEntries	_analysisEntries;

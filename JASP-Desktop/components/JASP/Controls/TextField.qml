@@ -46,7 +46,7 @@ JASPControl
 	property alias	controlLabel:		beforeLabel
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
-	property int	labelSpacing:		4 * preferencesModel.uiScale
+
 	property double controlXOffset:		0
 
 	signal editingFinished()
@@ -80,7 +80,7 @@ JASPControl
 	RowLayout
 	{
 		id:			row
-		spacing:	labelSpacing
+		spacing:	Theme.labelSpacing
 		
 		Rectangle
 		{
@@ -105,10 +105,10 @@ JASPControl
 			font:					Theme.font
 			focus:					true
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
-			Layout.leftMargin:		beforeLabel.text ? controlXOffset : -labelSpacing
+			Layout.leftMargin:		beforeLabel.text ? controlXOffset : -Theme.labelSpacing
 			
 			padding:				Theme.jaspControlPadding
-			leftPadding:			labelSpacing
+			leftPadding:			Theme.labelSpacing
 			selectByMouse:			true
 			background: Rectangle
 			{

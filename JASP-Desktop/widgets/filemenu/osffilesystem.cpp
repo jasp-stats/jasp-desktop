@@ -30,8 +30,12 @@
 
 #include "filesystementry.h"
 #include "osf/onlinedatamanager.h"
+#include "osf/onlineusernodeosf.h"
+#include "widgets/filemenu/osf.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
+#include <gui/messageforwarder.h>
+#include <iostream>
 
 const QString OSFFileSystem::rootelementname = "Projects";
 
@@ -71,13 +75,25 @@ void OSFFileSystem::attemptToConnect()
 	if ( _isAuthenticated == false && _dataManager != NULL )
 	{
 		emit processingEntries();
-		bool authsuccess = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
-		setAuthenticated(authsuccess);
-		if (!authsuccess)
-			emit entriesChanged();
+
+		OnlineUserNodeOSF *userNode = (OnlineUserNodeOSF *)_dataManager->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+		userNode->login();
+		connect(userNode, &OnlineUserNodeOSF::authenticationResult, this, &OSFFileSystem::handleAuthenticationResult);
 	}
-	
+	else emit stopProcessing();
+}
+
+void OSFFileSystem::handleAuthenticationResult(bool authsuccess)
+{
+	setAuthenticated(authsuccess);
+	if (!authsuccess)
+		emit entriesChanged();
 	emit stopProcessing();
+}
+
+void OSFFileSystem::updateAuthentication(bool authenticated)
+{
+	setAuthenticated(authenticated);
 }
 
 
@@ -86,43 +102,19 @@ bool OSFFileSystem::requiresAuthentication() const
 	return true;
 }
 
-void OSFFileSystem::authenticate(const QString &username, const QString &password)
-{
-	bool success = false;
-
-	if (_dataManager && username!="")
-	{
-		_dataManager->saveUsername(OnlineDataManager::OSF, username);
-
-		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
-
-		success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
-
-		if (success)
-			_dataManager->savePassword(OnlineDataManager::OSF, password);
-		else
-			_dataManager->removePassword(OnlineDataManager::OSF);
-	}
-
-
-	Settings::sync();
-
-	setAuthenticated(success);
-}
-
 void OSFFileSystem::setAuthenticated(bool value)
 {
 	if (value)
 	{
 		_isAuthenticated = true;
-		emit authenticationSuccess();
+		emit authenticationSucceeded();
 		refresh();
 	}
 	else
 	{
 		emit stopProcessing();
 		_isAuthenticated = false;
-		emit authenticationFail("Username and/or password are not correct. Please try again.");		
+		emit authenticationFailed("Username and/or password are not correct. Please try again.");
 	}
 }
 
@@ -181,7 +173,12 @@ void OSFFileSystem::parseProjects(QUrl url, bool recursive) {
 
 	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), this, SLOT(gotProjects()));
+	connect(reply, &QNetworkReply::finished, this, &OSFFileSystem::gotProjects);
+}
+
+void OSFFileSystem::handleNetworkReplyError(QNetworkReply* reply)
+{
+	OSF::checkErrorMessageOSF(reply);
 }
 
 void OSFFileSystem::gotProjects()
@@ -242,8 +239,12 @@ void OSFFileSystem::gotProjects()
 		else
 			emit entriesChanged();
 	}
-
-
+	else
+	{
+		handleNetworkReplyError(reply);
+		emit newLoginRequired();
+		emit stopProcessing();
+	}
 
 	reply->deleteLater();
 }
@@ -264,7 +265,7 @@ void OSFFileSystem::parseFilesAndFolders(QUrl url, int level, bool recursive)
 
 	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), this, SLOT(gotFilesAndFolders()));
+	connect(reply, &QNetworkReply::finished, this, &OSFFileSystem::gotFilesAndFolders);
 }
 
 void OSFFileSystem::gotFilesAndFolders()
@@ -376,7 +377,12 @@ void OSFFileSystem::gotFilesAndFolders()
 			parseFilesAndFolders(QUrl(nextContentList.toString()), _level + 1, true);
 		else
 			finished = true;
-
+	}
+	else
+	{
+		handleNetworkReplyError(reply);
+		emit newLoginRequired();
+		emit stopProcessing();
 	}
 
 	if (finished)
@@ -384,6 +390,7 @@ void OSFFileSystem::gotFilesAndFolders()
 
 	reply->deleteLater();
 }
+
 
 QString OSFFileSystem::getRelationshipUrl(QJsonObject nodeObject, QString name)
 {

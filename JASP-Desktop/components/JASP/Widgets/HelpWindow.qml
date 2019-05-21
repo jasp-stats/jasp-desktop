@@ -14,9 +14,10 @@ Window
 
 	WebEngineView
 	{
-		id:				helpView
-		url:			helpModel.indexURL()
-		anchors.fill:	parent
+		id:						helpView
+		url:					helpModel.indexURL()
+		anchors.fill:			parent
+		onNavigationRequested:	request.action = request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == helpModel.indexURL() ? WebEngineNavigationRequest.AcceptRequest : WebEngineNavigationRequest.IgnoreRequest
 
 		Connections
 		{

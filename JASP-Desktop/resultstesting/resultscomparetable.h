@@ -106,8 +106,12 @@ public:
 	std::string	toString() const;
 	std::string	diffToString(const result & other) const;
 
+	bool		hasError() { return _error; }
+	void		setError() { _error = true; }
+
 private:
 	tables		resultTables;
+	bool		_error = false;
 };
 
 

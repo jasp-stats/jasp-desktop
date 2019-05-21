@@ -1,8 +1,9 @@
-import "qrc:/components/JASP/Controls/"
-import QtQuick 2.9
-import QtQuick.Window 2.3
-import QtQuick.Controls 2.2
-import JASP 1.0
+import QtQuick			2.9
+import QtQuick.Window	2.3
+import QtQuick.Controls	2.2
+import JASP.Theme		1.0
+import JASP.Controls	1.0
+import JASP				1.0
 
 FocusScope
 {
@@ -83,9 +84,10 @@ FocusScope
 
 	Flickable
 	{
-		id: myFlickable
+		id:				myFlickable
 
-		//anchors.fill: parent
+		clip:			true
+
 		anchors.top:	parent.top
 		anchors.left:	parent.left
 		anchors.right:	vertiScroller.left
@@ -94,19 +96,15 @@ FocusScope
 		contentWidth:	theView.width
 		contentHeight:	theView.height
 
-		//flickDeceleration: 4000
-
-		clip: true
-
 		DataSetView
 		{
-			z: -1
-			id: theView
-			model: null
+			z:			-1
+			id:			theView
+			model:		null
 
-			viewportX:	myFlickable.visibleArea.xPosition * width
-			viewportY:	myFlickable.visibleArea.yPosition * height
-			viewportW:	myFlickable.visibleArea.widthRatio * width
+			viewportX:	myFlickable.visibleArea.xPosition   * width
+			viewportY:	myFlickable.visibleArea.yPosition   * height
+			viewportW:	myFlickable.visibleArea.widthRatio  * width
 			viewportH:	myFlickable.visibleArea.heightRatio * height
 		}
 	}

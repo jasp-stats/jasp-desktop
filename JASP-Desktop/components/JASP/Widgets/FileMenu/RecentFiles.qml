@@ -13,6 +13,11 @@ Item
 	{
 		id:					menuHeader
 		headertext:			qsTr("Recent Files")
+		anchors
+		{
+			top:			parent.top
+			margins:		Theme.generalMenuMargin
+		}
 	}
 
 

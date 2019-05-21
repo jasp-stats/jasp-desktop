@@ -42,17 +42,6 @@ OnlineDataManager::~OnlineDataManager()
 {
 }
 
-bool OnlineDataManager::authenticationSuccessful(OnlineDataManager::Provider provider) const
-{
-	if (_authList.contains(provider) == false)
-		return false;
-
-	if (provider == OnlineDataManager::OSF)
-		return OnlineUserNodeOSF::authenticationSuccessful(getNetworkAccessManager(provider));
-
-	return false;
-}
-
 void OnlineDataManager::savePasswordFromAuthData(OnlineDataManager::Provider provider)
 {
 	if (provider == OnlineDataManager::OSF)

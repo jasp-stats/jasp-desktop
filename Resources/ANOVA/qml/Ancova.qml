@@ -130,8 +130,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
-			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }] }
+			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 
         Group

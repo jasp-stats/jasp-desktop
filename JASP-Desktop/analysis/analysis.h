@@ -94,7 +94,6 @@ public:
 	void imagesRewritten();
 
 	void setRFile(const std::string &file)				{ _rfile = file;								}
-	void setVisible(bool visible)						{ _visible = visible;							}
 	void setUserData(Json::Value userData)				{ _userData = userData;							}
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;						}
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
@@ -115,7 +114,6 @@ public:
 			bool				usesJaspResults()	const	{ return _useJaspResults;					}
 			Status				status()			const	{ return _status;							}
 			int					revision()			const	{ return _revision;							}
-			bool				isVisible()			const	{ return _visible;							}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
 			QString				helpFile()			const	{ return _helpFile;							}
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;					}
@@ -130,6 +128,7 @@ public:
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
+			void		loadFromJSON(Json::Value & options);
 			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
 
 	static	Status		parseStatus(std::string name);
@@ -173,8 +172,7 @@ private:
 
 protected:
 	Status					_status			= Initializing;
-	bool					_visible		= true,
-							_refreshBlocked	= false;
+	bool					_refreshBlocked	= false;
 
 	Options*				_options;
 
@@ -190,6 +188,7 @@ private:
 	size_t					_id;
 	std::string				_module			= "dynamic",
 							_name,
+							_titleDefault,
 							_title,
 							_rfile;
 	bool					_useJaspResults = false;

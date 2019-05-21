@@ -67,22 +67,15 @@ Form
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
-			AssignedVariablesList
-			{
-				name: "withinModelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction"
-			}
+			AvailableVariablesList	{ name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
+			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: "Interaction"	}
 		}
 		
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
-			AssignedVariablesList
-			{
-				name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction"
-				addInteractionOptions: true
-			}
+			AvailableVariablesList	{ name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
+			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
 		DropDown
@@ -132,8 +125,8 @@ Form
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
+			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
         CheckBox

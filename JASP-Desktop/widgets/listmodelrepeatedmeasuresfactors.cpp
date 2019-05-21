@@ -142,6 +142,16 @@ const Terms &ListModelRepeatedMeasuresFactors::getLevels() const
 	return _allLevelsCombinations;
 }
 
+void ListModelRepeatedMeasuresFactors::updateLatestLevelIndex(int currentindex)
+{
+	int index, lastlevel, countlevels = 0;
+	for (index=currentindex ;  _factors[index].isLevel && index<_factors.size(); index++) countlevels ++;
+	lastlevel=index-1;
+	for (index=currentindex ;  _factors[index].isLevel && index>0; index--) countlevels ++;
+	_factors[lastlevel].value=tq("Level %1").arg(countlevels-1);
+}
+
+
 void ListModelRepeatedMeasuresFactors::_setAllLevelsCombinations()
 {
 	vector<vector<string> > allLevelsCombinations;
@@ -213,7 +223,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 			if (factor.index > 2 && !factor.isVirtual)
 			{
 				setValue = false;
-				_factors.removeAt(row);
+				_factors.removeAt(row);				
 			}
 			else
 				val = tq("Level %1").arg(factor.index);
@@ -263,6 +273,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 			{
 				Factor newLevel(tq("Level ") + QString::number(factor.index + 1), true, true, factor.index + 1, factor.headFactor);
 				_factors.insert(row + 1, newLevel);
+				updateLatestLevelIndex(row);
 			}
 			else
 			{
@@ -271,7 +282,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 				_factors.push_back(newLevel1);
 				Factor newLevel2(tq("Level 2"), false, true, 2, &factor);
 				_factors.push_back(newLevel2);
-				Factor newVirtualLevel(tq("Level"), true, true, 3, &factor);
+				Factor newVirtualLevel(tq("Level 3"), true, true, 3, &factor);
 				_factors.push_back(newVirtualLevel);
 				Factor newVirtualFactor(tq("Factor ") + QString::number(factor.index + 1), true, false, factor.index + 1);
 				_factors.push_back(newVirtualFactor);
@@ -306,6 +317,7 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 		{
 			if (factor.index > 2)
 				_factors.removeAt(row);
+			updateLatestLevelIndex(row-1);
 		}
 		else
 		{

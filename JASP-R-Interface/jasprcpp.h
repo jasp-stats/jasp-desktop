@@ -33,6 +33,7 @@ SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
+SEXP jaspRCPP_RunSeparateR(SEXP code);
 
 				//Custom parseEvals to make sure sink is set (to capcode.c_str()ture output)
 void			jaspRCPP_parseEvalQNT(const std::string & code);

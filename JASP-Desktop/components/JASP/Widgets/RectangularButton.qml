@@ -61,10 +61,7 @@ Item
 	Keys.onEnterPressed:	clicked();
 	Keys.onReturnPressed:	clicked();
 
-
-
 	signal clicked()
-
 
 	Rectangle
 	{

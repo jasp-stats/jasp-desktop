@@ -1,27 +1,27 @@
-/* Copyright (C) 2014 Jesper K. Pedersen <blackie@kde.org>
-  
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; see the file COPYING.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.
-*/
-
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
 // Code based on http://stackoverflow.com/questions/17833103/how-to-create-scrollbar-in-qtquick-2-0
 
 import QtQuick 2.0;
 import JASP.Theme 1.0
 
-Item {
+Item
+{
 	id: scrollbar;
 
 	readonly property real visibleBreadth:	Theme.scrollbarBoxWidth
@@ -65,8 +65,8 @@ Item {
 		else			flickable.contentX = Math.max (0, Math.min (flickable.contentX + (flickable.width  * movement), flickable.contentWidth  - flickable.width));
 	}
 
-	function scrollDown() { scroll( 0.25); }
-	function scrollUp ()  { scroll(-0.25); }
+	function scrollDown() { scroll( 0.125); }
+	function scrollUp ()  { scroll(-0.125); }
 	
 	Binding
 	{
@@ -103,8 +103,21 @@ Item {
 		
 		MouseArea
 		{
-			anchors.fill: parent;
-			onClicked: { }
+			anchors.fill:	parent;
+			onClicked:		{ }
+
+			onWheel:	if(scrollbar.vertical)
+						{
+									if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
+							else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
+							else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
+						} else {
+									if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
+							else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
+							else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
+						}
+
+
 		}
 	}
 

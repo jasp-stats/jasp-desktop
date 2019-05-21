@@ -16,6 +16,7 @@ RectangularButton
 	centerText:		false
 
 	signal hoverClicked();
+	onHoverClicked:			forceActiveFocus();
 
 	Timer
 	{

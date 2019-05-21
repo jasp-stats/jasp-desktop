@@ -30,19 +30,25 @@
   m$error$infinity <- 
   "Infinity found in {{variables}}"  
   m$error$factorLevels <- 
-  "Number of factor levels {{factorLevels.amount}} in {{variables}}"  
+  "Number of factor levels is {{factorLevels.amount}} in {{variables}}"  
   m$error$variance <- 
-  "Variance = {{variance.equalTo}} in {{variables}}"  
+  "The variance in {{variables}} is equal to {{variance.equalTo}}"  
   m$error$observations <- 
-  "Number of observations {{observations.amount}} in {{variables}}"  
+  "Number of observations is {{observations.amount}} in {{variables}}"  
   m$error$levene <- 
-  "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
+  "Cannot compute statistic reliably: number of observations is {{observations.amount}} in {{variables}}"
   m$error$limits <-
   "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
   m$error$varCovMatrix <- 
   "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
   m$error$varCovData <- 
   "The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear"
+  m$error$modelInteractions <-
+  "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
+  m$error$negativeValues <-
+  "Negative numbers found in {{variables}}"
+  m$error$missingValues <-
+  "Missing values encountered in {{variables}}"
   
   ### Footnotes
   m$footnote$leveneSign <- 

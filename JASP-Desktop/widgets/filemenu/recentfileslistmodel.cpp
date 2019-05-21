@@ -2,14 +2,14 @@
 #include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
+#include "recentfiles.h"
 
 RecentFilesListModel::RecentFilesListModel(QObject *parent)	: FileMenuBasicListModel(parent, new RecentFilesFileSystem(parent))
 {
 	_fsbmRecentFiles = static_cast<RecentFilesFileSystem*>(_model);
 	_fsbmRecentFiles->refresh();
 
-	connect(this, SIGNAL(openFile(FileEvent *)), parent, SLOT(openFile(FileEvent *)));
-
+	connect(this, &RecentFilesListModel::openFileEvent, dynamic_cast<RecentFiles*> (parent), &RecentFiles::openFile);
 }
 
 void RecentFilesListModel::addRecentFilePath(const QString &newpath)
@@ -30,5 +30,5 @@ void RecentFilesListModel::openFile(const QString &path)
 	FileEvent *event = new FileEvent(this->parent(), FileEvent::FileOpen);
 	event->setPath(path);
 
-	emit openFile(event);
+	emit openFileEvent(event);
 }

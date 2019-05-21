@@ -410,7 +410,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	}
 	while (!success);
 
-	bool createActualComputedColumn = computeType != ComputedColumn::computedType::analysisNotComputed;
+	bool	createActualComputedColumn	= computeType != ComputedColumn::computedType::analysisNotComputed,
+			showComputedColumn			= createActualComputedColumn && computeType != ComputedColumn::computedType::analysis;
 
 	ComputedColumn  * createdColumn = nullptr;
 
@@ -425,8 +426,11 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	emit dataSetChanged(_package->dataSet());
 	emit refreshData();
 
+
+
 	if(createActualComputedColumn)		setLastCreatedColumn(name);
 	else								emit dataColumnAdded(name);
+	if(showComputedColumn)				setShowThisColumn(name);
 
 	return createdColumn;
 }
@@ -466,6 +470,9 @@ void ComputedColumnsModel::requestComputedColumnDestruction(QString columnNameQ)
 
 	if(columnNameQ == lastCreatedColumn())
 		setLastCreatedColumn("");
+
+	if(columnNameQ == showThisColumn())
+		setShowThisColumn("");
 }
 
 bool ComputedColumnsModel::showAnalysisFormForColumn(QString columnName)

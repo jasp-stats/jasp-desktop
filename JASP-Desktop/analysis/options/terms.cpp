@@ -547,6 +547,35 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 	return changed;
 }
 
+bool Terms::discardWhatDoesContainTheseTerms(const Terms &terms)
+{
+	bool changed = false;
+
+	_terms.erase(
+		std::remove_if(
+			_terms.begin(),
+			_terms.end(),
+			[&](const Term& existingTerm)
+			{
+				bool shouldRemove = false;
+
+				for (const Term &term : terms)
+				{
+					if (existingTerm.containsAll(term))
+					{
+						shouldRemove = true;
+						changed = true;
+						break;
+					}
+				}
+				return shouldRemove;
+			}),
+		_terms.end()
+	);
+
+	return changed;
+}
+
 bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 {
 	bool changed = false;
