@@ -67,8 +67,10 @@ Item
 		model	: fileMenuModel.osf.breadCrumbs
 		visible	: loggedin
 
+		anchors.rightMargin: Theme.generalMenuMargin * preferencesModel.uiScale
+
 		width	: rect.width
-		height	: (loggedin ? 40 : 0) * preferencesModel.uiScale
+		height	: loggedin ? (40 * preferencesModel.uiScale) + (scrollBarVisible ? scrollBarHeight : 0) : 0
 
 		anchors.top			: menuHeader.bottom
 		anchors.left		: menuHeader.left
