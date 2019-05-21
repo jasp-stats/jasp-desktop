@@ -199,20 +199,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     
   }
   
-  
-  
   ## Create Within Subjects Effects Table
-  
-  result <- .rmAnovaWithinSubjectsTable(dataset, options, perform, model, stateSphericity, status)
+  result <- .rmAnovaWithinSubjectsTable(dataset, options, perform, model, stateSphericity, status, fullModel)
   
   results[["withinSubjectsEffects"]] <- result$result
   status <- result$status
   
   
-  
   ## Create Between Subjects Effects Table
   # if(length(unique(unlist(options$betweenSubjectFactors))) > 0 ){
-  result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
+  result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status, fullModel)
   
   results[["betweenSubjectsEffects"]] <- result$result
   status <- result$status
@@ -975,7 +971,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   }
 }
 
-.rmAnovaBetweenSubjectsTable <- function(dataset, options, perform, model, status) {
+.rmAnovaBetweenSubjectsTable <- function(dataset, options, perform, model, status, fullModel) {
   
   anova <- list()
   
@@ -1005,6 +1001,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     }
     if(options$effectSizePartialEtaSquared) {
       fields[[length(fields) + 1]] <- list(name="partialEta", type="number", title="\u03B7\u00B2\u209A", format="dp:3")
+    }
+    if(options$effectSizeGenEtaSquared) {
+      fields[[length(fields) + 1]] <- list(name="genEta", type="number", title="\u03B7\u00B2<sub>G</sub>", format="dp:3")
     }
     if(options$effectSizeOmegaSquared) {
       fields[[length(fields) + 1]] <- list(name="omega", type="number", title="\u03C9\u00B2", format="dp:3")
@@ -1065,7 +1064,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       }
     }
     
-    row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
+    row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
     if (options$VovkSellkeMPR){
       row[['VovkSellkeMPR']] <- "."
     }
@@ -1132,11 +1131,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             SSt <- sum(resultTable[,"Sum Sq"])
             SSr <- resultTable["Residuals","Sum Sq"]
             MSr <- SSr/resultTable["Residuals","Df"]
-            
+
             row[["eta"]] <- SS / SSt
             row[["partialEta"]] <- SS / (SS + SSr)
-            omega <- (SS - (df * MSr)) / (SSt + MSr) 
+            row[["genEta"]] <- fullModel[["anova_table"]][modelTermsCase, "ges"]
             
+            omega <- (SS - (df * MSr)) / (SSt + MSr) 
+
             if (omega < 0) {
               row[["omega"]] <- 0
             } else {
@@ -1147,6 +1148,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             
             row[["eta"]] <- .clean(NaN)
             row[["partialEta"]] <- .clean(NaN)
+            row[["genEta"]] <- .clean(NaN)
             row[["omega"]] <- .clean(NaN)
             
           }
@@ -1169,7 +1171,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         MS <- .clean(NaN)
       }
       
-      row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
+      row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="",  "genEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
       if (options$VovkSellkeMPR){
         row[["VovkSellkeMPR"]] <- ""
       }
@@ -1214,15 +1216,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           }
           
           if (result[index,"Error SS"] > 0) {
+            # Is between subjects factor
             
             SSr <- result[index,"Error SS"]
             SSt <- sum(result[indices,"Sum Sq"]) + SSr
             MSr <- SSr/result[index,"den Df"]
-            
+
             row[["eta"]] <- SS / SSt
             row[["partialEta"]] <- SS / (SS + SSr)
-            omega <- (SS - (df * MSr)) / (SSt + MSr)
+            row[["genEta"]] <- fullModel[["anova_table"]][modelTermsCase, "ges"]
             
+            omega <- (SS - (df * MSr)) / (SSt + MSr)
+
             if (omega < 0) {
               row[["omega"]] <- 0
             } else {
@@ -1233,6 +1238,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             
             row[["eta"]] <- .clean(NaN)
             row[["partialEta"]] <- .clean(NaN)
+            row[["genEta"]] <- .clean(NaN)
             row[["omega"]] <- .clean(NaN)
             
           }
@@ -1253,7 +1259,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         MS <- SS / df
       }
       
-      row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
+      row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="",  "genEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
       if (options$VovkSellkeMPR){
         row[["VovkSellkeMPR"]] <- ""
       }
@@ -1271,7 +1277,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   list(result = anova, status = status)
 }
 
-.rmAnovaWithinSubjectsTable <- function(dataset, options, perform, model, stateSphericity, status) {
+.rmAnovaWithinSubjectsTable <- function(dataset, options, perform, model, stateSphericity, status, fullModel) {
   
   anova <- list()
   
@@ -1328,6 +1334,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     }
     if(options$effectSizePartialEtaSquared) {
       fields[[length(fields) + 1]] <- list(name="partialEta", type="number", title="\u03B7\u00B2\u209A", format="dp:3")
+    }
+    if(options$effectSizeGenEtaSquared) {
+      fields[[length(fields) + 1]] <- list(name="genEta", type="number", title="\u03B7\u00B2<sub>G</sub>", format="dp:3")
     }
     if(options$effectSizeOmegaSquared) {
       fields[[length(fields) + 1]] <- list(name="omega", type="number", title="\u03C9\u00B2", format="dp:3")
@@ -1431,7 +1440,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           counter <- 1
           
           if (options$sphericityNone) {
-            row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1440,7 +1449,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           }
           
           if (options$sphericityGreenhouseGeisser) {
-            row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1449,7 +1458,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           }
           
           if (options$sphericityHuynhFeldt) {
-            row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1459,7 +1468,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           
         } else {
           
-          row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
+          row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
           if (options$VovkSellkeMPR){
             row[["VovkSellkeMPR"]] <- ""
           }
@@ -1603,12 +1612,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
               
               if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
                 index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
-                
+
                 SSt <- sum(resultTable[,"Sum Sq"])
                 SSr <- resultTable["Residuals","Sum Sq"]
                 MSr <- SSr/resultTable["Residuals","Df"]
-                row[["eta"]] <- SS / SSt
+                
+                row[["eta"]] <- SS / sum(unlist(lapply(result, function(x) return(x[[1]]['Sum Sq']))))
                 row[["partialEta"]] <- SS / (SS + SSr)
+                row[["genEta"]] <- fullModel[["anova_table"]][index[-1], "ges"]
+
                 n <- resultTable["Residuals","Df"]  + 1
                 MSm <- resultTable[index, "Mean Sq"]
                 MSb <- result["Error: subject"][[1]][[1]]$`Mean Sq`
@@ -1627,6 +1639,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                 
                 row[["eta"]] <- .clean(NaN)
                 row[["partialEta"]] <- .clean(NaN)
+                row[["genEta"]] <- .clean(NaN)
                 row[["omega"]] <- .clean(NaN)
                 
               }
@@ -1657,14 +1670,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           
           if (!options$sphericityCorrections || cor == "empty") {
             
-            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
+            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
             
           } else if (cor == "None") {
             
-            row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1679,7 +1692,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
               MSGG <- .clean(NaN)
             }
             
-            row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1694,7 +1707,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
               MSHF <- .clean(NaN)
             }
             
-            row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1806,14 +1819,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
               for (case in .indices(terms.base64[[i]])) {
                 indices <- c(indices, which(unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCases[[case]])))))
               }
-              
+
               if (result[index,"Error SS"] > 0) {
-                
+
                 SSr <- result[index,"Error SS"]
                 SSt <- sum(result[indices,"Sum Sq"]) + SSr
                 MSr <- SSr/result[index,"den Df"]
-                row[["eta"]] <- SS / SSt
+
+                # row[["eta"]] <- SS / SSt
+                row[["eta"]] <- SS / (sum(result[-1, 'Sum Sq']) + sum(unique(result[, 'Error SS'])))
                 row[["partialEta"]] <- SS / (SS + SSr)
+                row[["genEta"]] <- fullModel[["anova_table"]][index[-1], "ges"]
+
                 n <- result[1, 'den Df'] + 1
                 MSm <- result[index, "Sum Sq"] / result[index, "num Df"] 
                 MSb <- result[1, 'Error SS'] / (n - 1)
@@ -1831,6 +1848,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                 
                 row[["eta"]] <- .clean(NaN)
                 row[["partialEta"]] <- .clean(NaN)
+                row[["genEta"]] <- .clean(NaN)
                 row[["omega"]] <- .clean(NaN)
                 
               }
@@ -1861,14 +1879,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           
           if (!options$sphericityCorrections || cor == "empty") {
             
-            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
+            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
             
           } else if (cor == "None") {
             
-            row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1883,7 +1901,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
               MSGG <- .clean(NaN)
             }
             
-            row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
@@ -1898,7 +1916,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
               MSHF <- .clean(NaN)
             }
             
-            row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+            row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "genEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
             if (options$VovkSellkeMPR){
               row[["VovkSellkeMPR"]] <- ""
             }
