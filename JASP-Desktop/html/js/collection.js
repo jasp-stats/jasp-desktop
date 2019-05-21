@@ -330,9 +330,12 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 		 for (var i = 0; i < this.views.length; i++)
 		 {
-			 var optCitation = this.views[i].getCitations();
+			
+			var optCitation = null;
+			if (this.views[i].getCitations)
+				optCitation = this.views[i].getCitations();
 
-			 if(optCitation !== null)
+			 if (optCitation !== null)
 				 cites = cites.concat(optCitation);
 		 }
 
