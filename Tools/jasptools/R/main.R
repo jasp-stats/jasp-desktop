@@ -143,8 +143,6 @@ view <- function(results) {
   insertedJS <- paste0(
     "<script>
       $(document).ready(function() {
-        window.jasp = { welcomeScreenIsCleared: function() {} }
-        window.clearWelcomeScreen()
         window.analysisChanged(", content, ")
       })
     </script></body>")
