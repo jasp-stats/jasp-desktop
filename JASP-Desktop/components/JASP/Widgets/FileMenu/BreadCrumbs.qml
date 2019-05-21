@@ -3,12 +3,33 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
+import JASP.Controls 1.0
 
 ListView
 {
 	id : listView
 			
 	orientation: ListView.Horizontal
+	property alias scrollBarVisible: scrollBar.visible
+	property alias scrollBarHeight: scrollBar.height
+
+	clip: true
+
+	JASPScrollBar
+	{
+		id:				scrollBar
+		flickable:		listView
+		manualAnchor:	true
+		vertical:		false
+		height:			10 * preferencesModel.uiScale
+
+		anchors
+		{
+			left:			parent.left
+			right:			parent.right
+			bottom:			parent.bottom
+		}
+	}
 
 	signal crumbButtonClicked(int modelIndex)
 
@@ -22,8 +43,7 @@ ListView
 			Item
 			{
 				id :	rectArrow
-				//color:	Theme.grayMuchLighter
-				
+
 				height:		rect.height
 				width:		index > 0 ? height   : 0
 				visible:	index > 0
