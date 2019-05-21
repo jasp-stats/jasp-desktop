@@ -43,13 +43,13 @@ Form
 	{
 		id		: hypothesisGroup
 		name	: "hypothesis"
-		title	: qsTr("Alt. Hypothesis")
+		title	: qsTr("Test Values")
 		enabled	: exProbVar.count == 0
 
 		Layout.columnSpan: 2
 
-		RadioButton {						value: "multinomialTest";	label: qsTr("Multinomial test");	 checked: true	}
-		RadioButton {	id: expectedProbs;	value: "expectedProbs";		label: qsTr("χ² test"); 				  			}
+		RadioButton {						value: "multinomialTest";	label: qsTr("Equal proportions (multinomial test)");	 checked: true	}
+		RadioButton {	id: expectedProbs;	value: "expectedProbs";		label: qsTr("Expected proportions (χ² test)"); 				  			}
 
 		Chi2TestTableView
 		{

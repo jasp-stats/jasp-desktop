@@ -39,7 +39,7 @@ Form
 	{
 		id		: hypothesisGroup
 		name	: "hypothesis"
-		title	: qsTr("Alt. Hypothesis")
+		title	: qsTr("Test Values")
 		enabled	: exProbVar.count == 0
 
 		Layout.columnSpan: 2
