@@ -23,13 +23,13 @@ import QtQuick.Layouts 1.3
 
 import JASP.Theme 1.0
 
-FocusScope {
-	height: calculatedMinimumHeight
-	visible: opened
+FocusScope
+{
+	height:		calculatedMinimumHeight
+	visible:	opened
 	
-	property real calculatedMinimumHeight: buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (Theme.generalAnchorMargin * 2)
-	
-	readonly property bool opened: levelsTableModel.chosenColumn != -1
+				property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (Theme.generalAnchorMargin * 2)
+	readonly	property bool opened:					levelsTableModel.chosenColumn != -1
 	
 	Connections
 	{
@@ -102,7 +102,7 @@ FocusScope {
 				
 				function columnChanged(columnName)
 				{
-					analyses.refreshAnalysesUsingColumn(columnName)
+					analysesModel.refreshAnalysesUsingColumn(columnName)
 				}
 				
 				model: levelsTableModel
@@ -128,8 +128,8 @@ FocusScope {
 				
 				function sendCurrentColumnChanged()
 				{
-					if(variablesWindow.chosenColumn > -1)
-						columnChanged(dataSetModel.columnTitle(variablesWindow.chosenColumn))
+					if(levelsTableModel.chosenColumn > -1)
+						columnChanged(dataSetModel.columnTitle(levelsTableModel.chosenColumn))
 				}
 				
 				function resizeValueColumn()
