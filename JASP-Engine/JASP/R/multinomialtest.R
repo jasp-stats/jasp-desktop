@@ -504,7 +504,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     # Determine y-axis margin: If CIs could not be computed, use observed counts
     plotFrame$yAxisMargin <- plotFrame$upperCI
     for(i in 1:nrow(plotFrame)){
-      if(plotFrame$upperCI[i] == '0'){
+      if(plotFrame$upperCI[i] == 0){
         plotFrame$yAxisMargin[i] <- plotFrame$obs[i]
       }   
     }
