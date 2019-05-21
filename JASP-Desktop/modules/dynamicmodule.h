@@ -84,7 +84,7 @@ public:
 	std::string			description()		const { return _description;							}
 	std::string			modulePackage()		const { return _modulePackage;							}
 
-	bool				isDevMod()			const { return _name == developmentModuleName();			}
+	bool				isDevMod()			const { return _name == developmentModuleName();		}
 	bool				error()				const { return _status == moduleStatus::error;			}
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
 	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}

@@ -103,7 +103,7 @@ void BoundQMLListViewDraggable::setUp()
 				qmlAvailableListView->addAssignedModel(_assignedModel);
 				addDependency(qmlAvailableListView);
 			}
-			connect(_availableModel, &ListModelAvailableInterface::modelChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);			
+			connect(_availableModel, &ListModelAvailableInterface::allAvailableTermsChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);
 		}
 	}
 	

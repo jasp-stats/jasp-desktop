@@ -25,7 +25,7 @@
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
 					saveArg			= "--save",
-					timeOutArg		= "--timeout=";
+					timeOutArg		= "--timeOut=";
 
 void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile)
 {
@@ -56,7 +56,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 				if(!folder.exists())
 				{
-					std::cerr << "Folder for unitTestRecursive " << args[arg + 1] << " does not exist!" << std::endl;
+					std::cerr << "Folder for unitTestRecursive " << folder.absolutePath().toStdString() << " does not exist!" << std::endl;
 					exit(1);
 				}
 
@@ -76,13 +76,13 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 				if(!testMe.exists())
 				{
-					std::cerr << "File for unitTest " << filePath << " does not exist!" << std::endl;
+					std::cerr << "File for unitTest " << testMe.absoluteFilePath().toStdString() << " does not exist!" << std::endl;
 					letsExplainSomeThings = true;
 				}
 
 				bool	isJaspFile	= filePath.size() >= jaspExtension.size()  &&  filePath.substr(filePath.size() - jaspExtension.size()) == jaspExtension;
 
-				if(!isJaspFile)
+				if(!isJaspFile && !letsExplainSomeThings)
 				{
 					std::cerr << "File for unitTest " << filePath << " is not a JASP file!" << std::endl;
 					letsExplainSomeThings = true;
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
 	// future permanent fix.
 	// This does slow down QML quite a bit and disables gradients
 	// qputenv("QT_QUICK_BACKEND", "software");
-	QCoreApplication::setAttribute(Qt::AA_UseOpenGLES); //might fix weirdlooking QML on Windows when using not-so-goo drivers? ( https://github.com/jasp-stats/jasp-desktop/issues/2669 )
+	//Turned this off because it causes some weird resizing problems QCoreApplication::setAttribute(Qt::AA_UseOpenGLES); //might fix weirdlooking QML on Windows when using not-so-goo drivers? ( https://github.com/jasp-stats/jasp-desktop/issues/2669 )
 #endif
 
 	std::string filePath;

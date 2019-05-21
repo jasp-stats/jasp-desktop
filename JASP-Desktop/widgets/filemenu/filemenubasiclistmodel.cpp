@@ -39,8 +39,10 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case AssociatedDataFileRole:	return QFileInfo(item.associatedDataFile).fileName();
 	case IconSourceRole:			return FileSystemEntry::sourcesIcons()[item.entryType];
 	case DataIconSourceRole:		return FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
-	//case DirRole:					return QFileInfo (item.associated_datafile).path() + QDir::separator();
-	case DirRole:					return QDir::toNativeSeparators(QFileInfo (item.path).path()) + QDir::separator();
+	case DirRole:					if (QFileInfo(item.path).path().toLower().startsWith("http:") || QFileInfo(item.path).path().toLower().startsWith("https:"))
+										return QFileInfo (item.path).path();
+									else
+										return QDir::toNativeSeparators(QFileInfo (item.path).path()) ;
 	case ActionRole:				return _openFileWhenClicked ? "open" : "sync";
 	default:						return QStringLiteral("Me know nothing");
 	}

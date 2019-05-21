@@ -24,15 +24,15 @@ Item
 		anchors.left:		menuHeader.left
 		anchors.right:		menuHeader.right
 		anchors.bottom:		menuHeader.bottom
-		anchors.topMargin:	2 * Theme.generalMenuMargin
+		anchors.topMargin:	Theme.generalMenuMargin
 		focus:				true
 		Keys.onLeftPressed: resourceMenu.forceActiveFocus();
 		focusPolicy:		Qt.WheelFocus
 
-		Column
+		PrefsGroupRect
 		{
-			width:			scrollPrefs.width
 			spacing:		Theme.rowSpacing
+			implicitWidth:	scrollPrefs.width - (Theme.generalAnchorMargin * 2)
 
 			CheckBox  //Synchronize automatically
 			{

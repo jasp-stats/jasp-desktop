@@ -29,6 +29,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			devModRegenDESC			READ devModRegenDESC			WRITE setDevModRegenDESC			NOTIFY devModRegenDESCChanged			)
 	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
 	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
+	Q_PROPERTY(int			maxFlickVelocity		READ maxFlickVelocity			WRITE setMaxFlickVelocity			NOTIFY maxFlickVelocityChanged			)
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -55,14 +56,12 @@ public:
 	bool		devModRegenDESC()			const;
 	bool		logToFile()					const;
 	int			logFilesMax()				const;
+	int			maxFlickVelocity()			const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-
-
-
 
 public slots:
 	void setUiScale(double uiScale);
@@ -89,6 +88,8 @@ public slots:
 	void setDevModRegenDESC(bool devModRegenDESC);
 	void setLogToFile(bool logToFile);
 	void setLogFilesMax(int logFilesMax);
+	void setMaxFlickVelocity(int maxFlickVelocity);
+
 
 signals:
 	void fixedDecimalsChanged(bool fixedDecimals);
@@ -113,6 +114,7 @@ signals:
 	void devModRegenDESCChanged(bool devModRegenDESC);
 	void logToFileChanged(bool logToFile);
 	void logFilesMaxChanged(int logFilesMax);
+	void maxFlickVelocityChanged(int maxFlickVelocity);
 
 private:
 	int _defaultPPI = 192;

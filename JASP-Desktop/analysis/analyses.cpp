@@ -89,7 +89,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		if(title == "")
 			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
-						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
+		analysis = create(module, name, title, id, version, &optionsJson, status, false);
+
+		analysis->loadFromJSON(analysisData);
 	}
 	else
 	{
@@ -161,6 +163,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
 	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
 	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
+	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
 	connect(analysis, &Analysis::saveImageSignal,					this, &Analyses::analysisSaveImage					);
 	connect(analysis, &Analysis::editImageSignal,					this, &Analyses::analysisEditImage					);
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
@@ -255,7 +258,6 @@ void Analyses::removeAnalysis(Analysis *analysis)
 
 	beginRemoveRows(QModelIndex(), indexAnalysis, indexAnalysis);
 	analysis->abort();
-	analysis->setVisible(false);
 	_analysisMap.erase(id);
 	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
 	endRemoveRows();
@@ -434,12 +436,12 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(analysisTitle.toStdString()));
-	else							create(module, analysisName, analysisTitle);
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry((analysisTitle + "~" + analysisFunction).toStdString()));
+	else							create(module, analysisFunction, analysisTitle);
 }
 
 
@@ -551,10 +553,18 @@ void Analyses::setVisible(bool visible)
 		unselectAnalysis();
 }
 
-void Analyses::analysisTitleChanged(int id, QString title)
+void Analyses::analysisTitleChangedFromResults(int id, QString title)
 {
 	Analysis * analysis = get(id);
 
 	if(analysis != nullptr)
 		analysis->setTitleQ(title);
+}
+
+void Analyses::setChangedAnalysisTitle()
+{
+    Analysis * analysis = dynamic_cast<Analysis*>(QObject::sender());
+
+    if (analysis != nullptr)
+        emit analysisTitleChanged(analysis);
 }

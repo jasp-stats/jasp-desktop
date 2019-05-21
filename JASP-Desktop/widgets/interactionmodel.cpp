@@ -42,18 +42,13 @@ void InteractionModel::clearInteractions()
 	_interactionTerms.removeParent();
 }
 
-void InteractionModel::removeFactors(const Terms& terms)
-{
-	_fixedFactors.remove(terms);
-	_randomFactors.remove(terms);
-	_covariates.remove(terms);
-	_interactionTerms.discardWhatDoesContainTheseComponents(terms);
-}
-
 void InteractionModel::removeInteractionTerms(const Terms& terms)
 {
 	_fixedFactors.remove(terms);
 	_randomFactors.remove(terms);
 	_covariates.remove(terms);
-	_interactionTerms.remove(terms);
+	if (_mustContainLowerTerms)
+		_interactionTerms.discardWhatDoesContainTheseTerms(terms);
+	else
+		_interactionTerms.remove(terms);
 }

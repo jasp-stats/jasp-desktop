@@ -57,6 +57,7 @@ JASPControl
 	property bool	showVariableTypeIcon:	true
 	property bool	setWidthInForm:		false
 	property bool	setHeightInForm:	false
+	property bool	mustContainLowerTerms: true
 	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
 	
 	property var	interactionControl
@@ -181,7 +182,7 @@ JASPControl
 				}
 			}
 		]
-		
+
 		Repeater
 		{
 			model: suggestedColumns.length
@@ -198,11 +199,9 @@ JASPControl
 					bottom:			rectangle.bottom;
 					bottomMargin:	4  * preferencesModel.uiScale
 					right:			rectangle.right;
-					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale
+					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 				}
 			}
-
-
 		}
 		
 		Component.onCompleted:
@@ -280,7 +279,7 @@ JASPControl
 			
 			Keys.onPressed:
 			{
-				if (event.modifiers & Qt.ShiftModifier)
+				if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Shift)
 					shiftPressed = true;
 				else
 					shiftPressed = false;
@@ -288,7 +287,7 @@ JASPControl
 			
 			Keys.onReleased:
 			{
-				if (event.modifiers & Qt.ShiftModifier)
+				if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Shift)
 					shiftPressed = false;
 			}
 			
@@ -380,7 +379,7 @@ JASPControl
 				}
 				for (var i = startIndex; i <= endIndex; i++)
 				{
-					var item = listView.contentItem.children[i];
+					var item = listView.contentItem.children[i]
 					if (item)
 						listView.selectItem(item.children[0], selected);
 					else
@@ -468,7 +467,7 @@ JASPControl
 					height:					15 * preferencesModel.uiScale
 					width:					15 * preferencesModel.uiScale
 					anchors.verticalCenter:	parent.verticalCenter
-					source:					!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) ? "" : enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]
+					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]
 					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
 				}
 				Text
@@ -617,10 +616,7 @@ JASPControl
 								{
 									var selectedItem = listView.selectedItems[i];
 									if (selectedItem.objectName !== "itemRectangle")
-									{
-										console.log("This is not an itemRectangle!")
 										continue;
-									}
 									
 									if (selectedItem.rank !== index)
 									{

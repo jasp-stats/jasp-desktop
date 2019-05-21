@@ -312,13 +312,14 @@ std::string DynamicModule::generateModuleInstallingR()
 	setInstallLog("Installing module " + _name + ".\n");
 
 	std::string typeInstall = "'source'";
+//<< ".runSeparateR(\"{"
 
-	R	<< "libPathsToUse <- c('" << moduleRLibrary().toStdString()	<< "', .libPaths(.Library));\n"
-		<< "{\n"
-		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "'));\n"
-		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL));\n"
-		<< standardRIndent << "withr::with_libpaths(new=libPathsToUse, find.package(package='" << _name << "'));\n"
-		<< "};\n" "return('"+succesResultString()+"');";
+	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths(.Library))";
+
+	R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "'));\n"
+		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL))\");\n" //Running in separate R because otherwise we cannot capture output :s
+		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
+
 
 	Log::log() << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
 
@@ -438,17 +439,18 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::stri
 {
 	auto parts = stringUtils::splitString(codedReference, '~');
 
-	std::string moduleName		= parts.size() > 1 ? parts[0] : "",
-				analysisTitle	= parts.size() > 1 ? parts[1] : parts[0];
+	std::string moduleName		= parts.size() > 2 ? parts[0] : "",
+				title			= parts.size() > 2 ? parts[1] : parts[0],
+				function		= parts.size() > 2 ? parts[2] : parts[1];
 
 	if(!moduleName.empty() && _name != moduleName)
 		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
 
 	for (AnalysisEntry * menuEntry : _menuEntries)
-		if (menuEntry->isAnalysis() && menuEntry->title() == analysisTitle)
+		if (menuEntry->isAnalysis() && menuEntry->title() == title && menuEntry->function() == function)
 			return menuEntry;
 
-	throw Modules::ModuleException(_name, "Cannot find analysis with title " + analysisTitle + "...");
+	throw Modules::ModuleException(_name, "Cannot find analysis with title " + title + " and function " + function + "...");
 }
 
 void DynamicModule::setInstallLog(std::string installLog)

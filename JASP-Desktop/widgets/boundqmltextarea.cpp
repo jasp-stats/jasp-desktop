@@ -45,13 +45,15 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 		_item->setProperty("applyScriptInfo", _applyScriptInfo);
 
 		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+		if(QFontDatabase::applicationFontFamilies(id).size() > 0)
+		{
+			QString family = QFontDatabase::applicationFontFamilies(id).at(0);
 
-		QFont font(family);
-		font.setStyleHint(QFont::Monospace);
-		font.setPointSize(10);
-		_item->setProperty("font", font);
-
+			QFont font(family);
+			font.setStyleHint(QFont::Monospace);
+			font.setPointSize(10);
+			_item->setProperty("font", font);
+		}
 
 		QVariant textDocumentVariant = _item->property("textDocument");
 		QQuickTextDocument* textDocumentQQuick = textDocumentVariant.value<QQuickTextDocument *>();

@@ -58,7 +58,7 @@ public:
 	Modules::DynamicModule*			myDynamicModule();
 	Modules::AnalysisEntry*			getAnalysis(const std::string& name);
 	QVariant						analysisMenu()												const			{ return QVariant::fromValue(_analysisMenuModel); }
-	std::vector<std::string>		getAllAnalysisNames()											const;
+	std::vector<std::string>		getAllAnalysisNames()										const;
 
 public slots:
 	void setRequiresDataset(bool requiresDataset);

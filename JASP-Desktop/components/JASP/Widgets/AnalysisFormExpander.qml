@@ -262,6 +262,7 @@ Rectangle
 			anchors
 			{
 				top:			errorRect.bottom
+				topMargin:		errorRect.visible ? Theme.formMargin : 0
 				left:			parent.left
 				right:			parent.right
 			}

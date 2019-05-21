@@ -163,7 +163,8 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			html += 'background-image : url(\'' + url + '?x=' + Math.random() + '\'); '
 			html += 'background-size : 100% 100%">'
 		} else {
-			html += '<div class="jasp-image-image no-data">';
+			if (height > 100 && width > 100)
+				html += '<div class="jasp-image-image no-data">';
 		}
 
 		if (error && error.errorMessage) {
@@ -191,7 +192,9 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			width: width,
 			height: height
 		});
-		this.resizer.render();
+		
+		if (data)
+			this.resizer.render();
 
 		return this;
 	},

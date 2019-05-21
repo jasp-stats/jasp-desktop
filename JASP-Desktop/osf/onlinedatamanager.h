@@ -28,9 +28,7 @@ public:
 	void		setAuthentication(OnlineDataManager::Provider provider, QString username, QString password);
 	void		initAuthentication(OnlineDataManager::Provider provider);
 	void		clearAuthenticationOnExit(OnlineDataManager::Provider provider);
-	AuthData	getAuthData(OnlineDataManager::Provider provider);
-	bool		authenticationSuccessful(OnlineDataManager::Provider provider) const;
-
+	AuthData	getAuthData(OnlineDataManager::Provider provider);	
 	void		savePasswordFromAuthData(OnlineDataManager::Provider provider);
 	void		savePassword(OnlineDataManager::Provider provider, QString password);
 	void		removePassword(OnlineDataManager::Provider provider);

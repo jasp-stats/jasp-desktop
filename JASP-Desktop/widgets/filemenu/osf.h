@@ -24,6 +24,7 @@
 #include "osfbreadcrumbslistmodel.h"
 
 #include <QQmlContext>
+#include <QNetworkReply>
 
 class OSF: public FileMenuObject
 {
@@ -62,7 +63,7 @@ public:
 	void setShowfiledialog(const bool showdialog);
 	void setUsername(const QString &username);
 	void setPassword(const QString &password);
-
+	static void checkErrorMessageOSF(QNetworkReply* reply);
 	void setOnlineDataManager(OnlineDataManager *odm);
 	Q_INVOKABLE void attemptToConnect();
 	void setCurrentFileName(QString currentFileName);
@@ -108,6 +109,8 @@ public slots:
 	void stopProcessing();
 	void newFolderClicked();
 	void closeFileDialog();
+	void newLoginRequired();
+	void handleAuthenticationResult(bool);
 
 	void setListModel(OSFListModel * listModel);
 	void setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs);

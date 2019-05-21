@@ -28,6 +28,7 @@ Rectangle
 	width	: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
 	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
 	color	: mice.pressed ? Theme.grayLighter : "transparent"
+	z		: 1
 
 	property alias	text		: innerText.text
 	property alias	source		: backgroundImage.source
@@ -93,7 +94,7 @@ Rectangle
 			anchors.topMargin			: 5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
 			font						: Theme.fontRibbon
-			renderType					: Text.QtRendering //Because this might be transform and be ugly if done natively
+			renderType					: Text.QtRendering //Because this might be transformed and ugly if done natively
 		}
 
 		MouseArea
@@ -105,15 +106,20 @@ Rectangle
 			cursorShape		: Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
 
-			onClicked		:
+			onClicked:
 			{
+				fileMenuModel.visible	= false;
+				modulesMenu.opened		= false;
+				customMenu.visible		= false;
+				mouse.accepted			= false;
+
 				if (ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
 				{
 					var functionCall = function (index)
 					{
-						var analysisName = customMenu.props['model'].getAnalysisName(index);
+						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
 						customMenu.visible = false;

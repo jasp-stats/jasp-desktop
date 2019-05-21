@@ -164,45 +164,22 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	    # TODO: If bfObject has an error, then skip this 
 	    # if (isTRUE(bfObject$error)) 
 	    
-	    # Counts defined
-	    if (options$counts != "") {
-	        # Start tallying
-	        badVariableNames <- NULL
-
-	        for (counts in options$counts) {
-	            if ( any(is.na(dataset [[.v (options$counts)]])) ) {
-	                badVariableNames <- c (badVariableNames, options$counts)
-	            }
-	        }
-
-	        if (!is.null(badVariableNames)) {
-	            errorMessage <- paste0("Bayes factor is undefined -- incomplete contingency table, the count variable ", badVariableNames, " contain(s) empty cell and/or NaN.")
-	            listOfErrors[[ length(listOfErrors) + 1 ]] <- errorMessage
-	            
-	            # TODO: Tim's error handling
-	            bfObject$hasErrors <- TRUE
-	            bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage=errorMessage, errorType="badData")
-	        }
-	        
-	        if (length(listOfErrors)==0) {
-	            badVariableNames <- NULL
-	            
-	            for (counts in options$counts) {
-	                if (any (!is.finite (dataset [[.v (options$counts)]])) || any(dataset [[.v (options$counts)]] < 0 )) {
-	                    badVariableNames <- c (badVariableNames, options$counts)
-	                }
-	            }
-
-	            if (!is.null(badVariableNames)) {
-	                errorMessage <- paste0("Bayes factor is undefined -- the count variable ", badVariableNames, " contain(s) infinity and/or negative numbers.")
-	                listOfErrors[[ length(listOfErrors) + 1 ]] <- errorMessage
-	                
-	                # TODO: Tim's error handling
-	                bfObject$hasErrors <- TRUE
-	                bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage=errorMessage, errorType="badData")
-	            }
-	        }
-	    }
+		if (length(options$factors) > 0 && perform == "run") {
+			args <- list(
+				dataset = dataset,
+				type = c("missingValues", "modelInteractions"),
+				modelInteractions.modelTerms = options$modelTerms,
+				missingValues.target = options$factors,
+				exitAnalysisIfErrors = TRUE
+			)
+			
+			if (options$counts != "") {
+				args$type <- c(args$type, "infinity", "negativeValues")
+				args$missingValues.target <- c(options$counts, options$factors)
+			}
+			
+			do.call(.hasErrors, args)
+		}
 	    
 	    # Counts not given
 	    #
@@ -210,18 +187,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	        dataset <- plyr::count(dataset)
 	    } else {
 	        dataset <- dataset
-	    }
-
-	    # Data check here
-	    if (length(listOfErrors)==0) {
-	        if ( isTRUE(anyNA(dataset[.v(options$factors)]))) {
-	            errorMessage <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN or incomplete contingency table."
-	            listOfErrors[[ length(listOfErrors) + 1 ]] <- errorMessage
-	            
-	            # TODO: Tim's error handling
-	            bfObject$hasErrors <- TRUE
-	            bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage=errorMessage, errorType="badData")
-	        }
 	    }
 
 	    # Extract models needed to be compared

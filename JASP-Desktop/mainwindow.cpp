@@ -31,6 +31,8 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QtWebEngine>
+#include <QAction>
+#include <QMenuBar>
 
 #include "utilities/qutils.h"
 #include "utilities/appdirs.h"
@@ -97,6 +99,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
+	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
@@ -152,6 +155,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 MainWindow::~MainWindow()
 {
+	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
+
 	delete _resultsJsInterface;
 	delete _engineSync;
 	if (_package && _package->dataSet())
@@ -229,11 +234,10 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChanged,			_analyses,				&Analyses::analysisTitleChanged								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu										);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedFromResults,_analyses,				&Analyses::analysisTitleChangedFromResults					);
+	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
-	connect(_resultsJsInterface,	&ResultsJsInterface::welcomeScreenIsCleared,		this,					&MainWindow::welcomeScreenIsCleared							);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -241,6 +245,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
 	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
+	connect(_analyses,              &Analyses::analysisTitleChanged,                    _resultsJsInterface,    &ResultsJsInterface::changeTitle							);
 	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
@@ -331,6 +336,8 @@ void MainWindow::loadQML()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+
+	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 }
 
 void MainWindow::initLog()
@@ -388,11 +395,6 @@ void MainWindow::open(QString filepath)
 }
 
 /*
-void MainWindow::resizeEvent(QResizeEvent *event)
-{
-	QMainWindow::resizeEvent(event);
-	adjustOptionsPanelWidth();
-}
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -686,10 +688,12 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		{
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
-			JASPTIMER_RESUME(Delayed Load);
-			_resultsJsInterface->clearWelcomeScreen(true);
+			setWelcomePageVisible(false);
+			_resultsJsInterface->resetResults();
 
-			_openEvent = event; //Used in delayedLoadHandler
+
+			_loader.io(event, _package);
+			showProgress(event->type() != Utils::FileType::jasp);
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -727,7 +731,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	{
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress();
+		showProgress(false);
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -771,7 +775,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		setDataPanelVisible(false);
 		setDataAvailable(false);
-		_resultsJsInterface->resetResults();
+		setWelcomePageVisible(true);
 
 		closeVariablesPage();
 	}
@@ -843,7 +847,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			}
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
-				startComparingResults();
+				QTimer::singleShot(1000, this, &MainWindow::startComparingResults);
 
 		}
 		else
@@ -900,7 +904,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if (_package->dataSet())
 				_loader.free(_package->dataSet());
 			_package->reset();
-			_resultsJsInterface->resetResults();
+			setWelcomePageVisible(true);
 
 			setWindowTitle("JASP");
 
@@ -984,21 +988,18 @@ void MainWindow::populateUIfromDataSet(bool showData)
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 
-		if (_analyses->count() == 1)
+		if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 			emit currentAnalysis->expandAnalysis();
 	}
 
+	setDataAvailable(_package->dataSet()->rowCount() > 0);
 
-	if(_package->dataSet()->rowCount() == 0)
-	{
+	if(!_dataAvailable)
 		setDataPanelVisible(false);
-		setDataAvailable(false);
-	}
-	else
+	else if(_progressShowsItself)
 	{
 		setDataPanelVisible(showData);
-		setDataAvailable(true);
-		_analyses->setVisible(!showData);
+		_analyses->setVisible(!showData || !resultXmlCompare::compareResults::theOne()->testMode());
 	}
 
 	hideProgress();
@@ -1031,25 +1032,19 @@ void MainWindow::matchComputedColumnsToAnalyses()
 
 void MainWindow::resultsPageLoaded()
 {
-	Log::log() << "void MainWindow::resultsPageLoaded(bool success) needs some love for WIN32" << std::endl;
-// #ifdef _WIN32
-// 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
-// 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
-// 		ui->webViewResults->setZoomFactor(zoom);
-// 		ui->webViewHelp->setZoomFactor(zoom);
-// 		ppi = verticalDpi;
-// 		_resultsJsInterface->setZoom(zoom);
-//
-// 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
-// #endif
-
 	_resultsViewLoaded = true;
 
 	if (_openOnLoadFilename != "")
 	{
-		_fileMenu->open(_openOnLoadFilename);
-		_openOnLoadFilename = "";
+		// this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
+        QTimer::singleShot(500, this, &MainWindow::_openFile);
 	}
+}
+
+void MainWindow::_openFile()
+{
+    _fileMenu->open(_openOnLoadFilename);
+    _openOnLoadFilename = "";
 }
 
 
@@ -1284,8 +1279,9 @@ void MainWindow::startDataEditor(QString path)
 
 void MainWindow::showProgress(bool showData)
 {
+	_progressShowsItself = showData;
 	_fileMenu->setVisible(false);
-	if (showData)
+	if (_progressShowsItself)
 		setDataPanelVisible(true);
 	setProgressBarVisible(true);
 }
@@ -1370,25 +1366,21 @@ void MainWindow::finishComparingResults()
 	}
 }
 
-void MainWindow::saveJaspFileHandler()
-{
-	std::cerr << "saving file!" << std::endl;
-
-	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
-
-	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
-
-	dataSetIORequestHandler(saveEvent);
-
-}
-
-
 void MainWindow::finishSavingComparedResults()
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave())
 	{
 		_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
+}
+
+void MainWindow::saveJaspFileHandler()
+{
+	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
+
+	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
+
+	dataSetIORequestHandler(saveEvent);
 }
 
 bool MainWindow::enginesInitializing()
@@ -1469,28 +1461,7 @@ void MainWindow::removeAllAnalyses()
 
 void MainWindow::analysisAdded(Analysis *)
 {
-	if(_resultsJsInterface->welcomeShown())
-		_resultsJsInterface->clearWelcomeScreen(false); //in case we are playing with summary stats or so we do not want to keep seeing the welcome screen
-}
-
-void MainWindow::welcomeScreenIsCleared(bool callDelayedLoad)
-{
-	if(callDelayedLoad)
-		delayedLoadHandler();
-}
-
-void MainWindow::delayedLoadHandler()
-{
-	if (_openEvent)
-	{
-		_loader.io(_openEvent, _package);
-		showProgress(_openEvent->type() != Utils::FileType::jasp);
-		_openEvent = nullptr;
-
-		JASPTIMER_STOP(Delayed Load);
-	}
-	else
-		std::cerr << "Unable to open file" << std::endl;
+	setWelcomePageVisible(false);
 }
 
 void MainWindow::getAnalysesUserData()
@@ -1502,15 +1473,6 @@ void MainWindow::getAnalysesUserData()
 	parser.parse(fq(userData.toString()), data);
 
 	_analyses->setAnalysesUserData(data);
-}
-
-void MainWindow::setAnalysesVisible(bool analysesVisible)
-{
-	if (_analysesVisible == analysesVisible)
-		return;
-
-	_analysesVisible = analysesVisible;
-	emit analysesVisibleChanged(_analysesVisible);
 }
 
 void MainWindow::setDatasetLoaded(bool datasetLoaded)
@@ -1553,8 +1515,8 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 
 	if(!_analysesAvailable && !_package->isLoaded())
 	{
-		_resultsJsInterface->resetResults();
 		_package->setModified(false);
+		setWelcomePageVisible(true);
 	}
 	else
 		_package->setModified(true);
@@ -1568,4 +1530,42 @@ void MainWindow::resetQmlCache()
 QString MainWindow::browseOpenFileDocuments(QString caption, QString filter)
 {
 	return MessageForwarder::browseOpenFile(caption, AppDirs::documents(), filter);
+}
+
+void MainWindow::makeAppleMenu()
+{
+#ifdef __APPLE__
+	//see https://doc.qt.io/qt-5/qmenubar.html#qmenubar-as-a-global-menu-bar
+	QMenuBar	*appleMenuBar	= new QMenuBar(0);
+	QMenu		*quitMenu		= appleMenuBar->addMenu("quit"),
+				*aboutMenu		= appleMenuBar->addMenu("about.JASP"),
+				*prefMenu		= appleMenuBar->addMenu("preferences");
+
+	QAction		*macQuit		= new QAction("Quit JASP",				this),
+				*macAbout		= new QAction("About JASP",				this),
+				*macPreferences = new QAction("Preferences of JASP",	this);
+
+	macQuit->setShortcut(Qt::Key_Close);
+
+	macQuit->setMenuRole(			QAction::QuitRole);
+	macAbout->setMenuRole(			QAction::AboutRole);
+	macPreferences->setMenuRole(	QAction::PreferencesRole);
+
+	connect(macQuit,		&QAction::triggered, [&](){ if(checkPackageModifiedBeforeClosing()) _application->quit(); });
+	connect(macAbout,		&QAction::triggered, [&](){ showAbout(); });
+	connect(macPreferences, &QAction::triggered, [&](){ _fileMenu->showPreferences(); });
+
+	quitMenu->addAction(macQuit);
+	aboutMenu->addAction(macAbout);
+	prefMenu->addAction(macPreferences);
+#endif
+}
+
+void MainWindow::setWelcomePageVisible(bool welcomePageVisible)
+{
+	if (_welcomePageVisible == welcomePageVisible)
+		return;
+
+	_welcomePageVisible = welcomePageVisible;
+	emit welcomePageVisibleChanged(_welcomePageVisible);
 }

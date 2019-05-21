@@ -27,6 +27,7 @@ Item
 	width					: menuRectangle.width
 	height					: menuRectangle.height
 	property var props		: undefined
+	property var dontCloseMenu	: false
 	property bool hasIcons	: true
 	property real _iconPad	: 5 * preferencesModel.uiScale
 	onPropsChanged			: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
@@ -94,7 +95,12 @@ Item
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuItemHeight
-						color	: mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
+						color	:
+						{
+							if (!isEnabled)
+								return "transparent"
+							return mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
+						}
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
@@ -119,12 +125,13 @@ Item
 						{
 							id					: menuItemText
 							text				: displayText
-							height				: menuItem.height
 							font				: Theme.font
+							color				: isEnabled ? Theme.black : Theme.gray
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
 							anchors.leftMargin	: menu._iconPad
 							anchors.verticalCenter:  parent.verticalCenter
+
 						}
 
 						MouseArea
@@ -133,6 +140,14 @@ Item
 							hoverEnabled	: true
 							anchors.fill	: parent
 							onClicked		: menu.props['functionCall'](index)
+							onEntered		: {
+								if (!isEnabled)
+									menu.dontCloseMenu = true
+							}
+							onExited		: {
+								if (!isEnabled)
+									menu.dontCloseMenu = false
+							}
 						}
 					}
 				}
@@ -180,6 +195,20 @@ Item
 								left			: menuItemImage.right
 								leftMargin		: menu._iconPad
 								verticalCenter	: parent.verticalCenter
+							}
+						}
+
+						MouseArea
+						{
+							hoverEnabled	: true
+							anchors.fill	: parent
+							onEntered		: {
+								if (!isEnabled)
+									menu.dontCloseMenu = true
+							}
+							onExited		: {
+								if (!isEnabled)
+									menu.dontCloseMenu = false
 							}
 						}
 					}

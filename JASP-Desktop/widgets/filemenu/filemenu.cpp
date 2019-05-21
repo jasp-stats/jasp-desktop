@@ -304,8 +304,9 @@ void FileMenu::dataSetIORequestHandler(FileEvent *event)
 
 void FileMenu::analysisAdded(Analysis *analysis)
 {
-	_actionButtons->setEnabled(ActionButtons::SaveAs, true);
-	_actionButtons->setEnabled(ActionButtons::ExportResults, true);
+	_actionButtons->setEnabled(ActionButtons::Close,			true);
+	_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
+	_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
 }
 
 void FileMenu::setSyncFile(FileEvent *event)
@@ -432,10 +433,22 @@ void FileMenu::setVisible(bool visible)
 
 	_visible = visible;
 	emit visibleChanged(_visible);
+
+	if(!_visible)
+	{
+		_actionButtons->setSelectedAction(ActionButtons::Open);
+		_resourceButtons->setSelectedButton(ResourceButtons::None);
+	}
 }
 
 void FileMenu::showFileOpenMenu()
 {
 	setVisible(true);
 	_actionButtons->setSelectedAction(ActionButtons::Open);
+}
+
+void FileMenu::showPreferences()
+{
+	setVisible(true);
+	_actionButtons->setSelectedAction(ActionButtons::Preferences);
 }

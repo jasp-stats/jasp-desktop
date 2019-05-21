@@ -220,20 +220,26 @@ int FileReader::readData(char *data, int maxSize, int &errorCode)
 	return count;
 }
 
-char* FileReader::readAllData(int blockSize, int &errorCode)
+std::string FileReader::readAllData(int blockSize, int &errorCode)
 {
 	int size = bytesAvailable();
 	if (size == 0)
 		return NULL;
 
+	size++;
+
 	char *data = new char[size];
+	data[size - 1] = '\0';
 
 	int startOffset = _currentRead;
 
 	errorCode = 0;
 	while (readData(&data[_currentRead - startOffset], blockSize, errorCode) > 0 && errorCode == 0);
 
-	return data;
+	std::string out(data);
+	delete[] data;
+
+	return out;
 }
 
 

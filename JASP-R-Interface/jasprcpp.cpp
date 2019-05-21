@@ -17,7 +17,7 @@
 
 #include "jasprcpp.h"
 #include "jaspResults/src/jaspResults.h"
-
+#include <fstream>
 
 
 static const	std::string NullString = "null";
@@ -45,6 +45,8 @@ DataSetRowCount				dataSetRowCount;
 
 static logFlushDef			_logFlushFunction		= nullptr;
 static logWriteDef			_logWriteFunction		= nullptr;
+
+static std::string			_R_HOME = "";
 
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
@@ -79,6 +81,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
+	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
 	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
@@ -125,7 +128,9 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
-	std::cout << "R_HOME: " << Rcpp::as<std::string>(rInside.parseEval("R.home('')")) << std::endl;
+	_R_HOME = Rcpp::as<std::string>(rInside.parseEval("R.home('')"));
+
+	std::cout << "R_HOME: " << _R_HOME << std::endl;
 }
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground)
@@ -176,7 +181,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	if(usesJaspResults)
 	{
 #ifdef PRINT_ENGINE_MESSAGES
-		std::cout << "result of runJaspResults:\n" << str << std::endl << std::flush;
+		jaspRCPP_logString("result of runJaspResults:\n" + str + "\n");
 #endif
 		jaspObject::destroyAllAllocatedObjects();
 	}
@@ -214,7 +219,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 
 #ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "result of runJaspResults:\n" << str << std::endl << std::flush;
+	jaspRCPP_logString("result of runJaspResults:\n" + str);
 #endif
 
 	jaspObject::destroyAllAllocatedObjects();
@@ -464,7 +469,7 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
 
 void jaspRCPP_returnString(SEXP Message)
 {
-	std::cout << "A message from R: " << static_cast<std::string>(Rcpp::as<Rcpp::String>(Message)) << "\n" << std::flush;
+	jaspRCPP_logString("A message from R: " + static_cast<std::string>(Rcpp::as<Rcpp::String>(Message)) + "\n");
 }
 
 void jaspRCPP_setRWarning(SEXP Message)
@@ -480,7 +485,6 @@ void jaspRCPP_setRError(SEXP Message)
 void jaspRCPP_setLog(SEXP Message)
 {
 	lastErrorMessage = Rcpp::as<std::string>(Message);
-	std::cout << "jaspRCPP_setLog receives: '" << lastErrorMessage << "'" << std::endl;
 }
 
 int jaspRCPP_dataSetRowCount()
@@ -853,7 +857,7 @@ struct jaspRCPP_Connection
 	static Rboolean	open(struct Rconn *)		{ return Rboolean::TRUE;	}
 	static void		close(struct Rconn *)		{}
 	static void		destroy(struct Rconn *)		{}
-	static int		fflush(struct Rconn *)		{ std::cout << std::flush; return 0;	}
+	static int		fflush(struct Rconn *)		{ return 0;	}
 
 	static size_t	write(const void * buf, size_t, size_t len, struct Rconn * = nullptr)
 	{
@@ -901,12 +905,65 @@ void jaspRCPP_parseEvalQNT(const std::string & code)
 RInside::Proxy jaspRCPP_parseEval(const std::string & code)
 {
 	jaspRCPP_parseEvalPreface(code);
-	return rinside->parseEval(__sinkMe(code));
+	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code));
 	jaspRCPP_logString("\n");
+	return returnthis;
+}
+
+///This function runs *code* in a separate instance of R, because the output of install.packages (and perhaps other functions) cannot be captured through the outputsink...
+SEXP jaspRCPP_RunSeparateR(SEXP code)
+{
+	const char *root, *relativePath;
+
+	if (!requestTempFileNameCB("log", &root, &relativePath))
+		Rf_error("Cannot open output file for separate R!");
+
+	auto bendSlashes = [](std::string input)
+	{
+#ifdef WIN32
+		std::stringstream output;
+
+		for(char k : input)
+			if(k == '/')	output << "\\";
+			else			output << k;
+		return output.str();
+#else
+		return input;
+#endif
+	};
+
+	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/Rscript\"");
+
+
+	std::string codestr = Rcpp::as<std::string>(code);
+
+
+	std::string path = std::string(root) + "/" + relativePath;
+	std::string command = R + " -e \"" + codestr + "\" > " + path + " 2>&1 ";
+#ifdef WIN32
+	command = '"' + command + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
+#endif
+
+	jaspRCPP_parseEvalPreface(command);
+
+	system(command.c_str());
+
+	std::ifstream readLog(path);
+	std::stringstream out;
+
+	if(readLog)
+	{
+		out << readLog.rdbuf();
+		readLog.close();
+	}
+
+	jaspRCPP_logString(out.str() + "\n");
+
+	return Rcpp::wrap(out.str());
 }
 
 extern "C" {
-//We need to to the following crazy defines to make sure the header actually gets accepted by the compiler...
+//We need to do the following crazy defines to make sure the header actually gets accepted by the compiler...
 #define class _class
 #define private _private;
 #include "R_ext/Connections.h"
@@ -918,9 +975,7 @@ SEXP jaspRCPP_CreateCaptureConnection()
 
 	SEXP rc = PROTECT(R_new_custom_connection("jaspRCPP_OUT", "w", "jaspRCPP_OUT", &con));
 
-	/* set connection properties */
 	con->incomplete		= FALSE;
-	//con->private		= req;
 	con->canseek		= FALSE;
 	con->canwrite		= TRUE;
 	con->isopen			= TRUE;

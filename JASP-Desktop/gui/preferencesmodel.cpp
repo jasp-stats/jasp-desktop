@@ -104,6 +104,7 @@ int		PreferencesModel::thresholdScale()			const { return Settings::value(Setting
 bool	PreferencesModel::devModRegenDESC()			const { return Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC	).toBool();					}
 bool	PreferencesModel::logToFile()				const {	return Settings::value(Settings::LOG_TO_FILE								).toBool();					}
 int		PreferencesModel::logFilesMax()				const {	return Settings::value(Settings::LOG_FILES_MAX								).toInt();					}
+int		PreferencesModel::maxFlickVelocity()		const {	return Settings::value(Settings::QML_MAX_FLICK_VELOCITY						).toInt();					}
 
 QStringList PreferencesModel::missingValues()		const
 {;
@@ -370,4 +371,13 @@ void PreferencesModel::setLogFilesMax(int newLogFilesMax)
 
 	Settings::setValue(Settings::LOG_FILES_MAX, newLogFilesMax);
 	emit logFilesMaxChanged(newLogFilesMax);
+}
+
+void PreferencesModel::setMaxFlickVelocity(int newMaxFlickVelocity)
+{
+	if (maxFlickVelocity() == newMaxFlickVelocity)
+		return;
+
+	Settings::setValue(Settings::QML_MAX_FLICK_VELOCITY, newMaxFlickVelocity);
+	emit maxFlickVelocityChanged(newMaxFlickVelocity);
 }

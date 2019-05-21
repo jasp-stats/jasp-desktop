@@ -33,8 +33,12 @@ Item
 	{
 		id				: menuHeader
 		headertext		: qsTr("Open Science Framework")
-
 		toolseparator	: !loggedin
+		anchors
+		{
+			top:			parent.top
+			margins:		Theme.generalMenuMargin
+		}
 	}
 
 	RectangularButton

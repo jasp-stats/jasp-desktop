@@ -36,48 +36,29 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	list.of.errors <- list()
 	error.message <- NULL
 
-	if (options$counts != "" && perform == "run") {
-		variable.names <- NULL
-		for (counts in options$counts) {
-			if(any(is.na(dataset [[.v (options$counts)]])))
-				variable.names <- c (variable.names, options$counts)
-			}
-
-		if ( !is.null (variable.names))
-			error.message <- paste ("Poisson glm is undefined -- the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
-		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-
-		if (length(list.of.errors)==0 ){
-			variable.names <- NULL
-			for (counts in options$counts) {
-				if (any (!is.finite (dataset [[.v (options$counts)]])) || any  (dataset [[.v (options$counts)]] < 0 ))
-					variable.names <- c (variable.names, options$counts)
-			}
-
-			if ( !is.null (variable.names))
-				error.message <- paste ("Poisson glm is undefined -- the count variable ", variable.names, " contain(s) infinity and/or negative numbers. ", sep = "")
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-			}
+	if (length(options$factors) > 0 && perform == "run") {
+		args <- list(
+			dataset = dataset,
+			type = c("missingValues", "modelInteractions"),
+			modelInteractions.modelTerms = options$modelTerms,
+			missingValues.target = options$factors,
+			exitAnalysisIfErrors = TRUE
+		)
+		
+		if (options$counts != "") {
+			args$type <- c(args$type, "infinity", "negativeValues")
+			args$missingValues.target <- c(options$counts, options$factors)
 		}
+		
+		do.call(.hasErrors, args)
+	}
+
 
 	if (options$counts == ""){
 	 	dataset <- plyr::count(dataset)
 	 } else {
 	 	dataset <- dataset
 	 }
-
-
-	if ( perform == "run" && length(list.of.errors)==0  ) {
-		variable.names <- NULL
-		for (factor in options$factors) {
-			if(any(is.na(dataset[.v(factor)])))
-			variable.names <- c (variable.names, factor)
-			}
-
-		if ( !is.null (variable.names))
-		error.message <- "Poisson glm is undefined -- the factors contain(s) empty cell or NaN or incomplete contingency table."
-		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-	}
 
 	results <- list()
 

@@ -37,8 +37,12 @@ FocusScope
 	property alias	from:					root.min
 	property double	lastValidValue:			defaultValue
 	property double	stepSize:				1
+	property alias	text:					label.text
+	property string toolTip:				""
+	property alias	implicitWidthLabel:		label.implicitWidth
+	property alias	widthLabel:				label.width
 
-					width:					minus.width + valueField.width + plus.width
+					width:					plus.x + plus.width
 					height:					valueField.height
 
 					Keys.onLeftPressed:		{ minus.clicked(); event.accepted = true; }
@@ -47,38 +51,67 @@ FocusScope
 					Keys.onReturnPressed:	valueField.focus = !valueField.focus;
 					Keys.onEscapePressed:	focus = false;
 
+	signal editingFinished()
+	
+	Component.onCompleted: valueField.onEditingFinished.connect(editingFinished);        
+	
 	function setValue(val)
 	{
-		var pow			= Math.pow(10, decimals);
-		val				= Math.round(val * pow) / pow;
-		val				= Math.min(root.max, Math.max(root.min, val));
-		valueField.text = String(val);
+		var pow				= Math.pow(10, decimals);
+		val					= Math.round(val * pow) / pow;
+		val					= Math.min(root.max, Math.max(root.min, val));
+		valueField.text		= String(val);
+		editingFinished()
+		//valueField.focus	= false;
+	}
+
+	Text
+	{
+		id:						label
+		text:					""
+		font:					Theme.font
+		color:					enabled ? Theme.textEnabled : Theme.textDisabled
+		width:					!visible ? 0 : implicitWidth
+		visible:				text !== ""
+		anchors
+		{
+			left:				parent.left
+			verticalCenter:		parent.verticalCenter
+		}
 	}
 
 	RectangularButton
 	{
-		id:				minus
-		iconSource:		"qrc:/icons/subtraction-sign-small.svg" //"qrc:/icons/addition-sign-small.svg"
-		onClicked:		root.setValue(Number(valueField.text) - root.stepSize)
-		width:			height
-		anchors.right:	valueField.left
-
+		id:						minus
+		iconSource:				"qrc:/icons/subtraction-sign-small.svg" //"qrc:/icons/addition-sign-small.svg"
+		onClicked:				root.setValue(Number(valueField.text) - root.stepSize)
+		width:					height
+		anchors
+		{
+			left:				label.right
+			leftMargin:			label.visible ? Theme.labelSpacing : 0
+		}
 	}
 
 	TextField
 	{
-		id:						valueField
-		validator:				JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals; inclusive: root.inclusive }
-		anchors.centerIn:		parent
-		width:					Theme.spinBoxWidth
-		height:					plus.height
-		font:					Theme.font
-		horizontalAlignment:	Text.AlignHCenter
-
-		Keys.onReturnPressed:	valueField.processInput()
-		Keys.onEnterPressed:	valueField.processInput()
-		Keys.onEscapePressed:	{ text = root.lastValidValue; focus = false; }
-		onTextChanged:			if(acceptableInput) root.lastValidValue = text
+		id:							valueField
+		validator:					JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals; inclusive: root.inclusive }
+		anchors
+		{
+			left:					minus.right
+			verticalCenter:			parent.verticalCenter
+		}
+		width:						Theme.spinBoxWidth
+		height:						plus.height
+		font:						Theme.font
+		horizontalAlignment:		Text.AlignHCenter
+		padding:					Theme.jaspControlPadding
+		Keys.onReturnPressed:		valueField.processInput()
+		Keys.onEnterPressed:		valueField.processInput()
+		Keys.onEscapePressed:		{ text = root.lastValidValue; focus = false; }
+		onTextChanged:				if(acceptableInput) root.lastValidValue = text
+		selectByMouse:				true
 
 		function processInput()
 		{
@@ -86,26 +119,49 @@ FocusScope
 			else					root.lastValidValue = Number(text)
 			focus = false;
 		}
-		onActiveFocusChanged:	if(!activeFocus) focus = false;
+		onActiveFocusChanged:		if(!activeFocus) focus = false;
+
+		ToolTip.text:				root.toolTip
+		ToolTip.timeout:			Theme.toolTipTimeout
+		ToolTip.delay:				Theme.toolTipDelay
+		ToolTip.toolTip.font:		Theme.font
+		ToolTip.visible:			root.toolTip !== "" && ( hoverMe.containsMouse || minus.hovered || plus.hovered )
+		ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor }
 	}
 
 	RectangularButton
 	{
-		id:				plus
-		iconSource:		"qrc:/icons/addition-sign-small.svg"
-		onClicked:		root.setValue(Number(valueField.text) + root.stepSize)
-		width:			height
-		anchors.left:	valueField.right
+		id:					plus
+		iconSource:			"qrc:/icons/addition-sign-small.svg"
+		onClicked:			root.setValue(Number(valueField.text) + root.stepSize)
+		width:				height
+
+		anchors.left:		valueField.right
 	}
 
 	Rectangle
 	{
-		anchors.fill:		parent
-		anchors.margins:	-border.width
+		anchors
+		{
+			top:			parent.top
+			left:			minus.left
+			right:			plus.right
+			bottom:			parent.bottom
+			margins:		-border.width
+		}
 		z:					-1
 		border.color:		Theme.focusBorderColor
 		border.width:		Theme.jaspControlHighlightWidth
 		color:				"transparent"
 		visible:			root.activeFocus
+	}
+
+	MouseArea
+	{
+		id:					hoverMe
+		anchors.fill:		valueField
+		hoverEnabled:		true
+		acceptedButtons:	Qt.NoButton
+		onWheel:			if(wheel.angleDelta > 0) plus.clicked(); else minus.clicked();
 	}
 }

@@ -123,7 +123,6 @@ Item
 		{
 			id:						giveResultsSomeSpace
 			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
-			//Layout.minimumWidth:	Math.max(Theme.minPanelWidth, analyses.width)
 			Layout.fillWidth:		true
 			z:						3
 			visible:				panelSplit.shouldShowInputOutput
@@ -150,12 +149,39 @@ Item
 				}
 			}
 
-			onWidthChanged:
+			/*onWidthChanged:
 			{
-				resizeTimer.resizer(giveResultsSomeSpace.width);
-				//data.wasMaximized = data.width === data.maxWidth;
+				// removed the timer as it isn't necessary any longer after a fix to the dataview (see df7a6eb29a66cc9b201818bf0f6bc86ba8e747ca)
+				// the timer creates a lag in resizing which isn't very nice, we should only activate this if we have hard data that we should
+				//resizeTimer.resizer(giveResultsSomeSpace.width);
 			}
 
+			Timer
+			{
+				id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
+
+				property real resizeToThis: -1
+				property real currentWidth: giveResultsSomeSpace.width
+
+				function resizer(newWidth)
+				{
+					if(resizeTimer.resizeToThis	!== newWidth)
+					{
+						//if(resizeTimer.running)
+						resizeTimer.stop();
+
+						resizeTimer.resizeToThis = newWidth;
+
+						if(newWidth !== resizeTimer.currentWidth)
+							resizeTimer.start();
+					}
+				}
+
+				running:		false
+				repeat:			false
+				interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
+				onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
+			}*/
 
 			WebEngineView
 			{
@@ -168,35 +194,7 @@ Item
 					bottom:				parent.bottom
 				}
 
-				width: resizeTimer.currentWidth - panelSplit.hackySplitHandlerHideWidth
-
-				Timer
-				{
-					id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
-
-					property real resizeToThis: -1
-					property real currentWidth: giveResultsSomeSpace.width
-
-					function resizer(newWidth)
-					{
-						if(resizeTimer.resizeToThis	!== newWidth)
-						{
-							//if(resizeTimer.running)
-							resizeTimer.stop();
-
-							resizeTimer.resizeToThis = newWidth;
-
-							if(newWidth !== resizeTimer.currentWidth)
-								resizeTimer.start();
-						}
-					}
-
-					running:		false
-					repeat:			false
-					interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
-					onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
-				}
-
+				width: giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
 
 				url:					resultsJsInterface.resultsPageUrl
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
@@ -220,13 +218,12 @@ Item
 					// It would be much better to have resultsJsInterface be passed directly though..
 					// It also gives you an overview of the functions used in results html
 
-					function openFileTab()								{ resultsJsInterface.openFileTab()							}
-					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)			}
-					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()					}
-					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)					}
-					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)	}
-					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)}
-					function analysisTitleChanged(id, title)			{ resultsJsInterface.analysisTitleChanged(id, title)		}
+					function openFileTab()								{ resultsJsInterface.openFileTab()                              }
+					function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)             }
+					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }
+					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
+					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
+					function analysisTitleChangedFromResults(id, title)	{ resultsJsInterface.analysisTitleChangedFromResults(id, title) }
 
 
 					function showAnalysesMenu(options)
@@ -238,6 +235,9 @@ Item
 						var optionsJSON  = JSON.parse(options);
 						var functionCall = function (index)
 						{
+							if (customMenu.dontCloseMenu)
+								return;
+
 							customMenu.visible = false;
 							var name = customMenu.props['model'].getName(index);
 
@@ -284,14 +284,12 @@ Item
 					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
 					function pushToClipboard(mime, raw, coded)		{ resultsJsInterface.pushToClipboard(mime, raw, coded)		}
 					function pushImageToClipboard(raw, coded)		{ resultsJsInterface.pushImageToClipboard(raw, coded)		}
-					function simulatedMouseClick(x, y, count)		{ resultsJsInterface.simulatedMouseClick(x, y, count)		}
 					function saveTempImage(index, path, base64)		{ resultsJsInterface.saveTempImage(index, path, base64)		}
 					function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
 					function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
 					function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
 					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
 					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
-
 				}
 			}
 		}

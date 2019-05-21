@@ -35,6 +35,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	_id(id),
 	_module(module),
 	_name(name),
+	_titleDefault(title),
 	_title(title),
 	_version(version),
 	_analyses(analyses)
@@ -53,7 +54,8 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	  _options(new Options()),
 	  _id(id),
 	  _name(analysisEntry->title()),
-	  _title(title == "" ? analysisEntry->title() : title),
+	  _titleDefault(analysisEntry->title()),
+	  _title(title == "" ? _titleDefault : title),
 	  _version(AppInfo::version),
 	  _moduleData(analysisEntry),
 	  _dynamicModule(_moduleData->dynamicModule()),
@@ -198,6 +200,7 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["id"]			= int(_id);
 	analysisAsJson["name"]			= _name;
 	analysisAsJson["title"]			= _title;
+	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["module"]		= _module;
 	analysisAsJson["progress"]		= _progress;
@@ -229,6 +232,12 @@ Json::Value Analysis::asJSON() const
 		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
 
 	return analysisAsJson;
+}
+
+void Analysis::loadFromJSON(Json::Value & options)
+{
+	_titleDefault = options.get("titleDef", _titleDefault).asString();
+	//The rest is already taken in from Analyses::createFromJaspFileEntry
 }
 
 void Analysis::setStatus(Analysis::Status status)
@@ -336,7 +345,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 			json["image"] = getSaveImgOptions();
 		else
 		{
-			json["options"]		= options()->asJSON();
+			json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSON();
 		}
 	}
 
@@ -364,13 +373,13 @@ void Analysis::setHelpFile(QString helpFile)
 void Analysis::setTitle(std::string title)
 {
 	if(title == "")
-		title = _name;
+		title = _titleDefault;
 
 	if (_title == title)
 		return;
 
+	_results["title"] = title;
 	_title = title;
+	
 	emit titleChanged();
-
-	optionsChangedHandler();
 }

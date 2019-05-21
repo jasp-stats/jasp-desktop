@@ -24,15 +24,18 @@ ListModel
 	{
 		displayText		: "Scale"
 		menuImageSource	: "qrc:/icons/variable-scale.svg"
+		isEnabled		: true
 	}
 	ListElement
 	{
 		displayText		: "Ordinal"
 		menuImageSource	: "qrc:/icons/variable-ordinal.svg"
+		isEnabled		: true
 	}
 	ListElement
 	{
 		displayText		: "Nominal"
 		menuImageSource	: "qrc:/icons/variable-nominal.svg"
+		isEnabled		: true
 	}
 }

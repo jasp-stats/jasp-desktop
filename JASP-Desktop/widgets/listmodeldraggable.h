@@ -44,13 +44,14 @@ public:
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
 
 protected:
-	bool _removeTermsWhenDragged;
-	bool _copyTermsWhenDropped;
-	bool _addNewAvailableTermsToAssignedModel = false;
+	bool		_removeTermsWhenDragged;
+	bool		_copyTermsWhenDropped;
+	bool		_addNewAvailableTermsToAssignedModel = false;
 	qmlDropMode _dropMode;
+	Terms		_tempTermsToRemove;
 		
-	bool isAllowed(const Term &term) const;
-	bool isSuggested(const Term &term) const;
+	bool		isAllowed(const Term &term) const;
+	bool		isSuggested(const Term &term) const;
 };
 
 #endif // LISTMODELDRAGGABLE_H

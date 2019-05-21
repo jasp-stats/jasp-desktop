@@ -50,6 +50,7 @@ AnalysisEntry::AnalysisEntry() :
 	_isSeparator(true),
 	_isGroupTitle(false),
 	_isAnalysis(false),
+	_isEnabled(true),
 	_icon("")
 {
 }
@@ -104,7 +105,7 @@ Json::Value AnalysisEntry::asJsonForJaspFile()	const
 	json["moduleVersion"]		= dynamicModule()->version();
 	json["moduleMaintainer"]	= dynamicModule()->maintainer();
 	json["moduleWebsite"]		= dynamicModule()->website();
-	json["analysisEntry"]		= _title;
+	json["analysisEntry"]		= _title + "~" + _function;
 
 	return json;
 }
@@ -112,7 +113,7 @@ Json::Value AnalysisEntry::asJsonForJaspFile()	const
 std::string AnalysisEntry::codedReference() const
 {
 	std::string modName  = dynamicModule()->name(),
-				coded    = modName + '~' + title();
+				coded    = modName + "~" + title() + '~' + function();
 
 	return coded;
 }

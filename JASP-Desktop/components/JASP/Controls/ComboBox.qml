@@ -3,15 +3,18 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
-JASPControl {
+
+JASPControl
+{
 	id:					comboBox
 	controlType:		"ComboBox"
-	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.implicitHeight : 0)
-	implicitWidth:		control.implicitWidth + ((controlLabel.visible && !setLabelAbove) ? labelSpacing + controlLabel.implicitWidth : 0)
+	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
+	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? Theme.labelSpacing + controlLabel.width : 0)
 	width:				implicitWidth
+	background:			useExternalBorder ? externalControlBackground : control.background
+
     
 	property alias	control:				control
-	property int	labelSpacing:			4 * preferencesModel.uiScale
 	property alias	controlLabel:			controlLabel
 	property alias	label:					controlLabel.text
 	property string	currentText				//Am i empty or what?
@@ -33,6 +36,7 @@ JASPControl {
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
 	property bool	setWidthInForm:			true
+	property bool	useExternalBorder:		true
     
     signal activated(int index);
 
@@ -66,8 +70,8 @@ JASPControl {
 	{
 		var newWidth = maxWidth + ((comboBox.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale);
 		control.modelWidth = newWidth;
-		if (control.implicitWidth < controlMinWidth)
-			control.modelWidth += (controlMinWidth - control.implicitWidth);
+		if (control.width < controlMinWidth)
+			control.modelWidth += (controlMinWidth - control.width);
 		comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
     }
     
@@ -75,11 +79,11 @@ JASPControl {
     
 	Rectangle
 	{
-		id: rectangleLabel
-		implicitWidth: controlLabel.implicitWidth
-		implicitHeight: control.implicitHeight
-		color: debug ? Theme.debugBackgroundColor : "transparent"
-		visible: controlLabel.text && comboBox.visible ? true : false
+		id:			rectangleLabel
+		width:		controlLabel.width
+		height:		control.height
+		color:		debug ? Theme.debugBackgroundColor : "transparent"
+		visible:	controlLabel.text && comboBox.visible ? true : false
 		Label
 		{
 			id:			controlLabel
@@ -93,14 +97,15 @@ JASPControl {
 	{
 						id:				control
 						anchors.left:	!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
-						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : comboBox.labelSpacing
+						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : Theme.labelSpacing
 						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
 
 						focus:			true
 
 						padding:		2 * preferencesModel.uiScale //Theme.jaspControlPadding
 
-						implicitWidth:	modelWidth + extraWidth
+						width:			modelWidth + extraWidth
+						height:			Theme.comboBoxHeight
 						textRole:		comboBox.textRole
 		property int	modelWidth:		30 * preferencesModel.uiScale
 		property int	extraWidth:		5 * padding + canvas.width
@@ -123,7 +128,7 @@ JASPControl {
 
 		contentItem: Item
 		{
-			implicitHeight:				Theme.comboBoxHeight
+			height:						Theme.comboBoxHeight
 			Image
 			{
 				id:						contentIcon
@@ -175,39 +180,57 @@ JASPControl {
 		background: Rectangle
 		{
 			id:				comboBoxBackground
-			border.color:	Theme.borderColor
-			border.width:	1
+			border.width:	comboBox.useExternalBorder && !control.activeFocus ? 1					: 0
+			border.color:	comboBox.useExternalBorder							? Theme.borderColor : "transparent"
 			radius:			2
 			color:			enabled ? Theme.controlBackgroundColor : Theme.disableControlBackgroundColor
+		}
+
+		Rectangle
+		{
+			id:					externalControlBackground
+			height:				parent.height + Theme.jaspControlHighlightWidth
+			width:				parent.width + Theme.jaspControlHighlightWidth
+			color:				"transparent"
+			border.width:		3
+			border.color:		"transparent"
+			anchors.centerIn:	parent
+			opacity:			debug ? .3 : 1
+			visible:			comboBox.useExternalBorder
+			radius:				Theme.jaspControlHighlightWidth
 		}
 
 		popup: Popup
 		{
 			y:				control.height - 1
-			width:			control.width
-			implicitHeight:	contentItem.implicitHeight
+			width:			comboBoxBackground.width
 			padding:		1
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } }
 			contentItem: ListView
 			{
 				id: popupView
-				clip:			true
-				implicitHeight:	contentHeight
+				width:			comboBoxBackground.width
+				height:			contentHeight
 				model:			control.popup.visible ? control.delegateModel : null
 				currentIndex:	control.highlightedIndex
-			}
 
-			background: Rectangle
-			{
-				border.color:	Theme.borderColor
-				radius:			2
+				Rectangle
+				{
+					anchors.centerIn: parent
+					width: parent.width + 4
+					height: parent.height + 4
+					border.color:	Theme.focusBorderColor
+					border.width:	2
+					color: "transparent"
+				}
 			}
 		}
 
 		delegate: ItemDelegate
 		{
 			height:								Theme.comboBoxHeight
+			width:								comboBoxBackground.width
 			enabled:							comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
 
 			contentItem: Rectangle
@@ -235,7 +258,7 @@ JASPControl {
 					text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? model.label : model.name)) : ""
 					font:						Theme.font
 					color:						itemRectangle.isEmptyValue || !enabled ? Theme.grayDarker : (comboBox.currentIndex === index ? Theme.white : Theme.black)
-					verticalAlignment:			Text.AlignVCenter
+					anchors.verticalCenter:		parent.verticalCenter
 					anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
 				}
 			}
