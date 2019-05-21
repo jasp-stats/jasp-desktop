@@ -133,11 +133,17 @@ void RibbonButton::setEnabled(bool enabled)
 	_enabled = enabled;
 	emit enabledChanged();
 
-	if(isDynamic())
+	if(_dynamicModules != nullptr)
 	{
-		if(enabled)	_dynamicModules->loadModule(moduleName());
-		else		_dynamicModules->unloadModule(moduleName());
 
+		if(isDynamic())
+		{
+			if(enabled)	_dynamicModules->loadModule(moduleName());
+			else		_dynamicModules->unloadModule(moduleName());
+
+		}
+
+		emit _dynamicModules->moduleEnabledChanged(moduleNameQ(), enabled);
 	}
 }
 

@@ -103,8 +103,6 @@ void DynamicModule::initialize()
 	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
 
 	parseDescriptionFile(descriptionTxt);
-
-	setStatus(moduleStatus::loadingNeeded);
 }
 
 void DynamicModule::parseDescriptionFile(std::string descriptionTxt)

@@ -21,11 +21,12 @@
 #include "dirs.h"
 #include "log.h"
 
-RibbonModel::RibbonModel(DynamicModules * dynamicModules, std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
-	: QAbstractListModel(dynamicModules), _dynamicModules(dynamicModules)
+RibbonModel::RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
+	: QAbstractListModel(dynamicModules), _dynamicModules(dynamicModules), _preferences(preferences)
 {
 	for(const std::string & moduleName : commonModulesToLoad)
 		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), true);
+
 	for(const std::string & moduleName : extraModulesToLoad)
 		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), false);
 
@@ -34,6 +35,19 @@ RibbonModel::RibbonModel(DynamicModules * dynamicModules, std::vector<std::strin
 
 	for(const std::string & modName : _dynamicModules->moduleNames())
 		addRibbonButtonModelFromDynamicModule((*_dynamicModules)[modName]);
+
+	if(_preferences->modulesRemember())
+	{
+		QStringList enabledModules = _preferences->modulesRemembered();
+
+		for(const QString & enabledModule : enabledModules)
+		{
+			std::string mod = enabledModule.toStdString();
+
+			if(_buttonModelsByName.count(mod) > 0)
+				_buttonModelsByName[mod]->setEnabled(true);
+		}
+	}
 }
 
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)

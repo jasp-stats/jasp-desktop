@@ -105,12 +105,35 @@ bool	PreferencesModel::devModRegenDESC()			const { return Settings::value(Settin
 bool	PreferencesModel::logToFile()				const {	return Settings::value(Settings::LOG_TO_FILE								).toBool();					}
 int		PreferencesModel::logFilesMax()				const {	return Settings::value(Settings::LOG_FILES_MAX								).toInt();					}
 int		PreferencesModel::maxFlickVelocity()		const {	return Settings::value(Settings::QML_MAX_FLICK_VELOCITY						).toInt();					}
+bool	PreferencesModel::modulesRemember()			const { return Settings::value(Settings::MODULES_REMEMBER							).toBool();					}
+
+
 
 QStringList PreferencesModel::missingValues()		const
-{;
+{
 	QStringList items = Settings::value(Settings::MISSING_VALUES_LIST).toString().split("|");
 
 	return items;
+}
+
+QStringList PreferencesModel::modulesRemembered()	const
+{
+	QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|");
+
+	return items;
+}
+
+void PreferencesModel::moduleEnabledChanged(QString moduleName, bool enabled)
+{
+	QStringList list = modulesRemembered();
+
+	if(list.contains(moduleName) != enabled)
+	{
+		if(enabled)	list.append(moduleName);
+		else		list.removeAll(moduleName);
+	}
+
+	setModulesRemembered(list);
 }
 
 QString PreferencesModel::fixedDecimalsForJS() const
@@ -380,4 +403,22 @@ void PreferencesModel::setMaxFlickVelocity(int newMaxFlickVelocity)
 
 	Settings::setValue(Settings::QML_MAX_FLICK_VELOCITY, newMaxFlickVelocity);
 	emit maxFlickVelocityChanged(newMaxFlickVelocity);
+}
+
+void PreferencesModel::setModulesRemember(bool newModulesRemember)
+{
+	if (modulesRemember() == newModulesRemember)
+		return;
+
+	Settings::setValue(Settings::MODULES_REMEMBER, newModulesRemember);
+	emit modulesRememberChanged(newModulesRemember);
+}
+
+void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
+{
+	if (modulesRemembered() == newModulesRemembered)
+		return;
+
+	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
+	emit modulesRememberedChanged();
 }

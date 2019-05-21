@@ -107,6 +107,7 @@ signals:
 	void reloadHelpPage();
 
 	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
+	void moduleEnabledChanged(QString moduleName, bool enabled);
 
 private slots:
 	void enginesStopped();

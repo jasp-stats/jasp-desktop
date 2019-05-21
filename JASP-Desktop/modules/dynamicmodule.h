@@ -170,7 +170,6 @@ signals:
 	void registerForLoading(const std::string & moduleName);
 	void registerForInstalling(const std::string & moduleName);
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
-
 	void initializedChanged(bool initialized);
 
 private:
@@ -181,7 +180,7 @@ private:
 private:
 	//QDir			_generatedPackageFolder;
 	QFileInfo		_moduleFolder;
-	moduleStatus	_status = moduleStatus::uninitialized;
+	moduleStatus	_status = moduleStatus::initializing;
 	std::string		_name,
 					_title,
 					_icon,

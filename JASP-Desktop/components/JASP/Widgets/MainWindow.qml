@@ -187,7 +187,6 @@ Window
 				if (!customMenu.visible) {
 					resultsJsInterface.runJavaScript("window.setSelection(false);")
 				}
-
 			}
 		}
 

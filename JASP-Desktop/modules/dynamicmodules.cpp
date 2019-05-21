@@ -272,8 +272,8 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 
 	bool wasInitialized = dynMod->initialized();
 
-	if(!wasInitialized)	initializeModule(dynMod);
-	else				registerForLoading(moduleName.toStdString());
+	if(!wasInitialized)			initializeModule(dynMod);
+	if(dynMod->initialized())	registerForLoading(moduleName.toStdString());
 
 
 	if(dynMod->isDevMod())
@@ -283,7 +283,6 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 		startWatchingDevelopersModule();
 
 		setDevelopersModuleInstallButtonEnabled(true);
-
 	}
 }
 

@@ -22,34 +22,33 @@ import JASP.Theme 1.0
 
 Item
 {
-	id: scrollbar;
+									id							: scrollbar
+									width						: vertical ? breadth   : undefined
+									height						: vertical ? undefined : breadth
+									visible						: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0
 
-	readonly property real visibleBreadth:	Theme.scrollbarBoxWidth
-	property real breadth: visible ? visibleBreadth : 0
-	width:  vertical ? breadth   : undefined;
-	height: vertical ? undefined : breadth;
+	readonly	property real		visibleBreadth				: Theme.scrollbarBoxWidth
+				property real		breadth						: visible ? visibleBreadth : 0
+				property real		extraMarginRightOrBottom	: 0
+				property real		extraMarginLeftOrTop		: 0
+				property Flickable	flickable					: null
+				property int		handleSize					: Theme.scrollbarWidth
+				property int		minimumLength				: 16 * preferencesModel.uiScale
+				property string		bkColor						: Theme.white
+				property string		fgColor						: Theme.black
+				property string		pressedColor				: Theme.blueLighter
+				property bool		outerradius					: false
+				property bool		innerradius					: false
+				property bool		showarrows					: false
+				property bool		vertical					: true
+				property bool		manualAnchor				: false
 
-	property real extraMarginRightOrBottom	: 0
-	property real extraMarginLeftOrTop		: 0
-	property Flickable flickable			: null;
-	property int handleSize					: Theme.scrollbarWidth
-	property int minimumLength				: 16 * preferencesModel.uiScale
-	property string bkColor					: Theme.white; //Use JASPTheme when available!
-	property string fgColor					: Theme.black;
-	property string pressedColor			: Theme.blueLighter;
-	property bool outerradius				: false;
-	property bool innerradius				: false;
-	property bool showarrows				: false;
-	property bool vertical					: true;
-	property bool manualAnchor				: false;
-
-	visible: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0;
-
-	anchors {
-		right:			manualAnchor ? undefined : flickable.right;
-		bottom:			manualAnchor ? undefined : flickable.bottom;
-		top:			manualAnchor ? undefined : vertical	? flickable.top				: undefined;
-		left:			manualAnchor ? undefined : vertical	? undefined					: flickable.left;
+	anchors
+	{
+		right:			manualAnchor ? undefined : flickable.right
+		bottom:			manualAnchor ? undefined : flickable.bottom
+		top:			manualAnchor ? undefined : vertical	? flickable.top				: undefined
+		left:			manualAnchor ? undefined : vertical	? undefined					: flickable.left
 		topMargin:		manualAnchor ? undefined : vertical ? extraMarginLeftOrTop		: undefined
 		leftMargin:		manualAnchor ? undefined : vertical ? undefined					: extraMarginLeftOrTop
 		rightMargin:	manualAnchor ? undefined : vertical ? undefined					: extraMarginRightOrBottom
@@ -105,19 +104,18 @@ Item
 		{
 			anchors.fill:	parent;
 			onClicked:		{ }
+			cursorShape:	Qt.PointingHandCursor
 
-			onWheel:	if(scrollbar.vertical)
-						{
-									if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
-							else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
-							else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
-						} else {
-									if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
-							else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
-							else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
-						}
-
-
+			onWheel:		if(scrollbar.vertical)
+							{
+										if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
+								else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
+								else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
+							} else {
+										if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
+								else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
+								else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
+							}
 		}
 	}
 
@@ -138,7 +136,8 @@ Item
 
 			margins:	backScrollbar.border.width + 1
 		}
-		onClicked: { scrollUp (); }
+
+		onClicked:		scrollUp ();
 		
 		Image
 		{
@@ -150,7 +149,8 @@ Item
 		}
 	}
 
-	MouseArea {
+	MouseArea
+	{
 		id:		btnDown
 		height: btnUp.size
 		width:	btnUp.size
@@ -163,7 +163,8 @@ Item
 			bottom:		parent.bottom
 			margins:	backScrollbar.border.width + 1
 		}
-		onClicked: { scrollDown (); }
+
+		onClicked:  scrollDown ();
 		
 		Image
 		{
@@ -196,6 +197,8 @@ Item
 		{
 			id:				clicker
 			anchors.fill:	parent
+			cursorShape:	Qt.PointingHandCursor
+
 			drag
 			{
 				target:		handle;
@@ -229,11 +232,11 @@ Item
 			
 			Rectangle
 			{
-				id:			backHandle;
-				radius:		innerradius ? width/2 : 0;
-				color:		(clicker.pressed ? pressedColor : fgColor);
-				opacity:	(flickable.moving ? 0.5 : (clicker.pressed ? 1 : 0.2));
-				anchors		{ fill: parent; }
+				id:				backHandle
+				radius:			innerradius			? width/2		: 0
+				color:			clicker.pressed		? pressedColor	: fgColor
+				opacity:		flickable.moving	? 0.5			: clicker.pressed ? 1 : 0.2
+				anchors.fill:	parent
 				
 				Behavior on opacity { NumberAnimation { duration: 150; } }
 			}

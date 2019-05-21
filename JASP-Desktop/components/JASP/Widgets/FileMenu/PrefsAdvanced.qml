@@ -62,8 +62,19 @@ ScrollView
 				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
 				widthLabel:				uiScaleSpinBox.widthLabel
 
-				KeyNavigation.tab:		developerMode
-				KeyNavigation.down:		developerMode
+				KeyNavigation.tab:		rememberModulesSelected
+				KeyNavigation.down:		rememberModulesSelected
+			}
+
+			CheckBox
+			{
+				id:					rememberModulesSelected
+				label:				qsTr("Remember Modules Enabled")
+				checked:			preferencesModel.modulesRemember
+				onCheckedChanged:	preferencesModel.modulesRemember = checked
+				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
+				KeyNavigation.tab:	developerMode
+				KeyNavigation.down:	developerMode
 			}
 		}
 

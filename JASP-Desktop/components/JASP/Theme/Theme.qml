@@ -92,7 +92,7 @@ QtObject {
 	readonly property int textFieldHeight:				20  * uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
-	readonly property int scrollbarBoxWidth:			12  * uiScale
+	readonly property int scrollbarBoxWidth:			16  * uiScale
 	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale

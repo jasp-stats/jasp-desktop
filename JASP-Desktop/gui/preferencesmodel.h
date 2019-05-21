@@ -30,6 +30,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
 	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
 	Q_PROPERTY(int			maxFlickVelocity		READ maxFlickVelocity			WRITE setMaxFlickVelocity			NOTIFY maxFlickVelocityChanged			)
+	Q_PROPERTY(bool			modulesRemember			READ modulesRemember			WRITE setModulesRemember			NOTIFY modulesRememberChanged			)
+	Q_PROPERTY(QStringList	modulesRemembered		READ modulesRemembered			WRITE setModulesRemembered			NOTIFY modulesRememberedChanged			)
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -57,6 +59,8 @@ public:
 	bool		logToFile()					const;
 	int			logFilesMax()				const;
 	int			maxFlickVelocity()			const;
+	bool		modulesRemember()			const;
+	QStringList	modulesRemembered()			const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
@@ -88,33 +92,38 @@ public slots:
 	void setDevModRegenDESC(bool devModRegenDESC);
 	void setLogToFile(bool logToFile);
 	void setLogFilesMax(int logFilesMax);
-	void setMaxFlickVelocity(int maxFlickVelocity);
+	void setMaxFlickVelocity(int maxFlickVelocity);	
+	void setModulesRemember(bool modulesRemember);
+	void setModulesRemembered(QStringList modulesRemembered);
 
+	void moduleEnabledChanged(QString moduleName, bool enabled);
 
 signals:
-	void fixedDecimalsChanged(bool fixedDecimals);
-	void fixedDecimalsChangedString(QString fixedDecimals);
-	void numDecimalsChanged(int numDecimals);
-	void exactPValuesChanged(bool exactPValues);
-	void dataAutoSynchronizationChanged(bool dataAutoSynchronization);
-	void useDefaultEditorChanged(bool useDefaultEditor);
-	void customEditorChanged(QString customEditor);
-	void useDefaultPPIChanged(bool useDefaultPPI);
-	void whiteBackgroundChanged(bool whiteBackground);
-	void uiScaleChanged(double uiScale);
-	void customPPIChanged(int customPPI);
-	void defaultPPIChanged(int defaultPPI);
+	void fixedDecimalsChanged(			bool		fixedDecimals);
+	void fixedDecimalsChangedString(	QString		fixedDecimals);
+	void numDecimalsChanged(			int			numDecimals);
+	void exactPValuesChanged(			bool		exactPValues);
+	void dataAutoSynchronizationChanged(bool		dataAutoSynchronization);
+	void useDefaultEditorChanged(		bool		useDefaultEditor);
+	void customEditorChanged(			QString		customEditor);
+	void useDefaultPPIChanged(			bool		useDefaultPPI);
+	void whiteBackgroundChanged(		bool		whiteBackground);
+	void uiScaleChanged(				double		uiScale);
+	void customPPIChanged(				int			customPPI);
+	void defaultPPIChanged(				int			defaultPPI);
 	void missingValuesChanged();
-	void developerModeChanged(bool developerMode);
-	void developerFolderChanged(QString developerFolder);
-	void plotPPIChanged(int ppiForPlot);
-	void plotBackgroundChanged(QString background);
-	void customThresholdScaleChanged(bool customThresholdScale);
-	void thresholdScaleChanged(int thresholdScale);
-	void devModRegenDESCChanged(bool devModRegenDESC);
-	void logToFileChanged(bool logToFile);
-	void logFilesMaxChanged(int logFilesMax);
-	void maxFlickVelocityChanged(int maxFlickVelocity);
+	void developerModeChanged(			bool		developerMode);
+	void developerFolderChanged(		QString		developerFolder);
+	void plotPPIChanged(				int			ppiForPlot);
+	void plotBackgroundChanged(			QString		background);
+	void customThresholdScaleChanged(	bool		customThresholdScale);
+	void thresholdScaleChanged(			int			thresholdScale);
+	void devModRegenDESCChanged(		bool		devModRegenDESC);
+	void logToFileChanged(				bool		logToFile);
+	void logFilesMaxChanged(			int			logFilesMax);
+	void maxFlickVelocityChanged(		int			maxFlickVelocity);
+	void modulesRememberChanged(		bool		modulesRemember);
+	void modulesRememberedChanged();
 
 private:
 	int _defaultPPI = 192;

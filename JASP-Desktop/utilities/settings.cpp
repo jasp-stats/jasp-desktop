@@ -30,7 +30,9 @@ const Settings::Setting Settings::Values[] = {
 	{"devModeRegenDescEtc",			true},
 	{"logToFile",					false}, //By default do not log to file and when running debug-mode log to stdout and in release to nowhere.
 	{"logFilesMax",					50},
-	{"maxFlickVelocity",			800}
+	{"maxFlickVelocity",			800},
+	{"modulesRemember",				true},
+	{"modulesRemembered",			""}
 };
 
 QVariant Settings::value(Settings::Type key)
