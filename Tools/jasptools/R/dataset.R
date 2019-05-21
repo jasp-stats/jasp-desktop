@@ -13,18 +13,19 @@
 
     # check if it's a name of a JASP dataset
     locations <- .datasetLocations()
-    files <- c()
+    allDatasets <- c()
     for (location in locations) {
-      datasets <- list.files(location)
-      datasets <- datasets[endsWith(datasets, ".csv")]
-      if (x %in% datasets) {
-        fullPath <- file.path(location, x)
+      files <- list.files(location, recursive=TRUE, include.dirs=TRUE)
+      datasets <- files[endsWith(files, ".csv")]
+      match <- which(basename(datasets) == x)
+      if (length(match) == 1) {
+        fullPath <- file.path(location, datasets[match])
         return(utils::read.csv(fullPath, header = TRUE, check.names = FALSE))
       }
-      files <- c(files, datasets)
+      allDatasets <- c(allDatasets, basename(datasets))
     }
     cat("It appears", x, "could not be found. Please supply either a full filepath or the name of one of the following datasets:\n",
-        paste(files, collapse = '\n'), "\n")
+        paste0(sort(allDatasets), collapse = '\n'), "\n")
     stop(paste(x, "not found"))
   }
   stop(paste("Cannot handle data of type", mode(x)))
