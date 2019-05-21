@@ -238,9 +238,10 @@ Manova <- function(jaspResults, dataset, options) {
 }
 
 .boxComputation <- function(dataset, options, errors) {
-  
+
   depData <- dataset[, .v(options$dependent)]
-  grouping <- apply(dataset[, .v(options$fixedFactors)], 1, function(x) as.factor(paste0(x, collapse = "")))
+  factorData <- as.matrix(dataset[, .v(options$fixedFactors)])
+  grouping <- apply(factorData, 1, function(x) as.factor(paste0(x, collapse = "")))
   
   # from the biotools package
   p <- ncol(depData)
@@ -318,8 +319,8 @@ Manova <- function(jaspResults, dataset, options) {
     
     shapiroTable$showSpecifiedColumnsOnly <- TRUE
     
-    shapiroTable$addColumnInfo(name = "Shapiro-Wilk",   title = "W",                  type = "number")
-    shapiroTable$addColumnInfo(name = "p",       title = "p",                      type = "pvalue")
+    shapiroTable$addColumnInfo(name = "W", title = "Shapiro-Wilk", type = "number")
+    shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
     
     shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
     
