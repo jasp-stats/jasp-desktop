@@ -107,8 +107,8 @@ $(document).ready(function () {
 	}
 
 	window.setSelection = function(value) {
-		// remove jaspWidget selection
-		window.menuObject.toolbar.setSelected(value);
+		if (window.menuObject != undefined)
+			window.menuObject.toolbar.setSelected(value);
 	}
 
 	window.copyMenuClicked = function () {
