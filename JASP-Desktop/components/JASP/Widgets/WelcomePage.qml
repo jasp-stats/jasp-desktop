@@ -28,7 +28,7 @@ FocusScope
 
 	id:		welcomeRoot
 
-	property real scaler: 0.9
+	property real scaler: Math.max(0.9, 0.8 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight))
 
 	Rectangle
 	{
@@ -47,8 +47,11 @@ FocusScope
 			id:					info
 			z:					1
 			anchors.centerIn:	parent
-			height:				550 * welcomeRoot.scaler
-			width:				700 * welcomeRoot.scaler
+			height:				baseHeight * welcomeRoot.scaler
+			width:				baseWidth  * welcomeRoot.scaler
+
+			property int baseWidth:		700
+			property int baseHeight:	550
 
 			Image
 			{
@@ -77,6 +80,7 @@ FocusScope
 				color:			"white"
 				font.family:	latoRegularFontFamily.name
 				font.pixelSize: 30 * welcomeRoot.scaler
+				renderType:		Text.QtRendering
 
 				anchors
 				{
@@ -107,6 +111,7 @@ FocusScope
 				color:			"white"
 				font.family:	latoLightFontFamily.name
 				font.pixelSize: 16 * welcomeRoot.scaler
+				renderType:		Text.QtRendering
 
 				anchors
 				{
@@ -144,7 +149,7 @@ FocusScope
 
 						anchors
 						{
-							verticalCenter:	parent.verticalCenter
+							verticalCenter:	blueKeyword.verticalCenter
 							left:			parent.left
 							margins:		1 //welcomeRoot.scaler
 						}
@@ -156,8 +161,9 @@ FocusScope
 						text:				keyword
 						font.family:		latoRegularFontFamily.name
 						font.pixelSize:		explanationElement.font.pixelSize
-						font.bold:			true
+						font.weight:		Font.ExtraBold
 						verticalAlignment:	Text.AlignVCenter
+						renderType:			Text.QtRendering
 						color:				"#23a1df"
 						width:				80 * welcomeRoot.scaler
 						readOnly:			true
@@ -165,7 +171,7 @@ FocusScope
 						selectByMouse:		false
 						anchors
 						{
-							verticalCenter:	orangeDot.verticalCenter
+							top:			parent.top
 							left:			orangeDot.right
 							margins:		orangeDot.anchors.margins
 						}
@@ -177,15 +183,17 @@ FocusScope
 						text:				explanation
 						font.family:		latoLightFontFamily.name
 						font.pixelSize:		freshAndFunky.font.pixelSize
+						font.weight:		Font.Light
 						verticalAlignment:	Text.AlignVCenter
 						color:				"black"
 						wrapMode:			TextEdit.Wrap
 						readOnly:			true
+						renderType:			Text.QtRendering
 						selectByKeyboard:	false
 						selectByMouse:		false
 						anchors
 						{
-							verticalCenter:	blueKeyword.verticalCenter
+							top:			blueKeyword.top
 							left:			blueKeyword.right
 							right:			parent.right
 						}
@@ -217,7 +225,7 @@ FocusScope
 				font.underline:			openDataFileMouse.containsMouse
 				font.family:			latoRegularFontFamily.name
 				font.pixelSize:			freshAndFunky.font.pixelSize + 2
-
+				renderType:				Text.QtRendering
 				anchors
 				{
 					horizontalCenter:	parent.horizontalCenter
@@ -246,6 +254,7 @@ FocusScope
 				color:				"white"
 				width:				parent.widthOverflowers
 				wrapMode:			TextEdit.Wrap
+				renderType:			Text.QtRendering
 				readOnly:			true
 				selectByKeyboard:	false
 				selectByMouse:		false

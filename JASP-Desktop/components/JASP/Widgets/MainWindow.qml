@@ -23,17 +23,17 @@ import JASP.Theme 1.0
 
 Window
 {
-	id:			mainWindowRoot
-	title:		mainWindow.windowTitle
-	visible:	true
-	width:		1250 < Screen.width ? 1250 : Screen.width
-	height:		768
+	id:					mainWindowRoot
+	title:				mainWindow.windowTitle
+	visible:			true
+	width:				Math.min(1248, Screen.width)
+	height:				768
 
 
-	minimumWidth:	800
-	minimumHeight:	600
+	minimumWidth:		800
+	minimumHeight:		600
 
-	onVisibleChanged: if(!visible) helpModel.visible = false
+	onVisibleChanged:	if(!visible) helpModel.visible = false
 
 	property real devicePixelRatio: Screen.devicePixelRatio
 
@@ -67,7 +67,7 @@ Window
 		RibbonBar
 		{
 			id	: ribbon
-			z	: 4
+			z	: 6
 
 			anchors
 			{
@@ -101,8 +101,8 @@ Window
 				customMenu.visible	= true;
 			}
 
-			visible: false
-			dontCloseMenu: false
+			visible:		false
+			dontCloseMenu:	false
 		}
 
 		FileMenu

@@ -23,14 +23,14 @@ import JASP.Theme 1.0
 
 Item
 {
-	id						: menu
-	width					: menuRectangle.width
-	height					: menuRectangle.height
-	property var props		: undefined
-	property var dontCloseMenu	: false
-	property bool hasIcons	: true
-	property real _iconPad	: 5 * preferencesModel.uiScale
-	onPropsChanged			: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+	id							: menu
+	width						: menuRectangle.width
+	height						: menuRectangle.height
+	property var props			: undefined
+	property bool dontCloseMenu	: false
+	property bool hasIcons		: true
+	property real _iconPad		: 5 * preferencesModel.uiScale
+	onPropsChanged				: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
 
 	function resizeElements(newWidth)
 	{

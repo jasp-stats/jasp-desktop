@@ -24,17 +24,24 @@ import JASP.Theme 1.0
 
 Rectangle
 {
-	id		: ribbonButton
-	width	: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
-	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
-	color	: mice.pressed ? Theme.grayLighter : "transparent"
-	z		: 1
+	id				: ribbonButton
+	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
+	height			: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
+	color			: showPressed ? Theme.grayLighter : "transparent"
+	border.color	: myMenuOpen ? Theme.grayDarker : Theme.gray
+	border.width	: showPressed ? 1 : 0
+	z				: 1
+	//radius			: 4
 
 	property alias	text		: innerText.text
 	property alias	source		: backgroundImage.source
 	property bool	enabled		: true
 	property string moduleName	: "???"
 	property var	menu		: []
+	property bool	myMenuOpen	: false
+	property bool	showPressed	: myMenuOpen || mice.pressed
+
+	onMyMenuOpenChanged: if(!myMenuOpen) myMenuOpen = false; //Break the binding
 
 	property real _imgIndWidth: backgroundImage.width + (menuIndicator.visible ? (menuIndicator.width + menuIndicator.anchors.leftMargin) * 2 : 0)
 
@@ -45,7 +52,7 @@ Rectangle
 		anchors.centerIn	: parent
 		width				: parent.width
 		height				: parent.height
-		scale				: mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
+		scale				: mice.containsMouse && !ribbonButton.showPressed ? Theme.ribbonScaleHovered : 1
 
 		Image
 		{
@@ -131,7 +138,9 @@ Rectangle
 						"hasIcons"		: ribbonButton.menu.hasIcons()
 					};
 
-					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
+					customMenu.showMenu(ribbonButton, props, 1 , ribbonButton.height);
+
+					myMenuOpen = Qt.binding(function() { return customMenu.visible; });
 				}
 			}
 		}
