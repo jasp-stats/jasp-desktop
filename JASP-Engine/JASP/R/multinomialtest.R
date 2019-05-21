@@ -406,7 +406,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
 
     tableFrame <- data.frame(
       factor = names(chisqResults[[1]][["observed"]]),
-      observed = chisqResults[[1]][["observed"]]/div,
+      observed = as.numeric(chisqResults[[1]][["observed"]])/div,
       stringsAsFactors = FALSE
     )
 
