@@ -66,12 +66,12 @@ Form
 		CheckBox
 		{
 			name: "plotPriorAndPosterior";			label: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	label: qsTr("Additional info") }
+            CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{
 			name: "plotBayesFactorRobustness";		label: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info") }
+            CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{
