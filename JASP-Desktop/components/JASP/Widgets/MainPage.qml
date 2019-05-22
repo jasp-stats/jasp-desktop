@@ -241,7 +241,7 @@ Item
 							"functionCall"	: functionCall
 						};
 
-						customMenu.showMenu(resultsView, props, optionsJSON['rXright'] + 10, optionsJSON['rY']);
+						customMenu.showMenu(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
 					}
 
 					function updateUserData()						{ resultsJsInterface.updateUserData()						}

@@ -114,7 +114,7 @@ Item
 							return mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
 						}
 
-						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
+						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
 						Image
@@ -129,7 +129,7 @@ Item
 							fillMode				: Image.PreserveAspectFit
 
 							anchors.left			: parent.left
-							anchors.leftMargin		: menu._iconPad
+							anchors.leftMargin		: menu._iconPad * 2
 							anchors.verticalCenter	: parent.verticalCenter
 						}
 
@@ -141,7 +141,8 @@ Item
 							color				: isEnabled ? Theme.black : Theme.gray
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
-							anchors.leftMargin	: menu._iconPad
+							anchors.leftMargin	: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
+              anchors.rightMargin : menu._iconPad * 2
 							anchors.verticalCenter:  parent.verticalCenter
 
 						}
