@@ -80,12 +80,30 @@ FocusScope
 				color:			"white"
 				font.family:	latoRegularFontFamily.name
 				font.pixelSize: 30 * welcomeRoot.scaler
+				font.weight:	Font.Bold
 				renderType:		Text.QtRendering
 
 				anchors
 				{
 					top:				jaspLogo.bottom
 					horizontalCenter:	parent.horizontalCenter
+				}
+			}
+
+			Text
+			{
+				id:				version
+				text:			mainWindow.versionString()
+				color:			"white"
+				font.family:	latoLightFontFamily.name
+				font.pixelSize: 12 * welcomeRoot.scaler
+				font.weight:	Font.Light
+				renderType:		Text.QtRendering
+
+				anchors
+				{
+					top:		parent.top
+					right:		parent.right
 				}
 			}
 
@@ -111,6 +129,7 @@ FocusScope
 				color:			"white"
 				font.family:	latoLightFontFamily.name
 				font.pixelSize: 16 * welcomeRoot.scaler
+				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
 
 				anchors
@@ -208,7 +227,7 @@ FocusScope
 				height:						childrenRect.height
 				spacing:					2 //* preferencesModel.uiScale
 				anchors.horizontalCenter:	parent.horizontalCenter
-				y:							(parent.height / 2) - (height / 2) - 10
+				y:							(parent.height / 2) - (height / 2) - (20 * welcomeRoot.scaler)
 
 				Repeater
 				{
@@ -230,7 +249,7 @@ FocusScope
 				{
 					horizontalCenter:	parent.horizontalCenter
 					top:				bulletPoints.bottom
-					topMargin:			20
+					topMargin:			25 * welcomeRoot.scaler
 				}
 
 				MouseArea
@@ -248,16 +267,19 @@ FocusScope
 
 			TextArea
 			{
-				id:					keepInMindBeta
-				text:				qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!")
-				font:				freshAndFunky.font
-				color:				"white"
-				width:				parent.widthOverflowers
-				wrapMode:			TextEdit.Wrap
-				renderType:			Text.QtRendering
-				readOnly:			true
-				selectByKeyboard:	false
-				selectByMouse:		false
+				id:						keepInMindBeta
+				text:					qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!")
+				font.family:			latoLightFontFamily.name
+				font.pixelSize:			12 * welcomeRoot.scaler
+				font.weight:			Font.Normal
+				color:					"white"
+				width:					parent.widthOverflowers
+				wrapMode:				TextEdit.Wrap
+				renderType:				Text.QtRendering
+				readOnly:				true
+				selectByKeyboard:		false
+				selectByMouse:			false
+				horizontalAlignment:	Text.AlignHCenter
 
 				anchors
 				{
@@ -271,34 +293,36 @@ FocusScope
 
 		Image
 		{
-			id:					blueWave
-			fillMode:			Image.TileHorizontally
-			height:				100  * welcomeRoot.scaler
-			sourceSize.width:	1400 * welcomeRoot.scaler
-			sourceSize.height:	height
-			source:				"qrc:/core/img/jasp-wave-down-blue-120.svg"
+			id:						blueWave
+			fillMode:				Image.TileHorizontally
+			horizontalAlignment:	Image.AlignHCenter
+			height:					100  * welcomeRoot.scaler
+			sourceSize.width:		1400 * welcomeRoot.scaler
+			sourceSize.height:		height
+			source:					"qrc:/core/img/jasp-wave-down-blue-120.svg"
 			anchors
 			{
-				top:			parent.top
-				left:			parent.left
-				right:			parent.right
+				top:				parent.top
+				left:				parent.left
+				right:				parent.right
 
 			}
 		}
 
 		Image
 		{
-			id:					greenWave
-			fillMode:			blueWave.fillMode
-			height:				blueWave.height
-			sourceSize.width:	blueWave.sourceSize.width
-			sourceSize.height:	blueWave.sourceSize.height
-			source:				"qrc:/core/img/jasp-wave-up-green-120.svg"
+			id:						greenWave
+			fillMode:				blueWave.fillMode
+			horizontalAlignment:	Image.AlignHCenter
+			height:					blueWave.height
+			sourceSize.width:		blueWave.sourceSize.width
+			sourceSize.height:		blueWave.sourceSize.height
+			source:					"qrc:/core/img/jasp-wave-up-green-120.svg"
 			anchors
 			{
-				left:			parent.left
-				right:			parent.right
-				bottom:			parent.bottom
+				left:				parent.left
+				right:				parent.right
+				bottom:				parent.bottom
 
 			}
 		}

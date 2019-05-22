@@ -149,7 +149,7 @@ bool Version::isBeta() const
 	return build >= 101 && build <= 254;
 }
 
-std::string Version::asString() const
+std::string Version::asString(bool addDebugFlag) const
 {
 	std::stringstream stream;
 
@@ -158,15 +158,24 @@ std::string Version::asString() const
 	if (revision != 0 || build > 255 )
 		stream << "." << (int)revision;
 
-	if (isRelease()) {
+	/*if (isRelease()) {
 		if (build > 255)
 			stream << "." << (int)(build - 255);
 	}
 	else if (isAlpha())
 		stream << " Alpha " << (int)build;
 	else if (isBeta())
-		stream << " Beta " << (int)(build - 100);
-	
+		stream << " Beta " << (int)(build - 100);*/
+
+	if(addDebugFlag) //Moved from aboutmodel.cpp
+	{
+#ifdef JASP_DEBUG
+		stream << "-Debug";
+#endif
+
+		stream << "-Beta";
+	}
+
 	return stream.str();
 }
 

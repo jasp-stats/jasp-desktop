@@ -76,6 +76,7 @@ FocusScope
 				vertical:		true
 				flickable:		analysesFlickable
 				manualAnchor:	true
+				bigBar:			true
 				anchors
 				{
 					top:		parent.top

@@ -117,6 +117,7 @@ FocusScope
 		anchors.top:	parent.top
 		anchors.right:	parent.right
 		anchors.bottom: horiScroller.top
+		bigBar:			true
 	}
 
 	JASPScrollBar
@@ -127,5 +128,6 @@ FocusScope
 		anchors.left:	parent.left
 		anchors.right:	vertiScroller.left
 		anchors.bottom: parent.bottom
+		bigBar:			true
 	}
 }

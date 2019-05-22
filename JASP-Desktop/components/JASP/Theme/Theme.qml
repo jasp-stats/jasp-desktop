@@ -86,13 +86,11 @@ QtObject {
 	readonly property int spinBoxWidth:					50  * uiScale
 	readonly property int sliderLength:					80  * uiScale
 	readonly property int spinBoxHeight:				30  * uiScale
-	readonly property int scrollbarWidth:				8   * uiScale
 	readonly property int comboBoxHeight:				20  * uiScale
 	readonly property int textFieldWidth:				200 * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
-	readonly property int scrollbarBoxWidth:			16  * uiScale
 	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
@@ -105,6 +103,10 @@ QtObject {
 	readonly property int defaultTextAreaHeight:		250 * uiScale
 	readonly property int jaspControlHighlightWidth:	Math.max(2, 3 * uiScale)
 	readonly property int defaultSingleItemListHeight:	49  * uiScale
+
+	readonly property int scrollbarBoxWidth:			12  * uiScale
+	readonly property int scrollbarBoxWidthBig:			16  * uiScale
+
 
 	readonly property int messageBoxButtonHeight:		40  * uiScale
 	readonly property int maximumFlickVelocity:			preferencesModel.maxFlickVelocity

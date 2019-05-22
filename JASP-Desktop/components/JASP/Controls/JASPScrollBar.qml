@@ -27,21 +27,21 @@ Item
 									height						: vertical ? undefined : breadth
 									visible						: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0
 
-	readonly	property real		visibleBreadth				: Theme.scrollbarBoxWidth
+	readonly	property real		visibleBreadth				: bigBar ? Theme.scrollbarBoxWidthBig : Theme.scrollbarBoxWidth
 				property real		breadth						: visible ? visibleBreadth : 0
 				property real		extraMarginRightOrBottom	: 0
 				property real		extraMarginLeftOrTop		: 0
 				property Flickable	flickable					: null
-				property int		handleSize					: Theme.scrollbarWidth
 				property int		minimumLength				: 16 * preferencesModel.uiScale
 				property string		bkColor						: Theme.white
-				property string		fgColor						: Theme.black
+				property string		fgColor						: Theme.gray
 				property string		pressedColor				: Theme.blueLighter
 				property bool		outerradius					: false
 				property bool		innerradius					: false
 				property bool		showarrows					: false
 				property bool		vertical					: true
 				property bool		manualAnchor				: false
+				property bool		bigBar						: false
 
 	anchors
 	{
@@ -198,6 +198,7 @@ Item
 			id:				clicker
 			anchors.fill:	parent
 			cursorShape:	Qt.PointingHandCursor
+			hoverEnabled:	true
 
 			drag
 			{
@@ -233,9 +234,8 @@ Item
 			Rectangle
 			{
 				id:				backHandle
-				radius:			innerradius			? width/2		: 0
-				color:			clicker.pressed		? pressedColor	: fgColor
-				opacity:		flickable.moving	? 0.5			: clicker.pressed ? 1 : 0.2
+				radius:			innerradius									? width/2		: 0
+				color:			clicker.pressed || clicker.containsMouse	? pressedColor	: fgColor
 				anchors.fill:	parent
 				
 				Behavior on opacity { NumberAnimation { duration: 150; } }

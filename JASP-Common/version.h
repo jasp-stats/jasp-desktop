@@ -39,7 +39,7 @@ public:
 	bool isBeta()		const;
 	bool isEmpty()		const;
 
-	std::string asString() const;
+	std::string asString(bool addDebugFlag = false) const;
 
 	unsigned char	major		= 0,
 					minor		= 0,

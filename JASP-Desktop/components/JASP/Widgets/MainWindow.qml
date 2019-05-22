@@ -16,19 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Window 2.11
-import JASP.Widgets 1.0
-import JASP.Theme 1.0
+import QtQuick			2.11
+import QtQuick.Window	2.11
+import JASP.Widgets		1.0
+import JASP.Theme		1.0
 
 Window
 {
 	id:					mainWindowRoot
 	title:				mainWindow.windowTitle
 	visible:			true
-	width:				Math.min(1248, Screen.width)
+	width:				1248
 	height:				768
-
+	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 
 	minimumWidth:		800
 	minimumHeight:		600
@@ -50,6 +50,11 @@ Window
 		}
 	}
 
+	function toggleFullScreen()
+	{
+		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
+	}
+
 	Item
 	{
 		anchors.fill:	parent
@@ -63,6 +68,7 @@ Window
 		Shortcut { onActivated: mainWindow.refreshKeyPressed();		sequences: ["Ctrl+R"];											}
 		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();	sequences: ["Ctrl+0"];											}
 		Shortcut { onActivated: mainWindowRoot.close();				sequences: ["Ctrl+Q", Qt.Key_Close];							}
+		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];											}
 
 		RibbonBar
 		{

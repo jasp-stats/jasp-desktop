@@ -44,15 +44,7 @@ QString AboutModel::jaspBuildDate() const
 
 QString AboutModel::getJaspVersion()
 {
-	QString version = QString::fromStdString(AppInfo::version.asString());
-
-#ifdef JASP_DEBUG
-	version+="-Debug";
-#endif
-
-	version+="-Beta";
-
-	return version;
+	return QString::fromStdString(AppInfo::version.asString(true));
 }
 
 QString AboutModel::getJaspCopyrightMessage()
