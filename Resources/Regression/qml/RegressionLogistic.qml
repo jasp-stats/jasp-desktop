@@ -156,13 +156,13 @@ Form
                     {
                         value: "residualZ"; label: qsTr("Standard residual >"); checked: true
                         childrenOnSameRow: true
-                        IntegerField { name: "casewiseDiagnosticsResidualZ"; defaultValue: 3	}
+                        DoubleField { name: "casewiseDiagnosticsResidualZ"; defaultValue: 3	}
                     }
                     RadioButton
                     {
                         value: "cooksDistance";	label: qsTr("Cook's distance >")
                         childrenOnSameRow: true
-                        IntegerField { name: "casewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+                        DoubleField { name: "casewiseDiagnosticsCooksDistance";	defaultValue: 1	}
                     }
                     RadioButton { value: "allCases"; label: qsTr("All")										}
                 }
