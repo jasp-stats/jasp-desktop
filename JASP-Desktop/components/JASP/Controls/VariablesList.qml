@@ -268,7 +268,6 @@ JASPControl
 					if (itemWrapper)
 					{
 						var itemRectangle = itemWrapper.children[0];
-						itemWrapper.forceActiveFocus();
 						listView.clearSelectedItems(false);
 						listView.selectItem(itemRectangle, true);
 						listView.startShiftSelected = listView.currentIndex;
