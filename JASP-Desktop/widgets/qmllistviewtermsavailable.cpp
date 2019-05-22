@@ -38,6 +38,8 @@ void QMLListViewTermsAvailable::addAssignedModel(ListModelAssignedInterface *mod
 	_assignedModels.push_back(model);
 	 if (!_availableModel->areTermsVariables())
 		 model->listView()->setTermsAreNotVariables();
+	 if (_availableModel->areTermsInteractions())
+		 model->listView()->setTermsAreInteractions();
 }
 
 void QMLListViewTermsAvailable::setTermsAreNotVariables()
