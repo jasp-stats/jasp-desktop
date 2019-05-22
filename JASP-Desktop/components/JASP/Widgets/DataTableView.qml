@@ -118,7 +118,8 @@ FocusScope
 
 								if (columnType !== undefined)
 									colIcon.setColumnType(columnType);
-								customMenu.visible = false;
+
+								customMenu.remove()
 							}
 							var props = {
 								"model"			: columnTypeModel,

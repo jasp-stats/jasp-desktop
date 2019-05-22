@@ -235,11 +235,10 @@ Item
 						var optionsJSON  = JSON.parse(options);
 						var functionCall = function (index)
 						{
-							if (customMenu.dontCloseMenu)
-								return;
-
-							customMenu.visible = false;
-							var name = customMenu.props['model'].getName(index);
+							var name		= customMenu.props['model'].getName(index);
+							var jsfunction	= customMenu.props['model'].getJSFunction(index);
+							
+							customMenu.remove()
 
 							if (name === 'hasRefreshAllAnalyses') {
 								resultsJsInterface.refreshAllAnalyses();
@@ -255,7 +254,7 @@ Item
 								resultsJsInterface.purgeClipboard();
 							}
 
-							resultsJsInterface.runJavaScript(customMenu.props['model'].getJSFunction(index));
+							resultsJsInterface.runJavaScript(jsfunction);
 
 							if (name === 'hasEditTitle' || name === 'hasNotes') {
 								resultsJsInterface.packageModified();

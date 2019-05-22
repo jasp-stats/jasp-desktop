@@ -689,8 +689,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 			setWelcomePageVisible(false);
-			_resultsJsInterface->resetResults();
-
 
 			_loader.io(event, _package);
 			showProgress(event->type() != Utils::FileType::jasp);
@@ -772,7 +770,8 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
-
+		
+		_resultsJsInterface->resetResults();
 		setDataPanelVisible(false);
 		setDataAvailable(false);
 		setWelcomePageVisible(true);

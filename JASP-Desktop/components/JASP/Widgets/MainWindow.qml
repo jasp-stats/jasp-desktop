@@ -102,7 +102,6 @@ Window
 			}
 
 			visible:		false
-			dontCloseMenu:	false
 		}
 
 		FileMenu
@@ -182,11 +181,8 @@ Window
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
 				mouse.accepted			= false
-				customMenu.visible		= customMenu.dontCloseMenu
-
-				if (!customMenu.visible) {
-					resultsJsInterface.runJavaScript("window.setSelection(false);")
-				}
+				
+				customMenu.remove()
 			}
 		}
 

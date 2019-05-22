@@ -117,8 +117,9 @@ Rectangle
 			{
 				fileMenuModel.visible	= false;
 				modulesMenu.opened		= false;
-				customMenu.visible		= false;
 				mouse.accepted			= false;
+				
+				customMenu.remove()
 
 				if (ribbonButton.menu.rowCount() === 1)
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
@@ -129,7 +130,7 @@ Rectangle
 						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
-						customMenu.visible = false;
+						customMenu.remove();
 					}
 
 					var props = {

@@ -27,10 +27,22 @@ Item
 	width						: menuRectangle.width
 	height						: menuRectangle.height
 	property var props			: undefined
-	property bool dontCloseMenu	: false
 	property bool hasIcons		: true
 	property real _iconPad		: 5 * preferencesModel.uiScale
-	onPropsChanged				: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+	
+	onPropsChanged				:
+	{
+		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+		
+		if (menu.props === undefined || menu.props["model"] !== resultMenuModel)
+			resultsJsInterface.runJavaScript("window.setSelection(false);")
+	}
+	
+	function remove()
+	{
+		menu.visible = false
+		menu.props = undefined
+	}
 
 	function resizeElements(newWidth)
 	{
@@ -139,15 +151,7 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		: menu.props['functionCall'](index)
-							onEntered		: {
-								if (!isEnabled)
-									menu.dontCloseMenu = true
-							}
-							onExited		: {
-								if (!isEnabled)
-									menu.dontCloseMenu = false
-							}
+							onClicked		: if (isEnabled) menu.props['functionCall'](index)
 						}
 					}
 				}
@@ -195,20 +199,6 @@ Item
 								left			: menuItemImage.right
 								leftMargin		: menu._iconPad
 								verticalCenter	: parent.verticalCenter
-							}
-						}
-
-						MouseArea
-						{
-							hoverEnabled	: true
-							anchors.fill	: parent
-							onEntered		: {
-								if (!isEnabled)
-									menu.dontCloseMenu = true
-							}
-							onExited		: {
-								if (!isEnabled)
-									menu.dontCloseMenu = false
 							}
 						}
 					}

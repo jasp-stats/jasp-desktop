@@ -42,9 +42,10 @@ FocusScope
 
 		onClicked:
 		{
-			customMenu.visible		= false;
 			fileMenuModel.visible	= !fileMenuModel.visible;
 			modulesMenu.opened		= false;
+			
+			customMenu.remove()
 		}
 
 		anchors
@@ -77,9 +78,10 @@ FocusScope
 
 		onClicked	:
 		{
-			customMenu.visible	= false;
-			modulesMenu.opened	= !modulesMenu.opened;
-			fileMenuModel.visible = false;
+			modulesMenu.opened		= !modulesMenu.opened;
+			fileMenuModel.visible	= false;
+			
+			customMenu.remove()
 		}
 
 		showArrow	: modulesMenu.opened
