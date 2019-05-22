@@ -245,6 +245,7 @@ JASPControl
 			anchors.rightMargin:	scrollBar.width + anchors.margins
 			model:					variablesList.model
 			delegate:				itemComponent
+			boundsBehavior:			Flickable.StopAtBounds
 			
 			property int startShiftSelected: 0;
 			property int endShiftSelected: -1;

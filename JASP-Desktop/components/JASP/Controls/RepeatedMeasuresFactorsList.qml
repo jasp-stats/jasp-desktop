@@ -85,6 +85,8 @@ JASPControl
 			cellHeight:			22 * preferencesModel.uiScale
 			cellWidth:			width
 			clip:				true
+			boundsBehavior:		Flickable.StopAtBounds
+
 
 			anchors.fill:		parent
 			anchors.margins:	4 * preferencesModel.uiScale

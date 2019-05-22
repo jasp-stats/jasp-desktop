@@ -34,6 +34,7 @@ Item
 		orientation:	ListView.Horizontal
 		currentIndex:	ribbonModelFiltered.highlightedModuleIndex
 		height:			parent.height
+		boundsBehavior:	Flickable.StopAtBounds
 
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
