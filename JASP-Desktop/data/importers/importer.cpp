@@ -125,7 +125,8 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 			}
 	}
 
-	_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
+	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
+		_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 
 	delete importDataSet;
 }
