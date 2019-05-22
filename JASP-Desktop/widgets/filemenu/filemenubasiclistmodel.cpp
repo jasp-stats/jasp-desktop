@@ -42,7 +42,7 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case DirRole:					if (QFileInfo(item.path).path().toLower().startsWith("http:") || QFileInfo(item.path).path().toLower().startsWith("https:"))
 										return QFileInfo (item.path).path();
 									else
-										return QDir::toNativeSeparators(QFileInfo (item.path).path()) ;
+										return QDir::toNativeSeparators(QFileInfo (item.path).path()) + QDir::separator() ;
 	case ActionRole:				return _openFileWhenClicked ? "open" : "sync";
 	default:						return QStringLiteral("Me know nothing");
 	}
