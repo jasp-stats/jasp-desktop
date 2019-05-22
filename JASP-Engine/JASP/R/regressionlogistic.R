@@ -98,7 +98,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
           estimatesTable <<- state[["estimatesTable"]]
         }
         
-        if (!any(coeffEstimatesBootstrapping, coeffEstimatesBootstrappingReplicates)) {
+        if (!any(coeffEstimatesBootstrappingReplicates)) {
           # estimates table bootstrapping can be reused
           estimatesTableBootstrapping <<- state[["estimatesTableBootstrapping"]]
         }
@@ -198,6 +198,12 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   
   if (is.null(estimatesTableBootstrapping) && options[["coeffEstimatesBootstrapping"]]) {
     estimatesTableBootstrapping <- .estimatesTableBootstrapping(dataset, options, perform)
+    estimatesTableBootstrappingState <- estimatesTableBootstrapping
+  } else if(options[["coeffEstimatesBootstrapping"]] && options[['coeffEstimates']]){
+    estimatesTableBootstrappingState <- estimatesTableBootstrapping
+  } else{
+    estimatesTableBootstrappingState <- estimatesTableBootstrapping
+    estimatesTableBootstrapping <- NULL
   }
   
   if (is.null(casewiseDiagnosticsTable) && options[["casewiseDiagnostics"]]) {
@@ -277,7 +283,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
     state[["lrObj"]] <- lrObj
     state[["modelSummary"]] <- modelSummary
     state[["estimatesTable"]] <- estimatesTable
-    state[["estimatesTableBootstrapping"]] <- estimatesTableBootstrapping
+    state[["estimatesTableBootstrapping"]] <- estimatesTableBootstrappingState
     state[["casewiseDiagnosticsTable"]] <- casewiseDiagnosticsTable
     state[["confusionMatrix"]] <- confusionMatrix
     state[["perfMetrics"]] <- perfMetrics
@@ -449,7 +455,9 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   } else {
     
     # init phase
-    casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", dependentVariable=".", predicted = ".", predictedGroup = ".", residual = ".", residualZ = ".", cooksD = ".")
+    casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", dependentVariable=".",
+                                                                           predicted = ".", predictedGroup = ".",
+                                                                           residual = ".", residualZ = ".", cooksD = ".")
   }
   
   casewiseDiagnostics[["data"]] <- casewiseDiagnostics.rows
