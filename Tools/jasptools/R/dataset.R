@@ -15,15 +15,21 @@
     locations <- .datasetLocations()
     allDatasets <- c()
     for (location in locations) {
-      files <- list.files(location, recursive=TRUE, include.dirs=TRUE)
+      
+      files <- list.files(location, recursive = TRUE, include.dirs = TRUE)
       datasets <- files[endsWith(files, ".csv")]
       match <- which(basename(datasets) == x)
-      if (length(match) == 1) {
-        fullPath <- file.path(location, datasets[match])
-        return(utils::read.csv(fullPath, header = TRUE, check.names = FALSE))
+      if (length(match) > 0) {
+        fullPath <- file.path(location, datasets[match[1]])
+        if (length(match) > 1) {
+          warning("Multiple datasets exists with the same name, choosing '", datasets[match[1]], "'")
+        }
+        return(data.table::fread(fullPath, header = TRUE, check.names = FALSE, data.table = FALSE))
       }
       allDatasets <- c(allDatasets, basename(datasets))
+      
     }
+    
     cat("It appears", x, "could not be found. Please supply either a full filepath or the name of one of the following datasets:\n",
         paste0(sort(allDatasets), collapse = '\n'), "\n")
     stop(paste(x, "not found"))
