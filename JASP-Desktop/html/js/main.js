@@ -467,7 +467,7 @@ $(document).ready(function () {
 			analyses.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
-				console.log(options);
+
 				window.menuObject = obj;
 			});
 
