@@ -31,7 +31,7 @@ Form
 
 	VariablesForm
 	{
-		height: 190
+		height: 190 * preferencesModel.uiScale
 		marginBetweenVariablesLists: 15
 		AvailableVariablesList {				name: "allVariablesList" }
 		AssignedVariablesList {					name: "factor";		title: qsTr("Factor");			singleVariable: true; allowedColumns: ["ordinal", "nominal"]	}

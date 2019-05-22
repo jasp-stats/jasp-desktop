@@ -28,7 +28,7 @@ Form
 
 	VariablesForm
 	{
-		height						: 260
+		height						: 260 * preferencesModel.uiScale
 		marginBetweenVariablesLists	: 15
 
 		AvailableVariablesList	{ name: "allVariablesList" }
@@ -44,10 +44,10 @@ Form
 
 		Group
 		{
-			title	: qsTr("Prior on Log Odds Ratio")
+			title	: qsTr("Normal Prior on Log Odds Ratio")
 
-			DoubleField { label: qsTr("Normal prior μ:"); name: "normal_mu";			defaultValue: 0 }
-			DoubleField { label: qsTr("                     σ:"); name: "normal_sigma";	defaultValue: 1 }
+			DoubleField { label: qsTr("μ:"); name: "normal_mu";		defaultValue: 0 }
+			DoubleField { label: qsTr("σ:"); name: "normal_sigma";	defaultValue: 1 }
 		}
 
 		Group
