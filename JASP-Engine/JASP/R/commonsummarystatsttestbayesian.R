@@ -1582,43 +1582,25 @@
 
     if (oneSided == FALSE) {
       xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-    }
-
-    if (oneSided == "right") {
-      # if (length(delta[delta >= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
-
-      xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
-
-      if (any(is.na(xlim))) {
-        xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
-        xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
+      xlim[2] <- max( 2, quantile(delta, probs = 0.99)[[1]])
+    } else {
+      if(oneSided == "right")
+        oneSidedDelta <- delta[delta >= 0]
+      else
+        oneSidedDelta <- delta[delta <= 0]
+      
+      xlim[1] <- min(-2, quantile(oneSidedDelta, probs = 0.01)[[1]])
+      xlim[2] <- max( 2, quantile(oneSidedDelta, probs = 0.99)[[1]])
+      
+      if(any(is.na(xlim))){
+        xlim[1] <- min(-2, .qShiftedT(0.01, parameters = parameters, oneSided = oneSided))
+        xlim[2] <- max( 2, .qShiftedT(0.99, parameters = parameters, oneSided = oneSided))
       }
       
-      if(any(abs(xlim) == Inf)){ # In case qShiftedT fails
+      if(any(is.infinite(xlim))) # In case .qShiftedT fails
         stop("Cannot plot the posterior - possibly too concentrated near 0.")
-      }
     }
-
-    if (oneSided == "left") {
-      #if (length(delta[delta <= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
-
-      xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
-
-      if (any(is.na(xlim))) {
-        xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
-        xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
-      }
-      
-      if(any(abs(xlim) == Inf)){ # In case qShiftedT fails
-        stop("Cannot plot the posterior - possibly too concentrated near 0.")
-      }
-    }
-
+    
     xticks <- pretty(xlim)
 
     ylim <- vector("numeric", 2)
