@@ -49,6 +49,7 @@ Rectangle
 		{
 			id:					missingValuesList
 			focus:				true
+			boundsBehavior:		Flickable.StopAtBounds
 			anchors.fill:		parent
 			anchors.margins:	Theme.generalAnchorMargin
 			model:				preferencesModel.missingValues

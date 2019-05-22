@@ -7,6 +7,8 @@ ListView
 	width:					0
 	spacing:				4
 	maximumFlickVelocity:	Theme.maximumFlickVelocity
+	boundsBehavior:			Flickable.StopAtBounds
+
 
 	property string	__debugName:	"ElementView"
 	property real	maxWidth:		300 * preferencesModel.uiScale

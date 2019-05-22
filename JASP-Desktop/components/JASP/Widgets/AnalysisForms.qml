@@ -89,6 +89,7 @@ FocusScope
 				id:				analysesFlickable
 				contentWidth:	analysesColumn.width
 				contentHeight:	analysesColumn.height
+				boundsBehavior: Flickable.StopAtBounds
 
 				anchors
 				{

@@ -9,11 +9,12 @@ ListView
 {
 	id : listView
 			
-	orientation: ListView.Horizontal
-	property alias scrollBarVisible: scrollBar.visible
-	property alias scrollBarHeight: scrollBar.height
+	orientation:	ListView.Horizontal
+	boundsBehavior:	Flickable.StopAtBounds
+	clip:			true
 
-	clip: true
+	property alias scrollBarVisible:	scrollBar.visible
+	property alias scrollBarHeight:		scrollBar.height
 
 	JASPScrollBar
 	{
