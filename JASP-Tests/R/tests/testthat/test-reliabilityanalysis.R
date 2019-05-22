@@ -18,9 +18,9 @@ test_that("Main table results match", {
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
   table <- results[["results"]][["reliabilityScale"]][["data"]]
   expect_equal_tables(table,
-    list("scale", 0.535041083185576, 0.558313196445623, 0.667932535083157,
-         0.622700230679449, 0.283327270506343, -0.02217061461, 0.144515070286093,
-         0.351394015923524, 0.673229304903445)
+    list("scale", -0.757822989578577, -0.0677657928415725, 0.667932535083157,
+         0.622700230679449, -0.175972651899464, -0.02217061461, 0.144515070286093,
+         -1.45211881901153, -0.235388804018903)
   )
 })
 
@@ -59,13 +59,11 @@ test_that("Reverse scaled items match", {
   options$meanScale <- TRUE
   options$sdScale <- TRUE
   
-  datapath <- file.path(jasptools:::.pkgOptions$data.dir, "Data Library", "1. Descriptives", "Fear of Statistics.csv")
-  data <- read.table(datapath, header = TRUE)
-  results <- jasptools::run("ReliabilityAnalysis", data, options)
+  results <- jasptools::run("ReliabilityAnalysis", "Fear of Statistics.csv", options)
   table <- results[["results"]][["reliabilityScale"]][["data"]]
   expect_equal_tables(table,
-    list("scale", 0.535041083185576, 0.558313196445623, 0.667932535083157,
-         0.622700230679449, 0.283327270506343, -0.02217061461, 0.144515070286093,
-         0.351394015923524, 0.673229304903445)
+    list("scale", 0.820836210468446, 0.813045844410605, 0.724966918842779,
+         0.708529526625945, 0.368244389782582, 3.08727148969273, 0.393585959365817,
+         0.81017314606981, 0.831119838017159)
   )
 })

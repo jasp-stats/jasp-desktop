@@ -130,7 +130,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			key[match(.v(unlist(options[["reverseScaledItems"]])), colnames(dataset))] <- -1
 
 		}
-browser()
+
 		# calculate chronbach alpha, gutmanns lambda6, and average inter item corrrelation
 		relyFit <- .quietDuringUnitTest(psych::alpha(dataList[["covariance"]], 
 		                                             key = .v(unlist(options[["reverseScaledItems"]]))))
