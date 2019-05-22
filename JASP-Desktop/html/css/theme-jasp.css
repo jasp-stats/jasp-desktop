@@ -620,10 +620,10 @@ pre {
 ::-webkit-scrollbar-thumb {
   background: transparent;
   border: solid 2px transparent;
-  box-shadow: inset 0 0 10px 10px #d1d1d1;
+  box-shadow: inset 0 0 0 10px #cacaca;
 }
 
 
 ::-webkit-scrollbar-thumb:hover {
- box-shadow: inset 0 0 10px 10px #97C4F2;
+ box-shadow: inset 0 0 0 10px #97C4F2;
 }

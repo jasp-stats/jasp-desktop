@@ -27,17 +27,15 @@ Item
 									height						: vertical ? undefined : breadth
 									visible						: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0
 
-	readonly	property real		visibleBreadth				: bigBar ? Theme.scrollbarBoxWidthBig : Theme.scrollbarBoxWidth
-				property real		breadth						: visible ? visibleBreadth : 0
-				property real		extraMarginRightOrBottom	: 0
-				property real		extraMarginLeftOrTop		: 0
+	readonly	property int		visibleBreadth				: bigBar ? Theme.scrollbarBoxWidthBig : Theme.scrollbarBoxWidth
+				property int		breadth						: visible ? visibleBreadth : 0
+				property int		extraMarginRightOrBottom	: 0
+				property int		extraMarginLeftOrTop		: 0
 				property Flickable	flickable					: null
 				property int		minimumLength				: 16 * preferencesModel.uiScale
 				property string		bkColor						: Theme.white
 				property string		fgColor						: Theme.gray
 				property string		pressedColor				: Theme.blueLighter
-				property bool		outerradius					: false
-				property bool		innerradius					: false
 				property bool		showarrows					: false
 				property bool		vertical					: true
 				property bool		manualAnchor				: false
@@ -90,7 +88,6 @@ Item
 	Rectangle
 	{
 		id:				backScrollbar
-		radius:			outerradius ? width/2 : 0
 		antialiasing:	true
 		color:			bkColor
 		anchors.fill:	parent
@@ -102,8 +99,9 @@ Item
 		
 		MouseArea
 		{
+			id:				clicker
+			hoverEnabled:	true
 			anchors.fill:	parent;
-			onClicked:		{ }
 			cursorShape:	Qt.PointingHandCursor
 
 			onWheel:		if(scrollbar.vertical)
@@ -116,6 +114,21 @@ Item
 								else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
 								else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
 							}
+
+			drag
+			{
+				target:		handle;
+				minimumY:	!scrollbar.vertical ? 0 : 0
+				maximumY:	!scrollbar.vertical ? 0 : (groove.height - handle.height)
+				axis:		Drag.XAndYAxis
+				minimumX:	scrollbar.vertical  ? 0 : 0
+				maximumX:	scrollbar.vertical  ? 0 : (groove.width - handle.width)
+
+			}
+
+			onClicked:	if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height));
+						else					flickable.contentX = (mouse.x / groove.width  * (flickable.contentWidth  - flickable.width));
+
 		}
 	}
 
@@ -192,37 +205,12 @@ Item
 			rightMargin:	basicMargin + extraHorizontalMargin
 			bottomMargin:	basicMargin + extraVerticalMargin
 		}
-		
-		MouseArea
-		{
-			id:				clicker
-			anchors.fill:	parent
-			cursorShape:	Qt.PointingHandCursor
-			hoverEnabled:	true
-
-			drag
-			{
-				target:		handle;
-				minimumY:	!scrollbar.vertical ? 0 : 0
-				maximumY:	!scrollbar.vertical ? 0 : (groove.height - handle.height)
-				axis:		Drag.XAndYAxis
-				minimumX:	scrollbar.vertical  ? 0 : 0
-				maximumX:	scrollbar.vertical  ? 0 : (groove.width - handle.width)
-
-			}
-
-			onClicked:
-			{
-				if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height));
-				else					flickable.contentX = (mouse.x / groove.width  * (flickable.contentWidth  - flickable.width));
-			}
-		}
 
 		Item
 		{
-			id:		handle;
-			height: !scrollbar.vertical ? parent.height : Math.max (scrollbar.minimumLength, (flickable.visibleArea.heightRatio * groove.height))
-			width:   scrollbar.vertical ? parent.width	: Math.max (scrollbar.minimumLength, (flickable.visibleArea.widthRatio  * groove.width))
+			id:			handle;
+			height:		!scrollbar.vertical ? parent.height : Math.max (scrollbar.minimumLength, (flickable.visibleArea.heightRatio * groove.height))
+			width:		 scrollbar.vertical ? parent.width	: Math.max (scrollbar.minimumLength, (flickable.visibleArea.widthRatio  * groove.width))
 			anchors
 			{
 				top:	scrollbar.vertical ? undefined		: parent.top
@@ -234,7 +222,6 @@ Item
 			Rectangle
 			{
 				id:				backHandle
-				radius:			innerradius									? width/2		: 0
 				color:			clicker.pressed || clicker.containsMouse	? pressedColor	: fgColor
 				anchors.fill:	parent
 				

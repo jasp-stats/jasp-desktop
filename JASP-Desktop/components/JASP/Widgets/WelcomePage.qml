@@ -97,7 +97,7 @@ FocusScope
 				color:			"white"
 				font.family:	latoLightFontFamily.name
 				font.pixelSize: 12 * welcomeRoot.scaler
-				font.weight:	Font.Light
+				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
 
 				anchors

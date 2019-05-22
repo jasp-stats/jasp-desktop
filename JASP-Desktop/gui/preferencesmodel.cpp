@@ -252,7 +252,7 @@ void PreferencesModel::setDeveloperFolder(QString newDeveloperFolder)
 
 void PreferencesModel::setUiScale(double newUiScale)
 {
-	newUiScale = std::max(0.2, newUiScale);
+	newUiScale = std::min(3.0, std::max(0.2, newUiScale));
 
 	if (std::abs(uiScale() - newUiScale) < 0.001)
 		return;

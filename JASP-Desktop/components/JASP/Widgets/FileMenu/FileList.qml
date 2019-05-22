@@ -46,5 +46,6 @@ ListView
 	{
 		id:				rightscrollbar
 		flickable:		parent
+		bigBar:			true
 	}
 }
