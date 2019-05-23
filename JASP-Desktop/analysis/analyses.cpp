@@ -192,6 +192,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 
 void Analyses::clear()
 {
+	setCurrentAnalysisIndex(-1);
 	beginResetModel();
 	for (auto idAnalysis : _analysisMap)
 	{
