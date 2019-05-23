@@ -33,9 +33,8 @@ public:
 	
 	virtual const Terms& allTerms() const { return _allTerms; }
 			void initTerms(const Terms &terms) override;
-	virtual void resetTermsFromSourceModels() = 0;
+	virtual void resetTermsFromSourceModels(bool updateAssigned = true) = 0;
 	virtual void removeTermsInAssignedList();
-			void emitChangedTerms();
 	
 			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;	
 

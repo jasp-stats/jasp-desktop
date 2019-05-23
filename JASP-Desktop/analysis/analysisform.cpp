@@ -419,7 +419,7 @@ void AnalysisForm::bindTo()
 	const Json::Value& optionsFromJASPFile = _analysis->optionsFromJASPFile();
 	_dataSet = _analysis->getDataSet();
 	_options = _analysis->options();
-	QVector<ListModelAvailableInterface*> availableModels;
+	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
 	_options->blockSignals(true);
 	
@@ -475,27 +475,29 @@ void AnalysisForm::bindTo()
 		else
 		{
 			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
-			// The availableListControl are not bound, but they have to be updated when the form is initialized.
 			if (availableListControl)
 			{
 				ListModelAvailableInterface* availableModel = availableListControl->availableModel();
+				// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
+				// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
+				// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
+				// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
+				// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
+				// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
 				if (availableModel)
 				{
-					availableModel->resetTermsFromSourceModels();
-					availableModels.push_back(availableModel);
+					if (optionsFromJASPFile != Json::nullValue)
+						availableModel->resetTermsFromSourceModels(false);
+					else
+						availableModelsToBeReset.push_back(availableModel);
 				}
 			}
 		}
 	}
+
+	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
+		availableModel->resetTermsFromSourceModels(true);
 	
-	if (optionsFromJASPFile == Json::nullValue)
-	{
-		// If the options do not come from a JASP file
-		// the assigned models must be aware of the default values of the available models.
-		for (ListModelAvailableInterface* availableModel : availableModels)
-			availableModel->emitChangedTerms();
-	}
-		
 	_options->blockSignals(false, false);
 }
 

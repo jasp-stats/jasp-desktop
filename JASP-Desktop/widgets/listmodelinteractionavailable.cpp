@@ -26,7 +26,7 @@ ListModelInteractionAvailable::ListModelInteractionAvailable(QMLListView* listVi
 	_areTermsInteractions = true;
 }
 
-void ListModelInteractionAvailable::resetTermsFromSourceModels()
+void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssigned)
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
 	if (sourceItems.size() == 0)
@@ -79,5 +79,9 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels()
 	removeTermsInAssignedList();
 	
 	endResetModel();
+
+	if (updateAssigned)
+		emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
+
 }
 

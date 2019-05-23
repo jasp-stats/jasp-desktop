@@ -28,8 +28,8 @@ class ListModelTermsAvailable : public ListModelAvailableInterface
 public:
 	ListModelTermsAvailable(QMLListView* listView);
 		
-	void		initTerms(const Terms& terms)		override;
-	void		resetTermsFromSourceModels()		override;
+	void		initTerms(const Terms& terms)							override;
+	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;
 	
 	ListModel*	getSourceModelOfTerm(const Term& term);
 	void		addEmptyValue() { _addEmptyValue = true; }
