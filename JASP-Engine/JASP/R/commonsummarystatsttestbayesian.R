@@ -1337,7 +1337,6 @@
 				dontPlotData = FALSE, options = NULL, delta = NULL) {
 
     # Function outputs the prior and posterior plot for t-test in the summary stats module.
-
 	if (addInformation) {
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
 	} else {
