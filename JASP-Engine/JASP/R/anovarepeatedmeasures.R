@@ -783,7 +783,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   # Because there are multiple names for each variable in JASP, one of the things the following code does is make sure to get the correct naming
   # and refer to the correct actual variable. The different names are the actual name of the variable, the name the user gives in jasp for the lvel and factor, 
   # and also the name that JASP gives to it, which is a concatenation of "Level#_Level#', where the first refers to the factor and second to the level. 
-  
   postHocVariables <- unlist(options$postHocTestsVariables, recursive = FALSE)
   variables <- unname(sapply(postHocVariables, function(x) paste(.v(x), collapse = ":")))
   
@@ -809,23 +808,29 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     
     orderOfTerms <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name))
     indexofOrderFactors <- match(allNames,orderOfTerms)
-    
+
     if (any(var == .v(allNames))) {     ## If the variable is a repeated measures factor
-      
+
       if (!options$postHocTestPooledError) {
         
         levelsOfThisFactor <- unlist(lapply(options$repeatedMeasuresFactors[rmFactorIndex], function(x) x$levels)) # Levels within Factor
         numberOfLevels <- length(unique(levelsOfThisFactor))
         splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[indexofOrderFactors[rmFactorIndex]]))
         listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
+        
         for(i in 1:numberOfLevels){
+          
           listVarNamesToLevel[[i]] <- factorNamesV[(splitNames %in% .v(levelsOfThisFactor[i]))]  
+        
         }
         
         countr <- 1
         allEstimates <- allTees <- allSE <- allPees <- allLowerCI <- allUpperCI <- numeric() 
+        
         for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
+          
           for (i in .seqx(k+1, numberOfLevels)) {
+            
             bonfAdjustCIlevel <- 1-((1-options$confidenceIntervalIntervalPostHoc)/choose(numberOfLevels, 2))
             tResult <- t.test(rowMeans(postHocData[listVarNamesToLevel[[k]]]),rowMeans(postHocData[listVarNamesToLevel[[i]]]),
                               paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
@@ -836,7 +841,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             allLowerCI[countr] <- tResult$conf.int[1]
             allUpperCI[countr] <- tResult$conf.int[2]
             countr <- countr + 1
+            
           }
+          
         }
         bonferPvals <- p.adjust(allPees, method = "bonferroni")  # correct all pvalues according to bonf
         # resultGeneral <- list(estimate = allEstimates, t.ratio = allTees, SE = allSE, p.value = bonferPvals )
@@ -848,14 +855,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         resultBonf['upper.CL'] <- allUpperCI
         resultHolm['p.value'] <- p.adjust(allPees, method = "holm")  # correct all pvalues according to holm
       }
-      
       resultScheffe['p.value'] <- rep(".", length(resultScheffe['p.value']))
       resultTukey['p.value'] <-  rep(".", length(resultTukey['p.value']))
       rmFactorIndex <- rmFactorIndex + 1
-      
     }
+
+    if (is.null(resultBonf[['t.ratio']])) {
+      resultBonf[['t.ratio']] <- rep(NaN, nrow(resultBonf))
+    } 
     resultBonf[['effectSize']] <- resultBonf[['t.ratio']] / sqrt(nrow(dataset))
-    
+
     resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, 
                                   resultTukey = resultTukey, resultScheffe = resultScheffe,
                                   comparisons = comparisons)
@@ -2303,7 +2312,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     
     rows <- list()
     
-    
     pairedList <- lapply(statePostHoc[[thisVarNameV]]$resultBonf$contrast,
                          function(x) strsplit(as.character(x), split = " - "))
     ### fix names levels
@@ -2374,27 +2382,28 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             }
             
             SE  <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$SE[index]))
-            
+
+            tIndex <-  which(sapply(posthoc.table$schema$fields, function(x) x$name) == "t")
             if (reverse) {
               
               if ("z.ratio" %in% names(statePostHoc[[thisVarNameV]]$resultBonf)) {
-                posthoc.table$schema$fields[[7]]$name <- "z"
+                posthoc.table$schema$fields[[tIndex]]$name <- "z"
                 z <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$z.ratio[index]))
               } else {
                 t <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$t.ratio[index]))
               }
               
             } else {
-              
+
               if ("z.ratio" %in% names(statePostHoc[[thisVarNameV]]$resultBonf)) {
-                posthoc.table$schema$fields[[7]]$name <- "z"
+                posthoc.table$schema$fields[[tIndex]]$name <- "z"
                 z <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$z.ratio[index]))
               } else {
                 t <- .clean(as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$t.ratio[index]))
               }
               
             }
-            
+
             if (options$postHocTestEffectSize & reverse) {
               effectSize <- .clean(-as.numeric(statePostHoc[[thisVarNameV]]$resultBonf$effectSize[index]))
             } else {
@@ -2466,7 +2475,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         rows[[length(rows)+1]] <- row
       }
     }
-    
+
     posthoc.table[["footnotes"]] <- as.list(footnotes)
     posthoc.table[["data"]] <- rows
     posthoc.table[["status"]] <- "complete"
