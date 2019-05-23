@@ -61,7 +61,7 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 	endResetModel();
 }
 
-void ListModelTermsAvailable::resetTermsFromSourceModels()
+void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
 	if (sourceItems.size() == 0)
@@ -87,6 +87,9 @@ void ListModelTermsAvailable::resetTermsFromSourceModels()
 	setChangedTerms(termsAvailable);
 	initTerms(termsAvailable);
 	endResetModel();
+
+	if (updateAssigned)
+		emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
 }
 
 ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)

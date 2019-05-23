@@ -86,13 +86,25 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 	{
 		QString itemType = getItemType(term);
 		if (itemType == "fixedFactors")
-			fixedFactors.add(term);
+		{
+			if (!_fixedFactors.contains(term))
+				fixedFactors.add(term);
+		}
 		else if (itemType == "randomFactors")
-			randomFactors.add(term);
+		{
+			if (!_randomFactors.contains(term))
+				randomFactors.add(term);
+		}
 		else if (itemType == "covariates")
-			covariates.add(term);
+		{
+			if (!_covariates.contains(term))
+				covariates.add(term);
+		}
 		else
-			others.add(term);
+		{
+			if (!_interactionTerms.contains(term))
+				others.add(term);
+		}
 	}
 			
 	if (fixedFactors.size() > 0)
