@@ -128,6 +128,7 @@ Form
 		Group
 		{
 			title: qsTr("Residuals")
+            CheckBox { name: "residualsDescriptives";   label: qsTr("Statistics")    }
 			CheckBox { name: "residualsDurbinWatson";	label: qsTr("Dublin-Watson") }
 			CheckBox
 			{

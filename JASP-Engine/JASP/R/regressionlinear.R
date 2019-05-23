@@ -583,8 +583,16 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (options$residualsDurbinWatson) {
 
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "sf:4;dp:3")
-		empty.line$"Durbin-Watson" <- "."
+	  fields[[length(fields)+1]] <- list(name = "Durbin-Watson_ac", title = "Autocorrelation",
+	                                     type = "number", format = "sf:4;dp:3", 
+	                                     overTitle = "Durbin-Watson")
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Statistic",
+		                                   type = "number", format = "sf:4;dp:3",
+		                                   overTitle = "Durbin-Watson")
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson_p.value", title = "p",
+		                                   type = "number", format = "dp:3;p:.001",
+		                                   overTitle = "Durbin-Watson")
+		empty.line[["Durbin-Watson_ac"]] <- empty.line[["Durbin-Watson"]] <- empty.line[["Durbin-Watson_p.value"]] <- "."
 	}
 
 	model.table[["schema"]] <- list(fields = fields)
@@ -607,12 +615,15 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				if (options$residualsDurbinWatson) {
 
 					if (m == length(lm.model)) {
-
-						table.rows[[ m ]]$"Durbin-Watson" <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$dw)
+            durwatResult <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
+            
+						table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$r)
+						table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['statistic']])
+						table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
 
 					} else {
 
-						table.rows[[ m ]]$"Durbin-Watson" <- ""
+						table.rows[[ m ]]$"Durbin-Watson_ac" <- table.rows[[ m ]]$"Durbin-Watson" <- table.rows[[ m ]]$"Durbin-Watson_p.value" <- ""
 					}
 				}
 
@@ -907,7 +918,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-			alpha <- alpha / 100
+			#alpha <- alpha / 100
 			
 			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
