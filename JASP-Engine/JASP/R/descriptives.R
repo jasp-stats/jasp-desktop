@@ -31,7 +31,7 @@ Descriptives <- function(jaspResults, dataset, options)
     }
   }
 
-  if (makeSplit)
+  if (makeSplit && length(variables) > 0)
   {
     splitFactor      <- dataset[[.v(splitName)]]
     splitLevels      <- levels(splitFactor)
