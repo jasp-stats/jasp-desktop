@@ -504,11 +504,17 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 
 void Analyses::analysisIdSelectedInResults(int id)
 {
+
+
 	for(size_t i=0; i<_orderedIds.size(); i++)
 		if(_orderedIds[i] == id)
 		{
 			setCurrentAnalysisIndex(int(i));
 			emit analysisSelectedIndexResults(int(i)); //Picked up in QML
+
+			if(!visible())
+				setVisible(true);
+
 			return;
 		}
 }
@@ -523,6 +529,12 @@ void Analyses::selectAnalysisAtRow(int row)
 	setCurrentAnalysisIndex(row);
 	if(row > -1)
 		emit showAnalysisInResults(_orderedIds[row]);
+}
+
+void Analyses::unselectAnalysis()
+{
+	setCurrentAnalysisIndex(-1);
+	emit unselectAnalysisInResults();
 }
 
 void Analyses::setCurrentFormHeight(double currentFormHeight)

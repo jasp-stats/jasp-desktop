@@ -100,6 +100,7 @@ public slots:
 	void analysisIdSelectedInResults(int id);
 	void analysesUnselectedInResults();
 	void selectAnalysisAtRow(int row);
+	void unselectAnalysis();
 	void rCodeReturned(QString result, int requestId);
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
