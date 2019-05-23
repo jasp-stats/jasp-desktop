@@ -525,13 +525,6 @@ void Analyses::selectAnalysisAtRow(int row)
 		emit showAnalysisInResults(_orderedIds[row]);
 }
 
-void Analyses::unselectAnalysis()
-{
-	setCurrentAnalysisIndex(-1);
-	emit unselectAnalysisInResults();
-}
-
-
 void Analyses::setCurrentFormHeight(double currentFormHeight)
 {
 	if (qFuzzyCompare(_currentFormHeight, currentFormHeight))
@@ -550,7 +543,7 @@ void Analyses::setVisible(bool visible)
 	emit visibleChanged(_visible);
 
 	if(!_visible)
-		unselectAnalysis();
+		emit unselectAnalysisInResults();
 }
 
 void Analyses::analysisTitleChangedFromResults(int id, QString title)
