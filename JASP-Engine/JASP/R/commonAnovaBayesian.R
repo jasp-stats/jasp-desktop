@@ -440,12 +440,12 @@
     
     # get all higher order interactions of which this effect is a component
     # e.g., V1 is a component of V1:V2
-    idx1 <- which(interactions.matrix[effect, ])
+    idx1 <- interactions.matrix[effect, ]
     
     # get all models that exclude the predictor, but that always include the lower order main effects
     # e.g., V1:V2 is compared against models that always include V1 and V2
-    idx2 <- which(interactions.matrix[, effect]) # if effect is V1:V2, idx3 contains c(V1, V2)
-    
+    idx2 <- interactions.matrix[, effect] # if effect is V1:V2, idx2 contains c(V1, V2)
+
     # idx3 is FALSE if a model contains higher order interactions of effect, TRUE otherwise
     idx3 <- !matrixStats::rowAnys(effects.matrix[, idx1, drop = FALSE])
     

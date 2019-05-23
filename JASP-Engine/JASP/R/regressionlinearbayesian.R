@@ -826,10 +826,10 @@ RegressionLinearBayesian <- function (
       
       priorModelProbs <- bas_obj$priorprobs
       postModelProbs  <- bas_obj$postprobs
-      terms <- attr(bas_obj$terms, "factors")[-1, ]
+      terms <- attr(bas_obj$terms, "factors")[-1, , drop = FALSE]
       rownames(terms) <- .unvf(rownames(terms))
       colnames(terms) <- .unvf(colnames(terms))
-      inclMat <- BAS:::list2matrix.which(bas_obj)[, -1]
+      inclMat <- BAS:::list2matrix.which(bas_obj)[, -1, drop = FALSE]
       terms <- rbind(terms, matrix(FALSE, nrow = ncol(terms) - nrow(terms), ncol = ncol(terms)))
       diag(terms) <- FALSE
       storage.mode(terms) <- "logical"
