@@ -1489,13 +1489,20 @@
     ylim <- vector("numeric", 2)
 
     ylim[1] <- 0
+    
+    xBoundOptim <- xlim
+    if(oneSided == "right"){
+      xBoundOptim[1] <- 0
+    } else if(oneSided == "left"){
+      xBoundOptim[2] <- 0
+    }
     dmax1optim <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
                                                               oneSided = oneSided, options = options),
-                           interval = range(xticks),
+                           interval = xBoundOptim,
                            maximum = TRUE)$objective
     # sometimes optimize fails, so we brute force
-    dmax1grid <- max(.dposterior_informative(seq(xlim[1], xlim[2], length.out = 101), t = t, n1 = n1, n2 = n2,
-                                             paired = paired, oneSided = oneSided, options = options), na.rm = TRUE)
+    dmax1grid <- max(.dposterior_informative(seq(xBoundOptim[1], xBoundOptim[2], length.out = 101), t = t, n1 = n1, n2 = n2,
+                                            paired = paired, oneSided = oneSided, options = options), na.rm = TRUE)
     dmax1 <- max(c(dmax1optim, dmax1grid), na.rm = TRUE)
     
     dmax2 <- optimize(function(x).dprior_informative(x, oneSided = oneSided, options = options),
