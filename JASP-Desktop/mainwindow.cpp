@@ -824,7 +824,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->isSuccessful())
 		{
-			populateUIfromDataSet(event->type() != Utils::FileType::jasp);
+			populateUIfromDataSet();
 			QString name = QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
 			_currentFilePath = event->path();
@@ -923,7 +923,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 }
 
 
-void MainWindow::populateUIfromDataSet(bool showData)
+void MainWindow::populateUIfromDataSet()
 {
 	setDataSetAndPackageInModels(_package);
 
@@ -991,15 +991,14 @@ void MainWindow::populateUIfromDataSet(bool showData)
 			emit currentAnalysis->expandAnalysis();
 	}
 
+	bool hasAnalyses = _analyses->count() > 0;
+
 	setDataAvailable(_package->dataSet()->rowCount() > 0);
 
-	if(!_dataAvailable)
-		setDataPanelVisible(false);
-	else if(_progressShowsItself)
-	{
-		setDataPanelVisible(showData);
-		_analyses->setVisible(!showData || !resultXmlCompare::compareResults::theOne()->testMode());
-	}
+	if(!_dataAvailable)				setDataPanelVisible(false);
+	else if(_progressShowsItself)	setDataPanelVisible(!hasAnalyses);
+
+	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
 
 	hideProgress();
 

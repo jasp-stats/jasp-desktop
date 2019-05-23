@@ -224,12 +224,14 @@ JASPControl
 			flickable:		listView
 			manualAnchor:	true
 			vertical:		true
+			z:				1337
 
 			anchors
 			{
 				top:		parent.top
 				right:		parent.right
 				bottom:		parent.bottom
+				margins:	2
 			}
 		}
 		
