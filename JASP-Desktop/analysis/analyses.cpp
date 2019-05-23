@@ -504,8 +504,6 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 
 void Analyses::analysisIdSelectedInResults(int id)
 {
-
-
 	for(size_t i=0; i<_orderedIds.size(); i++)
 		if(_orderedIds[i] == id)
 		{
@@ -554,8 +552,11 @@ void Analyses::setVisible(bool visible)
 	_visible = visible;
 	emit visibleChanged(_visible);
 
-	if(!_visible)
-		emit unselectAnalysisInResults();
+	if(currentAnalysisIndex() != -1)
+	{
+		if(!_visible)		emit unselectAnalysisInResults();
+		else				emit showAnalysisInResults(_orderedIds[currentAnalysisIndex()]);
+	}
 }
 
 void Analyses::analysisTitleChangedFromResults(int id, QString title)
