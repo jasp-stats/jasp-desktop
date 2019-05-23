@@ -172,6 +172,9 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 			d <- dataset[[.v(var)]]
 			d <- d[!is.na(d)]
 			
+			if (length(d) == 0)
+				.addFootnote(footnotes, symbol="<em>Warning.</em>", text=paste(var, "is excluded as it has no valid observations."))
+			
 			levels <- levels(d)
 			n <- length(d)
 			
@@ -729,6 +732,9 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	posteriorLine <- .dposteriorTheta(theta, a, b, counts, n, hypothesis, theta0)
 	
 	dmax <- max(c(posteriorLine[is.finite(posteriorLine)], priorLine[is.finite(priorLine)]))
+	
+	if (dmax <= 0) # both the prior and posterior are flat or no values were finite
+	  dmax <- 1
 	
 	ylim <- vector("numeric", 2)
 	ylim[1] <- 0
