@@ -589,10 +589,16 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Statistic",
 		                                   type = "number", format = "sf:4;dp:3",
 		                                   overTitle = "Durbin-Watson")
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson_p.value", title = "p",
-		                                   type = "number", format = "dp:3;p:.001",
-		                                   overTitle = "Durbin-Watson")
-		empty.line[["Durbin-Watson_ac"]] <- empty.line[["Durbin-Watson"]] <- empty.line[["Durbin-Watson_p.value"]] <- "."
+		empty.line[["Durbin-Watson_ac"]] <- empty.line[["Durbin-Watson"]] <- "."
+		
+		if(options$wlsWeights == ""){
+  		fields[[length(fields)+1]] <- list(name = "Durbin-Watson_p.value", title = "p",
+  		                                   type = "number", format = "dp:3;p:.001",
+  		                                   overTitle = "Durbin-Watson")
+  		empty.line[["Durbin-Watson_p.value"]] <- "."
+		} else{
+		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = "p-value for Durbin-Watson test is unavailable for weighted regression.")
+		}
 	}
 
 	model.table[["schema"]] <- list(fields = fields)
@@ -614,11 +620,15 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 				if (options$residualsDurbinWatson) {
 				  
-				  durwatResult <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
+				  durwatResult <- car::durbinWatsonTest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
 				  
-				  table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$r)
-				  table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['statistic']])
-				  table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
+				  table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(durwatResult[['r']])
+				  table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['dw']])
+				  
+				  if(options$wlsWeights == ""){ # if regression is not weighted, calculate p-value with lmtest (car method is unstable)
+				    durwatResult[['p.value']] <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))$p.value
+				    table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
+				  }
 
 				}
 
