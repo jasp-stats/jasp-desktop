@@ -22,7 +22,7 @@ test_that("Main table results match", {
   expect_equal_tables(table,
     list(1, 0.00124876050417603, 1.55940279678998e-06, -0.0102025063175828,
          5.01896242334011, 1.55940279678998e-06, 0.000152821712396024,
-         1, 98, 0.990161847660694, 2.22918408630401)
+         1, 98, 0.990161847660694, 2.22918408630401, -0.124437281020818)
   )
 })
 
@@ -42,10 +42,10 @@ test_that("Coefficients table results match", {
   table <- results[["results"]][["regression"]][["data"]]
   expect_equal_tables(table,
     list(1, "(Intercept)", -0.105623204281424, 0.176988347288719, "", -0.596780555892316,
-         0.552030096201664, 1, -0.107624744624094, -0.103621663938754,
+         0.552030096201664, 1, -0.399521419778159, 0.188275011215311,
          "", "", "TRUE", "", "contGamma", -0.0408888274744623, 0.0696473684093105,
          -0.0592003859505643, -0.587083595666713, 0.558497687623533,
-         1, -0.0416764613484857, -0.0401011936004389, 1, 1)
+         1, -0.156541849851968, 0.0747641949030438, 1, 1)
   )
 })
 
@@ -142,7 +142,7 @@ test_that("Residuals Statistics table results match", {
   options$modelTerms <- list(
     list(components="contcor1", isNuisance=FALSE)
   )
-  options$residualsDurbinWatson <- TRUE
+  options$residualsStatistics <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
   table <- results[["results"]][["residuals statistics"]][["data"]]
   expect_equal_tables(table,
@@ -166,14 +166,11 @@ test_that("Casewise Diagnostics table results match", {
   options$residualsCasewiseDiagnosticsType <- "outliersOutside"
   options$residualsCasewiseDiagnosticsOutliersOutside <- 3
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["residuals statistics"]][["data"]]
+  table <- results[["results"]][["casewise diagnostics"]][["data"]]
   expect_equal_tables(table,
-    list("Predicted Value", -0.275779454672472, -0.143545494526366, -0.18874858754,
-         0.0109677571683762, 100, "Residual", -2.83584638233813, 3.54333175330668,
-         1.8570756911418e-17, 1.05835678125479, 100, "Std. Predicted Value",
-         -7.93515627638173, 4.12145275644591, 7.10605890536647e-16, 1,
-         100, "Std. Residual", -2.6793890904309, 3.34810934796608, 0.00829531757614864,
-         1.01553841838244, 100)
+                      list(55, 3.34810934796608, 3.356094448, -0.187237305306683, 3.54333175330668,
+                           0.0577123260439598, 83, 3.22377600371253, 2.958797116, -0.143545494526366,
+                           3.10234261052637, 1.15289593050314)
   )
 })
 
