@@ -129,7 +129,7 @@ Form
 		{
 			title: qsTr("Residuals")
             CheckBox { name: "residualsStatistics";     label: qsTr("Statistics")    }
-			CheckBox { name: "residualsDurbinWatson";	label: qsTr("Dublin-Watson") }
+            CheckBox { name: "residualsDurbinWatson";	label: qsTr("Durbin-Watson") }
 			CheckBox
 			{
 				name: "residualsCasewiseDiagnostics";	label: qsTr("Casewise diagnostics")
