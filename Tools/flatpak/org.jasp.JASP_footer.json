@@ -1,0 +1,36 @@
+		{
+			"name": "jasp",
+			"buildsystem": "qmake",
+			"config-opts": [],
+			"build-options": {
+				"append-ld-library-path": "/app/lib;/app/lib64/R/lib",
+				"env": {
+					"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
+					"R_HOME": "/app/lib64/R/",
+					"PREFIX": "/app"
+				},
+				"build-args": ["--share=network"]
+			},
+			"sources":[
+				{
+					"type":"git",
+					"branch": "development",
+					"url": "https://github.com/jasp-stats/jasp-desktop"
+				},
+				{
+					"type": "shell",
+					"commands": 
+					[ 
+						"echo \"Now we will try to install all JASP's R packages!\"",
+						"R CMD INSTALL ./JASP-Engine/JASP",
+
+						"echo \"After that it is time for JASPgraphs!\"",
+						"R CMD INSTALL ./JASP-Engine/JASPgraphs",
+
+						"echo \"And building JASP isn't a bad idea either.\""
+					]
+				}
+			]
+		}
+	]
+}
