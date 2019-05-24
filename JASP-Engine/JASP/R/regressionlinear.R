@@ -613,18 +613,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				table.rows[[ m ]]$"se" <- as.numeric(lm.summary$sigma)
 
 				if (options$residualsDurbinWatson) {
+				  
+				  durwatResult <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
+				  
+				  table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$r)
+				  table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['statistic']])
+				  table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
 
-					if (m == length(lm.model)) {
-            durwatResult <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
-            
-						table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$r)
-						table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['statistic']])
-						table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
-
-					} else {
-
-						table.rows[[ m ]]$"Durbin-Watson_ac" <- table.rows[[ m ]]$"Durbin-Watson" <- table.rows[[ m ]]$"Durbin-Watson_p.value" <- ""
-					}
 				}
 
 				if (options$rSquaredChange == TRUE) {
