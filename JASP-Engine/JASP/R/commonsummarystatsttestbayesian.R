@@ -1337,7 +1337,6 @@
 				dontPlotData = FALSE, options = NULL, delta = NULL) {
 
     # Function outputs the prior and posterior plot for t-test in the summary stats module.
-
 	if (addInformation) {
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
 	} else {
@@ -1490,10 +1489,22 @@
     ylim <- vector("numeric", 2)
 
     ylim[1] <- 0
-    dmax1 <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
-                                                        oneSided = oneSided, options = options),
-                     interval = range(xticks),
-                     maximum = TRUE)$objective
+    
+    xBoundOptim <- xlim
+    if(oneSided == "right"){
+      xBoundOptim[1] <- 0
+    } else if(oneSided == "left"){
+      xBoundOptim[2] <- 0
+    }
+    dmax1optim <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
+                                                              oneSided = oneSided, options = options),
+                           interval = xBoundOptim,
+                           maximum = TRUE)$objective
+    # sometimes optimize fails, so we brute force
+    dmax1grid <- max(.dposterior_informative(seq(xBoundOptim[1], xBoundOptim[2], length.out = 101), t = t, n1 = n1, n2 = n2,
+                                            paired = paired, oneSided = oneSided, options = options), na.rm = TRUE)
+    dmax1 <- max(c(dmax1optim, dmax1grid), na.rm = TRUE)
+    
     dmax2 <- optimize(function(x).dprior_informative(x, oneSided = oneSided, options = options),
                      interval = range(xticks),
                      maximum = TRUE)$objective
@@ -1577,35 +1588,25 @@
 
     if (oneSided == FALSE) {
       xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-    }
-
-    if (oneSided == "right") {
-      # if (length(delta[delta >= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
-
-      xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
-
-      if (any(is.na(xlim))) {
-        xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
-        xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
+      xlim[2] <- max( 2, quantile(delta, probs = 0.99)[[1]])
+    } else {
+      if(oneSided == "right")
+        oneSidedDelta <- delta[delta >= 0]
+      else
+        oneSidedDelta <- delta[delta <= 0]
+      
+      xlim[1] <- min(-2, quantile(oneSidedDelta, probs = 0.01)[[1]])
+      xlim[2] <- max( 2, quantile(oneSidedDelta, probs = 0.99)[[1]])
+      
+      if(any(is.na(xlim))){
+        xlim[1] <- min(-2, .qShiftedT(0.01, parameters = parameters, oneSided = oneSided))
+        xlim[2] <- max( 2, .qShiftedT(0.99, parameters = parameters, oneSided = oneSided))
       }
+      
+      if(any(is.infinite(xlim))) # In case .qShiftedT fails
+        stop("Cannot plot the posterior - possibly too concentrated near 0.")
     }
-
-    if (oneSided == "left") {
-      #if (length(delta[delta <= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
-
-      xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
-
-      if (any(is.na(xlim))) {
-        xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
-        xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
-      }
-    }
-
+    
     xticks <- pretty(xlim)
 
     ylim <- vector("numeric", 2)
