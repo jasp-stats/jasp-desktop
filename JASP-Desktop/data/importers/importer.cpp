@@ -133,43 +133,22 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 
 void Importer::fillSharedMemoryColumnWithStrings(const std::vector<std::string> &values, Column &column)
 {
-	// try to make the column nominal
-	bool success = false;
-	std::set<int> uniqueValues;
-	std::vector<int> intValues;
-	intValues.reserve(values.size());
-	std::map<int, std::string> emptyValuesMap;
+	// interpret the column as a datatype
+	std::set<int>				uniqueValues;
+	std::vector<int>			intValues;
+	std::vector<double>			doubleValues;
+	std::map<int, std::string>	emptyValuesMap;
 
-	int thresholdScale = Settings::defaultValue(Settings::THRESHOLD_SCALE).toInt();
-	if (Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool())
-		thresholdScale = Settings::value(Settings::THRESHOLD_SCALE).toInt();
+	//If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
+	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
-	if (ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap) && uniqueValues.size() <= thresholdScale)
-	{
-		column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
-		success = true;
-	}
+	auto isOrdinal = [&](){ return ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap) && uniqueValues.size() <= thresholdScale; };
+	auto isScalar  = [&](){ return ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap); };
 
-
-	if (!success)
-	{
-		// try to make the column scale
-		std::vector<double> doubleValues;
-		doubleValues.reserve(values.size());
-		emptyValuesMap.clear();
-
-		if (ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap))
-		{
-			column.setColumnAsScale(doubleValues);
-			success = true;
-		}
-	}
-
-	if (!success)
-	{
-		// if it can't be made nominal numeric or scale, make it nominal-text
-		emptyValuesMap = column.setColumnAsNominalText(values);
-	}
+	if		(isOrdinal())					column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, true);
+	else if	(isScalar())					column.setColumnAsScale(doubleValues);
+	else				emptyValuesMap =	column.setColumnAsNominalText(values);
 
 	_packageData->storeInEmptyValues(column.name(), emptyValuesMap);
 }
@@ -180,8 +159,10 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 	bool success		= true;
 	do
 	{
-		try {
+		try
+		{
 			dataSet->setColumnCount(columnCount);
+
 			if (rowCount > 0)
 				dataSet->setRowCount(rowCount);
 
@@ -226,7 +207,8 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 	bool success = true;
 
 	do {
-		try {
+		try
+		{
 			Column &column = _packageData->dataSet()->column(colNo);
 			column.setName(importColumn->getName());
 			fillSharedMemoryColumn(importColumn, column);
