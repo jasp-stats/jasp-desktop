@@ -1,22 +1,10 @@
-# Network Analysis
+Network Analysis
+===
 
-Network Analysis allows you to analyze the network structure of your variables. Load your data of interest into the box `Variables`. If you'd like to compare networks for different groups, you can add a grouping variable to `Split by`. In networks, observed variables are referred to as nodes and estimated relations are called edges.
+Network Analysis allows the user to analyze the network structure of variables. Load the data of interest into the box `Variables`. In order to compare networks for different groups, add a grouping variable in `Split by`. In networks, observed variables are referred to as nodes and estimated relations are called edges.
 
-## Estimators
 
-This analysis allows you to estimate not one type of network, but multiple. Supported networks are:
-
-- Correlation Networks
-- Partial correlation Networks
-- EBICglasso Networks (Foygel & Drton, 2010; Friedman, Hastie, & Tibshirani, 2008; Friedman, Hastie, & Tibshirani, 2014)
-- Huge: High-dimensional undirected graph estimation (Zhao et a., 2015).
-- Ising Networks (using IsingFit, van Borkulo et al., 2014; or IsingSampler, Epskamp, 2014; Epskamp, Borsboom & Maris, in Press).
-- Adaptive Lasso (Schaeafer & Boulesteix, 2009)
-- Mixed Graphical Models (Haslbeck & Waldorp, 2015).
-
-An estimator can be selected by clicking on `Estimator`.
-
-## Assumptions
+### Assumptions
 
 Assumption vary per network analysis method. In general, relations among variables are assumed to be *linear*.
 
@@ -26,23 +14,37 @@ Additional assumptions are required for some networks:
 - EBICglasso: your data are normally distributed.
 - Mixed Graphical Models: Your variables are either normally distributed, catgorical, or Poisson (counts).
 
+### Input
+---
 
-## Basic output
+#### Assignment Box 
+- Variables: In this box the dependent variables are selected.  
+- Split: Split by a categorical variable, such as experimental condition.
 
+#### Estimator
+This analysis allows you to estimate not one type of network, but multiple. Supported networks are:
+- Correlation Networks
+- Partial correlation Networks
+- EBICglasso Networks (Foygel & Drton, 2010; Friedman, Hastie, & Tibshirani, 2008; Friedman, Hastie, & Tibshirani, 2014)
+- Huge: High-dimensional undirected graph estimation (Zhao et a., 2015).
+- Ising Networks (using IsingFit, van Borkulo et al., 2014; or IsingSampler, Epskamp, 2014; Epskamp, Borsboom & Maris, in Press).
+- Adaptive Lasso (Schaeafer & Boulesteix, 2009)
+- Mixed Graphical Models (Haslbeck & Waldorp, 2015).
 
-There are five options:
-
+#### Plots
 - Network plot: a plot of the estimated network.
 - Centrality plot: a plot of centrality measures of the estimated network.
+
+#### Tables
 - Centrality table: a table containing the values of the centrality measures.
 - Weights matrix: the estimates parameters, in the form of a matrix.
 - Layout matrix: the layout for each node in the network plot. If shown, the options "show variable names" can also be clicked to prefix the layout with the names.
 
-Analysis options
------------
 
-[//]: # (Goes from left column top to down, then middle column top to down, then right column top to down.)
 
+
+
+### Analysis options
 For each network method, options can be adjusted to influence the result. Only options available to a specific estimation method will be available at a time.
 
 #### Correlation method
@@ -81,7 +83,7 @@ Many methods exist for estimating Ising models. Supported methods are:
 #### Missing Values
 How should missing values be handled? Some analyses allow for pairwise exclusion, but not all.
 
-#### Tuning Parameter
+#### Tuning Parameters
 This parameter is the &gamma; hyperparameter of the EBIC estimation procedure. It controls the sparsity of the estimated network. Setting it to 0 will cause the regular BIC to be used.
 
 #### Cross-validation
@@ -89,7 +91,6 @@ How many cross-validation samples should be made? This method is only used by Ad
 
 #### Thresholds
 Thresholds to be used in correlation or partial correlation networks. This can either be set to a number, or to a method. If set to a number, edges with an absolute strength below that value will not be shown. Alternatively it can be set to a method to control the family-wise error rate. Available methods are:
-
 - `Significant`: Show edges significant at the 0.05 level.
 - `Bonferroni`: as `Significant`, but with the Bonferroni multiplicity correction.
 - `Holm`: as `Significant`, but with the Holm multiplicity correction.
@@ -117,17 +118,11 @@ If you untick `Weighted`, the estimated network will only consist of positive (1
 Centralilty measures of a network can be difficult to compare. To facilitate this, you can select `Normalized` to ensure each centrality measure has a mean of zero and a variance of one. Alternatively, you can select relative to divide each centrality measure by it's maximum observed value.
 
 
-Bootstrap options
------------
-
+### Bootstrap options
 To investigate the stability of estimated networks, check `Bootstrap Network` underneath `Estimator`. Doing so will automatically bootstrap the edges of estimated network and their centrality. Additional options can be specified, such as the number of bootstraps and the type of bootstrap.
 
 
-## Graphical options
-
-[//]: # (Goes from left column top to down, then right column top to down.)
-
-
+### Graphical options
 All options below modify the output from Network plot. Other figures and tables are not affected. To make Networks plots aesthetically pleasing, many options exist.
 
 #### Layout
@@ -174,32 +169,32 @@ When estimating a Mixed Graphical Model, the assumed distribution of a variable 
 - `Using node colors`: Change the color of the nodes based on their assumed distribution. Ignored if  `color nodes by` is set.
 - `Using node shape`: Change the shape of the nodes based on their assumed distribution. Gaussian nodes are circles, categorical nodes are squares, and Poisson nodes are triangles.
 
+### Output
+-------
+TBA.
 
-## References
-
+### References
+-------
 The reference list below contains references for all networks. A subset of references relevant to a specific estimator can be obtained by right clicking the downward arrow right of any table and selecting "Copy Citations".
 
-van Borkulo, C. D., Borsboom, D., Epskamp, S., Blanken, T. F., Boschloo, L., Schoevers, R. A., & Waldorp, L. J. (2014). A new method for constructing networks from binary data. *Scientific reports, 4*(5918), 1-10.
-
-Epskamp, S., Borsboom, D., & Fried, E. I. (2016). Estimating psychological networks and their accuracy: a tutorial paper. arXiv preprint, arXiv:1604.08462.
-
-Epskamp, S., Cramer, A. O., Waldorp, L. J., Schmittmann, V. D., & Borsboom, D. (2012). qgraph: Network visualizations of relationships in psychometric data. *Journal of Statistical Software, 48*(4), 1-18.
+- van Borkulo, C. D., Borsboom, D., Epskamp, S., Blanken, T. F., Boschloo, L., Schoevers, R. A., & Waldorp, L. J. (2014). A new method for constructing networks from binary data. *Scientific reports, 4*(5918), 1-10.
+- Epskamp, S., Borsboom, D., & Fried, E. I. (2016). Estimating psychological networks and their accuracy: a tutorial paper. arXiv preprint, arXiv:1604.08462.
+- Epskamp, S., Cramer, A. O., Waldorp, L. J., Schmittmann, V. D., & Borsboom, D. (2012). qgraph: Network visualizations of relationships in psychometric data. *Journal of Statistical Software, 48*(4), 1-18.
 Chicago
+- Epskamp, S., Maris, G., Waldorp, L., & Borsboom, D. (in press). Network psychometrics. In P. Irwing, D. Hughes, & T. Booth (Eds.), *Handbook of psychometrics.* New York, NY, USA: Wiley.
+- Epskamp, S. (2014). IsingSampler: Sampling methods and distribution functions for the Ising model. Retrieved from github.com/SachaEpskamp/IsingSampler
+- Foygel, R., & Drton, M. (2010). Extended Bayesian information criteria for Gaussian graphical models. *In Advances in neural information processing systems* (pp. 604-612).
+- Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics, 9*(3), 432-441.
+- Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models. Retrieved from https://CRAN.R-project.org/package=glasso
+- Fruchterman, T. M., & Reingold, E. M. (1991). Graph drawing by force-directed placement. Software: Practice and experience, 21(11), 1129-1164.
+- Haslbeck, J., & Waldorp, L. J. (2015). mgm: Structure Estimation for time-varying mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.
+- Kraeamer, N., Schaeafer, J., & Boulesteix, A.-L. (2009). Regularized estimation of large-scale gene association networks using graphical gaussian models. *BMC Bioinformatics, 10*(1), 1-24.
+- Zhao, T., Li, X., Liu, H., Roeder, K., Lafferty, J., & Wasserman, L. (2015). huge: High-dimensional undirected graph estimation. Retrieved from https://CRAN.R-project.org/package=huge
 
-Epskamp, S., Maris, G., Waldorp, L., & Borsboom, D. (in press). Network psychometrics. In P. Irwing, D. Hughes, & T. Booth (Eds.), *Handbook of psychometrics.* New York, NY, USA: Wiley.
 
-Epskamp, S. (2014). IsingSampler: Sampling methods and distribution functions for the Ising model. Retrieved from github.com/SachaEpskamp/IsingSampler
-
-Foygel, R., & Drton, M. (2010). Extended Bayesian information criteria for Gaussian graphical models. *In Advances in neural information processing systems* (pp. 604-612).
-
-Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics, 9*(3), 432-441.
-
-Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models. Retrieved from https://CRAN.R-project.org/package=glasso
-
-Fruchterman, T. M., & Reingold, E. M. (1991). Graph drawing by force-directed placement. Software: Practice and experience, 21(11), 1129-1164.
-
-Haslbeck, J., & Waldorp, L. J. (2015). mgm: Structure Estimation for time-varying mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.
-
-Kraeamer, N., Schaeafer, J., & Boulesteix, A.-L. (2009). Regularized estimation of large-scale gene association networks using graphical gaussian models. *BMC Bioinformatics, 10*(1), 1-24.
-
-Zhao, T., Li, X., Liu, H., Roeder, K., Lafferty, J., & Wasserman, L. (2015). huge: High-dimensional undirected graph estimation. Retrieved from https://CRAN.R-project.org/package=huge
+### R Packages 
+---
+- bootnet
+- glasso
+- huge
+- mgm

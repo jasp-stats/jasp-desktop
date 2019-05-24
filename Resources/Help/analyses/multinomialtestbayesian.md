@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 Bayesian Multinomial Test
 ===
   
@@ -13,13 +8,13 @@ The Bayesian multinomial test allows the user to test whether an observed distri
 
 ### Input
 ---
+
 #### Assignment Box
 - Factor: The categorical variable we are interested in.
 - Counts (optional): The variable that contains the count data.
 - Expected Counts (optional): When the data set contains a variable which reflects the expectations of cell counts, that column can be entered here. The values in this variable will be interpreted as the null hypothesis.
 
-### Options
----
+
 #### Test Values
 - Equal proportions: In the Bayesian multinomial test we test the null hypothesis that the cell probabilities are uniformly distributed. The null hypothesis is tested against the alternative hypothesis which states that all category proportions are free to vary.
 - Expected proportions: Here, we specify the null hypothesis that the cell probabilites are equal to a particular expected distribution. By default the first hypothesis constitutes the null hypothesis from the Bayesian multinomial test, but the expected counts can be changed manually. The null hypothesis is tested against the alternative hypothesis which states that all category proportions are free to vary. The specification of multiple hypotheses is possible.
@@ -39,12 +34,13 @@ The Bayesian multinomial test allows the user to test whether an observed distri
 - Plots:
   - Descriptive plot: Plots the frequencies and the credible intervals of the observed counts.
 
-#### Prior
+### Prior
 Option to adjust the prior distribution for the vector of cell probabilities. 
 - *Dirichlet*: For *K* categories, the default prior is Dirichlet(alpha_*1*, alpha_*2*, ..., alpha_*K*) with all alpha parameters set to 1. Note that the parameters of the *Dirichlet distribution* reflect prior counts, which implies that all values must be non-negative.
 
 ### Output
 ---
+
 #### Bayesian Multinomial Test
 - Hypothesis: Displays all specified hypotheses.
 - Levels: Displays the number of categories of the variable of interest.
