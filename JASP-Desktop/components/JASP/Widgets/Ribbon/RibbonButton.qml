@@ -63,11 +63,7 @@ Rectangle
 			opacity:	ribbonButton.enabled ? 1 : 0.5
 			smooth:		true
 			mipmap:		true
-			sourceSize
-			{
-				width:	backgroundImage.width * 2
-				height:	backgroundImage.height * 2
-			}
+			fillMode:	Image.PreserveAspectFit
 
 			anchors
 			{
