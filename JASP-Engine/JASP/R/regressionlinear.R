@@ -2152,7 +2152,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#						   Residuals Statistics Table   					   #
 	################################################################################
 
-	if (options$residualsDurbinWatson || options$residualsCasewiseDiagnostics) {
+	if (options$residualsStatistics) {
 
 		residualsStatistics <- list()
 		residualsStatistics[["title"]] <- "Residuals Statistics"
