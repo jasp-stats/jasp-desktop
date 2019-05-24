@@ -1304,7 +1304,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 	    
 	    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-	    alpha <- alpha / 100
+	    #alpha <- alpha / 100
 	    
 	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
