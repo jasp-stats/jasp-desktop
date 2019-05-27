@@ -151,10 +151,11 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.leftMargin:	10 * preferencesModel.uiScale
 
-			text:					model.name  //i.e. title
+			text:					model.name
 			font:					Theme.font
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
+			elide:					Text.ElideMiddle
 		}
 
 		Text
@@ -167,10 +168,11 @@ FocusScope
 			anchors.left:			associatedDatafileImage.right
 			anchors.right:			parent.right
 			anchors.leftMargin:		10 * preferencesModel.uiScale
-			text:					model.dirpath  //i.e. title
+			text:					model.dirpath
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
 			font:					Theme.font
+			elide:					Text.ElideMiddle
 		}
 
 		MouseArea
