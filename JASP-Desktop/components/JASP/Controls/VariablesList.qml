@@ -30,7 +30,7 @@ JASPControl
 	background:			rectangle
 	width:				parent.width
 	implicitWidth:		width
-	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
+	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
 	implicitHeight:		height
 	useControlMouseArea:	false
 	

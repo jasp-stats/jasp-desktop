@@ -27,7 +27,7 @@ JASPControl
 	controlType:				"RepeatedMeasuresFactorsList"
 	width:						parent.width
 	implicitWidth:				width
-	height:						Theme.defaultListHeight
+	height:						Theme.defaultVariablesFormHeight
 	implicitHeight:				height
 	background:					rectangle
 
