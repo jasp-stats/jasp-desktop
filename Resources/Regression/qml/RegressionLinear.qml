@@ -128,7 +128,8 @@ Form
 		Group
 		{
 			title: qsTr("Residuals")
-			CheckBox { name: "residualsDurbinWatson";	label: qsTr("Dublin-Watson") }
+            CheckBox { name: "residualsStatistics";     label: qsTr("Statistics")    }
+            CheckBox { name: "residualsDurbinWatson";	label: qsTr("Durbin-Watson") }
 			CheckBox
 			{
 				name: "residualsCasewiseDiagnostics";	label: qsTr("Casewise diagnostics")
@@ -139,13 +140,13 @@ Form
 					{
 						value: "outliersOutside"; label: qsTr("Standard residual >"); checked: true
 						childrenOnSameRow: true
-						IntegerField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3	}
+                        DoubleField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3	}
 					}
 					RadioButton
 					{
 						value: "cooksDistance";	label: qsTr("Cook's distance >")
 						childrenOnSameRow: true
-						DoubleField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+                        DoubleField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 1	}
 					}
 					RadioButton { value: "allCases"; label: qsTr("All")										}
 				}
