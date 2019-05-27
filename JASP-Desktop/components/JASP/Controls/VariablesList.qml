@@ -51,6 +51,7 @@ JASPControl
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
 	property alias	selectedItems:		listView.selectedItems
+	property var	selectedItemsTypes:	[]
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
@@ -75,22 +76,33 @@ JASPControl
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
 	signal hasSelectedItemsChanged();
 
+	function setSelectedItems()
+	{
+		var items = listView.getExistingItems()
+		variablesList.selectedItemsTypes = []
+		for (var i = 0; i < items.length; i++)
+		{
+			var item = items[i]
+			if (listView.selectedItems.includes(item.rank))
+			{
+				item.selected = true
+				if (!variablesList.selectedItemsTypes.includes(item.columnType))
+					variablesList.selectedItemsTypes.push(item.columnType)
+			}
+			else
+				item.selected = false;
+		}
+
+		hasSelectedItemsChanged();
+	}
+
 	function moveSelectedItems(target)
 	{
 		if (listView.selectedItems.length === 0) return;
 		
-		var selectedIndexes = [];
-		for (var i = 0; i < listView.selectedItems.length; i++)
-		{
-			var selectedItem = listView.selectedItems[i];
-			selectedIndexes.push(selectedItem.rank);
-		}
-		
-		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
-		// So we have to clear the selected items list before.
-		listView.clearSelectedItems(true);
 		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
-		itemsDropped(selectedIndexes, target, -1, assignOption);
+		itemsDropped(selectedItems, target, -1, assignOption);
+		listView.clearSelectedItems(true);
 	}
 	
 	DropArea
@@ -272,7 +284,7 @@ JASPControl
 					{
 						var itemRectangle = itemWrapper.children[0];
 						listView.clearSelectedItems(false);
-						listView.selectItem(itemRectangle, true);
+						listView.addSelectedItem(itemRectangle.rank);
 						listView.startShiftSelected = listView.currentIndex;
 						listView.endShiftSelected = -1;
 					}
@@ -301,72 +313,48 @@ JASPControl
 			{
 				moveSelectedItems()
 			}
-			
-			function addSelectedItem(item)
+
+			function getExistingItems()
 			{
-				if (!item || item.objectName !== "itemRectangle")
+				var items = [];
+				for (var i = 0; i < listView.contentItem.children.length; i++)
 				{
-					console.log("item is not an itemRectangle!!!!")
-					return;
+					var item = listView.contentItem.children[i];
+					if (item.children.length === 0)
+						continue;
+					item = item.children[0];
+					if (item.objectName === "itemRectangle")
+						items.push(item);
 				}
-				if (!item.draggable)
-					return;
-				
-				item.selected = true;
-				if (selectedItems.find(function(elt) {return elt.rank === item.rank}))
-					return;
-				
-				var added = false;
-				for (var i = 0; i < selectedItems.length; i++)
-				{
-					if (item.rank < selectedItems[i].rank)
-					{
-						selectedItems.splice(i, 0, item);
-						added = true;
-						break;
-					}
-				}
-				if (!added)
-					selectedItems.push(item);
-				
-				variablesList.hasSelectedItemsChanged();
+
+				return items;
 			}
 			
-			function removeSelectedItem(item)
+			function addSelectedItem(itemRank)
 			{
-				
-				if (!item || item.objectName !== "itemRectangle")
+				if (selectedItems.includes(itemRank))
 					return;
 				
-				item.selected = false;
-				for (var i = 0; i < selectedItems.length; i++)
-				{
-					if (item.rank === selectedItems[i].rank)
-					{
-						selectedItems.splice(i, 1);
-						break;
-					}
-				}
-				variablesList.hasSelectedItemsChanged();
+				selectedItems.push(itemRank);
+				selectedItems.sort();
+				variablesList.setSelectedItems()
 			}
 			
-			function selectItem(item, selected)
+			function removeSelectedItem(itemRank)
 			{
-				if (selected)
-					listView.addSelectedItem(item);
-				else
-					listView.removeSelectedItem(item);
+				var index = selectedItems.indexOf(itemRank)
+				if (index >= 0)
+				{
+					selectedItems.splice(index, 1);
+					variablesList.setSelectedItems()
+				}
 			}
 			
 			function clearSelectedItems(emitSignal)
 			{
-				for (var i = 0; i < selectedItems.length; i++)
-				{
-					selectedItems[i].selected = false;
-				}
 				selectedItems = [];
 				if (emitSignal)
-					variablesList.hasSelectedItemsChanged();
+					variablesList.setSelectedItems()
 			}
 			
 			function selectShiftItems(selected)
@@ -379,14 +367,26 @@ JASPControl
 					startIndex = endIndex;
 					endIndex = temp;
 				}
-				for (var i = startIndex; i <= endIndex; i++)
+
+				if (selected)
 				{
-					var item = listView.contentItem.children[i]
-					if (item)
-						listView.selectItem(item.children[0], selected);
-					else
-						console.log(variablesList.name + ": Unknown item at index " + i);
+					for (var i = startIndex; i <= endIndex; i++)
+					{
+						if (!listView.selectedItems.includes(i))
+							listView.selectedItems.push(i)
+					}
+					listView.selectedItems.sort();
 				}
+				else
+				{
+					for (var i = startIndex; i <= endIndex; i++)
+					{
+						var index = selectedItems.indexOf(i)
+						if (index >= 0)
+							selectedItems.splice(index, 1);
+					}
+				}
+				variablesList.setSelectedItems()
 			}
 		}
 	}
@@ -394,6 +394,7 @@ JASPControl
 	Component
 	{
 		id: itemComponent
+
 		FocusScope
 		{
 			id:			itemWrapper
@@ -416,7 +417,7 @@ JASPControl
 				
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
-				property bool selected:				false
+				property bool selected:				listView.selectedItems.includes(rank)
 				property bool dragging:				false
 				property int offsetX:				0
 				property int offsetY:				0
@@ -562,36 +563,39 @@ JASPControl
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 						{
-							listView.clearSelectedItems(false);
-							listView.selectItem(itemRectangle, true);
+							listView.clearSelectedItems(false)
+							listView.addSelectedItem(itemRectangle.rank)
 						}
 					}
 					
 					onPressed:
 					{
-						listView.mousePressed = true;
+						listView.mousePressed = true
 						listView.currentIndex = index;
-						itemRectangle.clearOtherSelectedItemsWhenClicked = false;
+						itemRectangle.clearOtherSelectedItemsWhenClicked = false
 						if (mouse.modifiers & Qt.ControlModifier)
 						{
-							listView.selectItem(itemRectangle, !itemRectangle.selected);
-							listView.startShiftSelected = index;
-							listView.endShiftSelected = -1;
+							if (itemRectangle.selected)
+								listView.removeSelectedItem(itemRectangle.rank)
+							else
+								listView.addSelectedItem(itemRectangle.rank)
+							listView.startShiftSelected = index
+							listView.endShiftSelected = -1
 						}
 						else if (mouse.modifiers & Qt.ShiftModifier)
 						{
 							if (listView.endShiftSelected >= 0)
 								listView.selectShiftItems(false)
-							listView.endShiftSelected = index;
-							listView.selectShiftItems(true);
+							listView.endShiftSelected = index
+							listView.selectShiftItems(true)
 						}
 						else
 						{
-							itemWrapper.forceActiveFocus();
+							itemWrapper.forceActiveFocus()
 							if (!itemRectangle.selected)
 							{
 								listView.clearSelectedItems(false);
-								listView.selectItem(itemRectangle, true);
+								listView.addSelectedItem(itemRectangle.rank);
 							}
 							else
 							{
@@ -614,18 +618,20 @@ JASPControl
 							if (itemRectangle.selected)
 							{
 								itemRectangle.dragging = true;
-								for (var i = 0; i < listView.selectedItems.length; i++)
+
+								var items = listView.getExistingItems();
+								for (var i = 0; i < items.length; i++)
 								{
-									var selectedItem = listView.selectedItems[i];
-									if (selectedItem.objectName !== "itemRectangle")
+									var item = items[i];
+									if (!listView.selectedItems.includes(item.rank))
 										continue;
-									
-									if (selectedItem.rank !== index)
+
+									if (item.rank !== index)
 									{
-										selectedItem.dragging = true;
-										selectedItem.offsetX = selectedItem.x - itemRectangle.x;
-										selectedItem.offsetY = selectedItem.y - itemRectangle.y;
-										selectedItem.setRelative(itemRectangle);
+										item.dragging = true;
+										item.offsetX = item.x - itemRectangle.x;
+										item.offsetY = item.y - itemRectangle.y;
+										item.setRelative(itemRectangle);
 									}
 								}
 							}
@@ -633,14 +639,16 @@ JASPControl
 						}
 						else
 						{
-							var selectedIndexes = [];
-							for (var i = 0; i < listView.selectedItems.length; i++)
+							var items = listView.getExistingItems();
+							for (var i = 0; i < items.length; i++)
 							{
-								var selectedItem = listView.selectedItems[i];
-								selectedIndexes.push(selectedItem.rank);
-								selectedItem.dragging = false;
-								selectedItem.x = selectedItem.x; // break bindings
-								selectedItem.y = selectedItem.y;
+								var item = items[i];
+								if (!item.dragging)
+									continue;
+
+								item.dragging = false;
+								item.x = item.x; // break bindings
+								item.y = item.y;
 							}
 							if (itemRectangle.Drag.target)
 							{
@@ -648,10 +656,10 @@ JASPControl
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;
 								
-								listView.clearSelectedItems(true); // Must be before itemsDropped: listView does not exist anymore afterwards
 								var variablesListName = variablesList.name
 								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
-								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								itemsDropped(listView.selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								listView.clearSelectedItems(true);
 							}
 						}
 					}
