@@ -83,11 +83,11 @@ The independent samples t-test allows the user to estimate the effect size and t
 
 ### References
 ---
-
-- Jeffreys, H. (1961).  Theory of probability (3rd ed.) . Oxford, UK: Oxford University Press.
-- Morey, R. D., Rouder, J. N., Pratte, M. S., & Speckman, P. L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors.  Journal of Mathematical Psychology, 55 , 368-378.
-- Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis.  Psychonomic Bulletin & Review, 16 , 225-237.
-- van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2019). Bayesian Rank-Based Hypothesis Testing for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1712.06941
+- Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (in press). Informed Bayesian t-tests. *The American Statistician*. <a href="https://arxiv.org/abs/1704.02479">https://arxiv.org/abs/1704.02479</a>
+- Jeffreys, H. (1961).  *Theory of probability (3rd ed.)*. Oxford, UK: Oxford University Press.
+- Morey, R. D., Rouder, J. N., Pratte, M. S., & Speckman, P. L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors.  *Journal of Mathematical Psychology, 55*, 368-378.
+- Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis.  *Psychonomic Bulletin & Review, 16*, 225-237.
+- van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2019). Bayesian Rank-Based Hypothesis Testing for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: <a href="https://arxiv.org/abs/1712.06941">https://arxiv.org/abs/1712.06941</a> 
 
 
 ### R Packages

@@ -209,9 +209,9 @@ The independent variable / repeated measures factor on the x-axis and dependent 
 
 ### References
 ---
-- Conover,W. J. (1999) Practical nonparametric Statistics, 3rd. Edition, Wiley.
-- Morey, R. D. (2008) Confidence Intervals from Normalized Data: A correction to Cousineau (2005). Tutorial in Quantatitative Methods for Psychology, 4(2), 61-64.
-- Loftus, G. R., & Masson, M. E. J. (1994). Using confidence intervals in within-subject designs. Psychonomic Bulletin and Review, 1, 476–490.
+- Conover,W. J. (1999). *Practical nonparametric Statistics, 3rd. Edition*, Wiley.
+- Morey, R. D. (2008) Confidence Intervals from Normalized Data: A correction to Cousineau (2005). Tutorial in *Quantatitative Methods for Psychology, 4*(2), 61-64.
+- Loftus, G. R., & Masson, M. E. J. (1994). Using confidence intervals in within-subject designs. *Psychonomic Bulletin and Review, 1*, 476–490.
 
 ### R-packages
 ---

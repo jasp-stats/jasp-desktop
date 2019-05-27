@@ -54,5 +54,5 @@ The descriptive plot displays the frequency of the reported counts and the corre
 
 ### References
 ---
-- Clopper, C. J. & Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. Biometrika, 26, 404–413. doi: 10.2307/2331986.
-- Good, I. J. (1967). A Bayesian significance test for multinomial distributions. Journal of the Royal Statistical Society: Series B (Methodological), 29, 399-418.
+- Clopper, C. J. & Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika, 26*, 404–413. doi: 10.2307/2331986.
+- Good, I. J. (1967). A Bayesian significance test for multinomial distributions. *Journal of the Royal Statistical Society: Series B (Methodological), 29*, 399-418.
