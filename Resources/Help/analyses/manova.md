@@ -63,8 +63,8 @@ ANOVA - dependent variable:
 
 ### References 
 --- 
--	Field, A. (2009). Discovering Statistics using SPSS (3rd ed.). Sage Publishing.
--	Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using R. Sage Publishing.
+-	Field, A. (2009). *Discovering Statistics using SPSS (3rd ed.)*. Sage Publishing.
+-	Field, A., Miles, J., & Field, Z. (2012). *Discovering statistics using R*. Sage Publishing.
 
 ### R Packages
 ---

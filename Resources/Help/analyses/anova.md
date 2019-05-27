@@ -261,13 +261,13 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### References 
 --- 
--	Field, A. (2009). Discovering Statistics using SPSS (3rd ed.). Sage Publishing.
--	Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using R. Sage Publishing.
--	Goss-Sampson, M. A. (2018). Statistical Analysis in JASP: A Guide for Students. Version 2, October 2018. 
--	Langsrud, Ø. (2003). ANOVA for unbalanced data: Use Type II instead of Type III sums of squares. Statistics and Computing, 13(2), 163-167.
--	Moore, D.S., McCabe, G.P., & Craig, B.A. (2012). Introduction to the practice of statistics (7th ed.). New York, NY: W.H. Freeman and Company.
--	Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p values for testing precise null hypotheses. The American Statistician, 55(1), 62-71.
--	Whitlock, M.C. & Schluter, D. (2015). The analysis of biological data (2nd ed.). Greenwood Village, Colorado: Roberts and Company Publishers.
+-	Field, A. (2009). *Discovering Statistics using SPSS (3rd ed.)*. Sage Publishing.
+-	Field, A., Miles, J., & Field, Z. (2012). *Discovering statistics using R*. Sage Publishing.
+-	Goss-Sampson, M. A. (2018). *Statistical Analysis in JASP: A Guide for Students*. Version 2, October 2018. 
+-	Langsrud, Ø. (2003). ANOVA for unbalanced data: Use Type II instead of Type III sums of squares. *Statistics and Computing, 13*(2), 163-167.
+-	Moore, D.S., McCabe, G.P., & Craig, B.A. (2012). *Introduction to the practice of statistics (7th ed.)*. New York, NY: W.H. Freeman and Company.
+-	Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p values for testing precise null hypotheses. *The American Statistician, 55*(1), 62-71.
+-	Whitlock, M.C. & Schluter, D. (2015). *The analysis of biological data (2nd ed.)*. Greenwood Village, Colorado: Roberts and Company Publishers.
 
 
 ### R Packages

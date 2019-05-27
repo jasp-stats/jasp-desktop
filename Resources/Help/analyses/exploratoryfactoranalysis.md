@@ -89,15 +89,15 @@ The scree plot provides information on how much variance in the data, indicated 
 
 ### References 
 ---
-- Brown, T. A. (2014). Confirmatory factor analysis for applied research.     
+- Brown, T. A. (2014). *Confirmatory factor analysis for applied research*.     
     Guilford Publications. 
 - Hayton, J. C., Allen, D. G., & Scarpello, V. (2004). Factor retention     
-    decisions in exploratory factor analysis: A tutorial on parallel analysis. Organizational research methods, 7(2), 191-205.
+    decisions in exploratory factor analysis: A tutorial on parallel analysis. *Organizational research methods, 7*(2), 191-205.
 - Hopwood, C. J., & Donnellan, M. B. (2010). How should the internal structure 
-    of personality inventories be evaluated? Personality and Social Psychology Review, 14, 332–346. 
+    of personality inventories be evaluated? *Personality and Social Psychology Review, 14*, 332–346. 
 - Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in 
-    exploratory factor analysis. Best practices in quantitative methods, 86-99.
-- Yong, A. G., & Pearce, S. (2013). A beginner’s guide to factor analysis: Focusing on exploratory factor analysis. Tutorials in quantitative methods for psychology, 9(2), 79-94.
+    exploratory factor analysis. *Best practices in quantitative methods*, 86-99.
+- Yong, A. G., & Pearce, S. (2013). A beginner’s guide to factor analysis: Focusing on exploratory factor analysis. *Tutorials in quantitative methods for psychology, 9*(2), 79-94.
 
 ### R Packages 
 --- 
