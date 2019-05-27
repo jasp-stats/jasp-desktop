@@ -19,11 +19,12 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form
 {
 	usesJaspResults: false
-	
+
 	CheckBox { name: "incl_GoF"; checked: true; visible: false }
 	CheckBox { name: "incl_fitIndices"; checked: false; visible: false }
 	CheckBox { name: "incl_loadings"; checked: true; visible: false }
@@ -31,13 +32,14 @@ Form
 	IntegerField { name: "plotHeightScreePlot"  ; defaultValue: 300; visible: false }
 	IntegerField { name: "plotWidthPathDiagram" ; defaultValue: 480; visible: false }
 	IntegerField { name: "plotWidthScreePlot"   ; defaultValue: 300; visible: false }
-	
+
 	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); suggestedColumns: ["scale"] }
+		height: Theme.smallDefaultVariablesFormHeight
+		AvailableVariablesList { name: "allVariablesList" }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["scale"] }
 	}
-	
+
 	RadioButtonGroup
 	{
 		name: "factorMethod"
@@ -73,11 +75,11 @@ Form
 			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ] }
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Output Options")
-		
+
 		Slider
 		{
 			name: "highlightText"

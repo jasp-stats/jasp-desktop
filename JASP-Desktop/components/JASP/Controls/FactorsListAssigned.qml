@@ -28,7 +28,7 @@ JASPControl
 	controlType:				"FactorsListAssigned"
 	background:					rectangle
 	implicitWidth:				parent.width
-	implicitHeight:				Theme.defaultListHeight
+	implicitHeight:				Theme.defaultVariablesFormHeight
 
 	property var model
 	property string title

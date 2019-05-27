@@ -18,17 +18,19 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form
 {
 	usesJaspResults: true
-	
+
 	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "nominal"] }
+		height: Theme.smallDefaultVariablesFormHeight
+		AvailableVariablesList { name: "allVariablesList" }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["ordinal", "nominal"] }
 	}
-	
+
 	DoubleField { name: "testValue"; label: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
 
 	RadioButtonGroup
@@ -60,5 +62,5 @@ Form
 			CIField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence interval") }
 		}
 	}
-		
+
 }

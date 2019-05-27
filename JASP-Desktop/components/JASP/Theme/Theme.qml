@@ -92,11 +92,12 @@ QtObject {
 	readonly property int splitHandleWidth:				20  * uiScale
 	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int subMenuIconHeight:			13	* uiScale
-	readonly property int defaultListHeight:			350 * uiScale
+	readonly property int defaultVariablesFormHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
 	readonly property int jaspControlPadding:			3   * uiScale
 	readonly property int ribbonButtonHeight:			72  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
+	readonly property int smallDefaultVariablesFormHeight:	200 * uiScale
 	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
 	readonly property int sliderHandleDiameter:			16  * uiScale

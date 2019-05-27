@@ -44,7 +44,7 @@ Form
                 name: "availableFactors"
                 source: [{ name: "factors", use: "title" }]
                 showVariableTypeIcon: false
-                height: Theme.defaultListHeight / 3 - 10
+                height: Theme.defaultVariablesFormHeight / 3 - 10
             }
             AssignedVariablesList
             {
@@ -52,21 +52,21 @@ Form
                 name:  "secondOrder"
 				suggestedColumns: []
             }
-            height: Theme.defaultListHeight / 3
+            height: Theme.defaultVariablesFormHeight / 3
         }
 
 //		SEM.FactorsForm
 //		{
 //            id: secondorder
 //            name: "secondOrder"
-//            implicitHeight: Theme.defaultListHeight / 3 - 10
+//            implicitHeight: Theme.defaultVariablesFormHeight / 3 - 10
 //            allowAll: true
 //			availableVariablesList
 //			{
 //                name: "availableFactors"
 //				source: [{ name: "factors", use: "title" }]
 //                showVariableTypeIcon: false
-//                height: Theme.defaultListHeight / 3 - 10
+//                height: Theme.defaultVariablesFormHeight / 3 - 10
 //            }
 //            initNumberFactors: 1
 //        }

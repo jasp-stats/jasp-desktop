@@ -19,17 +19,19 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form
 {
 	usesJaspResults: false
-	
+
 	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "scale"] }
+		height: Theme.smallDefaultVariablesFormHeight
+		AvailableVariablesList { name: "allVariablesList" }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["ordinal", "scale"] }
 	}
-	
+
 	Group
 	{
 		title: qsTr("Correlation Coefficient")
@@ -51,7 +53,7 @@ Form
 		}
 		CheckBox { name: "VovkSellkeMPR";		label: qsTr("Vovk-Sellke maximum p-ratio")			}
 	}
-	
+
 	RadioButtonGroup
 	{
 		title: qsTr("Alt. Hypothesis")
@@ -72,19 +74,19 @@ Form
 		}
 
 	}
-	
+
 	Section
 	{
 		title: qsTr("Options")
 		debug: true
-		
+
 		Group
 		{
 			title: qsTr("Statistics")
 			CheckBox { name: "meansAndStdDev";	label: qsTr("Means and standard deviations")				}
 			CheckBox { name: "crossProducts";	label: qsTr("Cross-product deviations and covariances")		}
 		}
-		
+
 		RadioButtonGroup
 		{
 			name: "missingValues"

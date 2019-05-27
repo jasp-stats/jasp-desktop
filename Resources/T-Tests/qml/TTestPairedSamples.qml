@@ -19,20 +19,21 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form
 {
 	usesJaspResults: false
 	plotHeight: 300
 	plotWidth:  350
-	
+
 	CheckBox { name: "welchs"; checked: false; visible: false }
-	
+
 	VariablesForm
 	{
-		height: 200
-		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); suggestedColumns: ["scale"]; listViewType: "Pairs" }
+		height: Theme.smallDefaultVariablesFormHeight
+		AvailableVariablesList { name: "allVariablesList" }
+		AssignedVariablesList { name: "pairs"; title: qsTr("Variable pairs"); suggestedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	Group
