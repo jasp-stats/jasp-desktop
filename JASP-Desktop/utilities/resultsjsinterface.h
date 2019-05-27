@@ -102,6 +102,7 @@ public slots:
 	void setExactPValuesHandler(bool exact);
 	void setFixDecimalsHandler(QString numDecimals);
 	void analysisImageEditedHandler(Analysis *analysis);
+	void cancelImageEdit(int id);
 	void exportSelected(const QString &filename);
 	void setResultsPageUrl(QString resultsPageUrl);
 	void resultsPageLoaded(bool success);

@@ -228,6 +228,19 @@ void Analyses::reload(Analysis *analysis)
 		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
 }
 
+
+bool Analyses::allCreatedInCurrentVersion() const
+{
+	for (auto idAnalysis : _analysisMap)
+	{
+		Analysis* analysis = idAnalysis.second;
+		if (analysis->version() != AppInfo::version)
+			return false;
+	}
+	
+	return true;
+}
+
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
 	emit emptyQMLCache();

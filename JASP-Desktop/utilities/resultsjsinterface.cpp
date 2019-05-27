@@ -127,10 +127,15 @@ void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 	Json::Value imgJson = analysis->getImgResults();
 	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
-	results = "window.modifySelectedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
+	results = "window.refreshEditedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
 	emit runJavaScript(results);
 
     return;
+}
+
+void ResultsJsInterface::cancelImageEdit(int id)
+{
+	emit runJavaScript("window.cancelImageEdit(" + QString::number(id) + ");");
 }
 
 void ResultsJsInterface::menuHidding()

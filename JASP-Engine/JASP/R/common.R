@@ -2768,8 +2768,9 @@ editImage <- function(plotName, type, height, width) {
     state[["figures"]][[plotName]][["width"]]  <- width
     state[["figures"]][[plotName]][["height"]] <- height
 		
-    key                <- attr(x = state, which = "key")
-    attr(state, "key") <- key
+    key                 <- attr(x = state, which = "key")
+    state               <- .modifyStateFigures(state, identifier=plotName, replacement=list(width=width, height=height), completeObject = FALSE)
+    attr(state, "key")  <- key
 		
     .saveState(state)
 		
