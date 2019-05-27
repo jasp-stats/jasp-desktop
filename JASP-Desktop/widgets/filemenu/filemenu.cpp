@@ -275,6 +275,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			_actionButtons->setEnabled(ActionButtons::ExportData,		false);
 			_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 			_actionButtons->setEnabled(ActionButtons::Close,			false);
+			_computer->setMode(FileEvent::FileOpen);
 			break;
 
 		default:
