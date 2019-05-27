@@ -66,7 +66,7 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotCorrelationMatrix"; label: qsTr("Display pairwise table")
+			name: "plotCorrelationMatrix"; label: qsTr("Correlation Matrix")
 			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
 			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
 		}
