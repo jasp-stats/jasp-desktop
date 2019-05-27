@@ -44,11 +44,12 @@ Linear regression allows the user to model a linear relationship between one or 
   - Collinearity diagnostics: Collinearity statistics, eigenvalues, condition indices, and variance proportions.
 
 - Residuals:
+  - Statistics: Display descriptive statistics of the residuals and predicted values.
   - Durbin-Watson: Durbin-Watson statistic to test the autocorrelation of the residuals.
   - Casewise diagnostic: Casewise and summarized diagnostics for the residuals.
-    - Standard residual > 3: Outliers outside x standard deviations: Shows diagnostics for cases where the absolute value of the standardized residual is larger than x; default is x=3.
-    - Cook's distance > 0 : Shows diagnostics for cases where the value of Cook’s distance is larger than x; default is x = 0. 
-    - All cases: Show diagnostics for all cases.
+    - Standard residual > 3: Outliers outside x standard deviations: Display diagnostics for cases where the absolute value of the standardized residual is larger than x; default is x=3.
+    - Cook's distance > 1 : Display diagnostics for cases where the value of Cook’s distance is larger than x; default is x = 1. 
+    - All cases: Display diagnostics for all cases.
 
 
 ### Options
