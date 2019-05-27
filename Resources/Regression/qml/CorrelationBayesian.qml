@@ -27,6 +27,7 @@ Form
 	
 	VariablesForm
 	{
+		height: Theme.variablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
 	}

@@ -20,6 +20,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP.Theme 1.0
 
 Form {
 	usesJaspResults: false
@@ -28,9 +29,9 @@ Form {
 	
 	VariablesForm
 	{
-		height: 200
+		height: Theme.variablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); allowedColumns: ["scale"]; listViewType: "Pairs" }
+		AssignedVariablesList { name: "pairs"; title: qsTr("Variable pairs"); allowedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	RadioButtonGroup

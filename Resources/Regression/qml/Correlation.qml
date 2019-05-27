@@ -19,6 +19,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form
 {
@@ -26,8 +27,9 @@ Form
 	
 	VariablesForm
 	{
+		height: Theme.variablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "scale"] }
 	}
 	
 	Group

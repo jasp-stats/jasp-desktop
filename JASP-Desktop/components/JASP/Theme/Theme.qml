@@ -97,6 +97,7 @@ QtObject {
 	readonly property int jaspControlPadding:			3   * uiScale
 	readonly property int ribbonButtonHeight:			72  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
+	readonly property int variablesFormHeight:			200 * uiScale
 	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
 	readonly property int sliderHandleDiameter:			16  * uiScale

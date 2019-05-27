@@ -18,6 +18,7 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
+import JASP.Theme 1.0
 
 Form
 {
@@ -25,8 +26,9 @@ Form
 	
 	VariablesForm
 	{
+		height: Theme.variablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "nominal"] }
 	}
 	
 	DoubleField { name: "testValue"; label: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }

@@ -26,7 +26,7 @@ Form
 	
 	VariablesForm
 	{
-		height: 300
+		height: Theme.variablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); allowedColumns: ["ordinal", "scale"] }
 	}
@@ -70,7 +70,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 150
+			height: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); source: "variables" }
 			AssignedVariablesList {  name: "reverseScaledItems"; title: qsTr("Reverse-Scaled Items") }
 		}
