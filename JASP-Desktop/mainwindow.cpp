@@ -188,7 +188,9 @@ void MainWindow::makeConnections()
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
+	connect(this,					&MainWindow::ppiChanged,                        	_engineSync,			&EngineSync::ppiChanged                                     );
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
+	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
@@ -263,8 +265,8 @@ void MainWindow::makeConnections()
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
+	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
-	connect(_preferences,			&PreferencesModel::plotPPIChanged,					_engineSync,			&EngineSync::ppiChanged										);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
@@ -524,11 +526,25 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 }
 
 
-
 void MainWindow::setImageBackgroundHandler(QString value)
 {
 	emit imageBackgroundChanged(value);
-	_engineSync->refreshAllPlots();
+
+	if (_analyses->allCreatedInCurrentVersion())
+		_engineSync->refreshAllPlots();
+	else if (MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the background of the images they must be refreshed first.\n\nRefresh all analyses?"))
+		_analyses->refreshAllAnalyses();
+}
+
+
+void MainWindow::plotPPIChangedHandler(int ppi, bool wasUserAction)
+{
+    emit ppiChanged(ppi);
+
+	if (_analyses->allCreatedInCurrentVersion())
+		_engineSync->refreshAllPlots();
+	else if (wasUserAction && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
+		_analyses->refreshAllAnalyses();
 }
 
 
@@ -662,14 +678,20 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
     if (analysis == nullptr)
         return;
 
-    string utf8 = fq(options);
-    Json::Value root;
-	Json::Reader().parse(utf8, root);
-
-	analysis->editImage(root);
-
-    return;
-
+	if (analysis->version() != AppInfo::version)
+	{
+		if (MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
+			analysis->refresh();
+		else
+			emit editImageCancelled(id);
+	}
+	else
+	{
+		string utf8 = fq(options);
+		Json::Value root;
+		Json::Reader().parse(utf8, root);
+		analysis->editImage(root);
+	}
 }
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)

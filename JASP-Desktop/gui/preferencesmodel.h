@@ -21,7 +21,6 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
-	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIChanged					)
 	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
 	Q_PROPERTY(bool			customThresholdScale	READ customThresholdScale		WRITE setCustomThresholdScale		NOTIFY customThresholdScaleChanged		)
@@ -114,7 +113,7 @@ signals:
 	void missingValuesChanged();
 	void developerModeChanged(			bool		developerMode);
 	void developerFolderChanged(		QString		developerFolder);
-	void plotPPIChanged(				int			ppiForPlot);
+	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
 	void plotBackgroundChanged(			QString		background);
 	void customThresholdScaleChanged(	bool		customThresholdScale);
 	void thresholdScaleChanged(			int			thresholdScale);

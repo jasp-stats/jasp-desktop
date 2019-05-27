@@ -89,6 +89,7 @@ public:
 
 public slots:
 	void setImageBackgroundHandler(QString value);
+	void plotPPIChangedHandler(int ppi, bool wasUserAction);
 	void setProgressBarProgress(int progressBarProgress);
 	void setProgressBarVisible(bool progressBarVisible);
 	void setWelcomePageVisible(bool welcomePageVisible);
@@ -166,6 +167,8 @@ private:
 signals:
 	void saveJaspFile();
 	void imageBackgroundChanged(QString value);
+	void editImageCancelled(int id);
+	void ppiChanged(int ppi);
 	void updateAnalysesUserData(QString userData);
 	void runButtonTextChanged(QString runButtonText);
 	void runButtonEnabledChanged(bool runButtonEnabled);

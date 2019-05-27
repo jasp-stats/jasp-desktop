@@ -103,7 +103,6 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler								);
 			connect(_engines[i],	&EngineRepresentation::moduleUninstallingFinished,		this,			&EngineSync::moduleUninstallingFinished									);
 			connect(_engines[i],	&EngineRepresentation::logCfgReplyReceived,				this,			&EngineSync::logCfgReplyReceived										);
-			connect(this,			&EngineSync::ppiChanged,								this,			&EngineSync::refreshAllPlots,					Qt::QueuedConnection	);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
 			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved									);
@@ -622,7 +621,7 @@ void EngineSync::setModuleWideCastVars(Json::Value newVars)
 	_requestWideCastModuleJson			= newVars;
 }
 
-void EngineSync::refreshAllPlots(int)
+void EngineSync::refreshAllPlots()
 {
 	std::set<Analysis*> inProgress;
 	for(EngineRepresentation * engine : _engines)

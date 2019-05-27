@@ -53,7 +53,7 @@ public slots:
 	void computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
 	void pause();
 	void resume();
-	void refreshAllPlots(int = 0);
+	void refreshAllPlots();
 	void stopEngines();
 	void logCfgRequest();
 	void logToFileChanged(bool logToFile) { logCfgRequest(); }

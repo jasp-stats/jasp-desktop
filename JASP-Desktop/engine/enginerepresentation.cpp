@@ -484,6 +484,7 @@ void EngineRepresentation::ppiChanged(int newPPI)
 void EngineRepresentation::imageBackgroundChanged(QString value)
 {
 	_imageBackground = value;
+	Log::log() << "image background for engineRep set to: " << _imageBackground.toStdString() << std::endl;
 
 	rerunRunningAnalysis();
 }
