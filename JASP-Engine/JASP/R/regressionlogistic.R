@@ -196,8 +196,11 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
                                          type = "binomial")
   }
   
-  if (is.null(estimatesTableBootstrapping) && options[["coeffEstimatesBootstrapping"]]) {
+  if (is.null(estimatesTableBootstrapping) && options[["coeffEstimatesBootstrapping"]] && options[["coeffEstimates"]]) {
     estimatesTableBootstrapping <- .estimatesTableBootstrapping(dataset, options, perform)
+    if(estimatesTableBootstrapping == "Bootstrapping options have changed")
+      return()
+    
     estimatesTableBootstrappingState <- estimatesTableBootstrapping
   } else if(options[["coeffEstimatesBootstrapping"]] && options[['coeffEstimates']]){
     estimatesTableBootstrappingState <- estimatesTableBootstrapping
@@ -348,7 +351,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   testResult <- .jaspGlm(dataset, options, perform = perform, type = "binomial")
   
   if (perform == "run" && !is.null(testResult)) {
-    
+    ticks <- options[['coeffEstimatesBootstrappingReplicates']] * length(testResult)
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
     rows <- list()
     
     for (i in 1:length(testResult)) {
@@ -360,10 +364,13 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       rn <- rownames(summary(testResult[[i]])[["coefficients"]])
       rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
       
-      progress <- .newProgressbar(ticks = options[['coeffEstimatesBootstrappingReplicates']], callback = callback)
       
-      .bootstrapping <- function(data, indices, model.formula) {
-        progress()
+      .bootstrapping <- function(data, indices, model.formula, options) {
+        pr <- progress()
+        response <- .callbackBootstrapLogisticRegression(pr, options)
+        
+        if(response$status == "changed" || response$status == "aborted")
+          stop("Bootstrapping options have changed")
         
         d <- data[indices, , drop = FALSE] # allows boot to select sample
         result <- glm(model.formula, family = "binomial", data = d)
@@ -371,7 +378,14 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
         return(coef(result))
       }
       
-      bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$coeffEstimatesBootstrappingReplicates, model.formula = formula(testResult[[i]]))
+      bootstrap.summary <- try(boot::boot(data = dataset, statistic = .bootstrapping,
+                                          R = options$coeffEstimatesBootstrappingReplicates,
+                                          model.formula = formula(testResult[[i]]),
+                                          options = options),
+                               silent = TRUE)
+      if(inherits(bootstrap.summary, "try-error"))
+        return("Bootstrapping options have changed")
+      
       bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
       bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
       bootstrap.se <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
@@ -538,4 +552,20 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
               residualZ=unname(residualZ),
               cooksD=unname(cooksD))
   )
+}
+
+.callbackBootstrapLogisticRegression <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    
+    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
+       change$modelTerms || change$coeffEstimates || change$includeIntercept ||
+       change$coeffEstimatesBootstrapping ||
+       change$coeffEstimatesBootstrappingReplicates)
+      return(response)
+    
+    response$status <- "ok"
+  }
+  
+  return(response)
 }
