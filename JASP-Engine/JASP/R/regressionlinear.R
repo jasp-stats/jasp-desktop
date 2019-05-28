@@ -1258,7 +1258,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	}
 	
-	
 	################################################################################
 	#						   BOOTSTRAPPING MODEL COEFFICIENTS TABLE   						#
 	################################################################################
@@ -1326,6 +1325,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  bootstrap.regression.result <- list()
 	  
 	  if (perform == "run" && length(list.of.errors) == 0) {
+	    ticks <- options[['regressionCoefficientsBootstrappingReplicates']]*length(lm.model)
+	    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
 	    
 	    for (m in 1:length(lm.model)) {
 	      
@@ -1340,11 +1341,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          # !!!!! if(all(is.na(tmp)))
 	        }
 	        
-	        progress <- .newProgressbar(ticks = options[['regressionCoefficientsBootstrappingReplicates']],
-	                                    callback = callback)
-	        
-	        .bootstrapping <- function(data, indices, formula, wlsWeights) {
-	          progress()
+	        .bootstrapping <- function(data, indices, formula, wlsWeights, options) {
+	          pr <- progress()
+	          response <- .callbackBootstrapLinearRegression(pr, options)
+	          
+	          if(response$status == "changed" || response$status == "aborted")
+	            stop("Bootstrapping options have changed")
 	          
 	          d <- data[indices, , drop = FALSE] # allows boot to select sample
 	          if (.unv(wlsWeights) == "") {
@@ -1356,10 +1358,16 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          return(coef(fit))
 	        }
 	        
-	        bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping,
+	        bootstrap.summary <- try(boot::boot(data = dataset, statistic = .bootstrapping,
 	                                        R = options$regressionCoefficientsBootstrappingReplicates,
 	                                        formula = formula(lm.model[[m]]$lm.fit),
-	                                        wlsWeights = .v(options$wlsWeights))
+	                                        wlsWeights = .v(options$wlsWeights),
+	                                        options = options),
+	                                 silent = TRUE
+	                                 )
+	        if(inherits(bootstrap.summary, "try-error"))
+	          return()
+	        
 	        bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
 	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
 	        bootstrap.se <- matrixStats::colSds(bootstrap.summary$t, na.rm = TRUE)
@@ -3972,4 +3980,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   
   return(plot.data)
 
+}
+
+.callbackBootstrapLinearRegression <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    
+    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
+       change$modelTerms || change$regressionCoefficientsEstimates || change$includeConstant ||
+       change$regressionCoefficientsBootstrapping ||
+       change$regressionCoefficientsBootstrappingReplicates ||
+       change$regressionCoefficientsConfidenceIntervalsInterval)
+      return(response)
+
+    response$status <- "ok"
+  }
+  
+  return(response)
 }
