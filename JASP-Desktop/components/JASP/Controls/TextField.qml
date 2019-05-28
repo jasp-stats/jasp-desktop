@@ -41,6 +41,7 @@ JASPControl
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
 	property alias	placeholderText:	control.placeholderText
+	property bool	selectValueOnFocus:	false
 	
 	property alias	validator:			control.validator
 	property alias	controlLabel:		beforeLabel
@@ -134,6 +135,12 @@ JASPControl
 			
 			onActiveFocusChanged:
 			{
+				if (activeFocus)
+				{
+					if (textField.selectValueOnFocus)
+						control.selectAll()
+				}
+
 				if (!control.acceptableInput)
 				{
 					var msg
