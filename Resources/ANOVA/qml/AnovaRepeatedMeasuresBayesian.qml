@@ -36,7 +36,7 @@ Form
 		{
 			name: "repeatedMeasuresCells"
 			title: qsTr("Repeated Measures Cells")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 			listViewType: "RepeatedMeasures"
 			source: "repeatedMeasuresFactors"
 			height: 140
@@ -45,14 +45,14 @@ Form
 		{
 			name: "betweenSubjectFactors"
 			title: qsTr("Between Subject Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 			itemType: "fixedFactors"
 		}
 		AssignedVariablesList
 		{
 			name: "covariates"
 			title: qsTr("Covariates")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 	}
 

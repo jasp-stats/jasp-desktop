@@ -26,7 +26,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "nominal"] }
 	}
 	
 	DoubleField { name: "testValue"; label: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }

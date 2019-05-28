@@ -50,7 +50,7 @@ Form
             {
                 title: "Second-Order"
                 name:  "secondOrder"
-                allowedColumns: []
+				suggestedColumns: []
             }
             height: Theme.defaultListHeight / 3
         }

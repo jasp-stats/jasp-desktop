@@ -27,7 +27,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "pairs"; allowedColumns: ["scale"]; listViewType: "Pairs" }
+		AssignedVariablesList { name: "pairs"; suggestedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	RadioButtonGroup

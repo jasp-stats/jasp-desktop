@@ -65,7 +65,7 @@ JASPControl
 					name:               factorName
 					editableTitle:      factorTitle
 					dropMode:			"Replace"
-                    allowedColumns:     allowAll ? [] : ["scale"]
+					suggestedColumns:	allowAll ? [] : ["scale"]
                     implicitWidth:      listWidth
 					height:             factorsForm.factorListHeight
 

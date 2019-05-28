@@ -33,28 +33,28 @@ Form
 			name: "dependent"
 			title: qsTr("Dependent Variable")
 			singleVariable: true
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 
 		AssignedVariablesList
 		{
 			name: "fixedFactors"
 			title: qsTr("Fixed Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 		}
 
 		AssignedVariablesList
 		{
 			name: "fixedCovariates"
 			title: qsTr("Fixed Covariates")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 
 		AssignedVariablesList
 		{
 			name: "randomFactors"
 			title: qsTr("Random Effects Grouping Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 		}
 	}
 

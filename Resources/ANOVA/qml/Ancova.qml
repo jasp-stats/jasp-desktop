@@ -40,33 +40,33 @@ Form
 			name: "dependent"
 			title: qsTr("Dependent Variable")
 			singleVariable: true
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 		AssignedVariablesList
 		{
 			name: "fixedFactors"
 			title: qsTr("Fixed Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 		}
 		AssignedVariablesList
 		{
 			name: "randomFactors"
 			title: qsTr("Random Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 			debug: true
 		}
 		AssignedVariablesList
 		{
 			name: "covariates"
 			title: qsTr("Covariates")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 		AssignedVariablesList
 		{
 			name: "wlsWeights"
 			title: qsTr("WLS Weights")
 			singleVariable: true
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 	}
 	
@@ -188,9 +188,9 @@ Form
             AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");         source: ["fixedFactors", "covariates"]	}
 			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true	}
 			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate Lines");  singleVariable: true
-                                    allowedColumns: ["ordinal", "nominal"]		}
+									suggestedColumns: ["ordinal", "nominal"]		}
 			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots");  singleVariable: true
-                                    allowedColumns: ["ordinal", "nominal"]		}
+									suggestedColumns: ["ordinal", "nominal"]		}
 		}
 		
 		Group

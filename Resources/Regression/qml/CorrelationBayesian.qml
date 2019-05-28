@@ -28,7 +28,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "scale"] }
 	}
 
 	Group

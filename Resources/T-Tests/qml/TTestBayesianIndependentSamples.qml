@@ -30,8 +30,8 @@ Form {
 	{
 		height: 200
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; title: qsTr("Dependent Variables"); allowedColumns: ["scale"] }
-		AssignedVariablesList { name: "groupingVariable"; title: qsTr("Grouping Variable"); allowedColumns: ["ordinal", "nominal"]; singleVariable: true }
+		AssignedVariablesList { name: "variables"; title: qsTr("Dependent Variables"); suggestedColumns: ["scale"] }
+		AssignedVariablesList { name: "groupingVariable"; title: qsTr("Grouping Variable"); suggestedColumns: ["ordinal", "nominal"]; singleVariable: true }
 	}
 	
 	RadioButtonGroup
