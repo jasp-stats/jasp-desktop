@@ -1286,13 +1286,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  
 	  footnotes <- .newFootnotes()
 	  
+	  alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
+	  
 	  # Declare table elements
 	  fields <- list(
 	    list(name = "Model", type = "integer"),
 	    list(name = "Name", title = "  ", type = "string"),
 	    list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
 	    list(name = "Bias", type = "number", format = "sf:4;dp:3"),
-	    list(name = "Standard Error", type="number", format = "sf:4;dp:3")
+	    list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
+	    list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3",
+	         overTitle=paste0(100*alpha, "% bca\u002A CI")),
+	    list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3",
+	         overTitle=paste0(100*alpha, "% bca\u002A CI"))
 	  )
 
 	  empty.line <- list( #for empty elements in tables when given output
@@ -1300,7 +1306,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Name" = "",
 	    "Bias" = "",
 	    "Coefficient" = "",
-	    "Standard Error" = "")
+	    "Standard Error" = "",
+	    "Lower Bound" = "",
+	    "Upper Bound" = "")
 #	    "p" = "")
 	  
 	  dotted.line <- list( #for empty tables
@@ -1308,22 +1316,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Name" = ".",
 	    "Coefficient" = ".",
 	    "Bias" = ".",
-	    "Standard Error" = ".")
+	    "Standard Error" = ".",
+	    "Lower Bound" = ".",
+	    "Upper Bound" = ".")
 #	    "p" = ".")
-	  
-	    
-	    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-	    #alpha <- alpha / 100
-	    
-	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3",
-	                                           overTitle=paste0(100*alpha, "% bca\u002A CI"))
-	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3",
-	                                           overTitle=paste0(100*alpha, "% bca\u002A CI"))
-	    
-	    empty.line$"Lower Bound" = ""
-	    empty.line$"Upper Bound" = ""
-	    dotted.line$"Lower Bound" = "."
-	    dotted.line$"Upper Bound" = "."
 	  
 	  bootstrap.regression[["schema"]] <- list(fields = fields)
 	  
@@ -1385,11 +1381,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	            bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v])
 	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	            
-	            if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-	              bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v)
-	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
-	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
-	            }
+	            bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v)
+	            bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
+	            bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
 	            
 	          } else {
 	            
