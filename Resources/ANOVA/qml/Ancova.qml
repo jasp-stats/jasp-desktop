@@ -186,7 +186,7 @@ Form
 		VariablesForm {
 			height: 200
             AvailableVariablesList { name: "descriptivePlotsVariables"; source: ["fixedFactors", "covariates"]	}
-            AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true; suggestedColumns: "scale"}
+            AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true}
             AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate Lines");  singleVariable: true; suggestedColumns: ["ordinal", "nominal"]		}
             AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots");  singleVariable: true; suggestedColumns: ["ordinal", "nominal"]		}
 		}
