@@ -588,12 +588,9 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     }
     # use only exProbVar
     fact <- dataset[[.v(options$factor)]]
-    eProps <- data.frame(dataset[[.v(options$exProbVar)]])
-
-    # Reorder to match factor levels
-    eProps           <- data.frame(eProps[levels(fact),])
+    eProps <- dataset[.v(options$exProbVar)]
     colnames(eProps) <- options$exProbVar
-    rownames(eProps) <- levels(fact)
+    rownames(eProps) <- fact
 
     # Exclude missing values
     eProps           <- na.omit(eProps)
