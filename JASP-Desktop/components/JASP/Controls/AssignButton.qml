@@ -63,7 +63,6 @@ Button
 				for (var i = 0; i < source.selectedItemsTypes.length; i++)
 				{
 					var itemType = source.selectedItemsTypes[i];
-					if (itemType === "nominalText") itemType = "nominal";
 					if (!target.allowedColumns.includes(itemType))
 						result = false;
 				}

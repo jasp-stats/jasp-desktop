@@ -197,7 +197,7 @@ JASPControl
 
 		Repeater
 		{
-			model: suggestedColumns.length
+			model: suggestedColumns
 
 
 			Image
@@ -218,8 +218,40 @@ JASPControl
 		
 		Component.onCompleted:
 		{
-			if (suggestedColumns.length === 0)
-				suggestedColumns = allowedColumns
+			var mySuggestedColumns = []
+			var myAllowedColumns = []
+
+			if (typeof suggestedColumns === "string")
+				mySuggestedColumns.push(suggestedColumns)
+			else
+				mySuggestedColumns = suggestedColumns.concat()
+			if (typeof allowedColumns === "string")
+				myAllowedColumns.push(allowedColumns)
+			else
+				myAllowedColumns = allowedColumns.concat()
+
+			if (mySuggestedColumns.length === 0 && myAllowedColumns.length > 0)
+				mySuggestedColumns = myAllowedColumns.concat()
+			else if (myAllowedColumns.length === 0 && mySuggestedColumns.length > 0)
+			{
+				myAllowedColumns = mySuggestedColumns.concat()
+				if (mySuggestedColumns.includes("scale"))
+				{
+					if (!myAllowedColumns.includes("nominal"))
+						myAllowedColumns.push("nominal")
+					if (!myAllowedColumns.includes("ordinal"))
+						myAllowedColumns.push("ordinal")
+				}
+				if (mySuggestedColumns.includes("nominal"))
+				{
+					if (!myAllowedColumns.includes("nominalText"))
+						myAllowedColumns.push("nominalText")
+					if (!myAllowedColumns.includes("ordinal"))
+						myAllowedColumns.push("ordinal")
+				}
+			}
+			suggestedColumns = mySuggestedColumns.concat()
+			allowedColumns = myAllowedColumns.concat()
 			
 			var length = variablesList.resources.length
 			for (var i = length - 1; i >= 0; i--)
@@ -267,6 +299,7 @@ JASPControl
 			property bool mousePressed: false;
 			property bool shiftPressed: false;
 			property var itemContainingDrag
+			property var draggingItems: []
 			
 			onCurrentItemChanged:
 			{
@@ -427,7 +460,7 @@ JASPControl
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			variablesList.draggable && (!variablesList.dragOnlyVariables || isVariable)
-				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? (model.columnType === "nominalText" ? "nominal" : model.columnType) : ""
+				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraColumnsModel:		model.extraColumns
 
 				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
@@ -617,6 +650,8 @@ JASPControl
 						{
 							if (itemRectangle.selected)
 							{
+								listView.draggingItems = []
+								listView.draggingItems.push(itemRectangle)
 								itemRectangle.dragging = true;
 
 								var items = listView.getExistingItems();
@@ -628,6 +663,7 @@ JASPControl
 
 									if (item.rank !== index)
 									{
+										listView.draggingItems.push(item)
 										item.dragging = true;
 										item.offsetX = item.x - itemRectangle.x;
 										item.offsetY = item.y - itemRectangle.y;
@@ -639,16 +675,15 @@ JASPControl
 						}
 						else
 						{
-							var items = listView.getExistingItems();
-							for (var i = 0; i < items.length; i++)
+							for (var i = 0; i < listView.draggingItems.length; i++)
 							{
-								var item = items[i];
-								if (!item.dragging)
+								var draggingItem = listView.draggingItems[i];
+								if (!draggingItem.dragging)
 									continue;
 
-								item.dragging = false;
-								item.x = item.x; // break bindings
-								item.y = item.y;
+								draggingItem.dragging = false;
+								draggingItem.x = draggingItem.x; // break bindings
+								draggingItem.y = draggingItem.y;
 							}
 							if (itemRectangle.Drag.target)
 							{

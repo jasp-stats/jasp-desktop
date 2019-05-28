@@ -150,14 +150,9 @@ int QMLListView::_getAllowedColumnsTypes()
 			if (allowedColumn == "ordinal")
 				allowedColumnsTypes |= Column::ColumnTypeOrdinal;
 			else if (allowedColumn == "nominal")
-			{
 				allowedColumnsTypes |= Column::ColumnTypeNominal;
-				allowedColumnsTypes |= Column::ColumnTypeNominalText;
-			}
 			else if (allowedColumn == "nominalText")
 				allowedColumnsTypes |= Column::ColumnTypeNominalText;
-			else if (allowedColumn == "nominalInt")
-				allowedColumnsTypes |= Column::ColumnTypeNominal;
 			else if (allowedColumn == "scale")
 				allowedColumnsTypes |= Column::ColumnTypeScale;
 			else

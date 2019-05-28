@@ -30,7 +30,7 @@ Form {
 	{
 		height: 200
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); allowedColumns: ["scale"]; listViewType: "Pairs" }
+		AssignedVariablesList { name: "pairs"; title: qsTr("Variables"); suggestedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	RadioButtonGroup
