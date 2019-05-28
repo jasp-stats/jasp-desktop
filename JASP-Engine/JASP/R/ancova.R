@@ -182,6 +182,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   if(is.null(stateBootsPostHoc) && options[['postHocTestsBootstrapping']]){
     
     result <- .anovabootsPostHoctrappingTable(dataset, options, perform, model, status, stateBootsPostHoc, singular)
+    if(result == "Bootstrapping options have changed")
+      return()
+    
     results[["bootsPostHoc"]] <- list(collection=result$result, title = "Post Hoc Tests via Bootstrapping")
     status <- result$status
     stateBootsPostHoc <- result$stateBootsPostHoc
@@ -211,6 +214,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   if(is.null(stateBootsMarginalMeans) && options[['marginalMeansBootstrapping']]){
     
     result <- .anovaMarginalMeansBootstrapping(dataset, options, perform, model, status, singular, stateBootsMarginalMeans)
+    if(result =="Bootstrapping options have changed")
+      return()
+    
     results[["bootsMarginalMeans"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
     status <- result$status
     stateBootsMarginalMeans <- result$stateMarginalMeans
@@ -1475,6 +1481,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   postHocTables <- resultPostHoc <- list()
   
+  ticks <- options[['postHocTestsBootstrappingReplicates']] * length(postHocVariables)
+  progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  
   for (postHocVarIndex in 1:length(postHocVariables)) {
     footnotes <- .newFootnotes()
     
@@ -1510,10 +1519,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                           infer = c(FALSE, FALSE))
       
       # actual bootstrapping
-      progress <- .newProgressbar(ticks = options[['postHocTestsBootstrappingReplicates']], callback = callback)
-      
       .bootstrapPostHoc <- function(data, indices, options, thisVarName, postHocVariablesListV, postHocVarIndex){
-        progress()
+        pr <- progress()
+        response <- .callbackBootstrapAncovaPostHoc(pr, options)
+        
+        if(response$status == "changed" || response$status == "aborted")
+          stop("Bootstrapping options have changed")
         
         resamples <- data[indices, , drop = FALSE] # allows boot to select sample
         
@@ -1538,10 +1549,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         }
       }
       
-      bootstrapPostHoc <- boot::boot(data = dataset, statistic = .bootstrapPostHoc, 
-                                     R = options[["postHocTestsBootstrappingReplicates"]],
-                                     options = options, thisVarName = thisVarName,
-                                     postHocVariablesListV = postHocVariablesListV, postHocVarIndex = postHocVarIndex)
+      bootstrapPostHoc <- try(boot::boot(data = dataset, statistic = .bootstrapPostHoc, 
+                                         R = options[["postHocTestsBootstrappingReplicates"]],
+                                         options = options, thisVarName = thisVarName,
+                                         postHocVariablesListV = postHocVariablesListV,
+                                         postHocVarIndex = postHocVarIndex),
+                              silent = TRUE)
+      if(inherits(bootstrapPostHoc, "try-error"))
+        return("Bootstrapping options have changed")
       
       bootstrapPostHoc.summary <- summary(bootstrapPostHoc)
       bootstrapPostHoc.ci <- t(sapply(1:nrow(bootstrapPostHoc.summary), function(comparison){
@@ -2052,6 +2067,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   marginalMeans <- list()
   
+  ticks = options[['marginalMeansBootstrappingReplicates']]*length(terms.base64)
+  progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  
   for (i in .indices(terms.base64)) {
     
     result <- list()
@@ -2103,10 +2121,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       
       formula <- as.formula(paste("~", terms.base64[i]))
       
-      progress <- .newProgressbar(ticks = options[['marginalMeansBootstrappingReplicates']], callback = callback)
-      
       .bootstrapMarginalMeans <- function(data, indices, options){
-        progress()
+        pr <- progress()
+        response <- .callbackBootstrapAncovaMarginalMeans(pr, options)
+        
+        if(response$status == "changed" || response$status == "aborted")
+          stop("Bootstrapping options have changed")
         
         resamples <- data[indices, , drop=FALSE]
         
@@ -2125,9 +2145,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         }
       }
 
-      bootstrapMarginalMeans <- boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
-                                           R = options[["marginalMeansBootstrappingReplicates"]],
-                                           options = options)
+      bootstrapMarginalMeans <- try(boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
+                                               R = options[["marginalMeansBootstrappingReplicates"]],
+                                               options = options), silent = TRUE)
+      if(inherits(bootstrapMarginalMeans, "try-error"))
+        return("Bootstrapping options have changed")
       
       bootstrapMarginalMeans.summary <- summary(bootstrapMarginalMeans)
       bootstrapMarginalMeans.ci <- t(sapply(1:nrow(bootstrapMarginalMeans.summary), function(index){
@@ -3182,4 +3204,40 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   }
   
   list(result=qqPlot, status=status, stateqqPlot=stateqqPlot)
+}
+
+
+.callbackBootstrapAncovaPostHoc <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    if(is.null(options$covariates)) # because of anova
+      change$covariates <- FALSE
+    
+    if(change$dependent || change$covariates || change$fixedFactors || change$randomFactors ||
+       change$modelTerms || change$wlsWeights || change$postHocTestsVariables ||
+       change$confidenceIntervalIntervalPostHoc || 
+       change$postHocTestsBootstrapping || change$postHocTestsBootstrappingReplicates)
+      return(response)
+    
+    response$status <- "ok"
+  }
+  
+  return(response)
+}
+
+.callbackBootstrapAncovaMarginalMeans <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    if(is.null(options$covariates)) # because of anova
+      change$covariates <- FALSE
+    
+    if(change$dependent || change$covariates || change$fixedFactors || change$randomFactors ||
+       change$modelTerms || change$wlsWeights || change$marginalMeansTerms ||
+       change$marginalMeansBootstrapping || change$marginalMeansBootstrappingReplicates)
+      return(response)
+    
+    response$status <- "ok"
+  }
+  
+  return(response)
 }
