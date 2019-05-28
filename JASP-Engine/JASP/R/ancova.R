@@ -1510,7 +1510,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                           infer = c(FALSE, FALSE))
       
       # actual bootstrapping
+      progress <- .newProgressbar(ticks = options[['postHocTestsBootstrappingReplicates']], callback = callback)
+      
       .bootstrapPostHoc <- function(data, indices, options, thisVarName, postHocVariablesListV, postHocVarIndex){
+        progress()
+        
         resamples <- data[indices, , drop = FALSE] # allows boot to select sample
         
         anovaModel <- .anovaModel(resamples, options) # refit model
@@ -2099,7 +2103,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       
       formula <- as.formula(paste("~", terms.base64[i]))
       
+      progress <- .newProgressbar(ticks = options[['marginalMeansBootstrappingReplicates']], callback = callback)
+      
       .bootstrapMarginalMeans <- function(data, indices, options){
+        progress()
+        
         resamples <- data[indices, , drop=FALSE]
         
         anovaModelBoots <- .anovaModel(resamples, options) # refit model

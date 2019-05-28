@@ -1269,7 +1269,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
       (diff$regressionCoefficientsBootstrapping == FALSE && diff$regressionCoefficientsBootstrappingReplicates == FALSE &&
        diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE &&
        diff$regressionCoefficientsEstimates == FALSE && diff$regressionCoefficientsConfidenceIntervalsInterval == FALSE && 
-       diff$regressionCoefficientsConfidenceIntervals == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&  
+       diff$steppingMethodCriteriaFEntry == FALSE &&  
        diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && 
        diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
        diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
@@ -1311,19 +1311,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Standard Error" = ".")
 #	    "p" = ".")
 	  
-	  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 	    
 	    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
 	    #alpha <- alpha / 100
 	    
-	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
+	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3",
+	                                           overTitle=paste0(100*alpha, "% bca\u002A CI"))
+	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3",
+	                                           overTitle=paste0(100*alpha, "% bca\u002A CI"))
 	    
 	    empty.line$"Lower Bound" = ""
 	    empty.line$"Upper Bound" = ""
 	    dotted.line$"Lower Bound" = "."
 	    dotted.line$"Upper Bound" = "."
-	  }
 	  
 	  bootstrap.regression[["schema"]] <- list(fields = fields)
 	  
@@ -1344,7 +1344,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          # !!!!! if(all(is.na(tmp)))
 	        }
 	        
+	        progress <- .newProgressbar(ticks = options[['regressionCoefficientsBootstrappingReplicates']],
+	                                    callback = callback)
+	        
 	        .bootstrapping <- function(data, indices, formula, wlsWeights) {
+	          progress()
+	          
 	          d <- data[indices, , drop = FALSE] # allows boot to select sample
 	          if (.unv(wlsWeights) == "") {
 	            fit <- lm(formula = formula, data=d)
@@ -1355,9 +1360,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          return(coef(fit))
 	        }
 	        
-	        bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$regressionCoefficientsBootstrappingReplicates, formula = formula(lm.model[[m]]$lm.fit), wlsWeights = .v(options$wlsWeights))
-	        bootstrap.coef <- bootstrap.summary$t0
-	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
+	        bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping,
+	                                        R = options$regressionCoefficientsBootstrappingReplicates,
+	                                        formula = formula(lm.model[[m]]$lm.fit),
+	                                        wlsWeights = .v(options$wlsWeights))
+	        bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
+	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
 	        bootstrap.se <- matrixStats::colSds(bootstrap.summary$t, na.rm = TRUE)
 
 	        len.reg <- length(bootstrap.regression.result) + 1
@@ -1476,11 +1484,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	              bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v+var])
 	              bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v+var])
 
-	              if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-	                bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var)
-	                bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
-	                bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
-	              }
+	              bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var)
+	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
+	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
 	              
 	              len.reg <- len.reg + 1
 	            }
@@ -1598,11 +1604,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  
 	  bootstrap.regression[["data"]] <- bootstrap.regression.result
 	  
+	  footnotes <- .newFootnotes()
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+	               text = paste0("Bootstrapping based on ", options[['regressionCoefficientsBootstrappingReplicates']], " replicates."))
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+	               text = "Coefficient estimate is based on the median of the bootstrap distribution.")
+	  .addFootnote(footnotes, symbol = "\u002A", text = "Bias corrected accelerated.")
+
+	  
 	  # Check whether variables in the regression model are redundant
 	  for(i in 1:length(bootstrap.regression$data)) {
 	    if (bootstrap.regression$data[[i]]$Coefficient=="NA") {
 	      # Add footnote
-	      footnotes <- .newFootnotes()
 	      .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
 	      # Add footnote symbol to name of the redundant variable
 	      bootstrap.regression$data[[i]]$Name <- paste0(bootstrap.regression$data[[i]]$Name, "\u207A")

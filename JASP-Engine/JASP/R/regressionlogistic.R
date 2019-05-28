@@ -335,8 +335,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
     list(name="est", title = "Estimate", type="number", format="dp:3"),
     list(name="bias", title = "Bias", type="number", format="dp:3"),
     list(name="se", title = "Standard Error", type="number", format="dp:3"),
-    list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle="95% Confidence interval"),
-    list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle="95% Confidence interval")
+    list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle="95% bca\u002A Confidence interval"),
+    list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle="95% bca\u002A Confidence interval")
   )
   
   if (! multimod) {
@@ -360,15 +360,20 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       rn <- rownames(summary(testResult[[i]])[["coefficients"]])
       rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
       
+      progress <- .newProgressbar(ticks = options[['coeffEstimatesBootstrappingReplicates']], callback = callback)
+      
       .bootstrapping <- function(data, indices, model.formula) {
+        progress()
+        
         d <- data[indices, , drop = FALSE] # allows boot to select sample
         result <- glm(model.formula, family = "binomial", data = d)
+        
         return(coef(result))
       }
       
       bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$coeffEstimatesBootstrappingReplicates, model.formula = formula(testResult[[i]]))
-      bootstrap.coef <- bootstrap.summary$t0
-      bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
+      bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
+      bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
       bootstrap.se <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
       
       for (j in seq_along(rn)) {
@@ -399,6 +404,15 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       list(model = ".", param = ".", est = ".", bias = ".", se = ".", cilo = ".", ciup = ".")
     )
   }
+  
+  footnotes <- .newFootnotes()
+  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+               text = paste0("Bootstrapping based on ", options[['coeffEstimatesBootstrappingReplicates']], " replicates."))
+  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+               text = "Coefficient estimate is based on the median of the bootstrap distribution.")
+  .addFootnote(footnotes, symbol = "\u002A",
+               text = "Bias corrected accelerated.")
+  out[['footnotes']] <- as.list(footnotes)
   
   out[["data"]] <- rows
   return(out)

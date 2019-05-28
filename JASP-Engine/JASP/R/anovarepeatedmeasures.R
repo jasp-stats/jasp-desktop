@@ -3942,7 +3942,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       formula <- as.formula(paste("~", terms.base64[i]))
       
+      progress <- .newProgressbar(ticks = options[['marginalMeansBootstrappingReplicates']], callback = callback)
+      
       .bootstrapMarginalMeans <- function(data, indices, options){
+        progress()
+        
         resamples <- data[indices, , drop=FALSE]
         
         anovaModelBoots <- .rmAnovaModel(resamples, options, TRUE) # refit model
