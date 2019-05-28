@@ -91,7 +91,7 @@ Form
 				childrenOnSameRow: true
 				TextField
 				{
-					inputType: "integerArray"
+					inputType: "doubleArray"
 					name: "percentileValuesPercentilesPercentiles"
 					fieldWidth: 60
 				}

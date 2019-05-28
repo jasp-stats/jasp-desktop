@@ -25,6 +25,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optioncomputedcolumn.h"
 #include "analysis/options/optionintegerarray.h"
+#include "analysis/options/optiondoublearray.h"
 
 #include <QObject>
 
@@ -34,7 +35,7 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 	Q_OBJECT
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, ComputedColumnType, AddColumnType };
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType };
 
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
 	BoundQMLTextInput(QMap<QString, QVariant>& properties, AnalysisForm *form);
@@ -58,10 +59,12 @@ private:
 
 	QString					  _getPercentValue();
 	QString					  _getIntegerArrayValue();
+	QString					  _getDoubleArrayValue();
 
 	TextInputType			  _inputType;
 	OptionInteger			* _integer			= nullptr;
 	OptionIntegerArray		* _integerArray		= nullptr;
+	OptionDoubleArray		* _doubleArray		= nullptr;
 	OptionNumber			* _number			= nullptr;
 	OptionString			* _string			= nullptr;
 	OptionComputedColumn	* _computedColumn	= nullptr;
