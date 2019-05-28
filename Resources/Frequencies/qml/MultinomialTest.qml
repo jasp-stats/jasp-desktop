@@ -76,7 +76,7 @@ Form
 				CIField {	name: "confidenceIntervalInterval"	}
 			}
 		}
-		CheckBox {	name: "VovkSellkeMPR";	label: qsTr("Vovk-Dellke maximum p-ratio")		}
+        CheckBox {	name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")		}
 	}
 
 	ColumnLayout
