@@ -24,16 +24,24 @@ import JASP.Theme 1.0
 
 Rectangle
 {
-	id		: ribbonButton
-	width	: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
-	height	: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
-	color	: mice.pressed ? Theme.grayLighter : "transparent"
+	id				: ribbonButton
+	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
+	height			: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
+	color			: showPressed ? Theme.grayLighter : "transparent"
+	border.color	: myMenuOpen ? Theme.grayDarker : Theme.gray
+	border.width	: showPressed ? 1 : 0
+	z				: 1
+	//radius			: 4
 
 	property alias	text		: innerText.text
 	property alias	source		: backgroundImage.source
 	property bool	enabled		: true
 	property string moduleName	: "???"
 	property var	menu		: []
+	property bool	myMenuOpen	: false
+	property bool	showPressed	: myMenuOpen || mice.pressed
+
+	onMyMenuOpenChanged: if(!myMenuOpen) myMenuOpen = false; //Break the binding
 
 	property real _imgIndWidth: backgroundImage.width + (menuIndicator.visible ? (menuIndicator.width + menuIndicator.anchors.leftMargin) * 2 : 0)
 
@@ -44,7 +52,7 @@ Rectangle
 		anchors.centerIn	: parent
 		width				: parent.width
 		height				: parent.height
-		scale				: mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1
+		scale				: mice.containsMouse && !ribbonButton.showPressed ? Theme.ribbonScaleHovered : 1
 
 		Image
 		{
@@ -55,11 +63,7 @@ Rectangle
 			opacity:	ribbonButton.enabled ? 1 : 0.5
 			smooth:		true
 			mipmap:		true
-			sourceSize
-			{
-				width:	backgroundImage.width * 2
-				height:	backgroundImage.height * 2
-			}
+			fillMode:	Image.PreserveAspectFit
 
 			anchors
 			{
@@ -93,7 +97,7 @@ Rectangle
 			anchors.topMargin			: 5 * preferencesModel.uiScale
 			color						: ribbonButton.enabled ? Theme.black : Theme.gray
 			font						: Theme.fontRibbon
-			renderType					: Text.QtRendering //Because this might be transform and be ugly if done natively
+			renderType					: Text.QtRendering //Because this might be transformed and ugly if done natively
 		}
 
 		MouseArea
@@ -105,18 +109,24 @@ Rectangle
 			cursorShape		: Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
 
-			onClicked		:
+			onClicked:
 			{
+				fileMenuModel.visible	= false;
+				modulesMenu.opened		= false;
+				mouse.accepted			= false;
+				
+				customMenu.remove()
+
 				if (ribbonButton.menu.rowCount() === 1)
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisName(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				else
 				{
 					var functionCall = function (index)
 					{
-						var analysisName = customMenu.props['model'].getAnalysisName(index);
+						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
-						customMenu.visible = false;
+						customMenu.remove();
 					}
 
 					var props = {
@@ -125,7 +135,9 @@ Rectangle
 						"hasIcons"		: ribbonButton.menu.hasIcons()
 					};
 
-					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
+					customMenu.showMenu(ribbonButton, props, 1 , ribbonButton.height);
+
+					myMenuOpen = Qt.binding(function() { return customMenu.visible; });
 				}
 			}
 		}

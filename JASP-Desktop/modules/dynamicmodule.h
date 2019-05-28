@@ -84,7 +84,7 @@ public:
 	std::string			description()		const { return _description;							}
 	std::string			modulePackage()		const { return _modulePackage;							}
 
-	bool				isDevMod()			const { return _name == developmentModuleName();			}
+	bool				isDevMod()			const { return _name == developmentModuleName();		}
 	bool				error()				const { return _status == moduleStatus::error;			}
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
 	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
@@ -170,7 +170,6 @@ signals:
 	void registerForLoading(const std::string & moduleName);
 	void registerForInstalling(const std::string & moduleName);
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
-
 	void initializedChanged(bool initialized);
 
 private:
@@ -181,7 +180,7 @@ private:
 private:
 	//QDir			_generatedPackageFolder;
 	QFileInfo		_moduleFolder;
-	moduleStatus	_status = moduleStatus::uninitialized;
+	moduleStatus	_status = moduleStatus::initializing;
 	std::string		_name,
 					_title,
 					_icon,

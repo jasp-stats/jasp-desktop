@@ -39,7 +39,7 @@ Form
 		{
 			name: "repeatedMeasuresCells"
 			title: qsTr("Repeated Measures Cells")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 			listViewType: "RepeatedMeasures"
 			source: "repeatedMeasuresFactors"
 			height: 140
@@ -48,14 +48,14 @@ Form
 		{
 			name: "betweenSubjectFactors"
 			title: qsTr("Between Subject Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 			itemType: "fixedFactors"
 		}
 		AssignedVariablesList
 		{
 			name: "covariates"
 			title: qsTr("Covariates")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 	}
 	
@@ -67,22 +67,15 @@ Form
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
-			AssignedVariablesList
-			{
-				name: "withinModelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction"
-			}
+			AvailableVariablesList	{ name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
+			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: "Interaction"	}
 		}
 		
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
-			AssignedVariablesList
-			{
-				name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction"
-				addInteractionOptions: true
-			}
+			AvailableVariablesList	{ name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
+			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
 		
 		DropDown
@@ -132,8 +125,8 @@ Form
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
+			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
         CheckBox
@@ -255,6 +248,7 @@ Form
 				columns: 3
 				CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
 				CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
+				CheckBox { name: "effectSizeGenEtaSquared";	label: qsTr("general η²")					}
 				CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
 			}
 			CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}

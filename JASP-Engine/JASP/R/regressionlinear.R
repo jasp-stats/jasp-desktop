@@ -55,11 +55,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 
 	if (perform == "run") {
-	  
+			
 	  if (dependent.variable != "") {
-  		.hasErrors(dataset, type = c("infinity", "variance", "observations"), 
+  		.hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions"), 
   								all.target = list.variables, observations.amount = "< 2",
-  								exitAnalysisIfErrors = TRUE)
+  								modelInteractions.modelTerms = options$modelTerms, exitAnalysisIfErrors = TRUE)
   								
   		#check weights
   		if (options$wlsWeights != "")
@@ -169,42 +169,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		includes.nuisance <- (length(variables.in.null.model) > 0)
 		lm.fit.index.one.model <- 1 + as.numeric(includes.nuisance && (!identical(variables.in.model,variables.in.null.model)))
 
-	}
-
-
-	if (length(options$modelTerms) > 0) {
-
-		max.no.components <- max(sapply (options$modelTerms, function(term){length (term$components)}))
-
-		if (max.no.components > 1) {
-
-			# In case of interactions, check whether all main effects and lower-order interaction terms are in the model
-
-			for (term in options$modelTerms) {
-
-				components <- term$components
-
-				if (length (components) > 1) {
-
-					no.children <- 2^length (components) - 1
-					inclusion <- sapply (options$modelTerms, function (terms) {
-
-							term.components <- terms$components
-
-							if (sum (term.components %in% components) == length (term.components)) {
-								return (TRUE)
-							}
-							return (FALSE)
-						})
-
-					if (sum (inclusion) != no.children) {
-
-						error.message <- "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
-						list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-					}
-				}
-			}
-		}
 	}
 
 	if (dependent.variable != "") {
@@ -619,8 +583,22 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (options$residualsDurbinWatson) {
 
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "sf:4;dp:3")
-		empty.line$"Durbin-Watson" <- "."
+	  fields[[length(fields)+1]] <- list(name = "Durbin-Watson_ac", title = "Autocorrelation",
+	                                     type = "number", format = "sf:4;dp:3", 
+	                                     overTitle = "Durbin-Watson")
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Statistic",
+		                                   type = "number", format = "sf:4;dp:3",
+		                                   overTitle = "Durbin-Watson")
+		empty.line[["Durbin-Watson_ac"]] <- empty.line[["Durbin-Watson"]] <- "."
+		
+		if(options$wlsWeights == ""){
+  		fields[[length(fields)+1]] <- list(name = "Durbin-Watson_p.value", title = "p",
+  		                                   type = "number", format = "dp:3;p:.001",
+  		                                   overTitle = "Durbin-Watson")
+  		empty.line[["Durbin-Watson_p.value"]] <- "."
+		} else{
+		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = "p-value for Durbin-Watson test is unavailable for weighted regression.")
+		}
 	}
 
 	model.table[["schema"]] <- list(fields = fields)
@@ -641,15 +619,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				table.rows[[ m ]]$"se" <- as.numeric(lm.summary$sigma)
 
 				if (options$residualsDurbinWatson) {
+				  
+				  durwatResult <- car::durbinWatsonTest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
+				  
+				  table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(durwatResult[['r']])
+				  table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['dw']])
+				  
+				  if(options$wlsWeights == ""){ # if regression is not weighted, calculate p-value with lmtest (car method is unstable)
+				    durwatResult[['p.value']] <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))$p.value
+				    table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
+				  }
 
-					if (m == length(lm.model)) {
-
-						table.rows[[ m ]]$"Durbin-Watson" <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$dw)
-
-					} else {
-
-						table.rows[[ m ]]$"Durbin-Watson" <- ""
-					}
 				}
 
 				if (options$rSquaredChange == TRUE) {
@@ -943,7 +923,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-			alpha <- alpha / 100
+			#alpha <- alpha / 100
 			
 			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
@@ -1334,7 +1314,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 	    
 	    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-	    alpha <- alpha / 100
+	    #alpha <- alpha / 100
 	    
 	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
@@ -2177,7 +2157,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#						   Residuals Statistics Table   					   #
 	################################################################################
 
-	if (options$residualsDurbinWatson || options$residualsCasewiseDiagnostics) {
+	if (options$residualsStatistics) {
 
 		residualsStatistics <- list()
 		residualsStatistics[["title"]] <- "Residuals Statistics"

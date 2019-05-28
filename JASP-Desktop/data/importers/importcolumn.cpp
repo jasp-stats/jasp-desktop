@@ -124,47 +124,56 @@ bool ImportColumn::convertValueToDouble(const string &strValue, double &doubleVa
 
 bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intValues, set<int> &uniqueValues, map<int, string> &emptyValuesMap)
 {
-	bool success = true;
+	emptyValuesMap.clear();
+	uniqueValues.clear();
+	intValues.clear();
+	intValues.reserve(values.size());
+
 	int row = 0;
-	for (vector<string>::const_iterator it = values.begin(); it != values.end(); ++it, ++row)
+
+	for (const string &value : values)
 	{
-		const string &value = *it;
 		int intValue = INT_MIN;
-		success = convertValueToInt(value, intValue);
-		if (success)
+
+		if (convertValueToInt(value, intValue))
 		{
-			if (intValue != INT_MIN)
-				uniqueValues.insert(intValue);
-			else if (!value.empty())
-				emptyValuesMap.insert(make_pair(row, value));
+			if (intValue != INT_MIN)	uniqueValues.insert(intValue);
+			else if (!value.empty())	emptyValuesMap.insert(make_pair(row, value));
+
 			intValues.push_back(intValue);
 		}
 		else
-			break;
+			return false;
+
+		row++;
 	}
 
-	return success;
+	return true;
 }
 
 bool ImportColumn::convertToDouble(const vector<string> &values, vector<double> &doubleValues, map<int, string> &emptyValuesMap)
 {
-	bool success = true;
-	int row = 0;
-	for (vector<string>::const_iterator it = values.begin(); it != values.end(); ++it, ++row)
-	{
-		const string &value = *it;
-		double doubleValue = NAN;
-		success = convertValueToDouble(value, doubleValue);
+	emptyValuesMap.clear();
+	doubleValues.clear();
+	doubleValues.reserve(values.size());
 
-		if (success)
+	int row = 0;
+	for (const string &value : values)
+	{
+		double doubleValue = static_cast<double>(NAN);
+
+		if (convertValueToDouble(value, doubleValue))
 		{
 			doubleValues.push_back(doubleValue);
+
 			if (std::isnan(doubleValue) && value != Utils::emptyValue)
 				emptyValuesMap.insert(make_pair(row, value));
 		}
 		else
-			break;
+			return false;
+
+		row++;
 	}
 
-	return success;
+	return true;
 }

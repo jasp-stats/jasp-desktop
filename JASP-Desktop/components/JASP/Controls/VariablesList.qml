@@ -51,12 +51,14 @@ JASPControl
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
 	property alias	selectedItems:		listView.selectedItems
+	property var	selectedItemsTypes:	[]
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
 	property bool	showVariableTypeIcon:	true
 	property bool	setWidthInForm:		false
 	property bool	setHeightInForm:	false
+	property bool	mustContainLowerTerms: true
 	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
 	
 	property var	interactionControl
@@ -74,22 +76,33 @@ JASPControl
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
 	signal hasSelectedItemsChanged();
 
+	function setSelectedItems()
+	{
+		var items = listView.getExistingItems()
+		variablesList.selectedItemsTypes = []
+		for (var i = 0; i < items.length; i++)
+		{
+			var item = items[i]
+			if (listView.selectedItems.includes(item.rank))
+			{
+				item.selected = true
+				if (!variablesList.selectedItemsTypes.includes(item.columnType))
+					variablesList.selectedItemsTypes.push(item.columnType)
+			}
+			else
+				item.selected = false;
+		}
+
+		hasSelectedItemsChanged();
+	}
+
 	function moveSelectedItems(target)
 	{
 		if (listView.selectedItems.length === 0) return;
 		
-		var selectedIndexes = [];
-		for (var i = 0; i < listView.selectedItems.length; i++)
-		{
-			var selectedItem = listView.selectedItems[i];
-			selectedIndexes.push(selectedItem.rank);
-		}
-		
-		// itemsDropped will change the listView, and that may call the onCurrentItemChanged
-		// So we have to clear the selected items list before.
-		listView.clearSelectedItems(true);
 		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
-		itemsDropped(selectedIndexes, target, -1, assignOption);
+		itemsDropped(selectedItems, target, -1, assignOption);
+		listView.clearSelectedItems(true);
 	}
 	
 	DropArea
@@ -181,10 +194,10 @@ JASPControl
 				}
 			}
 		]
-		
+
 		Repeater
 		{
-			model: suggestedColumns.length
+			model: suggestedColumns
 
 
 			Image
@@ -198,17 +211,47 @@ JASPControl
 					bottom:			rectangle.bottom;
 					bottomMargin:	4  * preferencesModel.uiScale
 					right:			rectangle.right;
-					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale
+					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 				}
 			}
-
-
 		}
 		
 		Component.onCompleted:
 		{
-			if (suggestedColumns.length === 0)
-				suggestedColumns = allowedColumns
+			var mySuggestedColumns = []
+			var myAllowedColumns = []
+
+			if (typeof suggestedColumns === "string")
+				mySuggestedColumns.push(suggestedColumns)
+			else
+				mySuggestedColumns = suggestedColumns.concat()
+			if (typeof allowedColumns === "string")
+				myAllowedColumns.push(allowedColumns)
+			else
+				myAllowedColumns = allowedColumns.concat()
+
+			if (mySuggestedColumns.length === 0 && myAllowedColumns.length > 0)
+				mySuggestedColumns = myAllowedColumns.concat()
+			else if (myAllowedColumns.length === 0 && mySuggestedColumns.length > 0)
+			{
+				myAllowedColumns = mySuggestedColumns.concat()
+				if (mySuggestedColumns.includes("scale"))
+				{
+					if (!myAllowedColumns.includes("nominal"))
+						myAllowedColumns.push("nominal")
+					if (!myAllowedColumns.includes("ordinal"))
+						myAllowedColumns.push("ordinal")
+				}
+				if (mySuggestedColumns.includes("nominal"))
+				{
+					if (!myAllowedColumns.includes("nominalText"))
+						myAllowedColumns.push("nominalText")
+					if (!myAllowedColumns.includes("ordinal"))
+						myAllowedColumns.push("ordinal")
+				}
+			}
+			suggestedColumns = mySuggestedColumns.concat()
+			allowedColumns = myAllowedColumns.concat()
 			
 			var length = variablesList.resources.length
 			for (var i = length - 1; i >= 0; i--)
@@ -225,12 +268,14 @@ JASPControl
 			flickable:		listView
 			manualAnchor:	true
 			vertical:		true
+			z:				1337
 
 			anchors
 			{
 				top:		parent.top
 				right:		parent.right
 				bottom:		parent.bottom
+				margins:	2
 			}
 		}
 		
@@ -246,6 +291,7 @@ JASPControl
 			anchors.rightMargin:	scrollBar.width + anchors.margins
 			model:					variablesList.model
 			delegate:				itemComponent
+			boundsBehavior:			Flickable.StopAtBounds
 			
 			property int startShiftSelected: 0;
 			property int endShiftSelected: -1;
@@ -253,6 +299,7 @@ JASPControl
 			property bool mousePressed: false;
 			property bool shiftPressed: false;
 			property var itemContainingDrag
+			property var draggingItems: []
 			
 			onCurrentItemChanged:
 			{
@@ -269,9 +316,8 @@ JASPControl
 					if (itemWrapper)
 					{
 						var itemRectangle = itemWrapper.children[0];
-						itemWrapper.forceActiveFocus();
 						listView.clearSelectedItems(false);
-						listView.selectItem(itemRectangle, true);
+						listView.addSelectedItem(itemRectangle.rank);
 						listView.startShiftSelected = listView.currentIndex;
 						listView.endShiftSelected = -1;
 					}
@@ -280,7 +326,7 @@ JASPControl
 			
 			Keys.onPressed:
 			{
-				if (event.modifiers & Qt.ShiftModifier)
+				if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Shift)
 					shiftPressed = true;
 				else
 					shiftPressed = false;
@@ -288,7 +334,7 @@ JASPControl
 			
 			Keys.onReleased:
 			{
-				if (event.modifiers & Qt.ShiftModifier)
+				if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Shift)
 					shiftPressed = false;
 			}
 			
@@ -300,72 +346,48 @@ JASPControl
 			{
 				moveSelectedItems()
 			}
-			
-			function addSelectedItem(item)
+
+			function getExistingItems()
 			{
-				if (!item || item.objectName !== "itemRectangle")
+				var items = [];
+				for (var i = 0; i < listView.contentItem.children.length; i++)
 				{
-					console.log("item is not an itemRectangle!!!!")
-					return;
+					var item = listView.contentItem.children[i];
+					if (item.children.length === 0)
+						continue;
+					item = item.children[0];
+					if (item.objectName === "itemRectangle")
+						items.push(item);
 				}
-				if (!item.draggable)
-					return;
-				
-				item.selected = true;
-				if (selectedItems.find(function(elt) {return elt.rank === item.rank}))
-					return;
-				
-				var added = false;
-				for (var i = 0; i < selectedItems.length; i++)
-				{
-					if (item.rank < selectedItems[i].rank)
-					{
-						selectedItems.splice(i, 0, item);
-						added = true;
-						break;
-					}
-				}
-				if (!added)
-					selectedItems.push(item);
-				
-				variablesList.hasSelectedItemsChanged();
+
+				return items;
 			}
 			
-			function removeSelectedItem(item)
+			function addSelectedItem(itemRank)
 			{
-				
-				if (!item || item.objectName !== "itemRectangle")
+				if (selectedItems.includes(itemRank))
 					return;
 				
-				item.selected = false;
-				for (var i = 0; i < selectedItems.length; i++)
-				{
-					if (item.rank === selectedItems[i].rank)
-					{
-						selectedItems.splice(i, 1);
-						break;
-					}
-				}
-				variablesList.hasSelectedItemsChanged();
+				selectedItems.push(itemRank);
+				selectedItems.sort();
+				variablesList.setSelectedItems()
 			}
 			
-			function selectItem(item, selected)
+			function removeSelectedItem(itemRank)
 			{
-				if (selected)
-					listView.addSelectedItem(item);
-				else
-					listView.removeSelectedItem(item);
+				var index = selectedItems.indexOf(itemRank)
+				if (index >= 0)
+				{
+					selectedItems.splice(index, 1);
+					variablesList.setSelectedItems()
+				}
 			}
 			
 			function clearSelectedItems(emitSignal)
 			{
-				for (var i = 0; i < selectedItems.length; i++)
-				{
-					selectedItems[i].selected = false;
-				}
 				selectedItems = [];
 				if (emitSignal)
-					variablesList.hasSelectedItemsChanged();
+					variablesList.setSelectedItems()
 			}
 			
 			function selectShiftItems(selected)
@@ -378,14 +400,26 @@ JASPControl
 					startIndex = endIndex;
 					endIndex = temp;
 				}
-				for (var i = startIndex; i <= endIndex; i++)
+
+				if (selected)
 				{
-					var item = listView.contentItem.children[i];
-					if (item)
-						listView.selectItem(item.children[0], selected);
-					else
-						console.log(variablesList.name + ": Unknown item at index " + i);
+					for (var i = startIndex; i <= endIndex; i++)
+					{
+						if (!listView.selectedItems.includes(i))
+							listView.selectedItems.push(i)
+					}
+					listView.selectedItems.sort();
 				}
+				else
+				{
+					for (var i = startIndex; i <= endIndex; i++)
+					{
+						var index = selectedItems.indexOf(i)
+						if (index >= 0)
+							selectedItems.splice(index, 1);
+					}
+				}
+				variablesList.setSelectedItems()
 			}
 		}
 	}
@@ -393,6 +427,7 @@ JASPControl
 	Component
 	{
 		id: itemComponent
+
 		FocusScope
 		{
 			id:			itemWrapper
@@ -415,7 +450,7 @@ JASPControl
 				
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
-				property bool selected:				false
+				property bool selected:				listView.selectedItems.includes(rank)
 				property bool dragging:				false
 				property int offsetX:				0
 				property int offsetY:				0
@@ -425,7 +460,7 @@ JASPControl
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			variablesList.draggable && (!variablesList.dragOnlyVariables || isVariable)
-				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? (model.columnType === "nominalText" ? "nominal" : model.columnType) : ""
+				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 				property var extraColumnsModel:		model.extraColumns
 
 				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
@@ -468,7 +503,7 @@ JASPControl
 					height:					15 * preferencesModel.uiScale
 					width:					15 * preferencesModel.uiScale
 					anchors.verticalCenter:	parent.verticalCenter
-					source:					!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) ? "" : enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]
+					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]
 					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
 				}
 				Text
@@ -561,36 +596,39 @@ JASPControl
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 						{
-							listView.clearSelectedItems(false);
-							listView.selectItem(itemRectangle, true);
+							listView.clearSelectedItems(false)
+							listView.addSelectedItem(itemRectangle.rank)
 						}
 					}
 					
 					onPressed:
 					{
-						listView.mousePressed = true;
+						listView.mousePressed = true
 						listView.currentIndex = index;
-						itemRectangle.clearOtherSelectedItemsWhenClicked = false;
+						itemRectangle.clearOtherSelectedItemsWhenClicked = false
 						if (mouse.modifiers & Qt.ControlModifier)
 						{
-							listView.selectItem(itemRectangle, !itemRectangle.selected);
-							listView.startShiftSelected = index;
-							listView.endShiftSelected = -1;
+							if (itemRectangle.selected)
+								listView.removeSelectedItem(itemRectangle.rank)
+							else
+								listView.addSelectedItem(itemRectangle.rank)
+							listView.startShiftSelected = index
+							listView.endShiftSelected = -1
 						}
 						else if (mouse.modifiers & Qt.ShiftModifier)
 						{
 							if (listView.endShiftSelected >= 0)
 								listView.selectShiftItems(false)
-							listView.endShiftSelected = index;
-							listView.selectShiftItems(true);
+							listView.endShiftSelected = index
+							listView.selectShiftItems(true)
 						}
 						else
 						{
-							itemWrapper.forceActiveFocus();
+							itemWrapper.forceActiveFocus()
 							if (!itemRectangle.selected)
 							{
 								listView.clearSelectedItems(false);
-								listView.selectItem(itemRectangle, true);
+								listView.addSelectedItem(itemRectangle.rank);
 							}
 							else
 							{
@@ -612,22 +650,24 @@ JASPControl
 						{
 							if (itemRectangle.selected)
 							{
+								listView.draggingItems = []
+								listView.draggingItems.push(itemRectangle)
 								itemRectangle.dragging = true;
-								for (var i = 0; i < listView.selectedItems.length; i++)
+
+								var items = listView.getExistingItems();
+								for (var i = 0; i < items.length; i++)
 								{
-									var selectedItem = listView.selectedItems[i];
-									if (selectedItem.objectName !== "itemRectangle")
-									{
-										console.log("This is not an itemRectangle!")
+									var item = items[i];
+									if (!listView.selectedItems.includes(item.rank))
 										continue;
-									}
-									
-									if (selectedItem.rank !== index)
+
+									if (item.rank !== index)
 									{
-										selectedItem.dragging = true;
-										selectedItem.offsetX = selectedItem.x - itemRectangle.x;
-										selectedItem.offsetY = selectedItem.y - itemRectangle.y;
-										selectedItem.setRelative(itemRectangle);
+										listView.draggingItems.push(item)
+										item.dragging = true;
+										item.offsetX = item.x - itemRectangle.x;
+										item.offsetY = item.y - itemRectangle.y;
+										item.setRelative(itemRectangle);
 									}
 								}
 							}
@@ -635,14 +675,15 @@ JASPControl
 						}
 						else
 						{
-							var selectedIndexes = [];
-							for (var i = 0; i < listView.selectedItems.length; i++)
+							for (var i = 0; i < listView.draggingItems.length; i++)
 							{
-								var selectedItem = listView.selectedItems[i];
-								selectedIndexes.push(selectedItem.rank);
-								selectedItem.dragging = false;
-								selectedItem.x = selectedItem.x; // break bindings
-								selectedItem.y = selectedItem.y;
+								var draggingItem = listView.draggingItems[i];
+								if (!draggingItem.dragging)
+									continue;
+
+								draggingItem.dragging = false;
+								draggingItem.x = draggingItem.x; // break bindings
+								draggingItem.y = draggingItem.y;
 							}
 							if (itemRectangle.Drag.target)
 							{
@@ -650,10 +691,10 @@ JASPControl
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;
 								
-								listView.clearSelectedItems(true); // Must be before itemsDropped: listView does not exist anymore afterwards
 								var variablesListName = variablesList.name
 								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
-								itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								itemsDropped(listView.selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								listView.clearSelectedItems(true);
 							}
 						}
 					}

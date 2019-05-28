@@ -24,6 +24,7 @@ import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts	1.3
 import JASP.Theme		1.0
 import JASP.Widgets		1.0
+import JASP.Controls	1.0
 
 Item
 {
@@ -123,7 +124,6 @@ Item
 		{
 			id:						giveResultsSomeSpace
 			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
-			//Layout.minimumWidth:	Math.max(Theme.minPanelWidth, analyses.width)
 			Layout.fillWidth:		true
 			z:						3
 			visible:				panelSplit.shouldShowInputOutput
@@ -150,53 +150,18 @@ Item
 				}
 			}
 
-			onWidthChanged:
-			{
-				resizeTimer.resizer(giveResultsSomeSpace.width);
-				//data.wasMaximized = data.width === data.maxWidth;
-			}
-
-
 			WebEngineView
 			{
 				id:						resultsView
 
 				anchors
 				{
-					left:				parent.left
 					top:				parent.top
+					left:				parent.left
 					bottom:				parent.bottom
 				}
 
-				width: resizeTimer.currentWidth - panelSplit.hackySplitHandlerHideWidth
-
-				Timer
-				{
-					id:	resizeTimer //For issue https://github.com/jasp-stats/INTERNAL-jasp/issues/177
-
-					property real resizeToThis: -1
-					property real currentWidth: giveResultsSomeSpace.width
-
-					function resizer(newWidth)
-					{
-						if(resizeTimer.resizeToThis	!== newWidth)
-						{
-							//if(resizeTimer.running)
-							resizeTimer.stop();
-
-							resizeTimer.resizeToThis = newWidth;
-
-							if(newWidth !== resizeTimer.currentWidth)
-								resizeTimer.start();
-						}
-					}
-
-					running:		false
-					repeat:			false
-					interval:		200 //Is probably enough to give smooth draggin' and low enough to rerender the results on a proper size once held still this long?
-					onTriggered:	resizeTimer.currentWidth = resizeTimer.resizeToThis;
-				}
-
+				width: giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
 
 				url:					resultsJsInterface.resultsPageUrl
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
@@ -225,7 +190,6 @@ Item
 					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
-					function welcomeScreenIsCleared(callDelayedLoad)	{ resultsJsInterface.welcomeScreenIsCleared(callDelayedLoad)    }
 					function analysisTitleChangedFromResults(id, title)	{ resultsJsInterface.analysisTitleChangedFromResults(id, title) }
 
 
@@ -238,8 +202,10 @@ Item
 						var optionsJSON  = JSON.parse(options);
 						var functionCall = function (index)
 						{
-							customMenu.visible = false;
-							var name = customMenu.props['model'].getName(index);
+							var name		= customMenu.props['model'].getName(index);
+							var jsfunction	= customMenu.props['model'].getJSFunction(index);
+							
+							customMenu.remove()
 
 							if (name === 'hasRefreshAllAnalyses') {
 								resultsJsInterface.refreshAllAnalyses();
@@ -255,7 +221,7 @@ Item
 								resultsJsInterface.purgeClipboard();
 							}
 
-							resultsJsInterface.runJavaScript(customMenu.props['model'].getJSFunction(index));
+							resultsJsInterface.runJavaScript(jsfunction);
 
 							if (name === 'hasEditTitle' || name === 'hasNotes') {
 								resultsJsInterface.packageModified();
@@ -275,7 +241,7 @@ Item
 							"functionCall"	: functionCall
 						};
 
-						customMenu.showMenu(resultsView, props, optionsJSON['rXright'] + 10, optionsJSON['rY']);
+						customMenu.showMenu(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
 					}
 
 					function updateUserData()						{ resultsJsInterface.updateUserData()						}
@@ -284,14 +250,12 @@ Item
 					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
 					function pushToClipboard(mime, raw, coded)		{ resultsJsInterface.pushToClipboard(mime, raw, coded)		}
 					function pushImageToClipboard(raw, coded)		{ resultsJsInterface.pushImageToClipboard(raw, coded)		}
-					function simulatedMouseClick(x, y, count)		{ resultsJsInterface.simulatedMouseClick(x, y, count)		}
 					function saveTempImage(index, path, base64)		{ resultsJsInterface.saveTempImage(index, path, base64)		}
 					function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
 					function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
 					function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
 					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
 					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
-
 				}
 			}
 		}

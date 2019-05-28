@@ -238,7 +238,7 @@ Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analys
 {
 	switch(result)
 	{
-	case analysisResultStatus::validationError:		return Analysis::ValidationError;
+	case analysisResultStatus::validationError:	return Analysis::ValidationError;
 	case analysisResultStatus::fatalError:		return Analysis::FatalError;
 	case analysisResultStatus::imageSaved:
 	case analysisResultStatus::imageEdited:

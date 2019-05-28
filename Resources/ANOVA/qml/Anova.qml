@@ -34,10 +34,10 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true }
-		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		allowedColumns: ["ordinal", "nominal"]		}
-		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		allowedColumns: ["ordinal", "nominal"];	debug: true }
-		AssignedVariablesList { name: "wlsWeights";		title: qsTr("WLS Weights");			allowedColumns: ["scale"]; singleVariable: true }
+		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variable");	suggestedColumns: ["scale"]; singleVariable: true		}
+		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		suggestedColumns: ["ordinal", "nominal"]				}
+		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		suggestedColumns: ["ordinal", "nominal"];	debug: true }
+		AssignedVariablesList { name: "wlsWeights";		title: qsTr("WLS Weights");			suggestedColumns: ["scale"]; singleVariable: true		}
 	}
 	
 	Section
@@ -106,8 +106,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
-			AssignedVariablesList {  name: "postHocTestsVariables"; listViewType: "Interaction"; addAvailableVariablesToAssigned: false}
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: "modelTerms" }
+			AssignedVariablesList {  name: "postHocTestsVariables" }
 
 		}
 
@@ -198,8 +198,8 @@ Form
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: "modelTerms"; showVariableTypeIcon: false }
-			AssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: "modelTerms" }
+			AssignedVariablesList {  name: "marginalMeansTerms" }
 		}
 
         CheckBox

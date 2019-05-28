@@ -11,6 +11,7 @@ ListView
 	id:						listView
 	maximumFlickVelocity:	Theme.maximumFlickVelocity
 	clip:					true
+	boundsBehavior:			Flickable.StopAtBounds
 
 	spacing:				10
 	model:					cppModel
@@ -45,5 +46,6 @@ ListView
 	{
 		id:				rightscrollbar
 		flickable:		parent
+		bigBar:			true
 	}
 }

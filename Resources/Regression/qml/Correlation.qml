@@ -27,12 +27,12 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; allowedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "scale"] }
 	}
 	
 	Group
 	{
-		title: qsTr("Correlation Coefficients")
+		title: qsTr("Correlation Coefficient")
 		CheckBox { name: "pearson";			label: qsTr("Pearson"); checked: true	}
 		CheckBox { name: "spearman";		label: qsTr("Spearman")					}
 		CheckBox { name: "kendallsTauB";	label: qsTr("Kendall's tau-b")			}
@@ -40,6 +40,7 @@ Form
 
 	Group
 	{
+		title: qsTr("Additional Options")
 		CheckBox { name: "displayPairwise";		label: qsTr("Display pairwise table")				}
 		CheckBox { name: "reportSignificance";	label: qsTr("Report significance"); checked: true	}
 		CheckBox { name: "flagSignificant";		label: qsTr("Flag significant correlations")			}
@@ -65,7 +66,7 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotCorrelationMatrix"; label: qsTr("Display pairwise table")
+			name: "plotCorrelationMatrix"; label: qsTr("Correlation Matrix")
 			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
 			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
 		}

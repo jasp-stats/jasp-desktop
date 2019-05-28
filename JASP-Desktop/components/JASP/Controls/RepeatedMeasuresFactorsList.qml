@@ -63,12 +63,32 @@ JASPControl
 		border.width:	1
 		border.color:	Theme.borderColor
 
+		JASPScrollBar
+		{
+			id:				scrollBar
+			flickable:		listView
+			manualAnchor:	true
+			vertical:		true
+			z:				1337
+
+			anchors
+			{
+				top:		parent.top
+				right:		parent.right
+				bottom:		parent.bottom
+				margins:	2
+			}
+		}
+
+
 		GridView
 		{
 			id:					listView
-			cellHeight:			23 * preferencesModel.uiScale
+			cellHeight:			22 * preferencesModel.uiScale
 			cellWidth:			width
 			clip:				true
+			boundsBehavior:		Flickable.StopAtBounds
+
 
 			anchors.fill:		parent
 			anchors.margins:	4 * preferencesModel.uiScale
@@ -85,7 +105,7 @@ JASPControl
 		{
 			id:		itemWrapper
 			height: listView.cellHeight
-			width:	listView.cellWidth
+			width:	scrollBar.visible ?  listView.cellWidth - scrollBar.width : listView.cellWidth
 
 			Rectangle
 			{
@@ -105,7 +125,7 @@ JASPControl
 					value:							itemRectangle.isVirtual ? "" : model.name
 					placeholderText:				itemRectangle.isVirtual ? model.name : ""
 					anchors.verticalCenter:			parent.verticalCenter
-					fieldWidth:						parent.width - (6 * preferencesModel.uiScale)
+					fieldWidth:						parent.width
 					useExternalBorder:				false
 					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
 					onEditingFinished:				itemChanged(index, value)

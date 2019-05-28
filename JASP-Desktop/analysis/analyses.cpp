@@ -89,7 +89,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		if(title == "")
 			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
-						analysis		= create(module, name, title, id, version, &optionsJson, status, false);
+		analysis = create(module, name, title, id, version, &optionsJson, status, false);
+
+		analysis->loadFromJSON(analysisData);
 	}
 	else
 	{
@@ -190,6 +192,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 
 void Analyses::clear()
 {
+	setCurrentAnalysisIndex(-1);
 	beginResetModel();
 	for (auto idAnalysis : _analysisMap)
 	{
@@ -256,7 +259,6 @@ void Analyses::removeAnalysis(Analysis *analysis)
 
 	beginRemoveRows(QModelIndex(), indexAnalysis, indexAnalysis);
 	analysis->abort();
-	analysis->setVisible(false);
 	_analysisMap.erase(id);
 	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
 	endRemoveRows();
@@ -435,12 +437,12 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
-void Analyses::analysisClickedHandler(QString analysisName, QString analysisTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(analysisTitle.toStdString()));
-	else							create(module, analysisName, analysisTitle);
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry((analysisTitle + "~" + analysisFunction).toStdString()));
+	else							create(module, analysisFunction, analysisTitle);
 }
 
 
@@ -508,6 +510,10 @@ void Analyses::analysisIdSelectedInResults(int id)
 		{
 			setCurrentAnalysisIndex(int(i));
 			emit analysisSelectedIndexResults(int(i)); //Picked up in QML
+
+			if(!visible())
+				setVisible(true);
+
 			return;
 		}
 }
@@ -530,7 +536,6 @@ void Analyses::unselectAnalysis()
 	emit unselectAnalysisInResults();
 }
 
-
 void Analyses::setCurrentFormHeight(double currentFormHeight)
 {
 	if (qFuzzyCompare(_currentFormHeight, currentFormHeight))
@@ -548,8 +553,11 @@ void Analyses::setVisible(bool visible)
 	_visible = visible;
 	emit visibleChanged(_visible);
 
-	if(!_visible)
-		unselectAnalysis();
+	if(currentAnalysisIndex() != -1)
+	{
+		if(!_visible)		emit unselectAnalysisInResults();
+		else				emit showAnalysisInResults(_orderedIds[currentAnalysisIndex()]);
+	}
 }
 
 void Analyses::analysisTitleChangedFromResults(int id, QString title)

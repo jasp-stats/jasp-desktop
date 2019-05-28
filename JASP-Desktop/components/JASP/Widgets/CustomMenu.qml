@@ -23,13 +23,26 @@ import JASP.Theme 1.0
 
 Item
 {
-	id						: menu
-	width					: menuRectangle.width
-	height					: menuRectangle.height
-	property var props		: undefined
-	property bool hasIcons	: true
-	property real _iconPad	: 5 * preferencesModel.uiScale
-	onPropsChanged			: hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+	id							: menu
+	width						: menuRectangle.width
+	height						: menuRectangle.height
+	property var props			: undefined
+	property bool hasIcons		: true
+	property real _iconPad		: 5 * preferencesModel.uiScale
+	
+	onPropsChanged				:
+	{
+		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+		
+		if (menu.props === undefined || menu.props["model"] !== resultMenuModel)
+			resultsJsInterface.runJavaScript("window.setSelection(false);")
+	}
+	
+	function remove()
+	{
+		menu.visible = false
+		menu.props = undefined
+	}
 
 	function resizeElements(newWidth)
 	{
@@ -94,9 +107,14 @@ Item
 						id		: menuItem
 						width	: initWidth
 						height	: Theme.menuItemHeight
-						color	: mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
+						color	:
+						{
+							if (!isEnabled)
+								return "transparent"
+							return mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
+						}
 
-						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? 15 : 10) * preferencesModel.uiScale
+						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
 						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
 						Image
@@ -111,7 +129,7 @@ Item
 							fillMode				: Image.PreserveAspectFit
 
 							anchors.left			: parent.left
-							anchors.leftMargin		: menu._iconPad
+							anchors.leftMargin		: menu._iconPad * 2
 							anchors.verticalCenter	: parent.verticalCenter
 						}
 
@@ -120,9 +138,11 @@ Item
 							id					: menuItemText
 							text				: displayText
 							font				: Theme.font
+							color				: isEnabled ? Theme.black : Theme.gray
 
 							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
-							anchors.leftMargin	: menu._iconPad
+							anchors.leftMargin	: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
+              anchors.rightMargin : menu._iconPad * 2
 							anchors.verticalCenter:  parent.verticalCenter
 
 						}
@@ -132,7 +152,7 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		: menu.props['functionCall'](index)
+							onClicked		: if (isEnabled) menu.props['functionCall'](index)
 						}
 					}
 				}

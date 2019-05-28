@@ -30,9 +30,7 @@ FocusScope
 
 			font:	Theme.font
 
-			//headersGradient: myHeadersGradient
 			model:				dataSetModel
-
 			onDoubleClicked:	__myRoot.doubleClicked()
 
 			leftTopCornerItem:
@@ -50,7 +48,7 @@ FocusScope
 				RectangularButton
 				{
 					id:				addColumnButton
-					width:			40
+					width:			height
 					toolTip:		"Add computed column"
 					iconSource:		"qrc:/icons/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
@@ -120,7 +118,8 @@ FocusScope
 
 								if (columnType !== undefined)
 									colIcon.setColumnType(columnType);
-								customMenu.visible = false;
+
+								customMenu.remove()
 							}
 							var props = {
 								"model"			: columnTypeModel,

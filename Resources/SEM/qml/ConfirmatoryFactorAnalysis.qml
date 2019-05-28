@@ -50,7 +50,7 @@ Form
             {
                 title: "Second-Order"
                 name:  "secondOrder"
-                allowedColumns: []
+				suggestedColumns: []
             }
             height: Theme.defaultListHeight / 3
         }
@@ -192,24 +192,34 @@ Form
                 }
             }
 
-            RadioButtonGroup {
-                title: qsTr("Error Calculation")
-                name: "se"
-                RadioButton { text: qsTr("Standard")  ; name: "standard" ; checked: true }
-                RadioButton { text: qsTr("Robust")    ; name: "robust" }
-                RadioButton { 
-                    text: qsTr("Bootstrap") 
-                    name: "bootstrap" 
-                    IntegerField {
-                        text: qsTr("Bootstrap samples")
-                        name: "bootstrapNumber"
-                        defaultValue: 1000
-                        min: 1
-                        max: 1000000
+            GroupBox {
+                title: qsTr("Error calculation")
+                CIField {
+                    text: qsTr("CI width")
+                    name: "ciWidth"
+                }
+                RadioButtonGroup {
+                    title: qsTr("Method")
+                    name: "se"
+                    RadioButton { text: qsTr("Standard")  ; name: "standard" ; checked: true }
+                    RadioButton { text: qsTr("Robust")    ; name: "robust" }
+                    RadioButton {
+                        text: qsTr("Bootstrap CI")
+                        name: "bootstrap"
+                        IntegerField {
+                            text: qsTr("Bootstrap samples")
+                            name: "bootstrapNumber"
+                            defaultValue: 1000
+                            min: 100
+                            max: 1000000
+                        }
                     }
                 }
-                
             }
+
+
+
+
 
             RadioButtonGroup {
                 title: qsTr("Estimator")

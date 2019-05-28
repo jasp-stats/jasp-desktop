@@ -60,8 +60,8 @@ signals:
 	void entriesChanged();
 	void pathChanged(QString path);
 
-	void authenticationFail(const QString &message);
-	void authenticationSuccess();
+	void authenticationFailed(const QString &message);
+	void authenticationSucceeded();
 	void authenticationClear();
 
 protected:

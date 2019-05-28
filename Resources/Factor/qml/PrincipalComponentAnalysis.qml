@@ -35,7 +35,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); allowedColumns: ["scale"] }
+		AssignedVariablesList { name: "variables"; title: qsTr("Included Variables"); suggestedColumns: ["scale"] }
 	}
 	
 	RadioButtonGroup

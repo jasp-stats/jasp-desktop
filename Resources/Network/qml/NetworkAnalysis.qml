@@ -42,7 +42,7 @@ Form
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables") }
-		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; allowedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 	}
 	
 	DropDown
@@ -218,7 +218,7 @@ Form
 			visible: [7].includes(estimator.currentIndex)
 			height: 150
 			AvailableVariablesList { name: "variablesTypeAvailable" }
-			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleVariable: true; allowedColumns: ["nominal"] }
+			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleVariable: true; suggestedColumns: ["nominal"] }
 		}
 	}
 

@@ -27,7 +27,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	allowedColumns: ["scale"]; singleVariable: true;		}
+		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	suggestedColumns: ["scale"]; singleVariable: true;		}
 		DropDown
 		{
 			name: "method"
@@ -39,9 +39,9 @@ Form
 				{ label: "Stepwise",	value: "stepwise"}
 			]			
 		}
-		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			allowedColumns: ["scale"]							}
-		AssignedVariablesList { name: "factors";	title: qsTr("Factors");				allowedColumns: ["nominal", "ordinal"]; debug: true	}
-		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); allowedColumns: ["scale"]; singleVariable: true		}
+		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			suggestedColumns: ["scale"]								}
+		AssignedVariablesList { name: "factors";	title: qsTr("Factors");				suggestedColumns: ["nominal", "ordinal"]; debug: true	}
+		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); suggestedColumns: ["scale"]; singleVariable: true	}
 	}
 	
 	
@@ -128,7 +128,8 @@ Form
 		Group
 		{
 			title: qsTr("Residuals")
-			CheckBox { name: "residualsDurbinWatson";	label: qsTr("Dublin-Watson") }
+            CheckBox { name: "residualsStatistics";     label: qsTr("Statistics")    }
+            CheckBox { name: "residualsDurbinWatson";	label: qsTr("Durbin-Watson") }
 			CheckBox
 			{
 				name: "residualsCasewiseDiagnostics";	label: qsTr("Casewise diagnostics")
@@ -139,13 +140,13 @@ Form
 					{
 						value: "outliersOutside"; label: qsTr("Standard residual >"); checked: true
 						childrenOnSameRow: true
-						IntegerField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3	}
+                        DoubleField { name: "residualsCasewiseDiagnosticsOutliersOutside"; defaultValue: 3	}
 					}
 					RadioButton
 					{
 						value: "cooksDistance";	label: qsTr("Cook's distance >")
 						childrenOnSameRow: true
-						DoubleField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 0	}
+                        DoubleField { name: "residualsCasewiseDiagnosticsCooksDistance";	defaultValue: 1	}
 					}
 					RadioButton { value: "allCases"; label: qsTr("All")										}
 				}

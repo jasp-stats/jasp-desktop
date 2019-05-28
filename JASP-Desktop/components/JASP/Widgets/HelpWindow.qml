@@ -14,9 +14,19 @@ Window
 
 	WebEngineView
 	{
-		id:				helpView
-		url:			helpModel.indexURL()
-		anchors.fill:	parent
+		id:						helpView
+		url:					helpModel.indexURL()
+		anchors.fill:			parent
+		onNavigationRequested:
+		{
+			if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
+			{
+				Qt.openUrlExternally(request.url);
+				request.action = WebEngineNavigationRequest.IgnoreRequest;
+			}
+			//else
+			//	request.action = request.navigationType !== WebEngineNavigationRequest.BackForwardNavigation && request.navigationType !== WebEngineNavigationRequest.TypedNavigation ? WebEngineNavigationRequest.AcceptRequest : WebEngineNavigationRequest.IgnoreRequest
+		}
 
 		Connections
 		{

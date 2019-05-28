@@ -1,352 +1,250 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts	1.3
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
 import JASP.Controls	1.0
-import JASP				1.0
 
-Item
+ScrollView
 {
+	id:						scrollPrefs
 	focus:					true
-	onActiveFocusChanged:	if(activeFocus) useDefaultPPICheckbox.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) uiScaleSpinBox.forceActiveFocus();
+	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	MenuHeader
+	Column
 	{
-		id:			menuHeader
-		headertext:	"Advanced Preferences"
-		helpfile:	"preferences/prefsadvanced"
-	}
+		width:			scrollPrefs.width
+		//anchors.left:	parent.left
+		//anchors.right:	parent.right
+		spacing:		Theme.rowSpacing
 
-	ScrollView
-	{
-		id:					scrollPrefs
-		anchors.top:		menuHeader.bottom
-		anchors.left:		menuHeader.left
-		anchors.right:		menuHeader.right
-		anchors.bottom:		parent.bottom
-		anchors.topMargin:	2 * Theme.generalMenuMargin
-		focus:				true
-		Keys.onLeftPressed: resourceMenu.forceActiveFocus();
-		focusPolicy:		Qt.WheelFocus
-
-		Column
+		MenuHeader
 		{
+			id:				menuHeader
+			headertext:		"Advanced Preferences"
+			helpfile:		"preferences/prefsadvanced"
+			anchorMe:		false
 			width:			scrollPrefs.width
-			spacing:		Theme.rowSpacing
+		}
 
-			Item
+		PrefsGroupRect
+		{
+			title:						qsTr("User interface options")
+
+			SpinBox
 			{
-				height:	useDefaultPPICheckbox.height + (editCustomPPI.visible ? editCustomPPI.height : 0 )
-				width:	parent.width
+				id:						uiScaleSpinBox
+				value:					Math.round(preferencesModel.uiScale * 100)
+				onEditingFinished:		preferencesModel.uiScale = value / 100
+				from:					20
+				to:						300
+				stepSize:				10
+				decimals:				0
+				text:					qsTr("Zoom (%): ")
+				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
 
-				CheckBox
-				{
-					id:					useDefaultPPICheckbox
-					label:				"Use PPI of screen in plots: " + preferencesModel.defaultPPI
-					checked:			preferencesModel.useDefaultPPI
-					onCheckedChanged:	preferencesModel.useDefaultPPI = checked
-					//font:				Theme.font
-					height:				implicitHeight * preferencesModel.uiScale
-					toolTip:			qsTr("Use the Pixels per Inch of your screen to render your plots")
-					focus:				true
-					KeyNavigation.tab:	customPPISpinBox
-					KeyNavigation.down:	customPPISpinBox
-				}
+				KeyNavigation.tab:		uiMaxFlickVelocity
+				KeyNavigation.down:		uiMaxFlickVelocity
 
-				Item
-				{
-					id:					editCustomPPI
-					visible:			!preferencesModel.useDefaultPPI
-					width:				customPPISpinBox.x + customPPISpinBox.width
-					height:				customPPISpinBox.height
-					anchors.top:		useDefaultPPICheckbox.bottom
-					anchors.topMargin:	Theme.generalAnchorMargin
+				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel)
+			}
 
-					Text
-					{
-						id:						customPPILabel
-						text:					"Custom PPI: "
-						anchors.left:			parent.left
-						anchors.leftMargin:		Theme.subOptionOffset
-						anchors.verticalCenter:	parent.verticalCenter
-						font:					Theme.font
-					}
+			SpinBox
+			{
+				id:						uiMaxFlickVelocity
+				value:					preferencesModel.maxFlickVelocity
+				onValueChanged:			if(value !== "") preferencesModel.maxFlickVelocity = value
+				from:					100
+				to:						3000
+				stepSize:				100
+				decimals:				0
+				text:					qsTr("Scroll speed (pix/s): ")
+				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
+				widthLabel:				uiScaleSpinBox.widthLabel
 
-					SpinBox
-					{
-						id:						customPPISpinBox
-						value:					preferencesModel.customPPI
-						onValueChanged:			preferencesModel.customPPI = value
-						from:					16
-						to:						2000
-						stepSize:				16
-						x:						uiScaleSpinBox.x
-						KeyNavigation.tab:		uiScaleSpinBox
-						KeyNavigation.down:		uiScaleSpinBox
+				KeyNavigation.tab:		rememberModulesSelected
+				KeyNavigation.down:		rememberModulesSelected
+			}
 
-						anchors
-						{
-							//left:			customPPILabel.right
-							verticalCenter:	parent.verticalCenter
-						}
-					}
-				}
+			CheckBox
+			{
+				id:					rememberModulesSelected
+				label:				qsTr("Remember Modules Enabled")
+				checked:			preferencesModel.modulesRemember
+				onCheckedChanged:	preferencesModel.modulesRemember = checked
+				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
+				KeyNavigation.tab:	developerMode
+				KeyNavigation.down:	developerMode
+			}
+		}
+
+		PrefsGroupRect
+		{
+			title:				qsTr("Modules options")
+
+			CheckBox
+			{
+				id:					developerMode
+				label:				qsTr("Developer mode (Beta version)")
+				checked:			preferencesModel.developerMode
+				onCheckedChanged:	preferencesModel.developerMode = checked
+				toolTip:			qsTr("To use JASP Modules enable this option.")
+				KeyNavigation.tab:	browseDeveloperFolderButton
+				KeyNavigation.down:	browseDeveloperFolderButton
 			}
 
 			Item
 			{
-				height:				uiScaleSpinBox.height
-				width:				uiScaleSpinBox.x + uiScaleSpinBox.width
-				anchors.topMargin:	Theme.generalAnchorMargin
+				id:					editDeveloperFolder
+				visible:			preferencesModel.developerMode
+				width:				parent.width
+				height:				browseDeveloperFolderButton.height + overwriteDescriptionEtc.height
 
-				Text
+				RectangularButton
 				{
-					id:							uiScaleLabel
-					text:						"User Interface Scaling: "
-					font:						Theme.font
-					color:						Theme.textEnabled
-					anchors.verticalCenter:		parent.verticalCenter
-					//toolTip:					qsTr("Change the scale of the entire interface, can also be done through Ctrl/Cmd + '+' or '-'")
+					id:					browseDeveloperFolderButton
+					text:				qsTr("Select developer folder")
+					onClicked:			preferencesModel.browseDeveloperFolder()
+					anchors.left:		parent.left
+					anchors.leftMargin: Theme.subOptionOffset
+					toolTip:			qsTr("Browse to your JASP Module folder.")
+					KeyNavigation.tab:	developerFolderText
+					KeyNavigation.down:	developerFolderText
 				}
 
-				SpinBox
+				Rectangle
 				{
-					id:					uiScaleSpinBox
-					value:				preferencesModel.uiScale //* _mult
-					onValueChanged:		if(value !== "") preferencesModel.uiScale = value /// _mult
-					from:				0.01	//* _mult
-					to:					3		//* _mult
-					stepSize:			0.1		//* _mult
-					decimals:			2
-
-/*
-					property real	_mult:		Math.pow(10, decimals)
-					property int	decimals:	2
-					property real	realValue:	value / _mult
-
-					validator: JASPDoubleValidator {
-						bottom:	Math.min(uiScaleSpinBox.from, uiScaleSpinBox.to)
-						top:		Math.max(uiScaleSpinBox.from, uiScaleSpinBox.to)
-						decimals: uiScaleSpinBox.decimals
-					}
-
-					textFromValue: function(value, locale)	{  return Number(value / 100).toLocaleString("en-US", 'f', uiScaleSpinBox.decimals)	}
-					valueFromText: function(text, locale)	{  return Number.fromLocaleString("en-US", text) * 100								}
-*/
+					id:					developerFolderTextRect
 					anchors
 					{
-						margins:	Theme.generalAnchorMargin
-						left:		uiScaleLabel.right
+						left:			browseDeveloperFolderButton.right
+						right:			parent.right
+						top:			parent.top
 					}
 
-					KeyNavigation.tab:		whiteBackgroundButton
-					KeyNavigation.down:		whiteBackgroundButton
-				}
-			}
+					height:				browseDeveloperFolderButton.height
+					color:				Theme.white
+					border.color:		Theme.buttonBorderColor
+					border.width:		1
 
-
-			RadioButtonGroup
-			{
-				title:				qsTr("Image Background Color")
-
-				RadioButton
-				{
-					id:					whiteBackgroundButton
-					text:				qsTr("White")
-					checked:			preferencesModel.whiteBackground
-					onCheckedChanged:	preferencesModel.whiteBackground = checked
-					toolTip:			"This makes the background of all plots white, quite useful if you want to use it in LaTeX or submit it to a journal."
-					KeyNavigation.tab:	transparentBackgroundButton
-					KeyNavigation.down:	transparentBackgroundButton
-				}
-
-				RadioButton
-				{
-					id:					transparentBackgroundButton
-					text:				qsTr("Transparent")
-					checked:			!preferencesModel.whiteBackground
-					onCheckedChanged:	preferencesModel.whiteBackground = !checked
-					toolTip:			"This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white."
-					KeyNavigation.tab:	developerMode
-					KeyNavigation.down:	developerMode
-				}
-			}
-
-			Item
-			{
-				height:	developerMode.height + (editDeveloperFolder.visible ? editDeveloperFolder.height : 0)
-				width:	parent.width - Theme.generalAnchorMargin
-
-				CheckBox
-				{
-					id:					developerMode
-					label:				qsTr("Developer mode (Beta version)")
-					checked:			preferencesModel.developerMode
-					onCheckedChanged:	preferencesModel.developerMode = checked
-					toolTip:			qsTr("To use JASP Modules enable this option")
-					KeyNavigation.tab:	browseDeveloperFolderButton
-					KeyNavigation.down:	browseDeveloperFolderButton
-				}
-
-				Item
-				{
-					id:					editDeveloperFolder
-					visible:			preferencesModel.developerMode
-					width:				parent.width
-					height:				browseDeveloperFolderButton.height + overwriteDescriptionEtc.height
-					anchors.top:		developerMode.bottom
-
-
-					RectangularButton
+					TextInput
 					{
-						id:					browseDeveloperFolderButton
-						text:				qsTr("Select developer folder")
-						onClicked:			preferencesModel.browseDeveloperFolder()
-						anchors.left:		parent.left
-						anchors.leftMargin: Theme.subOptionOffset
-						toolTip:			qsTr("Browse to your JASP Module folder")
-						KeyNavigation.tab:	developerFolderText
-						KeyNavigation.down:	developerFolderText
-					}
-
-					Rectangle
-					{
-						id:					developerFolderTextRect
-						anchors
-						{
-							left:			browseDeveloperFolderButton.right
-							right:			parent.right
-							top:			parent.top
-						}
-
-						height:				browseDeveloperFolderButton.height
-						color:				Theme.white
-						border.color:		Theme.buttonBorderColor
-						border.width:		1
-
-						TextInput
-						{
-							id:					developerFolderText
-							text:				preferencesModel.developerFolder
-							clip:				true
-							font:				Theme.font
-							onTextChanged:		preferencesModel.developerFolder = text
-							color:				Theme.textEnabled
-							KeyNavigation.tab:	overwriteDescriptionEtc
-							KeyNavigation.down:	overwriteDescriptionEtc
-
-							anchors
-							{
-								left:			parent.left
-								right:			parent.right
-								verticalCenter:	parent.verticalCenter
-								margins:		Theme.generalAnchorMargin
-							}
-
-							Connections
-							{
-								target:					preferencesModel
-								onCustomEditorChanged:	developerFolderText = preferencesModel.developerFolder
-							}
-
-						}
-					}
-
-					CheckBox
-					{
-						id:					overwriteDescriptionEtc
-						label:				qsTr("Regenerate package metadata every time (DESCRIPTION & NAMESPACE)")
-						checked:			preferencesModel.devModRegenDESC
-						onCheckedChanged:	preferencesModel.devModRegenDESC = checked
-						//font:				Theme.font
-						height:				implicitHeight * preferencesModel.uiScale
-						toolTip:			qsTr("Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
-						KeyNavigation.tab:	logToFile
-						KeyNavigation.down:	logToFile
+						id:					developerFolderText
+						text:				preferencesModel.developerFolder
+						clip:				true
+						font:				Theme.font
+						onTextChanged:		preferencesModel.developerFolder = text
+						color:				Theme.textEnabled
+						KeyNavigation.tab:	overwriteDescriptionEtc
+						KeyNavigation.down:	overwriteDescriptionEtc
 
 						anchors
 						{
 							left:			parent.left
-							leftMargin:		Theme.subOptionOffset
-							top:			developerFolderTextRect.bottom
+							right:			parent.right
+							verticalCenter:	parent.verticalCenter
+							margins:		Theme.generalAnchorMargin
 						}
+
+						Connections
+						{
+							target:					preferencesModel
+							onCustomEditorChanged:	developerFolderText = preferencesModel.developerFolder
+						}
+
 					}
 				}
+
+				CheckBox
+				{
+					id:					overwriteDescriptionEtc
+					label:				qsTr("Regenerate package metadata every time (DESCRIPTION & NAMESPACE)")
+					checked:			preferencesModel.devModRegenDESC
+					onCheckedChanged:	preferencesModel.devModRegenDESC = checked
+					//font:				Theme.font
+					height:				implicitHeight * preferencesModel.uiScale
+					toolTip:			qsTr("Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
+					KeyNavigation.tab:	logToFile
+					KeyNavigation.down:	logToFile
+
+					anchors
+					{
+						left:			parent.left
+						leftMargin:		Theme.subOptionOffset
+						top:			developerFolderTextRect.bottom
+					}
+				}
+			}
+		}
+
+		PrefsGroupRect
+		{
+			id:		loggingGroup
+			title:	qsTr("Logging options")
+
+			CheckBox
+			{
+				id:					logToFile
+				label:				qsTr("Log to file")
+				checked:			preferencesModel.logToFile
+				onCheckedChanged:	preferencesModel.logToFile = checked
+				toolTip:			qsTr("To store debug-logs of JASP in a file, check this box.")
+				KeyNavigation.tab:	maxLogFilesSpinBox
+				KeyNavigation.down:	maxLogFilesSpinBox
 			}
 
 			Item
 			{
-				id:		loggingGroup
-				height:	loggingSubGroup.y + loggingSubGroup.height
-				width:	Math.max(loggingSubGroup.width, logToFile.width)
+				id:					loggingSubGroup
+				x:					Theme.subOptionOffset
+				height:				maxLogFilesSpinBox.height
+				width:				showLogs.x + showLogs.width
+				enabled:			preferencesModel.logToFile
 
-				CheckBox
+
+				SpinBox
 				{
-					id:					logToFile
-					label:				qsTr("Log to file")
-					checked:			preferencesModel.logToFile
-					onCheckedChanged:	preferencesModel.logToFile = checked
-					toolTip:			qsTr("To store debug-logs of JASP in a file, check this box.")
-					KeyNavigation.tab:	maxLogFilesSpinBox
-					KeyNavigation.down:	maxLogFilesSpinBox
+					id:					maxLogFilesSpinBox
+					value:				preferencesModel.logFilesMax
+					onValueChanged:		if(value !== "") preferencesModel.logFilesMax = value
+					from:				5 //Less than 5 makes no sense as on release you get 1 for JASP-Desktop and 4 from the Engines
+					to:					100
+					defaultValue:		10
+					stepSize:			1
+					KeyNavigation.tab:	showLogs
+					KeyNavigation.down:	showLogs
+					text:				qsTr("Max logfiles to keep: ")
+
+					anchors
+					{
+						leftMargin:	Theme.generalAnchorMargin
+						left:		parent.left
+						top:		showLogs.top
+						bottom:		showLogs.bottom
+					}
 				}
 
-				Item
+				RectangularButton
 				{
-					id:					loggingSubGroup
-					x:					Theme.subOptionOffset
-					height:				maxLogFilesSpinBox.height
-					width:				showLogs.x + showLogs.width
-					enabled:			preferencesModel.logToFile
-					anchors.top:		logToFile.bottom
-
-					Text
+					id:			showLogs
+					text:		qsTr("Show logs")
+					onClicked:	mainWindow.showLogFolder();
+					anchors
 					{
-						id:							maxLogFilesLabel
-						text:						qsTr("Max logfiles to keep: ")
-						font:						Theme.font
-						color:						enabled ? Theme.textEnabled : Theme.textDisabled
-						anchors.verticalCenter:		parent.verticalCenter
-						//toolTip:					qsTr("Change the scale of the entire interface, can also be done through Ctrl/Cmd + '+' or '-'")
+						margins:	Theme.generalAnchorMargin
+						left:		maxLogFilesSpinBox.right
 					}
-
-					SpinBox
-					{
-						id:					maxLogFilesSpinBox
-						value:				preferencesModel.logFilesMax
-						onValueChanged:		if(value !== "") preferencesModel.logFilesMax = value
-						from:				5 //Less than 5 makes no sense as on release you get 1 for JASP-Desktop and 4 from the Engines
-						to:					100
-						defaultValue:		10
-						stepSize:			1
-						KeyNavigation.tab:	showLogs
-						KeyNavigation.down:	showLogs
-
-						anchors
-						{
-							leftMargin:	Theme.generalAnchorMargin
-							left:		maxLogFilesLabel.right
-							top:		showLogs.top
-							bottom:		showLogs.bottom
-						}
-					}
-
-					RectangularButton
-					{
-						id:			showLogs
-						text:		qsTr("Show logs")
-						onClicked:	mainWindow.showLogFolder();
-						anchors
-						{
-							margins:	Theme.generalAnchorMargin
-							left:		maxLogFilesSpinBox.right
-						}
-						KeyNavigation.tab:	useDefaultPPICheckbox
-						KeyNavigation.down:	useDefaultPPICheckbox
-					}
+					KeyNavigation.tab:	uiScaleSpinBox
+					KeyNavigation.down:	uiScaleSpinBox
 				}
 			}
+		}
+
+		Item
+		{
+			id:		extraSpaceForScrolling
+			width:	1
+			height:	1
 		}
 	}
 }

@@ -39,6 +39,7 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 	_singleItem = QQmlProperty(_item, "singleVariable").read().toBool();
 	QString extraControlOptionName = _item->property("extraControlOptionName").toString();
 	bool addAvailableTermsToAssigned = _item->property("addAvailableVariablesToAssigned").toBool();
+	bool mustContainLowerTerms = _item->property("mustContainLowerTerms").toBool();
 	
 	if (extraControlOptionName.isEmpty())
 		_extraControlOptionName = interaction ? "components" : "variable";
@@ -46,7 +47,7 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 		_extraControlOptionName = extraControlOptionName.toStdString();
 	
 	if (interaction)
-		_termsModel = new ListModelInteractionAssigned(this, addAvailableTermsToAssigned);
+		_termsModel = new ListModelInteractionAssigned(this, addAvailableTermsToAssigned, mustContainLowerTerms);
 	else
 		_termsModel = new ListModelTermsAssigned(this, _singleItem);
 

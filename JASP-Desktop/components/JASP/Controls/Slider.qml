@@ -13,7 +13,6 @@ JASPControl
 	implicitWidth:		columnLayout.implicitWidth
 
 	property alias	control:		textField
-	property int	labelSpacing:	4 * preferencesModel.uiScale
 	property int	decimals:		2
 	property int	power:			Math.pow(10, decimals);
 	property alias	label:			controlLabel.text
@@ -37,7 +36,7 @@ JASPControl
 	ColumnLayout
 	{
 		id:			columnLayout;
-		spacing:	controlLabel.visible ? labelSpacing : 0
+		spacing:	controlLabel.visible ? Theme.labelSpacing : 0
         
 		Label
 		{

@@ -6,13 +6,16 @@ Rectangle
 
 	z: 2
 
-	ListView {
-		id: listOfColumns
-		orientation: ListView.Horizontal
-		anchors.fill: parent
+	ListView
+	{
+		id:				listOfColumns
+		orientation:	ListView.Horizontal
+		anchors.fill:	parent
+		boundsBehavior:	Flickable.StopAtBounds
 
 
-		model: ListModel {
+		model: ListModel
+		{
 			ListElement { name: "dummyNominalText";	type: "qrc:/icons/variable-nominal-text.svg";	}
 			ListElement { name: "dummyNominal";		type: "qrc:/icons/variable-nominal.svg";		}
 			ListElement { name: "dummyOrdinal";		type: "qrc:/icons/variable-ordinal.svg";		}

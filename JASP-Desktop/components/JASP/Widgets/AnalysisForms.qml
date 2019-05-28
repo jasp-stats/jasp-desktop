@@ -76,6 +76,7 @@ FocusScope
 				vertical:		true
 				flickable:		analysesFlickable
 				manualAnchor:	true
+				bigBar:			true
 				anchors
 				{
 					top:		parent.top
@@ -89,6 +90,7 @@ FocusScope
 				id:				analysesFlickable
 				contentWidth:	analysesColumn.width
 				contentHeight:	analysesColumn.height
+				boundsBehavior: Flickable.StopAtBounds
 
 				anchors
 				{

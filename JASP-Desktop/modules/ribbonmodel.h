@@ -25,6 +25,7 @@
 
 
 #include "modules/ribbonbutton.h"
+#include "gui/preferencesmodel.h"
 
 
 class RibbonModel : public QAbstractListModel
@@ -45,7 +46,7 @@ public:
 		ModuleRole
 	};
 
-	RibbonModel(DynamicModules * dynamicModules, std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});
+	RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});
 
 	int								rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(_moduleNames.size());	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -59,8 +60,8 @@ public:
 
 	bool						isModuleName(std::string name)						const	{ return _buttonModelsByName.count(name) > 0; }
 	QString						moduleName(size_t index)							const	{ return QString::fromStdString(_moduleNames[index]);}
-	RibbonButton*			ribbonButtonModelAt(size_t index)					const	{ return ribbonButtonModel(_moduleNames[index]); }
-	RibbonButton*			ribbonButtonModel(std::string moduleName)			const;
+	RibbonButton*				ribbonButtonModelAt(size_t index)					const	{ return ribbonButtonModel(_moduleNames[index]); }
+	RibbonButton*				ribbonButtonModel(std::string moduleName)			const;
 	int							ribbonButtonModelIndex(RibbonButton * model)	const;
 
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
@@ -72,10 +73,9 @@ public:
 	QString						getModuleNameFromAnalysisName(const QString analysisName);
 	
 signals:
-	void currentButtonModelChanged();
-	Q_INVOKABLE void analysisClickedSignal(QString analysisName, QString analysisTitle, QString module);
-
-	void highlightedModuleIndexChanged(int highlightedModuleIndex);
+				void currentButtonModelChanged();
+	Q_INVOKABLE void analysisClickedSignal(QString analysisFunction, QString analysisTitle, QString module);
+				void highlightedModuleIndexChanged(int highlightedModuleIndex);
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
@@ -90,10 +90,11 @@ private: // functions
 	void addRibbonButtonModel(RibbonButton* model);
 
 private: // fields
-	std::map<std::string, RibbonButton*>		_buttonModelsByName;
+	std::map<std::string, RibbonButton*>			_buttonModelsByName;
 	std::vector<std::string>						_moduleNames;
 	int												_highlightedModuleIndex = -1;
-	DynamicModules								*	_dynamicModules = nullptr;
+	DynamicModules								*	_dynamicModules			= nullptr;
+	PreferencesModel							*	_preferences			= nullptr;
 };
 
 

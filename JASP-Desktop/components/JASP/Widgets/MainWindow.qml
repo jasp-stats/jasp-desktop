@@ -16,24 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Window 2.11
-import JASP.Widgets 1.0
-import JASP.Theme 1.0
+import QtQuick			2.11
+import QtQuick.Window	2.11
+import JASP.Widgets		1.0
+import JASP.Theme		1.0
 
 Window
 {
-	id:			mainWindowRoot
-	title:		mainWindow.windowTitle
-	visible:	true
-	width:		1024
-	height:		768
+	id:					mainWindowRoot
+	title:				mainWindow.windowTitle
+	visible:			true
+	width:				1248
+	height:				768
+	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 
+	minimumWidth:		800
+	minimumHeight:		600
 
-	minimumWidth:	800
-	minimumHeight:	600
-
-	onVisibleChanged: if(!visible) helpModel.visible = false
+	onVisibleChanged:	if(!visible) helpModel.visible = false
 
 	property real devicePixelRatio: Screen.devicePixelRatio
 
@@ -50,10 +50,15 @@ Window
 		}
 	}
 
+	function toggleFullScreen()
+	{
+		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
+	}
+
 	Item
 	{
-		anchors.fill: parent
-		focus:	true
+		anchors.fill:	parent
+		focus:			true
 
 		Shortcut { onActivated: mainWindow.saveKeyPressed();		sequences: ["Ctrl+S"];											}
 		Shortcut { onActivated: mainWindow.openKeyPressed();		sequences: ["Ctrl+O"];											}
@@ -62,12 +67,13 @@ Window
 		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();		sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
 		Shortcut { onActivated: mainWindow.refreshKeyPressed();		sequences: ["Ctrl+R"];											}
 		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();	sequences: ["Ctrl+0"];											}
-		Shortcut { onActivated: mainWindowRoot.close();				sequences: ["Ctrl+Q"];											}
+		Shortcut { onActivated: mainWindowRoot.close();				sequences: ["Ctrl+Q", Qt.Key_Close];							}
+		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];											}
 
 		RibbonBar
 		{
 			id	: ribbon
-			z	: 4
+			z	: 6
 
 			anchors
 			{
@@ -101,7 +107,7 @@ Window
 				customMenu.visible	= true;
 			}
 
-			visible: false
+			visible:		false
 		}
 
 		FileMenu
@@ -117,10 +123,26 @@ Window
 			}
 		}
 
+		WelcomePage
+		{
+			id:			welcomePage
+			z:			0
+			visible:	mainWindow.welcomePageVisible
+
+			anchors
+			{
+				top:	ribbon.bottom
+				left:	parent.left
+				right:	parent.right
+				bottom:	parent.bottom
+			}
+		}
+
 		MainPage
 		{
-			id: mainpage
-			z:	0
+			id:			mainpage
+			z:			0
+			visible:	!mainWindow.welcomePageVisible
 
 			anchors
 			{
@@ -133,16 +155,13 @@ Window
 
 		MouseArea
 		{
-			visible:		fileMenuModel.visible || modulesMenu.opened || customMenu.visible
-			z:				1
-			hoverEnabled:	true
-
-			onContainsMouseChanged: if(containsMouse) ribbonModel.highlightedModuleIndex = -1
-
-			anchors.fill:		parent
-			anchors.topMargin:	ribbon.height
-
-			propagateComposedEvents: true
+			visible:					fileMenuModel.visible || modulesMenu.opened || customMenu.visible
+			z:							1
+			hoverEnabled:				true
+			onContainsMouseChanged:		if(containsMouse) ribbonModel.highlightedModuleIndex = -1
+			anchors.fill:				parent
+			anchors.topMargin:			ribbon.height
+			propagateComposedEvents:	true
 
 			Rectangle
 			{
@@ -168,7 +187,8 @@ Window
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
 				mouse.accepted			= false
-				customMenu.visible		= false
+				
+				customMenu.remove()
 			}
 		}
 
@@ -198,7 +218,11 @@ Window
 				target:			mainWindow
 				onShowWarning:	msgBox.showWarning(title, message)
 			}
-
 		}*/
+	}
+
+	UIScaleNotifier
+	{
+		anchors.centerIn:	parent
 	}
 }

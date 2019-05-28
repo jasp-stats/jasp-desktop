@@ -25,12 +25,13 @@
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned)
+ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned, bool mustContainLowerTerms)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
 	_areTermsInteractions = true;
 	_copyTermsWhenDropped = true;
 	_addNewAvailableTermsToAssignedModel = addAvailableTermsToAssigned;
+	_mustContainLowerTerms = mustContainLowerTerms;
 }
 
 void ListModelInteractionAssigned::initTerms(const Terms &terms)
@@ -85,13 +86,25 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 	{
 		QString itemType = getItemType(term);
 		if (itemType == "fixedFactors")
-			fixedFactors.add(term);
+		{
+			if (!_fixedFactors.contains(term))
+				fixedFactors.add(term);
+		}
 		else if (itemType == "randomFactors")
-			randomFactors.add(term);
+		{
+			if (!_randomFactors.contains(term))
+				randomFactors.add(term);
+		}
 		else if (itemType == "covariates")
-			covariates.add(term);
+		{
+			if (!_covariates.contains(term))
+				covariates.add(term);
+		}
 		else
-			others.add(term);
+		{
+			if (!_interactionTerms.contains(term))
+				others.add(term);
+		}
 	}
 			
 	if (fixedFactors.size() > 0)
@@ -118,7 +131,7 @@ void ListModelInteractionAssigned::availableTermsChanged(Terms *termsAdded, Term
 	
 	if (termsRemoved && termsRemoved->size() > 0)
 	{
-		removeFactors(*termsRemoved);
+		removeInteractionTerms(*termsRemoved);
 		setTerms();
 	}
 }

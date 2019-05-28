@@ -16,7 +16,8 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(QString	computeColumnError			READ computeColumnError														NOTIFY computeColumnErrorChanged		)
 	Q_PROPERTY(QString	computeColumnNameSelected	READ computeColumnNameSelected		WRITE setComputeColumnNameSelected		NOTIFY computeColumnNameSelectedChanged )
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY datasetLoadedChanged				)
-	Q_PROPERTY(QString lastCreatedColumn			READ lastCreatedColumn														NOTIFY lastCreatedColumnChanged			)
+	Q_PROPERTY(QString	lastCreatedColumn			READ lastCreatedColumn														NOTIFY lastCreatedColumnChanged			)
+	Q_PROPERTY(QString	showThisColumn				READ showThisColumn					WRITE setShowThisColumn					NOTIFY showThisColumnChanged			)
 
 public:
 	explicit	ComputedColumnsModel(Analyses * analyses, QObject * parent);
@@ -55,6 +56,11 @@ public:
 
 
 
+				QString showThisColumn() const
+				{
+					return _showThisColumn;
+				}
+
 private:
 				void	validate(QString name);
 				void	setAnalyses(Analyses * analyses)				{ _analyses = analyses; }
@@ -82,6 +88,8 @@ signals:
 				void	lastCreatedColumnChanged(QString lastCreatedColumn);
 				void	dataColumnAdded(QString columnName);
 
+				void showThisColumnChanged(QString showThisColumn);
+
 public slots:
 				void				computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
 				void				computeColumnFailed(QString columnName, QString error);
@@ -93,6 +101,15 @@ public slots:
 				void				setLastCreatedColumn(QString lastCreatedColumn);
 				void				analysisRemoved(Analysis * analysis);
 
+				void setShowThisColumn(QString showThisColumn)
+				{
+					if (_showThisColumn == showThisColumn)
+						return;
+
+					_showThisColumn = showThisColumn;
+					emit showThisColumnChanged(_showThisColumn);
+				}
+
 private:
 
 	QString					_currentlySelectedName	= "",
@@ -100,6 +117,7 @@ private:
 	ComputedColumns		*	_computedColumns		= nullptr;
 	DataSetPackage		*	_package				= nullptr;
 	Analyses			*	_analyses				= nullptr;
+	QString _showThisColumn;
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

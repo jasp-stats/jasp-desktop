@@ -16,6 +16,7 @@ class LevelsTableModel : public QAbstractTableModel
 
 public:
 	LevelsTableModel(QObject *parent = 0);
+	~LevelsTableModel()	{ }
 
 	enum class Roles {
 		ValueRole = Qt::UserRole + 1,
@@ -44,8 +45,6 @@ public:
 	Q_INVOKABLE void moveDownFromQML(QVariantList selection)	{ QModelIndexList List = convertQVariantList_to_QModelIndexList(selection); moveDown(List); }
 
 	QModelIndexList convertQVariantList_to_QModelIndexList(QVariantList selection);
-
-
 
 	Q_INVOKABLE bool setAllowFilterOnLabel(int row, bool newAllowValue);
 	Q_INVOKABLE bool allowFilter(int row);

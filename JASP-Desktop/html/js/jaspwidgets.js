@@ -570,8 +570,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
 					if (scrollIntoView) {
 						window.scrollIntoView(self.$el, function () {
-							var pos = self.simulatedClickPosition();
-							window.simulateClick(pos.x, pos.y, 1);
 							self.setGhostTextVisible(true);
 						});
 					}
@@ -912,7 +910,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			this["callback"] = null;
 		}
 	},
-	
+
 	setTitle: function(title) {
 		this.title = title;
 	},

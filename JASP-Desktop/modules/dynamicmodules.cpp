@@ -272,8 +272,8 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 
 	bool wasInitialized = dynMod->initialized();
 
-	if(!wasInitialized)	initializeModule(dynMod);
-	else				registerForLoading(moduleName.toStdString());
+	if(!wasInitialized)			initializeModule(dynMod);
+	if(dynMod->initialized())	registerForLoading(moduleName.toStdString());
 
 
 	if(dynMod->isDevMod())
@@ -283,7 +283,6 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 		startWatchingDevelopersModule();
 
 		setDevelopersModuleInstallButtonEnabled(true);
-
 	}
 }
 
@@ -315,18 +314,6 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 		return _modules[moduleName]->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 
 	throw Modules::ModuleException(moduleName, "Module is not available, to load this JASP file properly you will need to install it first and then retry.\nIf you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or, if that doesn't help, you could try to contact the module's maintainer: \"" + jsonFromJaspFile.get("moduleMaintainer", "the JASP team").asString() + "\".");
-}
-
-Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const std::string & codedReference)
-{
-    auto parts = stringUtils::splitString(codedReference, '~');
-
-	if(parts.size() != 3)
-		throw Modules::ModuleException("No module", "This isnt a coded reference");
-
-	std::string moduleName		= parts[0];
-
-	return dynamicModule(moduleName)->retrieveCorrespondingAnalysisEntry(codedReference);
 }
 
 bool DynamicModules::isFileAnArchive(const QString &  filepath)

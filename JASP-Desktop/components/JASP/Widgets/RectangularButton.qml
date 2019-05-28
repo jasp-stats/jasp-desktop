@@ -61,10 +61,7 @@ Item
 	Keys.onEnterPressed:	clicked();
 	Keys.onReturnPressed:	clicked();
 
-
-
 	signal clicked()
-
 
 	Rectangle
 	{
@@ -102,11 +99,12 @@ Item
 			width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
 			height: filterButtonRoot.height - (2 * buttonPadding)
 
-			sourceSize.width:	Math.max(48, width  * 2)
-			sourceSize.height:	Math.max(48, height * 2)
+			sourceSize.width:	Math.max(96, width  * 2)
+			sourceSize.height:	Math.max(96, height * 2)
 
 			visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
 			source:		filterButtonRoot.iconSource
+			mipmap:		true
 		}
 
 		Text

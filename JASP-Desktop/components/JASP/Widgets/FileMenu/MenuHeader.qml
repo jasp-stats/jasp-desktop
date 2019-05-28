@@ -10,6 +10,7 @@ Item
 	property bool	toolseparator:	true
 	property string headertext:		""
 	property string helpfile:		""
+	property bool	anchorMe:		true
 
 	function showHelp()
 	{
@@ -17,46 +18,53 @@ Item
 			helpModel.showOrTogglePage(helpfile);
 	}
 
-	height:				Theme.menuHeaderHeight
+	height:					Theme.menuHeaderHeight
 	anchors
 	{
-		top:			parent.top
-		left:			parent.left
-		right:			parent.right
-		leftMargin:		Theme.generalMenuMargin
-		rightMargin:	Theme.generalMenuMargin
-		topMargin:		Theme.generalMenuMargin
+		top:				!anchorMe ? undefined : parent.top
+		left:				!anchorMe ? undefined : parent.left
+		right:				!anchorMe ? undefined : parent.right
 	}
 
 	Label
 	{
-		id:				headLabel
-		text:			headertext
+		id:					headLabel
+		text:				headertext
 
-		anchors.fill:	parent
-		font:			Theme.fontGroupTitle
-		color:			Theme.black
+		anchors
+		{
+			verticalCenter:	parent.verticalCenter
+			left:			parent.left
+			margins:		Theme.generalAnchorMargin
+		}
+		font:				Theme.fontGroupTitle
+		color:				Theme.black
 	}
 
 	MenuButton
 	{
-		id:						idHelpButton
-		visible:				helpfile !== ""
-		height:					headLabel.height
-		width:					height
-		iconSource:				"qrc:/images/info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-		onClicked:				helpModel.showOrTogglePage(helpfile)
-		toolTip:				"Show info about these preferences"
-		radius:					height / 2
-		anchors.verticalCenter: headLabel.verticalCenter
-		anchors.right:			parent.right
+		id:					idHelpButton
+		visible:			helpfile !== ""
+		height:				parent.height - (Theme.generalAnchorMargin * 2)
+		width:				height
+		iconSource:			"qrc:/images/info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+		onClicked:			helpModel.showOrTogglePage(helpfile)
+		toolTip:			qsTr("Show info about these preferences")
+		radius:				height / 2
+
+		anchors
+		{
+			verticalCenter:	headLabel.verticalCenter
+			right:			parent.right
+			margins:		Theme.generalAnchorMargin
+		}
 	}
 
 	ToolSeparator
 	{
 		id:				firstSeparator
 
-		anchors.top:	headLabel.bottom
+		anchors.bottom:	parent.bottom
 		width:			parent.width
 
 		orientation:	Qt.Horizontal

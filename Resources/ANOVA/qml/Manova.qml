@@ -34,9 +34,9 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variables");	allowedColumns: ["scale"]; singleVariable: false }
-		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		allowedColumns: ["ordinal", "nominal"]		}
-		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		allowedColumns: ["ordinal", "nominal"];	debug: true }
+		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variables");	suggestedColumns: ["scale"]; singleVariable: false		}
+		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		suggestedColumns: ["ordinal", "nominal"]				}
+		AssignedVariablesList { name: "randomFactors";	title: qsTr("Random Factors");		suggestedColumns: ["ordinal", "nominal"];	debug: true }
 	}
 	
 	Section
@@ -65,6 +65,13 @@ Form
 			CheckBox { name: "testWilks";		label: qsTr("Wilks"); checked: false }
 			CheckBox { name: "testHotellingLawley";	label: qsTr("Hotelling-Lawley"); checked: false }
 			CheckBox { name: "testRoy";		label: qsTr("Roy"); checked: false }
+		}
+		
+		Group
+		{
+			title: qsTr("Assumption Checks")
+			CheckBox { name: "boxMTest";			label: qsTr("Homogeneity of covariance matrices")}
+			CheckBox { name: "shapiroTest";			label: qsTr("Multivariate normality")		}
 		}
 		
 		Group

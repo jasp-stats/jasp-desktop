@@ -46,6 +46,7 @@ JASPControl
 		{
 			id:				flickable
 			clip:			true
+			boundsBehavior: Flickable.StopAtBounds
 			anchors.fill:	parent
 
 			TextArea.flickable: TextArea

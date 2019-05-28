@@ -27,7 +27,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "pairs"; allowedColumns: ["scale"]; listViewType: "Pairs" }
+		AssignedVariablesList { name: "pairs"; suggestedColumns: ["scale"]; listViewType: "Pairs" }
 	}
 	
 	RadioButtonGroup
@@ -38,10 +38,15 @@ Form
 		RadioButton { value: "Kendall";	label: qsTr("Kendall's tau-b")				}
 	}
 
-	CheckBox
+
+	Group
 	{
-		name: "credibleInterval"; label: qsTr("Credible intervals")
-		CIField { name: "ciValue";	label: qsTr("Interval"); debug: true }
+		title: qsTr("Additional Options")
+		CheckBox
+		{
+			name: "credibleInterval"; label: qsTr("Credible intervals")
+			CIField { name: "ciValue";	label: qsTr("Interval"); debug: true }
+		}
 	}
 
 	RadioButtonGroup
@@ -61,12 +66,12 @@ Form
 		CheckBox
 		{
 			name: "plotPriorAndPosterior";			label: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	label: qsTr("Additional info") }
+            CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{
 			name: "plotBayesFactorRobustness";		label: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info") }
+            CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{

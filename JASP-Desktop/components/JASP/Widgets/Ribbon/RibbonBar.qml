@@ -42,9 +42,10 @@ FocusScope
 
 		onClicked:
 		{
-			customMenu.visible		= false;
 			fileMenuModel.visible	= !fileMenuModel.visible;
 			modulesMenu.opened		= false;
+			
+			customMenu.remove()
 		}
 
 		anchors
@@ -66,24 +67,6 @@ FocusScope
 			right	: modulesPlusButton.left
 			left	: fileMenuOpenButton.right
 		}
-
-		MouseArea
-		{
-			id				: ribbonMenuMouseArea
-			anchors.fill	: parent
-			enabled			: fileMenuModel.visible || modulesMenu.opened || customMenu.visible
-			cursorShape		: !mainWindow.datasetLoaded || enabled ? Qt.ArrowCursor : Qt.PointingHandCursor
-
-			propagateComposedEvents: true
-
-			onClicked:
-			{
-				fileMenuModel.visible	= false;
-				modulesMenu.opened		= false;
-				customMenu.visible		= false;
-				mouse.accepted			= false;
-			}
-		}
 	}
 
 	MenuArrowButton
@@ -95,9 +78,10 @@ FocusScope
 
 		onClicked	:
 		{
-			customMenu.visible	= false;
-			modulesMenu.opened	= !modulesMenu.opened;
-			fileMenuModel.visible = false;
+			modulesMenu.opened		= !modulesMenu.opened;
+			fileMenuModel.visible	= false;
+			
+			customMenu.remove()
 		}
 
 		showArrow	: modulesMenu.opened

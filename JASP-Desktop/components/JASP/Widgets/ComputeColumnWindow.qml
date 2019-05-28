@@ -26,7 +26,12 @@ FocusScope
 	onSelectedColumnNameMirrorChanged:	if(selectedColumnNameMirror === "") close();
 	onJsonConstructedModelChanged:		computedColumnConstructor.initializeFromJSON(userLikesR ? "{\"formulas\":[]}" : jsonConstructedModel);
 	onComputeColumnRCodeChanged:		computeColumnEdit.text = computeColumnRCode;
-	onLastCreatedColumnChanged:			if(!changed && lastCreatedColumn !== computedColumnsInterface.computeColumnNameSelected) open(lastCreatedColumn)
+
+	Connections
+	{
+		target:						computedColumnsInterface
+		onShowThisColumnChanged:	if(!computedColumnContainer.changed && computedColumnsInterface.showThisColumn !== computedColumnsInterface.computeColumnNameSelected) open(computedColumnsInterface.showThisColumn)
+	}
 
 	function close()
     {

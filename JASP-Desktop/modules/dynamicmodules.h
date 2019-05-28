@@ -64,7 +64,6 @@ public:
 	Modules::DynamicModule*	operator[](		const std::string & moduleName)		const { return dynamicModule(moduleName); }
 
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
-	Modules::AnalysisEntry*	retrieveCorrespondingAnalysisEntry(const std::string & codedReference);
 
 	Q_INVOKABLE bool	isFileAnArchive(				const QString & filepath);
 	Q_INVOKABLE QString getDescriptionJsonFromArchive(	const QString & filepath);
@@ -108,6 +107,7 @@ signals:
 	void reloadHelpPage();
 
 	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
+	void moduleEnabledChanged(QString moduleName, bool enabled);
 
 private slots:
 	void enginesStopped();

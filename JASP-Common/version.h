@@ -25,25 +25,26 @@ class Version
 public:
 	Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build);
 	Version(std::string version);
-	Version();
+	Version() {}
 
-	bool operator<(const Version&) const;
-	bool operator>(const Version&) const;
+	bool operator<(const Version&)	const;
+	bool operator>(const Version&)	const;
 	bool operator<=(const Version&) const;
 	bool operator>=(const Version&) const;
 	bool operator==(const Version&) const;
 	bool operator!=(const Version&) const;
 
-	bool isRelease() const;
-	bool isAlpha() const;
-	bool isBeta() const;
-	std::string asString() const;
-	bool isEmpty() const;
+	bool isRelease()	const;
+	bool isAlpha()		const;
+	bool isBeta()		const;
+	bool isEmpty()		const;
 
-	unsigned char major;
-	unsigned char minor;
-	unsigned char revision;
-	unsigned short build;
+	std::string asString(bool addDebugFlag = false) const;
+
+	unsigned char	major		= 0,
+					minor		= 0,
+					revision	= 0,
+					build		= 0;
 };
 
 

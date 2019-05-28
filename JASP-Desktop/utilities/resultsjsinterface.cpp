@@ -39,7 +39,6 @@
 
 ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
-	connect(this, &ResultsJsInterface::welcomeScreenIsCleared,	this, &ResultsJsInterface::welcomeScreenIsClearedHandler);
 	connect(this, &ResultsJsInterface::zoomChanged,				this, &ResultsJsInterface::setZoomInWebEngine);
 
 	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
@@ -210,7 +209,7 @@ void ResultsJsInterface::changeTitle(Analysis *analysis)
     int id = analysis->id();
     QString title = analysis->titleQ();
 
-    emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + title + "')");
+    emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + escapeJavascriptString(title) + "')");
 }
 
 void ResultsJsInterface::showAnalysis(int id)
@@ -240,26 +239,10 @@ void ResultsJsInterface::setResultsMeta(QString str)
 	emit runJavaScript(results);
 }
 
-void ResultsJsInterface::clearWelcomeScreen(bool callDelayedLoad)
-{
-	emit runJavaScript("window.clearWelcomeScreen("+QString(callDelayedLoad ? "true)" : "false)"));
-}
-
 void ResultsJsInterface::resetResults()
 {
 	emit resultsPageUrlChanged(_resultsPageUrl);
-	setWelcomeShown(true);
 }
-
-void ResultsJsInterface::setWelcomeShown(bool welcomeShown)
-{
-	if (_welcomeShown == welcomeShown)
-		return;
-
-	_welcomeShown = welcomeShown;
-	emit welcomeShownChanged(_welcomeShown);
-}
-
 
 void ResultsJsInterface::unselect()
 {

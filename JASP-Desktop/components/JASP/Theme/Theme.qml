@@ -28,7 +28,7 @@ QtObject {
 	readonly property color whiteBroken:		"#F5F5F5"
 	readonly property color black:				"black"
 	readonly property color gray:				"#d1d1d1"
-	readonly property color grayDarker:			Qt.darker(gray, 1.5)
+	readonly property color grayDarker:			"#9A9A9A"
 	readonly property color grayLighter:		"#E0E0E0"
 	readonly property color grayMuchLighter:	"#ECECEC"
 	readonly property color grayVeryMuchLighter:"#F4F6F7"
@@ -48,6 +48,8 @@ QtObject {
 	readonly property color textDisabled:				grayDarker
 	readonly property color uiBackground:				grayMuchLighter
 	readonly property color uiBorder:					grayDarker
+	readonly property color fileMenuLightBorder:		grayMuchLighter
+	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
 
 	readonly property color buttonColor:				uiBackground
 	readonly property color buttonColorHovered:			grayLighter
@@ -55,7 +57,7 @@ QtObject {
 	readonly property color buttonBorderColor:			gray
 	readonly property color buttonBorderColorHovered:	black
 
-	readonly property color fileMenuColorBackground:	grayVeryMuchLighter
+
 
 	readonly property color itemHighlight:				blueMuchLighter
 
@@ -78,33 +80,36 @@ QtObject {
 	readonly property int subOptionOffset:				40 * uiScale
 
 	readonly property int sliderWidth:					4   * uiScale
-	readonly property int sliderLength:					80  * uiScale
-	readonly property int spinBoxHeight:				30  * uiScale
 	readonly property int switchHeight:					15  * uiScale
 	readonly property int shadowRadius:					10  * uiScale
-	readonly property int scrollbarWidth:				8   * uiScale
-	readonly property int scrollbarBoxWidth:			12  * uiScale
+	readonly property int labelSpacing:					4   * uiScale
+	readonly property int spinBoxWidth:					50  * uiScale
+	readonly property int sliderLength:					80  * uiScale
+	readonly property int spinBoxHeight:				30  * uiScale
 	readonly property int comboBoxHeight:				20  * uiScale
 	readonly property int textFieldWidth:				200 * uiScale
-	readonly property int numericFieldWidth:			40  * uiScale
 	readonly property int textFieldHeight:				20  * uiScale
-	readonly property int spinBoxWidth:					50  * uiScale
-	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int splitHandleWidth:				20  * uiScale
+	readonly property int numericFieldWidth:			40  * uiScale
+	readonly property int subMenuIconHeight:			13	* uiScale
 	readonly property int defaultListHeight:			350 * uiScale
 	readonly property int titleBottomMargin:            5   * uiScale
 	readonly property int jaspControlPadding:			3   * uiScale
 	readonly property int ribbonButtonHeight:			72  * uiScale
-	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int variablesListTitle:			20  * uiScale
+	readonly property int ribbonButtonPadding:			10  * uiScale
 	readonly property int groupContentPadding:			10  * uiScale
 	readonly property int sliderHandleDiameter:			16  * uiScale
 	readonly property int defaultTextAreaHeight:		250 * uiScale
 	readonly property int jaspControlHighlightWidth:	Math.max(2, 3 * uiScale)
 	readonly property int defaultSingleItemListHeight:	49  * uiScale
 
+	readonly property int scrollbarBoxWidth:			12  * uiScale
+	readonly property int scrollbarBoxWidthBig:			16  * uiScale
+
+
 	readonly property int messageBoxButtonHeight:		40  * uiScale
-	readonly property int maximumFlickVelocity:			400
+	readonly property int maximumFlickVelocity:			preferencesModel.maxFlickVelocity
 	readonly property int hoverTime:					400
 	readonly property int fileMenuSlideDuration:		150
 
@@ -112,7 +117,7 @@ QtObject {
 
 	readonly property int menuItemHeight:               20  * uiScale
 	readonly property int menuGroupTitleHeight:         40  * uiScale
-	readonly property int menuHeaderHeight:             30  * uiScale
+	readonly property int menuHeaderHeight:             50  * uiScale
 	readonly property real menuSpacing:					1   * uiScale
 	readonly property real menuPadding:					10  * uiScale
 
@@ -133,6 +138,12 @@ QtObject {
 	fontGroupTitle.underline:	false
 	fontGroupTitle.pixelSize:	14 * uiScale
 	fontGroupTitle.family:		"SansSerif"
+
+	property font fontPrefOptionsGroupTitle
+	fontPrefOptionsGroupTitle.bold:			true
+	fontPrefOptionsGroupTitle.underline:	false
+	fontPrefOptionsGroupTitle.pixelSize:	13 * uiScale
+	fontPrefOptionsGroupTitle.family:		"SansSerif"
 
 	property font fontLabel
 	fontLabel.bold:			true

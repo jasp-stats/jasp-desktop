@@ -36,7 +36,7 @@ Form
 		{
 			name: "repeatedMeasuresCells"
 			title: qsTr("Repeated Measures Cells")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 			listViewType: "RepeatedMeasures"
 			source: "repeatedMeasuresFactors"
 			height: 140
@@ -45,14 +45,14 @@ Form
 		{
 			name: "betweenSubjectFactors"
 			title: qsTr("Between Subject Factors")
-			allowedColumns: ["ordinal", "nominal"]
+			suggestedColumns: ["ordinal", "nominal"]
 			itemType: "fixedFactors"
 		}
 		AssignedVariablesList
 		{
 			name: "covariates"
 			title: qsTr("Covariates")
-			allowedColumns: ["scale"]
+			suggestedColumns: ["scale"]
 		}
 	}
 
@@ -60,7 +60,7 @@ Form
 
 	Group
 	{
-		title: qsTr("Output")
+		title: qsTr("Tables")
 		CheckBox
 		{
 			name: "effects"; label: qsTr("Effects")
@@ -72,15 +72,16 @@ Form
 			}
 		}
         CheckBox { name: "posteriorEstimates"; label: qsTr("Estimates") }
-        CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
-        CIField { name: "credibleInterval";	label: qsTr("Credible interval") }
+        CheckBox { name: "criTable";           label: qsTr("Model averaged R\u00B2") }
+        CheckBox { name: "descriptives";       label: qsTr("Descriptives") }
+        CIField {  name: "credibleInterval";   label: qsTr("Credible interval") }
     }
     RadioButtonGroup
     {
         title: qsTr("Order")
         name: "bayesFactorOrder"
-        RadioButton { value: "nullModelTop";	label: qsTr("Compare to null model"); checked: true	}
-        RadioButton { value: "bestModelTop";	label: qsTr("Compare to best model")					}
+        RadioButton { value: "bestModelTop"; label: qsTr("Compare to best model"); checked: true}
+        RadioButton { value: "nullModelTop"; label: qsTr("Compare to null model")               }
     }
     
     GroupBox
@@ -133,6 +134,18 @@ Form
     {
         title: qsTr("Single Model Inference")
 
+        VariablesForm
+        {
+            height: 200
+            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
+            AssignedVariablesList
+            {
+				title: qsTr("Specific Model Terms")
+                name: "singleModelTerms"
+                listViewType: "Interaction"
+            }
+        }
+
         GridLayout
         {
 
@@ -140,6 +153,7 @@ Form
             {
                 title: qsTr("Tables")
                 CheckBox { label: qsTr("Estimates"); name: "singleModelEstimates"}
+                CheckBox { label: qsTr("R\u00B2");   name: "singleModelCriTable" }
             }
 
             GroupBox
@@ -158,18 +172,6 @@ Form
                 CheckBox { label: qsTr("Posterior R\u00B2") ;     name: "singleModelrsqPlot"}
             }
 
-        }
-
-        VariablesForm
-        {
-            height: 200
-            AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
-            AssignedVariablesList
-            {
-				title: qsTr("Specific Model Terms")
-                name: "singleModelTerms"
-                listViewType: "Interaction"
-            }
         }
     }
 
@@ -221,9 +223,9 @@ Form
 		Group
 		{
 			title: qsTr("Prior")
-			DoubleField { name: "priorFixedEffects";	label: qsTr("r scale fixed effects"); defaultValue: 0.5; fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorRandomEffects";	label: qsTr("r scale random effects"); defaultValue: 1; fieldWidth: 50; max: 2; decimals: 1 }
-			DoubleField { name: "priorCovariates";		label: qsTr("r scale covariates"); defaultValue: 0.354; fieldWidth: 50; max: 2; decimals: 1 }
+			DoubleField { name: "priorFixedEffects";	label: qsTr("r scale fixed effects");  defaultValue: 0.5;   max: 2; decimals: 1 }
+			DoubleField { name: "priorRandomEffects";	label: qsTr("r scale random effects"); defaultValue: 1;     max: 2; decimals: 1 }
+			DoubleField { name: "priorCovariates";		label: qsTr("r scale covariates");     defaultValue: 0.354; max: 2; decimals: 1 }
 		}
 
         RadioButtonGroup

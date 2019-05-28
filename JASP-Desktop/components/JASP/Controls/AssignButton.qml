@@ -60,10 +60,9 @@ Button
 			if (target.allowedColumns.length > 0)
 			{
 				result = true;
-				for (var i = 0; i < source.selectedItems.length; i++)
+				for (var i = 0; i < source.selectedItemsTypes.length; i++)
 				{
-					var itemType = source.selectedItems[i].columnType;
-					if (itemType === "nominalText") itemType = "nominal";
+					var itemType = source.selectedItemsTypes[i];
 					if (!target.allowedColumns.includes(itemType))
 						result = false;
 				}

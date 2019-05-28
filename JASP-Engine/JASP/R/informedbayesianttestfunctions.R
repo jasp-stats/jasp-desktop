@@ -133,12 +133,14 @@
 
   i <- 1
   while (abs(x.cur - x.new) > tol && i < max.iter) {
-
     x.cur <- x.new
     x.new <- x.cur - (.cdf_t(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
                              prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df) - q) /
                       .posterior_t(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
                                    prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
+    
+    if(is.infinite(x.new)) # possibly due to dividing by posterior density = 0
+      stop("Cannot plot the posterior - possibly too concentrated near 0.")
     i <- i + 1
   }
 
@@ -147,20 +149,19 @@
 
 .ciPlusMedian_t <- function(t, n1, n2 = NULL, independentSamples = FALSE, prior.location, prior.scale,
                             prior.df, ci = .95, tol = 0.0001, max.iter = 100, oneSided) {
-
   lower <- (1 - ci) / 2
   upper <- ci + (1 - ci) / 2
   med   <- .5
 
   postAreaSmaller0 <- .cdf_t(x = 0, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
                              prior.location = prior.location, prior.scale = prior.scale, prior.df = prior.df)
-
+  
   if (oneSided == "right") {
 
     lower <- postAreaSmaller0 + (1 - postAreaSmaller0) * lower
     upper <- postAreaSmaller0 + (1 - postAreaSmaller0) * upper
     med   <- postAreaSmaller0 + (1 - postAreaSmaller0) * med
-} else if (oneSided == "left") {
+  } else if (oneSided == "left") {
 
     lower <- postAreaSmaller0 * lower
     upper <- postAreaSmaller0 * upper
@@ -223,6 +224,9 @@
                                   prior.mean = prior.mean, prior.variance = prior.variance) - q) /
                       .posterior_normal(x.cur, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
                                         prior.mean = prior.mean, prior.variance = prior.variance)
+    
+    if(is.infinite(x.new)) # possibly due to dividing by posterior density = 0
+      stop("Cannot plot the posterior - possibly too concentrated near 0.")
     i <- i + 1
   }
 
@@ -240,12 +244,13 @@
   postAreaSmaller0 <- .cdf_normal(x = 0, t = t, n1 = n1, n2 = n2, independentSamples = independentSamples,
                                  prior.mean = prior.mean, prior.variance = prior.variance)
 
+  
   if (oneSided == "right") {
 
     lower <- postAreaSmaller0 + (1 - postAreaSmaller0) * lower
     upper <- postAreaSmaller0 + (1 - postAreaSmaller0) * upper
     med   <- postAreaSmaller0 + (1 - postAreaSmaller0) * med
-} else if (oneSided == "left") {
+  } else if (oneSided == "left") {
 
     lower <- postAreaSmaller0 * lower
     upper <- postAreaSmaller0 * upper
