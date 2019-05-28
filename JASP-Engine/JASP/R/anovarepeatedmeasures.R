@@ -325,6 +325,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   ## Create Marginal Means via Bootstrapping Tables
   if(is.null(stateMarginalMeansBoots) && options[['marginalMeansBootstrapping']]){
     result <- .rmAnovaMarginalMeansBootstrappingTable(dataset, options, perform, status, fullModel)
+    if(result == "Bootstrapping options have changed")
+      return()
     
     results[["marginalMeansBoots"]] <- list(collection=result$result, title = "Marginal Means via Bootstrapping")
     status <- result$status
@@ -3886,6 +3888,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   marginalMeans <- list()
   
+  ticks <- options[['marginalMeansBootstrappingReplicates']] * length(terms.base64)
+  progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  
   for (i in .indices(terms.base64)) {
     
     result <- list()
@@ -3942,10 +3947,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       formula <- as.formula(paste("~", terms.base64[i]))
       
-      progress <- .newProgressbar(ticks = options[['marginalMeansBootstrappingReplicates']], callback = callback)
-      
       .bootstrapMarginalMeans <- function(data, indices, options){
-        progress()
+        pr <- progress()
+        response <- .callbackBootstrapRMAnovaMarginalMeans(pr, options)
+        
+        if(response$status == "changed" || response$status == "aborted")
+          stop("Bootstrapping options have changed")
         
         resamples <- data[indices, , drop=FALSE]
         
@@ -3964,9 +3971,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         }
       }
       
-      bootstrapMarginalMeans <- boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
-                                           R = options[["marginalMeansBootstrappingReplicates"]],
-                                           options = options)
+      bootstrapMarginalMeans <- try(boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
+                                               R = options[["marginalMeansBootstrappingReplicates"]],
+                                               options = options), silent = TRUE)
+      if(inherits(bootstrapMarginalMeans, "try-error"))
+        return("Bootstrapping options have changed")
       
       bootstrapMarginalMeans.summary <- summary(bootstrapMarginalMeans)
       bootstrapMarginalMeans.ci <- t(sapply(1:nrow(bootstrapMarginalMeans.summary), function(index){
@@ -4072,3 +4081,17 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   list(result=marginalMeans, status=status, stateMarginalMeansBoots=stateMarginalMeans)
 }
 
+.callbackBootstrapRMAnovaMarginalMeans <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    
+    if(change$repeatedMeasuresCells || change$covariates || change$betweenSubjectFactors ||
+       change$withinModelTerms || change$marginalMeansTerms ||
+       change$marginalMeansBootstrapping || change$marginalMeansBootstrappingReplicates)
+      return(response)
+    
+    response$status <- "ok"
+  }
+  
+  return(response)
+}
