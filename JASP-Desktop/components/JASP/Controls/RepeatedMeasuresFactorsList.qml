@@ -17,7 +17,6 @@
 //
 
 import QtQuick 2.11
-import QtQuick.Controls 2.4
 import QtQml.Models 2.2
 import JASP.Controls 1.0
 import JASP.Theme 1.0
@@ -127,6 +126,7 @@ JASPControl
 					anchors.verticalCenter:			parent.verticalCenter
 					fieldWidth:						parent.width
 					useExternalBorder:				false
+					selectValueOnFocus:				true
 					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
 					onEditingFinished:				itemChanged(index, value)
 				}
