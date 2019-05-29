@@ -520,7 +520,8 @@ void Analyses::analysisIdSelectedInResults(int id)
 
 void Analyses::analysesUnselectedInResults()
 {
-	setCurrentAnalysisIndex(-1);
+	if (count() > 1)
+		setCurrentAnalysisIndex(-1);
 }
 
 void Analyses::selectAnalysisAtRow(int row)
