@@ -120,5 +120,9 @@
         <file>icons/meta-analysis.svg</file>
         <file>icons/sem-latreg.svg</file>
         <file>icons/edit-pencil.png</file>
+        <file>icons/analysis-bain-anova.svg</file>
+        <file>icons/analysis-bain-regression.svg</file>
+        <file>icons/analysis-bain-ttest.svg</file>
+        <file>icons/bain-module.svg</file>
     </qresource>
 </RCC>

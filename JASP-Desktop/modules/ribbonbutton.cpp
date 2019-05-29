@@ -33,7 +33,7 @@ RibbonButton::RibbonButton(QObject *parent, Json::Value descriptionJson, bool is
 		setIsDynamic(		moduleDescription.get("dynamic",			false).asBool()		); //It should never be dynamic here right?
 		setIsCommon(		isCommon														);
 		setTitle(			moduleDescription.get("title",				"???").asString()	);
-		setModuleName(		title()															);
+		setModuleName(		moduleDescription.get("name",				title()).asString()	);
 		setIconSource(QString::fromStdString(moduleDescription.get("icon", "").asString()));
 
 		for(Json::Value & menuEntry : descriptionJson["menu"])
