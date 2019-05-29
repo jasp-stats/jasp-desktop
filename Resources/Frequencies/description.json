@@ -38,7 +38,7 @@
 			"function":	"BinomialTestBayesian"
 		},
 		{
-			"title":	"Bayesian A/B Test",
+			"title":	"Bayesian A/B Test (Beta)",
 			"function": "ABTestBayesian"
 		},
 		{
