@@ -44,6 +44,9 @@ void DataSetPackage::reset()
 
 void DataSetPackage::setModified(bool value)
 {
+	if (!_isLoaded)
+		value = false;
+
 	if (value != _isModified)
 	{
 		_isModified = value;
