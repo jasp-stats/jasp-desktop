@@ -109,8 +109,6 @@ FocusScope
 						anchors.fill:		parent
 						onClicked:
 						{
-							// if(columnIndex > -1)
-							// 	popupLoader.open()
 							var functionCall      = function (index)
 							{
 								// FIXME:
@@ -119,14 +117,22 @@ FocusScope
 								if (columnType !== undefined)
 									colIcon.setColumnType(columnType);
 
-								customMenu.remove()
+								customMenu.hide()
 							}
 							var props = {
 								"model"			: columnTypeModel,
 								"functionCall"	: functionCall
 							};
 
-							customMenu.showMenu(colIcon, props, colIcon.width / 2, colIcon.height);
+							customMenu.scrollOri.x	= dataTableView.contentX;
+							customMenu.scrollOri.y	= 0;
+
+							customMenu.showMenu(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
+
+							customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
+							customMenu.menuScroll.y	= 0;
+							customMenu.menuMinIsMin	= true
+							customMenu.menuMaxPos.x	= dataTableView.width + dataTableView.x
 						}
 
 						hoverEnabled:		true

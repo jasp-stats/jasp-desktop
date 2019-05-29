@@ -21,6 +21,11 @@ FocusScope
 	property alias font:					theView.font
 	property alias rowNumberWidth:			theView.rowNumberWidth
 
+	readonly property alias contentX:		myFlickable.contentX
+	readonly property alias contentY:		myFlickable.contentY
+	readonly property alias contentWidth:	myFlickable.contentWidth
+	readonly property alias contentHeight:	myFlickable.contentHeight
+
 	JASPMouseAreaToolTipped
 	{
 		id:					datasetMouseArea

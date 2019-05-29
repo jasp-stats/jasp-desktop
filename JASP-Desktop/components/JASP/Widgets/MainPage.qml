@@ -45,7 +45,7 @@ Item
 		width:			parent.width + hackySplitHandlerHideWidth
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
-		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidth : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
+		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
 		property bool shouldShowInputOutput:		(!mainWindow.progressBarVisible && !mainWindow.dataAvailable) || mainWindow.analysesAvailable
 
 		DataPanel
@@ -161,7 +161,7 @@ Item
 					bottom:				parent.bottom
 				}
 
-				width: giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
+				width:					giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
 
 				url:					resultsJsInterface.resultsPageUrl
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
@@ -205,7 +205,7 @@ Item
 							var name		= customMenu.props['model'].getName(index);
 							var jsfunction	= customMenu.props['model'].getJSFunction(index);
 							
-							customMenu.remove()
+							customMenu.hide()
 
 							if (name === 'hasRefreshAllAnalyses') {
 								resultsJsInterface.refreshAllAnalyses();
@@ -242,6 +242,11 @@ Item
 						};
 
 						customMenu.showMenu(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
+
+						customMenu.scrollOri		= resultsView.scrollPosition;
+						customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x); });
+						customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y); });
+						customMenu.menuMinIsMin		= true
 					}
 
 					function updateUserData()						{ resultsJsInterface.updateUserData()						}

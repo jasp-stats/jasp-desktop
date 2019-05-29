@@ -26,9 +26,9 @@ Rectangle
 {
 	id				: ribbonButton
 	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
-	height			: Theme.ribbonButtonHeight  // backgroundImage.height + innerText.height
+	height			: Theme.ribbonButtonHeight
 	color			: showPressed ? Theme.grayLighter : "transparent"
-	border.color	: myMenuOpen ? Theme.grayDarker : Theme.gray
+	border.color	: myMenuOpen  ? Theme.grayDarker  : Theme.gray
 	border.width	: showPressed ? 1 : 0
 	z				: 1
 	//radius			: 4
@@ -115,7 +115,7 @@ Rectangle
 				modulesMenu.opened		= false;
 				mouse.accepted			= false;
 				
-				customMenu.remove()
+				customMenu.hide()
 
 				if (ribbonButton.menu.rowCount() === 1)
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
@@ -126,7 +126,7 @@ Rectangle
 						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 						ribbonModel.analysisClickedSignal(analysisName, analysisTitle, ribbonButton.moduleName)
-						customMenu.remove();
+						customMenu.hide();
 					}
 
 					var props = {
@@ -135,7 +135,7 @@ Rectangle
 						"hasIcons"		: ribbonButton.menu.hasIcons()
 					};
 
-					customMenu.showMenu(ribbonButton, props, 1 , ribbonButton.height);
+					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
 
 					myMenuOpen = Qt.binding(function() { return customMenu.visible; });
 				}

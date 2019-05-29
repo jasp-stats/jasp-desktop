@@ -256,13 +256,24 @@ int main(int argc, char *argv[])
 #endif
 			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
-			int exitCode = a.exec();
-			JASPTIMER_STOP("JASP");
-			JASPTIMER_PRINTALL();
-			return exitCode;
+			try
+			{
+				int exitCode = a.exec();
+				JASPTIMER_STOP("JASP");
+				JASPTIMER_PRINTALL();
+				return exitCode;
+			}
+			catch(std::exception & e)
+			{
+				std::cerr << "Uncaught std::exception! Was: " << e.what() << "\n";
+				return -1;
+			}
+			catch(...)
+			{
+				std::cerr << "Uncaught ???\n";
+				return -1;
+			}
 		}
-	//	catch(std::exception & e) { std::cerr << "Expection ocurred: " << e.what() << std::endl;  return -1; }
-	//	catch(...) { return -1; }
 	else
 	{
 		int		failures	= 0,
