@@ -1126,8 +1126,7 @@ void MainWindow::analysesCountChangedHandler()
 
 void MainWindow::setPackageModified()
 {
-	//if (_package->isLoaded())
-		_package->setModified(true);
+	_package->setModified(true);
 }
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
