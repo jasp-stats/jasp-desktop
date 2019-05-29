@@ -359,30 +359,41 @@ ABTestBayesian <- function(
     orNotEqualTo1Prob  <- options$orNotEqualTo1Prob / sum_logor
 
     output.rows <- list()
+    rowCount    <- 0
 
-    output.rows[[1]] <- list(
-        "Models" = "Log odds ratio = 0",
-        "BF" = .clean(1.00),
-        "P(M|data)" = ab_obj$post_prob[["H0"]],
-        "P(M)" = .clean(orEqualTo1Prob)
-    )
+    if (orEqualTo1Prob > 0) {
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
+            "Models" = "Log odds ratio = 0",
+            "BF" = .clean(1.00),
+            "P(M|data)" = ab_obj$post_prob[["H0"]],
+            "P(M)" = .clean(orEqualTo1Prob)
+        )
+    }
 
-    output.rows[[2]] <- list(
-        "Models" = "Log odds ratio > 0",
-        "BF" = .clean(ab_obj$bf[["bfplus0"]]),
-        "P(M|data)" = ab_obj$post_prob[["H+"]],
-        "P(M)" = .clean(orGreaterThan1Prob)
-    )
+    if (orGreaterThan1Prob > 0) {
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
+            "Models" = "Log odds ratio > 0",
+            "BF" = .clean(ab_obj$bf[["bfplus0"]]),
+            "P(M|data)" = ab_obj$post_prob[["H+"]],
+            "P(M)" = .clean(orGreaterThan1Prob)
+        )
+    }
 
-    output.rows[[3]] <- list(
-        "Models" = "Log odds ratio < 0",
-        "BF" = .clean(ab_obj$bf[["bfminus0"]]),
-        "P(M|data)" = ab_obj$post_prob[["H-"]],
-        "P(M)" = .clean(orLessThan1Prob)
-    )
+    if (orLessThan1Prob > 0) {
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
+            "Models" = "Log odds ratio < 0",
+            "BF" = .clean(ab_obj$bf[["bfminus0"]]),
+            "P(M|data)" = ab_obj$post_prob[["H-"]],
+            "P(M)" = .clean(orLessThan1Prob)
+        )
+    }
 
     if (orNotEqualTo1Prob > 0) {
-        output.rows[[4]] <- list(
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
             "Models" = "Log odds ratio ≠ 0",
             "BF" = .clean(ab_obj$bf[["bf10"]]),
             "P(M|data)" = ab_obj$post_prob[["H1"]],
@@ -391,34 +402,23 @@ ABTestBayesian <- function(
     }
 
     if (options$bayesFactorOrder == "bestModelTop") {
-        ordered <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
 
+        ordered       <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
         best_model_bf <- ordered[[1]]$BF
-        ordered[[1]]$BF <- .clean(ordered[[1]]$BF / best_model_bf)
-        ordered[[2]]$BF <- .clean(ordered[[2]]$BF / best_model_bf)
-        ordered[[3]]$BF <- .clean(ordered[[3]]$BF / best_model_bf)
-        if (orNotEqualTo1Prob > 0) {
-            ordered[[4]]$BF <- .clean(ordered[[4]]$BF / best_model_bf)
-        }
 
-        output.rows <- ordered
+        output.rows   <- list()
+        for (r in 1:rowCount) {
+            ordered[[r]]$BF  <-.clean(ordered[[r]]$BF / best_model_bf)
+        }
+        output.rows   <- ordered
+
     }
 
-    if (options$bayesFactorType == "BF01") {
-        output.rows[[1]]$BF <-.clean(1 / output.rows[[1]]$BF)
-        output.rows[[2]]$BF <-.clean(1 / output.rows[[2]]$BF)
-        output.rows[[3]]$BF <-.clean(1 / output.rows[[3]]$BF)
-        if (orNotEqualTo1Prob > 0) {
-            output.rows[[4]]$BF <-.clean(1 / output.rows[[4]]$BF)
-        }
-
-        # output.rows <- lapply(output.rows, function(x) {x$BF <- .clean(1 / x$BF); return(x)})
-    } else if (options$bayesFactorType == "LogBF10") {
-        output.rows[[1]]$BF <-.clean(base::log(output.rows[[1]]$BF))
-        output.rows[[2]]$BF <-.clean(base::log(output.rows[[2]]$BF))
-        output.rows[[3]]$BF <-.clean(base::log(output.rows[[3]]$BF))
-        if (orNotEqualTo1Prob > 0) {
-            output.rows[[4]]$BF <-.clean(base::log(output.rows[[4]]$BF))
+    for (r in 1:rowCount) {
+        if (options$bayesFactorType == "BF01") {
+            output.rows[[r]]$BF <- .clean(1 / output.rows[[r]]$BF)
+        } else if (options$bayesFactorType == "LogBF10") {
+            output.rows[[r]]$BF <- .clean(base::log(output.rows[[r]]$BF))
         }
     }
 

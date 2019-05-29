@@ -50,14 +50,10 @@ Form
 			DoubleField { label: qsTr("σ:"); name: "normal_sigma";	defaultValue: 1 }
 		}
 
-		Group
+		CheckBox
 		{
-			title	: qsTr("Data")
-			CheckBox
-			{
-				name	: "descriptives";
-				label	: qsTr("Descriptives")
-			}
+			name	: "descriptives";
+			label	: qsTr("Descriptives")
 		}
 	}
 
