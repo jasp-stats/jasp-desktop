@@ -405,6 +405,10 @@
     priorInclProb <- tmp[["priorInclProb"]]
     postInclProb  <- tmp[["postInclProb"]]
     bfIncl        <- tmp[["bfIncl"]]
+    
+    # show BFinclusion for nuisance predictors as 1, rather than NaN
+    priorInclIs1 <- is.nan(bfIncl) & abs(1 - priorInclProb) <= sqrt(.Machine$double.eps)
+    bfIncl[priorInclIs1] <- 1
 
   }
   

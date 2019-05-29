@@ -836,13 +836,16 @@ RegressionLinearBayesian <- function (
       storage.mode(inclMat) <- "logical"
       rownames(terms) <- colnames(terms)
       effectNames <- colnames(terms)
-      
+
       tmp <- .BANOVAcomputMatchedInclusion(
         effectNames, inclMat, terms, priorModelProbs, postModelProbs
       )
       probne0     <- c(1 ,tmp[["postInclProb"]])
       priorProbs  <- c(1, tmp[["priorInclProb"]])
       BFinclusion <- c(1, tmp[["bfIncl"]])
+      # show BFinclusion for nuisance predictors as 1, rather than NaN
+      priorInclIs1 <- is.nan(BFinclusion) & abs(1 - priorProbs) <= sqrt(.Machine$double.eps)
+      BFinclusion[priorInclIs1] <- 1
       
     }
     
