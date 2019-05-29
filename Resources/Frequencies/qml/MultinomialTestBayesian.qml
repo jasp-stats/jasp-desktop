@@ -53,6 +53,7 @@ Form
 			width	: form.availableWidth - hypothesisGroup.leftPadding
 			visible	: expectedProbs.checked
 			source	: "factor"
+			maxNumHypotheses	: 5
 		}
 	}
 
