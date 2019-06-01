@@ -38,6 +38,8 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
   - Minimum: Minimum value of the data points.
   - Maximum: Maximum value of the data points.
   - S.E. Mean: Standard error of the mean.
+  - IQR: Interquartile range
+  - MAD: Median absolute deviation
 - Distribution:
   - Skewness: Skew of the distribution of the data points.
   - Kurtosis: Kurtosis of the distribution of the data points.

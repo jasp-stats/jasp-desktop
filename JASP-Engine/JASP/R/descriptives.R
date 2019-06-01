@@ -135,7 +135,7 @@ Descriptives <- function(jaspResults, dataset, options)
   stats$position          <- 1
 
   stats$dependOn(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
-    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
+    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "iqr", "mad","minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
 
   if (wantsSplit)
   {
@@ -163,6 +163,8 @@ Descriptives <- function(jaspResults, dataset, options)
   if (options$range)                stats$addColumnInfo(name="Range",                       type="number")
   if (options$minimum)              stats$addColumnInfo(name="Minimum",                     type="number")
   if (options$maximum)              stats$addColumnInfo(name="Maximum",                     type="number")
+  if (options$mad)                  stats$addColumnInfo(name="MAD",                         type="number")
+  if (options$iqr)                  stats$addColumnInfo(name="IQR",                         type="number")
   if (options$sum)                  stats$addColumnInfo(name="Sum",                         type="number")
 
   if (options$percentileValuesQuartiles) {
@@ -240,7 +242,7 @@ Descriptives <- function(jaspResults, dataset, options)
   resultsCol[["Valid"]]   <- length(na.omitted)
   resultsCol[["Missing"]] <- rows - length(na.omitted)
 
-  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum))
+  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$iqr || options$mad || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum))
     shouldAddNominalTextFootnote <- TRUE
 
   resultsCol[["Mean"]]                    <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mean,              na.omitted, mean)
@@ -252,6 +254,8 @@ Descriptives <- function(jaspResults, dataset, options)
   resultsCol[["Std. Deviation"]]          <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardDeviation, na.omitted, sd)
   resultsCol[["Std. Error of Mean"]]      <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardErrorMean, na.omitted, function(param) { sd(param)/sqrt(length(param))} )
   resultsCol[["Variance"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$variance,          na.omitted, var)
+  resultsCol[["IQR"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$iqr,               na.omitted, .descriptivesIqr)
+  resultsCol[["MAD"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mad,               na.omitted, mad)
   resultsCol[["Kurtosis"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesKurtosis)
   resultsCol[["Std. Error of Kurtosis"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesSEK)
   resultsCol[["Skewness"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSkewness)
@@ -840,10 +844,10 @@ Descriptives <- function(jaspResults, dataset, options)
     for (level in levels(plotDat$group))
     {
       v         <- plotDat[plotDat$group == level,]$y
-      quantiles <- quantile(v, probs=c(0.25,0.75))
-      IQR       <- quantiles[2] - quantiles[1]
+      quantiles <- quantile(v, probs=c(0.25,0.75), type=6)
+      obsIQR       <- quantiles[2] - quantiles[1]
 
-      plotDat[plotDat$group == level,]$outlier <- v < (quantiles[1]-1.5*IQR) | v > (quantiles[2]+1.5*IQR)
+      plotDat[plotDat$group == level,]$outlier <- v < (quantiles[1]-1.5*obsIQR) | v > (quantiles[2]+1.5*obsIQR)
     }
 
     plotDat$label <- ifelse(plotDat$outlier, row.names(plotDat),"")
@@ -1137,6 +1141,11 @@ Descriptives <- function(jaspResults, dataset, options)
   kurtosis <- a * b + c
 
   return(kurtosis)
+}
+
+.descriptivesIqr <- function(x) {
+  # Interquartile range based on the stats package, type 6 is used by Minitab and SPSS, see quartile
+  return(stats::IQR(x=x, type=6))
 }
 
 .descriptivesSkewness <- function(x) {
