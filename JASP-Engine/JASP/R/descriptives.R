@@ -844,7 +844,7 @@ Descriptives <- function(jaspResults, dataset, options)
     for (level in levels(plotDat$group))
     {
       v         <- plotDat[plotDat$group == level,]$y
-      quantiles <- quantile(v, probs=c(0.25,0.75))
+      quantiles <- quantile(v, probs=c(0.25,0.75), type=6)
       obsIQR       <- quantiles[2] - quantiles[1]
 
       plotDat[plotDat$group == level,]$outlier <- v < (quantiles[1]-1.5*obsIQR) | v > (quantiles[2]+1.5*obsIQR)
