@@ -79,7 +79,7 @@ Form
 				IntegerField
 				{
 					name: "percentileValuesEqualGroupsNo"
-					min: 1
+                    min: 2
 					max: 1000
 					defaultValue: 4
 					afterLabel: qsTr(" equal groups")
@@ -111,14 +111,14 @@ Form
 		{
 			title: qsTr("Dispersion")
 			columns: 2
-            CheckBox { name: "standardDeviation";	label: qsTr("Std.deviation");   checked: true	}
-            CheckBox { name: "minimum";				label: qsTr("Minimum");         checked: true	}
-            CheckBox { name: "variance";			label: qsTr("Variance")             			}
-            CheckBox { name: "maximum";				label: qsTr("Maximum");         checked: true	}
-            CheckBox { name: "range";				label: qsTr("Range")                    		}
             CheckBox { name: "standardErrorMean";	label: qsTr("S. E. mean")                   	}
-            CheckBox { name: "iqr";                 label: qsTr("IQR")                              }
+            CheckBox { name: "standardDeviation";	label: qsTr("Std.deviation");   checked: true	}
             CheckBox { name: "mad";                 label: qsTr("MAD")                              }
+            CheckBox { name: "iqr";                 label: qsTr("IQR")                              }
+            CheckBox { name: "variance";			label: qsTr("Variance")             			}
+            CheckBox { name: "range";				label: qsTr("Range")                    		}
+            CheckBox { name: "minimum";				label: qsTr("Minimum");         checked: true	}
+            CheckBox { name: "maximum";				label: qsTr("Maximum");         checked: true	}
 		}
 
 		Group
