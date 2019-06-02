@@ -6,7 +6,7 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
 ### Input
 -------
 
-#### Assignment Box 
+#### Assignment Box
 - Variables: All variables of interest.
 - Split: Can be split by a categorical variable such as experimental condition.
 - Displays a frequency table for each variable.
@@ -38,7 +38,7 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
   - Variance: Variance of the data points.
   - Range: Range of the data points; maximum - minimum.
   - Minimum: Minimum value of the data points.
-  - Maximum: Maximum value of the data points. 
+  - Maximum: Maximum value of the data points.
 - Distribution:
   - Skewness: Skewness of the distribution of the data points.
   - Kurtosis: Kurtosis of the distribution of the data points.
@@ -104,4 +104,3 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
 - grid
 - stats
 - stringr
-
