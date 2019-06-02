@@ -154,6 +154,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (options$shapiro) {            stats$addColumnInfo(name="Shapiro-Wilk",                type="number")
                                     stats$addColumnInfo(name="P-value of Shapiro-Wilk",     type="pvalue") }
   if (options$range)                stats$addColumnInfo(name="Range",                       type="number")
+  if (options$mad)                  stats$addColumnInfo(name="MAD",                         type="number")
+  if (options$iqr)                  stats$addColumnInfo(name="IQR",                         type="number")
   if (options$minimum)              stats$addColumnInfo(name="Minimum",                     type="number")
   if (options$maximum)              stats$addColumnInfo(name="Maximum",                     type="number")
   if (options$sum)                  stats$addColumnInfo(name="Sum",                         type="number")
