@@ -51,24 +51,26 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
 - Valid: Number of valid cases.
 - Missing: Number of missing values.
 - Mean: Arithmetic mean of the data points.
+- Std. Error of Mean: Standard error of the mean.
+- Median: Median of the data points.
+- Mode: Mode of the data points.
 - Std. Deviation: Standard deviation of the data points.
+- Variance: Variance of the data points.
+- Skewness: Skew of the distribution of the data points.
+- Std. Error of Skewness: Standard error of the skewness.
+- Kurtosis: Kurtosis of the distribution of the data points.
+- Std. Error of Kurtosis: Standard error of kurtosis.
+- Shapiro-Wilk: Value of the Shapiro-Wilk statistic.
+- P-value of Shapiro-Wilk: p-value of Shapiro-Wilk statistic.
+- Range: Range of the data points.
 - Minimum: Minimum value of the data points.
 - Maximum: Maximum value of the data points.
-- Std. Error of Mean: Standard error of the mean.
-  - Median: Median of the data points.
-  - Mode: Mode of the data points.
-  - Variance: Variance of the data points.
-  - Skewness: Skew of the distribution of the data points.
-  - Std. Error of Skewness: Standard error of the skewness.
-  - Kurtosis: Kurtosis of the distribution of the data points.
-  - Std. Error of Kurtosis: Standard error of kurtosis.
-  - Shapiro-Wilk: Value of the Shapiro-Wilk statistic.
-  - P-value of Shapiro-Wilk: p-value of Shapiro-Wilk statistic.
-  - Range: Range of the data points.
-  - Sum: Sum of the data points.
-  - Quartiles: 25th, 50th, and 75th quartile of the data points.
-  - Cut points for x equal groups: Cut points that divide the data into x equal groups.
-  - Percentiles: Displays the xth percentiles.
+- MAD: Median absolute deviation
+- IQR: Interquartile range
+- Sum: Sum of the data points.
+- Quartiles: 25th, 50th, and 75th quartile of the data points.
+- Cut points for x equal groups: Cut points that divide the data into x equal groups.
+- Percentiles: Displays the xth percentiles.
 
 #### Distribution Plots
 - For continuous variables, displays a histogram and the fit of a nonparametric density estimator.
