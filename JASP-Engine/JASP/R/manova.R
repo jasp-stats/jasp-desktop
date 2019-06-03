@@ -269,22 +269,32 @@ Manova <- function(jaspResults, dataset, options) {
   df <- (choose(p, 2) + p) * (nlev - 1)
   pval <- pchisq(chiSq, df, lower.tail = FALSE)
   
-  return(list(ChiSq = chiSq, df = df, p = pval, errors = errors))
+  return(list(result = list(ChiSq = chiSq, df = df, p = pval), errors = errors))
 }
 
-.multivariateShapiroComputation <- function(dataset, options) {
-  
+.multivariateShapiroComputation <- function(dataset, options, errors) {
+
   # From mvnormtest
   depData <- t(as.matrix(dataset[, .v(options$dependent)]))
   Us <- apply(depData, 1, mean)
   R <- depData - Us
   
-  M.1 <- solve(R %*% t(R), tol = 1e-18)
-  Rmax <- diag(t(R) %*% M.1 %*% R)
-  C <- M.1 %*% R[, which.max(Rmax)]
-  Z <- t(C) %*% depData
+  tryResult <- try(expr = {
+    M.1 <- solve(R %*% t(R), tol = 1e-200)
+    Rmax <- diag(t(R) %*% M.1 %*% R)
+    C <- M.1 %*% R[, which.max(Rmax)]
+    Z <- t(C) %*% depData
+    
+    result <- stats::shapiro.test(Z)
+  }, silent = TRUE)
   
-  return(stats::shapiro.test(Z))
+  if (grepl(tryResult[[1]], pattern = "singular")) {
+    errors <- "The design matrix is not invertible. This might be due to collinear dependent variables."
+    result <- NULL
+  }
+  
+   
+  return(list(result = result, errors = errors))
 }
 
 .assumptionTables <- function(jaspResults, dataset, options, errors) {
@@ -299,6 +309,8 @@ Manova <- function(jaspResults, dataset, options) {
   if (options$boxMTest) {
     # Make Box test table
     boxResult <- .boxComputation(dataset, options, errors)
+    boxErrors <- boxResult$errors
+    boxResult <- boxResult$result
     boxMTable <- createJaspTable(title = "Box's M-test for Homogeneity of Covariance Matrices")
     
     boxMTable$showSpecifiedColumnsOnly <- TRUE
@@ -307,14 +319,19 @@ Manova <- function(jaspResults, dataset, options) {
     boxMTable$addColumnInfo(name = "df",      title = "df",                     type = "integer")
     boxMTable$addColumnInfo(name = "p",       title = "p",                      type = "pvalue")
     
-    boxMTable$addRows(boxResult[1:3])
+    boxMTable$addRows(boxResult)
+    
+    if (!is.null(boxErrors))
+      boxMTable$setError(boxErrors)
     
     jaspResults[["assumptionsContainer"]][["boxMTable"]] <- boxMTable
   }
   
   if (options$shapiroTest) {
     # Make multivariate normal Shaprio table
-    shapiroResult <- .multivariateShapiroComputation(dataset, options)
+    shapiroResult <- .multivariateShapiroComputation(dataset, options, errors)
+    shapiroErrors <- shapiroResult$errors
+    shapiroResult <- shapiroResult$result
     shapiroTable <- createJaspTable(title = "Shapiro-Wilk Test for Multivariate Normality")
     
     shapiroTable$showSpecifiedColumnsOnly <- TRUE
@@ -323,6 +340,9 @@ Manova <- function(jaspResults, dataset, options) {
     shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
     
     shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
+    
+    if (!is.null(shapiroErrors)) 
+      shapiroTable$setError(shapiroErrors)
     
     jaspResults[["assumptionsContainer"]][["shapiroTable"]] <- shapiroTable
   }
