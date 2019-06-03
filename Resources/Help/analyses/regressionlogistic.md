@@ -49,7 +49,7 @@ For example, if the two-sided *p*-value equals .05, the Vovk-Sellke MPR equals 2
 - Residuals:
   - Casewise diagnostics: Casewise and summarized diagnostics for the residuals.
     - Standard residual > 3: Outliers outside x standard deviations: Shows diagnostics for cases where the absolute value of the standardized residual is larger than x; default is x=3.
-    - Cook's distance > 0 : Shows diagnostics for cases where the value of Cook’s distance is larger than x; default is x = 0. 
+    - Cook's distance > 1 : Shows diagnostics for cases where the value of Cook’s distance is larger than x; default is x = 1. 
     - All: Show diagnostics for all cases. 
  
 - Performance Diagnostics:
