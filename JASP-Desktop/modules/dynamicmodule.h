@@ -121,8 +121,6 @@ public:
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
 
-	static std::string	moduleNameStripNonAlphaNum(std::string folderName);
-
 	static std::string	succesResultString() { return "succes!"; }
 
 	QString installLog()	const	{ return QString::fromStdString(_installLog);	}

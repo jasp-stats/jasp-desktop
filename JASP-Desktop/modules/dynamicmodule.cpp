@@ -39,7 +39,7 @@ const char * standardRIndent = "  ";
 DynamicModule::DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
 {
 	QDir moduleDir(_moduleFolder.absoluteDir());
-	_name = moduleNameStripNonAlphaNum(moduleDir.dirName().toStdString());
+	_name = stringUtils::stripNonAlphaNum(moduleDir.dirName().toStdString());
 	setInstalled(true);
 }
 
@@ -566,22 +566,6 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	}
 }
 
-std::string	DynamicModule::moduleNameStripNonAlphaNum(std::string moduleString)
-{
-	//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
-	moduleString.erase(std::remove_if(moduleString.begin(), moduleString.end(), [](unsigned char x)
-	{
-#ifdef _WIN32
-		return !std::isalnum(x, std::locale());
-#else
-		return !std::isalnum(x);
-#endif
-
-	}), moduleString.end());
-
-	return moduleString;
-}
-
 void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
 {
 	if (_requiredPackages == requiredPackages)
@@ -689,7 +673,7 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 				foundName = moduleDescription.get("name", "").asString();
 
 				if(foundName == "")
-					foundName = moduleNameStripNonAlphaNum(moduleDescription.get("title", "").asString());
+					foundName = stringUtils::stripNonAlphaNum(moduleDescription.get("title", "").asString());
 			}
 			catch(...)
 			{ }
@@ -707,7 +691,7 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 		auto removeExtension = [&](const std::string & ext){
 			if(fileName.size() - ext.size() > 0 && fileName.substr(fileName.size() - ext.size()) == ext)
 			{
-				foundName = moduleNameStripNonAlphaNum(fileName.substr(0, fileName.size() - ext.size()));
+				foundName = stringUtils::stripNonAlphaNum(fileName.substr(0, fileName.size() - ext.size()));
 				return false;
 			}
 			return true;

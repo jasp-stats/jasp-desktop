@@ -1,6 +1,7 @@
 #ifndef STRINGUTILS_H
 #define STRINGUTILS_H
 
+#include <set>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -101,6 +102,22 @@ public:
 		input = replaceBy(input, "&", "&amp;");
 		input = replaceBy(input, "<", "&lt;");
 		input = replaceBy(input, ">", "&gt;");
+
+		return input;
+	}
+
+	inline static std::string stripNonAlphaNum(std::string input)
+	{
+		//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
+		input.erase(std::remove_if(input.begin(), input.end(), [](unsigned char x)
+		{
+	#ifdef _WIN32
+			return !std::isalnum(x, std::locale());
+	#else
+			return !std::isalnum(x);
+	#endif
+
+		}), input.end());
 
 		return input;
 	}

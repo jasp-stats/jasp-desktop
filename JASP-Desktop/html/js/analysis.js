@@ -578,7 +578,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	editTitleClicked: function () {
 		var id = this.model.get("id");
-		this.toolbar.startEdit(function(title) { console.log("CALLBACK!"); jasp.analysisTitleChangedFromResults(id, title); } );
+		this.toolbar.startEdit(function(title) { jasp.analysisTitleChangedInResults(id, title); } );
 	},
 
 	createChild: function (result, status, metaEntry) {

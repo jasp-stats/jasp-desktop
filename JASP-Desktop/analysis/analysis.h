@@ -157,8 +157,8 @@ public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
 	void					setHelpFile(QString helpFile);
-	void					setTitleQ(QString title) { setTitle(title.toStdString()); }
-	void					setTitle(std::string title);
+	void					setTitleQ(QString title);
+	void					setTitle(std::string title) { setTitleQ(QString::fromStdString(title)); }
 
 protected:
 	int						callback(Json::Value results);

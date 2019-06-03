@@ -557,7 +557,7 @@ void Analyses::setVisible(bool visible)
 	}
 }
 
-void Analyses::analysisTitleChangedFromResults(int id, QString title)
+void Analyses::analysisTitleChangedInResults(int id, QString title)
 {
 	Analysis * analysis = get(id);
 
