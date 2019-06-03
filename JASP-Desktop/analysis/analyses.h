@@ -125,7 +125,6 @@ signals:
 	void analysisResultsChanged(		Analysis *	source);
 	void analysisTitleChanged(			Analysis *  source);
 	void analysisOptionsChanged(		Analysis *	source);
-	void analysisNameSelected(			QString		name);
 	void sendRScript(					QString		script, int requestID);
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);

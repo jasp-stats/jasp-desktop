@@ -24,6 +24,29 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
+		NumberAnimation
+		{
+			id: showExpandedForm
+			target: analysesFlickable
+			property: "contentY"; duration: 200; easing.type: Easing.OutQuad; easing.amplitude: 3
+		}
+
+
+		function scrollToForm(formIndex)
+		{
+			var offset = formIndex * (Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing)
+			if (scrollAnalyses.height + offset <= analysesFlickable.contentHeight)
+			{
+				showExpandedForm.to = offset
+				showExpandedForm.start();
+			}
+			else if (analysesFlickable.contentHeight > scrollAnalyses.height)
+			{
+				showExpandedForm.to = analysesFlickable.contentHeight - scrollAnalyses.height
+				showExpandedForm.start();
+			}
+		}
+
 		Rectangle
 		{
 			id:				openCloseButton
@@ -121,6 +144,7 @@ FocusScope
 
 					Repeater
 					{
+						id:			formRepeater
 						model:		analysesModel
 
 						delegate: AnalysisFormExpander
@@ -129,6 +153,7 @@ FocusScope
 							myID:				model.analysisID
 							myAnalysis:         model.analysis
 							formQmlUrl:			model.formPath
+							background:			formsBackground
 						}
 					}
 				}
