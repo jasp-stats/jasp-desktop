@@ -6,7 +6,8 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
-
+#include <locale>
+#include <cctype>
 
 class stringUtils
 {
