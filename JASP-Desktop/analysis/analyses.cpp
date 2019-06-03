@@ -494,11 +494,7 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
 
 	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
-	{
-		int id = _orderedIds[_currentAnalysisIndex];
-		emit analysisNameSelected(QString::fromStdString(get(id)->name()));
 		setVisible(true);
-	}
 	else
 		emit analysesUnselected();
 }

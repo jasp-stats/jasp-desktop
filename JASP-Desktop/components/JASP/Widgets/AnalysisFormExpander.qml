@@ -20,8 +20,10 @@ Rectangle
 	property alias		myID:				loader.myID
 	property alias		myAnalysis:         loader.myAnalysis
 	property string		formQmlUrl:			undefined
+	property var		background:			null
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
 	property bool		imploded:			height == loader.y
+
 
     ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
@@ -30,7 +32,7 @@ Rectangle
 		if(analysesModel.currentAnalysisIndex === myIndex)	analysesModel.unselectAnalysis()
 		else												analysesModel.selectAnalysisAtRow(myIndex);
 	}
-	
+
 	Component.onCompleted: myAnalysis.expandAnalysis.connect(toggleExpander)
 
 	states: [
@@ -44,8 +46,13 @@ Rectangle
 
 	transitions: Transition
 	{
-		NumberAnimation		{ property: "height";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
-		RotationAnimation	{						duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+		NumberAnimation		{ property: "height";	duration: 200 }
+		RotationAnimation	{						duration: 200 }
+		onRunningChanged:
+		{
+			if (!running && expanded && background)
+				background.scrollToForm(myIndex)
+		}
 	}
 	
 	Item
