@@ -102,7 +102,7 @@ JASPControl
 		{
 			id:						control
 			text:					textField.lastValidValue
-			implicitWidth:			textField.fieldWidth
+			implicitWidth:			textField.fieldWidth //+ (textField.useExternalBorder ? 2 * Theme.jaspControlHighlightWidth : 0)
 			font:					Theme.font
 			focus:					true
 			color:					enabled ? Theme.textEnabled : Theme.textDisabled
