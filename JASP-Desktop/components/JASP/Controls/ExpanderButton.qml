@@ -48,7 +48,7 @@ FocusScope
 		State
 		{
 			name: "expanded";	when: expanderWrapper.expanded
-			PropertyChanges {	target: expanderWrapper;	implicitHeight: expanderButton.height + expanderArea.anchors.topMargin + expanderArea.height }
+			PropertyChanges {	target: expanderWrapper;	implicitHeight: expanderButton.height + expanderArea.anchors.topMargin + expanderArea.height + 2 }
 			PropertyChanges {	target: expanderIcon;		rotation: 90;											}
 		}
 	]
