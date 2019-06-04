@@ -1329,7 +1329,7 @@ RegressionLinearBayesian <- function (
 							labels.id = NULL, sub.caption = NULL, ...) {
 	# based on BAS::plot.bas
 
-	show <- rep(FALSE, 4)
+	show <- rep(FALSE, 5)
 	show[which] <- TRUE
 	iid <- 1:id.n
 	if (show[1] || show[5]) {
