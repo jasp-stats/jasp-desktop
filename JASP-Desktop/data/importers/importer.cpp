@@ -143,10 +143,14 @@ void Importer::fillSharedMemoryColumnWithStrings(const std::vector<std::string> 
 	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
 	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
-	auto isOrdinal = [&](){ return ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap) && uniqueValues.size() <= thresholdScale; };
-	auto isScalar  = [&](){ return ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap); };
+	bool valuesAreIntegers = ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap);
+
+	auto isNominalInt = [&](){ return valuesAreIntegers && uniqueValues.size() == 2; };
+	auto isOrdinal = [&](){ return valuesAreIntegers && uniqueValues.size() > 2 && uniqueValues.size() <= thresholdScale; };
+	auto isScalar  = [&]() { return ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap); };
 
 	if		(isOrdinal())					column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, true);
+	else if	(isNominalInt())				column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, false);
 	else if	(isScalar())					column.setColumnAsScale(doubleValues);
 	else				emptyValuesMap =	column.setColumnAsNominalText(values);
 
