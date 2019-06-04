@@ -87,12 +87,13 @@ public:
 
 	inline static std::string replaceBy(std::string input, const std::string & replaceThis, const std::string & withThis)
 	{
-		size_t len = replaceThis.size();
+		size_t	oldLen = replaceThis.size(),
+				newLen = withThis.size();
 
-		for(std::string::size_type curPos = input.find_first_of(replaceThis); curPos + len < input.size() && curPos != std::string::npos; curPos = input.find_first_of(replaceThis, curPos))
+		for(std::string::size_type curPos = input.find_first_of(replaceThis); curPos + oldLen < input.size() && curPos != std::string::npos; curPos = input.find_first_of(replaceThis, curPos))
 		{
-			input.replace(curPos, len, withThis);
-			curPos += len;
+			input.replace(curPos, oldLen, withThis);
+			curPos += newLen;
 		}
 
 		return input;
@@ -121,6 +122,45 @@ public:
 		}), input.end());
 
 		return input;
+	}
+
+	// Blatantly taken from https://stackoverflow.com/a/217605
+
+	// trim from start (in place)
+	static inline void ltrim(std::string &s) {
+		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+			return !std::isspace(ch);
+		}));
+	}
+
+	// trim from end (in place)
+	static inline void rtrim(std::string &s) {
+		s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+			return !std::isspace(ch);
+		}).base(), s.end());
+	}
+
+	// trim from both ends (in place)
+	static inline void trim(std::string &s) {
+		ltrim(s);
+		rtrim(s);
+	}
+
+	// trim from start (copying)
+	static inline std::string ltrim_copy(std::string s) {
+		ltrim(s);
+		return s;
+	}
+
+	// trim from end (copying)
+	static inline std::string rtrim_copy(std::string s) {
+		rtrim(s);
+		return s;
+	}
+
+	static inline bool startsWith(const std::string & line, const std::string & startsWithThis)
+	{
+		return line.size() >= startsWithThis.size() && line.substr(0, startsWithThis.size()) == startsWithThis;
 	}
 
 private:

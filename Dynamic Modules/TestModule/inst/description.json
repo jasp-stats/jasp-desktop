@@ -11,14 +11,14 @@
 		"license":									"Whatever"
 	},
 
-	"requiredPackages":	[],
+	"requiredPackages":	["dbscan"],
 
 	"menu":
 	[
 		{
 			"title":							"Test",
 			"qml":								"test.qml",
-			"function":							"testFunc",
+			"function":							"testFunc"
 		}
 	]
 }
