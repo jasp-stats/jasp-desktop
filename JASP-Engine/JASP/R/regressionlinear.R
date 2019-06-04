@@ -1325,8 +1325,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  bootstrap.regression.result <- list()
 	  
 	  if (perform == "run" && length(list.of.errors) == 0) {
-	    ticks <- options[['regressionCoefficientsBootstrappingReplicates']]*length(lm.model)
-	    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+	    if(length(lm.model) > 0){
+	      ticks <- options[['regressionCoefficientsBootstrappingReplicates']]*length(lm.model)
+	      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+	    }
 	    
 	    for (m in 1:length(lm.model)) {
 	      

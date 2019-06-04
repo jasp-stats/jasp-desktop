@@ -351,8 +351,10 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   testResult <- .jaspGlm(dataset, options, perform = perform, type = "binomial")
   
   if (perform == "run" && !is.null(testResult)) {
-    ticks <- options[['coeffEstimatesBootstrappingReplicates']] * length(testResult)
-    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+    if(length(testResult) > 0){
+      ticks <- options[['coeffEstimatesBootstrappingReplicates']] * length(testResult)
+      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+    }
     rows <- list()
     
     for (i in 1:length(testResult)) {

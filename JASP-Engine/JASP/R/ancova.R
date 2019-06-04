@@ -1481,8 +1481,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   postHocTables <- resultPostHoc <- list()
   
-  ticks <- options[['postHocTestsBootstrappingReplicates']] * length(postHocVariables)
-  progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  if(length(postHocVariables) > 0){
+    ticks <- options[['postHocTestsBootstrappingReplicates']] * length(postHocVariables)
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  }
   
   for (postHocVarIndex in 1:length(postHocVariables)) {
     footnotes <- .newFootnotes()
@@ -2067,8 +2069,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   marginalMeans <- list()
   
-  ticks = options[['marginalMeansBootstrappingReplicates']]*length(terms.base64)
-  progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  if(length(terms.base64) > 0){
+    ticks <- options[['marginalMeansBootstrappingReplicates']]*length(terms.base64)
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  }
   
   for (i in .indices(terms.base64)) {
     

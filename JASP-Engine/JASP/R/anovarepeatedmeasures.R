@@ -3888,8 +3888,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   marginalMeans <- list()
   
-  ticks <- options[['marginalMeansBootstrappingReplicates']] * length(terms.base64)
-  progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  if(length(terms.base64) > 0){
+    ticks <- options[['marginalMeansBootstrappingReplicates']] * length(terms.base64)
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+  }
   
   for (i in .indices(terms.base64)) {
     
