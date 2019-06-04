@@ -23,8 +23,6 @@ AboutModel::AboutModel(QObject *parent) : QObject(parent)
 
 	QString citationUrl = getJaspCitationUrl();
 	setJaspCitationUrl(citationUrl);
-
-
 }
 
 bool AboutModel::visible() const
@@ -66,7 +64,7 @@ QString AboutModel::getJaspDownloadUrl()
 QString AboutModel::getJaspCitation()
 {
 
-	QString citation = "JASP Team (" +  QString::fromStdString(AppInfo::getBuildYear()) + "). JASP (" + getJaspVersion() +")[Compute software].";
+	QString citation = "JASP Team (" +  QString::fromStdString(AppInfo::getBuildYear()) + "). JASP (Version " + getJaspVersion() +") [Computer software].";
 
 	return citation;
 }
