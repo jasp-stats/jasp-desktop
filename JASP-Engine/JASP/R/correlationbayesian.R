@@ -2704,7 +2704,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 							if (col < row) {
 
-								if (options$plotPosteriors) {
+								if (options$plotPosteriors && (options$pearson || options$kendallsTauB)) {
 
 									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
 										.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth, addRho= options$pearson, addTau=options$kendallsTauB)
