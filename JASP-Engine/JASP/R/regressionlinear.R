@@ -1323,13 +1323,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  bootstrap.regression[["schema"]] <- list(fields = fields)
 	  
 	  bootstrap.regression.result <- list()
+	  ci.fails <- FALSE
 	  
 	  if (perform == "run" && length(list.of.errors) == 0) {
 	    if(length(lm.model) > 0){
 	      ticks <- options[['regressionCoefficientsBootstrappingReplicates']]*length(lm.model)
 	      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
 	    }
-	    
 	    for (m in 1:length(lm.model)) {
 	      
 	      if ( class(lm.model[[ m ]]$lm.fit) == "lm" && (! (length(lm.model[[m]]$variables) == 0 && options$includeConstant == FALSE))) {
@@ -1391,9 +1391,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	            bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v])
 	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	            
-	            bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v)
-	            bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
-	            bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
+	            result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v))
+	            if(!inherits(result.bootstrap.ci, "try-error")){
+	              bootstrap.ci <- result.bootstrap.ci
+	            } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+	              ci.fails <- TRUE
+	              bootstrap.ci <- list(bca = rep(NA, 5))
+	            } else{
+	              bootstrap.ci <- result.bootstrap.ci
+	            }
+	            bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- .clean(as.numeric( bootstrap.ci$bca[4] ))
+	            bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- .clean(as.numeric( bootstrap.ci$bca[5] ))
 	            
 	          } else {
 	            
@@ -1488,9 +1496,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	              bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v+var])
 	              bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v+var])
 
-	              bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var)
-	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
-	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
+	              result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var))
+	              if(!inherits(result.bootstrap.ci, "try-error")){
+	                bootstrap.ci <- result.bootstrap.ci
+	              } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+	                ci.fails <- TRUE
+	                bootstrap.ci <- list(bca = rep(NA, 5))
+	              } else{
+	                bootstrap.ci <- result.bootstrap.ci
+	              }
+	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- .clean(as.numeric( bootstrap.ci$bca[4] ))
+	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- .clean(as.numeric( bootstrap.ci$bca[5] ))
 	              
 	              len.reg <- len.reg + 1
 	            }
@@ -1609,6 +1625,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  bootstrap.regression[["data"]] <- bootstrap.regression.result
 	  
 	  footnotes <- .newFootnotes()
+	  if(ci.fails){
+	    .addFootnote(footnotes,
+	                 symbol = "<i>Note.</i>", 
+	                 text = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
+	  }
 	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
 	               text = paste0("Bootstrapping based on ", options[['regressionCoefficientsBootstrappingReplicates']], " replicates."))
 	  .addFootnote(footnotes, symbol = "<em>Note.</em>",

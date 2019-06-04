@@ -349,6 +349,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   out[["schema"]] <- list(fields=fields)
   
   testResult <- .jaspGlm(dataset, options, perform = perform, type = "binomial")
+  ci.fails <- FALSE
   
   if (perform == "run" && !is.null(testResult)) {
     if(length(testResult) > 0){
@@ -394,7 +395,16 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       
       for (j in seq_along(rn)) {
         
-        bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = 0.95, index=j)
+        result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = 0.95, index=j))
+        if(!inherits(result.bootstrap.ci, "try-error")){
+          bootstrap.ci <- result.bootstrap.ci
+        } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+          ci.fails <- TRUE
+          bootstrap.ci <- list(bca = rep(NA, 5))
+        } else{
+          bootstrap.ci <- result.bootstrap.ci
+        }
+        
         row <- list(
           model = as.character(i),
           param = .clean(.formatTerm(rn[j], testResult[[i]])),
@@ -422,6 +432,11 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   }
   
   footnotes <- .newFootnotes()
+  if(ci.fails){
+    .addFootnote(footnotes,
+                 symbol = "<i>Note.</i>", 
+                 text = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
+  }
   .addFootnote(footnotes, symbol = "<em>Note.</em>",
                text = paste0("Bootstrapping based on ", options[['coeffEstimatesBootstrappingReplicates']], " replicates."))
   .addFootnote(footnotes, symbol = "<em>Note.</em>",

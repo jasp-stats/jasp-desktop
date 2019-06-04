@@ -3980,10 +3980,26 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         return("Bootstrapping options have changed")
       
       bootstrapMarginalMeans.summary <- summary(bootstrapMarginalMeans)
+      ci.fails <- FALSE
       bootstrapMarginalMeans.ci <- t(sapply(1:nrow(bootstrapMarginalMeans.summary), function(index){
-        boot::boot.ci(boot.out = bootstrapMarginalMeans, conf = 0.95, type = "bca",
-                      index = index)[['bca']][1,4:5]
+        res <- try(boot::boot.ci(boot.out = bootstrapMarginalMeans, conf = 0.95, type = "bca",
+                                 index = index)[['bca']][1,4:5])
+        if(!inherits(res, "try-error")){
+          return(res)
+        } else if(identical(attr(res, "condition")$message, "estimated adjustment 'a' is NA")){
+          ci.fails <<- TRUE
+          return(c(NA, NA))
+        } else{
+          return(res)
+        }
       }))
+      
+      if(ci.fails){
+        .addFootnote(footnotes,
+                     symbol = "<i>Note.</i>", 
+                     text = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
+      }
+      
       bootstrapMarginalMeans.summary[,"lower.CL"] <- bootstrapMarginalMeans.ci[,1]
       bootstrapMarginalMeans.summary[,"upper.CL"] <- bootstrapMarginalMeans.ci[,2]
 
