@@ -2869,9 +2869,9 @@ editImage <- function(plotName, type, height, width) {
 	if (oldBFtype == newBFtype)
 		return(bfOld)
 
-  if      (oldBFtype == "BF10") { if (newBFtype == "BF01") return(1 / bfOld);  else return(log(bfOld));     }
-  else if (oldBFtype == "BF01") {	if (newBFtype == "BF10") return(1 / bfOld);  else return(log(1 / bfOld)); }
-  else                          {	if (newBFtype == "BF10") return(exp(bfOld)); else return(1 / exp(bfOld));	} # log(BF10)
+  if      (oldBFtype == "BF10") { if (newBFtype == "BF01") { return(1 / bfOld);  } else { return(log(bfOld));     } }
+  else if (oldBFtype == "BF01") {	if (newBFtype == "BF10") { return(1 / bfOld);  } else { return(log(1 / bfOld)); } }
+  else                          {	if (newBFtype == "BF10") { return(exp(bfOld)); } else { return(1 / exp(bfOld));	} } # log(BF10)
 }
 
 postProcessModuleInstall <- function(moduleLibraryPath)
