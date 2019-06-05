@@ -120,10 +120,11 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 			else if(!(startsWith(remoteDebuggingPort) || startsWith(qmlJsDebug))) //Just making sure it isnt something else that should be allowed.
 			{
 				//if it isn't anything else it must be a file to open right?
+				// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
 
 				QFileInfo openMe(QString::fromStdString(args[arg]));
 
-				if(openMe.exists())
+				if(startsWith("https:") || startsWith("http:") || openMe.exists())
 					filePath = args[arg];
 				else
 				{

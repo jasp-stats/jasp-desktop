@@ -46,7 +46,7 @@ Item
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
 		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
-		property bool shouldShowInputOutput:		(!mainWindow.progressBarVisible && !mainWindow.dataAvailable) || mainWindow.analysesAvailable
+		property bool shouldShowInputOutput:		!mainWindow.progressBarVisible //(!mainWindow.progressBarVisible && !mainWindow.dataAvailable) || mainWindow.analysesAvailable
 
 		DataPanel
 		{
