@@ -116,7 +116,7 @@ ABTestBayesian <- function(
         results[["descriptivesTable"]] <- descriptives
     }
 
-    if (options[["plotPriorAndPosterior"]] || options$plotSequentialAnalysis || options[["plotPriorOnly"]]) {
+    if (options[["plotPriorAndPosterior"]] || options[["plotSequentialAnalysis"]] || options[["plotPriorOnly"]]) {
 
         results[["inferentialPlots"]] <- list(title = "Inferential Plots", PosteriorPlot = plotPosterior,
                                               SequentialAnalysisPlot = plotSequentialAnalysis, PriorPlot = plotPrior)
@@ -218,7 +218,7 @@ ABTestBayesian <- function(
     }
 
     if (status$error) {
-        table[["error"]] <- list(errorType = "badData", errorMessage = status$error.message)
+        table[["error"]] <- list(errorType = "badData", errorMessage = status$errorMessage)
     }
 
     return(table)
@@ -266,9 +266,9 @@ ABTestBayesian <- function(
     #   options: a list of user options
     #
     # Return:
-    #   A status object containing "ready", "error", "error.message"
+    #   A status object containing "ready", "error", "errorMessage"
 
-    status <- list(ready = TRUE, error = FALSE, error.message = NULL)
+    status <- list(ready = TRUE, error = FALSE, errorMessage = "")
 
     if (options$n1 == "" || options$n2 == "" || options$y1 == "" || options$y2 == "") {
         status$ready <- FALSE
@@ -314,8 +314,8 @@ ABTestBayesian <- function(
                               posterior = TRUE, nsamples = options$numSamples))
 
     if (isTryError(ab)) {
-        status$ready <- FALSE
         status$error <- TRUE
+        status$errorMessage <- .extractErrorMessage(ab)
     }
 
     return(list(ab_obj = ab, status = status))
@@ -537,7 +537,7 @@ ABTestBayesian <- function(
     title <- "Prior and Posterior"
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
-    if (!(status$ready && perform == "run")) {
+    if (!(status$ready && perform == "run") || status$error) {
         emptyPlot[["title"]]  <- title
         emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)
@@ -664,7 +664,7 @@ ABTestBayesian <- function(
     title <- "Sequential Analysis"
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
-    if (!(status$ready && perform == "run")) {
+    if (!(status$ready && perform == "run") || status$error) {
         emptyPlot[["title"]]  <- title
         emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)

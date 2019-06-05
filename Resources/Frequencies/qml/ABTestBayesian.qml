@@ -106,7 +106,7 @@ Form
 	}
 
 
-	ExpanderButton
+	Section
 	{
 		title	: qsTr("Advanced Options")
 
@@ -127,7 +127,7 @@ Form
 			Group
 			{
 				title: qsTr("Sampling")
-				IntegerField { name: "numSamples"; label: qsTr("No. samples"); defaultValue: 10000; min: 1; fieldWidth: 50; }
+				IntegerField { name: "numSamples"; label: qsTr("No. samples"); defaultValue: 10000; min: 100; fieldWidth: 50; }
 			}
 		}
 	}
