@@ -74,30 +74,27 @@ bool OnlineDataNode::exists()
 
 QString OnlineDataNode::getActionPath() const
 {
-	if (_preparedAction == OnlineDataNode::NewFile)
-		return getUploadPath(_preparedData);
-	else if (_preparedAction == OnlineDataNode::NewFolder)
-		return getNewFolderPath(_preparedData);
-	else if (_preparedAction == OnlineDataNode::Upload)
-		return getUploadPath();
-	else if (_preparedAction == OnlineDataNode::Download)
-		return getDownloadPath();
-	else
-		return "";
+	switch(_preparedAction)
+	{
+	case OnlineDataNode::NewFile:		return getUploadPath(_preparedData);
+	case OnlineDataNode::NewFolder:		return getNewFolderPath(_preparedData);
+	case OnlineDataNode::Upload:		return getUploadPath();
+	case OnlineDataNode::Download:		return getDownloadPath();
+	default:							return "";
+	}
 }
 
 bool OnlineDataNode::beginAction() {
 
 	if (_actionFilter == NULL || _actionFilter->call(this, _actionFilter) == true)
 	{
-		if (_preparedAction == OnlineDataNode::Upload)
-			return beginUploadFile();
-		else if (_preparedAction == OnlineDataNode::NewFile)
-			return beginUploadFile(_preparedData);
-		else if (_preparedAction == OnlineDataNode::Download)
-			return beginDownloadFile();
-		else if (_preparedAction == OnlineDataNode::NewFolder)
-			return beginNewFolder(_preparedData);
+		switch(_preparedAction)
+		{
+		case OnlineDataNode::Upload:	return beginUploadFile();
+		case OnlineDataNode::NewFile:	return beginUploadFile(_preparedData);
+		case OnlineDataNode::Download:	return beginDownloadFile();
+		case OnlineDataNode::NewFolder:	return beginNewFolder(_preparedData);
+		}
 	}
 
 	return false;

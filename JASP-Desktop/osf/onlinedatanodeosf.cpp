@@ -51,17 +51,17 @@ void OnlineDataNodeOSF::processUrl(QUrl url)
 
 	switch (_preparedAction)
 	{
-		case OnlineDataNodeOSF::Upload: progressmsg="Initiating upload of "; break;
-		case OnlineDataNodeOSF::Download: progressmsg="Initiating download of "; break;
-		case OnlineDataNodeOSF::NewFile: progressmsg="Initiating making new file "; break;
-		case OnlineDataNodeOSF::NewFolder: progressmsg="Initiating making new folder  "; break;
-		default:progressmsg="Initiating osf action "; break;
+		case OnlineDataNodeOSF::Upload:		progressmsg="Initiating upload of ";			break;
+		case OnlineDataNodeOSF::Download:	progressmsg="Initiating download of ";			break;
+		case OnlineDataNodeOSF::NewFile:	progressmsg="Initiating making new file ";		break;
+		case OnlineDataNodeOSF::NewFolder:	progressmsg="Initiating making new folder  ";	break;
+		default:							progressmsg="Initiating osf action ";			break;
 	}
 	emit progress(progressmsg + _expectedName, 0);
 
 	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, &QNetworkReply::finished,			this, &OnlineDataNodeOSF::nodeInfoReceived);
+	connect(reply, &QNetworkReply::finished, this, &OnlineDataNodeOSF::nodeInfoReceived);
 }
 
 
@@ -72,16 +72,16 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 	QString progressmsg;
 	QNetworkReply *reply = static_cast<QNetworkReply*>(this->sender());
 
-	bool success = false;
-	bool finished = false;
+	bool	success		= false,
+			finished	= false;
 
 	switch (_preparedAction)
 	{
-		case OnlineDataNodeOSF::Upload: progressmsg="Upload of "; break;
-		case OnlineDataNodeOSF::Download: progressmsg="Download of "; break;
-		case OnlineDataNodeOSF::NewFile: progressmsg="Creating new file "; break;
-		case OnlineDataNodeOSF::NewFolder: progressmsg="Creating new folder "; break;
-		default:progressmsg="Osf action "; break;
+		case OnlineDataNodeOSF::Upload:		progressmsg = "Upload of ";				break;
+		case OnlineDataNodeOSF::Download:	progressmsg = "Download of ";			break;
+		case OnlineDataNodeOSF::NewFile:	progressmsg = "Creating new file ";		break;
+		case OnlineDataNodeOSF::NewFolder:	progressmsg = "Creating new folder ";	break;
+		default:							progressmsg = "Osf action ";			break;
 	}
 
 
