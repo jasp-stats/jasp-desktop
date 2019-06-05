@@ -142,8 +142,6 @@ while(i <= length(orderedPkgs))
     downloaded[[curPkg]]$downloadUrl <- curVer
   })
   
-
-  
   if(!succes)
   {
     print(paste0('Download failed, now trying: "',oldVer,'"'))  
@@ -163,12 +161,41 @@ while(i <= length(orderedPkgs))
   i <- i + 1L
 }
 
-# Now we just need to convert this to a json to use in flatpak
+ind             <- '\t\t'
+buildOptionsEtc <- paste0(
+  ind,'\t"build-options": {\n',ind,'\t\t"append-ld-library-path": "/app/lib;/app/lib64/R/lib",\n',
+  ind,'\t\t"env": {\n',ind,'\t\t\t"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",\n',ind,'\t\t\t"R_HOME": "/app/lib64/R/",\n',ind,'\t\t\t"PREFIX": "/app"\n',ind,'\t\t}\n',ind,'\t},\n',
+  ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'},\n',
+  sep='',
+  collapse='')
 
-ind <- '\t\t'
+
+convertToJsonGitBuild <- function(pkgName, repo, commit)
+{
+  return(paste0(
+    ind,'{\n',ind,'\t"name": "', 
+    pkgName, 
+    '",\n',ind,'\t"buildsystem": "simple",\n',ind,'\t"sources": [\n',ind,'\t\t{\n',ind,'\t\t\t"type": "git",\n',ind,'\t\t\t"url": "', 
+    repo, 
+    '",\n',ind,'\t\t\t"commit": "', 
+    commit,
+    '"\n',ind,'\t\t}\n',ind,'\t],\n',
+    buildOptionsEtc
+    sep='',
+    collapse=''))
+}
+
+specials <- new.env(hash = TRUE, parent = parent.frame())
+specials[['BAS']] <- convertToJsonGitBuild('BAS', 'https://github.com/vandenman/BAS', 'abb73a6ac9d145ced3586434d413130b2f6263e9')
+
+# Now we just need to convert this to a json to use in flatpak
 
 convertToJsonLine <- function(pkgName)
 {
+  # check if something special should be done for this package
+  if(exists(pkgName, where=specials, inherits=FALSE))
+    return(specials[[pkgName]])
+
   pkgUrl <- downloaded[[pkgName]]$downloadUrl
   pkgSha <- downloaded[[pkgName]]$sha256
   return(paste0(
@@ -179,9 +206,7 @@ convertToJsonLine <- function(pkgName)
     '",\n',ind,'\t\t\t"sha256": "', 
     pkgSha,
     '"\n',ind,'\t\t}\n',ind,'\t],\n',
-    ind,'\t"build-options": {\n',ind,'\t\t"append-ld-library-path": "/app/lib;/app/lib64/R/lib",\n',
-    ind,'\t\t"env": {\n',ind,'\t\t\t"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",\n',ind,'\t\t\t"R_HOME": "/app/lib64/R/",\n',ind,'\t\t\t"PREFIX": "/app"\n',ind,'\t\t}\n',ind,'\t},\n',
-    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'},\n',
+    buildOptionsEtc
     sep='',
     collapse=''))
 }
