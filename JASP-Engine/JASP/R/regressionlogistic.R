@@ -352,10 +352,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   ci.fails <- FALSE
   
   if (perform == "run" && !is.null(testResult)) {
-    if(length(testResult) > 0){
-      ticks <- options[['coeffEstimatesBootstrappingReplicates']] * length(testResult)
-      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
-    }
+    ticks <- options[['coeffEstimatesBootstrappingReplicates']]
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
     rows <- list()
     
     for (i in 1:length(testResult)) {
@@ -370,7 +368,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       
       .bootstrapping <- function(data, indices, model.formula, options) {
         pr <- progress()
-        response <- .callbackBootstrapLogisticRegression(pr, options)
+        response <- .optionsDiffCheckBootstrapLogisticRegression(pr, options)
         
         if(response$status == "changed" || response$status == "aborted")
           stop("Bootstrapping options have changed")
@@ -386,7 +384,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
                                           model.formula = formula(testResult[[i]]),
                                           options = options),
                                silent = TRUE)
-      if(inherits(bootstrap.summary, "try-error"))
+      if(inherits(bootstrap.summary, "try-error") &&
+         identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
         return("Bootstrapping options have changed")
       
       bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
@@ -571,7 +570,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   )
 }
 
-.callbackBootstrapLogisticRegression <- function(response, options) {
+.optionsDiffCheckBootstrapLogisticRegression <- function(response, options) {
   if(response$status == "changed"){
     change <- .diff(options, response$options)
     

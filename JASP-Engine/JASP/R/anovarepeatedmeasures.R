@@ -3888,7 +3888,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   marginalMeans <- list()
   
-  if(length(terms.base64) > 0){
+  if(length(terms.base64) > 0 && perform == "run" && status$ready && status$error == FALSE){
     ticks <- options[['marginalMeansBootstrappingReplicates']] * length(terms.base64)
     progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
   }
@@ -3951,7 +3951,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       .bootstrapMarginalMeans <- function(data, indices, options){
         pr <- progress()
-        response <- .callbackBootstrapRMAnovaMarginalMeans(pr, options)
+        response <- .optionsDiffCheckBootstrapRMAnovaMarginalMeans(pr, options)
         
         if(response$status == "changed" || response$status == "aborted")
           stop("Bootstrapping options have changed")
@@ -3976,7 +3976,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       bootstrapMarginalMeans <- try(boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
                                                R = options[["marginalMeansBootstrappingReplicates"]],
                                                options = options), silent = TRUE)
-      if(inherits(bootstrapMarginalMeans, "try-error"))
+      if(inherits(bootstrapMarginalMeans, "try-error") && 
+         identical(attr(bootstrapMarginalMeans, "condition")$message, "Bootstrapping options have changed"))
         return("Bootstrapping options have changed")
       
       bootstrapMarginalMeans.summary <- summary(bootstrapMarginalMeans)
@@ -4099,7 +4100,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   list(result=marginalMeans, status=status, stateMarginalMeansBoots=stateMarginalMeans)
 }
 
-.callbackBootstrapRMAnovaMarginalMeans <- function(response, options) {
+.optionsDiffCheckBootstrapRMAnovaMarginalMeans <- function(response, options) {
   if(response$status == "changed"){
     change <- .diff(options, response$options)
     

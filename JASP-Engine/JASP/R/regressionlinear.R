@@ -1345,7 +1345,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	        
 	        .bootstrapping <- function(data, indices, formula, wlsWeights, options) {
 	          pr <- progress()
-	          response <- .callbackBootstrapLinearRegression(pr, options)
+	          response <- .optionsDiffCheckBootstrapLinearRegression(pr, options)
 	          
 	          if(response$status == "changed" || response$status == "aborted")
 	            stop("Bootstrapping options have changed")
@@ -1367,7 +1367,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	                                        options = options),
 	                                 silent = TRUE
 	                                 )
-	        if(inherits(bootstrap.summary, "try-error"))
+	        if(inherits(bootstrap.summary, "try-error") &&
+	           identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
 	          return()
 	        
 	        bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
@@ -4005,7 +4006,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 }
 
-.callbackBootstrapLinearRegression <- function(response, options) {
+.optionsDiffCheckBootstrapLinearRegression <- function(response, options) {
   if(response$status == "changed"){
     change <- .diff(options, response$options)
     

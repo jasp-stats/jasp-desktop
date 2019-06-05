@@ -1481,7 +1481,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   postHocTables <- resultPostHoc <- list()
   
-  if(length(postHocVariables) > 0){
+  if(length(postHocVariables) > 0 && perform == "run" && status$ready && status$error == FALSE){
     ticks <- options[['postHocTestsBootstrappingReplicates']] * length(postHocVariables)
     progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
   }
@@ -1523,7 +1523,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       # actual bootstrapping
       .bootstrapPostHoc <- function(data, indices, options, thisVarName, postHocVariablesListV, postHocVarIndex){
         pr <- progress()
-        response <- .callbackBootstrapAncovaPostHoc(pr, options)
+        response <- .optionsDiffCheckBootstrapAncovaPostHoc(pr, options)
         
         if(response$status == "changed" || response$status == "aborted")
           stop("Bootstrapping options have changed")
@@ -1557,7 +1557,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                                          postHocVariablesListV = postHocVariablesListV,
                                          postHocVarIndex = postHocVarIndex),
                               silent = TRUE)
-      if(inherits(bootstrapPostHoc, "try-error"))
+      if(inherits(bootstrapPostHoc, "try-error") &&
+         identical(attr(bootstrapPostHoc, "condition")$message, "Bootstrapping options have changed"))
         return("Bootstrapping options have changed")
       
       bootstrapPostHoc.summary <- summary(bootstrapPostHoc)
@@ -2084,7 +2085,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   marginalMeans <- list()
   
-  if(length(terms.base64) > 0){
+  if(length(terms.base64) > 0 && perform == "run" && status$ready && status$error == FALSE){
     ticks <- options[['marginalMeansBootstrappingReplicates']]*length(terms.base64)
     progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
   }
@@ -2142,7 +2143,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       
       .bootstrapMarginalMeans <- function(data, indices, options){
         pr <- progress()
-        response <- .callbackBootstrapAncovaMarginalMeans(pr, options)
+        response <- .optionsDiffCheckBootstrapAncovaMarginalMeans(pr, options)
         
         if(response$status == "changed" || response$status == "aborted")
           stop("Bootstrapping options have changed")
@@ -2167,7 +2168,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       bootstrapMarginalMeans <- try(boot::boot(data = dataset, statistic = .bootstrapMarginalMeans, 
                                                R = options[["marginalMeansBootstrappingReplicates"]],
                                                options = options), silent = TRUE)
-      if(inherits(bootstrapMarginalMeans, "try-error"))
+      if(inherits(bootstrapMarginalMeans, "try-error") &&
+         identical(attr(bootstrapMarginalMeans, "condition")$message, "Bootstrapping options have changed"))
         return("Bootstrapping options have changed")
       
       bootstrapMarginalMeans.summary <- summary(bootstrapMarginalMeans)
@@ -3241,7 +3243,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 
-.callbackBootstrapAncovaPostHoc <- function(response, options) {
+.optionsDiffCheckBootstrapAncovaPostHoc <- function(response, options) {
   if(response$status == "changed"){
     change <- .diff(options, response$options)
     if(is.null(options$covariates)) # because of anova
@@ -3259,7 +3261,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   return(response)
 }
 
-.callbackBootstrapAncovaMarginalMeans <- function(response, options) {
+.optionsDiffCheckBootstrapAncovaMarginalMeans <- function(response, options) {
   if(response$status == "changed"){
     change <- .diff(options, response$options)
     if(is.null(options$covariates)) # because of anova
