@@ -253,6 +253,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
     connect(_analyses,				&Analyses::analysesExportResults,					_fileMenu,				&FileMenu::analysesExportResults							);
+	connect(_analyses,				&Analyses::somethingModified,						[&](){					if(_package) _package->setModified(true); }					);
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -717,20 +718,17 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
-		if (_analyses->count() > 0)
-		{
-			_package->setWaitingForReady();
+		_package->setWaitingForReady();
 
-			getAnalysesUserData();
-			_resultsJsInterface->exportPreviewHTML();
+		getAnalysesUserData();
+		_resultsJsInterface->exportPreviewHTML();
 
-			Json::Value analysesData(Json::objectValue);
+		Json::Value analysesData(Json::objectValue);
 
-			analysesData["analyses"]	= _analyses->asJson();
-			analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
+		analysesData["analyses"]	= _analyses->asJson();
+		analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
 
-			_package->setAnalysesData(analysesData);
-		}
+		_package->setAnalysesData(analysesData);
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 

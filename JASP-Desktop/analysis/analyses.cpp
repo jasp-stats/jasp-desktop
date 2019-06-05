@@ -173,6 +173,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
+	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
 
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
