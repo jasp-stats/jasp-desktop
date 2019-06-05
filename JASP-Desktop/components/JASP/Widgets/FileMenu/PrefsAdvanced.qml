@@ -24,7 +24,8 @@ ScrollView
 			headertext:		"Advanced Preferences"
 			helpfile:		"preferences/prefsadvanced"
 			anchorMe:		false
-			width:			scrollPrefs.width
+			width:			scrollPrefs.width - (2 * Theme.generalMenuMargin)
+			x:				Theme.generalMenuMargin
 		}
 
 		PrefsGroupRect
