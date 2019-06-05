@@ -51,7 +51,10 @@ public:
 					nameRole,
 					idRole};
 
-				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules) {}
+				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules)
+				{
+					connect(this, &Analyses::requestComputedColumnDestruction, this, &Analyses::dataSetChanged, Qt::QueuedConnection);
+				}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
@@ -141,9 +144,9 @@ signals:
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(QString columnName);
 
-
 private slots:
 	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
+
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);

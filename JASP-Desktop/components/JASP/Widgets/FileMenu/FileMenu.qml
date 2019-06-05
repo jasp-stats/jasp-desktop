@@ -10,8 +10,8 @@ FocusScope
 	id: fileMenu
 
 	Keys.onEscapePressed:	fileMenuModel.visible = false;
-	Keys.onDownPressed:		{ actionMenu.forceActiveFocus(); fileMenuModel.actionButtons.selectButtonDown(); }
-	Keys.onUpPressed:		{ actionMenu.forceActiveFocus(); fileMenuModel.actionButtons.selectButtonUp(); }
+	Keys.onDownPressed:		fileMenuModel.actionButtons.selectButtonDown();
+	Keys.onUpPressed:		fileMenuModel.actionButtons.selectButtonUp();
 
 
 	function showToolSeperator(typeRole)
@@ -33,7 +33,7 @@ FocusScope
 	Connections
 	{
 		target:				fileMenuModel
-		onVisibleChanged:	if(fileMenuModel.visible) fileMenu.forceActiveFocus(); else fileMenu.focus = false;
+		onVisibleChanged:	if(fileMenuModel.visible) actionMenu.forceActiveFocus(); else fileMenu.focus = false;
 	}
 
 	Item
@@ -88,9 +88,8 @@ FocusScope
 
 				Repeater
 				{
-					id: actionRepeaterId
-
-					model: fileMenuModel.actionButtons
+					id:		actionRepeaterId
+					model:	fileMenuModel.actionButtons
 
 					Item
 					{
@@ -125,6 +124,7 @@ FocusScope
 								actionMenuButton.forceActiveFocus();
 								fileMenuModel.actionButtons.buttonClicked(typeRole);
 							}
+
 							onClicked:
 							{
 								hoverClicked();
@@ -219,6 +219,7 @@ FocusScope
 							width:					parent.width
 							height:					parent.height
 							anchors.left:			parent.left
+							enabled:				!resourceMenuAnimation.running
 
 							text:					nameRole
 							selected:				selectedRole
