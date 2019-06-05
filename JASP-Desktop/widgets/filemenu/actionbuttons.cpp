@@ -84,25 +84,29 @@ void ActionButtons::setSelectedAction(FileOperation selectedAction)
 	if (_selected == selectedAction)
 		return;
 
-	QModelIndex	oldIndex = index(_opToIndex[_selected]),
-				newIndex = index(_opToIndex[selectedAction]);
+	bool		oldIsNone = _selected		== FileOperation::None,
+				newIsNone = selectedAction	== FileOperation::None;
+
+	QModelIndex	oldIndex = index(oldIsNone ? 0 : _opToIndex[_selected]),
+				newIndex = index(newIsNone ? 0 : _opToIndex[selectedAction]);
 
 	_selected = selectedAction;
 
-	emit dataChanged(oldIndex, oldIndex);
-	emit dataChanged(newIndex, newIndex);
+	if(!oldIsNone)	emit dataChanged(oldIndex, oldIndex);
+	if(!newIsNone)	emit dataChanged(newIndex, newIndex);
 
 	emit selectedActionChanged(_selected);
 }
 
 std::set<ResourceButtons::ButtonType> ActionButtons::resourceButtonsForButton(FileOperation button)
 {
+	if(button == None) return {};
 	return _data[_opToIndex[button]].resourceButtons;
 }
 
 void ActionButtons::selectButtonUp()
 {
-	int idx = _opToIndex[_selected];
+	int idx = _selected == None ? 0 : _opToIndex[_selected];
 
 	for(int move = 1; move < _data.size(); move++)
 	{
@@ -118,7 +122,7 @@ void ActionButtons::selectButtonUp()
 
 void ActionButtons::selectButtonDown()
 {
-	int idx = _opToIndex[_selected];
+	int idx = _selected == None ? _data.size() - 1 : _opToIndex[_selected];
 
 	for(int move = 1; move < _data.size(); move++)
 	{

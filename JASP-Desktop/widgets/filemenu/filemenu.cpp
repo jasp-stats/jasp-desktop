@@ -54,7 +54,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
-	setResourceButtonsVisibleFor(ActionButtons::Open);
+	setResourceButtonsVisibleFor(_fileoperation);
 }
 
 void FileMenu::setFileoperation(ActionButtons::FileOperation fo)
@@ -436,10 +436,7 @@ void FileMenu::setVisible(bool visible)
 	emit visibleChanged(_visible);
 
 	if(!_visible)
-	{
-		_actionButtons->setSelectedAction(ActionButtons::Open);
-		_resourceButtons->setSelectedButton(ResourceButtons::None);
-	}
+		_actionButtons->setSelectedAction(ActionButtons::None);
 }
 
 void FileMenu::showFileOpenMenu()

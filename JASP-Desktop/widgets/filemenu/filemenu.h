@@ -127,7 +127,7 @@ private:
 
 private:
 	OnlineDataManager			*	_odm						= nullptr;
-	CurrentDataFile					*	_currentDataFile			= nullptr;
+	CurrentDataFile				*	_currentDataFile			= nullptr;
 	RecentFiles					*	_recentFiles				= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
@@ -142,7 +142,7 @@ private:
 	Utils::FileType					_currentFileType			= Utils::FileType::unknown;
 	bool							_currentFileReadOnly		= false,
 									_visible					= false;
-	ActionButtons::FileOperation	_fileoperation				= ActionButtons::Open;
+	ActionButtons::FileOperation	_fileoperation				= ActionButtons::None;
 };
 
 #endif // FILEMENU_H

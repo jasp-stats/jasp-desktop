@@ -9,7 +9,9 @@ FocusScope
 {
 	id: fileMenu
 
-	Keys.onEscapePressed: fileMenuModel.visible = false;
+	Keys.onEscapePressed:	fileMenuModel.visible = false;
+	Keys.onDownPressed:		{ actionMenu.forceActiveFocus(); fileMenuModel.actionButtons.selectButtonDown(); }
+	Keys.onUpPressed:		{ actionMenu.forceActiveFocus(); fileMenuModel.actionButtons.selectButtonUp(); }
 
 
 	function showToolSeperator(typeRole)
@@ -31,7 +33,7 @@ FocusScope
 	Connections
 	{
 		target:				fileMenuModel
-		onVisibleChanged:	if(fileMenuModel.visible) actionMenu.forceActiveFocus(); else fileMenu.focus = false;
+		onVisibleChanged:	if(fileMenuModel.visible) fileMenu.forceActiveFocus(); else fileMenu.focus = false;
 	}
 
 	Item
