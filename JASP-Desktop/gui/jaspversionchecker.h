@@ -25,29 +25,25 @@
 #include <QUrl>
 #include <QTimer>
 
-
-class AboutDialog : public QObject
+///One off version checker, will delete itself after downloading!
+class JASPVersionChecker : public QObject
 {
 	Q_OBJECT
-	friend class AboutDialogJsInterface;
 
 public:
-	explicit	AboutDialog(QObject *parent = 0);
-				~AboutDialog();
+	explicit JASPVersionChecker(QObject *parent);
 
-	//void showEvent(QShowEvent * e) override;
+signals:
+	void showDownloadButton(QString downloadUrl);
 	
 private slots:
-	void aboutPageLoaded(bool success);
 	void downloadFinished();
 	void checkForJaspUpdate();
 
 private:
-	QNetworkAccessManager	*m_network_manager;	// make the HTTP GET request
-	QNetworkReply			*m_network_reply;
-	QByteArray				*m_pBuffer;
-	QTimer					*delayedVersionCheck = nullptr;
-	
+	QNetworkReply			*	_networkReply			= nullptr;
+	QString						_url					= "https://jasp-stats.org/jasp-version/";
+	QNetworkAccessManager		_networkManager;
 };
 
 #endif // ABOUTDIALOG_H

@@ -40,7 +40,7 @@
 #include "processinfo.h"
 #include "appinfo.h"
 
-#include "gui/aboutdialog.h"
+#include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
@@ -149,6 +149,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync->start(_preferences->plotPPI());
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
+
+	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
+	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -1584,4 +1587,13 @@ void MainWindow::setWelcomePageVisible(bool welcomePageVisible)
 
 	_welcomePageVisible = welcomePageVisible;
 	emit welcomePageVisibleChanged(_welcomePageVisible);
+}
+
+void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
+{
+	if (_downloadNewJASPUrl == downloadNewJASPUrl)
+		return;
+
+	_downloadNewJASPUrl = downloadNewJASPUrl;
+	emit downloadNewJASPUrlChanged(_downloadNewJASPUrl);
 }

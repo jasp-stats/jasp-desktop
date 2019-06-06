@@ -270,7 +270,6 @@ HEADERS += \
     engine/enginerepresentation.h \
     engine/enginesync.h \
     engine/rscriptstore.h \
-    gui/aboutdialog.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
@@ -369,7 +368,8 @@ HEADERS += \
     widgets/listmodelfactorsform.h \
     utilities/aboutmodel.h \
     modules/ribbonbutton.h \
-    widgets/filemenu/currentdatafile.h
+    widgets/filemenu/currentdatafile.h \
+    gui/jaspversionchecker.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -450,7 +450,6 @@ SOURCES += \
     data/fileevent.cpp \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
-    gui/aboutdialog.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
@@ -547,7 +546,8 @@ SOURCES += \
     widgets/listmodelfactorsform.cpp \
     utilities/aboutmodel.cpp \
     modules/ribbonbutton.cpp \
-    widgets/filemenu/currentdatafile.cpp
+    widgets/filemenu/currentdatafile.cpp \
+    gui/jaspversionchecker.cpp
 
 RESOURCES += \
     html/html.qrc \

@@ -64,6 +64,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
 	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
+	Q_PROPERTY(QString	downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 
 	friend class FileMenu;
 public:
@@ -83,8 +84,10 @@ public:
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
+	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
+
 
 
 public slots:
@@ -122,6 +125,9 @@ public slots:
 
 	void	openFolderExternally(QDir folder);
 	void	showLogFolder();
+
+	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
+
 
 private:
 	void makeConnections();
@@ -162,7 +168,7 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-    void _openFile();
+	void _openFile();
 
 signals:
 	void saveJaspFile();
@@ -183,6 +189,7 @@ signals:
 	void dataAvailableChanged(bool dataAvailable);
 	void analysesAvailableChanged(bool analysesAvailable);
 	void welcomePageVisibleChanged(bool welcomePageVisible);
+	void downloadNewJASPUrlChanged(QString downloadNewJASPUrl);
 
 private slots:
 	void resultsPageLoaded();
@@ -251,7 +258,8 @@ private:
 									_fatalError,
 									_currentFilePath,
 									_progressBarStatus,
-									_windowTitle;
+									_windowTitle,
+									_downloadNewJASPUrl		= "";
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
