@@ -2,10 +2,10 @@
 options(warn=1) #print warnings as they occur
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
+CRAN       <- "https://cran.rstudio.com/"
 
 giveOrderedDependencies <- function()
 {
-  CRAN            <- "https://cran.rstudio.com/"
   available_pkgs  <- available.packages(repos = CRAN)
 
   # Define the base packages.  These are packages which come with R upon install
@@ -249,15 +249,41 @@ createFlatpakJson <- function()
   print(paste0("Expected packages are written as json to ", jsonFile, " and a fresh org.jasp.JASP.json has been generated!"))
 }
 
+getInstalledPackageEnv <- function()
+{
+  installed           <- as.data.frame(installed.packages()[,c(1,3:4)]);
+  rownames(installed) <- NULL
+  installed           <- installed[is.na(installed$Priority),1:2,drop=FALSE]
+  installEnv          <- new.env(hash = TRUE, parent = parent.frame(), size=length(installed))
+    
+  i <- 1L
+  while(i <= nrow(installed))
+  {
+    pkg               <- as.character(installed$Package[[i]])
+    ver               <- as.character(installed$Version[[i]])
+    installEnv[[pkg]] <- ver
+    i                 <- i + 1L
+  }
+  
+  return(installEnv)
+}
+
 installRequiredPackages <- function()
 {
-  orderedPkgs <- giveOrderedDependencies()
-
+  orderedPkgs   <- giveOrderedDependencies()
+  installedPkgs <- getInstalledPackageEnv()
+  
+  
+  
   i <- 1L
   while(i <= length(orderedPkgs))
   {
     pkgName  <- orderedPkgs[[i]]
     version  <- expEnv[[pkgName]]
+    isThere  <- exists(pkgName, where=installedPkgs, inherits=FALSE)
+    
+    if(isThere)
+      isThere <- installedPkgs[[pkgName]] == version
 
     print(paste0('Getting ready to install ',pkgName,' ',version))
     
@@ -269,8 +295,10 @@ installRequiredPackages <- function()
       else
         stop(paste0("Found a special that I cannot handle! (",specialDef,")"))
     }
+    else if(isThere)
+      print('Already installed!')
     else
-      devtools::install_version(package=pkgName, version=version)  
+      devtools::install_version(package=pkgName, version=version, repos=CRAN, upgrade='never')  
       
     i <- i + 1L
   }
@@ -278,3 +306,5 @@ installRequiredPackages <- function()
 
   print('All packages installed!')
 }
+
+print('Run createFlatpakJson() to transform the expected packages of JASP into a fresh org.jasp.JASP.json for flatpak.\nOr run installRequiredPackages() as administrator to get you local installed version of R up to speed with the same packages.')
