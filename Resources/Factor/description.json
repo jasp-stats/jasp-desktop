@@ -3,7 +3,7 @@
 	{
 		"title"          : "Factor",
 		"icon"			 : "analysis-classical-sem.svg",
-		"description"    : "This module offers the Principal Component and Exploratory Factor analyses",
+		"description"    : "This module offers the Principal Component, Confirmatory and Exploratory Factor analyses",
 		"version"        : 1,
 		"author"         : "JASP Team",
 		"maintainer"     : "JASP Team <jasp-stats.org>",
@@ -21,6 +21,10 @@
 		{
 			"title":	"Exploratory Factor Analysis",
 			"function":	"ExploratoryFactorAnalysis"
+		},
+		{
+			"title":	"Confirmatory Factor Analysis",
+			"function":	"ConfirmatoryFactorAnalysis"
 		}
 	]
 }
