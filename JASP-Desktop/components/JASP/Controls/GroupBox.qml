@@ -78,9 +78,16 @@ Rectangle {
 		id: alignTextFieldSignal
 		target: null
 		enabled: false
-		onXChanged: _alignTextField();
+		onXChanged: alignTextFieldTimer.restart()
 	}
 
+	Timer
+	{
+		// The alignment should be done when the scaling of the TextField's are done
+		id: alignTextFieldTimer
+		interval: 50
+		onTriggered: _alignTextField()
+	}
     
 	Component.onCompleted:
 	{
@@ -119,11 +126,15 @@ Rectangle {
 				}
             }
             
-			alignTextFieldSignal.target = longestControl;
+			if (!alignTextFieldSignal.target)
+				alignTextFieldSignal.target = longestControl;
 			for (i = 0; i < _allTextFields.length; i++)
 			{
 				if (_allTextFields[i].control !== longestControl)
+					// Cannot use binding here, since control.x depends on the controlXOffset,
+					// that would generate a binding loop
 					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].control.x);
+
 			}
 			alignTextFieldSignal.enabled = true;
 		}
