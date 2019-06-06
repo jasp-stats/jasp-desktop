@@ -70,7 +70,7 @@ ScrollView
 			CheckBox
 			{
 				id:					rememberModulesSelected
-				label:				qsTr("Remember Modules Enabled")
+				label:				qsTr("Remember Enabled Modules")
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")

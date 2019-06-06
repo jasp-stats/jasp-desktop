@@ -22,7 +22,7 @@ You can also use keyboard shortcuts instead:
 This speed determines, in pixels per second, what the maximum flick / scroll speed is of certain moving elements in JASP.
 Should you find that scrolling in the options goes too fast, or too slow, you can change this.
 
-### Remember Modules Enabled
+### Remember Enabled Modules
 If you've enabled this option then JASP will remember which modules are activated and make sure they remain that way even when you close JASP. So supposing `Summary Statistics` was enabled and JASP closes then after reopening JASP it will be enabled immediately.
 
 
