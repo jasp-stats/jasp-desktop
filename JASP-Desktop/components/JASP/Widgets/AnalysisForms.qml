@@ -72,8 +72,8 @@ FocusScope
 					//topMargin:		-1
 					//bottomMargin:	-1
 				}
-				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data") : ""
-				toolTipArrow:			analysesModel.visible		? "Hide input options" : "Show input options"
+				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Resize data/results")  : qsTr("Drag to show data")) : ""
+				toolTipArrow:			analysesModel.visible		? qsTr("Hide input options") : qsTr("Show input options")
 				dragEnabled:			mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
 		}
