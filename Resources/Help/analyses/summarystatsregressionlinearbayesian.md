@@ -49,3 +49,8 @@ Bayesian Linear regression allows you to model a linear relationship between one
 - Rouder, J. N., & Morey, R. D. (2012). Default Bayes factors for model selection in regression. *Multivariate Behavioral Research, 47*, 877-903.
 - Zellner, A., & Siow, A. (1980) Posterior odds ratios for selected regression hypotheses. In J. M. Bernardo, D. V. Lindley, & A. F. M. Smith (Eds), *Bayesian statistics: Proceedings of the first international meeting held in Valencia (Spain)* (pp. 585-603). University of Valencia.
 - Perception and Cognition Lab (University of Missouri): Bayes factor calculators. http://pcl.missouri.edu/bayesfactor
+
+### R Packages
+---
+- BayesFactor
+- stats

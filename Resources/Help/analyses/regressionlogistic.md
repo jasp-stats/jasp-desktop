@@ -160,4 +160,11 @@ Squared Pearson residuals plot:
 
 ### R Packages
 -------
-hmeasure
+- boot
+- ggplot2
+- hmeasure
+- JASPgraphs
+- MASS
+- matrixStats
+- mdscore
+- stats

@@ -52,4 +52,6 @@ The descriptive plot displays the frequency of the reported counts and the corre
 
 ### R Packages
 ---
+- ggplot2
+- JASPgraphs
 - stats

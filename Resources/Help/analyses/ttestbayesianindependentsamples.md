@@ -93,4 +93,7 @@ The independent samples t-test allows the user to estimate the effect size and t
 ### R Packages
 ---
 - BayesFactor
+- ggplot2
+- JASPgraphs
 - logspline
+- stats

@@ -49,3 +49,10 @@ The Bayesian Correlation Pairs allows you to test the null hypothesis that the p
 - Rouder, J. N., & Morey R. D. (2012). Default Bayes factors for model selection in regression. *Multivariate Behavioral Research, 47*, 877-903.
 - Wetzels, R., & Wagenmakers, E.-J. (2012). A default Bayesian hypothesis test for correlations and partial correlations. *Psychonomic Bulletin & Review, 19*, 1057-1064.
 - van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (in press). Bayesian Inference for Kendall's Rank Correlation Coefficient. *The American Statistician*.
+
+### R Packages
+---
+- hypergeo
+- ggplot2
+- JASPgraphs
+- stats

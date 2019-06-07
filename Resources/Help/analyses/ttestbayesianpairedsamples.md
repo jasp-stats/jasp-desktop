@@ -87,4 +87,8 @@ The paired samples t-test allows you to estimate the effect size  and test the n
 
 ### R-packages 
 ---
-- BayesFactor 
+- BayesFactor
+- ggplot2
+- JASPgraphs
+- logspline
+- stats
