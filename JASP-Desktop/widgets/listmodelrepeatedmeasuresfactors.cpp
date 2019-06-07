@@ -251,7 +251,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 	Factor& factor = _factors[row];
 	int		factorIndex = _getIndex(factor);
 	
-	if (factor.value == val || (factor.isVirtual && val.isEmpty()))
+	if ((!factor.isVirtual && factor.value == val) || (factor.isVirtual && val.isEmpty()))
 		return;
 	
 	if (val.isEmpty() && !factor.isVirtual)
