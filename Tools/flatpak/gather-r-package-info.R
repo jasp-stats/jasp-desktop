@@ -1,8 +1,9 @@
 # very loosely based on https://github.com/dewittpe/R-install-dependencies
 options(warn=1) #print warnings as they occur
+options(nCpus=8)
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
-CRAN       <- "https://cran.rstudio.com/"
+CRAN       <- "https://cran.r-project.org/" #"https://cran.rstudio.com/"
 
 giveOrderedDependencies <- function()
 {
@@ -129,8 +130,8 @@ giveOrderedDependencies <- function()
 }
 
 specials <- new.env(hash = TRUE, parent = parent.frame())
-specials[['BAS']]   <- list(type='git', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='https://github.com/vandenman/BAS')
-specials[['Bain']]  <- list(type='git', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='https://github.com/jasp-stats/BAIN-for-JASP')
+specials[['BAS']]   <- list(type='github', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='vandenman/BAS')
+specials[['Bain']]  <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
 
 createFlatpakJson <- function()
 {
@@ -147,37 +148,41 @@ createFlatpakJson <- function()
   while(i <= length(orderedPkgs))
   {
     curPkg   <- orderedPkgs[[i]]
-    version  <- expEnv[[curPkg]]
-    filePkg  <- paste0(curPkg, "_", expEnv[[curPkg]],".tar.gz")
-    destFile <- paste0(destDir, filePkg)
-    curVer   <- paste0(CRAN, 'src/contrib/', filePkg)
-    oldVer   <- paste0(CRAN, 'src/contrib/Archive/', curPkg, '/', filePkg)
-    succes   <- FALSE
 
-    downloaded[[curPkg]] <- list(version=version, fileName=filePkg, destFile=destFile, downloadUrl='', sha256='')
-
-    print(paste0('For pkg ', curPkg, ' trying download from "',curVer,'"'))
-    tryCatch(error=function(e) e, exp={
-      download.file(url=curVer, destfile=destFile);
-      succes <- TRUE;
-      downloaded[[curPkg]]$downloadUrl <- curVer
-    })
-    
-    if(!succes)
+    if(!exists(curPkg, where=specials, inherits=FALSE))
     {
-      print(paste0('Download failed, now trying: "',oldVer,'"'))  
+      version  <- expEnv[[curPkg]]
+      filePkg  <- paste0(curPkg, "_", expEnv[[curPkg]],".tar.gz")
+      destFile <- paste0(destDir, filePkg)
+      curVer   <- paste0(CRAN, 'src/contrib/', filePkg)
+      oldVer   <- paste0(CRAN, 'src/contrib/Archive/', curPkg, '/', filePkg)
+      succes   <- FALSE
+
+      downloaded[[curPkg]] <- list(version=version, fileName=filePkg, destFile=destFile, downloadUrl='', sha256='')
+
+      print(paste0('For pkg ', curPkg, ' trying download from "',curVer,'"'))
       tryCatch(error=function(e) e, exp={
-        download.file(url=oldVer, destfile=destFile);
+        download.file(url=curVer, destfile=destFile);
         succes <- TRUE;
-        downloaded[[curPkg]]$downloadUrl <- oldVer
+        downloaded[[curPkg]]$downloadUrl <- curVer
       })
+      
+      if(!succes)
+      {
+        print(paste0('Download failed, now trying: "',oldVer,'"'))  
+        tryCatch(error=function(e) e, exp={
+          download.file(url=oldVer, destfile=destFile);
+          succes <- TRUE;
+          downloaded[[curPkg]]$downloadUrl <- oldVer
+        })
+      }
+
+      if(!succes)
+        stop("Both downloads failed...")
+
+      sha256sumOutput             <- system2('sha256sum', args=destFile, stdout=TRUE)
+      downloaded[[curPkg]]$sha256 <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
     }
-
-    if(!succes)
-      stop("Both downloads failed...")
-
-    sha256sumOutput             <- system2('sha256sum', args=destFile, stdout=TRUE)
-    downloaded[[curPkg]]$sha256 <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
     
     i <- i + 1L
   }
@@ -215,8 +220,8 @@ createFlatpakJson <- function()
     if(exists(pkgName, where=specials, inherits=FALSE))
     {
       specialDef <- specials[[pkgName]]
-      if(specialDef$type == 'git')
-        return(convertToJsonGitBuild(pkgName, specialDef$repo, specialDef$commit))
+      if(specialDef$type == 'github')
+        return(convertToJsonGitBuild(pkgName, paste0('https://github.com/',specialDef$repo), specialDef$commit))
       else
         stop(paste0("Found a special that I cannot handle because type is: ", specialDef$type))
     }
@@ -283,22 +288,22 @@ installRequiredPackages <- function()
     isThere  <- exists(pkgName, where=installedPkgs, inherits=FALSE)
     
     if(isThere)
-      isThere <- installedPkgs[[pkgName]] == version
+      isThere <- (installedPkgs[[pkgName]] == version)
 
     print(paste0('Getting ready to install ',pkgName,' ',version))
     
-    if(exists(pkgName, where=specials, inherits=FALSE))
+    if(isThere)
+      print('Already installed!')
+    else if(exists(pkgName, where=specials, inherits=FALSE))
     {
       specialDef <- specials[[pkgName]]
-      if(specialDef$type == 'git' & grep('github.com', specialDef$repo, ignore.case=TRUE))
+      if(specialDef$type == 'github')
         devtools::install_github(paste0(specialDef$repo, '@', specialDef$commit))
       else
         stop(paste0("Found a special that I cannot handle! (",specialDef,")"))
     }
-    else if(isThere)
-      print('Already installed!')
     else
-      devtools::install_version(package=pkgName, version=version, repos=CRAN, upgrade='never')  
+      devtools::install_version(package=pkgName, version=version, repos=CRAN, upgrade_dependencies=FALSE)  
       
     i <- i + 1L
   }
