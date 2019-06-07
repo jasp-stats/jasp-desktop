@@ -32,6 +32,7 @@ void DataSetPackage::reset()
 	_analysesData				= Json::arrayValue;
 	_warningMessage				= std::string();
 	_isLoaded					= false;
+	_hasAnalysesWithoutData		= false;
 	_analysesHTMLReady			= false;
 	_isArchive					= false;
 	_dataFilter					= DEFAULT_FILTER;
@@ -44,13 +45,13 @@ void DataSetPackage::reset()
 
 void DataSetPackage::setModified(bool value)
 {
-	if (!_isLoaded)
-		value = false;
-
-	if (value != _isModified)
+	if (!value || _isLoaded || _hasAnalysesWithoutData)
 	{
-		_isModified = value;
-		isModifiedChanged(this);
+		if (value != _isModified)
+		{
+			_isModified = value;
+			isModifiedChanged(this);
+		}
 	}
 }
 
