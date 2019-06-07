@@ -89,5 +89,4 @@ Sequential analysis:
 ---
 - hypergeo
 - ggplot2
-- JASPgraphs
 - stats

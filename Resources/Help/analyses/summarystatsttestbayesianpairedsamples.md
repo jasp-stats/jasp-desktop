@@ -61,6 +61,5 @@ This function allows you to compute Bayes factor corresponding to paired groups 
 ---
 - BayesFactor
 - ggplot2
-- JASPgraphs
 - logspline
 - stats

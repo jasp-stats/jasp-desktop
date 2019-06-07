@@ -54,5 +54,4 @@ The Bayesian Correlation Pairs allows you to test the null hypothesis that the p
 ---
 - hypergeo
 - ggplot2
-- JASPgraphs
 - stats

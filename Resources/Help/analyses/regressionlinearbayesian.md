@@ -93,6 +93,5 @@ Posterior summaries of Coefficients.
 ---
 - BAS
 - ggplot2
-- JASPgraphs
 - scales
 - stats

@@ -180,10 +180,9 @@ Descriptives - dependent variable:
 - BayesFactor
 - colorspace
 - ggplot2
-- JASPgraphs
 - KernSmooth
 - matrixStats
-- ply
+- plyr
 - stats
 - stringi
 - stringr

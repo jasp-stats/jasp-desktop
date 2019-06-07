@@ -97,8 +97,6 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
 
 ### R Packages
 ---
-- base
-- JASPgraphs
 - ggplot2
 - ggrepel
 - grid

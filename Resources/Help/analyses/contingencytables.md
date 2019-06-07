@@ -8,7 +8,6 @@ Additional documentation will be available in future releases of JASP.
 ### R Packages
 ---
 - ggplot2
-- JASPgraphs
 - stats
 - vcd
 - vcdExtra

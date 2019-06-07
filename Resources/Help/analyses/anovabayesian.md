@@ -194,7 +194,6 @@ Descriptives Plot:
 - BayesFactor
 - colorspace
 - ggplot2
-- JASPgraphs
 - KernSmooth
 - matrixStats
 - ply

@@ -17,7 +17,7 @@ Multinomial test allows the user to test whether an observed distribution of cel
 #### Alt. Hypothesis
 - Multinomial test: The multinomial test checks whether the observed cell counts are uniformly distributed.The null hypothesis is tested by means of the Pearson's chi-squared test statistics, which measures the deviation of the observed from the expected cell counts under the null hypothesis. The null hypothesis is tested against the alternative hypothesis that states that the category proportions differ from the uniform distribution.
     - $$\chi^2$$ test: The chi-squared goodness-of-fit test determines whether the observed cell counts deviate from a particular expected distribution. In the chi-square goodness-of-fit test, the expected distribution is not restricted to a uniform distribution. By default the first hypothesis postulates that the cell counts are uniformly distributed, but the expected counts can be changed manually and the specification of multiple hypotheses is possible. The specified null hypotheses are tested against the alternative hypothesis which states that the category proportions differ from the uniform distribution.
-    
+
 #### Additional statistics
 - Descriptives: Option to display the descriptives of the data; the observed and e\chipected counts as well as the confidence intervals of the observed values.
   - Confidence interval: Coverage of the confidence intervals in percentages. By default the confidence level is set to 95%. The confidence intervals are based on a procedure first given by Clopper and Pearson (1934) and assumes independent binomial distributions for each factor level.
@@ -39,7 +39,7 @@ Multinomial test allows the user to test whether an observed distribution of cel
   - $$\chi^2$$: The chi-square goodness-of-fit value.
   - p: the p-value of the multinomial test, or the $$\chi^2$$ goodness-of-fit test.
   - VS-MPR: Vovk-Sellke maximum p-ratio.
-- Descriptives: 
+- Descriptives:
   - The descriptives table includes the categories of interest, the observed values, the expected values under the specified hypotheses, and confidence intervals based on independent binomial distributions. The descriptives are displayed either in counts or in proportions.
 
 #### Descriptives plot
@@ -53,5 +53,4 @@ The descriptive plot displays the frequency of the reported counts and the corre
 ### R Packages
 ---
 - ggplot2
-- JASPgraphs
 - stats

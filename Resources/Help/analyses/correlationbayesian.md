@@ -85,5 +85,4 @@ The Bayesian Correlation Matrix allows estimation of the population correlation,
 ---
 - hypergeo
 - ggplot2
-- JASPgraphs
 - stats

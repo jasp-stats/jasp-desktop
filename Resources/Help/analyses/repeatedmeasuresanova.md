@@ -219,6 +219,5 @@ The independent variable / repeated measures factor on the x-axis and dependent 
 - boot
 - emmeans
 - ggplot2
-- JASPgraphs
 - plyr
 - stats
