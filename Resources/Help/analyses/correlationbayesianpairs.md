@@ -88,5 +88,6 @@ Sequential analysis:
 ### R Packages
 ---
 - hypergeo
+- ggplot2
 - JASPgraphs
 - stats

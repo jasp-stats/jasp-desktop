@@ -195,10 +195,17 @@ Descriptives Plot:
 ### R Packages
 ---
 - BayesFactor
+- colorspace
+- ggplot2
+- JASPgraphs
+- KernSmooth
+- matrixStats
+- ply
+- stats
+- stringi
+- stringr
+- utils
 
 ### Example
 ---
 - For a detailed example see van den Bergh et al. (2019).
-
-
-

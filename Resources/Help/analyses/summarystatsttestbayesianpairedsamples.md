@@ -56,3 +56,11 @@ This function allows you to compute Bayes factor corresponding to paired groups 
 - Jeffreys, H. (1961). *Theory of probability (3rd ed.)*. Oxford, UK: Oxford University Press.
 - Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. *Psychonomic Bulletin & Review, 16*, 225-237.
 - Morey, R. D. & Rouder, J. N. (2011). Bayes Factor Approaches for Testing Interval Null Hypotheses. *Psychological Methods, 16*, 406-419
+
+### R Packages
+---
+- BayesFactor
+- ggplot2
+- JASPgraphs
+- logspline
+- stats
