@@ -23,7 +23,7 @@ import JASP.Widgets 1.0
 Form {
     id: form
 
-    ComputedColumnField { name: "hallo"; text: "fill me!"; }
+	AddColumnField { name: "hallo"; text: "fill me!"; }
     CheckBox
     {
         name: "checkbox_0"

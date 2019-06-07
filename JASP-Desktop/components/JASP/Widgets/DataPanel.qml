@@ -9,26 +9,12 @@ Rectangle
 	id:				rootDataset
 	color:			Theme.uiBackground
 
-    ProgressBarHolder
+	SplitView
     {
-		id:			progressBarHolder
-		objectName: "progressBarHolder"
-		visible:	mainWindow.progressBarVisible
-    }
-
-    SplitView
-    {
-        id: splitViewData
-		anchors
-		{
-			top:	progressBarHolder.bottom
-			left:	rootDataset.left
-			right:	rootDataset.right
-			bottom:	rootDataset.bottom
-		}
+		id:				splitViewData
+		anchors.fill:	parent
 
 		orientation:	Qt.Vertical
-		visible:		!mainWindow.progressBarVisible
 
 		handleDelegate: Rectangle { color: Theme.uiBorder; }
 

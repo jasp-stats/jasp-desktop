@@ -718,7 +718,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			setWelcomePageVisible(false);
 
 			_loader.io(event, _package);
-			showProgress(event->type() != Utils::FileType::jasp);
+			showProgress();
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -738,7 +738,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -747,13 +747,13 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -762,7 +762,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -1017,12 +1017,12 @@ void MainWindow::populateUIfromDataSet()
 
 	setDataAvailable(_package->dataSet()->rowCount() > 0);
 
-	if(!_dataAvailable)				setDataPanelVisible(false);
-	else if(_progressShowsItself)	setDataPanelVisible(!hasAnalyses);
+	hideProgress();
+
+	if(!_dataAvailable)	setDataPanelVisible(false);
+	else				setDataPanelVisible(!hasAnalyses);
 
 	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
-
-	hideProgress();
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
 	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
@@ -1296,15 +1296,11 @@ void MainWindow::startDataEditor(QString path)
 
 }
 
-void MainWindow::showProgress(bool showData)
+void MainWindow::showProgress()
 {
-	_progressShowsItself = showData;
 	_fileMenu->setVisible(false);
-	if (_progressShowsItself)
-	{
-		setDataPanelVisible(true);
-		setProgressBarVisible(true);
-	}
+
+	setProgressBarVisible(true);
 }
 
 void MainWindow::hideProgress()
@@ -1543,6 +1539,9 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 	}
 	else
 		_package->setModified(true);
+
+	if(!_analysesAvailable && !dataPanelVisible())
+		setDataPanelVisible(true);
 }
 
 void MainWindow::resetQmlCache()

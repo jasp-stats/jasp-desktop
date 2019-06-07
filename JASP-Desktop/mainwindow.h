@@ -210,7 +210,7 @@ private slots:
 	void emptyValuesChangedHandler();
 
 	void closeVariablesPage();
-	void showProgress(bool showData = true);
+	void showProgress();
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
@@ -274,7 +274,6 @@ private:
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
 									_savingForClose			= false,
-									_progressShowsItself	= false,
 									_welcomePageVisible		= true;
 
 	static QString					_iconPath;

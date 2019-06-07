@@ -2,17 +2,14 @@ import QtQuick			2.11
 import QtQuick.Controls	2.4
 import JASP.Theme		1.0
 
-Item
+Rectangle
 {
-	visible:				false
-	anchors
-	{
-		top:	rootDataset.top
-		left:	rootDataset.left
-		right:	rootDataset.right
-	}
-
-	height:			!visible ? 0 : loadingBar.height + loadingBar.y
+	color:			Theme.uiBackground
+	border.color:	Theme.uiBorder
+	border.width:	1
+	height:			120 * preferencesModel.uiScale
+	radius:			height
+	width:			parent.width * 0.5
 
     Text
     {
@@ -26,10 +23,9 @@ Item
 			top:		parent.top
 			left:		parent.left
 			right:		parent.right
-			topMargin:	30
+			topMargin:	16 * preferencesModel.uiScale
 		}
     }
-
 
     ProgressBar
     {
@@ -38,21 +34,20 @@ Item
 		to:				100
 		value:			mainWindow.progressBarProgress
 
-
 		anchors
 		{
-			top:		loadingText.bottom
-			left:		progressBarHolder.left
-			right:		progressBarHolder.right
-			margins:	30
+			verticalCenter:	parent.verticalCenter
+			left:			progressBarHolder.left
+			right:			progressBarHolder.right
+			margins:		30 * preferencesModel.uiScale
 		}
 
 		background:
 			Rectangle
 			{
-				y:				3
-				implicitWidth:	200
-				height:			6
+				//y:				3 * preferencesModel.uiScale
+				implicitWidth:	200 * preferencesModel.uiScale
+				height:			18 * preferencesModel.uiScale
 				radius:			height
 				color:			Theme.grayLighter
 			}
@@ -60,12 +55,14 @@ Item
 
 		contentItem: Item
 		{
-			implicitWidth:	200
-			implicitHeight: 12
+			implicitWidth:	200 * preferencesModel.uiScale
+			implicitHeight: 14  * preferencesModel.uiScale
 
 			Rectangle
 			{
-				width:	loadingBar.visualPosition * parent.width
+				y:		2 * preferencesModel.uiScale
+				x:		2 * preferencesModel.uiScale
+				width:	loadingBar.visualPosition * (parent.width - (x * 2))
 				height: parent.height
 				radius: height
 				color:	Theme.blue

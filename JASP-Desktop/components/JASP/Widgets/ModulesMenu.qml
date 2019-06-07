@@ -94,13 +94,13 @@ FocusScope
 			MenuButton
 			{
 				id:					addDeveloperModuleButton
-				text:				folderSelected ? "Install Developer Module" : "Select a Developer Module"
+				text:				folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? "Install Developer Module" : "Installing Developer Module") : "Select a Developer Module"
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
 				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
-				toolTip:			folderSelected ? "Install selected developer module" : "Select a developer module under Left menu->Preference->Advanced"
+				toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? "Install selected developer module" : "Installing developer module now") : "Select a developer module under Left menu->Preference->Advanced"
 				visible:			preferencesModel.developerMode
 				enabled:			dynamicModules.developersModuleInstallButtonEnabled
 
