@@ -9,7 +9,7 @@ Columns& ComputedColumns::columns()
 
 void ComputedColumns::setPackageModified()
 {
-	if(_package != NULL)
+	if(_package != nullptr && _package->isLoaded())
 		_package->setModified(true);
 }
 

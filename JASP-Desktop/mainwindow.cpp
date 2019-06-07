@@ -494,6 +494,8 @@ void MainWindow::syncKeyPressed()
 void MainWindow::packageChanged(DataSetPackage *package)
 {
 	QString title = windowTitle();
+	if (title.isEmpty())
+		title = "JASP";
 
 	if (package->isModified())	title += '*';
 	else						title.chop(1);
@@ -934,8 +936,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			}
 
 		}
-		else if (event->operation() == FileEvent::FileSyncData)
-			_package->setModified(true);
 		else
 			_applicationExiting = false;
 	}
@@ -1477,6 +1477,8 @@ void MainWindow::removeAllAnalyses()
 
 void MainWindow::analysisAdded(Analysis *)
 {
+	if (!_package->isLoaded())
+		_package->setHasAnalysesWithoutData();
 	setWelcomePageVisible(false);
 }
 
