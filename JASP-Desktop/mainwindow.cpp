@@ -1301,8 +1301,10 @@ void MainWindow::showProgress(bool showData)
 	_progressShowsItself = showData;
 	_fileMenu->setVisible(false);
 	if (_progressShowsItself)
+	{
 		setDataPanelVisible(true);
-	setProgressBarVisible(true);
+		setProgressBarVisible(true);
+	}
 }
 
 void MainWindow::hideProgress()
