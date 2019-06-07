@@ -182,7 +182,6 @@ Residual Statistics:
 - boot
 - car
 - ggplot2
-- JASPgraphs
 - lmtest
 - matrixStats
 - stats

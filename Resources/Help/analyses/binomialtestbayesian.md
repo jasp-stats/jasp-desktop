@@ -62,6 +62,5 @@ The Bayesian binomial test allows you to test whether a proportion of a dichotom
 ### R Packages
 ---
 - ggplot2
-- JASPgraphs
 - plotrix
 - stats

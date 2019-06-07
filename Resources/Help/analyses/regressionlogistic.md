@@ -163,7 +163,6 @@ Squared Pearson residuals plot:
 - boot
 - ggplot2
 - hmeasure
-- JASPgraphs
 - MASS
 - matrixStats
 - mdscore

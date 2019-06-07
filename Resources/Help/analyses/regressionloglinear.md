@@ -10,6 +10,5 @@ References
 ### R Packages
 ---
 - ggplot2
-- JASPgraphs
 - plyr
 - stats

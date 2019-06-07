@@ -78,5 +78,4 @@ The Correlation Matrix allows estimation of the population correlation, as well 
 ---
 - ggplot2
 - grid
-- JASPgraphs
 - stats

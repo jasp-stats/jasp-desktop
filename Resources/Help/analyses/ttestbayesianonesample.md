@@ -97,7 +97,6 @@ Test value specified in the null hypothesis.
 ---
 - BayesFactor
 - ggplot2
-- JASPgraphs
 - logspline
 - stats
 

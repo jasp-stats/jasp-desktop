@@ -45,5 +45,4 @@ For example, if the two-sided *p*-value equals .05, the Vovk-Sellke MPR equals 2
 ### R Packages
 ---
 - ggplot2
-- JASPgraphs
 - stats

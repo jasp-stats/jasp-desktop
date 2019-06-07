@@ -65,6 +65,5 @@ This function allows you to compute Bayes factor corresponding to an independent
 ---
 - BayesFactor
 - ggplot2
-- JASPgraphs
 - logspline
 - stats

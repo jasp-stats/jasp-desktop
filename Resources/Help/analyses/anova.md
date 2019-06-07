@@ -276,7 +276,6 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 - car
 - emmeans
 - ggplot2
-- JASPgraphs
 - lmtest
 - MASS
 - multcomp

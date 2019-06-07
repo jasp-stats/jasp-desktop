@@ -101,8 +101,10 @@ The scree plot provides information on how much variance in the data, indicated 
 
 ### R Packages 
 --- 
-- psych 
-- qgraph 
+- ggplot2
+- psych
+- qgraph
+- stats
 
 ### Example 
 ---
