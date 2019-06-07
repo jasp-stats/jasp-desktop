@@ -189,7 +189,7 @@
       }
       model.effects <- .BANOVAgetFormulaComponents(model.list[[m]])
 
-      idx <- match(model.effects, effects, nomatch = 0L)
+      idx <- match(.BANOVAreorderTerms(model.effects), .BANOVAreorderTerms(effects), nomatch = 0L)
       idx <- idx[!is.na(idx)]
       effects.matrix[m, idx] <- TRUE
 
@@ -2228,6 +2228,18 @@
   for (i in which(lengths(s) > 1L))
     s[[i]] <- paste0(sort(s[[i]]), collapse = ":")
   return(paste(all.vars(x)[1L], "~", paste(sort(unlist(s)), collapse = " + ")))
+}
+
+.BANOVAreorderTerms <- function(x) {
+  
+  # This function reorders the terms of a formula such that they are alphabetical
+  # it essentially does the same as .BANOVAreorderFormulas but expects x to be character
+  # x should be a character string of the form c("a" "a:b"), so not a ~ b + c:d. 
+  # For example, output from `all.vars(formula)` or `.BANOVAgetFormulaComponents(formula)`.
+  s <- strsplit(x, ":")
+  for (i in which(lengths(s) > 1L))
+    s[[i]] <- paste0(sort(s[[i]]), collapse = ":")
+  return(unlist(s))
 }
 
 # Single Model Inference (SMI) ----
