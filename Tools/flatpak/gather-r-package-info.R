@@ -183,7 +183,7 @@ createFlatpakJson <- function()
       sha256sumOutput             <- system2('sha256sum', args=destFile, stdout=TRUE)
       downloaded[[curPkg]]$sha256 <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
     }
-    
+
     i <- i + 1L
   }
 
@@ -303,7 +303,7 @@ installRequiredPackages <- function()
         stop(paste0("Found a special that I cannot handle! (",specialDef,")"))
     }
     else
-      devtools::install_version(package=pkgName, version=version, repos=CRAN, upgrade_dependencies=FALSE)  
+      devtools::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE)  
       
     i <- i + 1L
   }
