@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-	<id>org.jasp.JASP</id>
+	<id>org.jasp-stats.JASP</id>
 	<name>JASP</name>
 	<summary>Offers standard analysis procedures in both their classical and Bayesian form</summary>
 	<metadata_license>CC0-1.0</metadata_license>
@@ -21,19 +21,20 @@
 	</description>
 	<screenshots>
 		<screenshot type="default">
-			<image>http://jasp-stats.org/flatpak/JASP-screenshot0.png</image>
+			<image>https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/JASP-screenshot0.png</image>
 			<caption>Some plots and a table</caption>
 		</screenshot>
 	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<provides>
 		<id>JASP</id>
-		<binary>org.jasp.JASP</binary>
+		<binary>org.jasp-stats.JASP</binary>
 	</provides>
 	<releases>
-		<release version="0.10.0" date="2019-06-??">
+		<release version="0.10.0" date="2019-06-11">
 			<description>
-				User Interface completely rewritten and many other changes.
+				User Interface completely rewritten and many many other changes.
+				See https://jasp-stats.org/blog/ for more info!
 			</description>
 		</release>
 		<release version="0.9.2" date="2018-12-10">

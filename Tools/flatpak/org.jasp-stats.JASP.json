@@ -1,9 +1,9 @@
 {
-	"app-id": "org.jasp.JASP",
+	"app-id": "org.jasp-stats.JASP",
 	"runtime": "org.kde.Sdk",
 	"runtime-version": "5.12",
 	"sdk": "org.kde.Sdk",
-	"command": "org.jasp.JASP",
+	"command": "org.jasp-stats.JASP",
 	"finish-args":[
 		"--socket=x11",
 		"--socket=wayland",

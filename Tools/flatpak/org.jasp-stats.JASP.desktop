@@ -2,10 +2,10 @@
 Name=JASP
 Comment=Statistical analysis package
 Keywords=statistics;data
-Exec=org.jasp.JASP %f
+Exec=org.jasp-stats.JASP %f
 Terminal=false
 Type=Application
 MimeType=application/jasp
-StartupWMClass=org.jasp.JASP
+StartupWMClass=org.jasp-stats.JASP
 StartupNotify=true
-Icon=org.jasp.JASP
+Icon=org.jasp-stats.JASP

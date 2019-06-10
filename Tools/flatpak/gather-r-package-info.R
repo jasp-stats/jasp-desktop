@@ -249,9 +249,9 @@ createFlatpakJson <- function()
   close(fileConn)
 
 
-  system2("cat",args=c("org.jasp.JASP_header.json", jsonFile, "org.jasp.JASP_footer.json"), stdout="org.jasp.JASP.json")
+  system2("cat",args=c("org.jasp-stats.JASP_header.json", jsonFile, "org.jasp-stats.JASP_footer.json"), stdout="org.jasp-stats.JASP.json")
 
-  print(paste0("Expected packages are written as json to ", jsonFile, " and a fresh org.jasp.JASP.json has been generated!"))
+  print(paste0("Expected packages are written as json to ", jsonFile, " and a fresh org.jasp-stats.JASP.json has been generated!"))
 }
 
 getInstalledPackageEnv <- function()
@@ -312,4 +312,4 @@ installRequiredPackages <- function()
   print('All packages installed!')
 }
 
-print('Run createFlatpakJson() to transform the expected packages of JASP into a fresh org.jasp.JASP.json for flatpak.\nOr run installRequiredPackages() as administrator to get you local installed version of R up to speed with the same packages.')
+print('Run createFlatpakJson() to transform the expected packages of JASP into a fresh org.jasp-stats.JASP.json for flatpak.\nOr run installRequiredPackages() as administrator to get you local installed version of R up to speed with the same packages.')
