@@ -11,7 +11,7 @@ options$tableCentrality <- TRUE
 options$tableClustering <- TRUE
 options$tableWeightsMatrix <- TRUE
 options$tableLayout <- TRUE
-results <- jasptools::run("NetworkAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects = "pkgLoading")
+results <- jasptools::run("NetworkAnalysis", "test.csv", options)
 
 test_that("generalTB table results match", {
   table <- results[["results"]][["generalTB"]][["data"]]
@@ -29,7 +29,7 @@ test_that("centralityTB table results match", {
   )
 })
 
-test_that("clusteringTB table results match", { 
+test_that("clusteringTB table results match", {
   table <- results[["results"]][["clusteringTB"]][["data"]]
   expect_equal_tables(table,
     list("contcor1", 0, 0, 0, 0, "contcor2", 0, 0, 0, 0, "contNormal",
@@ -48,6 +48,6 @@ test_that("weightmatrixTB table results match", {
 test_that("layoutTB table results match", {
   table <- results[["results"]][["layoutTB"]][["data"]]
   expect_equal_tables(table,
-    list(1, 1, -1, 0.0611664081106051, -0.270697752594105, -1)
+    list(1, 1, -1, 0.0473496200043197, -0.258402690078048, -1)
   )
 })

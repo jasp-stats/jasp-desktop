@@ -101,13 +101,15 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	},
 
 	onResized: function (w, h) {
-		if (this.resizer.isResizing()) {
+		if (this.resizer.isResizing() && !this.resizeEventTriggered) {
+			this.resizeEventTriggered = true;
 			var args = { name: this.model.get("data"), width: w, height: h, type: "resize" };
 			this.model.trigger("EditImage:clicked", args);
 		}
 	},
 
 	onResizeStart: function (w, h) {
+		this.resizeEventTriggered = false;
 		this.setBackupValues(w, h);
 		this.model.trigger("analysis:resizeStarted", this);
 		this.$el.addClass("jasp-image-resizable");
@@ -118,12 +120,12 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	},
 
 	setBackupValues: function(w, h) {
-		this.model.set({ oldWith: w, oldHeight: h });
+		this.model.set({ preResizeWidth: w, preResizeHeight: h });
 	},
 
 	restoreSize: function() {
-		var width = this.model.get("oldWith");
-		var height = this.model.get("oldHeight");
+		var width = this.model.get("preResizeWidth");
+		var height = this.model.get("preResizeHeight");
 		this.model.set({ width: width, height: height });
 	},
 
@@ -139,6 +141,11 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	_hoveringEndImage: function (e) {
 		this.resizer.setVisibility(false);
 	},
+	
+	reRender: function () {
+		this.$el.find(".jasp-image-image").remove();
+		this.render();
+	},
 
 	render: function () {
 		var html	= ''
@@ -153,18 +160,17 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 		if (error)
 			this.$el.addClass("error-state");
 
-		html += '<div class="jasp-image-image"';
-
 		if (data) {
-
+			html += '<div class="jasp-image-image"';
 			var id = data.replace(/[^A-Za-z0-9]/g, '-');
+			var url = window.globSet.tempFolder + data;
 			html += ' id="' + id + '" style="';
-            html += 'background-image : url(\'' + window.globSet.tempFolder + data + '?x=' + Math.random() + '\'); '
-
-			html += 'background-size : 100% 100%; '
+			html += 'background-image : url(\'' + url + '?x=' + Math.random() + '\'); '
+			html += 'background-size : 100% 100%">'
+		} else {
+			if (height > 100 && width > 100)
+				html += '<div class="jasp-image-image no-data">';
 		}
-
-		html += '">'
 
 		if (error && error.errorMessage) {
 
@@ -191,7 +197,9 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			width: width,
 			height: height
 		});
-		this.resizer.render();
+		
+		if (data)
+			this.resizer.render();
 
 		return this;
 	},

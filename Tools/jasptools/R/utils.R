@@ -19,18 +19,24 @@
 }
 
 .initRunEnvironment <- function(envir, dataset, ...) {
+  # source all the R analysis files
+  if (.isModule())
+    .sourceModuleCode(envir)
+  else
+    .sourceDir(.getPkgOption("common.r.dir"), envir)
   .setInternal("envir", envir) # envir in which the analysis is executed
   .setInternal("dataset", dataset) # dataset to be found later when it needs to be read
   .libPaths(c(.getPkgOption("pkgs.dir"), .libPaths())) # location of JASP's R packages
-  .sourceDir(.getPkgOption("r.dir"), envir) # source all the R analysis files
   .exportS3Methods(envir) # ensure S3 methods can be registered to the associated generic functions
   .setRCPPMasks(...) # set the rbridge globals to the value run is called with
 }
 
 # it is necessary to export custom S3 methods to the global envir as otherwise they are not registered
 .exportS3Methods <- function(env) {
-  if (identical(env, .GlobalEnv))
+  if (identical(env, .GlobalEnv)) {
+    .setInternal("s3Methods", NULL)
     return(invisible(NULL))
+  }
 
   objs <- ls(env, all.names=FALSE)
   s3 <- vapply(objs, utils::isS3method, envir=env, FUN.VALUE=logical(1))
@@ -45,7 +51,7 @@
 
 .removeS3Methods <- function() {
   objs <- .getInternal("s3Methods")
-  if (is.null(objs))
+  if (length(objs))
     return(invisible(NULL))
   rm(list=objs, envir=.GlobalEnv)
 }
@@ -63,39 +69,53 @@
   }
 }
 
-.sourceDir <- function(path, envir) {
-  for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
-    source(file.path(path, nm), local=envir)
+.sourceModuleCode <- function(envir) {
+  .sourceDir(.getPkgOption("module.dir"), envir)
+  rFiles <- c("base64", "common", "commonerrorcheck", "commonmessages", "exposeUs")
+  .sourceDir(.getPkgOption("common.r.dir"), envir, fileNames=rFiles)
+}
+
+
+.sourceDir <- function(paths, envir, fileNames=NULL) {
+  for (i in 1:length(paths)) {
+    rFilePaths <- list.files(paths[i], pattern = "\\.[RrSsQq]$", recursive=TRUE)
+    for (rFilePath in rFilePaths) {
+      rFileName <- tools::file_path_sans_ext(basename(rFilePath))
+      if (! is.null(fileNames) && ! rFileName %in% fileNames)
+        next
+      source(file.path(paths[i], rFilePath), local=envir)
+    }
   }
 }
 
-.getJSON <- function(analysis, ...) {
-  file <- file.path(.getPkgOption("json.dir"), paste0(analysis, ".json"))
-  analysisJSON <- try(readLines(file, warn=FALSE), silent=TRUE)
-  if (inherits(analysisJSON, "try-error")) {
-    stop("The JSON file for the analysis you supplied could not be found.
-         Please ensure that (1) its name matches the main R function
-         and (2) your working directory is set properly.")
+.usesJaspResults <- function(analysis) {
+  qmlFile <- .getQMLFile(analysis)
+  if (!is.null(qmlFile))
+    return(.jaspResultsExistsInQMLFile(qmlFile))
+  stop("Could not find the options file for analysis ", analysis)
+}
+
+.jaspResultsExistsInQMLFile <- function(file) {
+  fileSize <- file.info(file)$size 
+  fileContents <- readChar(file, nchars=fileSize)
+  fileContents <- gsub('[[:blank:]]|\\"', "", fileContents)
+  
+  jaspResults <- TRUE
+  if (isTRUE(grepl("usesJaspResults:false", fileContents))) {
+    jaspResults <- FALSE
   }
+  return(jaspResults)
+}
 
-  args <- list(...)
-  if (length(args) == 0)
-   return(analysisJSON)
-
-  result <- list()
-  optsList <- jsonlite::read_json(file)
-  for (arg in args) {
-    keys <- unlist(strsplit(arg, "=>", fixed=TRUE))
-    value <- optsList
-    for (key in keys) {
-      value <- value[[key]]
+.transferPlotsFromjaspResults <- function() {
+  pathPlotsjaspResults <- file.path(tempdir(), "jaspResults", "plots")
+  pathPlotsjasptools <- file.path(tempdir(), "jasptools", "html")
+  if (dir.exists(pathPlotsjaspResults)) {
+    plots <- list.files(pathPlotsjaspResults)
+    if (length(plots) > 0) {
+      file.copy(file.path(pathPlotsjaspResults, plots), pathPlotsjasptools, overwrite=TRUE)
     }
-    if (is.null(value))
-      result[[key]] <- "null"
-    else
-      result[[key]] <- jsonlite::toJSON(value)
   }
-  return(result)
 }
 
 .parseUnicode <- function(str) {
@@ -152,35 +172,20 @@
 }
 
 .restoreNamespaces <- function(nms) {
-  addedNamespaces <- setdiff(loadedNamespaces(), nms)
-  if (length(addedNamespaces) > 0) {
-    addedNamespaces <- rev(addedNamespaces) # assuming new pkgs (i.e. dependents) get added later
-    addedNamespaces <- addedNamespaces[addedNamespaces != "jaspResults"]
+  nms <- unique(c(nms, "jasptools", "jaspResults", "JASPgraphs", "Rcpp", "vdiffr", "testthat", "jsonlite"))
+  for (i in 1:2) {
+    if (length(setdiff(loadedNamespaces(), nms)) == 0)
+      break
+    addedNamespaces <- setdiff(loadedNamespaces(), nms)
+    dependencies <- unlist(lapply(addedNamespaces, tools:::dependsOnPkgs))
+    namespaces <- c(dependencies, addedNamespaces)
+    namespaces <- names(sort(table(namespaces), decreasing=TRUE))
+    addedNamespaces <- namespaces[namespaces %in% loadedNamespaces() & !namespaces %in% nms]
     for (namespace in addedNamespaces) {
-      try(unloadNamespace(namespace), silent=TRUE) # this will fail if the pkg is a dependent
+      suppressWarnings(suppressMessages(try(unloadNamespace(namespace), silent=TRUE)))
     }
   }
-}
-
-# not used. Could possibly make pkg unloading more targeted, but does not include pkgs used in other (linked) analyses
-.getAnalysisPkgs <- function(analysis, base=FALSE) {
-  analysis <- .validateAnalysis(analysis)
-  file <- file.path(.getPkgOption("r.dir"), paste0(analysis, ".R"))
-  content <- readLines(file, warn=FALSE)
-  content <- gsub('#.*', "", content) # remove comments
-  matches <- stringr::str_match_all(content, '([a-zA-Z0-9.]{2,}(?<![.]))(?:::|:::)[a-zA-Z0-9._]+')
-  analysisPkgs <- unique(unlist(lapply(matches, function(match) match[, 2])))
-
-  if (! base) {
-    basePkgs <- utils::installed.packages(priority="high")
-    basePkgs <- basePkgs[basePkgs[, "Priority"] == "base", 1]
-    if (length(analysisPkgs) > 0)
-      analysisPkgs <- analysisPkgs[! analysisPkgs %in% basePkgs]
-  }
-
-  if (length(analysisPkgs) > 0)
-    return(analysisPkgs)
-  return(NULL)
+  suppressWarnings(R.utils::gcDLLs())
 }
 
 .charVec2MixedList <- function(x) {
@@ -200,9 +205,8 @@
 }
 
 collapseTable <- function(rows) {
-  if (! is.list(rows) || length(rows) == 0) {
-    stop("expecting input to be a list with table rows")
-  }
+  if (! is.list(rows) || length(rows) == 0)
+    stop("expecting input to be a list (with a list for each JASP table row)")
 
   x <- unname(unlist(rows))
   x <- .charVec2MixedList(x)
@@ -216,11 +220,55 @@ collapseTable <- function(rows) {
   }
 
   analysis <- tolower(analysis)
-  analyses <- list.files(.getPkgOption("r.dir"), pattern = "\\.[RrSsQq]$")
+  if (.isModule())
+    analyses <- list.files(.getPkgOption("module.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
+  else
+    analyses <- list.files(.getPkgOption("common.r.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   analyses <- gsub("\\.[RrSsQq]$", "", analyses)
   if (! analysis %in% analyses) {
     stop("Could not find the analysis. Please ensure that its name matches the main R function.")
   }
 
   return(analysis)
+}
+
+.insideTestEnvironment <- function() {
+  testthat <- vapply(sys.frames(), 
+    function(frame) 
+      methods::getPackageName(frame) == "testthat", 
+    logical(1))
+  if (any(testthat)) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+.getErrorMsgFromLastResults <- function() {
+  lastResults <- .getInternal("lastResults")
+  if (jsonlite::validate(lastResults))
+    lastResults <- jsonlite::fromJSON(lastResults)
+    
+  if (is.null(lastResults) || !is.list(lastResults) || is.null(names(lastResults)))
+    return(NULL)
+  
+  if ((lastResults[["status"]] == "error" || lastResults[["status"]] == "exception") && is.list(lastResults[["results"]]))
+    return(.errorMsgFromHtml(lastResults$results$errorMessage))
+
+  return(NULL)
+}
+
+.isModule <- function() {
+  moduleDir <- .getPkgOption("module.dir")
+  if (dir.exists(moduleDir)) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+.errorMsgFromHtml <- function(html) {
+  parsedMsg <- gsub("<br>", " ", html, fixed=TRUE)
+  indexStackTrace <- unlist(gregexpr("<div class=stack-trace", parsedMsg, fixed=TRUE))[1]
+  if (indexStackTrace > -1)
+    parsedMsg <- substr(parsedMsg, 1, indexStackTrace - 1)
+  return(parsedMsg)
 }

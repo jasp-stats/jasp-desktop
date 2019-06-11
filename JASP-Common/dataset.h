@@ -19,9 +19,8 @@
 #define DATASET_H
 
 #include <map>
-#include <iostream>
+
 #include "columns.h"
-#include "computedcolumns.h"
 
 typedef boost::interprocess::allocator<bool, boost::interprocess::managed_shared_memory::segment_manager> BoolAllocator;
 typedef boost::container::vector<bool, BoolAllocator> BoolVector;
@@ -54,7 +53,7 @@ public:
 	std::string toString();
 	std::vector<std::string> resetEmptyValues(emptyValsType emptyValuesMap);
 
-	void				setFilterVector(std::vector<bool> filterResult);
+	bool				setFilterVector(std::vector<bool> filterResult);
 	const BoolVector&	filterVector()		const	{ return _filterVector; }
 	int					filteredRowCount()	const	{ return _filteredRowCount; }
 

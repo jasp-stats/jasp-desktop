@@ -29,16 +29,21 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	_data[field] = obj; //If we overwrite anything: deletion will be taken care of by jaspObject::destroyAllAllocatedObjects()
 
-	if(obj->_title == "")
-		obj->_title = field;
-
 	obj->setName(field);
+	if (_passErrorMessageToNextChild)
+	{
+		obj->setError(_errorMessage);
+		_passErrorMessageToNextChild = false;
+	}
+	else if (_error)
+	{
+		obj->setError();
+	}
 
 	if(_data_order.count(field) == 0) //this way we can keep the order after removing the original object due to changes/options-changing or whatever because the order will stay the same
 		_data_order[field] = _order_increment++;
 
 	addChild(obj);
-
 	notifyParentOfChanges();
 }
 
@@ -270,4 +275,26 @@ void jaspContainer::checkDependenciesChildren(Json::Value currentOptions)
 
 	for(auto & removeThis : removeThese)
 		_data.erase(removeThis);
+}
+
+void jaspContainer::setError()
+{
+	_error = true;
+	for(auto & d : _data)
+		d.second->setError();
+}
+
+void jaspContainer::setError(std::string message)
+{
+	jaspObject::setError(message);
+	if (_data.empty())
+	{
+		_passErrorMessageToNextChild = true;
+	} 
+	else
+	{
+		for(auto & d : _data)
+			d.second->setError();
+		_data.begin()->second->setError(message);
+	}
 }

@@ -16,9 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-VariablesList {
-    id: variablesList
-    anchors.right: parent.right
-    anchors.rightMargin: 50 // Due to the f...g OK button
-    listViewType: "assignedVariables"    
+VariablesList
+{
+    listViewType: "AssignedVariables"
+    dropMode: "Insert"	
 }

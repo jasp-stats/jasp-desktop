@@ -122,7 +122,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	n_group2 <- ttest.results[["n_group2"]]
 	n_group1 <- ttest.results[["n_group1"]]
 	deltaSamplesWilcox <- ttest.results[["delta"]]
-
+	rHat <- ttest.results[["rHat"]]
+	
+	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
 	if(is.null(options()$BFapproxOptimizer)) options(BFapproxOptimizer = "optim")
@@ -650,7 +652,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 									plot[["obj"]] <- content[["obj"]]
 									plot[["data"]] <- content[["png"]]
 
-								})
+							})
+								
+							if (isTryError(p)) {
+								errorMessage <- .extractErrorMessage(p)
+								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+							}
 
 						}
 
@@ -774,7 +781,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
 		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes,
-		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox),
+		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox, rHat = rHat),
 		keep=keep))
 	}
 
@@ -861,7 +868,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	} else if (options$wilcoxTest) {
 	  # display Wilcoxon statistic instead of error % 
 	  fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3;", title="W")
-    
+	  fields[[length(fields)+1]] <- list(name="rHat", type="number", format="sf:4;dp:3", title="R^")
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
@@ -892,7 +899,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	}
 
-
+  if (options$wilcoxTest) {
+    
+    message <- paste("Result based on data augmentation algorithm with 5 chains of ", options$wilcoxonSamplesNumber, " iterations.", sep="")
+    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+  }
+	
 	ttest.rows <- list()
 
 	status <- rep("ok", length(options$variables))
@@ -903,6 +915,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	plottingError <- rep("error", length(options$variables))
 	errorFootnotes <- rep("no", length(options$variables))
 	delta <- list()
+	rHat <- list()
+	
 	
 	for (variable in options[["variables"]]) {
 
@@ -983,7 +997,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			i <- 1
 			
 			if (options$wilcoxTest) {
-			  progressbar <- .newProgressbar(ticks=length(options[["variables"]]) * round(options$wilcoxonSamplesNumber / 1e2, 0), 
+			  progressbar <- .newProgressbar(ticks=length(options[["variables"]]) * round(5 * options$wilcoxonSamplesNumber / 1e2, 0), 
 			                                                 callback = callBackWilcoxonMCMC, response=TRUE)
 			}
 			
@@ -1075,7 +1089,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					status[rowNo] <- state$status[index]
 					plottingError[rowNo] <- state$plottingError[index]
 					delta[[rowNo]] <- state$delta[[index]]
-
+					rHat[[rowNo]] <- state$rHat[[index]]
+					
 				} else {
 
 				    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
@@ -1101,6 +1116,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
   					  error <- .clean(r[["error"]])
   					  tValue[i] <- r[["tValue"]]
   					  delta[[i]] <- NA
+  					  rHat[[i]] <- NA
   					  
   					  
 					  } else if (options$wilcoxTest) {
@@ -1110,14 +1126,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					        diff$missingValues == FALSE && diff$wilcoxonSamplesNumber == FALSE) {
                 
                 delta[[i]] <- state$delta[[i]]
+                rHat[[i]] <- state$rHat[[i]]
                 bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = delta[[i]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
-                
+
               } else {
                 
-                r <- .rankSumGibbsSampler(x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
+                r <- .rankSumGibbsSampler(x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 1,
                                           cauchyPriorParameter = options$priorWidth, progressbar = progressbar)
                 if(is.null(r)) return() # Return null if settings are changed
                 delta[[i]] <- r[["deltaSamples"]]
+                rHat[[i]] <- r[["rHat"]]
                 bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = r[["deltaSamples"]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
                 
               }
@@ -1187,7 +1205,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 							index <- .addFootnote(footnotes, errorMessage)
 							list(.variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
-						} else {
+						} else if (!is.null(rHat)) {
+
+						  list(.variable=variable, BF=BF, error=error, rHat=rHat[[i]])
+						}	else {
 
 							list(.variable=variable, BF=BF, error=error)
 						}
@@ -1222,7 +1243,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	list(ttest = ttest, status = status, g1 = g1, g2 = g2, BFH1H0 = BFH1H0, plottingError = plottingError,
 	     BF10post = BF10post, errorFootnotes = errorFootnotes, tValue = tValue, n_group2 = n_group2,
-	     n_group1 = n_group1, delta = delta)
+	     n_group1 = n_group1, delta = delta, rHat = rHat)
 }
 
 .base_breaks_x <- function(x) {
@@ -1432,53 +1453,71 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 
 .rankSumGibbsSampler <- function(xVals, yVals, nSamples = 1e3, cauchyPriorParameter = 1/sqrt(2),
-                                 nBurnin = 0, nGibbsIterations = 10, progressbar){
+                                 nBurnin = 0, nGibbsIterations = 10, nChains = 5, progressbar){
   n1 <- length(xVals)
   n2 <- length(yVals)
+  
   allRanks <- rank(c(xVals,yVals))
   xRanks <- allRanks[1:n1]
   yRanks <- allRanks[(n1+1):(n1+n2)]
   
-  allVals <- sort(rnorm((n1+n2)))[allRanks] # initial values
-  nSamples <- nSamples + nBurnin
-  deltaSamples <- gSamples <- muSamples <- numeric(nSamples)
+  deltaSamples <- numeric(nSamples)
+  deltaSamplesMatrix <- matrix(ncol = nChains, nrow = nSamples-nBurnin)
+  totalIterCount <- 0
   
-  oldMuProp <- oldDeltaProp <- 0
-  
-  for (j in 1:nSamples) {
-
-    if (j %% 1e2 == 0 ) { 
-      response <- progressbar()
-      if (response[["status"]] != "ok")
-        return()
-    }
+  for(thisChain in 1:nChains) {
     
-    for (i in sample(1:(n1+n2))) {
-      underx <- allVals[allRanks < allRanks[i]][order(allVals[allRanks < allRanks[i]], decreasing = T)][1]
-      upperx <- allVals[allRanks > allRanks[i]][order(allVals[allRanks > allRanks[i]], decreasing = F)][1]
-      if (is.na(underx)) {underx <- -Inf}
-      if (is.na(upperx)) {upperx <- Inf}
+  
+    currentVals <- sort(rnorm((n1+n2)))[allRanks] # initial values
+    
+    
+    oldDeltaProp <- 0
+    
+    for (j in 1:nSamples) {
       
-      if (i <= n1) {
-        allVals[i] <- .truncNormSample(mu = (-0.5*oldMuProp), sd = 1, lBound = underx, uBound = upperx)
-      } else if (i > n1) {
-        allVals[i] <- .truncNormSample(mu = (0.5*oldMuProp), sd = 1, lBound = underx, uBound = upperx)
+      totalIterCount <-   totalIterCount + 1
+      
+      if (totalIterCount %% 1e2 == 0 ) { 
+        response <- progressbar()
+        if (response[["status"]] != "ok")
+          return()
       }
+      
+      for (i in sample(1:(n1+n2))) {
+        
+        currentRank <- allRanks[i]
+        
+        currentBounds <- .upperLowerTruncation(ranks=allRanks, values=currentVals, currentRank=currentRank)
+        if (i <= n1) {
+          oldDeltaProp <- -0.5*oldDeltaProp
+        } else if (i > n1) {
+          oldDeltaProp <- 0.5*oldDeltaProp
+        }
+        
+        currentVals[i] <- .truncNormSample(currentBounds[["under"]], currentBounds[["upper"]], mu=oldDeltaProp, sd=1)
+        
+      }
+      
+      xVals <- currentVals[1:n1]
+      yVals <- currentVals[(n1+1):(n1+n2)]
+      
+      gibbsResult <- .sampleGibbsTwoSampleWilcoxon(x = xVals, y = yVals, n1 = n1, n2 = n2, nIter = nGibbsIterations,
+                                          rscale = cauchyPriorParameter)
+      
+      deltaSamples[j] <- oldDeltaProp <- gibbsResult
+  
     }
-    
-    xVals <- allVals[1:n1]
-    yVals <- allVals[(n1+1):(n1+n2)]
-    
-    gibbsResult <- .sampleGibbsTwoSampleWilcoxon(x = xVals, y = yVals, n1 = n1, n2 = n2, nIter = nGibbsIterations,
-                                                 rscale = cauchyPriorParameter)
-    
-    muSamples[j] <- oldMuProp <- gibbsResult[3]
-    deltaSamples[j] <- oldDeltaProp <- gibbsResult[1]
+    deltaSamples <- -1 * deltaSamples[-(1:nBurnin)]
+    deltaSamplesMatrix[, thisChain] <- deltaSamples
   }
   
-  deltaSamples <- -1 * deltaSamples[-(1:nBurnin)]
+  betweenChainVar <- (nSamples / (nChains - 1)) * sum((apply(deltaSamplesMatrix, 2, mean)  - mean(deltaSamplesMatrix))^2)
+  withinChainVar <- (1/ nChains) * sum(apply(deltaSamplesMatrix, 2, var)) 
+  
+  fullVar <- ((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples)
+  rHat <- sqrt(fullVar/withinChainVar)
 
-  return(list(deltaSamples = deltaSamples))
+  return(list(deltaSamples = as.vector(deltaSamplesMatrix), rHat = rHat))
 }
 
 .sampleGibbsTwoSampleWilcoxon <- function(x, y, n1, n2, nIter = 10, rscale = 1/sqrt(2)) {
@@ -1499,7 +1538,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
     # convert to delta
     delta <- mu / sqrt(sigmaSq)
   }
-  return(c(delta, sigmaSq, mu, g))
+  return(delta)
 }
 
 .truncNormSample <- function(lBound = -Inf, uBound = Inf, mu = 0, sd = 1) {
@@ -1509,6 +1548,23 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
   mySample <- qnorm(runif(1, lBoundUni, uBoundUni), mean = mu, sd = sd)
   
   return(mySample)
+}
+
+.upperLowerTruncation <- function(ranks, values, currentRank, n, ranksAreIndices = FALSE) {
+  
+  if (currentRank == min(ranks)) {
+    under <- -Inf
+  } else {
+    under <- max(values[ranks < currentRank])
+  }
+  
+  if (currentRank == max(ranks)) {
+    upper <- Inf
+  } else {
+    upper <- min(values[ranks > currentRank])
+  }
+  
+  return(list(under=under, upper=upper))
 }
 
 .computeBayesFactorWilcoxon <- function(deltaSamples, cauchyPriorParameter, oneSided) {

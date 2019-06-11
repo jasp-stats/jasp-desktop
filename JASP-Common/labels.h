@@ -83,6 +83,7 @@ private:
 	void _setNewStringForLabel(Label &label, const std::string &display);
 	std::string _getValueFromLabel(const Label &label) const;
 	std::string _getOrgValueFromLabel(const Label &label) const;
+	std::map<std::string, int> _resetLabelValues(int &maxValue);
 
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;

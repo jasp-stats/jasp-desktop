@@ -24,7 +24,6 @@
         <file>js/jquery-ui-1.10.1.custom.min.js</file>
         <file>js/table.js</file>
         <file>js/utils.js</file>
-        <file>css/theme-spss.css</file>
         <file>css/theme-jasp.css</file>
         <file>css/images/copy.png</file>
         <file>css/images/running.gif</file>
@@ -39,6 +38,7 @@
         <file>css/images/arrowsmalldownbtn.png</file>
         <file>css/images/resizer.png</file>
         <file>css/images/menu-indicator.svg</file>
+        <file>css/images/empty-plot.png</file>
         <file>js/etch.js</file>
         <file>css/etch.css</file>
         <file>css/images/editor_icons.png</file>
@@ -51,8 +51,6 @@
         <file>css/images/collapse.png</file>
         <file>about.html</file>
         <file>css/images/tinylogo.svg</file>
-        <file>welcome.html</file>
-        <file>css/theme-intro.css</file>
         <file>font/Lato-Light.ttf</file>
         <file>font/Lato-Regular.ttf</file>
         <file>img/jasp-logo.svg</file>

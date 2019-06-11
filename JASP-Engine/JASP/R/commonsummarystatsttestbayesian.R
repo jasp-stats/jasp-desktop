@@ -348,6 +348,7 @@
 	BFH1H0 <- ifelse((options$bayesFactorType == "BF01"), FALSE, TRUE)
 	bftype.current <- options$bayesFactorType
 	bftype.previous <- state$options$bayesFactorType
+	equivalent.bf <- NULL
 
 	plotType <- "robustnessPlot"
 
@@ -545,13 +546,22 @@
 
 		BF <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval,
 																	rscale = rValues[i])
-		BF10[i] <- .clean(exp(BF$bf))
+		BF10[i] <- exp(BF$bf)
 
 		if (!.shouldContinue(callback())) {
 			return()
 		}
 
 	}
+
+	# sometimes BayesFactor fails and returns NaN, e.g. BayesFactor::ttest.tstat(t = 10, n1 = 5, n2 = 0, nullInterval = NULL, rscale = 0.0005)
+	# we'll remove up to 5% of the NaN's and otherwise just return an error for the plot
+	validValues <- is.finite(BF10)
+	if (sum(validValues) < (0.95 * length(BF10)))
+		stop("could not calculate enough valid Bayes Factors for different values of the prior")
+
+	BF10 <- BF10[validValues]
+	rValues <- rValues[validValues]
 
 	# add BF10 = 1 for r = 0
 	rValues <- c(0, rValues)
@@ -1327,7 +1337,6 @@
 				dontPlotData = FALSE, options = NULL, delta = NULL) {
 
     # Function outputs the prior and posterior plot for t-test in the summary stats module.
-
 	if (addInformation) {
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
 	} else {
@@ -1400,7 +1409,7 @@
     # informative prior
     xlim <- vector("numeric", 2)
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
-      ci99PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+      ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                         prior.location = options[["informativeCauchyLocation"]],
                                         prior.scale = options[["informativeCauchyScale"]],
                                         prior.df = 1, ci = .99, oneSided = oneSided)
@@ -1411,7 +1420,7 @@
                                                     options[["informativeCauchyScale"]],
                                                     1), oneSided = oneSided)
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+      ci95PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                         prior.location = options[["informativeCauchyLocation"]],
                                         prior.scale = options[["informativeCauchyScale"]],
                                         prior.df = 1, ci = .95, oneSided = oneSided)
@@ -1420,7 +1429,7 @@
       medianPosterior <- ci95PlusMedian[["median"]]
 
     } else if (options[["informativeStandardizedEffectSize"]] == "t") {
-      ci99PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+      ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                         prior.location = options[["informativeTLocation"]],
                                         prior.scale = options[["informativeTScale"]],
                                         prior.df = options[["informativeTDf"]],
@@ -1434,7 +1443,7 @@
                                                     options[["informativeTDf"]]),
                                oneSided = oneSided)
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+      ci95PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                         prior.location = options[["informativeTLocation"]],
                                         prior.scale = options[["informativeTScale"]],
                                         prior.df = options[["informativeTDf"]], ci = .95, oneSided = oneSided)
@@ -1442,7 +1451,7 @@
       CIhigh <- ci95PlusMedian[["ciUpper"]]
       medianPosterior <- ci95PlusMedian[["median"]]
     } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
-      ci99PlusMedian <- .ciPlusMedian_normal(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+      ci99PlusMedian <- .ciPlusMedian_normal(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                              prior.mean = options[["informativeNormalMean"]],
                                              prior.variance = options[["informativeNormalStd"]]^2,
                                              ci = .99, oneSided = oneSided)
@@ -1463,7 +1472,7 @@
       priorUpper <- qnorm(upperp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
 
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_normal(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+      ci95PlusMedian <- .ciPlusMedian_normal(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                              prior.mean = options[["informativeNormalMean"]],
                                              prior.variance = options[["informativeNormalStd"]]^2,
                                              ci = .95, oneSided = oneSided)
@@ -1480,10 +1489,22 @@
     ylim <- vector("numeric", 2)
 
     ylim[1] <- 0
-    dmax1 <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
-                                                        oneSided = oneSided, options = options),
-                     interval = range(xticks),
-                     maximum = TRUE)$objective
+    
+    xBoundOptim <- xlim
+    if(oneSided == "right"){
+      xBoundOptim[1] <- 0
+    } else if(oneSided == "left"){
+      xBoundOptim[2] <- 0
+    }
+    dmax1optim <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
+                                                              oneSided = oneSided, options = options),
+                           interval = xBoundOptim,
+                           maximum = TRUE)$objective
+    # sometimes optimize fails, so we brute force
+    dmax1grid <- max(.dposterior_informative(seq(xBoundOptim[1], xBoundOptim[2], length.out = 101), t = t, n1 = n1, n2 = n2,
+                                            paired = paired, oneSided = oneSided, options = options), na.rm = TRUE)
+    dmax1 <- max(c(dmax1optim, dmax1grid), na.rm = TRUE)
+    
     dmax2 <- optimize(function(x).dprior_informative(x, oneSided = oneSided, options = options),
                      interval = range(xticks),
                      maximum = TRUE)$objective
@@ -1517,8 +1538,8 @@
       } else {
         bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
       }
-      
-      
+
+
       library(BayesFactor)
       samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
                                         index = 1)
@@ -1567,35 +1588,25 @@
 
     if (oneSided == FALSE) {
       xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-    }
-
-    if (oneSided == "right") {
-      # if (length(delta[delta >= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
-
-      xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
-
-      if (any(is.na(xlim))) {
-        xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
-        xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
+      xlim[2] <- max( 2, quantile(delta, probs = 0.99)[[1]])
+    } else {
+      if(oneSided == "right")
+        oneSidedDelta <- delta[delta >= 0]
+      else
+        oneSidedDelta <- delta[delta <= 0]
+      
+      xlim[1] <- min(-2, quantile(oneSidedDelta, probs = 0.01)[[1]])
+      xlim[2] <- max( 2, quantile(oneSidedDelta, probs = 0.99)[[1]])
+      
+      if(any(is.na(xlim))){
+        xlim[1] <- min(-2, .qShiftedT(0.01, parameters = parameters, oneSided = oneSided))
+        xlim[2] <- max( 2, .qShiftedT(0.99, parameters = parameters, oneSided = oneSided))
       }
+      
+      if(any(is.infinite(xlim))) # In case .qShiftedT fails
+        stop("Cannot plot the posterior - possibly too concentrated near 0.")
     }
-
-    if (oneSided == "left") {
-      #if (length(delta[delta <= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
-
-      xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
-      xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
-
-      if (any(is.na(xlim))) {
-        xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
-        xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
-      }
-    }
-
+    
     xticks <- pretty(xlim)
 
     ylim <- vector("numeric", 2)
@@ -1822,17 +1833,17 @@
 	if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
 	  midPoint <- mean(range(xticks))
 	  if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
-	    mostPosterior <- 1 - .cdf_t(midPoint, t = t, ny = n1, nx = n2,
+	    mostPosterior <- 1 - .cdf_t(midPoint, t = t, n1 = n1, n2 = n2,
 	                                prior.location = options[["informativeCauchyLocation"]],
 	                                prior.scale = options[["informativeCauchyScale"]],
 	                                prior.df = 1)
 	  } else if (options[["informativeStandardizedEffectSize"]] == "t") {
-	    mostPosterior <- 1 - .cdf_t(midPoint, t = t, ny = n1, nx = n2,
+	    mostPosterior <- 1 - .cdf_t(midPoint, t = t, n1 = n1, n2 = n2,
 	                                prior.location = options[["informativeTLocation"]],
 	                                prior.scale = options[["informativeTScale"]],
 	                                prior.df = options[["informativeTDf"]])
 	  } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
-	    mostPosterior <- 1 - .cdf_normal(midPoint, t = t, ny = n1, nx = n2,
+	    mostPosterior <- 1 - .cdf_normal(midPoint, t = t, n1 = n1, n2 = n2,
 	                                     prior.mean = options[["informativeNormalMean"]],
 	                                     prior.variance = options[["informativeNormalStd"]]^2)
 	  }

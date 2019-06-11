@@ -15,38 +15,54 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 
-Button {
-    id: button
+JASPControl
+{
+	id:					button
+	controlType:		"Button"
+	implicitHeight:		control.implicitHeight
+	implicitWidth:		control.implicitWidth
+	isBound:			false
+	opacity:			enabled ? 1 : .7
+	
+	property alias control: control
+    property alias text:	control.text
+	property alias label:	control.text
+    property alias image:	image
+    
+    signal clicked()
+    
+	Component.onCompleted: control.clicked.connect(clicked);
 
-    implicitWidth: height
-    width: 50
-    height: 30
+	Button
+	{
+		id:	control
 
-    background: Rectangle {
-        id: rectangle
-        border.width: 1
-        border.color: Theme.borderColor
-        radius: Theme.borderRadius
-        color: Theme.controlBackgroundColor
-        
-        Behavior on color {        
-            ColorAnimation {
-                duration: 500
-            }
+		font: Theme.font
+		Image
+		{
+			id:					image
+			fillMode:			Image.PreserveAspectFit
+			anchors.centerIn:	parent
+			sourceSize.height:	rectangle.height - (6 * preferencesModel.uiScale)
+			height:				sourceSize.height
+			visible:			source ? true : false
+        }
+    
+		background: Rectangle
+		{
+			id:				rectangle
+			border.width:	1
+			border.color:	Theme.borderColor
+			radius:			Theme.borderRadius
+			color:			enabled ? (control.down ? Theme.gray : Theme.controlBackgroundColor) : Theme.disableControlBackgroundColor
+            
+			Behavior on color { ColorAnimation { duration: 100 } }
         }
         
     }
-    
-    states: [
-        State {
-            name: "disabled"
-            PropertyChanges { target: rectangle; color: Theme.disableControlBackgroundColor }
-        }
-    ]
 }

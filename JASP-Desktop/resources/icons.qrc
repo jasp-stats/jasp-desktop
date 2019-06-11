@@ -16,14 +16,6 @@
         <file>icons/document-save-as.png</file>
         <file>icons/edit-delete-shred.png</file>
         <file>icons/emblem-favorite.png</file>
-        <file>icons/folder-blue.png</file>
-        <file>icons/folder-cyan.png</file>
-        <file>icons/folder-grey.png</file>
-        <file>icons/folder-orange.png</file>
-        <file>icons/folder-red.png</file>
-        <file>icons/folder-txt.png</file>
-        <file>icons/folder-violet.png</file>
-        <file>icons/folder-yellow.png</file>
         <file>icons/text-x-moc.png</file>
         <file>icons/user-home.png</file>
         <file>icons/tools-wizard.png</file>
@@ -68,6 +60,7 @@
         <file>icons/logo-osf.png</file>
         <file>icons/spreadsheet.svg</file>
         <file>icons/folder.svg</file>
+        <file>icons/create-folder.png</file>
         <file>icons/file-jasp.svg</file>
         <file>icons/expand.png</file>
         <file>icons/collapse.png</file>
@@ -78,5 +71,58 @@
         <file>icons/editImage.png</file>
         <file>icons/right-arrow.png</file>
         <file>icons/computed.png</file>
+        <file>icons/JASP_logo_gray.svg</file>
+        <file>icons/JASP_logo_green.svg</file>
+        <file>icons/JASP-logo_blue.svg</file>
+        <file>icons/variance.png</file>
+        <file>icons/trashcan.svg</file>
+        <file>icons/trashcan_open.svg</file>
+        <file>icons/sum.png</file>
+        <file>icons/sigma.png</file>
+        <file>icons/rootTail.png</file>
+        <file>icons/rootHead.png</file>
+        <file>icons/recycle.svg</file>
+        <file>icons/or.png</file>
+        <file>icons/notEqual.png</file>
+        <file>icons/negative.png</file>
+        <file>icons/lessThanEqual.png</file>
+        <file>icons/lessThan.png</file>
+        <file>icons/greaterThanEqual.png</file>
+        <file>icons/greaterThan.png</file>
+        <file>icons/equal.png</file>
+        <file>icons/divide.png</file>
+        <file>icons/and.png</file>
+        <file>icons/gear.svg</file>
+        <file>icons/modulo.png</file>
+        <file>icons/product.png</file>
+        <file>icons/NotR.png</file>
+        <file>icons/R.png</file>
+        <file>icons/QuestionMark.png</file>
+        <file>icons/trashcan_open.png</file>
+        <file>icons/trashcan.png</file>
+        <file>icons/check-mark.png</file>
+        <file>icons/ConditionBy.png</file>
+        <file>icons/error.png</file>
+        <file>icons/square_trashcan.png</file>
+        <file>icons/columnConstructorBackground.png</file>
+        <file>icons/filterConstructorBackground.png</file>
+        <file>icons/exclamation.svg</file>
+        <file>icons/subtraction-sign.svg</file>
+        <file>icons/addition-sign-small.svg</file>
+        <file>icons/subtraction-sign-small.svg</file>
+        <file>icons/install_icon.png</file>
+        <file>icons/delete_icon.png</file>
+        <file>icons/delete_icon_gray.png</file>
+        <file>icons/variable-nominal-disabled.svg</file>
+        <file>icons/variable-ordinal-disabled.svg</file>
+        <file>icons/variable-scale-disabled.svg</file>
+        <file>icons/large-arrow-right.png</file>
+        <file>icons/meta-analysis.svg</file>
+        <file>icons/sem-latreg.svg</file>
+        <file>icons/edit-pencil.png</file>
+        <file>icons/analysis-bain-anova.svg</file>
+        <file>icons/analysis-bain-regression.svg</file>
+        <file>icons/analysis-bain-ttest.svg</file>
+        <file>icons/bain-module.svg</file>
     </qresource>
 </RCC>

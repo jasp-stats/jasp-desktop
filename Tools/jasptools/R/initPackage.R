@@ -1,26 +1,25 @@
 develop <- function(path, makePersistent = TRUE) {
-
   # path: ~/Github/jasp-desktop
   # file: ~/R/library/jasptools/
-
+  
   path <- normalizePath(path)
   if (!isJaspDesktopDir(path))
     stop(paste("incorrect path.\n\nPath should point to the github location of jasp-desktop.",
                "JASP-Common and JASP-Desktop should be subdirectories."))
-
+  
   if (makePersistent) {
     jasptoolsDir <- path.package("jasptools", quiet = FALSE)
     file <- file.path(jasptoolsDir, "jasp-desktop_Location.txt")
     if (file.exists(file))
       message(sprintf("Overwriting existing path at %s.", file))
     else message(sprintf("Creating %s", file))
-
+    
     fileConn <- file(file)
     writeLines(path, fileConn)
     close(fileConn)
   }
   .jasptoolsInit(path)
-
+  
   return(invisible(TRUE))
 }
 
@@ -102,7 +101,7 @@ isJaspDesktopDir <- function(path) {
         }
 
         if (is.null(pathsToPackages)) {
-          pathsToPackages <- .findDirPackages(file.path(".."), c("build", "jasp"))
+          pathsToPackages <- .findDirPackages(file.path(".."), c("build"))
         }
       } else if (os == "linux") {
         message("Identified OS as Linux. Assuming R packages required for JASP were installed manually.")
@@ -114,7 +113,7 @@ isJaspDesktopDir <- function(path) {
     if (!is.null(pathsToPackages)) {
       for (path in pathsToPackages) {
         packages <- list.files(path)
-        if (!identical(packages, character(0)) && "base" %in% packages) {
+        if (!identical(packages, character(0)) && "Rcpp" %in% packages) {
           message("Successfully found the bundled R packages.")
           pathToPackages <- path
           break
@@ -126,12 +125,12 @@ isJaspDesktopDir <- function(path) {
       message("Unable to find the bundled R packages.
       Required packages will have to be installed manually, or 'pkgs.dir' must be set.")
     }
-
+    
     # set locations of all required resources (json, analyses, html, packages)
     relativePaths <- list(
-      r.dir = file.path("JASP-Engine", "JASP", "R"),
+      common.r.dir = file.path("JASP-Engine", "JASP", "R"),
       html.dir = file.path("JASP-Desktop", "html"),
-      json.dir = file.path("Resources", "Library"),
+      common.qml.dir = file.path("Resources"),
       data.dir = file.path("Resources", "Data Sets"),
       tests.dir = file.path("JASP-Tests", "R", "tests", "testthat"),
       tests.data.dir = file.path("JASP-Tests", "R", "tests", "datasets")

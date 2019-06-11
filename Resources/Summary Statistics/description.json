@@ -1,0 +1,55 @@
+{
+	"moduleDescription" :
+	{
+		"title"          : "Summary Statistics",
+		"description"    : "Summary Statistics module",
+		"icon"			 : "analysis-bayesian-ttest.svg",
+		"requiresDataset": false,
+		"version"        : 1,
+		"author"         : "JASP Team",
+		"maintainer"     : "JASP Team <jasp-stats.org>",
+		"website"        : "jasp-stats.org",
+		"license"        : "GPL (>= 2)",
+		"dynamic"        : false
+	},
+
+	"menu":
+	[
+		{
+			"title"   : "T-Tests",
+			"icon"	  : "analysis-bayesian-ttest.svg"
+		},
+		{
+			"title"   : "Bayesian Independent Samples T-Test",
+			"function": "SummaryStatsTTestBayesianIndependentSamples"
+		},
+		{
+			"title"   : "Bayesian Paired Samples T-Test",
+			"function": "SummaryStatsTTestBayesianPairedSamples"
+		},
+		{
+			"title"   : "Bayesian One Sample T-Test",
+			"function": "SummaryStatsTTestBayesianOneSample"
+		},
+		{
+			"title"   : "Regression",
+			"icon"    : "analysis-bayesian-regression.svg"
+		},
+		{
+			"title"   : "Bayesian Correlation Pairs",
+			"function": "SummaryStatsCorrelationBayesianPairs"
+		},
+		{
+			"title"   : "Bayesian Linear Regression",
+			"function": "SummaryStatsRegressionLinearBayesian"
+		},
+		{
+			"title"   : "Frequencies",
+			"icon"    : "analysis-bayesian-crosstabs.svg"
+		},
+		{
+			"title"   : "Bayesian Binomial Test",
+			"function": "SummaryStatsBinomialTestBayesian"
+		}
+	]
+}

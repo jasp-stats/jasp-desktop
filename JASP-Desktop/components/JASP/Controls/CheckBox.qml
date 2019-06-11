@@ -16,56 +16,132 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+import QtQuick.Layouts	1.3 as L
 import JASP.Theme 1.0
 
-JASPControl {
-    controlType: "CheckBox"
-    implicitWidth: control.width; implicitHeight: control.height
-    property alias text: control.text
-    property alias checked: control.checked
-    signal clicked();
-    
-    Component.onCompleted: {
-        control.clicked.connect(clicked);
-    }
-    
-    CheckBox {
-        id: control
-        height: Theme.checkBoxIndicatorLength + 4
-        width: Theme.checkBoxIndicatorLength + label.implicitWidth + control.spacing + 6
-        focus: true
-        
-        background: backgroundRectangle
+JASPControl
+{
+	id:					checkBox
+	controlType:		"CheckBox"
+	implicitWidth:		childrenOnSameRow
+							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+							: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
+	implicitHeight:		childrenOnSameRow
+							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
+							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+	focusIndicator:		focusIndicator
+	childControlsArea:	childControlsArea
 
-        indicator: Rectangle {
-            width: Theme.checkBoxIndicatorLength
-            height: Theme.checkBoxIndicatorLength
-            anchors.left: control.left
-            anchors.leftMargin: 2
-            anchors.top: control.top
-            anchors.topMargin: 2
-            color: control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
-            border.color: control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor) : Theme.disableControlBackgroundColor
-            border.width: 1
-            radius: Theme.borderRadius
-            
-            Text {
-                visible: control.checked ? true : false
-                color: Theme.white
-                text: "\u2713"
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-        }
-        
-        contentItem: Label {
-            id: label
-            anchors.left: control.indicator.right
-            anchors.leftMargin: control.spacing
-            anchors.top: control.top
-            anchors.topMargin: 2
-            text: control.text
-        }
-    }
+	default property alias	content:				childControlsArea.children
+			property alias	control:				control
+			property alias	childrenArea:			childControlsArea
+			property alias	text:					control.text
+			property alias	font:					label.font
+			property alias	label:					control.text
+			property alias	checked:				control.checked
+			property bool	childrenOnSameRow:		false
+			property alias	columns:				childControlsArea.columns
+			property bool	enableChildrenOnChecked: true
+			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
+
+	signal clicked();
+
+	CheckBox
+	{
+		id:						control
+		padding:				Theme.jaspControlPadding
+		focus:					true
+		onCheckedChanged:		checkBox.clicked()
+
+		Keys.onReturnPressed:	checked = !checked
+		Keys.onEnterPressed:	checked = !checked
+
+		indicator: Rectangle
+		{
+			id:		checkIndicator
+			width:	height
+			height:	label.height
+			y:		control.padding
+			x:		control.padding
+
+			color:			control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
+			border.color:	control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor)					: Theme.disableControlBackgroundColor
+			border.width:	1
+			radius:			Theme.borderRadius
+
+			Text
+			{
+				visible:					control.checked ? true : false
+				color:						Theme.white
+				text:						"\u2713"
+				font:						Theme.font
+				anchors.horizontalCenter:	parent.horizontalCenter
+				renderType:					Text.QtRendering //Prettier
+			}
+		}
+
+		Rectangle
+		{
+			id: focusIndicator
+			anchors.centerIn: checkIndicator
+			width: checkIndicator.width + Theme.jaspControlHighlightWidth
+			height: checkIndicator.height + Theme.jaspControlHighlightWidth
+			color: "transparent"
+			border.width: 0
+			border.color: "transparent"
+			radius: Theme.jaspControlHighlightWidth
+		}
+
+		contentItem: Label
+		{
+			id:					label
+			text:				control.text
+			font:				Theme.font
+			leftPadding:		checkIndicator.width + control.spacing
+			verticalAlignment:	Text.AlignVCenter
+		}
+
+		background: Rectangle
+		{
+			color: "transparent"
+		}
+	}
+
+	GridLayout
+	{
+		id:				childControlsArea
+		enabled:		enableChildrenOnChecked ? control.checked : true
+		visible:		children.length > 0
+		columns:		childrenOnSameRow ? children.length : 1
+		rowSpacing:		Theme.rowGroupSpacing
+		columnSpacing:	Theme.columnGridSpacing
+
+		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
+	}
+
+	Component.onCompleted:
+	{
+		if (childControlsArea.children.length > 0)
+		{
+			if (childrenOnSameRow)
+			{
+				childControlsArea.x = childControlsArea.childControlsPadding
+				childControlsArea.anchors.top = control.top
+				if (childControlsArea.implicitHeight < control.implicitHeight)
+					childControlsArea.anchors.topMargin = control.padding - 1 // border width
+			}
+			else
+			{
+				childControlsArea.anchors.top = control.bottom
+				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
+				childControlsArea.anchors.left = control.left
+				childControlsArea.anchors.leftMargin = childControlsArea.childControlsPadding
+			}
+		}
+
+	}
+
+
 }

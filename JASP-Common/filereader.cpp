@@ -52,7 +52,7 @@ FileReader::~FileReader()
 
 void FileReader::openFile(const string &filePath)
 {
-	#ifdef __WIN32__
+	#ifdef _WIN32
 	boost::filesystem::path path = boost::nowide::widen(filePath);
 	#else
 	boost::filesystem::path path = filePath;
@@ -75,7 +75,7 @@ void FileReader::openFile(const string &filePath)
 void FileReader::openEntry(const string &archivePath, const string &entryPath)
 {
 	bool success = false;
-	#ifdef __WIN32__
+	#ifdef _WIN32
 	boost::filesystem::path pathArchive = boost::nowide::widen(archivePath);
 	#else
 	boost::filesystem::path pathArchive = archivePath;
@@ -87,7 +87,7 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
-		#ifdef __WIN32__
+		#ifdef _WIN32
 		int r = archive_read_open_filename_w(_archive, pathArchive.native().c_str(), 10240);
 		#else
 		int r = archive_read_open_filename(_archive, pathArchive.native().c_str(), 10240);
@@ -99,7 +99,7 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 			struct archive_entry *entry;
 			while (archive_read_next_header(_archive, &entry) == ARCHIVE_OK)
 			{
-				//#ifdef __WIN32__
+				//#ifdef _WIN32
 				//if (wstring(archive_entry_pathname_w(entry)) == pathEntry.native())
 				//#else
 				if (string(archive_entry_pathname(entry)) == entryPath)//pathEntry.native())
@@ -220,20 +220,26 @@ int FileReader::readData(char *data, int maxSize, int &errorCode)
 	return count;
 }
 
-char* FileReader::readAllData(int blockSize, int &errorCode)
+std::string FileReader::readAllData(int blockSize, int &errorCode)
 {
 	int size = bytesAvailable();
 	if (size == 0)
 		return NULL;
 
+	size++;
+
 	char *data = new char[size];
+	data[size - 1] = '\0';
 
 	int startOffset = _currentRead;
 
 	errorCode = 0;
 	while (readData(&data[_currentRead - startOffset], blockSize, errorCode) > 0 && errorCode == 0);
 
-	return data;
+	std::string out(data);
+	delete[] data;
+
+	return out;
 }
 
 
@@ -282,7 +288,7 @@ vector<string> FileReader::getEntryPaths(const string &archivePath, const string
 {
 	vector<string> files = vector<string>();
 
-	#ifdef __WIN32__
+	#ifdef _WIN32
 	boost::filesystem::path pathArchive = boost::nowide::widen(archivePath);
 	#else
 	boost::filesystem::path pathArchive = archivePath;
@@ -296,7 +302,7 @@ vector<string> FileReader::getEntryPaths(const string &archivePath, const string
 		archive_read_support_filter_all(a);
 		archive_read_support_format_all(a);
 
-		#ifdef __WIN32__
+		#ifdef _WIN32
 		int r = archive_read_open_filename_w(a, pathArchive.native().c_str(), 10240);
 		#else
 		int r = archive_read_open_filename(a, pathArchive.native().c_str(), 10240);

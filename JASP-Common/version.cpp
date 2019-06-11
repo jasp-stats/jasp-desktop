@@ -21,23 +21,18 @@
 #include <sstream>
 #include <stdio.h>
 
-using namespace std;
+//For https://github.com/jasp-stats/INTERNAL-jasp/issues/264 (major and minor defined by GNU C):
+#ifdef major
+#undef major
+#endif
 
-Version::Version()
-{
-	major = 0;
-	minor = 0;
-	revision = 0;
-	build = 0;
-}
+#ifdef minor
+#undef minor
+#endif
 
 Version::Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build)
-{
-	major = _major;
-	minor = _minor;
-	revision = _revision;
-	build = _build;
-}
+	: major(_major), minor(_minor), revision(_revision), build(_build)
+{}
 
 Version::Version(std::string versionString)
 {
@@ -90,14 +85,14 @@ Version::Version(std::string versionString)
 
 	if (error)
 	{
-		major = 0;
-		minor = 0;
-		revision = 0;
-		build = 0;
+		major		= 0;
+		minor		= 0;
+		revision	= 0;
+		build		= 0;
 	}
 }
 
-bool Version::operator>(const Version& version)
+bool Version::operator>(const Version& version) const
 {
 	return ((this->major > version.major) ||
 		(this->major == version.major && this->minor > version.minor) ||
@@ -105,7 +100,7 @@ bool Version::operator>(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build > version.build));
 }
 
-bool Version::operator<(const Version& version)
+bool Version::operator<(const Version& version) const
 {
 	return ((this->major < version.major) ||
 		(this->major == version.major && this->minor < version.minor) ||
@@ -113,7 +108,7 @@ bool Version::operator<(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build < version.build));
 }
 
-bool Version::operator>=(const Version& version)
+bool Version::operator>=(const Version& version) const
 {
 	return ((this->major > version.major) ||
 		(this->major == version.major && this->minor > version.minor) ||
@@ -121,7 +116,7 @@ bool Version::operator>=(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build >= version.build));
 }
 
-bool Version::operator<=(const Version& version)
+bool Version::operator<=(const Version& version) const
 {
 	return ((this->major < version.major) ||
 		(this->major == version.major && this->minor < version.minor) ||
@@ -129,12 +124,12 @@ bool Version::operator<=(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build <= version.build));
 }
 
-bool Version::operator==(const Version& version)
+bool Version::operator==(const Version& version) const
 {
 	return this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build == version.build;
 }
 
-bool Version::operator!=(const Version& version)
+bool Version::operator!=(const Version& version) const
 {
 	return this->major != version.major || this->minor != version.minor || this->revision != version.revision || this->build != version.build;
 }
@@ -154,31 +149,40 @@ bool Version::isBeta() const
 	return build >= 101 && build <= 254;
 }
 
-string Version::asString() const
+std::string Version::asString(bool addDebugFlag) const
 {
-	stringstream stream;
+	std::stringstream stream;
 
-	stream << (int)major;
-	stream  << "." << (int)minor;
+	stream << (int)major << "." << (int)minor;
+
 	if (revision != 0 || build > 255 )
 		stream << "." << (int)revision;
 
-	if (isRelease()) {
+	/*if (isRelease()) {
 		if (build > 255)
 			stream << "." << (int)(build - 255);
 	}
 	else if (isAlpha())
 		stream << " Alpha " << (int)build;
 	else if (isBeta())
-		stream << " Beta " << (int)(build - 100);
-	
+		stream << " Beta " << (int)(build - 100);*/
+
+	if(addDebugFlag) //Moved from aboutmodel.cpp
+	{
+#ifdef JASP_DEBUG
+		stream << "-Debug";
+#endif
+
+	}
+
 	return stream.str();
 }
 
 bool Version::isEmpty() const
 {
-	return major == 0 &&
-		minor == 0 &&
-		revision == 0 &&
-		build == 0;
+	return
+		major		== 0 &&
+		minor		== 0 &&
+		revision	== 0 &&
+		build		== 0;
 }

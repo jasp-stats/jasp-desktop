@@ -1,3 +1,4 @@
+
 .jasp-no-select {
 	-webkit-user-select: none;
 }
@@ -17,7 +18,7 @@ body.windows {
 }
 
 body.selected {
-	background-color: #E8E8E8 ;
+        background-color: #ECECEC ;
 }
 
 h1, .h1-toolbar .jasp-menu {
@@ -286,7 +287,7 @@ svg > text
 	margin-right: 1.7em ;
 }
 
-.jasp-analysis {
+:not(.error-state) > .jasp-analysis {
 
 	margin: 0 .7em .7em .7em ;
 	padding: 0 1em 1em 1em ;
@@ -363,26 +364,33 @@ div.image-status.waiting {
 	visibility: visible ;
 }
 
-.error-state {
-	color: silver ;
+div.jasp-image-image.no-data {
+	background-image: url('images/empty-plot.png') ;
+	background-repeat: no-repeat;
+	background-size: contain;
+	position: relative;
+	max-height: 480px;
+	max-width: 480px;
 }
 
-.exception .error-message-box {
+.error-state {
+	color: silver;
+	min-height: 200px;
+	min-width: 500px;
+}
+
+.fatalError.error-message-box {
 	border-width: 3px;
 	border-style: double;
 }
 
-.analysis-error {
+.analysis-error-message {
+	min-width: 400px;
+	max-width: 1000px;
 	position: absolute;
 	top: 60px;
-	left: 40px;
-	right: 40px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.analysis-error.analysis-error-top-max {
-	top: 200px;
+	left: 50px;
+	margin-right: 50px;
 }
 
 .error-message-positioner {
@@ -395,9 +403,7 @@ div.image-status.waiting {
 	z-index: 100 ;
 }
 
-
-
-.jasp-image-holder .error-message-positioner {
+.jasp-image-image .error-message-positioner {
 
 	position: absolute ;
 	top: 25% ;
@@ -416,10 +422,6 @@ div.image-status.waiting {
 	border-radius: .4em ;
 	min-width: 300px ;
 	white-space: normal;
-}
-
-.error-message-message {
-
 }
 
 .stack-trace-selector div,
@@ -596,4 +598,32 @@ pre {
 
 .jasp-code {
   font-family: monospace, monospace;
+}
+
+/* The following code convinces webengine to have scrollbars that look sorta like JASPScrollBar */
+/* width */
+::-webkit-scrollbar {
+ width: 16px;
+ height: 16px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+ background:    #FFFFFF;
+ border-style:  solid;
+ border-width:  1px;
+ border-color:  #9A9A9A
+}
+
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: solid 2px transparent;
+  box-shadow: inset 0 0 0 10px #cacaca;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+ box-shadow: inset 0 0 0 10px #97C4F2;
 }

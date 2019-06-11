@@ -156,51 +156,38 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 
 	constructChildren: function (constructor, data) {
-
-		this.collection = this.model.get('collection');
-		var metaData = data.meta //remember for later
-
-		if(Array.isArray(metaData))  //from jaspResults
-		{
-			_.each(
-				metaData,
-				function (meta)
-				{
-					var itemResults = this.collection[meta.name]
-					data.meta = meta
-
-					var itemView = constructor.call(this, itemResults, data, true);
-					if (itemView !== null) {
-						itemView.inCollection = true;
-
-						if (itemView.resizer)
-							this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
-
-						this.listenTo(itemView, "all", this.eventEcho)
-						this.views.push(itemView);
-						this.localViews.push(itemView);
-					}
-				},
-				this);
-
-			data.meta = metaData //and put it back again..
-		}
-		else
-		{
-
-			_.each(this.collection, function (itemResults) {
-				var itemView = constructor.call(this, itemResults, data, true);
-				if (itemView !== null) {
-					itemView.inCollection = true;
-
-					if (itemView.resizer)
-						this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
-
-					this.listenTo(itemView, "all", this.eventEcho)
-					this.views.push(itemView);
-					this.localViews.push(itemView);
+		if (Array.isArray(data.meta)) { // the meta comes from a jaspResult analysis
+			_.each(data.meta, function (meta) {
+				if (meta.type == "collection" && data.collection[meta.name].title == "") { // remove collections without a title from view
+					var dataWithSkip = jQuery.extend(true, {}, data);
+					dataWithSkip.collection = dataWithSkip.collection[meta.name]["collection"];
+					dataWithSkip.meta = meta.meta;
+					this.constructChildren(constructor, dataWithSkip);
+				} else {
+					var itemResults = data.collection[meta.name];
+					data.meta = meta;
+					let itemView = constructor.call(this, itemResults, data, true);
+					this.pushViews(itemView);
 				}
 			}, this);
+		} else {
+			_.each(data.collection, function (itemResults) {
+				var itemView = constructor.call(this, itemResults, data, true);
+				this.pushViews(itemView);
+			}, this);
+		}
+	},
+
+	pushViews: function(itemView) {
+		if (itemView !== null) {
+			itemView.inCollection = true;
+
+			if (itemView.resizer)
+				this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
+
+			this.listenTo(itemView, "all", this.eventEcho)
+			this.views.push(itemView);
+			this.localViews.push(itemView);
 		}
 	},
 
@@ -343,9 +330,12 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 		 for (var i = 0; i < this.views.length; i++)
 		 {
-			 var optCitation = this.views[i].getCitations();
+			
+			var optCitation = null;
+			if (this.views[i].getCitations)
+				optCitation = this.views[i].getCitations();
 
-			 if(optCitation !== null)
+			 if (optCitation !== null)
 				 cites = cites.concat(optCitation);
 		 }
 

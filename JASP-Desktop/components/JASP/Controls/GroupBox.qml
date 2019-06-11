@@ -16,47 +16,127 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-import QtQuick.Layouts 1.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+import QtQuick.Layouts 1.3 as L
 import JASP.Theme 1.0
 
 Rectangle {
-    id: control
+	id:					control
+	
+	implicitWidth:		Math.max(label.realWidth, Theme.groupContentPadding + contentArea.implicitWidth)
+	implicitHeight:		label.realHeight + Theme.titleBottomMargin + contentArea.implicitHeight	
+	color:				Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
+	L.Layout.leftMargin:	indent ? Theme.indentationLength : 0
+	visible:			!debug || DEBUG_MODE
     
-    property int leftPadding: Theme.groupContentPadding
-    property int spacing: Theme.rowSpacing
-    property string title: ""
-    property bool debug: false
-    property var childControls: []
-    default property alias content: column.children
-    implicitHeight: (title ? 20 : 0) + column.childrenRect.height
-    implicitWidth: column.childrenRect.width + (title ? control.leftPadding : 0)
-    
-    color: Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
-    
-    Label {
-        id: label
-        anchors.top: control.top
-        anchors.left: control.left
-        text: control.title
-        visible: control.title ? true : false
+	default property alias	content:			contentArea.children
+			property alias	contentArea:		contentArea
+			property int	rowSpacing:			Theme.rowGroupSpacing
+			property int	columnSpacing:		Theme.columnGroupSpacing
+			property int	columns:			1
+			property string title:				""
+			property bool	debug:				false
+			property bool	indent:				false
+			property bool	alignTextFields:	true
+			property var	childControls:		[]
+			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
+			property alias	label:				label
+
+			property var	_allTextFields:		[]
+
+
+	Label
+	{
+		id:				label
+		anchors.top:	control.top
+		anchors.left:	control.left
+		text:			control.title
+		color:			enabled ? Theme.textEnabled : Theme.textDisabled
+		font:			Theme.font
+		visible:		control.title ? true : false
+		
+		property int	realHeight: visible ? implicitHeight : 0
+		property int	realWidth: visible ? implicitWidth : 0
+		
     }
     
-    ColumnLayout {
-        id: column
-        anchors.top: control.title ? label.bottom : control.top
-        anchors.left: control.left
-        anchors.leftMargin: control.title ? control.leftPadding : 0
-        spacing: control.spacing
+	GridLayout
+	{
+		id:					contentArea
+		columns:			control.columns
+		anchors.top:		control.title ? label.bottom : control.top
+		anchors.topMargin:	control.title ? Theme.titleBottomMargin : 0
+		anchors.left:		control.left
+        anchors.leftMargin: control.title ? Theme.groupContentPadding : 0
+		rowSpacing:			control.rowSpacing
+		columnSpacing:		control.columnSpacing
     }
+
+	Connections
+	{
+		id: alignTextFieldSignal
+		target: null
+		enabled: false
+		onXChanged: alignTextFieldTimer.restart()
+	}
+
+	Timer
+	{
+		// The alignment should be done when the scaling of the TextField's are done
+		id: alignTextFieldTimer
+		interval: 50
+		onTriggered: _alignTextField()
+	}
     
-    Component.onCompleted: {
-        form.getJASPControls(childControls, column)
-        for (var i = 0; i < childControls.length; i++) {
+	Component.onCompleted:
+	{
+		var i;
+        form.getJASPControls(childControls, contentArea, false)
+		for (i = 0; i < childControls.length; i++)
+		{
             if (control.debug)
-                childControls[i].debug = true;
-        }
+				childControls[i].setDebugState();
+		}
+
+		for (i = 0; i < contentArea.children.length; i++)
+		{
+			var child = contentArea.children[i];
+			if (child.hasOwnProperty('controlType') && child.controlType === 'TextField')
+				_allTextFields.push(child)
+		}
+
+		_alignTextField()
+	}
+
+	function _alignTextField()
+	{
+		if (alignTextFields && _allTextFields.length > 1)
+		{
+			var i;
+			var xMax = 0;
+			var longestControl;
+			for (i = 0; i < _allTextFields.length; i++)
+			{
+				_allTextFields[i].controlXOffset = 0;
+				if (xMax < _allTextFields[i].control.x)
+				{
+					longestControl = _allTextFields[i].control;
+					xMax = _allTextFields[i].control.x;
+				}
+            }
+            
+			if (!alignTextFieldSignal.target)
+				alignTextFieldSignal.target = longestControl;
+			for (i = 0; i < _allTextFields.length; i++)
+			{
+				if (_allTextFields[i].control !== longestControl)
+					// Cannot use binding here, since control.x depends on the controlXOffset,
+					// that would generate a binding loop
+					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].control.x);
+
+			}
+			alignTextFieldSignal.enabled = true;
+		}
     }
-    
 }

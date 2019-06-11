@@ -17,12 +17,15 @@
 
 #include "labels.h"
 #include "iostream"
-#include <boost/foreach.hpp>
+
+#include "log.h"
 
 using namespace std;
 
 map<int, map<int, string> > Labels::_orgStringValues;
 int Labels::_counter = 0;
+
+typedef unsigned int uint;
 
 Labels::Labels(boost::interprocess::managed_shared_memory *mem)
 	: _labels(mem->get_segment_manager())
@@ -70,7 +73,31 @@ void Labels::removeValues(std::set<int> valuesToRemove)
 			[&valuesToRemove](const Label& label) {
 				return std::find(valuesToRemove.begin(), valuesToRemove.end(), label.value()) != valuesToRemove.end();
 			}),
-		_labels.end());
+				_labels.end());
+}
+
+std::map<string, int> Labels::_resetLabelValues(int& maxValue)
+{
+	std::map<string, int> result;
+	map<int, string> &orgStringValues = getOrgStringValues();
+	map<int, string> newOrgStringValues;
+	int labelValue = 1;
+	for (Label& label : _labels)
+	{
+		int oldLabelValue = label.value();
+		if (orgStringValues.find(oldLabelValue) != orgStringValues.end())
+			newOrgStringValues[labelValue] = orgStringValues[oldLabelValue];
+		if (oldLabelValue != labelValue)
+			label.setValue(labelValue);
+		result[label.text()] = labelValue;
+		labelValue++;
+	}
+
+	orgStringValues.clear();
+	orgStringValues.insert(newOrgStringValues.begin(), newOrgStringValues.end());
+	maxValue = labelValue - 1;
+
+	return result;
 }
 
 bool Labels::syncInts(map<int, string> &values)
@@ -112,8 +139,7 @@ bool Labels::syncInts(const std::set<int> &values)
 		}
 		else
 		{
-			std::cout << "Remove label " << label.text() << std::endl;
-			std::cout.flush();
+			Log::log() << "Remove label " << label.text() << std::endl;
 			valuesToRemove.insert(value);
 		}
 	}
@@ -129,12 +155,20 @@ bool Labels::syncInts(const std::set<int> &values)
 
 std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething)
 {
-	std::map<std::string,std::string> valuesToAdd;
+	std::vector<std::pair<std::string,std::string> > valuesToAdd;
+	std::map<std::string, std::vector<unsigned int> > mapValuesToAdd;
+	unsigned int valuesToAddIndex = 0;
 
 	for (const std::string& newValue : new_values)
 	{
 		std::string shortValue	= newValue.length() > Label::MAX_LABEL_LENGTH ? newValue.substr(0, Label::MAX_LABEL_LENGTH) : newValue;
-		valuesToAdd[shortValue] = newValue;
+		valuesToAdd.push_back(make_pair(newValue, shortValue));
+		auto elt = mapValuesToAdd.find(shortValue);
+		if (elt != mapValuesToAdd.end())
+			elt->second.push_back(valuesToAddIndex);
+		else
+			mapValuesToAdd[shortValue] = { valuesToAddIndex };
+		valuesToAddIndex++;
 	}
 	
 	std::set<int>				valuesToRemove;
@@ -149,26 +183,36 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 		if (labelValue > maxLabelKey)
 			maxLabelKey = labelValue;
 
-		auto elt = valuesToAdd.find(labelText);
-		if (elt != valuesToAdd.end())
+		auto elt = mapValuesToAdd.find(labelText);
+		if (elt != mapValuesToAdd.end())
 		{
-			result[elt->second] = labelValue;
-			valuesToAdd.erase(elt);
+			for (uint i : elt->second)
+				result[valuesToAdd[i].first] = labelValue;
+			mapValuesToAdd.erase(elt);
 		}
 		else
 			valuesToRemove.insert(labelValue);
 	}
 
-	if(changedSomething != NULL && (valuesToRemove.size() > 0 || valuesToAdd.size() > 0))
+	if(changedSomething != nullptr && (valuesToRemove.size() > 0 || mapValuesToAdd.size() > 0))
 		*changedSomething = true;
 
-	removeValues(valuesToRemove);
+	if (valuesToRemove.size() > 0)
+	{
+		removeValues(valuesToRemove);
+		result = _resetLabelValues(maxLabelKey);
+	}
 	
 	for (auto elt : valuesToAdd)
 	{
-		maxLabelKey++;
-		add(maxLabelKey, elt.first, true);
-		result[elt.second] = maxLabelKey;
+		const std::string& newLabel = elt.first;
+		const std::string& shortLabel = elt.second;
+		if (mapValuesToAdd.find(shortLabel) != mapValuesToAdd.end())
+		{
+			maxLabelKey++;
+			add(maxLabelKey, shortLabel, true);
+			result[newLabel] = maxLabelKey;
+		}
 	}
 
 	for (Label& label : _labels)
@@ -182,7 +226,7 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &n
 			{
 				_setNewStringForLabel(label, newStringLabel);
 
-				if(changedSomething != NULL)
+				if(changedSomething != nullptr)
 					*changedSomething = true;
 			}
 		}
@@ -219,12 +263,11 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 			return label;
 	}
 
-	std::cout << "Cannot find entry " << index << std::endl;
+	Log::log() << "Cannot find entry " << index << std::endl;
 	for(const Label &label: _labels)
 	{
-		std::cout << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
+		Log::log() << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
 	}
-	std::cout.flush();
 	throw runtime_error("Cannot find this entry");
 }
 
@@ -232,8 +275,7 @@ bool Labels::setLabelFromRow(int row, const string &display)
 {
 	if (row >= (int)_labels.size() || row < 0)
 	{
-		std::cout << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
-		std::cout.flush();
+		Log::log() << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return false;
 	}
 
@@ -296,8 +338,7 @@ string Labels::getValueFromRow(int row)
 {
 	if (row >= (int)_labels.size())
 	{
-		std::cout << "Get value with wrong row: " << row << ", size: " << _labels.size() << std::endl;
-		std::cout.flush();
+		Log::log() << "Get value with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return "";
 	}
 	const Label &label = _labels.at(row);
@@ -313,8 +354,7 @@ std::string Labels::getLabelFromRow(int row)
 {
 	if (row >= (int)_labels.size())
 	{
-		std::cout << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
-		std::cout.flush();
+		Log::log() << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return "";
 	}
 	Label &label = _labels.at(row);

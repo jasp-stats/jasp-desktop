@@ -12,16 +12,7 @@ typedef bool (*pollMessagesFuncDef)();
 class jaspResults : public jaspContainer
 {
 public:
-	jaspResults(std::string title = "", std::string status = "running") : jaspContainer(title, jaspObjectType::results)
-	{
-		setStatus(status);
-
-		if(_baseCitation != "")
-			addCitation(_baseCitation);
-
-		if(_saveResultsHere != "")
-			loadResults();
-	}
+	jaspResults(std::string title, Rcpp::RObject oldState);
 
 	//static functions to allow the values to be set before the constructor is called from R. Would be nicer to just run the constructor in C++ maybe?
 	static void setSendFunc(sendFuncDef sendFunc);
@@ -29,6 +20,8 @@ public:
 	static void setResponseData(int analysisID, int revision);
 	static void setSaveLocation(const char * newSaveLocation);
 	static void setBaseCitation(std::string baseCitation);
+	static void setInsideJASP();
+	static bool isInsideJASP() { return _insideJASP; }
 
 	void send(std::string otherMsg = "");
 	void checkForAnalysisChanged();
@@ -46,11 +39,12 @@ public:
 	void saveResults();
 
 	void loadResults();
-	void setErrorMessage(std::string msg);
+	void setErrorMessage(std::string msg, std::string errorStatus);
 	void changeOptions(std::string opts);
 	void setOptions(std::string opts);
 	void pruneInvalidatedData();
 
+	Rcpp::List	getOtherObjectsForState();
 	Rcpp::List	getPlotObjectsForState();
 	Rcpp::List	getPlotPathsForKeep();
 	Rcpp::List	getKeepList();
@@ -63,25 +57,39 @@ public:
 
 	void startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs = 500);
 	void progressbarTick();
+	void resetProgressbar();
 
-	int getCurrentTimeMs();
+	static Rcpp::RObject	getObjectFromEnv(std::string envName);
+	static void				setObjectInEnv(std::string envName, Rcpp::RObject obj);
+	static bool				objectExistsInEnv(std::string envName);
 
 private:
-	static Json::Value response;
-	static sendFuncDef ipccSendFunc;
-	static pollMessagesFuncDef ipccPollFunc;
-	static std::string _saveResultsHere;
-	static std::string _baseCitation;
+	static Json::Value				_response;
+	static sendFuncDef				_ipccSendFunc;
+	static pollMessagesFuncDef		_ipccPollFunc;
+	static std::string				_saveResultsHere;
+	static std::string				_baseCitation;
+	static bool						_insideJASP;
+	static const std::string		analysisChangedErrorMessage;
 
-	std::string errorMessage = "";
-	static const std::string analysisChangedErrorMessage;
+	static Rcpp::Environment		*	_RStorageEnv; //we need this environment to store R objects in a "named" fashion, because then the garbage collector doesn't throw away everything...
+
+	std::string	errorMessage = "";
 	Json::Value	_currentOptions		= Json::nullValue,
 				_previousOptions	= Json::nullValue;
 
 	void addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & pngImgObj);
 	void addPlotPathsForKeepFromJaspObject(jaspObject * obj, Rcpp::List & pngPathImgObj);
+	void addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & cumulativeList);
+	void fillEnvironmentWithStateObjects(Rcpp::List state);
 
-	int _progressbarExpectedTicks = 100, _progressbarLastUpdateTime = -1, _progressbarTicks = 0, _progressbarBetweenUpdatesTime = 500;
+
+	int		_progressbarExpectedTicks		= 100,
+			_progressbarLastUpdateTime		= -1,
+			_progressbarTicks				= 0,
+			_progressbarBetweenUpdatesTime	= 500,
+			_sendingFeedbackLastTime		= -1,
+			_sendingFeedbackInterval		= 500;
 };
 
 void JASPresultFinalizer(jaspResults * obj);
@@ -94,19 +102,24 @@ class  jaspResults_Interface : public jaspContainer_Interface
 public:
 	jaspResults_Interface(jaspObject * dataObj) : jaspContainer_Interface(dataObj) {}
 
-	void		send()								{ ((jaspResults*)myJaspObject)->send(); }
-	void		complete()							{ ((jaspResults*)myJaspObject)->complete(); }
-	void		setErrorMessage(std::string msg)	{ ((jaspResults*)myJaspObject)->setErrorMessage(msg); }
-	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState(); }
-	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList(); }
-	void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick(); }
-	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults(); }
-
-	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks); }
-	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs); }
+	void		send()								{ ((jaspResults*)myJaspObject)->send();								}
+	void		complete()							{ ((jaspResults*)myJaspObject)->complete();							}
+	Rcpp::List	getOtherObjectsForState()			{ return ((jaspResults*)myJaspObject)->getOtherObjectsForState();	}
+	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState();	}
+	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList();				}
+	void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick();					}
+	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults();				}
+	
+	void		setErrorMessage(std::string msg, std::string errorStatus)			{ ((jaspResults*)myJaspObject)->setErrorMessage(msg, errorStatus);							}
+	
+	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks);							}
+	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs);	}
 
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }
+
+	void		setStatus(std::string status)		{ ((jaspResults*)myJaspObject)->setStatus(status); }
+	std::string getStatus()							{ return ((jaspResults*)myJaspObject)->getStatus(); }
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspResults, std::string,	_relativePathKeep, RelativePathKeep)
 };

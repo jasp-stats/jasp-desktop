@@ -1,12 +1,12 @@
 
 #include "levelstablemodel.h"
-#include <boost/foreach.hpp>
+
 #include <boost/container/vector.hpp>
 #include <algorithm>
-#include <QDebug>
+
 #include <QColor>
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 LevelsTableModel::LevelsTableModel(QObject *parent)
 	: QAbstractTableModel(parent)
@@ -22,6 +22,9 @@ void LevelsTableModel::setColumn(Column *column)
 	_colName = column != NULL ? column->name() : "";
 	endResetModel();
 	emit resizeLabelColumn();
+
+	if(column == NULL)	setChosenColumn(-1);
+	else				setChosenColumn(_dataSet->getColumnIndex(_colName));
 }
 
 void LevelsTableModel::refreshColumn(Column * column)
@@ -128,7 +131,7 @@ void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
 	Labels &labels = _column->labels();
 	std::vector<Label> new_labels(labels.begin(), labels.end());
 
-	BOOST_FOREACH (QModelIndex &index, selection)
+	for (QModelIndex &index : selection)
 	{
 		//if (index.column() == 0) {
 			iter_swap(new_labels.begin() + index.row(), new_labels.begin() + (index.row() + (up ? - 1: 1)));
@@ -291,4 +294,14 @@ int LevelsTableModel::filteredOut()
 			filteredOut++;
 
 	return filteredOut;
+}
+
+
+void LevelsTableModel::setChosenColumn(int chosenColumn)
+{
+	if (_chosenColumn == chosenColumn)
+		return;
+
+	_chosenColumn = chosenColumn;
+	emit chosenColumnChanged(_chosenColumn);
 }

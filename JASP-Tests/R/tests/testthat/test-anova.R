@@ -55,7 +55,7 @@ test_that("Main table results match", {
 
   for (type in c("type1", "type2", "type3")) {
     options$sumOfSquares <- type
-    results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("Anova", "test.csv", options)
     table <- results[["results"]][["anova"]][["data"]]
     expect_equal_tables(table, refTables[[type]], label=paste("Table with SS", type))
   }
@@ -68,7 +68,7 @@ test_that("Homogeneity of Variances table results match", {
   options$modelTerms <- list(list(components="facExperim"))
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   table <- results[["results"]][["assumptionsObj"]][["levene"]][["data"]]
   expect_equal_tables(table, list(3.1459013381035, 1, 98, 0.0792241296904395, 1.83142365040653, 1))
 })
@@ -122,7 +122,7 @@ test_that("Contrasts table results match", {
   contrasts <- c("deviation", "simple", "difference", "Helmert", "repeated", "polynomial")
   for (contrast in contrasts) {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
-    results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("Anova", "test.csv", options)
     table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
   }
@@ -138,13 +138,15 @@ test_that("Post Hoc table results match", {
   options$postHocTestsHolm <- TRUE
   options$postHocTestsScheffe <- TRUE
   options$postHocTestsTukey <- TRUE
+  options$postHocTestsSidak <- TRUE
   options$postHocTestsVariables <- "contBinom"
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table,
-    list(0, 1, 0.163364220743842, 0.214904085649005, 0.760172707980336,
-         0.15401876311258, 0.448976320466698, 0.448976320466698, 0.448976320466698,
-         0.448976320466698, -0.2631059, 0.5898344, "TRUE")
+                      list(0, 1, 0.163364220743842, 0.214904085649005, 0.760172707980337,
+                           0.15401876311258, 0.448976320466697, 0.448976320466697, 0.448976320466697,
+                           0.448976320466697, 0.448976320466697, -0.263105943067511, 0.589834384555196,
+                           "TRUE")
     )
 })
 
@@ -173,7 +175,7 @@ test_that("Marginal Means table results match", {
 
   for (adjustment in c("none", "Bonferroni", "Sidak")) {
     options$marginalMeansCIAdjustment <- adjustment
-    results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("Anova", "test.csv", options)
     table <- results[["results"]][["marginalMeans"]][["collection"]][[1]][["data"]]
     expect_equal_tables(table, refTables[[adjustment]], label=paste("Table with CI adjustment", adjustment))
   }
@@ -185,7 +187,7 @@ test_that("Descriptives table results match", {
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
   options$descriptives <- TRUE
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   table <- results[["results"]][["descriptivesObj"]][["descriptivesTable"]][["data"]]
   expect_equal_tables(table,
     list(0, 58, -0.120135614827586, 1.10575982846952, "TRUE", 1, 42, -0.283499835571429,
@@ -193,42 +195,42 @@ test_that("Descriptives table results match", {
   )
 })
 
-# test_that("Q-Q plot matches", {
-#   options <- jasptools::analysisOptions("Anova")
-#   options$dependent <- "contNormal"
-#   options$fixedFactors <- "contBinom"
-#   options$modelTerms <- list(list(components="contBinom"))
-#   options$qqPlot <- TRUE
-#   results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "q-q", dir="Anova")
-# })
+test_that("Q-Q plot matches", {
+  options <- jasptools::analysisOptions("Anova")
+  options$dependent <- "contNormal"
+  options$fixedFactors <- "contBinom"
+  options$modelTerms <- list(list(components="contBinom"))
+  options$qqPlot <- TRUE
+  results <- jasptools::run("Anova", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "q-q", dir="Anova")
+})
 
-# test_that("Descriptives plots match", {
-#   options <- jasptools::analysisOptions("Anova")
-#   options$dependent <- "contNormal"
-#   options$fixedFactors <- c("facFive", "contBinom")
-#   options$wlsWeights <- "facFifty"
-#   options$modelTerms <- list(
-#     list(components="facFive"),
-#     list(components="contBinom"),
-#     list(components=c("facFive", "contBinom"))
-#   )
-#   options$plotHorizontalAxis <- "contBinom"
-#   options$plotSeparateLines <- "facFive"
-#   options$plotErrorBars <- TRUE
-#   options$confidenceIntervalInterval <- 0.90
-#
-#   options$errorBarType <- "confidenceInterval"
-#   results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "descriptives-ci", dir="Anova")
-#
-#   options$errorBarType <- "standardError"
-#   results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "descriptives-se", dir="Anova")
-# })
+test_that("Descriptives plots match", {
+  options <- jasptools::analysisOptions("Anova")
+  options$dependent <- "contNormal"
+  options$fixedFactors <- c("facFive", "contBinom")
+  options$wlsWeights <- "facFifty"
+  options$modelTerms <- list(
+    list(components="facFive"),
+    list(components="contBinom"),
+    list(components=c("facFive", "contBinom"))
+  )
+  options$plotHorizontalAxis <- "contBinom"
+  options$plotSeparateLines <- "facFive"
+  options$plotErrorBars <- TRUE
+  options$confidenceIntervalInterval <- 0.90
+
+  options$errorBarType <- "confidenceInterval"
+  results <- jasptools::run("Anova", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "descriptives-ci", dir="Anova")
+
+  options$errorBarType <- "standardError"
+  results <- jasptools::run("Anova", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "descriptives-se", dir="Anova")
+})
 
 test_that("Simple Main Effects table results match", {
   options <- jasptools::analysisOptions("Anova")
@@ -243,7 +245,7 @@ test_that("Simple Main Effects table results match", {
   options$moderatorFactorTwo <- ""
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Anova", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "debug.csv", options)
   table <- results[["results"]][["simpleEffects"]][["data"]]
   expect_equal_tables(table, list(1, 0.350864897951646, 1, 0.350864897951646, 0.310783783968887,
                                   0.578524772558188, "TRUE", 2, 2.72259751707838, 1, 2.72259751707838,
@@ -264,7 +266,7 @@ test_that("Nonparametric table results match", {
     list(components="facExperim"),
     list(components="facFive")
   )  
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   table <- results[["results"]][["kruskal"]][["data"]]
   expect_equal_tables(table,
                       list("facFive", 3.39599999999996, 4, 0.493866894607871, "facExperim",       
@@ -277,7 +279,7 @@ test_that("Analysis handles errors", {
   options$dependent <- "debInf"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                    label="Inf dependent check")
 
@@ -285,21 +287,21 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "contBinom"
   options$wlsWeights <- "debInf"
   options$modelTerms <- list(list(components="contBinom"))
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="Inf WLS weights check")
 
   options$dependent <- "contNormal"
   options$fixedFactors <- "debSame"
   options$modelTerms <- list(list(components="debSame"))
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="1-level factor check")
 
   options$dependent <- "debSame"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive"))
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="No variance check")
 
@@ -307,7 +309,180 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "facFive"
   options$wlsWeights <- "contNormal"
   options$modelTerms <- list(list(components="facFive"))
-  results <- jasptools::run("Anova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="Negative WLS weights check")
+})
+
+#### Andy Field Tests ----
+
+#### Chapter 4 -----
+test_that("Field - Chapter 4 results match", {
+  options <- jasptools::analysisOptions("ANOVA")
+  options$dependent <- "Happiness"
+  options$fixedFactors <- "Dose"
+  options$modelTerms <- list(list(components = "Dose"))
+  
+  options$homogeneityCorrections <- TRUE
+  options$homogeneityBrown <- TRUE
+  options$homogeneityWelch <- TRUE
+  
+  results <- jasptools::run("Anova", "Puppies Dummy.csv", options, view = FALSE)
+  table <- results[['results']][['anova']][['data']]
+  
+  # this table is also in the chapter 5
+  expect_equal_tables(table,
+                      list("Dose", 20.1333333333334, 2, 10.0666666666667, 5.11864406779661,
+                           0.0246942895382225, "TRUE", "None", "Dose", 20.1333333333334,
+                           2, 10.0666666666667, 5.11864406779661, 0.0255514729692058, "FALSE",
+                           "Brown-Forsythe", "Dose", 20.1333333333334, 2, 10.0666666666667,
+                           4.32045117281357, 0.0537384707116728, "FALSE", "Welch", "Residual",
+                           23.6, 12, 1.96666666666667, "", "", "TRUE", "None", "Residual",
+                           23.6, 11.5743973399834, 2.03898305084746, "", "", "FALSE", "Brown-Forsythe",
+                           "Residual", 23.6, 7.94337535943375, 2.97102918244598, "", "",
+                           "FALSE", "Welch"))
+})
+
+#### Chapter 5 ----
+
+test_that("Field - Chapter 5 results match", {
+  options <- jasptools::analysisOptions("ANOVA")
+  options$dependent <- "Happiness"
+  options$fixedFactors <- "Dose"
+  options$modelTerms <- list(list(components = "Dose"))
+  
+  options$contrasts <- list(
+    list(contrast = "Helmert", variable = "Dose")
+  )
+  
+  options$postHocTestsVariables <- "Dose"
+  options$postHocTestsTypeGames <- TRUE
+  options$postHocTestsTypeDunnett <- TRUE
+  options$confidenceIntervalsPostHoc <- TRUE
+  results <- jasptools::run("Anova", "Puppies Dummy.csv", options, view = FALSE)
+  
+  # contrast 
+  table <- results[['results']][['contrasts']][['collection']][[1]][['data']]
+  expect_equal_tables(table,
+                      list("1 - 2, 3", -1.9, 0.768114574786861, -2.47358930863565, 0.0293002196554282,
+                           12, -3.5735778902, -0.2264221098, "TRUE", "2 - 3", -1.8, 0.886942313043338,
+                           -2.02944427560764, 0.0651922067570462, 12, -3.73248129083355,
+                           0.132481290833552, "FALSE"))
+  
+  # standard post hoc (tukey)
+  table <- results[['results']][['posthoc']][['collection']][[1]][['data']]
+  expect_equal_tables(table,
+                      list(1, 2, -1, 0.886942313043338, -1.12746904200424, ".", 0.516276123508473,
+                           ".", ".", ".", ".", -3.36624115850686, 1.36624115850686, "TRUE",
+                           1, 3, -2.8, 0.886942313043338, -3.15691331761188, ".", 0.020924399492241,
+                           ".", ".", ".", ".", -5.16624115850686, -0.433758841493135, "FALSE",
+                           2, 3, -1.8, 0.886942313043338, -2.02944427560764, ".", 0.147457622995377,
+                           ".", ".", ".", ".", -4.16624115850686, 0.566241158506865, "FALSE"))
+  
+  # games-howell post hoc
+  table <- results[['results']][['posthoc']][['collection']][[2]][['data']]
+  expect_equal_tables(table,
+                     list(1, 2, -1, -1.21267812518166, 0.824621125123532, -3.3563089273419,
+                          1.3563089273419, 0.47896489393065, 8, 1, 3, -2.8, -3.05505046330389,
+                          0.916515138991168, -5.43893919399355, -0.161060806006447, 0.0388414107946456,
+                          7.7199124726477, 2, 3, -1.8, -1.96396101212393, 0.916515138991168,
+                          -4.43893919399355, 0.838939193993553, 0.185393344481167, 7.7199124726477))
+  
+  # dunnet post hoc
+  table <- results[['results']][['posthoc']][['collection']][[3]][['data']]
+  expect_equal_tables(table, 
+                      list("2 - 1", 1, 1.12746904200424, 0.886942313043338, 0.445888579780104,
+                           -1.21963511399532, 3.21963511399532, "3 - 1", 2.8, 3.15691331761188,
+                           0.886942313043338, 0.0152377020148067, 0.580364886004677, 5.01963511399532))
+})
+
+#### Chapter 7 ----
+
+test_that("Field - Chapter 7 results match", {
+  options <- jasptools::analysisOptions("ANOVA")
+  
+  options$dependent <- "Attractiveness"
+  options$fixedFactors <- list("FaceType", "Alcohol")
+  options$modelTerms <- list(
+    list(components = "FaceType"),
+    list(components = "Alcohol"),
+    list(components = c("FaceType", "Alcohol"))
+  )
+  
+  options$contrasts <- list(
+    list(contrast = "none", variable = "FaceType"),
+    list(contrast = "Helmert", variable = "Alcohol")
+  )
+  options$confidenceIntervalsContrast <- TRUE
+  
+  options$postHocTestsVariables <- "Alcohol"
+  options$postHocTestsBonferroni <- TRUE
+  options$confidenceIntervalsPostHoc <- TRUE
+  options$postHocTestsBootstrapping <- TRUE
+  options$postHocTestsBootstrappingReplicates <- 500
+  
+  options$marginalMeansTerms <- list(
+    list(components = c("FaceType", "Alcohol"))
+  )
+  options$marginalMeansBootstrapping <- TRUE
+  options$marginalMeansBootstrappingReplicates <- 500
+  
+  set.seed(1)
+  results <- jasptools::run("Anova", "Beer Goggles.csv", options)
+   
+  table <- results$results$anova$data
+  expect_equal_tables(table,
+                      list("FaceType", 21.3333333333334, 1, 21.3333333333334, 15.5826086956522,
+                           0.000295223592290028, "TRUE", "Alcohol", 16.5416666666666, 2,
+                           8.27083333333331, 6.04130434782607, 0.00494338949698304, "FALSE",
+                           "FaceType <unicode> Alcohol", 23.2916666666667, 2, 11.6458333333333,
+                           8.50652173913045, 0.000791273868880283, "FALSE", "Residual",
+                           57.5, 42, 1.36904761904762, "", "", "TRUE"))
+  
+  table <- results$results$contrasts$collection[[1]]$data
+  expect_equal_tables(table,
+                      list("0 - 1, 2", -1.09375, 0.358257190138194, -3.05297431596026, 0.003921402019941,
+                           45, -1.81674228032104, -0.37075771967896, "TRUE", "1 - 2", -0.6875,
+                           0.413679770330811, -1.66191351211161, 0.103977316507, 45, -1.52233957533075,
+                           0.147339575330745, "FALSE"))
+  
+  table <- results$results$posthoc$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(0, 1, -0.749999999999998, 0.413679770330811, -1.8129965586672,
+                           ".", 0.177726007657148, ".", 0.230950085511107, ".", ".", -1.75503241941969,
+                           0.255032419419693, "TRUE", 0, 2, -1.4375, 0.413679770330811,
+                           -3.47491007077881, ".", 0.00337043014651439, ".", 0.0035995676767978,
+                           ".", ".", -2.44253241941969, -0.432467580580307, "FALSE", 1,
+                           2, -0.6875, 0.413679770330811, -1.66191351211161, ".", 0.231712504393662,
+                           ".", 0.311931949521001, ".", ".", -1.69253241941969, 0.317532419419691,
+                           "FALSE"))
+  
+  table <- results$results$bootsPostHoc$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(0, 1, -0.769579725829725, -0.00376914898826841, 0.392000159227314,
+                           -1.48733254329573, 0.0548973391001531, "TRUE", 0, 2, -1.43536324786325,
+                           0.0142934574412497, 0.435378856593833, -2.31465226049576, -0.602581004497448,
+                           "FALSE", 1, 2, -0.690674603174602, 0.018062606429518, 0.407611902363181,
+                           -1.43846891737073, 0.214248742598683, "FALSE"))
+  
+  table <- results$results$marginalMeans$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(0, 0, 3.5, 0.413679770330811, 2.66516042466926, 4.33483957533075,
+                           "TRUE", 0, 1, 4.875, 0.413679770330811, 4.04016042466926, 5.70983957533075,
+                           "FALSE", 0, 2, 6.625, 0.413679770330811, 5.79016042466926, 7.45983957533075,
+                           "FALSE", 1, 0, 6.37500000000001, 0.413679770330811, 5.54016042466926,
+                           7.20983957533075, "TRUE", 1, 1, 6.5, 0.413679770330811, 5.66516042466926,
+                           7.33483957533075, "FALSE", 1, 2, 6.125, 0.413679770330811, 5.29016042466926,
+                           6.95983957533075, "FALSE"))
+  
+  table <- results$results$bootsMarginalMeans$collection[[1]]$data
+  expect_equal_tables(table, 
+                      list(0, 0, 3.5, -0.000576109837874483, 0.609481794897967, 2.17405680747747,
+                           4.66824003252126, "TRUE", 0, 1, 4.83974358974359, -0.0233288832082952,
+                           0.449084420277268, 4.00000000000001, 6, "FALSE", 0, 2, 6.57142857142858,
+                           -0.0390126855170969, 0.388994937578588, 6, 7.50000000000001,
+                           "FALSE", 1, 0, 6.33333333333334, -0.0167382728382766, 0.319660323889613,
+                           5.88388102664993, 7.17856492366397, "TRUE", 1, 1, 6.5, -0.0138867382617391,
+                           0.320922728447883, 5.875, 7.2, "FALSE", 1, 2, 6.14285714285714,
+                           0.0118089133089123, 0.395829403830131, 5.4, 7, "FALSE"))
 })

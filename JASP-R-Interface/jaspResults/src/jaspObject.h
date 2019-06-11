@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <queue>
+#include "enumutilities.h"
 #ifdef JASP_R_INTERFACE_LIBRARY
 #include "jsonredirect.h"
 #else
@@ -11,13 +12,10 @@
 
 void jaspPrint(std::string msg);
 
-enum class jaspObjectType { unknown, container, table, plot, json, list, results, html, state };
-
 #define JASPOBJECT_DEFAULT_POSITION 9999
 
-
-std::string		jaspObjectTypeToString(jaspObjectType type);
-jaspObjectType	jaspObjectTypeStringToObjectType(std::string type);
+DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state);
+jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
 
 std::string					stringExtend(std::string & str, size_t len, char kar = ' ');
 std::string					stringRemove(std::string str, char kar = ' ');
@@ -40,12 +38,17 @@ public:
 	virtual std::string toHtml() { return ""; }
 			std::string htmlTitle() { return "<h2>" + _title + "</h2>"; }
 
+			std::string type() { return jaspObjectTypeToString(_type); }
+
 			std::string	getWarning()						{ return _warning; }
 			void		setWarning(std::string warning)		{ _warning = warning; _warningSet = true; }
+			bool		getError()							{ return _error; }
+	virtual void		setError()							{ _error = true; }
+	virtual void		setError(std::string message)		{ _errorMessage = message; _error = true; }
 
 			void		print()								{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
 			void		addMessage(std::string msg)			{ _messages.push_back(msg); }
-	virtual void		childrenUpdatedCallbackHandler()	{} ///Can be caugt by jaspResults to send changes and stuff like that.
+	virtual void		childrenUpdatedCallbackHandler()	{} ///Can be called by jaspResults to send changes and stuff like that.
 
 			void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis);
 			void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis);
@@ -111,15 +114,18 @@ public:
 
 	void			notifyParentOfChanges(); ///let ancestors know about updates
 
+	static int getCurrentTimeMs();
+
 protected:
 	jaspObjectType				_type;
-	std::string					_warning = "";
-	bool						_warningSet = false;
+	std::string					_warning = "",
+								_errorMessage = "";
+	bool						_warningSet = false,
+								_error = false;
 
 	std::vector<std::string>	_messages;
 	Json::Value					_citations = Json::arrayValue;
 	std::string					_name;
-
 
 	std::map<std::string, Json::Value> _optionMustBe;
 	std::map<std::string, Json::Value> _optionMustContain;
@@ -172,6 +178,7 @@ public:
 	void		print()								{ myJaspObject->print(); }
 	void		addMessage(std::string msg)			{ myJaspObject->addMessage(msg); }
 	std::string	toHtml()							{ return myJaspObject->toHtml(); }
+	std::string	type()								{ return myJaspObject->type(); }
 	void		printHtml()							{ jaspPrint(myJaspObject->toHtml()); }
 
 	void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis)				{ myJaspObject->setOptionMustBeDependency(optionName, mustBeThis);				}
@@ -185,6 +192,8 @@ public:
 
 	void		setWarning(std::string newWarning)	{ myJaspObject->setWarning(newWarning); }
 	std::string getWarning()						{ return myJaspObject->getWarning(); }
+	void		setError(std::string message)		{ myJaspObject->setError(message); }
+	bool		getError()							{ return myJaspObject->getError(); }
 
 	jaspObject * returnMyJaspObject() { return myJaspObject; }
 
@@ -200,7 +209,17 @@ void jaspObjectFinalizer(jaspObject * obj);
 #define JASP_OBJECT_CREATOR_FUNCTIONNAME_STR(JASP_TYPE) "create_cpp_" #JASP_TYPE
 #define JASP_OBJECT_CREATOR(JASP_TYPE) JASP_TYPE ## _Interface * JASP_OBJECT_CREATOR_FUNCTIONNAME(JASP_TYPE)(std::string title) { return new JASP_TYPE ## _Interface (new JASP_TYPE(title)); }
 #define JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(JASP_TYPE) Rcpp::function(JASP_OBJECT_CREATOR_FUNCTIONNAME_STR(JASP_TYPE), &JASP_OBJECT_CREATOR_FUNCTIONNAME(JASP_TYPE))
+#define JASP_OBJECT_CREATOR_ARG(JASP_TYPE, EXTRA_ARG) JASP_TYPE ## _Interface * JASP_OBJECT_CREATOR_FUNCTIONNAME(JASP_TYPE)(std::string title, Rcpp::RObject EXTRA_ARG) { return new JASP_TYPE ## _Interface (new JASP_TYPE(title, EXTRA_ARG)); }
 
 
 RCPP_EXPOSED_CLASS_NODECL(jaspObject_Interface)
 
+//#define JASP_R_INTERFACE_TIMERS
+
+#ifdef JASP_R_INTERFACE_TIMERS
+#define JASP_OBJECT_TIMERBEGIN			static int cumulativeTime = 0;	int startSerialize = getCurrentTimeMs();
+#define JASP_OBJECT_TIMEREND(ACTIVITY)	cumulativeTime += getCurrentTimeMs() - startSerialize;	std::cout << jaspObjectTypeToString(getType()) << " spent " << cumulativeTime << "ms " #ACTIVITY "!" << std::endl;
+#else
+#define JASP_OBJECT_TIMERBEGIN			/* Doin' nothing */
+#define JASP_OBJECT_TIMEREND(ACTIVITY)	/* What you didn't start you need not stop */
+#endif

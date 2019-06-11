@@ -12,7 +12,7 @@ test_that("Main table results match", {
   options$meanDifference <- TRUE
   options$effectSize <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table,
     list(99, 1, -2.22170938375, -1.16121720596087, -2.53938523225467, "<unicode>",
@@ -27,7 +27,7 @@ test_that("Normality table matches", {
   options <- jasptools::analysisOptions("TTestPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
   options$normalityTests <- TRUE
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["assumptionChecks"]][["shapiroWilk"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", "-", "contGamma", 0.969542808533914, 0.0203952735337306,
@@ -39,7 +39,7 @@ test_that("Descriptives table matches", {
   options <- jasptools::analysisOptions("TTestPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
   options$descriptives <- TRUE
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
@@ -47,30 +47,30 @@ test_that("Descriptives table matches", {
   )
 })
 
-# test_that("Descriptives plot matches", {
-#   options <- jasptools::analysisOptions("TTestPairedSamples")
-#   options$pairs <- list(c("contNormal", "contGamma"))
-#   options$descriptivesPlots <- TRUE
-#   results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "descriptives", dir="TTestPairedSamples")
-# })
+test_that("Descriptives plot matches", {
+  options <- jasptools::analysisOptions("TTestPairedSamples")
+  options$pairs <- list(c("contNormal", "contGamma"))
+  options$descriptivesPlots <- TRUE
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "descriptives", dir="TTestPairedSamples")
+})
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestPairedSamples")
 
   options$pairs <- list(c("contNormal", "debInf"))
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$pairs <- list(c("contNormal", "debSame"))
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$pairs <- list(c("contNormal", "debMiss99"))
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

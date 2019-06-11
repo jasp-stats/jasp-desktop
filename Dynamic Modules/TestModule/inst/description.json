@@ -1,0 +1,24 @@
+{
+	"moduleDescription" :
+	{
+		"title":									"Test Module",
+		"icon": 									"test.svg",
+		"description": 								"A module to test stuff with.",
+		"version":									"1.0",
+		"author":									"Joris Goosen",
+		"maintainer":								"Joris Goosen <Joris@JorisGoosen.nl>",
+		"website":									"",
+		"license":									"Whatever"
+	},
+
+	"requiredPackages":	["dbscan"],
+
+	"menu":
+	[
+		{
+			"title":							"Test",
+			"qml":								"test.qml",
+			"function":							"testFunc"
+		}
+	]
+}

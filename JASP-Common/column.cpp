@@ -18,14 +18,14 @@
 #include "column.h"
 #include "utils.h"
 
-#include <boost/foreach.hpp>
+
 #include <sstream>
 #include <string>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <cmath>
-#include <iostream>
+#include "log.h"
 
 using namespace boost::interprocess;
 using namespace boost;
@@ -784,7 +784,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std::string> &values, const std::map<std::string, std::string>&labels, bool * changedSomething)
 {
-	if(changedSomething != NULL)
+	if(changedSomething != nullptr)
 		*changedSomething = false;
 
 	std::map<int, std::string>	emptyValuesMap;
@@ -807,7 +807,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 		if (isEmptyValue(value))
 		{
-			if(changedSomething != NULL && *intInputItr != INT_MIN)
+			if(changedSomething != nullptr && *intInputItr != INT_MIN)
 				*changedSomething = true;
 
 			*intInputItr = INT_MIN;
@@ -816,7 +816,10 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 		}
 		else
 		{
-			if(changedSomething != NULL && *intInputItr != map[value])
+			if (map.find(value) == map.end())
+				throw std::runtime_error("Error when reading column " + name() + ": cannot convert it to Nominal Text");
+			
+			if(changedSomething != nullptr && *intInputItr != map[value])
 				*changedSomething = true;
 
 			*intInputItr = map[value];
@@ -828,7 +831,7 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 
 	while (nb_values < _rowCount)
 	{
-		if(changedSomething != NULL && *intInputItr != INT_MIN)
+		if(changedSomething != nullptr && *intInputItr != INT_MIN)
 			*changedSomething = true;
 
 		*intInputItr = INT_MIN;
@@ -876,7 +879,7 @@ void Column::setValue(int row, int value)
 
 	if (itr == _blocks.end())
 	{
-		//qDebug() << "Column::setValue(), bad rowIndex";
+		//Log::log()  << "Column::setValue(), bad rowIndex" << std::endl;
 		return;
 	}
 
@@ -893,7 +896,7 @@ void Column::setValue(int row, double value)
 
 	if (itr == _blocks.end())
 	{
-		//qDebug() << "Column::setValue(), bad rowIndex";
+		//Log::log()  << "Column::setValue(), bad rowIndex" << std::endl;
 		return;
 	}
 
@@ -934,10 +937,7 @@ bool Column::isValueEqual(int row, int value)
 	{
 		bool result = (intValue == value);
 		if (!result)
-		{
-			std::cout << "Value not equal: " << intValue << " " << value << std::endl;
-			std::cout.flush();
-		}
+			Log::log() << "Value not equal: " << intValue << " " << value << std::endl;
 		return result;
 	}
 
@@ -1159,8 +1159,7 @@ void Column::truncate(int rows)
 			itr++;
 			if (itr == _blocks.rend())
 			{
-				std::cout << "Try to erase more blocks than existing!!" << std::endl;
-				std::cout.flush();
+				Log::log() << "Try to erase more blocks than existing!!" << std::endl;
 				rowsToDelete = 0;
 				_rowCount = 0;
 			}
@@ -1230,9 +1229,8 @@ int& Column::IntsStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-		std::cout << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
-		std::cout << "Nb of blocks: " << parent->_blocks.size() << std::endl;
-		std::cout.flush();
+		Log::log() << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
+		Log::log() << "Nb of blocks: " << parent->_blocks.size() << std::endl;
 	}
 
 	int blockId = itr->first;
@@ -1326,7 +1324,7 @@ double& Column::DoublesStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-		//qDebug() << "Column::Ints[], bad rowIndex";
+		//Log::log()  << "Column::Ints[], bad rowIndex" << std::endl;
 	}
 
 	int blockId = itr->first;
@@ -1367,16 +1365,8 @@ bool Column::allLabelsPassFilter() const
 
 bool Column::hasFilter() const
 {
-	if(_columnType == ColumnTypeScale)
-	{
-//#ifdef JASP_DEBUG
-//		std::cout << "Scale columns do not yet have their own specific filtertype..\n" << std::flush;
-//#endif
-		//Maybe check filterConstructor-thingy?
-		return false;
-	}
-	else
-		return !allLabelsPassFilter();
+	if(_columnType == ColumnTypeScale)	return false;
+	else								return !allLabelsPassFilter();
 }
 
 void Column::resetFilter()

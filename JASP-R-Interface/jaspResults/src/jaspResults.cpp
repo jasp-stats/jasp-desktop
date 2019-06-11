@@ -1,24 +1,24 @@
 #include "jaspModuleRegistration.h"
-
-#include <chrono>
 #include <fstream>
 #include <cmath>
 
-sendFuncDef			jaspResults::ipccSendFunc = NULL;
-pollMessagesFuncDef jaspResults::ipccPollFunc = NULL;
-std::string			jaspResults::_saveResultsHere = "";
-std::string			jaspResults::_baseCitation = "";
+sendFuncDef			jaspResults::_ipccSendFunc		= nullptr;
+pollMessagesFuncDef jaspResults::_ipccPollFunc		= nullptr;
+std::string			jaspResults::_saveResultsHere	= "";
+std::string			jaspResults::_baseCitation		= "";
+Rcpp::Environment*	jaspResults::_RStorageEnv		= nullptr;
+bool				jaspResults::_insideJASP		= false;
 
 const std::string jaspResults::analysisChangedErrorMessage = "Analysis changed and will be restarted!";
 
 void jaspResults::setSendFunc(sendFuncDef sendFunc)
 {
-	ipccSendFunc = sendFunc;
+	_ipccSendFunc = sendFunc;
 }
 
 void jaspResults::setPollMessagesFunc(pollMessagesFuncDef pollFunc)
 {
-	ipccPollFunc = pollFunc;
+	_ipccPollFunc = pollFunc;
 }
 
 void jaspResults::setBaseCitation(std::string baseCitation)
@@ -28,9 +28,9 @@ void jaspResults::setBaseCitation(std::string baseCitation)
 
 void jaspResults::setResponseData(int analysisID, int revision)
 {
-	response["id"]			= analysisID;
-	response["revision"]	= revision;
-	response["progress"]	= -1;
+	_response["id"]			= analysisID;
+	_response["revision"]	= revision;
+	_response["progress"]	= -1;
 }
 
 void jaspResults::setSaveLocation(const char * newSaveLocation)
@@ -38,21 +38,46 @@ void jaspResults::setSaveLocation(const char * newSaveLocation)
 	_saveResultsHere = newSaveLocation;
 }
 
+void jaspResults::setInsideJASP()
+{
+	_insideJASP = true;
+}
+
+jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
+	: jaspContainer(title, jaspObjectType::results)
+{
+	if(_RStorageEnv != nullptr)
+		delete _RStorageEnv;
+	_RStorageEnv = new Rcpp::Environment(_insideJASP ? Rcpp::Environment::global_env() : Rcpp::as<Rcpp::Environment>(Rcpp::Environment::namespace_env("jaspResults")[".plotStateStorage"]));
+
+
+	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState))
+		fillEnvironmentWithStateObjects(Rcpp::as<Rcpp::List>(oldState));
+
+	setStatus("running");
+
+	if(_baseCitation != "")
+		addCitation(_baseCitation);
+
+	if(_saveResultsHere != "")
+		loadResults();
+}
+
 void jaspResults::setStatus(std::string status)
 {
-	response["status"] = status;
+	_response["status"] = status;
 }
 
 std::string jaspResults::getStatus()
 {
-	return response["status"].asString();
+	return _response["status"].asString();
 }
 
 void jaspResults::complete()
 {
 	completeChildren();
 
-	if(getStatus() == "running")
+	if(getStatus() == "running" || getStatus() == "waiting")
 		setStatus("complete");
 
 	send();
@@ -61,6 +86,7 @@ void jaspResults::complete()
 
 void jaspResults::saveResults()
 {
+	JASP_OBJECT_TIMERBEGIN
 	if(_saveResultsHere == "")
 	{
 		jaspPrint("Did not store jaspResults");
@@ -68,16 +94,15 @@ void jaspResults::saveResults()
 	}
 
 	std::ofstream saveHere(_saveResultsHere);
-
 	Json::Value json = convertToJSON();
 
-	//std::cout << "jaspResults JSON:\n\n" << json.toStyledString();
-
 	saveHere << json.toStyledString();
+	JASP_OBJECT_TIMEREND(saveResults)
 }
 
 void jaspResults::loadResults()
 {
+	JASP_OBJECT_TIMERBEGIN
 	_previousOptions = Json::nullValue;
 
 	if(_saveResultsHere == "") return;
@@ -93,6 +118,8 @@ void jaspResults::loadResults()
 	if(!val.isObject()) return;
 
 	convertFromJSON_SetFields(val);
+
+	JASP_OBJECT_TIMEREND(loadResults);
 }
 
 void jaspResults::changeOptions(std::string opts)
@@ -122,19 +149,20 @@ void jaspResults::send(std::string otherMsg)
 	JASPprint("send was called!");
 #endif
 
-	if(ipccSendFunc != NULL)
-		(*ipccSendFunc)(otherMsg == "" ? constructResultJson() : otherMsg.c_str());
+	if(_ipccSendFunc != nullptr)
+		(*_ipccSendFunc)(otherMsg == "" ? constructResultJson() : otherMsg.c_str());
 }
 
 void jaspResults::checkForAnalysisChanged()
 {
-	if(ipccPollFunc == NULL)
+	if(_ipccPollFunc == nullptr)
 		return;
 
-	if((*ipccPollFunc)())
+	if((*_ipccPollFunc)())
 	{
 		setStatus("changed");
-		Rf_error(analysisChangedErrorMessage.c_str());
+	  static Rcpp::Function stop("stop");
+		stop(analysisChangedErrorMessage);
 	}
 }
 
@@ -146,25 +174,36 @@ void jaspResults::childrenUpdatedCallbackHandler()
 #endif
 
 	checkForAnalysisChanged(); //can "throw" Rf_error
-	send();
+
+	int curTime = getCurrentTimeMs();
+	if(_sendingFeedbackLastTime == -1 || (curTime - _sendingFeedbackLastTime) > _sendingFeedbackInterval)
+	{
+		send();
+		_sendingFeedbackLastTime = curTime;
+	}
 }
 
-Json::Value jaspResults::response = Json::Value(Json::objectValue);
+Json::Value jaspResults::_response = Json::Value(Json::objectValue);
 
 const char * jaspResults::constructResultJson()
 {
-	response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
-	response["results"]		= dataEntry();
-	response["name"]		= response["results"]["title"];
+	_response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
+	_response["results"]		= dataEntry();
+	_response["name"]		= _response["results"]["title"];
 
-	if(errorMessage != "")
+	if(errorMessage != "" )
 	{
-		response["results"]["error"]		= true;
-		response["results"]["errorMessage"] = errorMessage;
+		_response["results"]["error"]		= true;
+		_response["results"]["errorMessage"] = errorMessage;
+	}
+	else if (_error)
+	{
+		_response["results"]["error"]		= true;
+		_response["results"]["errorMessage"] = "Analyis returned an error but no errormessage...";
 	}
 
 	static std::string msg;
-	msg = response.toStyledString();
+	msg = _response.toStyledString();
 
 #ifdef JASP_RESULTS_DEBUG_TRACES
 	std::cout << "Result JSON:\n" << msg << "\n\n" << std::flush;
@@ -203,23 +242,23 @@ Json::Value jaspResults::dataEntry()
 
 
 
-void jaspResults::setErrorMessage(std::string msg)
+void jaspResults::setErrorMessage(std::string msg, std::string errorStatus)
 {
 	if(msg.find(analysisChangedErrorMessage) != std::string::npos)
 		return; //we do not wanna report analysis changed as an error I think
 
 	errorMessage = msg;
-	setStatus("error");
+	setStatus(errorStatus);
 }
 
 Rcpp::List jaspResults::getPlotObjectsForState()
 {
 	Rcpp::List returnThis;
-	auto * protectList  = new Rcpp::Shield<Rcpp::List>(returnThis);
+	Rcpp::Shield<Rcpp::List> protectList(returnThis);
 
+	JASP_OBJECT_TIMERBEGIN
 	addSerializedPlotObjsForStateFromJaspObject(this, returnThis);
-
-	delete protectList;
+	JASP_OBJECT_TIMEREND(getting plot objects)
 	return returnThis;
 }
 
@@ -229,11 +268,69 @@ void jaspResults::addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, 
 	{
 		jaspPlot * plot = (jaspPlot*)obj;
 		if(plot->_filePathPng != "")
-			pngImgObj[plot->_filePathPng] = plot->getPlotObject();
+		{
+			Rcpp::List pngImg;
+			pngImg["obj"]					= plot->getPlotObject();
+			pngImg["width"]					= plot->_width;
+			pngImg["height"]				= plot->_height;
+			pngImg["envName"]				= plot->_envName;
+			pngImgObj[plot->_filePathPng]	= pngImg;
+		}
 	}
 
 	for(auto c : obj->getChildren())
 		addSerializedPlotObjsForStateFromJaspObject(c, pngImgObj);
+}
+
+Rcpp::List jaspResults::getOtherObjectsForState()
+{
+	Rcpp::List returnThis;
+	Rcpp::Shield<Rcpp::List> protectList(returnThis);
+
+	JASP_OBJECT_TIMERBEGIN
+	addSerializedOtherObjsForStateFromJaspObject(this, returnThis);
+	JASP_OBJECT_TIMEREND(getting other objects)
+	return returnThis;
+}
+
+void jaspResults::addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & cumulativeList)
+{
+	if(obj->getType() == jaspObjectType::state)
+	{
+		jaspState * state				= (jaspState*)obj; //If other objects are needed this code can be more general
+
+		if(objectExistsInEnv(state->_envName))
+			cumulativeList[state->_envName]	= state->getObject();
+	}
+
+	for(auto c : obj->getChildren())
+		addSerializedOtherObjsForStateFromJaspObject(c, cumulativeList);
+}
+
+void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)
+{
+	if(state.containsElementNamed("figures"))
+	{
+		//Let's try to load all previous plots from the state!
+		Rcpp::List figures = state["figures"];
+
+		for(Rcpp::List plotInfo : figures)
+			if(plotInfo.containsElementNamed("envName") && plotInfo.containsElementNamed("obj"))
+			{
+				std::string envName = Rcpp::as<std::string>(plotInfo["envName"]);
+				(*_RStorageEnv)[envName] = plotInfo;
+			}
+	}
+
+	if(state.containsElementNamed("other"))
+	{
+		//Let's try to load all previous plots from the state!
+		Rcpp::List others = state["other"];
+		Rcpp::List names  = others.names();
+
+		for(std::string name : names)
+			(*_RStorageEnv)[name] = others[name];
+	}
 }
 
 Rcpp::List jaspResults::getPlotPathsForKeep()
@@ -288,11 +385,6 @@ void jaspResults::convertFromJSON_SetFields(Json::Value in)
 	_previousOptions	= _currentOptions;
 }
 
-int jaspResults::getCurrentTimeMs()
-{
-	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-}
-
 void jaspResults::startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs)
 {
 	_progressbarExpectedTicks		= expectedTicks;
@@ -300,7 +392,7 @@ void jaspResults::startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs
 	_progressbarLastUpdateTime		= getCurrentTimeMs();
 	_progressbarTicks				= 0;
 
-	response["progress"]			= 0;
+	_response["progress"]			= 0;
 
 	send();
 }
@@ -312,14 +404,30 @@ void jaspResults::progressbarTick()
 	_progressbarTicks++;
 
 	int progress			= std::lround(100.0f * ((float)_progressbarTicks) / ((float)_progressbarExpectedTicks));	progress				= std::min(100, std::max(progress, 0));
-	response["progress"]	= progress;
+	_response["progress"]	= progress;
 
 	int curTime = getCurrentTimeMs();
 	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progress == 100)
 	{
 		send();
-		_progressbarLastUpdateTime = curTime;
+		
+		if (progress == 100)
+			resetProgressbar();
+		else
+			_progressbarLastUpdateTime = curTime;
 	}
+}
+
+void jaspResults::resetProgressbar()
+{
+	_progressbarExpectedTicks      = 100;
+	_progressbarLastUpdateTime     = -1;
+	_progressbarTicks              = 0;
+	_progressbarBetweenUpdatesTime = 500;
+	_sendingFeedbackLastTime       = -1;
+	_sendingFeedbackInterval       = 500;
+	
+	_response["progress"] = -1;
 }
 
 //implementation here in jaspResults.cpp to make sure we have access to all constructors
@@ -327,7 +435,7 @@ jaspObject * jaspObject::convertFromJSON(Json::Value in)
 {
 	jaspObjectType newType = jaspObjectTypeStringToObjectType(in.get("type", "").asString());
 
-	jaspObject * newObject = NULL;
+	jaspObject * newObject = nullptr;
 
 	switch(newType)
 	{
@@ -338,11 +446,28 @@ jaspObject * jaspObject::convertFromJSON(Json::Value in)
 	//case jaspObjectType::list:	newObject = new jaspList();			break;
 	case jaspObjectType::html:		newObject = new jaspHtml();			break;
 	case jaspObjectType::state:		newObject = new jaspState();		break;
-	case jaspObjectType::results:	newObject = new jaspResults();		break;
+	//case jaspObjectType::results:	newObject = new jaspResults();		break;
 	default:						throw std::runtime_error("Cant understand this type");
 	}
 
-	if(newObject != NULL) newObject->convertFromJSON_SetFields(in);
+	if(newObject != nullptr) newObject->convertFromJSON_SetFields(in);
 
 	return newObject;
+}
+
+Rcpp::RObject jaspResults::getObjectFromEnv(std::string envName)
+{
+	if(_RStorageEnv->exists(envName))
+		return (*_RStorageEnv)[envName];
+	return R_NilValue;
+}
+
+void jaspResults::setObjectInEnv(std::string envName, Rcpp::RObject obj)
+{
+	(*_RStorageEnv)[envName] = obj;
+}
+
+bool jaspResults::objectExistsInEnv(std::string envName)
+{
+	return _RStorageEnv->exists(envName);
 }

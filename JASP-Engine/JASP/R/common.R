@@ -21,40 +21,39 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 {
     if (identical(.Platform$OS.type, "windows"))
             compiler::enableJIT(0)
-    dataKey <- fromJSON(dataKey)
-    options <- fromJSON(options)
+
+    dataKey     <- fromJSON(dataKey)
+    options     <- fromJSON(options)
     resultsMeta <- fromJSON(resultsMeta)
-    stateKey <- fromJSON(stateKey)
+    stateKey    <- fromJSON(stateKey)
 
 
   if (base::exists(".requestStateFileNameNative")) {
-    location <- .fromRCPP(".requestStateFileNameNative")
-    root <- location$root
-    base::Encoding(root) <- "UTF-8"
+    location              <- .fromRCPP(".requestStateFileNameNative")
+    root                  <- location$root
+    base::Encoding(root)  <- "UTF-8"
+    oldwd                 <- getwd()
     setwd(root)
+    on.exit(setwd(oldwd))
   }
 
-  analysis <- eval(parse(text=name))
+  analysis      <- eval(parse(text=name))
 
-  env <- new.env()
-  env$callback <- callback
-  env$time <- Sys.time()
-  env$i <- 1
+  env           <- new.env()
+  env$callback  <- callback
+  env$time      <- Sys.time()
+  env$i         <- 1
 
-  if (perform == "init") {
-
+  if (perform == "init")
     the.callback <- function(...) list(status="ok")
-
-  } else {
-
+  else {
     the.callback <- function(...) {
-
       t <- Sys.time()
 
       cat(paste("Callback", env$i, ":", t - env$time, "\n"))
 
-      env$time <- t
-      env$i <- env$i + 1
+      env$time  <- t
+      env$i     <- env$i + 1
 
       return(env$callback(...))
     }
@@ -63,10 +62,8 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
   dataset <- NULL
   if (! is.null(dataKey)) {
     cols <- .getDataSetCols(dataKey, options)
-    if (perform == "run")
-      dataset <- do.call(.readDataSetToEnd, cols)
-    else
-      dataset <- do.call(.readDataSetHeader, cols)
+    if (perform == "run") dataset <- do.call(.readDataSetToEnd, cols)
+    else                  dataset <- do.call(.readDataSetHeader, cols)
   }
 
   oldState <- NULL
@@ -82,12 +79,11 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
     }
 
-    results <- list()
-    results[["results"]] <- emptyResults
+    results                         <- list()
+    results[["results"]]            <- emptyResults
+    results[["status"]]             <- "inited"
     results[["results"]][["title"]] <- title
-    results[["status"]] <- "inited"
-
-    json <- try({ toJSON(results) })
+    json                            <- try({ toJSON(results) })
 
     if (inherits(results, "try-error"))
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
@@ -107,24 +103,23 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
   },
   error=function(e) e)
+	
+	if (inherits(results, "error")) {		
+		
+		if (inherits(results, "validationError")) {
+			errorStatus <- "validationError"
+			errorMessage <- results$message
+		} else {
+			errorStatus <- "fatalError"
+			error <- .sanitizeForJson(results)
 
-  if (inherits(results, "expectedError")) {
+			stackTrace <- .sanitizeForJson(results$stackTrace)
+			stackTrace <- paste(stackTrace, collapse="<br><br>")
 
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
-
-    errorResponse
-
-  } else if (inherits(results, "error")) {
-
-    error <- .sanitizeForJson(results)
-
-    stackTrace <- .sanitizeForJson(results$stackTrace)
-    stackTrace <- paste(stackTrace, collapse="<br><br>")
-
-    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-
-    errorResponse
+			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
+		}
+		
+		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
 
   } else if (is.null(results)) {
 
@@ -163,7 +158,9 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
       results <- .addCitationToResults(results)
     }
 
+    results[["results"]][["title"]] <- title
 		json <- try({ toJSON(results) })
+
     if (class(json) == "try-error")
       return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
     else
@@ -173,90 +170,79 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 }
 
 
-runJaspResults <- function(name, title, dataKey, options, stateKey)
+runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
-	if (identical(.Platform$OS.type, "windows"))
+  if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 
-  jaspResults <- jaspResultsModule$create_cpp_jaspResults(name)
-  jaspResults$setOptions(options)
+  jaspResultsCPP        <- jaspResultsModule$create_cpp_jaspResults(name, .retrieveState())
+  jaspResults           <- jaspResultsR$new(jaspResultsCPP)
+  jaspResultsCPP$title  <- title
+
+  jaspResultsCPP$setOptions(options)
 
   dataKey     <- rjson::fromJSON(dataKey)
   options     <- rjson::fromJSON(options)
   stateKey    <- rjson::fromJSON(stateKey)
 
   if (base::exists(".requestStateFileNameNative")) {
-    location <- .fromRCPP(".requestStateFileNameNative")
-    root <- location$root
-    base::Encoding(root) <- "UTF-8"
+    location              <- .fromRCPP(".requestStateFileNameNative")
+    root                  <- location$root
+    base::Encoding(root)  <- "UTF-8"
+    oldwd                 <- getwd()
     setwd(root)
+    on.exit(setwd(oldwd))
   }
 
-  analysis    <- eval(parse(text=name))
+  analysis    <- eval(parse(text=functionCall))
 
   dataset <- NULL
   if (! is.null(dataKey)) {
-    cols <- .getDataSetCols(dataKey, options)
+    cols    <- .getDataSetCols(dataKey, options)
     dataset <- do.call(.readDataSetToEnd, cols)
   }
 
-  oldState <- NULL
-  if ('state' %in% names(formals(analysis))) {
-    oldState <- .getStateFromKey(stateKey, options)
-  }
-
-  newState <-
+  analysisResult <-
     tryCatch(
-      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options, state=oldState), error=.addStackTrace),
+      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options), error=.addStackTrace),
       error=function(e) e
     )
 
-  if (inherits(newState, "expectedError")) {
-
-    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", newState$message, "\" } }", sep="")
-
-    jaspResults$setErrorMessage(newState$message)
-    jaspResults$send()
-
-    return(errorResponse)
-
-  }
-  else if (inherits(newState, "error"))
-  {
-
-    error <- .sanitizeForJson(newState)
-
-    stackTrace <- .sanitizeForJson(newState$stackTrace)
-    stackTrace <- paste(stackTrace, collapse="<br><br>")
-
-    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-
-    jaspResults$setErrorMessage(errorMessage)
-    jaspResults$send()
-
-    return(errorResponse)
-
+  if (inherits(analysisResult, "error")) {		
+		
+		if (inherits(analysisResult, "validationError")) {
+			errorStatus <- "validationError"
+			errorMessage <- analysisResult$message
+		} else {
+			errorStatus <- "fatalError"
+			
+			error <- .sanitizeForJson(analysisResult)
+			stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
+			stackTrace <- paste(stackTrace, collapse="<br><br>")
+			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
+		}
+		
+		jaspResultsCPP$setErrorMessage(errorMessage, errorStatus)
+    jaspResultsCPP$send()
+		
+		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
   }
   else
   {
-    if (is.null(newState))
-      newState <- list()
+    newState                        <- list()
+    newState[["figures"]]           <- jaspResultsCPP$getPlotObjectsForState()
+    newState[["other"]]             <- jaspResultsCPP$getOtherObjectsForState()
+    jaspResultsCPP$relativePathKeep <- .saveState(newState)$relativePath
 
-    newState[["figures"]]         <- jaspResults$getPlotObjectsForState()
+    returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
 
-    jaspResults$relativePathKeep  <- .saveState(newState)$relativePath
-
-    returnThis <- list(keep=jaspResults$getKeepList()) #To keep the old keep-code functional we return it like this
-
-    jaspResults$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
-
-
-  json <- try({ toJSON(returnThis) })
-  if (class(json) == "try-error")
-    return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
-  else
-    return(json)
+    jaspResultsCPP$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
+		
+		json <- try({ toJSON(returnThis) })
+		if (class(json) == "try-error")
+			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+		else
+			return(json)
   }
 }
 
@@ -264,20 +250,19 @@ initEnvironment <- function() {
 	Sys.setlocale("LC_CTYPE", "UTF-8")
 	packages <- c("BayesFactor") # Add any package that needs pre-loading
 
-	for (package in packages) {
-		if (base::isNamespaceLoaded(package) == FALSE) {
+  for (package in packages)
+    if (base::isNamespaceLoaded(package) == FALSE)
 			try(base::loadNamespace(package), silent=TRUE)
-		}
-	}
+
+
 
 	if (base::exists(".requestTempRootNameNative")) {
 		paths <- .fromRCPP(".requestTempRootNameNative")
 		root = paths$root
 		base::Encoding(root) <- "UTF-8"
 		setwd(root)
-	} else {
+  } else
 		print("Could not set the working directory!")
-	}
 }
 
 
@@ -1479,7 +1464,6 @@ isTryError <- function(obj){
 	dataset
 }
 
-
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
 	new.df <- NULL
 	namez <- NULL
@@ -1587,7 +1571,7 @@ isTryError <- function(obj){
 .fromRCPP <- function(x, ...) {
 
 	if (length(x) != 1 || ! is.character(x)) {
-		stop("Invalid type supplied, expected character")
+    stop("Invalid type supplied to .fromRCPP, expected character")
 	}
 
 	collection <- c(
@@ -1610,7 +1594,7 @@ isTryError <- function(obj){
 	} else {
 		location <- getAnywhere(x)
 		if (length(location[["objs"]]) == 0) {
-			stop("Could not locate object")
+      stop(paste0("Could not locate ",x," in environment (.fromRCPP)"))
 		}
 		obj <- location[["objs"]][[1]]
 	}
@@ -1625,28 +1609,21 @@ isTryError <- function(obj){
 }
 
 .saveState <- function(state) {
-	result <- list()
-	relativePath <- NULL
-	fullPath <- NULL
-	if (base::exists(".requestStateFileNameNative")) {
+	location <- .fromRCPP(".requestStateFileNameNative")
+	relativePath <- location$relativePath
 
-		location <- .fromRCPP(".requestStateFileNameNative")
-
-		relativePath <- location$relativePath
-
-		# when run in jasptools do not save the state, but store it internally
-		searchPath <- search()
-		if ("package:jasptools" %in% searchPath) {
-			jasptools:::.setInternal("state", state)
-			return(list(relativePath = relativePath))
-		}
-
-		base::Encoding(relativePath) <- "UTF-8"
-
-		try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
+	# when run in jasptools do not save the state, but store it internally
+	searchPath <- search()
+	if ("package:jasptools" %in% searchPath) {
+		jasptools:::.setInternal("state", state)
+		return(list(relativePath = relativePath))
 	}
-  result <- list(relativePath = relativePath)
-  return(result)
+
+	base::Encoding(relativePath) <- "UTF-8"
+
+	try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
+
+	return(list(relativePath = relativePath))
 }
 
 .retrieveState <- function() {
@@ -1956,6 +1933,7 @@ callback <- function(results=NULL, progress=NULL) {
 	stringr::str_trim(last)
 }
 
+#.clean is not necessary for analyses using jaspResults, jaspTable will take care of it for you.
 .clean <- function(value) {
     # Clean function value so it can be reported in json/html
 
@@ -2254,7 +2232,7 @@ as.list.footnotes <- function(footnotes) {
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
-    pngMultip <- .fromRCPP(".ppi") / 96
+    pngMultip <- ppi / 96
     ggplot2::ggsave(
     	filename  = relativePathpng,
     	plot      = plot,
@@ -2284,7 +2262,7 @@ as.list.footnotes <- function(footnotes) {
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
         .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
-      qgraph::plot.qgraph(plot)
+      qgraph:::plot.qgraph(plot)
     } else {
       plot(plot)
     }
@@ -2304,59 +2282,109 @@ as.list.footnotes <- function(footnotes) {
 # not .saveImage() because RInside (interface to CPP) cannot handle that
 saveImage <- function(plotName, format, height, width)
 {
-  state     <- .retrieveState()     # Retrieve plot object from state
-  plt       <- state[["figures"]][[plotName]]
-  location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
+  state           <- .retrieveState()     # Retrieve plot object from state
+  plt             <- state[["figures"]][[plotName]][["obj"]]
+  
+  location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
   backgroundColor <- .fromRCPP(".imageBackground")
-
-	# create file location string
-	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+  
+  # create file location string
+  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
   relativePath <- paste0("temp.", format)
+  
+  error <- try({
+		
+    # Get file size in inches by creating a mock file and closing it
+    pngMultip <- .fromRCPP(".ppi") / 96
+    png(
+      filename = "dpi.png",
+      width = width * pngMultip,
+      height = height * pngMultip,
+      res = 72 * pngMultip
+    )
+    insize <- dev.size("in")
+    dev.off()
+		
+		# Even though OSX is usually cairo able, the cairo devices should not be used as plot fonts are not scaled well.
+		# On the other hand, Windows should use a cairo (eps/pdf) device as the standard devices use a wrong R_HOME for some reason.
+		# Consequently on Windows you will get encoding/font errors because the devices cannot find their resources.
+		if (capabilities("aqua"))
+			type <- "quartz"
+		else if (capabilities("cairo"))
+			type <- "cairo"
+		else
+			type <- "Xlib"
 
-  # Get file size in inches by creating a mock file and closing it
-  pngMultip <- .fromRCPP(".ppi") / 96
-  png(filename="dpi.png", width=width * pngMultip,
-      height=height * pngMultip,res=72 * pngMultip)
-  insize <- dev.size("in")
-  dev.off()
+		# Open correct graphics device
+		if (format == "eps") {
 
-  # Open correct graphics device
-	if (format == "eps") {
+			if (type == "cairo")
+				device <- grDevices::cairo_ps
+			else
+				device <- grDevices::postscript
+					
+			device(
+				relativePath,
+				width = insize[1],
+				height = insize[2],
+				bg = backgroundColor
+			)
+			
+		} else if (format == "tiff") {
+			
+			hiResMultip <- 300 / 72
+			grDevices::tiff(
+				relativePath,
+				width       = width * hiResMultip,
+				height      = height * hiResMultip,
+				res         = 300,
+				bg          = backgroundColor,
+				compression = "lzw",
+				type        = type
+			)
+			
+		} else if (format == "pdf") {
+			
+			if (type == "cairo")
+				device <- grDevices::cairo_pdf
+			else
+				device <- grDevices::pdf
+					
+			device(
+				relativePath,
+				width = insize[1],
+				height = insize[2],
+				bg = "transparent"
+			)
+			
+		} else { # add optional other formats here in "else if"-statements
+		
+			stop("Format incorrectly specified")
+			
+		}
+      
+		# Plot and close graphics device
+		if (inherits(plt, "recordedplot")) {
+			.redrawPlot(plt)
+		} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+			gridExtra::grid.arrange(plt)
+		} else {
+			plot(plt)
+		}
+		dev.off()
 
-		grDevices::cairo_ps(filename=relativePath, width=insize[1],
-		                                        height=insize[2], bg=backgroundColor)
-
-	} else if (format == "tiff") {
-
-		hiResMultip <- 300/72
-    grDevices::tiff(filename    = relativePath,
-                    width       = width * hiResMultip,
-                    height      = height * hiResMultip,
-                    res         = 300,
-					bg          = backgroundColor,
-                    compression = "lzw",
-                    type        = "cairo")
-
+  })
+  # Create output for interpretation by JASP front-end and return it
+  output <- list(status = "imageSaved",
+                 results = list(name  = relativePath,
+                                error = FALSE))
+  if (isTryError(error)) {
+    output[["results"]][["error"]] <- TRUE
+    output[["results"]][["errorMessage"]] <-
+      .extractErrorMessage(error)
   }
-  else if (format == "pdf")
-    grDevices::cairo_pdf(filename=relativePath, width=insize[1], height=insize[2], bg="transparent")
-   else  # add optional other formats here in "else if"-statements
-		stop("Format incorrectly specified")
-
-
-	# Plot and close graphics device
-	if (inherits(plt, "recordedplot")) {
-		.redrawPlot(plt) #(see below)
-	} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-		gridExtra::grid.arrange(plt)
-	} else {
-		plot(plt) #ggplots
-	}
-
-	dev.off()
-
-  # Create JSON string for interpretation by JASP front-end and return it
-  return(paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"",	relativePath , "\" } }"))
+  
+  return(toJSON(output))
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
@@ -2421,7 +2449,12 @@ saveImage <- function(plotName, format, height, width)
 
 	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
 		# Found a figure, add to the list!
-		result[[lst[["data"]]]] <- lst[["obj"]]
+    name <- lst[["data"]]
+    result[[name]] <- list(
+      obj = lst[["obj"]],
+      width = lst[["width"]],
+      height = lst[["height"]]
+    )
 		return(result)
 	}
 
@@ -2648,86 +2681,102 @@ if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
 
 }
 
+rewriteImages <- function() {
+  state    <- .retrieveState()
+  oldPlots <- state[["figures"]]
+
+  for (i in seq_along(oldPlots)) {
+    try({
+      plotName <- names(oldPlots)[i]
+      oldPlot  <- oldPlots[[i]]
+      width    <- oldPlot[["width"]]
+      height   <- oldPlot[["height"]]
+      plot     <- oldPlot[["obj"]]
+      invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathpng = plotName))
+    })
+  }
+
+  return(NULL)
+}
+
 # not .editImage() because RInside (interface to CPP) cannot handle that
 editImage <- function(plotName, type, height, width) {
 
-	# assumption: state[["figures"]][[plotName]] is either of class "ggplot2" or "recordedPlot"
+  # assumption: state[["figures"]][[plotName]] is either of class "ggplot2" or "recordedPlot"
 
-	results <- NULL
-	state <- .retrieveState()
-	oldPlot <- state[["figures"]][[plotName]]
+  results       <- NULL
+  state         <- .retrieveState()
+  oldPlot       <- state[["figures"]][[plotName]][["obj"]]
+  isGgplot      <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
+  requireResize <- type == "resize"
 
-  isGgplot <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
-	requireResize <- type == "resize"
+  if (!is.null(oldPlot)) {
+  # this try is required because resizing and editing may fail for various reasons.
+  # An example is the "figure margins too large" error when the plot area is too small.
+  # if something fails, the default behaviour is to use the old plot and do nothing.
+    results <- try({
+      # copy plot and check if we edit it
+      plot <- oldPlot
+      #if (type == "interactive" && isGgplot) {
+      if (FALSE && type == "interactive" && isGgplot) {
+        editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
+        plot <- editedPlot[["UpdatedPlots"]][[1]]
+      }
+      
+      # nothing was modified in ggedit, or editing was cancelled
+      if (identical(plot, oldPlot) && !requireResize)
+        return(oldPlot)
 
-	if (!is.null(oldPlot)) {
+      # plot is modified or needs to be resized, let's save the new plot
+      newPlot <- list()
+      content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName)
 
-		# this try is required because resizing and editing may fail for various reasons.
-		# An example is the "figure margins too large" error when the plot area is too small.
-		# if something fails, the default behaviour is to use the old plot and do nothing.
-		results <- try({
+      newPlot[["data"]]   <- content[["png"]]
+      newPlot[["width"]]  <- width
+      newPlot[["height"]] <- height
 
-			# copy plot and check if we edit it
-			plot <- oldPlot
-			#if (type == "interactive" && isGgplot) {
-			if (FALSE && type == "interactive" && isGgplot) {
-			  editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
-				plot <- editedPlot[["UpdatedPlots"]][[1]]
-			}
+      # no new recorded plot is created in .writeImage so we recycle the old one
+      # we can only resize recordedPlots anyway
+      if (isGgplot) newPlot[["obj"]] <- content[["obj"]]
+      else          newPlot[["obj"]] <- plot
 
-			# nothing was modified in ggedit, or editing was cancelled
-			if (identical(plot, oldPlot) && !requireResize)
-				return(oldPlot)
+      newPlot # results == newPlot
+    })
+  }
 
-			# plot is modified or needs to be resized, let's save the new plot
-			newPlot <- list()
-			content <- .writeImage(width = width, height = height,
-			                       plot = plot, obj = TRUE,
-			                       relativePathpng = plotName)
+  # plotName <- base::normalizePath(plotName)
+  # plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
 
-			newPlot[["data"]] <- content[["png"]]
-			newPlot[["width"]] <- width
-			newPlot[["height"]] <- height
+  # create json list for QT
+  response <- list(
+    status="imageEdited",
+    results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE)
+  )
 
-			# no new recorded plot is created in .writeImage so we recycle the old one
-			# we can only resize recordedPlots anyway
-			if (isGgplot)
-						newPlot[["obj"]] <- content[["obj"]]
-			else newPlot[["obj"]] <- plot
+  if (isTryError(results) || is.null(results)) {
+		
+    if (is.null(results))
+      errorMessage <- "no plot object was found"
+    else
+      errorMessage <- .extractErrorMessage(results)
+			
+    response[["results"]][["error"]]        <- TRUE
+    response[["results"]][["errorMessage"]] <- errorMessage
+		
+  } else {
+		
+    state[["figures"]][[plotName]][["width"]]  <- width
+    state[["figures"]][[plotName]][["height"]] <- height
+		
+    key                 <- attr(x = state, which = "key")
+    state               <- .modifyStateFigures(state, identifier=plotName, replacement=list(width=width, height=height), completeObject = FALSE)
+    attr(state, "key")  <- key
+		
+    .saveState(state)
+		
+  }
 
-			newPlot # results == newPlot
-		})
-	}
-
-	# plotName <- base::normalizePath(plotName)
-	# plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
-
-	# create json list for QT
-	response <- list(
-		status = "imageEdited",
-		results = list(
-			name = plotName,
-			resized = requireResize,
-			height = height,
-			width = width,
-			error = FALSE
-		)
-	)
-
-	# error checks
-	if (isTryError(results) || is.null(results)) {
-		response[["results"]][["error"]] <- TRUE
-	} else {
-		# adjust the state of the analysis and save it
-		state[["figures"]][[plotName]] <- results[["obj"]]
-		# store the stateKey (which gets removed by .modifyStateFigures)
-		key <- attr(x = state, which = "key")
-		state <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
-		attr(state, "key") <- key
-		.saveState(state)
-	}
-
-	toJSON(response)
+  toJSON(response)
 }
 
 .modifyStateFigures <- function(x, identifier, replacement, completeObject = TRUE) {
@@ -2807,115 +2856,38 @@ editImage <- function(plotName, type, height, width) {
   return(v)
 }
 
-###########################
-## JASP Results Wrappers ##
-###########################
-# should define the same functions as those in zzzWrappers.R in jaspResults package.
-# with the difference that here they should directly point to jaspResultsModule
+.recodeBFtype <- function(bfOld, newBFtype = c("BF10", "BF01", "LogBF10"), oldBFtype = c("BF10", "BF01", "LogBF10")) {
 
-# if title is left unset (aka "") then, when added to a container/results, it will take the fieldname as title.
-# width and height should be set to some global default setting and only in exceptional cases manually. Maybe we could take it from JASPplot?
-# aspectRatio of > 0 sets height to width * aspectRatio.
-createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, errorMessage="", dependencies=NULL, position=NULL)
+	# Arguments:
+	# bfOld: the current value of the Bayes factor
+	# newBFtype: the new type of Bayes factor, e.g., BF10, BF01,
+	# oldBFtype: the current type of the Bayes factor, e.g., BF10, BF01,
+
+	newBFtype <- match.arg(newBFtype)
+	oldBFtype <- match.arg(oldBFtype)
+
+	if (oldBFtype == newBFtype)
+		return(bfOld)
+
+  if      (oldBFtype == "BF10") { if (newBFtype == "BF01") { return(1 / bfOld);  } else { return(log(bfOld));     } }
+  else if (oldBFtype == "BF01") {	if (newBFtype == "BF10") { return(1 / bfOld);  } else { return(log(1 / bfOld)); } }
+  else                          {	if (newBFtype == "BF10") { return(exp(bfOld)); } else { return(1 / exp(bfOld));	} } # log(BF10)
+}
+
+postProcessModuleInstall <- function(moduleLibraryPath)
 {
-  jaspPlotObj  <- jaspResultsModule$create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
+  #first we just remove Rcpp, let's avoid any problems that might arise from having multiple versions of Rcpp running at the same time
+  unlink(paste0(moduleLibraryPath, "/Rcpp"), recursive=TRUE) #if it fails we do not care
 
-  if(aspectRatio > 0 && !is.null(width) && width != 0)  height = aspectRatio * width
-  else if(aspectRatio > 0)                              width = height / aspectRatio;
+  sys <- Sys.info()
 
-  jaspPlotObj$width  <- width
-  jaspPlotObj$height <- height
-  jaspPlotObj$aspectRatio <- aspectRatio
-
-  if(!is.null(error) || errorMessage != "")
+  if(!is.null(sys) & sys['sysname'] == 'Darwin') # This is MacOS
   {
-    if(is.null(error))  jaspPlotObj$error <- "errorMsgSet"
-    else                jaspPlotObj$error <- error
-    jaspPlotObj$errorMessage  <- errorMessage
+    #now we just need to find all libs and hand them over to
+    allFiles <- list.files(path=moduleLibraryPath, pattern='.+\\.((so)|(dylib))$', recursive=TRUE)
+    allFiles <- allFiles[grep('dSYM', allFiles, invert=TRUE)] #ignore debugsymbols
+    allFiles <- paste0(moduleLibraryPath, '/', allFiles)
+
+    .postProcessLibraryModule(allFiles)
   }
-
-  jaspPlotObj$plotObject <- plot
-
-  if(!is.null(dependencies))
-    jaspPlotObj$dependOnOptions(dependencies)
-
-  if(is.numeric(position))
-    jaspPlotObj$position = position
-
-  return(jaspPlotObj)
-}
-
-createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
-{
-  container <- jaspResultsModule$create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
-
-  if(!is.null(dependencies))
-    container$dependOnOptions(dependencies)
-
-  if(is.numeric(position))
-    container$position = position
-
-  return(container)
-}
-
-createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
-{
-  jaspObj <- jaspResultsModule$create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
-
-  if(!is.null(data))
-    jaspObj$setData(data)
-
-  if(!is.null(colNames))
-    jaspObj$setColNames(colNames)
-
-  if(!is.null(colTitles))
-    jaspObj$setColTitles(colTitles)
-
-  if(!is.null(colFormats))
-    jaspObj$setColFormats(colFormats)
-
-  if(!is.null(rowNames))
-    jaspObj$setRowNames(rowNames)
-
-  if(!is.null(rowTitles))
-    jaspObj$setRowTitles(rowTitles)
-
-  if(!is.null(dependencies))
-    jaspObj$dependOnOptions(dependencies)
-
-  if(is.numeric(position))
-    jaspObj$position = position
-
-  return(jaspObj)
-}
-
-createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL) # if you change "hide me" here then also change it in zzzWrappers.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
-{
-  htmlObj             <- jaspResultsModule$create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
-  htmlObj$elementType <- elementType
-  htmlObj$class       <- class
-  htmlObj$title       <- title
-
-  if(!is.null(dependencies))
-    htmlObj$dependOnOptions(dependencies)
-
-  if(is.numeric(position))
-    htmlObj$position = position
-
-  return(htmlObj)
-}
-
-createJaspState <- function(object=NULL, title="", dependencies=NULL, position=NULL)
-{
-  stateObj <- jaspResultsModule$create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
-
-  stateObj$object <- object
-
-  if(!is.null(dependencies))
-      stateObj$dependOnOptions(dependencies)
-
-  if(is.numeric(position))
-    stateObj$position = position
-
-  return(stateObj)
 }

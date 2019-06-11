@@ -1,55 +1,148 @@
-import QtQuick 2.10
-import JASP.Theme 1.0
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
 
-FocusScope {
-    id: jaspControl
-    property string controlType: "JASPControl"
-    property string name: ""
-    property bool hasTabFocus: true
-    property bool isBound: true
-    property bool debug: false
-    property var backgroundRectangle: Rectangle {
-        color: debug ? Theme.debugBackgroundColor : Theme.analysisBackgroundColor
-        border.width: 0
-        border.color: Theme.analysisBackgroundColor
-    }
-    
-    readonly property string iconFolder: "qrc:/icons/"
-    
-    Component.onCompleted: {
-        if (typeof(DEBUG_MODE) !== "undefined" && !DEBUG_MODE && debug)
-            visible = false;
-    }
-    
-    states: [
-        State {
-            when: jaspControl.activeFocus && jaspControl.hasTabFocus
-            PropertyChanges {
-                target: backgroundRectangle
-                border.width: 3
-                border.color: Theme.focusBorderColor
-                radius: 3
-            }
-        }
-    ]
-    
-    transitions: [
-        Transition {
-            ParallelAnimation {
-                NumberAnimation {
-                    target: backgroundRectangle
-                    properties: "border.width"; 
-                    duration: 800; 
-                    easing.type: Easing.OutElastic; 
-                    easing.amplitude: 1.5;
-                }
-                ColorAnimation {
-                    target: backgroundRectangle                    
-                    duration: 100
-                }
-            }
-        }
-    ]
-    
-    
+import QtQuick				2.11
+import JASP.Theme			1.0
+import QtQuick.Controls		2.4
+
+FocusScope
+{
+	id: jaspControl
+
+	property string	controlType:			"JASPControl"
+	property string name:					""
+	property bool	isBound:				true
+	property bool	debug:					false
+	property var	background:				null
+	property var	focusIndicator:			background
+	property bool   indent:                 false
+	property alias	cursorShape:			controlMouseArea.cursorShape
+	property alias	hovered:				controlMouseArea.containsMouse
+	property bool	useControlMouseArea:	true
+	property var	childControlsArea:		null
+	property var	childControls:			[]
+	property bool	childControlHasFocus:	false
+	
+	activeFocusOnTab: true
+
+	function showControlError(message)
+	{
+		form.showControlError(jaspControl, message, false)
+	}
+
+	function showControlErrorTemporary(message)
+	{
+		form.showControlError(jaspControl, message, true)
+	}
+
+	function clearControlError()
+	{
+		form.clearControlError()
+	}
+
+	function setDebugState()
+	{
+		debug = true
+		if (typeof(DEBUG_MODE) === "undefined" || !DEBUG_MODE)
+			visible = false;
+		else if (background)
+			background.color = Theme.debugBackgroundColor
+		
+		for (var i = 0; i < childControls.length; i++)
+			childControls[i].setDebugState();
+	}
+	
+	Component.onCompleted:
+	{
+		if (typeof(control) !== "undefined")
+		{
+			if (!background)
+				background = control.background
+		}
+		
+		if (typeof(getJASPControls) === "function" && childControlsArea && childControlsArea.children.length > 0)
+		{
+			getJASPControls(childControls, childControlsArea, false)
+			if (controlType != "Expander")
+				childControlHasFocus = Qt.binding(function() {
+					var result = false;
+					for (var i = 0; i < childControls.length; i++)
+						if (childControls[i].activeFocus)
+							result = true;
+					return result;
+				});
+		}
+		
+		if (debug)
+			setDebugState();
+	}
+	
+	states: [
+		State
+		{
+			name: "hasFocus"
+			when: focusIndicator && jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
+			PropertyChanges
+			{
+				target:			focusIndicator
+				border.color:	Theme.focusBorderColor
+				border.width:	Theme.jaspControlHighlightWidth
+			}
+		}
+	]
+
+	transitions: [
+		Transition
+		{
+			to: "hasFocus"
+			ParallelAnimation
+			{
+				NumberAnimation
+				{
+					target:				focusIndicator
+					properties:			"border.width";
+					duration:			800;
+					easing.type:		Easing.OutElastic;
+					easing.amplitude:	1.5;
+				}
+				ColorAnimation
+				{
+					target:		focusIndicator
+					duration:	100
+				}
+			}
+		}
+	]
+
+	property string	toolTip:				""
+
+	ToolTip.text:				toolTip
+	ToolTip.timeout:			Theme.toolTipTimeout
+	ToolTip.delay:				Theme.toolTipDelay
+	ToolTip.toolTip.font:		Theme.font
+	ToolTip.visible:			toolTip !== "" && controlMouseArea.containsMouse
+
+	MouseArea
+	{
+		z:					5
+		anchors.fill:		useControlMouseArea ? parent : undefined
+		id:					controlMouseArea
+		hoverEnabled:		true
+		acceptedButtons:	Qt.NoButton
+		cursorShape:		Qt.PointingHandCursor
+	}
 }

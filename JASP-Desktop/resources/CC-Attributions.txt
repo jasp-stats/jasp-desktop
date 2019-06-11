@@ -1,5 +1,11 @@
 Creative Commons requires us to give proper courtesy to the creators of certain files.
 
 
-filter.png and filterConstructorBackground.png: originally from "Font Awesome by Dave Gandy - https://fortawesome.github.com/Font-Awesome"
 columnConstructorBackground.png: 				Originally from "Timur Zima, from the Noun Project"
+
+filter.png, 
+    filterConstructorBackground.png, 
+    exclamation.svg, 
+    font.svg   
+    
+    originally from "Font Awesome by Dave Gandy - https://fortawesome.github.com/Font-Awesome"

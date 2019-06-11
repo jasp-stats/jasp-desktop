@@ -1,5 +1,5 @@
 #' @export
-themeJasp = function(graph, xName, yName,
+themeJasp = function(graph,
                      setAxesBreaks = FALSE,
                      plotType = NULL,
                      xAxis = TRUE,
@@ -9,14 +9,11 @@ themeJasp = function(graph, xName, yName,
                      fontsize = getGraphOption("fontsize"),
                      family = getGraphOption("family"),
                      horizontal = FALSE,
-                     legend.cex = getGraphOption("legend.cex"),
-                     legend.position = getGraphOption("legend.position"),
-                     legend.coordinates = getGraphOption("legend.coordinates"),
                      legend.title = "auto",
+                     legend.position = getGraphOption("legend.position"),
+                     legend.justification = "top",
                      axisTickLength = getGraphOption("axisTickLength"),
                      axisTickWidth = getGraphOption("axisTickWidth"),
-                     # legend.position.left = graphOptions("legend.position.left"),
-                     # legend.position.right = graphOptions("legend.position.right"),
                      xyMargin = "auto") {
 
     # "auto" always means: base this on the graph object.
@@ -24,38 +21,37 @@ themeJasp = function(graph, xName, yName,
 
     # graph: graph object to add theme to
     # fontsize: general size of text
-    # legend.title: "auto" for default, "none" for omitting or a element_text element
+    # legend.title: "none" for omitting or an element_text element
     # legend.position: otherwise as described in ?ggplot2::theme
     # xyMargin: otherwise a list where the 1st element is the xMargin and the second the yMargin. Both a numeric vector of length 4
     # legend.cex: legend text has size fontsize*legend.cex
     # axis.title.cex = axis label has size fontsize*axis.title.cex
     # family: font family
     # legend.position.left/ legend.position.right: where to place the legend? (units relative to plot window; c(.5, .5) = center)
+    #
+  if (is.character(legend.title)) {
 
-    # error handling ----
-    if (is.character(legend.title)) {
+    if (legend.title == "auto") {
 
-        if (legend.title == "auto") {
+      legend.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5)
 
-            legend.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5)
+    } else if (legend.title == "none") {
 
-        } else if (legend.title == "none") {
+      legend.title = ggplot2::element_blank()
 
-            legend.title = ggplot2::element_blank()
+    } else {
 
-        } else {
-
-            warning("legend.title not understood, omitted instead")
-            legend.title = ggplot2::element_blank()
-
-        }
-
-    } else if (!inherits(class(legend.title), "element")) {
-
-        warning("legend.title not understood, omitted instead")
-        legend.title = ggplot2::element_blank()
+      warning("legend.title not understood, omitted instead")
+      legend.title = ggplot2::element_blank()
 
     }
+
+  } else if (!inherits(class(legend.title), "element")) {
+
+    warning("legend.title not understood, omitted instead")
+    legend.title = ggplot2::element_blank()
+
+  }
 
     # actually doing stuff ----
     gBuild <- ggplot2::ggplot_build(graph)
@@ -67,25 +63,8 @@ themeJasp = function(graph, xName, yName,
     # possibly redundant.
     if (xyMargin == "auto") {
 
-        # 	    if (horizontal) {
-        #
-        #     		# get size of axis tick labels
-        #     		xBreaks = gBuild$layout$panel_ranges[[1]]$x.labels
-        # 			if (is.factor(xBreaks))
-        #     		    xBreaks = levels(xBreaks)
-        # 			xCex = max(c(0, max(nchar(xBreaks, type = "width")) - 4))
-        #     		yCex = 0
-        #
-        # 	    } else {
-        #
-        # yBreaks = gBuild$layout$panel_ranges[[1]]$y.labels
-        # if (is.factor(yBreaks))
-        #     yBreaks = levels(yBreaks)
-
         xCex <- 0
         yCex <- 0 #max(c(0, max(nchar(yBreaks, type = "width")) - 4))
-
-        # }
 
         # margins are c(bottom, left, top right)
         xMargin <- c(20 + 5 * xCex, 0, 0, 0) # margin x-label to x-axis
@@ -129,15 +108,13 @@ themeJasp = function(graph, xName, yName,
     }
 
 
-    if (horizontal) {
-
+    if (horizontal)
         graph <- graph + ggplot2::coord_flip()
 
-    }
 
     graph <- graph + themeJaspRaw(legend.position = legend.position, xMargin = xMargin, yMargin = yMargin,
-                                  legend.cex = legend.cex, axis.title.cex = axis.title.cex, family = family,
-                                  fontsize = fontsize, legend.title = legend.title,
+                                  axis.title.cex = axis.title.cex, family = family,
+                                  fontsize = fontsize, legend.title = legend.title, legend.justification = legend.justification,
                                   axisTickLength = axisTickLength, axisTickWidth = axisTickWidth)
 
     return(graph)
@@ -155,11 +132,14 @@ themeJaspRaw = function(legend.position = "none",
                         axisTickLength = getGraphOption("axisTickLength"),
                         axisTickWidth = getGraphOption("axisTickWidth"),
                         fontsize = getGraphOption("fontsize"),
+                        legend.justification = "top",
                         legend.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5),
                         Xvjust = NULL, Yvjust = NULL) {
 
     # TODO: use x_custom & y_custom with ggplot!
     ggplot2::theme(
+        # generics
+        rect = getBackgroundRect(getGraphOption("debug")),
         # axis
         axis.line = element_blank(),
         axis.text = ggplot2::element_text(family = family, size = fontsize),
@@ -168,20 +148,22 @@ themeJaspRaw = function(legend.position = "none",
         # axis.ticks.y = y_custom(size = 1.25, color = "black"),
         axis.title = ggplot2::element_text(family = family, size = axis.title.cex*fontsize),
         axis.ticks = ggplot2::element_line(size = axisTickWidth, color = "black"), # tick width
-        axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10)),
-        axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10)),
+        axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15, b = 5)),
+        axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10, l = 5)),
         axis.text.x = ggplot2::element_text(family = family, colour = "black", size = fontsize,
                                             margin = ggplot2::margin(t = 7), vjust = Xvjust),
         axis.text.y = ggplot2::element_text(family = family, colour = "black", size = fontsize,
                                             margin = ggplot2::margin(r = 7), vjust = Yvjust),
 
         # legend
-        legend.background = ggplot2::element_rect(color = "white", fill = "white"),
-        legend.key = ggplot2::element_rect(color = "white", fill = "white"),
-        legend.key.size = grid::unit(2, "cm"),
-        legend.text = ggplot2::element_text(family = family, size = legend.cex*fontsize),
-        legend.title = legend.title, # ggplot2::element_text(family = family, size = fontsize, hjust = 0.5),
-        legend.position = legend.position,
+        legend.background     = element_rect(color = "transparent", fill = "transparent"),
+        legend.box.background = element_rect(color = "transparent", fill = "transparent"),
+        legend.justification  = legend.justification,
+        legend.key            = element_rect(color = "transparent", fill = "transparent"),
+        legend.key.size       = unit(1, "cm"), 
+        legend.text           = element_text(family = family, size = legend.cex*fontsize),
+        legend.title          = legend.title, # ggplot2::element_text(family = family, size = fontsize, hjust = 0.5),
+        legend.position       = legend.position,
 
         # panel
         panel.border = element_blank(),
@@ -191,7 +173,7 @@ themeJaspRaw = function(legend.position = "none",
 
         # plot
         plot.background = ggplot2::element_rect(fill = "transparent", color = "transparent"),
-        plot.margin = ggplot2::unit(c(1, 1, 1, 1), "cm"),
+        plot.margin = ggplot2::margin(),
         plot.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5) # center title
     )
 }

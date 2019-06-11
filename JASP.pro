@@ -1,6 +1,6 @@
 cache()
 
-include(JASP.pri) 
+include(JASP.pri)
 
 TEMPLATE = subdirs
 
@@ -10,7 +10,6 @@ SUBDIRS += \
 	JASP-Common \
         JASP-Engine \
         JASP-Desktop
-#	JASP-Tests
 
 unix: SUBDIRS += $$JASP_R_INTERFACE_TARGET
 

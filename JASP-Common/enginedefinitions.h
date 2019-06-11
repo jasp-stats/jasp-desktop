@@ -1,20 +1,12 @@
 #ifndef ENGINEDEFINITIONS_H
 #define ENGINEDEFINITIONS_H
 
-#include <stdexcept>
-#include <string>
+#include "enumutilities.h"
 
-enum class engineState	{ idle, analysis, filter, rCode, computeColumn, paused, resuming };
-std::string engineStateToString(engineState e);
-engineState engineStateFromString(std::string e);
-
-enum class performType	{ init, run, abort, saveImg, editImg};
-std::string performTypeToString(performType p);
-performType performTypeFromString(std::string p);
-
-enum class analysisResultStatus  { error, exception, imageSaved, imageEdited, complete, inited, running, changed, waiting};
-std::string analysisResultStatusToString(analysisResultStatus p);
-analysisResultStatus analysisResultStatusFromString(std::string p);
-
+DECLARE_ENUM(engineState,			initializing, idle, analysis, filter, rCode, computeColumn, moduleRequest, pauseRequested, paused, resuming, stopRequested, stopped, logCfg);
+DECLARE_ENUM(performType,			init, run, abort, saveImg, editImg, rewriteImgs);
+DECLARE_ENUM(analysisResultStatus,	validationError, fatalError, imageSaved, imageEdited, imagesRewritten, complete, inited, running, changed, waiting);
+DECLARE_ENUM(moduleStatus,			initializing, installNeeded, loadingNeeded, unloadingNeeded, readyForUse, error);
+DECLARE_ENUM(engineAnalysisStatus,	empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, rewriteImgs, synchingData);
 
 #endif // ENGINEDEFINITIONS_H

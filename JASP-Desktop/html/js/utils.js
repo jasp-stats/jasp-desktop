@@ -2,7 +2,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
     /**
      * Prepares the columns of a table to the required format
      * @param column
-     * @param type           column type - string, number, ...
+     * @param type           column type - string, number, pvalue, integer, ...
      * @param format         decimal format, p-value format
      * @param alignNumbers
      * @param combine
@@ -38,7 +38,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
                 if (typeof content === "string") {
                     if (html) {
 						content = content.replace(/\u273B/g, "<small>\u273B</small>");
-						content = content.replace(/<(\w)/gi, function(p1, p2) { return '< '+p2; }) //Makes sure there is a space between <char: a<b -> a< b
+						//content = content.replace(/<(\w)/gi, function(p1, p2) { return '< '+p2; }) //Makes sure there is a space between <char: a<b -> a< b // breaks any tag used in cells... like the above <small>
 
                     }
                 }
@@ -500,7 +500,8 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
     let columnCount = columnDefs.length;
     let columns = Array(columnCount);
     let columnHeaders = Array(columnCount);
-    let rowCount = rowData ? rowData.length : 0;
+    let tableDataExists = rowData.length > 0;
+    let rowCount = tableDataExists ? rowData.length : 1;
 
     for (let colNo = 0; colNo < columnCount; colNo++) {
 
@@ -538,8 +539,14 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
 
         for (let rowNo = 0; rowNo < rowCount; rowNo++) {
 
-            let row = rowData[rowNo];
-			let content = row[columnName] === null ? '' : row[columnName];
+            let row = [];
+            let content = '.';
+
+            if (tableDataExists) {
+                row = rowData[rowNo];
+                content = row[columnName] === null ? '' : row[columnName];
+            }          
+
             let cell = { content: content };
 
             if (row['.footnotes'] && row['.footnotes'][columnName])
@@ -715,8 +722,8 @@ function formatCellforLaTeX (toFormat) {
         return '';
     }
     let text = toFormat.toString();
-    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B']
-    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*']
+    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B',    '\u221E']
+    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*', '$\\infty$']
 
     // Handle special characters
     for (let i = 0; i < special_match.length; ++i) {
@@ -738,7 +745,8 @@ function formatCellforLaTeX (toFormat) {
 
     matched = text.match('<em>(.*)</em>');
     if (matched !== null) {
-        text = text.replace(matched[0], matched[1]);
+        let formatted = '\\textit{' + matched[1] + '}';
+        text = text.replace(matched[0], formatted);
     }
 
     let special_match_after = ['<'];
@@ -749,4 +757,11 @@ function formatCellforLaTeX (toFormat) {
     }
 
     return text
+}
+
+function camelize (str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+        if (+match === 0) return "";
+        return index == 0 ? match.toLowerCase() : match.toUpperCase();
+    });
 }

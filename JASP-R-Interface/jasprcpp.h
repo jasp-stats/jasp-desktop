@@ -33,6 +33,13 @@ SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
+SEXP jaspRCPP_RunSeparateR(SEXP code);
+
+				//Custom parseEvals to make sure sink is set (to capcode.c_str()ture output)
+void			jaspRCPP_parseEvalQNT(const std::string & code);
+RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
+void			jaspRCPP_logString(const std::string & code);
+SEXP			jaspRCPP_CreateCaptureConnection();
 
 const char * jaspRCPP_requestJaspResultsRelativeFilePath();
 
@@ -40,8 +47,9 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);
 void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
-int jaspRCPP_dataSetRowCount();
+void jaspRCPP_setLog(SEXP Message);
 
+int jaspRCPP_dataSetRowCount();
 
 bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::RObject scalarData);
 bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::RObject ordinalData);
@@ -66,6 +74,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
 void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, size_t colMax);
 
-
+std::string _jaspRCPP_System(std::string cmd);
+void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames);
 
 #endif // JASPRCPP_H

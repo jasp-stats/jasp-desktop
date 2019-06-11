@@ -23,32 +23,38 @@
   "The following problem(s) occurred while running the analysis:"
   m$error$grouping <- 
   "after grouping on {{grouping}}"
-  m$error$exception <- 
+  m$error$fatalError <- 
   "This analysis terminated unexpectedly.<br><br>{{error}}<br><div class=stack-trace-selector><span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistance with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
   
   ### Error checks
   m$error$infinity <- 
   "Infinity found in {{variables}}"  
   m$error$factorLevels <- 
-  "Number of factor levels {{factorLevels.amount}} in {{variables}}"  
+  "Number of factor levels is {{factorLevels.amount}} in {{variables}}"  
   m$error$variance <- 
-  "Variance = {{variance.equalTo}} in {{variables}}"  
+  "The variance in {{variables}} is equal to {{variance.equalTo}}"  
   m$error$observations <- 
-  "Number of observations {{observations.amount}} in {{variables}}"  
+  "Number of observations is {{observations.amount}} in {{variables}}"  
   m$error$levene <- 
-  "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
+  "Cannot compute statistic reliably: number of observations is {{observations.amount}} in {{variables}}"
   m$error$limits <-
   "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
   m$error$varCovMatrix <- 
   "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
   m$error$varCovData <- 
   "The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear"
+  m$error$modelInteractions <-
+  "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
+  m$error$negativeValues <-
+  "Negative numbers found in {{variables}}"
+  m$error$missingValues <-
+  "Missing values encountered in {{variables}}"
   
   ### Footnotes
   m$footnote$leveneSign <- 
   "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
   m$footnote$VovkSellkeMPR <-
-  "Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
+  "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
   m$footnote$binomNeq <- 
   "Proportions tested against value: {{value}}."
   m$footnote$binomLess <- 

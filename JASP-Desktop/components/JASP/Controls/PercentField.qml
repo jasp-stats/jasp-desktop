@@ -16,22 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
+import QtQuick 2.11
 import JASP.Controls 1.0
 import JASP.Theme 1.0
+import JASP 1.0
 
-TextField {
-    id: textField
-    property int defaultValue: 50
-    property bool showPercent: true
-    property bool with1Decimal: false
+TextField
+{
+	property int	defaultValue:	50
+	property bool	showPercent:	true
+	property int	decimals:		0
+	property int	min:			0
+	property int	max:			100
     
-    property var intVal: IntValidator {bottom: 0; top: 100}
-    property var doubleVal: DoubleValidator {bottom: 0; top: 100; decimals: 1}
-    
-    inputType: "percent"
-    control.width: Theme.font.pixelSize * (with1Decimal ? 3 : 2)
-    validator: with1Decimal ? doubleVal : intVal
-    text: Number.parseInt(defaultValue);
-    afterLabel.text: showPercent ? "%" : ""
+	id:					percentField
+	inputType:			"percent"
+	fieldWidth:			Theme.font.pixelSize * (percentField.decimals + 3)
+	validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max; decimals: percentField.decimals; notation: DoubleValidator.StandardNotation}
+
+	lastValidValue:		defaultValue
+	afterLabel:			showPercent ? "%" : ""
+	cursorShape:		Qt.IBeamCursor	
 }

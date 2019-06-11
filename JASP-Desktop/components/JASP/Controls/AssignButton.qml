@@ -16,63 +16,80 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
-import JASP.Theme 1.0
 
-Button {
-    id: button
-    property var leftSource;
-    property var rightSource;
-    property bool leftToRight: true
+import QtQuick		2.11
+import JASP.Theme	1.0
 
-    property var source: leftToRight ? leftSource : rightSource;
-    property var target: leftToRight ? rightSource : leftSource;
+Button
+{
+	id:					button
+	activeFocusOnTab:	false
 
-    readonly property string iconToLeft: "qrc:/images/arrow-left.png"
-    readonly property string iconToRight: "qrc:/images/arrow-right.png"
-    text: ""
-    x: (rightSource.x + leftSource.width - width) / 2
-    y: rightSource.y + rightSource.rectangleY
+				property var	leftSource
+				property var	rightSource
+				property bool	leftToRight:	true
 
-    width: 40
-    height: 20
+				property var	source:			leftToRight ? leftSource : rightSource
+				property var	target:			leftToRight ? rightSource : leftSource
 
-    Image {
-        id: image
-        fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
-        sourceSize.height: button.background.height - 6
-        height: sourceSize.height
-        source: leftToRight ? iconToRight : iconToLeft
-    }
+				property var	interactionControl
 
-    onClicked: source.moveSelectedItems(target)
+	readonly	property string iconToLeft:		"qrc:/images/arrow-left.png"
+	readonly	property string iconToRight:	"qrc:/images/arrow-right.png"
+	
+	text:			""
+	enabled:		false
+	image.source:	leftToRight ? iconToRight : iconToLeft
+    
+	control.width:	40 * preferencesModel.uiScale
+	control.height: 20 * preferencesModel.uiScale
+	width:			control.width
+	height:			control.height
+	implicitWidth:  width
+    implicitHeight:	height	
+    
+	onClicked:		source.moveSelectedItems(target)
 
-    function setIconToRight() {
-        if (leftSource.activeFocus)
-            leftToRight = true;
-    }
+	function setIconToRight()	{ if (leftSource.activeFocus)	 leftToRight = true;	}
+	function setIconToLeft()	{ if (rightSource.activeFocus) leftToRight = false;		}
+	function setState()
+	{
+		var result = false;
+		if (source.selectedItems.length > 0)
+		{
+			if (target.allowedColumns.length > 0)
+			{
+				result = true;
+				for (var i = 0; i < source.selectedItemsTypes.length; i++)
+				{
+					var itemType = source.selectedItemsTypes[i];
+					if (!target.allowedColumns.includes(itemType))
+						result = false;
+				}
+			}
+			else
+				result = true;
+		}
 
-    function setIconToLeft() {
-        if (rightSource.activeFocus)
-            leftToRight = false;
-    }
+		if (interactionControl)
+		{
+			if (target.addInteractionOptions)
+			{
+				var nb = source.selectedItems.length
+				interactionControl.enabled = result
+				var enabledOptions = [ true, nb > 1, nb > 2, nb > 3, nb > 4, true ]
+				interactionControl.enabledOptions = enabledOptions
+				if (!enabledOptions[interactionControl.currentIndex])
+					result = false;
+			}
+			else
+				interactionControl.enabled = false
+		}
+		
+		enabled = result
+		
+	}
 
-    function setDisabledState() {
-        if (source.hasSelectedItems)
-            state = "";
-        else
-            state = "disabled";
-    }
-
-    onSourceChanged: setDisabledState()
-
-    Component.onCompleted: {
-        rightSource.activeFocusChanged.connect(setIconToLeft);
-        leftSource.activeFocusChanged.connect(setIconToRight);
-        rightSource.hasSelectedItemsChanged.connect(setDisabledState);
-        leftSource.hasSelectedItemsChanged.connect(setDisabledState);
-        state = "disabled";
-    }
+	onSourceChanged:	setState()
 
 }

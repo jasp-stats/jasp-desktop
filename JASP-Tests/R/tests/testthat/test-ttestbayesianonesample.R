@@ -12,57 +12,58 @@ test_that("Main table results match", {
   options$effectSizeStandardized <- "default"
   options$defaultStandardizedEffectSize <- "cauchy"
   options$priorWidth <- 0.707
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table, list("contNormal", 0.508160332089536, 2.80907441042415e-05))
 })
 
-# test_that("Prior posterior plot matches", {
-#   set.seed(0)
-#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
-#   options$variables <- "contNormal"
-#   options$plotPriorAndPosterior <- TRUE
-#   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianOneSample")
-# })
-#
-# test_that("BF robustness check plot matches", {
-#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
-#   options$variables <- "contNormal"
-#   options$plotBayesFactorRobustness <- TRUE
-#   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
-#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianOneSample")
-# })
-#
-# test_that("Sequential analysis plot matches", {
-#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
-#   options$variables <- "contNormal"
-#   options$plotSequentialAnalysis <- TRUE
-#   options$plotSequentialAnalysisRobustness <- TRUE
-#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianOneSample")
-# })
-#
-# test_that("Descriptives plot matches", {
-#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
-#   options$variables <- "contNormal"
-#   options$descriptivesPlots <- TRUE
-#   options$descriptivesPlotsCredibleInterval <- 0.90
-#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-#   testPlot <- results[["state"]][["figures"]][[1]]
-#   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianOneSample")
-# })
+test_that("Prior posterior plot matches", {
+  skip("base plots are not supported in regression testing")
+  set.seed(0)
+  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options$variables <- "contNormal"
+  options$plotPriorAndPosterior <- TRUE
+  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianOneSample")
+})
+
+test_that("BF robustness check plot matches", {
+  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options$variables <- "contNormal"
+  options$plotBayesFactorRobustness <- TRUE
+  options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianOneSample")
+})
+
+test_that("Sequential analysis plot matches", {
+  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options$variables <- "contNormal"
+  options$plotSequentialAnalysis <- TRUE
+  options$plotSequentialAnalysisRobustness <- TRUE
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianOneSample")
+})
+
+test_that("Descriptives plot matches", {
+  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options$variables <- "contNormal"
+  options$descriptivesPlots <- TRUE
+  options$descriptivesPlotsCredibleInterval <- 0.90
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianOneSample")
+})
 
 test_that("Descriptives table matches", {
   options <- jasptools::analysisOptions("TTestBayesianOneSample")
   options$variables <- "contNormal"
   options$descriptives <- TRUE
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
   table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
@@ -74,17 +75,17 @@ test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestBayesianOneSample")
 
   options$variables <- "debInf"
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- "debSame"
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- "debMiss99"
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

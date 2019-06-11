@@ -16,6 +16,7 @@
 //
 
 #include "dataset.h"
+#include "log.h"
 
 using namespace std;
 /* DataSet is implemented as a set of columns */
@@ -93,12 +94,22 @@ vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > emptyVal
 	return colChanged;
 }
 
-void DataSet::setFilterVector(std::vector<bool> filterResult)
+bool DataSet::setFilterVector(std::vector<bool> filterResult)
 {
+	bool changed = false;
+
 	_filteredRowCount = 0;
+
 	for(size_t i=0; i<filterResult.size(); i++)
+	{
+		if(_filterVector[i] != filterResult[i])
+			changed = true;
+
 		if((_filterVector[i] = filterResult[i])) //economy
 			_filteredRowCount++;
+	}
+
+	return changed;
 }
 
 bool DataSet::allColumnsPassFilter() const
@@ -114,10 +125,8 @@ size_t DataSet::rowCount()	const
 	size_t	min = minRowCount(),
 			max = maxRowCount();
 
-#ifdef JASP_DEBUG
 	if(min != max)
-		std::cout << "DataSet::rowCount() found inconsistent rowCounts min=" << min << " max=" << max << std::endl;
-#endif
+		Log::log() << "DataSet::rowCount() found inconsistent rowCounts min=" << min << " max=" << max << std::endl;
 
 	return min;
 }
@@ -125,9 +134,7 @@ size_t DataSet::rowCount()	const
 
 void DataSet::setSynchingData(bool newVal)
 {
-#ifdef JASP_DEBUG
-	std::cout << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl;
-#endif
+	Log::log() << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl;
 
 	_synchingData = newVal;
 }

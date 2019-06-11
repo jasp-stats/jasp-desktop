@@ -4,18 +4,18 @@
 class jaspState : public jaspObject
 {
 public:
-	jaspState(std::string title = "") : jaspObject(jaspObjectType::state, title) {}
-	~jaspState() { _stateObjectSerialized = Rcpp::Vector<RAWSXP>(); }
+	jaspState(std::string title = "") : jaspObject(jaspObjectType::state, title) { initEnvName(); }
 
-	void setObject(Rcpp::RObject obj);
-	Rcpp::RObject getObject();
+	void			setObject(Rcpp::RObject obj);
+	Rcpp::RObject	getObject();
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
-	std::string dataToString(std::string prefix) override;
+	Json::Value		convertToJSON()								override;
+	void			convertFromJSON_SetFields(Json::Value in)	override;
+	std::string		dataToString(std::string prefix)			override;
+	std::string		_envName;
 
 private:
-	Rcpp::Vector<RAWSXP> _stateObjectSerialized;
+	void initEnvName();
 };
 
 

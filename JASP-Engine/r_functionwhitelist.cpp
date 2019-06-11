@@ -1,5 +1,5 @@
 #include "r_functionwhitelist.h"
-#include "utils.h"
+#include "stringutils.h"
 
 	//The following functions (and keywords that can be followed by a '(') will be allowed in user-entered R-code, such as filters or computed columns. This is for security because otherwise JASP-files could become a vector of attack and that doesn't refer to an R-datatype.
 const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
@@ -184,6 +184,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"tolower",
 	"toString",
 	"toupper",
+	"trimws",
 	"unclass",
 	"union",
 	"unique",
@@ -247,7 +248,7 @@ const std::regex	R_FunctionWhiteList::assignmentOperatorLeftMatcher(		"(?:->>?)\
 
 std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::string const & script)
 {
-	//std::cout << "findIllegalFunctionsAliases with " << script << std::endl << std::flush;
+	//Log::log() << "findIllegalFunctionsAliases with " << script << std::endl << std::flush;
 
 	std::set<std::string> illegalAliasesFound;
 
@@ -261,7 +262,7 @@ std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::stri
 			std::string foundAlias((*foundAliasesIter)[1].str());
 			bool allowed = (*lambdaMatchChecker)(foundAlias);
 
-			//std::cout << "I found alias assignment: " << foundAlias << " which is " << (allowed ? "allowed" : "not allowed") << ".." << std::endl;
+			//Log::log() << "I found alias assignment: " << foundAlias << " which is " << (allowed ? "allowed" : "not allowed") << ".." << std::endl;
 
 			if(!allowed)
 				illegalAliasesFound.insert(foundAlias);
@@ -273,14 +274,14 @@ std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::stri
 	aliasSearcher(assignmentWhiteListedLeftMatcher,		[](std::string alias) { return functionWhiteList.count(alias) == 0; }); //only allowed when the token being assigned to is not in whitelist
 	aliasSearcher(assignmentWhiteListedRightMatcher,	[](std::string alias) { return functionWhiteList.count(alias) == 0; });
 
-	//std::cout << std::flush;
+	//Log::log() << std::flush;
 
 	return illegalAliasesFound;
 }
 
 void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 {
-	std::string commentFree = Utils::stripRComments(script);
+    std::string commentFree = stringUtils::stripRComments(script);
 
 	static std::string errorMsg;
 

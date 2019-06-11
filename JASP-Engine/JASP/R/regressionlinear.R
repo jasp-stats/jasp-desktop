@@ -22,7 +22,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 
 	dependent.variable <- unlist(options$dependent)
-	wls.weight <- unlist(options$wlsWeight)
+	wls.weight <- unlist(options$wlsWeights)
 	independent.variables <- NULL
 	to.be.read.variables.factors <- NULL
 	if (length(options$covariates) > 0){
@@ -44,8 +44,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (is.null(dataset)) {
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(	columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric,
-											exclude.na.listwise=c(to.be.read.variables.numeric, to.be.read.variables.factors)	)
+			dataset <- .readDataSetToEnd(	columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
 		} else {
 			dataset <- .readDataSetHeader(columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
 		}
@@ -55,94 +54,23 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	###		    DATA QUALITY CHECK  	 ##
 	#######################################
 
-	list.of.errors <- list()
-
-
-	if (perform == "run" && dependent.variable != "") {
-
-		#check weights
-		if (options$wlsWeight != "") {
-
-			weight.base64 <- .v(wls.weight)
-			min.weight <- min(dataset[[ weight.base64 ]])
-
-			if (is.finite(min.weight)) {
-
-				if (min.weight <= 0) {
-
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- there are nonpositive weights encountered"
-				}
-
-			} else {
-
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- the weights contain infinities"
-			}
-		}
-
-		#check for data
-		number.of.rows <- length( dataset[[ .v(dependent.variable) ]])
-		number.of.columns <- 1 + length(independent.variables)
-		x <- matrix(0, number.of.rows, number.of.columns)
-		x[,1] <- as.numeric( dataset[[ .v(dependent.variable) ]])
-
-		if (number.of.columns > 1){
-
-			for (i in 1:(number.of.columns - 1)) {
-				x[,i+1] <- as.numeric( dataset[[ .v(independent.variables[ i ]) ]])
-			}
-		}
-
-		#check on number of valid observations.
-		n.valid.cases <- nrow(x)
-
-		if (n.valid.cases == 0) {
-
-			list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are
-			excluded)"
-		}
-
-		#check for variance in variables.
-		number.of.values.vars <- sapply(1:ncol(x),function(i){length(unique(x[,i]))})
-		indicator <- which(number.of.values.vars <= 1)
-
-		if (length(indicator) != 0 ){
-
-			if (number.of.values.vars[1] <= 1){
-
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- the dependent variable contains all the same value (the variance is zero)"
-
-			} else {
-
-				if (length(indicator) == 1){
-
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", independent.variables[indicator-1] ," contain(s) all the
-						same value (the variance is zero)",sep="")
-
-				} else {
-
-					var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", var.names, " contain(s) all the same value (their variance
-						is zero)", sep="")
-				}
-			}
-		}
-
-		#check for Inf's in dataset.
-		column.sums <- colSums(x,na.rm=TRUE)
-		indicator <- which(is.infinite(column.sums))
-
-		if (length(indicator) > 0 ){
-
-			if ( 1%in%indicator){
-
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- "Least squares regression model is undefined -- the dependent variable contains infinity"
-
-			} else {
-
-				var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- paste("Least squares regression model undefined -- the independent variable(s) ",var.names, " contain(s) infinity",sep="")
-			}
-		}
+	if (perform == "run") {
+			
+	  if (dependent.variable != "") {
+  		.hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions"), 
+  								all.target = list.variables, observations.amount = "< 2",
+  								modelInteractions.modelTerms = options$modelTerms, exitAnalysisIfErrors = TRUE)
+  								
+  		#check weights
+  		if (options$wlsWeights != "")
+  			.hasErrors(dataset, type = c("infinity", "limits", "observations"), 
+  									all.target = options$wlsWeights, limits.min = 1, observations.amount = "< 2",
+  	  							exitAnalysisIfErrors = TRUE)
+	  }
+	  
+	  #remove NA listwise
+	  dataset <- dataset[complete.cases(dataset), , drop=FALSE]
+	  
 	}
 
 	#######################################
@@ -150,6 +78,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 
 	results <- list()
+	list.of.errors <- list()
 
 	.meta <-  list(
 		list(name = "title", type = "title"),
@@ -240,42 +169,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		includes.nuisance <- (length(variables.in.null.model) > 0)
 		lm.fit.index.one.model <- 1 + as.numeric(includes.nuisance && (!identical(variables.in.model,variables.in.null.model)))
 
-	}
-
-
-	if (length(options$modelTerms) > 0) {
-
-		max.no.components <- max(sapply (options$modelTerms, function(term){length (term$components)}))
-
-		if (max.no.components > 1) {
-
-			# In case of interactions, check whether all main effects and lower-order interaction terms are in the model
-
-			for (term in options$modelTerms) {
-
-				components <- term$components
-
-				if (length (components) > 1) {
-
-					no.children <- 2^length (components) - 1
-					inclusion <- sapply (options$modelTerms, function (terms) {
-
-							term.components <- terms$components
-
-							if (sum (term.components %in% components) == length (term.components)) {
-								return (TRUE)
-							}
-							return (FALSE)
-						})
-
-					if (sum (inclusion) != no.children) {
-
-						error.message <- "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
-						list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-					}
-				}
-			}
-		}
 	}
 
 	if (dependent.variable != "") {
@@ -456,6 +349,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 	}
+	# show a footnote if this is TRUE
+	interceptOnlyModelIsBest <- dependent.variable != "" && perform == "run" && options$method != "enter" &&
+	  length(options$modelTerm) > 0L && length(lm.model) == 1L && length(lm.model[[1L]][["variables"]]) == 0L
 
 	### check for errors
 	if (! is.null(independent.variables) && ! is.null(dependent.variable)) {
@@ -687,8 +583,22 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (options$residualsDurbinWatson) {
 
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "sf:4;dp:3")
-		empty.line$"Durbin-Watson" <- "."
+	  fields[[length(fields)+1]] <- list(name = "Durbin-Watson_ac", title = "Autocorrelation",
+	                                     type = "number", format = "sf:4;dp:3", 
+	                                     overTitle = "Durbin-Watson")
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Statistic",
+		                                   type = "number", format = "sf:4;dp:3",
+		                                   overTitle = "Durbin-Watson")
+		empty.line[["Durbin-Watson_ac"]] <- empty.line[["Durbin-Watson"]] <- "."
+		
+		if(options$wlsWeights == ""){
+  		fields[[length(fields)+1]] <- list(name = "Durbin-Watson_p.value", title = "p",
+  		                                   type = "number", format = "dp:3;p:.001",
+  		                                   overTitle = "Durbin-Watson")
+  		empty.line[["Durbin-Watson_p.value"]] <- "."
+		} else{
+		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = "p-value for Durbin-Watson test is unavailable for weighted regression.")
+		}
 	}
 
 	model.table[["schema"]] <- list(fields = fields)
@@ -709,15 +619,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				table.rows[[ m ]]$"se" <- as.numeric(lm.summary$sigma)
 
 				if (options$residualsDurbinWatson) {
+				  
+				  durwatResult <- car::durbinWatsonTest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
+				  
+				  table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(durwatResult[['r']])
+				  table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['dw']])
+				  
+				  if(options$wlsWeights == ""){ # if regression is not weighted, calculate p-value with lmtest (car method is unstable)
+				    durwatResult[['p.value']] <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))$p.value
+				    table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
+				  }
 
-					if (m == length(lm.model)) {
-
-						table.rows[[ m ]]$"Durbin-Watson" <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$dw)
-
-					} else {
-
-						table.rows[[ m ]]$"Durbin-Watson" <- ""
-					}
 				}
 
 				if (options$rSquaredChange == TRUE) {
@@ -937,6 +849,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			}
 		}
 		anova[["data"]] <- anova.result
+		if (interceptOnlyModelIsBest) {
+		  text <- "The model with an intercept is selected as the best model. No meaningful information can be shown."
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = text)
+		}
 		anova[["footnotes"]] <- as.list(footnotes)
 
 		results[["anova"]] <- anova
@@ -1007,7 +923,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-			alpha <- alpha / 100
+			#alpha <- alpha / 100
 			
 			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
 			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
@@ -1342,7 +1258,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	}
 	
-	
 	################################################################################
 	#						   BOOTSTRAPPING MODEL COEFFICIENTS TABLE   						#
 	################################################################################
@@ -1353,7 +1268,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
       (diff$regressionCoefficientsBootstrapping == FALSE && diff$regressionCoefficientsBootstrappingReplicates == FALSE &&
        diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE &&
        diff$regressionCoefficientsEstimates == FALSE && diff$regressionCoefficientsConfidenceIntervalsInterval == FALSE && 
-       diff$regressionCoefficientsConfidenceIntervals == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&  
+       diff$steppingMethodCriteriaFEntry == FALSE &&  
        diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && 
        diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
        diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
@@ -1370,13 +1285,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  
 	  footnotes <- .newFootnotes()
 	  
+	  alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
+	  
 	  # Declare table elements
 	  fields <- list(
 	    list(name = "Model", type = "integer"),
 	    list(name = "Name", title = "  ", type = "string"),
 	    list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
 	    list(name = "Bias", type = "number", format = "sf:4;dp:3"),
-	    list(name = "Standard Error", type="number", format = "sf:4;dp:3")
+	    list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
+	    list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3",
+	         overTitle=paste0(100*alpha, "% bca\u002A CI")),
+	    list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3",
+	         overTitle=paste0(100*alpha, "% bca\u002A CI"))
 	  )
 
 	  empty.line <- list( #for empty elements in tables when given output
@@ -1384,7 +1305,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Name" = "",
 	    "Bias" = "",
 	    "Coefficient" = "",
-	    "Standard Error" = "")
+	    "Standard Error" = "",
+	    "Lower Bound" = "",
+	    "Upper Bound" = "")
 #	    "p" = "")
 	  
 	  dotted.line <- list( #for empty tables
@@ -1392,29 +1315,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	    "Name" = ".",
 	    "Coefficient" = ".",
 	    "Bias" = ".",
-	    "Standard Error" = ".")
+	    "Standard Error" = ".",
+	    "Lower Bound" = ".",
+	    "Upper Bound" = ".")
 #	    "p" = ".")
-	  
-	  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-	    
-	    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-	    alpha <- alpha / 100
-	    
-	    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-	    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-	    
-	    empty.line$"Lower Bound" = ""
-	    empty.line$"Upper Bound" = ""
-	    dotted.line$"Lower Bound" = "."
-	    dotted.line$"Upper Bound" = "."
-	  }
 	  
 	  bootstrap.regression[["schema"]] <- list(fields = fields)
 	  
 	  bootstrap.regression.result <- list()
+	  ci.fails <- FALSE
 	  
 	  if (perform == "run" && length(list.of.errors) == 0) {
-	    
+	    if(length(lm.model) > 0){
+	      ticks <- options[['regressionCoefficientsBootstrappingReplicates']]*length(lm.model)
+	      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+	    }
 	    for (m in 1:length(lm.model)) {
 	      
 	      if ( class(lm.model[[ m ]]$lm.fit) == "lm" && (! (length(lm.model[[m]]$variables) == 0 && options$includeConstant == FALSE))) {
@@ -1428,7 +1343,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          # !!!!! if(all(is.na(tmp)))
 	        }
 	        
-	        .bootstrapping <- function(data, indices, formula, wlsWeights) {
+	        .bootstrapping <- function(data, indices, formula, wlsWeights, options) {
+	          pr <- progress()
+	          response <- .optionsDiffCheckBootstrapLinearRegression(pr, options)
+	          
+	          if(response$status == "changed" || response$status == "aborted")
+	            stop("Bootstrapping options have changed")
+	          
 	          d <- data[indices, , drop = FALSE] # allows boot to select sample
 	          if (.unv(wlsWeights) == "") {
 	            fit <- lm(formula = formula, data=d)
@@ -1439,9 +1360,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	          return(coef(fit))
 	        }
 	        
-	        bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$regressionCoefficientsBootstrappingReplicates, formula = formula(lm.model[[m]]$lm.fit), wlsWeights = .v(options$wlsWeights))
-	        bootstrap.coef <- bootstrap.summary$t0
-	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
+	        bootstrap.summary <- try(boot::boot(data = dataset, statistic = .bootstrapping,
+	                                        R = options$regressionCoefficientsBootstrappingReplicates,
+	                                        formula = formula(lm.model[[m]]$lm.fit),
+	                                        wlsWeights = .v(options$wlsWeights),
+	                                        options = options),
+	                                 silent = TRUE
+	                                 )
+	        if(inherits(bootstrap.summary, "try-error") &&
+	           identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
+	          return()
+	        
+	        bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
+	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
 	        bootstrap.se <- matrixStats::colSds(bootstrap.summary$t, na.rm = TRUE)
 
 	        len.reg <- length(bootstrap.regression.result) + 1
@@ -1461,11 +1392,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	            bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v])
 	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 	            
-	            if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-	              bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v)
-	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
-	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
+	            result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v))
+	            if(!inherits(result.bootstrap.ci, "try-error")){
+	              bootstrap.ci <- result.bootstrap.ci
+	            } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+	              ci.fails <- TRUE
+	              bootstrap.ci <- list(bca = rep(NA, 5))
+	            } else{
+	              bootstrap.ci <- result.bootstrap.ci
 	            }
+	            bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- .clean(as.numeric( bootstrap.ci$bca[4] ))
+	            bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- .clean(as.numeric( bootstrap.ci$bca[5] ))
 	            
 	          } else {
 	            
@@ -1560,11 +1497,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	              bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v+var])
 	              bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v+var])
 
-	              if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-	                bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var)
-	                bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
-	                bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
+	              result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var))
+	              if(!inherits(result.bootstrap.ci, "try-error")){
+	                bootstrap.ci <- result.bootstrap.ci
+	              } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+	                ci.fails <- TRUE
+	                bootstrap.ci <- list(bca = rep(NA, 5))
+	              } else{
+	                bootstrap.ci <- result.bootstrap.ci
 	              }
+	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- .clean(as.numeric( bootstrap.ci$bca[4] ))
+	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- .clean(as.numeric( bootstrap.ci$bca[5] ))
 	              
 	              len.reg <- len.reg + 1
 	            }
@@ -1682,11 +1625,23 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  
 	  bootstrap.regression[["data"]] <- bootstrap.regression.result
 	  
+	  footnotes <- .newFootnotes()
+	  if(ci.fails){
+	    .addFootnote(footnotes,
+	                 symbol = "<i>Note.</i>", 
+	                 text = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
+	  }
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+	               text = paste0("Bootstrapping based on ", options[['regressionCoefficientsBootstrappingReplicates']], " replicates."))
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+	               text = "Coefficient estimate is based on the median of the bootstrap distribution.")
+	  .addFootnote(footnotes, symbol = "\u002A", text = "Bias corrected accelerated.")
+
+	  
 	  # Check whether variables in the regression model are redundant
 	  for(i in 1:length(bootstrap.regression$data)) {
 	    if (bootstrap.regression$data[[i]]$Coefficient=="NA") {
 	      # Add footnote
-	      footnotes <- .newFootnotes()
 	      .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
 	      # Add footnote symbol to name of the redundant variable
 	      bootstrap.regression$data[[i]]$Name <- paste0(bootstrap.regression$data[[i]]$Name, "\u207A")
@@ -1952,6 +1907,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			covmatrix[["error"]] <- list(errorType="badData")
 
 		covmatrix[["data"]] <- covmatrix.rows
+		if (interceptOnlyModelIsBest) {
+		  footnotes <- .newFootnotes()
+		  text <- "The model with an intercept is selected as the best model. No meaningful information can be shown."
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = text)
+		  covmatrix[["footnotes"]] <- c(covmatrix[["footnotes"]], as.list(footnotes))
+		}
 
 		results[["coefficient covariances"]] <- covmatrix
 	}
@@ -2235,7 +2196,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#						   Residuals Statistics Table   					   #
 	################################################################################
 
-	if (options$residualsDurbinWatson || options$residualsCasewiseDiagnostics) {
+	if (options$residualsStatistics) {
 
 		residualsStatistics <- list()
 		residualsStatistics[["title"]] <- "Residuals Statistics"
@@ -3927,8 +3888,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
     if (dontPlotData) {
         
-        p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes())
-        p <- JASPgraphs::themeJasp(p,xName = xlab, yName = ylab)
+        p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes()) +
+          ggplot2::xlab(resName) + ggplot2::ylab("Density")
+        p <- JASPgraphs::themeJasp(p)
         
         return(p)
     }
@@ -3936,12 +3898,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     density <- density(res)
 
     h <- hist(res, plot = FALSE)
-    dens <- h$density
-    yhigh <- 1.2*max(h$density)
+    dens <- density(res)
+		yhigh <- max(c(h$density, dens$y))
     ylow <- 0
     xticks <- base::pretty(c(res, h$breaks), min.n= 3)
 
-	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(ylow, yhigh), force = TRUE, yLabels = NULL, xLabels = xticks)
     p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
                                 binwidth = (h$breaks[2] - h$breaks[1]),
                                 fill = "grey",
@@ -4042,4 +4004,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   
   return(plot.data)
 
+}
+
+.optionsDiffCheckBootstrapLinearRegression <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    
+    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
+       change$modelTerms || change$regressionCoefficientsEstimates || change$includeConstant ||
+       change$regressionCoefficientsBootstrapping ||
+       change$regressionCoefficientsBootstrappingReplicates ||
+       change$regressionCoefficientsConfidenceIntervalsInterval)
+      return(response)
+
+    response$status <- "ok"
+  }
+  
+  return(response)
 }

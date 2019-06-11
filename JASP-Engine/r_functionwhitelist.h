@@ -4,7 +4,7 @@
 #include <set>
 #include <regex>
 #include <sstream>
-#include <iostream>
+
 #include "../JASP-R-Interface/jasprcpp_interface.h"
 
 class R_FunctionWhiteList

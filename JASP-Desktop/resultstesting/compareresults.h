@@ -20,14 +20,23 @@ public:
 	void	setOriginalResult(QString result);
 	void	setRefreshResult(QString result);
 
-	void	enableTestMode()	{ runningTestMode = true; }
-	bool	testMode()			{ return runningTestMode; }
+	void	enableTestMode()			{ runningTestMode = true; }
+	bool	testMode()			const	{ return runningTestMode; }
 
-	void	setRefreshCalled()	{ atLeastOneRefreshHappened = true; }
-	bool	refreshed()			{ return atLeastOneRefreshHappened; }
+	void	enableSaving()				{ saveAfterRefresh = true; }
+	bool	shouldSave()		const	{ return saveAfterRefresh; }
 
-	void	setExportCalled()	{ resultsExportCalled = true; }
-	bool	exportCalled()		{ return resultsExportCalled; }
+	void	setRefreshCalled()			{ atLeastOneRefreshHappened = true; }
+	bool	refreshed()			const	{ return atLeastOneRefreshHappened; }
+
+	void	setExportCalled()			{ resultsExportCalled = true; }
+	bool	exportCalled()		const	{ return resultsExportCalled; }
+
+	bool	comparedAlready()	const	{ return ranCompare;	}
+	bool	compareSucces()		const	{ return succes;		}
+
+	QString	filePath()			const	{ return _filePath;	}
+	void	setFilePath(QString p)		{ _filePath = p;	}
 
 	static	compareResults	*theOne();
 
@@ -36,9 +45,14 @@ private:
 
 	bool			runningTestMode				= false,
 					atLeastOneRefreshHappened	= false,
-					resultsExportCalled			= false;
+					resultsExportCalled			= false,
+					saveAfterRefresh			= false,
+					ranCompare					= false,
+					succes						= false;
+
 	QString			originalResultExport		= "",
-					refreshedResultExport		= "";
+					refreshedResultExport		= "",
+					_filePath					= "";
 
 	static compareResults*	singleton;
 };

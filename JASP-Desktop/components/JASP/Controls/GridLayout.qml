@@ -16,19 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
+import QtQuick 2.11
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 GridLayout {
-    id: gridLayout
-    rowSpacing: Theme.rowSpacing
-    columnSpacing: Theme.columnSpacing
-    columns: 2
-    width: parent.width
-        
-    Component.onCompleted: {
-        for (var i = 0; i < children.length; i++)
-            children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft
-    }
+	id:						gridLayout
+	rowSpacing:				Theme.rowGridSpacing
+	columnSpacing:			Theme.columnGridSpacing
+	columns:				2
+	Layout.minimumWidth:	parent.width
+	
+	property bool alignChildrenTopLeft: true
+	property int count:	children.length
+	
+	onCountChanged:
+	{
+		if (alignChildrenTopLeft)
+			for (var i = 0; i < children.length; i++)
+				children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft;
+	}
 }

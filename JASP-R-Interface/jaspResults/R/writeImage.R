@@ -8,13 +8,29 @@ tryToWriteImageJaspResults <- function(...)
   )
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL)
+getImageLocation <- function(type="png") {
+  root <- file.path(tempdir(), "jaspResults", "plots")
+  if (! dir.exists(root))
+    dir.create(root, recursive=TRUE)
+  numPlots <- length(list.files(root))
+  list(
+    root = root,
+    relativePath = paste(numPlots + 1, type, sep=".")
+  )
+}
+
+writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation("png"))
 {
   # Initialise output object
   image <- list()
 
-  # Create png file location
-  location <- .fromRCPP(".requestTempFileNameNative", "png")
+  # Set values from JASP'S Rcpp when available
+  if (exists(".fromRCPP")) {
+    location <- .fromRCPP(".requestTempFileNameNative", "png")
+    backgroundColor <- .fromRCPP(".imageBackground")
+    ppi <- .fromRCPP(".ppi")
+  }
+
   # TRUE if called from analysis, FALSE if called from editImage
   if (is.null(relativePathpng))
     relativePathpng <- location$relativePath
@@ -29,17 +45,14 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   setwd(root)
   on.exit(setwd(oldwd))
 
-  backgroundColor <- .fromRCPP(".imageBackground")
-
   # Operating System information
   type <- "cairo"
   if (Sys.info()["sysname"]=="Darwin"){
     type <- "quartz"
   }
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-    ppi <- .fromRCPP(".ppi")
 
-    pngMultip <- .fromRCPP(".ppi") / 96
+    pngMultip <- ppi / 96
     ggplot2::ggsave(
     	filename  = relativePathpng, 
     	plot      = plot, 
@@ -55,7 +68,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   } else {
     
   	# Calculate pixel multiplier
-  	pngMultip <- .fromRCPP(".ppi") / 96
+  	pngMultip <- ppi / 96
     isRecordedPlot <- inherits(plot, "recordedplot")
 
     # Open graphics device and plot
@@ -70,7 +83,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
       .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
-      qgraph::plot.qgraph(plot)
+      qgraph:::plot.qgraph(plot)
     } else {
       plot(plot)
     }

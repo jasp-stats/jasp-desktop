@@ -46,7 +46,7 @@ test_that("Main table results match", {
 
   for (type in c("type1", "type2", "type3")) {
     options$sumOfSquares <- type
-    results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("Ancova", "test.csv", options)
     table <- results[["results"]][["anova"]][["data"]]
     expect_equal_tables(table, refTables[[type]], label=paste("Table with SS", type))
   }
@@ -63,7 +63,7 @@ test_that("Homogeneity of Variances table results match", {
   )
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   table <- results[["results"]][["assumptionsObj"]][["levene"]][["data"]]
   expect_equal_tables(table, list(2.72159218177061, 1, 98, 0.102201011380302, 1.57819444559362, 1))
 })
@@ -122,7 +122,7 @@ test_that("Contrasts table results match", {
   contrasts <- c("deviation", "simple", "difference", "Helmert", "repeated", "polynomial")
   for (contrast in contrasts) {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
-    results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("Ancova", "test.csv", options)
     table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
   }
@@ -142,14 +142,16 @@ test_that("Post Hoc table results match", {
   options$postHocTestsHolm <- TRUE
   options$postHocTestsScheffe <- TRUE
   options$postHocTestsTukey <- TRUE
-  options$postHocTestsVariables <- "facExperim"
+  options$postHocTestsSidak <- TRUE
+  options$postHocTestsVariables <- list("facExperim")
   options$postHocTestsTypeStandard <- TRUE
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table,
-    list("control", "experimental", -0.0830902357515323, 0.21391801479091,
-         -0.388420937024623, -0.078154288522293197, 0.698555762823947,
-         0.927393971055831, 0.698555762823947, 0.698555762823947, -0.4966168, 0.3501177, "TRUE")
+                      list("control", "experimental", -0.0830902357515323, 0.21391801479091,
+                           -0.388420937024623, -0.0781542885222932, 0.698555762823947,
+                           0.698555762823947, 0.698555762823947, 0.698555762823947, 0.698555762823947,
+                           -0.507658279613133, 0.341477808110069, "TRUE")
   )
 })
 
@@ -182,7 +184,7 @@ test_that("Marginal Means table results match", {
 
   for (adjustment in c("none", "Bonferroni", "Sidak")) {
     options$marginalMeansCIAdjustment <- adjustment
-    results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("Ancova", "test.csv", options)
     table <- results[["results"]][["marginalMeans"]][["collection"]][[1]][["data"]]
     expect_equal_tables(table, refTables[[adjustment]], label=paste("Table with CI adjustment", adjustment))
   }
@@ -203,7 +205,7 @@ test_that("Simple Main Effects table results match", {
   options$moderatorFactorTwo <- ""
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Ancova", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "debug.csv", options)
   table <- results[["results"]][["simpleEffects"]][["data"]]
   expect_equal_tables(table, list(1, 0.350864897951646, 1, 0.350864897951646, 0.307765411627339,
                                   0.580386465552355, "TRUE", 2, 2.72259751707838, 1, 2.72259751707838,
@@ -221,7 +223,7 @@ test_that("Analysis handles errors", {
   options$dependent <- "debInf"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                    label="Inf dependent check")
 
@@ -230,7 +232,7 @@ test_that("Analysis handles errors", {
  options$covariates <- "debInf"
  options$fixedFactors <- "contBinom"
  options$modelTerms <- list(list(components="contBinom"))
- results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+ results <- jasptools::run("Ancova", "test.csv", options)
  expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="Inf covariate check")
 
@@ -239,21 +241,21 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "contBinom"
   options$wlsWeights <- "debInf"
   options$modelTerms <- list(list(components="contBinom"))
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="Inf WLS weights check")
 
   options$dependent <- "contNormal"
   options$fixedFactors <- "debSame"
   options$modelTerms <- list(list(components="debSame"))
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="1-level factor check")
 
   options$dependent <- "debSame"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive"))
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="No variance check")
 
@@ -261,7 +263,135 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "facFive"
   options$wlsWeights <- "contNormal"
   options$modelTerms <- list(list(components="facFive"))
-  results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Ancova", "test.csv", options)
   expect_identical(results[["results"]][["anova"]][["error"]][["errorType"]], "badData",
                   label="Negative WLS weights check")
+})
+
+### Andy Field tests ----
+
+#### Chapter 6 ---
+test_that("Field - Chapter 6 results match", {
+  options <- jasptools::analysisOptions("Ancova")
+  
+  options$dependent <- "Happiness"
+  options$fixedFactors <- "Dose"
+  options$covariates <- "Puppy_love"
+  options$modelTerms <- list(
+    list(components = "Dose"),
+    list(components = "Puppy_love")
+  )
+  
+  options$marginalMeansTerms <- list(
+    list(components = "Dose")
+  )
+  options$marginalMeansBootstrapping <- TRUE
+  options$marginalMeansBootstrappingReplicates <- 500
+  
+  options$contrasts <- list(
+    list(contrast = "simple", variable = "Dose") 
+  )
+  options$confidenceIntervalsContrast <- TRUE
+  
+  options$postHocTestsVariables <- "Dose"
+  options$postHocTestsSidak <- TRUE
+  options$postHocTestsTukey <- FALSE
+  options$confidenceIntervalsPostHoc <- TRUE
+  options$postHocTestsBootstrapping <- TRUE
+  options$postHocTestsBootstrappingReplicates <- 500
+  
+  set.seed(1) # seed for bootstrapping
+  results <- jasptools::run("Ancova", "Puppy Love.csv", options)
+  
+  # main table
+  table <- results$results$anova$data
+  expect_equal_tables(table,
+                      list("Dose", 25.1851942083821, 2, 12.592597104191, 4.14192880386377,
+                           0.0274465428639959, "TRUE", "Puppy_love", 15.0757477099169,
+                           1, 15.0757477099169, 4.9586811332752, 0.0348333806474409, "TRUE",
+                           "Residual", 79.0471155379463, 26, 3.0402736745364, "", "", "TRUE"))
+  # marginal means
+  table <- results$results$marginalMeans$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(1, 2.92637006325413, 0.59620445705692, 1.70085425032354, 4.15188587618472,
+                           "TRUE", 2, 4.71205017806836, 0.620797059348147, 3.43598354715531,
+                           5.9881168089814, "FALSE", 3, 5.15125138508969, 0.502632306147453,
+                           4.11807588299064, 6.18442688718874, "FALSE"))
+  
+  
+  # marginal means bootstrapping
+  table <- results$results$bootsMarginalMeans$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(1, 2.89513297007949, 0.00291277082733199, 0.454016672951108, 2.24194236484924,
+                           4.40152013882763, "TRUE", 2, 4.7532347036809, 0.0469177160983509,
+                           0.374655789875328, 3.87665072858526, 5.46307279640562, "FALSE",
+                           3, 5.13975121640456, 0.0363834639636114, 0.660396429197245,
+                           4.00063237957797, 6.57588583114463, "FALSE"))
+  
+  # contrast 
+  table <- results$results$contrasts$collection[[1]]$data
+  expect_equal_tables(table,
+                      list("2 - 1", 1.78568011481422, 0.849355306996751, 2.1023947223315,
+                           0.0453535580857103, 27, 0.0398052774148459, 3.5315549522136,
+                           "TRUE", "3 - 1", 2.22488132183556, 0.802810905470398, 2.77136409916095,
+                           0.0101750138508479, 27, 0.574679871977612, 3.8750827716935,
+                           "FALSE"))
+  
+  # post hoc
+  table <- results$results$posthoc$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(1, 2, -1.78568011481422, 0.849355306996751, -2.1023947223315,
+                           ".", ".", ".", ".", ".", 0.129983128349044, -3.89623786330153,
+                           0.324877633673085, "TRUE", 1, 3, -2.22488132183556, 0.802810905470398,
+                           -2.77136409916095, ".", ".", ".", ".", ".", 0.0302155022603601,
+                           -4.21978117488038, -0.229981468790732, "FALSE", 2, 3, -0.439201207021333,
+                           0.81122140296394, -0.541407321622228, ".", ".", ".", ".", ".",
+                           0.932499470707816, -2.45500025326293, 1.57659783922026, "FALSE"))
+  
+  # post hoc bootstrap
+  table <- results$results$bootsPostHoc$collection[[1]]$data
+  expect_equal_tables(table,
+                      list(1, 2, -1.78324124481148, -0.0194100366350722, 0.538336190074754,
+                           -2.83630538964887, -0.858078871455782, "TRUE", 1, 3, -2.18556663740395,
+                           -0.0155779657803694, 0.763324066789791, -3.97107607430337, -0.844312084720958,
+                           "FALSE", 2, 3, -0.410252544853603, 0.00383207085470288, 0.775278163963213,
+                           -2.12122714048355, 0.972524781215359, "FALSE"))
+  
+  # interaction with covariate
+  options <- jasptools::analysisOptions("Ancova")
+  
+  options$dependent <- "Happiness"
+  options$fixedFactors <- "Dose"
+  options$covariates <- "Puppy_love"
+  options$modelTerms <- list(
+    list(components = "Dose"),
+    list(components = "Puppy_love"),
+    list(components = list("Dose", "Puppy_love"))
+  )
+  
+  options$contrasts <- list(
+    list(contrast = "none", variable = "Dose")
+  )
+  options$plotHorizontalAxis <- "Puppy_love"
+  options$plotSeparatePlots <- "Dose"
+  results <- jasptools::run("Ancova", "Puppy Love.csv", options)
+  
+  table <- results$results$anova$data
+  expect_equal_tables(table,
+                      list("Dose", 36.5575599693692, 2, 18.2787799846846, 7.483568988423,
+                           0.00297956448464929, "TRUE", "Puppy_love", 17.1822242014479,
+                           1, 17.1822242014479, 7.03462486521667, 0.0139474621264158, "FALSE",
+                           "Dose <unicode> Puppy_love", 20.4265936571326, 2, 10.2132968285663,
+                           4.18145584551367, 0.0276671129121842, "FALSE", "Residual", 58.6205218808138,
+                           24, 2.44252174503391, "", "", "TRUE"))
+  
+  # descriptive plots
+  plot1 <- results[['state']][['figures']][[1]][["obj"]]
+  expect_equal_plots(plot1, "PuppyLove1", "Ancova")
+  
+  plot2 <- results[['state']][['figures']][[2]][["obj"]]
+  expect_equal_plots(plot2, "PuppyLove2", "Ancova")
+  
+  plot3 <- results[['state']][['figures']][[3]][["obj"]]
+  expect_equal_plots(plot3, "PuppyLove3", "Ancova")
 })

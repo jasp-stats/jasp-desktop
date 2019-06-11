@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{jaspContainer}
+\alias{createJaspContainer}
 
 \title{Class "jaspContainer"}
 \description{

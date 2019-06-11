@@ -140,12 +140,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       } else if (perform == "run" && ready) {
         # here do calculations
         #
-        errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity', 'observations'),
-                             all.target = c(var1, var2), observations.amount = "< 3")
+        errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+                             type = c('variance', 'infinity', 'observations', 'observationsPairwise'),
+                             all.target = c(var1, var2), observations.amount = "< 3", 
+                             observationsPairwise.amount = 2)
 
         if (! identical(errors, FALSE)) {
           estimate <- p.value <- MPR <- upperCI <- lowerCI <- "NaN"
           errorMessage <- errors$message
+
         } else {
           obs1 <- dataset[[ .v(var1) ]]
           obs2 <- dataset[[ .v(var2) ]]
@@ -161,7 +164,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           estimate <- as.numeric(result$estimate)
           p.value  <- as.numeric(result$p.value)
           MPR <- .VovkSellkeMPR(p.value)
-
+          
           if (test == "pearson") {
             upperCI <- as.numeric(result$conf.int[2])
             lowerCI <- as.numeric(result$conf.int[1])
@@ -175,6 +178,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
             upperCI <- as.numeric(kendallCI[2])
             lowerCI <- as.numeric(kendallCI[1])
+          }
+          if (length(c(lowerCI, upperCI)) == 0) {
+            upperCI <- lowerCI <- "NaN"
           }
         }
       }
@@ -487,12 +493,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     for (i in seq_along(variables)) {
       variable.statuses[[i]]$unplotable <- FALSE
       variable.statuses[[i]]$plottingError <- NULL
-
       errors <- .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
                            all.target=variables[i], message="short", observations.amount="< 3")
+      
       if (! identical(errors, FALSE)) {
         variable.statuses[[i]]$unplotable <- TRUE
-        variable.statuses[[i]]$plottingError <- errors$message
+        variable.statuses[[i]]$plottingError <- paste(strwrap(errors$message, 25), collapse="\n") # break msgs so they fit in the matrix
       }
     }
 
@@ -536,7 +542,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                             if ( ! variable.statuses[[row]]$unplotable) {
                                 plotMat[[row, col]] <- .plotMarginalCor(dataset[[variables[row]]]) + adjMargin # plot marginal (histogram with density estimator)
                             } else {
-                                plotMat[[row, col]] <- .displayError(variable.statuses[[row]]$plottingError, cexText=cexText) + adjMargin
+                                errorMessagePlot <- paste0("Undefined density:", "\n", variable.statuses[[row]]$plottingError)
+                                plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                             }
                         } else {
 
@@ -555,7 +562,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 plotMat[[row, col]] <- .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) + adjMargin # plot scatterplot
                             } else {
                                 errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
                                 plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                             }
                         } else {
@@ -577,7 +584,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                                   pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) + adjMargin # plot r= ...
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                    errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
                                     plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                                 }
                             } else {
@@ -601,7 +608,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                                   # }
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                    errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
                                     plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                                 }
                             } else {
@@ -676,7 +683,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		hdiff <- 1L
 		xBreaks <- unique(variable)
 		yBreaks <- c(0, max(table(variable)))
-
 		p <- p + ggplot2::geom_bar(
 			mapping  = ggplot2::aes(x = x),
 			fill     = "grey",
@@ -928,7 +934,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
             plot.margin = grid::unit(c(2,1,1,2), "cm"),
             axis.text.x =ggplot2::element_blank(),
             axis.title = ggplot2::element_blank()) +
-        ggplot2::annotate("text", x = 4, y = 25, label = errorMessage, size = 9)
+        ggplot2::annotate("text", x = 0, y = 0, label = errorMessage, size = 5) +
+        ggplot2::xlim(-30, 30) +
+        ggplot2::ylim(-30, 30)
     return(p)
 }
 
@@ -1001,15 +1009,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 }
 
 .corValueString <- function(corValue = NULL, testType = NULL, decimals = 3){
+    if (testType == "pearson")
+      type <- "italic(r)"
+    else if (testType == "spearman")
+      type <- "italic(rho)"
+    else #kendall
+      type <- "italic(tau)"
 
-    if (testType == "pearson"){
-        string <- as.character(as.expression(substitute(italic(r)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
-    } else if (testType == "spearman"){
-        string <- as.character(as.expression(substitute(italic(rho)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
-    } else if (testType == "kendall"){
-        string <- as.character(as.expression(substitute(italic(tau)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
-    }
+    formattedValue <- formatC(round(corValue, decimals), format = "f", digits = decimals)
 
-    return(string)
-
+    return(paste0(type, ' ~ "=" ~ ', '"', formattedValue, '"'))
 }

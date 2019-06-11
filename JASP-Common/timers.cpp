@@ -3,12 +3,15 @@
 #ifdef PROFILE_JASP
 #include  <iostream>
 
+static std::map<std::string, boost::timer::cpu_timer *> * timers = nullptr;
+
 boost::timer::cpu_timer * _getTimer(std::string timerName)
 {
 
-	//std::cout << "getTimer! "<< timerName << std::endl;
+	//Log::log() << "getTimer! "<< timerName << std::endl;
 
-	static auto * timers = new std::map<std::string, boost::timer::cpu_timer *>();
+	if(timers == nullptr)
+		timers = new std::map<std::string, boost::timer::cpu_timer *>();
 
 	if(timers->count(timerName) == 0)
 	{
@@ -17,7 +20,15 @@ boost::timer::cpu_timer * _getTimer(std::string timerName)
 	}
 
 	return (*timers)[timerName];
-	return NULL;
+}
+
+void _printAllTimers()
+{
+	if(timers == nullptr)
+		return;
+
+	for(auto keyval : *timers)
+		Log::log() << keyval.first << " ran for " << keyval.second->format() << std::endl;
 }
 
 #endif

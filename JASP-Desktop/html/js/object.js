@@ -89,7 +89,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 
 	if (itemView.constructChildren) {
 		var indentChildren = itemView.indentChildren === undefined ? false : itemView.indentChildren;
-		itemView.constructChildren(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1, indent: indentChildren });
+		itemView.constructChildren(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, collection: results.collection, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1, indent: indentChildren });
 		if (itemView.hasViews() === false) {
 			itemView.close();
 			return null;

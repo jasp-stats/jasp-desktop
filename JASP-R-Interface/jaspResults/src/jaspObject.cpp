@@ -1,47 +1,18 @@
+#define ENUM_DECLARATION_CPP
 #include "jaspObject.h"
 #include "jaspJson.h"
+#include <chrono>
 
-#if defined(__WIN32__) || !defined(JASP_R_INTERFACE_LIBRARY)
+#if defined(_WIN32) || !defined(JASP_R_INTERFACE_LIBRARY)
 #include "lib_json/json_value.cpp" //hacky way to get libjson in the code ^^
 #include "lib_json/json_reader.cpp"
 #include "lib_json/json_writer.cpp"
 #endif
 
-
-
-std::string jaspObjectTypeToString(jaspObjectType type)
-{
-	switch(type)
-	{
-	case jaspObjectType::container:	return "jaspContainer";
-	case jaspObjectType::table:		return "jaspTable";
-	case jaspObjectType::state:		return "jaspState";
-	case jaspObjectType::plot:		return "jaspPlot";
-	case jaspObjectType::json:		return "jaspJson";
-	case jaspObjectType::list:		return "jaspList";
-	case jaspObjectType::html:		return "jaspHtml";
-	case jaspObjectType::results:	return "jaspResults";
-	default:						return "jaspObject";
-	}
-}
-
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type)
 {
-	static std::map<std::string, jaspObjectType> nameToType  ({
-		{"jaspContainer",	jaspObjectType::container},
-		{"jaspTable",		jaspObjectType::table},
-		{"jaspState",		jaspObjectType::state},
-		{"jaspPlot",		jaspObjectType::plot},
-		{"jaspJson",		jaspObjectType::json},
-		{"jaspList",		jaspObjectType::list},
-		{"jaspHtml",		jaspObjectType::html},
-		{"jaspResults",		jaspObjectType::results}});
-
-	if(nameToType.count(type) > 0)
-		return nameToType[type];
-	else
-		return jaspObjectType::unknown;
-
+	try			{ return jaspObjectTypeFromString(type); }
+	catch(...)	{ return jaspObjectType::unknown; }
 }
 
 std::string stringExtend(std::string & str, size_t len, char kar)
@@ -212,11 +183,9 @@ Rcpp::DataFrame jaspObject::convertFactorsToCharacters(Rcpp::DataFrame df)
 
 			Rcpp::CharacterVector	factorLevels	= originalColumn.attr("levels");
 
-#ifdef JASP_DEBUG
 			std::cout	<< "converting factors to characters for dataframe\n"
 						<< "originalColumn: " << originalColumn << "\n"
 						<< "factorLevels: " << factorLevels << std::endl;
-#endif
 
 			Rcpp::CharacterVector	charCol(originalColumn.size());
 
@@ -269,6 +238,7 @@ Json::Value jaspObject::convertToJSON()
 	obj["name"]			= _name;
 	obj["title"]		= _title;
 	obj["type"]			= jaspObjectTypeToString(_type);
+	obj["error"]        = _error;
 	obj["warning"]		= _warning;
 	obj["position"]		= _position;
 	obj["warningSet"]	= _warningSet;
@@ -348,7 +318,7 @@ void jaspObject::copyDependenciesFromJaspObject(jaspObject * other)
 bool jaspObject::checkDependencies(Json::Value currentOptions)
 {
 	if((_optionMustBe.size() + _optionMustContain.size()) == 0)
-		return false;
+		return true;
 
 	for(auto & keyval : _optionMustBe)
 		if(currentOptions.get(keyval.first, Json::nullValue) != keyval.second)
@@ -388,3 +358,9 @@ Json::Value	jaspObject::dataEntry()
 	return baseObject;
 
 }
+
+int jaspObject::getCurrentTimeMs()
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+

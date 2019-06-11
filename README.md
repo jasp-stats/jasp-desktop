@@ -31,7 +31,7 @@
 
     @MISC{JASP2018,
       AUTHOR = {{JASP Team}},
-      TITLE  = {{JASP (Version 0.9.1)[Computer software]}},
+      TITLE  = {{JASP (Version 0.9.2)[Computer software]}},
       YEAR   = {2018},
       URL    = {https://jasp-stats.org/}
     }
@@ -42,14 +42,21 @@
 
 ### Development
 
+#### General 
   - [Licensing](Docs/development/jasp-licensing.md)
-  - [Rebasing your Repository](Docs/development/git-guide.md)
+  
+#### Building
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
+  - [Rebasing your Repository](Docs/development/git-guide.md)
+  - [Nightly versions of JASP here](http://static.jasp-stats.org/Nightlies/) (built fresh every night)
+
+#### Modules
+  - [Creating a Module](Docs/development/jasp-adding-module.md)
+  - [Making a QML Interface](Docs/development/jasp-qml-guide.md)
+    
+#### R
   - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)
-  - [Writing Unit Tests for Analyses](JASP-Tests/README.md)
   - [The JASP R style guide](Docs/development/r-style-guide.md)
   - [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
-  - [The Error list](Docs/development/jasp-error-list.md)
-  - [Adding new Analyses](Docs/development/jasp-adding-analyses.md)
-  - [Creating a Module](Docs/development/jasp-adding-module.md)
-  - [The JASP R package list](Docs/development/jasp-r-packages-list.md)
+  - [Writing Unit Tests for Analyses](JASP-Tests/README.md)
+  - [The JASP R package list](https://jasp-stats.org/r-package-list/)

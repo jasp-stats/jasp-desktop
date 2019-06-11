@@ -24,7 +24,7 @@
 
 #ifdef __APPLE__
 #include <semaphore.h>
-#elif defined __WIN32__
+#elif defined _WIN32
 
 #undef Realloc
 #undef Free
@@ -37,63 +37,66 @@
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>
 
-typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
-typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
-typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
+typedef boost::interprocess::allocator<char,	boost::interprocess::managed_shared_memory::segment_manager	> CharAllocator;
+typedef boost::container::basic_string<char,	std::char_traits<char>, CharAllocator						> String;
+typedef boost::interprocess::allocator<String,	boost::interprocess::managed_shared_memory::segment_manager	> StringAllocator;
 
 class IPCChannel
 {
 public:
-	IPCChannel(std::string name, int channelNumber, bool isSlave = false);
+	IPCChannel(std::string name, size_t channelNumber, bool isSlave = false);
+	~IPCChannel();
 
-	void send(std::string &data, bool alreadyLockedMutex = false);
+	void send(std::string &data,	bool alreadyLockedMutex = false);
+	void send(std::string &&data,	bool alreadyLockedMutex = false);
 	bool receive(std::string &data, int timeout = 0);
 
-	int channelNumber() { return _channelNumber; }
+	size_t channelNumber() { return _channelNumber; }
 
 private:
-
 	bool tryWait(int timeout = 0);
-
-	std::string _baseName, _nameControl, _nameMtS, _nameStM;
-	int _channelNumber;
-	bool _isSlave;
 
 	void doubleMemoryOut();
 	void rebindMemoryInIfSizeChanged();
-
-	boost::interprocess::managed_shared_memory *_memoryControl, *_memoryMasterToSlave, *_memorySlaveToMaster, *_memoryIn, *_memoryOut;
-
-	boost::interprocess::interprocess_mutex *_mutexOut;
-	boost::interprocess::interprocess_mutex *_mutexIn;
-
-	String *_dataOut, * _dataIn;
-
-
-	size_t *_sizeMtoS, *_sizeStoM, *_sizeIn, *_sizeOut, _previousSizeIn, _previousSizeOut;
-
 	void generateNames();
-	std::string _mutexInName,
-				_mutexOutName,
-				_dataInName,
-				_dataOutName,
-				_semaphoreInName,
-				_semaphoreOutName;
 
+	std::string										_baseName,
+													_nameControl,
+													_nameMtS,
+													_nameStM;
+	size_t											_channelNumber;
+	bool											_isSlave;
+	boost::interprocess::managed_shared_memory	*	_memoryControl			= nullptr,
+												*	_memoryMasterToSlave	= nullptr,
+												*	_memorySlaveToMaster	= nullptr,
+												*	_memoryIn				= nullptr,
+												*	_memoryOut				= nullptr;
+	boost::interprocess::interprocess_mutex		*	_mutexOut				= nullptr,
+												*	_mutexIn				= nullptr;
+	String										*	_dataOut				= nullptr,
+												*	_dataIn					= nullptr;
+	size_t										*	_sizeMtoS				= nullptr,
+												*	_sizeStoM				= nullptr,
+												*	_sizeIn					= nullptr,
+												*	_sizeOut				= nullptr,
+													_previousSizeIn,
+													_previousSizeOut;
+	std::string										_mutexInName,
+													_mutexOutName,
+													_dataInName,
+													_dataOutName,
+													_semaphoreInName,
+													_semaphoreOutName;
 #ifdef __APPLE__
-	sem_t* _semaphoreOut;
-	sem_t* _semaphoreIn;
-#elif defined __WIN32__
-    HANDLE _semaphoreOut;
-    HANDLE _semaphoreIn;
-
+	sem_t										*	_semaphoreOut			= nullptr,
+												*	_semaphoreIn			= nullptr;
+#elif defined _WIN32
+	HANDLE											_semaphoreOut,
+													_semaphoreIn;
 #else
-	boost::interprocess::named_semaphore* _semaphoreOut;
-	boost::interprocess::named_semaphore* _semaphoreIn;
+	boost::interprocess::named_semaphore		*	_semaphoreOut			= nullptr,
+												*	_semaphoreIn			= nullptr;
 #endif
-
-
-
 };
 
 #endif // IPCCHANNEL_H

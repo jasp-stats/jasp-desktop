@@ -57,7 +57,7 @@ JASPWidgets.DataDetails = function (dataKey, path) {
 		var extendedDetails = new JASPWidgets.DataDetails(dataKey, this.path)
 
 		var fullKey = this.GetFullKey();
-		if (fullKey === '') 
+		if (fullKey === '')
 			fullKey = dataKey;
 		else
 			fullKey = fullKey + '-' + dataKey;
@@ -76,14 +76,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.viewNotes = { list: [] };
 
-		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
-		
+		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar  jasp-title-toolbar" })
+
 		this.progressbar = new JASPWidgets.Progressbar();
 
-		this.imageToEdit = null;
-		this.ctxImage = null;
+		this.imageBeingEdited = null;
 		this.model.on("analysis:resizeStarted", function (image) {
-			this.ctxImage = image
+			this.imageBeingEdited = image
 		}, this);
 
 		this.userdata = this.model.get('userdata');
@@ -92,11 +91,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		var firstNoteDetails = new JASPWidgets.DataDetails('firstNote');
 		var firstNoteBox = this.getNoteBox(firstNoteDetails);
-		
+
 		var lastNoteDetails = new JASPWidgets.DataDetails('lastNote');
 		var lastNoteBox = this.getNoteBox(lastNoteDetails);
 
-		this.toolbar.setParent(this);	
+		this.toolbar.setParent(this);
 
 		this.model.on("CustomOptions:changed", function (options) {
 			this.trigger("optionschanged", this.model.get("id"), options)
@@ -125,7 +124,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				self.setData(details, pair.key, pair.value, self.userdata);
 			}
 		}
-		self.trigger("analysis:userDataChanged", self.model.get('id'));
+
+		self.trigger("analysis:userDataChanged");
 	},
 
 	_setTitle: function (title, format) {
@@ -140,34 +140,22 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
 	},
-	
+
 	handleVisibilityProgressbar: function(statusProgress) {
 		if (statusProgress == "progress-complete") {
 			var id = this.model.get("id");
 			window.setTimeout(function() { $("#progressbar-" + id).fadeOut()}, 500);
 		}
 	},
+
+	undoImageResize: function() {
+		if (this.imageBeingEdited !== null)
+			this.imageBeingEdited.restoreSize();
+	},
 	
-	modifyImage: function(image, ctx) {
-		var id = '#' + image.name.replace(/[^A-Za-z0-9]/g, '-');
-		if (image.error && image.resized) {
-			ctx.restoreSize(); // sets the properties of the model
-			this.resizeImageContainer(id, ctx.model.get("oldHeight"), ctx.model.get("oldWidth"));
-		} else if (image.resized) {
-			this.resizeImageContainer(id, image.height, image.width)
-			this.insertNewImage(id, image.name);
-		} else {
-			this.insertNewImage(id, image.name);
-		}
-	},
-
-	resizeImageContainer: function(id, height, width) {
-		this.$el.find(id).parent().height(height + 'px');
-		this.$el.find(id).parent().width(width + 'px');
-	},
-
-	insertNewImage: function(id, name) {
-		this.$el.find(id).css('background-image', 'url(\'' + window.globSet.tempFolder + name + '?x=' + Math.random() + '\')');
+	insertNewImage: function() {
+		if (this.imageBeingEdited !== null)
+			this.imageBeingEdited.reRender();
 	},
 
 	detachNotes: function() {
@@ -224,7 +212,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				else {
 					rootDataNode = rootDataNode[keyPath[i]];
 					if (rootDataNode === undefined)
-						break;	
+						break;
 				}
 			}
 		}
@@ -253,7 +241,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.viewNotes.list.push({ noteDetails: noteDetails, widget: widget, note: noteData });
 
 			this.listenTo(widget, "NoteBox:textChanged", function () {
-				this.trigger("analysis:userDataChanged", this.model.get('id'), key);
+				this.trigger("analysis:userDataChanged");
 			});
 		}
 
@@ -414,7 +402,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				var name = subView.model.get('name');
 				if (name !== null)
 					this.passUserDataToView(path.concat([name]), subView);
-				else 
+				else
 					throw "there must be a name parameter."
 			}
 		}
@@ -470,7 +458,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	},
 
 	copyMenuClicked: function () {
-		
+
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
@@ -516,6 +504,70 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	menuName: "Analysis",
 
+	createResultsViewFromMeta: function (results, resultsMeta, $result) {
+		for (let i = 0; i < resultsMeta.length; i++) {
+
+			let meta = resultsMeta[i];
+			let name = meta.name;
+
+			if (!_.has(results, name))
+				continue
+			let data = results[name];
+
+			if (meta.type == 'collection' && data.title == "") {  // remove collections without a title from view
+				let collectionMeta = meta.meta;
+				if (Array.isArray(collectionMeta)) { // the meta comes from a jaspResult analysis
+					$result = this.createResultsViewFromMeta(data["collection"], collectionMeta, $result);
+					continue;
+				}
+			}
+
+			let itemView = this.createChild(data, this.model.get("status"), meta);
+			if (itemView === null)
+				continue;
+
+			this.passUserDataToView([name], itemView);
+
+			this.views.push(itemView);
+			this.volatileViews.push(itemView);
+
+			itemView.render();
+			$result.append(itemView.$el);
+
+		}
+	},
+	
+	setErrorOnPreviousResults: function (errorMessage, status, $lastResult, $result) {
+		if (errorMessage == null) // parser.parse() in the engine was unable to parse the R error message
+			errorMessage = "An unknown error occurred.";
+
+		errorMessage = errorMessage.replace(/\n/g, '<br>');
+		errorMessage = errorMessage.replace(/  /g, '&nbsp;&nbsp;');
+
+		if ($lastResult.hasClass("error-state"))
+			$result.append($lastResult.find(".jasp-analysis").not(".error-state").clone())
+		else
+			$result.append($lastResult.clone());
+
+		$result.find(".status").removeClass("waiting running");
+		$result.addClass('error-state');
+
+		$result.append('<div class="' + status + ' analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "fatalError" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + errorMessage + '</div>');
+	},
+	
+	setHeightErroredAnalysis: function ($result) {
+		// the error box has an absolute position and unknown height, we need to manually verify the container height
+		var $selectedAnalysis = $result.find(".jasp-analysis");
+		var errorBoxHeight = $result.find(".analysis-error-message").outerHeight();	
+		if ($selectedAnalysis.height() < errorBoxHeight)
+			$selectedAnalysis.height(errorBoxHeight);
+	},
+
+	editTitleClicked: function () {
+		var id = this.model.get("id");
+		this.toolbar.startEdit(function(title) { jasp.analysisTitleChangedInResults(id, title); } );
+	},
+
 	createChild: function (result, status, metaEntry) {
 
 		var itemView = null;
@@ -530,7 +582,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		else if (metaEntry.type == "h2")
 			this.labelRequest = { title: result, titleFormat: 'h4' };
 		else {
-		
+
 			if (_.isArray(result)) {
 
 				result = { collection: result };
@@ -556,13 +608,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	render: function () {
 
-		if (this.imageToEdit != null) { // we only want to re-render adjusted images
-			this.modifyImage(this.imageToEdit, this.ctxImage);
-			this.imageToEdit = null;
-			this.ctxImage = null;
-			return this;
-		}
-
 		var results = this.model.get("results");
 		if (results == "" || results == null) {
 			var progress = this.model.get("progress");
@@ -573,7 +618,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			}
 			return this;
 		}
-		
+
+		this.imageBeingEdited = null;
+
 		this.toolbar.$el.detach();
 		this.detachNotes();
 
@@ -589,57 +636,15 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$innerElement.empty();
 
-		if (results.error) {
-
-			var status = this.model.get("status");
-			var error = results.errorMessage
-			if (error == null) // parser.parse() in the engine was unable to parse the R error message
-				error = "An unknown error occurred."
-
-			error = error.replace(/\n/g, '<br>')
-			error = error.replace(/  /g, '&nbsp;&nbsp;')
-
-			$innerElement.append($tempClone.clone());
-			$innerElement.find('.analysis-error').remove();
-			$innerElement.addClass('error-state');
-			if (status === "exception") $innerElement.addClass("exception");
-			$innerElement.find(".status").removeClass("waiting running");
-
-			$innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
-			if ($innerElement.find('.jasp-display-item').length > 3) {
-				$innerElement.find('.analysis-error').addClass('analysis-error-top-max');
-			}
-
-		}
-		else
-		{
+		if (!results.error) {
 			$innerElement.removeClass("error-state");
-			if (results[".meta"]) {
-
-				var meta = results[".meta"]
-
-				for (var i = 0; i < meta.length; i++)
-				{
-					var name = meta[i].name;
-
-					if (_.has(results, name))
-					{
-						var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
-
-						if (itemView !== null)
-						{
-							this.passUserDataToView([name], itemView);
-
-							this.views.push(itemView);
-							this.volatileViews.push(itemView);
-
-							itemView.render();
-							$innerElement.append(itemView.$el);
-						}
-					}
-				}
-			}
-
+			meta = results[".meta"]
+			if (meta)
+				this.createResultsViewFromMeta(results, meta, $innerElement);
+		} else {
+			var status = this.model.get("status");
+			var errorMessage = results.errorMessage
+			this.setErrorOnPreviousResults(errorMessage, status, $tempClone, $innerElement);
 		}
 
 		if (this.titleRequest)
@@ -650,7 +655,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var $progressbar = this.progressbar.init(this.model.get("progress"), this.model.get("id"), this.model.get("status"));
 		$innerElement.prepend($progressbar);
 		this.handleVisibilityProgressbar(this.progressbar.status());
-		
+
 		this.viewNotes.lastNoteNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteNoteBox.$el);
 
@@ -665,11 +670,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		$tempClone.replaceWith($innerElement);
 		$tempClone.empty();
 		
-		var errorBoxHeight = $innerElement.find(".analysis-error").outerHeight(true);
-		var $selectedAnalysis = $innerElement.find(".jasp-analysis");
-		if ($selectedAnalysis.height() < errorBoxHeight) {
-			$selectedAnalysis.height(errorBoxHeight);
-		}
+		if (results.error)
+			this.setHeightErroredAnalysis($innerElement);
 
 		return this;
 	},

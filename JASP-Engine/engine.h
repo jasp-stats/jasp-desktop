@@ -25,19 +25,7 @@
 #include "jsonredirect.h"
 
 /* The Engine represents the background processes.
- * It's job is pretty straight forward; it reads analysis
- * requests from shared memory (a semaphore is set when there
- * is a new message), and runs the analysis.
- * If an analysis is running when a new request is received,
- * and it is the same analysis (analysisId's match), then the
- * analysis is notified of the change (probably to one of its
- * options).
- * If the analysisId's don't match, then the old analysis is
- * aborted, and the new one is set running.
- *
- * Additionally: an engine can run a filter and return the result of that to the dataset.
- *
- * Since 2018-06 (JCG): This is getting less and less accurate of a description but i am not about to change it right now.
+ * It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
  */
 
 class Engine
@@ -45,80 +33,82 @@ class Engine
 public:
 	explicit Engine(int slaveNo, unsigned long parentPID);
 	static Engine * theEngine() { return _EngineInstance; } //There is only ever one engine in a process so we might as well have a static pointer to it.
-
+	~Engine();
 
 	void run();
 	bool receiveMessages(int timeout = 0);
 	void setSlaveNo(int no);
 	void sendString(std::string message) { _channel->send(message); }
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, synchingData } Status;
+	typedef engineAnalysisStatus Status;
 	Status getStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
-	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)										{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
-	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
-	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
-	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)							{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
+	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
+	bool setColumnDataAsNominal(	const std::string & columnName,			std::vector<int>			& nominalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
+	bool setColumnDataAsNominalText(const std::string & columnName, const	std::vector<std::string>	& nominalData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
 
-	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels);
+	bool isColumnNameOk(std::string columnName);
+
+	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string & columnName, std::vector<int> & data, const std::map<int, std::string> & levels);
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 
-	bool paused() { return currentEngineState == engineState::paused; }
+	bool paused() { return _engineState == engineState::paused; }
 
-private:
-// Methods:
-	void receiveFilterMessage(			Json::Value jsonRequest);
-	void receiveRCodeMessage(			Json::Value jsonRequest);
-	void receiveComputeColumnMessage(	Json::Value jsonRequest);
-	void receiveAnalysisMessage(		Json::Value jsonRequest);
+
+private: // Methods:
+	void receiveRCodeMessage(			const Json::Value & jsonRequest);
+	void receiveFilterMessage(			const Json::Value & jsonRequest);
+	void receiveAnalysisMessage(		const Json::Value & jsonRequest);
+	void receiveComputeColumnMessage(	const Json::Value & jsonRequest);
+	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
+	void receiveLogCfg(					const Json::Value & jsonRequest);
 
 	void runAnalysis();
-	void runRCode();
-	void runFilter();
-	void runComputeColumn();
+	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	Column::ColumnType computeColumnType);
+	void runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId);
+	void runRCode(			const std::string & rCode,				int rCodeRequestId);
 
+
+	void stopEngine();
 	void pauseEngine();
 	void resumeEngine();
 	void sendEnginePaused();
 	void sendEngineResumed();
+	void sendEngineStopped();
 
-	void removeNonKeepFiles(Json::Value filesToKeepValue);
 	void saveImage();
-    void editImage();
+	void editImage();
+	void rewriteImages();
+	void removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void sendAnalysisResults();
-
-	void sendFilterResult(std::vector<bool> filterResult, std::string warning = "");
-	void sendFilterError(std::string errorMessage);
-
-
-	void sendRCodeResult(std::string rCodeResult);
-	void sendRCodeError();
+	void sendFilterResult(		int filterRequestId,				const std::vector<bool> & filterResult, const std::string & warning = "");
+	void sendFilterError(		int filterRequestId,				const std::string & errorMessage);
+	void sendRCodeResult(		const std::string & rCodeResult,	int rCodeRequestId);
+	void sendRCodeError(		int rCodeRequestId);
 
 	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();
 
-	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
-	void provideStateFileName(std::string &root,		std::string &relativePath);
-	void provideJaspResultsFileName(std::string &root,	std::string &relativePath);
+	void provideTempFileName(		const std::string &extension,	std::string &root,			std::string &relativePath);
+	void provideStateFileName(		std::string &root,				std::string &relativePath);
+	void provideJaspResultsFileName(std::string &root,				std::string &relativePath);
 
-// Data:
+private: // Data:
 	static Engine * _EngineInstance;
 
-	Status _analysisStatus = empty;
-
+	Status		_analysisStatus = Status::empty;
 
 	int			_analysisId,
 				_analysisRevision,
 				_progress,
 				_ppi = 96,
-				_slaveNo = 0,
-				_rCodeRequestId = -1,
-				_filterRequestId = -1;
+				_slaveNo = 0;
 
 	bool		_analysisRequiresInit,
 				_analysisJaspResults,
@@ -131,23 +121,18 @@ private:
 				_analysisResultsMeta,
 				_analysisStateKey,
 				_analysisResultsString,
-				_filter = "",
-				_generatedFilter = "",
-				_rCode = "",
-				_computeColumnCode = "",
-				_computeColumnName = "",
-				_imageBackground = "white";
-
-	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
+				_imageBackground = "white",
+				_analysisRFile		= "",
+				_dynamicModuleCall	= "";
 
 	Json::Value _imageOptions,
 				_analysisResults;
 
-	IPCChannel *_channel = NULL;
+	IPCChannel *_channel = nullptr;
 
 	unsigned long _parentPID = 0;
 
-	engineState currentEngineState = engineState::idle;
+	engineState _engineState = engineState::idle;
 };
 
 #endif // ENGINE_H

@@ -1,4 +1,6 @@
 #include "jaspPlot.h"
+#include "jaspResults.h"
+
 
 jaspPlot::~jaspPlot()
 {
@@ -18,15 +20,8 @@ std::string jaspPlot::dataToString(std::string prefix)
 		prefix << "dims:        "	<< _width << "X" << _height << "\n" <<
 		prefix << "error:       '"	<< _error << "': '" << _errorMessage << "'\n" <<
 		prefix << "filePath:    "	<< _filePathPng << "\n" <<
-		prefix << "status:      "	<< _status << "\n" <<
-		prefix << "has plot:    "	<< (_plotObjSerialized.size() > 0 ? "yes" : "no") << "\n";
-
-	if(_footnotes.size() > 0)
-	{
-		out << prefix << "footnotes:   \n";
-		for(int i=0; i<_footnotes.size(); i++)
-			out << prefix << "\t[" << i << "]:\t(" << _footnotes[i]["symbol"] << ") " << _footnotes[i]["text"] << "\n";
-	}
+		prefix << "status:      "	<< _status << "\n" ;//<<
+		//prefix << "has plot:    "	<< (_plotObjSerialized.size() > 0 ? "yes" : "no") << "\n";
 
 	return out.str();
 }
@@ -41,39 +36,37 @@ Json::Value jaspPlot::dataEntry()
 	data["height"]		= _height;
 	data["width"]		= _width;
 	data["aspectRatio"]	= _aspectRatio;
-	data["status"]		= _error == "" ? _status : "error";
-	if(_error != "")
+	if(_error)
     {
+		data["status"]                  = "error";
 		data["error"]					= Json::objectValue;
-		data["error"]["type"]			= _error;
+		data["error"]["type"]			= "badData";//_error;
 		data["error"]["errorMessage"]	= _errorMessage;
     }
+	else
+	{
+		data["status"]                  = _status;
+	}
 	data["name"]		= getUniqueNestedName();
-	data["footnotes"]	= _footnotes;
 
 	return data;
 }
 
-void jaspPlot::addFootnote(std::string message, std::string symbol)
+void jaspPlot::initEnvName()
 {
-	Json::Value footnote(Json::objectValue);
+	static int counter = 0;
 
-	footnote["text"]	= message;
-	footnote["symbol"]	= symbol;
-	footnote["cols"]	= Json::nullValue;
-	footnote["rows"]	= Json::nullValue;
-
-	_footnotes.append(footnote);
+	_envName = "plot_" + std::to_string(counter++);
 }
-
 
 void jaspPlot::setPlotObject(Rcpp::RObject obj)
 {
+	Rcpp::List plotInfo = Rcpp::List::create(Rcpp::_["obj"] = obj, Rcpp::_["width"] = _width, Rcpp::_["height"] = _height);
 	_filePathPng = "";
 
 	if(!obj.isNULL())
 	{
-		Rcpp::Function tryToWriteImage("tryToWriteImageJaspResults");
+		static Rcpp::Function tryToWriteImage = jaspResults::isInsideJASP() ? Rcpp::Function("tryToWriteImageJaspResults") : Rcpp::Environment::namespace_env("jaspResults")["tryToWriteImageJaspResults"];
 		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj);
 
 		if(writeResult.containsElementNamed("png"))
@@ -84,20 +77,41 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 			_error			= "Error during writeImage";
 			_errorMessage	= Rcpp::as<std::string>(writeResult[writeResult.findName("error")]);
 		}
+
+		if(_status == "waiting" || _status == "running")
+			_status = "complete";
 	}
 
-
-	Rcpp::Function serialize("serialize");
-	_plotObjSerialized = serialize(Rcpp::_["object"] = obj, Rcpp::_["connection"] = R_NilValue, Rcpp::_["ascii"] = true);
+	jaspResults::setObjectInEnv(_envName, plotInfo);
 }
 
 Rcpp::RObject jaspPlot::getPlotObject()
 {
-	if(_plotObjSerialized.size() == 0)
-		return NULL;
+	Rcpp::RObject plotInfo = jaspResults::getObjectFromEnv(_envName);
+	if (!plotInfo.isNULL() && Rcpp::is<Rcpp::List>(plotInfo))
+	{
+		
+		Rcpp::List plotInfoList = Rcpp::as<Rcpp::List>(plotInfo);
+		if (plotInfoList.containsElementNamed("obj"))
+			return Rcpp::as<Rcpp::RObject>(plotInfoList["obj"]);
+			
+	}
+	return R_NilValue;
+}
 
-	Rcpp::Function unserialize("unserialize");
-	return unserialize(_plotObjSerialized);
+void jaspPlot::setChangedDimensionsFromStateObject()
+{
+	Rcpp::RObject plotInfo = jaspResults::getObjectFromEnv(_envName);
+	if (plotInfo.isNULL() || !Rcpp::is<Rcpp::List>(plotInfo))
+		return;
+	
+	Rcpp::List plotInfoList = Rcpp::as<Rcpp::List>(plotInfo);
+	
+	if (plotInfoList.containsElementNamed("width"))
+		_width = Rcpp::as<int>(plotInfoList["width"]);
+	
+	if (plotInfoList.containsElementNamed("height"))
+		_height = Rcpp::as<int>(plotInfoList["height"]);
 }
 
 Json::Value jaspPlot::convertToJSON()
@@ -107,13 +121,10 @@ Json::Value jaspPlot::convertToJSON()
 	obj["aspectRatio"]			= _aspectRatio;
 	obj["width"]				= _width;
 	obj["height"]				= _height;
-	obj["error"]				= _error;
 	obj["status"]				= _status;
 	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
-	obj["footnotes"]			= _footnotes;
-	obj["plotObjSerialized"]	= std::string(_plotObjSerialized.begin(), _plotObjSerialized.end());
-
+	obj["environmentName"]		= _envName;
 
 	return obj;
 }
@@ -125,14 +136,18 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_aspectRatio	= in.get("aspectRatio",		0.0f).asDouble();
 	_width			= in.get("width",			-1).asInt();
 	_height			= in.get("height",			-1).asInt();
-	_error			= in.get("error",			"null").asString();
+	_error			= in.get("error",			"false").asBool();
 	_status			= in.get("status",			"complete").asString();
 	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
-	_footnotes		= in.get("footnotes",		Json::arrayValue);
-
+	_envName		= in.get("environmentName",	_envName).asString();
+	
+	setChangedDimensionsFromStateObject();
+	
+	/*JASP_OBJECT_TIMERBEGIN
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();
 	_plotObjSerialized = Rcpp::Vector<RAWSXP>(jsonPlotObjStr.begin(), jsonPlotObjStr.end());
+	JASP_OBJECT_TIMEREND(converting from JSON)*/
 }
 
 std::string jaspPlot::toHtml()
@@ -142,29 +157,15 @@ std::string jaspPlot::toHtml()
 	out << "<div class=\"status " << _status << "\">" "\n"
 		<< htmlTitle() << "\n";
 
-	if(_error != "" || _errorMessage != "")
+	if(_error || _errorMessage != "")
 	{
 		out << "<p class=\"error\">\n";
-		if(_error		 != "") out << "error: <i>'" << _error << "'</i>";
-		if(_errorMessage != "") out << (_error != "" ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
+		if(_error		      ) out << "error: <i>'" << _error << "'</i>";
+		if(_errorMessage != "") out << (_error       ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
 		out << "\n</p>";
 	}
 	else
 		out << "<img src=\"" << _filePathPng << "\" height=\"" << _height << "\" width=\"" << _width << "\" alt=\"a plot called " << _title << "\">";
-
-
-	if(_footnotes.size() > 0)
-	{
-		out << "<h4>footnotes</h4>" "\n" "<ul>";
-
-		for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
-		{
-			std::string sym = _footnotes[i]["symbol"].asString() ;
-			out << "<li>" << (sym == "" ? "" : "<i>(" + sym  + ")</i> " ) << _footnotes[i]["text"].asString() << "</li>" "\n";
-		}
-
-		out << "</ul>\n";
-	}
 
 	out << "</div>\n";
 

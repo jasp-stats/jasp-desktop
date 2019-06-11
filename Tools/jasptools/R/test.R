@@ -14,6 +14,9 @@ testAnalysis <- function(analysis) {
   analysis <- .validateAnalysis(analysis)
   root <- .getPkgOption("tests.dir")
   file <- file.path(root, paste0("test-", analysis, ".R"))
+  envirValue <- Sys.getenv("NOT_CRAN")
+  Sys.setenv("NOT_CRAN" = "true") # this is to prevent vdiffr from skipping plots
+  on.exit(Sys.setenv("NOT_CRAN" = envirValue))
   testthat::test_file(file)
 }
 
@@ -28,6 +31,9 @@ testAnalysis <- function(analysis) {
 #' @export testAll
 testAll <- function() {
   testDir <- .getPkgOption("tests.dir")
+  envirValue <- Sys.getenv("NOT_CRAN")
+  Sys.setenv("NOT_CRAN" = "true")
+  on.exit(Sys.setenv("NOT_CRAN" = envirValue))
   testthat::test_dir(testDir)
 }
 
@@ -48,18 +54,17 @@ testAll <- function() {
 #' folder and used as a reference for future tests.
 #' @examples
 #'
-#' # jasptools::inspectTestPlots("Anova")
+#' # jasptools::manageTestPlots("Anova")
 #'
-#' @export inspectTestPlots
-inspectTestPlots <- function(analysis = NULL) {
-  .Deprecated(msg = "'inspectTestPlots' is deprecated.\nCreate tests for ggplot objects directly with testthat.")
-  # if (! is.null(analysis)) {
-  #   analysis <- .validateAnalysis(analysis)
-  #   analysis <- paste0("^", analysis, "$")
-  # }
-  # testDir <- .getPkgOption("tests.dir")
-  # on.exit(unloadNamespace("SomePkg")) # unload fake pkg in JASP unit tests, which is needed to run vdiffr
-  # vdiffr::manage_cases(testDir, analysis)
+#' @export manageTestPlots
+manageTestPlots <- function(analysis = NULL) {
+  if (! is.null(analysis)) {
+    analysis <- .validateAnalysis(analysis)
+    analysis <- paste0("^", analysis, "$")
+  }
+  testDir <- .getPkgOption("tests.dir")
+  on.exit(unloadNamespace("SomePkg")) # unload fake pkg in JASP unit tests, which is needed to run vdiffr
+  vdiffr::manage_cases(testDir, analysis)
 }
 
 

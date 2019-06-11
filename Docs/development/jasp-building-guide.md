@@ -11,7 +11,7 @@ Alternatively, those that are more comfortable using command line tools can use 
 We recommend building JASP in a separate directory to it's source directory. This can be achieved by calling *QMake* in a separate directory to the source, for example we might create a separate directory beside the *jasp-desktop* directory (perhaps called *jasp-build*), and then from this directory call:
 
     qmake ../jasp-desktop/JASP.pro
-    make
+    make # -j8 # <- to gain a considerable speedup on a typical quadcore system
 
 This generates the Makefile in the *jasp-build* directory, and all resulting object files and executables will be output to this directory.
 
@@ -19,92 +19,185 @@ JASP requires several dependencies which are documented below.
 
 JASP depends on:
 
- - [Qt (5.10 + QtWebEngine)](http://qt-project.org)
+ - [Qt (5.11 + QtWebEngine)](http://qt-project.org)
  - [R](http://cran.r-project.org)
  - [boost](http://boost.org)
  - [libarchive](http://libarchive.org/)
  - [zlib](http://zlib.net/)
 
-Links to specific versions for each platform are provided below.
+Required files on Windows and Mac OS X
+--------------
+To be able to build JASP the listed dependencies are required and can be easily installed on your system through [jasp-required-files](https://github.com/jasp-stats/jasp-required-files.git)
+Simply clone the git repository next to your jasp-desktop folder as follows:
+
+	[+] jasp-desktop < from github >
+	[+] jasp-required-files < from github >
 
 Windows
 -------
 
-Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
+Building JASP under windows is the most temperamental but should pose no large problems. Beside the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described more specific: 
 
- - [R 3.4.4 win64](https://static.jasp-stats.org/development/R3.4%20Win%20JASP%200.9.1.zip)
- - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
- - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-Windows-64-qt510.zip) Update 14-08-2018 (incl. JASP-R-Interface-4.2).
- - [Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download community version
+- [Qt 5.12](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
+- [Visual Studio 2017](https://www.visualstudio.com/downloads/) Download the community version from (https://www.visualstudio.com/downloads/)
+- [R Tools 3.5](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) Download from (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
-Qt: JASP for windows is built as 64-bit and is built with Visual Studio 2017.
+Besides installing and cloning the software above one needs to make some kits in Qt Creator to be able to build JASP and separately JASP-R-Interface. 
 
-The directory structure should be as follows:
+Assume that the root folder of your JASP build folder is <JASP>.
+To build JASP follow the next steps:
+	
+1. Clone JASP sources from the jasp-desktop github repository.
+	From <JASP> root folder in a terminal type:
+	
+	\> git clone https://github.com/jasp-stats/jasp-desktop.git
+	
+	Or from a browser go to https://github.com/jasp-stats/jasp-desktop and choose the Clone or Download option.
+	
+	<img src="https://static.jasp-stats.org/images/Clone-or-Download.png" width="400" height="56" />
+	
+	You should now have:  
+	\<JASP\>\jasp-desktop
+	
+2. Clone some third party binaries, boost and used R-packages  from jasp-required-files repository on GitHub. 
+	From \<JASP\> root folder in a terminal type:
+	
+	\> git clone https://github.com/jasp-stats/jasp-required-files.git
+	
+	You should now have:  
+	\<JASP\>\jasp-required-files
+	
+3. Switch to the Windows branch in jasp-required-files. From \<JASP\> root folder in a terminal type:
+	
+	Warning in advance:  
+Because the jasp-required-files folder contains binary files as well as R packages with text files it is necessary that git performs a checkout or commit without changing the line endings. Some packages might generate MD5 checksum errors if line endings are changed. It is possible to change this behavior of git configuration per repository. For more information on this subject see https://help.github.com/articles/dealing-with-line-endings/  
+(To use a repostory specific setting for this : in the jasp-required-files folder type: \>git config core.autocrlf false)
 
-    [+] jasp-desktop  < from github >
-	[+] boost_1_64_0
-    [-] build-JASP- ... < build directory, created by QtCreator >
-       [+] R
-	- JASP-R-Interface.dll
-	- JASP-R-Interface.lib
-	- archive.dll.lib
-	- libarchive.dll
-	- libboost_date_time-vc141-mt-1_64.lib
-	- libboost_date_time-vc141-mt-gd-1_64.lib
-	- libboost_filesystem-vc141-mt-1_64.lib
-	- libboost_filesystem-vc141-mt-gd-1_64.lib
-	- libboost_system-vc141-mt-1_64.lib
-	- libboost_system-vc141-mt-gd-1_64.lib
-	- libeay32.dll
-	- libgcc_s_seh-1.dll
-	- libgomp-1.dll
-	- libstdc++-6.dll
-	- libwinpthread-1.dll
-	- ssleay32.dll
+	\> cd \<JASP\>\jasp-required-files  
+	\> git checkout Windows  
+	\> git branch  
+	
+	Should confirm that you are on the Windoows branch now.
+	
+	
+4.	Create a build folder(s). From the \<JASP\> root folder for a 64-bit version e.g.:
+
+	\> mkdir build-release-64  
+	\> mkdir build-debug-64  
+	
+	Latter if you want to build a debug version. In the description it is assumed that you build a release version. 
+	You should now have:  
+
+	 \<JASP\>\build-release-64  
+	 \<JASP\>\build-debug-64  
+	
+	The destinction between debug version and release only differs in the option you choose in QtCreator. Olnly the description for the release version is given.
+	 
+5.	Copy files to its expected location in the build folders:    
+	From \<JASP\>\jasp-required-files\64\\* -> \<JASP\>\build-release-64  
+	From \<JASP\>\jasp-required-files\R -> \<JASP\>\build-release-64\R  
+	From \<JASP\>\jasp-required-files\boost_1_64_0 -> <JASP>\boost_1_64_0  
+	
+	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder. From the buildfolder or Jasp root folder:  
+	\> cd <JASP>\build-release-64  
+	\> mklink /D R ..\jasp-required-files\R  
+	\> cd \<JASP\>    
+	\> mklink /D boost_1_64_0 .\jasp-required-files\boost_1_64_0  
+		
+	You should now have :  
+
+	\<JASP\>\build-release-64\R    	
+	\<JASP\>\build-release-64\*.lib and *.dll    
+	\<JASP\>\boost_1_64_0  
+
+6.	Install Qt 5.12  
+	Go to https://www.qt.io/download  
+	Choose Open Source and Download.  
+	Start qt-unified-windows-x86-3.0.6-online.exe from your download folder.  
+	(Skip some forms if you do not have a Qt account)  
+	Use the default options but select the following components to install:
+
+![Image of Qt Installer](https://static.jasp-stats.org/images/QtCreator-Components.png)  
+  
+  
+You will now have QtCreator in \<QTINSTALLDIR\>\Tools\QtCreator\bin\qtcreator.exe (and in your start menu).        
+For following updates of Qt you can use the MaintenanceTool for Qt in \<QTINSTALLDIR\>\MaintenanceTool.exe (and in your start menu).  
+
+
+7. Install Microsoft Visual Studio 2017 (not 2019)
+	Go to https://www.visualstudio.com/downloads/  
+	Download Community version
+	Start vs_community_.. from your download folder.  
+	Choose all the default options.	 
+	For components to install only choose the Desktop development with C++ option:  
+	
+![Image of Qt Installer](https://static.jasp-stats.org/images/Visual-Studio-Options.png)  
+	
+8. Install RTools 3.5  
+	Download from https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe  
+	Start RTools35 from your download folder.  
+	Choose the default options.  
+
+	You will now have RTools 3.5 installed in C:\RTools  
+
+9.	The last steps you have to do is configuring QtCreator with the proper kits to build JASP.    
+	Start QtCreator and load, through File->Open File or Project, the JASP.pro file from <JASP>\jasp-desktop\JASP.pro.  
+	Also load <JASP>\jasp-desktop\JASP-R-Interface\JASP-R-Interface.pro.  
+	Both projects are built with a different kit in Qt because they are built with different compilers.  
+	Select Manage Kits in QtCreator, through Project in the side panel, and go to the Compilers Tab and add manually the MINGW compiler needed to build JASP-R-Interface. After adding a new compiler select its location in RTools mingw folder.   
+	The compiler tab should now be similar to:  
+
+![Image of Qt Installer](https://static.jasp-stats.org/images/Compilers.png)    
+
+	The Debuggers tab should now be similar to:  
+	
+![Image of Qt Installer](https://static.jasp-stats.org/images/Debuggers.png)   	
+
+You should now create two kits, one for building JASP desktop and one for building JASP-R-Interface. Both are equal except for the Compiler versions. The kits should look similar to:
+
+![Image of Qt Installer](https://static.jasp-stats.org/images/MSVC-Kit.png)   
+
+And   
+
+![Image of Qt Installer](https://static.jasp-stats.org/images/MINGW-Kit.png) 
+
+Your deployment configuration should now show something like:  
+
+![Image of Qt Installer](https://static.jasp-stats.org/images/JASP-Configuration.png)   
+![Image of Qt Installer](https://static.jasp-stats.org/images/JASP-R-Interface-Configuration.png)   
+  
+  
+10. From the Projects Options in the side panel check if your build folders are correct.
+  
+  
+![Image of Qt Installer](https://static.jasp-stats.org/images/BuildDir.png)  
+
+For the JASP-R-Interface the Build directory should be build-release-64\JASP-R-Interface.
+ 
+11. Start building the JASP-R-Interface first, you will need this to finish the JASP build properly.
+
+12. Now set JASP as Active project and build JASP.  
+
 
 
 Mac OS X
 --------
-To build JASP on mac you need to clone the JASP repository and download the following five packages:
+To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories, install XCode, Command line tools, Qt and some packages in R. 
 
- 0. Clone the JASP repository
- 1. [XCode](https://developer.apple.com/xcode/) Easiest would be via the App Store.
- 2. [Qt 5.10.1 + QtWebEngine](https://download.qt.io/archive/qt/). Tick: MacOS and Qt WebEngine
- 3. [R 3.4.4](https://static.jasp-stats.org/development/R3.4%20OSX%20JASP%200.9.1.zip) This contains R and the packages. Unzip this file and set it as a framework in the build folder as shown below.
- 4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip). Unzip this file in the JASP folder.
- 5. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-OSX-64-qt510.zip). Unzip this file in both release and debug build folders.
+ 0. Clone the repository **jasp-desktop**
+ 1. [XCode and command line tools](https://developer.apple.com/xcode/) Qt on OS X relies on XCode and Command line tools to function. You can install them through the App Store or the link provided above. Once you've installed both, you should: 
+ - open XCode 
+ - Go to "Preferences" - "Locations"
+ - Tell XCode which "Command Line Tools" to use 
+ - Close
 
-The directory structure should be as follows:
-
-	[+] JASP
-		[-] jasp-desktop  < from github >
-		[-] buildDebug510 < Build debug directory for QtCreator >
-			- libboost_system-clang-mt-1_64.a
-			- libboost_filesystem-clang-mt-1_64.a
-			- libarchive.a
-			- libz.a
-			- libJASP-R-Interface.1.0.0.dylib
-			- libJASP-R-Interface.dylib
-		[-] buildRelease510 < Build release directory for QtCreator  >
-			- libboost_system-clang-mt-1_64.a
-			- libboost_filesystem-clang-mt-1_64.a
-			- libarchive.a
-			- libz.a
-			- libJASP-R-Interface.1.0.0.dylib
-			- libJASP-R-Interface.dylib
-		[-] boost_1_64_0
-		[-] Frameworks
-                        [-] R.framework
-				[-] Versions
-					[+] 3.3
-
- 0. **Clone** the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/* and cloning results in the creating of *~/desktop/JASP/jasp-desktop*.
- 1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
- 2. **Qt**: Install Qt5.10.1 with MacOS and Qt WebEngine.
-
+ 2. [Qt](https://www.qt.io/): **Install Qt 5.12**
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
 
- 2.a. **Configure Qt5.10.1**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give "Desktop Qt 5.10.1 clang 64bit". Click on this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
+ 2.a. **Configure Qt5.12**: Once installed:
+ - Go to "Qt Creator" - "Preference" - "Kits" 
+ - Auto-detect should give "Desktop Qt 5.12.0 clang 64bit". Click on this. 
+ - Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
@@ -118,16 +211,36 @@ The directory structure should be as follows:
 
 In both case, I've added the flag "-j4" to make use of all my four cores on my mac.
 
-5. In the end, your folder should be structured as follows:
+ 3. Clone the repository **jasp-required-files** and select the **MacOS** branch. These files can now be put in the folders as shown here:
 
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
-where the blue files are the binaries that are added manually.
+where the blue files are the binaries that are added manually. The process will be smoothened out in the near future.
+
+ 4. Install packages in your local R for JASP to build JASPGraph: 
+
+``` 
+ install.packages(c("ggplot2", "scales", "cowplot", "gridExtra", "stringr"))
+```
+
+The process will be smoothened out in the near future.
+
+ 5. Build JASP in Qt. 
 
 Linux
 -----
 
 ### Build
+
+#### All linux
+Besides the packages mentioned under Ubuntu and Fedora one needs a multitude of R-packages to run every analysis. To make life easier a script has been added: `jasp-desktop/Tools/installRequiredPackages.R` which can be used to install all required R-packages. To run it simply open a terminal, make sure you are running as administrator and execute the following in your jasp-desktop source directory:
+```
+cd Tools
+Rscript installRequiredPackages.R
+```
+At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install would the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running on and install that. 
+
+After installing the missing sources you can try to run `installRequiredPackages.R` again and see if it stops complaining, it will skip all packages that are already installed to save you time. And hopefully after some time it will be done and you can try everything included with JASP.
 
 #### Ubuntu (and alike)
 To build JASP under Ubuntu (17.10+), debian, and derivatives, you will need:
