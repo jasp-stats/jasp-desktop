@@ -22,8 +22,9 @@
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
 #include "log.h"
+#include "data/datasetpackage.h"
 
-FileMenu::FileMenu(QObject *parent) : QObject(parent)
+FileMenu::FileMenu(QObject *parent, DataSetPackage* package) : QObject(parent), _package(package)
 {	
 	_recentFiles			= new RecentFiles(parent);
 	_currentDataFile		= new CurrentDataFile(parent);
@@ -225,7 +226,12 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			}
 
 			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
-				setCurrentDataFile(event->dataFilePath());
+			{
+				QString datafile = event->dataFilePath();
+				if (datafile.isEmpty())
+					datafile = QString::fromStdString(_package->dataFilePath());
+				setCurrentDataFile(datafile);
+			}
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());

@@ -123,7 +123,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
 									{ "Network", "Meta Analysis", "SEM", "Summary Statistics", "BAIN" });
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
-	_fileMenu				= new FileMenu(this);
+	_fileMenu				= new FileMenu(this, _package);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 
