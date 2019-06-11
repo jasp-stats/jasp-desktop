@@ -517,7 +517,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			if (meta.type == 'collection' && data.title == "") {  // remove collections without a title from view
 				let collectionMeta = meta.meta;
 				if (Array.isArray(collectionMeta)) { // the meta comes from a jaspResult analysis
-					$result = this.createResultsViewFromMeta(data["collection"], collectionMeta, $result);
+					this.createResultsViewFromMeta(data["collection"], collectionMeta, $result);
 					continue;
 				}
 			}
