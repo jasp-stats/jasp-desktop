@@ -190,8 +190,6 @@ createFlatpakJson <- function()
 
   ind             <- '\t\t'
   buildOptionsEtc <- paste0(
-    ind,'\t"build-options": {\n',ind,'\t\t"append-ld-library-path": "/app/lib;/app/lib64/R/lib",\n',
-    ind,'\t\t"env": {\n',ind,'\t\t\t"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",\n',ind,'\t\t\t"R_HOME": "/app/lib64/R/",\n',ind,'\t\t\t"PREFIX": "/app"\n',ind,'\t\t}\n',ind,'\t},\n',
     ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'},\n',
     sep='',
     collapse='')

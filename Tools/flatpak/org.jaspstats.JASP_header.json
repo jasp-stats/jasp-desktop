@@ -13,10 +13,14 @@
 		"--env=PATH=/usr/bin:/app/bin"
 	],
 	"build-options": {
-		"cflags": "-O2",
-		"cxxflags": "-O2",
 		"env": {
 			"PATH": "/usr/bin:/app/bin"
+		},
+		"append-ld-library-path": "/app/lib;/app/lib64/R/lib",
+		"env": {
+			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
+			"R_HOME": "/app/lib64/R/",
+			"PREFIX": "/app"
 		}
 	},
 	"cleanup": [
@@ -28,7 +32,7 @@
 			"buildsystem": "simple",
 			"build-commands":[
 				"./bootstrap.sh --with-libraries=filesystem,system",
-				"./b2 -j4 install --prefix=/app" 
+				"./b2 -j${FLATPAK_BUILDER_N_JOBS} install --prefix=/app" 
 			],
 			"sources":[
 				{
