@@ -23,12 +23,12 @@ import JASP 1.0
 
 PercentField
 {
-	property int	defaultValue:	95
-	property int	decimals:		1
-      
 	id:					ciField
+
+	defaultValue:		95
+	decimals:			1
+	inclusive:			"no"
 	fieldWidth:			Theme.font.pixelSize * (ciField.decimals + 3)
-	validator:			JASPDoubleValidator { id: doubleValidator; bottom: 0; top: 100; inclusive: "no"; decimals: ciField.decimals; notation: DoubleValidator.StandardNotation}
 
 	lastValidValue:		defaultValue
 }
