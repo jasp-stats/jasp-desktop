@@ -51,7 +51,7 @@ FocusScope
 			width:				baseWidth  * welcomeRoot.scaler
 
 			property int baseWidth:		700
-			property int baseHeight:	550
+			property int baseHeight:	500
 
 			Image
 			{

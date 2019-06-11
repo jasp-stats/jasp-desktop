@@ -36,6 +36,7 @@
 #include "resourcebuttonsvisible.h"
 
 class MainWindow;
+class DataSetPackage;
 
 class FileMenu : public QObject
 {
@@ -58,7 +59,7 @@ public:
 
 	Q_ENUM(FileMenuListItemType)
 
-	explicit FileMenu(QObject *parent = nullptr);
+	explicit FileMenu(QObject *parent = nullptr, DataSetPackage* package = nullptr);
 	virtual ~FileMenu() {}
 	
 
@@ -143,6 +144,7 @@ private:
 	bool							_currentFileReadOnly		= false,
 									_visible					= false;
 	ActionButtons::FileOperation	_fileoperation				= ActionButtons::None;
+	DataSetPackage*					_package					= nullptr;
 };
 
 #endif // FILEMENU_H
