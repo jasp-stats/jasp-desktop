@@ -246,8 +246,11 @@ Json::Value jaspObject::convertToJSON()
 	obj["warning"]		= _warning;
 	obj["warningSet"]	= _warningSet;
 	obj["position"]		= _position;
-	obj["citations"]	= _citations;
+	obj["citations"]	= Json::arrayValue;;
 	obj["messages"]		= Json::arrayValue;
+
+	for(auto c : _citations)
+		obj["citations"].append(c);
 
 	for(auto m : _messages)
 		obj["messages"].append(m);
@@ -273,10 +276,12 @@ void jaspObject::convertFromJSON_SetFields(Json::Value in)
 	_warning		= in.get("warning",			"null").asString();
 	_warningSet		= in.get("warningSet",		false).asBool();
 	_position		= in.get("position",		JASPOBJECT_DEFAULT_POSITION).asInt();
-	_citations		= in.get("citations",		Json::arrayValue);
+
+	_citations.clear();
+	for(auto & citation : in.get("citations", Json::nullValue))
+		_citations.insert(citation.asString());
 
 	_messages.clear();
-
 	for(auto & msg : in.get("messages", Json::nullValue))
 		_messages.push_back(msg.asString());
 
@@ -349,20 +354,18 @@ bool jaspObject::checkDependencies(Json::Value currentOptions)
 
 void jaspObject::addCitation(std::string fullCitation)
 {
-	_citations.append(fullCitation);
-
-	notifyParentOfChanges();
+	bool citationAdded = _citations.insert(fullCitation).second;
+	if (citationAdded)
+		notifyParentOfChanges();
 }
 
 Json::Value	jaspObject::dataEntry()
 {
 	Json::Value baseObject(Json::objectValue);
-	if(_citations.size() > 0)
-		baseObject["citation"] = _citations;
-
+	for(auto c : _citations)
+		baseObject["citation"].append(c);
 
 	return baseObject;
-
 }
 
 int jaspObject::getCurrentTimeMs()

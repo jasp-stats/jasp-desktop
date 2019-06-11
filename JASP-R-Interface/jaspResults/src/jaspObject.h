@@ -127,7 +127,7 @@ protected:
 								_error = false;
 
 	std::vector<std::string>	_messages;
-	Json::Value					_citations = Json::arrayValue;
+	std::set<std::string>		_citations;
 	std::string					_name;
 
 	std::map<std::string, Json::Value> _optionMustBe;
