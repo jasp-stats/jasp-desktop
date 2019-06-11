@@ -386,7 +386,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   bainResult <- jaspResults[["bainResult"]]$object
   if(options[["bayesFactorPlot"]] && ready){
       if(is.null(jaspResults[["BFplots"]])){
-      jaspResults[["BFplots"]]                    <- createJaspContainer("Bayes Factor Comparison", height = 400, width = 600)
+      jaspResults[["BFplots"]]                    <- createJaspContainer("Bayes Factor Comparison")
       jaspResults[["BFplots"]]                    $dependOn(options =c("variables", "testValue", "hypothesis", "bayesFactorPlot"))
       jaspResults[["BFplots"]]					          $position <- 3
       }
