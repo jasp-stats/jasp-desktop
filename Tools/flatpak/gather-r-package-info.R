@@ -164,7 +164,7 @@ createFlatpakJson <- function()
       tryCatch(error=function(e) e, exp={
         download.file(url=curVer, destfile=destFile);
         succes <- TRUE;
-        downloaded[[curPkg]]$downloadUrl <- curVer
+        #downloaded[[curPkg]]$downloadUrl <- curVer
       })
       
       if(!succes)
@@ -173,15 +173,16 @@ createFlatpakJson <- function()
         tryCatch(error=function(e) e, exp={
           download.file(url=oldVer, destfile=destFile);
           succes <- TRUE;
-          downloaded[[curPkg]]$downloadUrl <- oldVer
+          #downloaded[[curPkg]]$downloadUrl <- oldVer
         })
       }
 
       if(!succes)
         stop("Both downloads failed...")
 
-      sha256sumOutput             <- system2('sha256sum', args=destFile, stdout=TRUE)
-      downloaded[[curPkg]]$sha256 <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
+      sha256sumOutput                  <- system2('sha256sum', args=destFile, stdout=TRUE)
+      downloaded[[curPkg]]$sha256      <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
+      downloaded[[curPkg]]$downloadUrl <- paste0("http://static.jasp-stats.org/RPkgs/", filePkg)
     }
 
     i <- i + 1L
