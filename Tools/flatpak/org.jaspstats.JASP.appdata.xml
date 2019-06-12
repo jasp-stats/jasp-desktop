@@ -7,6 +7,7 @@
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>AGPL-3.0+</project_license>
 	<content_rating type="oars-1.1" />
+	<developer_name>University of Amsterdam</developer_name>
 	<description>
 		<p>
 		​JASP is a cross platform statistical software program with a state-of-the-art graphical user interface. 
@@ -24,13 +25,12 @@
 	<translation/> <!-- translation not yet supported -->
 	<screenshots>
 		<screenshot type="default">
-			<image>https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/JASP-screenshot0.png</image>
-			<caption>Some plots and a table</caption>
+			<image>http://static.jasp-stats.org/RPkgs/JASP-screenshot0.png</image>
 		</screenshot>
 	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
-	<url type="donations">https://jasp-stats.org/donate/</url>
+	<url type="donation">https://jasp-stats.org/donate/</url>
 	<url type="blog">https://jasp-stats.org/blog/</url>
 	<url type="repository">https://github.com/jasp-stats/jasp-desktop</url>
 	<releases>
