@@ -182,7 +182,7 @@ Form
 		VariablesForm
 		{
 			height: 200
-            AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables"}
 		}
 

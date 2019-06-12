@@ -27,10 +27,11 @@ QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisF
 	: QMLItem(item, form)
 	, QMLListViewDraggable(item, form)
 {
+	bool mixedModelTerms = getItemProperty("mixedModelTerms").toBool();
 	if (isInteraction)
 		_availableModel = new ListModelInteractionAvailable(this);
 	else
-		_availableModel = new ListModelTermsAvailable(this);
+		_availableModel = new ListModelTermsAvailable(this, mixedModelTerms);
 }
 
 void QMLListViewTermsAvailable::addAssignedModel(ListModelAssignedInterface *model)

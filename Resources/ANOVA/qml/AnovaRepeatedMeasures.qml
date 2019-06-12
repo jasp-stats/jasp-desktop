@@ -125,7 +125,7 @@ Form
 		VariablesForm
 		{
 			height: 150
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]; mixedModelTerms: true }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
@@ -204,7 +204,7 @@ Form
 			VariablesForm
 			{
 				height: 150
-                AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]}
+				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
 			
