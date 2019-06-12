@@ -19,4 +19,6 @@
 VariablesList
 {
     listViewType: "AvailableVariables"
+
+	property bool	mixedModelTerms:	false
 }
