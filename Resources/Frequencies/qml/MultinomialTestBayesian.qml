@@ -45,7 +45,7 @@ Form
 		Layout.columnSpan: 2
 
 		RadioButton {	value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
-		RadioButton {	value: "expectedProbs";	label: qsTr("Expected proportions"); id: expectedProbs			}
+		RadioButton {	value: "expectedProbs";		label: qsTr("Expected proportions"); id: expectedProbs			}
 
 		Chi2TestTableView
 		{
