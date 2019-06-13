@@ -211,14 +211,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   if (inherits(analysisResult, "error")) {		
 		
 		if (inherits(analysisResult, "validationError")) {
-			errorStatus <- "validationError"
+      errorStatus  <- "validationError"
 			errorMessage <- analysisResult$message
 		} else {
-			errorStatus <- "fatalError"
-			
-			error <- .sanitizeForJson(analysisResult)
-			stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
-			stackTrace <- paste(stackTrace, collapse="<br><br>")
+      errorStatus  <- "fatalError"
+      error        <- .sanitizeForJson(analysisResult)
+      stackTrace   <- .sanitizeForJson(analysisResult$stackTrace)
+      stackTrace   <- paste(stackTrace, collapse="<br><br>")
 			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
 		}
 		

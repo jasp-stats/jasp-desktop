@@ -41,7 +41,7 @@ public:
 	void sendString(std::string message) { _channel->send(message); }
 
 	typedef engineAnalysisStatus Status;
-	Status getStatus() { return _analysisStatus; }
+	Status getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
