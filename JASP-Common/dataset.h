@@ -39,14 +39,16 @@ public:
 	size_t rowCount()		const;
 	size_t columnCount()	const { return _columns.columnCount(); }
 
-	Columns& columns()					{ return _columns; }
-	Column& column(size_t index)		{ return _columns.at(index);}
-	Column& column(std::string name)	{ return _columns.get(name);	}
+	Columns& columns()				{ return _columns; }
+
+			Column& column(size_t index)				{ return _columns.at(index);	}
+			Column& column(std::string name)			{ return _columns.get(name);	}
+	const	Column& column(size_t index)		const	{ return _columns.at(index);	}
+	const	Column& column(std::string name)	const	{ return _columns.get(name);	}
 
 	int  getColumnIndex(std::string name) { try{ return _columns.findIndexByName(name); } catch(...) { return -1;	} }
 	void setRowCount(size_t rowCount);
 	void setColumnCount(size_t columnCount);
-
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
@@ -60,6 +62,8 @@ public:
 	bool allColumnsPassFilter()				const;
 	bool synchingData()						const	{ return _synchingData; }
 	void setSynchingData(bool newVal);
+
+	int	 getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 
 private:
 	Columns			_columns;

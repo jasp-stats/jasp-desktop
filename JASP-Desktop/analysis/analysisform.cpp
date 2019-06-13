@@ -90,9 +90,9 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 }
 
-void AnalysisForm::runRScript(QString script, QString controlName)
+void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
-	emit _analysis->sendRScript(_analysis, script, controlName);
+	emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
 }
 
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
@@ -533,15 +533,19 @@ void AnalysisForm::_formCompletedHandler()
 	if (!analysisVariant.isNull())
 	{
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
+		_dataSet = _analysis->getDataSet();
+
 		_parseQML();
+
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
+
 		bindTo();
 		_analysis->resetOptionsFromJASPFile();
 		_analysis->initialized(this, isNewAnalysis);
 	}
 }
 
-void AnalysisForm::dataSetChanged()
+void AnalysisForm::dataSetChangedHandler()
 {
 	if (!_removed)
 	{

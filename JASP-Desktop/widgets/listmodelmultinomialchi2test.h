@@ -27,9 +27,15 @@ class ListModelMultinomialChi2Test : public ListModelTableViewBase
 	Q_OBJECT
 
 public:
-	enum class	specialRoles { active = Qt::UserRole, lines, maxColString };
+	explicit ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType) : ListModelTableViewBase(parent, tableType) {}
 
-	explicit ListModelMultinomialChi2Test(QMLListView* parent, QString tableType) : ListModelTableViewBase(parent, tableType) {}
+	QString			getColName(size_t index)						override;
+	OptionsTable *	createOption()									override;
+	void			initValues(OptionsTable * bindHere)				override;
+
+public slots:
+	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
+	void modelChangedSlot()											override;
 };
 
 #endif // LISTMODELMULTINOMIALCHI2TEST_H

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2019 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,45 +16,44 @@
 //
 
 #include "optionstable.h"
-
-#include "boost/foreach.hpp"
-
 #include "optionvariable.h"
 
-using namespace Json;
-using namespace std;
 
 void OptionsTable::init(const Json::Value &data)
 {
-	_template = new Options();
+				_template		= new Options();
+	Json::Value templateJson	= data.get("template", Json::nullValue);
+	Json::Value defaultJson		= data.get("default", Json::nullValue);
 
-	Json::Value templ4te = data.get("template", Json::nullValue);
+	if (!templateJson.isNull())
+		_template->init(templateJson);
 
-	if (templ4te.isNull() == false)
-		_template->init(templ4te);
 
-	Json::Value d3fault = data.get("default", Json::nullValue);
-
-	if (d3fault.isNull() == false)
-		set(d3fault);
+	if (!defaultJson.isNull())
+		set(defaultJson);
 }
 
 Json::Value OptionsTable::asJSON() const
 {
-	Value v = arrayValue;
-	int i = 0;
+	Json::Value v(Json::arrayValue);
 
-	BOOST_FOREACH(Options *item, _value)
-		v[i++] = item->asJSON();
+	for(Options *item : _value)
+		v.append(item->asJSON());
 
 	return v;
 }
 
+void OptionsTable::deleteOldValues()
+{
+	for(Options *row : _value)
+		delete row;
+
+	_value.clear();
+}
+
 void OptionsTable::set(const Json::Value &value)
 {
-	BOOST_FOREACH(Options *row, _value)
-		delete row;
-	_value.clear();
+	deleteOldValues();
 
 	if (_template)
 	{
@@ -71,14 +70,11 @@ void OptionsTable::set(const Json::Value &value)
 
 Option *OptionsTable::clone() const
 {
-	Options* templote = this->rowTemplate();
-	Options* rowTemplate = templote ? static_cast<Options*>(templote->clone()) : NULL;
-
-	OptionsTable *c = new OptionsTable(rowTemplate);
+	OptionsTable * c = new OptionsTable(_template == nullptr ? nullptr : static_cast<Options*>(_template->clone()));
 
 	std::vector<Options *> rows;
 
-	BOOST_FOREACH(Options *row, _value)
+	for(Options *row : _value)
 		rows.push_back(static_cast<Options*>(row->clone()));
 
 	c->setValue(rows);
@@ -86,18 +82,15 @@ Option *OptionsTable::clone() const
 	return c;
 }
 
-void OptionsTable::setValue(const vector<Options *> &value)
+void OptionsTable::setValue(const std::vector<Options *> &value)
 {
+	deleteOldValues();
+
 	_value = value;
 	notifyChanged();
 }
 
-void OptionsTable::optionsChanged(Option *)
-{
-	notifyChanged();
-}
-
-void OptionsTable::connectOptions(const vector<Options *> &value)
+void OptionsTable::connectOptions(const std::vector<Options *> &value)
 {
 	setValue(value);
 	
@@ -105,16 +98,13 @@ void OptionsTable::connectOptions(const vector<Options *> &value)
 		options->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));	
 }
 
-Options *OptionsTable::rowTemplate() const
-{
-	return _template;
-}
+
 
 void OptionsTable::setTemplate(Options *templote)
 {
 	_template = templote;
 	
-	if (_cachedValue != Json::nullValue)
+	if(!_cachedValue.isNull())
 	{
 		set(_cachedValue);
 		_cachedValue = Json::nullValue;

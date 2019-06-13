@@ -53,18 +53,19 @@ public:
 				void			bindTo();
 				void			unbind();
 
-				void			runRScript(QString script, QString controlName);
+				void			runRScript(QString script, QString controlName, bool whiteListedVersion);
 				
 				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
-				void			dataSetChanged();
+				void			dataSetChangedHandler();
 
 signals:
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
 				void			formCompleted();
+				void			dataSetChanged();
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;

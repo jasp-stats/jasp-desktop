@@ -26,10 +26,15 @@
 
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
-std::string fq(const QString &from);
-QString tq(const std::string &from);
-QStringList tql(const std::vector<std::string> &from);
-std::vector<std::string> fromQstringToStdVector(const QString &input, const QString &delimetor);
+std::string					fq(const QString &from);
+std::vector<std::string>	fq(const QVector<QString> & vec);
+QString						tq(const std::string &from);
+QVector<QString>			tq(const std::vector<std::string> & vec);
+QStringList					tql(const std::vector<std::string> &from);
+std::vector<std::string>	fromQstringToStdVector(const QString &input, const QString &delimeter);
+
+template<typename T> inline		std::vector<T>	fq(QVector<T>		in) { return in.toStdVector();				}
+template<typename T> inline		QVector<T>		tq(std::vector<T>	in) { return QVector<T>::fromStdVector(in); }
 
 QString stripFirstAndLastChar(QString in, const QString &strip);
 QString getShortCutKey();

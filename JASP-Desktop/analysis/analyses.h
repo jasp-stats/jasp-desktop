@@ -53,12 +53,12 @@ public:
 
 				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules)
 				{
-					connect(this, &Analyses::requestComputedColumnDestruction, this, &Analyses::dataSetChanged, Qt::QueuedConnection);
+					connect(this, &Analyses::requestComputedColumnDestruction, this, &Analyses::dataSetColumnsChanged, Qt::QueuedConnection);
 				}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "");
+	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", Json::Value *options = nullptr);
 
 	Analysis*	create(const QString &module, const QString &name, const QString &title)	{ return create(module, name, title, _nextId++, AppInfo::version);		}
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry)								{ return create(analysisEntry, _nextId++);						}
@@ -130,7 +130,7 @@ signals:
 	void analysisResultsChanged(		Analysis *	source);
 	void analysisTitleChanged(			Analysis *  source);
 	void analysisOptionsChanged(		Analysis *	source);
-	void sendRScript(					QString		script, int requestID);
+	void sendRScript(					QString		script, int requestID, bool whiteListedVersion);
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);
 	void currentAnalysisIndexChanged(	int			currentAnalysisIndex);
@@ -138,6 +138,7 @@ signals:
 	void visibleChanged(				bool		visible);
 	void emptyQMLCache();
 	void dataSetChanged();
+	void dataSetColumnsChanged();
 	void somethingModified();
     void analysesExportResults();
 
@@ -146,7 +147,7 @@ signals:
 	void				requestComputedColumnDestruction(QString columnName);
 
 private slots:
-	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
+	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion);
 
 
 private:

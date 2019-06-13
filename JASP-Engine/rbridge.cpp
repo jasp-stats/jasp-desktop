@@ -793,10 +793,10 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	bool * arrayPointer = NULL;
 
-	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();\n"
-								 "rowcount <- " + std::to_string(rowCount) +  ";\n"
-								 "attach(data);\n"
-								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);\n";
+	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();"												"\n"
+								 "rowcount <- " + std::to_string(rowCount) +  ";"										"\n"
+								 "attach(data);"																		"\n"
+								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
 
 	jaspRCPP_runScript(setupFilterEnv.c_str());//first we load the data to be filtered
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
@@ -838,16 +838,23 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
+	int rowCount	= rbridge_dataSet == NULL ? 0 : rbridge_dataSet->rowCount();
+
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64(rbridge_encodeColumnNamesToBase64(rCode));
+	std::string rCode64("local({" +rbridge_encodeColumnNamesToBase64(rCode) + "})");
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
-	catch(filterException e)	{ jaspRCPP_setErrorMsg(e.what()); return "script is not safe..";	}
+	catch(filterException e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
 
-	if(filterColumnsUsed.size() > 0)	jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
+	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();"												"\n"
+								 "rowcount <- " + std::to_string(rowCount) +  ";"										"\n"
+								 "attach(data);"																		"\n"
+								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
+
+	jaspRCPP_runScript(setupFilterEnv.c_str()); //first we load the data to be filtered
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
-	if(filterColumnsUsed.size() > 0)	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(rbridge_decodeColumnNamesFromBase64(jaspRCPP_getLastErrorMsg()).c_str());
 

@@ -163,6 +163,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["rCode"]			= scriptStore->script.toStdString();
 	json["requestId"]		= scriptStore->requestId;
+	json["whiteListed"]		= scriptStore->whiteListedVersion;
 
 	sendString(json.toStyledString());
 }

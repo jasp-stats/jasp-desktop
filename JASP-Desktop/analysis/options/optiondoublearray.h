@@ -24,7 +24,8 @@
 class OptionDoubleArray : public OptionI<std::vector<double> >
 {
 public:
-	OptionDoubleArray() : OptionI() {}
+	OptionDoubleArray()									: OptionI() {}
+	OptionDoubleArray(const std::vector<double> & vals) : OptionI(vals) {}
 
 	void		init(const Json::Value &data)			override;
 	void		set(const Json::Value& value)			override;

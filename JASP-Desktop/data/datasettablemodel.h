@@ -60,7 +60,6 @@ public:
 				void				clearDataSet() { setDataSetPackage(NULL); }
 				size_t				addColumnToDataSet();
 				int					columnsFilteredCount();
-				int					getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 
 				bool				setColumnType(int columnIndex, Column::ColumnType newColumnType);
 				Column::ColumnType	getColumnType(int columnIndex);

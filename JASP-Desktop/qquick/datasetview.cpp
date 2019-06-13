@@ -82,6 +82,8 @@ void DataSetView::calculateCellSizes()
 
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
+	_storedLineFlags.clear();
+	_storedDisplayText.clear();
 
 	for(auto col : _cellTextItems)
 	{
@@ -148,8 +150,6 @@ void DataSetView::calculateCellSizes()
 
 	emit itemSizeChanged();
 
-	_storedLineFlags.clear();
-	_storedDisplayText.clear();
 
 	JASPTIMER_STOP(calculateCellSizes);
 }
@@ -157,6 +157,9 @@ void DataSetView::calculateCellSizes()
 void DataSetView::viewportChanged()
 {
 	if(_model == nullptr || _viewportX != _viewportX || _viewportY != _viewportY || _viewportW != _viewportW || _viewportH != _viewportH ) //only possible if they are NaN
+		return;
+
+	if(_dataColsMaxWidth.size() != _model->columnCount())
 		return;
 
 	JASPTIMER_RESUME(viewportChanged);
@@ -743,8 +746,12 @@ void DataSetView::updateExtraColumnItem()
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)
 {
-	if(_storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
-		_storedDisplayText[row][col] = _model->data(_model->index(row, col)).toString();
+	QModelIndex idx = _model->index(row, col);
+
+	bool isEditable(_model->flags(idx) & Qt::ItemIsEditable);
+
+	if(isEditable || _storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
+		_storedDisplayText[row][col] = _model->data(idx).toString();
 
 	QString text = _storedDisplayText[row][col];
 
@@ -753,6 +760,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 
 	previousContext->setContextProperty("itemText",			text);
 	previousContext->setContextProperty("itemActive",		active);
+	previousContext->setContextProperty("itemEditable",		isEditable);
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
 	previousContext->setContextProperty("dataFont",			_font);

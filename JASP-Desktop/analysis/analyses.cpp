@@ -17,8 +17,6 @@
 //
 
 #include "analyses.h"
-
-#include "boost/foreach.hpp"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "processinfo.h"
@@ -71,6 +69,8 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	Analysis *analysis;
 
+	Json::Value &	optionsJson	= analysisData["options"];
+
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
 		Json::Value	&	versionJson		= analysisData["version"];
@@ -82,7 +82,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
 						title				= QString::fromStdString(analysisData.get("title", "").asString());
 
-		Json::Value &	optionsJson	= analysisData["options"];
+
 
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 
@@ -91,13 +91,13 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		
 		analysis = create(module, name, title, id, version, &optionsJson, status, false);
 
-		analysis->loadFromJSON(analysisData);
+		analysis->loadExtraFromJSON(analysisData);
 	}
 	else
 	{
 		std::string title			= analysisData.get("title", "").asString();
 		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-				analysis			= create(analysisEntry, id, status, false, title);
+				analysis			= create(analysisEntry, id, status, false, title, &optionsJson);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
 		if(!dynMod->loaded())
@@ -121,9 +121,9 @@ Analysis* Analyses::create(const QString &module, const QString &name, const QSt
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, Json::Value *options)
 {
-	Analysis *analysis = new Analysis(this, id, analysisEntry, title);
+	Analysis *analysis = new Analysis(this, id, analysisEntry, title, options);
 
 	analysis->setStatus(status);
 	analysis->setResults(analysisEntry->getDefaultResults());
@@ -473,11 +473,11 @@ void Analyses::rCodeReturned(QString result, int requestId)
 		Log::log()  << "Unkown Returned Rcode request ID " << requestId << std::endl;
 }
 
-void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName)
+void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion)
 {
 	_scriptIDMap[_scriptRequestID] = qMakePair(analysis, controlName);
 
-	emit sendRScript(script, _scriptRequestID++);
+	emit sendRScript(script, _scriptRequestID++, whiteListedVersion);
 }
 
 void Analyses::selectAnalysis(Analysis * analysis)
@@ -493,6 +493,9 @@ void Analyses::selectAnalysis(Analysis * analysis)
 
 void Analyses::setDataSet(DataSet *dataSet)
 {
+	if(_dataSet == dataSet)
+		return;
+
 	_dataSet = dataSet;
 	
 	emit dataSetChanged();

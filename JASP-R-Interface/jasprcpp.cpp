@@ -77,13 +77,13 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
 	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
 
-	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
 	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
 	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
+	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
 	rInside[".setColumnDataAsScale"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
@@ -197,16 +197,16 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	jsonOptions.set_encoding(Encoding);
 
 
+	rInside[".ppi"]				= ppi;
 	rInside["name"]				= name;
 	rInside["title"]			= title;
-	rInside["requiresInit"]		= false;
 	rInside["dataKey"]			= dataKey;
 	rInside["options"]			= jsonOptions;
-	rInside["resultsMeta"]		= "null";
-	rInside["stateKey"]			= stateKey;
 	rInside["perform"]			= perform;
+	rInside["stateKey"]			= stateKey;
 	rInside["moduleCall"]		= moduleCall;
-	rInside[".ppi"]				= ppi;
+	rInside["resultsMeta"]		= "null";
+	rInside["requiresInit"]		= false;
 	rInside[".imageBackground"]	= imageBackground;
 
 	jaspResults::setResponseData(analysisID, analysisRevision);
@@ -313,13 +313,12 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 {
 	RInside &rInside = rinside->instance();
 
+	rInside[".imageBackground"] = imageBackground;
 	rInside["plotName"]			= name;
 	rInside["format"]			= type;
-
 	rInside["height"]			= height;
 	rInside["width"]			= width;
 	rInside[".ppi"]				= ppi;
-	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = jaspRCPP_parseEval("saveImage(plotName,format,height,width)");
 	static std::string staticResult;
@@ -332,12 +331,12 @@ const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const
 
 	RInside &rInside = rinside->instance();
 
+	rInside[".imageBackground"] = imageBackground;
 	rInside["plotName"]			= name;
-	rInside["type"]				= type;
 	rInside["height"]			= height;
 	rInside["width"]			= width;
+	rInside["type"]				= type;
 	rInside[".ppi"]				= ppi;
-	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = jaspRCPP_parseEval("editImage(plotName,type,height,width)");
 	static std::string staticResult;
@@ -358,7 +357,6 @@ void STDCALL jaspRCPP_rewriteImages(const int ppi, const char* imageBackground) 
 	jaspRCPP_parseEvalQNT("rewriteImages()");
 }
 
-
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	// Function to evaluate arbitrary R code from C++
 	// Returns string if R result is a string, else returns "null"
@@ -372,15 +370,24 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
 		"tryCatch(				"
-		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode)) }),		"
-		"		error	= function(e) { .setRError(toString(e$message))	}		"
+		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"		error	= function(e) { .setRError(toString(e$message))	  }, 	"
+		"		warning	= function(w) { .setRWarning(toString(w$message)) }		"
 		");			"
 		"returnVal	");
 
 	SEXP result = jaspRCPP_parseEval(rCodeTryCatch);
 
 	static std::string staticResult;
-	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+	try
+	{
+		staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+	}
+	catch(...)
+	{
+		staticResult = NullString;
+	}
+
 	return staticResult.c_str();
 }
 

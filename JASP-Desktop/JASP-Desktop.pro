@@ -372,7 +372,8 @@ HEADERS += \
     gui/jaspversionchecker.h \
     widgets/listmodeltableviewbase.h \
     widgets/sortmenumodel.h \
-    widgets/sortable.h
+    widgets/sortable.h \
+    widgets/listmodelfiltereddataentry.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -553,7 +554,9 @@ SOURCES += \
     gui/jaspversionchecker.cpp \
     widgets/listmodeltableviewbase.cpp \
     widgets/sortmenumodel.cpp \
-    widgets/sortable.cpp
+    widgets/sortable.cpp \
+    widgets/listmodelfiltereddataentry.cpp
+
 
 RESOURCES += \
     html/html.qrc \

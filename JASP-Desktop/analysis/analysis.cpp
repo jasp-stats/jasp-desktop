@@ -49,7 +49,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title) :
+Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, Json::Value *data) :
 	  QObject(analyses),
 	  _options(new Options()),
 	  _id(id),
@@ -61,6 +61,9 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	  _dynamicModule(_moduleData->dynamicModule()),
 	  _analyses(analyses)
 {
+	if (data)
+		_optionsDotJASP = *data; //Same story as other constructor
+
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
 	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
 	bindOptionHandlers();
@@ -190,7 +193,8 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	_analysisForm	= form;
 	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(_analyses, &Analyses::dataSetChanged, _analysisForm, &AnalysisForm::dataSetChanged);
+	connect(_analyses, &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChanged);
+	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChanged); //Really should be renamed
 }
 
 Json::Value Analysis::asJSON() const
@@ -234,7 +238,7 @@ Json::Value Analysis::asJSON() const
 	return analysisAsJson;
 }
 
-void Analysis::loadFromJSON(Json::Value & options)
+void Analysis::loadExtraFromJSON(Json::Value & options)
 {
 	_titleDefault = options.get("titleDef", _titleDefault).asString();
 	//The rest is already taken in from Analyses::createFromJaspFileEntry

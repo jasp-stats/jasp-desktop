@@ -19,13 +19,11 @@
 #ifndef BOUNDQMLTABLEVIEW_H
 #define BOUNDQMLTABLEVIEW_H
 
-#include "analysis/boundqmlitem.h"
-#include "qmllistview.h"
-
-#include "listmodelmultinomialchi2test.h"
-
-#include "analysis/options/optionstable.h"
 #include <QObject>
+#include "qmllistview.h"
+#include "analysis/boundqmlitem.h"
+#include "listmodeltableviewbase.h"
+#include "analysis/options/optionstable.h"
 
 class BoundQMLTableView : public QMLListView, public BoundQMLItem
 {
@@ -34,27 +32,24 @@ class BoundQMLTableView : public QMLListView, public BoundQMLItem
 public:
 	BoundQMLTableView(QQuickItem* item, AnalysisForm* form);
 
-	void		bindTo(Option *option)						override;
-	ListModel*	model()										override { return _tableModel; }
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	Option*		boundTo()									override { return _boundTo; }
-	void		setUp()										override;
-
+	void		bindTo(Option *option)							override;
+	ListModel*	model()											override { return _tableModel; }
+	Option*		createOption()									override;
+	bool		isOptionValid(Option * option)					override;
+	bool		isJsonValid(const Json::Value & optionValue)	override;
+	Option*		boundTo()										override { return _boundTo; }
+	void		setUp()											override;
+	void		rScriptDoneHandler(const QString & result)		override;
 
 protected:
-	OptionsTable*					_boundTo;
-	ListModel*						_tableModel = nullptr;
-	ListModelMultinomialChi2Test*	_multinomialChi2TestModel = nullptr;
+	OptionsTable				* _boundTo		= nullptr;
+	ListModelTableViewBase		* _tableModel	= nullptr;
 	
 private slots:
 	void addColumnSlot();
 	void removeColumnSlot(int col);
 	void resetSlot();
 	void itemChangedSlot(int col, int row, QString value);
-	void modelChangedSlot();
-
 };
 
 #endif // BOUNDQMLTABLEVIEW_H

@@ -138,3 +138,32 @@ void DataSet::setSynchingData(bool newVal)
 
 	_synchingData = newVal;
 }
+
+int DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
+{
+	if(columnIndex >= columnCount()) return 0;
+
+	const Column & col = column(columnIndex);
+
+	int extraPad = 2;
+
+	switch(col.columnType())
+	{
+	case Column::ColumnTypeScale:
+		return 6 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + some padding because of dots and whatnot
+
+	case Column::ColumnTypeUnknown:
+		return 0;
+
+	default:
+	{
+		int tempVal = 0;
+
+		for(int labelIndex=0; labelIndex < static_cast<int>(col.labels().size()); labelIndex++)
+			tempVal = std::max(tempVal, static_cast<int>(col.labels().getLabelFromRow(labelIndex).length()));
+
+		return tempVal + extraPad;
+	}
+	}
+
+}

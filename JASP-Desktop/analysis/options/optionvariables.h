@@ -24,8 +24,8 @@
 class OptionVariables : public OptionTerms, public OptionVariableI
 {
 public:
-	OptionVariables() : OptionTerms(true, false) {}
-
+	OptionVariables()								: OptionTerms(true, false) {}
+	OptionVariables(std::vector<std::string> vars)	: OptionTerms(true, false) { setValue(vars); }
 
 	Json::Value					asJSON()												const	override;
 	void						set(const Json::Value& value)									override;

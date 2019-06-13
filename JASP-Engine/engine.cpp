@@ -233,16 +233,17 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 		throw std::runtime_error("Unexpected rCode message, current state is not idle (" + engineStateToString(_engineState) + ")");
 
 	_engineState		= engineState::rCode;
-	std::string rCode	= jsonRequest.get("rCode", "").asString();
-	int rCodeRequestId	= jsonRequest.get("requestId", -1).asInt();
+	std::string rCode	= jsonRequest.get("rCode",			"").asString();
+	int rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
+	bool whiteListed	= jsonRequest.get("whiteListed",	true).asBool();
 
-	runRCode(rCode, rCodeRequestId);
+	runRCode(rCode, rCodeRequestId, whiteListed);
 }
 
 // Evaluating arbitrary R code (as string) which returns a string
-void Engine::runRCode(const std::string & rCode, int rCodeRequestId)
+void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteListed)
 {
-	std::string rCodeResult = jaspRCPP_evalRCode(rCode.c_str());
+	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str()) : jaspRCPP_evalRCode(rCode.c_str());
 
 	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
 	else						sendRCodeResult(rCodeResult, rCodeRequestId);
@@ -471,18 +472,18 @@ void Engine::runAnalysis()
 
 void Engine::saveImage()
 {
-	std::string name	= _imageOptions.get("name",		Json::nullValue).asString();
-	std::string type	= _imageOptions.get("type",		Json::nullValue).asString();
-	int height			= _imageOptions.get("height",	Json::nullValue).asInt();
-	int width			= _imageOptions.get("width",	Json::nullValue).asInt();
-
-	std::string result = jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
+				width	= _imageOptions.get("width",	Json::nullValue).asInt();
+	std::string name	= _imageOptions.get("name",		Json::nullValue).asString(),
+				type	= _imageOptions.get("type",		Json::nullValue).asString(),
+				result	= jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 
 	_analysisStatus								= Status::complete;
 	_analysisResults["results"]["inputOptions"]	= _imageOptions;
 	_progress									= -1;
+
 	sendAnalysisResults();
 
 	_analysisStatus								= Status::empty;
@@ -491,16 +492,17 @@ void Engine::saveImage()
 
 void Engine::editImage()
 {
-	std::string name	= _imageOptions.get("name", Json::nullValue).asString();
-	std::string type	= _imageOptions.get("type", Json::nullValue).asString();
-	int height			= _imageOptions.get("height", Json::nullValue).asInt();
-	int width			= _imageOptions.get("width", Json::nullValue).asInt();
-	std::string result	= jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
+				width	= _imageOptions.get("width",	Json::nullValue).asInt();
+	std::string name	= _imageOptions.get("name",		Json::nullValue).asString(),
+				type	= _imageOptions.get("type",		Json::nullValue).asString(),
+				result	= jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 
 	_analysisStatus			= Status::complete;
 	_progress				= -1;
+
 	sendAnalysisResults();
 
 	_analysisStatus			= Status::empty;
@@ -515,6 +517,7 @@ void Engine::rewriteImages()
 	_analysisResults			= Json::Value();
 	_analysisResults["status"]	= analysisResultStatusToString(analysisResultStatus::imagesRewritten);
 	_progress					= -1;
+
 	sendAnalysisResults();
 
 	_analysisStatus				= Status::empty;

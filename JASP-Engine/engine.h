@@ -70,7 +70,7 @@ private: // Methods:
 	void runAnalysis();
 	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	Column::ColumnType computeColumnType);
 	void runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId);
-	void runRCode(			const std::string & rCode,				int rCodeRequestId);
+	void runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed);
 
 
 	void stopEngine();

@@ -68,7 +68,7 @@ public slots:
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 protected:
-	QMLListView*	_listView;
+	QMLListView*	_listView = nullptr;
 	QString			_itemType;
 	Terms			_terms;
 	bool			_areTermsVariables;

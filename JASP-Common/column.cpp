@@ -54,6 +54,11 @@ Labels &Column::labels()
 	return _labels;
 }
 
+const Labels & Column::labels() const
+{
+	return _labels;
+}
+
 bool Column::isEmptyValue(const string& val)
 {
 	if (val.empty()) return true;

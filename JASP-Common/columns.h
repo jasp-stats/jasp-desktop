@@ -45,11 +45,11 @@ public:
 
 	Columns(boost::interprocess::managed_shared_memory *mem) : _columnStore(mem->get_segment_manager()), _mem(mem) { }
 
-	size_t findIndexByName(std::string name) const;
-			Column& at(size_t index)		{ return _columnStore.at(index); }
-	const	Column& at(size_t index) const	{ return _columnStore.at(index); }
-
-	Column& get(std::string name)	{ return _columnStore[findIndexByName(name)]; }
+			size_t	findIndexByName(std::string name) const;
+			Column& at(size_t index)							{ return _columnStore.at(index); }
+	const	Column& at(size_t index)					const	{ return _columnStore.at(index); }
+			Column& get(std::string name)						{ return _columnStore[findIndexByName(name)]; }
+	const	Column& get(std::string name)				const	{ return _columnStore[findIndexByName(name)]; }
 
 	void removeColumn(size_t index);
 	void removeColumn(std::string name);

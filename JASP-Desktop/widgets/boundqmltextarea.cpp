@@ -169,7 +169,7 @@ void BoundQMLTextArea::checkSyntax()
 			.append(colNames)
 			.append(")");
 		
-		runRScript(checkCode);
+		runRScript(checkCode, false);
 	}
 	else
 	{

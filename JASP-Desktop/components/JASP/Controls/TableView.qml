@@ -17,13 +17,13 @@
 //
 
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Theme 1.0
-import QtQuick.Window 2.3
-import JASP 1.0
+import QtQuick			2.11
+import QtQuick.Controls	2.5
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Theme		1.0
+import QtQuick.Window	2.3
+import JASP				1.0
 
 JASPControl
 {
@@ -31,22 +31,35 @@ JASPControl
 
 	controlType:		"TableView"
 	activeFocusOnTab:	false
+	width:				implicitWidth
+	height:				implicitHeight
+	implicitWidth:		400
+	implicitHeight:		400
 
 	property var	source
-	property alias	syncModels:	tableView.source
+	property alias	syncModels:		tableView.source
 	property string	modelType
-	property string	itemType:	"string"
+	property string	itemType:		"string"
+	property string filter:			"rep(TRUE, rowcount)"		//Used by ListModelFilteredDataEntry
+	property string colName:		"data" //Used by ListModelFilteredDataEntry
 	property string	tableType
-	property alias	model:		theView.model
-	property var	validator:	(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
-	property int	colSelected: -1
-	property int	columnCount: 0
-	property int	rowCount: 0
+	property alias	model:			theView.model
+	property var	validator:		(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
+	property int	colSelected:	-1
+	property int	columnCount:	0
+	property int	rowCount:		0
 
-	signal addColumn();
-	signal removeColumn(int col);
-	signal reset();
+	signal reset()
+	signal addColumn()
 	signal itemChanged(int col, int row, string value)
+	signal removeColumn(int col)
+
+	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
+	signal filterSignal(string filter)
+	signal colNameSignal(string filter)
+
+	onFilterChanged:	filterSignal(tableView.filter)
+	onColNameChanged:	colNameSignal(tableView.colName)
 
 	function removeAColumn()
 	{
@@ -135,23 +148,37 @@ JASPControl
 				}
 			}
 
-			JASPDoubleValidator	{ id: intValidator; bottom: 0; decimals: 0 }
-			JASPDoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
-			RegExpValidator		{ id: stringValidator }
+			JASPDoubleValidator	{ id: intValidator;		bottom: 0; decimals: 0	}
+			JASPDoubleValidator { id: doubleValidator;	bottom: 0; decimals: 1	}
+			RegExpValidator		{ id: stringValidator							}
 
 			itemDelegate: Rectangle
 			{
+				Text
+				{
+					anchors.fill:	 	parent
+					font:				Theme.font
+					color:				Theme.textDisabled
+					visible:			!itemEditable
+					text:				itemText
+					padding:			Theme.jaspControlPadding
+					leftPadding:		Theme.labelSpacing
+					verticalAlignment:	Text.AlignVCenter
+				}
+
 				TextField
 				{
+					id:					textInput
 					fieldWidth:			parent.width
 					fieldHeight:		parent.height
-					value:				itemText;
+					value:				itemText
 					inputType:			tableView.itemType
 					useExternalBorder:	false
 					isBound:			false
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
+					visible:			itemEditable
 				}
 			}
 

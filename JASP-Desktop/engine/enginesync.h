@@ -49,7 +49,7 @@ public:
 
 public slots:
 	void sendFilter(	const QString & generatedFilter,	const QString & filter,			int requestID);
-	void sendRCode(		const QString & rCode,				int requestId);
+	void sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
 	void computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
 	void pause();
 	void resume();

@@ -334,7 +334,7 @@ string Labels::getValueFromKey(int key) const
 	return _getValueFromLabel(label);
 }
 
-string Labels::getValueFromRow(int row)
+string Labels::getValueFromRow(int row) const
 {
 	if (row >= (int)_labels.size())
 	{
@@ -350,14 +350,14 @@ Label& Labels::operator[](size_t index)
 	return _labels.at(index);
 }
 
-std::string Labels::getLabelFromRow(int row)
+std::string Labels::getLabelFromRow(int row) const
 {
 	if (row >= (int)_labels.size())
 	{
 		Log::log() << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		return "";
 	}
-	Label &label = _labels.at(row);
+	const Label & label = _labels.at(row);
 	return label.text();
 }
 

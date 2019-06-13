@@ -22,53 +22,66 @@
 #include "listmodel.h"
 #include "common.h"
 #include "data/datasetpackage.h"
+#include "analysis/options/optionstable.h"
+
+class BoundQMLTableView;
 
 ///This class makes sure the roles that DataSetView expects are implemented and returned.
 class ListModelTableViewBase : public ListModel
 {
 	Q_OBJECT
+	Q_PROPERTY(int columnCount	READ columnCount	NOTIFY columnCountChanged)
+	Q_PROPERTY(int rowCount		READ rowCount		NOTIFY rowCountChanged)
 
 public:
 	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString };
 
-	explicit						ListModelTableViewBase(QMLListView* parent, QString tableType) : ListModel(parent), _tableType(tableType) {}
+	explicit						ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType);
 
 	QHash<int, QByteArray>			roleNames() const override;
 
-				int					rowCount(const QModelIndex & = QModelIndex())										const	override {	return _rowNames.length();				}
+				int					rowCount(	const QModelIndex & = QModelIndex())									const	override {	return _rowNames.length();				}
 				int					columnCount(const QModelIndex & = QModelIndex())									const	override {	return static_cast<int>(_columnCount);	}
-				QVariant			data(const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
+				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
+				Qt::ItemFlags		flags(		const QModelIndex &index)												const	override;
 				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
-				Qt::ItemFlags		flags(const QModelIndex &index)														const	override;
 
-				int					getMaximumColumnWidthInCharacters(size_t columnIndex) const;
+	virtual		int					getMaximumColumnWidthInCharacters(size_t columnIndex)								const;
 
 				void				addColumn();
 				void				removeColumn(size_t index);
 				void				reset();
-				void				itemChanged(int column, int row, double value);
-				void				initValues(const std::vector<std::string>& colNames, std::vector<std::string>& levels, const std::vector<std::vector<double> >& values);
+	virtual		void				itemChanged(int column, int row, double value);
+				void				refreshModel() { return ListModel::refresh(); }
+	virtual		void				initValues(OptionsTable * bindHere)		{}
+	virtual		QString				getColName(size_t index)				{ return "Col " + QString::fromStdString(std::to_string(index)); }
+	virtual		OptionsTable *		createOption()							{ return new OptionsTable(); }
+	virtual		void				modelChangedSlot()						{}
 
-				const QVector<QVector<double> >&	values()	const { return _values;		}
-				const QVector<QString>&				rowNames()	const { return _rowNames;	}
-				const QVector<QString>&				colNames()	const { return _colNames;	}
+				const QVector<QVector<double> >	&	values()	const { return _values;		}
+				const QVector<QString>			&	rowNames()	const { return _rowNames;	}
+				const QVector<QString>			&	colNames()	const { return _colNames;	}
 
-public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
+				void runRScript(		const QString & script);
+	virtual		void rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
 
-	void refreshModel() { return ListModel::refresh(); }
+signals:
+	void columnCountChanged();
+	void rowCountChanged();
+	void itemChangedSignal(int column, int row, double value);
 
+protected:
 
-private:
-	QString	_getColName(size_t index);
+	BoundQMLTableView		*	_tableView		= nullptr;
+	OptionsTable			*	_boundTo		= nullptr;
 
-	size_t						_columnCount	= 0;
 	const size_t				_maxColumn		= 10;
 	QVector<QString>			_rowNames,
 								_colNames;
 	QVector<QVector<double> >	_values;
 	int							_rowSelected	= -1;
 	QString						_tableType;
+	size_t						_columnCount	= 0;
 };
 
 #endif // LISTMODELTABLEVIEWBASE_H

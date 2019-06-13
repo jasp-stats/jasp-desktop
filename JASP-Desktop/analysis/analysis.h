@@ -50,7 +50,7 @@ public:
 	void setStatus(Status status);
 
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
-	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "");
+	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
 
@@ -63,7 +63,7 @@ public:
 
 signals:
 	void				nameChanged();
-	void				sendRScript(			Analysis * analysis, QString script, QString controlName);
+	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
 	void				optionsChanged(			Analysis * analysis);
 	void				saveImageSignal(		Analysis * analysis);
 	void				editImageSignal(		Analysis * analysis);
@@ -130,7 +130,7 @@ public:
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
-			void		loadFromJSON(Json::Value & options);
+			void		loadExtraFromJSON(Json::Value & options);
 			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
 
 	static	Status		parseStatus(std::string name);

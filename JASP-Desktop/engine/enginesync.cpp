@@ -166,9 +166,9 @@ void EngineSync::sendFilter(const QString & generatedFilter, const QString & fil
 	}
 }
 
-void EngineSync::sendRCode(const QString & rCode, int requestId)
+void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion)
 {
-	_waitingScripts.push(new RScriptStore(requestId, rCode));
+	_waitingScripts.push(new RScriptStore(requestId, rCode, engineState::rCode, whiteListedVersion));
 }
 
 void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, Column::ColumnType columnType)
@@ -278,8 +278,6 @@ void EngineSync::ProcessAnalysisRequests()
 
 		return true;
 	});
-
-
 }
 
 QProcess * EngineSync::startSlaveProcess(int no)

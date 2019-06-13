@@ -194,7 +194,8 @@ public:
 
 	size_t rowCount() const { return _rowCount; }
 
-	Labels& labels();
+			Labels & labels();
+	const	Labels & labels() const;
 
 	Column &operator=(const Column &columns);
 
