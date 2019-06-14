@@ -1211,7 +1211,6 @@ Json::Value jaspTable::convertToJSON()
 	Json::Value obj		= jaspObject::convertToJSON();
 
 	obj["status"]					= _status;
-	obj["errorMessage"]				= _errorMessage;
 	obj["transposeTable"]			= _transposeTable;
 	obj["transposeWithOvertitle"]	= _transposeWithOvertitle;
 	obj["showSpecifiedColumnsOnly"]	= _showSpecifiedColumnsOnly;
@@ -1261,8 +1260,6 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	jaspObject::convertFromJSON_SetFields(in);
 
 	_status						= in.get("status",						"null").asString();
-	_error						= in.get("error",						"false").asBool();
-	_errorMessage				= in.get("errorMessage",				"null").asString();
 	_transposeTable				= in.get("transposeTable",				false).asBool();
 	_transposeWithOvertitle		= in.get("transposeWithOvertitle",		false).asBool();
 	_showSpecifiedColumnsOnly	= in.get("showSpecifiedColumnsOnly",	false).asBool();
