@@ -242,9 +242,10 @@ Json::Value jaspObject::convertToJSON()
 	obj["title"]		= _title;
 	obj["type"]			= jaspObjectTypeToString(_type);
 	obj["error"]        = _error;
+	obj["errorMessage"] = _errorMessage;
 	obj["warning"]		= _warning;
-	obj["position"]		= _position;
 	obj["warningSet"]	= _warningSet;
+	obj["position"]		= _position;
 	obj["citations"]	= _citations;
 	obj["messages"]		= Json::arrayValue;
 
@@ -265,12 +266,14 @@ Json::Value jaspObject::convertToJSON()
 
 void jaspObject::convertFromJSON_SetFields(Json::Value in)
 {
-	_name		= in.get("name",		"null").asString();
-	_title		= in.get("title",		"null").asString();
-	_warning	= in.get("warning",		"null").asString();
-	_warningSet	= in.get("warningSet",	false).asBool();
-	_position	= in.get("position",	JASPOBJECT_DEFAULT_POSITION).asInt();
-	_citations	= in.get("citations",	Json::arrayValue);
+	_name			= in.get("name",			"null").asString();
+	_title			= in.get("title",			"null").asString();
+	_error			= in.get("error",			false).asBool();
+	_errorMessage	= in.get("errorMessage",	"").asString();
+	_warning		= in.get("warning",			"null").asString();
+	_warningSet		= in.get("warningSet",		false).asBool();
+	_position		= in.get("position",		JASPOBJECT_DEFAULT_POSITION).asInt();
+	_citations		= in.get("citations",		Json::arrayValue);
 
 	_messages.clear();
 

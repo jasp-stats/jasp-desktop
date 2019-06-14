@@ -122,7 +122,6 @@ Json::Value jaspPlot::convertToJSON()
 	obj["width"]				= _width;
 	obj["height"]				= _height;
 	obj["status"]				= _status;
-	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
 	obj["environmentName"]		= _envName;
 
@@ -136,9 +135,7 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_aspectRatio	= in.get("aspectRatio",		0.0f).asDouble();
 	_width			= in.get("width",			-1).asInt();
 	_height			= in.get("height",			-1).asInt();
-	_error			= in.get("error",			"false").asBool();
 	_status			= in.get("status",			"complete").asString();
-	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
 	_envName		= in.get("environmentName",	_envName).asString();
 	
