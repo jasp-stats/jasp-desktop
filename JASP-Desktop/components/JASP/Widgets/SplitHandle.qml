@@ -36,7 +36,7 @@ Rectangle
 		delay:			Theme.toolTipDelay
 		font:			Theme.font
 		background:		Rectangle { color:	Theme.tooltipBackgroundColor }
-		visible:		!handleRoot.dragEnabled && hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
+		visible:		handleRoot.dragEnabled && hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
 		y:				hoverMouse.mouseY
 		x:				parent.width / 2
 	}

@@ -15,15 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.checkPackages <- function() {
+.expectedPackages <- function() 
+{
+  expected <- matrix(nrow=0, ncol=2, dimnames=list(NULL, c("Package", "Version")))
 
-	expected <- matrix(nrow=0, ncol=2, dimnames=list(NULL, c("Package", "Version")))
-	
-#--auto-generated
+  #--auto-generated
 	expected <- rbind(expected, c('BAS', '1.5.3'))
 	expected <- rbind(expected, c('BDgraph', '2.55'))
 	expected <- rbind(expected, c('BMS', '0.3.4'))
 	expected <- rbind(expected, c('BSDA', '1.2.0'))
+	expected <- rbind(expected, c('Bain', '0.1.3'))
 	expected <- rbind(expected, c('BayesFactor', '0.9.12-4.2'))
 	expected <- rbind(expected, c('Epi', '2.34'))
 	expected <- rbind(expected, c('Formula', '1.2-3'))
@@ -53,8 +54,10 @@
 	expected <- rbind(expected, c('SuppDists', '1.1-9.4'))
 	expected <- rbind(expected, c('TH.data', '1.0-10'))
 	expected <- rbind(expected, c('TTR', '0.23-4'))
+	expected <- rbind(expected, c('VGAM', '1.1-1'))
 	expected <- rbind(expected, c('XML', '3.98-1.19'))
 	expected <- rbind(expected, c('abind', '1.4-5'))
+	expected <- rbind(expected, c('abtest', '0.1.3'))
 	expected <- rbind(expected, c('acepack', '1.4.1'))
 	expected <- rbind(expected, c('afex', '0.23-0'))
 	expected <- rbind(expected, c('arm', '1.10-1'))
@@ -258,6 +261,7 @@
 	expected <- rbind(expected, c('shinyBS', '0.61'))
 	expected <- rbind(expected, c('shinyjs', '1.0'))
 	expected <- rbind(expected, c('smacof', '1.10-8'))
+	expected <- rbind(expected, c('sn', '1.5-4'))
 	expected <- rbind(expected, c('snow', '0.4-3'))
 	expected <- rbind(expected, c('sourcetools', '0.1.7'))
 	expected <- rbind(expected, c('sp', '1.3-1'))
@@ -296,40 +300,38 @@
 	expected <- rbind(expected, c('yaml', '2.2.0'))
 	expected <- rbind(expected, c('zip', '2.0.0'))
 	expected <- rbind(expected, c('zoo', '1.8-4'))
-#--auto-generated
+  #--auto-generated
 
-	expected.package.names <- expected[,1]
-	dimnames(expected) <- list(expected.package.names, c("Package", "Version"))
+  expected.package.names <- expected[,1]
+  dimnames(expected) <- list(expected.package.names, c("Package", "Version"))
 
-	installed <- installed.packages()
+  return(expected)
+}
+
+.checkPackages <- function() 
+{
+  expected                <- .expectedPackages()
+  expected.package.names  <- expected[,1]
+	installed               <- installed.packages()
 	installed.package.names <- dimnames(installed)[[1]]
+	messages                <- c()
 
-	messages <- c()
-
-	for (package.name in expected.package.names) {
-	
-		if (package.name %in% installed.package.names) {
-		
+	for (package.name in expected.package.names) 
+  {
+		if (package.name %in% installed.package.names) 
+    {
 			installed.version <- installed[package.name, "Version"]
 			expected.version  <- expected[package.name, "Version"]
 		
 			if (installed.version != expected.version)
 				messages <- c(messages, paste("Package ", package.name, " is not the correct version; expected: ", expected.version, ", installed: ", installed.version, sep=""))
 		
-		} else {
-		
-			messages <- c(messages, paste("Package ", package.name, " not installed!", sep=""))
-		}
-	
+		} 
+    else 		
+			messages <- c(messages, paste("Package ", package.name, " not installed!", sep=""))	
 	}
 	
-	if (length(messages) == 0) {
-	
-		list("All R-packages are up-to-date!")
-	
-	} else {
-	
-		list(official=FALSE, messages=messages)
-	}
+	if (length(messages) == 0)  return(list("All R-packages are up-to-date!"))
+	else                        return(list(official=FALSE, messages=messages))
 }
 

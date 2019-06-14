@@ -138,7 +138,7 @@ protected:
 	void buildNewLinesAndCreateNewItems();
 
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
-	float extraColumnWidth() { return _extraColumnItem == nullptr ? 0 : _extraColumnItem->width(); }
+	float extraColumnWidth() { return _extraColumnItem == nullptr ? 0 : 1 + _extraColumnItem->width(); }
 
 	QQuickItem * createTextItem(int row, int col);
 	void storeTextItem(int row, int col, bool cleanUp = true);

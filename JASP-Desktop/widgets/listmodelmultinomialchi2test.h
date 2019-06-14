@@ -19,56 +19,17 @@
 #ifndef LISTMODELMULTINOMIALCHI2TEST_H
 #define LISTMODELMULTINOMIALCHI2TEST_H
 
-#include "listmodel.h"
-#include "common.h"
-#include "data/datasetpackage.h"
+#include "listmodeltableviewbase.h"
 
 
-class ListModelMultinomialChi2Test : public ListModel
+class ListModelMultinomialChi2Test : public ListModelTableViewBase
 {
 	Q_OBJECT
 
 public:
 	enum class	specialRoles { active = Qt::UserRole, lines, maxColString };
 
-	explicit						ListModelMultinomialChi2Test(QMLListView* parent, QString tableType);
-
-	QHash<int, QByteArray>			roleNames() const override;
-
-				int					rowCount(const QModelIndex &parent = QModelIndex())									const	override;
-				int					columnCount(const QModelIndex &parent = QModelIndex())								const	override;
-				QVariant			data(const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
-				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
-				Qt::ItemFlags		flags(const QModelIndex &index)														const	override;
-
-				int					getMaximumColumnWidthInCharacters(size_t columnIndex) const;
-
-				void				addColumn();
-				void				removeColumn(size_t index);
-				void				reset();
-				void				itemChanged(int column, int row, double value);
-				const QVector<QVector<double> >& values() const { return _values; }
-				const QVector<QString>&	rowNames() const { return _rowNames; }
-				const QVector<QString>& colNames() const { return _colNames; }
-				void				initValues(const std::vector<std::string>& colNames, std::vector<std::string>& levels, const std::vector<std::vector<double> >& values);
-
-public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
-
-	void refreshModel() { return ListModel::refresh(); }
-
-
-private:
-	size_t						_columnCount = 0;
-	QVector<QString>			_rowNames;
-	QVector<QString>			_colNames;
-	QVector<QVector<double> >	_values;
-	int							_rowSelected = -1;
-	QString						_tableType;
-
-	QString	_getColName(size_t index);
-
-	const size_t	_maxColumn = 10;
+	explicit ListModelMultinomialChi2Test(QMLListView* parent, QString tableType) : ListModelTableViewBase(parent, tableType) {}
 };
 
 #endif // LISTMODELMULTINOMIALCHI2TEST_H

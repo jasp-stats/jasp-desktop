@@ -116,7 +116,7 @@ ABTestBayesian <- function(
         results[["descriptivesTable"]] <- descriptives
     }
 
-    if (options[["plotPriorAndPosterior"]] || options$plotSequentialAnalysis || options[["plotPriorOnly"]]) {
+    if (options[["plotPriorAndPosterior"]] || options[["plotSequentialAnalysis"]] || options[["plotPriorOnly"]]) {
 
         results[["inferentialPlots"]] <- list(title = "Inferential Plots", PosteriorPlot = plotPosterior,
                                               SequentialAnalysisPlot = plotSequentialAnalysis, PriorPlot = plotPrior)
@@ -218,7 +218,7 @@ ABTestBayesian <- function(
     }
 
     if (status$error) {
-        table[["error"]] <- list(errorType = "badData", errorMessage = status$error.message)
+        table[["error"]] <- list(errorType = "badData", errorMessage = status$errorMessage)
     }
 
     return(table)
@@ -266,9 +266,9 @@ ABTestBayesian <- function(
     #   options: a list of user options
     #
     # Return:
-    #   A status object containing "ready", "error", "error.message"
+    #   A status object containing "ready", "error", "errorMessage"
 
-    status <- list(ready = TRUE, error = FALSE, error.message = NULL)
+    status <- list(ready = TRUE, error = FALSE, errorMessage = "")
 
     if (options$n1 == "" || options$n2 == "" || options$y1 == "" || options$y2 == "") {
         status$ready <- FALSE
@@ -314,8 +314,8 @@ ABTestBayesian <- function(
                               posterior = TRUE, nsamples = options$numSamples))
 
     if (isTryError(ab)) {
-        status$ready <- FALSE
         status$error <- TRUE
+        status$errorMessage <- .extractErrorMessage(ab)
     }
 
     return(list(ab_obj = ab, status = status))
@@ -359,30 +359,41 @@ ABTestBayesian <- function(
     orNotEqualTo1Prob  <- options$orNotEqualTo1Prob / sum_logor
 
     output.rows <- list()
+    rowCount    <- 0
 
-    output.rows[[1]] <- list(
-        "Models" = "Log odds ratio = 0",
-        "BF" = .clean(1.00),
-        "P(M|data)" = ab_obj$post_prob[["H0"]],
-        "P(M)" = .clean(orEqualTo1Prob)
-    )
+    if (orEqualTo1Prob > 0) {
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
+            "Models" = "Log odds ratio = 0",
+            "BF" = .clean(1.00),
+            "P(M|data)" = ab_obj$post_prob[["H0"]],
+            "P(M)" = .clean(orEqualTo1Prob)
+        )
+    }
 
-    output.rows[[2]] <- list(
-        "Models" = "Log odds ratio > 0",
-        "BF" = .clean(ab_obj$bf[["bfplus0"]]),
-        "P(M|data)" = ab_obj$post_prob[["H+"]],
-        "P(M)" = .clean(orGreaterThan1Prob)
-    )
+    if (orGreaterThan1Prob > 0) {
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
+            "Models" = "Log odds ratio > 0",
+            "BF" = .clean(ab_obj$bf[["bfplus0"]]),
+            "P(M|data)" = ab_obj$post_prob[["H+"]],
+            "P(M)" = .clean(orGreaterThan1Prob)
+        )
+    }
 
-    output.rows[[3]] <- list(
-        "Models" = "Log odds ratio < 0",
-        "BF" = .clean(ab_obj$bf[["bfminus0"]]),
-        "P(M|data)" = ab_obj$post_prob[["H-"]],
-        "P(M)" = .clean(orLessThan1Prob)
-    )
+    if (orLessThan1Prob > 0) {
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
+            "Models" = "Log odds ratio < 0",
+            "BF" = .clean(ab_obj$bf[["bfminus0"]]),
+            "P(M|data)" = ab_obj$post_prob[["H-"]],
+            "P(M)" = .clean(orLessThan1Prob)
+        )
+    }
 
     if (orNotEqualTo1Prob > 0) {
-        output.rows[[4]] <- list(
+        rowCount = rowCount + 1
+        output.rows[[rowCount]] <- list(
             "Models" = "Log odds ratio ≠ 0",
             "BF" = .clean(ab_obj$bf[["bf10"]]),
             "P(M|data)" = ab_obj$post_prob[["H1"]],
@@ -391,34 +402,23 @@ ABTestBayesian <- function(
     }
 
     if (options$bayesFactorOrder == "bestModelTop") {
-        ordered <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
 
+        ordered       <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
         best_model_bf <- ordered[[1]]$BF
-        ordered[[1]]$BF <- .clean(ordered[[1]]$BF / best_model_bf)
-        ordered[[2]]$BF <- .clean(ordered[[2]]$BF / best_model_bf)
-        ordered[[3]]$BF <- .clean(ordered[[3]]$BF / best_model_bf)
-        if (orNotEqualTo1Prob > 0) {
-            ordered[[4]]$BF <- .clean(ordered[[4]]$BF / best_model_bf)
-        }
 
-        output.rows <- ordered
+        output.rows   <- list()
+        for (r in 1:rowCount) {
+            ordered[[r]]$BF  <-.clean(ordered[[r]]$BF / best_model_bf)
+        }
+        output.rows   <- ordered
+
     }
 
-    if (options$bayesFactorType == "BF01") {
-        output.rows[[1]]$BF <-.clean(1 / output.rows[[1]]$BF)
-        output.rows[[2]]$BF <-.clean(1 / output.rows[[2]]$BF)
-        output.rows[[3]]$BF <-.clean(1 / output.rows[[3]]$BF)
-        if (orNotEqualTo1Prob > 0) {
-            output.rows[[4]]$BF <-.clean(1 / output.rows[[4]]$BF)
-        }
-
-        # output.rows <- lapply(output.rows, function(x) {x$BF <- .clean(1 / x$BF); return(x)})
-    } else if (options$bayesFactorType == "LogBF10") {
-        output.rows[[1]]$BF <-.clean(base::log(output.rows[[1]]$BF))
-        output.rows[[2]]$BF <-.clean(base::log(output.rows[[2]]$BF))
-        output.rows[[3]]$BF <-.clean(base::log(output.rows[[3]]$BF))
-        if (orNotEqualTo1Prob > 0) {
-            output.rows[[4]]$BF <-.clean(base::log(output.rows[[4]]$BF))
+    for (r in 1:rowCount) {
+        if (options$bayesFactorType == "BF01") {
+            output.rows[[r]]$BF <- .clean(1 / output.rows[[r]]$BF)
+        } else if (options$bayesFactorType == "LogBF10") {
+            output.rows[[r]]$BF <- .clean(base::log(output.rows[[r]]$BF))
         }
     }
 
@@ -537,7 +537,7 @@ ABTestBayesian <- function(
     title <- "Prior and Posterior"
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
-    if (!(status$ready && perform == "run")) {
+    if (!(status$ready && perform == "run") || status$error) {
         emptyPlot[["title"]]  <- title
         emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)
@@ -664,7 +664,7 @@ ABTestBayesian <- function(
     title <- "Sequential Analysis"
     emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
 
-    if (!(status$ready && perform == "run")) {
+    if (!(status$ready && perform == "run") || status$error) {
         emptyPlot[["title"]]  <- title
         emptyPlot[["status"]] <- "waiting"
         return (emptyPlot)

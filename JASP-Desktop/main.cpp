@@ -27,13 +27,14 @@ const std::string	jaspExtension	= ".jasp",
 					saveArg			= "--save",
 					timeOutArg		= "--timeOut=";
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP)
 {
 	filePath	= "";
 	unitTest	= false,
 	dirTest		= false;
 	save		= false;
 	logToFile	= false;
+	hideJASP	= false;
 	timeOut		= 10;
 
 	bool letsExplainSomeThings = false;
@@ -46,6 +47,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 			save = true;
 		else if(args[arg] == "--logToFile")
 			logToFile = true;
+		else if(args[arg] == "--hide")
+			hideJASP = true;
 		else if(args[arg] == "--unitTestRecursive")
 		{
 			if(arg >= args.size() - 1)
@@ -117,10 +120,11 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 			else if(!(startsWith(remoteDebuggingPort) || startsWith(qmlJsDebug))) //Just making sure it isnt something else that should be allowed.
 			{
 				//if it isn't anything else it must be a file to open right?
+				// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
 
 				QFileInfo openMe(QString::fromStdString(args[arg]));
 
-				if(openMe.exists())
+				if(startsWith("https:") || startsWith("http:") || openMe.exists())
 					filePath = args[arg];
 				else
 				{
@@ -133,12 +137,13 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 	if(letsExplainSomeThings)
 	{
-		std::cout	<< "JASP can be started without arguments, or the following: { filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile } \n"
+		std::cout	<< "JASP can be started without arguments, or the following: { filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n"
 					<< "If a filename is supplied JASP will try to load it. \nIf --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
 					<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
 					<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
 					<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes.\n"
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
+					<< "If --hide is specified then JASP will not be shown during recursive testing.\n"
 					<< std::flush;
 
 		exit(1);
@@ -147,7 +152,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 #define SEPARATE_PROCESS
 
-void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & timeOut, int argc, char *argv[], bool save)
+void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & timeOut, int argc, char *argv[], bool save, bool hideJASP)
 {
 	const QString jaspExtension(".jasp");
 
@@ -162,7 +167,7 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 		//std::cout << "QDir dir: " << dir.path().toStdString() << " has " << files.size() << " subfiles!" << std::endl;
 
 		for(QFileInfo subFile : dir.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Files | QDir::Dirs))
-			recursiveFileOpener(subFile, failures, total, timeOut, argc, argv, save);
+			recursiveFileOpener(subFile, failures, total, timeOut, argc, argv, save, hideJASP);
 
 	}
 	else if(file.isFile())
@@ -188,7 +193,9 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 					arguments << "--save";
 
 				arguments << QString::fromStdString("--timeOut="+std::to_string(timeOut));
-				arguments << "-platform" << "minimal";
+
+				if(hideJASP)
+					arguments << "-platform" << "minimal";
 
 				std::cout << "Starting subJASP with args: " << arguments.join(' ').toStdString() << std::endl;
 				subJasp.setArguments(arguments);
@@ -232,10 +239,11 @@ int main(int argc, char *argv[])
 	bool		unitTest,
 				dirTest,
 				save,
-				logToFile;
+				logToFile,
+				hideJASP;
 	int			timeOut;
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP);
 
 	QString filePathQ(QString::fromStdString(filePath));
 
@@ -256,19 +264,30 @@ int main(int argc, char *argv[])
 #endif
 			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
-			int exitCode = a.exec();
-			JASPTIMER_STOP("JASP");
-			JASPTIMER_PRINTALL();
-			return exitCode;
+			try
+			{
+				int exitCode = a.exec();
+				JASPTIMER_STOP("JASP");
+				JASPTIMER_PRINTALL();
+				return exitCode;
+			}
+			catch(std::exception & e)
+			{
+				std::cerr << "Uncaught std::exception! Was: " << e.what() << "\n";
+				return -1;
+			}
+			catch(...)
+			{
+				std::cerr << "Uncaught ???\n";
+				return -1;
+			}
 		}
-	//	catch(std::exception & e) { std::cerr << "Expection ocurred: " << e.what() << std::endl;  return -1; }
-	//	catch(...) { return -1; }
 	else
 	{
 		int		failures	= 0,
 				total		= 0;
 
-		recursiveFileOpener(QFileInfo(filePathQ), failures, total, timeOut, argc, argv, save);
+		recursiveFileOpener(QFileInfo(filePathQ), failures, total, timeOut, argc, argv, save, hideJASP);
 
 		if(total == 0)
 		{

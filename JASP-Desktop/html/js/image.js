@@ -141,6 +141,11 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	_hoveringEndImage: function (e) {
 		this.resizer.setVisibility(false);
 	},
+	
+	reRender: function () {
+		this.$el.find(".jasp-image-image").remove();
+		this.render();
+	},
 
 	render: function () {
 		var html	= ''

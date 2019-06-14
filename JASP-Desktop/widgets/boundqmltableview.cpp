@@ -39,10 +39,10 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	if (modelType == "MultinomialChi2Model")
 		_tableModel	= _multinomialChi2TestModel = new ListModelMultinomialChi2Test(this, tableType);
 
-	QQuickItem::connect(item, SIGNAL(addColumn()), this, SLOT(addColumnSlot()));
-	QQuickItem::connect(item, SIGNAL(removeColumn(int)), this, SLOT(removeColumnSlot(int)));
-	QQuickItem::connect(item, SIGNAL(reset()), this, SLOT(resetSlot()));
-	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)), this, SLOT(itemChangedSlot(int, int, QString)));
+	QQuickItem::connect(item, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
+	QQuickItem::connect(item, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
+	QQuickItem::connect(item, SIGNAL(reset()),							this, SLOT(resetSlot()));
+	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)),	this, SLOT(itemChangedSlot(int, int, QString)));
 
 	connect(_tableModel, &ListModel::modelChanged, this, &BoundQMLTableView::modelChangedSlot);
 }
@@ -53,17 +53,18 @@ void BoundQMLTableView::bindTo(Option *option)
 
 	if (_boundTo != nullptr)
 	{
-		std::vector<Options *> _groups = _boundTo->value();
-		std::vector<std::vector<double> > values;
-		std::vector<std::string> levels;
-		std::vector<std::string> colNames;
+		std::vector<Options *>				_groups = _boundTo->value();
+		std::vector<std::vector<double> >	values;
+		std::vector<std::string>			levels,
+											colNames;
 
 		for (std::vector<Options *>::iterator it = _groups.begin(); it != _groups.end(); ++it) {
 
-			Options *newRow = static_cast<Options *>(*it);
-			OptionString *optionName = static_cast<OptionString *>(newRow->get("name"));
-			OptionVariables *optionLevels = static_cast<OptionVariables *>(newRow->get("levels"));
-			OptionDoubleArray *optionValues = static_cast<OptionDoubleArray *>(newRow->get("values"));
+			Options				* newRow		= static_cast<Options *>(*it);
+			OptionString		* optionName	= static_cast<OptionString *>(newRow->get("name"));
+			OptionVariables		* optionLevels	= static_cast<OptionVariables *>(newRow->get("levels"));
+			OptionDoubleArray	* optionValues	= static_cast<OptionDoubleArray *>(newRow->get("values"));
+
 			colNames.push_back(optionName->value());
 			levels = optionLevels->variables();
 			values.push_back(optionValues->value());
@@ -72,8 +73,8 @@ void BoundQMLTableView::bindTo(Option *option)
 		if (_multinomialChi2TestModel)
 			_multinomialChi2TestModel->initValues(colNames, levels, values);
 
-		_item->setProperty("columnCount", (int)(colNames.size()));
-		_item->setProperty("rowCount", (int)(levels.size()));
+		_item->setProperty("columnCount",	(int)(colNames.size()));
+		_item->setProperty("rowCount",		(int)(levels.size()));
 
 	}
 	else
@@ -83,10 +84,11 @@ void BoundQMLTableView::bindTo(Option *option)
 
 Option *BoundQMLTableView::createOption()
 {
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
+	Options* templote =		new Options();
+	templote->add("name",	new OptionString());
 	templote->add("levels", new OptionVariables());
 	templote->add("values", new OptionDoubleArray());
+
 	return new OptionsTable(templote);
 }
 
@@ -127,12 +129,11 @@ void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)
 {
 	if (_multinomialChi2TestModel)
 	{
-		bool ok = false;
-		double val = value.toDouble(&ok);
-		if (ok)
-			_multinomialChi2TestModel->itemChanged(col, row, val);
-		else
-			QTimer::singleShot(0, _multinomialChi2TestModel, SLOT(refreshModel()));
+		bool	ok	= false;
+		double	val = value.toDouble(&ok);
+
+		if (ok)	_multinomialChi2TestModel->itemChanged(col, row, val);
+		else	QTimer::singleShot(0, _multinomialChi2TestModel, SLOT(refreshModel()));
 	}
 }
 
@@ -140,9 +141,9 @@ void BoundQMLTableView::modelChangedSlot()
 {
 	if (_multinomialChi2TestModel)
 	{
-		const QVector<QVector<double> >& allValues = _multinomialChi2TestModel->values();
-		const QVector<QString>& colNames = _multinomialChi2TestModel->colNames();
-		const QVector<QString>& rowNames = _multinomialChi2TestModel->rowNames();
+		const QVector<QVector<double> >	& allValues = _multinomialChi2TestModel->values();
+		const QVector<QString>			& colNames	= _multinomialChi2TestModel->colNames();
+		const QVector<QString>			& rowNames	= _multinomialChi2TestModel->rowNames();
 
 		std::vector<std::string> stdlevels;
 		for (const QString& rowName : rowNames)
@@ -154,9 +155,11 @@ void BoundQMLTableView::modelChangedSlot()
 		{
 			Options* options = new Options();
 			options->add("name", new OptionString(colName.toStdString()));
+
 			OptionVariables* levels = new OptionVariables();
 			levels->setValue(stdlevels);
 			options->add("levels", levels);
+
 			OptionDoubleArray* values = new OptionDoubleArray();
 			values->setValue(allValues[colIndex].toStdVector());
 			options->add("values", values);

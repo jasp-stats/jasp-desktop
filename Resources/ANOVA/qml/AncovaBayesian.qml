@@ -179,10 +179,10 @@ Form
 		
 		VariablesForm
 		{
-			AvailableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors")          ; source: "fixedFactors" }
-			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis")  ; singleVariable: true }
-			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate Lines")	; singleVariable: true }
-			AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots")   ; singleVariable: true }
+            AvailableVariablesList { name: "descriptivePlotsVariables";	source: ["fixedFactors", "covariates"] }
+            AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis")  ; singleVariable: true}
+            AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate Lines")	; singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
+            AssignedVariablesList { name: "plotSeparatePlots";			title: qsTr("Separate Plots")   ; singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 		}
 		
 		Group

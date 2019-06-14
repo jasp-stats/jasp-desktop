@@ -173,6 +173,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
+	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
 
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
@@ -226,6 +227,19 @@ void Analyses::reload(Analysis *analysis)
 	}
 	else
 		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+}
+
+
+bool Analyses::allCreatedInCurrentVersion() const
+{
+	for (auto idAnalysis : _analysisMap)
+	{
+		Analysis* analysis = idAnalysis.second;
+		if (analysis->version() != AppInfo::version)
+			return false;
+	}
+	
+	return true;
 }
 
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
@@ -494,11 +508,7 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
 
 	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
-	{
-		int id = _orderedIds[_currentAnalysisIndex];
-		emit analysisNameSelected(QString::fromStdString(get(id)->name()));
 		setVisible(true);
-	}
 	else
 		emit analysesUnselected();
 }
@@ -520,7 +530,8 @@ void Analyses::analysisIdSelectedInResults(int id)
 
 void Analyses::analysesUnselectedInResults()
 {
-	setCurrentAnalysisIndex(-1);
+	if (count() > 1)
+		setCurrentAnalysisIndex(-1);
 }
 
 void Analyses::selectAnalysisAtRow(int row)
@@ -560,7 +571,7 @@ void Analyses::setVisible(bool visible)
 	}
 }
 
-void Analyses::analysisTitleChangedFromResults(int id, QString title)
+void Analyses::analysisTitleChangedInResults(int id, QString title)
 {
 	Analysis * analysis = get(id);
 

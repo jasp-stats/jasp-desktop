@@ -32,10 +32,10 @@ Form
 		marginBetweenVariablesLists	: 15
 
 		AvailableVariablesList	{ name: "allVariablesList" }
-		AssignedVariablesList	{ name: "y1";	title: qsTr("Successes Group 1");	singleVariable: true;	suggestedColumns: ["ordinal", "scale"] }
-		AssignedVariablesList	{ name: "n1";	title: qsTr("Sample Size Group 1");	singleVariable: true;	suggestedColumns: ["ordinal", "scale"] }
-		AssignedVariablesList	{ name: "y2";	title: qsTr("Successes Group 2");	singleVariable: true;	suggestedColumns: ["ordinal", "scale"] }
-		AssignedVariablesList	{ name: "n2";	title: qsTr("Sample Size Group 2");	singleVariable: true;	suggestedColumns: ["ordinal", "scale"] }
+        AssignedVariablesList	{ name: "y1";	title: qsTr("Successes Group 1");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+        AssignedVariablesList	{ name: "n1";	title: qsTr("Sample Size Group 1");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+        AssignedVariablesList	{ name: "y2";	title: qsTr("Successes Group 2");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+        AssignedVariablesList	{ name: "n2";	title: qsTr("Sample Size Group 2");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
 	}
 
 	ColumnLayout
@@ -50,14 +50,10 @@ Form
 			DoubleField { label: qsTr("σ:"); name: "normal_sigma";	defaultValue: 1 }
 		}
 
-		Group
+		CheckBox
 		{
-			title	: qsTr("Data")
-			CheckBox
-			{
-				name	: "descriptives";
-				label	: qsTr("Descriptives")
-			}
+			name	: "descriptives";
+			label	: qsTr("Descriptives")
 		}
 	}
 
@@ -110,7 +106,7 @@ Form
 	}
 
 
-	ExpanderButton
+	Section
 	{
 		title	: qsTr("Advanced Options")
 
@@ -131,7 +127,7 @@ Form
 			Group
 			{
 				title: qsTr("Sampling")
-				IntegerField { name: "numSamples"; label: qsTr("No. samples"); defaultValue: 10000; min: 1; fieldWidth: 50; }
+				IntegerField { name: "numSamples"; label: qsTr("No. samples"); defaultValue: 10000; min: 100; fieldWidth: 50; }
 			}
 		}
 	}

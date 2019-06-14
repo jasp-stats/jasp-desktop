@@ -133,7 +133,7 @@ Item
 				CheckBox
 				{
 					id:					customThreshold
-					label:				qsTr("Import threshold between Nominal or Scale")
+					label:				qsTr("Import threshold between Categorical or Scale")
 					checked:			preferencesModel.customThresholdScale
 					onCheckedChanged:	preferencesModel.customThresholdScale = checked
 					ToolTip.delay:		500

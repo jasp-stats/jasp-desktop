@@ -192,6 +192,15 @@ Descriptives Plot:
 ### R Packages
 ---
 - BayesFactor
+- colorspace
+- ggplot2
+- KernSmooth
+- matrixStats
+- ply
+- stats
+- stringi
+- stringr
+- utils
 
 ### Example
 ---

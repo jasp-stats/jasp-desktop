@@ -216,6 +216,8 @@ The independent variable / repeated measures factor on the x-axis and dependent 
 ### R-packages
 ---
 - afex
+- boot
 - emmeans
-- PMCMRplus
+- ggplot2
+- plyr
 - stats

@@ -93,6 +93,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".readFilterDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
 	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
 	rInside[".createCaptureConnection"]		= Rcpp::InternalFunction(&jaspRCPP_CreateCaptureConnection);
+	rInside[".postProcessLibraryModule"]	= Rcpp::InternalFunction(&jaspRCPP_postProcessLocalPackageInstall);
 	rInside[".requestTempFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
 	rInside[".requestTempRootNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rInside[".setColumnDataAsNominalText"]	= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominalText);
@@ -910,14 +911,38 @@ RInside::Proxy jaspRCPP_parseEval(const std::string & code)
 	return returnthis;
 }
 
-///This function runs *code* in a separate instance of R, because the output of install.packages (and perhaps other functions) cannot be captured through the outputsink...
-SEXP jaspRCPP_RunSeparateR(SEXP code)
+std::string _jaspRCPP_System(std::string cmd)
 {
 	const char *root, *relativePath;
 
 	if (!requestTempFileNameCB("log", &root, &relativePath))
 		Rf_error("Cannot open output file for separate R!");
 
+	std::string path = std::string(root) + "/" + relativePath;
+
+	cmd += " > " + path + " 2>&1 ";
+
+#ifdef WIN32
+	cmd = '"' + cmd + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
+#endif
+
+	system(cmd.c_str());
+
+	std::ifstream readLog(path);
+	std::stringstream out;
+
+	if(readLog)
+	{
+		out << readLog.rdbuf();
+		readLog.close();
+	}
+
+	return out.str();
+}
+
+///This function runs *code* in a separate instance of R, because the output of install.packages (and perhaps other functions) cannot be captured through the outputsink...
+SEXP jaspRCPP_RunSeparateR(SEXP code)
+{
 	auto bendSlashes = [](std::string input)
 	{
 #ifdef WIN32
@@ -934,33 +959,69 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 
 	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/Rscript\"");
 
-
-	std::string codestr = Rcpp::as<std::string>(code);
-
-
-	std::string path = std::string(root) + "/" + relativePath;
-	std::string command = R + " -e \"" + codestr + "\" > " + path + " 2>&1 ";
-#ifdef WIN32
-	command = '"' + command + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
-#endif
+	std::string codestr = Rcpp::as<std::string>(code),
+				command = R + " -e \"" + codestr + "\"";
 
 	jaspRCPP_parseEvalPreface(command);
 
-	system(command.c_str());
+	std::string out = _jaspRCPP_System(command);
 
-	std::ifstream readLog(path);
-	std::stringstream out;
+	jaspRCPP_logString(out + "\n");
 
-	if(readLog)
-	{
-		out << readLog.rdbuf();
-		readLog.close();
-	}
-
-	jaspRCPP_logString(out.str() + "\n");
-
-	return Rcpp::wrap(out.str());
+	return Rcpp::wrap(out);
 }
+
+void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames)
+{
+#ifdef __APPLE__
+	Rcpp::CharacterVector libDirs = moduleLibFileNames;
+
+	for(Rcpp::String libDirStr : libDirs)
+	{
+		std::string libDir		= stringUtils::replaceBy(libDirStr, " ", "\\ "),
+					otoolCmd	= "otool -L " + libDir,
+					otoolOut	= _jaspRCPP_System(otoolCmd);
+		auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
+
+		/*std::cout << "jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir << " and found this output:" << std::endl;
+
+		for(const auto & line : otoolLines)
+			std::cout << line << std::endl;*/
+
+		//ok otoolLines[1] represents the "id" of the lib but we do not need to change it because it probably points directly back to itself. The other lines however we should change
+
+		for(size_t i=2; i<otoolLines.size(); i++)
+		{
+			std::string line = otoolLines[i];
+			line = line.substr(0, line.find_first_of('('));
+			stringUtils::trim(line);
+			line = stringUtils::replaceBy(line, " ", "\\ ");
+
+			const std::string libStart = "/Library/Frameworks/R.framework/Versions/";
+
+			if(stringUtils::startsWith(line, libStart))
+			{
+
+				std::string newLine = stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/" + line.substr(libStart.size()), " ", "\\ "),
+							cmd		= "install_name_tool -change " + line + " " + newLine + " " + libDir;
+
+				_jaspRCPP_System(cmd);
+			}
+			else if(stringUtils::startsWith(line, "/opt/") || stringUtils::startsWith(line, "/usr/local/"))
+			{
+				std::string baseName = line.substr(line.find_last_of('/') == std::string::npos ? 0 : line.find_last_of('/') + 1);
+
+				std::string newLine = stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/" + std::to_string(CURRENT_R_VERSION) + "/Resources/lib/" + baseName, " ", "\\ "),
+							cmd		= "install_name_tool -change " + line + " " + newLine + " " + libDir;
+
+				_jaspRCPP_System(cmd);
+			}
+		}
+	}
+#endif
+}
+
+// ------------------- Below here be dragons -------------------- //
 
 extern "C" {
 //We need to do the following crazy defines to make sure the header actually gets accepted by the compiler...

@@ -31,7 +31,7 @@ Form
 		AssignedVariablesList { name: "dependent";	title: qsTr("Effect Size"); singleVariable: true; suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("Effect Size Standard Error"); singleVariable: true; suggestedColumns: ["scale"] }
 		DropDown { name: "method"; label: qsTr("Method"); currentIndex: 2; values: [ "Fixed Effects", "Maximum Likelihood", "Restricted ML", "DerSimonian-Laird", "Hedges", "Hunter-Schmidt", "Sidik-Jonkman", "Empirical Bayes", "Paule-Mandel"]; }
-		AssignedVariablesList { name: "studyLabels";	title: qsTr("Study Labels"); singleVariable: true; suggestedColumns: ["nominal","ordinal"] }
+        AssignedVariablesList { name: "studyLabels";	title: qsTr("Study Labels"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates"); singleVariable: false; suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); singleVariable: false; suggestedColumns: ["ordinal", "nominal"] }
 	}

@@ -48,6 +48,7 @@ void BoundQMLTextInput::initTextInput()
 	else if (type == "number")			_inputType = TextInputType::NumberInputType;
 	else if (type == "percent")			_inputType = TextInputType::PercentIntputType;
 	else if (type == "integerArray")	_inputType = TextInputType::IntegerArrayInputType;
+	else if (type == "doubleArray")		_inputType = TextInputType::DoubleArrayInputType;
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
 	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
 	else								_inputType = TextInputType::StringInputType;
@@ -82,6 +83,22 @@ QString BoundQMLTextInput::_getIntegerArrayValue()
 			value += ",";
 		first = false;
 		value += QString::number(intValue);
+	}
+
+	return value;
+}
+
+QString BoundQMLTextInput::_getDoubleArrayValue()
+{
+	QString value;
+	vector<double> doubleValues = _doubleArray->value();
+	bool first  = true;
+	for (double doubleValue : doubleValues)
+	{
+		if (!first)
+			value += ",";
+		first = false;
+		value += QString::number(doubleValue);
 	}
 
 	return value;
@@ -125,6 +142,14 @@ void BoundQMLTextInput::bindTo(Option *option)
 		_value = _getIntegerArrayValue();
 		break;
 
+
+	case TextInputType::DoubleArrayInputType:
+		_doubleArray = dynamic_cast<OptionDoubleArray *>(option);
+		_option = _doubleArray;
+		_value = _getDoubleArrayValue();
+		break;
+
+
 	case TextInputType::ComputedColumnType:
 	case TextInputType::AddColumnType:
 		_option = _computedColumn = dynamic_cast<OptionComputedColumn *>(option);
@@ -150,6 +175,7 @@ Option *BoundQMLTextInput::createOption()
 	case TextInputType::NumberInputType:		option = new OptionNumber();			break;
 	case TextInputType::PercentIntputType:		option = new OptionNumber();			break;
 	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();		break;
+	case TextInputType::DoubleArrayInputType:	option = new OptionDoubleArray();		break;
 	case TextInputType::ComputedColumnType:
 	{
 		option = new OptionComputedColumn();
@@ -182,6 +208,7 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::NumberInputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
 	case TextInputType::PercentIntputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
 	case TextInputType::IntegerArrayInputType:	return dynamic_cast<OptionIntegerArray*>(option)	!= nullptr;
+	case TextInputType::DoubleArrayInputType:	return dynamic_cast<OptionDoubleArray*>(option)	!= nullptr;
 	case TextInputType::AddColumnType:
 	case TextInputType::ComputedColumnType:		return dynamic_cast<OptionComputedColumn*>(option)	!= nullptr;
 	case TextInputType::StringInputType:
@@ -212,6 +239,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	case TextInputType::NumberInputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
 	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
 	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::DoubleArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::StringInputType:
 	default:									valid = (optionValue.type() == Json::stringValue);			break;
 	}
@@ -260,6 +288,24 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 		dynamic_cast<OptionIntegerArray*>(option)->setValue(values);
 		break;
 	}
+
+	case TextInputType::DoubleArrayInputType:
+	{
+		text.replace(QString(" "), QString(","));
+		std::vector<double> values;
+		QStringList chunks = text.split(QChar(','), QString::SkipEmptyParts);
+
+		for (QString &chunk: chunks)
+		{
+			bool ok;
+			double value = chunk.toDouble(&ok);
+			if (ok)
+				values.push_back(value);
+		}
+		dynamic_cast<OptionDoubleArray*>(option)->setValue(values);
+		break;
+	}
+
 	case TextInputType::ComputedColumnType:
 	case TextInputType::AddColumnType:
 		dynamic_cast<OptionComputedColumn*>(option)->setValue(text.toStdString());

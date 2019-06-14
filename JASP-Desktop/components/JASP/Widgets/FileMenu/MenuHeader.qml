@@ -24,6 +24,8 @@ Item
 		top:				!anchorMe ? undefined : parent.top
 		left:				!anchorMe ? undefined : parent.left
 		right:				!anchorMe ? undefined : parent.right
+		leftMargin:			!anchorMe ? undefined : Theme.generalMenuMargin
+		rightMargin:		!anchorMe ? undefined : Theme.generalMenuMargin
 	}
 
 	Label
@@ -35,7 +37,7 @@ Item
 		{
 			verticalCenter:	parent.verticalCenter
 			left:			parent.left
-			margins:		Theme.generalAnchorMargin
+			//margins:		Theme.generalAnchorMargin
 		}
 		font:				Theme.fontGroupTitle
 		color:				Theme.black

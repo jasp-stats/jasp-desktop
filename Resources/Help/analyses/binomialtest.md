@@ -41,3 +41,8 @@ For example, if the two-sided *p*-value equals .05, the Vovk-Sellke MPR equals 2
 ---
 - Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p values for testing precise null hypotheses. *The American Statistician, 55*(1), 62-71.
 - Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). *Introduction to the practice of statistics (7th ed.)*. New York, NY: W. H. Freeman and Company.
+
+### R Packages
+---
+- ggplot2
+- stats

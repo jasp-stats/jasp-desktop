@@ -62,8 +62,15 @@ manageTestPlots <- function(analysis = NULL) {
     analysis <- .validateAnalysis(analysis)
     analysis <- paste0("^", analysis, "$")
   }
+  
+  oldLibPaths <- .libPaths()
+  .libPaths(c(.getPkgOption("pkgs.dir"), .libPaths()))
+  on.exit({
+    .libPaths(oldLibPaths)
+    unloadNamespace("SomePkg") # unload fake pkg in JASP unit tests, which is needed to run vdiffr
+  }) 
+
   testDir <- .getPkgOption("tests.dir")
-  on.exit(unloadNamespace("SomePkg")) # unload fake pkg in JASP unit tests, which is needed to run vdiffr
   vdiffr::manage_cases(testDir, analysis)
 }
 

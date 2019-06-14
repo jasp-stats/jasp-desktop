@@ -43,3 +43,71 @@ test_that("Main tables results match", {
         label = "descriptivesTable"
     )
 })
+
+test_that("Coefficient plots match", {
+    set.seed(1)
+    options <- jasptools::analysisOptions("RegressionLinearBayesian")
+    options$dependent <- "contNormal"
+    options$covariates <- list("contGamma", "debCollin1", "contcor2")
+    options$modelTerms <- list(
+        list(components="contGamma", isNuisance=FALSE),
+        list(components="debCollin1", isNuisance=FALSE),
+        list(components="contcor2", isNuisance=FALSE)
+    )
+    options$plotInclusionProbabilities <- TRUE
+    options$plotCoefficientsPosterior <- TRUE
+    
+    results <- jasptools::run("RegressionLinearBayesian", "test.csv", options)
+    
+    inclusionProbabilities <- results[['state']][['figures']][[1]][["obj"]]
+    expect_equal_plots(inclusionProbabilities, "inclusionProbabilities", "RegressionLinearBayesian")
+    
+    posteriorCoefficients <- results[['state']][['figures']][[2]][["obj"]]
+    expect_equal_plots(posteriorCoefficients, "posteriorCoefficients", "RegressionLinearBayesian")
+})
+
+test_that("Residuals plots match", {
+    set.seed(1)
+    options <- jasptools::analysisOptions("RegressionLinearBayesian")
+    options$dependent <- "contNormal"
+    options$covariates <- list("contGamma")
+    options$modelTerms <- list(
+        list(components="contGamma", isNuisance=FALSE)
+    )
+    options$plotResidualsVsFitted <- TRUE
+    options$plotQQplot <- TRUE
+    
+    results <- jasptools::run("RegressionLinearBayesian", "test.csv", options)
+    
+    residualsVsFitted <- results[['state']][['figures']][[1]][["obj"]]
+    expect_equal_plots(residualsVsFitted, "residualsVsFitted", "RegressionLinearBayesian")
+    
+    qqPlot <- results[['state']][['figures']][[2]][["obj"]]
+    expect_equal_plots(qqPlot, "qqPlot", "RegressionLinearBayesian")
+})
+
+test_that("Models plots match", {
+    set.seed(1)
+    options <- jasptools::analysisOptions("RegressionLinearBayesian")
+    options$dependent <- "contNormal"
+    options$covariates <- list("contGamma", "contExpon", "contcor1")
+    options$modelTerms <- list(
+        list(components="contGamma", isNuisance=FALSE),
+        list(components="contExpon", isNuisance=FALSE),
+        list(components="contcor1", isNuisance=FALSE)
+    )
+    options$plotLogPosteriorOdds <- TRUE
+    options$plotModelComplexity <- TRUE
+    options$plotModelProbabilities <- TRUE
+    
+    results <- jasptools::run("RegressionLinearBayesian", "test.csv", options)
+    
+    logPosteriorOdds <- results[['state']][['figures']][[1]][["obj"]]
+    expect_equal_plots(logPosteriorOdds, "logPosteriorOdds", "RegressionLinearBayesian")
+    
+    modelProbabilities <- results[['state']][['figures']][[2]][["obj"]]
+    expect_equal_plots(modelProbabilities, "modelProbabilities", "RegressionLinearBayesian")
+        
+    modelComplexity <- results[['state']][['figures']][[3]][["obj"]]
+    expect_equal_plots(modelComplexity, "modelComplexity", "RegressionLinearBayesian")
+})

@@ -35,8 +35,8 @@ Form
 		marginBetweenVariablesLists: 15
 		AvailableVariablesList {				name: "allVariablesList" }
 		AssignedVariablesList {					name: "factor";		title: qsTr("Factor");			singleVariable: true; suggestedColumns: ["ordinal", "nominal"]	}
-		AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; suggestedColumns: ["ordinal", "scale"]	}
-		AssignedVariablesList {	id: exProbVar;	name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; suggestedColumns: ["ordinal", "scale"]	}
+        AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
+        AssignedVariablesList {	id: exProbVar;	name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
 	}
 
 	RadioButtonGroup
@@ -76,7 +76,7 @@ Form
 				CIField {	name: "confidenceIntervalInterval"	}
 			}
 		}
-		CheckBox {	name: "VovkSellkeMPR";	label: qsTr("Vovk-Dellke maximum p-ratio")		}
+        CheckBox {	name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")		}
 	}
 
 	ColumnLayout

@@ -161,7 +161,7 @@ void jaspResults::checkForAnalysisChanged()
 	if((*_ipccPollFunc)())
 	{
 		setStatus("changed");
-	  static Rcpp::Function stop("stop");
+		static Rcpp::Function stop("stop");
 		stop(analysisChangedErrorMessage);
 	}
 }

@@ -88,3 +88,10 @@ Posterior summaries of Coefficients.
 ---
 - Clyde, M. A. (2017). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.4.7)[Computer software].
 - Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. *Journal of Computational and Graphical Statistics, 20*, 80-101.
+
+### R Packages
+---
+- BAS
+- ggplot2
+- scales
+- stats

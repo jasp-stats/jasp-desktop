@@ -12,7 +12,7 @@ class ActionButtons : public QAbstractListModel
 	Q_PROPERTY(FileOperation selectedAction READ selectedAction WRITE setSelectedAction NOTIFY selectedActionChanged)
 
 public:
-	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, About};
+	enum FileOperation {None = 0, Open, Save, SaveAs, ExportResults, ExportData, SyncData, Close, Preferences, About};
 	Q_ENUM(FileOperation)
 
 	struct DataRow { FileOperation operation; QString name; bool enabled; std::set<ResourceButtons::ButtonType> resourceButtons; };
@@ -45,7 +45,7 @@ public slots:
 private:
 	std::vector<DataRow>				_data;
 	std::map<FileOperation, size_t>		_opToIndex;
-	FileOperation						_selected = Open;
+	FileOperation						_selected = None;
 };
 
 #endif // ACTIONBUTTONS_H

@@ -44,10 +44,20 @@ $(document).ready(function () {
 		analyses.reRender();
 	}
 
-	window.modifySelectedImage = function(id, image) {
-		var jaspWidget = analyses.getAnalysis(id);
-		jaspWidget.imageToEdit = image;
-		jaspWidget.render();
+	window.refreshEditedImage = function(id, results) {
+		var analysis = analyses.getAnalysis(id);
+		if (analysis !== undefined) {
+			if (results.error && results.resized)
+				analysis.undoImageResize();
+			else
+				analysis.insertNewImage();
+		}
+	}
+	
+	window.cancelImageEdit = function(id) {
+		var analysis = analyses.getAnalysis(id);
+		if (analysis !== undefined)
+			analysis.undoImageResize();
 	}
 
 	window.select = function (id) {
@@ -68,10 +78,10 @@ $(document).ready(function () {
 	}
 
 	window.changeTitle = function(id, title) {
-		var selectedAnalysis = analyses.getAnalysis(id);
-		if (selectedAnalysis !== undefined) {
-			selectedAnalysis.toolbar.setTitle(title);
-			selectedAnalysis.toolbar.render();
+		var analysis = analyses.getAnalysis(id);
+		if (analysis !== undefined) {
+			analysis.toolbar.setTitle(title);
+			analysis.toolbar.render();
 		}
 	}
 

@@ -56,3 +56,11 @@ References
 - Kline, R. B. (2015). Principles and practice of structural equation modeling. _Guilford publications_.
 - Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. _Journal of Statistical Software, 48_(2), 1-36. URL www.jstatsoft.org/v48/i02/
 - Veen, D., Little, T.D. & van de Schoot, R. (2018). Effects Coding as Unbiased Alternative to Scale Scores. (manuscript under review).
+
+### R Packages
+---
+- ggplot2
+- lavaan
+- reshape2
+- semPlot
+- stats

@@ -808,6 +808,8 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		        descriptivesPlot[["width"]] <- options$plotWidth
 		        descriptivesPlot[["height"]] <- options$plotHeight
 		        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
+
+			dataset <- na.omit(dataset)
 			
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[variableIndex]),
 				groupvars = .v(options$groupingVariable), conf.interval = options$descriptivesPlotsConfidenceInterval,

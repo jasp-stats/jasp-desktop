@@ -27,8 +27,8 @@ Form {
 	VariablesForm
 	{
 		AvailableVariablesList	{ name: "allVariablesList" }
-		AssignedVariablesList	{ name: "dependent";	title: qsTr("Dependent Variable");		suggestedColumns: ["scale"];	singleVariable: true	}
-		AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				suggestedColumns: ["scale"]								}
+        AssignedVariablesList	{ name: "dependent";	title: qsTr("Dependent Variable");		suggestedColumns: ["scale"];	singleVariable: true	}
+        AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				suggestedColumns: ["scale"];    allowedColumns: ["scale"]   }
 		AssignedVariablesList	{ name: "wlsWeights";	title: qsTr("WLS Weights (optional)");	suggestedColumns: ["scale"];	singleVariable: true	}
 	}
 	
@@ -39,7 +39,14 @@ Form {
 		title: qsTr("Output")
 		columns: 2
 
-		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable }
+		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable
+            RadioButtonGroup
+            {
+                name: "effectsType"
+                RadioButton { value: "allModels";		label: qsTr("Across all models");   checked: true	}
+                RadioButton { value: "matchedModels";	label: qsTr("Across matched models")				}
+            }
+        }
 
 		DropDown
 		{

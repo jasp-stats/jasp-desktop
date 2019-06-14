@@ -45,3 +45,8 @@ This function computes the Bayes factor for a binomially distributed observation
 - Jeffreys, H. (1961). *Theory of Probability*. Oxford, Oxford University Press.
 - O’Hagan, A., & Forster, J. (2004). *Kendall’s advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.)*. London: Arnold.
 - Haldane, J. B. S. (1932). A note on inverse probability. *Mathematical Proceedings of the Cambridge Philosophical Society, 28*, 55-61.
+
+
+### R Packages
+---
+- stats

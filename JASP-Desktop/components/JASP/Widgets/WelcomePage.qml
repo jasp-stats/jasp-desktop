@@ -51,7 +51,7 @@ FocusScope
 			width:				baseWidth  * welcomeRoot.scaler
 
 			property int baseWidth:		700
-			property int baseHeight:	550
+			property int baseHeight:	500
 
 			Image
 			{
@@ -96,7 +96,7 @@ FocusScope
 				text:			mainWindow.versionString()
 				color:			"white"
 				font.family:	latoLightFontFamily.name
-				font.pixelSize: 12 * welcomeRoot.scaler
+				font.pixelSize: 14 * welcomeRoot.scaler
 				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
 
@@ -243,7 +243,7 @@ FocusScope
 				text:					qsTr("So open a data file and take JASP for a spin!")
 				font.underline:			openDataFileMouse.containsMouse
 				font.family:			latoRegularFontFamily.name
-				font.pixelSize:			freshAndFunky.font.pixelSize + 2
+				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
 				renderType:				Text.QtRendering
 				anchors
 				{
@@ -261,6 +261,46 @@ FocusScope
 					cursorShape:	Qt.PointingHandCursor
 				}
 
+			}
+
+			Rectangle
+			{
+				id:					downloadNewJASPButton
+				color:				Theme.blue
+				radius:				height / 2
+				height:				downloadNewJASP.height * 1.5
+				width:				downloadNewJASP.width  * 1.2
+				visible:			mainWindow.downloadNewJASPUrl !== ""
+
+				anchors
+				{
+					top:					openADataFile.bottom
+					topMargin:				(openADataFile.height * 2.5) - (height / 2)
+					horizontalCenter:		openADataFile.horizontalCenter
+				}
+
+				Text
+				{
+					id:						downloadNewJASP
+					anchors.centerIn:		parent
+					text:					qsTr("Click to get latest version")
+					font.family:			latoRegularFontFamily.name
+					font.pixelSize:			openADataFile.font.pixelSize + (downloadMouseArea.containsMouse ? 4 * welcomeRoot.scaler : 0)
+					font.weight:			Font.Bold
+					color:					"white"
+					horizontalAlignment:	Text.AlignHCenter
+					verticalAlignment:		Text.AlignVCenter
+				}
+
+				MouseArea
+				{
+					id:						downloadMouseArea
+					hoverEnabled:			true
+					onClicked:				Qt.openUrlExternally(mainWindow.downloadNewJASPUrl);
+					anchors.fill:			parent
+					cursorShape:			Qt.PointingHandCursor
+					focus:					true
+				}
 			}
 
 			property int widthOverflowers:	width * 0.9

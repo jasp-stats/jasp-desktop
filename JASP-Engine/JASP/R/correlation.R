@@ -498,7 +498,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       
       if (! identical(errors, FALSE)) {
         variable.statuses[[i]]$unplotable <- TRUE
-        variable.statuses[[i]]$plottingError <- errors$message
+        variable.statuses[[i]]$plottingError <- paste(strwrap(errors$message, 25), collapse="\n") # break msgs so they fit in the matrix
       }
     }
 
@@ -1009,15 +1009,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 }
 
 .corValueString <- function(corValue = NULL, testType = NULL, decimals = 3){
+    if (testType == "pearson")
+      type <- "italic(r)"
+    else if (testType == "spearman")
+      type <- "italic(rho)"
+    else #kendall
+      type <- "italic(tau)"
 
-    if (testType == "pearson"){
-        string <- as.character(as.expression(substitute(italic(r)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
-    } else if (testType == "spearman"){
-        string <- as.character(as.expression(substitute(italic(rho)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
-    } else if (testType == "kendall"){
-        string <- as.character(as.expression(substitute(italic(tau)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
-    }
+    formattedValue <- formatC(round(corValue, decimals), format = "f", digits = decimals)
 
-    return(string)
-
+    return(paste0(type, ' ~ "=" ~ ', '"', formattedValue, '"'))
 }

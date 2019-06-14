@@ -26,22 +26,48 @@ Item
 	id							: menu
 	width						: menuRectangle.width
 	height						: menuRectangle.height
-	property var props			: undefined
-	property bool hasIcons		: true
-	property real _iconPad		: 5 * preferencesModel.uiScale
-	
-	onPropsChanged				:
+	x							: Math.min(menuMinPos.x + (menuMinIsMin ? Math.max(0, menuX) : menuX), menuMaxPos.x - (width  + 2) )
+	y							: Math.min(menuMinPos.y + (menuMinIsMin ? Math.max(0, menuY) : menuY), menuMaxPos.y - (height + 2) )
+	property var	props		: undefined
+	property bool	hasIcons	: true
+	property real	_iconPad	: 5 * preferencesModel.uiScale
+	property int	menuX		: menuOffset.x + menuScroll.x
+	property int	menuY		: menuOffset.y + menuScroll.y
+	property point	menuOffset	: "0,0"
+	property point	menuScroll	: "0,0"
+	property point	menuMinPos	: "0,0"
+	property point	menuMaxPos	: "0,0"
+	property bool	menuMinIsMin: false
+
+	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
+
+	onPropsChanged:
 	{
 		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
-		
+
 		if (menu.props === undefined || menu.props["model"] !== resultMenuModel)
 			resultsJsInterface.runJavaScript("window.setSelection(false);")
 	}
-	
-	function remove()
+
+	function showMenu(item, props, x_offset, y_offset)
 	{
-		menu.visible = false
-		menu.props = undefined
+		customMenu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
+		customMenu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
+		customMenu.menuMinPos	= item.mapToItem(null, 1, 1);
+		customMenu.props		= props;
+		customMenu.menuOffset.x	= x_offset;
+		customMenu.menuOffset.y	= y_offset;
+		customMenu.visible		= true;
+	}
+
+	function hide()
+	{
+		menu.visible		= false;
+		menu.props			= undefined;
+		menu.menuMinIsMin	= false;
+		menu.menuOffset		= "0,0"
+		menu.menuScroll		= "0,0"
+		menu.menuMinPos		= "0,0"
 	}
 
 	function resizeElements(newWidth)
@@ -139,11 +165,13 @@ Item
 							text				: displayText
 							font				: Theme.font
 							color				: isEnabled ? Theme.black : Theme.gray
-
-							anchors.left		: menu.hasIcons ? menuItemImage.right : parent.left
-							anchors.leftMargin	: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
-              anchors.rightMargin : menu._iconPad * 2
-							anchors.verticalCenter:  parent.verticalCenter
+							anchors
+							{
+								left			: menu.hasIcons ? menuItemImage.right : parent.left
+								leftMargin		: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
+								rightMargin		: menu._iconPad * 2
+								verticalCenter	: parent.verticalCenter
+							}
 
 						}
 

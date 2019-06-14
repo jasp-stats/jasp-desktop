@@ -68,7 +68,10 @@ JASPControl
 	Flickable
 	{
 		id:				myFlickable
-		anchors.fill:	parent
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		anchors.right:	vertiScroller.left
+		anchors.bottom: horiScroller.top
 		contentWidth:	theView.width
 		contentHeight:	theView.height
 		clip:			true
@@ -134,7 +137,7 @@ JASPControl
 
 			JASPDoubleValidator	{ id: intValidator; bottom: 0; decimals: 0 }
 			JASPDoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
-			RegExpValidator { id: stringValidator }
+			RegExpValidator		{ id: stringValidator }
 
 			itemDelegate: Rectangle
 			{
@@ -155,8 +158,26 @@ JASPControl
 			leftTopCornerItem: Rectangle { color: Theme.analysisBackgroundColor }
 
 		}
+	}
 
-		ScrollBar.vertical:		ScrollBar   { z: 0; stepSize: 0.025 }
-		ScrollBar.horizontal:	ScrollBar	{ z: 0; stepSize: 0.025	}
+	JASPScrollBar
+	{
+		id:				vertiScroller;
+		flickable:		myFlickable
+		anchors.top:	parent.top
+		anchors.right:	parent.right
+		anchors.bottom: horiScroller.top
+		bigBar:			false
+	}
+
+	JASPScrollBar
+	{
+		id:				horiScroller;
+		flickable:		myFlickable
+		vertical:		false
+		anchors.left:	parent.left
+		anchors.right:	vertiScroller.left
+		anchors.bottom: parent.bottom
+		bigBar:			false
 	}
 }

@@ -41,7 +41,7 @@ Form
 	VariablesForm 
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables") }
+        AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]}
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 	}
 	
@@ -262,7 +262,7 @@ Form
 		{
 			height: 200
 			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
-			AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true }
+            AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true; suggestedColumns: ["nominal"]}
 		}
 		
 		Group

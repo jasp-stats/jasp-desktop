@@ -35,8 +35,6 @@ public:
 	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
 	const Terms& getLevels() const;
 
-private:
-	void updateLatestLevelIndex(int startindex);
 	
 public slots:
 	void itemChanged(int row, QVariant value);
@@ -48,26 +46,44 @@ protected:
 		QString		value;
 		bool		isVirtual;
 		bool		isLevel;
-		int			index;
 		Factor*		headFactor;
-		Factor(const QString& _value, bool _isVirtual, bool _isLevel, int _index, Factor* _factor = nullptr) :
-			value(_value), isVirtual(_isVirtual), isLevel(_isLevel), index(_index)
+		Factor(const QString& _value, bool _isVirtual, bool _isLevel, Factor* _factor = nullptr) :
+			value(_value), isVirtual(_isVirtual), isLevel(_isLevel)
 		{
 			if (_factor)
 				headFactor = _factor;
 			else
 				headFactor = this;
 		}
+
+		Factor(const Factor& factor) : value(factor.value), isVirtual(factor.isVirtual), isLevel(factor.isLevel)
+		{
+			if (&factor == factor.headFactor)
+				headFactor = this;
+			else
+				headFactor = factor.headFactor;
+		}
+
+		bool operator==(const Factor& factor)
+		{
+			return factor.headFactor == headFactor
+					&& factor.isLevel == isLevel
+					&& factor.isVirtual == isVirtual
+					&& factor.value == value;
+		}
 	};
 	QList<Factor>	_factors;
-	QList<QString>	_factorTitles;
 	Terms			_allLevelsCombinations;
-	QStringList		_getLevels(const Factor& factor);
-	QStringList		_getAllFactors();
-	QString			_giveUniqueName(const QStringList& names, const QString startName);
 
+	QStringList		_getOtherLevelsStringList(const Factor& factor);
+	QStringList		_getAllFactorsStringList();
+	QString			_giveUniqueName(const QStringList& names, const QString startName);
+	int				_getIndex(const Factor& factor) const;
 	
-	void _setAllLevelsCombinations();
+	void			_updateVirtualLevelIndex(Factor* headFactor);
+	void			_updateVirtualFactorIndex();
+	void			_setAllLevelsCombinations();
+	QString			_removeFactor(int row);
 };
 
 #endif // LISTMODELREPEATEDMEASURESFACTORS_H

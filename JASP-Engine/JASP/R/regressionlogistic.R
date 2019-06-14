@@ -196,8 +196,11 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
                                          type = "binomial")
   }
   
-  if (is.null(estimatesTableBootstrapping) && options[["coeffEstimatesBootstrapping"]]) {
+  if (is.null(estimatesTableBootstrapping) && options[["coeffEstimatesBootstrapping"]] && options[["coeffEstimates"]]) {
     estimatesTableBootstrapping <- .estimatesTableBootstrapping(dataset, options, perform)
+    if(estimatesTableBootstrapping == "Bootstrapping options have changed")
+      return()
+    
     estimatesTableBootstrappingState <- estimatesTableBootstrapping
   } else if(options[["coeffEstimatesBootstrapping"]] && options[['coeffEstimates']]){
     estimatesTableBootstrappingState <- estimatesTableBootstrapping
@@ -335,8 +338,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
     list(name="est", title = "Estimate", type="number", format="dp:3"),
     list(name="bias", title = "Bias", type="number", format="dp:3"),
     list(name="se", title = "Standard Error", type="number", format="dp:3"),
-    list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle="95% Confidence interval"),
-    list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle="95% Confidence interval")
+    list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle="95% bca\u002A Confidence interval"),
+    list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle="95% bca\u002A Confidence interval")
   )
   
   if (! multimod) {
@@ -346,9 +349,11 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   out[["schema"]] <- list(fields=fields)
   
   testResult <- .jaspGlm(dataset, options, perform = perform, type = "binomial")
+  ci.fails <- FALSE
   
   if (perform == "run" && !is.null(testResult)) {
-    
+    ticks <- options[['coeffEstimatesBootstrappingReplicates']]
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
     rows <- list()
     
     for (i in 1:length(testResult)) {
@@ -360,20 +365,45 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       rn <- rownames(summary(testResult[[i]])[["coefficients"]])
       rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
       
-      .bootstrapping <- function(data, indices, model.formula) {
+      
+      .bootstrapping <- function(data, indices, model.formula, options) {
+        pr <- progress()
+        response <- .optionsDiffCheckBootstrapLogisticRegression(pr, options)
+        
+        if(response$status == "changed" || response$status == "aborted")
+          stop("Bootstrapping options have changed")
+        
         d <- data[indices, , drop = FALSE] # allows boot to select sample
         result <- glm(model.formula, family = "binomial", data = d)
+        
         return(coef(result))
       }
       
-      bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$coeffEstimatesBootstrappingReplicates, model.formula = formula(testResult[[i]]))
-      bootstrap.coef <- bootstrap.summary$t0
-      bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
+      bootstrap.summary <- try(boot::boot(data = dataset, statistic = .bootstrapping,
+                                          R = options$coeffEstimatesBootstrappingReplicates,
+                                          model.formula = formula(testResult[[i]]),
+                                          options = options),
+                               silent = TRUE)
+      if(inherits(bootstrap.summary, "try-error") &&
+         identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
+        return("Bootstrapping options have changed")
+      
+      bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
+      bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
       bootstrap.se <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
       
       for (j in seq_along(rn)) {
         
-        bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = 0.95, index=j)
+        result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = 0.95, index=j))
+        if(!inherits(result.bootstrap.ci, "try-error")){
+          bootstrap.ci <- result.bootstrap.ci
+        } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+          ci.fails <- TRUE
+          bootstrap.ci <- list(bca = rep(NA, 5))
+        } else{
+          bootstrap.ci <- result.bootstrap.ci
+        }
+        
         row <- list(
           model = as.character(i),
           param = .clean(.formatTerm(rn[j], testResult[[i]])),
@@ -399,6 +429,20 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
       list(model = ".", param = ".", est = ".", bias = ".", se = ".", cilo = ".", ciup = ".")
     )
   }
+  
+  footnotes <- .newFootnotes()
+  if(ci.fails){
+    .addFootnote(footnotes,
+                 symbol = "<i>Note.</i>", 
+                 text = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
+  }
+  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+               text = paste0("Bootstrapping based on ", options[['coeffEstimatesBootstrappingReplicates']], " replicates."))
+  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+               text = "Coefficient estimate is based on the median of the bootstrap distribution.")
+  .addFootnote(footnotes, symbol = "\u002A",
+               text = "Bias corrected accelerated.")
+  out[['footnotes']] <- as.list(footnotes)
   
   out[["data"]] <- rows
   return(out)
@@ -524,4 +568,20 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
               residualZ=unname(residualZ),
               cooksD=unname(cooksD))
   )
+}
+
+.optionsDiffCheckBootstrapLogisticRegression <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    
+    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
+       change$modelTerms || change$coeffEstimates || change$includeIntercept ||
+       change$coeffEstimatesBootstrapping ||
+       change$coeffEstimatesBootstrappingReplicates)
+      return(response)
+    
+    response$status <- "ok"
+  }
+  
+  return(response)
 }

@@ -39,7 +39,7 @@ bool PollMessagesFunctionForJaspResults()
 		if(Engine::theEngine()->paused())
 			return true;
 		else
-			return Engine::theEngine()->getStatus() == engineAnalysisStatus::changed;
+			return Engine::theEngine()->getAnalysisStatus() == engineAnalysisStatus::changed;
 	}
 	return false;
 }
@@ -471,10 +471,10 @@ void Engine::runAnalysis()
 
 void Engine::saveImage()
 {
-	std::string name	= _imageOptions.get("name", Json::nullValue).asString();
-	std::string type	= _imageOptions.get("type", Json::nullValue).asString();
-	int height			= _imageOptions.get("height", Json::nullValue).asInt();
-	int width			= _imageOptions.get("width", Json::nullValue).asInt();
+	std::string name	= _imageOptions.get("name",		Json::nullValue).asString();
+	std::string type	= _imageOptions.get("type",		Json::nullValue).asString();
+	int height			= _imageOptions.get("height",	Json::nullValue).asInt();
+	int width			= _imageOptions.get("width",	Json::nullValue).asInt();
 
 	std::string result = jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 

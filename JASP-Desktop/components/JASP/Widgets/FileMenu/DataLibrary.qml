@@ -14,11 +14,6 @@ Item
 		id:						menuHeader
 		headertext:				qsTr("Data Library")
 		toolseparator:			false
-		anchors
-		{
-			top:			parent.top
-			margins:		Theme.generalMenuMargin
-		}
 	}
 
 	BreadCrumbs

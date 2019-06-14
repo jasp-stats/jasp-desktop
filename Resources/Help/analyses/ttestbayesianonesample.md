@@ -95,5 +95,8 @@ Test value specified in the null hypothesis.
 
 ### R-packages 
 ---
-- BayesFactor 
+- BayesFactor
+- ggplot2
+- logspline
+- stats
 

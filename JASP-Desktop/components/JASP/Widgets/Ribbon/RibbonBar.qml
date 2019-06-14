@@ -45,7 +45,7 @@ FocusScope
 			fileMenuModel.visible	= !fileMenuModel.visible;
 			modulesMenu.opened		= false;
 			
-			customMenu.remove()
+			customMenu.hide()
 		}
 
 		anchors
@@ -81,7 +81,7 @@ FocusScope
 			modulesMenu.opened		= !modulesMenu.opened;
 			fileMenuModel.visible	= false;
 			
-			customMenu.remove()
+			customMenu.hide()
 		}
 
 		showArrow	: modulesMenu.opened

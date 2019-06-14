@@ -19,11 +19,6 @@
 			"title":	"Structural Equation Modeling",
 			"qml":		"SEMSimple.qml",
 			"function":	"SEMSimple"
-		},
-		{
-			"title":	"Confirmatory Factor Analysis",
-			"qml":		"ConfirmatoryFactorAnalysis.qml",
-			"function":	"ConfirmatoryFactorAnalysis"
 		}
 	]
 }

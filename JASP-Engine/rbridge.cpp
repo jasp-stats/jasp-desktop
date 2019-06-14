@@ -259,8 +259,10 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	if (colHeaders == NULL)
 		return NULL;
 
-	//if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
+
+	if(rbridge_dataSet == NULL)
+		return NULL;
 
 	Columns &columns = rbridge_dataSet->columns();
 

@@ -36,6 +36,7 @@ Item
 	property	alias	showDeleteButton	: deleteButton.visible
 	property	string	tableType			: "ExpectedProportions"
 	property	string	itemType			: "double"
+	property	int		maxNumHypotheses	: 10
 
 	RowLayout
 	{
@@ -63,7 +64,7 @@ Item
 				name			: "addButton"
 				control.width	: chi2TestTableView.width * 1 / 4
 				onClicked		: tableView.addColumn()
-				enabled			: tableView.columnCount > 0
+				enabled			: (tableView.columnCount > 0 && tableView.columnCount < maxNumHypotheses)
 			}
 
 			Button

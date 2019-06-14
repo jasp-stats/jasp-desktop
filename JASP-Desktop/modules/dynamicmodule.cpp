@@ -39,7 +39,7 @@ const char * standardRIndent = "  ";
 DynamicModule::DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
 {
 	QDir moduleDir(_moduleFolder.absoluteDir());
-	_name = moduleNameStripNonAlphaNum(moduleDir.dirName().toStdString());
+	_name = stringUtils::stripNonAlphaNum(moduleDir.dirName().toStdString());
 	setInstalled(true);
 }
 
@@ -315,6 +315,7 @@ std::string DynamicModule::generateModuleInstallingR()
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths(.Library))";
 
 	R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', upgrade=TRUE));\n"
+		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n"
 		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL))\");\n" //Running in separate R because otherwise we cannot capture output :s
 		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
 
@@ -566,22 +567,6 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	}
 }
 
-std::string	DynamicModule::moduleNameStripNonAlphaNum(std::string moduleString)
-{
-	//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
-	moduleString.erase(std::remove_if(moduleString.begin(), moduleString.end(), [](unsigned char x)
-	{
-#ifdef _WIN32
-		return !std::isalnum(x, std::locale());
-#else
-		return !std::isalnum(x);
-#endif
-
-	}), moduleString.end());
-
-	return moduleString;
-}
-
 void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
 {
 	if (_requiredPackages == requiredPackages)
@@ -689,7 +674,7 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 				foundName = moduleDescription.get("name", "").asString();
 
 				if(foundName == "")
-					foundName = moduleNameStripNonAlphaNum(moduleDescription.get("title", "").asString());
+					foundName = stringUtils::stripNonAlphaNum(moduleDescription.get("title", "").asString());
 			}
 			catch(...)
 			{ }
@@ -707,7 +692,7 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 		auto removeExtension = [&](const std::string & ext){
 			if(fileName.size() - ext.size() > 0 && fileName.substr(fileName.size() - ext.size()) == ext)
 			{
-				foundName = moduleNameStripNonAlphaNum(fileName.substr(0, fileName.size() - ext.size()));
+				foundName = stringUtils::stripNonAlphaNum(fileName.substr(0, fileName.size() - ext.size()));
 				return false;
 			}
 			return true;

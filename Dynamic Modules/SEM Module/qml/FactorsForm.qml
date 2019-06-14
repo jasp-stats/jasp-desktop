@@ -11,7 +11,7 @@ JASPControl
     id:					    factorsForm
 	controlType:		    "FactorsForm"
     implicitWidth:	        parent.width
-	height:			        Theme.defaultListHeight
+	height:			        Theme.defaultVariablesFormHeight
     implicitHeight:         height
     useControlMouseArea:    false
 
@@ -21,7 +21,7 @@ JASPControl
     property bool   allowAll: false
 	property int	initNumberFactors: 1
 	property int    listWidth:			parent.width * 2 / 5
-    property int    factorListHeight: (Theme.defaultListHeight - factorButtons.height) / 3 - factorsFormColumn.spacing 
+    property int    factorListHeight: (Theme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing 
 
 	signal titleChanged(int index, string title);
 	signal factorAdded(int index, var item);
@@ -126,9 +126,9 @@ JASPControl
     function calculateHeight() 
     {
         if (factorsFormRepeater.count > 3) {
-            factorsForm.height = Theme.defaultListHeight + (factorsFormRepeater.count - 3) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
+            factorsForm.height = Theme.defaultVariablesFormHeight + (factorsFormRepeater.count - 3) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
         } else {
-            factorsForm.height = Theme.defaultListHeight
+            factorsForm.height = Theme.defaultVariablesFormHeight
         }
     }
     

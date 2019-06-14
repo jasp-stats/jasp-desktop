@@ -64,6 +64,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
 	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
+	Q_PROPERTY(QString	downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 
 	friend class FileMenu;
 public:
@@ -83,12 +84,15 @@ public:
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
+	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
 
 
+
 public slots:
 	void setImageBackgroundHandler(QString value);
+	void plotPPIChangedHandler(int ppi, bool wasUserAction);
 	void setProgressBarProgress(int progressBarProgress);
 	void setProgressBarVisible(bool progressBarVisible);
 	void setWelcomePageVisible(bool welcomePageVisible);
@@ -121,6 +125,9 @@ public slots:
 
 	void	openFolderExternally(QDir folder);
 	void	showLogFolder();
+
+	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
+
 
 private:
 	void makeConnections();
@@ -161,11 +168,13 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-    void _openFile();
+	void _openFile();
 
 signals:
 	void saveJaspFile();
 	void imageBackgroundChanged(QString value);
+	void editImageCancelled(int id);
+	void ppiChanged(int ppi);
 	void updateAnalysesUserData(QString userData);
 	void runButtonTextChanged(QString runButtonText);
 	void runButtonEnabledChanged(bool runButtonEnabled);
@@ -180,6 +189,7 @@ signals:
 	void dataAvailableChanged(bool dataAvailable);
 	void analysesAvailableChanged(bool analysesAvailable);
 	void welcomePageVisibleChanged(bool welcomePageVisible);
+	void downloadNewJASPUrlChanged(QString downloadNewJASPUrl);
 
 private slots:
 	void resultsPageLoaded();
@@ -200,7 +210,7 @@ private slots:
 	void emptyValuesChangedHandler();
 
 	void closeVariablesPage();
-	void showProgress(bool showData = true);
+	void showProgress();
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
@@ -248,7 +258,8 @@ private:
 									_fatalError,
 									_currentFilePath,
 									_progressBarStatus,
-									_windowTitle;
+									_windowTitle,
+									_downloadNewJASPUrl		= "";
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
@@ -263,7 +274,6 @@ private:
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
 									_savingForClose			= false,
-									_progressShowsItself	= false,
 									_welcomePageVisible		= true;
 
 	static QString					_iconPath;

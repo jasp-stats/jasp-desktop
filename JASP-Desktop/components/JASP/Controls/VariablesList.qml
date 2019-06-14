@@ -30,7 +30,7 @@ JASPControl
 	background:			rectangle
 	width:				parent.width
 	implicitWidth:		width
-	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
+	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
 	implicitHeight:		height
 	useControlMouseArea:	false
 	
@@ -103,48 +103,7 @@ JASPControl
 		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedItems, target, -1, assignOption);
 		listView.clearSelectedItems(true);
-	}
-	
-	DropArea
-	{
-		id: dropArea
-		anchors.fill: parent
-		
-		property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
-		
-		onPositionChanged:
-		{
-			if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
-			var itemIndex = Math.floor((drag.y - text.height) / listView.cellHeight);
-			if (variablesList.columns > 1)
-			{
-				itemIndex = itemIndex * 2 + Math.floor(drag.x / listView.cellWidth);
-			}
-			
-			if (itemIndex >= 0 && itemIndex < listView.contentItem.children.length)
-			{
-				var item = listView.contentItem.children[itemIndex].children[0];
-				if (item && item.objectName === "itemRectangle") {
-					listView.itemContainingDrag = item
-					variablesList.indexInDroppedListViewOfDraggedItem = itemIndex
-				}
-				else
-				{
-					console.log("dropArea: could not find child!")
-				}
-			}
-			else
-			{
-				listView.itemContainingDrag = null
-				variablesList.indexInDroppedListViewOfDraggedItem = -1
-			}
-		}
-		onExited:
-		{
-			listView.itemContainingDrag = null
-			variablesList.indexInDroppedListViewOfDraggedItem = -1
-		}
-	}
+	}	
 	
 	Text
 	{
@@ -215,6 +174,42 @@ JASPControl
 				}
 			}
 		}
+
+		DropArea
+		{
+			id: dropArea
+			anchors.fill: parent
+
+			property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
+
+			onPositionChanged:
+			{
+				if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+				var item = listView.itemAt(drag.x, drag.y + listView.contentY)
+				if (item && item.children.length > 0)
+					item = item.children[0];
+				if (item && item.objectName === "itemRectangle")
+				{
+					dropLine.parent = item
+					dropLine.visible = true
+					listView.itemContainingDrag = item
+					variablesList.indexInDroppedListViewOfDraggedItem = item.rank
+				}
+				else
+				{
+					dropLine.visible = false
+					listView.itemContainingDrag = null
+					variablesList.indexInDroppedListViewOfDraggedItem = -1
+				}
+			}
+			onExited:
+			{
+				dropLine.visible = false
+				listView.itemContainingDrag = null
+				variablesList.indexInDroppedListViewOfDraggedItem = -1
+			}
+		}
+
 		
 		Component.onCompleted:
 		{
@@ -277,6 +272,17 @@ JASPControl
 				bottom:		parent.bottom
 				margins:	2
 			}
+		}
+
+		Rectangle
+		{
+			id:			dropLine
+			height:		2
+			width:		parent.width
+			anchors.top: parent.top
+			anchors.left: parent.left
+			color:		Theme.itemSelectedColor
+			visible:	false
 		}
 		
 		GridView
@@ -489,14 +495,6 @@ JASPControl
 				QTCONTROLS.ToolTip.delay: 300
 				QTCONTROLS.ToolTip.text: model.name
 				
-				Rectangle
-				{
-					height:		2
-					width:		parent.width
-					color:		Theme.red
-					visible:	itemRectangle.containsDragItem && variablesList.dropModeInsert
-				}
-				
 				Image
 				{
 					id:						icon
@@ -687,7 +685,7 @@ JASPControl
 							}
 							if (itemRectangle.Drag.target)
 							{
-								var dropTarget = itemRectangle.Drag.target.parent
+								var dropTarget = itemRectangle.Drag.target.parent.parent
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;
 								

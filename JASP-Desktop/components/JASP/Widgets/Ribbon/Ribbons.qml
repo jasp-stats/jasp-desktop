@@ -39,6 +39,8 @@ Item
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
 
+		onDragStarted:		customMenu.hide()
+
 		anchors
 		{
 			left:			fadeOutLeft.right

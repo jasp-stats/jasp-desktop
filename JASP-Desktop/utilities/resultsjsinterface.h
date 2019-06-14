@@ -38,7 +38,6 @@ class ResultsJsInterface : public QObject
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
-
 	void changeTitle(Analysis *analyses);
 	void showAnalysis(int id);
 	void analysisChanged(Analysis *analysis);
@@ -67,7 +66,7 @@ signals:
 	Q_INVOKABLE void analysisSaveImage(int id, QString options);
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 	Q_INVOKABLE void analysisSelected(int id);
-	Q_INVOKABLE void analysisTitleChangedFromResults(int id, QString title);
+	Q_INVOKABLE void analysisTitleChangedInResults(int id, QString title);
 	Q_INVOKABLE void removeAnalysisRequest(int id);
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
@@ -102,6 +101,7 @@ public slots:
 	void setExactPValuesHandler(bool exact);
 	void setFixDecimalsHandler(QString numDecimals);
 	void analysisImageEditedHandler(Analysis *analysis);
+	void cancelImageEdit(int id);
 	void exportSelected(const QString &filename);
 	void setResultsPageUrl(QString resultsPageUrl);
 	void resultsPageLoaded(bool success);

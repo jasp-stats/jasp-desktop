@@ -370,16 +370,18 @@ void Analysis::setHelpFile(QString helpFile)
 	emit helpFileChanged(_helpFile);
 }
 
-void Analysis::setTitle(std::string title)
+void Analysis::setTitleQ(QString title)
 {
-	if(title == "")
-		title = _titleDefault;
+	std::string strippedTitle	= title.simplified().toStdString();
 
-	if (_title == title)
+	if(strippedTitle == "")
+		strippedTitle = _titleDefault;
+
+	if (_title == strippedTitle && strippedTitle == title.toStdString())
 		return;
 
-	_results["title"] = title;
-	_title = title;
+	_results["title"] = strippedTitle;
+	_title = strippedTitle;
 	
 	emit titleChanged();
 }

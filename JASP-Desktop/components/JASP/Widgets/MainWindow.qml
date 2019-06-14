@@ -34,6 +34,8 @@ Window
 	minimumHeight:		600
 
 	onVisibleChanged:	if(!visible) helpModel.visible = false
+	//onWidthChanged:		customMenu.hide()
+	//onHeightChanged:	customMenu.hide()
 
 	property real devicePixelRatio: Screen.devicePixelRatio
 
@@ -85,29 +87,9 @@ Window
 
 		CustomMenu
 		{
-			id	: customMenu
-			z	: 5
-
-			function showMenu(item, props, x_offset, y_offset)
-			{
-				customMenu.props	= props;
-
-				var point			= item.mapToItem(null, 0, 0);
-				customMenu.x		= point.x + x_offset;
-				customMenu.y		= point.y + y_offset;
-				var rightX			= customMenu.x + customMenu.width + 2;
-				var bottomY			= customMenu.y + customMenu.height + 2;
-
-				if (rightX > mainWindowRoot.width)
-					customMenu.x -= (rightX - mainWindowRoot.width);
-
-				if (bottomY > mainWindowRoot.height)
-					customMenu.y -= (bottomY - mainWindowRoot.height);
-
-				customMenu.visible	= true;
-			}
-
-			visible:		false
+			id:			customMenu
+			z:			5
+			visible:	false
 		}
 
 		FileMenu
@@ -121,6 +103,14 @@ Window
 				left:	parent.left
 				bottom:	parent.bottom
 			}
+		}
+
+		ProgressBarHolder
+		{
+			id:					progressBarHolder
+			visible:			mainWindow.progressBarVisible
+			z:					10
+			anchors.centerIn:	parent
 		}
 
 		WelcomePage
@@ -182,13 +172,14 @@ Window
 				}
 			}
 
-			onClicked:
+			onPressed:
 			{
+				mouse.accepted			= false
+
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
-				mouse.accepted			= false
 				
-				customMenu.remove()
+				customMenu.hide()
 			}
 		}
 

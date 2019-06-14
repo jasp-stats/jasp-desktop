@@ -142,7 +142,7 @@ void DataSetView::calculateCellSizes()
 
 	_dataWidth = w;
 
-	setWidth(	_dataRowsMaxHeight + _dataWidth					);
+	setWidth(	(_extraColumnItem != nullptr ? _dataRowsMaxHeight : 0 ) + _dataWidth					);
 	setHeight(	_dataRowsMaxHeight * (_model->rowCount() + 1)	);
 	_recalculateCellSizes = false;
 
@@ -385,11 +385,11 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 				pos1x(pos0x + _dataColsMaxWidth[col]),
 				pos1y(pos0y + _dataRowsMaxHeight);
 
-		if(pos0x  > _rowNumberMaxWidth + _viewportX && pos0x < maxXForVerticalLine)
+		if(pos0x  > _rowNumberMaxWidth + _viewportX && pos0x <= maxXForVerticalLine)
 			addLine(pos0x, pos0y, pos0x, pos1y);
 
 
-		if(col == _model->columnCount() - 1 && pos1x  > _rowNumberMaxWidth + _viewportX && pos1x < maxXForVerticalLine)
+		if(col == _model->columnCount() - 1 && pos1x  > _rowNumberMaxWidth + _viewportX && pos1x <= maxXForVerticalLine)
 			addLine(pos1x, pos0y, pos1x, pos1y);
 #endif
 	}
@@ -735,7 +735,7 @@ void DataSetView::updateExtraColumnItem()
 		return;
 
 	_extraColumnItem->setHeight(_dataRowsMaxHeight);
-	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width());
+	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
 	_extraColumnItem->setY(_viewportY);
 
 	connect(_extraColumnItem, &QQuickItem::widthChanged, [&](){	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width()); });

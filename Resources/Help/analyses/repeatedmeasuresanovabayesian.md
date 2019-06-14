@@ -178,3 +178,12 @@ Descriptives - dependent variable:
 ### R Packages
 ---
 - BayesFactor
+- colorspace
+- ggplot2
+- KernSmooth
+- matrixStats
+- plyr
+- stats
+- stringi
+- stringr
+- utils

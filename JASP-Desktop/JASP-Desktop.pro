@@ -18,7 +18,7 @@ DESTDIR = ..
 
 windows:TARGET = JASP
    macx:TARGET = JASP
-  linux:{ exists(/app/lib/*) {TARGET = org.jasp.JASP } else { TARGET = jasp }}
+  linux:{ exists(/app/lib/*) {TARGET = org.jaspstats.JASP } else { TARGET = jasp }}
 
 DEPENDPATH = ..
 INCLUDEPATH += ../JASP-Common/
@@ -74,32 +74,32 @@ QML_IMPORT_PATH = $$PWD/imports
 
 
 exists(/app/lib/*) {
-	flatpak_desktop.files = ../Tools/flatpak/org.jasp.JASP.desktop
+	flatpak_desktop.files = ../Tools/flatpak/org.jaspstats.JASP.desktop
 	flatpak_desktop.path = /app/share/applications
 	INSTALLS += flatpak_desktop
 
-	flatpak_icon.files = ../Tools/flatpak/org.jasp.JASP.svg
+	flatpak_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
 	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
 	INSTALLS += flatpak_icon
 
-	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jasp.JASP.xml.gz < org.jasp.JASP.appdata.xml"
+	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jaspstats.JASP.xml.gz < org.jaspstats.JASP.appdata.xml"
 	QMAKE_EXTRA_TARGETS += flatpak_appinfo
 	PRE_TARGETDEPS      += flatpak_appinfo
 
-	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jasp.JASP.appdata.xml
+	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jaspstats.JASP.appdata.xml
 	#flatpak_appinfo_xml.path = /app/share/appdata
 	#INSTALLS += flatpak_appinfo_xml
 
 
-	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jasp.JASP.svg
+	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
 	flatpak_appinfo_icon.path = /app/share/app-info/icons/flatpak/scalable
 	INSTALLS += flatpak_appinfo_icon
 
-	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jasp.JASP.png
+	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jaspstats.JASP.png
 	flatpak_appinfo_icon64.path = /app/share/app-info/icons/flatpak/64x64
 	INSTALLS += flatpak_appinfo_icon64
 
-	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jasp.JASP.png
+	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jaspstats.JASP.png
 	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
 	INSTALLS += flatpak_appinfo_icon128
 }
@@ -108,13 +108,13 @@ exists(/app/lib/*) {
 unix {
     SCRIPTFILENAME=$${OUT_PWD}/../versionScript.sh
 
-    createVersionScript.commands += echo \"$${LITERAL_HASH}!/bin/sh\"                                                                           >  $$SCRIPTFILENAME ;
-    createVersionScript.commands += echo \"JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR\"                                                            >> $$SCRIPTFILENAME ;
-    createVersionScript.commands += echo \"JASP_VERSION_MINOR=$$JASP_VERSION_MINOR\"                                                            >> $$SCRIPTFILENAME ;
-    createVersionScript.commands += echo \"JASP_VERSION_REVISION=$$JASP_VERSION_REVISION\"                                                      >> $$SCRIPTFILENAME ;
-    createVersionScript.commands += echo \"JASP_VERSION_BUILD=$$JASP_VERSION_BUILD\n\"                                                          >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"$${LITERAL_HASH}!/bin/sh\"                                                                               >          $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR\"                                                                  >>       $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_MINOR=$$JASP_VERSION_MINOR\"                                                                    >>     $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_REVISION=$$JASP_VERSION_REVISION\"                                                                >>   $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_BUILD=$$JASP_VERSION_BUILD\n\"                                                                      >> $$SCRIPTFILENAME ;
     createVersionScript.commands += echo \"JASP_VERSION=$${JASP_VERSION_MAJOR}.$${JASP_VERSION_MINOR}.$${JASP_VERSION_REVISION}.$${JASP_VERSION_BUILD}\n\"  >> $$SCRIPTFILENAME ;
-    createVersionScript.commands += echo \"CURRENT_R_VERSION=$$CURRENT_R_VERSION\"                                                              >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"CURRENT_R_VERSION=$$CURRENT_R_VERSION\"                                                                          >> $$SCRIPTFILENAME ;
 
     QMAKE_EXTRA_TARGETS += createVersionScript
     POST_TARGETDEPS     += createVersionScript
@@ -123,10 +123,10 @@ unix {
 #And of course also a version description to include in the Windows installer
 windows {
         WIXFILENAME=$${OUT_PWD}/../jasp.wxi
-        createVersionWix.commands += $$quote(echo ^<?xml version=\"1.0\" encoding=\"utf-8\"?^>^<Include^> >  $${WIXFILENAME}) &&
-        createVersionWix.commands += $$quote(echo ^<?define MajorVersion=\"$${JASP_VERSION_MAJOR}\" ?^> >>  $${WIXFILENAME}) &&
-        createVersionWix.commands += $$quote(echo ^<?define MinorVersion=\"$${JASP_VERSION_MINOR}\" ?^> >>  $${WIXFILENAME}) &&
-        createVersionWix.commands += $$quote(echo ^<?define BuildVersion=\"$${JASP_VERSION_BUILD}\" ?^> >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?xml version=\"1.0\" encoding=\"utf-8\"?^>^<Include^>          >  $${WIXFILENAME})  &&
+        createVersionWix.commands += $$quote(echo ^<?define MajorVersion=\"$${JASP_VERSION_MAJOR}\" ?^>            >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define MinorVersion=\"$${JASP_VERSION_MINOR}\" ?^>            >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define BuildVersion=\"$${JASP_VERSION_BUILD}\" ?^>            >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define Revision=\"$${JASP_VERSION_REVISION}\" ?^>^</Include^> >>  $${WIXFILENAME})
 
         QMAKE_EXTRA_TARGETS += createVersionWix
@@ -270,7 +270,6 @@ HEADERS += \
     engine/enginerepresentation.h \
     engine/enginesync.h \
     engine/rscriptstore.h \
-    gui/aboutdialog.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
@@ -369,7 +368,9 @@ HEADERS += \
     widgets/listmodelfactorsform.h \
     utilities/aboutmodel.h \
     modules/ribbonbutton.h \
-    widgets/filemenu/currentdatafile.h
+    widgets/filemenu/currentdatafile.h \
+    gui/jaspversionchecker.h \
+    widgets/listmodeltableviewbase.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -450,7 +451,6 @@ SOURCES += \
     data/fileevent.cpp \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
-    gui/aboutdialog.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
@@ -547,7 +547,9 @@ SOURCES += \
     widgets/listmodelfactorsform.cpp \
     utilities/aboutmodel.cpp \
     modules/ribbonbutton.cpp \
-    widgets/filemenu/currentdatafile.cpp
+    widgets/filemenu/currentdatafile.cpp \
+    gui/jaspversionchecker.cpp \
+    widgets/listmodeltableviewbase.cpp
 
 RESOURCES += \
     html/html.qrc \

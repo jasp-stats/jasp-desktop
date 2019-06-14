@@ -9,7 +9,9 @@ FocusScope
 {
 	id: fileMenu
 
-	Keys.onEscapePressed: fileMenuModel.visible = false;
+	Keys.onEscapePressed:	fileMenuModel.visible = false;
+	Keys.onDownPressed:		fileMenuModel.actionButtons.selectButtonDown();
+	Keys.onUpPressed:		fileMenuModel.actionButtons.selectButtonUp();
 
 
 	function showToolSeperator(typeRole)
@@ -86,9 +88,8 @@ FocusScope
 
 				Repeater
 				{
-					id: actionRepeaterId
-
-					model: fileMenuModel.actionButtons
+					id:		actionRepeaterId
+					model:	fileMenuModel.actionButtons
 
 					Item
 					{
@@ -123,6 +124,7 @@ FocusScope
 								actionMenuButton.forceActiveFocus();
 								fileMenuModel.actionButtons.buttonClicked(typeRole);
 							}
+
 							onClicked:
 							{
 								hoverClicked();
@@ -217,6 +219,7 @@ FocusScope
 							width:					parent.width
 							height:					parent.height
 							anchors.left:			parent.left
+							enabled:				!resourceMenuAnimation.running
 
 							text:					nameRole
 							selected:				selectedRole

@@ -40,7 +40,7 @@
 #include "processinfo.h"
 #include "appinfo.h"
 
-#include "gui/aboutdialog.h"
+#include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
@@ -121,9 +121,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_filterModel			= new FilterModel(_package, this);
 	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences,
 									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-									{ "Network", "Meta Analysis", "SEM", "Summary Statistics" });
+									{ "Network", "Meta Analysis", "SEM", "Summary Statistics", "BAIN" });
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
-	_fileMenu				= new FileMenu(this);
+	_fileMenu				= new FileMenu(this, _package);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 
@@ -149,6 +149,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_engineSync->start(_preferences->plotPPI());
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
+
+	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
+	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -188,7 +191,9 @@ void MainWindow::makeConnections()
 
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
 	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
+	connect(this,					&MainWindow::ppiChanged,                        	_engineSync,			&EngineSync::ppiChanged                                     );
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
+	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
@@ -234,7 +239,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAnalysisRequest,			_analyses,				&Analyses::removeAnalysisById								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedFromResults,_analyses,				&Analyses::analysisTitleChangedFromResults					);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedInResults,	_analyses,				&Analyses::analysisTitleChangedInResults					);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
@@ -250,8 +255,8 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
-	//connect(_analyses,			&Analyses::analysisNameSelected,					_helpModel,				&HelpModel::setAnalysispagePath								); //The user can click the info-button if they want to see some documentation
     connect(_analyses,				&Analyses::analysesExportResults,					_fileMenu,				&FileMenu::analysesExportResults							);
+	connect(_analyses,				&Analyses::somethingModified,						[&](){					if(_package) _package->setModified(true); }					);
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
@@ -263,8 +268,8 @@ void MainWindow::makeConnections()
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
+	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
-	connect(_preferences,			&PreferencesModel::plotPPIChanged,					_engineSync,			&EngineSync::ppiChanged										);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
@@ -492,6 +497,8 @@ void MainWindow::syncKeyPressed()
 void MainWindow::packageChanged(DataSetPackage *package)
 {
 	QString title = windowTitle();
+	if (title.isEmpty())
+		title = "JASP";
 
 	if (package->isModified())	title += '*';
 	else						title.chop(1);
@@ -524,11 +531,25 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 }
 
 
-
 void MainWindow::setImageBackgroundHandler(QString value)
 {
 	emit imageBackgroundChanged(value);
-	_engineSync->refreshAllPlots();
+
+	if (_analyses->allCreatedInCurrentVersion())
+		_engineSync->refreshAllPlots();
+	else if (MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the background of the images they must be refreshed first.\n\nRefresh all analyses?"))
+		_analyses->refreshAllAnalyses();
+}
+
+
+void MainWindow::plotPPIChangedHandler(int ppi, bool wasUserAction)
+{
+    emit ppiChanged(ppi);
+
+	if (_analyses->allCreatedInCurrentVersion())
+		_engineSync->refreshAllPlots();
+	else if (wasUserAction && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
+		_analyses->refreshAllAnalyses();
 }
 
 
@@ -662,14 +683,20 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
     if (analysis == nullptr)
         return;
 
-    string utf8 = fq(options);
-    Json::Value root;
-	Json::Reader().parse(utf8, root);
-
-	analysis->editImage(root);
-
-    return;
-
+	if (analysis->version() != AppInfo::version)
+	{
+		if (MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
+			analysis->refresh();
+		else
+			emit editImageCancelled(id);
+	}
+	else
+	{
+		string utf8 = fq(options);
+		Json::Value root;
+		Json::Reader().parse(utf8, root);
+		analysis->editImage(root);
+	}
 }
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
@@ -691,30 +718,27 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			setWelcomePageVisible(false);
 
 			_loader.io(event, _package);
-			showProgress(event->type() != Utils::FileType::jasp);
+			showProgress();
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
-		if (_analyses->count() > 0)
-		{
-			_package->setWaitingForReady();
+		_package->setWaitingForReady();
 
-			getAnalysesUserData();
-			_resultsJsInterface->exportPreviewHTML();
+		getAnalysesUserData();
+		_resultsJsInterface->exportPreviewHTML();
 
-			Json::Value analysesData(Json::objectValue);
+		Json::Value analysesData(Json::objectValue);
 
-			analysesData["analyses"]	= _analyses->asJson();
-			analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
+		analysesData["analyses"]	= _analyses->asJson();
+		analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
 
-			_package->setAnalysesData(analysesData);
-		}
+		_package->setAnalysesData(analysesData);
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -723,13 +747,13 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -738,7 +762,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
-		showProgress(false);
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -915,8 +939,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			}
 
 		}
-		else if (event->operation() == FileEvent::FileSyncData)
-			_package->setModified(true);
 		else
 			_applicationExiting = false;
 	}
@@ -995,12 +1017,12 @@ void MainWindow::populateUIfromDataSet()
 
 	setDataAvailable(_package->dataSet()->rowCount() > 0);
 
-	if(!_dataAvailable)				setDataPanelVisible(false);
-	else if(_progressShowsItself)	setDataPanelVisible(!hasAnalyses);
+	hideProgress();
+
+	if(!_dataAvailable)	setDataPanelVisible(false);
+	else				setDataPanelVisible(!hasAnalyses);
 
 	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
-
-	hideProgress();
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
 	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
@@ -1126,8 +1148,7 @@ void MainWindow::analysesCountChangedHandler()
 
 void MainWindow::setPackageModified()
 {
-	//if (_package->isLoaded())
-		_package->setModified(true);
+	_package->setModified(true);
 }
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
@@ -1275,12 +1296,10 @@ void MainWindow::startDataEditor(QString path)
 
 }
 
-void MainWindow::showProgress(bool showData)
+void MainWindow::showProgress()
 {
-	_progressShowsItself = showData;
 	_fileMenu->setVisible(false);
-	if (_progressShowsItself)
-		setDataPanelVisible(true);
+
 	setProgressBarVisible(true);
 }
 
@@ -1459,6 +1478,8 @@ void MainWindow::removeAllAnalyses()
 
 void MainWindow::analysisAdded(Analysis *)
 {
+	if (!_package->isLoaded())
+		_package->setHasAnalysesWithoutData();
 	setWelcomePageVisible(false);
 }
 
@@ -1518,6 +1539,9 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 	}
 	else
 		_package->setModified(true);
+
+	if(!_analysesAvailable && !dataPanelVisible())
+		setDataPanelVisible(true);
 }
 
 void MainWindow::resetQmlCache()
@@ -1566,4 +1590,13 @@ void MainWindow::setWelcomePageVisible(bool welcomePageVisible)
 
 	_welcomePageVisible = welcomePageVisible;
 	emit welcomePageVisibleChanged(_welcomePageVisible);
+}
+
+void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
+{
+	if (_downloadNewJASPUrl == downloadNewJASPUrl)
+		return;
+
+	_downloadNewJASPUrl = downloadNewJASPUrl;
+	emit downloadNewJASPUrlChanged(_downloadNewJASPUrl);
 }

@@ -25,7 +25,7 @@ Item
 {
 	id:				variablesForm
 	implicitWidth:	form.width
-	height:			Theme.defaultListHeight
+	height:			Theme.defaultVariablesFormHeight
     implicitHeight: height
 	Layout.columnSpan: parent.columns
 	visible:		!debug || DEBUG_MODE
@@ -210,7 +210,7 @@ Item
 			{
 				if (control.width === variablesForm.width)
 					control.setWidthInForm = true
-				if (control.height === Theme.defaultListHeight)
+				if (control.height === Theme.defaultVariablesFormHeight)
 					control.setHeightInForm = true
 			}
 		}

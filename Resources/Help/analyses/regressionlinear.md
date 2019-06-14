@@ -181,6 +181,8 @@ Residual Statistics:
 ----
 - boot
 - car
+- ggplot2
+- lmtest
 - matrixStats
 - stats
 

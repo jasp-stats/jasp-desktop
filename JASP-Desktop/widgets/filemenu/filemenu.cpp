@@ -22,8 +22,9 @@
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
 #include "log.h"
+#include "data/datasetpackage.h"
 
-FileMenu::FileMenu(QObject *parent) : QObject(parent)
+FileMenu::FileMenu(QObject *parent, DataSetPackage* package) : QObject(parent), _package(package)
 {	
 	_recentFiles			= new RecentFiles(parent);
 	_currentDataFile		= new CurrentDataFile(parent);
@@ -54,7 +55,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
-	setResourceButtonsVisibleFor(ActionButtons::Open);
+	setResourceButtonsVisibleFor(_fileoperation);
 }
 
 void FileMenu::setFileoperation(ActionButtons::FileOperation fo)
@@ -225,7 +226,12 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			}
 
 			if(event->operation() == FileEvent::FileSave || (event->operation() == FileEvent::FileOpen && !event->isReadOnly()))
-				setCurrentDataFile(event->dataFilePath());
+			{
+				QString datafile = event->dataFilePath();
+				if (datafile.isEmpty())
+					datafile = QString::fromStdString(_package->dataFilePath());
+				setCurrentDataFile(datafile);
+			}
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
@@ -437,8 +443,8 @@ void FileMenu::setVisible(bool visible)
 
 	if(!_visible)
 	{
-		_actionButtons->setSelectedAction(ActionButtons::Open);
 		_resourceButtons->setSelectedButton(ResourceButtons::None);
+		_actionButtons->setSelectedAction(ActionButtons::None);
 	}
 }
 

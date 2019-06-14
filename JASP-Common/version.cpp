@@ -173,7 +173,6 @@ std::string Version::asString(bool addDebugFlag) const
 		stream << "-Debug";
 #endif
 
-		stream << "-Beta";
 	}
 
 	return stream.str();

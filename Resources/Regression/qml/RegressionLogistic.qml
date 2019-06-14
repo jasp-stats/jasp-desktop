@@ -28,7 +28,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-		AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	suggestedColumns: ["nominal", "ordinal"]; singleVariable: true	}
+        AssignedVariablesList { name: "dependent";	title: qsTr("Dependent Variable");	suggestedColumns: ["ordinal", "nominal"]; singleVariable: true	}
 		DropDown
 		{
 			name: "method"
@@ -41,7 +41,7 @@ Form
 			]
 		}
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates");			suggestedColumns: ["scale"]											}
-		AssignedVariablesList { name: "factors";	title: qsTr("Factors");				suggestedColumns: ["nominal", "ordinal"];itemType: "fixedFactors"	}
+        AssignedVariablesList { name: "factors";	title: qsTr("Factors");				suggestedColumns: ["ordinal", "nominal"];itemType: "fixedFactors"	}
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("WLS Weights (optional)"); suggestedColumns: ["scale"]; singleVariable: true; debug: true	}
 	}
 	

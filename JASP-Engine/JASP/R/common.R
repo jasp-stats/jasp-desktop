@@ -211,14 +211,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   if (inherits(analysisResult, "error")) {		
 		
 		if (inherits(analysisResult, "validationError")) {
-			errorStatus <- "validationError"
+      errorStatus  <- "validationError"
 			errorMessage <- analysisResult$message
 		} else {
-			errorStatus <- "fatalError"
-			
-			error <- .sanitizeForJson(analysisResult)
-			stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
-			stackTrace <- paste(stackTrace, collapse="<br><br>")
+      errorStatus  <- "fatalError"
+      error        <- .sanitizeForJson(analysisResult)
+      stackTrace   <- .sanitizeForJson(analysisResult$stackTrace)
+      stackTrace   <- paste(stackTrace, collapse="<br><br>")
 			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
 		}
 		
@@ -2768,8 +2767,9 @@ editImage <- function(plotName, type, height, width) {
     state[["figures"]][[plotName]][["width"]]  <- width
     state[["figures"]][[plotName]][["height"]] <- height
 		
-    key                <- attr(x = state, which = "key")
-    attr(state, "key") <- key
+    key                 <- attr(x = state, which = "key")
+    state               <- .modifyStateFigures(state, identifier=plotName, replacement=list(width=width, height=height), completeObject = FALSE)
+    attr(state, "key")  <- key
 		
     .saveState(state)
 		
@@ -2868,23 +2868,25 @@ editImage <- function(plotName, type, height, width) {
 	if (oldBFtype == newBFtype)
 		return(bfOld)
 
-	if (oldBFtype == "BF10") {
-		if (newBFtype == "BF01") {
-			return(1 / bfOld)
-		} else {
-			return(log(bfOld))
-		}
-	} else if (oldBFtype == "BF01") {
-		if (newBFtype == "BF10") {
-			return(1 / bfOld)
-		} else {
-			return(log(1 / bfOld))
-		}
-	} else { # log(BF10)
-		if (newBFtype == "BF10") {
-			return(exp(bfOld))
-		} else {
-			return(1 / exp(bfOld))
-		}
-	}
+  if      (oldBFtype == "BF10") { if (newBFtype == "BF01") { return(1 / bfOld);  } else { return(log(bfOld));     } }
+  else if (oldBFtype == "BF01") {	if (newBFtype == "BF10") { return(1 / bfOld);  } else { return(log(1 / bfOld)); } }
+  else                          {	if (newBFtype == "BF10") { return(exp(bfOld)); } else { return(1 / exp(bfOld));	} } # log(BF10)
+}
+
+postProcessModuleInstall <- function(moduleLibraryPath)
+{
+  #first we just remove Rcpp, let's avoid any problems that might arise from having multiple versions of Rcpp running at the same time
+  unlink(paste0(moduleLibraryPath, "/Rcpp"), recursive=TRUE) #if it fails we do not care
+
+  sys <- Sys.info()
+
+  if(!is.null(sys) & sys['sysname'] == 'Darwin') # This is MacOS
+  {
+    #now we just need to find all libs and hand them over to
+    allFiles <- list.files(path=moduleLibraryPath, pattern='.+\\.((so)|(dylib))$', recursive=TRUE)
+    allFiles <- allFiles[grep('dSYM', allFiles, invert=TRUE)] #ignore debugsymbols
+    allFiles <- paste0(moduleLibraryPath, '/', allFiles)
+
+    .postProcessLibraryModule(allFiles)
+  }
 }

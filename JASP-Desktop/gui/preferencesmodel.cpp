@@ -217,7 +217,7 @@ void PreferencesModel::setUseDefaultPPI(bool newUseDefaultPPI)
 	emit useDefaultPPIChanged(newUseDefaultPPI);
 
 	if(customPPI() != defaultPPI())
-		emit plotPPIChanged(plotPPI());
+		emit plotPPIChanged(plotPPI(), true);
 	
 }
 
@@ -286,7 +286,7 @@ void PreferencesModel::setCustomPPI(int newCustomPPI)
 	emit customPPIChanged(newCustomPPI);
 
 	if(!useDefaultPPI())
-		emit plotPPIChanged(plotPPI());
+		emit plotPPIChanged(plotPPI(), true);
 }
 
 void PreferencesModel::setDefaultPPI(int defaultPPI)
@@ -298,7 +298,7 @@ void PreferencesModel::setDefaultPPI(int defaultPPI)
 	emit defaultPPIChanged(_defaultPPI);
 
 	if(useDefaultPPI())
-		emit plotPPIChanged(plotPPI());
+		emit plotPPIChanged(plotPPI(), false);
 }
 
 void PreferencesModel::removeMissingValue(QString value)

@@ -79,6 +79,7 @@ public:
 			void			setId(std::string id)							{ _id							= id;				}
 			void			setWaitingForReady()							{ _analysesHTMLReady			= false;			}
 			void			setLoaded()										{ _isLoaded						= true;				}
+			void			setHasAnalysesWithoutData()						{ _hasAnalysesWithoutData		= true;				}
 
 			bool		isColumnNameFree(std::string name)		const;
 			bool		isColumnComputed(size_t colIndex)		const;
@@ -117,6 +118,7 @@ private:
 						_dataFileReadOnly,
 						_isModified					= false,
 						_isLoaded					= false,
+						_hasAnalysesWithoutData		= false,
 						_analysesHTMLReady			= false;
 
 	Json::Value			_analysesData;

@@ -268,9 +268,16 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### R Packages
 ---
+- boot
 - car
 - emmeans
+- ggplot2
+- lmtest
+- MASS
 - multcomp
+- onewaytests
+- sandwich
+- stats
 
 ### Example 
 --- 

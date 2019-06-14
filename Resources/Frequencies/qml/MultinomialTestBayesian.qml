@@ -31,8 +31,8 @@ Form
 		marginBetweenVariablesLists	: 15
 		AvailableVariablesList {				name: "allVariablesList" }
 		AssignedVariablesList {					name: "factor";		title: qsTr("Factor");			singleVariable: true; suggestedColumns: ["ordinal", "nominal"]	}
-		AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; suggestedColumns: ["ordinal", "scale"]	}
-		AssignedVariablesList {	id: exProbVar;	name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; suggestedColumns: ["ordinal", "scale"]	}
+        AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
+        AssignedVariablesList {	id: exProbVar;	name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
 	}
 
 	RadioButtonGroup
@@ -45,7 +45,7 @@ Form
 		Layout.columnSpan: 2
 
 		RadioButton {	value: "multinomialTest";	label: qsTr("Equal proportions");	 checked: true				}
-		RadioButton {	value: "expectedProbs";	label: qsTr("Expected proportions"); id: expectedProbs			}
+		RadioButton {	value: "expectedProbs";		label: qsTr("Expected proportions"); id: expectedProbs			}
 
 		Chi2TestTableView
 		{
@@ -53,6 +53,7 @@ Form
 			width	: form.availableWidth - hypothesisGroup.leftPadding
 			visible	: expectedProbs.checked
 			source	: "factor"
+			maxNumHypotheses	: 5
 		}
 	}
 

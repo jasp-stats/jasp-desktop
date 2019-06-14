@@ -32,7 +32,7 @@ Item
 
 	onWidthChanged:
 	{
-		if(!panelSplit.shouldShowInputOutput)										data.width = splitViewContainer.width
+		if(!mainWindow.analysesAvailable)											data.width = splitViewContainer.width
 		else if(data.wasMaximized)													return; //wasMaximized binds!
 		else if(splitViewContainer.width <= data.width + Theme.splitHandleWidth)	data.maximizeData();
 	}
@@ -45,13 +45,12 @@ Item
 		width:			parent.width + hackySplitHandlerHideWidth
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
-		property int  hackySplitHandlerHideWidth:	(panelSplit.shouldShowInputOutput && analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidth : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
-		property bool shouldShowInputOutput:		(!mainWindow.progressBarVisible && !mainWindow.dataAvailable) || mainWindow.analysesAvailable
+		property int  hackySplitHandlerHideWidth:	( analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
 
 		DataPanel
 		{
 			id:						data
-			visible:				mainWindow.progressBarVisible || mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
+			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
 
 			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
@@ -60,17 +59,15 @@ Item
 
 			onWidthChanged:
 			{
-				if(!mainWindow.progressBarVisible)
-				{
-					var iAmBig = width > 0;
-					 if(iAmBig !== mainWindow.dataPanelVisible)
-						mainWindow.dataPanelVisible = iAmBig
 
-					if(fakeEmptyDataForSumStatsEtc)
-					{
-						mainWindow.dataPanelVisible = false;
-						width = 0;
-					}
+				var iAmBig = width > 0;
+				 if(iAmBig !== mainWindow.dataPanelVisible)
+					mainWindow.dataPanelVisible = iAmBig
+
+				if(fakeEmptyDataForSumStatsEtc)
+				{
+					mainWindow.dataPanelVisible = false;
+					width = 0;
 				}
 
 				if(data.width !== data.maxWidth)
@@ -103,8 +100,8 @@ Item
 				onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
 				pointingLeft:	mainWindow.dataPanelVisible
 				showArrow:		mainWindow.dataAvailable
-				toolTipArrow:	mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? "Resize data"  : "Drag to show data") : ""
-				toolTipDrag:	mainWindow.dataPanelVisible ? "Resize data" : "Drag to show data"
+				toolTipArrow:	mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Hide data")  : qsTr("Show data")) : ""
+				toolTipDrag:	mainWindow.dataPanelVisible ? qsTr("Resize data/results") : qsTr("Drag to show data")
 				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
 
@@ -112,7 +109,7 @@ Item
 			{
 				id:						analyses
 				z:						-1
-				visible:				panelSplit.shouldShowInputOutput && mainWindow.analysesAvailable
+				visible:				mainWindow.analysesAvailable
 				width:					visible ? implicitWidth : 0
 				anchors.top:			parent.top
 				anchors.bottom:			parent.bottom
@@ -126,7 +123,7 @@ Item
 			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
 			Layout.fillWidth:		true
 			z:						3
-			visible:				panelSplit.shouldShowInputOutput
+			visible:				mainWindow.analysesAvailable
 			onVisibleChanged:		if(visible) width = Theme.resultWidth; else data.maximizeData()
 			color:					analysesModel.currentAnalysisIndex !== -1 ? Theme.uiBackground : Theme.white
 
@@ -161,7 +158,7 @@ Item
 					bottom:				parent.bottom
 				}
 
-				width: giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
+				width:					giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
 
 				url:					resultsJsInterface.resultsPageUrl
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
@@ -190,7 +187,7 @@ Item
 					function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
-					function analysisTitleChangedFromResults(id, title)	{ resultsJsInterface.analysisTitleChangedFromResults(id, title) }
+					function analysisTitleChangedInResults(id, title)	{ resultsJsInterface.analysisTitleChangedInResults(id, title)	}
 
 
 					function showAnalysesMenu(options)
@@ -205,7 +202,7 @@ Item
 							var name		= customMenu.props['model'].getName(index);
 							var jsfunction	= customMenu.props['model'].getJSFunction(index);
 							
-							customMenu.remove()
+							customMenu.hide()
 
 							if (name === 'hasRefreshAllAnalyses') {
 								resultsJsInterface.refreshAllAnalyses();
@@ -242,6 +239,11 @@ Item
 						};
 
 						customMenu.showMenu(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
+
+						customMenu.scrollOri		= resultsView.scrollPosition;
+						customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x); });
+						customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y); });
+						customMenu.menuMinIsMin		= true
 					}
 
 					function updateUserData()						{ resultsJsInterface.updateUserData()						}
