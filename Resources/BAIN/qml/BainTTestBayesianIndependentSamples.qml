@@ -66,13 +66,13 @@ Form
 
 	ColumnLayout
 	{
-		GroupBox
+		Group
 		{
 			title: qsTr("Tables")
 			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
 		}
 
-		GroupBox
+		Group
 		{
 			title: qsTr("Plots")
 			CheckBox { name: "bayesFactorPlot"; text: qsTr("Bayes factor comparison") }

@@ -20,6 +20,7 @@ JASPControl
 	property alias	font:				control.font
 	property alias	textDocument:		control.textDocument
 	property alias	title:				textAreaTitle.text
+	property bool	trim:				false
     
     signal applyRequest()
     

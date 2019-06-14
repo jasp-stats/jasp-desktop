@@ -40,7 +40,7 @@ Form
 
 	}
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Tables")
 
@@ -53,14 +53,14 @@ Form
 		}
 	}
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Plots")
 		CheckBox { name: "bayesFactorPlot";		text: qsTr("Bayes factor comparison")	}
 		CheckBox { name: "descriptivesPlot";	text: qsTr("Descriptives plot")			}
 	}
 
-	ExpanderButton
+	Section
 	{
 		text: qsTr("Model Constraints")
 		columns: 1
@@ -73,6 +73,7 @@ Form
 				infoText: Qt.platform.os == "osx" ? "\u2318 + Enter to apply" : "Crtl + Enter to apply"
 				text: ""
 				textType: "model"
+				trim: true
 		}
 	}
 }
