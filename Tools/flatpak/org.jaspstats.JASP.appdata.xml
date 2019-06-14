@@ -25,7 +25,10 @@
 	</description>
 	<translation/> <!-- translation not yet supported -->
 	<screenshots>
-		<screenshot type="default">http://static.jasp-stats.org/RPkgs/JASP-screenshot0.png</screenshot>
+		<screenshot type="default">
+			<image>http://static.jasp-stats.org/RPkgs/JASP-screenshot-0.png</image>
+			<caption>Shows the dataviewer of JASP flanked with the options and output for the Independt Samples T-Test.</caption>
+		</screenshot>
 	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
