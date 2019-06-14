@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
+BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 
 	### READY ###
 	ready <- options[["dependent"]] != "" && options[["fixedFactors"]] != ""  && !is.null(unlist(options[["covariates"]]))
@@ -46,9 +46,9 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready, type = "ancova")
 }
 
-.bainAncovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready){
+.bainAncovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready) {
 
-	if(!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 	variables <- c(options$dependent, options$fixedFactors, unlist(options$covariates))
 	bainTable <- createJaspTable("Bain ANCOVA Result")
@@ -67,14 +67,14 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	
 	bainContainer[["bainTable"]] <- bainTable
 
-	if(!ready)
+	if (!ready)
 		return()
 
-	if(any(variables %in% missingValuesIndicator)){
+	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
-		if(length(i) > 1){
+		if (length(i) > 1) {
 			bainTable$addFootnote(message= paste0("The variables ", paste(variables[i], collapse = ", "), " contain missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
-		} else if (length(i) == 1){
+		} else if (length(i) == 1) {
 			bainTable$addFootnote(message= paste0("The variable ", variables[i], " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
 		}
 	}
@@ -82,12 +82,12 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
 
-	if(length(varLevels) > 15){
+	if (length(varLevels) > 15) {
 		bainTable$setError("The fixed factor has too many levels for a Bain analysis.")
 		return()
 	}
 
-	if(options$model == ""){
+	if (options$model == "") {
 		# We have to make a default matrix depending on the levels of the grouping variable...meh
 		# The default hypothesis is that all groups are equal (e.g., 3 groups, "p1=p2=p3")
 		len <- length(varLevels)
@@ -127,7 +127,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	}
 
 	BF <- bainResult$BF
-	for(i in 1:length(BF)){
+	for (i in 1:length(BF)) {
 		row <- data.frame(hypotheses = paste0("H",i), BF = BF[i], PMP1 = bainResult$PMPa[i], PMP2 = bainResult$PMPb[i])
 		bainTable$addRows(row)
 	}
@@ -137,16 +137,16 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 
 .bainBayesFactorMatrix <- function(dataset, options, bainContainer, ready, type) {
 
-	if(!is.null(bainContainer[["bayesFactorMatrix"]]) || !options[["bayesFactorMatrix"]]) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(bainContainer[["bayesFactorMatrix"]]) || !options[["bayesFactorMatrix"]]) return() #The options for this table didn't change so we don't need to rebuild it
 
 	bayesFactorMatrix <- createJaspTable("Bayes Factor Matrix")
 	bayesFactorMatrix$position <- 3
 
-	if(type == "regression")
+	if (type == "regression")
 		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "covariates", "standardized"))
-	if(type == "ancova")
+	if (type == "ancova")
 		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "covariates"))
-	if(type == "anova")
+	if (type == "anova")
 		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors"))
 		
 	bayesFactorMatrix$addColumnInfo(name = "hypothesis", title = "", type = "string")
@@ -154,7 +154,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	
 	bainContainer[["bayesFactorMatrix"]] <- bayesFactorMatrix
 
-	if(!ready || bainContainer$getError()){
+	if (!ready || bainContainer$getError()) {
 		row <- data.frame(hypothesis = "H1", H1 = ".")
 		bayesFactorMatrix$addRows(row)
 		return()
@@ -174,9 +174,9 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 			bayesFactorMatrix$addColumnInfo(name = paste0("H", i), type = "number")
 	}
 
-	for(i in 1:nrow(BFmatrix)){
+	for (i in 1:nrow(BFmatrix)) {
 		tmp <- list(hypothesis = paste0("H", i))
-		for(j in 1:ncol(BFmatrix)){
+		for (j in 1:ncol(BFmatrix)) {
 			tmp[[paste0("H", j)]] <- BFmatrix[i,j]
 		}
 		row <- tmp
@@ -186,7 +186,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 
 .bainAncovaCoefficientsTable <- function(dataset, options, bainContainer, ready) {
 
-	if(!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
+	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 	
 	coefficientsTable <- createJaspTable("Coefficients for Groups plus Covariates")
 	coefficientsTable$dependOn(options="coefficients")
@@ -201,7 +201,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 	
-	if(!ready || bainContainer$getError())
+	if (!ready || bainContainer$getError())
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
@@ -214,7 +214,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	x <- rownames(covcoef)
 	x <- sapply(regmatches(x, gregexpr("covars", x)), length)
 	x <- sum(x)
-	if(x > 1){
+	if (x > 1) {
 			rownames(covcoef)[(length(rownames(covcoef)) - (x-1)):length(rownames(covcoef))] <- options$covariates
 	} else {
 			rownames(covcoef) <- gsub("covars", options$covariates, rownames(covcoef))
@@ -232,7 +232,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 
 	N <- NULL
 
-	for(variable in varLevels){
+	for (variable in varLevels) {
 		column <- dataset[ , .v(options$dependent)]
 		column <- column[which(groupCol == variable)]
 		N <- c(N,length(column))
@@ -241,30 +241,30 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 	covVars <- options$covariates
 	covVars <- unlist(covVars)
 
-	for(var in covVars){
+	for (var in covVars) {
 		col <- dataset[ , .v(var)]
 		col <- na.omit(col)
 		N <- c(N, length(col))
 	}
 
-	for(i in 1:length(groups)){
+	for (i in 1:length(groups)) {
 		row <- data.frame(v = groups[i], mean = estim[i], N = N[i], SE = SEs[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
 		coefficientsTable$addRows(row)
 	}
 }
 
-.readDataBainAncova <- function(options, dataset){
-	numeric.variables 						<- c(unlist(options$dependent),unlist(options$covariates))
-	numeric.variables 						<- numeric.variables[numeric.variables != ""]
-	factor.variables 						<- unlist(options$fixedFactors)
-	factor.variables 						<- factor.variables[factor.variables != ""]
-	all.variables							<- c(numeric.variables, factor.variables)
+.readDataBainAncova <- function(options, dataset) {
+	numeric.variables	<- c(unlist(options$dependent),unlist(options$covariates))
+	numeric.variables	<- numeric.variables[numeric.variables != ""]
+	factor.variables	<- unlist(options$fixedFactors)
+	factor.variables	<- factor.variables[factor.variables != ""]
+	all.variables			<- c(numeric.variables, factor.variables)
 	if (is.null(dataset)) {
-		trydata                                 <- .readDataSetToEnd(columns.as.numeric=all.variables)
-		missingValuesIndicator                  <- .unv(names(which(apply(trydata, 2, function(x){ any(is.na(x))} ))))
-		dataset 							<- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
+		trydata									<- .readDataSetToEnd(columns.as.numeric=all.variables)
+		missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
+		dataset									<- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
 	} else {
-		dataset 							<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
+		dataset									<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 	}
 	.hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
 				all.target=all.variables, observations.amount="< 3",
@@ -275,9 +275,9 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
   return(readList)
 }
 
-.bainLegendAncova <- function(dataset, options, jaspResults){
+.bainLegendAncova <- function(dataset, options, jaspResults) {
 
-	if(!is.null(jaspResults[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(jaspResults[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 		legendTable <- createJaspTable("Hypothesis Legend")
 		legendTable$dependOn(options =c("model", "fixedFactors"))
@@ -288,14 +288,14 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 		
 		jaspResults[["legendTable"]] <- legendTable
 
-		if(options$model != ""){
+		if (options$model != "") {
 			rest.string <- .bainCleanModelInput(options$model)
 			hyp.vector <- unlist(strsplit(rest.string, "[;]"))
-				for(i in 1:length(hyp.vector)){
+				for (i in 1:length(hyp.vector)) {
 					row <- list(number = paste0("H",i), hypothesis = hyp.vector[i])
 					legendTable$addRows(row)
 				}
-		} else if (options$fixedFactors != ""){
+		} else if (options$fixedFactors != "") {
 			factor <- options$fixedFactors
 			fact <- dataset[, .v(factor)]
 			levels <- levels(fact)
@@ -305,7 +305,7 @@ BainAncovaBayesian	 <- function (jaspResults, dataset, options, ...) {
 		}
 }
 
-.plot.BainA <- function (x, y, ...)
+.plot.BainA <- function(x, y, ...)
 {
     PMPa <- x$PMPa
     PMPb <- c(x$PMPb, 1 - sum(x$PMPb))

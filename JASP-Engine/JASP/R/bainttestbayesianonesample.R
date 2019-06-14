@@ -21,9 +21,9 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   ready <- length(options[["variables"]][options[["variables"]] != ""] > 0)
   
   ### READ DATA ###
-  readList                                        <- .readDataBainOneSample(options, dataset)
-  dataset                                         <- readList[["dataset"]]
-  missingValuesIndicator                          <- readList[["missingValuesIndicator"]]
+  readList								<- .readDataBainOneSample(options, dataset)
+  dataset									<- readList[["dataset"]]
+  missingValuesIndicator	<- readList[["missingValuesIndicator"]]
   
   ### RESULTS ###
   .bainOneSampleResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready)
@@ -38,11 +38,11 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   .bainOneSampleDescriptivesPlot(dataset, options, jaspResults, ready)
 }
 
-.readDataBainOneSample <- function(options, dataset){
-    if (is.null(dataset)){
-            trydata                                 <- .readDataSetToEnd(columns.as.numeric = options[["variables"]])
-            missingValuesIndicator                  <- .unv(names(which(apply(trydata, 2, function(x){ any(is.na(x))} ))))
-            dataset                                 <- .readDataSetToEnd(columns.as.numeric = options[["variables"]], exclude.na.listwise = options[["variables"]])
+.readDataBainOneSample <- function(options, dataset) {
+    if (is.null(dataset)) {
+            trydata									<- .readDataSetToEnd(columns.as.numeric = options[["variables"]])
+            missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
+            dataset									<- .readDataSetToEnd(columns.as.numeric = options[["variables"]], exclude.na.listwise = options[["variables"]])
     }
     .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
                 all.target = options[["variables"]], observations.amount="< 3",
@@ -55,7 +55,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
 .bainOneSampleResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready) {
 
-  if(!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+  if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   bainTable                      <- createJaspTable("Bain One Sample T-test Result")
   jaspResults[["bainTable"]]     <- bainTable
@@ -66,7 +66,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   BFH1H0 <- FALSE
   bf.title <- "BF"
 
-  if(options$hypothesis == "allTypes"){
+  if (options$hypothesis == "allTypes") {
     bainTable$addColumnInfo(name="Variable",      type="string", title="")
     bainTable$addColumnInfo(name="type[equal]",   type="string", title="Hypothesis")
     bainTable$addColumnInfo(name="BF[equal]",     type="number", title=bf.title)
@@ -109,15 +109,15 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   bainTable$addCitation(.bainGetCitations())
 
-  if(!ready)
+  if (!ready)
     return()
 
   jaspResults$startProgressbar(length(options[["variables"]]))
   bainResult <- list()
   
-  for (variable in options[["variables"]]){
+  for (variable in options[["variables"]]) {
 
-    if(variable %in% missingValuesIndicator){
+    if (variable %in% missingValuesIndicator) {
       bainTable$addFootnote(message= paste0("The variable ", variable, " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
     }
 
@@ -136,42 +136,42 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       next
     }
 
-    if(type == 1){
+    if (type == 1) {
         BF_0u <- bainAnalysis$BF_0u
         PMP_u <- bainAnalysis$PMP_u
         PMP_0 <- bainAnalysis$PMP_0
-        if(options$bayesFactorType == "BF10")
+        if (options$bayesFactorType == "BF10")
           BF_0u <- 1/BF_0u
     }
-    if(type == 2){
+    if (type == 2) {
         BF_01 <- bainAnalysis$BF_01
         PMP_1 <- bainAnalysis$PMP_1
         PMP_0 <- bainAnalysis$PMP_0
-        if(options$bayesFactorType == "BF10")
+        if (options$bayesFactorType == "BF10")
             BF_01 <- 1/BF_01
     }
-    if(type == 3){
+    if (type == 3) {
         BF_01 <- bainAnalysis$BF_01
         PMP_0 <- bainAnalysis$PMP_0
         PMP_1 <- bainAnalysis$PMP_1
-        if(options$bayesFactorType == "BF10")
+        if (options$bayesFactorType == "BF10")
             BF_01 <- 1/BF_01
     }
-     if (type == 4){
+     if (type == 4) {
         BF_01 <- bainAnalysis$BF_12
         PMP_0 <- bainAnalysis$PMP_1
         PMP_1 <- bainAnalysis$PMP_2
-        if(options$bayesFactorType == "BF10")
+        if (options$bayesFactorType == "BF10")
             BF_01 <- 1/BF_01
     }
-     if (type == 5){
+     if (type == 5) {
         BF_01 <- bainAnalysis$BF_01
         BF_02 <- bainAnalysis$BF_02
         BF_12 <- bainAnalysis$BF_12
         PMP_0 <- bainAnalysis$PMP_0
         PMP_1 <- bainAnalysis$PMP_1
         PMP_2 <- bainAnalysis$PMP_2
-        if(options$bayesFactorType == "BF10")
+        if (options$bayesFactorType == "BF10")
         {
             BF_01 <- 1/BF_01
             BF_02 <- 1/BF_02
@@ -179,38 +179,38 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
         }
     }
 
-    if(options$bayesFactorType == "BF01"){
-        if(options$hypothesis == "notEqualToTestValue"){
+    if (options$bayesFactorType == "BF01") {
+        if (options$hypothesis == "notEqualToTestValue") {
             row <- list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H1: Not equal", "BF[type2]" = "", "pmp[type2]" = PMP_u)
-        } else if(options$hypothesis == "greaterThanTestValue"){
+        } else if (options$hypothesis == "greaterThanTestValue") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
-        } else if(options$hypothesis == "lessThanTestValue"){
+        } else if (options$hypothesis == "lessThanTestValue") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal", "BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H1: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "_4type"){
+        } else if (options$hypothesis == "_4type") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "allTypes"){
+        } else if (options$hypothesis == "allTypes") {
             row <-list(Variable=variable, "type[equal]" = "H0: Equal", "BF[equal]"= "", "pmp[equal]" = PMP_0, 
                                             "type[greater]" = "H1: Bigger", "BF[greater]" = BF_01, "pmp[greater]" = PMP_1,
                                             "type[less]" = "H2: Smaller", "BF[less]" = BF_02, "pmp[less]" = PMP_2)
         }
-    } else if (options$bayesFactorType == "BF10"){
-        if(options$hypothesis == "notEqualToTestValue"){
+    } else if (options$bayesFactorType == "BF10") {
+        if (options$hypothesis == "notEqualToTestValue") {
             row <- list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"="", "pmp[type1]" = PMP_0,
                                               "hypothesis[type2]" = "H1: Not equal", "BF[type2]" = BF_0u, "pmp[type2]" = PMP_u)
-        } else if(options$hypothesis == "greaterThanTestValue"){
+        } else if (options$hypothesis == "greaterThanTestValue") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"="", "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
-        } else if(options$hypothesis == "lessThanTestValue"){
+        } else if (options$hypothesis == "lessThanTestValue") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal", "BF[type1]"="", "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H1: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "_4type"){
+        } else if (options$hypothesis == "_4type") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"= "", "pmp[type1]" = PMP_0,
                                             "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "allTypes"){
+        } else if (options$hypothesis == "allTypes") {
             row <-list(Variable=variable, "type[equal]" = "H0: Equal", "BF[equal]"= "", "pmp[equal]" = PMP_0,
                                             "type[greater]"= "H1: Bigger", "BF[greater]" = BF_01, "pmp[greater]" = PMP_1,
                                             "type[less]" = "H2: Smaller", "BF[less]" = BF_02, "pmp[less]" = PMP_2)
@@ -225,8 +225,8 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
 .bainOneSampleDescriptivesTable <- function(dataset, options, jaspResults, ready) {
 
-  if(!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
-    if(options[["descriptives"]]){
+  if (!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+    if (options[["descriptives"]]) {
       
       descriptivesTable <- createJaspTable("Descriptive Statistics")
       descriptivesTable$dependOn(options =c("variables", "descriptives", "descriptivesPlotsCredibleInterval"))
@@ -245,12 +245,12 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       
       jaspResults[["descriptivesTable"]] <- descriptivesTable
 
-      if(!ready)
+      if (!ready)
         return()
 
-      for(variable in options[["variables"]]){
+      for (variable in options[["variables"]]) {
           data <- na.omit(dataset[[ .v(variable) ]])
-          if (class(data) != "factor"){ # TODO: Fix this...
+          if (class(data) != "factor") { # TODO: Fix this...
             posteriorSummary <- .posteriorSummaryGroupMean(variable=data, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
             ciLower <- round(posteriorSummary$ciLower,3)
             ciUpper <- round(posteriorSummary$ciUpper,3)
@@ -268,15 +268,15 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     }
 }
 
-.bainOneSampleDescriptivesPlot <- function(dataset, options, jaspResults, ready){
-  if(options[["descriptivesPlots"]] && ready){
-      if(is.null(jaspResults[["descriptivesPlots"]])){
-      jaspResults[["descriptivesPlots"]]          <- createJaspContainer("Descriptive Plots")
-      jaspResults[["descriptivesPlots"]]          $dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
-      jaspResults[["descriptivesPlots"]]			    $position <- 4
+.bainOneSampleDescriptivesPlot <- function(dataset, options, jaspResults, ready) {
+  if (options[["descriptivesPlots"]] && ready) {
+      if (is.null(jaspResults[["descriptivesPlots"]])) {
+      jaspResults[["descriptivesPlots"]] <- createJaspContainer("Descriptive Plots")
+      jaspResults[["descriptivesPlots"]]$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
+      jaspResults[["descriptivesPlots"]]$position <- 4
       }
-      for (variable in unlist(options[["variables"]])){
-          if(is.null(jaspResults[["descriptivesPlots"]][[variable]]))
+      for (variable in unlist(options[["variables"]])) {
+          if (is.null(jaspResults[["descriptivesPlots"]][[variable]]))
           {
             variableData <- dataset[[ .v(variable) ]]
             variableData <- variableData[ ! is.na(variableData) ]
@@ -286,7 +286,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
             jaspResults[["descriptivesPlots"]][[variable]]        $dependOn(optionContainsValue=list("variables" = variable))
           }
       }
-  } else if(options[["descriptivesPlots"]]){
+  } else if (options[["descriptivesPlots"]]) {
     emptyPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plots")
     jaspResults[["descriptivesPlots"]] <- emptyPlot
     jaspResults[["descriptivesPlots"]]$dependOn(options =c("variables", "descriptivesPlots"))
@@ -342,7 +342,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.plot.BainT <- function (x, y, ...){
+.plot.BainT <- function(x, y, ...) {
     if (length(x) == 4 && names(x)[1] == "BF_0u") {
         PMP <- x$PMP_0
         lab = c("H0", "H1")

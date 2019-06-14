@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
+BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	### READY ###
 	ready <- options[["fixedFactors"]] != "" && options[["dependent"]] != ""
@@ -46,9 +46,9 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready)
 }
 
-.bainAnovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready){
+.bainAnovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready) {
 
-	if(!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 	variables <- c(options$dependent, options$fixedFactors)
 	bainTable <- createJaspTable("Bain ANOVA Result")
@@ -67,14 +67,14 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 
 	bainTable$addCitation(.bainGetCitations())
 
-	if(!ready)
+	if (!ready)
 		return()
 
-	if(any(variables %in% missingValuesIndicator)){
+	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
-		if(length(i) > 1){
+		if (length(i) > 1) {
 			bainTable$addFootnote(message= paste0("The variables ", variables[1], " and ", variables[2], " contain missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
-		} else if (length(i) == 1){
+		} else if (length(i) == 1) {
 			bainTable$addFootnote(message= paste0("The variable ", variables[i], " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
 		}
 	}
@@ -82,12 +82,12 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
 
-	if(length(varLevels) > 15){
+	if (length(varLevels) > 15) {
 		bainContainer$setError("The fixed factor has too many levels for a Bain analysis.")
 		return()
 	}
 
-	if(options$model == ""){
+	if (options$model == "") {
 
 		# We have to make a default matrix depending on the levels of the grouping variable...meh
 		# The default hypothesis is that all groups are equal (e.g., 3 groups, "p1=p2=p3")
@@ -129,7 +129,7 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	}
 
 	BF <- bainResult$BF
-	for(i in 1:length(BF)){
+	for (i in 1:length(BF)) {
 		row <- list(hypotheses = paste0("H",i), BF = BF[i], PMP1 = bainResult$PMPa[i], PMP2 = bainResult$PMPb[i])
 		bainTable$addRows(row)
 	}
@@ -137,7 +137,7 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	bainTable$addRows(row)
 }
 
-.bainAnovaDescriptivesTable <- function(dataset, options, jaspResults, ready){
+.bainAnovaDescriptivesTable <- function(dataset, options, jaspResults, ready) {
 
 	if (!is.null(jaspResults[["descriptivesTable"]]) || !options[["descriptives"]]) return()
 
@@ -158,13 +158,13 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	
 	jaspResults[["descriptivesTable"]] <- descriptivesTable
 
-	if(!ready)
+	if (!ready)
 		return()
 
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
 
-	for(variable in varLevels){
+	for (variable in varLevels) {
 
 			column <- dataset[ , .v(options$dependent)]
 			column <- column[which(groupCol == variable)]
@@ -225,7 +225,7 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	sum_model <- bainResult$estimate_res
 	summaryStat <- summary(sum_model)$coefficients
 
-	if(type == "ancova"){
+	if (type == "ancova") {
 		summaryStat <- summaryStat[-(nrow(summaryStat) - 0:(length(options[["covariates"]])-1)), ] # Remove covars rows
 	}
 
@@ -265,16 +265,16 @@ BainAnovaBayesian <- function (jaspResults, dataset, options, ...) {
 	descriptivesPlot$plotObject <- p
 }
 
-.readDataBainAnova <- function(options, dataset){
-	numeric.variables 							<- c(unlist(options$dependent))
-	numeric.variables 							<- numeric.variables[numeric.variables != ""]
-	factor.variables 							<- unlist(options$fixedFactors)
-	factor.variables 							<- factor.variables[factor.variables != ""]
-	all.variables 								<- c(numeric.variables, factor.variables)
+.readDataBainAnova <- function(options, dataset) {
+	numeric.variables	<- c(unlist(options$dependent))
+	numeric.variables	<- numeric.variables[numeric.variables != ""]
+	factor.variables	<- unlist(options$fixedFactors)
+	factor.variables	<- factor.variables[factor.variables != ""]
+	all.variables			<- c(numeric.variables, factor.variables)
 
 	if (is.null(dataset)) {
-		trydata                                 <- .readDataSetToEnd(columns.as.numeric=all.variables)
-		missingValuesIndicator                  <- .unv(names(which(apply(trydata, 2, function(x){ any(is.na(x))} ))))
+		trydata									<- .readDataSetToEnd(columns.as.numeric=all.variables)
+		missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
 		dataset 								<- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
 	} else {
 		dataset 								<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
