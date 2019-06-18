@@ -93,7 +93,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
         hyp <- "less"
       
       BF10  <- .bayesBinomialTest(counts, n, theta0=options$testValue, hypothesis = hyp, a = a, b = b)
-      
+
       BF <- BF10
       
       if (options$bayesFactorType == "BF01") {
@@ -134,7 +134,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   bayesianBinomialTable <- createJaspTable("Bayesian Binomial Test")
   bayesianBinomialTable$dependOn(c("variables", "testValue", "hypothesis", "bayesFactorType", "Prior"))
   bayesianBinomialTable$position <- 1
-  
+
   bayesianBinomialTable$addCitation(c("Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
                                       "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
                                       "Haldane, J. B. S. (1932). A note on inverse probability. Mathematical Proceedings of the Cambridge Philosophical Society, 28, 55-61."))
@@ -207,7 +207,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     errorMessageTable <- "Cannot test the hypothesis that the test value is greater than 1."
     
   } else if (theta0 == 0 && hyp == "less") {
-    
+
     errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
   }
   
