@@ -33,8 +33,9 @@ struct footnotes
 	
 	void		insert(std::string text, std::string symbol, std::vector<Json::Value> colNames, std::vector<Json::Value> rowNames);
 	void		convertFromJSON_SetFields(Json::Value footnotes);
-	Json::Value	convertToJSON() const; 
-	
+	Json::Value	convertToJSON() const;
+	Json::Value	convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames) const;
+
 	private:
 		std::map<std::string, tableFields> _data;
 };
@@ -131,6 +132,9 @@ private:
 	Json::Value	schemaJson();
 	Json::Value	rowsJson();
 	std::string deriveColumnType(int col);
+
+	std::map<std::string, size_t> mapColNamesToIndices();
+	std::map<std::string, size_t> mapRowNamesToIndices();
 
 	Json::Value convertToJSON()								override;
 	void		convertFromJSON_SetFields(Json::Value in)	override;
@@ -348,7 +352,6 @@ private:
 	std::vector<jaspColRowCombination>		_colRowCombinations;
 	size_t									_expectedColumnCount	= 0,
 											_expectedRowCount		= 0;
-
 };
 
 class jaspTable_Interface : public jaspObject_Interface
