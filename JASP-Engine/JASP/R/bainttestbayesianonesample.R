@@ -117,10 +117,6 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   
   for (variable in options[["variables"]]) {
 
-    if (variable %in% missingValuesIndicator) {
-      bainTable$addFootnote(message= paste0("The variable ", variable, " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
-    }
-
     variableData <- dataset[[ .v(variable) ]]
     variableData <- variableData[ ! is.na(variableData) ]
     variableData <- variableData - options[["testValue"]] # subtract test value from data points
@@ -131,10 +127,15 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     })
 
     if (inherits(p, "try-error")) {
-      bainTable$addFootnote(message=paste0("Results for ", variable, " not computed: ", .extractErrorMessage(p)), symbol="<b>Error.</b>")
-      jaspResults$progressbarTick()
-      next
-    }
+			bainTable$addRows(list(Variable=variable), rowNames=variable)
+			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
+			jaspResults$progressbarTick()
+			next
+		}
+		
+		if (variable %in% missingValuesIndicator) {
+			bainTable$addFootnote(message= paste0("Variable contains missing values, the rows containing these values are removed in the analysis."), colNames="Variable", rowNames=variable)
+		}
 
     if (type == 1) {
         BF_0u <- bainAnalysis$BF_0u
@@ -216,7 +217,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
                                             "type[less]" = "H2: Smaller", "BF[less]" = BF_02, "pmp[less]" = PMP_2)
         }
     }
-    bainTable$addRows(row)
+    bainTable$addRows(row, rowNames=variable)
     jaspResults$progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)

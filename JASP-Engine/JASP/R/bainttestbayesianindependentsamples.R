@@ -105,10 +105,6 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
   for (variable in options[["variables"]]) {
 
-		if (variable %in% missingValuesIndicator) {
-			bainTable$addFootnote(message= paste0("The variable ", variable, " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
-		}
-
 	  subDataSet <- dataset[, c(.v(variable), .v(options[["groupingVariable"]]))]
 	  subDataSet <- na.omit(subDataSet)
 	  group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
@@ -119,13 +115,18 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
       	bainAnalysis <- Bain::Bain_ttestData(group1, group2, type = type)
       	bainResult[[variable]] <- bainAnalysis
 
-	})
+		})
 
-	if (inherits(p, "try-error")) {
-		bainTable$addFootnote(message=paste0("Results for ", variable, " not computed: ", .extractErrorMessage(p)), symbol="<b>Error.</b>")
-		jaspResults$progressbarTick()
-		next
-	}
+		if (inherits(p, "try-error")) {
+			bainTable$addRows(list(Variable=variable), rowNames=variable)
+			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
+			jaspResults$progressbarTick()
+			next
+		}
+		
+		if (variable %in% missingValuesIndicator) {
+			bainTable$addFootnote(message= paste0("Variable contains missing values, the rows containing these values are removed in the analysis."), colNames="Variable", rowNames=variable)
+		}
 
     if (type == 1) {
         BF_0u <- bainAnalysis$BF_0u
@@ -221,7 +222,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
                                "pmp[less]" = PMP_1)
         }
     }
-    bainTable$addRows(row)
+    bainTable$addRows(row, rowNames=variable)
 	  jaspResults$progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)

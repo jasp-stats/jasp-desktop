@@ -18,7 +18,7 @@
 BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
   ### READY ###
-  ready <- !(""%in%unlist(options[["pairs"]])) && !is.null(unlist(options[["pairs"]])) # TODO: Fix this
+  ready <- !("" %in% unlist(options[["pairs"]])) && !is.null(unlist(options[["pairs"]])) # TODO: Fix this
   
   ### READ DATA ###
   readList <- .readDataBainPairedSamples(options, dataset)
@@ -96,15 +96,6 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
     for (pair in options[["pairs"]]) {
 
-      if (any(pair %in% missingValuesIndicator)) {
-        i <- which(pair %in% missingValuesIndicator)
-          if (length(i) > 1) {
-            bainTable$addFootnote(message= paste0("The variables ", pair[1], " and ", pair[2], " contain missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
-          } else if (length(i) == 1) {
-            bainTable$addFootnote(message= paste0("The variable ", pair[i], " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
-          }
-      }
-
         currentPair <- paste(pair, collapse=" - ")
 
         if (length(pair) > 0 && pair[[2]] != "" && pair[[1]] != pair[[2]]) {
@@ -127,9 +118,20 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         if (analysisPerformed) {
 
             if (inherits(p, "try-error")) {
-              bainTable$addFootnote(message=paste0("Results for ", currentPair, " not computed: ", .extractErrorMessage(p)), symbol="<b>Error.</b>")
+              bainTable$addRows(list(Variable=variable), rowNames=variable)
+              bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=currentPair)
               jaspResults$progressbarTick()
               next
+            } 
+            
+            if (any(pair %in% missingValuesIndicator)) {
+              i <- which(pair %in% missingValuesIndicator)
+              if (length(i) > 1) {
+                message <- paste0("Both variables contain missing values, the rows containing these values are removed in the analysis.")
+              } else {
+                message <- paste0("The variable ", pair[i], " contains missing values, the rows containing these values are removed in the analysis.")
+              }
+              bainTable$addFootnote(message=message, colNames="Variable", rowNames=currentPair)
             }
 
             if (type == 1) {
@@ -244,7 +246,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
                                "hypothesis[type2]" = ".", "BF[type2]" = ".", "pmp[type2]" = ".")
         }
     }
-    bainTable$addRows(row)
+    bainTable$addRows(row, rowNames=currentPair)
     jaspResults$progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)
