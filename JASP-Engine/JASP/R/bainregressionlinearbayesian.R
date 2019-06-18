@@ -153,9 +153,9 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
-	coefficientsTable$addColumnInfo(name="SE",      title="se",          type="number")
-	coefficientsTable$addColumnInfo(name="CiLower", title="lowerCI",     type="number", overtitle=overTitle)
-	coefficientsTable$addColumnInfo(name="CiUpper", title="upperCI",     type="number", overtitle=overTitle)
+	coefficientsTable$addColumnInfo(name="SE",      title="SE",          type="number")
+	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     type="number", overtitle=overTitle)
+	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     type="number", overtitle=overTitle)
 
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 

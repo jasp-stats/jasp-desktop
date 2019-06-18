@@ -196,8 +196,8 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	coefficientsTable$addColumnInfo(name="N",				title="N",						type="integer")
 	coefficientsTable$addColumnInfo(name="mean",		title="Coefficient",	type="number")
 	coefficientsTable$addColumnInfo(name="SE",			title="SE",						type="number")
-	coefficientsTable$addColumnInfo(name="CiLower",	title="lowerCI",			type="number", overtitle="95% Credible Interval")
-	coefficientsTable$addColumnInfo(name="CiUpper",	title="upperCI",			type="number", overtitle="95% Credible Interval")
+	coefficientsTable$addColumnInfo(name="CiLower",	title="lower",			type="number", overtitle="95% Credible Interval")
+	coefficientsTable$addColumnInfo(name="CiUpper",	title="upper",			type="number", overtitle="95% Credible Interval")
 
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 	

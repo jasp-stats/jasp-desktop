@@ -148,13 +148,13 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
 	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
 	descriptivesTable$addColumnInfo(name="mean", 		title="Mean",		type="number")
-	descriptivesTable$addColumnInfo(name="sd",   		title="sd", 		type="number")
-	descriptivesTable$addColumnInfo(name="se",   		title="se", 		type="number")
+	descriptivesTable$addColumnInfo(name="sd",   		title="SD", 		type="number")
+	descriptivesTable$addColumnInfo(name="se",   		title="SE", 		type="number")
 
 	interval <- options$CredibleInterval * 100
 	overTitle <- paste0(interval, "% Credible Interval")
-	descriptivesTable$addColumnInfo(name="lowerCI",      title = "lowerCI", type="number", overtitle = overTitle)
-	descriptivesTable$addColumnInfo(name="upperCI",      title = "upperCI", type="number", overtitle = overTitle)
+	descriptivesTable$addColumnInfo(name="lowerCI",      title = "Lower", type="number", overtitle = overTitle)
+	descriptivesTable$addColumnInfo(name="upperCI",      title = "Upper", type="number", overtitle = overTitle)
 	
 	jaspResults[["descriptivesTable"]] <- descriptivesTable
 
