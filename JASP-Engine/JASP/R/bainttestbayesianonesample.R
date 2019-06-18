@@ -119,7 +119,6 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
     variableData <- dataset[[ .v(variable) ]]
     variableData <- variableData[ ! is.na(variableData) ]
-    variableData <- variableData - options[["testValue"]] # subtract test value from data points
 
     p <- try({
       bainAnalysis <- Bain::Bain_ttestData(variableData, nu = options$testValue, type = type)

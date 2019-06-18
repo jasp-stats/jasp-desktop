@@ -55,7 +55,6 @@ protected:
 	QString						_text;
 	TextType					_textType;
 	QString						_applyScriptInfo;
-	bool						_trim = false;
 	
 	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
 	ListModelTermsAvailable*	_allVariablesModel = nullptr;

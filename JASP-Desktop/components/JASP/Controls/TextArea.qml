@@ -24,6 +24,12 @@ JASPControl
     
     signal applyRequest()
     
+	function userEnteredInput() {
+		if (textArea.trim)
+			textArea.text = textArea.text.trim();
+
+		applyRequest();
+	}
 
 	Text
 	{
@@ -63,7 +69,7 @@ JASPControl
 					if (event.modifiers & Qt.ControlModifier)
 					{
 						if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)
-							applyRequest();
+							userEnteredInput();
 					}
 					else if ( event.key === Qt.Key_Tab)
 					{

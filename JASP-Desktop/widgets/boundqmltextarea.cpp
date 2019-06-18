@@ -88,8 +88,6 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 	}
 	else
 		_textType = TextType::Default;
-	
-	_trim = _item->property("trim").toBool();
 
 	QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));
 	
@@ -134,10 +132,6 @@ void BoundQMLTextArea::resetQMLItem(QQuickItem *item)
 void BoundQMLTextArea::checkSyntax()
 {
 	_text = _item->property("text").toString();
-
-	if (_trim)
-		_text = _text.trimmed();
-
 	if (_textType == TextType::Lavaan)
 	{
 		// create an R vector of available column names

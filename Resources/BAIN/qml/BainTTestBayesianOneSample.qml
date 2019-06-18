@@ -23,7 +23,8 @@ Form
 {
 	VariablesForm
 	{
-		AvailableVariablesList { name: "variablesList"; suggestedColumns: ["scale"]}
+		height: 200
+		AvailableVariablesList { name: "variablesList" }
 		AssignedVariablesList {
 			name: "variables"
 			title: qsTr("Variables")
