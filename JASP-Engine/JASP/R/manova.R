@@ -23,7 +23,8 @@ Manova <- function(jaspResults, dataset, options) {
   # Read dataset
   dataset <- .readDataSetToEnd(columns.as.numeric=dependentVariables, 
                                columns.as.factor=randomFactors)
-
+  dataset <- na.omit(dataset)
+  
   # Error checking
   errors <- .manovaCheckErrors(dataset, options)
 
@@ -276,9 +277,9 @@ Manova <- function(jaspResults, dataset, options) {
 
   # From mvnormtest
   depData <- t(as.matrix(dataset[, .v(options$dependent)]))
-  Us <- apply(depData, 1, mean)
+  Us <- apply(depData, 1, mean, na.rm = TRUE)
   R <- depData - Us
-  
+
   tryResult <- try(expr = {
     M.1 <- solve(R %*% t(R), tol = 1e-200)
     Rmax <- diag(t(R) %*% M.1 %*% R)
@@ -287,7 +288,7 @@ Manova <- function(jaspResults, dataset, options) {
     
     result <- stats::shapiro.test(Z)
   }, silent = TRUE)
-  
+
   if (grepl(tryResult[[1]], pattern = "singular")) {
     errors <- "The design matrix is not invertible. This might be due to collinear dependent variables."
     result <- NULL
