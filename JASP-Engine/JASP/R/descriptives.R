@@ -131,11 +131,13 @@ Descriptives <- function(jaspResults, dataset, options) {
       qqSplitLevels     <- levels(qqSplitFactor)
       # remove missing values from the grouping variable
       dataset           <- dataset[!is.na(qqSplitFactor), ]
-      for(var in variables){ #allows multiple variables
+      for(var in variables){ 
+        deeperQQPlots <- createJaspContainer(paste0(var))
+        QQPlots[[var]] <- deeperQQPlots
         #splits dataset according to split values
         qqSplitData     <- split(dataset, qqSplitFactor)
         for( lev in 1:length(qqSplitLevels)){
-          QQPlots[[paste0(var, lev)]] <- .descriptivesQQPlot(dataset=qqSplitData[[lev]], options=options, qqvar=var, levelName=qqSplitLevels[lev])
+          QQPlots[[var]][[paste0(var, lev)]] <- .descriptivesQQPlot(dataset=qqSplitData[[lev]], options=options, qqvar=var, levelName=qqSplitLevels[lev])
         }
       }
     }
@@ -1247,8 +1249,7 @@ Descriptives <- function(jaspResults, dataset, options) {
         yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
       }
     }
-    #should y arguments have x ticks and labels?
-    p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = paste0(qqvar, ": Standardised"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+    p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = paste0("Standardised Residuals"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
     p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
     p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
 
