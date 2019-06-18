@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
+    usesJaspResults: true
 	
 	VariablesForm
 	{
@@ -51,6 +51,11 @@ Form
 			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox { name: "plotSequentialAnalysis";		label: qsTr("Sequential analysis") }
+        CheckBox
+        {
+            name: "descriptivesPlots";					label: qsTr("Descriptive plots")
+            CIField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence interval") }
+        }
 	}
 
 	BayesFactorType {}
