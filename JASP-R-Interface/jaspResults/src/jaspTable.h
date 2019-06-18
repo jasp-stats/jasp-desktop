@@ -81,9 +81,11 @@ public:
 	void		addColumns(Rcpp::RObject newColumns);
 
 	///Accepts data.frame, list, matrix or vector. If the input is one-dimensional it is assumed to be a single row, if two-dimensional then it will be assumed to be rows {cells/cols}, if three-dimensional or higher things probably break. Also fills up each column up to the maximum length one with nulls.
-	void		addRows(Rcpp::RObject newRows, Rcpp::CharacterVector _rowNames);
+	void		addRows(Rcpp::RObject newRows,	Rcpp::CharacterVector _rowNames);
+	void		addRow (Rcpp::RObject newRow,	Rcpp::CharacterVector _rowName);
 
 	void		addRowsWithoutNames(Rcpp::RObject newRows) { addRows(newRows, Rcpp::CharacterVector()); }
+	void		addRowWithoutNames (Rcpp::RObject newRow)  { addRow (newRow,  Rcpp::CharacterVector()); }
 
 	void		setColumn(std::string columnName, Rcpp::RObject column);
 
@@ -223,52 +225,8 @@ private:
 						static size_t lengthFromList(Rcpp::List list)				{ return list.size();	}
 	template<int RTYPE> static size_t lengthFromVector(Rcpp::Vector<RTYPE> vec)		{ return vec.size();	}
 
-	void addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames)
-	{
-		size_t elementLenghts = 0;
-		for(int el=0; el<newData.size(); el++)
-			elementLenghts = std::max(lengthFromRObject((Rcpp::RObject)newData[el]), elementLenghts);
-
-		if(elementLenghts <= 1 && newData.size() > 1) //each entry is 1 or 0, this must be a single row with columnnames and not a set of rows with rownames..
-		{
-			Rcpp::List newRowList;
-			auto shield = new Rcpp::Shield<Rcpp::List>(newRowList);
-			newRowList.push_back(newData);
-			addRowsFromList(newRowList, newRowNames);
-			delete shield;
-
-			return;
-		}
-
-		int equalizedColumnsLength = equalizeColumnsLengths();
-		int previouslyAddedUnnamedCols = 0;
-
-		std::vector<std::string> localRowNames = extractElementOrColumnNames(newData);
-
-		for(size_t row=0; row<localRowNames.size(); row++)
-			_rowNames[row + equalizedColumnsLength] = localRowNames[row];
-
-		for(size_t row=0; row<newRowNames.size(); row++)
-			_rowNames[row + equalizedColumnsLength] = newRowNames[row];
-
-
-		for(size_t row=0; row<newData.size(); row++)
-		{
-			Rcpp::RObject rij = (Rcpp::RObject)newData[row];
-
-			std::vector<std::string> localColNames;
-
-			if(Rcpp::is<Rcpp::List>(rij))
-				 localColNames = extractElementOrColumnNames<Rcpp::List>(Rcpp::as<Rcpp::List>(rij));
-
-			auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
-
-			for(size_t col=0; col<jsonRij.size(); col++)
-				previouslyAddedUnnamedCols = pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
-
-		}
-
-	}
+	void addRowFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames);
+	void addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames);
 
 	void addRowsFromDataFrame(Rcpp::DataFrame newData)
 	{
@@ -427,6 +385,8 @@ public:
 
 	void addRows(Rcpp::RObject newRows, Rcpp::CharacterVector rowNames)	{ ((jaspTable*)myJaspObject)->addRows(newRows, rowNames);		}
 	void addRowsWithoutNames(Rcpp::RObject newRows)						{ ((jaspTable*)myJaspObject)->addRowsWithoutNames(newRows);		}
+	void addRow(Rcpp::RObject newRow, Rcpp::CharacterVector rowNames)	{ ((jaspTable*)myJaspObject)->addRow(newRow, rowNames);		}
+	void addRowWithoutNames(Rcpp::RObject newRow)						{ ((jaspTable*)myJaspObject)->addRowWithoutNames(newRow);		}
 	void setColumn(std::string columnName, Rcpp::RObject column)		{ ((jaspTable*)myJaspObject)->setColumn(columnName, column);	}
 
 	void setExpectedSize(size_t columns, size_t rows)	{ ((jaspTable*)myJaspObject)->setExpectedSize(columns, rows);	}

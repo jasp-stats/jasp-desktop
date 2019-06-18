@@ -499,13 +499,24 @@ jaspTableR <- R6Class(
 					format <- "dp:3;p:.001"
 			}
 			private$jaspObject$addColumnInfoHelper(name, title, type, format, combine, overtitle)
-		},
-		addRows = function(rows, rowNames = NULL) {
-			if (is.null(rowNames))
-				private$jaspObject$addRows(rows) 
-			else
-				private$jaspObject$addRows(rows, rowNames)
-		},
+    },
+    addRows = function(rows, rowNames = NULL) {
+
+      maxElementLength <- 0 # Lets check if the users means a single row...
+      if(is.list(rows))           maxElementLength <- max(unlist(lapply(rows, length)))
+      else if(is.vector(rows))    maxElementLength <- 1
+
+      if(maxElementLength == 1)
+      {
+        if (is.null(rowNames))    private$jaspObject$addRow(rows)
+        else                      private$jaspObject$addRow(rows, rowNames)
+      }
+      else
+      {
+        if (is.null(rowNames))    private$jaspObject$addRows(rows)
+        else                      private$jaspObject$addRows(rows, rowNames)
+      }
+  },
 		setExpectedSize = function(rows=NULL, cols=NULL) {
 			inputTypes <- c(mode(rows), mode(cols))
 			if (!all(inputTypes %in% c("numeric", "NULL")))

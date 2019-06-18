@@ -202,13 +202,13 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   nhyps <- multinomialResults[["mainTable"]][["nhyps"]]
   nms   <- multinomialResults[["specs"]][["hypNames"]]
 
-  for (h in 1:nhyps) {
-    row <- data.frame(case  = nms[h],
-                       level = multinomialResults[["mainTable"]][["nlevels"]],
-                       BF    = multinomialResults[["mainTable"]][[nms[h]]][["BF"]][[options$bayesFactorType]]
-    )
-    multinomialTable$addRows(row)
-  }
+  for (h in 1:nhyps)
+    multinomialTable$addRows(list(
+      case  = nms[h],
+      level = multinomialResults[["mainTable"]][["nlevels"]],
+      BF    = multinomialResults[["mainTable"]][[nms[h]]][["BF"]][[options$bayesFactorType]]
+    ))
+
 }
 
 

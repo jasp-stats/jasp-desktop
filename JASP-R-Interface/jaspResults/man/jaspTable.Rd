@@ -23,12 +23,12 @@
 
 		\item{\code{setData(data)}:}{Set the data of the table, this methods accepts lists, dataframes, matrices and vectors. If any column- or rownames are specified they are set on the object, but only if they aren't set yet. Any one-dimensional data given will be assumed to be a row.}
 
-		\item{\code{addRows(rows, rowNames=null}:}{Add one or more rows to the table, where 'rows' is a list, dataframe, matrix or vector. 
-			Before the data is added all existing columns will be made the same length by appending null-values.
-			If the new data contains more columns than currently present empty columns will be added.  
-			Columnnames will be extracted and used to place the data in the correct column, they can be specified through the elementnames of a list, names of a data.frame and colnames of a matrix. 
-			To also set the rownames you can fill pass a characterVector with the desired names in the second argument.}
-		\item{\code{addColumns(cols)}:}{Add one or more columns to the table, where 'cols' is a list, dataframe, matrix or vector.
+    \item{\code{addRows(rows, rowNames=null}:}{Add one or more rows to the table, where 'rows' is a list, dataframe, matrix or vector.
+      Before the data is added all existing columns will be made the same length by appending null-values.
+      If the new data contains more columns than currently present empty columns will be added.
+      Columnnames will be extracted and used to place the data in the correct column, they can be specified through the elementnames of a list, names of a data.frame and colnames of a matrix.
+      To also set the rownames you can fill pass a characterVector with the desired names in the second argument.}
+    \item{\code{addColumns(cols)}:}{Add one or more columns to the table, where 'cols' is a list, dataframe, matrix or vector.
 			A list is interpreted as being a single column where each elementname is a rowname. A dataframe already consists of columns so these are simply used as expected, the same goes for a matrix. A vector is of course also a column and the rownames are used.
 			To specifically set a vector or list with a desired name you can directly set it through: [['columnName']]<-
 		}

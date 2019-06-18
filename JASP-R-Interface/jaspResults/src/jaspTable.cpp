@@ -201,16 +201,67 @@ void jaspTable::addRows(Rcpp::RObject newData, Rcpp::CharacterVector rowNames)
 	else if(Rcpp::is<Rcpp::StringMatrix>(newData))		addRowsFromMatrix<STRSXP>((Rcpp::StringMatrix)		newData, rowNames);
 	else if(Rcpp::is<Rcpp::CharacterMatrix>(newData))	addRowsFromMatrix<STRSXP>((Rcpp::CharacterMatrix)	newData, rowNames);
 
-	else if(Rcpp::is<Rcpp::NumericVector>(newData))		addRowFromVector<REALSXP>((Rcpp::NumericVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::LogicalVector>(newData))		addRowFromVector<LGLSXP>((Rcpp::LogicalVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::IntegerVector>(newData))		addRowFromVector<INTSXP>((Rcpp::IntegerVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::StringVector>(newData))		addRowFromVector<STRSXP>((Rcpp::StringVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::CharacterVector>(newData))	addRowFromVector<STRSXP>((Rcpp::CharacterVector)	newData, rowNames);
-
 	else
-		Rf_error("Cannot add this kind of data as a row to a jaspTable, it is not understood. Try a list, dataframe, vector or matrix instead.");
+		Rf_error("Cannot add this kind of data as rows to a jaspTable, it is not understood. Try a list, dataframe or matrix instead.");
 
 	notifyParentOfChanges();
+}
+
+void jaspTable::addRow(Rcpp::RObject newData, Rcpp::CharacterVector rowName)
+{
+	if(newData.isNULL())
+		return;
+
+	if		(Rcpp::is<Rcpp::List>(newData))				addRowFromList((Rcpp::List)							newData, rowName);
+
+	else if	(Rcpp::is<Rcpp::NumericVector>(newData))	addRowFromVector<REALSXP>((Rcpp::NumericVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::LogicalVector>(newData))	addRowFromVector<LGLSXP>((Rcpp::LogicalVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::IntegerVector>(newData))	addRowFromVector<INTSXP>((Rcpp::IntegerVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::StringVector>(newData))		addRowFromVector<STRSXP>((Rcpp::StringVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::CharacterVector>(newData))	addRowFromVector<STRSXP>((Rcpp::CharacterVector)	newData, rowName);
+
+	else
+		Rf_error("Cannot add this kind of data as a row to a jaspTable, it is not understood. Try a list or vector instead.");
+
+	notifyParentOfChanges();
+}
+
+void jaspTable::addRowFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames)
+{
+	Rcpp::List newRowList;
+	auto shield = new Rcpp::Shield<Rcpp::List>(newRowList);
+	newRowList.push_back(newData);
+	addRowsFromList(newRowList, newRowNames);
+	delete shield;
+}
+
+void jaspTable::addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames)
+{
+	int equalizedColumnsLength		= equalizeColumnsLengths(),
+		previouslyAddedUnnamedCols	= 0;
+
+	std::vector<std::string> localRowNames = extractElementOrColumnNames(newData);
+
+	for(size_t row=0; row<localRowNames.size(); row++)
+		_rowNames[row + equalizedColumnsLength] = localRowNames[row];
+
+	for(size_t row=0; row<newRowNames.size(); row++)
+		_rowNames[row + equalizedColumnsLength] = newRowNames[row];
+
+	for(size_t row=0; row<newData.size(); row++)
+	{
+		Rcpp::RObject rij = (Rcpp::RObject)newData[row];
+
+		std::vector<std::string> localColNames;
+
+		if(Rcpp::is<Rcpp::List>(rij))
+			 localColNames = extractElementOrColumnNames<Rcpp::List>(Rcpp::as<Rcpp::List>(rij));
+
+		auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
+
+		for(size_t col=0; col<jsonRij.size(); col++)
+			previouslyAddedUnnamedCols = pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
+	}
 }
 
 void jaspTable::addColumnsFromList(Rcpp::List newData)
