@@ -503,8 +503,8 @@ jaspTableR <- R6Class(
     addRows = function(rows, rowNames = NULL) {
 
       maxElementLength <- 0 # Lets check if the users means a single row...
-      if(is.list(rows))           maxElementLength <- max(unlist(lapply(rows, length)))
-      else if(is.vector(rows))    maxElementLength <- 1
+      if(is.list(rows) & !is.data.frame(rows))  maxElementLength <- max(unlist(lapply(rows, length)))
+      else if(is.vector(rows))                  maxElementLength <- 1
 
       if(maxElementLength == 1)
       {

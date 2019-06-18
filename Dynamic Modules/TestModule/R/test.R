@@ -8,7 +8,8 @@ testFunc <- function(jaspResults, dataset, options)
 
 	#tafel$addColumnInfo(name="kol2")
 	tafel$addRows(list(kol0=1, kol1=2, 3), rowNames="a")
-	tafel$addRows(list(kol0=1, 2, 3), rowNames="b")
+	tafel$addRows(as.data.frame(list(kol0=1, 2, 3)), rowNames="b")
+	tafel$addRows(as.data.frame(list('a', 'b','c')), rowNames="b")
 	#tafel$addRows(list(j=1, 2, 3))
 	#tafel$addRows(list(1, 2, 3))
 
