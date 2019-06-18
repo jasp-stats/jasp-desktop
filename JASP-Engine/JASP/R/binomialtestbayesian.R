@@ -130,7 +130,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     note <- "For all tests, the alternative hypothesis specifies that the proportion is less than "
 
   binomTable$addFootnote(paste0(note, options$testValue, "."))
-  
+
   jaspResults[["binomTable"]] <- binomTable
   
   if (!ready)
