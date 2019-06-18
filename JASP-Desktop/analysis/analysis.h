@@ -41,7 +41,7 @@ class Analysis : public QObject
 	Q_PROPERTY(QString name		READ nameQ						NOTIFY nameChanged		)
 	Q_PROPERTY(QString helpFile	READ helpFile					NOTIFY helpFileChanged	)
 	Q_PROPERTY(QString title	READ titleQ		WRITE setTitleQ	NOTIFY titleChanged		)
-	
+
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
 public:
@@ -58,6 +58,8 @@ public:
 	void				clearOptions();
 	Options				*options()					const	{ return _options;			}
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
+
+	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName) { return dynamicModule()->helpFolderPath() + helpFileName; }
 
 signals:
 	void				nameChanged();
