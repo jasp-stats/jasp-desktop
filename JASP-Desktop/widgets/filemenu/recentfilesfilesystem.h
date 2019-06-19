@@ -19,10 +19,10 @@
 #ifndef FSBMRECENTFILES_H
 #define FSBMRECENTFILES_H
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 #include "common.h"
 
-class RecentFilesFileSystem : public FileSystemModel
+class RecentFilesFileSystem : public FileSystem
 {
 public:
 	RecentFilesFileSystem(QObject *parent = NULL);

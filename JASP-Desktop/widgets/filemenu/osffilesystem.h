@@ -24,11 +24,12 @@
 #include <QNetworkReply>
 #include <QMap>
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 #include "common.h"
 #include "osf/onlinedatamanager.h"
+#include "../sortable.h"
 
-class OSFFileSystem : public FileSystemModel
+class OSFFileSystem : public FileSystem, public Sortable
 {
 	Q_OBJECT
 
@@ -64,6 +65,9 @@ public:
 	void clearAuthentication() OVERRIDE;
 
 	OnlineNodeData currentNodeData();
+	void sortWithType(SortType sortType, bool ascending = true)			override;
+
+	void sortEntriesAndRefresh(FileSystemEntry::SortOrder sortOrder, bool reset);
 
 signals:
 	void userDataChanged();
@@ -100,6 +104,8 @@ private:
 	void parseFilesAndFolders(QUrl url, int level, bool recursive = false);
 	void parseProjects(QUrl url, bool recursive = false);
 	void handleNetworkReplyError(QNetworkReply* reply);
+
+	FileSystemEntryList _unsortedEntries;
 
 	int _level = 0;
 

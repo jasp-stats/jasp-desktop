@@ -89,7 +89,6 @@ Window
 		{
 			id:			customMenu
 			z:			5
-			visible:	false
 		}
 
 		FileMenu

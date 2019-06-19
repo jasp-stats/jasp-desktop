@@ -4,7 +4,7 @@
 #include <QTimer>
 #include "log.h"
 
-FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystemModel * model) : QAbstractListModel(parent), _model(model)
+FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
 {
 
 }

@@ -296,13 +296,13 @@ HEADERS += \
     variablespage/levelstablemodel.h \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
+    widgets/filemenu/filesystem.h \
+    widgets/filemenu/osffilesystem.h \
     widgets/filemenu/recentfiles.h \
     widgets/filemenu/computer.h \
     widgets/filemenu/osf.h \
     widgets/filemenu/datalibrarybreadcrumbsmodel.h \
     widgets/filemenu/datalibrarylistmodel.h \
-    widgets/filemenu/filesystemmodel.h \
-    widgets/filemenu/osffilesystem.h \
     widgets/filemenu/computerfilesystem.h \
     widgets/filemenu/filesystementry.h \
     widgets/boundqmlcheckbox.h \
@@ -478,13 +478,13 @@ SOURCES += \
     variablespage/levelstablemodel.cpp \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
+    widgets/filemenu/filesystem.cpp \
+    widgets/filemenu/osffilesystem.cpp \
     widgets/filemenu/recentfiles.cpp \
     widgets/filemenu/computer.cpp \
     widgets/filemenu/osf.cpp \
     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp \
     widgets/filemenu/datalibrarylistmodel.cpp \
-    widgets/filemenu/filesystemmodel.cpp \
-    widgets/filemenu/osffilesystem.cpp \
     widgets/filemenu/computerfilesystem.cpp \
     widgets/boundqmlcheckbox.cpp \
     widgets/boundqmlradiobuttons.cpp \

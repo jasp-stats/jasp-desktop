@@ -45,6 +45,7 @@ public:
 	void									sortAgain();
 	Sortable::SortType						currentSortType();
 	bool									isAscending();
+	void									setCurrentEntry(Sortable::SortType sortType);
 
 private:
 	static QMap<Sortable::SortType, QString> _labels;

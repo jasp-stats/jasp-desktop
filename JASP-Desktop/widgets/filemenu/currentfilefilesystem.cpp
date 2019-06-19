@@ -24,7 +24,7 @@
 
 
 CurrentFileFileSystem::CurrentFileFileSystem(QObject *parent)
-	: FileSystemModel(parent)
+	: FileSystem(parent)
 {
 	parent->installEventFilter(this);
 	_current = QString();

@@ -21,6 +21,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4 as QTCONTROLS
 import QtQml.Models 2.2
 import JASP.Theme 1.0
+import JASP.Widgets 1.0
 import QtQuick.Layouts 1.3
 
 JASPControl
@@ -287,14 +288,9 @@ JASPControl
 			visible:	false			
 		}
 
-		Rectangle
+		SortMenuButton
 		{
-			height:		20 * preferencesModel.uiScale
-			width:		height
-			z:			10
-			radius:		height
-			color:		mouseAreaSort.containsMouse ? Theme.whiteBroken : Theme.white
-			visible:	variablesList.showSortMenu && variablesList.sortMenuModel && listView.count > 1
+			visible: variablesList.showSortMenu && variablesList.sortMenuModel && listView.count > 1
 			anchors
 			{
 				top:			parent.top
@@ -302,34 +298,8 @@ JASPControl
 				rightMargin:	5 * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 				topMargin:		4 * preferencesModel.uiScale
 			}
-			Image
-			{
-				id: sortVariables
-				source: "qrc:/icons/sort-az.png"
-				anchors.fill: parent
-				anchors.margins: 3
-			}
-			MouseArea
-			{
-				id: mouseAreaSort
-				anchors.fill: parent
-				hoverEnabled: true
-				onClicked:
-				{
-					var functionCall = function (index)
-					{
-						variablesList.sortMenuModel.clickSortItem(index)
-						customMenu.hide()
-					}
 
-					var props = {
-						"model": variablesList.sortMenuModel,
-						"functionCall"	: functionCall
-					};
-
-					customMenu.showMenu(parent, props, 0, parent.height);
-				}
-			}
+			sortMenuModel: variablesList.sortMenuModel
 		}
 
 		GridView

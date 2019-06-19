@@ -23,8 +23,11 @@ QMap<Sortable::SortType, QString> SortMenuModel::_labels =
 {
 	{ Sortable::SortType::None, "None" },
 	{ Sortable::SortType::SortByName, "Sort by name" },
+	{ Sortable::SortType::SortByNameAZ, "Sort by name A-Z" },
+	{ Sortable::SortType::SortByNameZA, "Sort by name Z-A" },
 	{ Sortable::SortType::SortByType, "Sort by type" },
-	{ Sortable::SortType::SortByDate, "Sort by date" }
+	{ Sortable::SortType::SortByDate, "Sort by date" },
+	{ Sortable::SortType::SortBySize, "Sort by size" }
 };
 
 SortMenuModel::SortMenuModel(QObject* parent, const QVector<Sortable::SortType> &menuEntries) : QAbstractListModel(parent)
@@ -92,4 +95,15 @@ bool SortMenuModel::isAscending()
 {
 	SortMenuItem* entry = _menuEntries[_currentEntry];
 	return entry->ascending;
+}
+
+void SortMenuModel::setCurrentEntry(Sortable::SortType sortType)
+{
+	int index = 0;
+	for (const SortMenuItem* menuItem : _menuEntries)
+	{
+		if (menuItem->sortType == sortType)
+			_currentEntry = index;
+		index++;
+	}
 }

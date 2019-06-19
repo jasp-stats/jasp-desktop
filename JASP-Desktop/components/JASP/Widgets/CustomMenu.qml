@@ -21,11 +21,12 @@ import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.12
 import JASP.Theme 1.0
 
-Item
+FocusScope
 {
 	id							: menu
 	width						: menuRectangle.width
 	height						: menuRectangle.height
+	visible						: showMe && activeFocus
 	x							: Math.min(menuMinPos.x + (menuMinIsMin ? Math.max(0, menuX) : menuX), menuMaxPos.x - (width  + 2) )
 	y							: Math.min(menuMinPos.y + (menuMinIsMin ? Math.max(0, menuY) : menuY), menuMaxPos.y - (height + 2) )
 	property var	props		: undefined
@@ -38,6 +39,7 @@ Item
 	property point	menuMinPos	: "0,0"
 	property point	menuMaxPos	: "0,0"
 	property bool	menuMinIsMin: false
+	property bool	showMe		: false
 
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 
@@ -57,12 +59,13 @@ Item
 		customMenu.props		= props;
 		customMenu.menuOffset.x	= x_offset;
 		customMenu.menuOffset.y	= y_offset;
-		customMenu.visible		= true;
+		customMenu.showMe		= true;
+		customMenu.forceActiveFocus();
 	}
 
 	function hide()
 	{
-		menu.visible		= false;
+		menu.showMe			= false;
 		menu.props			= undefined;
 		menu.menuMinIsMin	= false;
 		menu.menuOffset		= "0,0"
@@ -81,6 +84,7 @@ Item
 		id		: menuRectangle
 		z		: menuShadow.z + 1
 		color	: Theme.fileMenuColorBackground
+		focus	: true
 	}
 
 	Column

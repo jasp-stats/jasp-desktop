@@ -15,6 +15,7 @@ ListView
 
 	property alias scrollBarVisible:	scrollBar.visible
 	property alias scrollBarHeight:		scrollBar.height
+	property int scrollBarRightMargin: 0
 
 	JASPScrollBar
 	{
@@ -29,6 +30,7 @@ ListView
 			left:			parent.left
 			right:			parent.right
 			bottom:			parent.bottom
+			rightMargin:	scrollBarRightMargin
 		}
 	}
 

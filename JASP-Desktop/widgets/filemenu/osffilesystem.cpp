@@ -27,6 +27,8 @@
 #include <QJsonParseError>
 #include <QJsonArray>
 #include <QFile>
+#include <QDateTime>
+
 
 #include "filesystementry.h"
 #include "osf/onlinedatamanager.h"
@@ -34,13 +36,14 @@
 #include "widgets/filemenu/osf.h"
 #include "utilities/simplecrypt.h"
 #include "utilities/settings.h"
+#include "utilities/qutils.h"
 #include <gui/messageforwarder.h>
 #include <iostream>
 
 const QString OSFFileSystem::rootelementname = "Projects";
 
 OSFFileSystem::OSFFileSystem(QObject *parent, QString root)
-	:FileSystemModel (parent)
+	:FileSystem (parent)
 {
 	_dataManager = NULL;
 	_manager = NULL;
@@ -159,6 +162,14 @@ OSFFileSystem::OnlineNodeData OSFFileSystem::currentNodeData()
 	return _pathUrls[_path];
 }
 
+void OSFFileSystem::sortWithType(Sortable::SortType sortOrder, bool ascending)
+{
+	Settings::setValue(Settings::OSF_SORTORDER, int(sortOrder));
+	if (sortOrder == SortType::None) _entries =_unsortedEntries;
+	sortEntries(sortOrder);
+	emit entriesChanged();
+}
+
 void OSFFileSystem::loadProjects() {
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
 	parseProjects(url);
@@ -237,7 +248,13 @@ void OSFFileSystem::gotProjects()
 		if (nextProjects.isNull() == false)
 			parseProjects(QUrl(nextProjects.toString()), true);
 		else
-			emit entriesChanged();
+		{
+			_unsortedEntries = _entries;
+			if (currentSortType() != SortType::None)
+				sortItems();
+			else
+				emit entriesChanged();
+		}
 	}
 	else
 	{
@@ -272,12 +289,14 @@ void OSFFileSystem::gotFilesAndFolders()
 {
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
-	bool finished = false;
-
 	if (reply->error() == QNetworkReply::NoError)
 	{
 		QByteArray data = reply->readAll();
 		QString dataString = (QString) data;
+		QString date_created = "";
+		QString date_modified = "";
+		QDateTime created;
+		QDateTime modified;
 
 		QJsonParseError error;
 		QJsonDocument doc = QJsonDocument::fromJson(dataString.toUtf8(), &error);
@@ -303,6 +322,13 @@ void OSFFileSystem::gotFilesAndFolders()
 				QString kind = attrObj.value("kind").toString();
 				if (kind != "folder" && kind != "file")
 					continue;
+
+				date_created = attrObj.value("date_created").toString();
+				date_modified = attrObj.value("date_modified").toString();
+
+				modified = created = QDateTime();
+				if (date_modified!="") modified = osfJsonToDateTime(date_modified);
+				if (date_created!="") created = osfJsonToDateTime(date_created);
 
 				nodeData.name = attrObj.value("name").toString();
 
@@ -364,7 +390,11 @@ void OSFFileSystem::gotFilesAndFolders()
 
 			nodeData.level = _level;
 
-			_entries.append(createEntry(path, entryType));
+			FileSystemEntry fe = createEntry(path, entryType);
+			fe.created = created;
+			fe.modified = modified;
+
+			_entries.append(fe);
 			_pathUrls[path] = nodeData;
 
 		}
@@ -376,7 +406,13 @@ void OSFFileSystem::gotFilesAndFolders()
 		if (nextContentList.isNull() == false)
 			parseFilesAndFolders(QUrl(nextContentList.toString()), _level + 1, true);
 		else
-			finished = true;
+		{
+			_unsortedEntries = _entries;
+			if (currentSortType() != SortType::None)
+				sortItems();
+			else
+				emit entriesChanged();
+		}
 	}
 	else
 	{
@@ -384,9 +420,6 @@ void OSFFileSystem::gotFilesAndFolders()
 		emit newLoginRequired();
 		emit stopProcessing();
 	}
-
-	if (finished)
-		emit entriesChanged();
 
 	reply->deleteLater();
 }

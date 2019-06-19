@@ -112,5 +112,6 @@
         <file>components/JASP/Widgets/FileMenu/PrefsGroupRect.qml</file>
         <file>components/JASP/Widgets/WelcomePage.qml</file>
         <file>components/JASP/Widgets/UIScaleNotifier.qml</file>
+        <file>components/JASP/Widgets/SortMenuButton.qml</file>
     </qresource>
 </RCC>

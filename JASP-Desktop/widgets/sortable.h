@@ -28,8 +28,11 @@ public:
 	enum SortType {
 		None = 0,
 		SortByName,
+		SortByNameAZ,
+		SortByNameZA,
 		SortByType,
-		SortByDate
+		SortByDate,
+		SortBySize
 	};
 
 	virtual ~Sortable() {}

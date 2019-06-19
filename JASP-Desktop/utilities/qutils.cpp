@@ -20,7 +20,6 @@
 
 #include <QStringList>
 
-#include <QDateTime>
 #include "simplecrypt.h"
 #include "simplecryptkey.h"
 
@@ -94,4 +93,16 @@ QString decrypt(const QString &input)
 QString getSortableTimestamp()
 {
 	return QDateTime::currentDateTime().toString("yyyy-MM-dd hh_mm_ss"); //This order gets an easy alphanumeric sort by default and sadly enough the character : is not allowed on unix/macx
+}
+
+QDateTime osfJsonToDateTime(const QString &input)
+{
+	// JSON OSF modified file format is e.g. 2016-08-23T15:11:56.857000Z
+	QRegExp separator("(-|T|:|Z)");
+	QStringList list = input.split(separator);
+	QDate date(list[0].toInt(),list[1].toInt(),list[2].toInt());
+	QTime time(list[3].toInt(),list[4].toInt(),static_cast<int>(list[5].toDouble()));
+	QDateTime datetime(date,time);
+	return datetime;
+
 }
