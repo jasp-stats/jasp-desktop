@@ -45,6 +45,8 @@ JASPControl
 	property bool	draggable:			true
 	property var	source
 	property alias	syncModels:			variablesList.source
+	property var	sortMenuModel:		null
+	property bool	showSortMenu:		false
 	property bool	singleVariable:		false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
@@ -282,9 +284,54 @@ JASPControl
 			anchors.top: parent.top
 			anchors.left: parent.left
 			color:		Theme.itemSelectedColor
-			visible:	false
+			visible:	false			
 		}
-		
+
+		Rectangle
+		{
+			height:		20 * preferencesModel.uiScale
+			width:		height
+			z:			10
+			radius:		height
+			color:		mouseAreaSort.containsMouse ? Theme.whiteBroken : Theme.white
+			visible:	variablesList.showSortMenu && variablesList.sortMenuModel && listView.count > 1
+			anchors
+			{
+				top:			parent.top
+				right:			parent.right
+				rightMargin:	5 * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
+				topMargin:		4 * preferencesModel.uiScale
+			}
+			Image
+			{
+				id: sortVariables
+				source: "qrc:/icons/sort-az.png"
+				anchors.fill: parent
+				anchors.margins: 3
+			}
+			MouseArea
+			{
+				id: mouseAreaSort
+				anchors.fill: parent
+				hoverEnabled: true
+				onClicked:
+				{
+					var functionCall = function (index)
+					{
+						variablesList.sortMenuModel.clickSortItem(index)
+						customMenu.hide()
+					}
+
+					var props = {
+						"model": variablesList.sortMenuModel,
+						"functionCall"	: functionCall
+					};
+
+					customMenu.showMenu(parent, props, 0, parent.height);
+				}
+			}
+		}
+
 		GridView
 		{
 			id:						listView

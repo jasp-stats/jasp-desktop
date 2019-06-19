@@ -124,5 +124,7 @@
         <file>icons/analysis-bain-regression.svg</file>
         <file>icons/analysis-bain-ttest.svg</file>
         <file>icons/bain-module.svg</file>
+        <file>icons/sort-az.png</file>
+        <file>icons/sort-za.png</file>
     </qresource>
 </RCC>

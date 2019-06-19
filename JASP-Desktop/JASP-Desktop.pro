@@ -370,7 +370,9 @@ HEADERS += \
     modules/ribbonbutton.h \
     widgets/filemenu/currentdatafile.h \
     gui/jaspversionchecker.h \
-    widgets/listmodeltableviewbase.h
+    widgets/listmodeltableviewbase.h \
+    widgets/sortmenumodel.h \
+    widgets/sortable.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -549,7 +551,9 @@ SOURCES += \
     modules/ribbonbutton.cpp \
     widgets/filemenu/currentdatafile.cpp \
     gui/jaspversionchecker.cpp \
-    widgets/listmodeltableviewbase.cpp
+    widgets/listmodeltableviewbase.cpp \
+    widgets/sortmenumodel.cpp \
+    widgets/sortable.cpp
 
 RESOURCES += \
     html/html.qrc \

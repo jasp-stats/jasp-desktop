@@ -21,6 +21,7 @@
 
 #include "qmllistviewdraggable.h"
 #include "listmodelavailableinterface.h"
+#include "sortmenumodel.h"
 
 class ListModelAssignedInterface;
 
@@ -34,6 +35,7 @@ public:
 	ListModelAvailableInterface*	availableModel()	{ return _availableModel; }
 	void setTermsAreNotVariables() override;
 	void setTermsAreInteractions() override;
+	void setUp() override;
 
 	void addAssignedModel(ListModelAssignedInterface* model);
 	
@@ -41,8 +43,9 @@ public:
 	
 	
 protected:
-	ListModelAvailableInterface* _availableModel;
-	QList<ListModelAssignedInterface*> _assignedModels;
+	ListModelAvailableInterface*		_availableModel;
+	QList<ListModelAssignedInterface*>	_assignedModels;
+	SortMenuModel*						_sortedMenuModel;
 };
 
 #endif // QMLLISTVIEWTERMSAVAILABLE_H

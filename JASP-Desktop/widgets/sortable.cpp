@@ -16,10 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-VariablesList
-{
-	listViewType:	"AvailableVariables"
-	showSortMenu:	true
+#include "sortable.h"
+#include "sortmenumodel.h"
 
-	property bool	mixedModelTerms:	false
+void Sortable::sortItems()
+{
+	if (_sortMenuModel)
+		_sortMenuModel->sortAgain();
+}
+
+Sortable::SortType Sortable::currentSortType()
+{
+	if (_sortMenuModel)
+		return _sortMenuModel->currentSortType();
+	return SortType::None;
 }

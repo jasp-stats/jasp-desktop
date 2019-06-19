@@ -122,12 +122,12 @@ void Terms::setSortParent(const Terms &parent)
 }
 
 void Terms::removeParent() {
-	_parent = NULL;
+	_parent = nullptr;
 }
 
 void Terms::add(const Term &term)
 {
-	if (_parent != NULL)
+	if (_parent != nullptr)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 		int result = -1;
@@ -153,7 +153,7 @@ void Terms::add(const Term &term)
 
 void Terms::insert(int index, const Term &term)
 {
-	if (_parent == NULL)
+	if (_parent == nullptr)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 
@@ -170,7 +170,7 @@ void Terms::insert(int index, const Term &term)
 
 void Terms::insert(int index, const Terms &terms)
 {
-	if (_parent == NULL)
+	if (_parent == nullptr)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 
@@ -416,7 +416,7 @@ Term Terms::sortComponents(const Term &term) const
 
 int Terms::rankOf(const QString &component) const
 {
-	if (_parent == NULL)
+	if (_parent == nullptr)
 		return 0;
 
 	int index = 0;
@@ -433,7 +433,7 @@ int Terms::rankOf(const QString &component) const
 
 int Terms::termCompare(const Term &t1, const Term &t2) const
 {
-	if (_parent == NULL)
+	if (_parent == nullptr)
 		return 1;
 
 	if (t1.size() < t2.size())
@@ -589,7 +589,7 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 				bool shouldRemove = false;
 				if ( ! terms.contains(term))
 				{
-					if (discarded != NULL)
+					if (discarded != nullptr)
 						discarded->add(term);
 					shouldRemove = true;
 					changed = true;
