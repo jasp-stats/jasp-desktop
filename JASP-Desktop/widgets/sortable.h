@@ -16,10 +16,32 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-VariablesList
-{
-	listViewType:	"AvailableVariables"
-	showSortMenu:	true
+#ifndef SORTABLE_H
+#define SORTABLE_H
 
-	property bool	mixedModelTerms:	false
-}
+class SortMenuModel;
+
+class Sortable
+{
+
+public:
+	enum SortType {
+		None = 0,
+		SortByName,
+		SortByType,
+		SortByDate
+	};
+
+	virtual ~Sortable() {}
+
+	virtual void sortWithType(SortType sortType, bool ascending = true) = 0;
+	void setSortModel(SortMenuModel* menu) { _sortMenuModel = menu; }
+
+	void sortItems();
+	SortType currentSortType();
+
+private:
+	SortMenuModel* _sortMenuModel = nullptr;
+};
+
+#endif // SORTABLE_H

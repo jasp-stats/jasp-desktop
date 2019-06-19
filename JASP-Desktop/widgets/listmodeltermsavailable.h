@@ -24,19 +24,17 @@
 
 class ListModelTermsAvailable : public ListModelAvailableInterface
 {
-	Q_OBJECT	
+	Q_OBJECT
 public:
 	ListModelTermsAvailable(QMLListView* listView, bool mixedModelTerms = false);
 		
-	void		initTerms(const Terms& terms)							override;
+	void		sortWithType(SortType sortType, bool ascending)			override;
 	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;
 	
 	ListModel*	getSourceModelOfTerm(const Term& term);
-	void		addEmptyValue() { _addEmptyValue = true; }
 	
 private:	
 	std::map<QString, ListModel*>	_termSourceModelMap;	
-	bool							_addEmptyValue = false;
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

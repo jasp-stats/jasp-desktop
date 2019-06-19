@@ -26,39 +26,31 @@ ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView, bool mix
 {
 }
 
-void ListModelTermsAvailable::initTerms(const Terms &terms)
+void ListModelTermsAvailable::sortWithType(SortType sortType, bool ascending)
 {	
-	beginResetModel();
-
-	Terms suggested;
-	Terms allowed;
-	Terms forbidden;
-
-	for (const Term &term : terms)
+	if (sortType == Sortable::None)
 	{
-		if ( ! isAllowed(term))
-			forbidden.add(term);
-		else if (isSuggested(term))
-			suggested.add(term);
-		else
-			allowed.add(term);
+		Terms suggested;
+		Terms allowed;
+		Terms forbidden;
+
+		for (const Term &term : _allTerms)
+		{
+			if ( ! isAllowed(term))
+				forbidden.add(term);
+			else if (isSuggested(term))
+				suggested.add(term);
+			else
+				allowed.add(term);
+		}
+
+		_allTerms.clear();
+		_allTerms.add(suggested);
+		_allTerms.add(allowed);
+		_allTerms.add(forbidden);
 	}
-	Terms ordered; // present them in a nice order
 
-	if (_addEmptyValue)
-		ordered.add(QString());
-
-	ordered.add(suggested);
-	ordered.add(allowed);
-	ordered.add(forbidden);
-
-	_allTerms.set(ordered);
-	_terms.removeParent();
-	_terms.set(ordered);
-	_terms.setSortParent(_allTerms);
-
-	removeTermsInAssignedList();
-	endResetModel();
+	ListModelAvailableInterface::sortWithType(sortType, ascending);
 }
 
 void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
