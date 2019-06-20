@@ -125,7 +125,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       bainResult[[variable]] <- bainAnalysis
     })
 
-    if (inherits(p, "try-error")) {
+    if (isTryError(p)) {
 			bainTable$addRows(list(Variable=variable), rowNames=variable)
 			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
 			jaspResults$progressbarTick()

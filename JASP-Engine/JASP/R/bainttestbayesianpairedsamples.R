@@ -117,7 +117,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
         if (analysisPerformed) {
 
-            if (inherits(p, "try-error")) {
+            if (isTryError(p)) {
               bainTable$addRows(list(Variable=variable), rowNames=variable)
               bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=currentPair)
               jaspResults$progressbarTick()

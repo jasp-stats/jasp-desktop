@@ -121,7 +121,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 		})
 	}
 
-	if (inherits(p, "try-error")) {
+	if (isTryError(p)) {
 		bainContainer$setError(paste0("An error occurred in the analysis:<br>", .extractErrorMessage(p), "<br><br>Please double check your variables and model constraints."))
 		return()
 	}
