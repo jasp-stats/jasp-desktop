@@ -47,7 +47,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   results <- list()
   
   # First, we perform precalculation of variables we use throughout the analysis
-  results[["spec"]] <- .binomCalcSpecs(dataset, options)
+  results[["spec"]]  <- .binomCalcSpecs(dataset, options)
   results[["binom"]] <- list()
   
   for (variable in options$variables) {
@@ -60,7 +60,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     levels <- levels(data)
     
     for (level in levels) {
-      n   <- length(data)
+      n      <- length(data)
       counts <- sum(data == level)
       prop   <- counts / n
       
@@ -92,7 +92,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
       else
         hyp <- "less"
       
-      BF10  <- .bayesBinomialTest(counts, n, options$testValue, hypothesis = hyp, a = a, b = b)
+      BF10  <- .bayesBinomialTest(counts, n, theta0=options$testValue, hypothesis = hyp, a = a, b = b)
       
       BF <- BF10
       
@@ -129,11 +129,11 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 .bayesianBinomTableMain <- function(jaspResults, dataset, options, bayesianBinomResults, errors){
   if (!is.null(jaspResults[["bayesianBinomialTable"]])) return()
   variables <- unlist(options$variables)
-  theta0<- .5
+  theta0    <- options$testValue
   
-  bayesianBinomialTable                   <- createJaspTable("Bayesian Binomial Test")
+  bayesianBinomialTable <- createJaspTable("Bayesian Binomial Test")
   bayesianBinomialTable$dependOn(c("variables", "testValue", "hypothesis", "bayesFactorType", "Prior"))
-  bayesianBinomialTable$position          <- 1
+  bayesianBinomialTable$position <- 1
   
   bayesianBinomialTable$addCitation(c("Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
                                       "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
@@ -176,37 +176,37 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (options$hypothesis == "notEqualToTestValue") {
     
     hyp     <- "two.sided"
-    message <- paste0("Proportions tested against value: ", options$testValue, ".")
+    message <- paste0("Proportions tested against value: ", theta0, ".")
     bayesianBinomialTable$addFootnote(message)
     
   } else if (options$hypothesis == "greaterThanTestValue") {
     
     hyp  <- "greater"
     note <- "For all tests, the alternative hypothesis specifies that the proportion is greater than "
-    message <- paste0(note, options$testValue, ".")
+    message <- paste0(note, theta0, ".")
     bayesianBinomialTable$addFootnote(message)
     
   } else {
     
     hyp  <- "less"
     note <- "For all tests, the alternative hypothesis specifies that the proportion is less than "
-    message <- paste0(note, options$testValue, ".")
+    message <- paste0(note, theta0, ".")
     bayesianBinomialTable$addFootnote(message)
     
   }
   
-  bayesianBinomialTable$addColumnInfo(name="case", title="", type="string", combine=TRUE)
-  bayesianBinomialTable$addColumnInfo(name="level", title="Level", type="string")
-  bayesianBinomialTable$addColumnInfo(name="counts", title="Counts", type="integer")
-  bayesianBinomialTable$addColumnInfo(name="total", title="Total", type="integer")
-  bayesianBinomialTable$addColumnInfo(name="proportion", title="Proportion", type="number", format="sf:4;dp:3")
-  bayesianBinomialTable$addColumnInfo(name="BF", title=bf.title, type="number", format="sf:4;dp:3")
+  bayesianBinomialTable$addColumnInfo(name = "case",       title = "",           type = "string", combine = TRUE)
+  bayesianBinomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
+  bayesianBinomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
+  bayesianBinomialTable$addColumnInfo(name = "total",      title = "Total",      type = "integer")
+  bayesianBinomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number", format = "sf:4;dp:3")
+  bayesianBinomialTable$addColumnInfo(name = "BF",         title = bf.title,     type = "number", format = "sf:4;dp:3")
   
-  if (options$testValue == 1 && hyp == "greater") {
+  if (theta0 == 1 && hyp == "greater") {
     
     errorMessageTable <- "Cannot test the hypothesis that the test value is greater than 1."
     
-  } else if (options$testValue == 0 && hyp == "less") {
+  } else if (theta0 == 0 && hyp == "less") {
     
     errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
   }
@@ -307,7 +307,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     #}
   }
   
-  if (class(BF10) == "try-error")
+  if (isTryError(BF10))
     BF10 <- NA
   
   return(BF10)
@@ -319,6 +319,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   # beta distribution parameters
   a <- options$priorA
   b <- options$priorB
+  theta0 <- options$testValue
   if (options$hypothesis == "notEqualToTestValue") {
     hyp <- "two.sided"
     bfSubscripts = "BF[1][0]"
@@ -348,38 +349,37 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     
     levels <- levels(d)
     n <- length(d)
-    varSplitFactor     <- dataset[[.v(var)]]
+    varSplitFactor <- dataset[[.v(var)]]
     if(length(varSplitFactor[var])==0)
       return(createJaspPlot(error="Plotting is not possible: Variable only contains NA!", dependencies="variables"))
     #gives the different split values 
-    varSplitLevels    <- levels(varSplitFactor)
+    varSplitLevels <- levels(varSplitFactor)
     # remove missing values from the grouping variable
-    vardataset           <- dataset[!is.na(varSplitFactor), ]
-    varSplitData     <- split(vardataset, varSplitFactor)
+    vardataset <- dataset[!is.na(varSplitFactor), ]
+    varSplitData <- split(vardataset, varSplitFactor)
     for( lev in 1:length(varSplitLevels)){ 
       split <- varSplitLevels[[lev]]
       splitWord <- paste0("deeperBayesianBinomPlots", var, lev)
       deeperBayesianBinomPlots <- createJaspContainer(paste0(var, " - ", varSplitLevels[lev]))
       bayesianBinomPlots[[splitWord]] <- deeperBayesianBinomPlots
       counts <- sum(d == split)
-      prop <- counts/n
-      BF10   <- .bayesBinomialTest(counts, n, options$testValue, hypothesis = hyp, a = a, b = b)
+      prop   <- counts/n
+      BF10   <- .bayesBinomialTest(counts, n, theta0, hypothesis = hyp, a = a, b = b)
       if(options$plotPriorAndPosterior) {
-        quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, counts, n, hypothesis=hyp, theta0=options$testValue)
+        quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, counts, n, hypothesis=hyp, theta0 = theta0)
         medianPosterior <- quantiles$ci.median
         CIlower <- quantiles$ci.lower
         CIupper <- quantiles$ci.upper
-        ppCri     <- c(CIlower, CIupper)
-        dfLinesPP    <- .dfLinesPP(a=a, b=b, hyp = hyp, theta0=options$testValue, counts=counts, n=n)
-        dfPointsPP   <- .dfPointsPP(a=a, b=b, hyp = hyp, theta0=options$testValue, counts=counts, n=n)
-        xName  <- expression(paste("Population proportion ", theta))
+        ppCri   <- c(CIlower, CIupper)
+        dfLinesPP    <- .dfLinesPP(a=a, b=b, hyp = hyp, theta0 = theta0, counts = counts, n = n)
+        dfPointsPP   <- .dfPointsPP(a=a, b=b, hyp = hyp, theta0 = theta0, counts = counts, n = n)
+        xName <- expression(paste("Population proportion ", theta))
         if(options$plotPriorAndPosteriorAdditionalInfo){
           p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF01 = 1/BF10,
                                                  CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE, bfSubscripts = bfSubscripts)
         }
         else {
-          p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, bfSubscripts = bfSubscripts
-          )
+          p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, bfSubscripts = bfSubscripts)
         }
         plot <- createJaspPlot(
           title       = "Prior and Posterior",
@@ -392,10 +392,10 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
         bayesianBinomPlots[[splitWord]][[paste0(var, lev)]] <- plot
       }
       if(options$plotSequentialAnalysis){
-        dfLinesSR   <- .dfLinesSR(d=d, var=var, split = split, a = a, b = b, hyp = hyp, theta0=options$testValue)
+        dfLinesSR   <- .dfLinesSR(d = d, var = var, split = split, a = a, b = b, hyp = hyp, theta0 = theta0)
         dfPointsSR  <- NULL
-        xName  <- "n"
-        p <- JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF01 = 1/BF10, hasRightAxis = TRUE, bfSubscripts = bfSubscripts)
+        xName       <- "n"
+        p    <- JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF01 = 1/BF10, hasRightAxis = TRUE, bfSubscripts = bfSubscripts)
         plot <- createJaspPlot(
           title       = "Sequential Analysis",
           width       = 530,
@@ -405,77 +405,76 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
         )
         plot$dependOn(c("plotSequentialAnalysis", "Prior", "hypothesis"))
         bayesianBinomPlots[[splitWord]][[paste0(var, lev, "sequential")]] <- plot
-        
-        
       }
     }
   }
 }
 
-.dfLinesPP <- function(dataset, a = 1, b = 1, hyp = "two-sided", theta0=.5, counts, n){
+.dfLinesPP <- function(dataset, a = 1, b = 1, hyp = "two-sided", theta0 = .5, counts, n){
   if (a == 1 && b == 1) {
     
     theta <- seq(0, 1, length.out = 1000)
-    
+
   } else {
     
     theta <- seq(0.001, 0.999, length.out = 1000)
   }
-  x <- theta
+
+  size <- length(theta)
   if      (hyp == "two.sided"){
-    linesGroup <- c(dbeta(x, a + counts, b + n - counts), dbeta(x, a, b))
+    linesGroup <- c(dbeta(theta, a + counts, b + n - counts), dbeta(theta, a, b))
   }
-  else if (hyp== "greater")   {
-    linesGroup <- c(ifelse (x >= theta0, 
-                            dbeta(x, a + counts, b + n - counts)/pbeta(theta0, a + counts, b + n - counts, lower.tail = FALSE), 
-                            0), 
-                    ifelse (x >= theta0, 
-                            dbeta(x, a, b) / pbeta(theta0, a, b, lower.tail = FALSE), 
-                            0)
-    )
+  else if (hyp == "greater")   {
+    linesPrior <- linesPosterior <- numeric(size) # initializes everything to 0
+    idx <- theta >= theta0 # the nonzero components
+    # fill in the posterior
+    linesPosterior[idx] <- dbeta(theta[idx], a + counts, b + n - counts) / pbeta(theta0, a + counts, b + n - counts, lower.tail = FALSE)
+    # fill in the prior
+    linesPrior[idx] <- dbeta(theta[idx], a, b) / pbeta(theta0, a, b, lower.tail = FALSE)
+    linesGroup <- c(linesPosterior, linesPrior)
   }
-  else if (hyp== "less")      {
-    linesGroup <- c(ifelse (x <= theta0,
-                            dbeta(x, a + counts, b + n - counts) / pbeta(theta0, a + counts, b + n - counts),
-                            0), 
-                    ifelse (x <= theta0,
-                            dbeta(x, a, b) / pbeta(theta0, a, b),
-                            0)
-    )
+  else if (hyp == "less")      {
+    linesPrior <- linesPosterior <- numeric(size) # initializes everything to 0
+    idx        <- theta <= theta0 # the nonzero components
+    # fill in the posterior
+    linesPosterior[idx] <- dbeta(theta[idx], a + counts, b + n - counts) / pbeta(theta0, a + counts, b + n - counts, lower.tail = FALSE)
+    # fill in the prior
+    linesPrior[idx] <- dbeta(theta[idx], a, b) / pbeta(theta0, a, b, lower.tail = FALSE)
+    linesGroup      <- c(linesPosterior, linesPrior)
   }
   thetaGroup <- c(theta, theta)
   nameGroup  <- c(rep("Posterior", length(theta)), rep("Prior", length(theta)))
-  dat <- data.frame(x = thetaGroup, y = linesGroup, g=nameGroup)
+  dat        <- data.frame(x = thetaGroup, y = linesGroup, g = nameGroup)
   return(dat)
 }
 
-.dfPointsPP <- function(dataset, a = 1, b = 1, hyp = "two-sided", theta0=.5, counts, n){
+.dfPointsPP <- function(dataset, a = 1, b = 1, hyp = "two-sided", theta0 = .5, counts, n){
   if      (hyp == "two.sided"){
     heightPosteriorTheta0 <- dbeta(theta0, a + counts, b + n - counts)
-    heightPriorTheta0 <- dbeta(theta0, a, b)
+    heightPriorTheta0     <- dbeta(theta0, a, b)
   }
-  else if (hyp== "greater")   {
+  else if (hyp == "greater")   {
     heightPosteriorTheta0 <- dbeta(theta0, a + counts, b + n - counts)/pbeta(theta0, a + counts, b + n - counts, lower.tail = FALSE)
-    heightPriorTheta0 <- dbeta(theta0, a, b) / pbeta(theta0, a, b, lower.tail = FALSE)
+    heightPriorTheta0     <- dbeta(theta0, a, b) / pbeta(theta0, a, b, lower.tail = FALSE)
   }
-  else if (hyp== "less")      {
+  else if (hyp == "less")      {
     heightPosteriorTheta0 <- dbeta(theta0, a + counts, b + n - counts)/pbeta(theta0, a + counts, b + n - counts)
-    heightPriorTheta0 <- dbeta(theta0, a, b) / pbeta(theta0, a, b)
+    heightPriorTheta0     <- dbeta(theta0, a, b) / pbeta(theta0, a, b)
   }
   pointXVal <- c(theta0, theta0)
   pointYVal <- c(heightPosteriorTheta0, heightPriorTheta0)
-  nameGroup  <- c("Posterior", "Prior")
-  dat <- data.frame(x = pointXVal, y = pointYVal, g=nameGroup)
+  nameGroup <- c("Posterior", "Prior")
+  dat       <- data.frame(x = pointXVal, y = pointYVal, g = nameGroup)
   return(dat)
 }
 
-.dfLinesSR <- function(d, var, level, split, a = 1, b = 1, hyp = "two-sided", theta0=.5){
-  x <- ifelse (d == split, 1, 0)
-  BF10 <- vector("numeric", length(x))
+.dfLinesSR <- function(d, var, level, split, a = 1, b = 1, hyp = "two-sided", theta0 = .5){
+  x <- 1 * (d == split)
+  BF10 <- numeric(length(x))
   for (i in seq_along(x)) {
     
     counts <- sum(x[1:i] == 1)
-    n <- length(x[1:i])
+    n <- i  #length(x[1:i])
     BF10[i] <- .bayesBinomialTest(counts = counts, n = n, theta0, hyp, a, b)
     
     if (is.na(BF10[i]))
@@ -501,12 +500,12 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   } else if (hypothesis == "greater") {
     
     rightArea <- pbeta(theta0, a + counts , b + n - counts, lower.tail = FALSE)
-    leftArea <- 1 - rightArea
+    leftArea  <- 1 - rightArea
     quantiles <- qbeta(leftArea + rightArea * c(lower, .5, upper), a + counts , b + n - counts)
     
   } else if (hypothesis == "less") {
     
-    leftArea <- pbeta(theta0, a + counts , b + n - counts)
+    leftArea  <- pbeta(theta0, a + counts , b + n - counts)
     quantiles <- qbeta(leftArea * c(lower, .5, upper), a + counts , b + n - counts)
     
   }
