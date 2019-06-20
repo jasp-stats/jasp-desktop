@@ -63,7 +63,7 @@ size_t ListModelFilteredDataEntry::getDataSetRowCount()
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
 {
-	std::cout << "ListModelFilteredDataEntry::rScriptDoneHandler: " << result.toStdString() << std::endl;
+	//std::cout << "ListModelFilteredDataEntry::rScriptDoneHandler: " << result.toStdString() << std::endl;
 
 	QStringList values = result.split(' ');
 
@@ -180,7 +180,7 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 
 	if(options.size() == 0)
 	{
-		addError("Not a single row in OptionsTable for ListModelFilteredDataEntry!");
+		//addError("Not a single row in OptionsTable for ListModelFilteredDataEntry!");
 		fillTable();
 		emit modelChanged();
 		return;
