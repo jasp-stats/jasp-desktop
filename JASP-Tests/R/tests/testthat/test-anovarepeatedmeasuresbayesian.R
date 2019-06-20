@@ -211,17 +211,17 @@ test_that("Analysis fails gracefully if some models error", {
   
   expect_equal_tables(
     mainTable, 
-    list(1, 4.08564987058799, "Null model (incl. subject)", 0.1, 0.505296412283417,
-         "", 0.678071126224467, 2.08482465246755, "contBinom", 0.1, 0.342626907354199,
+    list(1, 4.08564987058798, "Null model (incl. subject)", 0.1, 0.505296412283417,
+         "", 0.678071126224469, 2.08482465246755, "contBinom", 0.1, 0.3426269073542,
          11.0544491376076, 0.147479470584362, 0.322085471769318, "RM Factor 1",
-         0.1, 0.0745208473717359, 5.34269802511568, 0.11793325601769,
-         0.253469573641492, "RM Factor 1 + contBinom", 0.1, 0.0595912511546406,
-         30.5049473873051, 0.0355525616238313, 0.0731728469410748, "RM Factor 1 + contBinom + RM Factor 1<unicode><unicode><unicode>contBinom",
-         0.1, 0.0179645818360071, 10.172921412827, 0, 0, 0, "NaN", "NaN",
-         "contNormal", 0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "RM Factor 1 + contNormal",
-         0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "contBinom + contNormal",
-         0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "RM Factor 1 + contBinom + contNormal",
-         0.1, "NaN", "", 0, 0, 0, "NaN", "NaN", "RM Factor 1 + contBinom + contNormal + RM Factor 1<unicode><unicode><unicode>contBinom",
+         0.1, 0.0745208473717358, 5.34269802511568, 0.11793325601769,
+         0.253469573641492, "RM Factor 1 + contBinom", 0.1, 0.0595912511546405,
+         30.5049473873051, 0.0355525616238314, 0.073172846941075, "RM Factor 1 + contBinom + RM Factor 1<unicode><unicode><unicode>contBinom",
+         0.1, 0.0179645818360071, 10.1729214128269, 1, 1, 1, "NaN", "NaN",
+         "contNormal", 0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM Factor 1 + contNormal",
+         0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "contBinom + contNormal",
+         0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM Factor 1 + contBinom + contNormal",
+         0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM Factor 1 + contBinom + contNormal + RM Factor 1<unicode><unicode><unicode>contBinom",
          0.1, "NaN", ""), 
     label = "Table where some BFs are NaN")
   
