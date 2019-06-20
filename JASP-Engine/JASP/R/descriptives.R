@@ -273,9 +273,9 @@ Descriptives <- function(jaspResults, dataset, options) {
     
   if (options$percentileValuesQuartiles) {
     if (base::is.factor(na.omitted) == FALSE) {
-      resultsCol[["q1"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
-      resultsCol[["q2"]] <- .clean(quantile(na.omitted, c(.5),  type=6, names=F))
-      resultsCol[["q3"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+      resultsCol[["q1"]] <- .clean(quantile(na.omitted, c(.25), names=F))
+      resultsCol[["q2"]] <- .clean(quantile(na.omitted, c(.5), names=F))
+      resultsCol[["q3"]] <- .clean(quantile(na.omitted, c(.75), names=F))
     } else {
       resultsCol[["q1"]] <- ""
       resultsCol[["q2"]] <- ""
@@ -311,14 +311,14 @@ Descriptives <- function(jaspResults, dataset, options) {
     if (options$percentileValuesEqualGroups) {
       
       for (i in seq(equalGroupsNo - 1)) 
-        resultsCol[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+        resultsCol[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), names=F))
       
     }
     
     if (options$percentileValuesPercentiles) {
       
       for (i in percentilesPercentiles) 
-        resultsCol[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+        resultsCol[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), names=F))
 
     }
   } else {
@@ -799,12 +799,13 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotDat <- data.frame(group = group, y = y)
     row.names(plotDat) <- yIndexToActual
 
-    # Identify outliers to label
+    # Identify outliers to label. Note that ggplot uses the unchangeable quantiles(type=7), 
+    # if we ever change the quantile type then the boxplot needs to be overwritten with stat_summary(geom='boxplot')
     plotDat$outlier <- FALSE
 
     for (level in levels(plotDat$group)) {
       v         <- plotDat[plotDat$group == level,]$y
-      quantiles <- quantile(v, probs=c(0.25,0.75), type=6)
+      quantiles <- quantile(v, probs=c(0.25,0.75))
       obsIQR       <- quantiles[2] - quantiles[1]
       plotDat[plotDat$group == level,]$outlier <- v < (quantiles[1]-1.5*obsIQR) | v > (quantiles[2]+1.5*obsIQR)
     }
@@ -1106,8 +1107,8 @@ Descriptives <- function(jaspResults, dataset, options) {
 }
 
 .descriptivesIqr <- function(x) {
-  # Interquartile range based on the stats package, type 6 is used by Minitab and SPSS, see quartile
-  return(stats::IQR(x=x, type=6))
+  # Interquartile range based on the stats package
+  return(stats::IQR(x))
 }
 
 .descriptivesSkewness <- function(x) {
