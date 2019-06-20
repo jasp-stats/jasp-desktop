@@ -590,8 +590,30 @@
       ]
     },
     {
-      "name": "10. Miscellaneous",
-      "path": "10. Miscellaneous",
+      "name": "10. Audit",
+      "path": "10. Audit",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "BuildIt Binary",
+          "path": "BuildIt_Binary.jasp",
+          "description": "BuildIt's non-monetary audit population consisting of 3500 records. <br><br> The example JASP file demonstrates the use of a binary audit workflow. <br><br> <i>Data set used in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)",
+          "kind": "file",
+          "associated_datafile": "BuildIt_Binary.csv"
+        },
+        {
+          "name": "BuildIt Monetary",
+          "path": "BuildIt_Monetary.jasp",
+          "description": "BuildIt's monetary audit population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of a monetary audit workflow. <br><br> <i>Data set used in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<i>",
+          "kind": "file",
+          "associated_datafile": "BuildIt_Monetary.csv"
+        }
+      ]
+    },
+    {
+      "name": "11. Miscellaneous",
+      "path": "11. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
