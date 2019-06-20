@@ -43,6 +43,9 @@ plotPieChart(value, gg, ga, showAxisTicks = FALSE, legend.position = "none") # h
 
 # axis can still be modified
 print(g + scale_y_continuous(breaks = seq(0, 100, 10)))
+cm <- c(0, cumsum(value))
+breaks <- 100 - (cm[-1] + cm[-length(cc)]) / 2
+print(g + scale_y_continuous(breaks = breaks, labels = gg))
 
 # something more extreme:
 value <- rpois(25, 10)
