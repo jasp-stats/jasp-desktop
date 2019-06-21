@@ -59,7 +59,7 @@ public:
 	Options				*options()					const	{ return _options;			}
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
-	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName) { return dynamicModule()->helpFolderPath() + helpFileName; }
+	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 
 signals:
 	void				nameChanged();
