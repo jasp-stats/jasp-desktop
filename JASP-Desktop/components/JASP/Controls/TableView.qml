@@ -137,18 +137,6 @@ JASPControl
 					height:					parent.width
 					font:					Theme.font
 				}
-
-				ToolTip.visible:			mouseAreaItem.containsMouse
-				ToolTip.delay:				Theme.toolTipDelay
-				ToolTip.timeout:			Theme.toolTipTimeout
-				ToolTip.text:				headerText
-
-				MouseArea
-				{
-					id:				mouseAreaItem
-					hoverEnabled:	true
-					anchors.fill:	parent
-				}
 			}
 
 			JASPDoubleValidator	{ id: intValidator;		bottom: 0; decimals: 0	}
@@ -185,7 +173,23 @@ JASPControl
 				}
 			}
 
-			leftTopCornerItem: Rectangle { color: Theme.analysisBackgroundColor }
+			leftTopCornerItem: Rectangle
+			{
+				color: Theme.analysisBackgroundColor
+
+				Text
+				{
+					text:					"Row #"
+					anchors.centerIn:		parent
+					horizontalAlignment:	Text.AlignHCenter
+					verticalAlignment:		Text.AlignVCenter
+					leftPadding:			3 * preferencesModel.uiScale
+					elide:					Text.ElideRight;
+					width:					parent.width
+					height:					parent.width
+					font:					Theme.font
+				}
+			}
 
 		}
 	}
