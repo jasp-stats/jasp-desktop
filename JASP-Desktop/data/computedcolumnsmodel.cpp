@@ -287,7 +287,9 @@ void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnNa
 			invalidate(QString::fromStdString(col->name()));
 
 	for(ComputedColumn * col : *_computedColumns)
-		if(col->iShouldBeSentAgain())
+		if(		col->codeType() != ComputedColumn::computedType::analysis				&&
+				col->codeType() != ComputedColumn::computedType::analysisNotComputed	&&
+				col->iShouldBeSentAgain() )
 			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCodeCommentStripped()), col->columnType());
 
 	checkForDependentAnalyses(columnName);
