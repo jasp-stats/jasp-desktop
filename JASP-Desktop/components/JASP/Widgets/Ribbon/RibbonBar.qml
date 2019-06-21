@@ -94,17 +94,50 @@ FocusScope
 			bottom	: parent.bottom
 		}
 	}
+	
+	Rectangle  // a line underneath ribbonbar, just like in filemenu
+	{
+		z		: 3
+		height	: 1
+		color	: Theme.uiBorder
+
+		anchors
+		{
+			top		: parent.bottom
+			left	: parent.left
+			right	: parent.right
+		}
+	}
 
 	Rectangle
 	{
-		id		: shadow
+		id		: leftShadow
 		y		: ribbonMenu.height
 		z		: 1
 		height	: Theme.shadowRadius
+		width   : customMenu.isRibbonMenu && customMenu.visible ? customMenu.x : ribbonBar.width
 
 		anchors
 		{
 			left	: parent.left
+		}
+
+		gradient	: Gradient {
+			GradientStop { position: 0.0; color: Theme.shadow }
+			GradientStop { position: 1.0; color: "transparent" } }
+
+	}
+	
+	Rectangle
+	{
+		id		: rightShadow
+		y		: ribbonMenu.height
+		z		: 1
+		height	: Theme.shadowRadius
+		width	: customMenu.isRibbonMenu && customMenu.visible ? (ribbonBar.width - (customMenu.x + customMenu.width)) : 0
+
+		anchors
+		{
 			right	: parent.right
 		}
 
@@ -112,18 +145,5 @@ FocusScope
 			GradientStop { position: 0.0; color: Theme.shadow }
 			GradientStop { position: 1.0; color: "transparent" } }
 
-		Rectangle  // a line underneath ribbonbar, just like in filemenu
-		{
-			z		: 3
-			height	: 1
-			color	: Theme.uiBorder
-
-			anchors
-			{
-				top		: parent.top
-				left	: parent.left
-				right	: parent.right
-			}
-		}
 	}
 }
