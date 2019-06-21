@@ -229,7 +229,7 @@ Form
 
 						HelpButton 
 						{ 
-							helpPage:			"analyses/explanatoryText"
+							helpPage:			"explanatoryText"
 							toolTip: 			"Show explanatory text at each step of the analysis"
 						}
 					}
