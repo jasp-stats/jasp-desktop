@@ -23,12 +23,10 @@
 		},
 		{
 			"title":						"Audit Workflow",
-			"qml":							"classicalAudit.qml",
 			"function":						"classicalAudit"
 		},
 		{
 			"title":						"Bayesian Audit Workflow",
-			"qml":							"bayesianAudit.qml",
 			"function":						"bayesianAudit"
 		},
 		{
@@ -37,12 +35,10 @@
 		},
 		{
 			"title":						"Planning",
-			"qml":							"classicalPlanning.qml",
 			"function":						"classicalPlanning"
 		},
 		{
 			"title":						"Bayesian Planning",
-			"qml":							"bayesianPlanning.qml",
 			"function":						"bayesianPlanning"
 		}
 	]
