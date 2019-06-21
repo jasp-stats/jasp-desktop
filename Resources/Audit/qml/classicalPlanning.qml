@@ -222,7 +222,7 @@ Form {
 
 					HelpButton 
 					{ 
-						helpPage:			"explanatoryText"
+						helpPage:			"Audit/explanatoryText"
 						toolTip: 			"Show explanatory text at each step of the analysis"
 					}
 				}

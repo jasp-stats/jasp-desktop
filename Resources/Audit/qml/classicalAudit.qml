@@ -229,7 +229,7 @@ Form
 
 						HelpButton 
 						{ 
-							helpPage:			"explanatoryText"
+							helpPage:			"Audit/explanatoryText"
 							toolTip: 			"Show explanatory text at each step of the analysis"
 						}
 					}
@@ -443,7 +443,7 @@ Form
 
 						HelpButton 
 						{ 
-							helpPage:			"monetaryUnitSampling"
+							helpPage:			"Audit/monetaryUnitSampling"
 							toolTip: 			"Select observations with probability proportional to their value"
 						}
 					}
@@ -460,7 +460,7 @@ Form
 						HelpButton
 						{ 
 							toolTip: 			"Select observations with equal probability"
-							helpPage:			"recordSampling"
+							helpPage:			"Audit/recordSampling"
 						}
 					}
 				}
@@ -483,7 +483,7 @@ Form
 						HelpButton 
 						{ 
 							toolTip: 			"Select observations by random sampling"
-							helpPage:			"randomSampling"
+							helpPage:			"Audit/randomSampling"
 						}
 					}
 
@@ -499,7 +499,7 @@ Form
 						HelpButton	
 						{ 
 							toolTip: 	"Select observations by cell sampling"
-							helpPage:	"cellSampling"
+							helpPage:	"Audit/cellSampling"
 						}
 					}
 
@@ -516,7 +516,7 @@ Form
 						HelpButton
 						{ 
 							toolTip: 	"Select observations by fixed interval sampling"
-							helpPage:	"fixedIntervalSampling"
+							helpPage:	"Audit/fixedIntervalSampling"
 						}
 					}
 				}
