@@ -395,3 +395,9 @@ void Analysis::refreshAvailableVariablesModels()
 	if(form() != nullptr)
 		form()->refreshAvailableVariablesModels();
 }
+
+QString	Analysis::fullHelpPath(QString helpFileName)
+{
+	if(isDynamicModule())	return dynamicModule()->helpFolderPath() + helpFileName;
+	else					return "analyses/" + helpFileName;
+}
