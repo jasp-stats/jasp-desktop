@@ -28,7 +28,7 @@ signals:
 	void openFileRequest(QString path);
 		
 private:
-	OSFFileSystem					*_fsbmOSF;
+	OSFFileSystem		*_fsbmOSF;
 	OSFBreadCrumbsListModel	*_osfBreadCrumbsListModel;
 };
 

@@ -154,6 +154,7 @@ FocusScope
 							myAnalysis:         model.analysis
 							formQmlUrl:			model.formPath
 							background:			formsBackground
+							backgroundFlickable:analysesFlickable
 						}
 					}
 				}

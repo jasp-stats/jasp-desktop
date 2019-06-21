@@ -31,7 +31,7 @@
 
 const QString DataLibraryFileSystem::rootelementname = "Categories";
 
-DataLibraryFileSystem::DataLibraryFileSystem(QObject *parent, QString root)	: FileSystemModel(parent)
+DataLibraryFileSystem::DataLibraryFileSystem(QObject *parent, QString root)	: FileSystem(parent)
 {
 	_rootPath = _path = root;
 	_dataLibraryRootPath = "";

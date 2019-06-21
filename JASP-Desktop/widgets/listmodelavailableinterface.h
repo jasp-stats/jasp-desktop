@@ -41,7 +41,7 @@ public:
 	
 			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;
 
-			void sortWithType(SortType sortType, bool ascending = true)			override;
+			void sortItems(SortType sortType)								override;
 			void addEmptyValue()												{ _addEmptyValue = true; }
 
 signals:

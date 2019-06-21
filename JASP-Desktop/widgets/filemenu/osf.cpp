@@ -32,17 +32,17 @@ OSF::OSF(QObject *parent): FileMenuObject(parent)
 
 	setBreadCrumbs(new OSFBreadCrumbsListModel(this, QChar('/')));
 
-	_model = new OSFFileSystem(parent , OSFFileSystem::rootelementname);
+	_osfFileSystem = new OSFFileSystem(parent , OSFFileSystem::rootelementname);
 
-	setListModel(new OSFListModel(this, _model, _osfBreadCrumbsListModel));
+	setListModel(new OSFListModel(this, _osfFileSystem, _osfBreadCrumbsListModel));
 
-	connect(_model,						&OSFFileSystem::authenticationSucceeded,		this,			&OSF::updateUserDetails);
-	connect(_model,						&OSFFileSystem::authenticationFailed,			this,			&OSF::authenticationeFailed);
-	connect(_model,						&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
-	connect(_model,						&OSFFileSystem::entriesChanged,					this,			&OSF::resetOSFListModel);
-	connect(_model,						&OSFFileSystem::stopProcessing,					this,			&OSF::stopProcessing);
+	connect(_osfFileSystem,						&OSFFileSystem::authenticationSucceeded,		this,			&OSF::updateUserDetails);
+	connect(_osfFileSystem,						&OSFFileSystem::authenticationFailed,			this,			&OSF::authenticationeFailed);
+	connect(_osfFileSystem,						&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
+	connect(_osfFileSystem,						&OSFFileSystem::entriesChanged,					this,			&OSF::resetOSFListModel);
+	connect(_osfFileSystem,						&OSFFileSystem::stopProcessing,					this,			&OSF::stopProcessing);
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&OSF::startProcessing);
-	connect(_model,						&OSFFileSystem::newLoginRequired,				this,			&OSF::newLoginRequired);
+	connect(_osfFileSystem,						&OSFFileSystem::newLoginRequired,				this,			&OSF::newLoginRequired);
 
 	connect(this,						&OSF::openFileRequest,							this,			&OSF::notifyDataSetOpened);
 	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
@@ -54,6 +54,10 @@ OSF::OSF(QObject *parent): FileMenuObject(parent)
 
 	setShowfiledialog(false);
 	setProcessing(false);
+
+	m_sortedMenuModel = new SortMenuModel(_osfFileSystem, {Sortable::None, Sortable::SortByNameAZ, Sortable::SortByNameZA, Sortable::SortByDate});
+	m_sortedMenuModel->setCurrentEntry(static_cast<Sortable::SortType>(Settings::value(Settings::OSF_SORTORDER).toInt()));
+
 }
 
 bool OSF::loggedin()
@@ -215,7 +219,7 @@ void OSF::checkErrorMessageOSF(QNetworkReply *reply)
 void OSF::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_odm = odm;
-	_model->setOnlineDataManager(_odm);
+	_osfFileSystem->setOnlineDataManager(_odm);
 
 	connect(_odm, SIGNAL(startUploading()), this, SLOT(startProcessing()));
 	connect(_odm, SIGNAL(finishedUploading()), this, SLOT(stopProcessing()));
@@ -226,8 +230,8 @@ void OSF::attemptToConnect()
 	if (!processing())
 	{
 		setProcessing(true);
-		_model->attemptToConnect();
-		setLoggedin(_model->isAuthenticated());
+		_osfFileSystem->attemptToConnect();
+		setLoggedin(_osfFileSystem->isAuthenticated());
 	}
 }
 
@@ -244,6 +248,11 @@ void OSF::setMode(FileEvent::FileMode mode)
 	setShowfiledialog(showfiledialog);
 }
 
+SortMenuModel *OSF::sortedMenuModel() const
+{
+	return m_sortedMenuModel;
+}
+
 //private slots
 
 void OSF::notifyDataSetSelected(QString path)
@@ -254,7 +263,7 @@ void OSF::notifyDataSetSelected(QString path)
 
 void OSF::notifyDataSetOpened(QString path)
 {
-	OSFFileSystem::OnlineNodeData nodeData = _model->getNodeData(path);
+	OSFFileSystem::OnlineNodeData nodeData = _osfFileSystem->getNodeData(path);
 	openSaveFile(nodeData.nodePath, nodeData.name);
 }
 
@@ -265,7 +274,7 @@ void OSF::authenticationeFailed(QString message)
 
 void OSF::saveClicked()
 {
-	OSFFileSystem::OnlineNodeData currentNodeData = _model->currentNodeData();
+	OSFFileSystem::OnlineNodeData currentNodeData = _osfFileSystem->currentNodeData();
 
 	if (currentNodeData.canCreateFiles == false)
 	{
@@ -282,7 +291,7 @@ void OSF::saveClicked()
 
 	QString path;
 
-	if (_model->hasFileEntry(filename.toLower(), path))
+	if (_osfFileSystem->hasFileEntry(filename.toLower(), path))
 		notifyDataSetOpened(path);
 	else
 		openSaveFile(currentNodeData.nodePath, filename);
@@ -327,7 +336,7 @@ void OSF::openSaveCompleted(FileEvent* event)
 
 	if (event->isSuccessful())
 	{
-		_model->refresh();
+		_osfFileSystem->refresh();
 	}
 
 	setProcessing(false);
@@ -336,7 +345,7 @@ void OSF::openSaveCompleted(FileEvent* event)
 
 void OSF::updateUserDetails()
 {
-	if (_model->isAuthenticated())
+	if (_osfFileSystem->isAuthenticated())
 	{
 		OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
 
@@ -360,7 +369,7 @@ void OSF::newFolderCreated()
 	if (node->error())
 		MessageForwarder::showWarning("", "An error occured and the folder could not be created.");
 	else
-		_model->refresh();
+		_osfFileSystem->refresh();
 
 	setSavefoldername(QString());
 	setProcessing(false);
@@ -368,7 +377,7 @@ void OSF::newFolderCreated()
 
 void OSF::newFolderClicked()
 {
-	OSFFileSystem::OnlineNodeData currentNodeData = _model->currentNodeData();
+	OSFFileSystem::OnlineNodeData currentNodeData = _osfFileSystem->currentNodeData();
 
 	if (currentNodeData.canCreateFolders == false)
 	{
@@ -388,9 +397,9 @@ void OSF::newFolderClicked()
 
 		emit newFolderRequested(name);
 
-		if (_model->hasFolderEntry(name.toLower()) == false)
+		if (_osfFileSystem->hasFolderEntry(name.toLower()) == false)
 		{
-			OnlineDataNode *node = _odm->createNewFolderAsync(_model->currentNodeData().nodePath + "#folder://" + name, name, "createNewFolder");
+			OnlineDataNode *node = _odm->createNewFolderAsync(_osfFileSystem->currentNodeData().nodePath + "#folder://" + name, name, "createNewFolder");
 			connect(node, &OnlineDataNode::finished , this, &OSF::newFolderCreated);
 		}
 	}
@@ -403,8 +412,8 @@ void OSF::closeFileDialog()
 
 void OSF::newLoginRequired()
 {
-	_model->clearAuthentication();
-	_model->refresh();
+	_osfFileSystem->clearAuthentication();
+	_osfFileSystem->refresh();
 	_osfBreadCrumbsListModel->indexChanged(0);
 	setLoggedin(false);
 	setProcessing(false);
@@ -412,7 +421,7 @@ void OSF::newLoginRequired()
 
 void OSF::handleAuthenticationResult(bool success)
 {
-	_model->updateAuthentication(success);
+	_osfFileSystem->updateAuthentication(success);
 
 	if(!success)
 	{
@@ -432,8 +441,8 @@ void OSF::resetOSFListModel()
 // public slots
 void OSF::logoutClicked()
 {
-	_model->clearAuthentication();
-	_model->refresh();
+	_osfFileSystem->clearAuthentication();
+	_osfFileSystem->refresh();
 	_osfBreadCrumbsListModel->indexChanged(0);
 
 	setLoggedin(false);

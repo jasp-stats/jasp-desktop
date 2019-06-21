@@ -22,6 +22,8 @@
 #include <QString>
 #include "utils.h"
 #include <QHash>
+#include <QDateTime>
+
 
 class FileSystemEntry
 {
@@ -34,6 +36,14 @@ public:
 			path,
 			description,
 			associatedDataFile = "";
+
+	QDateTime created,
+			  modified;
+
+	bool operator<(const FileSystemEntry & fe) const
+	{
+		return path < fe.path;
+	}
 
 	EntryType entryType;
 
@@ -63,6 +73,30 @@ public:
 		return icons;
 	}
 
+	static bool compareNames( FileSystemEntry const &fe1, FileSystemEntry const &fe2)
+	{
+		return fe1.name.toUpper() < fe2.name.toUpper(); // A-Z
+	}
+
+	static bool compareNamesReversed( FileSystemEntry const &fe1, FileSystemEntry const &fe2)
+	{
+		return fe1.name.toUpper() > fe2.name.toUpper(); // Z-A
+	}
+
+	static bool compareDateTime( FileSystemEntry const &fe1, FileSystemEntry const &fe2)
+	{
+		// if !modified modified should be the same as created
+		return fe1.modified > fe2.modified;  //Latest first
+	}
+
+	static bool compareDateTimeReversed( FileSystemEntry const &fe1, FileSystemEntry const &fe2)
+	{
+		// if !modified modified should be the same as created
+		return fe1.modified < fe2.modified;  //Oldes first
+	}
+
 };
 
+
 #endif // FILESYSTEMENTRY_H
+

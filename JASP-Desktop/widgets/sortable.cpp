@@ -19,10 +19,14 @@
 #include "sortable.h"
 #include "sortmenumodel.h"
 
+Sortable::~Sortable()
+{
+}
+
 void Sortable::sortItems()
 {
 	if (_sortMenuModel)
-		_sortMenuModel->sortAgain();
+		_sortMenuModel->sortItems();
 }
 
 Sortable::SortType Sortable::currentSortType()

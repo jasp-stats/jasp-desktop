@@ -24,18 +24,19 @@
 #include <QNetworkReply>
 #include <QMap>
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 #include "common.h"
 #include "osf/onlinedatamanager.h"
+#include "../sortable.h"
 
-class OSFFileSystem : public FileSystemModel
+class OSFFileSystem : public FileSystem, public Sortable
 {
 	Q_OBJECT
 
 public:
-	OSFFileSystem(QObject *parent = NULL, QString root = "");
-	~OSFFileSystem() OVERRIDE;
-	void refresh() OVERRIDE;
+	OSFFileSystem(QObject *parent = nullptr, QString root = "");
+	~OSFFileSystem() override;
+	void refresh() override;
 
 	typedef struct {
 		QString name;
@@ -59,11 +60,12 @@ public:
 	void attemptToConnect();
 	void updateAuthentication(bool authenticated);
 
-	bool requiresAuthentication() const OVERRIDE;
-	bool isAuthenticated() const OVERRIDE;
-	void clearAuthentication() OVERRIDE;
+	bool requiresAuthentication()			const override;
+	bool isAuthenticated()					const override;
+	void clearAuthentication()				override;
 
 	OnlineNodeData currentNodeData();
+	void sortItems(SortType sortType)	override;
 
 signals:
 	void userDataChanged();
@@ -84,8 +86,8 @@ private:
 
 	QMap<QString, OnlineNodeData> _pathUrls;
 
-	OnlineDataManager *_dataManager = NULL;
-	QNetworkAccessManager *_manager = NULL;
+	OnlineDataManager *_dataManager = nullptr;
+	QNetworkAccessManager *_manager = nullptr;
 
 	QString _userId;
 	QString _filesPath;
@@ -100,6 +102,10 @@ private:
 	void parseFilesAndFolders(QUrl url, int level, bool recursive = false);
 	void parseProjects(QUrl url, bool recursive = false);
 	void handleNetworkReplyError(QNetworkReply* reply);
+
+	QDateTime osfJsonToDateTime(const QString &input);
+
+	FileSystemEntryList _unsortedEntries;
 
 	int _level = 0;
 

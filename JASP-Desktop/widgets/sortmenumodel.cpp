@@ -23,8 +23,11 @@ QMap<Sortable::SortType, QString> SortMenuModel::_labels =
 {
 	{ Sortable::SortType::None, "None" },
 	{ Sortable::SortType::SortByName, "Sort by name" },
+	{ Sortable::SortType::SortByNameAZ, "Sort by name A-Z" },
+	{ Sortable::SortType::SortByNameZA, "Sort by name Z-A" },
 	{ Sortable::SortType::SortByType, "Sort by type" },
-	{ Sortable::SortType::SortByDate, "Sort by date" }
+	{ Sortable::SortType::SortByDate, "Sort by date" },
+	{ Sortable::SortType::SortBySize, "Sort by size" }
 };
 
 SortMenuModel::SortMenuModel(QObject* parent, const QVector<Sortable::SortType> &menuEntries) : QAbstractListModel(parent)
@@ -70,16 +73,15 @@ QHash<int, QByteArray> SortMenuModel::roleNames() const
 void SortMenuModel::clickSortItem(int index)
 {
 	SortMenuItem* entry = _menuEntries[index];
-	_sortable->sortWithType(entry->sortType, entry->ascending);
-	entry->ascending = ! entry->ascending;
+	_sortable->sortItems(entry->sortType);
 
 	_currentEntry = index;
 }
 
-void SortMenuModel::sortAgain()
+void SortMenuModel::sortItems()
 {
 	SortMenuItem* entry = _menuEntries[_currentEntry];
-	_sortable->sortWithType(entry->sortType, !entry->ascending);
+	_sortable->sortItems(entry->sortType);
 }
 
 Sortable::SortType SortMenuModel::currentSortType()
@@ -92,4 +94,15 @@ bool SortMenuModel::isAscending()
 {
 	SortMenuItem* entry = _menuEntries[_currentEntry];
 	return entry->ascending;
+}
+
+void SortMenuModel::setCurrentEntry(Sortable::SortType sortType)
+{
+	int index = 0;
+	for (const SortMenuItem* menuItem : _menuEntries)
+	{
+		if (menuItem->sortType == sortType)
+			_currentEntry = index;
+		index++;
+	}
 }
