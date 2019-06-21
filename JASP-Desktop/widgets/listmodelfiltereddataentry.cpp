@@ -14,9 +14,11 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * paren
 
 	setFilter(_tableView->getItemProperty("filter").toString());
 	setColName(_tableView->getItemProperty("colName").toString());
+	setExtraCol(_tableView->getItemProperty("extraCol").toString());
 
 	connect(_tableView->item(), SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
 	connect(_tableView->item(), SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))														);
+	connect(_tableView->item(), SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))													);
 	connect(_tableView->form(), &AnalysisForm::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
 	connect(this,				&ListModelFilteredDataEntry::filterChanged,		[&](){ _tableView->setItemProperty("filter",	_filter);	}						);
 	connect(this,				&ListModelFilteredDataEntry::colNameChanged,	[&](){ _tableView->setItemProperty("colName",	_colName);	}						);
@@ -147,6 +149,10 @@ void ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)
 	QString colName		= _colNames[_editableColumn];
 	_dataColumns		= sourceTerms.asVector();
 	_colNames			= tq(_dataColumns);
+
+	if(_extraCol != "")
+		_colNames.push_back(_extraCol);
+
 	_editableColumn		= _colNames.size();
 	_columnCount		= _dataColumns.size() + 1;
 
@@ -165,6 +171,7 @@ OptionsTable * ListModelFilteredDataEntry::createOption()
 	optsTemplate->add("values",		new OptionDoubleArray());
 	optsTemplate->add("rowIndices",	new OptionIntegerArray());
 	optsTemplate->add("dataCols",	new OptionVariables());
+	optsTemplate->add("extraCol",	new OptionVariables());
 
 	return new OptionsTable(optsTemplate);
 }
@@ -200,10 +207,17 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	OptionDoubleArray	*	optionValues		= static_cast<OptionDoubleArray		* >(firstRow->get("values"));
 	OptionString		*	optionColName		= static_cast<OptionString			* >(firstRow->get("colName"));
 	OptionVariables		*	optionDataCols		= static_cast<OptionVariables		* >(firstRow->get("dataCols"));
+	OptionVariables		*	optionExtraCol		= static_cast<OptionVariables		* >(firstRow->get("extraCol"));
 	OptionIntegerArray	*	optionRowIndices	= static_cast<OptionIntegerArray	* >(firstRow->get("rowIndices"));
+
+	setExtraCol(tq(optionExtraCol->variables().size() > 0 ? optionExtraCol->variables()[0] : ""));
 
 	_dataColumns	= optionDataCols->variables();
 	_colNames		= tq(_dataColumns);
+
+	if(_extraCol != "")
+		_colNames.push_back(_extraCol);
+
 	_editableColumn = _colNames.size();
 	_columnCount	= _dataColumns.size() + 1;
 	_colName		= tq(optionColName->value());
@@ -273,6 +287,7 @@ void ListModelFilteredDataEntry::modelChangedSlot()
 		options->add("rowIndices",	new OptionIntegerArray(stdRowIndices));
 		options->add("values",		new OptionDoubleArray(_values[0].toStdVector()));
 		options->add("dataCols",	new OptionVariables(_dataColumns));
+		options->add("extraCol",	new OptionVariables({fq(_extraCol)}));
 
 		_boundTo->setValue({options});
 	}
@@ -355,4 +370,38 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 		if(changed)
 			emit modelChanged();
 	}
+}
+
+void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
+{
+	if (_extraCol == extraCol)
+		return;
+
+	if(extraCol == "" && _colNames.size() > _editableColumn && _editableColumn > 0 && _colNames[_editableColumn - 1] == _extraCol)
+	{
+		_colNames.erase(_colNames.begin() + _editableColumn - 1);
+		_editableColumn--;
+
+		emit headerDataChanged(Qt::Horizontal, _editableColumn, _colNames.size() + 1);
+		emit dataChanged(index(0, _editableColumn), index(static_cast<int>(getDataSetRowCount()), _colNames.size() + 1));
+	}
+	else if(_extraCol == "" && _colNames.size() > 0)
+	{
+		_colNames.insert(_editableColumn, extraCol);
+		_editableColumn++;
+
+		emit headerDataChanged(Qt::Horizontal, _editableColumn - 1, _colNames.size());
+		emit dataChanged(index(0, _editableColumn - 1), index(static_cast<int>(getDataSetRowCount()), _colNames.size()));
+	}
+	else if(_extraCol != "" && extraCol != "" && _colNames.size() > _editableColumn)
+	{
+		_colNames[_editableColumn - 1] = extraCol;
+		emit headerDataChanged(Qt::Horizontal, _editableColumn - 1, _editableColumn - 1);
+		emit dataChanged(index(0, _editableColumn - 1), index(static_cast<int>(getDataSetRowCount()), _editableColumn - 1));
+	}
+
+	_extraCol = extraCol;
+
+	emit extraColChanged(_extraCol);
+	emit modelChanged();
 }

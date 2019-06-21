@@ -42,6 +42,7 @@ JASPControl
 	property string	itemType:		"string"
 	property string filter:			"rep(TRUE, rowcount)"		//Used by ListModelFilteredDataEntry
 	property string colName:		"data" //Used by ListModelFilteredDataEntry
+	property string	extraCol:		""
 	property string	tableType
 	property alias	model:			theView.model
 	property var	validator:		(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
@@ -57,9 +58,11 @@ JASPControl
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
 	signal colNameSignal(string filter)
+	signal extraColSignal(string extraCol)
 
 	onFilterChanged:	filterSignal(tableView.filter)
 	onColNameChanged:	colNameSignal(tableView.colName)
+	onExtraColChanged:	extraColSignal(tableView.extraCol)
 
 	function removeAColumn()
 	{

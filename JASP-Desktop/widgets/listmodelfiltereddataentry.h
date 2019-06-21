@@ -25,8 +25,9 @@
 class ListModelFilteredDataEntry : public ListModelTableViewBase
 {
 	Q_OBJECT
-	Q_PROPERTY(QString filter	READ filter		WRITE setFilter		NOTIFY filterChanged	)
-	Q_PROPERTY(QString colName	READ colName	WRITE setColName	NOTIFY colNameChanged	)
+	Q_PROPERTY(QString	filter		READ filter		WRITE setFilter		NOTIFY filterChanged	)
+	Q_PROPERTY(QString	colName		READ colName	WRITE setColName	NOTIFY colNameChanged	)
+	Q_PROPERTY(QString	extraCol	READ extraCol	WRITE setExtraCol	NOTIFY extraColChanged	)
 
 public:
 	explicit ListModelFilteredDataEntry(BoundQMLTableView * parent, QString tableType);
@@ -34,12 +35,15 @@ public:
 	QVariant		data(	const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
 	Qt::ItemFlags	flags(	const QModelIndex &index)								const	override;
 	void			rScriptDoneHandler(const QString & result)								override;
-	QString			filter()														const				{ return _filter;	}
-	QString			colName()														const				{ return _colName;	}
+	QString			filter()														const				{ return _filter;		}
+	QString			colName()														const				{ return _colName;		}
+	QString			extraCol()														const				{ return _extraCol;	}
 	OptionsTable *	createOption()															override;
 	void			initValues(OptionsTable * bindHere)										override;
 	int				getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
 	void			itemChanged(int column, int row, double value)							override;
+
+
 
 
 public slots:
@@ -48,12 +52,13 @@ public slots:
 	void	setFilter(QString filter);
 	void	dataSetChangedHandler();
 	void	setColName(QString colName);
-
+	void	setExtraCol(QString extraCol);
 
 signals:
 	void	filterChanged(QString filter);
 	void	acceptedRowsChanged();
 	void	colNameChanged(QString colName);
+	void	extraColChanged(QString extraCol);
 
 private:
 	void	setAcceptedRows(std::vector<bool> newRows);
@@ -63,12 +68,14 @@ private:
 	void	fillTable();
 
 	QString						_filter,
-								_colName;
+								_colName,
+								_extraCol;
 	std::vector<bool>			_acceptedRows;
 	std::vector<size_t>			_filteredRowToData;
 	std::map<size_t, double>	_enteredValues;
 	int							_editableColumn = 0;
-	std::vector<std::string>	_dataColumns;
+	std::vector<std::string>	_dataColumns,
+								_extraColsStr;
 };
 
 #endif // LISTMODELFILTEREDDATAENTRY_H
