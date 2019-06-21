@@ -544,7 +544,7 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
 
             if (tableDataExists) {
                 row = rowData[rowNo];
-                content = row[columnName] === null ? '' : row[columnName];
+                content = row[columnName] == null ? '' : row[columnName];
             }          
 
             let cell = { content: content };

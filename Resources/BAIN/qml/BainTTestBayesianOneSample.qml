@@ -23,7 +23,8 @@ Form
 {
 	VariablesForm
 	{
-		AvailableVariablesList { name: "variablesList"; suggestedColumns: ["scale"]}
+		height: 200
+		AvailableVariablesList { name: "variablesList" }
 		AssignedVariablesList {
 			name: "variables"
 			title: qsTr("Variables")
@@ -38,8 +39,7 @@ Form
 			text: qsTr("Test value")
 			defaultValue: 0
 			name: "testValue"
-			min: 0
-			max: 99999
+			negativeValues: true
 			decimals: 2
 		}
 
@@ -67,14 +67,14 @@ Form
 
 	ColumnLayout
 	{
-		GroupBox
+		Group
 		{
 			title: qsTr("Tables")
 
 			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
 		}
 
-		GroupBox
+		Group
 		{
 			title: qsTr("Plots")
 

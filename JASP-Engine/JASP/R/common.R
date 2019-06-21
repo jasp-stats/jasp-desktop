@@ -2202,6 +2202,18 @@ as.list.footnotes <- function(footnotes) {
   return(NULL)
 }
 
+.suppressGrDevice <- function(plotFunc) {
+  plotFunc <- substitute(plotFunc)
+  tmpFile <- tempfile()
+  png(tmpFile)
+  on.exit({
+    dev.off()
+    if (file.exists(tmpFile))
+      file.remove(tmpFile)
+  })
+  eval(plotFunc, parent.frame())
+}
+
 .writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {
 	# Initialise output object
 	image <- list()

@@ -212,8 +212,6 @@ jaspObjR <- R6Class(
 				for (i in seq_along(optionContainsValue)) {
 					name <- names(optionContainsValue)[i]
 					value <- optionContainsValue[[i]]
-					if (length(value) != 1 || !is.atomic(value))
-						stop("value provided in `optionContainsValue` must be of type atomic and length 1")
 					private$jaspObject$setOptionMustContainDependency(name, value)
 				}
 			}

@@ -88,7 +88,7 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 	}
 	else
 		_textType = TextType::Default;
-	
+
 	QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));
 	
 }
