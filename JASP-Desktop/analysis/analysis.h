@@ -161,6 +161,7 @@ public slots:
 	void					setHelpFile(QString helpFile);
 	void					setTitleQ(QString title);
 	void					setTitle(std::string title) { setTitleQ(QString::fromStdString(title)); }
+	void					refreshAvailableVariablesModels();
 
 protected:
 	int						callback(Json::Value results);

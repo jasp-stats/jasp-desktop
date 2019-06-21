@@ -516,3 +516,12 @@ void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 	for(const QString & col : colsToRemove)
 		requestComputedColumnDestruction(col);
 }
+
+void ComputedColumnsModel::setShowThisColumn(QString showThisColumn)
+{
+	if (_showThisColumn == showThisColumn)
+		return;
+
+	_showThisColumn = showThisColumn;
+	emit showThisColumnChanged(_showThisColumn);
+}

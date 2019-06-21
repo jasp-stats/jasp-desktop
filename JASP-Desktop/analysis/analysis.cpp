@@ -389,3 +389,9 @@ void Analysis::setTitleQ(QString title)
 	
 	emit titleChanged();
 }
+
+void Analysis::refreshAvailableVariablesModels()
+{
+	if(form() != nullptr)
+		form()->refreshAvailableVariablesModels();
+}

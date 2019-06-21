@@ -56,23 +56,29 @@ void ListModelTermsAvailable::sortWithType(SortType sortType, bool ascending)
 void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
+
 	if (sourceItems.size() == 0)
 		return;
 	
 	beginResetModel();
+
 	Terms termsAvailable;
 	QVector<Terms> termsPerModel;
 	_termSourceModelMap.empty();
+
 	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
 		{
 			Terms terms = sourceModel->terms(sourceItem->modelUse);
+
 			if (sourceItem->discardModel)
 				terms.discardWhatDoesContainTheseComponents(sourceItem->discardModel->terms());
+
 			for (const Term& term : terms)
 				_termSourceModelMap[term.asQString()] = sourceModel;
+
 			termsAvailable.add(terms);
 			termsPerModel.push_back(terms);
 		}
@@ -102,6 +108,7 @@ void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 	
 	setChangedTerms(termsAvailable);
 	initTerms(termsAvailable);
+
 	endResetModel();
 
 	if (updateAssigned)

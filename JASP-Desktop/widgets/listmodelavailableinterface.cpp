@@ -44,6 +44,8 @@ void ListModelAvailableInterface::initTerms(const Terms &terms)
 	removeTermsInAssignedList();
 	
 	endResetModel();
+
+
 }
 
 QVariant ListModelAvailableInterface::requestInfo(const Term &term, VariableInfo::InfoType info) const

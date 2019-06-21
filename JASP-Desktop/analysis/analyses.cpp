@@ -589,3 +589,8 @@ void Analyses::setChangedAnalysisTitle()
     if (analysis != nullptr)
         emit analysisTitleChanged(analysis);
 }
+
+void Analyses::refreshAvailableVariables()
+{
+	applyToAll([](Analysis * a) { a->refreshAvailableVariablesModels();	});
+}

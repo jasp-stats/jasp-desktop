@@ -28,7 +28,8 @@ public:
 				QString computeColumnError();
 				QString computeColumnNameSelected();
 				QString computeColumnJson();
-				QString lastCreatedColumn() const { return _lastCreatedColumn; }
+				QString lastCreatedColumn() const { return _lastCreatedColumn;	}
+				QString showThisColumn()	const { return _showThisColumn;		}
 				bool	computeColumnUsesRCode();
 
 				void	setComputeColumnRCode(QString newCode);
@@ -54,12 +55,6 @@ public:
 
 	Q_INVOKABLE bool	showAnalysisFormForColumn(QString columnName);
 
-
-
-				QString showThisColumn() const
-				{
-					return _showThisColumn;
-				}
 
 private:
 				void	validate(QString name);
@@ -87,8 +82,7 @@ signals:
 				void	showAnalysisForm(Analysis *analysis);
 				void	lastCreatedColumnChanged(QString lastCreatedColumn);
 				void	dataColumnAdded(QString columnName);
-
-				void showThisColumnChanged(QString showThisColumn);
+				void	showThisColumnChanged(QString showThisColumn);
 
 public slots:
 				void				computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
@@ -100,24 +94,16 @@ public slots:
 				void				recomputeColumn(std::string columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);
 				void				analysisRemoved(Analysis * analysis);
-
-				void setShowThisColumn(QString showThisColumn)
-				{
-					if (_showThisColumn == showThisColumn)
-						return;
-
-					_showThisColumn = showThisColumn;
-					emit showThisColumnChanged(_showThisColumn);
-				}
+				void				setShowThisColumn(QString showThisColumn);
 
 private:
 
 	QString					_currentlySelectedName	= "",
-							_lastCreatedColumn		= "";
+							_lastCreatedColumn		= "",
+							_showThisColumn			= "";
 	ComputedColumns		*	_computedColumns		= nullptr;
 	DataSetPackage		*	_package				= nullptr;
 	Analyses			*	_analyses				= nullptr;
-	QString _showThisColumn;
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

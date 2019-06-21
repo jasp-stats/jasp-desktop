@@ -175,8 +175,10 @@ void AnalysisForm::_parseQML()
 			BoundQMLTextArea* boundQMLTextArea = new BoundQMLTextArea(quickItem,	this);
 			control = boundQMLTextArea;
 			ListModelTermsAvailable* allVariablesModel = boundQMLTextArea->allVariablesModel();
+
 			if (allVariablesModel)
 				_allAvailableVariablesModels.push_back(allVariablesModel);
+
 			break;
 		}
 		case qmlControlType::ComboBox:
@@ -236,12 +238,14 @@ void AnalysisForm::_parseQML()
 			{
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteraction);
 				listView = availableVariablesListView;
-				if (availableVariablesListView->sourceModels().isEmpty()) // If there is no sourceModels, set all available variables.
-				{
-					ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-					if (availableModel)
-						_allAvailableVariablesModels.push_back(availableModel);
-				}
+
+				bool noSource = availableVariablesListView->sourceModels().isEmpty(); // If there is no sourceModels, set all available variables.
+
+				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
+
+				if (availableModel)
+					(noSource ? _allAvailableVariablesModels : _allAvailableVariablesModelsWithSource).push_back(availableModel);
+
 				break;
 			}
 			default:
@@ -398,6 +402,7 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
 	{
 		model->initTerms(columnNames);
+
 		if (refreshAssigned)
 		{
 			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
@@ -409,6 +414,11 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 			}
 		}
 	}
+
+	if(refreshAssigned)
+		for(ListModelTermsAvailable * model : _allAvailableVariablesModelsWithSource)
+			model->resetTermsFromSourceModels(true);
+
 }
 
 void AnalysisForm::bindTo()

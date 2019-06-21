@@ -86,6 +86,8 @@ public:
 	Q_INVOKABLE void reset();
     Q_INVOKABLE void exportResults();
 
+	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
+
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
@@ -113,7 +115,8 @@ protected:
 	bool									_removed = false;
 	
 private:
-	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
+	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels,
+											_allAvailableVariablesModelsWithSource;
 	QQuickItem								*_errorMessagesItem;
 	QList<QString>							_errorMessages;
 };

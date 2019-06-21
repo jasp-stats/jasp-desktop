@@ -114,6 +114,7 @@ public slots:
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
 	void setChangedAnalysisTitle();
 	void analysisTitleChangedInResults(int id, QString title);
+	void refreshAvailableVariables();
 
 signals:
 	void analysesUnselected();

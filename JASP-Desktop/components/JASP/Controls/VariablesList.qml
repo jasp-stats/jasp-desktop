@@ -25,13 +25,13 @@ import QtQuick.Layouts 1.3
 
 JASPControl
 {
-	id:					variablesList
-	controlType:		"VariablesListView"
-	background:			rectangle
-	width:				parent.width
-	implicitWidth:		width
-	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
-	implicitHeight:		height
+	id:						variablesList
+	controlType:			"VariablesListView"
+	background:				rectangle
+	width:					parent.width
+	implicitWidth:			width
+	height:					singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
+	implicitHeight:			height
 	useControlMouseArea:	false
 	
 	property var	model

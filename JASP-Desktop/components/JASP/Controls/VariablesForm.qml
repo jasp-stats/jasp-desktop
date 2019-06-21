@@ -23,12 +23,12 @@ import QtQuick.Layouts	1.3
 
 Item
 {
-	id:				variablesForm
-	implicitWidth:	form.width
-	height:			Theme.defaultVariablesFormHeight
-    implicitHeight: height
-	Layout.columnSpan: parent.columns
-	visible:		!debug || DEBUG_MODE
+	id:					variablesForm
+	implicitWidth:		form.width
+	height:				Theme.defaultVariablesFormHeight
+	implicitHeight:		height
+	Layout.columnSpan:	parent.columns
+	visible:			!debug || DEBUG_MODE
 
 	default property alias	content:						items.children
 			property int	listWidth:						implicitWidth * 2 / 5
@@ -61,9 +61,9 @@ Item
 		
 		Loader
 		{
-			property var myLeftSource:     availableVariablesList
-			property var myRightSource:    allAssignedVariablesList[index];
-			property bool interactionAssign: allAssignedVariablesList[index].addInteractionOptions
+			property var myLeftSource:			availableVariablesList
+			property var myRightSource:			allAssignedVariablesList[index];
+			property bool interactionAssign:	allAssignedVariablesList[index].addInteractionOptions
 			
 			
 			sourceComponent: interactionAssign ? assignInteractionButtonComponent : assignButtonComponent
@@ -120,21 +120,21 @@ Item
 			
 			DropDown
 			{
-				id: interactionControl
-				anchors.left: assignButton.left
+				id:					interactionControl
+				anchors.left:		assignButton.left
 				anchors.leftMargin: (assignButton.width - width - 4) / 2
-				anchors.top: assignButton.bottom
-				anchors.topMargin: 2
-				isDirectModel: true
-				currentIndex: 0
+				anchors.top:		assignButton.bottom
+				anchors.topMargin:	2
+				isDirectModel:		true
+				currentIndex:		0
 				values: ListModel 
 				{
-					ListElement { label: "Main Effects"; value: "MainEffects" }
-					ListElement { label: "Only 2 way"; value: "All2Way" }
-					ListElement { label: "Only 3 way"; value: "All3Way" }
-					ListElement { label: "Only 4 way"; value: "All4Way" }
-					ListElement { label: "Only 5 way"; value: "All5Way" }
-					ListElement { label: "All"; value: "Cross" }
+					ListElement { label: "Main Effects";	value: "MainEffects" }
+					ListElement { label: "Only 2 way";		value: "All2Way" }
+					ListElement { label: "Only 3 way";		value: "All3Way" }
+					ListElement { label: "Only 4 way";		value: "All4Way" }
+					ListElement { label: "Only 5 way";		value: "All5Way" }
+					ListElement { label: "All";				value: "Cross" }
 				}
 			}			
 		}
@@ -166,6 +166,7 @@ Item
 				{
 					if (availableVariablesList)
 						form.addError("Only 1 Available Variables list can be set in a VariablesForm");
+
 					availableVariablesList = control;
 					availableVariablesListIndex = i;
 				}
@@ -185,17 +186,17 @@ Item
 		else
 			allJASPControls.splice(availableVariablesListIndex, 1);
 				
-		availableVariablesList.parent = variablesForm
-		availableVariablesList.anchors.top = variablesForm.top
+		availableVariablesList.parent		= variablesForm
+		availableVariablesList.anchors.top	= variablesForm.top
 		availableVariablesList.anchors.left = variablesForm.left
 
 		
 		var anchorTop = variablesForm.top;
         for (i = 0; i < allJASPControls.length; ++i) {
-            allJASPControls[i].anchors.top = anchorTop;
-            allJASPControls[i].anchors.topMargin = i === 0 ? 0 : marginBetweenVariablesLists;
-            allJASPControls[i].anchors.right = variablesForm.right;
-			anchorTop = allJASPControls[i].bottom;
+			allJASPControls[i].anchors.top			= anchorTop;
+			allJASPControls[i].anchors.topMargin	= i === 0 ? 0 : marginBetweenVariablesLists;
+			allJASPControls[i].anchors.right		= variablesForm.right;
+			anchorTop								= allJASPControls[i].bottom;
         }
 		
 		// Set the width of the VariablesList to listWidth only if it is not set explicitely
@@ -210,6 +211,7 @@ Item
 			{
 				if (control.width === variablesForm.width)
 					control.setWidthInForm = true
+
 				if (control.height === Theme.defaultVariablesFormHeight)
 					control.setHeightInForm = true
 			}
@@ -220,9 +222,9 @@ Item
 			var assignedList = allAssignedVariablesList[i]
             availableVariablesList.dropKeys.push(assignedList.name);
             assignedList.dropKeys.push(availableVariablesList.name);
-            for (var j = 0; j < allAssignedVariablesList.length; ++j) {
-                assignedList.dropKeys.push(allAssignedVariablesList[j].name);
-            }			
+
+			for (var j = 0; j < allAssignedVariablesList.length; ++j)
+                assignedList.dropKeys.push(allAssignedVariablesList[j].name);		
         }
 		
 		setControlsSize()
@@ -239,27 +241,30 @@ Item
 		if (availableVariablesList.setWidthInForm) 
 			availableVariablesList.width = variablesForm.listWidth
 		
-		var firstControl = true;
+		var firstControl				= true;
 		var minHeightOfAssignedControls = 0;
-		var	changeableHeightControls = [];
+		var	changeableHeightControls	= [];
 		
 		for (var i = 0; i < allJASPControls.length; ++i)
 		{
-			var control = allJASPControls[i]
-			var isControlList = ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
-			var isControlComboBox = (control instanceof ComboBox)
+			var control				= allJASPControls[i]
+			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
+			var isControlComboBox	= (control instanceof ComboBox)
+
 			if (isControlList && control.setWidthInForm)
 				// Change the width of the VariablesList only if was not set explicitely
 				control.width = variablesForm.listWidth
 			else if (isControlComboBox && control.setWidthInForm)
 			{
-				control.setLabelAbove = true
+				control.setLabelAbove	= true
 				control.controlMinWidth = variablesForm.listWidth
 			}
 
 			if (!firstControl)
 				minHeightOfAssignedControls += marginBetweenVariablesLists;
+
 			firstControl = false;
+
 			if (!isControlList)
 				minHeightOfAssignedControls += control.height;
 			else if (control.singleVariable || !control.setHeightInForm)
@@ -274,13 +279,15 @@ Item
 		
 		// Set the height of controls (that have not singleVariable set or where the height is already specifically set)
         // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
-        if (changeableHeightControls.length > 0) {
+		if (changeableHeightControls.length > 0)
+		{
             var controlHeight = (availableVariablesList.height - minHeightOfAssignedControls) / changeableHeightControls.length;
+
 			if (controlHeight < minimumHeightVariablesLists)
 				controlHeight = minimumHeightVariablesLists; // Set a minimum height
-            for (i = 0; i < changeableHeightControls.length; i++) {
+
+			for (i = 0; i < changeableHeightControls.length; i++)
                 changeableHeightControls[i].height = changeableHeightControls[i].title ? (Theme.variablesListTitle + controlHeight) : controlHeight;
-            }
         }
 		
 	}

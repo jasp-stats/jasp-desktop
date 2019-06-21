@@ -496,17 +496,14 @@ bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)
 			_terms.end(),
 			[&](Term& existingTerm)
 			{
-				bool shouldRemove = false;
 				for (const string &str : existingTerm.scomponents())
-				{
 					if (! terms.contains(str))
 					{
-						shouldRemove = true;
 						changed = true;
-						break;
+						return true;
 					}
-				}
-				return shouldRemove;
+
+				return false;
 			}
 		),
 		_terms.end()
@@ -525,21 +522,16 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 			_terms.end(),
 			[&](Term& existingTerm)
 			{
-				bool shouldRemove = false;
-	
 				for (const Term &term : terms)
-				{
 					for (const string &component : term.scomponents())
-					{
 						if (existingTerm.contains(component))
 						{
-							shouldRemove = true;
-							changed = true;
-							break;
+							changed			= true;
+							return true;
 						}
-					}
-				}
-				return shouldRemove;
+
+
+				return false;
 			}),
 		_terms.end()
 	);
@@ -557,18 +549,14 @@ bool Terms::discardWhatDoesContainTheseTerms(const Terms &terms)
 			_terms.end(),
 			[&](const Term& existingTerm)
 			{
-				bool shouldRemove = false;
-
 				for (const Term &term : terms)
-				{
 					if (existingTerm.containsAll(term))
 					{
-						shouldRemove = true;
 						changed = true;
-						break;
+						return true;
 					}
-				}
-				return shouldRemove;
+
+				return false;
 			}),
 		_terms.end()
 	);
@@ -586,15 +574,16 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 			_terms.end(),
 			[&](Term& term)
 			{
-				bool shouldRemove = false;
 				if ( ! terms.contains(term))
 				{
 					if (discarded != nullptr)
 						discarded->add(term);
-					shouldRemove = true;
+
 					changed = true;
+					return true;
 				}
-				return shouldRemove;
+
+				return false;
 			}),
 		_terms.end()
 	);
