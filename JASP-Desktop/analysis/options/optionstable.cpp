@@ -45,8 +45,11 @@ Json::Value OptionsTable::asJSON() const
 
 void OptionsTable::deleteOldValues()
 {
-	for(Options *row : _value)
-		delete row;
+	auto i = std::begin(_value);
+
+	while(i != std::end(_value)) {
+		_value.erase(i);
+	}
 
 	_value.clear();
 }
@@ -93,9 +96,9 @@ void OptionsTable::setValue(const std::vector<Options *> &value)
 void OptionsTable::connectOptions(const std::vector<Options *> &value)
 {
 	setValue(value);
-	
+
 	for (Options* options : value)
-		options->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));	
+		options->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));
 }
 
 
@@ -103,7 +106,7 @@ void OptionsTable::connectOptions(const std::vector<Options *> &value)
 void OptionsTable::setTemplate(Options *templote)
 {
 	_template = templote;
-	
+
 	if(!_cachedValue.isNull())
 	{
 		set(_cachedValue);
