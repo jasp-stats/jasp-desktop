@@ -1,0 +1,45 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 							"Audit",
+		"name" :							"Audit",
+		"description": 						"JASP for Audit (JfA) is an officially supported add-on module that is designed specifically with the auditor in mind. JfA helps the auditor in interpreting, explaining, and reporting the analyses and leaves a transparent audit trail.",
+		"version":							"0.1",
+		"author":							"Koen Derks, Jacques de Swart , Eric-Jan Wagenmakers, Jan Wille & Ruud Wetzels",
+		"maintainer":						"Koen Derks <k.derks@nyenrode.nl>",
+		"website":							"www.github.com/koenderks/JASP-for-Audit",
+		"license":							"GPL (>= 2)",
+		"icon":     						"audit-module.svg",
+		"requiresDataset": 					false
+	},
+
+	"requiredPackages":	[],
+
+	"menu":
+	[
+		{
+			"title":    					"Workflow",
+			"icon":							"audit-workflow.svg"
+		},
+		{
+			"title":						"Audit Workflow",
+			"function":						"classicalAudit"
+		},
+		{
+			"title":						"Bayesian Audit Workflow",
+			"function":						"bayesianAudit"
+		},
+		{
+			"title":    					"Planning",
+			"icon":							"audit-planning.svg"
+		},
+		{
+			"title":						"Planning",
+			"function":						"classicalPlanning"
+		},
+		{
+			"title":						"Bayesian Planning",
+			"function":						"bayesianPlanning"
+		}
+	]
+}
