@@ -16,19 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 
-FileSystemModel::FileSystemModel(QObject *parent) : QObject(parent)
+FileSystem::FileSystem(QObject *parent) : QObject(parent)
 {
 
 }
 
-const FileSystemModel::FileSystemEntryList &FileSystemModel::entries() const
+const FileSystem::FileSystemEntryList &FileSystem::entries() const
 {
 	return _entries;
 }
 
-void FileSystemModel::setPath(QString path)
+void FileSystem::setPath(QString path)
 {
 	_path = path;
 
@@ -37,17 +37,17 @@ void FileSystemModel::setPath(QString path)
 	emit pathChanged(path);
 }
 
-const QString &FileSystemModel::path() const
+const QString &FileSystem::path() const
 {
 	return _path;
 }
 
-const QString &FileSystemModel::rootPath() const
+const QString &FileSystem::rootPath() const
 {
 	return _rootPath;
 }
 
-bool FileSystemModel::contains(const QString &path) const
+bool FileSystem::contains(const QString &path) const
 {
 	for (const FileSystemEntry &entry : _entries)
 	{
@@ -58,7 +58,7 @@ bool FileSystemModel::contains(const QString &path) const
 	return false;
 }
 
-bool FileSystemModel::hasFileEntry(QString name, QString &path)
+bool FileSystem::hasFileEntry(QString name, QString &path)
 {
 	for (int i =0; i < _entries.length(); i++)
 	{
@@ -70,7 +70,7 @@ bool FileSystemModel::hasFileEntry(QString name, QString &path)
 	return false;
 }
 
-bool FileSystemModel::hasFolderEntry(QString name)
+bool FileSystem::hasFolderEntry(QString name)
 {
 	for (int i =0; i < _entries.length(); i++)
 	{
@@ -80,7 +80,33 @@ bool FileSystemModel::hasFolderEntry(QString name)
 	return false;
 }
 
-FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntry::EntryType type)
+void FileSystem::sortEntries(Sortable::SortType  sortOrder)
+{
+	switch (sortOrder)
+	{
+		case Sortable::SortType::None:
+			break;
+
+		case Sortable::SortType::SortByNameAZ:
+			qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareNames);
+			break;
+
+		case Sortable::SortType::SortByNameZA:
+			qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareNamesReversed);
+			break;
+
+		case Sortable::SortType::SortByDate:
+			qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareDateTime);
+			break;
+
+		//case Sortable::SortType::SortByDate:
+		//	qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareDateTimeReversed);
+		//	break;
+
+	}
+}
+
+FileSystemEntry FileSystem::createEntry(const QString &path, FileSystemEntry::EntryType type)
 {
 	FileSystemEntry entry;
 	entry.entryType = type;
@@ -107,7 +133,7 @@ FileSystemEntry FileSystemModel::createEntry(const QString &path, FileSystemEntr
 	return entry;
 }
 
-FileSystemEntry FileSystemModel::createEntry(const QString &path, const QString &name, const QString &description, FileSystemEntry::EntryType type, const QString &associated_datafile)
+FileSystemEntry FileSystem::createEntry(const QString &path, const QString &name, const QString &description, FileSystemEntry::EntryType type, const QString &associated_datafile)
 {
 	FileSystemEntry entry;
 

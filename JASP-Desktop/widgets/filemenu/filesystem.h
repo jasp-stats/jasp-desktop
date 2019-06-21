@@ -16,23 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBMODEL_H
-#define FSBMODEL_H
+#ifndef FYLESYSTEM_H
+#define FYLESYSTEM_H
 
 #include <QObject>
 #include <QList>
 #include <QStringList>
 
 #include "filesystementry.h"
+#include "../sortable.h"
 
-class FileSystemModel : public QObject
+class FileSystem : public QObject
 {
 	Q_OBJECT
 
-	friend class FileSystemTableModel;
-
 public:
-	explicit FileSystemModel(QObject *parent = NULL);
+	explicit FileSystem(QObject *parent = NULL);
 	typedef QList<FileSystemEntry> FileSystemEntryList;
 
 	virtual void refresh() = 0;
@@ -51,6 +50,8 @@ public:
 
 	bool hasFileEntry(QString name, QString &path);
 	bool hasFolderEntry(QString name);
+
+	virtual void sortEntries(Sortable::SortType sortOrder);
 
 public slots:
 	void setPath(QString path);
@@ -76,4 +77,4 @@ protected:
 
 };
 
-#endif // FSBMODEL_H
+#endif // FYLESYSTEM_H

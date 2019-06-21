@@ -21,6 +21,7 @@ Rectangle
 	property alias		myAnalysis:         loader.myAnalysis
 	property string		formQmlUrl:			undefined
 	property var		background:			null
+	property alias		backgroundFlickable:loader.backgroundFlickable
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
 	property bool		imploded:			height == loader.y
 
@@ -277,6 +278,7 @@ Rectangle
 			property int		myIndex:			-1
 			property int		myID:				-1
 			property var		myAnalysis:         null
+			property var		backgroundFlickable: null
 		}
 	}
 }

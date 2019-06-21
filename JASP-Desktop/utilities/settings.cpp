@@ -18,6 +18,7 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFPassword",					""},
 	{"OSFEncryption",				0},
 	{"OSFRememberMe",				false},
+	{"OSFSortOrder",				0},
 	{"PPIUseDefault",				false},
 	{"PPICustomValue",				300},
 	{"UIScaleAll",					1.0f},
@@ -33,6 +34,7 @@ const Settings::Setting Settings::Values[] = {
 	{"maxFlickVelocity",			800},
 	{"modulesRemember",				true},
 	{"modulesRemembered",			""}
+
 };
 
 QVariant Settings::value(Settings::Type key)

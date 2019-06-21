@@ -14,7 +14,7 @@ class FileMenuBasicListModel : public QAbstractListModel
 	Q_OBJECT
 
 public:
-	explicit FileMenuBasicListModel(QObject *parent, FileSystemModel * model);
+	explicit FileMenuBasicListModel(QObject *parent, FileSystem * model);
 	virtual ~FileMenuBasicListModel() {}
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())									const	override;
@@ -32,7 +32,7 @@ public slots:
 	bool mayOpen();
 
 protected:
-	FileSystemModel *_model = nullptr;
+	FileSystem *_model = nullptr;
 	bool			_openFileWhenClicked = true;
 	static QMutex	_opening;
 	void			resetOpening();

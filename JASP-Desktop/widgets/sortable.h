@@ -28,17 +28,20 @@ public:
 	enum SortType {
 		None = 0,
 		SortByName,
+		SortByNameAZ,
+		SortByNameZA,
 		SortByType,
-		SortByDate
+		SortByDate,
+		SortBySize
 	};
 
-	virtual ~Sortable() {}
+	virtual ~Sortable();
 
-	virtual void sortWithType(SortType sortType, bool ascending = true) = 0;
-	void setSortModel(SortMenuModel* menu) { _sortMenuModel = menu; }
+	virtual void sortItems(SortType sortType) = 0;
+			void sortItems();
 
-	void sortItems();
-	SortType currentSortType();
+			void setSortModel(SortMenuModel* menu) { _sortMenuModel = menu; }
+			SortType currentSortType();
 
 private:
 	SortMenuModel* _sortMenuModel = nullptr;

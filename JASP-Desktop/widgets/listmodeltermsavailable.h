@@ -28,7 +28,7 @@ class ListModelTermsAvailable : public ListModelAvailableInterface
 public:
 	ListModelTermsAvailable(QMLListView* listView, bool mixedModelTerms = false);
 		
-	void		sortWithType(SortType sortType, bool ascending)			override;
+	void		sortItems(SortType sortType)							override;
 	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;
 	
 	ListModel*	getSourceModelOfTerm(const Term& term);

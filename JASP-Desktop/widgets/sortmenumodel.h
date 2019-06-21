@@ -42,9 +42,10 @@ public:
 	virtual QHash<int, QByteArray>			roleNames()													const override;
 
 	Q_INVOKABLE void						clickSortItem(int index);
-	void									sortAgain();
+	void									sortItems();
 	Sortable::SortType						currentSortType();
 	bool									isAscending();
+	void									setCurrentEntry(Sortable::SortType sortType);
 
 private:
 	static QMap<Sortable::SortType, QString> _labels;

@@ -38,6 +38,7 @@ AnalysisForm
 	property int	availableWidth:		form.width - 2 * Theme.formMargin
 	property var	jaspControls:		[]
 	property var    analysis:           myAnalysis
+	property var	backgroundForms:	backgroundFlickable
 	property alias	columns:			contentArea.columns
 	
 	property int    plotHeight:         320

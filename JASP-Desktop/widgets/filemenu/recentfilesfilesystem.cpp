@@ -24,7 +24,7 @@
 #include "utilities/settings.h"
 
 RecentFilesFileSystem::RecentFilesFileSystem(QObject *parent)
-	: FileSystemModel(parent)
+	: FileSystem(parent)
 {
 	parent->installEventFilter(this);
 }

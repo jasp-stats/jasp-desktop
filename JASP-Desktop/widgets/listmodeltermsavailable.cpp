@@ -26,7 +26,7 @@ ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView, bool mix
 {
 }
 
-void ListModelTermsAvailable::sortWithType(SortType sortType, bool ascending)
+void ListModelTermsAvailable::sortItems(SortType sortType)
 {	
 	if (sortType == Sortable::None)
 	{
@@ -50,7 +50,7 @@ void ListModelTermsAvailable::sortWithType(SortType sortType, bool ascending)
 		_allTerms.add(forbidden);
 	}
 
-	ListModelAvailableInterface::sortWithType(sortType, ascending);
+	ListModelAvailableInterface::sortItems(sortType);
 }
 
 void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)

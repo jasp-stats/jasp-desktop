@@ -22,6 +22,7 @@
 #include "filemenuobject.h"
 #include "osflistmodel.h"
 #include "osfbreadcrumbslistmodel.h"
+#include "../sortmenumodel.h"
 
 #include <QQmlContext>
 #include <QNetworkReply>
@@ -41,7 +42,7 @@ class OSF: public FileMenuObject
 
 	Q_PROPERTY(OSFListModel * listModel					READ listModel		WRITE setListModel		NOTIFY listModelChanged)
 	Q_PROPERTY(OSFBreadCrumbsListModel * breadCrumbs	READ breadCrumbs	WRITE setBreadCrumbs	NOTIFY breadCrumbsChanged)
-
+	Q_PROPERTY(SortMenuModel * sortedMenuModel			READ sortedMenuModel						NOTIFY sortedMenuModelChanged)
 
 public:
 	explicit OSF(QObject *parent = nullptr);
@@ -63,6 +64,7 @@ public:
 	void setShowfiledialog(const bool showdialog);
 	void setUsername(const QString &username);
 	void setPassword(const QString &password);
+
 	static void checkErrorMessageOSF(QNetworkReply* reply);
 	void setOnlineDataManager(OnlineDataManager *odm);
 	Q_INVOKABLE void attemptToConnect();
@@ -71,6 +73,8 @@ public:
 
 	OSFListModel * listModel()				const	{ return _osfListModel;	}
 	OSFBreadCrumbsListModel * breadCrumbs() const	{ return _osfBreadCrumbsListModel;	}
+
+	SortMenuModel * sortedMenuModel() const;
 
 signals:
 	void newFolderRequested(QString folderName);
@@ -83,9 +87,10 @@ signals:
 	void usernameChanged();
 	void passwordChanged();
 	void openFileRequest(QString path);
-
 	void listModelChanged(OSFListModel * listModel);
 	void breadCrumbsChanged(OSFBreadCrumbsListModel * breadCrumbs);
+
+	void sortedMenuModelChanged(SortMenuModel * sortedMenuModel);
 
 private slots:
 	void notifyDataSetSelected(QString path);
@@ -111,7 +116,6 @@ public slots:
 	void closeFileDialog();
 	void newLoginRequired();
 	void handleAuthenticationResult(bool);
-
 	void setListModel(OSFListModel * listModel);
 	void setBreadCrumbs(OSFBreadCrumbsListModel * breadCrumbs);
 
@@ -121,7 +125,7 @@ private:
 	OnlineDataManager		*_odm						= nullptr;
 	OSFListModel			*_osfListModel				= nullptr;
 	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel	= nullptr;
-	OSFFileSystem			*_model						= nullptr;
+	OSFFileSystem			*_osfFileSystem				= nullptr;
 
 	bool	_mLoggedin,
 			_mRememberMe,
@@ -133,6 +137,8 @@ private:
 			_mSaveFolderName,
 			_mUserName,
 			_mPassword;
+
+	SortMenuModel * m_sortedMenuModel;
 };
 
 

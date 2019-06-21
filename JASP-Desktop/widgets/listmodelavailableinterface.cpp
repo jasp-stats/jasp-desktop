@@ -28,7 +28,7 @@ void ListModelAvailableInterface::initTerms(const Terms &terms)
 	_allTerms = _allSortedTerms = _terms = terms;
 	_terms.setSortParent(_allSortedTerms);
 	if (currentSortType() != SortType::None)
-		sortItems();
+		Sortable::sortItems();
 
 	if (_addEmptyValue)
 	{
@@ -39,7 +39,6 @@ void ListModelAvailableInterface::initTerms(const Terms &terms)
 			_terms.add(QString());
 		}
 	}
-
 
 	removeTermsInAssignedList();
 	
@@ -53,7 +52,7 @@ QVariant ListModelAvailableInterface::requestInfo(const Term &term, VariableInfo
 	return VariableInfoConsumer::requestInfo(term, info);
 }
 
-void ListModelAvailableInterface::sortWithType(SortType sortType, bool ascending)
+void ListModelAvailableInterface::sortItems(SortType sortType)
 {
 	beginResetModel();
 
@@ -67,8 +66,7 @@ void ListModelAvailableInterface::sortWithType(SortType sortType, bool ascending
 		QList<QString> sortedTerms = _allSortedTerms.asQList();
 		std::sort(sortedTerms.begin(), sortedTerms.end(),
 				  [&](const QString& a, const QString& b) {
-						int comp = a.compare(b, Qt::CaseInsensitive);
-						return ascending ? comp < 0 : comp > 0;
+						return a.compare(b, Qt::CaseInsensitive) < 0;
 					});
 		_allSortedTerms = Terms(sortedTerms);
 		break;
@@ -81,8 +79,7 @@ void ListModelAvailableInterface::sortWithType(SortType sortType, bool ascending
 			termsTypeList.push_back(QPair<QString, int>(term, requestInfo(term, VariableInfo::VariableType).toInt()));
 		std::sort(termsTypeList.begin(), termsTypeList.end(),
 				  [&](const QPair<QString, int>& a, const QPair<QString, int>& b) {
-						int comp = a.second - b.second;
-						return ascending ? comp > 0 : comp < 0;
+						return a.second - b.second > 0;
 					});
 		QList<QString> sortedTerms;
 		for (const auto& term : termsTypeList)

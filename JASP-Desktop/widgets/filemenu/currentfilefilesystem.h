@@ -19,10 +19,10 @@
 #ifndef CURRENTFILEFILESYSTEM_H
 #define CURRENTFILEFILESYSTEM_H
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 #include "common.h"
 
-class CurrentFileFileSystem : public FileSystemModel
+class CurrentFileFileSystem : public FileSystem
 {
 public:
 	CurrentFileFileSystem(QObject *parent = NULL);

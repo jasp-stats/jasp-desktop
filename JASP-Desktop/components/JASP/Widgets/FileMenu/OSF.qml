@@ -21,6 +21,9 @@ import QtQuick.Controls 2.2
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
+//import JASP.Controls    1.0
+//import QtQuick.Layouts  1.3
+
 Item
 {
 	id	: rect
@@ -28,6 +31,13 @@ Item
 	property bool loggedin			: fileMenuModel.osf.loggedin
 	property bool processing		: fileMenuModel.osf.processing
 	property bool showfiledialog	: fileMenuModel.osf.showfiledialog
+
+	MouseArea
+	{
+		z:				-5
+		anchors.fill:	parent
+		onClicked:		rect.forceActiveFocus()
+	}
 
 	MenuHeader
 	{
@@ -62,16 +72,24 @@ Item
 		model	: fileMenuModel.osf.breadCrumbs
 		visible	: loggedin
 
-		anchors.rightMargin: Theme.generalMenuMargin * preferencesModel.uiScale
-
 		width	: rect.width
 		height	: loggedin ? (40 * preferencesModel.uiScale) + (scrollBarVisible ? scrollBarHeight : 0) : 0
 
 		anchors.top			: menuHeader.bottom
 		anchors.left		: menuHeader.left
-		anchors.right		: parent.right
+		anchors.right		: menuHeader.right
 
 		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
+
+		scrollBarRightMargin: sortMenuButton.width + 10 * preferencesModel.uiScale
+
+		MouseArea
+		{
+			z:				-5
+			anchors.fill:	parent
+			onClicked:		osfbreadcrumbs.forceActiveFocus()
+		}
+
 	}
 
 	ToolSeparator
@@ -83,6 +101,22 @@ Item
 		anchors.top		: osfbreadcrumbs.bottom
 		anchors.left	: menuHeader.left
 		anchors.right	: menuHeader.right
+	}
+
+	SortMenuButton
+	{
+		id: sortMenuButton
+		anchors
+		{
+			bottom:			firstSeparator.top
+			right:			firstSeparator.right
+			rightMargin:	3 * preferencesModel.uiScale
+			topMargin:		3 * preferencesModel.uiScale
+		}
+		visible: loggedin  && !fileExportDialog.visible
+		sortMenuModel: fileMenuModel.osf.sortedMenuModel
+		defaultColor: "transparent"
+		hoveredColor: Theme.gray
 	}
 
 	/////////////////////////// File dialog to save in OSF ////////////////////////////////////
