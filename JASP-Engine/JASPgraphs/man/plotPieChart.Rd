@@ -6,17 +6,20 @@
 \usage{
 plotPieChart(value, group, legendName = deparse(substitute(group)),
   legendLabels = if (is.factor(group)) levels(group) else unique(group),
+  legendColors = colorspace::qualitative_hcl(length(unique(group))),
   showAxisText = TRUE, showAxisTicks = showAxisText,
   asPercentages = TRUE, ...)
 }
 \arguments{
-\item{value}{the value for each group.}
+\item{value}{The value for each group.}
 
-\item{group}{character of factor that indicates which value belongs to which group.}
+\item{group}{Character of factor that indicates which value belongs to which group.}
 
 \item{legendName}{Character, title of the legend.}
 
-\item{legendLabels}{character vector with names for the legend.}
+\item{legendLabels}{Character vector with names for the legend.}
+
+\item{legendColors}{Character vector with colors.}
 
 \item{showAxisText}{Logical, should the axis text be shown?}
 
@@ -44,15 +47,11 @@ plotPieChart(value, gg, ga, showAxisTicks = FALSE, legend.position = "none") # h
 # axis can still be modified
 print(g + scale_y_continuous(breaks = seq(0, 100, 10)))
 cm <- c(0, cumsum(value))
-breaks <- 100 - (cm[-1] + cm[-length(cc)]) / 2
+breaks <- 100 - (cm[-1] + cm[-length(cm)]) / 2
 print(g + scale_y_continuous(breaks = breaks, labels = gg))
 
 # something more extreme:
 value <- rpois(25, 10)
 g <- as.character(seq_len(25))
 plotPieChart(value, g)
-
-
-
-
 }
