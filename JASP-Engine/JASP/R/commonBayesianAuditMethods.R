@@ -322,7 +322,7 @@
     pointdata <- data.frame(x = jaspResults[["materiality"]]$object * jaspResults[["N"]]$object, y = .dBetaBinom(ceiling(jaspResults[["materiality"]]$object * jaspResults[["N"]]$object),
                           N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]]))
     kk <- base::switch(options[["expectedErrors"]], "expectedRelative" = options[["expectedPercentage"]] * jaspResults[["N"]]$object, "expectedAbsolute" = round(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * jaspResults[["N"]]$object, 2))
-    secondPointData <- data.frame(x = kk, y = .dBetaBinom(kk, N = jaspResults[["N"]]$object, planningResult[["priorA"]], planningResult[["priorB"]]))
+    secondPointData <- data.frame(x = kk, y = .dBetaBinom(kk, N = jaspResults[["N"]]$object - lanningResult[["n"]], planningResult[["priorA"]], planningResult[["priorB"]]))
 
     if(!options[["priorPlotExpectedPosterior"]]){
       scaleValues <- c("dashed")
