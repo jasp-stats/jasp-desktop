@@ -114,3 +114,16 @@ void OptionsTable::setTemplate(Options *templote)
 		_cachedValue = Json::nullValue;
 	}
 }
+
+std::set<std::string> OptionsTable::usedVariables() const
+{
+	std::set<std::string> combined;
+
+	for (const Options * options : _value)
+	{
+		std::set<std::string> cols = options->usedVariables();
+		combined.insert(cols.begin(), cols.end());
+	}
+
+	return combined;
+}

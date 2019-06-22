@@ -35,7 +35,7 @@ public:
 	std::vector<std::string>	variables()												const	override;
 	void						replaceName(std::string oldName, std::string newName)			override;
 	void						removeName(std::string name)									override;
-	std::set<std::string>		usedVariables()													override;
+	std::set<std::string>		usedVariables()											const	override;
 	void						removeUsedVariable(std::string var)								override	{ removeName(var); }
 	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
 };

@@ -73,7 +73,7 @@ std::vector<std::string> OptionVariablesGroups::variables() const
 	return variables;
 }
 
-std::set<std::string> OptionVariablesGroups::usedVariables()
+std::set<std::string> OptionVariablesGroups::usedVariables() const
 {
 	std::set<std::string>					variables;
 	std::vector<std::vector<std::string>>	values = value();

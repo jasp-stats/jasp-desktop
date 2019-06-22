@@ -880,6 +880,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				_loader.free(_package->dataSet());
 			_package->reset();
 			setDataSetAndPackageInModels(nullptr);
+			setWelcomePageVisible(true);
 
 			if (_openedUsingArgs)	_application->exit(1);
 			else					MessageForwarder::showWarning("Unable to open file.\n\n" + event->message());
@@ -942,6 +943,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 			_applicationExiting = false;
+
 	}
 }
 

@@ -249,7 +249,7 @@ void AsyncLoader::loadPackage(QString id)
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
-		catch (runtime_error e)
+		catch (runtime_error & e)
 		{
 			Log::log() << "Runtime Exception in loadPackage: " << e.what() << std::endl;
 
@@ -257,7 +257,7 @@ void AsyncLoader::loadPackage(QString id)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
-		catch (exception e)
+		catch (exception & e)
 		{
 			Log::log() << "Exception in loadPackage: " << e.what() << std::endl;
 

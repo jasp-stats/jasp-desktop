@@ -179,7 +179,7 @@ Option *Options::clone() const
 	return c;
 }
 
-std::set<std::string> Options::usedVariables()
+std::set<std::string> Options::usedVariables() const
 {
 	std::set<std::string> combined;
 

@@ -49,10 +49,10 @@ public:
 	Option*		get(int index)												{ return _options.at(index).second; }
 	void		get(int index, std::string &name, Option *&option);	
 
-	std::set<std::string>	usedVariables()													override;
-	void					removeUsedVariable(std::string var)								override;
-	void					replaceVariableName(std::string oldName, std::string newName)	override;
-	std::set<std::string>	columnsCreated()												override;
+	std::set<std::string>	usedVariables()													const	override;
+	void					removeUsedVariable(std::string var)										override;
+	void					replaceVariableName(std::string oldName, std::string newName)			override;
+	std::set<std::string>	columnsCreated()														override;
 
 	class Names
 	{

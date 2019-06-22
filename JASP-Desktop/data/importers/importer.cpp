@@ -25,6 +25,7 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 
 	if (columnCount == 0)
 		return;
+
 	int rowCount = importDataSet->rowCount();
 
 	setDataSetSize(columnCount, rowCount);
