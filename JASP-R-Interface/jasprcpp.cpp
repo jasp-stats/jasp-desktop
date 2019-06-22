@@ -505,14 +505,16 @@ bool jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::RObject scalarD
 	if(Rcpp::is<Rcpp::Vector<REALSXP>>(scalarData))
 		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(scalarData));
 
-	(*rinside)["jaspRCPP_setColumnDataAsScaleData"] = scalarData;
-	//rinside->parseEvalNT("jaspRCPP_setColumnDataAsScaleData");
-	Rcpp::RObject result = jaspRCPP_parseEval("suppressWarnings(as.numeric(as.character(jaspRCPP_setColumnDataAsScaleData)))");
+	static Rcpp::Function asNumeric("as.numeric");
 
-	if(Rcpp::is<Rcpp::Vector<REALSXP>>(result))
-		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(result));
-
-	Rf_error("Something went wrong with the conversion to scalar..");
+	try
+	{
+		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(asNumeric(scalarData)));
+	}
+	catch(...)
+	{
+		Rf_error("Something went wrong with the conversion to scalar..");
+	}
 }
 
 bool _jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::Vector<REALSXP> scalarData)
@@ -534,14 +536,16 @@ bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::RObject ordin
 	if(Rcpp::is<Rcpp::Vector<INTSXP>>(ordinalData))
 		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(ordinalData));
 
-	(*rinside)["jaspRCPP_setColumnDataAsOrdinalData"] = ordinalData;
-	//rinside->parseEvalNT("jaspRCPP_setColumnDataAsOrdinalData");
-	Rcpp::RObject result = jaspRCPP_parseEval("suppressWarnings(as.factor(as.character(jaspRCPP_setColumnDataAsOrdinalData)))");
+	static Rcpp::Function asFactor("as.factor");
 
-	if(Rcpp::is<Rcpp::Vector<INTSXP>>(result))
-		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(result));
-
-	Rf_error("Something went wrong with the conversion to ordinal..");
+	try
+	{
+		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(asFactor(ordinalData)));
+	}
+	catch(...)
+	{
+		Rf_error("Something went wrong with the conversion to ordinal..");
+	}
 }
 
 bool _jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::Vector<INTSXP> ordinalData)
@@ -570,14 +574,16 @@ bool jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::RObject nomin
 	if(Rcpp::is<Rcpp::Vector<INTSXP>>(nominalData))
 		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(nominalData));
 
-	(*rinside)["jaspRCPP_setColumnDataAsNominalData"] = nominalData;
-	//rinside->parseEvalNT("jaspRCPP_setColumnDataAsNominalData");
-	Rcpp::RObject result = jaspRCPP_parseEval("suppressWarnings(as.factor(as.character(jaspRCPP_setColumnDataAsNominalData)))");
+	static Rcpp::Function asFactor("as.factor");
 
-	if(Rcpp::is<Rcpp::Vector<INTSXP>>(result))
-		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(result));
-
-	Rf_error("Something went wrong with the conversion to nominal..");
+	try
+	{
+		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(asFactor(nominalData)));
+	}
+	catch(...)
+	{
+		Rf_error("Something went wrong with the conversion to nominal..");
+	}
 }
 
 bool _jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::Vector<INTSXP> nominalData)
