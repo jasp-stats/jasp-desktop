@@ -84,7 +84,11 @@ Option *OptionsTable::clone() const
 
 void OptionsTable::setValue(const std::vector<Options *> &value)
 {
-	deleteOldValues();
+	std::set<Options *> newOnes(value.begin(),	value.end());
+
+	for(Options * older : _value)
+		if(newOnes.count(older) == 0)
+			delete older;
 
 	_value = value;
 	notifyChanged();
@@ -94,7 +98,7 @@ void OptionsTable::connectOptions(const std::vector<Options *> &value)
 {
 	setValue(value);
 	
-	for (Options* options : value)
+	for (Options* options : _value)
 		options->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));	
 }
 
