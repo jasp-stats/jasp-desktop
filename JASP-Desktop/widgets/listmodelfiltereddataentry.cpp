@@ -210,7 +210,7 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	OptionVariables		*	optionExtraCol		= static_cast<OptionVariables		* >(firstRow->get("extraCol"));
 	OptionIntegerArray	*	optionRowIndices	= static_cast<OptionIntegerArray	* >(firstRow->get("rowIndices"));
 
-	setExtraCol(tq(optionExtraCol->variables().size() > 0 ? optionExtraCol->variables()[0] : ""));
+	_extraCol = tq(optionExtraCol->variables().size() > 0 ? optionExtraCol->variables()[0] : "");
 
 	_dataColumns	= optionDataCols->variables();
 	_colNames		= tq(_dataColumns);

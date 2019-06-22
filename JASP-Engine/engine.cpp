@@ -400,7 +400,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageBackground		= jsonRequest.get("imageBackground",	"white").asString();
 
 		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
-		_engineState		= engineState::analysis;
+		_engineState			= engineState::analysis;
 	}
 }
 
@@ -432,7 +432,7 @@ void Engine::runAnalysis()
 			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground)
 		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults);
 
-	if (_analysisStatus == Status::initing || _analysisStatus == Status::running)  // if status hasn't changed
+	if (!_analysisJaspResults && (_analysisStatus == Status::initing || _analysisStatus == Status::running))  // if status hasn't changed
 		receiveMessages();
 
 	if (_analysisStatus == Status::toInit || _analysisStatus == Status::aborted || _analysisStatus == Status::error || _analysisStatus == Status::exception)
