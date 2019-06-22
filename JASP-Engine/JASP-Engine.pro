@@ -204,5 +204,20 @@ DISTFILES += \
     JASPgraphs/man/makeGridLines.Rd \
     JASPgraphs/man/drawBFpizza.Rd \
     JASPgraphs/man/PlotRobustnessSequential.Rd \
-    JASPgraphs/man/PlotPriorAndPosterior.Rd
+    JASPgraphs/man/PlotPriorAndPosterior.Rd \
+    JASP/R/bainancovabayesian.R \
+    JASP/R/bainanovabayesian.R \
+    JASP/R/bainregressionlinearbayesian.R \
+    JASP/R/bainttestbayesianindependentsamples.R \
+    JASP/R/bainttestbayesianonesample.R \
+    JASP/R/bainttestbayesianpairedsamples.R \
+    JASP/R/bayesianAudit.R \
+    JASP/R/bayesianPlanning.R \
+    JASP/R/common.R \
+    JASP/R/commonAudit.R \
+    JASP/R/commonAuditSampling.R \
+    JASP/R/commonBayesianAuditMethods.R \
+    JASP/R/commonClassicalAuditMethods.R \
+    JASP/R/classicalAudit.R \
+    JASP/R/classicalPlanning.R
 
