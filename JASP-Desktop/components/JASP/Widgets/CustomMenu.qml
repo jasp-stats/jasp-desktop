@@ -40,6 +40,7 @@ FocusScope
 	property point	menuMaxPos	: "0,0"
 	property bool	menuMinIsMin: false
 	property bool	showMe		: false
+	property bool	isRibbonMenu: false
 
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 
@@ -53,13 +54,14 @@ FocusScope
 
 	function showMenu(item, props, x_offset, y_offset)
 	{
-		menu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
-		menu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
-		menu.menuMinPos	= item.mapToItem(null, 1, 1);
-		menu.props		= props;
-		menu.menuOffset.x	= x_offset;
-		menu.menuOffset.y	= y_offset;
-		menu.showMe		= true;
+		customMenu.isRibbonMenu	= item.objectName === "ribbonButton";
+		customMenu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
+		customMenu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
+		customMenu.menuMinPos	= item.mapToItem(null, 1, 1);
+		customMenu.props		= props;
+		customMenu.menuOffset.x	= x_offset;
+		customMenu.menuOffset.y	= y_offset;
+		menu.showMe				= true;
 		menu.forceActiveFocus();
 	}
 
