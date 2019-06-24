@@ -9,6 +9,7 @@ plotPieChart(value, gg, ga, showAxisTicks = FALSE)
 plotPieChart(value, gg, ga, showAxisTicks = FALSE, legend.position = "none") # hide the legend
 
 # axis can still be modified
+print(g + scale_y_continuous(breaks = c(50, 75, 0)))
 print(g + scale_y_continuous(breaks = seq(0, 100, 10)))
 cm <- c(0, cumsum(value))
 breaks <- 100 - (cm[-1] + cm[-length(cm)]) / 2

@@ -18,7 +18,7 @@
 plotPieChart <- function(value, group,
                          legendName = deparse(substitute(group)),
                          legendLabels = if (is.factor(group)) levels(group) else unique(group),
-                         legendColors = colorspace::qualitative_hcl(length(unique(group))),
+                         legendColors = JASPcolors(length(unique(group))),
                          showAxisText = TRUE, showAxisTicks = showAxisText, asPercentages = TRUE,
                          ...) {
 
@@ -35,6 +35,11 @@ plotPieChart <- function(value, group,
 
   if (asPercentages)
     value <- value / sum(value) * 100
+
+  nUnique <- length(unique(group))
+  if (length(legendColors) < nUnique) {
+    legendColors <- scales::gradient_n_pal(legendColors)(seq(0, 1, length.out = nUnique))
+  }
 
   df <- data.frame(
     y = value,
@@ -53,4 +58,3 @@ plotPieChart <- function(value, group,
   ))
 
 }
-
