@@ -207,6 +207,90 @@
                      USE.NAMES = FALSE)])
 }
 
+.lavCreatePathDiagram <- function(semResults=NULL, lavModel=NULL, options) {
+  result <- list(keep=NULL, pathDiagram=NULL)
+  
+  plotArgs <- list(
+    DoNotPlot = TRUE,
+    ask = FALSE,
+    layout = "tree",
+    color = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
+    border.width = 1.5,
+    edge.label.cex = 0.9,
+    lty = 2,
+    title = FALSE
+  )
+
+  p <- try({
+    if (!is.null(semResults)) {
+      semPlotModel <- .lavToPlotObj(semResults)
+      .suppressGrDevice(do.call(semPlot::semPaths,
+        c(plotArgs, list(object = semPlotModel, what = ifelse(options$outputpathdiagramstandardizedparameter, "std", "paths")))
+      ))
+    } else {
+      semPlotModel <- .lavToPlotObj(lavModel)
+      .suppressGrDevice(do.call(semPlot::semPaths,
+        c(plotArgs, list(object = semPlotModel, what = "par", edge.color = "black"))
+      ))
+    }
+  })
+
+  if (isTryError(p)) {
+    errorMessage <- .extractErrorMessage(p)
+    if (options$groupingVariable != "")
+      result[["pathDiagram"]] <- list(title="Path Diagram", collection=list(list(error=list(error="badData", errorMessage=errorMessage))))
+    else
+      result[["pathDiagram"]]<- list(title="Path Diagram", error=list(error="badData", errorMessage=errorMessage))
+    return(result)
+  }
+
+  if (options$groupingVariable != "") {
+    # semplot returns an unnamed list, but which plot belongs to which grouping level?
+    # The order should match the order of the levels in the lavaan model..
+    titles <- semPlotModel@Original[[1]]@Data@group.label
+    if (!is.character(titles) || (length(titles) != length(p)))
+      titles <- seq_along(p)
+      
+    plotList <- list()
+    keep <- NULL
+    for (i in seq_along(p)) {
+      diagram <- .lavWritePathDiagram(p[[i]], titles[i], options)
+      plotList[[i]] <- diagram
+      keep <- c(keep, diagram[["data"]])
+    }
+    result[["pathDiagram"]] <- list(title = "Path Diagrams", collection = plotList)
+    
+  } else {
+    
+    result[["pathDiagram"]] <- .lavWritePathDiagram(p, "Path Diagram", options)
+    keep <- result[["pathDiagram"]][["data"]]
+    
+  }
+  result[["keep"]] <- keep
+  return(result)  
+}
+
+.lavWritePathDiagram <- function(plotObj, title, options) {
+  pathDiagram <- list()
+  pathDiagram$title <- title
+  pathDiagram$width <- options$plotWidth
+  pathDiagram$height <- options$plotHeight
+  if (pathDiagram$height == 0) {
+    pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
+  }
+  pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
+
+  content <- .writeImage(width = pathDiagram$width, 
+                        height = pathDiagram$height, plot = plotObj, obj = TRUE)
+  
+  pathDiagram[["convertible"]] <- TRUE
+  pathDiagram[["obj"]] <- content[["obj"]]
+  pathDiagram[["data"]] <- content[["png"]]
+  pathDiagram[["status"]] <- "complete"
+  
+  return(pathDiagram)
+}
+
 .lavToPlotObj <- function(lavResult) {
   # Create semplot model and unv the names of the manifest variables
   # Sorry, this code is really ugly but all it does is replace names for plot.
@@ -349,6 +433,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   }
 
   ### RUN SEM ###
+  semResults <- lavModel <- NULL
   if (perform == "run" && inputCorrect) {
       # Raw data:
       if (options$Data == "raw"){
@@ -468,7 +553,11 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   meta[[10]] <- list(name="covcor", type="table")
   meta[[11]] <- list(name="modificationIndices", type="table")
   meta[[12]] <- list(name="mardiasCoefficient", type="table")
-  meta[[13]] <- list(name="pathDiagram", type="image")
+
+  if (options$groupingVariable != "")
+    meta[[13]] <- list(name="pathDiagram", type="collection", meta="image")
+  else
+    meta[[13]] <- list(name="pathDiagram", type="image")
   
   results[[".meta"]] <- meta
   results[["title"]] <- "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
@@ -896,65 +985,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   
   # Create path diagram:
   if (perform == "run" && options$addPathDiagram) {
-    if(!is.null(semResults)) {
-      png() # semplot opens a device even though we specify doNotPlot, so we hack
-      p <- try(silent = FALSE, expr = {
-        semPlot::semPaths(.lavToPlotObj(semResults),
-            what            = ifelse(options$outputpathdiagramstandardizedparameter, "std", "paths"),
-            DoNotPlot       = TRUE,
-            ask             = FALSE,
-            layout          = "tree",
-            color           = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
-            border.width    = 1.5,
-            edge.label.cex  = 0.9,
-            lty             = 2,
-            title           = FALSE
-          )
-      })
-      dev.off()
-    } else {
-      png() # semplot opens a device even though we specify doNotPlot, so we hack
-      p <- try(silent = FALSE, expr = {
-        semPlot::semPaths(
-            object          = .lavToPlotObj(lavModel),
-            what            = "par",
-            DoNotPlot       = TRUE,
-            ask             = FALSE,
-            layout          = "tree",
-            edge.color      = "black",
-            color           = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
-            border.width    = 1.5,
-            edge.label.cex  = 0.9,
-            lty             = 2,
-            title           = FALSE
-          )
-      })
-      dev.off()
-    }
-    
-    if (isTryError(p)) {
-      errorMessage <- .extractErrorMessage(p)
-      results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
-    } else {
-      pathDiagram <- list()
-      pathDiagram$title <- "Path Diagram"
-      pathDiagram$width <- options$plotWidth
-      pathDiagram$height <- options$plotHeight
-      if (pathDiagram$height == 0) {
-        pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
-      }
-      pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
-      content <- .writeImage(width = pathDiagram$width, 
-                             height = pathDiagram$height, plot = p, obj = TRUE)
-      
-      pathDiagram[["convertible"]] <- TRUE
-      pathDiagram[["obj"]] <- content[["obj"]]
-      pathDiagram[["data"]] <- content[["png"]]
-      pathDiagram[["status"]] <- "complete"
-      
-      results[["pathDiagram"]] <- pathDiagram
-      keep <- results[["pathDiagram"]][["data"]]
-    }
+    diagramResults <- .lavCreatePathDiagram(semResults, lavModel, options)
+    results[["pathDiagram"]] <- diagramResults[["pathDiagram"]]
+    keep <- diagramResults[["keep"]]
   }
 
   # Return
