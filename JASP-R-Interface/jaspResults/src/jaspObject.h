@@ -14,7 +14,7 @@ void jaspPrint(std::string msg);
 
 #define JASPOBJECT_DEFAULT_POSITION 9999
 
-DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state);
+DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state, column);
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
 
 std::string					stringExtend(std::string & str, size_t len, char kar = ' ');

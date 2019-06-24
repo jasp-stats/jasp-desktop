@@ -368,7 +368,10 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 		_colNames[_editableColumn]	= _colName;
 
 		if(changed)
+		{
 			emit modelChanged();
+			emit headerDataChanged(Qt::Horizontal, _editableColumn, _editableColumn);
+		}
 	}
 }
 

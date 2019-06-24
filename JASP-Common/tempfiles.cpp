@@ -199,7 +199,7 @@ string TempFiles::createSpecific_clipboard(const string &filename)
 	filesystem::path	path	= Utils::osPath(fullPath),
 						dirPath	= path.parent_path();
 
-	if (filesystem::exists(dirPath, error) == false || error)
+	if (!filesystem::exists(dirPath, error) || error)
 		filesystem::create_directories(dirPath, error);
 
 	return fullPath;
@@ -211,7 +211,7 @@ string TempFiles::createSpecific(const string &dir, const string &filename)
 	string fullPath			= _sessionDirName + "/" + dir;
 	filesystem::path path	= Utils::osPath(fullPath);
 
-	if (filesystem::exists(path, error) == false || error)
+	if (!filesystem::exists(path, error) || error)
 		filesystem::create_directories(path, error);
 
 	return fullPath + "/" + filename;
@@ -224,7 +224,7 @@ void TempFiles::createSpecific(const string &name, int id, string &root, string 
 	filesystem::path path	= Utils::osPath(root + "/" + relativePath);
 
 	system::error_code error;
-	if (filesystem::exists(path, error) == false || error)
+	if (!filesystem::exists(path, error) || error)
 		filesystem::create_directories(path, error);
 
 	relativePath += "/" + name;
@@ -239,7 +239,7 @@ void TempFiles::create(const string &extension, int id, string &root, string &re
 
 	filesystem::path path	= Utils::osPath(resources);
 
-	if (filesystem::exists(resources, error) == false)
+	if (!filesystem::exists(resources, error) || error)
 		filesystem::create_directories(resources, error);
 
 	string suffix = extension == "" ? "" : "." + extension;
@@ -261,7 +261,7 @@ std::string TempFiles::createTmpFolder()
 		std::string tmpFolder	= _sessionDirName + "/tmp" + std::to_string(_nextTmpFolderId++) + "/";
 		filesystem::path path	= Utils::osPath(tmpFolder);
 
-		if (!filesystem::exists(path, error))
+		if (!filesystem::exists(path, error) || error)
 		{
 			filesystem::create_directories(path, error);
 			return tmpFolder;

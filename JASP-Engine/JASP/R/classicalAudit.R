@@ -32,7 +32,7 @@ classicalAudit <- function(jaspResults, dataset, options, ...){
   procedureContainer$position <- 1
   # Explanatory text for the procedure
   if(options[["explanatoryText"]] && is.null(procedureContainer[["procedureParagraph"]])){
-    if(is.null(jaspResults[["confidenceLevelLabel"]]$object)){
+    if(is.null(jaspResults[["confidenceLevelLabel"]])){
       jaspResults[["confidenceLevelLabel"]] <- createJaspState(paste0(round(options[["confidence"]] * 100, 2), "%"))
       jaspResults[["confidenceLevelLabel"]]$dependOn(options = c("confidence"))
     }
@@ -76,7 +76,7 @@ classicalAudit <- function(jaspResults, dataset, options, ...){
   .classicalPlanningTable(dataset, options, planningResult, jaspResults, position = 2, planningContainer)
   # Rewrite the required sample size when the planning has not been run yet
   requiredSampleSize <- 0
-  if(!is.null(jaspResults[["planningResult"]]$object))
+  if(!is.null(jaspResults[["planningResult"]]))
     requiredSampleSize <- planningResult[["n"]]
   # Calculate the number of expected errors and the maximum number of allowed errors
   expected.errors   <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = paste0(round(options[["expectedPercentage"]] * 100, 2), "%"), no = paste(jaspResults[["valutaTitle"]]$object, options[["expectedNumber"]]))

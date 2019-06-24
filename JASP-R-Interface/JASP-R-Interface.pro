@@ -41,7 +41,8 @@ SOURCES += \
     jaspResults/src/jaspPlot.cpp \
     jaspResults/src/jaspResults.cpp \
     jaspResults/src/jaspTable.cpp \
-    jaspResults/src/jaspState.cpp
+    jaspResults/src/jaspState.cpp \
+    jaspResults/src/jaspColumn.cpp
 
 HEADERS += \
     jasprcpp_interface.h \
@@ -62,7 +63,8 @@ HEADERS += \
     jaspResults/src/jaspResults.h \
     jaspResults/src/jaspTable.h \
     jaspResults/src/jaspModuleRegistration.h \
-    jaspResults/src/jaspState.h
+    jaspResults/src/jaspState.h \
+    jaspResults/src/jaspColumn.h
 
 
 windows{

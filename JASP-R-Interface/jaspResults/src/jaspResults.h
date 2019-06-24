@@ -18,7 +18,7 @@ public:
 	static void setSendFunc(sendFuncDef sendFunc);
 	static void setPollMessagesFunc(pollMessagesFuncDef pollFunc);
 	static void setResponseData(int analysisID, int revision);
-	static void setSaveLocation(const char * newSaveLocation);
+	static void setSaveLocation(const std::string & root, const std::string & relativePath);
 	static void setBaseCitation(std::string baseCitation);
 	static void setInsideJASP();
 	static bool isInsideJASP() { return _insideJASP; }
@@ -68,6 +68,7 @@ private:
 	static sendFuncDef				_ipccSendFunc;
 	static pollMessagesFuncDef		_ipccPollFunc;
 	static std::string				_saveResultsHere;
+	static std::string				_saveResultsRoot;
 	static std::string				_baseCitation;
 	static bool						_insideJASP;
 	static const std::string		analysisChangedErrorMessage;

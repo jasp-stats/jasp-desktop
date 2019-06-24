@@ -65,8 +65,17 @@ int main(int argc, char *argv[])
 		//usleep(6000000);
 
 		JASPTIMER_START(Engine Starting);
-		Engine e(slaveNo, parentPID);
-		e.run();
+
+		try
+		{
+			Engine e(slaveNo, parentPID);
+			e.run();
+
+		}
+		catch (std::exception & e)
+		{
+			Log::log() << "Engine had an uncaught exception of: " << e.what() << "\n";
+		}
 
 		JASPTIMER_PRINTALL();
 

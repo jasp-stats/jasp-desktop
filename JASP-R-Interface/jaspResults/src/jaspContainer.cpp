@@ -16,6 +16,7 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	if(Rcpp::is<jaspObject_Interface>(value))			obj = Rcpp::as<jaspObject_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspContainer_Interface>(value))	obj = Rcpp::as<jaspContainer_Interface>(value).returnMyJaspObject();
+	else if(Rcpp::is<jaspColumn_Interface>(value))		obj = Rcpp::as<jaspColumn_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspTable_Interface>(value))		obj = Rcpp::as<jaspTable_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspState_Interface>(value))		obj = Rcpp::as<jaspState_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspPlot_Interface>(value))		obj = Rcpp::as<jaspPlot_Interface>(value).returnMyJaspObject();
@@ -77,6 +78,7 @@ Rcpp::RObject jaspContainer::at(std::string field)
 	case jaspObjectType::json:		return Rcpp::wrap(((jaspJson*)ref)->jsonToPrefixedStrings());
 	case jaspObjectType::html:		return Rcpp::wrap(jaspHtml_Interface(ref));
 	case jaspObjectType::container:	return Rcpp::wrap(jaspContainer_Interface(ref));
+	case jaspObjectType::column:	return Rcpp::wrap(jaspColumn_Interface(ref));
 	case jaspObjectType::table:		return Rcpp::wrap(jaspTable_Interface(ref));
 	case jaspObjectType::state:		return Rcpp::wrap(jaspState_Interface(ref));
 	case jaspObjectType::plot:		return Rcpp::wrap(jaspPlot_Interface(ref));

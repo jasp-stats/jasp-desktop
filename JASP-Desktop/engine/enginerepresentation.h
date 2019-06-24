@@ -37,6 +37,7 @@ public:
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
 	void runModuleRequestOnProcess(Json::Value request);
+	void sendLogCfg();
 
 	void stopEngine();
 	void pauseEngine();
@@ -60,14 +61,11 @@ public:
 	void processEngineResumedReply();
 	void processLogCfgReply();
 
-	void sendLogCfg();
-
-	size_t channelNumber()								{ return _channel->channelNumber(); }
-
+	size_t	channelNumber()		{ return _channel->channelNumber(); }
+	int		engineChannelID()	{ return _channel->channelNumber(); }
 
 	void sendString(std::string str);
 
-	int engineChannelID()							{ return _channel->channelNumber(); }
 
 public slots:
 	void ppiChanged(int newPPI);
@@ -101,6 +99,7 @@ private:
 	void rerunRunningAnalysis();
 	void setChannel(IPCChannel * channel)			{ _channel = channel; }
 	void setSlaveProcess(QProcess * slaveProcess);
+	void checkForComputedColumns(const Json::Value & results);
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);

@@ -25,7 +25,7 @@ checkForJaspResultsInit <- function() {if (!exists("jaspResults", .GlobalEnv)) .
 
 is.JaspResultsObj <- function(x) {
 	inherits(x, "R6") && 
-	inherits(x, c("jaspResultsR", "jaspContainerR", "jaspObjR", "jaspOutputObjR", "jaspPlotR", "jaspTableR", "jaspHtmlR", "jaspStateR"))
+  inherits(x, c("jaspResultsR", "jaspContainerR", "jaspObjR", "jaspOutputObjR", "jaspPlotR", "jaspTableR", "jaspHtmlR", "jaspStateR", "jaspColumnR"))
 }
 
 destroyAllAllocatedRObjects <- function() {
@@ -80,7 +80,10 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
 	return(jaspHtmlR$new(text = text, elementType = elementType, class = class, dependencies = dependencies, title = title, position = position))
 
 createJaspState <- function(object=NULL, dependencies=NULL)
-	return(jaspStateR$new(object = object, dependencies = dependencies))
+  return(jaspStateR$new(object = object, dependencies = dependencies))
+
+createJaspColumn <- function(columnName="", dependencies=NULL)
+  return(jaspColumnR$new(columnName = columnName, dependencies = dependencies))
 
 # also imported but that doesn't work in JASP
 R6Class <- R6::R6Class
@@ -92,6 +95,7 @@ R6Class <- R6::R6Class
 #																					->	2.2.2. jaspContainer
 #																					->	2.2.3. jaspPlot
 #																					->	2.2.4. jaspTable
+#																					->	2.2.5. jaspColumn
 
 # R6 definitions
 
@@ -135,7 +139,8 @@ jaspResultsR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
+        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
+        "Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
 			))
@@ -351,6 +356,7 @@ jaspContainerR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
+        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
 				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
@@ -545,3 +551,42 @@ jaspTableR <- R6Class(
 }
 `[[.jaspTableR`   <- function(x, field)
 	x$.__enclos_env__$private$getField(field)
+
+jaspColumnR <- R6Class(
+  classname = "jaspColumnR",
+  inherit   = jaspOutputObjR,
+  cloneable = FALSE,
+  public    = list(
+    initialize = function(columnName="", dependencies=NULL, scalarData=NULL, ordinalData=NULL, nominalData=NULL, nominalTextData=NULL, jaspObject = NULL) {
+      if (!is.null(jaspObject)) {
+        private$jaspObject <- jaspObject
+        return()
+      }
+
+      if (columnName == "")
+        stop("You MUST specify a name for the column you want to change the data of")
+
+      if (jaspResultsCalledFromJasp()) {
+        columnObj <- jaspResultsModule$create_cpp_jaspColumn(columnName)
+      } else {
+        checkForJaspResultsInit()
+        columnObj <- create_cpp_jaspColumn(columnName)
+      }
+
+      if(!is.null(scalarData))      columnObj$setScale(scalarData)
+      if(!is.null(ordinalData))     columnObj$setOrdinal(ordinalData)
+      if(!is.null(nominalData))     columnObj$setNominal(nominalData)
+      if(!is.null(nominalTextData)) columnObj$setNominalText(nominalTextData)
+
+      if (!is.null(dependencies))
+        columnObj$dependOnOptions(dependencies)
+
+      private$jaspObject <- columnObj
+      return()
+    },
+    setScale        = function(scalarData)  private$jaspObject$setScale(scalarData),
+    setOrdinal      = function(ordinalData) private$jaspObject$setOrdinal(ordinalData),
+    setNominal      = function(nominalData) private$jaspObject$setNominal(nominalData),
+    setNominalText  = function(nominalData) private$jaspObject$setNominalText(nominalData)
+  )
+)

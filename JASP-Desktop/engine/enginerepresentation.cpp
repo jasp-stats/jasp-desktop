@@ -212,7 +212,7 @@ void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 
 	if(result == "TRUE")		emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), true);
 	else if(result == "FALSE")	emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), false);
-	else						emit computeColumnFailed(QString::fromStdString(columnName), QString::fromStdString(error == "" ? "Unknown Error" : error));
+	else						emit computeColumnFailed(	QString::fromStdString(columnName), QString::fromStdString(error == "" ? "Unknown Error" : error));
 }
 
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
@@ -312,28 +312,48 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		break;
 
 	case analysisResultStatus::validationError:
-		analysis->setResults(results);
-		clearAnalysisInProgress();
-
-		for(std::string col : analysis->columnsCreated())
-			emit computeColumnFailed(QString::fromStdString(col), "Analysis had an error..");
-		break;
-
 	case analysisResultStatus::fatalError:
-	case analysisResultStatus::inited:
 	case analysisResultStatus::complete:
+	case analysisResultStatus::inited:
 		analysis->setResults(results);
 		clearAnalysisInProgress();
 
-		//createdColumns and if it succeeded or not should actually be communicated through jaspColumn or something, to be created
-		for(std::string col : analysis->columnsCreated())
-			emit computeColumnSucceeded(QString::fromStdString(col), "", true);
+		if(analysis->columnsCreated().size() > 0)
+			checkForComputedColumns(results);
 		break;
 
 	case analysisResultStatus::running:
 	default:
 		analysis->setResults(results, progress);
 		break;
+	}
+}
+
+void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
+{
+	if(results.isArray())
+	{
+		for(const Json::Value & row : results)
+			checkForComputedColumns(row);
+		return;
+	}
+
+	if(results.isObject())
+	{
+		auto members = results.getMemberNames();
+		std::set<std::string> memberset(members.begin(), members.end());
+
+		if(memberset.count("columnName") > 0 && memberset.count("columnType") > 0 && memberset.count("dataChanged") > 0)
+		{
+			//jaspColumnType	columnType	= jaspColumnTypeFromString(results["columnType"].asString());
+			std::string		columnName	= results["columnName"].asString();
+			bool			dataChanged	= results["dataChanged"].asBool();
+
+			emit computeColumnSucceeded(QString::fromStdString(columnName), "", dataChanged);
+		}
+		else
+			for(std::string member : members)
+				checkForComputedColumns(results[member]);
 	}
 }
 

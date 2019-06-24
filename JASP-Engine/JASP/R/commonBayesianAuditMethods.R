@@ -44,7 +44,7 @@
 
 .bayesianPlanningHelper <- function(options, jaspResults, planningContainer){
 
-    if(!is.null(jaspResults[["planningResult"]]$object))
+    if(!is.null(jaspResults[["planningResult"]]))
       return(jaspResults[["planningResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]
@@ -384,7 +384,7 @@
 
 .bayesianAttributesBound <- function(dataset, options, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
     ar                        <- 1 - options[["confidence"]]
@@ -687,7 +687,7 @@
 }
 
 .coxAndSnellBound <- function(dataset, options, jaspResults, priorA = 0, priorB = 0){
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
     # Based on the paper:
     # Cox, D. R., & Snell, E. J. (1979). On sampling and the estimation of rare errors. Biometrika, 66(1), 125-132.
@@ -910,7 +910,7 @@
 
 .regressionBoundBayesian <- function(dataset, options, total_data_value, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]

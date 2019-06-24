@@ -590,7 +590,7 @@ Form
 
 		Section 
 		{
-			title: qsTr("Tables and Plots")
+			title: qsTr("Tables")
 
 			GridLayout 
 			{ 

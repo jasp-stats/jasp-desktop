@@ -32,7 +32,7 @@ bayesianAudit <- function(jaspResults, dataset, options, ...){
   procedureContainer$position <- 1
   # Interpretation for the procedure
   if(options[["explanatoryText"]] && is.null(procedureContainer[["procedureParagraph"]])){
-    if(is.null(jaspResults[["confidenceLevelLabel"]]$object)){
+    if(is.null(jaspResults[["confidenceLevelLabel"]])){
       jaspResults[["confidenceLevelLabel"]] <- createJaspState(paste0(round(options[["confidence"]] * 100, 2), "%"))
       jaspResults[["confidenceLevelLabel"]]$dependOn(options = c("confidence"))
     }
@@ -58,7 +58,7 @@ bayesianAudit <- function(jaspResults, dataset, options, ...){
   planningContainer <- createJaspContainer(title= "<u>Planning</u>")
   planningContainer$position <- 3
   # Rewrite the materiality to a proportion of the total value
-  if(jaspResults[["ready"]]$object || is.null(jaspResults[["materiality"]]$object)){
+  if(jaspResults[["ready"]]$object || is.null(jaspResults[["materiality"]])){
     materiality <- ifelse(options[["materiality"]] == "materialityAbsolute", yes = options[["materialityValue"]] / jaspResults[["total_data_value"]]$object, no = options[["materialityPercentage"]])
     jaspResults[["materiality"]] <- createJaspState(materiality)
     jaspResults[["materiality"]]$dependOn(options = c("materialityValue", "materialityPercentage", "monetaryVariable", "recordNumberVariable", "materiality"))
@@ -76,7 +76,7 @@ bayesianAudit <- function(jaspResults, dataset, options, ...){
   .bayesianPlanningTable(dataset, options, planningResult, jaspResults, position = 2, planningContainer)
   # Rewrite the required sample size when the planning has not been run yet
   requiredSampleSize <- 0
-  if(!is.null(jaspResults[["planningResult"]]$object))
+  if(!is.null(jaspResults[["planningResult"]]))
     requiredSampleSize <- planningResult[["n"]]
   # Calculate the number of expected errors and the maximum number of allowed errors
   expected.errors   <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = paste0(round(options[["expectedPercentage"]] * 100, 2), "%"), no = paste(jaspResults[["valutaTitle"]]$object, options[["expectedNumber"]]))

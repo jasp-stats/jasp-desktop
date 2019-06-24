@@ -41,7 +41,7 @@ RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
 void			jaspRCPP_logString(const std::string & code);
 SEXP			jaspRCPP_CreateCaptureConnection();
 
-const char * jaspRCPP_requestJaspResultsRelativeFilePath();
+bool jaspRCPP_requestJaspResultsRelativeFilePath(std::string & root, std:: string & relativePath);
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);

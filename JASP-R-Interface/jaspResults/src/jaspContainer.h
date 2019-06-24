@@ -1,5 +1,6 @@
 #pragma once
 #include "jaspObject.h"
+#include "jaspColumn.h"
 #include "jaspPlot.h"
 #include "jaspTable.h"
 #include "jaspState.h"

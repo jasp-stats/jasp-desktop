@@ -5,6 +5,7 @@
 sendFuncDef			jaspResults::_ipccSendFunc		= nullptr;
 pollMessagesFuncDef jaspResults::_ipccPollFunc		= nullptr;
 std::string			jaspResults::_saveResultsHere	= "";
+std::string			jaspResults::_saveResultsRoot	= "";
 std::string			jaspResults::_baseCitation		= "";
 Rcpp::Environment*	jaspResults::_RStorageEnv		= nullptr;
 bool				jaspResults::_insideJASP		= false;
@@ -33,9 +34,13 @@ void jaspResults::setResponseData(int analysisID, int revision)
 	_response["progress"]	= -1;
 }
 
-void jaspResults::setSaveLocation(const char * newSaveLocation)
+void jaspResults::setSaveLocation(const std::string & root, const std::string & relativePath)
 {
-	_saveResultsHere = newSaveLocation;
+	_saveResultsRoot	= root;
+	_saveResultsHere	= relativePath;
+
+	if(_saveResultsRoot.size() > 0 && _saveResultsRoot[_saveResultsRoot.size() - 1] != '/')
+		_saveResultsRoot.push_back('/');
 }
 
 void jaspResults::setInsideJASP()
@@ -93,10 +98,24 @@ void jaspResults::saveResults()
 		return;
 	}
 
-	std::ofstream saveHere(_saveResultsHere);
+	//std::cout << "Going to try to save jaspResults.json to '" << _saveResultsRoot << _saveResultsHere << "'" << std::endl;
+
+	std::ofstream saveHere(_saveResultsRoot + _saveResultsHere, std::ios_base::trunc);
+
+	if(!saveHere.good())
+	{
+		static std::string error;
+		error = "Could not open file for saving jaspResults! File: '" + _saveResultsRoot + _saveResultsHere + "'";
+		Rf_error(error.c_str());;
+	}
+
 	Json::Value json = convertToJSON();
 
-	saveHere << json.toStyledString();
+	Json::StyledWriter styledWriter;
+	saveHere << styledWriter.write(json);
+
+	saveHere.close();
+
 	JASP_OBJECT_TIMEREND(saveResults)
 }
 
@@ -107,7 +126,7 @@ void jaspResults::loadResults()
 
 	if(_saveResultsHere == "") return;
 
-	std::ifstream loadThis(_saveResultsHere);
+	std::ifstream loadThis(_saveResultsRoot + _saveResultsHere);
 
 	if(!loadThis.is_open()) return;
 
@@ -115,7 +134,14 @@ void jaspResults::loadResults()
 
 	Json::Reader().parse(loadThis, val);
 
-	if(!val.isObject()) return;
+	loadThis.close();
+
+	if(!val.isObject())
+	{
+		static std::string error;
+		error = "loading jaspResults had a problem, '" + _saveResultsRoot + _saveResultsHere + "' wasn't a JSON object!";
+		Rf_error(error.c_str());;
+	}
 
 	convertFromJSON_SetFields(val);
 
@@ -446,6 +472,7 @@ jaspObject * jaspObject::convertFromJSON(Json::Value in)
 	//case jaspObjectType::list:	newObject = new jaspList();			break;
 	case jaspObjectType::html:		newObject = new jaspHtml();			break;
 	case jaspObjectType::state:		newObject = new jaspState();		break;
+	case jaspObjectType::column:	newObject = new jaspColumn();		break;
 	//case jaspObjectType::results:	newObject = new jaspResults();		break;
 	default:						throw std::runtime_error("Cant understand this type");
 	}

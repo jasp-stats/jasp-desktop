@@ -86,12 +86,32 @@ void OptionsTable::setValue(const std::vector<Options *> &value)
 {
 	std::set<Options *> newOnes(value.begin(),	value.end());
 
-	for(Options * older : _value)
+	//Ok we do some checks to make sure that we arent setting the value to the same value. Because in that case some forms/analyses might go crazy restarting constantly (because of the way ListModelFilteredDataEntry sets the options... Very bluntly
+	bool changesFound = value.size() != _value.size();
+
+	for(Options * & older : _value)
 		if(newOnes.count(older) == 0)
+		{
 			delete older;
+			older = nullptr;
+		}
+
+	if(!changesFound)
+		changesFound = value.size() != _value.size(); //size might have changed
+
+	if(!changesFound)
+		for(size_t i=0; i<_value.size() && !changesFound; i++)
+			if(
+				((_value[i] == nullptr || value[i] == nullptr) && _value[i] != value[i])
+				||
+				(_value[i]->asJSON().toStyledString() != value[i]->asJSON().toStyledString())
+			)
+				changesFound = true;
 
 	_value = value;
-	notifyChanged();
+
+	if(changesFound)
+		notifyChanged();
 }
 
 void OptionsTable::connectOptions(const std::vector<Options *> &value)

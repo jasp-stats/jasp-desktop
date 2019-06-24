@@ -5,6 +5,7 @@ JASP_OBJECT_CREATOR(jaspHtml)
 JASP_OBJECT_CREATOR(jaspPlot)
 JASP_OBJECT_CREATOR(jaspTable)
 JASP_OBJECT_CREATOR(jaspState)
+JASP_OBJECT_CREATOR(jaspColumn)
 JASP_OBJECT_CREATOR(jaspContainer)
 JASP_OBJECT_CREATOR_ARG(jaspResults, oldState)
 
@@ -14,6 +15,7 @@ RCPP_MODULE(jaspResults)
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspHtml);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspTable);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspState);
+	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspColumn);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspResults);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspContainer);
 
@@ -152,6 +154,14 @@ RCPP_MODULE(jaspResults)
 	Rcpp::class_<jaspState_Interface>("jaspState")
 		.derives<jaspObject_Interface>("jaspObject")
 		.property("object", &jaspState_Interface::getObject, &jaspState_Interface::setObject, "The object that you might want to keep for the next revision of your analysis.")
+	;
+
+	Rcpp::class_<jaspColumn_Interface>("jaspColumn")
+		.derives<jaspObject_Interface>("jaspObject")
+		.method("setScale",				&jaspColumn_Interface::setScale,		"Overwrite the contents of the specified column with scalar data.")
+		.method("setOrdinal",			&jaspColumn_Interface::setOrdinal,		"Overwrite the contents of the specified column with ordinal data.")
+		.method("setNominal",			&jaspColumn_Interface::setNominal,		"Overwrite the contents of the specified column with nominal data.")
+		.method("setNominalText",		&jaspColumn_Interface::setNominalText,	"Overwrite the contents of the specified column with nominal text data.")
 	;
 
 	Rcpp::class_<jaspResults_Interface>("jaspResultsClass")

@@ -168,7 +168,10 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	{
 		///Some stuff for jaspResults etc
 		jaspResults::setResponseData(analysisID, analysisRevision);
-		jaspResults::setSaveLocation(jaspRCPP_requestJaspResultsRelativeFilePath());
+
+		std::string root, relativePath;
+		jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
+		jaspResults::setSaveLocation(root, relativePath);
 
 		results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey)");
 	}
@@ -210,7 +213,10 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside[".imageBackground"]	= imageBackground;
 
 	jaspResults::setResponseData(analysisID, analysisRevision);
-	jaspResults::setSaveLocation(jaspRCPP_requestJaspResultsRelativeFilePath());
+
+	std::string root, relativePath;
+	jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
+	jaspResults::setSaveLocation(root, relativePath);
 
 	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)");
 
@@ -418,15 +424,21 @@ SEXP jaspRCPP_requestTempRootNameSEXP()
 }
 
 
-const char * jaspRCPP_requestJaspResultsRelativeFilePath()
+bool jaspRCPP_requestJaspResultsRelativeFilePath(std::string & root, std:: string & relativePath)
 {
-	const char* root;
-	const char* relativePath;
+	root		 = "";
+	relativePath = "";
 
-	if (!requestJaspResultsFileSourceCB(&root, &relativePath))
-		return "";
+	const char	* _root,
+				* _relativePath;
 
-	return relativePath;
+	if (!requestJaspResultsFileSourceCB(&_root, &_relativePath))
+		return false;
+
+	root			= _root;
+	relativePath	= _relativePath;
+
+	return true;
 }
 
 SEXP jaspRCPP_requestStateFileNameSEXP()

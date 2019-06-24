@@ -283,13 +283,18 @@ void ComputedColumnsModel::recomputeColumn(std::string columnName)
 void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe)
 {
 	for(ComputedColumn * col : *_computedColumns)
-		if(col->dependsOn(columnName) || (refreshMe && col->name() == columnName))
+		if(	col->codeType() != ComputedColumn::computedType::analysis				&&
+			col->codeType() != ComputedColumn::computedType::analysisNotComputed	&&
+			(
+					col->dependsOn(columnName) ||
+					(refreshMe && col->name() == columnName)
+			) )
 			invalidate(QString::fromStdString(col->name()));
 
 	for(ComputedColumn * col : *_computedColumns)
-		if(		col->codeType() != ComputedColumn::computedType::analysis				&&
-				col->codeType() != ComputedColumn::computedType::analysisNotComputed	&&
-				col->iShouldBeSentAgain() )
+		if(	col->codeType() != ComputedColumn::computedType::analysis				&&
+			col->codeType() != ComputedColumn::computedType::analysisNotComputed	&&
+			col->iShouldBeSentAgain() )
 			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCodeCommentStripped()), col->columnType());
 
 	checkForDependentAnalyses(columnName);

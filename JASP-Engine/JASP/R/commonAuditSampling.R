@@ -11,7 +11,7 @@
     sampleSize                      <- jaspResults[["sampleSize"]]$object
     set.seed(options[["seed"]])
 
-    if(is.null(jaspResults[["sample"]]$object)){
+    if(is.null(jaspResults[["sample"]])){
       
       recordColumn <- dataset[, .v(recordVariable)]
 
@@ -89,7 +89,7 @@
     sampleSize                          <- jaspResults[["sampleSize"]]$object
     set.seed(options[["seed"]])
 
-    if(is.null(jaspResults[["sample"]]$object)){
+    if(is.null(jaspResults[["sample"]])){
       
       if(!is.null(rankingVariable)){
           rankingColumn       <- dataset[, .v(rankingVariable)]

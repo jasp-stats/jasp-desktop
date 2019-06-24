@@ -435,8 +435,11 @@
 
     auditDataVariable[options[["performAudit"]][[1]]$rowIndices + 1] <- options[["performAudit"]][[1]]$values
 
-    .setColumnDataAsScale(options[["sampleFilter"]], sampleFilter)
-    .setColumnDataAsScale(options[["variableName"]], auditDataVariable)          
+    if(is.null(jaspResults[["sampleFilter"]]))  jaspResults[["sampleFilter"]] <- createJaspColumn(columnName=options[["sampleFilter"]], dependencies="sampleFilter")
+    if(is.null(jaspResults[["variableName"]]))  jaspResults[["variableName"]] <- createJaspColumn(columnName=options[["variableName"]], dependencies="variableName")
+
+    jaspResults[["sampleFilter"]]$setScale(sampleFilter)
+    jaspResults[["variableName"]]$setScale(auditDataVariable)
   }
 }
 

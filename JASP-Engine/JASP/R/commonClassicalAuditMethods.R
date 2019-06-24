@@ -5,7 +5,7 @@
     impk <- base::switch(options[["expectedErrors"]], "expectedRelative" = ceiling(n * options[["expectedPercentage"]]), "expectedAbsolute" = ceiling(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
     if(impk >= n){ next }
     x <- dbinom(0:impk, size = n, prob = jaspResults[["materiality"]]$object)
-    if(sum(x) < alpha){ 
+    if(sum(x) < alpha){
       return(n)
     }
   }
@@ -49,7 +49,7 @@
 
 .classicalPlanningHelper <- function(options, jaspResults, planningContainer){
 
-    if(!is.null(jaspResults[["planningResult"]]$object)) return(jaspResults[["planningResult"]]$object)
+    if(!is.null(jaspResults[["planningResult"]])) return(jaspResults[["planningResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]
     ir                      <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
@@ -95,7 +95,7 @@
   planningSummary$addColumnInfo(name = 'IR',                   title = "Inherent risk",        type = 'string')
   planningSummary$addColumnInfo(name = 'CR',                   title = "Control risk",         type = 'string')
   planningSummary$addColumnInfo(name = 'DR',                   title = "Detection risk",       type = 'string')
-  planningSummary$addColumnInfo(name = 'k',                    title = "Expected errors",       type = 'string')
+  planningSummary$addColumnInfo(name = 'k',                    title = "Expected errors",      type = 'string')
   planningSummary$addColumnInfo(name = 'n',                    title = "Required sample size", type = 'string')
 
   if(!jaspResults[["ready"]]$object){
@@ -152,7 +152,7 @@
 
 .attributesBound <- function(dataset, options, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
   ar                      <- 1 - options[["confidence"]]
@@ -277,7 +277,7 @@
 }
 
 .stringerBound <- function(dataset, options, jaspResults){
-    if(!is.null(jaspResults[["evaluationResult"]]$object))
+    if(!is.null(jaspResults[["evaluationResult"]]))
       return(jaspResults[["evaluationResult"]]$object)
     # Based on the paper:
     # Stringer, K. W. (1963). Practical aspects of statistical sampling in auditing. In Proceedings of the Business and Economic Statistics Section (pp. 405-411). American Statistical Association.
@@ -394,7 +394,7 @@
 
 .directBound <- function(dataset, options, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]
@@ -449,7 +449,7 @@
 
 .differenceBound <- function(dataset, options, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]
@@ -509,7 +509,7 @@
 
 .ratioBound <- function(dataset, options, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]
@@ -573,7 +573,7 @@
 
 .regressionBound <- function(dataset, options, jaspResults){
 
-  if(!is.null(jaspResults[["evaluationResult"]]$object))
+  if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
 
     ar                      <- 1 - options[["confidence"]]
@@ -630,7 +630,7 @@
     resultList[["mleTable"]]    <- mleTable
 
     jaspResults[["evaluationResult"]] <- createJaspState(resultList)
-    jaspResults[["evaluationResult"]]$dependOn(options = c("IR", "CR", "confidence", "auditResult", "sampleFilter", "materialityPercentage", 
+    jaspResults[["evaluationResult"]]$dependOn(options = c("IR", "CR", "confidence", "auditResult", "sampleFilter", "materialityPercentage",
                                                             "estimator", "monetaryVariable", "materialityValue", "variableType", "performAudit"))
     return(jaspResults[["evaluationResult"]]$object)
 }

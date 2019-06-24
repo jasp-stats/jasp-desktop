@@ -9,7 +9,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   if(options[["explanatoryText"]] && is.null(jaspResults[["procedureContainer"]])){
     procedureContainer <- createJaspContainer(title= "<u>Procedure</u>")
     procedureContainer$position <- 1
-    if(is.null(jaspResults[["confidenceLevelLabel"]]$object)){
+    if(is.null(jaspResults[["confidenceLevelLabel"]])){
       jaspResults[["confidenceLevelLabel"]] <- createJaspState(paste0(round(options[["confidence"]] * 100, 2), "%"))
       jaspResults[["confidenceLevelLabel"]]$dependOn(options = c("confidence"))
     }
@@ -58,7 +58,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
     materialityLevelLabel         <- base::switch(options[["materiality"]], "materialityRelative" = paste0(round(options[["materialityPercentage"]], 4) * 100, "%"), "materialityAbsolute" = paste(jaspResults[["valutaTitle"]]$object, format(options[["materialityValue"]], scientific = FALSE)))
     expected.errors <- max.errors <- requiredSampleSize <- materiality <- 0
     priorA <- priorB <- 1
-    if(!is.null(jaspResults[["planningResult"]]$object)){
+    if(!is.null(jaspResults[["planningResult"]])){
       requiredSampleSize <- planningResult[["n"]]
       expected.errors   <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = paste0(round(options[["expectedPercentage"]] * 100, 2), "%"), no = paste(jaspResults[["valutaTitle"]]$object, options[["expectedNumber"]]))
       max.errors        <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = ceiling(options[["expectedPercentage"]] * planningResult[["n"]]), no = paste(jaspResults[["valutaTitle"]]$object, options[["expectedNumber"]] + 1))
@@ -132,7 +132,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   jaspResults[["N"]] <- createJaspState(options[["populationSize"]])
   jaspResults[["N"]]$dependOn(options = c("populationSize"))
 
-  if(is.null(jaspResults[["planningResult"]]$object)){
+  if(is.null(jaspResults[["planningResult"]])){
     if(options[["planningModel"]] == "beta"){
       n_noprior               <- .calc.n.beta(options, 1 - options[["confidence"]], jaspResults)
       n_withprior             <- .calc.n.beta(options, alpha, jaspResults)
