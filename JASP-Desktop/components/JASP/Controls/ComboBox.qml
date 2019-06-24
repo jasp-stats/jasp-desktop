@@ -211,7 +211,7 @@ JASPControl
 			{
 				id: popupView
 				width:			comboBoxBackground.width
-				height:			contentHeight
+				implicitHeight: contentHeight
 				model:			control.popup.visible ? control.delegateModel : null
 				currentIndex:	control.highlightedIndex
 
