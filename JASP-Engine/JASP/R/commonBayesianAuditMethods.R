@@ -42,6 +42,11 @@
     return(1)
 }
 
+.dCoxAndSnellF <- function(x, df1, df2, multiplicationFactor) {
+  # Rewritten using Wolfram Mathematica
+  (df1 ** (df1 / 2) * df2**(df2 / 2) * (x / multiplicationFactor) ** (- 1 + df1 / 2) * (df2 + (df1 * x) / multiplicationFactor)**(( -df1 - df2) / 2))/(abs(multiplicationFactor) * beta(df1/2, df2/2))
+}
+
 .bayesianPlanningHelper <- function(options, jaspResults, planningContainer){
 
     if(!is.null(jaspResults[["planningResult"]]))
@@ -672,12 +677,15 @@
 }
 
 .BFsamples <- function(options, evaluationResult, jaspResults){
-  densprior         <- density(evaluationResult[["prior"]])
+  set.seed(options[["seed"]])
+  prior             <- rbeta(n = 1e6, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]])
+  posterior         <- evaluationResult[["mf"]] * rf(n = 1e6, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]])
+  densprior         <- density(prior)
   priorCDF          <- approxfun(densprior$x, densprior$y, yleft=0, yright=0)
   priorLeft         <- integrate(priorCDF, lower = 0, upper = jaspResults[["materiality"]]$object)$value
   priorRight        <- integrate(priorCDF, lower = jaspResults[["materiality"]]$object, upper = 1)$value
   priorOdds         <- priorLeft / priorRight
-  densposterior     <- density(evaluationResult[["posterior"]])
+  densposterior     <- density(posterior)
   posteriorCDF      <- approxfun(densposterior$x, densposterior$y, yleft=0, yright=0)
   posteriorLeft     <- integrate(posteriorCDF, lower = 0, upper = jaspResults[["materiality"]]$object)$value
   posteriorRight    <- integrate(posteriorCDF, lower = jaspResults[["materiality"]]$object, upper = 1)$value
@@ -697,13 +705,14 @@
     z                         <- 0
     bound                     <- 0
     interval                  <- c(0, 0)
-    prior                     <- NULL
-    posterior                 <- NULL
     alpha                     <- 1 - options[["confidence"]]
     priorPi                   <- priorA / (priorA + priorB)
     a                         <- 1
     b                         <- 3
     priorMu                   <- 0.5
+    df1                       <- 0
+    df2                       <- 0
+    multiplicationFactor      <- 0
 
     if(jaspResults[["runEvaluation"]]$object){
 
@@ -718,15 +727,12 @@
       if(M == 0)
           z_bar               <- 0
 
-      set.seed(options[["seed"]])
-      prior                   <- rbeta(n = 1e6, shape1 = priorA, shape2 = priorB) 
+      multiplicationFactor        <- ((M + a) / (M + b)) * ((priorMu * (b - 1)) + (M * z_bar)) / (n + (a / priorPi))
+      df1 <- 2 * (M + a)
+      df2 <- 2 * (M + b)
 
-      posterior_part_1        <- (M + a) / (M + b)
-      posterior_part_2        <- ((priorMu * (b - 1)) + (M * z_bar)) / (n + (a / priorPi))
-      posterior               <- posterior_part_1 * posterior_part_2 * stats::rf(n = 1e6, df1 = (2 * (M + a)), df2 = ( 2 *(M + b)))
-
-      bound                   <- posterior_part_1 * posterior_part_2 * qf(p = options[["confidence"]], df1 = (2 * (M + a)), df2 = ( 2 *(M + b)))
-      interval                <- posterior_part_1 * posterior_part_2 * qf(p = c((1 - options[["confidence"]])/2, 1 - (1 - options[["confidence"]])/2), df1 = (2 * (M + a)), df2 = ( 2 *(M + b)))
+      bound                   <- multiplicationFactor * qf(p = options[["confidence"]], df1 = (2 * (M + a)), df2 = ( 2 *(M + b)))
+      interval                <- multiplicationFactor * qf(p = c((1 - options[["confidence"]])/2, 1 - (1 - options[["confidence"]])/2), df1 = (2 * (M + a)), df2 = ( 2 *(M + b)))
     }
 
     resultList <- list()
@@ -745,8 +751,9 @@
     resultList[["priorMu"]]     <- priorMu
     resultList[["posteriorA"]]  <- priorA + sum(z)
     resultList[["posteriorB"]]  <- priorB + (n - (sum(z)))
-    resultList[["prior"]]       <- prior
-    resultList[["posterior"]]   <- posterior
+    resultList[["df1"]]         <- df1
+    resultList[["df2"]]         <- df2
+    resultList[["mf"]]          <- multiplicationFactor 
 
     jaspResults[["evaluationResult"]] <- createJaspState(resultList)
     jaspResults[["evaluationResult"]]$dependOn(options = c("IR", "CR", "confidence", "auditResult", "sampleFilter", "materiality", "estimator", "monetaryVariable", "performAudit"))
@@ -852,28 +859,23 @@
     evaluationTable$addRows(row)
 }
 
-.priorAndPosteriorFromSamples <- function(options, evaluationResult, jaspResults){
+.priorAndPosteriorCoxAndSnell <- function(options, evaluationResult, jaspResults){
 
-  prior <- density(evaluationResult[["prior"]], from = 0, to = options[["priorAndPosteriorPlotLimit"]], n = 2^10)
-  posterior <- density(evaluationResult[["posterior"]], from = 0, to = options[["priorAndPosteriorPlotLimit"]], n = 2^10)
-
+  xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.001)
   d <- data.frame(
-      x = c(prior$x, posterior$x),
-      y = c(prior$y, posterior$y),
-      type = c(rep("Prior", length(prior$x)), rep("Posterior", length(posterior$x)))
+      x = rep(xseq, 2),
+      y = c(dbeta(x = xseq, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]]), .dCoxAndSnellF(x = xseq, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]])),
+      type = c(rep("Prior", length(xseq)), rep("Posterior", length(xseq)))
   )
   # Reorder factor levels to display in legend
   d$type = factor(d$type,levels(d$type)[c(2,1)])
 
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(posterior$x, min.n = 4)
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(xseq, min.n = 4)
   xLim <- range(xBreaks)
   yBreaks <- c(0, 1.2*max(d$y))
   yLim <- range(yBreaks)
 
-  posteriorPointData <- subset(d, d$type == "Posterior")
-  posteriorPointDataY <- posteriorPointData$y[which.min(abs(posteriorPointData$x - jaspResults[["materiality"]]$object))]
-
-  pointdata <- data.frame(x = jaspResults[["materiality"]]$object, y = posteriorPointDataY)
+  pointdata <- data.frame(x = jaspResults[["materiality"]]$object, y = .dCoxAndSnellF(x = jaspResults[["materiality"]]$object, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]]))
 
   p <- ggplot2::ggplot(d, ggplot2::aes(x = x, y = y)) +
       ggplot2::geom_line(ggplot2::aes(x = x, y = y, linetype = type), lwd = 1) +
@@ -886,23 +888,24 @@
     p <- p + ggplot2::geom_point(data = pdata, mapping = ggplot2::aes(x = x, y = y, shape = l), size = 0, color = rgb(0, 0.25, 1, 0))
     p <- p + ggplot2::scale_shape_manual(name = "", values = 21, labels = paste0(options[["confidence"]]*100, "% Posterior \ncredible region"))
     p <- p + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(size = 15, shape = 22, fill = rgb(0, 0.25, 1, .5), stroke = 2, color = "black")), order = 2)
+
     if(options[["areaUnderPosterior"]]=="displayCredibleBound"){
-        p <- p + ggplot2::geom_area(mapping = ggplot2::aes(x = x, y = y), data = subset(subset(d, d$type == "Posterior"), subset(d, d$type == "Posterior")$x <= evaluationResult[["bound"]]), fill = rgb(0, 0.25, 1, .5))
+      p <- p + ggplot2::stat_function(fun = .dCoxAndSnellF, args = list(df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]]), xlim = c(0, evaluationResult[["bound"]]),
+                                      geom = "area", fill = rgb(0, 0.25, 1, .5))
     } else {
-      subset1 <- subset(subset(d, d$type == "Posterior"), subset(d, d$type == "Posterior")$x <= evaluationResult[["interval"]][2])
-      subset2 <- subset(subset1, subset1$x >= evaluationResult[["interval"]][1])
-      p <- p + ggplot2::geom_area(mapping = ggplot2::aes(x = x, y = y), data = subset2, fill = rgb(0, 0.25, 1, .5))
+      p <- p + ggplot2::stat_function(fun = .dCoxAndSnellF, args = list(df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]]), xlim = evaluationResult[["interval"]],
+                                      geom = "area", fill = rgb(0, 0.25, 1, .5))
     }
   }
 
   p <- p + ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = pointdata, size = 3, shape = 21, stroke = 2, color = "black", fill = "red")
 
   thm <- ggplot2::theme(
-		axis.ticks.y = ggplot2::element_blank(),
-		axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
-	)
+    axis.ticks.y = ggplot2::element_blank(),
+    axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
+  )
   p <- p + ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, labels = c("", ""), limits = yLim) +
-  	       ggplot2::theme()
+            ggplot2::theme()
 
   p <- JASPgraphs::themeJasp(p, legend.position = "top") + thm
   return(p)
@@ -1006,7 +1009,7 @@
   if(options[["variableType"]] == "variableTypeCorrect"){
     p <- .priorAndPosteriorBayesianAttributes(options, evaluationResult, jaspResults)
   } else {
-    p <- .priorAndPosteriorFromSamples(options, evaluationResult, jaspResults)
+    p <- .priorAndPosteriorCoxAndSnell(options, evaluationResult, jaspResults)
   }
 
   priorAndPosteriorPlot$plotObject <- p
