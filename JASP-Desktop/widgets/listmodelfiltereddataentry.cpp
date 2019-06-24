@@ -31,6 +31,7 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * paren
 
 void ListModelFilteredDataEntry::dataSetChangedHandler()
 {
+	//std::cout << "ListModelFilteredDataEntry::dataSetChangedHandler()" << std::endl;
 	setAcceptedRowsTrue();
 	runFilter(_filter);
 }
@@ -48,6 +49,8 @@ void ListModelFilteredDataEntry::setFilter(QString filter)
 
 void ListModelFilteredDataEntry::runFilter(QString filter)
 {
+	//std::cout << "ListModelFilteredDataEntry::runFilter(" << filter.toStdString() << ")" << std::endl;
+
 	if(getDataSetRowCount() > 0)
 		runRScript(	"filterResult <- {" + filter + "};"										"\n"
 					"if(!is.logical(filterResult)) filterResult <- rep(TRUE, rowcount);"	"\n"
@@ -91,6 +94,7 @@ void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
 
 void ListModelFilteredDataEntry::setAcceptedRows(std::vector<bool> newRows)
 {
+	//std::cout << "setAcceptedRows(# newRows == " << newRows.size() << ")" << std::endl;
 	bool changed = newRows.size() != _acceptedRows.size();
 
 	if(changed)
@@ -115,6 +119,8 @@ void ListModelFilteredDataEntry::itemChanged(int column, int row, double value)
 {
 	if(column != _editableColumn)
 		return;
+
+	//std::cout << "ListModelFilteredDataEntry::itemChanged(" << column << ", " << row << ", " << value << ")" << std::endl;
 
 	//If changing this function also take a look at it's counterpart in ListModelTableViewBase
 	if (column > -1 && column < columnCount() && row > -1 && row < _rowNames.length())
@@ -145,6 +151,8 @@ Qt::ItemFlags ListModelFilteredDataEntry::flags(const QModelIndex & index) const
 
 void ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)
 {
+	//std::cout << "ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)" << std::endl;
+
 	Terms sourceTerms	= getSourceTerms();
 	QString colName		= _colNames[_editableColumn];
 	_dataColumns		= sourceTerms.asVector();
@@ -153,10 +161,10 @@ void ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)
 	if(_extraCol != "")
 		_colNames.push_back(_extraCol);
 
-	_editableColumn		= _colNames.size();
-	_columnCount		= _dataColumns.size() + 1;
+	_editableColumn		= _colNames.size();	
 
 	_colNames.push_back(colName);
+	_columnCount		= _colNames.size();
 
 	fillTable();
 
@@ -165,6 +173,8 @@ void ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)
 
 OptionsTable * ListModelFilteredDataEntry::createOption()
 {
+	//std::cout << "" << std::endl;
+
 	Options* optsTemplate =			new Options();
 	optsTemplate->add("colName",	new OptionString());
 	optsTemplate->add("filter",		new OptionString());
@@ -178,6 +188,8 @@ OptionsTable * ListModelFilteredDataEntry::createOption()
 
 void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 {
+	//std::cout << "ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)" << std::endl;
+
 	_boundTo = bindHere;
 
 	std::vector<Options *>	options = bindHere->value();
@@ -241,6 +253,8 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 
 void ListModelFilteredDataEntry::fillTable()
 {
+	//std::cout << "ListModelFilteredDataEntry::fillTable()" << std::endl;
+
 	beginResetModel();
 
 	_filteredRowToData.clear();
@@ -274,6 +288,8 @@ void ListModelFilteredDataEntry::fillTable()
 
 void ListModelFilteredDataEntry::modelChangedSlot()
 {
+	//std::cout << "ListModelFilteredDataEntry::modelChangedSlot()" << std::endl;
+
 	if (_boundTo)
 	{
 		std::vector<int> stdRowIndices;
@@ -359,12 +375,15 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 	if (_colName == colName)
 		return;
 
+	//std::cout << "ListModelFilteredDataEntry::setColName(" << colName.toStdString() << ") editableColumn = "  << _editableColumn /*<< " en _colNames[edit] = " << (_colNames.size() > _editableColumn ? _colNames[_editableColumn].toStdString() : "Not there" ) */ << std::endl;
+
+	bool changed = _colName != colName;
+
 	_colName = colName;
 	emit colNameChanged(_colName);
 
 	if(_colNames.size() > _editableColumn && _editableColumn >= 0)
 	{
-		bool changed				= _colNames[_editableColumn] == _colName;
 		_colNames[_editableColumn]	= _colName;
 
 		if(changed)
@@ -380,31 +399,58 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 	if (_extraCol == extraCol)
 		return;
 
-	if(extraCol == "" && _colNames.size() > _editableColumn && _editableColumn > 0 && _colNames[_editableColumn - 1] == _extraCol)
-	{
-		_colNames.erase(_colNames.begin() + _editableColumn - 1);
-		_editableColumn--;
+	//std::cout << "ListModelFilteredDataEntry::setExtraCol("<< extraCol.toStdString() <<")" << std::endl;
 
-		emit headerDataChanged(Qt::Horizontal, _editableColumn, _colNames.size() + 1);
-		emit dataChanged(index(0, _editableColumn), index(static_cast<int>(getDataSetRowCount()), _colNames.size() + 1));
-	}
-	else if(_extraCol == "" && _colNames.size() > 0)
-	{
-		_colNames.insert(_editableColumn, extraCol);
-		_editableColumn++;
-
-		emit headerDataChanged(Qt::Horizontal, _editableColumn - 1, _colNames.size());
-		emit dataChanged(index(0, _editableColumn - 1), index(static_cast<int>(getDataSetRowCount()), _colNames.size()));
-	}
-	else if(_extraCol != "" && extraCol != "" && _colNames.size() > _editableColumn)
-	{
-		_colNames[_editableColumn - 1] = extraCol;
-		emit headerDataChanged(Qt::Horizontal, _editableColumn - 1, _editableColumn - 1);
-		emit dataChanged(index(0, _editableColumn - 1), index(static_cast<int>(getDataSetRowCount()), _editableColumn - 1));
-	}
+	QString oldExtraCol = _extraCol;
 
 	_extraCol = extraCol;
 
+
+	beginResetModel();
+	if(extraCol == "" && _colNames.size() > _editableColumn && _editableColumn > 0 && _colNames[_editableColumn - 1] == oldExtraCol)
+	{
+		//std::cout << "Leegmaken!" << std::endl;
+
+		_colNames.erase(_colNames.begin() + _editableColumn - 1);
+		_editableColumn--;
+		_columnCount = _colNames.size();
+
+		//emit headerDataChanged(Qt::Horizontal, _editableColumn, _colNames.size() + 1);
+		//emit dataChanged(index(0, _editableColumn), index(static_cast<int>(getDataSetRowCount()), _colNames.size() + 1));
+
+	}
+	else if(oldExtraCol == "" && _colNames.size() > 0)
+	{
+		//std::cout << "Volmaken!" << std::endl;
+
+		_colNames[_editableColumn] = extraCol;
+		_editableColumn++;
+		_colNames.push_back(_colName);
+		_columnCount = _colNames.size();
+
+		//emit headerDataChanged(Qt::Horizontal, _editableColumn - 1, _colNames.size());
+		//emit dataChanged(index(0, _editableColumn - 1), index(static_cast<int>(getDataSetRowCount()), _colNames.size()));
+
+	}
+	else if(oldExtraCol != "" && extraCol != "" && _colNames.size() > _editableColumn)
+	{
+		//std::cout << "Overschrijven!" << std::endl;
+
+		_colNames[_editableColumn - 1] = extraCol;
+		//emit headerDataChanged(Qt::Horizontal, _editableColumn - 1, _editableColumn - 1);
+		//emit dataChanged(index(0, _editableColumn - 1), index(static_cast<int>(getDataSetRowCount()), _editableColumn - 1));
+	}
+
+	endResetModel();
+
+	emit columnCountChanged();
 	emit extraColChanged(_extraCol);
 	emit modelChanged();
+}
+
+void ListModelFilteredDataEntry::refreshModel()
+{
+	ListModel::refresh();
+
+	runFilter(_filter);
 }

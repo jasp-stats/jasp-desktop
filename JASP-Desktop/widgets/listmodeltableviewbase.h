@@ -52,7 +52,7 @@ public:
 				void				removeColumn(size_t index);
 				void				reset();
 	virtual		void				itemChanged(int column, int row, double value);
-				void				refreshModel() { return ListModel::refresh(); }
+	virtual		void				refreshModel() { return ListModel::refresh(); }
 	virtual		void				initValues(OptionsTable * bindHere)		{}
 	virtual		QString				getColName(size_t index)				{ return "Col " + QString::fromStdString(std::to_string(index)); }
 	virtual		OptionsTable *		createOption()							{ return new OptionsTable(); }

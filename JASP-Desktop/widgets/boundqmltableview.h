@@ -41,6 +41,9 @@ public:
 	void		setUp()											override;
 	void		rScriptDoneHandler(const QString & result)		override;
 
+public slots:
+	void		refreshMe();
+
 protected:
 	OptionsTable				* _boundTo		= nullptr;
 	ListModelTableViewBase		* _tableModel	= nullptr;

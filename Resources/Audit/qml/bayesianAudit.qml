@@ -412,9 +412,9 @@ Form
 				id: 			toSampling
 				anchors.right: 	parent.right
 				text: 			qsTr("<b>To Selection</b>")
-				enabled: 		materialityRelative.checked ? 
+				enabled: 		!samplingChecked.checked && (materialityRelative.checked ?
 									materialityPercentage.value != "0" && recordNumberVariable.count > 0 : 
-									materialityValue.value 		!= "0" && recordNumberVariable.count > 0 && monetaryVariable.count > 0
+									materialityValue.value 		!= "0" && recordNumberVariable.count > 0 && monetaryVariable.count > 0)
 				onClicked: 
 				{
 					samplingChecked.checked	= true
@@ -666,6 +666,7 @@ Form
 				id: 				toExecution
 				anchors.right: 		parent.right
 				text: 				qsTr("<b>To Execution</b>")
+				enabled:			!executionChecked.checked
 				onClicked: 
 				{
 					executionChecked.checked = true

@@ -49,6 +49,7 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ _item->setProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ _item->setProperty("rowCount",		_tableModel->rowNames().size()); });
+	connect(form,		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
 }
 
 void BoundQMLTableView::bindTo(Option *option)
@@ -114,4 +115,10 @@ void BoundQMLTableView::rScriptDoneHandler(const QString & result)
 {
 	if(_tableModel)
 		_tableModel->rScriptDoneHandler(result);
+}
+
+void BoundQMLTableView::refreshMe()
+{
+	if(_tableModel)
+		_tableModel->refreshModel();
 }

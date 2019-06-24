@@ -146,6 +146,9 @@ void Analysis::refresh()
 	_revision++;
 	TempFiles::deleteAll(_id);
 	emit toRefreshSignal(this);
+
+	if(_analysisForm)
+		_analysisForm->refreshTableViewModels();
 }
 
 void Analysis::saveImage(const Json::Value &options)

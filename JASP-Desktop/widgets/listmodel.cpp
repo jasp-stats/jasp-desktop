@@ -37,7 +37,8 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	return roles;
 }
 
-void ListModel::refresh() {
+void ListModel::refresh()
+{
 	beginResetModel(); 
 	endResetModel();
 }

@@ -563,5 +563,3 @@ void AnalysisForm::dataSetChangedHandler()
 		_setAllAvailableVariablesModel(true);
 	}
 }
-
-

@@ -43,7 +43,7 @@ public:
 	int				getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
 	void			itemChanged(int column, int row, double value)							override;
 
-
+	void			refreshModel()															override;
 
 
 public slots:
@@ -68,7 +68,7 @@ private:
 	void	fillTable();
 
 	QString						_filter,
-								_colName,
+								_colName = "data",
 								_extraCol;
 	std::vector<bool>			_acceptedRows;
 	std::vector<size_t>			_filteredRowToData;

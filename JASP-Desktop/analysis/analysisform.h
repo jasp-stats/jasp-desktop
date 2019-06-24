@@ -66,6 +66,7 @@ signals:
 				void			formChanged(Analysis* analysis);
 				void			formCompleted();
 				void			dataSetChanged();
+				void			refreshTableViewModels();
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
@@ -111,7 +112,6 @@ protected:
 	std::map<QString, ListModel* >			_modelMap;
 	DataSet									*_dataSet;
 	Options									*_options;
-
 	bool									_removed = false;
 	
 private:
