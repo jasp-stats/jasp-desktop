@@ -1,6 +1,11 @@
 #pragma once
 #include "jaspObject.h"
+#ifdef _WIN32
+#include "enumutilities.h"
+DECLARE_ENUM(jaspColumnType,		unknown, scale, ordinal, nominal, text);
+#else
 #include "enginedefinitions.h"
+#endif
 
 class jaspColumn : public jaspObject
 {

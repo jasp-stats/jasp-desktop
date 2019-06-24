@@ -1,5 +1,19 @@
-#include "jaspColumn.h"
+
+#ifdef JASP_R_INTERFACE_LIBRARY
 #include "jasprcpp.h"
+#else
+bool jaspRCPP_setColumnDataAsScale(			std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
+bool jaspRCPP_setColumnDataAsOrdinal(		std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
+bool jaspRCPP_setColumnDataAsNominal(		std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
+bool jaspRCPP_setColumnDataAsNominalText(	std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
+#endif
+
+#ifdef _WIN32
+#define ENUM_DECLARATION_CPP
+#endif
+
+#include "jaspColumn.h"
+
 
 Json::Value jaspColumn::convertToJSON()
 {
