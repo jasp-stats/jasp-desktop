@@ -770,7 +770,7 @@ bool Column::setColumnAsScale(const std::vector<double> &values)
 		if(doubleInputItr == AsDoubles.end())
 			throw std::runtime_error("Column::setColumnAsScale ran out of Doubles in assigning..");
 
-		if(*doubleInputItr != value) //clang warns us this is unsafe but what does IT know?! If it changes it changes!
+		if(*doubleInputItr != value && (isnan(*doubleInputItr) != isnan(value))) //clang warns us this is unsafe but what does IT know?! If it changes it changes! Maybe clang was right after all, nan != nan == true...
 			changedSomething = true;
 
 		*doubleInputItr = value;

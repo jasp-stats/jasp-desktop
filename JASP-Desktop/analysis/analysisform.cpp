@@ -106,7 +106,7 @@ void AnalysisForm::_cleanUpForm()
 {
 	_removed = true;
 	for (QMLItem* control : _orderedControls)
-		// controls will be automatically deleted by the delation of AnalysisForm
+		// controls will be automatically deleted by the deletion of AnalysisForm
 		// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
 		control->cleanUp();
 }
