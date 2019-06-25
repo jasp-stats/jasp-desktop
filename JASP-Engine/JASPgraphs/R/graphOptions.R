@@ -16,6 +16,10 @@
     axisTickWidth = .3,
     digits = list(axes = 3L, BF = 3L),
     ggVersion = packageVersion("ggplot2"),
+    palette = list(
+        palette = "colorblind",
+        Function = JASPcolors(palette = "colorblind", asFunction = TRUE)
+    ),
     debug = TRUE
 ))
 
