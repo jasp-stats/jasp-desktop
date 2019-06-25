@@ -113,7 +113,11 @@ void AnalysisForm::_cleanUpForm()
 
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
 {	
+	if(_removed)
+		return;
+
 	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
+
 	if (item)
 		item->rScriptDoneHandler(result);
 	else

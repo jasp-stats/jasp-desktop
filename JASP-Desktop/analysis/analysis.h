@@ -188,7 +188,8 @@ protected:
 	int						_progress		= -1;
 
 private:
-	size_t					_id;
+	size_t					_id,
+							_counter		= 0;
 	std::string				_module			= "dynamic",
 							_name,
 							_titleDefault,

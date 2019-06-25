@@ -173,7 +173,7 @@ bool Engine::receiveMessages(int timeout)
 void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
-		throw std::runtime_error("Unexpected filter message, current state is not idle (" + engineStateToString(_engineState) + ")");
+		Log::log() << "Unexpected filter message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
 	_engineState				= engineState::filter;
 	std::string filter			= jsonRequest.get("filter", "").asString();
@@ -230,7 +230,7 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
-		throw std::runtime_error("Unexpected rCode message, current state is not idle (" + engineStateToString(_engineState) + ")");
+		Log::log() << "Unexpected rCode message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
 	_engineState		= engineState::rCode;
 	std::string rCode	= jsonRequest.get("rCode",			"").asString();
@@ -284,7 +284,7 @@ void Engine::sendRCodeError(int rCodeRequestId)
 void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
-		throw std::runtime_error("Unexpected compute column message, current state is not idle (" + engineStateToString(_engineState) + ")");
+		Log::log() << "Unexpected compute column message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
 	_engineState = engineState::computeColumn;
 
