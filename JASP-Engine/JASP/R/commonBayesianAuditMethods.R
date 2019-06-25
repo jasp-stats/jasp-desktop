@@ -678,8 +678,8 @@
 
 .BFsamples <- function(options, evaluationResult, jaspResults){
   set.seed(options[["seed"]])
-  prior             <- rbeta(n = 1e6, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]])
-  posterior         <- evaluationResult[["mf"]] * rf(n = 1e6, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]])
+  prior             <- rbeta(n = 1e5, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]])
+  posterior         <- evaluationResult[["mf"]] * rf(n = 1e5, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]])
   densprior         <- density(prior)
   priorCDF          <- approxfun(densprior$x, densprior$y, yleft=0, yright=0)
   priorLeft         <- integrate(priorCDF, lower = 0, upper = jaspResults[["materiality"]]$object)$value

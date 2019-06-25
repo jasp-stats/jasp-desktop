@@ -240,7 +240,7 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	int valIndex = 0;
 	for(int rowIndex : optionRowIndices->value())
 	{
-		size_t row = static_cast<size_t>(rowIndex);
+        size_t row = static_cast<size_t>(rowIndex) - 1;
 
 		_enteredValues[row] = _values[0][valIndex++];
 		_acceptedRows[row]	= true;
@@ -295,7 +295,7 @@ void ListModelFilteredDataEntry::modelChangedSlot()
 		std::vector<int> stdRowIndices;
 
 		for (size_t index : _filteredRowToData)
-			stdRowIndices.push_back(static_cast<int>(index));
+            stdRowIndices.push_back(static_cast<int>(index + 1));
 
 		Options* options =			new Options();
 		options->add("colName",		new OptionString(_colName.toStdString()));

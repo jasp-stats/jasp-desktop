@@ -758,6 +758,7 @@ Form
 						interval:	1000
 						onTriggered:
 						{
+                            performAuditTable.colName   = variableName.value
 							performAuditTable.extraCol	= sampleFilter.value
 							performAuditTable.filter 	= sampleFilter.value + " > 0"
 						}
@@ -795,7 +796,7 @@ Form
 				Layout.fillWidth: 	true
 				modelType:			"FilteredDataEntryModel"
 				source:     		["recordNumberVariable", "monetaryVariable", "additionalVariables"]
-				colName:			variableName.value
+                colName:			"Filter"
 			}
 		}
 

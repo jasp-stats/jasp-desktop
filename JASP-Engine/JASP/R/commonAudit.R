@@ -433,7 +433,7 @@
     sampleFilter                  <- as.numeric(sampleFilter)
     auditDataVariable             <- rep(NA, jaspResults[["N"]]$object)
 
-    auditDataVariable[options[["performAudit"]][[1]]$rowIndices + 1] <- options[["performAudit"]][[1]]$values
+    auditDataVariable[options[["performAudit"]][[1]]$rowIndices] <- options[["performAudit"]][[1]]$values
 
     if(is.null(jaspResults[["sampleFilter"]]))  jaspResults[["sampleFilter"]] <- createJaspColumn(columnName=options[["sampleFilter"]], dependencies="sampleFilter")
     if(is.null(jaspResults[["variableName"]]))  jaspResults[["variableName"]] <- createJaspColumn(columnName=options[["variableName"]], dependencies="variableName")
