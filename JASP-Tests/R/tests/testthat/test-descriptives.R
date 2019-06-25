@@ -114,3 +114,12 @@ test_that("Boxplot matches", {
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "boxplot", dir="Descriptives")
 })
+
+test_that("Q-QPlot plot matches", {
+  options <- jasptools::analysisOptions("Descriptives")
+  options$variables <- "contNormal"
+  options$descriptivesQQPlot <- TRUE
+  results <- jasptools::run("Descriptives", "test.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "qqplot", dir="Descriptives")
+})

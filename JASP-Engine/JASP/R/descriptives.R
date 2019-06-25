@@ -119,7 +119,7 @@ Descriptives <- function(jaspResults, dataset, options) {
         jaspResults[["QQPlots"]] <- createJaspContainer("Q-Q Plots")
       else #only one Q-Q Plot
         jaspResults[["QQPlots"]] <- createJaspContainer("Q-Q Plot")
-      jaspResults[["QQPlots"]]$dependOn(c("descriptivesQQPlot", "variables", "splitby"))
+      jaspResults[["QQPlots"]]$dependOn(c("descriptivesQQPlot", "splitby"))
       jaspResults[["QQPlots"]]$position <- 8
     }
     QQPlots <- jaspResults[["QQPlots"]]
@@ -133,6 +133,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       dataset           <- dataset[!is.na(qqSplitFactor), ]
       for(var in variables){ 
         deeperQQPlots <- createJaspContainer(paste0(var))
+        deeperQQPlots$dependOn(optionContainsValue=list(variables=var))
         QQPlots[[var]] <- deeperQQPlots
         #splits dataset according to split values
         qqSplitData     <- split(dataset, qqSplitFactor)
@@ -148,10 +149,7 @@ Descriptives <- function(jaspResults, dataset, options) {
         }
       }
     }
-    QQPlots
   }
-  QQPlots<-NULL
-
   return()
 }
 
@@ -1189,25 +1187,12 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 .descriptivesQQPlot <- function(dataset, options,  qqvar, levelName=NULL) {
 
-  if (options$descriptivesQQPlot && is.null(options$variables))
-    return(list(result=NULL))
-
-  descriptivesQQPlot <- list()
-
+  #to put a subtitle if there is a split
+  title <- qqvar
+  if(!is.null(levelName))
+    title <- levelName
+  
   if (!is.null(qqvar)) {
-
-    #to put a subtitle if there is a split
-    if(!is.null(levelName))
-      descriptivesQQPlot$title <- paste0(options$splitby, ": ", levelName)
-    else
-      descriptivesQQPlot$title <- " "
-
-    # Hardcode plot dimensions
-    options$descriptivesPlotWidthQQPlot <- 400
-    options$descriptivesPlotHeightQQPlot <- 400
-
-    descriptivesQQPlot$width  <- options$descriptivesPlotWidthQQPlot
-    descriptivesQQPlot$height <- options$descriptivesPlotHeightQQPlot
 
     varCol<-dataset[[.v(qqvar)]]
     varCol<-varCol[!is.na(varCol)]
@@ -1258,19 +1243,12 @@ Descriptives <- function(jaspResults, dataset, options) {
 
   } else {
 
-    descriptivesQQPlot$title <- "Q-Q Plot"
-
-    # Hardcode plot dimensions
-    options$descriptivesPlotWidthQQPlot  <- 400
-    options$descriptivesPlotHeightQQPlot <- 400
-
-    descriptivesQQPlot$width  <- options$descriptivesPlotWidthQQPlot
-    descriptivesQQPlot$height <- options$descriptivesPlotHeightQQPlot
-    descriptivesQQPlot$custom <- list(width="descriptivesPlotWidthQQPlot", height="descriptivesPlotHeightQQPlot")
-    descriptivesQQPlot$data   <- NULL
     p<-NULL
   }
-  return(createJaspPlot(plot=p, width=400, aspectRatio=1, title=descriptivesQQPlot$title))
+  descriptivesQQPlot <- createJaspPlot(plot=p, width=400, aspectRatio=1, title=title)
+  if (!is.null(levelName))
+    descriptivesQQPlot$dependOn(optionContainsValue=list(variables=qqvar))
+  return(descriptivesQQPlot)
 }
 
 # </editor-fold> HELPER FUNCTIONS BLOCK
