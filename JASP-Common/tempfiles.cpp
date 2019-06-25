@@ -40,13 +40,18 @@ TempFiles::stringvec	TempFiles::_shmemNames		= TempFiles::stringvec();
 
 void TempFiles::init(long sessionId)
 {
-	system::error_code error;
-
 	_sessionId		= sessionId;
 	_nextFileId		= 0;
 	_sessionDirName	= Dirs::tempDir() + "/" + std::to_string(sessionId);
 	_statusFileName	= _sessionDirName +  "/status";
 	_clipboard		= Dirs::tempDir() + "/clipboard";
+
+	createSessionDir();
+}
+
+void TempFiles::createSessionDir()
+{
+	system::error_code error;
 
 	filesystem::path sessionPath = Utils::osPath(_sessionDirName);
 

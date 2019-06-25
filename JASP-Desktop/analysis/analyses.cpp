@@ -195,9 +195,11 @@ void Analyses::clear()
 {
 	setCurrentAnalysisIndex(-1);
 	beginResetModel();
-	for (auto idAnalysis : _analysisMap)
+	for (auto & idAnalysis : _analysisMap)
 	{
 		Analysis* analysis = idAnalysis.second;
+		idAnalysis.second  = nullptr;
+
 		emit analysisRemoved(analysis);
 		delete analysis;
 	}
@@ -407,14 +409,15 @@ void Analyses::refreshAnalysesUsingColumns(std::vector<std::string> &changedColu
 void Analyses::applyToSome(std::function<bool(Analysis *analysis)> applyThis)
 {
 	for(size_t id : _orderedIds)
-		if(!applyThis(_analysisMap[id]))
+		if(_analysisMap[id] != nullptr && !applyThis(_analysisMap[id]))
 			return;
 }
 
 void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis)
 {
 	for(size_t id : _orderedIds)
-		applyThis(_analysisMap[id]);
+		if(_analysisMap[id] != nullptr)
+			applyThis(_analysisMap[id]);
 }
 
 QVariant Analyses::data(const QModelIndex &index, int role)	const

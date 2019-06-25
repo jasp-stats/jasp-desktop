@@ -747,23 +747,10 @@ Form
 					onClicked:
 					{
 						pasteVariables.checked 		= true
-						tableViewDelay.start()
+						performAuditTable.colName   = variableName.value
+						performAuditTable.extraCol	= sampleFilter.value
+						performAuditTable.filter 	= sampleFilter.value + " > 0"
 					}
-
-					Timer
-					{
-						id:			tableViewDelay
-						repeat:		false
-						running:	false
-						interval:	1000
-						onTriggered:
-						{
-                            performAuditTable.colName   = variableName.value
-							performAuditTable.extraCol	= sampleFilter.value
-							performAuditTable.filter 	= sampleFilter.value + " > 0"
-						}
-					}
-
 				}
 			}
 		}

@@ -57,6 +57,7 @@ public slots:
 	void stopEngines();
 	void logCfgRequest();
 	void logToFileChanged(bool logToFile) { logCfgRequest(); }
+	void cleanUpAfterClose();
 
 	
 signals:

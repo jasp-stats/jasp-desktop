@@ -92,7 +92,8 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
-	emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
+	if(_analysis != nullptr && !_removed)
+		emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
 }
 
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)

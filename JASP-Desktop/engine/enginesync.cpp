@@ -648,3 +648,23 @@ void EngineSync::processLogCfgRequests()
 			_engines[channelNr]->sendLogCfg();
 
 }
+
+void EngineSync::cleanUpAfterClose()
+{
+	stopEngines();
+
+	resetModuleWideCastVars();
+	while(_waitingScripts.size() > 0)
+	{
+		delete _waitingScripts.front();
+		_waitingScripts.pop();
+	}
+
+	if(_waitingFilter != nullptr)
+		delete _waitingFilter;
+	_waitingFilter = nullptr;
+
+	TempFiles::createSessionDir();
+
+	restartEngines();
+}

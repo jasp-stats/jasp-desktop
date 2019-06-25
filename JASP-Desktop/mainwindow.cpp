@@ -933,6 +933,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			setWindowTitle("JASP");
 
+			_engineSync->cleanUpAfterClose();
+
 			if (_applicationExiting)	QApplication::exit();
 			else
 			{
