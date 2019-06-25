@@ -366,7 +366,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 								alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
 
-								confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt((sum(ns)) / (prod(ns))), 
+								confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt((prod(ns)) / (sum(ns))), 
 								                                               df = dfEffSize, 
 								                                               alpha.lower = alphaLevel, 
 								                                               alpha.upper = alphaLevel)[c(1, 3)]
