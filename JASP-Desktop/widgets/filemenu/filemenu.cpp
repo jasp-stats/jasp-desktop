@@ -194,7 +194,7 @@ QString FileMenu::getDefaultOutFileName()
 
 	if (path != "")
 	{
-		QString name	= QFileInfo(path).baseName(),
+		QString name	= QFileInfo(path).completeBaseName(),
 				ext		= QFileInfo(path).suffix();
 		switch (_mode)
 		{
@@ -235,7 +235,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
-			_computer->setFileName(info.baseName());
+			_computer->setFileName(info.completeBaseName());
 
 			_currentFilePath		= event->path();
 			_currentFileType		= event->type();

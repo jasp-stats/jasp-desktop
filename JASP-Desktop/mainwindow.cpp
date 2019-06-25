@@ -850,7 +850,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->isSuccessful())
 		{
 			populateUIfromDataSet();
-			QString name = QFileInfo(event->path()).baseName();
+			QString name = QFileInfo(event->path()).completeBaseName();
 			setWindowTitle(name);
 			_currentFilePath = event->path();
 
@@ -893,7 +893,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 		if (event->isSuccessful())
 		{
-			QString name = QFileInfo(event->path()).baseName();
+			QString name = QFileInfo(event->path()).completeBaseName();
 
 			_package->setModified(false);
 			setWindowTitle(name);
@@ -1208,7 +1208,7 @@ void MainWindow::startDataEditorHandler()
 			if (!_currentFilePath.isEmpty())
 			{
 				QFileInfo file(_currentFilePath);
-				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
+				name = file.absolutePath() + QDir::separator() + file.completeBaseName().replace('#', '_') + ".csv";
 			}
 
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
