@@ -224,6 +224,9 @@ void jaspContainer::completeChildren()
 		case jaspObjectType::table:
 			static_cast<jaspTable*>(obj)->complete();
 			break;
+
+		default:
+			break;
 		}
 	}
 }

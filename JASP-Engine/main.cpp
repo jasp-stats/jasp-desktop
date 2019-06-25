@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 		catch (std::exception & e)
 		{
 			Log::log() << "Engine had an uncaught exception of: " << e.what() << "\n";
+			throw e;
 		}
 
 		JASPTIMER_PRINTALL();
