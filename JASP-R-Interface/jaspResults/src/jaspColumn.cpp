@@ -1,4 +1,6 @@
 
+#include "jaspColumn.h"
+
 #ifdef JASP_R_INTERFACE_LIBRARY
 #include "jasprcpp.h"
 #else
@@ -7,8 +9,6 @@ bool jaspRCPP_setColumnDataAsOrdinal(		std::string, Rcpp::RObject) { jaspPrint("
 bool jaspRCPP_setColumnDataAsNominal(		std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
 bool jaspRCPP_setColumnDataAsNominalText(	std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
 #endif
-
-#include "jaspColumn.h"
 
 
 Json::Value jaspColumn::convertToJSON()
