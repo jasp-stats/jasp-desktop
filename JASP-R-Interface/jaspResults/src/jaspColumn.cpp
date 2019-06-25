@@ -8,10 +8,6 @@ bool jaspRCPP_setColumnDataAsNominal(		std::string, Rcpp::RObject) { jaspPrint("
 bool jaspRCPP_setColumnDataAsNominalText(	std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
 #endif
 
-#ifdef _WIN32
-#define ENUM_DECLARATION_CPP
-#endif
-
 #include "jaspColumn.h"
 
 

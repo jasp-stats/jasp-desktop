@@ -4,6 +4,7 @@
 #include <sstream>
 #include <queue>
 #include "enumutilities.h"
+
 #ifdef JASP_R_INTERFACE_LIBRARY
 #include "jsonredirect.h"
 #else
@@ -15,6 +16,8 @@ void jaspPrint(std::string msg);
 #define JASPOBJECT_DEFAULT_POSITION 9999
 
 DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state, column);
+DECLARE_ENUM(jaspColumnType, unknown, scale, ordinal, nominal, text);
+
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
 
 std::string					stringExtend(std::string & str, size_t len, char kar = ' ');

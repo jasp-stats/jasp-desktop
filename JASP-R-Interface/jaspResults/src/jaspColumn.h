@@ -1,11 +1,7 @@
-#pragma once
+#ifndef _JASPCOLUMN_HEADER
+#define _JASPCOLUMN_HEADER
+
 #include "jaspObject.h"
-#ifdef _WIN32
-#include "enumutilities.h"
-DECLARE_ENUM(jaspColumnType,		unknown, scale, ordinal, nominal, text);
-#else
-#include "enginedefinitions.h"
-#endif
 
 class jaspColumn : public jaspObject
 {
@@ -46,3 +42,4 @@ public:
 };
 
 RCPP_EXPOSED_CLASS_NODECL(jaspColumn_Interface)
+#endif
