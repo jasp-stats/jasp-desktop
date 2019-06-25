@@ -298,6 +298,7 @@ checkLavaanModel <- function(model, availableVars) {
   if (!missing(availableVars)) {
     latents <- unique(parsed[parsed$op == "=~",]$lhs)
     modelVars <- setdiff(unique(c(parsed$lhs, parsed$rhs)), latents)
+    modelVars <- modelVars[modelVars != ""] # e.g., x1 ~ 1 yields an empty rhs entry
 
     modelVarsInAvailableVars <- (modelVars %in% vvars)
     if (!all(modelVarsInAvailableVars)) {
