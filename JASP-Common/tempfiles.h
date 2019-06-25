@@ -45,10 +45,12 @@ class TempFiles
 	typedef std::vector<std::string> stringvec;
 
 public:
-	static void			createSessionDir();
 	static void			init(long _sessionId);
 	static void			attach(long _sessionId);
 	static void			heartbeat();
+
+	static void			createSessionDir();
+	static void			clearSessionDir();
 
 	static std::string	createSpecific_clipboard(const std::string &filename);
 	static void			purgeClipboard();

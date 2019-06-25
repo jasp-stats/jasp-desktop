@@ -67,6 +67,21 @@ void TempFiles::createSessionDir()
 	//	filesystem::create_directories(clipboardPath, error);
 }
 
+void TempFiles::clearSessionDir()
+{
+	filesystem::path sessionPath = Utils::osPath(_sessionDirName);
+	system::error_code error;
+
+	filesystem::directory_iterator it{sessionPath};
+	std::vector<filesystem::path> deleteUs;
+
+	while(it != filesystem::directory_iterator{})
+		deleteUs.push_back(*it++);
+
+	for(auto dir : deleteUs)
+		filesystem::remove_all(dir);
+}
+
 void TempFiles::attach(long sessionId)
 {
 	_sessionId		= sessionId;

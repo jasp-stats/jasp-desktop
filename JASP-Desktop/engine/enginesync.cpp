@@ -651,7 +651,8 @@ void EngineSync::processLogCfgRequests()
 
 void EngineSync::cleanUpAfterClose()
 {
-	stopEngines();
+	//stopEngines();
+	pause();
 
 	resetModuleWideCastVars();
 	while(_waitingScripts.size() > 0)
@@ -664,7 +665,9 @@ void EngineSync::cleanUpAfterClose()
 		delete _waitingFilter;
 	_waitingFilter = nullptr;
 
-	TempFiles::createSessionDir();
+	TempFiles::clearSessionDir();
 
-	restartEngines();
+	resume();
+
+	//restartEngines();
 }
