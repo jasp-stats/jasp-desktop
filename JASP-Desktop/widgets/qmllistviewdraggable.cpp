@@ -108,6 +108,7 @@ void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* t
 {
 	if (targetModel && indexes.size() > 0)
 	{
+		std::sort(indexes.begin(), indexes.end());
 		Options* options = _form->getAnalysisOptions();
 		if (options != nullptr)
 			options->blockSignals(true);
