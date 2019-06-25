@@ -59,10 +59,10 @@ test_that("Coefficient plots match", {
     
     results <- jasptools::run("RegressionLinearBayesian", "test.csv", options)
     
-    inclusionProbabilities <- results[['state']][['figures']][[1]][["obj"]]
+    inclusionProbabilities <- results[['state']][['figures']][[5]][["obj"]]
     expect_equal_plots(inclusionProbabilities, "inclusionProbabilities", "RegressionLinearBayesian")
     
-    posteriorCoefficients <- results[['state']][['figures']][[2]][["obj"]]
+    posteriorCoefficients <- results[['state']][['figures']][[1]][["obj"]]
     expect_equal_plots(posteriorCoefficients, "posteriorCoefficients", "RegressionLinearBayesian")
 })
 

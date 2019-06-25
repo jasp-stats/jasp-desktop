@@ -337,5 +337,9 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   results[["state"]] <- .getInternal("state")
 
+  figures <- results$state$figures
+  if (length(figures) > 1 && !is.null(names(figures)))
+    results$state$figures <- figures[order(names(figures))]
+
   return(invisible(results))
 }
