@@ -243,6 +243,7 @@ Rcpp::class_<CLASS_NAME_CPP>(CLASS_NAME_R)																			\
 	.derives<jaspObject_Interface>("jaspObject")																	\
 	.method( "[[",		&CLASS_NAME_CPP::at,		"Access element by fieldname (string) or index (int) ")			\
 	.method( "[[<-",	&CLASS_NAME_CPP::insert,	"Insert an element under index (int) or fieldname (string)")	\
+	.method( "insert",	&CLASS_NAME_CPP::insert,	"Insert an element under index (int) or fieldname (string)")	\
 	.method( "add",		&CLASS_NAME_CPP::add,		"Add an element at the end of the indexable list")				\
 	JASP_OBJECT_FINALIZER_LAMBDA(CLASS_NAME_CPP)																	\
 ;

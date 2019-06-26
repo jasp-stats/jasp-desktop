@@ -531,13 +531,29 @@ jaspTableR <- R6Class(
 				private$jaspObject$setExpectedRows(rows)
 			else
 				private$jaspObject$setExpectedColumns(cols)
-		}
+    },
+    getColumnName       = function(columnIndex)               { return( private$jaspObject$colNames           [[columnIndex]]);               },
+    setColumnName       = function(columnIndex, newName)      {         private$jaspObject$colNames$insert(     columnIndex,  newName);       },
+    getColumnTitle      = function(columnName)                { return( private$jaspObject$colTitles          [[columnName]]);                },
+    setColumnTitle      = function(columnName, newTitle)      {         private$jaspObject$colTitles$insert(    columnName,   newTitle);      },
+    getColumnOvertitle  = function(columnName)                { return( private$jaspObject$colOvertitles      [[columnName]]);                },
+    setColumnOvertitle  = function(columnName, newOvertitle)  {         private$jaspObject$colOvertitles$insert(columnName,   newOvertitle);  },
+    getColumnFormat     = function(columnName)                { return( private$jaspObject$colFormats         [[columnName]]);                },
+    setColumnFormat     = function(columnName, newFormat)     {         private$jaspObject$colFormats$insert(   columnName,   newFormat);     },
+    getColumnCombine    = function(columnName)                { return( private$jaspObject$colCombines        [[columnName]]);                },
+    setColumnCombine    = function(columnName, newCombine)    {         private$jaspObject$colCombines$insert(  columnName,   newCombine);    },
+    getColumnType       = function(columnName)                { return( private$jaspObject$colTypes           [[columnName]]);                },
+    setColumnType       = function(columnName, newType)       {         private$jaspObject$colTypes$insert(     columnName,   newType);       },
+    getRowName          = function(rowIndex)                  { return( private$jaspObject$rowNames           [[rowIndex]]);                  },
+    setRowName          = function(rowIndex, newName)         {         private$jaspObject$rowNames$insert(     rowIndex,     newName);       },
+    getRowTitle         = function(rowName)                   { return( private$jaspObject$rowTitles          [[rowName]]);                   },
+    setRowTitle         = function(rowName, newTitle)         {         private$jaspObject$rowTitles$insert(    rowName,      newTitle);      }
 	),
 	active = list(
 		transpose                = function(x) if (missing(x)) private$jaspObject$transpose                else private$jaspObject$transpose                <- x,
 		transposeWithOvertitle   = function(x) if (missing(x)) private$jaspObject$transposeWithOvertitle   else private$jaspObject$transposeWithOvertitle   <- x,
 		status                   = function(x) if (missing(x)) private$jaspObject$status                   else private$jaspObject$status                   <- x,
-		showSpecifiedColumnsOnly = function(x) if (missing(x)) private$jaspObject$showSpecifiedColumnsOnly else private$jaspObject$showSpecifiedColumnsOnly <- x
+    showSpecifiedColumnsOnly = function(x) if (missing(x)) private$jaspObject$showSpecifiedColumnsOnly else private$jaspObject$showSpecifiedColumnsOnly <- x
 	),
 	private = list(
 		setField = function(field, value) private$jaspObject[[field]] <- value,
