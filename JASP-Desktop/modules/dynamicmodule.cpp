@@ -191,14 +191,19 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 		{
 			if(!first) out << ", ";
 
-			if(pkgV.isObject())
+			if(pkgV.isObject() && pkgV.isMember("package"))
 			{
-				out << pkgV["package"].asString();
+				try {
+					out << pkgV["package"].asString();
 
-				if(!pkgV["version"].isNull())
-					out << " (>= " << pkgV["version"].asString() << ")";
+					if(!pkgV["version"].isNull())
+						out << " (>= " << pkgV["version"].asString() << ")";
 
-				first = false;
+					first = false;
+				} catch (...) {
+					setInstallLog("Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson");
+					setStatus(moduleStatus::error);
+				}
 			}
 			else if(pkgV.isString())
 			{
@@ -220,8 +225,14 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 		if(analysis->isAnalysis())
 			out << "export(" << analysis->function() << ")\n";
 
-	for(Json::Value & pkgV : _requiredPackages)
-		out << standardRIndent << "import('" << ( _requiredPackages.isArray() ? pkgV.asString() : pkgV["package"].asString()) << "');\n";
+	try
+	{
+		if(_requiredPackages.isArray())
+			for(Json::Value & pkgV : _requiredPackages)
+				out << standardRIndent << "import('" << (pkgV.isString()  ? pkgV.asString() : pkgV["package"].asString()) << "');\n";
+	} catch (...) {
+		throw std::runtime_error("Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson");
+	}
 
 	return out.str();
 }
@@ -305,8 +316,16 @@ std::string DynamicModule::generateModuleInstallingR()
 
 	parseDescriptionFile(getDescriptionJsonFromDirectory(_modulePackage));
 
-	generateRPackageMetadata(QDir(_modulePackage.c_str())); //Generate DESCRIPTION and NAMESPACE in case they are missing
-
+	try
+	{
+		generateRPackageMetadata(QDir(_modulePackage.c_str())); //Generate DESCRIPTION and NAMESPACE in case they are missing
+	}
+	catch(std::runtime_error & e)
+	{
+		setInstallLog(e.what());
+		setStatus(moduleStatus::error);
+		return "stop('Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson')";
+	}
 	setInstallLog("Installing module " + _name + ".\n");
 
 	std::string typeInstall = "'source'";
