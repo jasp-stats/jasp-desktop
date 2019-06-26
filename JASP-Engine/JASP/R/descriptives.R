@@ -111,6 +111,47 @@ Descriptives <- function(jaspResults, dataset, options) {
       }
     }
   }
+
+  # QQ plots
+  if (options$descriptivesQQPlot) {
+    if(is.null(jaspResults[["QQPlots"]])) {
+      if(length(variables)>1 || length(levels(dataset[[.v(splitName)]]))>1) #there will be more than one Q-Q Plot
+        jaspResults[["QQPlots"]] <- createJaspContainer("Q-Q Plots")
+      else #only one Q-Q Plot
+        jaspResults[["QQPlots"]] <- createJaspContainer("Q-Q Plot")
+      jaspResults[["QQPlots"]]$dependOn(c("descriptivesQQPlot", "splitby"))
+      jaspResults[["QQPlots"]]$position <- 8
+    }
+    QQPlots <- jaspResults[["QQPlots"]]
+    if(makeSplit) {
+      qqSplitFactor     <- dataset[[.v(splitName)]]
+      if(length(qqSplitFactor)==0)
+        return(createJaspPlot(error="Plotting is not possible: Variable only contains NA!", dependencies="splitby"))
+      #gives the different split values
+      qqSplitLevels     <- levels(qqSplitFactor)
+      # remove missing values from the grouping variable
+      dataset           <- dataset[!is.na(qqSplitFactor), ]
+      for(var in variables){ 
+        if(!is.null(QQPlots[[var]]))
+          next
+        deeperQQPlots <- createJaspContainer(paste0(var))
+        deeperQQPlots$dependOn(optionContainsValue=list(variables=var))
+        QQPlots[[var]] <- deeperQQPlots
+        #splits dataset according to split values
+        qqSplitData     <- split(dataset, qqSplitFactor)
+        for( lev in 1:length(qqSplitLevels)){
+          QQPlots[[var]][[paste0(var, lev)]] <- .descriptivesQQPlot(dataset=qqSplitData[[lev]], options=options, qqvar=var, levelName=qqSplitLevels[lev])
+        }
+      }
+    }
+    else { #no split
+      for(var in variables){
+        if(is.null(QQPlots[[var]])) {
+          QQPlots[[var]] <- .descriptivesQQPlot(dataset=dataset, options=options, qqvar=var)
+        }
+      }
+    }
+  }
   return()
 }
 
@@ -1144,6 +1185,72 @@ Descriptives <- function(jaspResults, dataset, options) {
   SEK <- 2 * .descriptivesSES(x) * sqrt((n^2 - 1) / ((n - 3) * (n + 5)))
 
   return(SEK)
+}
+
+.descriptivesQQPlot <- function(dataset, options,  qqvar, levelName=NULL) {
+
+  #to put a subtitle if there is a split
+  title <- qqvar
+  if(!is.null(levelName))
+    title <- levelName
+  
+  if (!is.null(qqvar)) {
+
+    varCol<-dataset[[.v(qqvar)]]
+    varCol<-varCol[!is.na(varCol)]
+
+    standResid <- as.data.frame(stats::qqnorm(varCol, plot.it=FALSE))
+
+    standResid <- na.omit(standResid)
+    xVar <- standResid$x
+    yVar <- standResid$y
+    yVar<-yVar-mean(yVar)
+    yVar<-yVar/(sd(yVar))
+
+    # Format x ticks
+    xlow   <- min(pretty(xVar))
+    xhigh  <- max(pretty(xVar))
+    xticks <- pretty(c(xlow, xhigh))
+
+    # format x labels
+    xLabs <- vector("character", length(xticks))
+    for (i in seq_along(xticks)) {
+      if (xticks[i] < 10^6) {
+        xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
+      } else {
+        xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
+      }
+    }
+
+    # Format y ticks
+    ylow   <- min(pretty(yVar))
+    yhigh  <- max(pretty(yVar))
+    yticks <- pretty(c(ylow, yhigh))
+
+    # format y labels
+    yLabs <- vector("character", length(yticks))
+    for (i in seq_along(yticks)) {
+      if (yticks[i] < 10^6) {
+        yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+      } else {
+        yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+      }
+    }
+    p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = paste0("Standardised Residuals"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+    p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
+
+    # JASP theme
+    p <- JASPgraphs::themeJasp(p)
+
+  } else {
+
+    p<-NULL
+  }
+  descriptivesQQPlot <- createJaspPlot(plot=p, width=400, aspectRatio=1, title=title)
+  if (is.null(levelName))
+    descriptivesQQPlot$dependOn(optionContainsValue=list(variables=qqvar))
+  return(descriptivesQQPlot)
 }
 
 # </editor-fold> HELPER FUNCTIONS BLOCK
