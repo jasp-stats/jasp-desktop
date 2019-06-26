@@ -140,10 +140,11 @@ Rectangle
 				modulesMenu.opened		= false;
 				mouse.accepted			= false;
 				
-				customMenu.hide()
-
 				if (ribbonButton.menu.rowCount() === 1)
+				{
+					customMenu.hide()
 					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+				}
 				else
 				{
 					var functionCall = function (index)
@@ -160,9 +161,9 @@ Rectangle
 						"hasIcons"		: ribbonButton.menu.hasIcons()
 					};
 
-					customMenu.showMenu(ribbonButton, props, 0 , ribbonButton.height);
+					customMenu.toggle(ribbonButton, props, 0 , ribbonButton.height);
 
-					myMenuOpen = Qt.binding(function() { return customMenu.visible; });
+					myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
 				}
 			}
 		}

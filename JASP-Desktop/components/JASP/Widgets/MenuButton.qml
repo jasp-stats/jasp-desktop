@@ -8,10 +8,11 @@ RectangularButton
 {
 	property bool hasSubMenu:			false
 	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered
+	property color defaultColor:        "transparent"
 
 	id: root
 	font:			Theme.fontRibbon
-	color:			(_pressed || activeFocus) ? Theme.buttonColorPressed : (showHovered || selected) ? Theme.buttonColorHovered : "transparent"
+	color:			(_pressed || activeFocus) ? Theme.buttonColorPressed : (showHovered || selected) ? Theme.buttonColorHovered : defaultColor
 	border.width:	0
 	centerText:		false
 

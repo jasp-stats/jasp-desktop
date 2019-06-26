@@ -34,6 +34,7 @@ Item
 		orientation:	ListView.Horizontal
 		currentIndex:	ribbonModelFiltered.highlightedModuleIndex
 		height:			parent.height
+		width:          Math.min(contentWidth, fadeOutRight.x - fadeOutLeft.width)
 		boundsBehavior:	Flickable.StopAtBounds
 
 		highlightFollowsCurrentItem:	true
@@ -44,7 +45,6 @@ Item
 		anchors
 		{
 			left:			fadeOutLeft.right
-			right:			fadeOutRight.left
 			verticalCenter:	parent.verticalCenter
 		}
 
