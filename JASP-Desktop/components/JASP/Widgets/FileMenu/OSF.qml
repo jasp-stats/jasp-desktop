@@ -115,8 +115,6 @@ Item
 		}
 		visible: loggedin  && !fileExportDialog.visible
 		sortMenuModel: fileMenuModel.osf.sortedMenuModel
-		defaultColor: "transparent"
-		hoveredColor: Theme.gray
 	}
 
 	/////////////////////////// File dialog to save in OSF ////////////////////////////////////

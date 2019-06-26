@@ -127,7 +127,7 @@ FocusScope
 							customMenu.scrollOri.x	= dataTableView.contentX;
 							customMenu.scrollOri.y	= 0;
 
-							customMenu.showMenu(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
+							customMenu.toggle(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
 
 							customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
 							customMenu.menuScroll.y	= 0;

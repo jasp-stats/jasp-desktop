@@ -149,7 +149,6 @@ Window
 			hoverEnabled:				true
 			onContainsMouseChanged:		if(containsMouse) ribbonModel.highlightedModuleIndex = -1
 			anchors.fill:				parent
-			anchors.topMargin:			ribbon.height
 			propagateComposedEvents:	true
 
 			Rectangle
@@ -173,7 +172,6 @@ Window
 
 			onPressed:
 			{
-				mouse.accepted			= false
 
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
