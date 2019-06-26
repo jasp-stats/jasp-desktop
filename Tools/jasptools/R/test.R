@@ -62,10 +62,15 @@ manageTestPlots <- function(analysis = NULL) {
     analysis <- .validateAnalysis(analysis)
     analysis <- paste0("^", analysis, "$")
   }
-  
+
+  envirValue <- Sys.getenv("NOT_CRAN")
+  Sys.setenv("NOT_CRAN" = "true")
+
   oldLibPaths <- .libPaths()
   .libPaths(c(.getPkgOption("pkgs.dir"), .libPaths()))
+
   on.exit({
+    Sys.setenv("NOT_CRAN" = envirValue)
     .libPaths(oldLibPaths)
     unloadNamespace("SomePkg") # unload fake pkg in JASP unit tests, which is needed to run vdiffr
   }) 
