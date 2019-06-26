@@ -11,6 +11,7 @@ MenuButton
 	iconSource:			"qrc:/icons/sort-az.png"
 	z:                  10
 	defaultColor:       Theme.buttonColor
+	opacity:			enabled ? 1 : 0.5
 
 	property var	sortMenuModel:	null
 	property int	scrollXPosition: 0
