@@ -132,6 +132,8 @@ Descriptives <- function(jaspResults, dataset, options) {
       # remove missing values from the grouping variable
       dataset           <- dataset[!is.na(qqSplitFactor), ]
       for(var in variables){ 
+        if(!is.null(QQPlots[[var]]))
+          next
         deeperQQPlots <- createJaspContainer(paste0(var))
         deeperQQPlots$dependOn(optionContainsValue=list(variables=var))
         QQPlots[[var]] <- deeperQQPlots
@@ -1246,8 +1248,6 @@ Descriptives <- function(jaspResults, dataset, options) {
     p<-NULL
   }
   descriptivesQQPlot <- createJaspPlot(plot=p, width=400, aspectRatio=1, title=title)
-  if (!is.null(levelName))
-    descriptivesQQPlot$dependOn(optionContainsValue=list(variables=qqvar))
   return(descriptivesQQPlot)
 }
 

@@ -60,7 +60,7 @@ Form
 					}
 				}
 			}
-            CheckBox {name: "descriptivesQQPlot"; label: qsTr("Q-Q Plots")}
+            CheckBox {name: "descriptivesQQPlot"; label: qsTr("Q-Q plots")}
 		}
 	}
 
