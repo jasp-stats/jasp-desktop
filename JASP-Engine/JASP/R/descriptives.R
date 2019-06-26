@@ -1248,6 +1248,8 @@ Descriptives <- function(jaspResults, dataset, options) {
     p<-NULL
   }
   descriptivesQQPlot <- createJaspPlot(plot=p, width=400, aspectRatio=1, title=title)
+  if (is.null(levelName))
+    descriptivesQQPlot$dependOn(optionContainsValue=list(variables=qqvar))
   return(descriptivesQQPlot)
 }
 
