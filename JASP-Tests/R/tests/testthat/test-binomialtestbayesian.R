@@ -37,15 +37,9 @@ test_that("Sequential analysis plots match", {
   options$plotSequentialAnalysis <- TRUE
   results <- jasptools::run("BinomialTestBayesian", "test.csv", options)
 
-  testpath <- (results[["results"]][["bayesianBinomPlots"]][["collection"]]
-  [["bayesianBinomPlots_deeperBayesianBinomPlotscontBinom1"]][["collection"]]
-  [["bayesianBinomPlots_deeperBayesianBinomPlotscontBinom1_contBinom1sequential"]][["data"]])
-  testPlot <- results[["state"]][["figures"]][[testpath]][["obj"]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "sequential-analysis-1", dir="BinomialTestBayesian")
 
-  testpath <- (results[["results"]][["bayesianBinomPlots"]][["collection"]]
-               [["bayesianBinomPlots_deeperBayesianBinomPlotscontBinom2"]][["collection"]]
-               [["bayesianBinomPlots_deeperBayesianBinomPlotscontBinom2_contBinom2sequential"]][["data"]])
-  testPlot <- results[["state"]][["figures"]][[testpath]][["obj"]]
+  testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
   expect_equal_plots(testPlot, "sequential-analysis-2", dir="BinomialTestBayesian")
 })
