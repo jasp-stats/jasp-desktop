@@ -24,12 +24,13 @@
 		</p>
 	</description>
 	<translation/> <!-- translation not yet supported -->
-	<screenshots>
+  <!-- breaks on flathub see https://github.com/flathub/flathub/pull/1035
+  <screenshots>
 		<screenshot type="default">
 			<image>http://static.jasp-stats.org/RPkgs/JASP-screenshot-0.png</image>
 			<caption>Shows the dataviewer of JASP flanked with the options and output for the Independt Samples T-Test</caption>
-		</screenshot>
-	</screenshots>
+    </screenshot>
+  </screenshots> -->
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
