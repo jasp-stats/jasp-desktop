@@ -23,7 +23,7 @@
       } else {
           monetaryColumn        <- dataset[, .v(options[["monetaryVariable"]])]
           monetaryColumn        <- ceiling(monetaryColumn)
-          sampleVector          <- base::sample(recordColumn, size = sampleSize, replace = TRUE, prob = monetaryColumn)
+          sampleVector          <- base::sample(recordColumn, size = sampleSize, replace = TRUE, prob = abs(monetaryColumn))
           sample                <- as.data.frame(dataset[recordColumn %in% sampleVector, ])
           colnames(sample)[1]   <- .v(options[["recordNumberVariable"]])
       }
@@ -121,7 +121,7 @@
           recordColumnIndex   <- which(colnames(dataset) == .v(recordVariable))
           recordColumn        <- dataset[, .v(recordVariable)]
           monetaryColumn      <- dataset[, .v(monetaryVariable)]
-          musList             <- rep(recordColumn, times = monetaryColumn)
+          musList             <- rep(recordColumn, times = abs(monetaryColumn))
           interval.mat        <- matrix(musList, nrow = sampleSize, byrow = TRUE, ncol = interval)
 
           sample.rows <- numeric(jaspResults[["sampleSize"]]$object)
@@ -246,7 +246,7 @@
         recordColumnIndex   <- which(colnames(dataset) == .v(recordVariable))
         recordColumn        <- dataset[, .v(recordVariable)]
         monetaryColumn      <- dataset[, .v(monetaryVariable)]
-        musList             <- rep(recordColumn, times = monetaryColumn)
+        musList             <- rep(recordColumn, times = abs(monetaryColumn))
         interval.mat        <- matrix(musList, nrow = sampleSize, byrow = TRUE, ncol = interval)
 
         sample.rows         <- interval.mat[1:nrow(interval.mat), startingPoint]
@@ -393,7 +393,7 @@
   }
   sampleSize                                <- length(unique(sample[, .v(options[["recordNumberVariable"]])]))
   if(options[["materiality"]] == "materialityAbsolute"){
-    sampleValue                             <- ceiling(sum(sample[, .v(options[["monetaryVariable"]])]))
+    sampleValue                             <- ceiling(sum(abs(sample[, .v(options[["monetaryVariable"]])])))
     percOfTotal                             <- paste0(round(sampleValue / total_data_value * 100, 2), "%")
     row                                     <- data.frame("n" = sampleSize, "V" = paste(jaspResults[["valutaTitle"]]$object, sampleValue), "P" = percOfTotal)
   } else {
