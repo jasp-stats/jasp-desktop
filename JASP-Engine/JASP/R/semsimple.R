@@ -207,6 +207,15 @@
                      USE.NAMES = FALSE)])
 }
 
+.decodeVarsInMessage <- function(encodedVars, message) {
+  if (length(encodedVars) == 0 || !is.character(encodedVars) || !is.character(message))
+    return(message)
+
+  decodedVars <- .unv(encodedVars)
+  names(decodedVars) <- encodedVars
+  stringr::str_replace_all(message, decodedVars)
+}
+
 .lavCreatePathDiagram <- function(semResults=NULL, lavModel=NULL, options) {
   result <- list(keep=NULL, pathDiagram=NULL)
   
@@ -622,7 +631,8 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
       if (!inputCorrect) {
           errorMessage <- errorCheck$message
       } else {
-          errorMessage <- paste0("Lavaan crashed with the following error: ",errorMessage)
+          errorMessage <- .decodeVarsInMessage(names(dataset), errorMessage)
+          errorMessage <- paste0("Lavaan crashed with the following error:<br>", errorMessage)
       }
 
       an0va[['error']] <- list(errorType="package", errorMessage=errorMessage)
