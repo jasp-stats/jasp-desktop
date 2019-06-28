@@ -866,7 +866,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				else
 				{
 					_package->setDataFilePath("");
-					_package->setModified(true);
 				}
 			}
 
