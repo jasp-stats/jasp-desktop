@@ -54,6 +54,7 @@ public:
 				void			unbind();
 
 				void			runRScript(QString script, QString controlName, bool whiteListedVersion);
+				void			refreshAnalysis();
 				
 				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 					

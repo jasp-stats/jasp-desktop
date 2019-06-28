@@ -96,6 +96,11 @@ void AnalysisForm::runRScript(QString script, QString controlName, bool whiteLis
 		emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
 }
 
+void AnalysisForm::refreshAnalysis()
+{
+	_analysis->refresh();
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)
