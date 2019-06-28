@@ -221,7 +221,11 @@
   bound             <- evaluationResult[["bound"]]
   proj.misstatement <- bound * jaspResults[["total_data_value"]]$object
   if(options[["variableType"]] == "variableTypeCorrect"){
-    mle <- evaluationResult[["k"]] / evaluationResult[["n"]]
+    if(options[["estimator"]] == "gammaBound" || options[["estimator"]] == "binomialBound" || options[["estimator"]] == "hyperBound"){
+      mle <- evaluationResult[["k"]] / evaluationResult[["n"]]
+    } else {
+      mle <- (evaluationResult[["posteriorA"]] - 1) / (evaluationResult[["posteriorA"]] + evaluationResult[["posteriorB"]] - 2)
+    }
   } else {
     if(options[["estimator"]] == "stringerBound" || options[["estimator"]] == "coxAndSnellBound"){
       mle <- sum(evaluationResult[["z"]]) / evaluationResult[["n"]]
