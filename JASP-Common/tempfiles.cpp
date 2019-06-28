@@ -75,11 +75,22 @@ void TempFiles::clearSessionDir()
 	if(!filesystem::exists(sessionPath, error) || error)
 		return;
 
-	filesystem::directory_iterator it{sessionPath};
 	std::vector<filesystem::path> deleteUs;
 
-	while(it != filesystem::directory_iterator{})
-		deleteUs.push_back(*it++);
+	for(filesystem::directory_entry & it : filesystem::directory_iterator{sessionPath})
+	{
+		bool leaveMeBe = false;
+
+		for (const filesystem::path & pp : it.path())
+		{
+			std::string pathComp = pp.generic_string();
+			if(pathComp.find("tmp") != std::string::npos || pathComp == "status")
+				leaveMeBe = true;
+		}
+
+		if(!leaveMeBe)
+			deleteUs.push_back(it.path());
+	}
 
 	for(auto dir : deleteUs)
 		filesystem::remove_all(dir);
