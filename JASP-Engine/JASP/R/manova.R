@@ -137,7 +137,7 @@ Manova <- function(jaspResults, dataset, options) {
                            options$testHotellingLawley, 
                            options$testRoy)]
   
-  nameStatistic <- c(Pillai = "Trace<sub>Pillai</sub>", Wilks = "Wilk's \u039B",
+  nameStatistic <- c(Pillai = "Trace<sub>Pillai</sub>", Wilks = "Wilks' \u039B",
                      `Hotelling-Lawley` = "Trace<sub>H-L</sub>", Roy = "Largest Root")
   
   for (thisTest in whichTests) {
