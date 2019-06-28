@@ -313,10 +313,13 @@ void DataSetTableModel::columnWasOverwritten(std::string columnName, std::string
 
 int DataSetTableModel::setColumnTypeFromQML(int columnIndex, int newColumnType)
 {
-	setColumnType(columnIndex, (Column::ColumnType)newColumnType);
+	bool changed = setColumnType(columnIndex, (Column::ColumnType)newColumnType);
 
-	emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
-	emit columnDataTypeChanged(_dataSet->column(columnIndex).name());
+	if (changed)
+	{
+		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
+		emit columnDataTypeChanged(_dataSet->column(columnIndex).name());
+	}
 
 	return getColumnType(columnIndex);
 }

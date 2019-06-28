@@ -566,5 +566,6 @@ void AnalysisForm::dataSetChangedHandler()
 	{
 		_dataSet = _analysis->getDataSet();
 		_setAllAvailableVariablesModel(true);
+		emit dataSetChanged();
 	}
 }

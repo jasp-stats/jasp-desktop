@@ -196,8 +196,8 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	_analysisForm	= form;
 	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(_analyses, &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChanged);
-	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChanged); //Really should be renamed
+	connect(_analyses, &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
+	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
 }
 
 Json::Value Analysis::asJSON() const
