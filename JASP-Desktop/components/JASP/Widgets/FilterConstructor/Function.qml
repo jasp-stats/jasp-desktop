@@ -31,7 +31,7 @@ Item
 
 	property real extraMeanWidth: (drawMeanSpecial ? 10 * preferencesModel.uiScale : 0)
 
-	property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "round", "median"]
+	property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "median"]
 	property string extraParameterCode: addNARMFunctions.indexOf(functionName) >= 0 ? ", na.rm=TRUE" : ""
 
 	height: meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
