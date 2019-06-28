@@ -508,7 +508,7 @@ bool Column::_changeColumnToNominalOrOrdinal(ColumnType newColumnType)
 
 		if (success)
 			setColumnAsNominalOrOrdinal(values, uniqueIntValues, newColumnType == ColumnTypeOrdinal);
-		else
+		else if (newColumnType == ColumnType::ColumnTypeNominal)
 		{
 			vector<string> values;
 			Doubles::iterator doubles = AsDoubles.begin();
