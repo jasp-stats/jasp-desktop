@@ -300,7 +300,16 @@ bool Utils::getIntValue(const double &value, int &intValue)
 	bool success = true;
 	try
 	{
-		intValue = boost::lexical_cast<int>(value);
+		double intPart;
+		success = modf(value, &intPart) == 0.0;
+		if (success)
+		{
+			if (intPart <=  INT_MAX && intPart >= INT_MIN)
+				intValue = int(intPart);
+			else
+				success = false;
+		}
+		//intValue = boost::lexical_cast<int>(value);
 	}
 	catch (...)
 	{
