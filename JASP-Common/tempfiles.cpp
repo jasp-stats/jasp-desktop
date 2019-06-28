@@ -72,7 +72,7 @@ void TempFiles::clearSessionDir()
 	filesystem::path sessionPath = Utils::osPath(_sessionDirName);
 	system::error_code error;
 	
-	if(!filesystem::exists(sessioPath, error) || error)
+	if(!filesystem::exists(sessionPath, error) || error)
 		return;
 
 	filesystem::directory_iterator it{sessionPath};
