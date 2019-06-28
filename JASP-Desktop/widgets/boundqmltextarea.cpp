@@ -34,6 +34,8 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 
 	if (textType == "lavaan")
 	{
+		connect(_form, &AnalysisForm::dataSetChanged,	this, &BoundQMLTextArea::dataSetChangedHandler,	Qt::QueuedConnection	);
+
 		_textType = TextType::Lavaan;
 		QMLListViewTermsAvailable* listView = new QMLListViewTermsAvailable(item, form); // Hack to get allVariablesModel
 		_allVariablesModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
@@ -176,7 +178,12 @@ void BoundQMLTextArea::checkSyntax()
 		if (_boundTo != nullptr)
 			_boundTo->setValue(_text.toStdString());
 	}
-		
+
+}
+
+void BoundQMLTextArea::dataSetChangedHandler()
+{
+	form()->refreshAnalysis();
 }
 
 void BoundQMLTextArea::rScriptDoneHandler(const QString & result)

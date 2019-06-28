@@ -49,6 +49,7 @@ public:
 
 private slots:
 	void checkSyntax();
+	void dataSetChangedHandler();
     
 protected:
 	OptionString*				_boundTo = nullptr;
