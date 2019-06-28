@@ -143,33 +143,69 @@ JASPControl
 			JASPDoubleValidator { id: doubleValidator;	bottom: 0; decimals: 1	}
 			RegExpValidator		{ id: stringValidator							}
 
+			property bool editingAlready: false
+
 			itemDelegate: Rectangle
 			{
 				Text
 				{
+					id:					textDisplay
 					anchors.fill:	 	parent
 					font:				Theme.font
-					color:				Theme.textDisabled
-					visible:			!itemEditable
+					color:				itemEditable ? Theme.textEnabled : Theme.textDisabled
+					visible:			!textInput.visible
 					text:				itemText
 					padding:			Theme.jaspControlPadding
 					leftPadding:		Theme.labelSpacing
 					verticalAlignment:	Text.AlignVCenter
 				}
 
+				MouseArea
+				{
+					anchors.fill:		parent
+					visible:			itemEditable && !textInput.visible
+					z:					2
+					onClicked:
+					{
+						if(theView.editingAlready)
+						{
+							textDisplay.forceActiveFocus();
+							return;
+						}
+
+						textInput.visible			= true;
+						textInput.value				= itemText;
+						textInput.lastValidValue	= itemText;
+						theView.editingAlready		= true;
+						textInput.forceActiveFocus();
+					}
+					cursorShape:		Qt.IBeamCursor
+				}
+
 				TextField
 				{
 					id:					textInput
+					anchors.fill:		parent
 					fieldWidth:			parent.width
 					fieldHeight:		parent.height
-					value:				itemText
+					visible:			false
 					inputType:			tableView.itemType
 					useExternalBorder:	false
 					isBound:			false
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
-					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
-					visible:			itemEditable
+					onEditingFinished:
+					{
+						tableView.itemChanged(columnIndex, rowIndex, value)
+						focus = false;
+					}
+					onActiveFocusChanged:
+						if(!activeFocus)
+						{
+							visible					= false;
+							theView.editingAlready	= false;
+						}
+
 				}
 			}
 
