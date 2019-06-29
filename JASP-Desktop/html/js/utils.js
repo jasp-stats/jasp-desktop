@@ -497,45 +497,36 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
      * @param modelFootnotes
      */
 
-    let columnCount = columnDefs.length;
-    let columns = Array(columnCount);
-    let columnHeaders = Array(columnCount);
+	let columnCount		= columnDefs.length;
+	let columns			= Array(columnCount);
+	let columnHeaders	= Array(columnCount);
     let tableDataExists = rowData.length > 0;
-    let rowCount = tableDataExists ? rowData.length : 1;
+	let rowCount		= tableDataExists ? rowData.length : 1;
 
     for (let colNo = 0; colNo < columnCount; colNo++) {
 
         // populate column headers
-        let columnDef = columnDefs[colNo];
-        let columnName = columnDef.name;
+		let columnDef	= columnDefs[colNo];
+		let columnName	= columnDef.name;
+		let title		= columnDef.title;
+		let overTitle	= columnDef.overTitle;
 
-        let title = columnDef.title;
-        let overTitle = columnDef.overTitle;
+		if (typeof title == "undefined")	title = columnName;
+		if (title == "")					title = "&nbsp;";
 
-        if (typeof title == "undefined") {
-            title = columnName;
-        }
+		let columnType		= columnDef.type;
+		let columnHeader	= {content: title, header: true, type: columnType};
 
-        if (title == "") {
-            title = "&nbsp;";
-        }
+		if (overTitle)     columnHeader.overTitle = overTitle;
 
-        let columnType = columnDef.type;
-        let columnHeader = {content: title, header: true, type: columnType};
-
-        if (overTitle) {
-            columnHeader.overTitle = overTitle;
-        }
-
-        if (typeof columnDef[".footnotes"] != "undefined") {
-            columnHeader.footnotes = getFootnotes(modelFootnotes, columnDef[".footnotes"]);
-        }
+		if (typeof columnDef[".footnotes"] != "undefined")
+			columnHeader.footnotes = getFootnotes(modelFootnotes, columnDef[".footnotes"]);
 
         columnHeaders[colNo] = columnHeader;
 
         // populate cells column-wise
-        let column = Array(rowCount);
-        let isGrouped = false;
+		let column		= Array(rowCount);
+		let isGrouped	= false;
 
         for (let rowNo = 0; rowNo < rowCount; rowNo++) {
 
@@ -582,8 +573,8 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
     }
 
     return {
-        'columns': columns,
-        'columnHeaders': columnHeaders
+		'columns':			columns,
+		'columnHeaders':	columnHeaders
     };
 }
 
@@ -660,54 +651,112 @@ function symbol(index) {
 
 function swapRowsAndColumns (columnHeaders, columns, optOverTitle) {
     /**
-     * Swap columns and rows (descriptive tables - input data is reversed.)
+	 * Swap columns and rows (descriptive tables - input data is reversed. Also other places perhaps?)
      * @param columnHeaders
      * @param columns
      * @param optOverTitle
      */
 
-    let newRowCount = columns.length - 1;
-    let newColumnCount = columns[0].length + 1;
+	var newColumnHeaders;
+	let newRowCount			= columns.length - 1;
+	let newColumnCount		= columns[0].length + 1;
+	var originalOvertitles	= Array(columnHeaders.length);
+	var overtitleFound		= false;
 
-    if (optOverTitle) {
+	for(let colNo = 0; colNo < originalOvertitles.length; colNo++)
+	{
+		//The first columnheader should be ignored, because the rows get pasted *underneath* the columnheaders and that would make them one step too far
+		originalOvertitles[colNo] = columnHeaders[colNo]["overTitle"] !== undefined ? columnHeaders[colNo]["overTitle"] : ""
+		if(originalOvertitles[colNo] !== "")
+			overtitleFound = true;
+	}
+
+	if(!overtitleFound)
+		originalOvertitles = null;
+
+
+	if (optOverTitle)
+	{
         // Transform first column into overtitle, second into title
-        var newColumnHeaders = Array(newColumnCount-1);
+		newColumnHeaders = Array(newColumnCount-1);
 
         for (let colNo = 0; colNo < newColumnCount - 1; colNo++) {
             newColumnHeaders[colNo] = {
-                content: columns[1][colNo].content,
-                header: true,
-                overTitle: columns[0][colNo].content,
-                type: "string"
+				content:	columns[1][colNo].content,
+				header:		true,
+				overTitle:	columns[0][colNo].content,
+				type:		"string"
             };
         }
         // remove the column that became title
         columns.shift();
         columnHeaders.shift();
         newRowCount--;
-    } else {
-        // var newColumnHeaders = Array(newColumnCount);
-        var newColumnHeaders = columns[0];
-    }
+	} else
+		newColumnHeaders = columns[0];
 
-    let newColumns = Array(newColumnCount);
+	let newColumns = Array(newColumnCount);
     let cornerCell = columnHeaders.shift();
     newColumnHeaders.unshift(cornerCell);
     newColumns[0] = columnHeaders;
 
     for (let colNo = 1; colNo < newColumnCount; colNo++) {
-        newColumns[colNo] = Array(newRowCount);
+		newColumns[colNo] = Array(newRowCount);
 
         for (let rowNo = 0; rowNo < newRowCount; rowNo++) {
             newColumns[colNo][rowNo] = columns[rowNo + 1][colNo - 1];
         }
     }
 
-    return {
-        columnHeaders: newColumnHeaders,
-        columns: newColumns,
-        rowCount: newRowCount,
-        columnCount: newColumnCount
+	if(originalOvertitles !== null)
+	{
+		for(var col=0; col<newColumnHeaders.length; col++)
+			newColumnHeaders[col]["overTitle"] = undefined
+
+		var newColHeaderOvertitle = originalOvertitles[0] === undefined ? "" : originalOvertitles[0]
+		if(newColHeaderOvertitle === "") newColHeaderOvertitle = "&nbsp;";
+
+		newColumnHeaders.unshift(
+		{
+			content:	newColHeaderOvertitle,
+			header:		true,
+			type:		"string"
+		});
+
+		originalOvertitles.shift(); //drop first element
+
+		newColumns.unshift(Array(newRowCount));
+		newColumnCount++;
+
+		var lastOvertitle = "";
+
+		for (let rowNo = 0; rowNo < newRowCount; rowNo++)
+		{
+			var curOvertitle = "";
+
+			if(rowNo < originalOvertitles.length)
+			{
+				curOvertitle = originalOvertitles[rowNo];
+
+				if(curOvertitle === lastOvertitle)
+					curOvertitle = "";
+
+				lastOvertitle		 = originalOvertitles[rowNo]
+			}
+
+			newColumns[0][rowNo] = {
+				content:	curOvertitle,
+				header:		true,
+				type:		newColumns[1][rowNo].type
+			}
+		}
+	}
+
+	return {
+		columnHeaders:	newColumnHeaders,
+		columns:		newColumns,
+		rowCount:		newRowCount,
+		columnCount:	newColumnCount
     }
 }
 

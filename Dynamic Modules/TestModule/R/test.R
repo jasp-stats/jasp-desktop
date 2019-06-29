@@ -1,41 +1,51 @@
 testFunc <- function(jaspResults, dataset, options)
 {
-  containerA <- createJaspContainer(title="A", position=1)
-  containerB <- createJaspContainer(title="B", position=1)
-  containerC <- createJaspContainer(title="C", position=2)
+	
+	# the correlation table stored here
+	mainTable <- createJaspTable(title = "Transposed Table")
+	mainTable$showSpecifiedColumnsOnly <- TRUE
 
-  containerA[["B"]] <- containerB
-  containerA[["C"]] <- containerC
+	# I guess we want the transpose
+	mainTable$transpose <- TRUE
 
-  jaspResults[["A"]] <- containerA
+	# but we don't want overtitles over the "displayed" columns
+	#mainTable$transposeWithOvertitle <- FALSE
 
-	tafel 						<- createJaspTable(title="Ik ben een test", position=5);
+	# the displayed columns are supposed to be just the number of variable
+	mainTable$addColumnInfo(name = "var", title = "", type = "string", overtitle="Variables")
 
-  containerA[["Tssss"]] <- tafel
+	# now we need to define the "displayed" rows; ideally defining columns with overtitles
+	whichtests <- c(TRUE, TRUE, TRUE)#options$pearson, options$spearman, options$kendallsTauB)
+	testsTitles <- c("Pearson's rho", "Spearman's r", "Kendall's Tau B")[whichtests]
+	tests <- c("pearson", "spearman", "kendall")[whichtests]
 
-  tafel2 <- createJaspTable(title="Ik ben nog een test", position=-5);
-  containerC[["T"]] <- tafel2
+	vars  <- options$variables
+	vvars <- vars # inside just, this will be actually .v(vars)
 
-  tafel2$setExpectedSize(3, 3)
-  tafel2$setError("AAAAAH!")
-    
-	tafel$addColumnInfo(name="kol0", title="kolom 0!")
-	tafel$addColumnInfo(name="kol1", title="kolom 1!")
-  tafel$showSpecifiedColumnsOnly <- TRUE
+	for (vi in seq_along(vvars)){
+	  for(ti in seq_along(tests)){
+		    mainTable$addColumnInfo(
+          name      = paste(vvars[vi], tests[ti], "r", sep = "."),
+					title     = testsTitles[ti], type = "number",
+					overtitle = vars[vi]) # this overtitle should appear as a first column
 
-	#tafel$addColumnInfo(name="kol2")
-	tafel$addRows(list(kol0=1, kol1=2, 3), rowNames="a")
-	tafel$addRows(as.data.frame(list(kol0=1, 2, 3)), rowNames="b")
-	tafel$addRows(as.data.frame(list('a', 'b','c')), rowNames="b")
-	tafel$addRows(as.data.frame(list('a', 'b','c')), rowNames="c")
-	#tafel$addRows(list(j=1, 2, 3))
-	#tafel$addRows(list(1, 2, 3))
 
-	tafel$addFootnote(message="msg 1", symbol="", colNames="kol0", rowNames="b")
-	tafel$addFootnote(message="msg 2", symbol="", colNames="kol0")
-	tafel$addFootnote(message="msg 3", symbol="")
+	#if(options$reportSignificance)
+		mainTable$addColumnInfo(name = paste(vvars[vi], tests[ti], "p.value", sep = "."),
+								title = "p-value", type = "pvalue",
+								overtitle = vars[vi]) # this overtitle should appear as a first column
 
-	tafel$addFootnote(message="msg 4", colNames="kol1", rowNames="a")
-	tafel$addFootnote(message="msg 5 moet voor 4", colNames="kol0", rowNames="a")
-	tafel$addFootnote(message="msg 6 moet na 1", colNames="kol1", rowNames="b")
+	# here will be more option-dependent stuff, but this should be enough as an example
+	}
+	}
+
+	# the displayed columns will show the variable names
+	mainTable$addColumns(list(var = vars))
+
+	# everything else is passed to the table with the computed results...
+	# fake example
+	mainTable$addColumns(list(contNormal.pearson.r = c(0.2, 0.3, 0.4), contNormal.pearson.p.value = c(0.1, 0.034, 0.001)))
+
+	#mainTable$print()
+	jaspResults[['transposeMe']] <- mainTable
 }
