@@ -419,50 +419,50 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
-		var optSchema = this.model.get("schema");
-		var optData = this.model.get("data");
-		var optTitle = this.model.get("title");
-		var optSubtitle = this.model.get("subtitle");
-		var optCasesAcrossColumns = this.model.get("casesAcrossColumns");
-		var optOverTitle = this.model.get("overTitle")
-		var optFootnotes = this.model.get("footnotes");
-		var optCitation = this.model.get("citation");
-		var optStatus = this.model.get("status");
-		var optError = this.model.get("error");
+		var optSchema				= this.model.get("schema");
+		var optData					= this.model.get("data");
+		var optTitle				= this.model.get("title");
+		var optSubtitle				= this.model.get("subtitle");
+		var optCasesAcrossColumns	= this.model.get("casesAcrossColumns");
+		var optOverTitle			= this.model.get("overTitle")
+		var optFootnotes			= this.model.get("footnotes");
+		var optCitation				= this.model.get("citation");
+		var optStatus				= this.model.get("status");
+		var optError				= this.model.get("error");
 
-		var columnDefs = optSchema.fields
-		var columnCount = columnDefs.length
+		var columnDefs		= optSchema.fields
+		var columnCount		= columnDefs.length
 
-		let rowData = optData;
-		let rowCount = rowData.length > 1 ? rowData.length : 1;
+		let rowData			= optData;
+		let rowCount		= rowData.length > 1 ? rowData.length : 1;
 
-		let columnsDict = createColumns(columnDefs, rowData, optFootnotes);
-		let columnHeaders = columnsDict['columnHeaders'];
-		let columns = columnsDict['columns'];
+		let columnsDict		= createColumns(columnDefs, rowData, optFootnotes);
+		let columnHeaders	= columnsDict['columnHeaders'];
+		let columns			= columnsDict['columns'];
 
 		var cells = Array(columnCount);
 
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 
-			var column = columns[colNo]
-			var name = columnDefs[colNo].name
-			var type = columnDefs[colNo].type
-			var format = columnDefs[colNo].format
-			var alignNumbers = !optCasesAcrossColumns  // numbers can't be aligned across rows
-			var combine = columnDefs[colNo].combine
+			var column			= columns[colNo]
+			var name			= columnDefs[colNo].name
+			var type			= columnDefs[colNo].type
+			var format			= columnDefs[colNo].format
+			var alignNumbers	= !optCasesAcrossColumns  // numbers can't be aligned across rows
+			var combine			= columnDefs[colNo].combine
 
-			cells[colNo] = formatColumn(column, type, format, alignNumbers, combine, optFootnotes, true)
+			cells[colNo]		= formatColumn(column, type, format, alignNumbers, combine, optFootnotes, true)
 		}
 
-		var columnsInColumn = {}  // dictionary of counts
+		var columnsInColumn			= {}  // dictionary of counts
 		var columnsInsertedInColumn = {}
-		var maxColumnsInColumn = 0
-		var columnNames = []
+		var maxColumnsInColumn		= 0
+		var columnNames				= []
 
-		for (var colNo = 0; colNo < columnCount; colNo++) {
-
+		for (var colNo = 0; colNo < columnCount; colNo++)
+		{
 			var columnName = optSchema.fields[colNo].name
-			var subRowPos = columnName.indexOf("[")
+			var subRowPos  = columnName.indexOf("[")
 
 			if (subRowPos != -1)
 				columnName = columnName.substr(0, subRowPos)
@@ -471,10 +471,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 			var cic = columnsInColumn[columnName]
 
-			if (typeof cic == "undefined")
-				cic = 1
-			else
-				cic++
+			cic = (typeof cic == "undefined") ? 1 : cic + 1;
 
 			if (maxColumnsInColumn < cic)
 				maxColumnsInColumn = cic
@@ -484,16 +481,15 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		if (maxColumnsInColumn > 1) {  // do columns need to be folded
 
-			var foldedColumnNames = _.uniq(columnNames)
-			var foldedCells = Array(foldedColumnNames.length)
+			var foldedColumnNames	= _.uniq(columnNames)
+			var foldedCells			= Array(foldedColumnNames.length)
 			var foldedColumnHeaders = Array(foldedColumnNames.length)
 
 			// fold the headers
-
-			for (var colNo = 0; colNo < foldedColumnNames.length; colNo++) {
-
-				var headerIndex = columnNames.indexOf(foldedColumnNames[colNo])
-				foldedColumnHeaders[colNo] = columnHeaders[headerIndex]
+			for (var colNo = 0; colNo < foldedColumnNames.length; colNo++)
+			{
+				var headerIndex				= columnNames.indexOf(foldedColumnNames[colNo])
+				foldedColumnHeaders[colNo]	= columnHeaders[headerIndex]
 			}
 
 
@@ -502,10 +498,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			for (var colNo = 0; colNo < columnNames.length; colNo++) {
 
 				var columnCells = cells[colNo]
-				var columnName = columnNames[colNo]
+				var columnName	= columnNames[colNo]
 				var targetIndex = foldedColumnNames.indexOf(columnName)
-				var column = foldedCells[targetIndex]
-				var cic = columnsInColumn[columnName]
+				var column		= foldedCells[targetIndex]
+				var cic			= columnsInColumn[columnName]
 
 				if (typeof column == "undefined")
 					column = Array(columnCells.length * cic)
@@ -532,20 +528,20 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 				foldedCells[targetIndex] = column
 			}
 
-			cells = foldedCells
+			cells			 = foldedCells
 
-			columnHeaders = foldedColumnHeaders
-			columnCount = foldedColumnHeaders.length
-			rowCount *= maxColumnsInColumn
+			columnHeaders	 = foldedColumnHeaders
+			columnCount		 = foldedColumnHeaders.length
+			rowCount		*= maxColumnsInColumn
 		}
 
 		if (cells !== undefined && cells.length > 0 && optCasesAcrossColumns) {
 
-			var swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)
-			cells = swapped.columns
-			columnHeaders = swapped.columnHeaders;
-			rowCount = swapped.rowCount
-			columnCount = swapped.columnCount
+			var swapped		= swapRowsAndColumns(columnHeaders, cells, optOverTitle)
+			cells			= swapped.columns
+			columnHeaders	= swapped.columnHeaders;
+			rowCount		= swapped.rowCount
+			columnCount		= swapped.columnCount
 		}
 
 		var chunks = []
