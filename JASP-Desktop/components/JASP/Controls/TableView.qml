@@ -216,14 +216,15 @@ JASPControl
 				Text
 				{
 					text:					"Row #"
-					anchors.centerIn:		parent
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
 					leftPadding:			3 * preferencesModel.uiScale
 					elide:					Text.ElideRight;
 					width:					parent.width
-					height:					parent.width
+					height:					parent.height
 					font:					Theme.font
+					anchors.right:			parent.right
+					anchors.bottom:			parent.bottom
 				}
 			}
 
