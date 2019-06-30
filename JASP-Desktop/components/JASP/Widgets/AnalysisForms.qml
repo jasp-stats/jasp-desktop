@@ -14,6 +14,7 @@ FocusScope
 
 	Behavior on width { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
+
 	Rectangle
 	{
 		id:				formsBackground
@@ -24,26 +25,30 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
-		NumberAnimation
+		/*NumberAnimation
 		{
-			id: showExpandedForm
-			target: analysesFlickable
-			property: "contentY"; duration: 200; easing.type: Easing.OutQuad; easing.amplitude: 3
-		}
+			id:				showExpandedForm
+			target:			analysesFlickable
+			property:		"contentY"
+			duration:		200
+			easing
+			{
+				type:		Easing.OutQuad
+				amplitude:	3
+			}
+		}*/
 
+		function getOffset(formIndex) { return formIndex * (Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing); }
 
 		function scrollToForm(formIndex)
 		{
-			var offset = formIndex * (Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing)
-			if (scrollAnalyses.height + offset <= analysesFlickable.contentHeight)
+			if (scrollAnalyses.height + getOffset(formIndex) <= analysesFlickable.contentHeight)
 			{
-				showExpandedForm.to = offset
-				showExpandedForm.start();
+				analysesFlickable.contentY = getOffset(formIndex);
 			}
 			else if (analysesFlickable.contentHeight > scrollAnalyses.height)
 			{
-				showExpandedForm.to = analysesFlickable.contentHeight - scrollAnalyses.height
-				showExpandedForm.start();
+				analysesFlickable.contentY = analysesFlickable.contentHeight - scrollAnalyses.height;
 			}
 		}
 
@@ -121,18 +126,30 @@ FocusScope
 					rightMargin:	verticalScrollbar.width
 				}
 
-
+				Behavior on contentY { PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   } }
 
 				Connections
 				{
 					target:							analysesModel
-					onAnalysisSelectedIndexResults:
+					onAnalysisSelectedIndexResults:	reposition();
+					onCurrentFormHeightChanged:		reposition();
+
+					function reposition()
+					{
+						var row = analysesModel.currentAnalysisIndex;
+
 						if(row > -1)
 						{
 							var heightImplodedButton		= (Theme.formExpanderHeaderHeight + analysesColumn.spacing + (Theme.formMargin * 2))
 							var previousChildBottomButton	= row <= 0 ? 0 : row * heightImplodedButton
-							analysesFlickable.contentY		=  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
+
+							//Should we scroll the analysis a bit?
+							if(		previousChildBottomButton > analysesFlickable.contentY										// We can actually scroll up a bit if necessary
+								||	analysesFlickable.contentY > previousChildBottomButton + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
+							)
+								analysesFlickable.contentY =  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
 						}
+					}
 
 				}
 
@@ -149,12 +166,12 @@ FocusScope
 
 						delegate: AnalysisFormExpander
 						{
-							myIndex:			index
-							myID:				model.analysisID
-							myAnalysis:         model.analysis
-							formQmlUrl:			model.formPath
-							background:			formsBackground
-							backgroundFlickable:analysesFlickable
+							myIndex:				index
+							myID:					model.analysisID
+							myAnalysis:				model.analysis
+							formQmlUrl:				model.formPath
+							background:				formsBackground
+							backgroundFlickable:	analysesFlickable
 						}
 					}
 				}

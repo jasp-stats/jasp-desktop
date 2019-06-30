@@ -24,6 +24,9 @@ Rectangle
 	property alias		backgroundFlickable:loader.backgroundFlickable
 	property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
 	property bool		imploded:			height == loader.y
+	property real		formHeight:			0
+
+	onFormHeightChanged: if(analysesModel.currentAnalysisIndex === myIndex) analysesModel.currentFormHeight = formHeight
 
 
     ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
@@ -256,9 +259,15 @@ Rectangle
 				width:				parent.width
 				padding:			5
 				verticalAlignment:	Text.AlignVCenter
-				text: loader.status === Loader.Error ? loader.sourceComponent.errorString() : ""
-				wrapMode: Text.Wrap
+				text:				loader.status === Loader.Error ? loader.sourceComponent.errorString() : ""
+				wrapMode:			Text.Wrap
 			}
+		}
+
+		Connections
+		{
+			target:				loader.item
+			onHeightChanged:	expanderButton.formHeight = loader.item.height
 		}
 
 		Loader
@@ -275,10 +284,10 @@ Rectangle
 				right:			parent.right
 			}
 	
-			property int		myIndex:			-1
-			property int		myID:				-1
-			property var		myAnalysis:         null
-			property var		backgroundFlickable: null
+			property int myIndex:				-1
+			property int myID:					-1
+			property var myAnalysis:			null
+			property var backgroundFlickable:	null
 		}
 	}
 }
