@@ -25,31 +25,41 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
-		/*NumberAnimation
-		{
-			id:				showExpandedForm
-			target:			analysesFlickable
-			property:		"contentY"
-			duration:		200
-			easing
-			{
-				type:		Easing.OutQuad
-				amplitude:	3
-			}
-		}*/
+		property real singleButtonHeight: Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing
 
-		function getOffset(formIndex) { return formIndex * (Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing); }
+		function getOffset(formIndex) { return formIndex < 0 ? 0 : formIndex * singleButtonHeight; }
+
+
 
 		function scrollToForm(formIndex)
 		{
-			if (scrollAnalyses.height + getOffset(formIndex) <= analysesFlickable.contentHeight)
+			if(formIndex < 0) return;
+
+			var offset = getOffset(formIndex);
+
+			if(formIndex === 0)
 			{
-				analysesFlickable.contentY = getOffset(formIndex);
+				//console.log("first item so setting contentY to zero!")
+				analysesFlickable.contentY = 0;
+				return;
 			}
-			else if (analysesFlickable.contentHeight > scrollAnalyses.height)
+
+			if (analysesModel.currentFormHeight + offset + singleButtonHeight < analysesFlickable.contentHeight)
 			{
-				analysesFlickable.contentY = analysesFlickable.contentHeight - scrollAnalyses.height;
+				//console.log("Setting contenty to offset: "+offset)
+				analysesFlickable.contentY = offset;
+				return;
 			}
+
+			//console.log("Setting contenty to Math.max(0, offset + analysesModel.currentFormHeight+ singleButtonHeight - scrollAnalyses.height): "+(Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height)));
+			analysesFlickable.contentY = Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height);
+
+		}
+
+		Connections
+		{
+			target:							analysesModel
+			onCurrentAnalysisIndexChanged:	formsBackground.scrollToForm(analysesModel.currentAnalysisIndex);
 		}
 
 		Rectangle
@@ -126,28 +136,39 @@ FocusScope
 					rightMargin:	verticalScrollbar.width
 				}
 
-				Behavior on contentY { PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   } }
+				Behavior on contentY
+				{
+					id:			contentYBehaviour
+					enabled:	!(analysesFlickable.flicking || analysesFlickable.moving);
+					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
+				}
+
+				//onContentYChanged: console.log("ContentY changed to: " + contentY)
 
 				Connections
 				{
 					target:							analysesModel
-					onAnalysisSelectedIndexResults:	reposition();
-					onCurrentFormHeightChanged:		reposition();
+					//onAnalysisSelectedIndexResults:	reposition();
+					onCurrentFormHeightChanged:		if(analysesModel.currentFormHeight > analysesModel.currentFormPrevH) reposition(); //If it got larger it probably means an expander opened and we should reposition if possible
 
 					function reposition()
 					{
 						var row = analysesModel.currentAnalysisIndex;
 
-						if(row > -1)
+						if(row > -1 && row === analysesModel.currentAnalysisIndex)
 						{
-							var heightImplodedButton		= (Theme.formExpanderHeaderHeight + analysesColumn.spacing + (Theme.formMargin * 2))
-							var previousChildBottomButton	= row <= 0 ? 0 : row * heightImplodedButton
+							var previousAnalysisButtonBottom	= formsBackground.getOffset(row);
 
 							//Should we scroll the analysis a bit?
-							if(		previousChildBottomButton > analysesFlickable.contentY										// We can actually scroll up a bit if necessary
-								||	analysesFlickable.contentY > previousChildBottomButton + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
+							if(		previousAnalysisButtonBottom > analysesFlickable.contentY										// We can actually scroll up a bit if necessary
+								||	analysesFlickable.contentY > previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
 							)
-								analysesFlickable.contentY =  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
+							{
+								//console.log("Ok, size changed and we should have this analysis be visible, so calling scrollToForm!");
+
+								if(!contentYBehaviour.animation.running)
+									formsBackground.scrollToForm(row);
+							}
 						}
 					}
 

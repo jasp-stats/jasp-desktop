@@ -558,8 +558,22 @@ void Analyses::setCurrentFormHeight(double currentFormHeight)
 	if (qFuzzyCompare(_currentFormHeight, currentFormHeight))
 		return;
 
+	setCurrentFormPrevH(_currentFormHeight);
 	_currentFormHeight = currentFormHeight;
+
+	//std::cout << "cur form H: "<<_currentFormHeight << std::endl;
 	emit currentFormHeightChanged(_currentFormHeight);
+}
+
+void Analyses::setCurrentFormPrevH(double currentFormPrevH)
+{
+	if (qFuzzyCompare(_currentFormPrevH, currentFormPrevH))
+		return;
+
+	_currentFormPrevH = currentFormPrevH;
+	//std::cout << "cur form Prev H: "<<_currentFormPrevH << std::endl;
+
+	emit currentFormPrevHChanged(_currentFormPrevH);
 }
 
 void Analyses::setVisible(bool visible)

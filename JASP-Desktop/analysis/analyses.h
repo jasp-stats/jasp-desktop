@@ -36,6 +36,7 @@ class Analyses : public QAbstractListModel
 	Q_PROPERTY(int		count					READ count													NOTIFY countChanged)
 	Q_PROPERTY(int		currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
 	Q_PROPERTY(double	currentFormHeight		READ currentFormHeight		WRITE setCurrentFormHeight		NOTIFY currentFormHeightChanged)
+	Q_PROPERTY(double	currentFormPrevH		READ currentFormPrevH		WRITE setCurrentFormPrevH		NOTIFY currentFormPrevHChanged)
 	Q_PROPERTY(bool		visible					READ visible				WRITE setVisible				NOTIFY visibleChanged)
 
 
@@ -93,6 +94,7 @@ public:
 	int						currentAnalysisIndex()										const			{ return _currentAnalysisIndex;	}
 	double					currentFormHeight()											const			{ return _currentFormHeight;	}
 	bool					visible()													const			{ return _visible;				}
+	double					currentFormPrevH()											const			{ return _currentFormPrevH;	}
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -115,6 +117,8 @@ public slots:
 	void setChangedAnalysisTitle();
 	void analysisTitleChangedInResults(int id, QString title);
 	void refreshAvailableVariables();
+	void setCurrentFormPrevH(double currentFormPrevH);
+
 
 signals:
 	void analysesUnselected();
@@ -147,6 +151,8 @@ signals:
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(QString columnName);
 
+	void currentFormPrevHChanged(double currentFormPrevH);
+
 private slots:
 	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion);
 
@@ -175,6 +181,7 @@ private:
 	 void							_analysisQMLFileChanged(Analysis* analysis);
 	 
 
+	 double _currentFormPrevH;
 };
 
 #endif // ANALYSES_H

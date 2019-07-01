@@ -52,11 +52,6 @@ Rectangle
 	{
 		NumberAnimation		{ property: "height";	duration: 200 }
 		RotationAnimation	{						duration: 200 }
-		onRunningChanged:
-		{
-			if (!running && expanded && background)
-				background.scrollToForm(myIndex)
-		}
 	}
 	
 	Item
@@ -288,6 +283,8 @@ Rectangle
 			property int myID:					-1
 			property var myAnalysis:			null
 			property var backgroundFlickable:	null
+
+			onLoaded:	if(source !== "") analysesModel.currentFormHeight = loader.item.height
 		}
 	}
 }
