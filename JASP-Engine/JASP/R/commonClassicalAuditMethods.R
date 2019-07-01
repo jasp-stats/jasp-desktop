@@ -37,7 +37,7 @@
     jaspResults$progressbarTick()
     k <- base::switch(options[["expectedErrors"]], "expectedRelative" = (n * options[["expectedPercentage"]]), "expectedAbsolute" = (options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
     x <- pgamma(jaspResults[["materiality"]]$object, shape = 1 + k, scale = 1 / n)
-    #x <- dpois(x = 0:k, lambda = jaspResults[["materiality"]]$object * n)
+    # ppois(a; b) = 1 - pgamma(b; 1 + a; 1)
     if(x >= (1 - alpha)){
       return(n)
     }

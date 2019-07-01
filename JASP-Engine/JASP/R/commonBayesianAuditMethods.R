@@ -824,7 +824,7 @@
     mle                     <- 0
 
     if(options[["estimator"]] == "coxAndSnellBound"){
-        mle <- paste0(round(sum(evaluationResult[["z"]]) / evaluationResult[["n"]], 4) * 100, "%")
+        mle <- paste0(round(evaluationResult[["mf"]] * ( (evaluationResult[["df1"]] - 2)  / evaluationResult[["df1"]] ) * ( evaluationResult[["df2"]] / (evaluationResult[["df2"]] + 2) ), 4) * 100, "%")
     } else if(options[["estimator"]] == "regressionBound"){
         mle <- paste(jaspResults[["valutaTitle"]]$object, round(evaluationResult[["mleTable"]] * total_data_value, 2))
     }
