@@ -26,6 +26,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   medResult <- .medComputeResults(jaspResults, dataset, options, errors)
 
   # Output functions
+  .medFitTable(jaspResults, medResult, options, errors)
   .medParTable(jaspResults, medResult, options, errors)
   .medPathPlot(jaspResults, medResult, options, errors)
   .medSyntax(  jaspResults, medResult, options, errors)
@@ -219,6 +220,23 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 # Output functions ----
+.medFitTable <- function(jaspResults, medResult, options, errors) {
+  jaspResults[["fitmeasures"]] <- fitms <- createJaspTable("Model Fit")
+  fitms$addColumnInfo(name = "metric", title = "Metric", type = "string")
+  fitms$addColumnInfo(name = "value",  title = "Value",  type = "number", format = "sf:4;dp:3")
+  
+  if (is.null(medResult)) {
+    fitms$setExpectedSize(rows = 1, cols = 2)
+    return()
+  }
+  
+  fm <- lavaan::fitmeasures(medResult)
+  fitms[["metric"]] <- names(fm)
+  fitms[["value"]]  <- fm
+  
+  return()
+}
+
 .medParTable <- function(jaspResults, medResult, options, errors) {
   showOpts <- c("showdir", "showind", "showtotind", "showtot", "showres")
   if (!any(options[showOpts])) return()
