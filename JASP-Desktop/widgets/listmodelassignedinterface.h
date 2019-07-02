@@ -31,13 +31,14 @@ class ListModelAssignedInterface : public ListModelDraggable
 public:
 	ListModelAssignedInterface(QMLListView* listView);
 	
-	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-	void			endResetModel() override;
-		
-	virtual void	setAvailableModel(ListModelAvailableInterface *source);
-	ListModelAvailableInterface* source() const											{ return _source; }
-	void addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
-	ListModelExtraControls* getExtraControlModel(QString colName)						{ return _extraControlsModels[colName]; }
+	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+	void							endResetModel()												override;
+	void							refresh()													override;
+
+	virtual void					setAvailableModel(ListModelAvailableInterface *source);
+	ListModelAvailableInterface*	source() const												{ return _source; }
+	void							addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
+	ListModelExtraControls*			getExtraControlModel(QString colName)						{ return _extraControlsModels[colName]; }
 	
 public slots:
 	virtual void availableTermsChanged(Terms *termsAdded, Terms *termsRemoved) {}
