@@ -44,7 +44,7 @@ FocusScope
 				return;
 			}
 
-			if (analysesModel.currentFormHeight + offset + singleButtonHeight < analysesFlickable.contentHeight)
+			if (analysesModel.currentFormHeight + offset + singleButtonHeight <= analysesFlickable.contentHeight || analysesModel.currentFormHeight + singleButtonHeight > scrollAnalyses.height)
 			{
 				//console.log("Setting contenty to offset: "+offset)
 				analysesFlickable.contentY = offset;
@@ -160,8 +160,8 @@ FocusScope
 							var previousAnalysisButtonBottom	= formsBackground.getOffset(row);
 
 							//Should we scroll the analysis a bit?
-							if(		previousAnalysisButtonBottom > analysesFlickable.contentY										// We can actually scroll up a bit if necessary
-								||	analysesFlickable.contentY > previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
+							if(		previousAnalysisButtonBottom	> analysesFlickable.contentY										// We can actually scroll up a bit if necessary
+								||	analysesFlickable.contentY		> previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
 							)
 							{
 								//console.log("Ok, size changed and we should have this analysis be visible, so calling scrollToForm!");

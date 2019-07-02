@@ -654,7 +654,6 @@ void EngineSync::cleanUpAfterClose()
 	//stopEngines();
 	pause();
 
-	resetModuleWideCastVars();
 	while(_waitingScripts.size() > 0)
 	{
 		delete _waitingScripts.front();
