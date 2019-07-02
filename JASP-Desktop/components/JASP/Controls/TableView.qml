@@ -19,6 +19,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls	2.5
+import QtQuick.Controls	2.5 as QTC
 import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
 import JASP.Theme		1.0
@@ -40,8 +41,8 @@ JASPControl
 	property alias	syncModels:		tableView.source
 	property string	modelType
 	property string	itemType:		"string"
-	property string filter:			"rep(TRUE, rowcount)"		//Used by ListModelFilteredDataEntry
-	property string colName:		"data" //Used by ListModelFilteredDataEntry
+	property string filter:			"rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
+	property string colName:		"data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol:		""
 	property string	tableType
 	property alias	model:			theView.model
@@ -143,8 +144,6 @@ JASPControl
 			JASPDoubleValidator { id: doubleValidator;	bottom: 0; decimals: 1	}
 			RegExpValidator		{ id: stringValidator							}
 
-			property bool editingAlready: false
-
 			itemDelegate: Rectangle
 			{
 				Text
@@ -167,44 +166,30 @@ JASPControl
 					z:					2
 					onClicked:
 					{
-						if(theView.editingAlready)
-						{
-							textDisplay.forceActiveFocus();
-							return;
-						}
-
 						textInput.visible			= true;
-						textInput.value				= itemText;
-						textInput.lastValidValue	= itemText;
-						theView.editingAlready		= true;
 						textInput.forceActiveFocus();
 					}
 					cursorShape:		Qt.IBeamCursor
 				}
 
-				TextField
+				QTC.TextField
 				{
 					id:					textInput
 					anchors.fill:		parent
-					fieldWidth:			parent.width
-					fieldHeight:		parent.height
 					visible:			false
-					inputType:			tableView.itemType
-					useExternalBorder:	false
-					isBound:			false
-					validator:			tableView.validator
+					text:				itemText
+					font:				Theme.font
+					leftPadding:		Theme.labelSpacing
+					padding:			Theme.jaspControlPadding
+					verticalAlignment:	Text.AlignVCenter
+					validator:			doubleValidator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:
 					{
-						tableView.itemChanged(columnIndex, rowIndex, value)
+						tableView.itemChanged(columnIndex, rowIndex, text)
 						focus = false;
 					}
-					onActiveFocusChanged:
-						if(!activeFocus)
-						{
-							visible					= false;
-							theView.editingAlready	= false;
-						}
+					onActiveFocusChanged: if(!activeFocus) visible = false;
 
 				}
 			}
