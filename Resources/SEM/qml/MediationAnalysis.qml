@@ -62,8 +62,9 @@ Form
         ColumnLayout {
             GroupBox
             {
-                CheckBox { label: qsTr("Include mean structure")      ; name: "includemeanstructure"   ; id: meanstructure }
-                CheckBox { label: qsTr("Standardized estimates")      ; name: "std" }
+                CheckBox { label: qsTr("Standardized estimates") ; name: "std" }
+                CheckBox { label: qsTr("Show lavaan syntax")     ; name: "showSyntax" }
+                CheckBox { label: qsTr("Show R-squared")         ; name: "rsquared" }
             }
             GroupBox
             {
@@ -111,25 +112,6 @@ Form
             }
         }
     }
-    
-	Section {
-        title: qsTr("Additional output")
-            GroupBox
-            {
-                title: qsTr("Additional fit measures")
-                CheckBox { label: qsTr("AIC")   ; name: "aic"   }
-                CheckBox { label: qsTr("BIC")   ; name: "bic"   }
-                CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
-                CheckBox { label: qsTr("TLI")   ; name: "tli"   }
-                CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
-                CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
-            }
-            GroupBox
-            {
-                CheckBox { label: qsTr("Show lavaan syntax")         ; name: "showSyntax" }
-            }
-
-    }
 
 	Section {
         text: qsTr("Plots")
@@ -137,36 +119,34 @@ Form
             title: "Plots"
             CheckBox { text: qsTr("Model plot")      ; name: "pathplot"   ; id: pathPlot }
             CheckBox { text: qsTr("Show parameters") ; name: "plotpars"   ; enabled: pathPlot.checked ; }
-            CheckBox { text: qsTr("Show means")      ; name: "plotmeans"  ; enabled: pathPlot.checked & meanstructure.checked ; }
         }   
     }
     
 	Section {
         text: qsTr("Advanced")
-        GridLayout {
-            GroupBox {
-                Layout.fillWidth: true
-                RadioButtonGroup {
-                    title: qsTr("Emulation")
-                    name: "mimic"
-                    RadioButton { text: qsTr("None")  ; name: "lavaan"  ; checked: true }
-                    RadioButton { text: qsTr("Mplus") ; name: "Mplus" }
-                    RadioButton { text: qsTr("EQS")   ; name: "EQS"   }
-                }
-            }
-
+        GroupBox {
+            Layout.fillWidth: true
             RadioButtonGroup {
-                title: qsTr("Estimator")
-                name: "estimator"
-                RadioButton { text: qsTr("Auto") ; name: "default"; checked: true }
-                RadioButton { text: qsTr("ML")   ; name: "ML"       }
-                RadioButton { text: qsTr("GLS")  ; name: "GLS"      }
-                RadioButton { text: qsTr("WLS")  ; name: "WLS"      }
-                RadioButton { text: qsTr("ULS")  ; name: "ULS"      }
-                RadioButton { text: qsTr("DWLS") ; name: "DWLS"     }
+                title: qsTr("Emulation")
+                name: "mimic"
+                RadioButton { text: qsTr("None")  ; name: "lavaan"  ; checked: true }
+                RadioButton { text: qsTr("Mplus") ; name: "Mplus" }
+                RadioButton { text: qsTr("EQS")   ; name: "EQS"   }
             }
         }
+
+        RadioButtonGroup {
+            title: qsTr("Estimator")
+            name: "estimator"
+            RadioButton { text: qsTr("Auto") ; name: "default"; checked: true }
+            RadioButton { text: qsTr("ML")   ; name: "ML"       }
+            RadioButton { text: qsTr("GLS")  ; name: "GLS"      }
+            RadioButton { text: qsTr("WLS")  ; name: "WLS"      }
+            RadioButton { text: qsTr("ULS")  ; name: "ULS"      }
+            RadioButton { text: qsTr("DWLS") ; name: "DWLS"     }
+        }
     }
+    
 }
 
 

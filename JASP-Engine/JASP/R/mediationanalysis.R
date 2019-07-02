@@ -27,6 +27,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Output functions
   .medParTable(jaspResults, medResult, options, errors)
+  .medRsquared(jaspResults, medResult, options, errors)
   .medPathPlot(jaspResults, medResult, options, errors)
   .medSyntax(  jaspResults, medResult, options, errors)
 
@@ -74,7 +75,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   medResult <- try(lavaan::sem(
     model           = .medToLavMod(options),
     data            = dataset,
-    meanstructure   = options$includemeanstructure,
     se              = ifelse(options$se == "bootstrap", "standard", options$se),
     mimic           = options$mimic,
     estimator       = options$estimator,
@@ -226,6 +226,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   jaspResults[["parest"]] <- pecont <- createJaspContainer("Parameter estimates")
   pecont$dependOn(options = c("ciWidth", "bootCItype"), optionsFromObject = jaspResults[["stateMedResult"]])
+  pecont$position <- 0
 
   if (is.null(medResult)) {
     pecont[["dir"]] <- dirtab <- createJaspTable(title = "Direct effects")
@@ -413,6 +414,22 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
 }
 
+.medRsquared <- function(jaspResults, medResult, options, errors) {
+  if (!options$rsquared || !is.null(jaspResults[["rsquared"]])) return()
+  
+  jaspResults[["rsquared"]] <- tabr2 <- createJaspTable("R-Squared")
+  tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
+  tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
+  tabr2$setExpectedSize(rows = 1, cols = 2)
+  tabr2$dependOn(options = "rsquared", optionsFromObject = jaspResults[["stateMedResult"]])
+  tabr2$position <- 1
+  if (is.null(medResult)) return()
+  
+  r2res              <- lavaan::inspect(medResult, "r2")
+  tabr2[["__var__"]] <- .unv(names(r2res))
+  tabr2[["rsq"]]     <- r2res
+}
+
 .medPathPlot <- function(jaspResults, medResult, options, errors) {
   if (!options$pathplot || !is.null(errors)) return()
 
@@ -460,6 +477,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults[["plot"]] <- createJaspPlot(pp, title = "Path plot", width = 600, height = 400)
   jaspResults[["plot"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]], 
                                  options = c("pathplot", "plotpars"))
+  jaspResults[["plot"]]$position <- 2
 }
 
 .medPathLayout <- function(n, min = -1, max = 1) {
@@ -474,6 +492,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
   semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
+  print(semPlotMod@Pars$lhs )
   semPlotMod@Pars$lhs <- .unv(semPlotMod@Pars$lhs)
   semPlotMod@Pars$rhs <- .unv(semPlotMod@Pars$rhs)
 
@@ -481,9 +500,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .medPlotPostProcess <- function(plt, options) {
-  confounds_idx <- which(plt$graphAttributes$Nodes$names %in% options$confounds)
-  predictor_idx <- which(plt$graphAttributes$Nodes$names %in% options$predictor)
-  dependent_idx <- which(plt$graphAttributes$Nodes$names %in% options$dependent)
+  node_names <- names(plt$graphAttributes$Nodes$names)
+  confounds_idx <- which(node_names %in% options$confounds)
+  predictor_idx <- which(node_names %in% options$predictor)
+  dependent_idx <- which(node_names %in% options$dependent)
   
   # remove focus from confounder edges
   confound_edges <- plt$Edgelist$from %in% confounds_idx
@@ -502,5 +522,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!options$showSyntax || !is.null(errors)) return()
   jaspResults[["syntax"]] <- createJaspHtml(.medToLavMod(options, FALSE), class = "jasp-code", title = "Model syntax")
   jaspResults[["syntax"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]])
+  jaspResults[["syntax"]]$position <- 3
 }
 
