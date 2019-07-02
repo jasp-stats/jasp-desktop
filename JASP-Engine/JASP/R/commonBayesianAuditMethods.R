@@ -299,20 +299,20 @@
   } else {
 
     if(!options[["priorPlotExpectedPosterior"]]){
-      xseq <- seq(0, jaspResults[["N"]]$object, 1)[1:ceiling(options[["priorPlotLimit"]] * jaspResults[["N"]]$object)]
+      xseq <- seq(0, jaspResults[["N"]]$object - planningResult[["n"]], 1)[1:ceiling(options[["priorPlotLimit"]] * (jaspResults[["N"]]$object - planningResult[["n"]]))]
       d <- data.frame(
           x = xseq,
-          y = .dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]])[1:ceiling(options[["priorPlotLimit"]] * jaspResults[["N"]]$object)],
+          y = .dBetaBinom(x = 0:(jaspResults[["N"]]$object - planningResult[["n"]]), N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]])[1:ceiling(options[["priorPlotLimit"]] * jaspResults[["N"]]$object - planningResult[["n"]])],
           type = c(rep("Prior", length(xseq)))
       )
     } else {
         k   <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = round(options[["expectedPercentage"]] * planningResult[["n"]], 2), no = round(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * planningResult[["n"]], 2))
 
-        xseq <- seq(0, jaspResults[["N"]]$object, 1)[1:ceiling(options[["priorPlotLimit"]] * jaspResults[["N"]]$object)]
+        xseq <- seq(0, jaspResults[["N"]]$object - planningResult[["n"]], 1)[1:ceiling(options[["priorPlotLimit"]] * (jaspResults[["N"]]$object - planningResult[["n"]]))]
         d <- data.frame(
             x = rep(xseq, 2),
-            y = c(.dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]])[1:ceiling(options[["priorPlotLimit"]] * jaspResults[["N"]]$object)] ,
-                  .dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]] + k, shape2 = planningResult[["priorB"]] + (planningResult[["n"]] - k))[1:ceiling(options[["priorPlotLimit"]] * jaspResults[["N"]]$object)]),
+            y = c(.dBetaBinom(x = 0:(jaspResults[["N"]]$object - planningResult[["n"]]), N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]])[1:ceiling(options[["priorPlotLimit"]] * (jaspResults[["N"]]$object - planningResult[["n"]]))] ,
+                  .dBetaBinom(x = 0:(jaspResults[["N"]]$object - planningResult[["n"]]), N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]] + k, shape2 = planningResult[["priorB"]] + (planningResult[["n"]] - k))[1:ceiling(options[["priorPlotLimit"]] * (jaspResults[["N"]]$object - planningResult[["n"]]))]),
             type = c(rep("Prior", length(xseq)), rep("Expected Posterior", length(xseq)))
         )
         # Reorder factor levels to display in legend
@@ -353,7 +353,7 @@
         }
         p <- p + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(size = 15, shape = 22, fill = rgb(0, 1, 0.5, .7), stroke = 2, color = "black")))
 
-        df <- data.frame(x = 0:jaspResults[["N"]]$object, y = .dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]]))
+        df <- data.frame(x = 0:(jaspResults[["N"]]$object - planningResult[["n"]]), y = .dBetaBinom(x = 0:(jaspResults[["N"]]$object - planningResult[["n"]]), N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]]))
         lim <- .qBetaBinom(p = options[["confidence"]], N = jaspResults[["N"]]$object - planningResult[["n"]], shape1 = planningResult[["priorA"]], shape2 = planningResult[["priorB"]])
         df <- df[1:lim, ]
         p <- p + ggplot2::geom_bar(data = df, stat="identity", fill = rgb(0, 1, 0.5, .7))
@@ -824,7 +824,7 @@
     mle                     <- 0
 
     if(options[["estimator"]] == "coxAndSnellBound"){
-        mle <- paste0(round(sum(evaluationResult[["z"]]) / evaluationResult[["n"]], 4) * 100, "%")
+        mle <- paste0(round(evaluationResult[["mf"]] * ( (evaluationResult[["df1"]] - 2)  / evaluationResult[["df1"]] ) * ( evaluationResult[["df2"]] / (evaluationResult[["df2"]] + 2) ), 4) * 100, "%")
     } else if(options[["estimator"]] == "regressionBound"){
         mle <- paste(jaspResults[["valutaTitle"]]$object, round(evaluationResult[["mleTable"]] * total_data_value, 2))
     }

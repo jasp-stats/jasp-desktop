@@ -227,8 +227,10 @@
       mle <- (evaluationResult[["posteriorA"]] - 1) / (evaluationResult[["posteriorA"]] + evaluationResult[["posteriorB"]] - 2)
     }
   } else {
-    if(options[["estimator"]] == "stringerBound" || options[["estimator"]] == "coxAndSnellBound"){
+    if(options[["estimator"]] == "stringerBound"){
       mle <- sum(evaluationResult[["z"]]) / evaluationResult[["n"]]
+    } else if(options[["estimator"]] == "coxAndSnellBound") {
+      mle <- evaluationResult[["mf"]] * ( (evaluationResult[["df1"]] - 2)  / evaluationResult[["df1"]] ) * ( evaluationResult[["df2"]] / (evaluationResult[["df2"]] + 2) ) 
     } else {
       mle <- abs(evaluationResult[["mleTable"]])
     }

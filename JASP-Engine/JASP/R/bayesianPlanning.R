@@ -58,7 +58,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
     materialityLevelLabel         <- base::switch(options[["materiality"]], "materialityRelative" = paste0(round(options[["materialityPercentage"]], 4) * 100, "%"), "materialityAbsolute" = paste(jaspResults[["valutaTitle"]]$object, format(options[["materialityValue"]], scientific = FALSE)))
     expected.errors <- max.errors <- requiredSampleSize <- materiality <- 0
     priorA <- priorB <- 1
-    if(!is.null(jaspResults[["planningResult"]])){
+    if(!is.null(jaspResults[["planningResult"]]) && !planningContainer$getError()){
       requiredSampleSize <- planningResult[["n"]]
       expected.errors   <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = paste0(round(options[["expectedPercentage"]] * 100, 2), "%"), no = paste(jaspResults[["valutaTitle"]]$object, options[["expectedNumber"]]))
       max.errors        <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = ceiling(options[["expectedPercentage"]] * planningResult[["n"]]), no = paste(jaspResults[["valutaTitle"]]$object, options[["expectedNumber"]] + 1))
