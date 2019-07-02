@@ -23,13 +23,13 @@
 			Indeed, the primary motivation for JASP is to make it easier for statistical practitioners to conduct Bayesian analyses.
 		</p>
 	</description>
-	<translation/> <!-- translation not yet supported -->
-  <screenshots>
+	<translation/>
+	<screenshots>
 		<screenshot type="default">
-			<image>http://static.jasp-stats.org/RPkgs/JASP-screenshot-0.png</image>
-			<caption>Shows the dataviewer of JASP flanked with the options and output for the Independt Samples T-Test</caption>
-    </screenshot>
-  </screenshots>
+			<caption xml:lang="en-GB">Shows the dataviewer of JASP flanked with the options and output for the Independent Samples T-Test</caption>
+			<image>https://static.jasp-stats.org/RPkgs/JASP-screenshot-0.png</image>
+		</screenshot>
+	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
