@@ -118,7 +118,9 @@
 
         createTable("MacOS", "./MacOS");
 
-        createTable("Windows", "./Windows");
+        createTable("Windows 64bit", "./Windows");
+        createTable("Windows 32bit", "./Windows32");
+        
         
       ?>
       
