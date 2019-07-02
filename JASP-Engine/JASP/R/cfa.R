@@ -37,13 +37,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   cfaResult <- .cfaComputeResults(jaspResults, dataset, options, errors)
 
   # Output tables
-  .cfaContainerMain(  jaspResults, options, cfaResult) # Main table container
-  .cfaTableMain(      jaspResults, options, cfaResult) # Main table with fit info
-  .cfaTableFitIndices(jaspResults, options, cfaResult) # Additional fit indices
-  .cfaTableParEst(    jaspResults, options, cfaResult) # Parameter estimates tables
-  .cfaTableModIndices(jaspResults, options, cfaResult) # Modification Indices
-  .cfaTableImpliedCov(jaspResults, options, cfaResult) # Implied Covariance matrix
-  .cfaTableResCov(    jaspResults, options, cfaResult) # Residual Covariance Matrix
+  .cfaContainerMain(   jaspResults, options, cfaResult) # Main table container
+  .cfaTableMain(       jaspResults, options, cfaResult) # Main table with fit info
+  .cfaTableFitMeasures(jaspResults, options, cfaResult) # Additional fit indices
+  .cfaTableRsquared(   jaspResults, options, cfaResult) # R-squared of indicators
+  .cfaTableParEst(     jaspResults, options, cfaResult) # Parameter estimates tables
+  .cfaTableModIndices( jaspResults, options, cfaResult) # Modification Indices
+  .cfaTableImpliedCov( jaspResults, options, cfaResult) # Implied Covariance matrix
+  .cfaTableResCov(     jaspResults, options, cfaResult) # Residual Covariance Matrix
 
   # Output plots
   .cfaInitPlots( jaspResults, options, cfaResult)      # Create plots container
@@ -374,32 +375,102 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.cfaTableFitIndices <- function(jaspResults, options, cfaResult) {
+.cfaTableRsquared <- function(jaspResults, options, cfaResult) {
+  if (!options$rsquared || !is.null(jaspResults[["rsquared"]])) return()
+  
+  jaspResults[["maincontainer"]][["rsquared"]] <- tabr2 <- createJaspTable("R-Squared")
+  tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
+  tabr2$setExpectedSize(rows = 1, cols = 1)
+  tabr2$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
+                   "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "rsquared"))
   if (is.null(cfaResult)) return()
+  
+  r2res <- lavaan::inspect(cfaResult[["lav"]], "r2")
+  
+  if (options$groupvar != "") {
+    # add columns with Rsq overtitle
+    tabr2[["__var__"]] <- .unv(names(r2res[[1]]))
+    lvls <- names(r2res)
+    for (lvl in lvls) {
+      tabr2$addColumnInfo(name = lvl, title = lvl, overtitle = "R\u00B2", type = "number", format = "sf:4;dp:3")
+      tabr2[[lvl]] <- r2res[[lvl]]
+    }
+  } else {
+    tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
+    tabr2[["__var__"]] <- .unv(names(r2res))
+    tabr2[["rsq"]]     <- r2res
+  }
+}
 
-  fitsel <- unlist(options[c("aic", "bic", "srmr", "tli", "cfi", "rmsea")])
-  if (!any(fitsel) || !is.null(jaspResults[["maincontainer"]][["fits"]])) return()
-
-  # Prep table
-  jaspResults[["maincontainer"]][["fits"]] <- fm <- createJaspTable("Additional fit indices")
-
-  fm$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
-                       "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "aic", "bic", "srmr",
-                       "tli", "cfi", "rmsea"))
-
-  # add column info
-  if (options$aic)   fm$addColumnInfo(name = "aic",   title = "AIC",   type = "number", format = "sf:4")
-  if (options$bic)   fm$addColumnInfo(name = "bic",   title = "BIC",   type = "number", format = "sf:4")
-  if (options$srmr)  fm$addColumnInfo(name = "srmr",  title = "SRMR",  type = "number", format = "sf:4")
-  if (options$tli)   fm$addColumnInfo(name = "tli",   title = "TLI",   type = "number", format = "sf:4")
-  if (options$cfi)   fm$addColumnInfo(name = "cfi",   title = "CFI",   type = "number", format = "sf:4")
-  if (options$rmsea) fm$addColumnInfo(name = "rmsea", title = "RMSEA", type = "number", format = "sf:4")
-
-
-  # Set data
-  fmdat <- lavaan::fitMeasures(cfaResult[["lav"]])
-  fmdat <- fmdat[c("aic", "bic", "srmr", "tli", "cfi", "rmsea")]
-  fm$setData(fmdat[fitsel])
+.cfaTableFitMeasures <- function(jaspResults, options, cfaResult) {
+  if (!options$additionalfits || !is.null(jaspResults[["maincontainer"]][["fits"]])) return()
+  jaspResults[["maincontainer"]][["fits"]] <- fitms <- createJaspContainer("Additional fit measures")
+  fitms$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
+                   "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "additionalfits"))
+  
+  # Fit indices
+  fitms[["indices"]] <- fitin <- createJaspTable("Fit indices")
+  fitin$addColumnInfo(name = "index", title = "Index", type = "string")
+  fitin$addColumnInfo(name = "value", title = "Value", type = "number", format = "sf:4;dp:3")
+  fitin$setExpectedSize(rows = 1, cols = 2)
+  
+  # information criteria
+  fitms[["incrits"]] <- fitic <- createJaspTable("Information criteria")
+  fitic$addColumnInfo(name = "index", title = "",      type = "string")
+  fitic$addColumnInfo(name = "value", title = "Value", type = "number", format = "sf:4;dp:3")
+  fitic$setExpectedSize(rows = 1, cols = 2)
+  
+  # other fit measures
+  fitms[["others"]] <- fitot <- createJaspTable("Other fit measures")
+  fitot$addColumnInfo(name = "index", title = "Metric", type = "string")
+  fitot$addColumnInfo(name = "value", title = "Value",  type = "number", format = "sf:4;dp:3")
+  fitot$setExpectedSize(rows = 1, cols = 2)
+  
+  if (is.null(cfaResult)) return() 
+  
+  # actually compute the fit measures
+  fm <- lavaan::fitmeasures(cfaResult[["lav"]])
+  
+  # Fit indices
+  fitin[["index"]] <- c(
+    "Comparative Fit Index (CFI)",
+    "Tucker-Lewis Index (TLI)",
+    "Bentler-Bonett Non-normed Fit Index (NNFI)",
+    "Bentler-Bonett Normed Fit Index (NFI)",
+    "Parsimony Normed Fit Index (PNFI)",
+    "Bollen's Relative Fit Index (RFI)",
+    "Bollen's Incremental Fit Index (IFI)",
+    "Relative Noncentrality Index (RNI)"
+  )
+  fitin[["value"]] <- fm[c("cfi", "tli", "nnfi", "nfi", "pnfi", "rfi", "ifi", "rni")]
+  
+  # information criteria
+  fitic[["index"]] <- c(
+    "Log-likelihood",
+    "Number of free parameters", 
+    "Akaike (AIC)",
+    "Bayesian (BIC)", 
+    "Sample-size adjusted Bayesian (SSABIC)"
+  )
+  fitic[["value"]] <- fm[c("logl", "npar", "aic", "bic", "bic2")]
+  
+  # other fitmeasures
+  fitot[["index"]] <- c(
+    "Root mean square error of approximation (RMSEA)", 
+    "RMSEA 90% CI lower bound",
+    "RMSEA 90% CI upper bound",
+    "RMSEA p-value", 
+    "Standardized root mean square residual (SRMR)", 
+    "Hoelter's critical N (\u03B1 = .05)",
+    "Hoelter's critical N (\u03B1 = .01)",
+    "Goodness of fit index (GFI)", 
+    "McDonald fit index (MFI)",
+    "Expected cross validation index (ECVI)"
+  )
+  fitot[["value"]] <- fm[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue", 
+                           "srmr", "cn_05", "cn_01", "gfi", "mfi", "ecvi")]
+  
+  return()
 }
 
 .cfaTableParEst <- function(jaspResults, options, cfaResult) {
