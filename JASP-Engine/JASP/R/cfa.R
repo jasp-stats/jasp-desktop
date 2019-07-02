@@ -376,7 +376,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .cfaTableRsquared <- function(jaspResults, options, cfaResult) {
-  if (!options$rsquared || !is.null(jaspResults[["rsquared"]])) return()
+  if (!options$rsquared || !is.null(jaspResults[["maincontainer"]][["rsquared"]])) return()
   
   jaspResults[["maincontainer"]][["rsquared"]] <- tabr2 <- createJaspTable("R-Squared")
   tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
