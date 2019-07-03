@@ -178,7 +178,15 @@ FocusScope
 				{
 					id:				analysesColumn
 					width:			analysesFlickable.width
-					spacing:		1
+					spacing:		0
+
+					move: Transition
+					{
+						// This animation may interfere during the Analysis expanding animation.
+						// So ensure that it is enabled only when an analysis is dragging
+						enabled: analysesModel.moving
+						NumberAnimation { properties: "y"; easing.type: Easing.OutQuad }
+					}
 
 					Repeater
 					{
@@ -188,10 +196,8 @@ FocusScope
 						delegate: AnalysisFormExpander
 						{
 							myIndex:				index
-							myID:					model.analysisID
 							myAnalysis:				model.analysis
 							formQmlUrl:				model.formPath
-							background:				formsBackground
 							backgroundFlickable:	analysesFlickable
 						}
 					}

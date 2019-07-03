@@ -1610,3 +1610,10 @@ void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
 	_downloadNewJASPUrl = downloadNewJASPUrl;
 	emit downloadNewJASPUrlChanged(_downloadNewJASPUrl);
 }
+
+void MainWindow::moveAnalysesResults(Analysis* fromAnalysis, int index)
+{
+	Analysis* toAnalysis = _analyses->getAnalysisBeforeMoving(size_t(index));
+	if (fromAnalysis && toAnalysis && fromAnalysis != toAnalysis)
+		_resultsJsInterface->moveAnalyses(fromAnalysis->id(), toAnalysis->id());
+}
