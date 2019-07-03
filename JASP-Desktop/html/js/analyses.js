@@ -112,6 +112,30 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.analyses.forEach(function(analysis) {analysis.render();});
 	},
 
+	move: function(fromId, toId) {
+		var fromIndex = -1, toIndex = -1
+		for (var i = 0; i < this.analyses.length; i++) {
+			if (this.analyses[i].model.get("id") === fromId)
+				fromIndex = i
+			if (this.analyses[i].model.get("id") === toId)
+				toIndex = i
+		}
+		if (fromIndex >= 0 && toIndex >= 0 && fromIndex != toIndex) {
+			var fromAnalysis = this.analyses[fromIndex]
+			var toAnalysis = this.analyses[toIndex]
+			this.analyses.splice(toIndex, 0, this.analyses.splice(fromIndex, 1)[0])
+			this.views.splice(toIndex + 1, 0, this.views.splice(fromIndex + 1, 1)[0])
+
+			fromAnalysis.$el.slideUp(200, function () {
+				if (toIndex > fromIndex)
+					toAnalysis.$el.after(fromAnalysis.$el)
+				else
+					toAnalysis.$el.before(fromAnalysis.$el)
+				fromAnalysis.$el.slideDown(200)
+			})
+		}
+	},
+
 	getAllUserData: function () {
 		var notes = [];
 		for (var i = 0; i < this.analyses.length; i++) {

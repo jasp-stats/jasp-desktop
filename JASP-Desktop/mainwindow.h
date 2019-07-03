@@ -127,7 +127,7 @@ public slots:
 	void	showLogFolder();
 
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
-
+	void	moveAnalysesResults(Analysis* fromAnalysis, int index);
 
 private:
 	void makeConnections();

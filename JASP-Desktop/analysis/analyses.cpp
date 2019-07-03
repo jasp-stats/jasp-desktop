@@ -454,6 +454,31 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
+void Analyses::move(int fromIndex, int toIndex)
+{
+	int size = int(_orderedIds.size());
+	if (fromIndex < 0 || toIndex < 0)
+	{
+		Log::log() << "Index in Analyses swaping negative!" << std::flush;
+		return;
+	}
+	if (fromIndex >= size || toIndex >= size)
+	{
+		Log::log() << "Index in Analyses swaping too big: " << fromIndex << ", " << toIndex << ", size: " << _orderedIds.size();
+		return;
+	}
+	if (fromIndex == toIndex)
+		return;
+
+	size_t fromId = _orderedIds[size_t(fromIndex)];
+	if (beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex > fromIndex ? (toIndex + 1) : toIndex))
+	{
+		_orderedIds.erase(_orderedIds.begin() + fromIndex);
+		_orderedIds.insert(_orderedIds.begin() + toIndex, fromId);
+		endMoveRows();
+	}
+}
+
 void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
@@ -589,6 +614,26 @@ void Analyses::setVisible(bool visible)
 		if(!_visible)		emit unselectAnalysisInResults();
 		else				emit showAnalysisInResults(_orderedIds[currentAnalysisIndex()]);
 	}
+}
+
+void Analyses::setMoving(bool moving)
+{
+	if (_moving == moving)
+		return;
+
+	_moving = moving;
+
+	if (moving)
+		_orderedIdsBeforeMoving = _orderedIds;
+	emit movingChanged(_moving);
+}
+
+Analysis* Analyses::getAnalysisBeforeMoving(size_t index)
+{
+	Analysis* result = nullptr;
+	if (index >= 0 && index < _orderedIdsBeforeMoving.size())
+		result = _analysisMap.at(_orderedIdsBeforeMoving[index]);
+	return result;
 }
 
 void Analyses::analysisTitleChangedInResults(int id, QString title)

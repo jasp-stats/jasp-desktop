@@ -44,6 +44,10 @@ $(document).ready(function () {
 		analyses.reRender();
 	}
 
+	window.moveAnalyses = function (fromId, toId) {
+		analyses.move(fromId, toId);
+	}
+
 	window.refreshEditedImage = function(id, results) {
 		var analysis = analyses.getAnalysis(id);
 		if (analysis !== undefined) {

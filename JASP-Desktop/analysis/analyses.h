@@ -38,6 +38,7 @@ class Analyses : public QAbstractListModel
 	Q_PROPERTY(double	currentFormHeight		READ currentFormHeight		WRITE setCurrentFormHeight		NOTIFY currentFormHeightChanged)
 	Q_PROPERTY(double	currentFormPrevH		READ currentFormPrevH		WRITE setCurrentFormPrevH		NOTIFY currentFormPrevHChanged)
 	Q_PROPERTY(bool		visible					READ visible				WRITE setVisible				NOTIFY visibleChanged)
+	Q_PROPERTY(bool		moving					READ moving					WRITE setMoving					NOTIFY movingChanged)
 
 
 	friend class EngineSync;
@@ -94,7 +95,9 @@ public:
 	int						currentAnalysisIndex()										const			{ return _currentAnalysisIndex;	}
 	double					currentFormHeight()											const			{ return _currentFormHeight;	}
 	bool					visible()													const			{ return _visible;				}
-	double					currentFormPrevH()											const			{ return _currentFormPrevH;	}
+	bool					moving()													const			{ return _moving;				}
+	double					currentFormPrevH()											const			{ return _currentFormPrevH;		}
+	Analysis*				getAnalysisBeforeMoving(size_t index);
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -111,6 +114,7 @@ public slots:
 	void rCodeReturned(QString result, int requestId);
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
+	void setMoving(bool moving);
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
@@ -118,7 +122,7 @@ public slots:
 	void analysisTitleChangedInResults(int id, QString title);
 	void refreshAvailableVariables();
 	void setCurrentFormPrevH(double currentFormPrevH);
-
+	void move(int fromIndex, int toIndex);
 
 signals:
 	void analysesUnselected();
@@ -141,6 +145,7 @@ signals:
 	void currentAnalysisIndexChanged(	int			currentAnalysisIndex);
 	void currentFormHeightChanged(		double		currentFormHeight);
 	void visibleChanged(				bool		visible);
+	void movingChanged(					bool		moving);
 	void emptyQMLCache();
 	void dataSetChanged();
 	void dataSetColumnsChanged();
@@ -164,6 +169,7 @@ private:
 private:
 	 std::map<size_t, Analysis*>	_analysisMap;
 	 std::vector<size_t>			_orderedIds;
+	 std::vector<size_t>			_orderedIdsBeforeMoving;
 
 	 size_t							_nextId					= 0;
 	 int							_currentAnalysisIndex	= -1;
@@ -171,6 +177,7 @@ private:
 	 DynamicModules*				_dynamicModules			= nullptr;
 	 double							_currentFormHeight		= 0;
 	 bool							_visible				= false;
+	 bool							_moving					= false;
 
 	 static int								_scriptRequestID;
 	 QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;

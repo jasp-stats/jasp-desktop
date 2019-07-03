@@ -264,6 +264,11 @@ void ResultsJsInterface::removeAnalyses()
 	emit runJavaScript("window.removeAllAnalyses()");
 }
 
+void ResultsJsInterface::moveAnalyses(size_t fromId, size_t toId)
+{
+	emit runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
+}
+
 Json::Value &ResultsJsInterface::getResultsMeta()
 {
 	QEventLoop loop;
