@@ -305,7 +305,7 @@
   }
 
   if (anyNuisance) {
-    message <- paste("All models include", paste0(.unv(nuisance), collapse = ", "))
+    message <- paste("All models include", paste0(.unvf(nuisance), collapse = ", "))
     modelTable$addFootnote(message = message, symbol = "<em>Note.</em>")
   }
 
