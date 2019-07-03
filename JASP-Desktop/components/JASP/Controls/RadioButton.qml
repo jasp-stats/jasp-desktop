@@ -116,6 +116,14 @@ JASPControl
 	GridLayout
 	{
 		id:				childControlsArea
+		anchors
+		{
+			top:		childrenOnSameRow ? control.top : control.bottom
+			topMargin:	childrenOnSameRow ? 0 : Theme.rowGroupSpacing
+			left:		childrenOnSameRow ? control.right : control.left
+			leftMargin: childrenOnSameRow ? Theme.columnGroupSpacing : (indentChildren ? childControlsArea.childControlsPadding : 0)
+		}
+
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
 		columns:		childrenOnSameRow ? children.length : 1
@@ -131,18 +139,10 @@ JASPControl
 		{
 			if (childrenOnSameRow)
 			{
-				childControlsArea.x = childControlsArea.childControlsPadding
-				childControlsArea.anchors.top = control.top
 				if (childControlsArea.implicitHeight < control.implicitHeight)
 					childControlsArea.anchors.topMargin = control.padding - 1 // border width
-			}
-			else
-			{
-				childControlsArea.anchors.top = control.bottom
-				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
-				childControlsArea.anchors.left = control.left
-				childControlsArea.anchors.leftMargin = indentChildren ? childControlsArea.childControlsPadding : 0
 			}
 		}
 	}
 }
+

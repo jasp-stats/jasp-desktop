@@ -279,13 +279,13 @@ JASPControl
 
 		Rectangle
 		{
-			id:			dropLine
-			height:		2
-			width:		parent.width
-			anchors.top: parent.top
-			anchors.left: parent.left
-			color:		Theme.itemSelectedColor
-			visible:	false			
+			id:				dropLine
+			height:			2
+			width:			parent ? parent.width : 0
+			anchors.top:	parent ? parent.top : undefined
+			anchors.left:	parent ? parent.left : undefined
+			color:			Theme.itemSelectedColor
+			visible:		false
 		}
 
 		SortMenuButton
