@@ -119,7 +119,7 @@ Form
 				id: 						variableSelectionTitle
 				anchors.horizontalCenter: 	parent.horizontalCenter
 				text: 						qsTr("<b>Variable definition</b>")
-				font:						Theme.fontGroupTitle
+				font:						Theme.fontLabel
 			}
 		}
 
