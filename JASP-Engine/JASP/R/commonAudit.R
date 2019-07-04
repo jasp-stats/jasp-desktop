@@ -537,7 +537,7 @@
           ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
           ggplot2::coord_flip() +
           ggplot2::xlab("") +
-          ggplot2::ylab("Sample size") +
+          ggplot2::ylab("Required sample size") +
           ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(hjust = 0)) +
           ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb")) +
           ggplot2::labs(fill = "") +
