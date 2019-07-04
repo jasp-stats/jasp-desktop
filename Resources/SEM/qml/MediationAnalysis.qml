@@ -49,7 +49,7 @@ Form
         }
         AssignedVariablesList
         {
-            title: "Confounders"
+            title: "Background confounders"
             name:  "confounds"
             allowedColumns: []
         }
@@ -103,9 +103,9 @@ Form
                         label: qsTr("Type")
                         name: "bootCItype"
                         values: [
+                            { label: qsTr("Bias-corrected percentile"), value: "bca.simple"   },
                             { label: qsTr("Percentile"),                value: "perc"         },
-                            { label: qsTr("Normal theory"),             value: "norm"         },
-                            { label: qsTr("Bias-corrected percentile"), value: "bca.simple"   }
+                            { label: qsTr("Normal theory"),             value: "norm"         }
                         ]
                     }
                 }
@@ -134,16 +134,18 @@ Form
                 RadioButton { text: qsTr("EQS")   ; name: "EQS"   }
             }
         }
-
-        RadioButtonGroup {
-            title: qsTr("Estimator")
-            name: "estimator"
-            RadioButton { text: qsTr("Auto") ; name: "default"; checked: true }
-            RadioButton { text: qsTr("ML")   ; name: "ML"       }
-            RadioButton { text: qsTr("GLS")  ; name: "GLS"      }
-            RadioButton { text: qsTr("WLS")  ; name: "WLS"      }
-            RadioButton { text: qsTr("ULS")  ; name: "ULS"      }
-            RadioButton { text: qsTr("DWLS") ; name: "DWLS"     }
+        GroupBox {
+            Layout.fillWidth: true
+            RadioButtonGroup {
+                title: qsTr("Estimator")
+                name: "estimator"
+                RadioButton { text: qsTr("Auto") ; name: "default"; checked: true }
+                RadioButton { text: qsTr("ML")   ; name: "ML"       }
+                RadioButton { text: qsTr("GLS")  ; name: "GLS"      }
+                RadioButton { text: qsTr("WLS")  ; name: "WLS"      }
+                RadioButton { text: qsTr("ULS")  ; name: "ULS"      }
+                RadioButton { text: qsTr("DWLS") ; name: "DWLS"     }
+            }
         }
     }
     

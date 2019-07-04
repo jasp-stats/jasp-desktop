@@ -256,7 +256,23 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   pe <- lavaan::parameterEstimates(medResult, boot.ci.type = options$bootCItype, 
                                    level = options$ciWidth)
-
+  
+  se_type <- switch(options$se,
+    "bootstrap" = "Delta method",
+    "standard"  = "Delta method",
+    "robust"    = "Robust"
+  )
+  ci_type <- switch(options$se,
+    "bootstrap" = switch(options$bootCItype, 
+      "perc"       = "percentile bootstrap", 
+      "norm"       = "normal theory bootstrap", 
+      "bca.simple" = "bias-corrected percentile bootstrap"
+    ),
+    "standard"  = "normal theory",
+    "robust"    = "robust"
+  )
+  se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
+  
   ## direct effects
   if (options[["showdir"]]) {
     pecont[["dir"]] <- dirtab <- createJaspTable(title = "Direct effects")
@@ -273,7 +289,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    
+    dirtab$addFootnote(se_message)
     pe_dir <- pe[substr(pe$label, 1, 1) == "c", ]
     dirtab[["lhs"]]      <- .unv(pe_dir$rhs)
     dirtab[["op"]]       <- rep("\u2192", nrow(pe_dir))
@@ -305,7 +321,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    
+    indtab$addFootnote(se_message)
     pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
     
     indtab[["x"]]        <- .unv(rep(options$predictor, each = length(options$mediators) * length(options$dependent)))
@@ -337,7 +353,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-
+    ttitab$addFootnote(se_message)
     pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
 
     ttitab[["lhs"]]      <- .unv(rep(options$predictor, each = length(options$dependent)))
@@ -367,6 +383,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+    tottab$addFootnote(se_message)
     pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
     
     tottab[["lhs"]]      <- .unv(rep(options$predictor, length(options$dependent)))
@@ -396,6 +413,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+    restab$addFootnote(se_message)
     pe_res <- pe[pe$op == "~~" &
                    pe$lhs != pe$rhs &
                    !.unv(pe$lhs) %in% options$predictor &
@@ -452,13 +470,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   } else {
     conf_l <- NULL
   }
-
-
   # creat a qgraph object using semplot
   png()
   pp <- semPlot::semPaths(
     object         = .medLavToPlotObj(medResult),
     layout         = rbind(deps_l, medi_l, pred_l, conf_l),
+    intercepts     = FALSE,
     reorder        = FALSE,
     whatLabels     = ifelse(options$plotpars, "par", "name"),
     edge.color     = "black",
@@ -492,9 +509,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
   semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
-  print(semPlotMod@Pars$lhs )
-  semPlotMod@Pars$lhs <- .unv(semPlotMod@Pars$lhs)
-  semPlotMod@Pars$rhs <- .unv(semPlotMod@Pars$rhs)
+  semPlotMod@Pars$lhs <- vapply(semPlotMod@Pars$lhs, function(v) ifelse(nchar(v) > 0, .unv(v), ""), "")
+  semPlotMod@Pars$rhs <- vapply(semPlotMod@Pars$rhs, function(v) ifelse(nchar(v) > 0, .unv(v), ""), "")
 
   return(semPlotMod)
 }
