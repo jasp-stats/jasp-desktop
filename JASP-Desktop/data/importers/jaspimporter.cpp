@@ -195,7 +195,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 				Labels &labels = column.labels();
 				labels.clear();
-				int index = 1;
+				int index = 0;
 
 				for (Json::Value keyValueFilterTrip : labelsDesc)
 				{
