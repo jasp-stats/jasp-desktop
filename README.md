@@ -7,6 +7,7 @@
   <a target="_blank" href="https://jasp-stats.org/download/">Download</a> |
   <a target="_blank" href="https://jasp-stats.org/how-to-use-jasp/">How to use</a> |
   <a target="_blank" href="https://jasp-stats.org/blog/">Blog</a> |
+  <a target="_blank" href="http://github.com/jasp-stats/jasp-issues/issues">Issues</a> |
   <a target="_blank" href="https://jasp-stats.org/contact/">Contact</a>
 </h5>
 
