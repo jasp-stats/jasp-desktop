@@ -183,8 +183,10 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 			}
 		}
 
-		do {
-			try {
+		do
+		{
+			try
+			{
 				Column &column = packageData->dataSet()->column(i);
 				Column::ColumnType columnType = parseColumnType(columnDesc["measureType"].asString());
 
@@ -194,18 +196,19 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				Labels &labels = column.labels();
 				labels.clear();
 				int index = 1;
-				for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
+
+				for (Json::Value keyValueFilterTrip : labelsDesc)
 				{
-					Json::Value keyValueFilterPair = *iter;
-					int zero		= 0; // ???
-					int key			= keyValueFilterPair.get(zero, Json::nullValue).asInt();
-					std::string val = keyValueFilterPair.get(1, Json::nullValue).asString();
-					bool fil		= keyValueFilterPair.get(2, true).asBool();
+
+					int key			= keyValueFilterTrip.get(int(0),	Json::nullValue).asInt();
+					std::string val = keyValueFilterTrip.get(1,			Json::nullValue).asString();
+					bool fil		= keyValueFilterTrip.get(2,			true).asBool();
 					int labelValue	= key;
+
 					if (columnType == Column::ColumnTypeNominalText)
 					{
-						labelValue = index;
-						mapValues[key] = labelValue;
+						labelValue		= index;
+						mapValues[key]	= labelValue;
 					}
 
 					labels.add(labelValue, val, fil);
@@ -217,10 +220,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				{
 					for (Json::Value keyValuePair : orgStringValuesDesc)
 					{
-						int zero		= 0; // ???
-						int key			= keyValuePair.get(zero, Json::nullValue).asInt();
-						std::string val = keyValuePair.get(1, Json::nullValue).asString();
-						key = mapValues[key];
+
+						int key			= keyValuePair.get(int(0),	Json::nullValue).asInt();
+						std::string val = keyValuePair.get(1,		Json::nullValue).asString();
+						key				= mapValues[key];
+
 						labels.setOrgStringValues(key, val);
 					}
 				}
@@ -235,7 +239,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				}
 				catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");		}
 			}
-			catch (std::exception e)		{ Log::log() << "n " << e.what() << std::endl;	}
+			catch (std::exception &e)		{ Log::log() << "std::exception " << e.what() << std::endl;	}
 			catch (...)						{ Log::log() << "something else" << std::endl;	}
 		} while (success == false);
 
@@ -262,6 +266,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		Column::ColumnType columnType	= column.columnType();
 		int typeSize					= (columnType == Column::ColumnTypeScale) ? sizeof(double) : sizeof(int);
 		std::map<int, int>& mapValues	= mapNominalTextValues[column.name()];
+		Labels &labels					= column.labels();
 
 		for (int r = 0; r < rowCount; r++)
 		{
@@ -278,6 +283,18 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				int value = *(int*)buff;
 				if (columnType == Column::ColumnTypeNominalText && value != INT_MIN)
 					value = mapValues[value];
+
+				//Maybe something went wrong somewhere and we do no have labels for all values...
+				try
+				{
+					labels.getLabelObjectFromKey(value);
+				}
+				catch (const labelNotFound &)
+				{
+					Log::log() << "Value '" << value << "' in column '" << column.name() << "' did not have a corresponding label, adding one now.\n";
+					labels.add(value, std::to_string(value), true);
+				}
+
 				column.setValue(r, value);
 			}
 

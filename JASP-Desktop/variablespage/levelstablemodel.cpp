@@ -78,9 +78,6 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 	if (role == Qt::BackgroundColorRole && index.column() == 0)
 		return QColor(0xf6,0xf6,0xf6);
 
-	// (role != Qt::DisplayRole && role != Qt::EditRole)
-	//	return QVariant();
-
 	Labels &labels = _column->labels();
 	int row = index.row();
 
@@ -88,28 +85,26 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 
-	if(role == (int)Roles::ValueRole) return tq(labels.getValueFromRow(row));
-	if(role == (int)Roles::LabelRole) return tq(labels.getLabelFromRow(row));
-	if(role == (int)Roles::FilterRole) return QVariant(labels[row].filterAllows());
+	if(role == (int)Roles::ValueRole)	return tq(labels.getValueFromRow(row));
+	if(role == (int)Roles::LabelRole)	return tq(labels.getLabelFromRow(row));
+	if(role == (int)Roles::FilterRole)	return QVariant(labels[row].filterAllows());
 
 	if(role == Qt::DisplayRole)
-	{
-		if (index.column() == 0)
-			return tq(labels.getValueFromRow(row));
-		else if(index.column() == 1)
-			return tq(labels.getLabelFromRow(row));
-		else if(index.column() == 2)
-			return QVariant(labels[row].filterAllows());
-	}
+		switch(index.column())
+		{
+		case 0:	return tq(labels.getValueFromRow(row));
+		case 1:	return tq(labels.getLabelFromRow(row));
+		case 2:	return QVariant(labels[row].filterAllows());
+		}
 
 	return QVariant();
 }
 
 QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if(role == (int)Roles::ValueRole) return "Value";
-	if(role == (int)Roles::LabelRole) return "Label";
-	if(role == (int)Roles::FilterRole) return "Filter";
+	if(role == (int)Roles::ValueRole)	return "Value";
+	if(role == (int)Roles::LabelRole)	return "Label";
+	if(role == (int)Roles::FilterRole)	return "Filter";
 
 	if (role != Qt::DisplayRole)
 		return QVariant();
@@ -117,10 +112,8 @@ QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, 
 	if (orientation != Qt::Horizontal)
 		return QVariant();
 
-	if (section == 0)
-		return "Value";
-	else
-		return "Label";
+	if (section == 0)	return "Value";
+	else				return "Label";
 }
 
 void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {

@@ -91,10 +91,13 @@ std::map<string, int> Labels::_resetLabelValues(int& maxValue)
 	for (Label& label : _labels)
 	{
 		int oldLabelValue = label.value();
+
 		if (orgStringValues.find(oldLabelValue) != orgStringValues.end())
 			newOrgStringValues[labelValue] = orgStringValues[oldLabelValue];
+
 		if (oldLabelValue != labelValue)
 			label.setValue(labelValue);
+
 		result[label.text()] = labelValue;
 		labelValue++;
 	}
@@ -256,8 +259,7 @@ map<int, string> &Labels::getOrgStringValues() const
 
 void Labels::setOrgStringValues(int key, std::string value)
 {
-	map<int, string> &orgStringValues = getOrgStringValues();
-	orgStringValues[key] = value;
+	getOrgStringValues()[key] = value;
 }
 
 const Label &Labels::getLabelObjectFromKey(int index) const
@@ -305,34 +307,28 @@ void Labels::_setNewStringForLabel(Label &label, const string &display)
 {
 	int label_value = label.value();
 	string label_string = label.text();
+
 	map<int, string> &orgStringValues = getOrgStringValues();
+
 	if (orgStringValues.find(label_value) == orgStringValues.end())
 		orgStringValues[label_value] = label_string;
+
 	label.setLabel(display);
 }
 
 string Labels::_getValueFromLabel(const Label &label) const
 {
-	if (label.hasIntValue())
-	{
-		std::ostringstream ss;
-		ss << label.value();
-		return ss.str();
-	}
-	else
-	{
-		return _getOrgValueFromLabel(label);
-	}
+	if (label.hasIntValue())	return std::to_string(label.value());
+	else						return _getOrgValueFromLabel(label);
 }
 
 string Labels::_getOrgValueFromLabel(const Label &label) const
 {
-	map<int, string> &orgStringValues = getOrgStringValues();
+	map<int, string> &orgStringValues	= getOrgStringValues();
 	map<int, string>::const_iterator it = orgStringValues.find(label.value());
-	if (it == orgStringValues.end())
-		return label.text();
-	else
-		return it->second;	
+
+	if (it == orgStringValues.end())	return label.text();
+	else								return it->second;
 }
 
 string Labels::getValueFromKey(int key) const
@@ -344,7 +340,7 @@ string Labels::getValueFromKey(int key) const
 	}
 	catch (const labelNotFound & e)
 	{
-		Log::log() << "Label not found, msg: " << e.what() << "\n";
+		Log::log() << "Label not found, msg: " << e.what() << ", returning emptyValue\n";
 		return Utils::emptyValue;
 	}
 }
