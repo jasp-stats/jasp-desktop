@@ -248,8 +248,8 @@ int main(int argc, char *argv[])
 	QString filePathQ(QString::fromStdString(filePath));
 
 	if(!dirTest)
-		//try
 		{
+			QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
