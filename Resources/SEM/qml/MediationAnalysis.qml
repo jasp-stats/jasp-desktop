@@ -39,13 +39,13 @@ Form
         {
             title: "Mediators"
             name:  "mediators"
-            allowedColumns: []
+            allowedColumns: ["scale", "ordinal"]
         }
         AssignedVariablesList
         {
             title: "Outcome"
             name:  "dependent"
-            allowedColumns: []
+            allowedColumns: ["scale", "ordinal"]
         }
         AssignedVariablesList
         {

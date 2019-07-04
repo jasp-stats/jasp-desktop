@@ -47,23 +47,49 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
       length(options$predictor) == 0) {
     return("Not enough variables")
   }
-
-  if (length(options$confounds) > 0) {
-    admissible <- vapply(options$confounds, function(co) {
-      var <- dataset[[.v(co)]]
-      if (is.character(var) || is.factor(var) && length(unique(var)) != 2) {
-        return(FALSE)
-      }
-      return(TRUE)
-    }, TRUE)
-    if (!all(admissible)) {
-      JASP:::.quitAnalysis(paste("Not all confounders are admissible. Inadmissible confounders:",
-                                options$confounds[!admissible],
-                                "\nOnly binary or continuous confounders allowed."))
+  
+  # Exogenous variables can be binary or continuous
+  exo <- ifelse(length(options$confounds) > 0, options$confounds, options$predictor)
+  admissible <- vapply(exo, function(exo_var) {
+    var <- na.omit(dataset[[.v(exo_var)]])
+    if ((is.character(var) || is.factor(var)) && length(unique(var)) != 2) {
+      return(FALSE)
     }
-
+    if (is.ordered(var)) return(FALSE)
+    return(TRUE)
+  }, TRUE)
+  if (!all(admissible)) {
+    JASP:::.quitAnalysis(
+      paste("Not all exogenous variables are admissible.",
+            "Inadmissible exogenous variables:",
+            paste(exo[!admissible], collapse = ","),
+            ". Only binary or continuous exogenous variables allowed.")
+    )
+  }
+  
+  # endogenous variables need to be scale or ordinal
+  endo <- c(options$mediators, options$dependent)
+  if (length(options$confounds) > 0) endo <- c(endo, options$predictor)
+  admissible <- vapply(endo, function(endo_var) {
+    var <- na.omit(dataset[[.v(endo_var)]])
+    if (!(is.ordered(var) || is.numeric(var))) {
+      return(FALSE)
+    }
+    return(TRUE)
+  }, TRUE)
+  if (!all(admissible)) {
+    JASP:::.quitAnalysis(
+      paste("Not all endogenous variables are admissible.",
+            "Inadmissible endogenous variables:",
+            paste(endo[!admissible], collapse = ","),
+            ". Only scale or ordinal endogenous variables allowed.")
+    )
   }
 
+  JASP:::.hasErrors(dataset, "run", type = c('observations', 'variance', 'infinity'),
+                    all.target = c(endo, exo),
+                    observations.amount = '< 2',
+                    exitAnalysisIfErrors = TRUE)
   return(NULL)
 }
 
@@ -92,9 +118,13 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     boot_1      <- lavaan::bootstrapLavaan(medResult, R = 1)
     bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
     bootres[1,] <- boot_1
-    for (i in 2:options$bootstrapNumber) {
-      bootres[i,] <- lavaan::bootstrapLavaan(medResult, 1)
+    i <- 2L
+    while (i < options$bootstrapNumber) {
+      boot_i      <- lavaan::bootstrapLavaan(medResult, 1)
+      if (length(boot_i) == 0) next # try again upon failure
+      bootres[i,] <- boot_i
       jaspResults$progressbarTick()
+      i <- i + 1L
     }
     
     medResult@boot       <- list(coef = bootres)
