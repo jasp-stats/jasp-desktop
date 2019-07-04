@@ -1,3 +1,22 @@
+#
+# Copyright (C) 2013-2018 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+
 .auditRiskModel <- function(options, jaspResults){
 
   if(!is.null(jaspResults[["ARMcontainer"]])) return()
@@ -518,7 +537,7 @@
           ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
           ggplot2::coord_flip() +
           ggplot2::xlab("") +
-          ggplot2::ylab("Sample size") +
+          ggplot2::ylab("Required sample size") +
           ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(hjust = 0)) +
           ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb")) +
           ggplot2::labs(fill = "") +
