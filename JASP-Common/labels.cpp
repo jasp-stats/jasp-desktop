@@ -17,10 +17,16 @@
 
 #include "labels.h"
 #include "iostream"
-
+#include "utils.h"
 #include "log.h"
 
 using namespace std;
+
+const char * labelNotFound::what() const noexcept
+{
+	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
+	return std::runtime_error::what();
+}
 
 map<int, map<int, string> > Labels::_orgStringValues;
 int Labels::_counter = 0;
@@ -268,7 +274,8 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 	{
 		Log::log() << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
 	}
-	throw runtime_error("Cannot find this entry");
+
+	throw labelNotFound("Cannot find this entry");
 }
 
 bool Labels::setLabelFromRow(int row, const string &display)
@@ -330,8 +337,16 @@ string Labels::_getOrgValueFromLabel(const Label &label) const
 
 string Labels::getValueFromKey(int key) const
 {
-	const Label &label = getLabelObjectFromKey(key);
-	return _getValueFromLabel(label);
+	try
+	{
+		const Label &label = getLabelObjectFromKey(key);
+		return _getValueFromLabel(label);
+	}
+	catch (const labelNotFound & e)
+	{
+		Log::log() << "Label not found, msg: " << e.what() << "\n";
+		return Utils::emptyValue;
+	}
 }
 
 string Labels::getValueFromRow(int row) const

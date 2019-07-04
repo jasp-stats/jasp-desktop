@@ -35,6 +35,14 @@ typedef boost::container::vector<Label, LabelAllocator> LabelVector;
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/const_iterator.hpp>
 
+
+struct labelNotFound : public std::runtime_error
+{
+	labelNotFound(std::string msg) : std::runtime_error("Label not found! " + msg) {}
+	const char* what() const noexcept override;
+};
+
+
 class Labels
 {
 public:
