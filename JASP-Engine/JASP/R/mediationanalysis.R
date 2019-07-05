@@ -59,7 +59,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     return(TRUE)
   }, TRUE)
   if (!all(admissible)) {
-    JASP:::.quitAnalysis(
+    .quitAnalysis(
       paste("Not all exogenous variables are admissible.",
             "Inadmissible exogenous variables:",
             paste(exo[!admissible], collapse = ","),
@@ -78,7 +78,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     return(TRUE)
   }, TRUE)
   if (!all(admissible)) {
-    JASP:::.quitAnalysis(
+    .quitAnalysis(
       paste("Not all endogenous variables are admissible.",
             "Inadmissible endogenous variables:",
             paste(endo[!admissible], collapse = ","),
@@ -86,7 +86,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     )
   }
 
-  JASP:::.hasErrors(dataset, "run", type = c('observations', 'variance', 'infinity'),
+  .hasErrors(dataset, "run", type = c('observations', 'variance', 'infinity'),
                     all.target = c(endo, exo),
                     observations.amount = '< 2',
                     exitAnalysisIfErrors = TRUE)
@@ -109,7 +109,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   if (inherits(medResult, "try-error")) {
     errmsg <- paste("Estimation failed\nMessage:\n", attr(medResult, "condition")$message)
-    JASP:::.quitAnalysis(errmsg)
+    .quitAnalysis(errmsg)
   }
 
   if (options$se == "bootstrap") {
