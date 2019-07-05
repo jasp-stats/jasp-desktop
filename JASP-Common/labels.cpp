@@ -17,10 +17,16 @@
 
 #include "labels.h"
 #include "iostream"
-
+#include "utils.h"
 #include "log.h"
 
 using namespace std;
+
+const char * labelNotFound::what() const noexcept
+{
+	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
+	return std::runtime_error::what();
+}
 
 map<int, map<int, string> > Labels::_orgStringValues;
 int Labels::_counter = 0;
@@ -85,10 +91,13 @@ std::map<string, int> Labels::_resetLabelValues(int& maxValue)
 	for (Label& label : _labels)
 	{
 		int oldLabelValue = label.value();
+
 		if (orgStringValues.find(oldLabelValue) != orgStringValues.end())
 			newOrgStringValues[labelValue] = orgStringValues[oldLabelValue];
+
 		if (oldLabelValue != labelValue)
 			label.setValue(labelValue);
+
 		result[label.text()] = labelValue;
 		labelValue++;
 	}
@@ -250,8 +259,7 @@ map<int, string> &Labels::getOrgStringValues() const
 
 void Labels::setOrgStringValues(int key, std::string value)
 {
-	map<int, string> &orgStringValues = getOrgStringValues();
-	orgStringValues[key] = value;
+	getOrgStringValues()[key] = value;
 }
 
 const Label &Labels::getLabelObjectFromKey(int index) const
@@ -268,7 +276,8 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 	{
 		Log::log() << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
 	}
-	throw runtime_error("Cannot find this entry");
+
+	throw labelNotFound("Cannot find this entry");
 }
 
 bool Labels::setLabelFromRow(int row, const string &display)
@@ -298,40 +307,42 @@ void Labels::_setNewStringForLabel(Label &label, const string &display)
 {
 	int label_value = label.value();
 	string label_string = label.text();
+
 	map<int, string> &orgStringValues = getOrgStringValues();
+
 	if (orgStringValues.find(label_value) == orgStringValues.end())
 		orgStringValues[label_value] = label_string;
+
 	label.setLabel(display);
 }
 
 string Labels::_getValueFromLabel(const Label &label) const
 {
-	if (label.hasIntValue())
-	{
-		std::ostringstream ss;
-		ss << label.value();
-		return ss.str();
-	}
-	else
-	{
-		return _getOrgValueFromLabel(label);
-	}
+	if (label.hasIntValue())	return std::to_string(label.value());
+	else						return _getOrgValueFromLabel(label);
 }
 
 string Labels::_getOrgValueFromLabel(const Label &label) const
 {
-	map<int, string> &orgStringValues = getOrgStringValues();
+	map<int, string> &orgStringValues	= getOrgStringValues();
 	map<int, string>::const_iterator it = orgStringValues.find(label.value());
-	if (it == orgStringValues.end())
-		return label.text();
-	else
-		return it->second;	
+
+	if (it == orgStringValues.end())	return label.text();
+	else								return it->second;
 }
 
 string Labels::getValueFromKey(int key) const
 {
-	const Label &label = getLabelObjectFromKey(key);
-	return _getValueFromLabel(label);
+	try
+	{
+		const Label &label = getLabelObjectFromKey(key);
+		return _getValueFromLabel(label);
+	}
+	catch (const labelNotFound & e)
+	{
+		Log::log() << "Label not found, msg: " << e.what() << ", returning emptyValue\n";
+		return Utils::emptyValue;
+	}
 }
 
 string Labels::getValueFromRow(int row) const

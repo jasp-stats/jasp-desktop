@@ -855,7 +855,15 @@ string Column::_getLabelFromKey(int key) const
 		return Utils::emptyValue;
 
 	if (_labels.size() > 0)
-		return _labels.getLabelObjectFromKey(key).text();
+		try
+		{
+			return _labels.getLabelObjectFromKey(key).text();
+		}
+		catch (const labelNotFound & e)
+		{
+			Log::log() << "Label not found, msg: " << e.what() << "\n";
+			return Utils::emptyValue;
+		}
 
 	stringstream ss;
 	ss << key;
@@ -951,9 +959,17 @@ bool Column::isValueEqual(int row, int value)
 
 	if (_labels.size() > 0)
 	{
-		Label label = _labels.getLabelObjectFromKey(intValue);
-		if (label.hasIntValue())
-			return label.value() == value;
+		try
+		{
+			Label label = _labels.getLabelObjectFromKey(intValue);
+			if (label.hasIntValue())
+				return label.value() == value;
+		}
+		catch (const labelNotFound & e)
+		{
+			Log::log() << "Label not found, msg: " << e.what() << "\n";
+			return false;
+		}
 	}
 	return false;
 }

@@ -11,7 +11,7 @@ JASPControl
     id:					    factorsForm
 	controlType:		    "FactorsForm"
     implicitWidth:	        parent.width
-	height:			        Theme.defaultVariablesFormHeight
+	height:			        Theme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
     implicitHeight:         height
     useControlMouseArea:    false
 
@@ -50,14 +50,24 @@ JASPControl
 			model: factorsForm.model
 			RowLayout
             {
+				property alias factorList: factorList
+				property alias button: button
                 spacing: 0
 				AssignButton
                 {
 					id: button
+					name: "Factor form "
                     Layout.leftMargin:  (factorsFormColumn.width / 3 - width) / 2
                     Layout.rightMargin: (factorsFormColumn.width / 3 - width) / 2
 					leftSource:         factorsForm.availableVariablesList
 					rightSource:        factorList
+
+					Component.onDestruction:
+					{
+						availableVariablesList.activeFocusChanged.disconnect(button.setIconToRight);
+						availableVariablesList.hasSelectedItemsChanged.disconnect(button.setState);
+					}
+
                 }
                 SEM.FactorsList 
                 {
@@ -71,18 +81,16 @@ JASPControl
 					height:             factorsForm.factorListHeight
 
 					onTitleIsChanged: factorsForm.titleChanged(index, editableTitle)
-					Component.onCompleted:
-					{
-						activeFocusChanged.connect(button.setIconToLeft);
-						availableVariablesList.activeFocusChanged.connect(button.setIconToRight);
-						hasSelectedItemsChanged.connect(button.setState);
-						availableVariablesList.hasSelectedItemsChanged.connect(button.setState);
-						factorsForm.factorAdded(index, factorList);
-						factorsForm.calculateHeight();
-					}
-                }
-            }
-            
+				}
+			}
+			onItemAdded:
+			{
+				item.factorList.activeFocusChanged.connect(item.button.setIconToLeft);
+				availableVariablesList.activeFocusChanged.connect(item.button.setIconToRight);
+				item.factorList.hasSelectedItemsChanged.connect(item.button.setState);
+				availableVariablesList.hasSelectedItemsChanged.connect(item.button.setState);
+				factorsForm.factorAdded(index, item.factorList);
+			}
         }
 
         Row 
@@ -97,7 +105,7 @@ JASPControl
                 text: qsTr("+")
                 control.width: height 
                 width: control.width
-                onClicked: addFactor() 
+				onClicked: factorsForm.model.addFactor()
             }
             Button 
             { 
@@ -105,32 +113,10 @@ JASPControl
                 text: qsTr("-") 
                 control.width: height 
                 width: control.width
-                onClicked: removeFactor() ; 
+				onClicked: factorsForm.model.removeFactor()
                 enabled: factorsFormRepeater.count > 1
             }
         }
         
-    }
-
-    function addFactor() 
-    {
-		model.addFactor()
-        factorsForm.calculateHeight()
-    }
-
-    function removeFactor() 
-    {
-		model.removeFactor()
-        factorsForm.calculateHeight()
-    }
-
-    function calculateHeight() 
-    {
-        if (factorsFormRepeater.count > 3) {
-            factorsForm.height = Theme.defaultVariablesFormHeight + (factorsFormRepeater.count - 3) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
-        } else {
-            factorsForm.height = Theme.defaultVariablesFormHeight
-        }
-    }
-    
+	}
 }

@@ -44,6 +44,31 @@ void ListModelAssignedInterface::endResetModel()
 	ListModelDraggable::endResetModel();
 }
 
+void ListModelAssignedInterface::refresh()
+{
+	bool doRefresh = true;
+	QList<int> toRemove;
+	for (int i = 0; i < rowCount(); i++)
+	{
+		QString term = data(index(i, 0)).toString();
+		if (!isAllowed(term))
+			toRemove.push_back(i);
+	}
+
+	if (toRemove.count() > 0)
+	{
+		QMLListViewDraggable* qmlListView = dynamic_cast<QMLListViewDraggable*>(listView());
+		if (qmlListView)
+		{
+			qmlListView->moveItems(toRemove, _source);
+			doRefresh = false;
+		}
+	}
+
+	if (doRefresh)
+		ListModelDraggable::refresh();
+}
+
 void ListModelAssignedInterface::addExtraControlModels()
 {
 	if (!_extraControlsDefinitions.isEmpty())

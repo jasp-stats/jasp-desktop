@@ -16,10 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
+import JASP.Theme		1.0
 
 Form
 {
@@ -113,13 +116,12 @@ Form
 			height: 			variableSelectionTitle.height
 			Layout.fillWidth: 	true
 
-			Text
+			Label
 			{
 				id: 						variableSelectionTitle
 				anchors.horizontalCenter: 	parent.horizontalCenter
 				text: 						qsTr("<b>Variable definition</b>")
-				font.family: 				"SansSerif"
-				font.pointSize: 			12 * preferencesModel.uiScale
+				font:						Theme.fontLabel
 			}
 		}
 

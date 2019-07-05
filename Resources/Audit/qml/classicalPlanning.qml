@@ -13,6 +13,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0

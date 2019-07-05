@@ -28,7 +28,7 @@ FocusScope
 
 	id:		welcomeRoot
 
-	property real scaler: Math.max(0.9, 0.8 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight))
+	property real scaler: Math.max(0.9, Math.min(1.5, 0.8 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
 	Rectangle
 	{

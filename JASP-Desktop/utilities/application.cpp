@@ -76,6 +76,13 @@ bool Application::event(QEvent *event)
 	}
 	else
 	{
-		return QApplication::event(event);
+		try {
+			return QApplication::event(event);
+		}
+		catch (const std::exception & e)
+		{
+			Log::log() << "Caught exception in Application::event(" << event << "): " << e.what() << std::endl;
+			throw e;
+		}
 	}
 }

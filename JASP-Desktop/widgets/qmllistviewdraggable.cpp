@@ -63,7 +63,7 @@ void QMLListViewDraggable::itemDoubleClickedHandler(int index)
 	
 	QList<int> indexes;
 	indexes.push_back(index);
-	_moveItems(indexes, draggableTargetModel);
+	moveItems(indexes, draggableTargetModel);
 }
 
 void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, QString assignOption)
@@ -101,10 +101,10 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 
 void QMLListViewDraggable::moveItemsDelayedHandler()
 {
-	_moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex, _tempAssignOption);
+	moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex, _tempAssignOption);
 }
 
-void QMLListViewDraggable::_moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, const QString& assignOption)
+void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, const QString& assignOption)
 {
 	if (targetModel && indexes.size() > 0)
 	{

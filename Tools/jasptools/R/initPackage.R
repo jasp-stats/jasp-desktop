@@ -34,13 +34,13 @@ isJaspDesktopDir <- function(path) {
   return(all(c("JASP-Common", "JASP-Desktop", "JASP-Engine", "JASP-R-Interface") %in% dirs))
 }
 
-.findDirPackages <- function(pathToBuild, needle) {
-  dirs <- list.files(pathToBuild)
+.findDirPackages <- function(pathToBuild, needle=NULL) {
+  dirs <- list.dirs(pathToBuild, recursive=FALSE, full.names=FALSE)
   locations <- NULL
   if (!identical(dirs, character(0))) {
     for (dirName in dirs) {
       name <- unlist(strsplit(dirName, "[\\W_]", perl = TRUE))
-      if (all(needle %in% tolower(name))) {
+      if (is.null(needle) || all(needle %in% tolower(name))) {
         location <- file.path(pathToBuild, dirName, "R", "library")
         locations <- c(locations, location)
       }
@@ -95,14 +95,12 @@ isJaspDesktopDir <- function(path) {
         }
       } else if (os == "windows") {
         if (.Machine$sizeof.pointer == 8) { # 64 bits
-          pathsToPackages <- .findDirPackages(file.path(".."), c("jasp", "64"))
+          pathsToPackages <- .findDirPackages(file.path(".."), "64")
         } else { # 32 bits
-          pathsToPackages <- .findDirPackages(file.path(".."), c("jasp", "32"))
+          pathsToPackages <- .findDirPackages(file.path(".."), "32")
         }
-
-        if (is.null(pathsToPackages)) {
-          pathsToPackages <- .findDirPackages(file.path(".."), c("build"))
-        }
+        pathsToPackages <- c(pathsToPackages, .findDirPackages(file.path("..")))
+          
       } else if (os == "linux") {
         message("Identified OS as Linux. Assuming R packages required for JASP were installed manually.")
       }

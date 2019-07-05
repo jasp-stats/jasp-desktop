@@ -7,6 +7,7 @@
   <a target="_blank" href="https://jasp-stats.org/download/">Download</a> |
   <a target="_blank" href="https://jasp-stats.org/how-to-use-jasp/">How to use</a> |
   <a target="_blank" href="https://jasp-stats.org/blog/">Blog</a> |
+  <a target="_blank" href="http://github.com/jasp-stats/jasp-issues/issues">Issues</a> |
   <a target="_blank" href="https://jasp-stats.org/contact/">Contact</a>
 </h5>
 
@@ -18,6 +19,9 @@
   <b>JASP</b> is a cross-platform software program which allows you to conduct statistical analyses in seconds, and without having to learn programming or risking a programming mistake. It aims to be a complete statistical package for both Bayesian and Frequentist statistical methods, that is easy to use and familiar to users of SPSS.
 </p>
 
+### Issue tracker
+Did you find a bug in JASP or would really like something to be added to it?
+Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/issues)!
 
 ### User guide
 

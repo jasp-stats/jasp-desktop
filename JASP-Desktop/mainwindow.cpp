@@ -158,14 +158,20 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 MainWindow::~MainWindow()
 {
-	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
-
-	delete _resultsJsInterface;
-	delete _engineSync;
-	if (_package && _package->dataSet())
+	try
 	{
-		_loader.free(_package->dataSet());
-		_package->reset();
+		_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
+
+		delete _resultsJsInterface;
+		delete _engineSync;
+		if (_package && _package->dataSet())
+		{
+			_loader.free(_package->dataSet());
+			_package->reset();
+		}
+	}
+	catch(...)
+	{
 	}
 }
 
