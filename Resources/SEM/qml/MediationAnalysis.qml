@@ -133,6 +133,12 @@ Form
                 RadioButton { text: qsTr("Mplus") ; name: "Mplus" }
                 RadioButton { text: qsTr("EQS")   ; name: "EQS"   }
             }
+            RadioButtonGroup {
+                title: qsTr("Missing value handling")
+                name: "missing"
+                RadioButton { text: qsTr("Full Information Maximum Likelihood") ; name: "fiml" ; checked: true }
+                RadioButton { text: qsTr("Listwise deletion")                   ; name: "listwise"             }
+            }
         }
         GroupBox {
             Layout.fillWidth: true

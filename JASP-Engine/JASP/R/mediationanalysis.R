@@ -44,6 +44,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medCheckErrors <- function(dataset, options) {
   if (length(options$dependent) == 0 || length(options$mediators) == 0 || length(options$predictor) == 0) return(FALSE)
   
+  # Check for missing value handling
+  if (options$estimator %in% c("GLS", "WLS", "ULS", "DWLS") && options$missing == "fiml")
+    .quitAnalysis("FIML only available with ML-type estimators.")
+  
   # Exogenous variables can be binary or continuous
   exo <- ifelse(length(options$confounds) > 0, options$confounds, options$predictor)
   # Endogenous variables need to be scale or ordinal
@@ -53,10 +57,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     checkExogenous = function() {
       admissible <- vapply(exo, function(exo_var) {
         var <- na.omit(dataset[[.v(exo_var)]])
-        if ((is.character(var) || is.factor(var)) && length(unique(var)) != 2) {
-          return(FALSE)
-        }
         if (is.ordered(var)) return(FALSE)
+        if ((is.character(var) || is.factor(var)) && length(unique(var)) != 2) return(FALSE)
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
@@ -85,7 +87,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   )
   
   .hasErrors(dataset, type = c('observations', 'variance', 'infinity'), custom = customChecks, 
-             all.target = c(endo, exo), observations.amount = '< 2', exitAnalysisIfErrors = TRUE)
+             all.target = c(endo, exo), observations.amount = paste('<', length(c(endo, exo))), 
+             exitAnalysisIfErrors = TRUE)
   
   return(TRUE)
 }
@@ -101,7 +104,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     se              = ifelse(options$se == "bootstrap", "standard", options$se),
     mimic           = options$mimic,
     estimator       = options$estimator,
-    std.ov          = options$std
+    std.ov          = options$std,
+    missing         = options$missing
   ))
   
   if (inherits(medResult, "try-error")) {
@@ -116,7 +120,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
     bootres[1,] <- boot_1
     i <- 2L
-    while (i < options$bootstrapNumber) {
+    while (i <= options$bootstrapNumber) {
       boot_i      <- lavaan::bootstrapLavaan(medResult, 1)
       if (length(boot_i) == 0) next # try again upon failure
       bootres[i,] <- boot_i
@@ -132,7 +136,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults[["stateMedResult"]]$dependOn(c(
     "predictor", "mediators", "dependent", "confounds", "includemeanstructure", 
     "bootstrapNumber", "fixManifestInterceptsToZero", "mimic", "se", "estimator", 
-    "std"))
+    "std", "missing"))
   return(medResult)
 }
 

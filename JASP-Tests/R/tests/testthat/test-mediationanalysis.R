@@ -8,6 +8,7 @@ test_that("Simple mediation analysis works", {
   options$mimic     <- "lavaan"
   options$estimator <- "ML"
   options$se        <- "default"
+  options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options, 
                             view = FALSE, quiet = TRUE)
   
@@ -43,6 +44,7 @@ test_that("Categorical confounders work", {
   options$mimic     <- "lavaan"
   options$estimator <- "ML"
   options$se        <- "default"
+  options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options, 
                             view = FALSE, quiet = TRUE)
   
@@ -64,36 +66,37 @@ test_that("Multiple mediation with missing values works", {
   options$mimic     <- "lavaan"
   options$estimator <- "ML"
   options$se        <- "default"
+  options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options, 
                             view = FALSE, quiet = TRUE)
   
   ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
  
   expect_equal_tables(ind_tab, list(
-    -0.296304106802847, 0.243189511202716, -0.0265572978000652, "contcor2",
+    -0.286287438147744, 0.0716044322927397, -0.107341502927502, "contcor2",
     "<unicode><unicode><unicode>", "<unicode><unicode><unicode>",
-    0.846987382777977, 0.137628451915703, "contcor1", "contNormal",
-    -0.192963718114997, -0.0768889421567336, 0.0611610412186728,
-    -0.0078639504690304, "debMiss1", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.823304518398917, 0.0352174796231786,
-    "contcor1", "contNormal", -0.223296799009283, -0.0220636167090898,
-    0.0181228445399456, -0.00197038608457214, "contcor2", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.847586838739501, 0.0102518366577195,
-    "contcor1", "debMiss30", -0.192198349462431, -0.00958773524468217,
-    0.0394738026097792, 0.0149430336825485, "debMiss1", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.232508749748695, 0.0125159284153823,
-    "contcor1", "debMiss30", 1.19392131263577, -3.79189688957024,
-    7.89972500677269, 2.05391405860122, "contcor2", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.491056482909909, 2.98261141239455,
-    "contOutlier", "contNormal", 0.688629450710867, -0.391583831958197,
-    0.318635662446574, -0.0364740847558115, "debMiss1", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.84045453399334, 0.181181771707769,
-    "contOutlier", "contNormal", -0.201312109998798, -0.302842168425176,
-    0.60761742910437, 0.152387630339597, "contcor2", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.511762616441047, 0.232264369322889,
-    "contOutlier", "debMiss30", 0.656095598235091, -0.244044319284989,
-    0.382660013570617, 0.069307847142814, "debMiss1", "<unicode><unicode><unicode>",
-    "<unicode><unicode><unicode>", 0.664645261089264, 0.159876492067959,
-    "contOutlier", "debMiss30", 0.433508680646766
+    0.239717584976287, 0.0913006242113347, "contcor1", "contNormal",
+    -1.17569297970009, -0.0934068738831913, 0.0235897423163003,
+    -0.0349085657834455, "debMiss1", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.242162593096285, 0.0298466239998148,
+    "contcor1", "contNormal", -1.16959847062308, -0.0253089791568423,
+    0.00781462953911848, -0.00874717480886191, "contcor2", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.300593344204476, 0.00845005544929284,
+    "contcor1", "debMiss30", -1.03516182365335, -0.0113560645428284,
+    0.0267224578923567, 0.00768319667476416, "debMiss1", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.428982821114215, 0.00971408728311937,
+    "contcor1", "debMiss30", 0.790933460945488, -3.22066204798646,
+    7.66726356440007, 2.2233007582068, "contcor2", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.423453378826046, 2.77758308271711,
+    "contOutlier", "contNormal", 0.800444376278354, -0.950829436570268,
+    0.588622855557618, -0.181103290506325, "debMiss1", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.644694053353005, 0.392724637868576,
+    "contOutlier", "contNormal", -0.461145731750425, -0.29132070016713,
+    0.653670767090359, 0.181175033461614, "contcor2", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.452331433562723, 0.241073681636872,
+    "contOutlier", "debMiss30", 0.751533855672048, -0.143920756388788,
+    0.223640571178022, 0.0398599073946173, "debMiss1", "<unicode><unicode><unicode>",
+    "<unicode><unicode><unicode>", 0.670768447414181, 0.0937673677848388,
+    "contOutlier", "debMiss30", 0.425093594245718
   ))
 })
