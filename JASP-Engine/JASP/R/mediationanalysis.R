@@ -46,46 +46,47 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   # Exogenous variables can be binary or continuous
   exo <- ifelse(length(options$confounds) > 0, options$confounds, options$predictor)
-  admissible <- vapply(exo, function(exo_var) {
-    var <- na.omit(dataset[[.v(exo_var)]])
-    if ((is.character(var) || is.factor(var)) && length(unique(var)) != 2) {
-      return(FALSE)
-    }
-    if (is.ordered(var)) return(FALSE)
-    return(TRUE)
-  }, TRUE)
-  if (!all(admissible)) {
-    .quitAnalysis(
-      paste("Not all exogenous variables are admissible.",
-            "Inadmissible exogenous variables:",
-            paste(exo[!admissible], collapse = ","),
-            ". Only binary or continuous exogenous variables allowed.")
-    )
-  }
-  
-  # endogenous variables need to be scale or ordinal
+  # Endogenous variables need to be scale or ordinal
   endo <- c(options$mediators, options$dependent)
-  if (length(options$confounds) > 0) endo <- c(endo, options$predictor)
-  admissible <- vapply(endo, function(endo_var) {
-    var <- na.omit(dataset[[.v(endo_var)]])
-    if (!(is.ordered(var) || is.numeric(var))) {
-      return(FALSE)
+  
+  customChecks <- list(
+    checkExogenous = function() {
+      admissible <- vapply(exo, function(exo_var) {
+        var <- na.omit(dataset[[.v(exo_var)]])
+        if ((is.character(var) || is.factor(var)) && length(unique(var)) != 2) {
+          return(FALSE)
+        }
+        if (is.ordered(var)) return(FALSE)
+        return(TRUE)
+      }, TRUE)
+      if (!all(admissible))
+        paste("Not all exogenous variables are admissible.",
+              "Inadmissible exogenous variables:",
+              paste(exo[!admissible], collapse = ","),
+              ". Only binary or continuous exogenous variables allowed.")
+    },
+    
+    checkEndogenous = function() {
+      if (length(options$confounds) > 0) endo <- c(endo, options$predictor)
+      admissible <- vapply(endo, function(endo_var) {
+        var <- na.omit(dataset[[.v(endo_var)]])
+        if (!(is.ordered(var) || is.numeric(var))) {
+          return(FALSE)
+        }
+        return(TRUE)
+      }, TRUE)
+      if (!all(admissible))
+        paste("Not all endogenous variables are admissible.",
+              "Inadmissible endogenous variables:",
+              paste(endo[!admissible], collapse = ","),
+              ". Only scale or ordinal endogenous variables allowed.")
     }
-    return(TRUE)
-  }, TRUE)
-  if (!all(admissible)) {
-    .quitAnalysis(
-      paste("Not all endogenous variables are admissible.",
-            "Inadmissible endogenous variables:",
-            paste(endo[!admissible], collapse = ","),
-            ". Only scale or ordinal endogenous variables allowed.")
-    )
-  }
-
-  .hasErrors(dataset, "run", type = c('observations', 'variance', 'infinity'),
-                    all.target = c(endo, exo),
-                    observations.amount = '< 2',
-                    exitAnalysisIfErrors = TRUE)
+    
+  )
+  
+  .hasErrors(dataset, type = c('observations', 'variance', 'infinity'), custom = customChecks, 
+             all.target = c(endo, exo), observations.amount = '< 2', exitAnalysisIfErrors = TRUE)
+  
   return(TRUE)
 }
 
