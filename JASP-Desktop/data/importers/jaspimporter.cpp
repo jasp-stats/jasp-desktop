@@ -199,8 +199,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 				for (Json::Value keyValueFilterTrip : labelsDesc)
 				{
-
-					int key			= keyValueFilterTrip.get(int(0),	Json::nullValue).asInt();
+					int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
+					int key			= keyValueFilterTrip.get(zero,	Json::nullValue).asInt();
 					std::string val = keyValueFilterTrip.get(1,			Json::nullValue).asString();
 					bool fil		= keyValueFilterTrip.get(2,			true).asBool();
 					int labelValue	= key;
@@ -220,8 +220,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				{
 					for (Json::Value keyValuePair : orgStringValuesDesc)
 					{
-
-						int key			= keyValuePair.get(int(0),	Json::nullValue).asInt();
+						int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
+						int key			= keyValuePair.get(zero,	Json::nullValue).asInt();
 						std::string val = keyValuePair.get(1,		Json::nullValue).asString();
 						key				= mapValues[key];
 
