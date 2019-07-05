@@ -264,19 +264,16 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     dirtab$addColumnInfo(name = "se",     title = "Std. Error", type = "number")
     dirtab$addColumnInfo(name = "z",      title = "z-value",    type = "number")
     dirtab$addColumnInfo(name = "pvalue", title = "p",          type = "number")
-    dirtab$setExpectedSize(rows = 1, cols = 4)
 
     indtab$addColumnInfo(name = "est",    title = "Estimate",   type = "number")
     indtab$addColumnInfo(name = "se",     title = "Std. Error", type = "number")
     indtab$addColumnInfo(name = "z",      title = "z-value",    type = "number")
     indtab$addColumnInfo(name = "pvalue", title = "p",          type = "number")
-    indtab$setExpectedSize(rows = 1, cols = 4)
 
     tottab$addColumnInfo(name = "est",    title = "Estimate",   type = "number")
     tottab$addColumnInfo(name = "se",     title = "Std. Error", type = "number")
     tottab$addColumnInfo(name = "z",      title = "z-value",    type = "number")
     tottab$addColumnInfo(name = "pvalue", title = "p",          type = "number")
-    tottab$setExpectedSize(rows = 1, cols = 4)
 
     return()
   }
@@ -317,6 +314,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     dirtab$addFootnote(se_message)
+    
     pe_dir <- pe[substr(pe$label, 1, 1) == "c", ]
     dirtab[["lhs"]]      <- .unv(pe_dir$rhs)
     dirtab[["op"]]       <- rep("\u2192", nrow(pe_dir))
@@ -349,6 +347,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     indtab$addFootnote(se_message)
+    
     pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
     
     indtab[["x"]]        <- .unv(rep(options$predictor, each = length(options$mediators) * length(options$dependent)))
@@ -381,6 +380,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     ttitab$addFootnote(se_message)
+    
     pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
 
     ttitab[["lhs"]]      <- .unv(rep(options$predictor, each = length(options$dependent)))
@@ -465,7 +465,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults[["rsquared"]] <- tabr2 <- createJaspTable("R-Squared")
   tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
   tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
-  tabr2$setExpectedSize(rows = 1, cols = 2)
   tabr2$dependOn(options = "rsquared", optionsFromObject = jaspResults[["stateMedResult"]])
   tabr2$position <- 1
   if (is.null(medResult)) return()
