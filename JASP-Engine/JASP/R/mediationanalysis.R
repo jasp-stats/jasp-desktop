@@ -299,7 +299,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   ## direct effects
   if (options[["showdir"]]) {
-    pecont[["dir"]] <- dirtab <- createJaspTable(title = "Direct effects")
+    dirtab <- createJaspTable(title = "Direct effects")
     dirtab$dependOn("showdir")
     
     dirtab$addColumnInfo(name = "lhs",      title = "",           type = "string")
@@ -314,6 +314,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     dirtab$addFootnote(se_message)
+    
+    pecont[["dir"]] <- dirtab
     
     pe_dir <- pe[substr(pe$label, 1, 1) == "c", ]
     dirtab[["lhs"]]      <- .unv(pe_dir$rhs)
@@ -330,7 +332,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   ## indirect effects
   if (options[["showind"]]) {
-    pecont[["ind"]] <- indtab <- createJaspTable(title = "Indirect effects")
+    indtab <- createJaspTable(title = "Indirect effects")
     indtab$dependOn("showind")
     
     indtab$addColumnInfo(name = "x",        title = "",           type = "string")
@@ -348,6 +350,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     indtab$addFootnote(se_message)
     
+    pecont[["ind"]] <- indtab 
+    
     pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
     
     indtab[["x"]]        <- .unv(rep(options$predictor, each = length(options$mediators) * length(options$dependent)))
@@ -361,11 +365,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     indtab[["pvalue"]]   <- pe_ind$pvalue
     indtab[["ci.lower"]] <- pe_ind$ci.lower
     indtab[["ci.upper"]] <- pe_ind$ci.upper
+    
   }
 
   ## total indirect effects
   if (options[["showtotind"]] && length(options$mediators) > 1) {
-    pecont[["tti"]] <- ttitab <- createJaspTable(title = "Total indirect effects")
+    ttitab <- createJaspTable(title = "Total indirect effects")
     ttitab$dependOn("showtotind")
     
     ttitab$addColumnInfo(name = "lhs",      title = "",           type = "string")
@@ -380,6 +385,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     ttitab$addFootnote(se_message)
+    
+    pecont[["tti"]] <- ttitab
     
     pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
 
@@ -396,7 +403,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (options[["showtot"]]) {
     ## total effects
-    pecont[["tot"]] <- tottab <- createJaspTable(title = "Total effects")
+    tottab <- createJaspTable(title = "Total effects")
     tottab$dependOn("showtot")
 
     tottab$addColumnInfo(name = "lhs",      title = "",           type = "string")
@@ -411,6 +418,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     tottab$addFootnote(se_message)
+    
+    pecont[["tot"]] <- tottab
+    
     pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
     
     tottab[["lhs"]]      <- .unv(rep(options$predictor, length(options$dependent)))
@@ -428,7 +438,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   ## residual covariances
   if (options[["showres"]] && length(c(options$mediators, options$dependent)) > 2) {
-    pecont[["res"]] <- restab <- createJaspTable(title = "Residual covariances")
+    restab <- createJaspTable(title = "Residual covariances")
     restab$addColumnInfo(name = "lhs",      title = "",           type = "string")
     restab$addColumnInfo(name = "op",       title = "",           type = "string")
     restab$addColumnInfo(name = "rhs",      title = "",           type = "string")
@@ -441,6 +451,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                          overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
     restab$addFootnote(se_message)
+    
+    pecont[["res"]] <- restab 
+    
     pe_res <- pe[pe$op == "~~" &
                    pe$lhs != pe$rhs &
                    !.unv(pe$lhs) %in% options$predictor &
@@ -462,11 +475,14 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medRsquared <- function(jaspResults, medResult, options, errors) {
   if (!options$rsquared || !is.null(jaspResults[["rsquared"]])) return()
   
-  jaspResults[["rsquared"]] <- tabr2 <- createJaspTable("R-Squared")
+  tabr2 <- createJaspTable("R-Squared")
   tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
   tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
   tabr2$dependOn(options = "rsquared", optionsFromObject = jaspResults[["stateMedResult"]])
   tabr2$position <- 1
+  
+  jaspResults[["rsquared"]] <- tabr2 
+  
   if (is.null(medResult)) return()
   
   r2res              <- lavaan::inspect(medResult, "r2")
@@ -496,9 +512,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   } else {
     conf_l <- NULL
   }
-  # creat a qgraph object using semplot
-  png()
-  pp <- semPlot::semPaths(
+  # create a qgraph object using semplot
+  pp <- .suppressGrDevice(semPlot::semPaths(
     object         = .medLavToPlotObj(medResult),
     layout         = rbind(deps_l, medi_l, pred_l, conf_l),
     intercepts     = FALSE,
@@ -511,8 +526,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     lty            = 2,
     title          = FALSE,
     sizeMan        = round(8*exp(-n_totl/80)+1)
-  )
-  dev.off()
+  ))
   
   # post-process plot
   pp <- .medPlotPostProcess(pp, options)
