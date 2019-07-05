@@ -96,7 +96,7 @@ Form
                         text: qsTr("Replications")
                         name: "bootstrapNumber"
                         defaultValue: 1000
-                        min: 1
+                        min: 500
                         max: 100000
                     }
                     DropDown {
