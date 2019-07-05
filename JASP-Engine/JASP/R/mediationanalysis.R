@@ -20,16 +20,16 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Read dataset
   dataset <- .medReadData(dataset, options)
-  errors  <- .medCheckErrors(dataset, options)
+  ready  <- .medCheckErrors(dataset, options)
 
   # Perform mediation analysis
-  medResult <- .medComputeResults(jaspResults, dataset, options, errors)
+  medResult <- .medComputeResults(jaspResults, dataset, options, ready)
 
   # Output functions
-  .medParTable(jaspResults, medResult, options, errors)
-  .medRsquared(jaspResults, medResult, options, errors)
-  .medPathPlot(jaspResults, medResult, options, errors)
-  .medSyntax(  jaspResults, medResult, options, errors)
+  .medParTable(jaspResults, medResult, options, ready)
+  .medRsquared(jaspResults, medResult, options, ready)
+  .medPathPlot(jaspResults, medResult, options, ready)
+  .medSyntax(  jaspResults, medResult, options, ready)
 
 }
 
@@ -42,11 +42,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .medCheckErrors <- function(dataset, options) {
-  if (length(options$dependent) == 0 ||
-      length(options$mediators) == 0 ||
-      length(options$predictor) == 0) {
-    return("Not enough variables")
-  }
+  if (length(options$dependent) == 0 || length(options$mediators) == 0 || length(options$predictor) == 0) return(FALSE)
   
   # Exogenous variables can be binary or continuous
   exo <- ifelse(length(options$confounds) > 0, options$confounds, options$predictor)
@@ -90,12 +86,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                     all.target = c(endo, exo),
                     observations.amount = '< 2',
                     exitAnalysisIfErrors = TRUE)
-  return(NULL)
+  return(TRUE)
 }
 
 # Results functions ----
-.medComputeResults <- function(jaspResults, dataset, options, errors) {
-  if (!is.null(errors)) return()
+.medComputeResults <- function(jaspResults, dataset, options, ready) {
+  if (!ready) return()
   if (!is.null(jaspResults[["stateMedResult"]])) return(jaspResults[["stateMedResult"]]$object)
   
   medResult <- try(lavaan::sem(
@@ -109,7 +105,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   if (inherits(medResult, "try-error")) {
     errmsg <- paste("Estimation failed\nMessage:\n", attr(medResult, "condition")$message)
-    .quitAnalysis(errmsg)
+    .quitAnalysis(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
   if (options$se == "bootstrap") {
@@ -250,7 +246,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
 # Output functions ----
 
-.medParTable <- function(jaspResults, medResult, options, errors) {
+.medParTable <- function(jaspResults, medResult, options, ready) {
   showOpts <- c("showdir", "showind", "showtotind", "showtot", "showres")
   if (!any(options[showOpts])) return()
   
@@ -478,8 +474,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   tabr2[["rsq"]]     <- r2res
 }
 
-.medPathPlot <- function(jaspResults, medResult, options, errors) {
-  if (!options$pathplot || !is.null(errors)) return()
+.medPathPlot <- function(jaspResults, medResult, options, ready) {
+  if (!options$pathplot || !ready) return()
 
   # compute the layout from the options
   n_pred <- length(options$predictor)
@@ -564,8 +560,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   return(plt)
 }
 
-.medSyntax <- function(jaspResults, medResult, options, errors) {
-  if (!options$showSyntax || !is.null(errors)) return()
+.medSyntax <- function(jaspResults, medResult, options, ready) {
+  if (!options$showSyntax || !ready) return()
   jaspResults[["syntax"]] <- createJaspHtml(.medToLavMod(options, FALSE), class = "jasp-code", title = "Model syntax")
   jaspResults[["syntax"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]])
   jaspResults[["syntax"]]$position <- 3
