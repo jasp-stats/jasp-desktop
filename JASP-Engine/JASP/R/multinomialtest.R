@@ -325,7 +325,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
       descriptivesTable$addColumnInfo(name = "observed", title = "Observed", type = "integer")
     else
       descriptivesTable$addColumnInfo(name = "observed", title = "Observed", type = "number")
-    
+
     nms <- names(chisqResults)
     
     if (length(nms) == 1) {
@@ -335,7 +335,6 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
       else
         descriptivesTable$addColumnInfo(name = "expected", title = paste0("Expected: ", nms), 
                                         type = "number")
-      
     } else {
       for (i in 1:length(nms)) {
         if (options$countProp == "descCounts")
