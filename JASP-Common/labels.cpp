@@ -62,9 +62,9 @@ int Labels::add(const std::string &display)
 	return add(_labels.size(), display, true);
 }
 
-int Labels::add(int key, const std::string &display, bool filterAllows)
+int Labels::add(int key, const std::string &display, bool filterAllows, bool isText)
 {
-	Label label(display, key, filterAllows);
+	Label label(display, key, filterAllows, isText);
 	_labels.push_back(label);
 
 	return key;
@@ -303,15 +303,26 @@ bool Labels::setLabelFromRow(int row, const string &display)
 	return true;
 }
 
+void Labels::log()
+{
+	Log::log() << "Labels: " << std::endl;
+	for (Label& label : _labels)
+		Log::log() << (label.hasIntValue() ? "int: " : "text: ") << label.value() << ": " << label.text() << std::endl;
+	Log::log() << std::flush;
+}
+
 void Labels::_setNewStringForLabel(Label &label, const string &display)
 {
 	int label_value = label.value();
 	string label_string = label.text();
 
-	map<int, string> &orgStringValues = getOrgStringValues();
+	if (!label.hasIntValue())
+	{
+		map<int, string> &orgStringValues = getOrgStringValues();
 
-	if (orgStringValues.find(label_value) == orgStringValues.end())
-		orgStringValues[label_value] = label_string;
+		if (orgStringValues.find(label_value) == orgStringValues.end())
+			orgStringValues[label_value] = label_string;
+	}
 
 	label.setLabel(display);
 }

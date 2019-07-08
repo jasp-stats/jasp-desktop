@@ -52,7 +52,7 @@ public:
 	void	clear();
 	int		add(int display);
 	int		add(const std::string &display);
-	int		add(int key, const std::string &display, bool filterAllows);
+	int		add(int key, const std::string &display, bool filterAllows, bool isText = true);
 	void	removeValues(std::set<int> valuesToRemove);
 	bool	syncInts(const std::set<int> &values);
 	bool	syncInts(std::map<int, std::string> &values);
@@ -87,6 +87,8 @@ public:
 	std::string getLabelFromRow(int) const;
 	std::string getValueFromRow(int) const;
 	bool setLabelFromRow(int row, const std::string &display);
+
+	void log();
 
 private:
 	void						_setNewStringForLabel(Label &label, const std::string &display);
