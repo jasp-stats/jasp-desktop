@@ -32,7 +32,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   .multinomialDescriptivesTable(jaspResults, chisqResults, options, ready)
   .multinomialContainerPlots(   jaspResults, chisqResults, options)
   .multinomialDescriptivesPlot( jaspResults, chisqResults, options, ready)
-  
+
   return()
 }
 
@@ -80,7 +80,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   #   jaspResults Object (chisquare test)
   if (!ready) 
     return()
-  
+
   # Take results from state if possible
   if (!is.null(jaspResults[["stateChisqResults"]])) 
     return(jaspResults[["stateChisqResults"]]$object)
@@ -302,7 +302,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   descriptivesTable <- createJaspTable(title = "Descriptives")
   descriptivesTable$dependOn(optionsFromObject = jaspResults[["stateDescriptivesResults"]])
-  
+
   if(options$factor == ""){
     descriptivesTable$addColumnInfo(name="factor", title="Factor", type = "string")
     if (options$countProp == "descCounts")
@@ -445,7 +445,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     for(i in 1:nrow(plotFrame))
       if(plotFrame$upperCI[i] == 0)
         plotFrame$yAxisMargin[i] <- plotFrame$obs[i]
-    
+
     # Create plot
     p <- ggplot2::ggplot(data = plotFrame,
                          mapping = ggplot2::aes(x = factor, y = obs)) +
@@ -550,7 +550,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   if (nlevels != length(counts)) 
     .quitAnalysis(paste0(variable, "variable does not match the number of levels of factor."))
-  
+
   # only applies for observed counts, expected counts can be proportions
   if (!expectedCounts && !all(counts == round(counts)))
     .quitAnalysis(paste0(variable, "variable must contain only integer values."))
