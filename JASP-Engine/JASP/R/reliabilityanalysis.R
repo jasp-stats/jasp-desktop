@@ -26,7 +26,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Output tables
   .reliabilityScaleTable(jaspResults, dataset, options, ready)
   .reliabilityItemTable (jaspResults, dataset, options, ready)
-  
+
   return()
 }
 
@@ -59,7 +59,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
       )
     }
   }
-  
+
   # Error check 2: One or more variables has infinity
   .hasErrors(dataset = dataset, 
              perform = perform,
@@ -72,7 +72,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .reliabilityComputeResults <- function (jaspResults, dataset, options, ready) {
   
   if (!ready) return()
-  
+
   # Take results from state if possible
   if (!is.null(jaspResults[["stateReliabilityResults"]])) 
     return(jaspResults[["stateReliabilityResults"]]$object)
@@ -361,7 +361,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   itemTable <- createJaspTable("Item Reliability Statistics")
   itemTable$showSpecifiedColumnsOnly <- TRUE
   itemTable$position <- 2
-  
+
   overTitle <- paste0("If item dropped")
   
   # Add columns to table
