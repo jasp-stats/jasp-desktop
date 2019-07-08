@@ -195,7 +195,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 				Labels &labels = column.labels();
 				labels.clear();
-				int index = 0;
+				int index = 1;
 
 				for (Json::Value keyValueFilterTrip : labelsDesc)
 				{
@@ -211,7 +211,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 						mapValues[key]	= labelValue;
 					}
 
-					labels.add(labelValue, val, fil);
+					labels.add(labelValue, val, fil, columnType == Column::ColumnTypeNominalText);
 
 					index++;
 				}
@@ -223,8 +223,10 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 						int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
 						int key			= keyValuePair.get(zero,	Json::nullValue).asInt();
 						std::string val = keyValuePair.get(1,		Json::nullValue).asString();
-						key				= mapValues[key];
-
+						if (mapValues.find(key) != mapValues.end())
+							key = mapValues[key];
+						else
+							Log::log() << "Cannot find key " << key << std::flush;
 						labels.setOrgStringValues(key, val);
 					}
 				}
@@ -292,7 +294,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				catch (const labelNotFound &)
 				{
 					Log::log() << "Value '" << value << "' in column '" << column.name() << "' did not have a corresponding label, adding one now.\n";
-					labels.add(value, std::to_string(value), true);
+					labels.add(value, std::to_string(value), true, columnType == Column::ColumnTypeNominalText);
 				}
 
 				column.setValue(r, value);
