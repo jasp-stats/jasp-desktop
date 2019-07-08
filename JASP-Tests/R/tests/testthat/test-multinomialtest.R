@@ -16,11 +16,11 @@ test_that("Main table results match", {
   )
   results <- jasptools::run("MultinomialTest",
                             "test.csv", options)
-  maintable <- results[["results"]][["chisq"]][["data"]]
+  maintable <- results[["results"]][["chisqTable"]][["data"]]
   desctable <- results[["results"]][["descriptivesTable"]][["data"]]
 
   expected <- jasptools:::collapseTable(
-      list(list(case = "H\u2080 (a)",
+      list(list(case = "H<unicode><unicode><unicode> (a)",
                 chisquare = 5.72,
                 df = 3,
                 p = 0.126056548007017,
@@ -28,10 +28,10 @@ test_that("Main table results match", {
 
   expect_equal_tables(maintable, expected)
   expect_equal_tables(desctable,
-                      list("f1", 0.49, 0.5,
-                           "f2", 0.49, 0.42,
-                           "f3", 0.01, 0.05,
-                           "totallyridiculoussuperlongfactorme", 0.01, 0.03))
+                      list(0.5,  "f1", 0.49, 
+                           0.42, "f2", 0.49, 
+                           0.05, "f3", 0.01, 
+                           0.03, "totallyridiculoussuperlongfactorme", 0.01))
 })
 
 test_that("Descriptives plot matches", {
