@@ -63,25 +63,24 @@ Form
             GroupBox
             {
                 CheckBox { label: qsTr("Standardized estimates") ; name: "std" }
-                CheckBox { label: qsTr("Show lavaan syntax")     ; name: "showSyntax" }
-                CheckBox { label: qsTr("Show R-squared")         ; name: "rsquared" }
+                CheckBox { label: qsTr("Lavaan syntax")     ; name: "showSyntax" }
+                CheckBox { label: qsTr("R-squared")         ; name: "rsquared" }
             }
             GroupBox
             {
                 title: qsTr("Parameter estimates")
-                CheckBox { label: qsTr("Show direct effects");          name: "showdir";    checked: true }
-                CheckBox { label: qsTr("Show indirect effects");        name: "showind";    checked: true }
-                CheckBox { label: qsTr("Show total indirect effects");  name: "showtotind"; checked: true }
-                CheckBox { label: qsTr("Show total effects");           name: "showtot";    checked: true }
-                CheckBox { label: qsTr("Show residual covariances");    name: "showres";    checked: true }
+                CheckBox { label: qsTr("Direct effects");          name: "showdir";    checked: true }
+                CheckBox { label: qsTr("Indirect effects");        name: "showind";    checked: true }
+                CheckBox { label: qsTr("Total indirect effects");  name: "showtotind"; checked: true }
+                CheckBox { label: qsTr("Total effects");           name: "showtot";    checked: true }
+                CheckBox { label: qsTr("Residual covariances");    name: "showres";    checked: true }
             }
 
         }
         GroupBox
         {
-            title: qsTr("Confidence intervals")
             CIField {
-                text: qsTr("Width")
+                text: qsTr("Confidence intervals")
                 name: "ciWidth"
             }
             RadioButtonGroup {
@@ -115,11 +114,13 @@ Form
 
 	Section {
         text: qsTr("Plots")
-        GroupBox {
-            title: "Plots"
-            CheckBox { text: qsTr("Model plot")      ; name: "pathplot"   ; id: pathPlot }
-            CheckBox { text: qsTr("Show parameters") ; name: "plotpars"   ; enabled: pathPlot.checked ; }
-        }   
+        CheckBox { 
+            text:   qsTr("Model plot")
+            name:   "pathplot"
+            id:     pathPlot 
+            CheckBox { text: qsTr("Parameter estimates") ; name: "plotpars" }
+            CheckBox { text: qsTr("Legend") ; name: "plotlegend" }
+        }
     }
     
 	Section {
@@ -127,17 +128,17 @@ Form
         GroupBox {
             Layout.fillWidth: true
             RadioButtonGroup {
+                title: qsTr("Missing value handling")
+                name: "missing"
+                RadioButton { text: qsTr("Full Information Maximum Likelihood") ; name: "fiml" ; checked: true }
+                RadioButton { text: qsTr("Exclude cases listwise")              ; name: "listwise"             }
+            }
+            RadioButtonGroup {
                 title: qsTr("Emulation")
                 name: "mimic"
                 RadioButton { text: qsTr("None")  ; name: "lavaan"  ; checked: true }
                 RadioButton { text: qsTr("Mplus") ; name: "Mplus" }
                 RadioButton { text: qsTr("EQS")   ; name: "EQS"   }
-            }
-            RadioButtonGroup {
-                title: qsTr("Missing value handling")
-                name: "missing"
-                RadioButton { text: qsTr("Full Information Maximum Likelihood") ; name: "fiml" ; checked: true }
-                RadioButton { text: qsTr("Listwise deletion")                   ; name: "listwise"             }
             }
         }
         GroupBox {
