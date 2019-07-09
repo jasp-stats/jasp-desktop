@@ -118,8 +118,8 @@ DropArea
 		{
 			id				: shadow
 			anchors.centerIn: draggableItem
-			width			: draggableItem.width + 6
-			height			: draggableItem.height + 6
+			width			: draggableItem.width
+			height			: draggableItem.height
 			visible			: false
 			color			: Theme.grayDarker
 			spread			: 0.2
