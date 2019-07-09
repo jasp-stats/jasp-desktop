@@ -403,7 +403,7 @@ ABTestBayesian <- function(
 
     if (options$bayesFactorOrder == "bestModelTop") {
 
-        ordered       <- output.rows[order(sapply(output.rows, "[[", "BF"), decreasing = TRUE)]
+        ordered       <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
         best_model_bf <- ordered[[1]]$BF
 
         output.rows   <- list()
