@@ -219,13 +219,12 @@ collapseTable <- function(rows) {
     stop("expecting non-vectorized character input")
   }
 
-  analysis <- tolower(analysis)
   if (.isModule())
     analyses <- list.files(.getPkgOption("module.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   else
     analyses <- list.files(.getPkgOption("common.r.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   analyses <- gsub("\\.[RrSsQq]$", "", analyses)
-  if (! analysis %in% analyses) {
+  if (! tolower(analysis) %in% tolower(analyses)) {
     stop("Could not find the analysis. Please ensure that its name matches the main R function.")
   }
 
@@ -251,7 +250,7 @@ collapseTable <- function(rows) {
   if (is.null(lastResults) || !is.list(lastResults) || is.null(names(lastResults)))
     return(NULL)
   
-  if ((lastResults[["status"]] == "error" || lastResults[["status"]] == "exception") && is.list(lastResults[["results"]]))
+  if ((lastResults[["status"]] == "validationError" || lastResults[["status"]] == "fatalError") && is.list(lastResults[["results"]]))
     return(.errorMsgFromHtml(lastResults$results$errorMessage))
 
   return(NULL)

@@ -5,7 +5,7 @@
 \title{Run a JASP analysis in R.}
 \usage{
 run(name, dataset, options, perform = "run", view = TRUE,
-  quiet = FALSE, sideEffects = FALSE)
+  quiet = FALSE, makeTests = FALSE, sideEffects = FALSE)
 }
 \arguments{
 \item{name}{String indicating the name of the analysis to run. This name is
@@ -24,6 +24,8 @@ By default the folder in Resources is checked first, unless called within a test
 
 \item{quiet}{Boolean indicating whether to suppress messages from the
 analysis.}
+
+\item{makeTests}{Boolean indicating whether to create testthat unit tests and print them to the terminal.}
 
 \item{sideEffects}{Boolean or character vector indicating which side effects
 are allowed.  Side effects are persistent changes made by jasptools or
@@ -78,7 +80,7 @@ jasptools::run("BinomialTest", "debug.csv", options)
 # If we want R functions sourced to the global env
 jasptools::run("BinomialTest", "debug.csv", options, sideEffects="globalEnv")
 
-# Or additionally have the .libPaths() set to JASP<e2><80><99>s R packages
+# Or additionally have the .libPaths() set to the JASP R packages
 jasptools::run("BinomialTest", "debug.csv", options, sideEffects=c("globalEnv", "libPaths"))
 
 }

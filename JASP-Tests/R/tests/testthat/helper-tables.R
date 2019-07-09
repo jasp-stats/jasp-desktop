@@ -54,13 +54,23 @@ expect_equal_tables <- function(test, ref, label=NULL) {
 
   nRows <- length(test)
   nCells <- length(test[[1]])
-  cellNames <- unlist(lapply(test, names))
+  cellNames <- names(unlist(test))
   test <- jasptools:::collapseTable(test)
 
   if (length(test) == length(ref)) {
     mismatches <- getTableMismatches(test, ref, nRows, nCells, cellNames)
     expect(length(mismatches) == 0, paste0(label, " is not equal to old table:\n", paste0(mismatches, collapse="\n")))
   } else {
-    expect(FALSE, paste(label, "and old table are not of equal length, check if the number of columns/rows is still the same"))
+    cellDiff <- abs(length(ref) - length(test))
+    type <- "cells (possibly footnotes?)"
+    if (cellDiff %% nRows == 0) type <- "columns"
+    else if (cellDiff %% nCells == 0) type <- "rows"
+    
+    if (length(test) > length(ref))
+      reason <- paste("likely reason: there are one or more new", type ,"in the new table that were not in the old table")
+    else
+      reason <- paste("likely reason: one or more", type, "are no longer in the new table that were in the old table")
+      
+    expect(FALSE, paste0(label, " (# cells: ", length(test), ") and old table (# cells: ", length(ref), ") are not of equal length, ", reason))
   }
 }

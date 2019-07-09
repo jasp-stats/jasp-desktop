@@ -90,7 +90,6 @@ test_that("Distribution plot matches", {
 })
 
 test_that("Correlation plot matches", {
-  skip("base plots are not supported in regression testing")
   options <- jasptools::analysisOptions("Descriptives")
   options$variables <- c("contNormal", "contGamma")
   options$plotCorrelationMatrix <- TRUE

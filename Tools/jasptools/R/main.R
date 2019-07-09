@@ -184,6 +184,7 @@ view <- function(results) {
 #' @param view Boolean indicating whether to view the results in a webbrowser.
 #' @param quiet Boolean indicating whether to suppress messages from the
 #' analysis.
+#' @param makeTests Boolean indicating whether to create testthat unit tests and print them to the terminal.
 #' @param sideEffects Boolean or character vector indicating which side effects
 #' are allowed.  Side effects are persistent changes made by jasptools or
 #' analyses run in jasptools, they include loading of packages ("pkgLoading"),
@@ -230,7 +231,7 @@ view <- function(results) {
 #' jasptools::run("BinomialTest", "debug.csv", options, sideEffects=c("globalEnv", "libPaths"))
 #'
 #' @export run
-run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, sideEffects = FALSE) {
+run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, makeTests = FALSE, sideEffects = FALSE) {
 
   if (missing(name)) {
     name <- attr(options, "analysisName")
@@ -313,6 +314,9 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   argNames <- intersect(names(possibleArgs), names(runArgs))
   args <- possibleArgs[argNames]
 
+  if (makeTests)
+    set.seed(1)
+  
   if (quiet) {
     sink(tempfile())
     results <- suppressWarnings(do.call(envir[[runFun]], args, envir=envir))
@@ -340,6 +344,9 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   figures <- results$state$figures
   if (length(figures) > 1 && !is.null(names(figures)))
     results$state$figures <- figures[order(names(figures))]
+  
+  if (makeTests)
+    .makeUnitTestsFromResults(results, name, dataset, options, usesJaspResults)
 
   return(invisible(results))
 }
