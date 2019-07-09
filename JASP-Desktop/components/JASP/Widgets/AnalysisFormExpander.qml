@@ -90,15 +90,16 @@ DropArea
 			}
 		]
 
-		Item
+		ToolTip
 		{
-			anchors.centerIn: parent
-			height: 0
-			width: 0
-			ToolTip.visible: mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
-			ToolTip.delay: 1000
-			ToolTip.timeout: 4000
-			ToolTip.text: qsTr("Drag to reorder the analyses")
+			text:			qsTr("Drag to reorder the analyses")
+			timeout:		Theme.toolTipTimeout
+			delay:			Theme.toolTipDelay
+			font:			Theme.font
+			background:		Rectangle { color:	Theme.tooltipBackgroundColor }
+			visible:		mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
+			y:				mouseArea.mouseY
+			x:				mouseArea.mouseX + 5
 		}
 
 		MouseArea
