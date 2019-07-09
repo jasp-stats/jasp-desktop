@@ -131,6 +131,8 @@ AnalysisForm
 
 		Behavior on opacity
 		{
+			enabled: !preferencesModel.safeGraphics;
+
 			NumberAnimation
 			{
 				duration: 300

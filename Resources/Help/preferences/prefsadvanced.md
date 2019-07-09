@@ -25,6 +25,8 @@ Should you find that scrolling in the options goes too fast, or too slow, you ca
 ### Remember Enabled Modules
 If you've enabled this option then JASP will remember which modules are activated and make sure they remain that way even when you close JASP. So supposing `Summary Statistics` was enabled and JASP closes then after reopening JASP it will be enabled immediately.
 
+### Safe Graphics
+If this is enabled JASP will run in software rendering mode, which means your interface is slower but weird glitches or other problems might disappear. You will need to restart JASP for this option to take effect though!
 
 ## Modules options
 

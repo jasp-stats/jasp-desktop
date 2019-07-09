@@ -36,7 +36,8 @@ public:
 		LOG_FILES_MAX,
 		QML_MAX_FLICK_VELOCITY,
 		MODULES_REMEMBER,
-		MODULES_REMEMBERED
+		MODULES_REMEMBERED,
+		SAFE_GRAPHICS_MODE
 	};
 
 	static QVariant value(Settings::Type key);

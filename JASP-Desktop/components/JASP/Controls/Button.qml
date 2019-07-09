@@ -61,7 +61,7 @@ JASPControl
 			radius:			Theme.borderRadius
 			color:			enabled ? (control.down ? Theme.gray : Theme.controlBackgroundColor) : Theme.disableControlBackgroundColor
             
-			Behavior on color { ColorAnimation { duration: 100 } }
+			Behavior on color {	enabled: !preferencesModel.safeGraphics;	ColorAnimation { duration: 100 } }
         }
         
     }

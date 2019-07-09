@@ -21,21 +21,23 @@
 
 #include "utilities/application.h"
 #include <QQuickWindow>
+#include "utilities/settings.h"
 
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
 					saveArg			= "--save",
 					timeOutArg		= "--timeOut=";
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics)
 {
-	filePath	= "";
-	unitTest	= false,
-	dirTest		= false;
-	save		= false;
-	logToFile	= false;
-	hideJASP	= false;
-	timeOut		= 10;
+	filePath		= "";
+	unitTest		= false,
+	dirTest			= false;
+	save			= false;
+	logToFile		= false;
+	hideJASP		= false;
+	safeGraphics	= false;
+	timeOut			= 10;
 
 	bool letsExplainSomeThings = false;
 
@@ -43,14 +45,11 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 	for(int arg = 0; arg < args.size(); arg++)
 	{
-		if(args[arg] == saveArg)
-			save = true;
-		else if(args[arg] == "--help" || args[arg] == "-h")
-			letsExplainSomeThings = true;
-		else if(args[arg] == "--logToFile")
-			logToFile = true;
-		else if(args[arg] == "--hide")
-			hideJASP = true;
+		if(args[arg] == saveArg)								save					= true;
+		else if(args[arg] == "--help" || args[arg] == "-h")		letsExplainSomeThings	= true;
+		else if(args[arg] == "--logToFile")						logToFile				= true;
+		else if(args[arg] == "--hide")							hideJASP				= true;
+		else if(args[arg] == "--safeGraphics")					safeGraphics			= true;
 		else if(args[arg] == "--unitTestRecursive")
 		{
 			if(arg >= args.size() - 1)
@@ -146,6 +145,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes.\n"
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
 					<< "If --hide is specified then JASP will not be shown during recursive testing.\n"
+					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled.\n"
 					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
 					<< std::flush;
 
@@ -243,17 +243,23 @@ int main(int argc, char *argv[])
 				dirTest,
 				save,
 				logToFile,
-				hideJASP;
+				hideJASP,
+				safeGraphics;
 	int			timeOut;
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics);
+
+	if(safeGraphics)	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
+	else				safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
 
 	QString filePathQ(QString::fromStdString(filePath));
 
 	if(!dirTest)
 		//try
 		{
-			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+			if(safeGraphics)
+				QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+
 			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen

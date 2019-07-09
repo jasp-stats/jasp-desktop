@@ -106,8 +106,7 @@ bool	PreferencesModel::logToFile()				const {	return Settings::value(Settings::L
 int		PreferencesModel::logFilesMax()				const {	return Settings::value(Settings::LOG_FILES_MAX								).toInt();					}
 int		PreferencesModel::maxFlickVelocity()		const {	return Settings::value(Settings::QML_MAX_FLICK_VELOCITY						).toInt();					}
 bool	PreferencesModel::modulesRemember()			const { return Settings::value(Settings::MODULES_REMEMBER							).toBool();					}
-
-
+bool	PreferencesModel::safeGraphics()			const { return Settings::value(Settings::SAFE_GRAPHICS_MODE							).toBool();					}
 
 QStringList PreferencesModel::missingValues()		const
 {
@@ -421,4 +420,15 @@ void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
 
 	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
 	emit modulesRememberedChanged();
+}
+
+void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
+{
+	if (safeGraphics() == newSafeGraphics)
+		return;
+
+	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
+	emit modulesRememberChanged(newSafeGraphics);
+
+	MessageForwarder::showWarning("Safe Graphics mode changed", "You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP");
 }

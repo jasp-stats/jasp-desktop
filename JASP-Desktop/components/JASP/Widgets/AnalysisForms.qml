@@ -12,7 +12,7 @@ FocusScope
 
 	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
 
-	Behavior on width { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+	Behavior on width { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 	Rectangle
@@ -139,7 +139,7 @@ FocusScope
 				Behavior on contentY
 				{
 					id:			contentYBehaviour
-					enabled:	!(analysesFlickable.flicking || analysesFlickable.moving);
+					enabled:	!(analysesFlickable.flicking || analysesFlickable.moving) && !preferencesModel.safeGraphics;
 					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
 				}
 

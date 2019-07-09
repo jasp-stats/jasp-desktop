@@ -31,6 +31,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(int			maxFlickVelocity		READ maxFlickVelocity			WRITE setMaxFlickVelocity			NOTIFY maxFlickVelocityChanged			)
 	Q_PROPERTY(bool			modulesRemember			READ modulesRemember			WRITE setModulesRemember			NOTIFY modulesRememberChanged			)
 	Q_PROPERTY(QStringList	modulesRemembered		READ modulesRemembered			WRITE setModulesRemembered			NOTIFY modulesRememberedChanged			)
+	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -60,11 +61,15 @@ public:
 	int			maxFlickVelocity()			const;
 	bool		modulesRemember()			const;
 	QStringList	modulesRemembered()			const;
+	bool		safeGraphics()				const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+
+
+
 
 public slots:
 	void setUiScale(double uiScale);
@@ -94,8 +99,11 @@ public slots:
 	void setMaxFlickVelocity(int maxFlickVelocity);	
 	void setModulesRemember(bool modulesRemember);
 	void setModulesRemembered(QStringList modulesRemembered);
+	void setSafeGraphics(bool safeGraphics);
 
 	void moduleEnabledChanged(QString moduleName, bool enabled);
+
+
 
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -123,6 +131,8 @@ signals:
 	void maxFlickVelocityChanged(		int			maxFlickVelocity);
 	void modulesRememberChanged(		bool		modulesRemember);
 	void modulesRememberedChanged();
+	void safeGraphicsChanged(			bool		safeGraphics);
+
 
 private:
 	int _defaultPPI = 192;

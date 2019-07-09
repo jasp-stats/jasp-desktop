@@ -161,6 +161,8 @@ Window
 
 				Behavior on opacity
 				{
+					enabled:		!preferencesModel.safeGraphics
+
 					PropertyAnimation
 					{
 						id:				darkeningBackgroundRectDarkening

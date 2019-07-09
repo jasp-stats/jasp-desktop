@@ -33,7 +33,8 @@ const Settings::Setting Settings::Values[] = {
 	{"logFilesMax",					50},
 	{"maxFlickVelocity",			800},
 	{"modulesRemember",				true},
-	{"modulesRemembered",			""}
+	{"modulesRemembered",			""},
+	{"safeGraphicsMode",			false}
 
 };
 

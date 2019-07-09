@@ -74,6 +74,17 @@ ScrollView
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
+				KeyNavigation.tab:	safeGraphicsMode
+				KeyNavigation.down:	safeGraphicsMode
+			}
+
+			CheckBox
+			{
+				id:					safeGraphicsMode
+				label:				qsTr("Safe Graphics Mode")
+				checked:			preferencesModel.safeGraphics
+				onCheckedChanged:	preferencesModel.safeGraphics = checked
+				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
 				KeyNavigation.tab:	developerMode
 				KeyNavigation.down:	developerMode
 			}

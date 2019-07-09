@@ -48,6 +48,8 @@ FocusScope
 
 		Behavior on x
 		{
+			enabled:		!preferencesModel.safeGraphics
+
 			PropertyAnimation
 			{
 				id:				fileMenuAnimation
@@ -165,6 +167,8 @@ FocusScope
 
 			Behavior on anchors.leftMargin
 			{
+				enabled:		!preferencesModel.safeGraphics
+
 				PropertyAnimation
 				{
 					id:				resourceMenuAnimation
@@ -293,6 +297,8 @@ FocusScope
 
 			Behavior on x
 			{
+				enabled:		!preferencesModel.safeGraphics
+
 				PropertyAnimation
 				{
 					id:				fileMenuResourceLoaderAnimation
