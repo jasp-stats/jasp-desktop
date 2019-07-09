@@ -37,7 +37,7 @@ Form
 			name: "covariates"
 			title: qsTr("Covariates")
 			singleVariable: false
-			suggestedColumns: ["ordinal", "nominal", "scale"]
+			suggestedColumns: ["scale"]
 		}
 	}
 

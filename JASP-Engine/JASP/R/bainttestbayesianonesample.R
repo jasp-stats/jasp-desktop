@@ -57,7 +57,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
-  bainTable                      <- createJaspTable("Bain One Sample T-test Result")
+  bainTable                      <- createJaspTable("Bain One Sample T-test")
   jaspResults[["bainTable"]]     <- bainTable
   bainTable$position <- 1
   bainTable$dependOn(options =c("testValue", "variables", "hypothesis", "bayesFactorType"))
