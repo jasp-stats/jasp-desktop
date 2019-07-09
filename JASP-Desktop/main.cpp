@@ -249,6 +249,10 @@ int main(int argc, char *argv[])
 
 	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics);
 
+	QCoreApplication::setOrganizationName("JASP");
+	QCoreApplication::setOrganizationDomain("jasp-stats.org");
+	QCoreApplication::setApplicationName("JASP");
+
 	if(safeGraphics)	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else				safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
 
@@ -263,9 +267,7 @@ int main(int argc, char *argv[])
 			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
-			QCoreApplication::setOrganizationName("JASP");
-			QCoreApplication::setOrganizationDomain("jasp-stats.org");
-			QCoreApplication::setApplicationName("JASP");
+
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 #ifdef _WIN32
