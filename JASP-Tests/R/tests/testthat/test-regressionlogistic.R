@@ -14,7 +14,7 @@ test_that("Fields Book - Chapter 10 results match", {
   options$oddsRatios <- TRUE
   options$coeffCI <- TRUE
   options$coeffCIOR <- TRUE
-  results <- jasptools::run("RegressionLogistic", dataset = "santas_log.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogistic", dataset = "santas_log.csv", options)
   output1 <- results[["results"]][["factorDescriptives"]][["data"]]
   expect_equal_tables(output1,
                       list(0, 178, "TRUE",
@@ -45,7 +45,7 @@ test_that("Fields Book - Chapter 10 results match", {
   options$oddsRatios <- TRUE
   options$coeffCI <- TRUE
   options$coeffCIOR <- TRUE
-  results <- jasptools::run("RegressionLogistic", dataset = "santas_log.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogistic", dataset = "santas_log.csv", options)
   output4 <- results[["results"]][["modelSummary"]][["data"]]
   expect_equal_tables(output4,
                       list("H<unicode>", 529.250590526386, 531.250590526386, 535.242055073494,
@@ -73,7 +73,7 @@ test_that("Fields Book - Chapter 10 results match", {
   options$coeffCIOR <- TRUE
   options$estimatesPlotsOpt <- TRUE
   options$showPoints <- FALSE
-  results <- jasptools::run("RegressionLogistic", dataset = "santas_log_subset_treat0.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogistic", dataset = "santas_log_subset_treat0.csv", options)
   output6 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output6,
                       list("(Intercept)", 1.829715, 0.3810035, 1.681811, 6.232108, 4.802356, 1.568094e-06, 23.06263, 1, 17552.68, 2.953413, 13.1506,
@@ -93,7 +93,7 @@ test_that("Fields Book - Chapter 10 results match", {
   options$coeffCIOR <- TRUE
   options$estimatesPlotsOpt <- TRUE
   options$showPoints <- FALSE
-  results <- jasptools::run("RegressionLogistic", dataset = "santas_log_subset_treat1.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogistic", dataset = "santas_log_subset_treat1.csv", options)
   output7 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output7,
                       list("(Intercept)", 2.029197, 0.3538977, -0.2530217, 7.607972, 5.73385, 9.817603e-09, 32.87704, 1, 2032173, 3.802162, 15.22324,
@@ -116,7 +116,7 @@ test_that("Fields Book - Chapter 10 results match", {
   options$coeffEstimatesBootstrapping <- TRUE
   options$coeffEstimatesBootstrappingReplicates <- 1000
   set.seed(1) # For Bootstrapping Unit Tests
-  results <- jasptools::run("RegressionLogistic", dataset = "santas_log.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogistic", dataset = "santas_log.csv", options)
   output9 <- results[["results"]][["casewiseDiagnosticsTable"]][["data"]]
   expect_equal_tables(output9,
                       list(18, 0, 0.8517899, 1, -0.8517899, -2.397327, 0.01212395,

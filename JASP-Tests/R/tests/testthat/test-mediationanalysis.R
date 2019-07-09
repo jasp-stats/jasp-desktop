@@ -10,8 +10,7 @@ test_that("Simple mediation analysis works", {
   options$estimator <- "ML"
   options$se        <- "default"
   options$missing   <- "FIML"
-  results <- jasptools::run("MediationAnalysis","test.csv", options, 
-                            view = FALSE, quiet = TRUE)
+  results <- jasptools::run("MediationAnalysis","test.csv", options)
   
   dir_tab <- results[["results"]][["parest"]][["collection"]][["parest_dir"]][["data"]]
   ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
@@ -46,8 +45,7 @@ test_that("Categorical confounders work", {
   options$estimator <- "ML"
   options$se        <- "default"
   options$missing   <- "FIML"
-  results <- jasptools::run("MediationAnalysis","test.csv", options, 
-                            view = FALSE, quiet = TRUE)
+  results <- jasptools::run("MediationAnalysis","test.csv", options)
   
   ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
 
@@ -68,8 +66,7 @@ test_that("Multiple mediation with missing values works", {
   options$estimator <- "ML"
   options$se        <- "default"
   options$missing   <- "FIML"
-  results <- jasptools::run("MediationAnalysis","test.csv", options, 
-                            view = FALSE, quiet = TRUE)
+  results <- jasptools::run("MediationAnalysis","test.csv", options)
   
   ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
  

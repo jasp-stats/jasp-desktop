@@ -31,7 +31,7 @@ test_that("Within subjects table results match", {
   options$sphericityCorrections <- TRUE
 
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = FALSE, quiet = TRUE)
+                            options = options)
   refTable <- list("Drink", "None", 2092.34444444444, 2, 1046.17222222222, 5.10598105687077,
                 0.0108629307294978, "TRUE", "FALSE", 1, 1, 1, 1, 1, "Drink",
                 "Greenhouse-Geisser", 2092.34444444444, 1.15422864073086, 1812.76427443316,
@@ -76,7 +76,7 @@ test_that("Sphericity Assumptions table match (Field Chapter 8)", {
   options$sphericityTests <- TRUE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = FALSE, quiet = TRUE)
+                            options = options)
   
   refTable <- list("Drink", 0.267241056560857, 23.7528754979348, 2, 6.95230186958065e-06,
                    0.577114320365429, 0.590744227025686, 0.5, "TRUE", "Imagery",
@@ -101,7 +101,7 @@ test_that("Post-hoc tests match (Field Chapter 8)", {
   options$postHocTestPooledError <- FALSE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = TRUE, quiet = TRUE)
+                            options = options)
   
   refTable <- list("Beer", "Water", 8.31666666666667, -0.438399936264868, 17.0717332695982,
                    3.3351289023547, 2.49365674016224, 0.557598598355329, 0.0440659117291126,
@@ -238,7 +238,7 @@ test_that("Descriptives Match", {
   options$descriptives <- TRUE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = FALSE, quiet = TRUE)
+                            options = options)
   
   refTable <- list("Beer", "Positive", 20, 21.05, 13.0079934938807, "TRUE", "Beer",
                    "Neutral", 20, 10, 10.295630140987, "FALSE", "Beer", "Negative",
@@ -327,8 +327,7 @@ test_that("Between Subjects table match", {
   options <- initOpts()
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", options = options,
-                            view = FALSE, quiet = TRUE)
+                            dataset = "AnovaMixedEffects.csv", options = options)
   
   refTable <- list("gender", 0.200000000000001, 1, 0.200000000000001, 0.00473545746857648,
                 0.945895847556855, "TRUE", "Residual", 760.222222222222, 18,
@@ -344,8 +343,7 @@ test_that("Homogeneity tests correct", {
   options$homogeneityTests <- TRUE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", options = options,
-                            view = FALSE, quiet = TRUE)
+                            dataset = "AnovaMixedEffects.csv", options = options)
   
   refTable <- list("att_high", 1.13105200239091, 1, 18, 0.301611198987337, "TRUE",
                 "att_some", 0.598562976996908, 1, 18, 0.449169168742317, "FALSE",
@@ -367,8 +365,7 @@ test_that("(Repeated) Contrast table match", {
   options$contrasts <- list(list(contrast = "repeated", variable = "Looks"))
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = "AnovaMixedEffects.csv", options = options,
-                            view = FALSE, quiet = TRUE)
+                            dataset = "AnovaMixedEffects.csv", options = options)
   
   refTable <- list("Attractive - Average", 14.31667, 0.9040603, 15.83596,
                    8.431449e-18, "TRUE", "Average - Ugly", 11.96667, 0.9040603,
@@ -398,8 +395,7 @@ test_that("Effect Size Calculation correct", {
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaRepeatedMeasuresOneWay.csv",
-                            options = options,
-                            view = FALSE, quiet = TRUE)
+                            options = options)
   
   refTable <- list("Animal", 83.1249999999999, 3, 27.7083333333333, 3.79380603096984,
                 0.0255702968630395, "TRUE", 1, 1, 1, 1, 1, 0.327424913835549,
@@ -425,8 +421,7 @@ test_that("Simple Effects table match", {
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
-                            options = options,
-                            view = FALSE, quiet = TRUE)
+                            options = options)
   
   refTable <- list("Female", "High", 42.4666666666668, 2, 21.2333333333334, 0.639629588307488, 
                    0.539062933641058, "TRUE", "Female", "Some", 6444.46666666667, 2, 
@@ -455,8 +450,7 @@ test_that("Nonparametric table match", {
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
-                            options = options,
-                            view = FALSE, quiet = TRUE)
+                            options = options)
   
   refTable <- list( "Charisma", 40.074508162411, 2, 1.98577994376659e-09, -170.212868480726,
                     26.3987755757377, 8, 158, 1.2968573602055e-25)
@@ -480,8 +474,7 @@ test_that("Conover table match", {
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
-                            options = options,
-                            view = FALSE, quiet = TRUE)
+                            options = options)
   
   refTable <- list( "High", "Some", 1.31809226918034, 406, 306.5, 0.189380510753162, 0.568141532259486, 
                     0.233862092301299, 158, "High", "None", 2.89450412880305, 406, 187.5,
@@ -518,8 +511,7 @@ test_that("Field - Chapter 8 results match", {
   options$confidenceIntervalsPostHoc <- TRUE
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaRepeatedMeasuresOneWay.csv",
-                            options = options,
-                            view = FALSE, quiet = TRUE)
+                            options = options)
   
   # output 2 (chi square and df for sphericity)
   table <- results$results$assumptionsObj$sphericity$data
@@ -579,8 +571,7 @@ test_that("Field - Chapter 9 match", {
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
-                            options = options,
-                            view = FALSE, quiet = TRUE)
+                            options = options)
   
   # sphericity
   table <- results$results$assumptionsObj$sphericity$data

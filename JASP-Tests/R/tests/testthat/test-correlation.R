@@ -37,7 +37,6 @@ test_that("Correlation table results match", {
 })
 
 test_that("Correlation matrix plot matches", {
-  skip("base plots are not supported in regression testing")
   options <- jasptools::analysisOptions("Correlation")
   options$variables <- list("contGamma", "contNormal")
   options$plotCorrelationMatrix <- TRUE

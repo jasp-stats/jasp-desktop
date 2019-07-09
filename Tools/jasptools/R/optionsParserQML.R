@@ -15,10 +15,12 @@
     "PercentField",
     "CIField",
     "TextField",
+    "TextArea",
     "CheckBox",
     "Slider",
     "AssignedVariablesList",
     "repeatedMeasuresFactorsList",
+    "Chi2TestTableView",
     "DropDown"
   ) # the button group requires additional parsing
 
@@ -70,17 +72,17 @@
   result[["plotWidth"]] <- 480
   result[["plotHeight"]] <- 320
 
-  regMatch <- "BayesFactorType\\{\\}"
+  regMatch <- "BayesFactorType\\{"
   if (grepl(regMatch, fileContents)) {
     result[["bayesFactorType"]] <- "BF10"
   }
   
-  regMatch <- "ContrastsList\\{\\}"
+  regMatch <- "ContrastsList\\{"
   if (grepl(regMatch, fileContents)) {
     result[["contrast"]] <- "none"
   }
   
-  regMatch <- "SubjectivePriors\\{\\}"
+  regMatch <- "SubjectivePriors\\{"
   if (grepl(regMatch, fileContents)) {
     subjectivePriors <- list(
       priorWidth = 0.707,
@@ -188,6 +190,10 @@ extractData.CheckBox <- function(element) {
   extractData.default(element, checked)
 }
 
+extractData.Chi2TestTableView <- function(element) {
+  extractData.default(element, list())
+}
+
 
 extractData.Slider <- function(element) {
   regMatch <- "value.*?:(\\d+)"
@@ -248,7 +254,7 @@ extractData.default <- function(element, value = NA) {
   if (!is.na(name)) {
     result <- list()
     result[[name]] <- ""
-    if (!is.na(value)) {
+    if (!identical(value, NA)) {
       result[[name]] <- value
     }
   }
