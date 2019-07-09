@@ -289,7 +289,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				//Maybe something went wrong somewhere and we do no have labels for all values...
 				try
 				{
-					labels.getLabelObjectFromKey(value);
+					if (value != INT_MIN)
+						labels.getLabelObjectFromKey(value);
 				}
 				catch (const labelNotFound &)
 				{
