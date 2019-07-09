@@ -89,6 +89,17 @@ DropArea
 			}
 		]
 
+		Item
+		{
+			anchors.centerIn: parent
+			height: 0
+			width: 0
+			ToolTip.visible: mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
+			ToolTip.delay: 1000
+			ToolTip.timeout: 4000
+			ToolTip.text: qsTr("Drag to reorder the analyses")
+		}
+
 		MouseArea
 		{
 			id:				mouseArea
@@ -102,7 +113,7 @@ DropArea
 			{
 				if (drag.active)
 				{
-					analysesModel.currentAnalysisIndex = -1
+					analysesModel.unselectAnalysis()
 					analysesModel.moving = true
 					draggableItem.droppedIndex = -1
 				}
@@ -272,7 +283,7 @@ DropArea
 					iconSource:			"qrc:/icons/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
 					enabled:			expanderButton.expanded
 					onClicked:			analysisTitleInput.startEditing();
-					toolTip:			"Edit the title of this analysis"
+					toolTip:			qsTr("Edit the title of this analysis")
 					radius:				height
 					opacity:			enabled ? 1 : 0.5
 					anchors
@@ -292,7 +303,7 @@ DropArea
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			helpModel.showOrTogglePage(loader.myAnalysis.helpFile)
-					toolTip:			"Show info for analysis"
+					toolTip:			qsTr("Show info for analysis")
 					radius:				height
 					anchors
 					{
@@ -311,7 +322,7 @@ DropArea
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			analysesModel.removeAnalysis(loader.myAnalysis)
-					toolTip:			"Remove analysis"
+					toolTip:			qsTr("Remove analysis")
 					radius:				height
 					anchors
 					{

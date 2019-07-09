@@ -6,7 +6,7 @@ MenuButton
 	id:					sortButton
 	_scaledDim:         24 * preferencesModel.uiScale
 	width:				height
-	toolTip:			"Sort the items"
+	toolTip:			qsTr("Sort the items")
 	radius:				height
 	iconSource:			"qrc:/icons/sort-az.png"
 	z:                  10
