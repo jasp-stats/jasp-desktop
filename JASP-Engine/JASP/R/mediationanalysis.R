@@ -517,8 +517,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     conf_l <- NULL
   }
   # create a qgraph object using semplot
+  po <- .medLavToPlotObj(medResult)
   pp <- .suppressGrDevice(semPlot::semPaths(
-    object         = .medLavToPlotObj(medResult),
+    object         = po,
     layout         = rbind(deps_l, medi_l, pred_l, conf_l),
     intercepts     = FALSE,
     reorder        = FALSE,
@@ -529,7 +530,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     edge.label.cex = 0.9,
     lty            = 2,
     title          = FALSE,
-    sizeMan        = round(8*exp(-n_totl/80)+1)
+    sizeMan        = round(8*exp(-n_totl/80)+1),
+    legend         = options$plotlegend,
+    legend.mode    = ifelse(options$plotlegend, "names", "style1"),
+    nodeNames      = po@Vars$name
   ))
   
   # post-process plot
@@ -537,7 +541,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   jaspResults[["plot"]] <- createJaspPlot(pp, title = "Path plot", width = 600, height = 400)
   jaspResults[["plot"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]], 
-                                 options = c("pathplot", "plotpars"))
+                                 options = c("pathplot", "plotpars", "plotlegend"))
   jaspResults[["plot"]]$position <- 2
 }
 
@@ -560,7 +564,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .medPlotPostProcess <- function(plt, options) {
-  node_names <- names(plt$graphAttributes$Nodes$names)
+  node_names    <- plt$graphAttributes$Nodes$names
   confounds_idx <- which(node_names %in% options$confounds)
   predictor_idx <- which(node_names %in% options$predictor)
   dependent_idx <- which(node_names %in% options$dependent)
