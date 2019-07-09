@@ -876,7 +876,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			}
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
-				QTimer::singleShot(1000, this, &MainWindow::startComparingResults);
+			{
+				//Make sure the engine gets enough time to load data
+				_engineSync->pause();
+				_engineSync->resume();
+				QTimer::singleShot(666, this, &MainWindow::startComparingResults);
+			}
 
 		}
 		else
@@ -1133,6 +1138,8 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 {
 	if (filename == "%PREVIEW%" || filename == "%EXPORT%")
 	{
+		std::cout << "void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)" << std::endl;
+
 		_package->setAnalysesHTML(fq(data));
 		_package->setAnalysesHTMLReady();
 

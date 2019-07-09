@@ -45,6 +45,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	{
 		if(args[arg] == saveArg)
 			save = true;
+		else if(args[arg] == "--help" || args[arg] == "-h")
+			letsExplainSomeThings = true;
 		else if(args[arg] == "--logToFile")
 			logToFile = true;
 		else if(args[arg] == "--hide")
@@ -137,13 +139,14 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 	if(letsExplainSomeThings)
 	{
-		std::cout	<< "JASP can be started without arguments, or the following: { filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n"
+		std::cout	<< "JASP can be started without arguments, or the following: { --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n"
 					<< "If a filename is supplied JASP will try to load it. \nIf --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
 					<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
 					<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
 					<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes.\n"
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
 					<< "If --hide is specified then JASP will not be shown during recursive testing.\n"
+					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
 					<< std::flush;
 
 		exit(1);
