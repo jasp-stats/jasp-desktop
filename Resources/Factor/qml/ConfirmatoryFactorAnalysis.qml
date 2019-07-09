@@ -113,13 +113,8 @@ Form
 		title: qsTr("Additional Output")
 		GroupBox
 		{
-			title: qsTr("Additional Fit Measures")
-			CheckBox { label: qsTr("AIC")   ; name: "aic"   }
-			CheckBox { label: qsTr("BIC")   ; name: "bic"   }
-			CheckBox { label: qsTr("SRMR")  ; name: "srmr"  }
-			CheckBox { label: qsTr("TLI")   ; name: "tli"   }
-			CheckBox { label: qsTr("CFI")   ; name: "cfi"   }
-			CheckBox { label: qsTr("RMSEA") ; name: "rmsea" }
+			CheckBox { label: qsTr("Additional Fit Measures")   ; name: "additionalfits"   }
+      CheckBox { label: qsTr("R-Squared")                 ; name: "rsquared"         }
 		}
 		GroupBox
 		{
