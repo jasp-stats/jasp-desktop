@@ -156,7 +156,7 @@ DropArea
 		Rectangle
 		{
 			id:					expanderButton
-			height:				loaderAndError.y + (expanded ? loaderAndError.height : 0)
+			height:				loaderAndError.y
 			anchors.top:		parent.top
 			anchors.left:		parent.left
 			anchors.right:		parent.right
@@ -170,7 +170,19 @@ DropArea
 
 			onFormHeightChanged: if(analysesModel.currentAnalysisIndex === draggableItem.myIndex) analysesModel.currentFormHeight = expanderButton.formHeight
 
-			Behavior on height { NumberAnimation { duration: 200 } }
+			states: [
+				State
+				{
+					name: "expanded";	when: expanderButton.expanded
+					PropertyChanges {	target: expanderButton;		height: loaderAndError.y + loaderAndError.height;	}
+				}
+			]
+
+			transitions: Transition
+			{
+				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
+				NumberAnimation		{ property: "height";	duration: 200 }
+			}
 
 			Item
 			{
