@@ -41,7 +41,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 .bainPairedSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready) {
     if (!is.null(jaspResults[["bainTable"]])) return()
 
-    bainTable <- createJaspTable("Bain Paired Samples T-Test Result")
+    bainTable <- createJaspTable("Bain Paired Samples T-Test")
     bainTable$dependOn(options =c("pairs", "hypothesis", "bayesFactorType"))
     bainTable$position <- 1
 

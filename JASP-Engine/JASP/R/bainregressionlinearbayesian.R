@@ -50,7 +50,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	variables <- c(options[["dependent"]], unlist(options[["covariates"]]))
 
-	bainTable <- createJaspTable("Bain Linear Regression Result")
+	bainTable <- createJaspTable("Bain Linear Regression")
 	bainContainer[["bainTable"]] <- bainTable
 	bainTable$position <- 1
 

@@ -51,7 +51,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 	variables <- c(options$dependent, options$fixedFactors, unlist(options$covariates))
-	bainTable <- createJaspTable("Bain ANCOVA Result")
+	bainTable <- createJaspTable("Bain ANCOVA")
 
 	bainTable$addColumnInfo(name="hypotheses", 		type="string", title="")
 	bainTable$addColumnInfo(name="BF", 						type="number", title= "BF.c")

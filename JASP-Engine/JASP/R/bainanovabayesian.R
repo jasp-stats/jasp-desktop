@@ -51,7 +51,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 	variables <- c(options$dependent, options$fixedFactors)
-	bainTable <- createJaspTable("Bain ANOVA Result")
+	bainTable <- createJaspTable("Bain ANOVA")
 	bainTable$position <- 1
 
 	bainContainer[["bainTable"]] <- bainTable

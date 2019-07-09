@@ -42,7 +42,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
   if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
-  bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test Result")
+  bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
   bainTable$dependOn(options =c("variables", "hypothesis", "bayesFactorType", "groupingVariable"))
 	bainTable$position <- 1
 
