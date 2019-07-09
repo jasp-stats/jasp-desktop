@@ -10,6 +10,7 @@ DropArea
 	anchors.left:		parent.left
 	anchors.right:		parent.right
 	height:				expanderButton.height + 1
+	keys:				["analysis"]
 
 	property alias		myIndex:			draggableItem.myIndex
 	property alias		myAnalysis:         loader.myAnalysis
@@ -59,10 +60,10 @@ DropArea
 		property int		droppedIndex:		-1
 		property alias		myAnalysis:			loader.myAnalysis
 
-
-		Drag.active: mouseArea.drag.active
-		Drag.hotSpot.x: width/2
-		Drag.hotSpot.y: height/2
+		Drag.keys:			["analysis"]
+		Drag.active:		mouseArea.drag.active
+		Drag.hotSpot.x:		width/2
+		Drag.hotSpot.y:		height/2
 
 		states: [
 			State {

@@ -180,8 +180,8 @@ JASPControl
 
 		DropArea
 		{
-			id: dropArea
-			anchors.fill: parent
+			id:				dropArea
+			anchors.fill:	parent
 
 			property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
 
@@ -503,6 +503,7 @@ JASPControl
 					else if (mouseArea.containsMouse)											return Theme.itemHoverColor;
 					else																		return Theme.controlBackgroundColor;
 				}
+
 				Drag.keys:		[variablesList.name]
 				Drag.active:	mouseArea.drag.active
 				Drag.hotSpot.x:	itemRectangle.width / 2
@@ -593,7 +594,7 @@ JASPControl
 				
 				MouseArea
 				{
-					id: mouseArea
+					id:				mouseArea
 					anchors.fill:	parent
 					drag.target:	parent
 					hoverEnabled:	true
