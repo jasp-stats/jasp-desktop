@@ -37,7 +37,7 @@ Rectangle
 		font:			Theme.font
 		background:		Rectangle { color:	Theme.tooltipBackgroundColor }
 		visible:		handleRoot.dragEnabled && hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
-		y:				hoverMouse.mouseY
+		y:				hoverMouse.mouseY + 10
 		x:				parent.width / 2
 	}
 
@@ -92,6 +92,18 @@ Rectangle
 				z:				3
 			}
 
+			ToolTip
+			{
+				text:			handleRoot.toolTipArrow
+				timeout:		Theme.toolTipTimeout
+				delay:			Theme.toolTipDelay
+				font:			Theme.font
+				background:		Rectangle { color:	Theme.tooltipBackgroundColor }
+				visible:		handleRoot.toolTipArrow !== "" && arrowMouse.containsMouse
+				y:				arrowMouse.mouseY + 15
+				x:				parent.width / 2
+			}
+
 			Image
 			{
 
@@ -106,12 +118,6 @@ Rectangle
 				sourceSize.height:		height * 2;
 
 				anchors.centerIn:		parent
-
-				ToolTip.text:			handleRoot.toolTipArrow
-				ToolTip.timeout:		Theme.toolTipTimeout
-				ToolTip.delay:			Theme.toolTipDelay
-				ToolTip.toolTip.font:	Theme.font
-				ToolTip.visible:		handleRoot.toolTipArrow !== "" && arrowMouse.containsMouse
 
 			}
 		}
