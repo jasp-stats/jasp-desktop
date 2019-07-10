@@ -312,10 +312,11 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 												mu = options$testValue,
 												conf.level = percentConfidenceMeanDiff, conf.int = TRUE)
 						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-						maxw <- (n*(n+1))/2
-						d <- as.numeric((r$statistic/maxw) * 2 - 1)
-						wSE <- sqrt((n*(n+1)*(2*n+1))/6) /2
-						mrSE <- sqrt(wSE^2  * 4 * (1/maxw^2)) 
+						nd <- sum(dat != 0)
+						maxw <- (nd * (nd + 1)) / 2
+						d <- as.numeric((r$statistic / maxw) * 2 - 1)
+						wSE <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) /2
+						mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
 						# zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
 						zmbiss <- atanh(d)
 						d <- .clean(d)

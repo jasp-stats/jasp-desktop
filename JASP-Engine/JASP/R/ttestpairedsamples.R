@@ -272,10 +272,12 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 							res <- stats::wilcox.test(c1, c2, paired = TRUE,
 													  conf.level = percentConfidenceMeanDiff, conf.int = TRUE,
 													  alternative = direction)
-							maxw <- (n*(n+1))/2
-							d <- as.numeric((res$statistic/maxw) * 2 - 1)
-							wSE <- sqrt((n*(n+1)*(2*n+1))/6) /2
-							mrSE <- sqrt(wSE^2  * 4 * (1/maxw^2)) 
+							# only count the difference scores that are not 0.
+							nd <- sum(c1 - c2 != 0)
+							maxw <- (nd * (nd + 1))/2
+							d <- as.numeric((res$statistic / maxw) * 2 - 1)
+							wSE <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) / 2
+							mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
 							# zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
 							zmbiss <- atanh(d)
 							d <- .clean(d)
