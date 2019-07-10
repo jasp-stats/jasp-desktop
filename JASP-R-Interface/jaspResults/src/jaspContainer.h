@@ -47,6 +47,8 @@ public:
 	void		setError() override;
 	void		setError(std::string message) override;
 
+	bool		containsNonContainer();
+
 protected:
 	std::map<std::string, jaspObject*>	_data;
 	std::map<std::string, int>			_data_order;

@@ -523,14 +523,13 @@ jaspTableR <- R6Class(
   },
 		setExpectedSize = function(rows=NULL, cols=NULL) {
 			inputTypes <- c(mode(rows), mode(cols))
-			if (!all(inputTypes %in% c("numeric", "NULL")))
-				stop("Please use numeric values to set the expected size")
-			if (!is.null(rows) && !is.null(cols))
-				private$jaspObject$setExpectedSize(cols, rows)
-			else if (!is.null(rows))
-				private$jaspObject$setExpectedRows(rows)
-			else
-				private$jaspObject$setExpectedColumns(cols)
+
+      if (!all(inputTypes %in% c("numeric", "NULL")))	stop("Please use numeric values to set the expected size")
+
+      if (!is.null(rows) && !is.null(cols))		private$jaspObject$setExpectedSize(cols, rows)
+      else if (!is.null(rows))        				private$jaspObject$setExpectedRows(rows)
+      else if(!is.null(cols))         				private$jaspObject$setExpectedColumns(cols)
+      else                                    stop("Enter cols, rows or both in setExpectedSize!")
     },
     getColumnName       = function(columnIndex)               { return( private$jaspObject$colNames           [[columnIndex]]);               },
     setColumnName       = function(columnIndex, newName)      {         private$jaspObject$colNames$insert(     columnIndex,  newName);       },

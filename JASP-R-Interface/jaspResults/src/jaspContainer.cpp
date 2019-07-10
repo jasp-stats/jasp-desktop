@@ -231,6 +231,28 @@ void jaspContainer::completeChildren()
 	}
 }
 
+
+bool jaspContainer::containsNonContainer()
+{
+	for(auto keyval : _data)
+	{
+		jaspObject * obj = keyval.second;
+
+		switch(obj->getType())
+		{
+		case jaspObjectType::container:
+			if(static_cast<jaspContainer*>(obj)->containsNonContainer())
+				return true;
+			break;
+
+		default:
+				return true;
+		}
+	}
+
+	return false;
+}
+
 Json::Value jaspContainer::convertToJSON()
 {
 	Json::Value obj			= jaspObject::convertToJSON();

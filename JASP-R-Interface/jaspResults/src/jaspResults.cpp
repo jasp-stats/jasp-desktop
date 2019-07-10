@@ -201,6 +201,9 @@ void jaspResults::childrenUpdatedCallbackHandler()
 
 	checkForAnalysisChanged(); //can "throw" Rf_error
 
+	if(!containsNonContainer())
+		return;
+
 	int curTime = getCurrentTimeMs();
 	if(_sendingFeedbackLastTime == -1 || (curTime - _sendingFeedbackLastTime) > _sendingFeedbackInterval)
 	{
