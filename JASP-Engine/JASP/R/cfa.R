@@ -199,14 +199,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Bootstrapping with interruptible progress bar
   if (cfaResult[["spec"]]$bootstrap) {
-    jaspResults$startProgressbar(options$bootstrapNumber)
+    startProgressbar(options$bootstrapNumber)
     
     boot_1      <- lavaan::bootstrapLavaan(cfaResult[["lav"]], R = 1)
     bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
     bootres[1,] <- boot_1
     for (i in 2:options$bootstrapNumber) {
       bootres[i,] <- lavaan::bootstrapLavaan(cfaResult[["lav"]], 1)
-      jaspResults$progressbarTick()
+      progressbarTick()
     }
     
     cfaResult[["lav"]]@boot       <- list(coef = bootres)

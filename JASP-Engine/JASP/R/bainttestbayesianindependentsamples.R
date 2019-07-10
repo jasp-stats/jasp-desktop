@@ -92,7 +92,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!ready)
 		return()
 
-  jaspResults$startProgressbar(length(options[["variables"]]))
+  startProgressbar(length(options[["variables"]]))
   bainResult <- list()
   levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
   if (length(levels) != 2) {
@@ -120,7 +120,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 		if (isTryError(p)) {
 			bainTable$addRows(list(Variable=variable), rowNames=variable)
 			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
-			jaspResults$progressbarTick()
+      progressbarTick()
 			next
 		}
 		
@@ -223,7 +223,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
         }
     }
     bainTable$addRows(row, rowNames=variable)
-	  jaspResults$progressbarTick()
+    progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)
   jaspResults[["bainResult"]]$dependOn(optionsFromObject =bainTable)

@@ -112,7 +112,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!ready)
     return()
 
-  jaspResults$startProgressbar(length(options[["variables"]]))
+  startProgressbar(length(options[["variables"]]))
   bainResult <- list()
   
   for (variable in options[["variables"]]) {
@@ -128,7 +128,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     if (isTryError(p)) {
 			bainTable$addRows(list(Variable=variable), rowNames=variable)
 			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
-			jaspResults$progressbarTick()
+			progressbarTick()
 			next
 		}
 		
@@ -217,7 +217,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
         }
     }
     bainTable$addRows(row, rowNames=variable)
-    jaspResults$progressbarTick()
+    progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)
   jaspResults[["bainResult"]]$dependOn(optionsFromObject =bainTable)

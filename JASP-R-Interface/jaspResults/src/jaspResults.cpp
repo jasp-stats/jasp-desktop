@@ -9,8 +9,9 @@ std::string			jaspResults::_saveResultsRoot	= "";
 std::string			jaspResults::_baseCitation		= "";
 Rcpp::Environment*	jaspResults::_RStorageEnv		= nullptr;
 bool				jaspResults::_insideJASP		= false;
+jaspResults*		jaspResults::_jaspResults		= nullptr;
 
-const std::string jaspResults::analysisChangedErrorMessage = "Analysis changed and will be restarted!";
+const std::string jaspResults::_analysisChangedErrorMessage = "Analysis changed and will be restarted!";
 
 void jaspResults::setSendFunc(sendFuncDef sendFunc)
 {
@@ -51,6 +52,8 @@ void jaspResults::setInsideJASP()
 jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 	: jaspContainer(title, jaspObjectType::results)
 {
+	_jaspResults = this;
+
 	if(_RStorageEnv != nullptr)
 		delete _RStorageEnv;
 	_RStorageEnv = new Rcpp::Environment(_insideJASP ? Rcpp::Environment::global_env() : Rcpp::as<Rcpp::Environment>(Rcpp::Environment::namespace_env("jaspResults")[".plotStateStorage"]));
@@ -188,7 +191,7 @@ void jaspResults::checkForAnalysisChanged()
 	{
 		setStatus("changed");
 		static Rcpp::Function stop("stop");
-		stop(analysisChangedErrorMessage);
+		stop(_analysisChangedErrorMessage);
 	}
 }
 
@@ -273,7 +276,7 @@ Json::Value jaspResults::dataEntry()
 
 void jaspResults::setErrorMessage(std::string msg, std::string errorStatus)
 {
-	if(msg.find(analysisChangedErrorMessage) != std::string::npos)
+	if(msg.find(_analysisChangedErrorMessage) != std::string::npos)
 		return; //we do not wanna report analysis changed as an error I think
 
 	errorMessage = msg;
@@ -414,7 +417,9 @@ void jaspResults::convertFromJSON_SetFields(Json::Value in)
 	_previousOptions	= _currentOptions;
 }
 
-void jaspResults::startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs)
+
+
+void jaspResults::startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)
 {
 	_progressbarExpectedTicks		= expectedTicks;
 	_progressbarBetweenUpdatesTime	= timeBetweenUpdatesInMs;
@@ -432,7 +437,8 @@ void jaspResults::progressbarTick()
 
 	_progressbarTicks++;
 
-	int progress			= std::lround(100.0f * ((float)_progressbarTicks) / ((float)_progressbarExpectedTicks));	progress				= std::min(100, std::max(progress, 0));
+	int progress			= int(std::lround(100.0f * (float(_progressbarTicks) / float(_progressbarExpectedTicks))));
+	progress				= std::min(100, std::max(progress, 0));
 	_response["progress"]	= progress;
 
 	int curTime = getCurrentTimeMs();
@@ -440,10 +446,8 @@ void jaspResults::progressbarTick()
 	{
 		send();
 		
-		if (progress == 100)
-			resetProgressbar();
-		else
-			_progressbarLastUpdateTime = curTime;
+		if (progress == 100)	resetProgressbar();
+		else					_progressbarLastUpdateTime = curTime;
 	}
 }
 
@@ -453,8 +457,6 @@ void jaspResults::resetProgressbar()
 	_progressbarLastUpdateTime     = -1;
 	_progressbarTicks              = 0;
 	_progressbarBetweenUpdatesTime = 500;
-	_sendingFeedbackLastTime       = -1;
-	_sendingFeedbackInterval       = 500;
 	
 	_response["progress"] = -1;
 }

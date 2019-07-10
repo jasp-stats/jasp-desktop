@@ -21,6 +21,13 @@
 
 initJaspResults <- function() .onAttach()
 
+startProgressbar <- function(expectedTicks, timeBetweenUpdatesInMs=NULL) {
+  if(is.null(timeBetweenUpdatesInMs))   jaspResultsModule$startProgressbar(expectedTicks)
+  else                                  jaspResultsModule$startProgressbar(expectedTicks, timeBetweenUpdatesInMs)
+}
+
+progressbarTick <- function() { jaspResultsModule$progressbarTick(); }
+
 checkForJaspResultsInit <- function() {if (!exists("jaspResults", .GlobalEnv)) .onAttach()}
 
 is.JaspResultsObj <- function(x) {
@@ -118,13 +125,6 @@ jaspResultsR <- R6Class(
 			for (i in seq_along(x))
 				private$jaspObject$addCitation(x[i])
 		},
-
-		startProgressbar = function(ntick, updateMs) {
-      if (missing(updateMs))  private$jaspObject$startProgressbar(ntick)
-      else            				private$jaspObject$startProgressbar(ntick, updateMs)
-		},
-
-		progressbarTick = function()	private$jaspObject$progressbarTick(),
 		print           = function()	private$jaspObject$print(),
 		printHtml       = function()	private$jaspObject$printHtml(),
 		setError        = function(x)	private$jaspObject$setError(x),

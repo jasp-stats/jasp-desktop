@@ -18,9 +18,9 @@
 # When making changes to this file always mention @koenderks as a reviewer in the Pull Request
 
 .calc.n.binomial <- function(options, alpha, jaspResults){
-  jaspResults$startProgressbar(5000)
+  startProgressbar(5000)
   for(n in 1:5000){
-    jaspResults$progressbarTick()
+    progressbarTick()
     impk <- base::switch(options[["expectedErrors"]], "expectedRelative" = ceiling(n * options[["expectedPercentage"]]), "expectedAbsolute" = ceiling(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
     if(impk >= n){ next }
     x <- dbinom(0:impk, size = n, prob = jaspResults[["materiality"]]$object)
@@ -34,10 +34,10 @@
 }
 
 .calc.n.hypergeometric <- function(options, alpha, jaspResults){
-  jaspResults$startProgressbar(5000)
+  startProgressbar(5000)
   K <- ceiling(jaspResults[["N"]]$object * jaspResults[["materiality"]]$object)
   for(n in 1:5000){
-    jaspResults$progressbarTick()
+    progressbarTick()
     impk <- base::switch(options[["expectedErrors"]], "expectedRelative" = ceiling(n * options[["expectedPercentage"]]), "expectedAbsolute" = ceiling(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
     if(impk >= n) { next }
     x <- dhyper(x = 0:impk, m = K, n = jaspResults[["N"]]$object - K, k = n)
@@ -51,9 +51,9 @@
 }
 
 .calc.n.poisson <- function(options, alpha, jaspResults){
-  jaspResults$startProgressbar(5000)
+  startProgressbar(5000)
   for(n in 1:5000){
-    jaspResults$progressbarTick()
+    progressbarTick()
     k <- base::switch(options[["expectedErrors"]], "expectedRelative" = (n * options[["expectedPercentage"]]), "expectedAbsolute" = (options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
     x <- pgamma(jaspResults[["materiality"]]$object, shape = 1 + k, scale = 1 / n)
     # ppois(a; b) = 1 - pgamma(b; 1 + a; 1)

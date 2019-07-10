@@ -52,11 +52,17 @@ public:
 
 	std::string _relativePathKeep;
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
+	Json::Value convertToJSON()								override;
+	void		convertFromJSON_SetFields(Json::Value in)	override;
 
-	void startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs = 500);
+
+	void startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs);
 	void progressbarTick();
+
+	static void staticStartProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs) { _jaspResults->startProgressbarMs(expectedTicks, timeBetweenUpdatesInMs); }
+	static void staticStartProgressbar(int expectedTicks)								{ staticStartProgressbarMs(expectedTicks, 250); }
+	static void staticProgressbarTick()													{ _jaspResults->progressbarTick(); }
+
 	void resetProgressbar();
 
 	static Rcpp::RObject	getObjectFromEnv(std::string envName);
@@ -64,16 +70,16 @@ public:
 	static bool				objectExistsInEnv(std::string envName);
 
 private:
-	static Json::Value				_response;
-	static sendFuncDef				_ipccSendFunc;
-	static pollMessagesFuncDef		_ipccPollFunc;
-	static std::string				_saveResultsHere;
-	static std::string				_saveResultsRoot;
-	static std::string				_baseCitation;
-	static bool						_insideJASP;
-	static const std::string		analysisChangedErrorMessage;
-
+	static jaspResults				*	_jaspResults;
 	static Rcpp::Environment		*	_RStorageEnv; //we need this environment to store R objects in a "named" fashion, because then the garbage collector doesn't throw away everything...
+	static Json::Value					_response;
+	static sendFuncDef					_ipccSendFunc;
+	static pollMessagesFuncDef			_ipccPollFunc;
+	static std::string					_saveResultsHere;
+	static std::string					_saveResultsRoot;
+	static std::string					_baseCitation;
+	static bool							_insideJASP;
+	static const std::string			_analysisChangedErrorMessage;
 
 	std::string	errorMessage = "";
 	Json::Value	_currentOptions		= Json::nullValue,
@@ -83,7 +89,6 @@ private:
 	void addPlotPathsForKeepFromJaspObject(jaspObject * obj, Rcpp::List & pngPathImgObj);
 	void addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & cumulativeList);
 	void fillEnvironmentWithStateObjects(Rcpp::List state);
-
 
 	int		_progressbarExpectedTicks		= 100,
 			_progressbarLastUpdateTime		= -1,
@@ -108,13 +113,13 @@ public:
 	Rcpp::List	getOtherObjectsForState()			{ return ((jaspResults*)myJaspObject)->getOtherObjectsForState();	}
 	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState();	}
 	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList();				}
-	void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick();					}
+	//void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick();					}
 	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults();				}
 	
 	void		setErrorMessage(std::string msg, std::string errorStatus)			{ ((jaspResults*)myJaspObject)->setErrorMessage(msg, errorStatus);							}
 	
-	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks);							}
-	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs);	}
+	//void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks);							}
+	//void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs);	}
 
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }

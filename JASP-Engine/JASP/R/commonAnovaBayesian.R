@@ -213,7 +213,7 @@
   internalTable[, 1L] <- 1 / nmodels
 
   #Now compute Bayes Factors for each model in the list, and populate the tables accordingly
-  jaspResults$startProgressbar(nmodels)
+  startProgressbar(nmodels)
 
   # check if any models can be resued from the state
   if (!is.null(stateObj[["modelTerms"]])) {
@@ -289,7 +289,7 @@
                                                oldBFtype = "LogBF10")
       modelTable[["error %"]] <- internalTable[, "error %"]
     }
-    jaspResults$progressbarTick()
+    progressbarTick()
   }
 
   internalTableObj <- .BANOVAfinalizeInternalTable(options, internalTable)
@@ -1487,7 +1487,7 @@
   h <- (1 - options[["credibleInterval"]]) / 2
   probs <- c(h, 1-h)
 
-  jaspResults$startProgressbar(nmodels)
+  startProgressbar(nmodels)
   for (i in seq_len(nmodels)) {
     if (is.na(reuseable[i])) {
 
@@ -1557,7 +1557,7 @@
     # compute model averaged posterior means
     weightedMeans[nms] <- weightedMeans[nms] + postProbs[i] * statistics[[i]]$mean
     weights      [nms] <- weights      [nms] + postProbs[i]
-    jaspResults$progressbarTick()
+    progressbarTick()
   }
 
   # find out which parameters are random -- this uses types from the last iteration above

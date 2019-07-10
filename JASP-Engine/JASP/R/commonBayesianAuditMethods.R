@@ -18,9 +18,10 @@
 # When making changes to this file always mention @koenderks as a reviewer in the Pull Request
 
 .calc.n.beta <- function(options, alpha, jaspResults){
-    jaspResults$startProgressbar(5000)
+    startProgressbar(5000)
+
     for(n in 1:5000){
-      jaspResults$progressbarTick()
+      progressbarTick()
       impk <- base::switch(options[["expectedErrors"]], "expectedRelative" = n * options[["expectedPercentage"]], "expectedAbsolute" = (options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
       if(impk >= n){ next }
       x <- qbeta(p = 1 - alpha, shape1 = 1 + impk, shape2 = 1 + (n - impk))
@@ -45,10 +46,11 @@
 }
 
 .calc.n.betabinom <- function(options, alpha, jaspResults){
-    jaspResults$startProgressbar(5000)
+    startProgressbar(5000)
+
     N <- jaspResults[["N"]]$object
     for(n in 1:5000){
-      jaspResults$progressbarTick()
+      progressbarTick()
       impk <- base::switch(options[["expectedErrors"]], "expectedRelative" = n * options[["expectedPercentage"]], "expectedAbsolute" = (options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n))
       if(impk >= n){ next }
       x <- .qBetaBinom(p = 1 - alpha, N = N - n, shape1 = 1 + impk, shape2 = 1 + (n - impk)) / N

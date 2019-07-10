@@ -91,7 +91,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!ready)
       return()
 
-    jaspResults$startProgressbar(length(options[["pairs"]]))
+    startProgressbar(length(options[["pairs"]]))
     bainResult <- list()
 
     for (pair in options[["pairs"]]) {
@@ -120,7 +120,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
             if (isTryError(p)) {
               bainTable$addRows(list(Variable=variable), rowNames=variable)
               bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=currentPair)
-              jaspResults$progressbarTick()
+              progressbarTick()
               next
             } 
             
@@ -247,7 +247,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         }
     }
     bainTable$addRows(row, rowNames=currentPair)
-    jaspResults$progressbarTick()
+    progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)
   jaspResults[["bainResult"]]$dependOn(optionsFromObject =bainTable)
