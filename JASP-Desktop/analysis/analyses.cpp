@@ -360,8 +360,17 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 }
 
 
-void Analyses::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames)
+void Analyses::refreshAnalysesUsingColumns(
+		std::vector<std::string> &changedColumns,
+		std::vector<std::string> &missingColumns,
+		std::map<std::string, std::string> &changeNameColumns,
+		std::vector<std::string> &oldColumnNames,
+		bool hasNewColumns)
 {
+	if (hasNewColumns || missingColumns.size() > 0 || changeNameColumns.size() > 0 || changedColumns.size() > 0)
+		// Apparently this must be done at the end of the event loop
+		QTimer::singleShot(0, this, &Analyses::refreshAvailableVariables);
+
 	std::set<Analysis *> analysesToRefresh;
 
 	for (auto idAnalysis : _analysisMap)

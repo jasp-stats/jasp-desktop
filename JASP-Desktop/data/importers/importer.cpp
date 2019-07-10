@@ -321,7 +321,7 @@ void Importer::_syncPackage(
 	}
 
 	_packageData->dataSet()->setSynchingData(false);
-	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
+	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged, newColumns.size() > 0);
 
 	if(enginesLoaded)
 		_packageData->resumeEngines();

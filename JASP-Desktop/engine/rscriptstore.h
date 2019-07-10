@@ -22,6 +22,7 @@ struct RFilterStore : public RScriptStore
 	RFilterStore(QString generatedfilter, QString filter, int requestID) : RScriptStore(requestID, filter, engineState::filter), generatedfilter(generatedfilter) { }
 
 	QString generatedfilter;
+	bool	sentToEngine = false;
 };
 
 struct RComputeColumnStore : public RScriptStore

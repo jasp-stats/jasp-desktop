@@ -110,7 +110,10 @@ bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
 void FilterModel::processFilterResult(std::vector<bool> filterResult, int requestId)
 {
 	if((requestId > -1 && requestId < _lastSentRequestId) || _package == nullptr || _package->dataSet() == nullptr)
+	{
+		emit filterProcessed(requestId);
 		return;
+	}
 
 	_package->setDataFilter(_rFilter.toStdString()); //store the filter that was last used and actually gave results.
 	if(_package->dataSet()->setFilterVector(filterResult))
@@ -119,6 +122,7 @@ void FilterModel::processFilterResult(std::vector<bool> filterResult, int reques
 		emit filterUpdated();
 		updateStatusBar();
 	}
+	emit filterProcessed(requestId);
 }
 
 
@@ -126,6 +130,7 @@ void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
 {
 	if(requestId == _lastSentRequestId || requestId == -1)
 		setFilterErrorMsg(filterErrorMsg);
+	emit filterProcessed(requestId);
 }
 
 void FilterModel::sendGeneratedAndRFilter()

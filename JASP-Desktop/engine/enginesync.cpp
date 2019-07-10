@@ -150,6 +150,7 @@ void EngineSync::process()
 	for (auto engine : _engines)
 		engine->process();
 	
+	processFilterScript();
 	processLogCfgRequests();
 	processScriptQueue();
 	processDynamicModules();
@@ -158,12 +159,15 @@ void EngineSync::process()
 
 void EngineSync::sendFilter(const QString & generatedFilter, const QString & filter, int requestID)
 {
-	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
-	{
-		Log::log() << "waiting filter  with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+	Log::log() << "waiting filter with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
-		_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
-	}
+	_filterStores[requestID] = new RFilterStore(generatedFilter, filter, requestID);
+}
+
+void EngineSync::filterProcessed(int requestId)
+{
+	Log::log() << "filter with request " << requestId  << " processed" << std::endl << std::flush;
+	_filterStores.erase(requestId);
 }
 
 void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion)
@@ -188,65 +192,123 @@ void EngineSync::computeColumn(const QString & columnName, const QString & compu
 	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, columnType));
 }
 
+void EngineSync::processFilterScript()
+{
+	RFilterStore* filterStore = nullptr;
+	for (auto filterPair : _filterStores)
+	{
+		if (!filterPair.second->sentToEngine)
+		{
+			filterStore = filterPair.second;
+			break;
+		}
+	}
+
+	if (!filterStore)
+		return;
+
+	if (_checkIdleEngineMutex.tryLock())
+	{
+		try
+		{
+			for (auto *engine : _engines)
+			{
+				if (engine->isIdle())
+				{
+					engine->runScriptOnProcess(filterStore);
+					filterStore->sentToEngine = true;
+				}
+			}
+		} catch (...)
+		{
+			Log::log() << "Exception sent in processFilterScript" << std::endl << std::flush;
+		}
+		_checkIdleEngineMutex.unlock();
+	}
+	else
+		Log::log() << "_checkIdleEngineMutex locked!" << std::endl;
+}
+
 void EngineSync::processScriptQueue()
 {
-	for(auto * engine : _engines)
-		if(engine->isIdle())
+	if (_filterStores.size() > 0)
+		return;
+
+	if(_waitingScripts.size() == 0)
+		return;
+
+	if (_checkIdleEngineMutex.tryLock())
+	{
+		try
 		{
-			if(_waitingScripts.size() == 0 && _waitingFilter == nullptr)
-				return;
-
-			if(_waitingFilter != nullptr)
+			for(auto * engine : _engines)
 			{
-				engine->runScriptOnProcess(_waitingFilter);
-				_waitingFilter = nullptr;
-			}
-			else
-			{
-
-				RScriptStore * waiting = _waitingScripts.front();
-
-				switch(waiting->typeScript)
+				if(engine->isIdle())
 				{
-				case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
-				case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
-				case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
-				default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
-				}
+					RScriptStore * waiting = _waitingScripts.front();
 
-				_waitingScripts.pop();
-				delete waiting; //clean up
+					switch(waiting->typeScript)
+					{
+					case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
+					//case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
+					case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
+					default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
+					}
+
+					_waitingScripts.pop();
+					delete waiting; //clean up
+				}
 			}
 		}
+		catch(...)
+		{
+			Log::log() << "Exception thrown in processScriptQueue" << std::endl << std::flush;
+		}
+		_checkIdleEngineMutex.unlock();
+	}
 }
 
 
 void EngineSync::processDynamicModules()
 {
+	if (_filterStores.size() > 0)
+		return;
+
 	if(!amICastingAModuleRequestWide() && (_dynamicModules->aModuleNeedsToBeLoadedInR() || _dynamicModules->aModuleNeedsToBeUnloadedFromR()))
 	{
 		if(_dynamicModules->aModuleNeedsToBeLoadedInR())			setModuleWideCastVars(_dynamicModules->getJsonForPackageLoadingRequest());
 		else if(_dynamicModules->aModuleNeedsToBeUnloadedFromR())	setModuleWideCastVars(_dynamicModules->getJsonForPackageUnloadingRequest());
 	}
 
-	for(auto engine : _engines)
-		if(engine->isIdle())
-		{
-			if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->getJsonForPackageInstallationRequest());
-			else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
-		}
-}
+	if	(!_dynamicModules->aModuleNeedsPackagesInstalled() && _requestWideCastModuleJson.isNull())
+		return;
 
-bool EngineSync::idleEngineAvailable()
-{
-	for(auto engine : _engines)
-		if(engine->isIdle())
-			return true;
-	return false;
+	if (_checkIdleEngineMutex.tryLock())
+	{
+		try
+		{
+			for(auto engine : _engines)
+			{
+				if(engine->isIdle())
+				{
+					if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->getJsonForPackageInstallationRequest());
+					else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
+				}
+			}
+		}
+		catch(...)
+		{
+			Log::log() << "Exception thrown in processDynamicModules" << std::endl << std::flush;
+		}
+		_checkIdleEngineMutex.unlock();
+	}
 }
 
 void EngineSync::ProcessAnalysisRequests()
 {	
+	if (_filterStores.size() > 0)
+		return;
+
 	const size_t initedAnalysesStartIndex =
 #ifndef JASP_DEBUG
 			1; // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnComputes & moduleRequests.
@@ -259,9 +321,6 @@ void EngineSync::ProcessAnalysisRequests()
 
 	_analyses->applyToSome([&](Analysis * analysis)
 	{
-		if(!idleEngineAvailable())
-			return false;
-
 		if (analysis == nullptr || analysis->isWaitingForModule())
 			return true;
 
@@ -269,12 +328,27 @@ void EngineSync::ProcessAnalysisRequests()
 		bool needsToRun			= canUseFirstEngine		|| analysis->isInited();
 
 		if(needsToRun)
-			for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
-				if (_engines[i]->isIdle())
+		{
+			if (_checkIdleEngineMutex.tryLock())
+			{
+				try
 				{
-					_engines[i]->runAnalysisOnProcess(analysis);
-					break;
+					for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
+					{
+						if (_engines[i]->isIdle())
+						{
+							_engines[i]->runAnalysisOnProcess(analysis);
+							break;
+						}
+					}
 				}
+				catch(...)
+				{
+					Log::log() << "Exception thrown in ProcessAnalysisRequests" << std::endl << std::flush;
+				}
+				_checkIdleEngineMutex.unlock();
+			}
+		}
 
 		return true;
 	});
@@ -643,9 +717,30 @@ void EngineSync::logCfgReplyReceived(size_t channelNr)
 
 void EngineSync::processLogCfgRequests()
 {
-	for(size_t channelNr : _logCfgRequested)
-		if(_engines[channelNr]->isIdle())
-			_engines[channelNr]->sendLogCfg();
+	if (_filterStores.size() > 0)
+		return;
+
+	if (_logCfgRequested.size() == 0)
+		return;
+
+	Log::log() << "Try to lock _checkIdleEngineMutex in processLogCfgRequests" << std::endl;
+
+	if (_checkIdleEngineMutex.tryLock())
+	{
+		Log::log() << "_checkIdleEngineMutex locked" << std::endl;
+		try
+		{
+			for(size_t channelNr : _logCfgRequested)
+				if(_engines[channelNr]->isIdle())
+					_engines[channelNr]->sendLogCfg();
+		}
+		catch (...)
+		{
+			Log::log() << "Exception thrown in processLogCfgRequests" << std:: endl << std::flush;
+		}
+		_checkIdleEngineMutex.unlock();
+		Log::log() << "_checkIdleEngineMutex unlocked" << std::endl;
+	}
 
 }
 
@@ -660,9 +755,8 @@ void EngineSync::cleanUpAfterClose()
 		_waitingScripts.pop();
 	}
 
-	if(_waitingFilter != nullptr)
-		delete _waitingFilter;
-	_waitingFilter = nullptr;
+	while(_filterStores.size() > 0)
+		delete _filterStores.begin()->second;
 
 	TempFiles::clearSessionDir();
 

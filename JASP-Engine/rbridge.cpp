@@ -166,10 +166,9 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 
 std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, const std::string &imageBackground, RCallback callback, bool useJaspResults)
 {
-	rbridge_callback = callback;
-	if (rbridge_dataSet != NULL) {
-		rbridge_dataSet = rbridge_dataSetSource();
-	}
+	rbridge_callback	= callback;
+	rbridge_dataSet		= rbridge_dataSetSource();
+
 
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), rfile.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults, imageBackground.c_str());
 	rbridge_callback = NULL;
@@ -181,18 +180,15 @@ std::string rbridge_run(const std::string &name, const std::string &title, const
 
 std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground)
 {
-	rbridge_callback = NULL; //Only jaspResults here so callback is not needed
-
-	if (rbridge_dataSet != NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
+	rbridge_dataSet		= rbridge_dataSetSource();
 
 	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str());
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
 
 	if(rbridge_dataSet == NULL)
 		return NULL;
@@ -220,8 +216,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMax)
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
 
 	Columns &columns = rbridge_dataSet->columns();
 
@@ -433,12 +428,11 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 
 extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 {
-	if (rbridge_dataSet == NULL)
-			rbridge_dataSet = rbridge_dataSetSource();
+					rbridge_dataSet = rbridge_dataSetSource();
+	Columns		&	columns			= rbridge_dataSet->columns();
+	static int		staticColMax	= 0;
+	static char	**	staticResult	= NULL;
 
-	Columns &columns = rbridge_dataSet->columns();
-	static int staticColMax = 0;
-	static char** staticResult = NULL;
 	if (staticResult)
 	{
 		for (int i = 0; i < staticColMax; i++)
@@ -461,17 +455,16 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	if (!columnsType)
 		return NULL;
 
-	static size_t lastColMax = 0;
-	static RBridgeColumnDescription* resultCols = NULL;
+	static size_t						lastColMax = 0;
+	static RBridgeColumnDescription	*	resultCols = NULL;
+
 	if (resultCols != NULL)
 		freeRBridgeColumnDescription(resultCols, lastColMax);
-	lastColMax = colMax;
-	resultCols = (RBridgeColumnDescription*)calloc(colMax, sizeof(RBridgeColumnDescription));
 
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
-
-	Columns &columns = rbridge_dataSet->columns();
+	lastColMax			= colMax;
+	resultCols			= static_cast<RBridgeColumnDescription*>(calloc(colMax, sizeof(RBridgeColumnDescription)));
+	rbridge_dataSet		= rbridge_dataSetSource();
+	Columns &columns	= rbridge_dataSet->columns();
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
@@ -619,8 +612,8 @@ void freeRBridgeColumns()
 	free(datasetStatic[datasetColMax].ints); //rownames/numbers
 	free(datasetStatic);
 
-	datasetStatic = NULL;
-	datasetColMax = 0;
+	datasetStatic	= NULL;
+	datasetColMax	= 0;
 }
 
 void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax)
@@ -759,10 +752,8 @@ std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase6
 
 void rbridge_findColumnsUsedInDataSet()
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
-
-	Columns &columns = rbridge_dataSet->columns();
+	rbridge_dataSet		= rbridge_dataSetSource();
+	Columns &columns	= rbridge_dataSet->columns();
 
 	columnNamesInDataSet.clear();
 
