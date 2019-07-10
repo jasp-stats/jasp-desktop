@@ -322,34 +322,26 @@ int jaspTable::equalizeColumnsLengths()
 	return maximumFoundColumnLength;
 }
 
-Json::Value jaspTable::getCell(size_t col, size_t row)
+Json::Value jaspTable::getCell(size_t col, size_t row, size_t maxCol, size_t maxRow)
 {
 	if(col < _data.size() && row < _data[col].size())
 		return _data[col][row];
 
-	bool	amIExpected	=	(col < _data.size() || col < _expectedColumnCount) &&
-							(row < _expectedRowCount || (_data.size() > 0 && row < _data[0].size()));
+	bool	amIExpected	= col < maxCol && row < maxRow;
 	return	amIExpected ? Json::Value(".") : Json::nullValue;
 }
 
-std::string	jaspTable::getCellFormatted(size_t col, size_t row)
+std::string	jaspTable::getCellFormatted(size_t col, size_t row, size_t maxCol, size_t maxRow)
 {
-	Json::Value val(getCell(col, row));
+	Json::Value val(getCell(col, row, maxCol, maxRow));
 
 	std::string format = "";
-	if(_colFormats.containsField(getColName(col)))
-		format = _colFormats[getColName(col)];
-	else if(_colFormats.rowCount() > col)
-		format = _colFormats[col];
+	if(_colFormats.containsField(getColName(col)))	format = _colFormats[getColName(col)];
+	else if(_colFormats.rowCount() > col)			format = _colFormats[col];
 
-	if(val.isNull())
-		return "";
-
-	if(val.isString())
-		return val.asString();
-
-	if(val.isBool())
-		return val.asBool() ? "true" : "false";
+	if(val.isNull())	return "";
+	if(val.isString())	return val.asString();
+	if(val.isBool())	return val.asBool() ? "true" : "false";
 
 	if(format == "")
 	{
@@ -434,22 +426,30 @@ std::string	jaspTable::getCellFormatted(size_t col, size_t row)
 	return out.str();
 }
 
-std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths, bool onlySpecifiedColumns)
+void jaspTable::calculateMaxColRow(size_t & maxCol, size_t & maxRow)
 {
-	size_t	maxRow = _expectedRowCount,
-			maxCol = 0;
+	maxRow = _expectedRowCount;
+	maxCol = 0;
 
 	for(size_t col=0; col<_data.size(); col++)
 	{
-		if(!onlySpecifiedColumns || columnSpecified(col))
+		if(!_showSpecifiedColumnsOnly || columnSpecified(col))
 			maxCol++;
 
 		maxRow = std::max(maxRow, _data[col].size());
 	}
 
+	maxCol = std::max(maxCol, _expectedColumnCount);
+}
+
+std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths)
+{
+	size_t	maxRow, maxCol;
+	calculateMaxColRow(maxCol, maxRow);
+
 	size_t colsSpecified = maxCol;
 
-	if(!onlySpecifiedColumns && _expectedColumnCount > maxCol)
+	if(!_showSpecifiedColumnsOnly && _expectedColumnCount > maxCol)
 		maxCol = _expectedColumnCount;
 
 	std::vector<std::vector<std::string>> uit;
@@ -458,12 +458,12 @@ std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool no
 	size_t colDst = 0;
 	for(size_t colSrc=0; colSrc< std::max(_data.size(), _expectedColumnCount) && colDst<maxCol; colSrc++)
 	{
-		if(!onlySpecifiedColumns || columnSpecified(colSrc) || colsSpecified < _expectedColumnCount)
+		if(!_showSpecifiedColumnsOnly || columnSpecified(colSrc) || colsSpecified < _expectedColumnCount)
 		{
 			uit[colDst].resize(maxRow);
 
 			for(size_t row=0; row<maxRow; row++)
-				uit[colDst][row] = getCellFormatted(colSrc, row);
+				uit[colDst][row] = getCellFormatted(colSrc, row, maxCol, maxRow);
 
 			colDst++;
 		}
@@ -768,7 +768,7 @@ std::string jaspTable::dataToString(std::string prefix)
 {
 	std::stringstream out;
 
-	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(!_transposeTable, _transposeTable, _showSpecifiedColumnsOnly);
+	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(!_transposeTable, _transposeTable);
 	std::vector<std::string>				colNames = getDisplayableColTitles(true, _showSpecifiedColumnsOnly),
 											rowNames = getDisplayableRowTitles();
 
@@ -805,7 +805,7 @@ std::string jaspTable::toHtml()
 {
 	std::stringstream out;
 
-	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(false, false, _showSpecifiedColumnsOnly);
+	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(false, false);
 	std::vector<std::string>				colNames = getDisplayableColTitles(false, _showSpecifiedColumnsOnly),
 											rowNames = getDisplayableRowTitles(false);
 	out		<< "<div class=\"status " << _status << " jaspTable\">\n"
@@ -1206,6 +1206,9 @@ Json::Value	jaspTable::rowsJson()
 		}
 	}
 
+	size_t	maxRow, maxCol;
+	calculateMaxColRow(maxCol, maxRow);
+
 	bool keepGoing = true;
 	for(size_t row=0; keepGoing; row++)
 	{
@@ -1217,7 +1220,7 @@ Json::Value	jaspTable::rowsJson()
 			if(_data[col].size() > row)
 				aColumnKeepsGoing = true;
 
-			aRow[getColName(col)] = getCell(col, row);
+			aRow[getColName(col)] = getCell(col, row, maxCol, maxRow);
 		}
 
 		for(size_t col=_data.size(); col<_expectedColumnCount; col++)

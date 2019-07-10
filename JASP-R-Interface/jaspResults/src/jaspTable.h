@@ -107,8 +107,10 @@ public:
 	bool		columnSpecified(size_t col)			{ return _specifiedColumns.count(getColName(col)) > 0;	}
 	bool		columnSpecified(std::string col)	{ return _specifiedColumns.count(col) > 0;				}
 
-	Json::Value	getCell(size_t col, size_t row);
-	std::string	getCellFormatted(size_t col, size_t row);
+	Json::Value	getCell(			size_t col, size_t row, size_t maxCol, size_t maxRow);
+	std::string	getCellFormatted(	size_t col, size_t row, size_t maxCol, size_t maxRow);
+
+	void		calculateMaxColRow(size_t & maxCol, size_t & maxRow);
 
 	void		setExpectedSize(size_t columns, size_t rows)	{ setExpectedRows(rows); setExpectedColumns(columns);	}
 	void		setExpectedRows(size_t rows)					{ _expectedRowCount = rows;								}
@@ -117,12 +119,12 @@ public:
 private:
 	std::vector<std::string>	getDisplayableColTitles(bool normalizeLengths = true, bool onlySpecifiedColumns = true);
 	std::vector<std::string>	getDisplayableRowTitles(bool normalizeLengths = true);
-	void						rectangularDataWithNamesToString(std::stringstream & out, std::string prefix, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
-	void						rectangularDataWithNamesToHtml(std::stringstream & out, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
+	void						rectangularDataWithNamesToString(	std::stringstream & out, std::string prefix,	std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
+	void						rectangularDataWithNamesToHtml(		std::stringstream & out,						std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
 
 
 	std::map<std::string, std::string>				getOvertitlesMap();
-	std::vector<std::vector<std::string>>			dataToRectangularVector(bool normalizeColLengths = false, bool normalizeRowLengths = false, bool onlySpecifiedColumns = true);
+	std::vector<std::vector<std::string>>			dataToRectangularVector(bool normalizeColLengths = false, bool normalizeRowLengths = false);
 	std::vector<std::vector<std::string>>			transposeRectangularVector(const std::vector<std::vector<std::string>> & in);
 	std::map<std::string, std::map<size_t, size_t>> getOvertitleRanges(std::vector<std::string> names, std::map<std::string,std::string> overtitles);
 
