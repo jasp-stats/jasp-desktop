@@ -375,7 +375,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
         dfPointsPP   <- .dfPointsPP(a=a, b=b, hyp = hyp, theta0 = theta0, counts = counts, n = n)
         xName <- expression(paste("Population proportion ", theta))
         if(options$plotPriorAndPosteriorAdditionalInfo){
-          p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF01 = 1/BF10,
+          p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = 1/BF10,
                                                  CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE, bfSubscripts = bfSubscripts)
         }
         else {
@@ -395,7 +395,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
         dfLinesSR   <- .dfLinesSR(d = d, var = var, split = split, a = a, b = b, hyp = hyp, theta0 = theta0)
         dfPointsSR  <- NULL
         xName       <- "n"
-        p    <- JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF01 = 1/BF10, hasRightAxis = TRUE, bfSubscripts = bfSubscripts)
+        p    <- JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF = 1/BF10, hasRightAxis = TRUE, bfSubscripts = bfSubscripts)
         plot <- createJaspPlot(
           title       = "Sequential Analysis",
           width       = 530,

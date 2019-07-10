@@ -1,8 +1,8 @@
 #' @title Create a robustness or sequential plot
 #'
-#' @param dfLines A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.
+#' @param dfLines A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}. \code{$y} is assumed to be on the log scale.
 #' @param dfPoints A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.
-#' @param BF01 Numeric, with value of Bayes factor.
+#' @param BF Numeric, with value of Bayes factor. This MUST correspond to bfType.
 #' @param hasRightAxis Logical, should there be a right axis displaying evidence?
 #' @param xName String or expression, displayed on the x-axis.
 #' @param yName String or expression, displayed on the y-axis.
@@ -12,37 +12,53 @@
 #' Ignored if \code{!is.null(dfLines$g) && linesLegend}.
 #' @param pointLegend Logical, should a legend of \code{dfPoints$g} be shown?
 #' @param linesLegend Logical, should a legend of \code{dfLines$g} be shown?
-#' @param bfSubscripts String, to be parsed as expression. Indicates what BF type to display.
+#' @param bfType String, what is the type of BF? Options are "BF01", "BF10", or "LogBF10".
+#' @param hypothesis String, what was the hypothesis? Options are "equal", "smaller", or "greater".
+#' @param bfSubscripts String, manually specify the BF labels.
 #' @param pizzaTxt String vector of length 2, text to be drawn above and below pizza plot.
 #' @param pointColors String vector, colors for points if \code{dfPoints$g} is not \code{NULL}.
 #' @param lineColors String vector, colors for lines if \code{dfLines$g} is not \code{NULL}.
 #' @param lineTypes String vector, line types if \code{dfLines$g} is not \code{NULL}.
 #' @param addLineAtOne Logical, should a black line be draw at BF = 1?
 #' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
+#' @param plotLineOrPoint String, should the main geom in the plot be a line or a point?
 #' @param ... Unused.
+#'
+#' @example inst/examples/ex-PlotRobustnessSequential.R
 #'
 #' @export
 PlotRobustnessSequential <- function(
-  dfLines, dfPoints = NULL, BF01 = NULL, hasRightAxis = TRUE, xName = NULL, yName = bfSubscripts,
-  addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF01), evidenceLeveltxt = !is.null(BF01),
-  pointLegend = !is.null(dfPoints), linesLegend = !is.null(dfLines$g), bfSubscripts = "BF[1][0]", 
-  pizzaTxt = pizzaTxtFromBF(bfSubscripts), pointColors  = c("grey", "white", "black", "red"),
+  dfLines, dfPoints = NULL, BF = NULL, hasRightAxis = TRUE, xName = NULL, yName = NULL,
+  addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF), evidenceLeveltxt = !is.null(BF),
+  pointLegend = !is.null(dfPoints), linesLegend = !is.null(dfLines$g), bfSubscripts = NULL,
+  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, 
+  bfType = c("BF01", "BF10", "LogBF10"),
+  hypothesis = c("equal", "smaller", "greater"),
+  pointColors  = c("red", "grey", "black", "white"),
   lineColors = c("black", "grey", "black"), lineTypes = c("dotted", "solid", "solid"),
-  addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5), ...) {
+  addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5),
+  plotLineOrPoint = c("line", "point"), ...) {
 
-  errCheckPlots(dfLines = dfLines, dfPoints = dfPoints, BF01 = BF01)
-  if (!is.null(dfPoints) && !is.null(BF01)) {
+  errCheckPlots(dfLines = dfLines, dfPoints = dfPoints, BF = BF)
+  bfType <- match.arg(bfType)
+  plotLineOrPoint <- match.arg(plotLineOrPoint)
+  hypothesis <- match.arg(hypothesis)
+  emptyPlot <- list()
+  
+  if (is.null(yName)) {
+    if (bfType == "BF01") {
+      yName <- getBFSubscripts(bfType, hypothesis)[2L]
+    } else {
+      yName <- getBFSubscripts(bfType, hypothesis)[1L]
+    }
+  }
+
+  if (!is.null(dfPoints) && !is.null(BF)) {
     stop("Cannot provide both a BF pizzaplot and a points legend!")
   }
   
-  if (grepl('+', bfSubscripts, fixed = TRUE)) {
-    hyp <- "greater"
-  } else if(grepl('-', bfSubscripts, fixed = TRUE)) {
-    hyp<- "less"
-  } else {
-    hyp <- "two.sided"
-  }
   yRange <- range(dfLines$y)
+  parseYaxisLabels <- TRUE
 
   if (all(abs(yRange) <= log(100))) {
 
@@ -70,10 +86,36 @@ PlotRobustnessSequential <- function(
   } else {
     # adaptive steps
     hasRightAxis <- FALSE # make no sense to display this anymore
+    
+    # convert base e to base 10
+    yRange <- yRange * log10(exp(1))
+    dfLines$y <- dfLines$y * log10(exp(1))
+    if (!is.null(dfPoints))
+      dfPoints$y <- dfPoints$y * log10(exp(1)) 
+    
+    # round to ensure all point lie within the breaks
+    from <- floor(yRange[1L])
+    to <- ceiling(yRange[2L])
+    # rounding + unique avoids fractional breaks which aren't nicely displayed
+    yBreaksL <- unique(as.integer(getPrettyAxisBreaks(x = c(from, to))))
+    if (yBreaksL[1L] == 0)
+      yBreaksL <- c(-1, yBreaksL)
+    if (yBreaksL[length(yBreaksL)] == 0)
+      yBreaksL <- c(yBreaksL, 1)
 
-    yBreaksL <- getPrettyAxisBreaks(x = yRange)
-    yLabelsL <- parse(text = paste0("10^", yBreaksL))
-
+    if (max(abs(yBreaksL)) < 6L) { # below 1 000 000
+      # show 1 / 100, 1 / 10, ..., 10 , 100, ..., 100 000
+      idx <- yBreaksL < 0
+      # unused parsed version (EJ didn't like that)
+      # yLabelsL <- c(paste0("frac(1, ", yBreaksL[idx], ")"), yBreaksL[!idx])
+      # formatC(x, format = "fg") ensures 1e5 is shown as 100000 not 1e+05
+      yLabelsL <- c(paste("1 /", formatC(10^abs(yBreaksL[idx]), format = "fg")), 
+                    formatC(10^yBreaksL[!idx], format = "fg"))
+      parseYaxisLabels <- FALSE
+    } else { # above 1 000 000
+      # show 10^-1, 10^1, 10^2, ...
+      yLabelsL <- parse(text = paste0("10^", yBreaksL))
+    }
   }
 
   if (hasRightAxis) {
@@ -149,14 +191,18 @@ PlotRobustnessSequential <- function(
     colour   = gridCols,
     linetype = gridLtys
   )
+  
+  geom <- switch(plotLineOrPoint,
+                 "line"  = geom_line,
+                 "point" = geom_point)
 
   g <- ggplot(data = dfLines, mapping = mapping) +
     gridLines +
-    geom_line() +
+    geom() +
     scale_y_continuous(
       name     = parse(text = yName),
       breaks   = yBreaksL,
-      labels   = parse(text = yLabelsL),
+      labels   = if (parseYaxisLabels) parse(text = yLabelsL) else yLabelsL,
       limits   = range(yBreaksL),
       sec.axis = sexAcis
     ) +
@@ -169,7 +215,7 @@ PlotRobustnessSequential <- function(
   if (!is.null(dfPoints)) {
     mapping <- if (ncol(dfPoints) == 2L) aes(x = x, y = y) else aes(x = x, y = y, fill = g)
     g <- g + geom_point(data = dfPoints, mapping = mapping) +
-      ggplot2::scale_fill_manual(values = c("red", "gray", "black", "white"))
+      ggplot2::scale_fill_manual(values = pointColors[order(factor(dfPoints$g))])
 
     if (pointLegend) {
 
@@ -178,42 +224,41 @@ PlotRobustnessSequential <- function(
     }
   }
 
-  if (!is.null(BF01)) {
-    tmp <- makeBFwheelAndText(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt)
+  if (!is.null(BF)) {
+    if (is.null(bfSubscripts))
+      bfSubscripts <- getBFSubscripts(bfType, hypothesis)
+    
+    tmp <- makeBFwheelAndText(BF, bfSubscripts, pizzaTxt, drawPizzaTxt, bfType)
     gTextBF <- tmp$gTextBF
     gWheel <- tmp$gWheel
+
+  } else {
+    gWheel <- emptyPlot
+    gTextBF <- emptyPlot
   }
 
   linesLegendPlot <- gTextEvidence <- NULL
   if (linesLegend && !is.null(dfLines$g)) {
     evidenceLeveltxt <- FALSE
-    linesLegendPlot <- makeLegendPlot(dfLines$g, colors = lineColors, linetypes = lineTypes, type = "line")
+    linesLegendPlot <- makeLegendPlot(dfLines$g, colors = lineColors, linetypes = lineTypes, type = plotLineOrPoint)
   } else if (evidenceLeveltxt) {
 
-    val <- BF01
-    if (val > 1) {
-      #returns 1 if val in [1, 3], 2 if val in [3, 10], ...
-      idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
-      evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
-      
-      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
-      gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
-    }
-    else{
+    val <- BF
+    if (val < 1)
       val <- 1 / val
     # returns 1 if val in [1, 3], 2 if val in [3, 10], ...
     idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
     evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
     
-    if (hyp == "greater")
+    if (hypothesis == "greater")
       evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['+'], ':')"))
-    else if (hyp == "less")
+    else if (hypothesis == "smaller")
       evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['-'], ':')"))
     else 
       evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[1], ':')"))
     
     gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
-    }
+
   }
 
   if (addEvidenceArrowText) {
@@ -233,9 +278,9 @@ PlotRobustnessSequential <- function(
       yend = c(yBreaksL[2L] + 0.75 * d1, yBreaksL[n] + 0.75 * d2)
     )
     
-    if(hyp == "greater")
+    if(hypothesis == "greater")
       arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['+']")
-    else if (hyp == "less")
+    else if (hypothesis == "smaller")
       arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['-']")
     else
       arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
@@ -244,8 +289,12 @@ PlotRobustnessSequential <- function(
       y = (dfArrow$y + dfArrow$yend) / 2,
       x = 1.5 * xlocation, # 15% of x-range
       # additional '' around for are necessary because otherwise it's parsed as a for loop
-      label = arrowLabel
+      label = arrowLabel, 
+      stringsAsFactors = FALSE
     )
+    if (bfType == "BF01")
+      dfArrowTxt[["label"]] <- dfArrowTxt[["label"]][2:1]
+
     g <- g + ggplot2::geom_segment(
       data    = dfArrow, aes(x = x, y = y, xend = xend, yend = yend),
       lineend = "round", linejoin = "bevel",
@@ -263,14 +312,7 @@ PlotRobustnessSequential <- function(
       )
   }
 
-  # if (addLineAtOne) {
-  #   idx <- 1L + (yBreaksL == 0)
-  #   gridLines <- element_line(colour = c("gray", "black")[idx], linetype = c("dashed", "solid")[idx])
-  # } else {
-  #   gridLines <- element_line(colour = "grey", linetype = "dashed")
-  # }
   thm <- theme(
-    # panel.grid.major.y = gridLines,
     axis.ticks.y.right = element_line(colour = colsRight),
     axis.text.y.right  = element_text(margin = ggplot2::margin(r = 5))
   )
@@ -284,7 +326,7 @@ PlotRobustnessSequential <- function(
     if (file.exists(f))
       file.remove(f)
 
-  } else if (!is.null(BF01)) {
+  } else if (!is.null(BF)) {
 
     if (!is.null(linesLegendPlot)) {
       topPlotList <- list(gTextBF, gWheel, linesLegendPlot, g)
@@ -304,10 +346,6 @@ PlotRobustnessSequential <- function(
       layout_matrix = layout,
       widths        = c(.4, .2, .4)
     )
-    # topplot <- gridExtra::arrangeGrob(grobs = topPlotList[!idx], layout_matrix = layout,
-    #                                   padding = grid::unit(0.0, "line"))
-    # plot    <- gridExtra::arrangeGrob(grobs = list(topplot, g), nrow = 2L, ncol = 1L, heights = c(.2, .8),
-    #                                   padding = grid::unit(0.0, "line"))
     dev.off()
     if (file.exists(f)) file.remove(f)
 
