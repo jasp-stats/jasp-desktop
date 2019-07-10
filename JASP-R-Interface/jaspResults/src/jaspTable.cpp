@@ -431,12 +431,13 @@ void jaspTable::calculateMaxColRow(size_t & maxCol, size_t & maxRow)
 	maxRow = _expectedRowCount;
 	maxCol = 0;
 
-	for(size_t col=0; col<_data.size(); col++)
+	for(size_t col=0; col<std::max(_colNames.rowCount(), _data.size()); col++)
 	{
 		if(!_showSpecifiedColumnsOnly || columnSpecified(col))
 			maxCol++;
 
-		maxRow = std::max(maxRow, _data[col].size());
+		if(col < _data.size())
+			maxRow = std::max(maxRow, _data[col].size());
 	}
 
 	maxCol = std::max(maxCol, _expectedColumnCount);
@@ -1215,16 +1216,13 @@ Json::Value	jaspTable::rowsJson()
 		Json::Value aRow(Json::objectValue);
 		bool aColumnKeepsGoing = false;
 
-		for(size_t col=0; col<_data.size(); col++)
+		for(size_t col=0; col<std::max(_data.size(), maxCol); col++)
 		{
-			if(_data[col].size() > row)
+			if(col < _data.size() && row < _data[col].size())
 				aColumnKeepsGoing = true;
 
 			aRow[getColName(col)] = getCell(col, row, maxCol, maxRow);
 		}
-
-		for(size_t col=_data.size(); col<_expectedColumnCount; col++)
-			aRow[getColName(col)] = ".";
 
 		std::string rowName = getRowName(row);
 		if(footnotesPerRowCol.count(rowName) > 0)
