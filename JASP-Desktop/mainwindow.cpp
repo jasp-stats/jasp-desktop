@@ -190,7 +190,7 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 void MainWindow::makeConnections()
 {
 	_package->isModifiedChanged.connect(	boost::bind(&MainWindow::packageChanged,		this,	_1));
-	_package->dataChanged.connect(			boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
+	_package->dataChanged.connect(			boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5, _6));
 	_package->enginesInitializing.connect(	boost::bind(&MainWindow::enginesInitializing,	this));
 	_package->pauseEngines.connect(			boost::bind(&MainWindow::pauseEngines,			this));
 	_package->resumeEngines.connect(		boost::bind(&MainWindow::resumeEngines,			this));
@@ -285,6 +285,7 @@ void MainWindow::makeConnections()
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _tableModel,			&DataSetTableModel::setColumnsUsedInEasyFilter				);
 	connect(_filterModel,			&FilterModel::filterUpdated,						_tableModel,			&DataSetTableModel::refresh									);
 	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
+	connect(_filterModel,			&FilterModel::filterProcessed,						_engineSync,			&EngineSync::filterProcessed								);
 	connect(_filterModel,			&FilterModel::updateGeneratedFilterWithR,			_labelFilterGenerator,	&labelFilterGenerator::easyFilterConstructorRCodeChanged	);
 
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
@@ -515,7 +516,7 @@ void MainWindow::packageChanged(DataSetPackage *package)
 }
 
 
-void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged)
+void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged, bool hasNewColumns)
 {
 	std::vector<std::string> oldColumnNames;
 
@@ -526,7 +527,11 @@ void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedCo
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	_analyses->refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldColumnNames);
+	_analyses->refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldColumnNames, hasNewColumns);
+	if(rowCountChanged)
+	{
+		QTimer::singleShot(0, _analyses, &Analyses::refreshAllAnalyses);
+	}
 
 	_computedColumnsModel->packageSynchronized(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
@@ -578,14 +583,15 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 									vector<string> &changedColumns,
 									vector<string> &missingColumns,
 									map<string, string> &changeNameColumns,
-									bool rowCountChanged)
+									bool rowCountChanged,
+									bool hasNewColumns)
 {
 	setDataSetAndPackageInModels(package);
 
 	_labelFilterGenerator->regenerateFilter();
 	_filterModel->sendGeneratedAndRFilter();
 
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged, hasNewColumns);
 }
 
 
@@ -1129,7 +1135,7 @@ void MainWindow::emptyValuesChangedHandler()
 		_package->dataSet()->setSynchingData(false);
 		_package->resumeEngines();
 		_package->setModified(true);
-		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false);
+		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false, false);
 	}
 }
 

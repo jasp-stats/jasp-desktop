@@ -28,6 +28,7 @@
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 #include "enginerepresentation.h"
+#include <QMutex>
 
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
@@ -53,6 +54,7 @@ public slots:
 	void computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
 	void pause();
 	void resume();
+	void filterProcessed(int requestId);
 	void refreshAllPlots();
 	void stopEngines();
 	void logCfgRequest();
@@ -82,7 +84,6 @@ signals:
 	void refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 
 private:
-	bool		idleEngineAvailable();
 	bool		allEnginesStopped();
 	bool		allEnginesPaused();
 	bool		allEnginesResumed();
@@ -90,6 +91,7 @@ private:
 	void		processScriptQueue();
 	void		processLogCfgRequests();
 	void		processDynamicModules();
+	void		processFilterScript();
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
 	void		setModuleWideCastVars(Json::Value newVars);
@@ -122,7 +124,7 @@ private:
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::vector<EngineRepresentation*>	_engines;
-	RFilterStore						*_waitingFilter = nullptr;
+	std::map<int, RFilterStore*>		_filterStores;
 
 	std::string _memoryName,
 				_engineInfo;
@@ -131,6 +133,7 @@ private:
 	Json::Value					_requestWideCastModuleJson		= Json::nullValue;
 	std::map<int, std::string>	_requestWideCastModuleResults;
 	std::set<size_t>			_logCfgRequested				= {};
+	QMutex						_checkIdleEngineMutex;
 };
 
 #endif // ENGINESYNC_H

@@ -141,10 +141,10 @@ private:
 	void checkUsedModules();
 
 	void packageChanged(DataSetPackage *package);
-	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged);
+	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged, bool hasNewColumns);
 	void setDataSetAndPackageInModels(DataSetPackage *package);
 	void setPackageModified();
-	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged);
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 
 	bool closeRequestCheck(bool &isSaving);
 	void saveTextToFileHandler(const QString &filename, const QString &data);

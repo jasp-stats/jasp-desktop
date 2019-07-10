@@ -136,8 +136,11 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 		const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
 		for (ListModelAssignedInterface* modelAssign : assignedModels)
 		{
-			if (!modelAssign->copyTermsWhenDropped())
-				_terms.remove(modelAssign->terms());
+			Terms assignedTerms = modelAssign->terms();
+			if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
+				modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
+			else if (!modelAssign->copyTermsWhenDropped())
+				_terms.remove(assignedTerms);
 		}
 	}
 	

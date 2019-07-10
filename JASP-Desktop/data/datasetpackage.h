@@ -97,7 +97,8 @@ public:
 										  std::vector<std::string> &			changedColumns,
 										  std::vector<std::string> &			missingColumns,
 										  std::map<std::string, std::string> &	changeNameColumns,
-										  bool									rowCountChanged)>		dataChanged;
+										  bool									rowCountChanged,
+										  bool									hasNewColumns)>			dataChanged;
 			boost::signals2::signal<void()>																pauseEngines,
 																										resumeEngines;
 			boost::signals2::signal<bool()>																enginesInitializing;
