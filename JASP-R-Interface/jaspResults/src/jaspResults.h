@@ -24,11 +24,12 @@ public:
 	static bool isInsideJASP() { return _insideJASP; }
 
 	void send(std::string otherMsg = "");
+	void sendProgress();
 	void checkForAnalysisChanged();
 	void setStatus(std::string status);
 	std::string getStatus();
 
-	const char *	constructResultJson();
+	const char *	constructResultJson(bool includeActualResults = true);
 	Json::Value		metaEntry() override;
 	Json::Value		dataEntry() override;
 

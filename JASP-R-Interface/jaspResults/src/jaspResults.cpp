@@ -182,6 +182,11 @@ void jaspResults::send(std::string otherMsg)
 		(*_ipccSendFunc)(otherMsg == "" ? constructResultJson() : otherMsg.c_str());
 }
 
+void jaspResults::sendProgress()
+{
+	send(constructResultJson(false)); //Only send progress update
+}
+
 void jaspResults::checkForAnalysisChanged()
 {
 	if(_ipccPollFunc == nullptr)
@@ -217,21 +222,26 @@ void jaspResults::childrenUpdatedCallbackHandler()
 
 Json::Value jaspResults::_response = Json::Value(Json::objectValue);
 
-const char * jaspResults::constructResultJson()
+const char * jaspResults::constructResultJson(bool includeActualResults)
 {
 	_response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
-	_response["results"]		= dataEntry();
-	_response["name"]		= _response["results"]["title"];
+	_response["results"]		= includeActualResults ? dataEntry() : Json::nullValue;
+	_response["name"]			= _response["results"]["title"];
 
-	if(errorMessage != "" )
+	if(!includeActualResults)
+		_response.removeMember("results"); // looks a bit weird to add it and remove it later but it's static so it might be there from a previous send
+	else
 	{
-		_response["results"]["error"]		= true;
-		_response["results"]["errorMessage"] = errorMessage;
-	}
-	else if (_error)
-	{
-		_response["results"]["error"]		= true;
-		_response["results"]["errorMessage"] = "Analyis returned an error but no errormessage...";
+		if(errorMessage != "" )
+		{
+			_response["results"]["error"]		= true;
+			_response["results"]["errorMessage"] = errorMessage;
+		}
+		else if (_error)
+		{
+			_response["results"]["error"]		= true;
+			_response["results"]["errorMessage"] = "Analyis returned an error but no errormessage...";
+		}
 	}
 
 	static std::string msg;
@@ -428,7 +438,7 @@ void jaspResults::startProgressbarMs(int expectedTicks, int timeBetweenUpdatesIn
 
 	_response["progress"]			= 0;
 
-	send();
+	sendProgress();
 }
 
 void jaspResults::progressbarTick()
@@ -444,7 +454,7 @@ void jaspResults::progressbarTick()
 	int curTime = getCurrentTimeMs();
 	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progress == 100)
 	{
-		send();
+		sendProgress();
 		
 		if (progress == 100)	resetProgressbar();
 		else					_progressbarLastUpdateTime = curTime;
