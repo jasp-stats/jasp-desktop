@@ -28,7 +28,7 @@ void _printAllTimers()
 		return;
 
 	for(auto keyval : *timers)
-		Log::log() << keyval.first << " ran for " << keyval.second->format() << std::endl;
+		std::cout << keyval.first << " ran for " << keyval.second->format() << std::endl;
 }
 
 #endif

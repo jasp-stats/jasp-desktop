@@ -30,4 +30,12 @@ testFunc <- function(jaspResults, dataset, options)
 	filtered[['rowName']] <- options$filteredData[[1]]$rowIndices
 
 	jaspResults[['filteredDataEntryExample']] <- filtered
+
+	startProgressbar(10)
+
+	for(n in 1:10)
+	{
+		Sys.sleep(1)
+		progressbarTick()
+	}
 }

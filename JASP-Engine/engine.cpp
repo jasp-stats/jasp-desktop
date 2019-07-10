@@ -585,7 +585,11 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 
 DataSet * Engine::provideDataSet()
 {
-	return SharedMemory::retrieveDataSet(_parentPID);
+	JASPTIMER_RESUME(Engine::provideDataSet());
+	DataSet * dataset = SharedMemory::retrieveDataSet(_parentPID);
+	JASPTIMER_STOP(Engine::provideDataSet());
+
+	return dataset;
 }
 
 void Engine::provideStateFileName(std::string &root, std::string &relativePath)
