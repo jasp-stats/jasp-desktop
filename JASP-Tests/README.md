@@ -51,7 +51,9 @@ For more information about this package see [this online book chapter by Hadley 
 The general structure of the tests is as follows:  
 \- A folder titled testthat contains a number of test-analysisName.R files.  
 -- Each test file has an analysis specific context and consists of tests that check that specific analysis.  
---- Each test in a file checks a specific expectation of a small portion of analysis functionality (e.g., a table, a plot, error handling, etc.)  
+--- Each test in a file checks a specific expectation of a small portion of analysis functionality (e.g., a table, a plot, error handling, etc.)
+
+It is possible to automatically generate the tests, but we'll first show how to do it manually.
 
 The testthat package offers a number of expectations useful for testing.  
 JASP offers two additional expectations:
@@ -88,8 +90,6 @@ test_that("Binomial table results match", {
 })
 ```
 
-`expect_equal_tables` is a wrapper around `testthat::expect_equal` and accepts the same arguments.
-
 In a similar fashion `expect_equal_plots` may be used to test regression of plots.  
 This function is a wrapper around `vdiffr::expect_doppelganger` (for more information about vdffir see their [github page](https://github.com/lionel-/vdiffr)).
 The function takes a plot object or recorded plot and compares it to a stored .svg file.  
@@ -114,6 +114,38 @@ Validating a plot places it in figs/analysisName.
 
 As noted earlier, testthat offers a number of expectations as well.  
 You should use whatever is most suitable for the situation.
+
+Of course, the above set of steps might be a bit tedious to perform for every table and plot. There are two things you can do to make your life easier. Firstly, you can let `jasptools::run()` take care of making expectations by setting `makeTests=TRUE`. Secondly, you can use the JASP application to easily set the options and then supply these to `jasptools::analysisOptions()`. After you set the options, look in the Qt terminal and copy the json that follows after `Engine::receiveAnalysisMessage:`. Make sure to include both `{` and `}` that surround the analysis call and use single quotes when supplying them to `analysisOptions()`. Your syntax should look like the following:
+```
+options <- analysisOptions('{
+   "dynamicModuleCall" : "",
+   "id" : 13,
+   "imageBackground" : "white",
+   "jaspResults" : true,
+   "name" : "BinomialTest",
+   "options" : {
+      "VovkSellkeMPR" : true,
+      "confidenceInterval" : true,
+      "confidenceIntervalInterval" : 0.950,
+      "descriptivesPlots" : true,
+      "descriptivesPlotsConfidenceInterval" : 0.950,
+      "hypothesis" : "notEqualToTestValue",
+      "plotHeight" : 320,
+      "plotWidth" : 480,
+      "testValue" : 0.50,
+      "variables" : [ "contBinom" ]
+   },
+   "perform" : "run",
+   "ppi" : 192,
+   "revision" : 4,
+   "rfile" : "",
+   "title" : "Binomial Test",
+   "typeRequest" : "analysis"
+}')
+jasptools::run(options=options, dataset="debug.csv", makeTests=TRUE)
+```
+
+You will be able to copy-paste the output directly in a test-file. You can do this for several `jasptools::run()`'s to get a good coverage. Just make sure that on the top of the test-file you have defined a `context("analysis name")` (otherwise testthat will throw an error).
 
 #### Dependencies related to plots
 Note that it is very important that all plots are created with equal versions of certain dependencies.  
