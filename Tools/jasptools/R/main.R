@@ -139,6 +139,9 @@ view <- function(results) {
   content <- .parseUnicode(content)
   content <- gsub("<div class=stack-trace>", "<div>", content, fixed=TRUE) # this makes sure the stacktrace is not hidden
 
+  
+  content <- gsub("\\\"", "\\\\\"", content, fixed=TRUE) # double escape all escaped quotes (otherwise the printed json is invalid)
+  
   html <- readChar(file.path(.getPkgOption("html.dir"), "index.html"), 1000000)
   insertedJS <- paste0(
     "<script>
