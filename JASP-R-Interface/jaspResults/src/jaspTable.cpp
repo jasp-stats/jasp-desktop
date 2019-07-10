@@ -327,8 +327,9 @@ Json::Value jaspTable::getCell(size_t col, size_t row)
 	if(col < _data.size() && row < _data[col].size())
 		return _data[col][row];
 
-	bool amIExpected = col < _expectedColumnCount && row < _expectedRowCount;
-	return amIExpected ? Json::Value(".") : Json::nullValue;
+	bool	amIExpected	=	(col < _data.size() || col < _expectedColumnCount) &&
+							(row < _expectedRowCount || (_data.size() > 0 && row < _data[0].size()));
+	return	amIExpected ? Json::Value(".") : Json::nullValue;
 }
 
 std::string	jaspTable::getCellFormatted(size_t col, size_t row)
