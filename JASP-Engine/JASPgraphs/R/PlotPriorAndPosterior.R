@@ -82,11 +82,13 @@ draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", 
   )
 }
 
-errCheckPlotPriorAndPosterior <- function(x, length = 1L) {
-	return(!is.null(x) && (length(x) != length || !is.numeric(x) || anyNA(x)))
+errCheckPlotPriorAndPosterior <- function(x, length = 1L, nullOk = TRUE) {
+  if (is.null(x))
+    return(!nullOk)
+	return(length(x) != length || !is.numeric(x) || anyNA(x))
 }
 
-errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, BF01 = NULL) {
+errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, BF = NULL) {
 
   if (!all(is.data.frame(dfLines), !is.null(dfLines$x), !is.null(dfLines$y),
            ncol(dfLines) == 2L || !is.null(dfLines$g)))
@@ -98,8 +100,8 @@ errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, B
     stop("CRI should be numeric and have length 2! (left bound, right bound)")
   if (errCheckPlotPriorAndPosterior(median))
     stop("median should be numeric and have length 1!")
-  if (errCheckPlotPriorAndPosterior(BF01))
-    stop("BF01 should be numeric and have length 1!")
+  if (errCheckPlotPriorAndPosterior(BF))
+    stop("BF should be numeric and have length 1!")
 
   return(invisible(TRUE))
 }
@@ -150,23 +152,28 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
   }
 
   if (!is.null(fill))
-    legendPlot <- legendPlot + ggplot2::scale_fill_manual(values = fill)
+    legendPlot <- legendPlot + ggplot2::scale_fill_manual(values = rev(fill))
   if (!is.null(colors))
-    legendPlot <- legendPlot + ggplot2::scale_color_manual(values = colors)
+    legendPlot <- legendPlot + ggplot2::scale_color_manual(values = rev(colors))
   if (!is.null(linetypes))
-    legendPlot <- legendPlot + ggplot2::scale_linetype_manual(values = linetypes)
+    legendPlot <- legendPlot + ggplot2::scale_linetype_manual(values = rev(linetypes))
 
   return(legendPlot)
 }
 
-makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL) {
-  if (is.null(subs))
-    subs <- unlist(stringr::str_extract_all(bfSubscripts, "(?<=\\[).+?(?=\\])")) # get everything between []
-  if (length(subs) != length(BFvalues))
-    stop("bfSubscripts and BFvalues have different length!")
-  lab <- paste0("BF[", subs[2:1], "]", "[", subs[1:2], "] == ",
-    format(BFvalues, digits = getGraphOption("digits")[["BF"]])
-  )
+makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
+  
+  if (!is.null(bfTxt)) {
+    lab <- paste0(bfTxt, " == ", format(BFvalues, digits = getGraphOption("digits")[["BF"]]))
+  } else {
+    if (is.null(subs))
+      subs <- unlist(stringr::str_extract_all(bfSubscripts, "(?<=\\[).+?(?=\\])")) # get everything between []
+    if (length(subs) != length(BFvalues))
+      stop("bfSubscripts and BFvalues have different length!")
+    lab <- paste0("BF[", subs[2:1], "]", "[", subs[1:2], "] == ",
+                  format(BFvalues, digits = getGraphOption("digits")[["BF"]])
+    )
+  }
   return(parseThis(lab))
 }
 
@@ -206,12 +213,58 @@ pizzaTxtFromBF <- function(x) {
   pizzaTxt
 }
 
-makeBFwheelAndText <- function(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt)) {
+#' @export
+getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater")) {
+  
+  bfType <- match.arg(bfType)
+  hypothesis <- match.arg(hypothesis)
+  
+  if (bfType == "BF01") {
+    subscripts <- switch (hypothesis,
+      "equal"   = c("BF[1][0]",   "BF[0][1]"),
+      "smaller" = c("BF['-'][0]", "BF[0]['-']"),
+      "greater" = c("BF['+'][0]", "BF[0]['+']")
+    )
+    # subscripts <- switch (hypothesis,
+    #   "equal"   = c("BF[0][1]",   "BF[1][0]"),
+    #   "smaller" = c("BF[0]['-']", "BF['-'][0]"),
+    #   "greater" = c("BF[0]['+']", "BF['+'][0]")
+    # )
+  } else if (bfType == "BF10") {
+    subscripts <- switch (hypothesis,
+      "equal"   = c("BF[1][0]",   "BF[0][1]"),
+      "smaller" = c("BF['-'][0]", "BF[0]['-']"),
+      "greater" = c("BF['+'][0]", "BF[0]['+']")
+    )
+  } else {
+    subscripts <- switch (hypothesis,
+      "equal"   = c("log(BF[0][1])",   "log(BF[1][0])"    ),
+      "smaller" = c("log(BF[0]['-'])", "log(BF['-'][0])"),
+      "greater" = c("log(BF[0]['+'])", "log(BF['+'][0])")
+    )
+  }
+  return(parseThis(subscripts))
+}
 
-  labels <- makeBFlabels(bfSubscripts, c(BF01, 1 / BF01))
+makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt), bfType) {
+  
+  # drawBFpizza uses BF01
+  bfSubscripts <- rev(bfSubscripts)
+  if (bfType == "BF10") {
+    BF01 <- 1 / BF
+    BFvalues <- c(1 / BF, BF)
+  } else if (bfType == "BF01") {
+    BF01 <- 1 / BF
+    BFvalues <- c(1 / BF, BF)
+  } else { # LogBF10
+    BF01 <- exp(-BF)
+    BFvalues <- c(-BF, BF)
+  }
+  
+  labels <- makeBFlabels(bfTxt = bfSubscripts, BFvalues = BFvalues)
   return(list(
-    gTextBF = draw2Lines(labels, x = 0.7),
-    gWheel = drawBFpizza(
+      gTextBF = draw2Lines(labels, x = 0.7),
+      gWheel = drawBFpizza(
       dat = data.frame(y = c(1, BF01)),
       labels = if (drawPizzaTxt) pizzaTxt else NULL
     )
@@ -219,28 +272,39 @@ makeBFwheelAndText <- function(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt = is.n
 }
 
 #' @title Create a prior-posterior plot.
+#'
 #' @param dfLines A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.
 #' @param dfPoints A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.
-#' @param BF01 Numeric, with value of Bayes factor.
+#' @param BF Numeric, with value of Bayes factor. This MUST correspond to bfType.
 #' @param CRI Numeric of length 2, Credible interval of posterior.
 #' @param median Numeric, median of posterior.
 #' @param xName String or expression, displayed on the x-axis.
 #' @param yName String or expression, displayed on the y-axis.
 #' @param drawPizzaTxt Logical, should there be text above and below the pizza plot?
 #' @param drawCRItxt Logical, should the credible interval be displayed in text?
-#' @param bfSubscripts String, to be parsed as expression. Indicates what BF type to display.
+#' @param bfType String, what is the type of BF? Options are "BF01", "BF10", or "LogBF10".
+#' @param hypothesis String, what was the hypothesis? Options are "equal", "smaller", or "greater".
+#' @param bfSubscripts String, manually specify the BF labels.
 #' @param pizzaTxt String vector of length 2, text to be drawn above and below pizza plot.
 #' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
 #' @param ... Unused.
 #'
+#' @return If BF, CRI, and median are all NULL a ggplot, otherwise a gtable.
+#'
+#' @example inst/examples/ex-PlotPriorAndPosterior.R
+#"
 #' @export
-PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = NULL, median = NULL, xName = NULL,
-                                  yName = "Density", drawPizzaTxt = !is.null(BF01), drawCRItxt = !is.null(CRI),
-                                  bfSubscripts = "BF[0][1]",
-                                  pizzaTxt = pizzaTxtFromBF(bfSubscripts),
+PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NULL, median = NULL, xName = NULL,
+                                  yName = "Density", drawPizzaTxt = !is.null(BF), drawCRItxt = !is.null(CRI),
+                                  bfType = c("BF01", "BF10", "LogBF10"),
+                                  hypothesis = c("equal", "smaller", "greater"),
+                                  bfSubscripts = NULL,
+                                  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, 
                                   bty = list(type = "n", ldwX = .5, lwdY = .5), ...) {
   
-	errCheckPlots(dfLines, dfPoints, CRI, median, BF01)
+	errCheckPlots(dfLines, dfPoints, CRI, median, BF)
+  bfType <- match.arg(bfType)
+  hypothesis <- match.arg(hypothesis)
 
   emptyPlot <- list()
 
@@ -308,8 +372,11 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
       legend.key.width = unit(1.5, "cm")
     )
 
-  if (!is.null(BF01)) {
-    tmp <- makeBFwheelAndText(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt)
+  if (!is.null(BF)) {
+    if (is.null(bfSubscripts))
+      bfSubscripts <- getBFSubscripts(bfType, hypothesis)
+    
+    tmp <- makeBFwheelAndText(BF, bfSubscripts, pizzaTxt, drawPizzaTxt, bfType)
     gTextBF <- tmp$gTextBF
     gWheel <- tmp$gWheel
 
@@ -327,10 +394,12 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
     layout <- matrix(1:3, 1, 3)
     layout[idx] <- NA_integer_
     layout <- rbind(layout, 4)
+    plots2arrange <- c(topPlotList[!idx], list(g))
+    
     f <- tempfile()
     png(f)
     plot <- arrangeGrob(
-      grobs         = list(gTextBF, gWheel, gTextCI, g),
+      grobs         = plots2arrange,
       heights       = c(.2, .8),
       layout_matrix = layout,
       widths        = c(.4, .2, .4)

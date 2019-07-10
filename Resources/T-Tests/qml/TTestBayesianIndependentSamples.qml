@@ -22,7 +22,6 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 Form {
-	usesJaspResults: false
 	plotHeight: 340
 	plotWidth:  420
 	
@@ -56,12 +55,14 @@ Form {
 
 		CheckBox
 		{
+            enabled: student.checked
 			name: "plotBayesFactorRobustness";	label: qsTr("Bayes factor robustness check")
 			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 
 		CheckBox
 		{
+            enabled: student.checked
 			name: "plotSequentialAnalysis";		label: qsTr("Sequential analysis")
 			CheckBox { name: "plotSequentialAnalysisRobustness";		label: qsTr("Robustness check") }
 		}
@@ -81,6 +82,7 @@ Form {
 		title: qsTr("Tests")
 		RadioButton
 		{
+            id: student
 			value: "Student";	label: qsTr("Student"); checked: true }
 		RadioButton
 		{

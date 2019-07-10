@@ -5,6 +5,9 @@ context("Bayesian Paired Samples T-Test")
 # - missing value exclusion
 # - default cauchy and informed prior cauchy/Normal
 # - error handling of plots
+ 
+getTtestTable <- function(x) x[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]]
+getDescriptivesTable <- function(x) x[["results"]][["descriptivesContainer"]][["collection"]][["descriptivesContainer_table"]]
 
 test_that("Main table results match", {
   options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
@@ -16,80 +19,95 @@ test_that("Main table results match", {
   options$informativeTScale <- 0.5
   options$informativeTDf <- 2
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("contNormal", "-", "contGamma", 0, 1.052979e-22))
+  table <- getTtestTable(results)[["data"]]
+  expect_equal_tables(table, list(0, 1.05297943818791e-20, "-", "contNormal", "contGamma"))
 })
 
-test_that("Prior posterior plot matches", {
-  skip("base plots are not supported in regression testing")
+test_that("Inferential and descriptives plots match", {
   set.seed(0)
   options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
   options$plotPriorAndPosterior <- TRUE
-  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-  results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
-  expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianPairedSamples")
-})
-
-test_that("BF robustness check plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
-  options$pairs <- list(c("contNormal", "contGamma"))
+  options$plotPriorAndPosteriorAdditionalInfo <- FALSE
+  
   options$plotBayesFactorRobustness <- TRUE
   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
-  results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
-  expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianPairedSamples")
-})
-
-test_that("Sequential analysis plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
-  options$pairs <- list(c("contNormal", "contGamma"))
+  
   options$plotSequentialAnalysis <- TRUE
-  options$plotSequentialAnalysisRobustness <- TRUE
-  results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
-  expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianPairedSamples")
-})
+  options$plotSequentialAnalysisRobustness <- FALSE
 
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
-  options$pairs <- list(c("contNormal", "contGamma"))
+  options$descriptives <- TRUE
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsCredibleInterval <- 0.90
+  
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
+  
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianPairedSamples")
+  
+  table <- getDescriptivesTable(results)[["data"]]
+  expect_equal_tables(table,
+    list(100, -0.364486647151235, -0.18874858754, 1.05841360919316, 0.105841360919316,
+         -0.013010527928765, "contNormal", 100, 1.77852060807581, 2.03296079621,
+         1.53241112621044, 0.153241112621044, 2.28740098434418, "contGamma"
+    ),
+    label = "Descriptives table"
+  )
+  
+  testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianPairedSamples")
+  
+  testPlot <- results[["state"]][["figures"]][[3]][["obj"]]
+  expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianPairedSamples")
+  
+  testPlot <- results[["state"]][["figures"]][[4]][["obj"]]
+  expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianPairedSamples")
+  
 })
 
-test_that("Descriptives table matches", {
+test_that("Inferential plots with additional info match", {
+  set.seed(0)
   options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
-  options$pairs <- list(c("contNormal", "contGamma"))
-  options$descriptives <- TRUE
+  options$pairs <- list(c("contcor1", "contcor2"))
+  options$plotPriorAndPosterior <- TRUE
+  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+  
+  options$plotBayesFactorRobustness <- TRUE
+  options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
+  
+  options$plotSequentialAnalysis <- TRUE
+  options$plotSequentialAnalysisRobustness <- TRUE
+  
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
-  expect_equal_tables(table,
-    list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
-         -0.398760810055083, 0.0212636349750834, "contGamma", 100, 2.03296079621,
-         1.53241112621044, 0.153241112621044, 1.72889718286736, 2.33702440955264)
-  )
+
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-additional", dir="TTestBayesianIndependentSamples")
+  
+  testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
+  expect_equal_plots(testPlot, "robustness-check-additional", dir="TTestBayesianIndependentSamples")
+
+  testPlot <- results[["state"]][["figures"]][[3]][["obj"]]
+  expect_equal_plots(testPlot, "sequential-analysis-additional", dir="TTestBayesianIndependentSamples")
+  
 })
+
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
 
   options$pairs <- list(c("contNormal", "debInf"))
+
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$pairs <- list(c("contNormal", "debSame"))
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$pairs <- list(c("contNormal", "debMiss99"))
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })
