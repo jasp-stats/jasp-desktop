@@ -134,6 +134,8 @@ size_t DataSet::rowCount()	const
 
 void DataSet::setSynchingData(bool newVal)
 {
+	if (newVal == _synchingData)
+		return;
 	Log::log() << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl;
 
 	_synchingData = newVal;
