@@ -448,7 +448,8 @@ Descriptives <- function(jaspResults, dataset, options) {
           "Frequency"           = alltotal - total,
           "Percent"             = (alltotal - total)/alltotal*100,
           "Valid Percent"       = "",
-          "Cumulative Percent"  = ""
+          "Cumulative Percent"  = "",
+          ".isNewGroup"         = FALSE
         )
 
         rows[[length(rows) + 1]] <- list(
@@ -457,7 +458,8 @@ Descriptives <- function(jaspResults, dataset, options) {
           "Frequency"           = alltotal,
           "Percent"             = 100,
           "Valid Percent"       = "",
-          "Cumulative Percent"  = ""
+          "Cumulative Percent"  = "",
+          ".isNewGroup"         = FALSE
         )
       }
     } else {

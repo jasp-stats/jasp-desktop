@@ -260,7 +260,9 @@ void jaspTable::addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRow
 		auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
 
 		for(size_t col=0; col<jsonRij.size(); col++)
-			previouslyAddedUnnamedCols = pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
+			previouslyAddedUnnamedCols	= pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
+
+		equalizedColumnsLength = equalizeColumnsLengths();
 	}
 }
 
@@ -1183,6 +1185,14 @@ Json::Value	jaspTable::schemaJson()
     return schema;
 }
 
+bool jaspTable::isSpecialColumn(size_t col)
+{
+	if(_colNames[col] == "") return false;
+
+	return _colNames[col] == ".isNewGroup" || _colNames[col] == ".footnotes";
+}
+
+
 Json::Value	jaspTable::rowsJson()
 {
 	Json::Value rows(Json::arrayValue);
@@ -1218,10 +1228,13 @@ Json::Value	jaspTable::rowsJson()
 
 		for(size_t col=0; col<std::max(_data.size(), maxCol); col++)
 		{
-			if(col < _data.size() && row < _data[col].size())
+			bool hasDataHere = col < _data.size() && row < _data[col].size();
+
+			if(hasDataHere)
 				aColumnKeepsGoing = true;
 
-			aRow[getColName(col)] = getCell(col, row, maxCol, maxRow);
+			if(hasDataHere || !isSpecialColumn(col))
+				aRow[getColName(col)] = getCell(col, row, maxCol, maxRow);
 		}
 
 		std::string rowName = getRowName(row);

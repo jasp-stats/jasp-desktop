@@ -104,6 +104,8 @@ public:
 	std::string getColName(size_t col)				{ return _colNames[col] == "" ? defaultColName(col) : _colNames[col]; }
 	std::string getColType(size_t col);
 
+	bool		isSpecialColumn(size_t col);
+
 	bool		columnSpecified(size_t col)			{ return _specifiedColumns.count(getColName(col)) > 0;	}
 	bool		columnSpecified(std::string col)	{ return _specifiedColumns.count(col) > 0;				}
 
