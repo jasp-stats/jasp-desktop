@@ -21,7 +21,7 @@ test_that("Main table results match for t-test", {
 
 test_that("Main table results match for Wilcoxon signed rank", {
   options <- jasptools::analysisOptions("TTestOneSample")
-  options$variables <- "contGamma"
+  options$variables <- "contNormal"
   options$meanDifference <- TRUE
   options$effectSize <- TRUE
   options$effSizeConfidenceIntervalCheckbox <- TRUE
@@ -32,8 +32,8 @@ test_that("Main table results match for Wilcoxon signed rank", {
   table <- results[["results"]][["ttest"]][["data"]]
 
   expect_equal_tables(table,
-                      list("contGamma", "", 3.955912e-18, 1.813483, 1,
-                           1.553513, 2.158945, 1, 1, 5050, "Wilcoxon"))
+                      list("contNormal", "", 0.01144246, -0.2257311, -0.2914851,
+                           -0.4346153, -0.05360698, -0.4822752, -0.07429513, 1789, "Wilcoxon"))
 })
 
 test_that("Main table results match for Z-test", {
