@@ -18,10 +18,6 @@ Popup
 	width:		popupLoader.width
 	height:		popupLoader.height+1
 
-
-
-	//onOpened: reset()
-
 	Loader
 	{
 		id:					popupLoader
@@ -45,13 +41,7 @@ Popup
 			border.color: Theme.uiBorder
 			border.width: 1
 
-		/*	Component.onCompleted: reset()
-
-			function reset()
-			{
-				rootCreateComputedColumn.selectedColumnType = columnTypeScale
-				nameEdit.reset()
-			}*/
+			Component.onCompleted: nameEdit.forceActiveFocus();
 
 			function createComputedColumn()
 			{
@@ -109,55 +99,60 @@ Popup
 				Rectangle
 				{
 					id:					nameBox
-					anchors.top:		parent.top
-					anchors.left:		nameLabel.right
-					anchors.right:		parent.right
-					anchors.bottom:		parent.bottom
-					anchors.margins:	6 * preferencesModel.uiScale
-
 					color:				Theme.white
 					border.color:		Theme.black
 					border.width:		1
 
+					anchors
+					{
+						top:		parent.top
+						left:		nameLabel.right
+						right:		parent.right
+						bottom:		parent.bottom
+						margins:	6 * preferencesModel.uiScale
+					}
+
+
 					TextEdit
 					{
-						id: nameEdit
-						property string defaultText: "..."
+						property string defaultText:				"..."
 						property string lastCheckedColumnNameInUse: ""
-						anchors.fill: parent
-						anchors.margins: 2
+						property bool	columnNameInUse:			lastCheckedColumnNameInUse !== "" && lastCheckedColumnNameInUse === text
+						property bool	validEntry:					text != defaultText && text.length > 0 && !columnNameInUse
 
-						text:				defaultText
-						font.pixelSize:		baseFontSize * preferencesModel.uiScale
+						id:						nameEdit
+						text:					defaultText
+						font.pixelSize:			baseFontSize * preferencesModel.uiScale
+						color:					columnNameInUse ? Theme.red : Theme.black
+						//height:					parent.height
+
+						ToolTip.delay:			0
+						ToolTip.timeout:		10000
+						ToolTip.visible:		columnNameInUse
+						ToolTip.text:			"Column name is already used, please choose a different one."
+
+						Keys.onReturnPressed:	rootCreateComputedColumn.createComputedColumn()
+
+						anchors
+						{
+							left:			parent.left
+							right:			parent.right
+							verticalCenter:	parent.verticalCenter
+							margins:		2
+						}
+
 						onActiveFocusChanged:
 						{
-							if(activeFocus && text === defaultText) text = ""
-							if(!activeFocus && text === "") text = defaultText
-						}
-						property bool columnNameInUse: lastCheckedColumnNameInUse !== "" && lastCheckedColumnNameInUse === text
-						property bool validEntry: text != defaultText && text.length > 0 && !columnNameInUse
-						color: columnNameInUse ? "red" : Theme.black
-
-						ToolTip.delay: 0
-						ToolTip.timeout: 10000
-						ToolTip.visible: columnNameInUse
-						ToolTip.text: "Column name is already used, please choose a different one."
-
-						Keys.onReturnPressed: rootCreateComputedColumn.createComputedColumn()
-
-						function reset()
-						{
-							lastCheckedColumnNameInUse = ""
-							nameEdit.focus = true
-							nameEdit.text = ""
+							if( activeFocus	&& text === defaultText	) text = ""
+							if(!activeFocus && text === ""			) text = defaultText
 						}
 
 						MouseArea
 						{
-							anchors.fill: parent
-							hoverEnabled: true
-							acceptedButtons: Qt.NoButton
-							cursorShape: containsMouse ? Qt.IBeamCursor : Qt.ArrowCursor
+							anchors.fill:		parent
+							hoverEnabled:		true
+							acceptedButtons:	Qt.NoButton
+							cursorShape:		Qt.IBeamCursor
 						}
 					}
 				}

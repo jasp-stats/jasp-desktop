@@ -106,7 +106,6 @@ QtObject {
 	readonly property int scrollbarBoxWidth:				12  * uiScale
 	readonly property int scrollbarBoxWidthBig:				16  * uiScale
 
-
 	readonly property int messageBoxButtonHeight:			40  * uiScale
 	readonly property int maximumFlickVelocity:				preferencesModel.maxFlickVelocity
 	readonly property int hoverTime:						400
