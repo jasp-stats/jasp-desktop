@@ -115,13 +115,16 @@ void FilterModel::processFilterResult(std::vector<bool> filterResult, int reques
 		return;
 	}
 
+	_package->dataSet()->setSynchingData(true);
 	_package->setDataFilter(_rFilter.toStdString()); //store the filter that was last used and actually gave results.
 	if(_package->dataSet()->setFilterVector(filterResult))
 	{
+		_package->dataSet()->setSynchingData(false);
 		refreshAllAnalyses();
 		emit filterUpdated();
 		updateStatusBar();
 	}
+	_package->dataSet()->setSynchingData(false);
 	emit filterProcessed(requestId);
 }
 
