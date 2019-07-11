@@ -2,6 +2,9 @@
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
+	if (_dataSet == nullptr || _dataSet->synchingData())
+		return QVariant();
+
 	if(index.row() >= rowCount()) return QVariant();
 
 	Column & col=_dataSet->column(index.row());
