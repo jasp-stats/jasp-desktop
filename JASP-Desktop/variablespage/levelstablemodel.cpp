@@ -75,6 +75,9 @@ int LevelsTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 {
+	if (_dataSet == nullptr || _dataSet->synchingData())
+		return QVariant();
+
 	if (role == Qt::BackgroundColorRole && index.column() == 0)
 		return QColor(0xf6,0xf6,0xf6);
 

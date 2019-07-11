@@ -161,6 +161,7 @@ void EngineSync::sendFilter(const QString & generatedFilter, const QString & fil
 {
 	Log::log() << "waiting filter with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
+	_package->dataSet()->setSynchingData(true);
 	_filterStores[requestID] = new RFilterStore(generatedFilter, filter, requestID);
 }
 
@@ -168,6 +169,8 @@ void EngineSync::filterProcessed(int requestId)
 {
 	Log::log() << "filter with request " << requestId  << " processed" << std::endl << std::flush;
 	_filterStores.erase(requestId);
+	if (_filterStores.size() == 0)
+		_package->dataSet()->setSynchingData(false);
 }
 
 void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion)

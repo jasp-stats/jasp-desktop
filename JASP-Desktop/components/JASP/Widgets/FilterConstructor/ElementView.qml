@@ -69,7 +69,7 @@ ListView
 			id: elementLoader
 
 			property bool isColumn:				type === "column"
-			property bool isOperator:			type.indexOf("operator") >=0
+			property bool isOperator:			type !== undefined && type.indexOf("operator") >=0
 			property string listOperator:		isOperator			?	operator			: "???"
 			property string listFunction:		type === "function"	?	functionName		: "???"
 			property real	listNumber:			type === "number"	?	number				: -1
@@ -77,7 +77,7 @@ ListView
 			property real	listWidth:			parent.width
 			property string	listColName:		isColumn			?	columnName			: "???"
 			property string	listColIcon:		isColumn			?	columnIcon			: "???"
-			property string listToolTip:		type !== "separator" && type !== "text" ? toolTip : ""
+			property string listToolTip:		type !== "separator" && type !== "text" && toolTip !== undefined? toolTip : ""
 
 			//anchors.centerIn: parent
 			x: isColumn ? listOfStuff.widthMargin / 2 : (parent.width - width) - (listOfStuff.widthMargin / 2)
