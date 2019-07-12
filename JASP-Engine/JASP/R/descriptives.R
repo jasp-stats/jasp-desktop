@@ -520,7 +520,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   for (i in seq_along(variables)) {
     variable2check  <- na.omit(dataset[[variables[i]]])
     d[i]            <- class(variable2check)
-    sdCheck[i]      <- sd(variable2check) > 0
+    sdCheck[i]      <- if (d[i] != "factor") sd(variable2check) > 0 else FALSE
     infCheck[i]     <- all(is.finite(variable2check))
   }
 
