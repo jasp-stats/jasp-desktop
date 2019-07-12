@@ -16,6 +16,7 @@
 		"env": {
 			"PATH": "/usr/bin:/app/bin"
 		},
+		"cxxflags": "-std=c++14 -O2 -g",
 		"append-ld-library-path": "/app/lib;/app/lib64/R/lib",
 		"env": {
 			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
