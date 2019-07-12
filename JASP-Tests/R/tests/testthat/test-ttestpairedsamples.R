@@ -11,12 +11,13 @@ test_that("Main table results match", {
   options$hypothesis <- "groupOneGreater"
   options$meanDifference <- TRUE
   options$effectSize <- TRUE
+  options$effSizeConfidenceIntervalCheckbox <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table,
     list(99, 1, -2.22170938375, -1.16121720596087, -2.53938523225467, "<unicode>",
-         0, 0, 0.191325909773409, 1, -11.6121720596087, "contNormal",
+         -1.37211873031366, "<unicode>", 0.191325909773409, 1, -11.6121720596087, "contNormal",
          "-", "contGamma", "Student", "", 0.999999999999999, -2.1796113893332,
          -0.921188118811881, -2.48184167915216, "<unicode>", -0.94536640190499,
          "<unicode>", "", 1, 199, "", "", "", "Wilcoxon")

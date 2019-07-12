@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Manova <- function(jaspResults, dataset, options) {
+Manova <- function(jaspResults, dataset = NULL, options) {
   
   # Check if we're ready to actually compute something or just show empty tables
   ready <- length(options$dependent) > 1 && length(options$fixedFactors) > 0 && length(options$modelTerms) > 0
@@ -24,10 +24,12 @@ Manova <- function(jaspResults, dataset, options) {
   randomFactors <- unlist(options$fixedFactors)
 
   # Read dataset
-  dataset <- .readDataSetToEnd(columns.as.numeric=dependentVariables, 
-                               columns.as.factor=randomFactors)
-  dataset <- na.omit(dataset)
-  
+  if (is.null(dataset)) {
+    dataset <- .readDataSetToEnd(columns.as.numeric = dependentVariables, 
+                                 columns.as.factor = randomFactors,
+                                 exclude.na.listwise = c(dependentVariables, randomFactors))
+  }
+
   # Error checking
   .manovaCheckErrors(dataset, options, ready)
 
