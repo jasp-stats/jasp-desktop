@@ -41,7 +41,11 @@ Popup
 			border.color: Theme.uiBorder
 			border.width: 1
 
-			Component.onCompleted: nameEdit.forceActiveFocus();
+			Component.onCompleted:
+			{
+				levelsTableModel.clearColumn();
+				nameEdit.forceActiveFocus();
+			}
 
 			function createComputedColumn()
 			{

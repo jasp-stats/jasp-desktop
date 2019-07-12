@@ -26,7 +26,7 @@ public:
 	Q_ENUM(Roles)
 
 	void setColumn(Column *column);
-	void clearColumn();
+	Q_INVOKABLE void clearColumn();
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())						const	override;
 	int						columnCount(const QModelIndex &parent = QModelIndex())					const	override;
