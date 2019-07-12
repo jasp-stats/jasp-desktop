@@ -26,18 +26,18 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   .crossTabCheckErrors(dataset, options)
   
   # Compute the results
-  crossTabResults <- .crossTabComputeResults(jaspResults, dataset, options, ready)
+  analyses <- .crossTabComputeAnalyses(dataset, options, ready)
   
   # Tables container
-  .crossTabContainer(jaspResults, crossTabResults, ready)
+  .crossTabContainer(jaspResults, options, analyses, ready)
     
   # Output tables
-  .crossTabMain(      jaspResults, dataset, options, crossTabResults, ready)
-  .crossTabChisq(     jaspResults, dataset, options, crossTabResults, ready)
-  .crossTabLogOdds(   jaspResults, dataset, options, crossTabResults, ready)
-  .crossTabNominal(   jaspResults, dataset, options, crossTabResults, ready)
-  .crossTabGamma(     jaspResults, dataset, options, crossTabResults, ready)
-  .crossTabKendallTau(jaspResults, dataset, options, crossTabResults, ready)
+  .crossTabMain(      jaspResults, dataset, options, analyses, ready)
+  .crossTabChisq(     jaspResults, dataset, options, analyses, ready)
+  .crossTabLogOdds(   jaspResults, dataset, options, analyses, ready)
+  .crossTabNominal(   jaspResults, dataset, options, analyses, ready)
+  .crossTabGamma(     jaspResults, dataset, options, analyses, ready)
+  .crossTabKendallTau(jaspResults, dataset, options, analyses, ready)
     
   return()
 }
@@ -57,7 +57,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
     
-    return(.readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var))
+    return(.readDataSetToEnd(columns.as.factor  = factors, 
+                             columns.as.numeric = counts.var))
   }
 }
 
@@ -69,7 +70,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 }
 
 # Results ----
-.crossTabComputeAnalyses <- function(dataset, options) {
+.crossTabComputeAnalyses <- function(dataset, options, ready) {
   rows    <- as.vector(options$rows,    "character")
   columns <- as.vector(options$columns, "character")
   
@@ -80,219 +81,130 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     columns <- ""
   
   analyses <- data.frame("columns" = columns, stringsAsFactors = FALSE)
-  analyses <- cbind(analyses, "rows" = rep(rows, each = dim(analyses)[1]), stringsAsFactors = FALSE)
+  analyses <- cbind(analyses, "rows" = rep(rows, each = dim(analyses)[1]), 
+                    stringsAsFactors = FALSE)
   
   for (layer in options$layers) {
     layer.vars <- as.vector(layer$variables, "character")
-    analyses <- cbind(analyses, rep(layer.vars, each = dim(analyses)[1]), stringsAsFactors = FALSE)
+    analyses <- cbind(analyses, rep(layer.vars, each = dim(analyses)[1]), 
+                      stringsAsFactors = FALSE)
     names(analyses)[dim(analyses)[2]] <- layer$name
   }
   
   analyses <- .dataFrameToRowList(analyses)
+  
+  add.groups <- list()
+  add.group.matrices <- list()
+  
+  for (i in 1:length(analyses)) {
+    analysis <- analyses[[i]]
+    counts.var <- options$counts
+    if (counts.var == "")
+      counts.var <- NULL
+    
+    if(ready) {
+      all.vars <- c(unlist(analysis), counts.var)
+      dataset <- subset(dataset, select = .v(all.vars))
+    }
+    
+    # the following creates a 'groups' list
+    # a 'group' represents a combinations of the levels from the layers
+    # if no layers are specified, groups is null
+    
+    if (length(analysis) >= 3) {  # if layers are specified
+      
+      lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+      
+      if (length(lvls) < 2)
+        lvls <- ""
+      else 
+        lvls <- c(lvls, "")  # blank means total
+      
+      # here we create all combinations of the levels from the layers
+      # it is easiest to do this with a data frame
+      # at the end we convert this to a list of rows
+      
+      groups <- data.frame(lvls, stringsAsFactors=FALSE)
+      base::names(groups) <- analysis[[3]]
+      
+      if (length(analysis) >= 4) {
+        
+        for (j in 4:(length(analysis)-2)) {
+          lvls <- base::levels(dataset[[ .v(analysis[[j]]) ]])
+          lvls <- c(lvls, "")  # blank means total
+          
+          groups <- cbind(rep(lvls, each=dim(groups)[1]), groups, 
+                          stringsAsFactors=FALSE)
+          names(groups)[1] <- analysis[[j]]
+        }
+      }
+      
+      # convert all the combinations to a list of rows
+      groups <- .dataFrameToRowList(groups)
+      
+    } else {  # if layers are not specified
+      groups <- NULL
+    }
+    analyses[[i]] <- c(analyses[[i]], list("groups" = groups))
+    if (!is.null(counts.var))
+      counts <- stats::na.omit(dataset[[ .v(counts.var) ]])
+    grp.mat <- .crosstabsCreateGroupMatrices(dataset, analysis$rows, 
+                                             analysis$columns, groups, 
+                                             counts.var, 
+                                             options$rowOrder=="descending", 
+                                             options$columnOrder=="descending", 
+                                             ready)
+    analyses[[i]] <- c(analyses[[i]], list("group.matrices" = grp.mat))
+  }
+  
   return(analyses)
 }
 
-.crossTabComputeResults <- function(jaspResults, dataset, options, ready) {
-  # Take results from state if possible
-  if (!is.null(jaspResults[["stateCrossTabResults"]])) 
-    return(jaspResults[["stateCrossTabResults"]]$object)
-  
-  results <- list()
-  results[["analysesOrder"]] <- list()
-  
-  # These are the groups of rows, columns, layers for the tables
-  analyses <- .crossTabComputeAnalyses(dataset, options)
-  results[["analysesOrder"]] <- analyses
-  
-  counts.var <- NULL
-  if(options$counts != "")
-    counts.var <- options$counts
-  
-    for (i in 1:length(analyses)) {
-      analysis <- analyses[[i]]
-      counts.var <- options$counts
-      if (counts.var == "")
-        counts.var <- NULL
-      
-      if(ready) {
-        all.vars <- c(unlist(analysis), counts.var)
-        dataset <- subset(dataset, select = .v(all.vars))
-      }
-      
-      # the following creates a 'groups' list
-      # a 'group' represents a combinations of the levels from the layers
-      # if no layers are specified, groups is null
-      
-      if (length(analysis) >= 3) {  # if layers are specified
-        
-        lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
-        
-        if (length(lvls) < 2) {
-          
-          lvls <- ""
-          
-        } else {
-          
-          lvls <- c(lvls, "")  # blank means total
-        }
-        
-        # here we create all combinations of the levels from the layers
-        # it is easiest to do this with a data frame
-        # at the end we convert this to a list of rows
-        
-        groups <- data.frame(lvls, stringsAsFactors=FALSE)
-        base::names(groups) <- analysis[[3]]
-        
-        if (length(analysis) >= 4) {
-          
-          for (j in 4:length(analysis))
-          {
-            lvls <- base::levels(dataset[[ .v(analysis[[j]]) ]])
-            lvls <- c(lvls, "")  # blank means total
-            
-            groups <- cbind(rep(lvls, each=dim(groups)[1]), groups, stringsAsFactors=FALSE)
-            names(groups)[1] <- analysis[[j]]
-          }
-        }
-        
-        # convert all the combinations to a list of rows
-        
-        groups <- .dataFrameToRowList(groups)
-        
-      } else {  # if layers are not specified
-        groups <- NULL
-      }
-      
-      if (!is.null(counts.var)) {
-        counts <- stats::na.omit(dataset[[ .v(counts.var) ]])
-      }
-      
-      #Fill tables
-      group.matrices <- .crosstabsCreateGroupMatrices(dataset, analysis$rows, analysis$columns, groups, counts.var, 
-                                                      options$rowOrder=="descending", options$columnOrder=="descending", ready)
-      counts.rows     <- list()
-      tests.rows      <- list()
-      odds.ratio.rows <- list()
-      nominal.rows    <- list()
-      ordinal.rows    <- list()
-      kendalls.rows   <- list()
-      
-      for (g in 1:length(group.matrices)) {
-        
-        group.matrix <- group.matrices[[g]]
-        
-        if (!is.null(groups)) {
-          
-          group <- groups[[g]]
-          
-        } else {
-          group <- NULL
-        }
-        
-        next.rows <- .crosstabsCreateCountsRows(analysis$rows, group.matrix, options, group, ready)
-        counts.rows <- c(counts.rows, next.rows)
-        
-        next.rows <- .crosstabsCreateTestsRows(analysis$rows, group.matrix, options, group, ready)
-        tests.rows <- c(tests.rows, next.rows)
-        
-        next.rows <- .crosstabsCreateOddsRatioRows(analysis$rows, group.matrix, options, group, ready)
-        odds.ratio.rows <- c(odds.ratio.rows, next.rows)
-        
-        next.rows <- .crosstabsCreateNominalRows(analysis$rows, group.matrix, options, group, ready)
-        nominal.rows <- c(nominal.rows, next.rows)
-        
-        next.rows <- .crosstabsCreateOrdinalRows(analysis$rows, group.matrix, options, group, ready)
-        ordinal.rows <- c(ordinal.rows, next.rows)
-        
-        next.rows <- .crosstabsCreateOrdinalTau(analysis$rows, group.matrix, options, group, ready)
-        kendalls.rows <- c(kendalls.rows, next.rows)
-      }
-      
-      results[[paste0("tables", analysis$rows, analysis$columns)]][["maintable"]][["data"]]     <- counts.rows
-      
-      results[[paste0("tables", analysis$rows, analysis$columns)]][["crossTabChisq"]][["data"]] <- tests.rows
-      
-      results[[paste0("tables", analysis$rows, analysis$columns)]][["logodds"]][["data"]]       <- odds.ratio.rows
-      
-      results[[paste0("tables", analysis$rows, analysis$columns)]][["nominal"]][["data"]]       <- nominal.rows
-      
-      results[[paste0("tables", analysis$rows, analysis$columns)]][["gamma"]][["data"]]         <- ordinal.rows
-      
-      results[[paste0("tables", analysis$rows, analysis$columns)]][["kendallTau"]][["data"]]    <- kendalls.rows
-    }
-  
-  # Save results to state
-  jaspResults[["stateCrossTabResults"]] <- createJaspState(results)
-  jaspResults[["stateCrossTabResults"]]$dependOn(c("rows", "columns", "counts", "layers",
-                                                   "chiSquared", "chiSquaredContinuityCorrection", "likelihoodRatio",
-                                                   "oddsratio", "oddsRatioConfidenceIntervalInterval", "VovkSellkeMPR", 
-                                                   "phiAndCramersV", "contingencyCoefficient", "gamma", "kendallsTauB",
-                                                   "countsExpected", "percentagesRow", "percentagesColumn", "percentagesTotal"))
-  
-  # Return results object
-  return(results)
-}
-
 # Container ----
-.crossTabContainer <- function(jaspResults, crossTabResults, ready) {
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses) {
-    if (is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]])) {
-      jaspResults[[paste("tables", analysis$rows, analysis$columns)]] <- createJaspContainer("Contingency Tables")
-      jaspResults[[paste("tables", analysis$rows, analysis$columns)]]$dependOn(c("rows", "columns", "layers"))
+.crossTabContainer <- function(jaspResults, options, analyses, ready) {
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
+    if (is.null(jaspResults[[paste0("tables", i)]])) {
+      jaspResults[[paste0("tables", i)]] <- createJaspContainer()
+      jaspResults[[paste0("tables", i)]]$dependOn(optionContainsValue = 
+                                                  list("rows" = analysis$rows, 
+                                                       "columns" = analysis$columns, 
+                                                       "layers" = options$layers))
     }
   }
 }
 
 # Output Tables ----
-.crossTabMain <- function(jaspResults, dataset, options, crossTabResults, ready) {
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses){
-    #analysis <- analyses[[i]]
-    if (!is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabMain"]])) 
+.crossTabMain <- function(jaspResults, dataset, options, analyses, ready) {
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
+    if (!is.null(jaspResults[[paste0("tables", i)]][["crossTabMain"]])) 
       return()
       
     # Create table
     crossTabMain <- createJaspTable(title = "Contingency Tables")
-    crossTabMain$dependOn(c("counts", "countsExpected", "percentagesRow", "percentagesColumn", "percentagesTotal"))
+    crossTabMain$dependOn(c("counts", "countsExpected", "percentagesRow", 
+                            "percentagesColumn", "percentagesTotal"))
     crossTabMain$showSpecifiedColumnsOnly <- TRUE
       
-    .addLayerColumnToTable(crossTabMain, analysis)
+    .crossTabMainAddLayersColumns(crossTabMain, analysis)
     if(analysis$rows == "")
-      crossTabMain$addColumnInfo(name = analysis$rows, title = " ", type = "string", combine = TRUE)
+      crossTabMain$addColumnInfo(name = analysis$rows, title = " ", 
+                                 type = "string", combine = TRUE)
     else 
-      crossTabMain$addColumnInfo(name = analysis$rows, type = "string", combine = TRUE)
-      
-    lvls <- c()
-      
-    if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-      lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
-      if (options$columnOrder == "descending") {
-        lvls <- base::rev(lvls)
-      }
-        
-    } else {
-      lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
-      if (options$columnOrder == "descending") {
-        lvls <- base::rev(lvls, decreasing = TRUE)
-      }
-    }
-    
-    overTitle <- unlist(analysis$columns)
-    if (overTitle == ""){
-      overTitle <- "."
-      lvls <- c(" .", " . ")
-    }
-      
+      crossTabMain$addColumnInfo(name = analysis$rows, type = "string", 
+                                 combine = TRUE)
+
     counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
       
     if (length(options$counts) > 0) {
       counts <- dataset[[ .v(options$counts) ]]
-      if (identical(counts, as.integer(counts)) == FALSE)  # are the counts floating point?
+      if (identical(counts, as.integer(counts)) == FALSE)          
         counts.fp <- TRUE
     }
       
-    if (options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) {
+    if (options$countsExpected || options$percentagesRow || 
+        options$percentagesColumn || options$percentagesTotal ) {
       crossTabMain$addColumnInfo(name = "type[counts]", title = "", type = "string")
         
       if (options$countsExpected) {
@@ -305,41 +217,18 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         crossTabMain$addColumnInfo(name = "type[col.proportions]", title = "", type = "string")
       }
       if (options$percentagesTotal) {
-        crossTabMain$addColumnInfo(name = "type[proportions]",     title = "", type = "string")
+        crossTabMain$addColumnInfo(name = "type[total.proportions]",     title = "", type = "string")
       }
     }
-      
-    for (column.name in lvls) {
-      private.name <- base::paste(column.name,"[counts]", sep = "")
-        
-      if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) 
-        crossTabMain$addColumnInfo(name = private.name, title = column.name, overtitle = overTitle, type = "number", format = "sf:4;dp:2")
-      else 
-        crossTabMain$addColumnInfo(name = private.name, title = column.name, overtitle = overTitle, type = "integer")
-      
-      if (options$countsExpected) { 
-        private.name <- base::paste(column.name,"[expected]", sep = "")
-        crossTabMain$addColumnInfo(name = private.name, title = column.name, type = "number", format = "sf:4;dp:2")
-      }
-      if (options$percentagesRow) {
-        private.name <- base::paste(column.name,"[row.proportions]", sep = "")
-        crossTabMain$addColumnInfo(name = private.name, title = column.name, type = "number", format = "dp:1;pc")
-      }
-      if (options$percentagesColumn) {
-        private.name <- base::paste(column.name,"[col.proportions]", sep = "")
-        crossTabMain$addColumnInfo(name = private.name, title = column.name, type = "number", format = "dp:1;pc")
-      }
-      if (options$percentagesTotal) {
-        private.name <- base::paste(column.name,"[proportions]", sep = "")
-        crossTabMain$addColumnInfo(name = private.name, title = column.name, type = "number", format = "dp:1;pc")
-      }
-    }
+    
+    .crossTabMainOvertitle(dataset, options, crossTabMain, analysis)
       
     # Totals columns
-    if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal) 
-      crossTabMain$addColumnInfo(name = "total[counts]", title = "Total", type = "number", format = "sf:4;dp:2")
+    if (counts.fp || options$countsExpected || options$percentagesRow || 
+        options$percentagesColumn || options$percentagesTotal) 
+      crossTabMain$addColumnInfo(name = "total[counts]",   title = "Total", type = "number", format = "sf:4;dp:2")
     else 
-      crossTabMain$addColumnInfo(name = "total[counts]", title = "Total", type = "integer")
+      crossTabMain$addColumnInfo(name = "total[counts]",   title = "Total", type = "integer")
       
     if (options$countsExpected) 
       crossTabMain$addColumnInfo(name = "total[expected]", title = "Total", type = "number", format = "sf:4;dp:2")
@@ -351,65 +240,53 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       crossTabMain$addColumnInfo(name = "total[col.proportions]", title = "Total", type = "number", format = "dp:1;pc")
     
     if (options$percentagesTotal) 
-      crossTabMain$addColumnInfo(name = "total[proportions]", title = "Total", type = "number", format = "dp:1;pc")
+      crossTabMain$addColumnInfo(name = "total[total.proportions]", title = "Total", type = "number", format = "dp:1;pc")
     
-    jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabMain"]] <- crossTabMain
-    #browser()
-      #print(length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["maintable"]][["data"]]))
-    for (level in 1){#1:length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["maintable"]][["data"]])) {
-      row <- crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["maintable"]][["data"]][[level]]
-      crossTabMain$addRows(row)
+    jaspResults[[paste0("tables", i)]][["crossTabMain"]] <- crossTabMain
+    
+    res <- try(.crosstabsCreateCountsRows(analysis$rows, analysis$group.matrices, 
+                                          analysis$groups, i, options, ready))
+    if(isTryError(res))
+      crossTabMain$setError(res)
+    else {
+      for (level in 1:length(res)) {
+        row <- res[[level]]
+        crossTabMain$addRows(row)
+      }
     }
   }
 }
 
-.crossTabChisq <- function(jaspResults, dataset, options, crossTabResults, ready) {
+.crossTabChisq <- function(jaspResults, dataset, options, analyses, ready) {
   if(!options$chiSquared && !options$chiSquaredContinuityCorrection && !options$likelihoodRatio) 
     return()
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses){
-    #analysis <- analyses[[i]]
-    if (!is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabChisq"]])) 
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
+    if (!is.null(jaspResults[[paste0("tables", i)]][["crossTabChisq"]])) 
       return()
     # Create table
     crossTabChisq <- createJaspTable(title = "Chi-Squared Tests")
-    crossTabChisq$dependOn(c("chiSquared", "chiSquaredContinuityCorrection", "likelihoodRatio", "VovkSellkeMPR"))
+    crossTabChisq$dependOn(c("chiSquared", "chiSquaredContinuityCorrection", 
+                             "likelihoodRatio", "VovkSellkeMPR"))
     crossTabChisq$showSpecifiedColumnsOnly <- TRUE
-    
-    # Footnotes
-    #p <- try({
-    #  crossTab <- 
-    #  crossTab[[analysis]] <- crossTab
-    #})
-    
-    #if (isTryError(p)) {
-    #  crossTabChisq$addRows(list(Variable=variable), rowNames=variable)
-    #  crossTabChisq$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)))
-    #}
-    #p <-
-    #message <- "\u03A7\u00B2 could not be calculated, contains no observations"
-    
-    
-    
     
     counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
     
     if (length(options$counts) > 0) {
       
       counts <- dataset[[ .v(options$counts) ]]
-      if (identical(counts, as.integer(counts)) == FALSE)  # are the counts floating point?
+      if (identical(counts, as.integer(counts)) == FALSE) 
         counts.fp <- TRUE
     }
     # Add columns to table
-    .addLayerColumnToTable(crossTabChisq, analysis)
+    .crossTabMainAddLayersColumns(crossTabChisq, analysis)
     if(options$chiSquared) {
       crossTabChisq$addColumnInfo(name = "type[chiSquared]",  title = "",      type = "string")
       crossTabChisq$addColumnInfo(name = "value[chiSquared]", title = "Value", type = "number", format = "sf:4;dp:3")
       crossTabChisq$addColumnInfo(name = "df[chiSquared]",    title = "df",    type = "integer")
       crossTabChisq$addColumnInfo(name = "p[chiSquared]",     title = "p",     type = "number", format = "dp:3;p:.001")
-      if (options$VovkSellkeMPR) {
+      if (options$VovkSellkeMPR)
         crossTabChisq$addColumnInfo(name = "MPR[chiSquared]", title = "VS-MPR", type = "number", format = "sf:4;dp:3")
-      }
     }
       
     if(options$chiSquaredContinuityCorrection) {
@@ -417,9 +294,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       crossTabChisq$addColumnInfo(name = "value[chiSquared-cc]", title = "Value", type = "number", format = "sf:4;dp:3")
       crossTabChisq$addColumnInfo(name = "df[chiSquared-cc]", title = "df", type = "integer")
       crossTabChisq$addColumnInfo(name = "p[chiSquared-cc]", title = "p", type = "number", format = "dp:3;p:.001")
-      if (options$VovkSellkeMPR) {
+      if (options$VovkSellkeMPR) 
         crossTabChisq$addColumnInfo(name = "MPR[chiSquared-cc]", title = "VS-MPR", type = "number", format = "sf:4;dp:3")
-      }
     }
        
     if(options$likelihoodRatio) {
@@ -427,41 +303,40 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       crossTabChisq$addColumnInfo(name = "value[likelihood]", title = "Value", type = "number", format = "sf:4;dp:3")
       crossTabChisq$addColumnInfo(name = "df[likelihood]", title = "df", type = "integer")
       crossTabChisq$addColumnInfo(name = "p[likelihood]", title = "p", type = "number", format = "dp:3;p:.001")
-      if (options$VovkSellkeMPR) {
+      if (options$VovkSellkeMPR)
         crossTabChisq$addColumnInfo(name = "MPR[likelihood]", title = "VS-MPR", type = "number", format = "sf:4;dp:3")
-      }
     }
     
     crossTabChisq$addColumnInfo(name = "type[N]", title = "", type = "string")
     
-    if (counts.fp) {
+    if (counts.fp)
       crossTabChisq$addColumnInfo(name = "value[N]", title = "Value", type = "number", format = "sf:4;dp:2")
-    } else { 
+    else 
       crossTabChisq$addColumnInfo(name = "value[N]", title = "Value", type = "integer")
-    }
     
     crossTabChisq$addColumnInfo(name = "df[N]", title = "df")
     crossTabChisq$addColumnInfo(name = "p[N]", title = "p")
-    if (options$VovkSellkeMPR) {
+    if (options$VovkSellkeMPR)
       crossTabChisq$addColumnInfo(name = "MPR[N]", title = "VS-MPR", type = "number", format = "sf:4;dp:3")
-    }
     
-    jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabChisq"]] <- crossTabChisq
+    jaspResults[[paste0("tables", i)]][["crossTabChisq"]] <- crossTabChisq
     
-    for (level in 1:length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["crossTabChisq"]][["data"]])) {
-      row <- crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["crossTabChisq"]][["data"]][[level]]
-      crossTabChisq$addRows(row)
+    res <- try(.crosstabsCreateTestsRows(analysis$rows, analysis$group.matrices, 
+                                         analysis$groups, i, options, ready))
+    if(isTryError(res))
+      crossTabChisq$setError(res)
+    else {
+      crossTabChisq$setData(res)
     }
   }
 }
 
-.crossTabLogOdds <- function(jaspResults, dataset, options, crossTabResults, ready) {
+.crossTabLogOdds <- function(jaspResults, dataset, options, analyses, ready) {
   if(!options$oddsRatio)
     return()
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses) {
-    #analysis <- analyses[[i]]
-    if (!is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabLogOdds"]])) 
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
+    if (!is.null(jaspResults[[paste0("tables", i)]][["crossTabLogOdds"]])) 
       return()
     
     # Create table
@@ -469,10 +344,11 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     crossTabLogOdds$dependOn(c("oddsRatio"))
     crossTabLogOdds$showSpecifiedColumnsOnly <- TRUE
     
-    ci.label <- paste(100*options$oddsRatioConfidenceIntervalInterval, "% Confidence Intervals", sep = "")
+    ci.label <- paste(100*options$oddsRatioConfidenceIntervalInterval, 
+                      "% Confidence Intervals", sep = "")
     
     # Add columns to table
-    .addLayerColumnToTable(crossTabLogOdds, analysis)
+    .crossTabMainAddLayersColumns(crossTabLogOdds, analysis)
     crossTabLogOdds$addColumnInfo(name = "type[oddsRatio]", title = "", type = "string")
     crossTabLogOdds$addColumnInfo(name = "value[oddsRatio]", title = "Log Odds Ratio", type = "number", format = "sf:4;dp:3")
     crossTabLogOdds$addColumnInfo(name = "low[oddsRatio]", title = "Lower",overtitle = ci.label, type = "number", format = "dp:3")
@@ -483,24 +359,25 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     crossTabLogOdds$addColumnInfo(name = "low[FisherTest]", title = "Lower", overtitle = ci.label, type = "number", format = "dp:3")
     crossTabLogOdds$addColumnInfo(name = "up[FisherTest]",  title = "Upper", overtitle = ci.label, type = "number", format = "dp:3")
     
-    jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabLogOdds"]] <- crossTabLogOdds
+    jaspResults[[paste0("tables", i)]][["crossTabLogOdds"]] <- crossTabLogOdds
     
-    for (level in 1:length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["logodds"]][["data"]])) {
-      row <- crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["logodds"]][["data"]][[level]]
-      crossTabLogOdds$addRows(row)
+    res <- try(.crosstabsCreateOddsRatioRows(analysis$rows, analysis$group.matrices, 
+                                             analysis$groups, i, options, ready))
+    if(isTryError(res))
+      crossTabLogOdds$setError(res)
+    else {
+      crossTabLogOdds$setData(res)
     }
   }
 }
 
-.crossTabNominal <- function(jaspResults, dataset, options, crossTabResults, ready) {
+.crossTabNominal <- function(jaspResults, dataset, options, analyses, ready) {
   if (!options$contingencyCoefficient && !options$phiAndCramersV && !options$lambda)
     return()
-  
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses){
-    #analysis <- analyses[[i]]
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
     
-    if (!is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabNominal"]])) 
+    if (!is.null(jaspResults[[paste0("tables", i)]][["crossTabNominal"]])) 
       return()
     
     # Create table
@@ -509,7 +386,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     crossTabNominal$showSpecifiedColumnsOnly <- TRUE
     
     # Add columns to table
-    .addLayerColumnToTable(crossTabNominal, analysis)
+    .crossTabMainAddLayersColumns(crossTabNominal, analysis)
     if (options$contingencyCoefficient){
       crossTabNominal$addColumnInfo(name = "type[ContCoef]", title = "", type = "string")
       crossTabNominal$addColumnInfo(name = "value[ContCoef]", title = "Value", type = "number", format = "sf:4;dp:3")
@@ -529,22 +406,24 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       crossTabNominal$addColumnInfo(name = "value[LambdaC]", title = "Value", type = "number", format = "sf:4;dp:3")
     }
     
-    jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabNominal"]] <- crossTabNominal
+    jaspResults[[paste0("tables", i)]][["crossTabNominal"]] <- crossTabNominal
     
-    for (level in 1:length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["nominal"]][["data"]])) {
-      row <- crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["nominal"]][["data"]][[level]]
-      crossTabNominal$addRows(row)
+    res <- try(.crosstabsCreateNominalRows(analysis$rows, analysis$group.matrices, 
+                                           analysis$groups, i, options, ready))
+    if(isTryError(res))
+      crossTabNominal$setError(res)
+    else {
+      crossTabNominal$setData(res)
     }
   }
 }
 
-.crossTabGamma <- function(jaspResults, dataset, options, crossTabResults, ready) {
+.crossTabGamma <- function(jaspResults, dataset, options, analyses, ready) {
   if (!options$gamma)
     return()
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses) {
-    #analysis <- analyses[[i]]
-    if (!is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabGamma"]])) 
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
+    if (!is.null(jaspResults[[paste0("tables", i)]][["crossTabGamma"]])) 
       return()
     
     # Create table
@@ -555,31 +434,30 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     ci.label <- paste("95% Confidence Intervals")
     
     # Add columns to table
-    if (length(analysis) >= 3) {
-      for (j in length(analysis):3)
-        crossTabGamma$addColumnInfo(name = analysis[[j]], type = "string", combine = TRUE)
-    }
-    crossTabGamma$addColumnInfo(name = "value[gammaCoef]", title = "Gamma", type = "number", format = "sf:4;dp:3")
+    .crossTabMainAddLayersColumns(crossTabGamma, analysis)
+    crossTabGamma$addColumnInfo(name = "value[gammaCoef]", title = "Gamma",          type = "number", format = "sf:4;dp:3")
     crossTabGamma$addColumnInfo(name = "Sigma[gammaCoef]", title = "Standard Error", type = "number", format = "dp:3")
-    crossTabGamma$addColumnInfo(name = "low[gammaCoef]", title = "Lower",overtitle = ci.label, type = "number", format = "dp:3")
-    crossTabGamma$addColumnInfo(name = "up[gammaCoef]",  title = "Upper",overtitle = ci.label, type = "number", format = "dp:3")
+    crossTabGamma$addColumnInfo(name = "low[gammaCoef]",   title = "Lower",  type = "number", format = "dp:3", overtitle = ci.label)
+    crossTabGamma$addColumnInfo(name = "up[gammaCoef]",    title = "Upper",  type = "number", format = "dp:3", overtitle = ci.label)
   
-    jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabGamma"]] <- crossTabGamma
+    jaspResults[[paste0("tables", i)]][["crossTabGamma"]] <- crossTabGamma
     
-    for (level in 1:length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["gamma"]][["data"]])) {
-      row <- crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["gamma"]][["data"]][[level]]
-      crossTabGamma$addRows(row)
+    res <- try(.crosstabsCreateGammaRows(analysis$rows, analysis$group.matrices, 
+                                         analysis$groups, i, options, ready))
+    if(isTryError(res))
+      crossTabGamma$setError(res)
+    else {
+      crossTabGamma$setData(res)
     }
   }
 }
 
-.crossTabKendallTau <- function(jaspResults, dataset, options, crossTabResults, ready) {
+.crossTabKendallTau <- function(jaspResults, dataset, options, analyses, ready) {
   if (!options$kendallsTauB)
     return()
-  analyses <- crossTabResults[["analysesOrder"]]
-  for (analysis in analyses) {
-    #analysis <- analyses[[i]]
-    if (!is.null(jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabKendallTau"]])) 
+  for (i in 1:length(analyses)){
+    analysis <- analyses[[i]]
+    if (!is.null(jaspResults[[paste0("tables", i)]][["crossTabKendallTau"]])) 
       return()
     # Create table
     crossTabKendallTau <- createJaspTable(title = "Kendall's Tau")
@@ -587,36 +465,115 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     crossTabKendallTau$showSpecifiedColumnsOnly <- TRUE
     
     # Add columns to table
-    if (length(analysis) >= 3) {
-      for (j in length(analysis):3)
-        crossTabKendallTau$addColumnInfo(name = analysis[[j]], type = "string", combine = TRUE)
-    }
+    .crossTabMainAddLayersColumns(crossTabKendallTau, analysis)
     crossTabKendallTau$addColumnInfo(name = "value[kTauB]", title = "Kendall's Tau-b ", type = "number", format = "sf:4;dp:3")
     crossTabKendallTau$addColumnInfo(name = "statistic[kTauB]", title = "Z", type = "number", format = "dp:3")
     crossTabKendallTau$addColumnInfo(name = "p[kTauB]", title = "p", type = "number", format = "dp:3;p:.001")
-    if (options$VovkSellkeMPR){
+    if (options$VovkSellkeMPR)
       crossTabKendallTau$addColumnInfo(name = "MPR[kTauB]", title = "VS-MPR", type = "number", format = "sf:4;dp:3")
-    }
-    jaspResults[[paste("tables", analysis$rows, analysis$columns)]][["crossTabKendallTau"]] <- crossTabKendallTau
+
+    jaspResults[[paste0("tables", i)]][["crossTabKendallTau"]] <- crossTabKendallTau
     
-    for (level in 1:length(crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["kendallTau"]][["data"]])) {
-      row <- crossTabResults[[paste0("tables", analysis$rows, analysis$columns)]][["kendallTau"]][["data"]][[level]]
-      crossTabKendallTau$addRows(row)
-    }
+    res <- try(.crosstabsCreateKendallsTauRows(analysis$rows, analysis$group.matrices, 
+                                               analysis$groups, i, options, ready))
+    if(isTryError(res))
+      crossTabKendallTau$setError(res)
+    else 
+      crossTabKendallTau$setData(res)
   }
 }
 
 # Other ----
-.addLayerColumnToTable <- function(table, analysis) {
-  if (length(analysis) >= 3)
-    for (j in length(analysis):3)
+.crossTabMainAddLayersColumns <- function(table, analysis) {
+  if ((length(analysis)-2) >= 3)
+    for (j in (length(analysis)-2):3)
       table$addColumnInfo(name = analysis[[j]], type = "string", combine = TRUE)
 }
 
-.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts = NULL, rowOrderDescending=FALSE, columnOrderDescending=FALSE, ready) {
+.crossTabMainOvertitle <- function(dataset, options, table, analysis) {
+  
+  lvls <- c()
+  overTitle <- unlist(analysis$columns)
+  counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
+  
+  if (length(options$counts) > 0) {
+    counts <- dataset[[ .v(options$counts) ]]
+    if (identical(counts, as.integer(counts)) == FALSE)  
+      counts.fp <- TRUE
+  }
+  if(analysis$columns == "") {
+    lvls <- c("a", "b")
+    for (column.name in lvls) {
+      private.name <- base::paste(column.name,"[counts]", sep = "")
+      
+      if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) 
+        table$addColumnInfo(name = private.name, title = ".", overtitle = ".", type = "number", format = "sf:4;dp:2")
+      else 
+        table$addColumnInfo(name = private.name, title = ".", overtitle = ".", type = "integer")
+      
+      if (options$countsExpected) { 
+        private.name <- base::paste(column.name,"[expected]", sep = "")
+        table$addColumnInfo(name = private.name, title = ".", type = "number", format = "sf:4;dp:2")
+      }
+      if (options$percentagesRow) {
+        private.name <- base::paste(column.name,"[row.proportions]", sep = "")
+        table$addColumnInfo(name = private.name, title = ".", type = "number", format = "dp:1;pc")
+      }
+      if (options$percentagesColumn) {
+        private.name <- base::paste(column.name,"[col.proportions]", sep = "")
+        table$addColumnInfo(name = private.name, title = ".", type = "number", format = "dp:1;pc")
+      }
+      if (options$percentagesTotal) {
+        private.name <- base::paste(column.name,"[total.proportions]", sep = "")
+        table$addColumnInfo(name = private.name, title = ".", type = "number", format = "dp:1;pc")
+      }
+    }
+  } else {
+    if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
+      lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
+      if (options$columnOrder == "descending")
+        lvls <- base::rev(lvls)
+    } else {
+      lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
+      if (options$columnOrder == "descending")
+        lvls <- base::rev(lvls, decreasing = TRUE)
+    }
+      
+    for (column.name in lvls) {
+      private.name <- base::paste(column.name,"[counts]", sep = "")
+      
+      if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) 
+        table$addColumnInfo(name = private.name, title = column.name, overtitle = overTitle, type = "number", format = "sf:4;dp:2")
+      else 
+        table$addColumnInfo(name = private.name, title = column.name, overtitle = overTitle, type = "integer")
+      
+      if (options$countsExpected) { 
+        private.name <- base::paste(column.name,"[expected]", sep = "")
+        table$addColumnInfo(name = private.name, title = column.name, type = "number", format = "sf:4;dp:2")
+      }
+      if (options$percentagesRow) {
+        private.name <- base::paste(column.name,"[row.proportions]", sep = "")
+        table$addColumnInfo(name = private.name, title = column.name, type = "number", format = "dp:1;pc")
+      }
+      if (options$percentagesColumn) {
+        private.name <- base::paste(column.name,"[col.proportions]", sep = "")
+        table$addColumnInfo(name = private.name, title = column.name, type = "number", format = "dp:1;pc")
+      }
+      if (options$percentagesTotal) {
+        private.name <- base::paste(column.name,"[total.proportions]", sep = "")
+        table$addColumnInfo(name = private.name, title = column.name, type = "number", format = "dp:1;pc")
+      }
+    }
+  }
+}
+
+.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, 
+                                          counts = NULL,  
+                                          rowOrderDescending=FALSE, 
+                                          columnOrderDescending=FALSE, 
+                                          ready) {
   
   # this creates count matrices for each of the groups
-  
   matrices <- list()
   
   if (is.null(groups)) {
@@ -631,16 +588,24 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       if (columns != "")
         col.levels <- base::levels(dataset[[ .v(columns) ]])
       
-      ss.matrix <- base::matrix(0, nrow = length(row.levels), ncol = length(col.levels), dimnames = list(row.levels, col.levels))
+      ss.matrix <- base::matrix(0, 
+                                nrow  = length(row.levels), 
+                                ncol     = length(col.levels), 
+                                dimnames = list(row.levels, col.levels))
       
     } else if (is.null(counts)) {
       ss.dataset <- base::subset(dataset, select = .v(c(rows, columns)))
       ss.table   <- base::table(ss.dataset)
-      ss.matrix  <- base::matrix(ss.table, nrow = dim(ss.table)[1], ncol = dim(ss.table)[2], dimnames = dimnames(ss.table))
+      ss.matrix  <- base::matrix(ss.table, nrow = dim(ss.table)[1], 
+                                 ncol = dim(ss.table)[2], 
+                                 dimnames = dimnames(ss.table))
       
     } else {
       ss.dataset <- base::subset(dataset, select = .v(c(rows, columns, counts)))
-      ss.matrix  <- base::tapply(ss.dataset[[ .v(counts) ]], list(ss.dataset[[ .v(rows) ]], ss.dataset[[ .v(columns) ]]), base::sum)
+      ss.matrix  <- base::tapply(ss.dataset[[ .v(counts) ]], 
+                                 list(ss.dataset[[ .v(rows) ]], 
+                                      ss.dataset[[ .v(columns) ]]), 
+                                 base::sum)
       ss.matrix[is.na(ss.matrix)] <- 0
     }
     
@@ -659,7 +624,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     ss.matrix[base::is.na(ss.matrix)] <- 0
     
     matrices[[1]] <- ss.matrix
-    
   } else {
     
     for (group in groups) {
@@ -671,18 +635,27 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       } else if (length(group) == 0) {
         ss.dataset <- base::subset(dataset, select = .v(c(rows, columns, counts)))
       } else {
-        ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", sep = "", collapse = "&")
+        ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", 
+                                        sep = "", collapse = "&")
         ss.expression    <- base::parse(text = ss.filter.string)
-        ss.dataset	     <- base::subset(dataset, select = .v(c(rows, columns, counts)), subset = eval(ss.expression))
+        ss.dataset	     <- base::subset(dataset, 
+                                         select = .v(c(rows, columns, counts)), 
+                                         subset = eval(ss.expression))
       }
       
       if (!ready) {
         ss.matrix <- base::matrix(c(0,0,0,0), nrow = 2, ncol = 2)
       } else if (is.null(counts)) {
         ss.table  <- base::table(ss.dataset)
-        ss.matrix <- base::matrix(ss.table, nrow = dim(ss.table)[1], ncol = dim(ss.table)[2], dimnames = dimnames(ss.table))
+        ss.matrix <- base::matrix(ss.table, 
+                                  nrow = dim(ss.table)[1], 
+                                  ncol = dim(ss.table)[2], 
+                                  dimnames = dimnames(ss.table))
       } else {
-        ss.matrix <- base::tapply(ss.dataset[[ .v(counts) ]], list(ss.dataset[[ .v(rows) ]], ss.dataset[[ .v(columns) ]]), base::sum)
+        ss.matrix <- base::tapply(ss.dataset[[ .v(counts) ]], 
+                                  list(ss.dataset[[ .v(rows) ]], 
+                                       ss.dataset[[ .v(columns) ]]), 
+                                  base::sum)
       }
       
       ss.matrix[base::is.na(ss.matrix)] <- 0
@@ -704,932 +677,769 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   return(matrices)
 }
 
-.crosstabsCreateCountsRows <- function(var.name, counts.matrix, options, group, ready) {
+.crosstabsCreateCountsRows <- function(var.name, group.matrices, 
+                                       groups,i, options, ready) {
+  if(!is.null(jaspResults[[paste0("tables", i)]][["resultsMain"]]))
+    return()
   
-  rows <- list()
-  row.count <- list()
-  row.expected <- list()
-  row.row.proportions <- list()
-  row.col.proportions <- list()
-  row.proportions <- list()
-  row.count[["type[counts]"]] <- "Count"
-  row.count[["type[proportions]"]] <- "% of total"
+  counts.rows     <- list()
   
-  if (ready) {
+  for (g in 1:length(group.matrices)) {
+    counts.matrix <- group.matrices[[g]]
     
-    expected.matrix <- try({
+    if (!is.null(groups))
+      group <- groups[[g]]
+    else
+      group <- NULL
+  
+    rows <- list()
+    row.count <- list()
+    row.expected <- list()
+    row.row.proportions <- list()
+    row.col.proportions <- list()
+    row.total.proportions <- list()
+    row.proportions <- list()
+    row.count[["type[counts]"]] <- "Count"
+    
+    if (ready) {
+      expected.matrix <- try({
+        stats::chisq.test(counts.matrix, correct=FALSE)$expected
+      })
+      if (class(expected.matrix) == "try-error") {
+        expected.matrix <- counts.matrix
+        expected.matrix[,] <- "&nbsp;"
+      }
       
-      stats::chisq.test(counts.matrix, correct=FALSE)$expected
-    })
-    
-    if (class(expected.matrix) == "try-error") {
+      row.proportions.matrix <- try({
+        base::prop.table(counts.matrix, 1)
+      })
+      if (class(row.proportions.matrix) == "try-error") {
+        row.proportions.matrix <- counts.matrix
+        row.proportions.matrix[,] <- "&nbsp;"
+      }
+      
+      col.proportions.matrix <- try({
+        base::prop.table(counts.matrix, 2)
+      })
+      if (class(col.proportions.matrix) == "try-error") {
+        col.proportions.matrix    <- counts.matrix
+        col.proportions.matrix[,] <- "&nbsp;"
+      }
+      
+      proportions.matrix <- try({
+        base::prop.table(counts.matrix, margin = NULL)
+      })
+      if (class(proportions.matrix) == "try-error") {
+        proportions.matrix    <- counts.matrix
+        proportions.matrix[,] <- "&nbsp;"
+      }
+      
+    } else {
       expected.matrix <- counts.matrix
-      expected.matrix[,] <- "&nbsp;"
-    }
-    
-  } else {
-    expected.matrix <- counts.matrix
-  }
-  ######percentages
-  if (ready) {
-    
-    row.proportions.matrix <- try({
-      
-      base::prop.table(counts.matrix, 1)
-    })
-    
-    if (class(row.proportions.matrix) == "try-error") {
-      
       row.proportions.matrix <- counts.matrix
-      row.proportions.matrix[,] <- "&nbsp;"
+      col.proportions.matrix <- counts.matrix
+      proportions.matrix <- counts.matrix
     }
     
-  } else {
-    
-    row.proportions.matrix <- counts.matrix
-  }
-  
-  if (ready) {
-    
-    col.proportions.matrix <- try({
+    for (j in 1:dim(counts.matrix)[[1]]) {
       
-      base::prop.table(counts.matrix, 2)
-    })
-    
-    if (class(col.proportions.matrix) == "try-error") {
+      if (ready) {
+        
+        row <- as.list(counts.matrix[j,])
+        names(row) <- base::paste(names(row),"[counts]",	sep = "")
+        row[["total[counts]"]] <- base::sum(counts.matrix[j,])
+        row <- c(row.count, row)
+        
+        if (options$countsExpected) {
+          
+          row.expected[["type[expected]"]] <- "Expected count"
+          
+          expected <- as.list(expected.matrix[i,])
+          names(expected) <- paste(names(expected),"[expected]",  sep = "")
+          
+          if (class(expected.matrix[1,1]) == "character") {
+            expected[["total[expected]"]] <- ""
+          } else {
+            expected[["total[expected]"]] <- base::sum(expected.matrix[i,])
+          }
+          
+          expected <- c(row.expected, expected)
+          row <- c(row, expected)
+        }
+        #browser()
+        if (options$percentagesRow) {
+          row.proportions <- list()
+          row.row.proportions[["type[row.proportions]"]] <- " % within row"
+          
+          row.proportions <- as.list(row.proportions.matrix[j,])
+          row.proportions <- .clean(row.proportions)
+          names(row.proportions) <- paste(names(row.proportions),
+                                          "[row.proportions]",  sep = "")
+          
+          if (class(row.proportions.matrix[1,1]) == "character") {
+            row.proportions[["total[row.proportions]"]] <- ""
+          } else {
+            row.proportions[["total[row.proportions]"]] <- .clean(base::sum(row.proportions.matrix[j,]))
+          }
+          
+          row.proportions <- c(row.row.proportions, row.proportions)
+          row <- c(row, row.proportions)
+        }
+        
+        if (options$percentagesColumn) {
+          
+          row.col.proportions[["type[col.proportions]"]] <- " % within column"
+          
+          col.proportions <- as.list(col.proportions.matrix[j,])
+          col.proportions <- .clean(col.proportions)
+          names(col.proportions) <- paste(names(col.proportions),
+                                          "[col.proportions]",  sep = "")
+          
+          if (class(col.proportions.matrix[1,1]) == "character") {
+            col.proportions[["total[col.proportions]"]] <- ""
+          } else {
+            row.sum  <- base::margin.table(counts.matrix, 1)
+            row.prop <- as.list( base::prop.table(row.sum))
+            row.prop <- .clean(row.prop)
+            col.proportions[["total[col.proportions]"]] <- row.prop[[j]]
+          }
+          
+          col.proportions <- c(row.col.proportions, col.proportions)
+          row <- c(row, col.proportions)
+        }
+        
+        if (options$percentagesTotal) {
+          total.proportions <- list()
+          row.total.proportions[["type[total.proportions]"]] <- " % of total"
+          
+          total.proportions <- as.list(proportions.matrix[j,])
+          total.proportions <- .clean(total.proportions)
+          names(total.proportions) <- paste(names(total.proportions),
+                                            "[total.proportions]",  sep="")
+          
+          if (class(proportions.matrix[1,1]) == "character")
+            total.proportions[["total[total.proportions]"]] <- ""
+          else 
+            total.proportions[["total[total.proportions]"]] <- .clean(base::sum(proportions.matrix[j,]))
+          
+          total.proportions <- c(row.total.proportions, total.proportions)
+          row <- c(row, total.proportions)
+        }
+        
+      } else {
+        
+        row <- list()
+      }
       
-      col.proportions.matrix    <- counts.matrix
-      col.proportions.matrix[,] <- "&nbsp;"
+      row[[var.name]] <- dimnames(counts.matrix)[[1]][j]
+      
+      for (layer in names(group)) {
+        
+        level <- group[[layer]]
+        
+        if (level == "") 
+          row[[layer]] <- "Total"
+        else 
+          row[[layer]] <- level
+      }
+      
+      if (j == 1 && options$countsExpected == FALSE && 
+          options$percentagesRow == FALSE && 
+          options$percentagesCol == FALSE && 
+          options$percentagesTotal == FALSE)
+        row[[".isNewGroup"]] <- TRUE
+      rows[[length(rows)+1]] <- row
     }
-    
-  } else {
-    
-    col.proportions.matrix <- counts.matrix
-  }
-  
-  if (ready) {
-    
-    proportions.matrix <- try({
-      
-      base::prop.table(counts.matrix, margin = NULL)
-    })
-    
-    if (class(proportions.matrix) == "try-error") {
-      
-      proportions.matrix    <- counts.matrix
-      proportions.matrix[,] <- "&nbsp;"
-    }
-    
-  } else {
-    
-    proportions.matrix <- counts.matrix
-  }
-  
-  for (i in 1:dim(counts.matrix)[[1]]) {
     
     if (ready) {
       
-      row <- as.list(counts.matrix[i,])
-      names(row) <- base::paste(names(row),"[counts]",	sep = "")
-      row[["total[counts]"]] <- base::sum(counts.matrix[i,])
+      row <- apply(counts.matrix, 2, base::sum)
+      row <- as.list(row)
+      names(row) <- base::paste(names(row),"[counts]",	sep="")
+      row[["total[counts]"]] <- base::sum(counts.matrix)
       row <- c(row.count, row)
       
       if (options$countsExpected) {
         
-        row.expected[["type[expected]"]] <- "Expected count"
+        if (class(expected.matrix[1,1]) == "character") {
+          expected <- expected.matrix[1,]
+        } else {
+          expected <- apply(expected.matrix, 2, base::sum)
+        }
         
-        expected <- as.list(expected.matrix[i,])
-        names(expected) <- paste(names(expected),"[expected]",  sep = "")
+        expected <- as.list(expected)
+        names(expected) <- paste(names(expected),"[expected]", sep="")
         
         if (class(expected.matrix[1,1]) == "character") {
           expected[["total[expected]"]] <- ""
         } else {
-          expected[["total[expected]"]] <- base::sum(expected.matrix[i,])
+          expected[["total[expected]"]] <- base::sum(expected.matrix)
         }
         
         expected <- c(row.expected, expected)
-        row <- c(row, expected)
+        
+        row <- c(row,  expected)
       }
       
       if (options$percentagesRow) {
         
-        row.row.proportions[["type[row.proportions]"]] <- " % within row"
+        if (class(row.proportions.matrix[1,1]) == "character") {
+          row.proportions <- row.proportions.matrix[1,]
+        } else {
+          m <- base::margin.table(counts.matrix, 2)
+          rowproportion <- base::prop.table(m)
+        }
         
-        row.proportions <- as.list(row.proportions.matrix[i,])
+        row.proportions <- as.list(rowproportion)
         row.proportions <- .clean(row.proportions)
-        names(row.proportions) <- paste(names(row.proportions),"[row.proportions]",  sep = "")
+        names(row.proportions) <- paste(names(row.proportions),
+                                        "[row.proportions]", sep="")
         
         if (class(row.proportions.matrix[1,1]) == "character") {
           row.proportions[["total[row.proportions]"]] <- ""
         } else {
-          row.proportions[["total[row.proportions]"]] <- .clean(base::sum(row.proportions.matrix[i,]))
+          row.proportions[["total[row.proportions]"]] <- .clean(base::sum(rowproportion))
         }
         
-        row.proportions <- c(row.row.proportions, row.proportions)
-        row <- c(row, row.proportions)
+        row.proportions<-c(row.row.proportions, row.proportions)
+        
+        row <- c(row,  row.proportions)
       }
       
       if (options$percentagesColumn) {
         
-        row.col.proportions[["type[col.proportions]"]] <- " % within column"
-        
-        col.proportions <- as.list(col.proportions.matrix[i,])
-        col.proportions <- .clean(col.proportions)
-        names(col.proportions) <- paste(names(col.proportions),"[col.proportions]",  sep = "")
-        
         if (class(col.proportions.matrix[1,1]) == "character") {
-          col.proportions[["total[col.proportions]"]] <- ""
+          col.proportions <- col.proportions.matrix[1,]
         } else {
-          
-          row.sum  <- base::margin.table(counts.matrix, 1)
-          row.prop <- as.list( base::prop.table(row.sum))
-          row.prop <- .clean(row.prop)
-          col.proportions[["total[col.proportions]"]] <- row.prop[[i]]
+          colproportion <- apply(col.proportions.matrix, 2, base::sum)
         }
         
-        col.proportions <- c(row.col.proportions, col.proportions)
-        row <- c(row, col.proportions)
+        col.proportions <- as.list(colproportion)
+        col.proportions <- .clean(col.proportions)
+        names(col.proportions) <- paste(names(col.proportions),"[col.proportions]", sep="")
+        
+        if (class(row.proportions.matrix[1,1]) == "character") {
+          col.proportions[["total[col.proportions]"]] <- ""
+        } else {
+          row.sum <- base::margin.table(counts.matrix, 1)
+          row.prop <- base::prop.table(row.sum)
+          col.proportions[["total[col.proportions]"]] <- .clean(base::sum(row.prop))
+        }
+        
+        col.proportions<-c(row.col.proportions, col.proportions)
+        
+        row <- c(row,  col.proportions)
       }
       
       if (options$percentagesTotal) {
         
-        row.proportions[["type[proportions]"]] <- " % of total"
-        
-        proportions <- as.list(proportions.matrix[i,])
-        proportions <- .clean(proportions)
-        names(proportions) <- paste(names(proportions),"[proportions]",  sep="")
-        
         if (class(proportions.matrix[1,1]) == "character") {
-          proportions[["total[proportions]"]] <- ""
+          total.proportions <- proportions.matrix[1,]
         } else {
-          proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix[i,]))
+          total.proportions <- apply(proportions.matrix, 2, base::sum)
         }
         
-        proportions <- c(row.proportions, proportions)
-        row <- c(row, proportions)
+        total.proportions <- as.list(total.proportions)
+        total.proportions <- .clean(total.proportions)
+        names(total.proportions) <- paste(names(total.proportions),"[total.proportions]", sep="")
+        
+        if (class(proportions.matrix[1,1]) == "character") {
+          total.proportions[["total[total.proportions]"]] <- ""
+        } else {
+          total.proportions[["total[total.proportions]"]] <- .clean(base::sum(proportions.matrix))
+        }
+        
+        total.proportions <- c(row.total.proportions, total.proportions)
+        
+        row <- c(row,  total.proportions)
       }
       
     } else {
-      
       row <- list()
     }
     
-    row[[var.name]] <- dimnames(counts.matrix)[[1]][i]
+    row[[var.name]] <- "Total"
+    if (options$countsExpected == FALSE && options$percentagesRow == FALSE && 
+        options$percentagesCol == FALSE && options$percentagesTotal == FALSE)
+      row[[".isNewGroup"]] <- TRUE
     
     for (layer in names(group)) {
       
       level <- group[[layer]]
       
-      if (level == "") {
-        
+      if (level == "")
         row[[layer]] <- "Total"
-        
-      } else {
-        
+      else 
         row[[layer]] <- level
-      }
     }
-    
-    if (i == 1 && options$countsExpected == FALSE && options$percentagesRow == FALSE && options$percentagesCol == FALSE && options$percentagesTotal == FALSE) {
-      
-      row[[".isNewGroup"]] <- TRUE
-    }
-    
     rows[[length(rows)+1]] <- row
+    counts.rows <- c(counts.rows, rows)
   }
-  
-  if (ready) {
-    
-    row <- apply(counts.matrix, 2, base::sum)
-    row <- as.list(row)
-    names(row) <- base::paste(names(row),"[counts]",	sep="")
-    row[["total[counts]"]] <- base::sum(counts.matrix)
-    row <- c(row.count, row)
-    
-    if (options$countsExpected) {
-      
-      if (class(expected.matrix[1,1]) == "character") {
-        expected <- expected.matrix[1,]
-      } else {
-        expected <- apply(expected.matrix, 2, base::sum)
-      }
-      
-      expected <- as.list(expected)
-      names(expected) <- paste(names(expected),"[expected]", sep="")
-      
-      if (class(expected.matrix[1,1]) == "character") {
-        expected[["total[expected]"]] <- ""
-      } else {
-        expected[["total[expected]"]] <- base::sum(expected.matrix)
-      }
-      
-      expected<-c(row.expected, expected)
-      
-      row <- c(row,  expected)
-    }
-    
-    if (options$percentagesRow) {
-      
-      if (class(row.proportions.matrix[1,1]) == "character") {
-        row.proportions <- row.proportions.matrix[1,]
-      } else {
-        m <- base::margin.table(counts.matrix, 2)
-        rowproportion <- base::prop.table(m)
-      }
-      
-      row.proportions <- as.list(rowproportion)
-      row.proportions <- .clean(row.proportions)
-      names(row.proportions) <- paste(names(row.proportions),"[row.proportions]", sep="")
-      
-      if (class(row.proportions.matrix[1,1]) == "character") {
-        row.proportions[["total[row.proportions]"]] <- ""
-      } else {
-        row.proportions[["total[row.proportions]"]] <- .clean(base::sum(rowproportion))
-      }
-      
-      row.proportions<-c(row.row.proportions, row.proportions)
-      
-      row <- c(row,  row.proportions)
-    }
-    
-    if (options$percentagesColumn) {
-      
-      if (class(col.proportions.matrix[1,1]) == "character") {
-        col.proportions <- col.proportions.matrix[1,]
-      } else {
-        colproportion <- apply(col.proportions.matrix, 2, base::sum)
-      }
-      
-      col.proportions <- as.list(colproportion)
-      col.proportions <- .clean(col.proportions)
-      names(col.proportions) <- paste(names(col.proportions),"[col.proportions]", sep="")
-      
-      if (class(row.proportions.matrix[1,1]) == "character") {
-        col.proportions[["total[col.proportions]"]] <- ""
-      } else {
-        row.sum <- base::margin.table(counts.matrix, 1)
-        row.prop <- base::prop.table(row.sum)
-        col.proportions[["total[col.proportions]"]] <- .clean(base::sum(row.prop))
-      }
-      
-      col.proportions<-c(row.col.proportions, col.proportions)
-      
-      row <- c(row,  col.proportions)
-    }
-    
-    
-    if (options$percentagesTotal) {
-      
-      if (class(proportions.matrix[1,1]) == "character") {
-        proportions <- proportions.matrix[1,]
-      } else {
-        proportions <- apply(proportions.matrix, 2, base::sum)
-      }
-      
-      proportions <- as.list(proportions)
-      proportions <- .clean(proportions)
-      names(proportions) <- paste(names(proportions),"[proportions]", sep="")
-      
-      if (class(proportions.matrix[1,1]) == "character") {
-        proportions[["total[proportions]"]] <- ""
-      } else {
-        proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix))
-      }
-      
-      proportions <- c(row.proportions, proportions)
-      
-      row <- c(row,  proportions)
-    }
-    
-  } else {
-    
-    row <- list()
-  }
-  
-  row[[var.name]] <- "Total"
-  if (options$countsExpected == FALSE && options$percentagesRow == FALSE && options$percentagesCol == FALSE && options$percentagesTotal == FALSE)
-    row[[".isNewGroup"]] <- TRUE
-  
-  for (layer in names(group)) {
-    
-    level <- group[[layer]]
-    
-    if (level == "") {
-      
-      row[[layer]] <- "Total"
-      
-    } else {
-      
-      row[[layer]] <- level
-    }
-  }
-  
-  rows[[length(rows)+1]] <- row
-  
-  rows
+  main <- createJaspState(counts.rows)
+  main$dependOn(optionsFromObject = jaspResults[[paste0("tables", i)]][["crossTabMain"]])
+  jaspResults[[paste0("tables", i)]][["resultsMain"]] <- main
+  return(counts.rows)
 }
 
-.crosstabsCreateTestsRows <- function(var.name, counts.matrix, options, group, ready) {
-  if(!options$chiSquared && !options$chiSquaredContinuityCorrection && !options$likelihoodRatio) 
+.crosstabsCreateTestsRows <- function(var.name, group.matrices, groups, 
+                                      i, options, ready) {
+  if(!options$chiSquared && 
+     !options$chiSquaredContinuityCorrection && 
+     !options$likelihoodRatio) 
+    return()
+  if(!is.null(jaspResults[[paste0("tables", i)]][["resultsChisq"]]))
     return()
   
-  row <- list()
+  tests.rows <- list()
+  for (g in 1:length(group.matrices)) {
+    counts.matrix <- group.matrices[[g]]
+    if (!is.null(groups))
+      group <- groups[[g]]
+    else
+      group <- NULL
   
-  for (layer in names(group)) {
-    level <- group[[layer]]
-    if (level == "") {
-      row[[layer]] <- "Total"
-    } else {
-      row[[layer]] <- level
+    row <- list()
+    
+    for (layer in names(group)) {
+      level <- group[[layer]]
+      if (level == "")
+        row[[layer]] <- "Total"
+      else 
+        row[[layer]] <- level
     }
-  }
-  
-  row[["type[N]"]] <- "N"
-  row[["df[N]"]]   <- ""
-  row[["p[N]"]]    <- ""
-  row[["MPR[N]"]]  <- ""
-  
-  if (ready)
-    row[["value[N]"]] <- base::sum(counts.matrix)
-  else 
-    row[["value[N]"]] <- "."
-  
-  if (options$chiSquared) {
     
-    row[["type[chiSquared]"]] <- "\u03A7\u00B2"
+    row[["type[N]"]] <- "N"
+    row[["df[N]"]]   <- ""
+    row[["p[N]"]]    <- ""
+    row[["MPR[N]"]]  <- ""
     
-    if (ready) {
+    if (ready)
+      row[["value[N]"]] <- base::sum(counts.matrix)
+    else 
+      row[["value[N]"]] <- "."
+    
+    if (options$chiSquared) {
       
-      chi.result <- try({
-        chi.result <- stats::chisq.test(counts.matrix, correct = FALSE)
-      })
+      row[["type[chiSquared]"]] <- "\u03A7\u00B2"
       
-      if (class(chi.result) == "try-error") {
+      if (ready) {
         
-        row[["value[chiSquared]"]] <- .clean(NaN)
-        row[["df[chiSquared]"]]    <- " "
-        row[["p[chiSquared]"]]     <- " "
-        row[["MPR[chiSquared]"]]   <- " "
+        chi.result <- try({
+          chi.result <- stats::chisq.test(counts.matrix, correct = FALSE)
+        })
         
-        #error <- .extractErrorMessage(chi.result)
+        if (class(chi.result) == "try-error") {
+          
+          row[["value[chiSquared]"]] <- .clean(NaN)
+          row[["df[chiSquared]"]]    <- " "
+          row[["p[chiSquared]"]]     <- " "
+          row[["MPR[chiSquared]"]]   <- " "
+        } else if (is.na(chi.result$statistic)) {
+          
+          row[["value[chiSquared]"]] <- .clean(NaN)
+          row[["df[chiSquared]"]]    <- " "
+          row[["p[chiSquared]"]]     <- " "
+          row[["MPR[chiSquared]"]]   <- " "
+          
+        } else {
+          
+          row[["value[chiSquared]"]] <- unname(chi.result$statistic)
+          row[["df[chiSquared]"]]    <- unname(chi.result$parameter)
+          row[["p[chiSquared]"]]     <- unname(chi.result$p.value)
+          row[["MPR[chiSquared]"]]   <- .VovkSellkeMPR(row[["p[chiSquared]"]])
+        }
+      } else {
+        row[["value[chiSquared]"]] <- "."
+      }
+    }
+    
+    if (options$chiSquaredContinuityCorrection) {
+      
+      row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction"
+      
+      if (ready) {
         
-        #if (error == "at least one entry of 'x' must be positive")
-        #  error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+        chi.result <- try({
+          chi.result <- stats::chisq.test(counts.matrix)
+          #row <- list(Method="Pearson's Chi-squared", 
+                       #X2=unname(chi$statistic), 
+                       #df=unname(chi$parameter), 
+                       #p = chi$p.value)
+        })
         
-        #sup	<- .addFootnote(footnotes, error)
-        #row.footnotes[["value[chiSquared]"]]=list(sup)
-        
-      } else if (is.na(chi.result$statistic)) {
-        
-        row[["value[chiSquared]"]] <- .clean(NaN)
-        row[["df[chiSquared]"]]    <- " "
-        row[["p[chiSquared]"]]     <- " "
-        row[["MPR[chiSquared]"]]   <- " "
-        
-        #message <- "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros"
-        
-        #sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-        #row.footnotes[["value[oddsRatio]"]]=list(sup)
-        
-        #warn <- warnings()
-        #if (length(warn) > 0)
-        #	message <- paste(message, names(warn)[1], sep = " : ")
-        
-        #sup <- .addFootnote(footnotes, message)
-        #row.footnotes [["value[chiSquared]"]]=list(sup)
+        if (class(chi.result) == "try-error") {
+          
+          row[["value[chiSquared-cc]"]] <- .clean(NaN)
+          row[["df[chiSquared-cc]"]]    <- " "
+          row[["p[chiSquared-cc]"]]     <- " "
+          row[["MPR[chiSquared-cc]"]]   <- " "
+          
+        } else if (is.na(chi.result$statistic)) {
+          
+          row[["value[chiSquared-cc]"]] <- .clean(NaN)
+          row[["df[chiSquared-cc]"]]    <- " "
+          row[["p[chiSquared-cc]"]]     <- " "
+          row[["MPR[chiSquared-cc]"]]   <- " "
+          
+        } else {
+          
+          row[["value[chiSquared-cc]"]] <- unname(chi.result$statistic)
+          row[["df[chiSquared-cc]"]]    <- unname(chi.result$parameter)
+          row[["p[chiSquared-cc]"]]     <- unname(chi.result$p.value)
+          row[["MPR[chiSquared-cc]"]]   <- .VovkSellkeMPR(row[["p[chiSquared-cc]"]])
+          
+        }
         
       } else {
         
-        row[["value[chiSquared]"]] <- unname(chi.result$statistic)
-        row[["df[chiSquared]"]]    <- unname(chi.result$parameter)
-        row[["p[chiSquared]"]]     <- unname(chi.result$p.value)
-        row[["MPR[chiSquared]"]]   <- .VovkSellkeMPR(row[["p[chiSquared]"]])
+        row[["value[chiSquared-cc]"]] <- "."
       }
-    } else {
-      row[["value[chiSquared]"]] <- "."
     }
-  }
-  
-  if (options$chiSquaredContinuityCorrection) {
     
-    row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction"
-    
-    if (ready) {
+    if (options$likelihoodRatio) {
       
-      chi.result <- try({
-        chi.result <- stats::chisq.test(counts.matrix)
-        #row <- list(Method="Pearson's Chi-squared", X2=unname(chi$statistic), df=unname(chi$parameter), p = chi$p.value)
-      })
+      row[["type[likelihood]"]] <- "Likelihood ratio"
       
-      if (class(chi.result) == "try-error") {
+      if (ready) {
         
-        row[["value[chiSquared-cc]"]] <- .clean(NaN)
-        row[["df[chiSquared-cc]"]]    <- " "
-        row[["p[chiSquared-cc]"]]     <- " "
-        row[["MPR[chiSquared-cc]"]]   <- " "
+        chi.result <- try({
+          chi.result <- vcd::assocstats(counts.matrix)
+        })
         
-        #error <- .extractErrorMessage(chi.result)
-        
-        #if (error == "at least one entry of 'x' must be positive")
-        #  error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-        
-        #sup	<- .addFootnote(footnotes, error)
-        #row.footnotes [["value[chiSquared-cc]"]]=list(sup)
-        
-      } else if (is.na(chi.result$statistic)) {
-        
-        row[["value[chiSquared-cc]"]] <- .clean(NaN)
-        row[["df[chiSquared-cc]"]]    <- " "
-        row[["p[chiSquared-cc]"]]     <- " "
-        row[["MPR[chiSquared-cc]"]]   <- " "
-        
-        #sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros")
-        #row.footnotes [["value[chiSquared-cc]"]]=list(sup)
-        
+        if (class(chi.result) == "try-error") {
+          
+          row[["value[likelihood]"]] <- .clean(NaN)
+          row[["df[likelihood]"]]    <- ""
+          row[["p[likelihood]"]]     <- ""
+          row[["MPR[likelihood]"]]   <- ""
+        } else {
+          row[["value[likelihood]"]] <- chi.result$chisq_tests[1]
+          row[["df[likelihood]"]]    <- chi.result$chisq_tests[3]
+          row[["p[likelihood]"]]     <- chi.result$chisq_tests[5]
+          row[["MPR[likelihood]"]]   <- .VovkSellkeMPR(row[["p[likelihood]"]])
+        }
       } else {
-        
-        row[["value[chiSquared-cc]"]] <- unname(chi.result$statistic)
-        row[["df[chiSquared-cc]"]]    <- unname(chi.result$parameter)
-        row[["p[chiSquared-cc]"]]     <- unname(chi.result$p.value)
-        row[["MPR[chiSquared-cc]"]]   <- .VovkSellkeMPR(row[["p[chiSquared-cc]"]])
-        
+        row[["value[likelihood]"]] <- "."
       }
-      
-    } else {
-      
-      row[["value[chiSquared-cc]"]] <- "."
     }
+    tests.rows <- c(tests.rows, row)
   }
-  
-  if (options$likelihoodRatio) {
-    
-    row[["type[likelihood]"]] <- "Likelihood ratio"
-    
-    if (ready) {
-      
-      chi.result <- try({
-        chi.result <- vcd::assocstats(counts.matrix)
-      })
-      
-      if (class(chi.result) == "try-error") {
-        
-        row[["value[likelihood]"]] <- .clean(NaN)
-        row[["df[likelihood]"]]    <- ""
-        row[["p[likelihood]"]]     <-""
-        row[["MPR[likelihood]"]]   <-""
-        
-        #error <- .extractErrorMessage(chi.result)
-        
-        #sup	<- .addFootnote(footnotes, error)
-        #row.footnotes[["value[likelihood]"]] = list(sup)
-        
-      } else {
-        row[["value[likelihood]"]] <- chi.result$chisq_tests[1]
-        row[["df[likelihood]"]]    <- chi.result$chisq_tests[3]
-        row[["p[likelihood]"]]     <- chi.result$chisq_tests[5]
-        row[["MPR[likelihood]"]]   <- .VovkSellkeMPR(row[["p[likelihood]"]])
-      }
-      
-    } else {
-      row[["value[likelihood]"]] <- "."
-    }
-  }
-  
-  list(row)
+  chisq <- createJaspState(tests.rows)
+  chisq$dependOn(optionsFromObject = jaspResults[[paste0("tables", i)]][["crossTabChisq"]])
+  jaspResults[[paste0("tables", i)]][["resultsChisq"]] <- chisq
+  return(tests.rows)
 }
 
-.crosstabsCreateOddsRatioRows <- function(var.name, counts.matrix, options, group, ready) {
+.crosstabsCreateOddsRatioRows <- function(var.name, group.matrices, 
+                                          groups, i, options, ready) {
   if(!options$oddsRatio)
     return()
+  if(!is.null(jaspResults[[paste0("tables", i)]][["resultsLogOdds"]]))
+    return()
+  odds.ratio.rows <- list()
+  for (g in 1:length(group.matrices)) {
+    counts.matrix <- group.matrices[[g]]
+    if (!is.null(groups))
+      group <- groups[[g]]
+    else
+      group <- NULL
   
-  row <- list()
-  
-  for (layer in names(group)) {
+    row <- list()
     
-    level <- group[[layer]]
-    
-    if (level == "") {
+    for (layer in names(group)) {
+      level <- group[[layer]]
       
-      row[[layer]] <- "Total"
-      #row[[".isNewGroup"]] <- TRUE
+      if (level == "")
+        row[[layer]] <- "Total"
+      else 
+        row[[layer]] <- level
+    }
+    if (options$oddsRatio ) {
+      row[["type[oddsRatio]"]] <- "Odds ratio"
+      if (ready) {
+        if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+          row[["value[oddsRatio]"]] <- .clean(NaN)
+          row[["low[oddsRatio]"]]   <- ""
+          row[["up[oddsRatio]"]]    <-  ""
+        } else {
+          chi.result <- try({
+            chi.result <- vcd::oddsratio(counts.matrix)
+            level <- options$oddsRatioConfidenceIntervalInterval
+            CI <- stats::confint(chi.result, level = level)
+            LogOR <- unname(chi.result$coefficients)
+            log.CI.low <- CI[1]
+            log.CI.high <- CI[2]
+          })
+          
+          if (class(chi.result) == "try-error") 
+            row[["value[oddsRatio]"]] <- .clean(NaN)
+          else if (is.na(chi.result))
+            row[["value[oddsRatio]"]] <- .clean(NaN)
+          else {
+            row[["value[oddsRatio]"]] <-LogOR
+            row[["low[oddsRatio]"]] <- log.CI.low
+            row[["up[oddsRatio]"]] <- log.CI.high
+          }
+          row[["value[oddsRatio]"]] <- .clean(LogOR)
+          row[["low[oddsRatio]"]] <- .clean(log.CI.low)
+          row[["up[oddsRatio]"]] <-  .clean(log.CI.high)
+        }
+      }
+    } else {
+      row[["value[oddsRatio]"]] <- "."
+    }
+    
+    if (options$oddsRatio ) {
+      row[["type[FisherTest]"]] <- "Fisher's exact test "
+      
+      if (ready) {
+        
+        if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+          row[["value[FisherTest]"]] <- .clean(NaN)
+          row[["low[FisherTest]"]]   <- ""
+          row[["up[FisherTest]"]]    <- ""
+        } else {
+          chi.result <- try({
+            conf.level <- options$oddsRatioConfidenceIntervalInterval
+            chi.result  <- stats::fisher.test(counts.matrix, 
+                                              conf.level = conf.level)
+            OR          <- unname(chi.result$estimate)
+            logOR       <- log(OR)
+            log.CI.low  <- log(chi.result$conf.int[1])
+            log.CI.high <- log(chi.result$conf.int[2])
+          })
+          
+          if (class(chi.result) == "try-error") 
+            row[["value[FisherTest]"]] <- .clean(NaN)
+          else if (is.na(chi.result)) 
+            row[["value[FisherTest]"]] <- .clean(NaN)
+          else {
+            row[["value[FisherTest]"]] <- logOR
+            row[["low[FisherTest]"]]   <- log.CI.low
+            row[["up[FisherTest]"]]    <- log.CI.high
+          }
+          row[["value[FisherTest]"]] <- .clean(logOR)
+          row[["low[FisherTest]"]]   <- .clean(log.CI.low)
+          row[["up[FisherTest]"]]    <- .clean(log.CI.high)
+        }
+      }
       
     } else {
-      
-      row[[layer]] <- level
+      row[["value[FisherTest]"]] <- "."
     }
+   
+    odds.ratio.rows <- c(odds.ratio.rows, row)
   }
-  
-  row.footnotes <- list()
-  
-  if (options$oddsRatio ) {
-    
-    row[["type[oddsRatio]"]] <- "Odds ratio"
-    
-    if (ready) {
-      
-      if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
-        
-        row[["value[oddsRatio]"]] <- .clean(NaN)
-        row[["low[oddsRatio]"]] <- ""
-        row[["up[oddsRatio]"]] <-  ""
-        
-        #sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-        #row.footnotes[["value[oddsRatio]"]]=list(sup)
-        
-      } else {
-        
-        chi.result <- try({
-          
-          chi.result <- vcd::oddsratio(counts.matrix)
-          CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
-          LogOR <- unname(chi.result$coefficients)
-          log.CI.low <- CI[1]
-          log.CI.high <- CI[2]
-        })
-        
-        if (class(chi.result) == "try-error") {
-          
-          row[["value[oddsRatio]"]] <- .clean(NaN)
-          
-          error <- .extractErrorMessage(chi.result)
-          
-          if (error == "at least one entry of 'x' must be positive")
-            error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-          
-          sup   <- .addFootnote(footnotes, error)
-          row.footnotes[["value[oddsRatio]"]]=list(sup)
-          
-        } else if (is.na(chi.result)) {
-          
-          row[["value[oddsRatio]"]] <- .clean(NaN)
-          
-          sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-          row.footnotes[["value[oddsRatio]"]]=list(sup)
-          
-        } else {
-          
-          row[["value[oddsRatio]"]] <-LogOR
-          row[["low[oddsRatio]"]] <- log.CI.low
-          row[["up[oddsRatio]"]] <- log.CI.high
-        }
-        
-        row[["value[oddsRatio]"]] <- .clean(LogOR)
-        row[["low[oddsRatio]"]] <- .clean(log.CI.low)
-        row[["up[oddsRatio]"]] <-  .clean(log.CI.high)
-      }
-    }
-    
-  } else {
-    
-    row[["value[oddsRatio]"]] <- "."
-    
-  }
-  
-  if (options$oddsRatio ) {
-    
-    row[["type[FisherTest]"]] <- "Fisher's exact test "
-    
-    if (ready) {
-      
-      if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
-        
-        row[["value[FisherTest]"]] <- .clean(NaN)
-        row[["low[FisherTest]"]] <- ""
-        row[["up[FisherTest]"]] <-  ""
-        
-        #sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-        #row.footnotes[["value[FisherTest]"]]=list(sup)
-        
-      } else {
-        
-        chi.result <- try({
-          chi.result  <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
-          OR          <- unname(chi.result$estimate)
-          logOR       <- log(OR)
-          log.CI.low  <- log(chi.result$conf.int[1])
-          log.CI.high <- log(chi.result$conf.int[2])
-        })
-        
-        if (class(chi.result) == "try-error") {
-          
-          row[["value[FisherTest]"]] <- .clean(NaN)
-          
-          #error <- .extractErrorMessage(chi.result)
-          
-          #if (error == "at least one entry of 'x' must be positive")
-          #  error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-          
-          #sup   <- .addFootnote(footnotes, error)
-          #row.footnotes[["value[FisherTest]"]]=list(sup)
-          
-        } else if (is.na(chi.result)) {
-          
-          row[["value[FisherTest]"]] <- .clean(NaN)
-          
-          #sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-          #row.footnotes[["value[FisherTest]"]]=list(sup)
-          
-        } else {
-          row[["value[FisherTest]"]] <- logOR
-          row[["low[FisherTest]"]]   <- log.CI.low
-          row[["up[FisherTest]"]]    <- log.CI.high
-        }
-        
-        row[["value[FisherTest]"]] <- .clean(logOR)
-        row[["low[FisherTest]"]]   <- .clean(log.CI.low)
-        row[["up[FisherTest]"]]    <- .clean(log.CI.high)
-      }
-    }
-    
-  } else {
-    row[["value[FisherTest]"]] <- "."
-  }
-  
-  #row[[".footnotes"]] <- row.footnotes
-  list(row)
+  logOdds <- createJaspState(odds.ratio.rows)
+  logOdds$dependOn(optionsFromObject = jaspResults[[paste0("tables", i)]][["crossTabLogOdds"]])
+  jaspResults[[paste0("tables", i)]][["resultsLogOdds"]] <- logOdds
+  return(odds.ratio.rows)
 }
 
-.crosstabsCreateNominalRows <- function(var.name, counts.matrix, options, group, ready) {
+.crosstabsCreateNominalRows <- function(var.name, group.matrices, 
+                                        groups, i, options, ready) {
   if (!options$contingencyCoefficient && !options$phiAndCramersV && !options$lambda)
     return()
+  if(!is.null(jaspResults[[paste0("tables", i)]][["resultsNominal"]]))
+    return()
   
-  row <- list()
+  nominal.rows    <- list()
   
-  for (layer in names(group)) {
-    
-    level <- group[[layer]]
-    
-    if (level == "") {
-      
-      row[[layer]] <- "Total"
-      
-    } else {
-      
-      row[[layer]] <- level
+  for (g in 1:length(group.matrices)) {
+    counts.matrix <- group.matrices[[g]]
+    if (!is.null(groups)) 
+      group <- groups[[g]]
+    else 
+      group <- NULL
+    row <- list()
+    for (layer in names(group)) {
+      level <- group[[layer]]
+      if (level == "") 
+        row[[layer]] <- "Total"
+      else 
+        row[[layer]] <- level
     }
-  }
-  
-  row.footnotes <- list ()
-  
-  if (options$contingencyCoefficient) {
-    
-    row[["type[ContCoef]"]] <- "Contingency coefficient"
-    
-    if (ready) {
-      
-      chi.result <- try({
-        
-        chi.result <- vcd::assocstats(counts.matrix)
-        
-      })
-      
-      if (class(chi.result) == "try-error") {
-        
-        row[["value[ContCoef]"]] <- .clean(NaN)
-        
-        error <- .extractErrorMessage(chi.result)
-        
-        sup	<- .addFootnote(footnotes, error)
-        row.footnotes[["value[ContCoef]"]] <- list(sup)
-        
-      } else if (is.na(chi.result$contingency)) {
-        
-        row[["value[ContCoef]"]] <- .clean(NaN)
-        
-        sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
-        row.footnotes[["value[ContCoef]"]] <- list(sup)
-        
-      } else {
-        
-        row[["value[ContCoef]"]] <- chi.result$contingency
+    if (options$contingencyCoefficient) {
+      row[["type[ContCoef]"]] <- "Contingency coefficient"
+      if (ready) {
+        chi.result <- try({
+          chi.result <- vcd::assocstats(counts.matrix)
+        })
+        if (class(chi.result) == "try-error") 
+          row[["value[ContCoef]"]] <- .clean(NaN)
+        else if (is.na(chi.result$contingency))
+          row[["value[ContCoef]"]] <- .clean(NaN)
+        else
+          row[["value[ContCoef]"]] <- chi.result$contingency
+      } else
+        row[["value[ContCoef]"]] <- "."
+    }
+    if (options$phiAndCramersV) {
+      row[["type[PhiCoef]"]] <- "Phi-coefficient"
+      if (ready) {
+        chi.result <- try({
+          chi.result <- vcd::assocstats(counts.matrix)
+        })
+        if (class(chi.result) == "try-error")
+          row[["value[PhiCoef]"]] <- .clean(NaN)
+        else if (is.na(chi.result$phi))
+          row[["value[PhiCoef]"]] <- .clean(NaN)
+        else
+          row[["value[PhiCoef]"]] <- chi.result$phi
+      } else 
+        row[["value[PhiCoef]"]] <- "."
+      row[["type[CramerV]"]] <- "Cramer's V "
+      if (ready) {
+        chi.result <- try({
+          chi.result <- vcd::assocstats(counts.matrix)
+        })
+        if (class(chi.result) == "try-error")
+          row[["value[CramerV]"]] <- .clean(NaN)
+        else if (is.na(chi.result$cramer))
+          row[["value[CramerV]"]] <- .clean(NaN)
+        else 
+          row[["value[CramerV]"]] <- chi.result$cramer
+      } else
+        row[["value[CramerV]"]] <- "."
+    }
+    if (options$lambda) {
+      row[["type[LambdaR]"]] <- paste("Lambda (", options$rows, 
+                                      "dependent)", sep =  " ")
+      if (ready) {
+        N      <- sum(counts.matrix)
+        E1     <- N - max(rowSums(counts.matrix))
+        E2     <- sum(apply(counts.matrix,2, function (x) sum(x) - max(x) ))
+        lambda <- (E1 - E2)/E1
+        row[["value[LambdaR]"]] <- lambda
+        if (is.na(lambda))
+          row[["value[LambdaR]"]] <- .clean(NaN)
+        else
+          row[["value[LambdaR]"]] <- "."
+        row[["type[LambdaC]"]] <- paste("Lambda (", options$columns, 
+                                        "dependent)", sep =  " ")
+        if (ready) {
+          N      <- sum(counts.matrix)
+          E1     <- N- max(colSums(counts.matrix))
+          E2     <- sum(apply(counts.matrix,1, function (x) sum(x)-max(x) ))
+          lambda <- (E1-E2)/E1
+          row[["value[LambdaC]"]] <- lambda
+        } else {
+          row[["value[LambdaC]"]] <- "."
+        }
       }
-      
-    } else {
-      row[["value[ContCoef]"]] <- "."
     }
+    nominal.rows <- c(nominal.rows, row)
   }
-  if (options$phiAndCramersV) {
-    
-    row[["type[PhiCoef]"]] <- "Phi-coefficient"
-    
-    if (ready) {
-      chi.result <- try({
-        chi.result <- vcd::assocstats(counts.matrix)
-      })
-      
-      if (class(chi.result) == "try-error") {
-        
-        row[["value[PhiCoef]"]] <- .clean(NaN)
-        
-        #error <- .extractErrorMessage(chi.result)
-        
-        #sup	<- .addFootnote(footnotes, error)
-        #row[["value[PhiCoef]"]] <- list(sup)
-        
-      } else if (is.na(chi.result$phi)) {
-        
-        row[["value[PhiCoef]"]] <- .clean(NaN)
-        
-        #sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
-        #row.footnotes[["value[PhiCoef]"]] <- list(sup)
-        #row.footnotes <- c(row.footnotes, list("value[PhiCoef]"=list(sup)))
-        
-      } else {
-        row[["value[PhiCoef]"]] <- chi.result$phi
-      }
-    } else {
-      row[["value[PhiCoef]"]] <- "."
-    }
-  }
-  if (options$phiAndCramersV) {
-    
-    row[["type[CramerV]"]] <- "Cramer's V "
-    
-    if (ready) {
-      
-      chi.result <- try({
-        
-        chi.result <- vcd::assocstats(counts.matrix)
-        
-      })
-      
-      if (class(chi.result) == "try-error") {
-        
-        row[["value[CramerV]"]] <- .clean(NaN)
-        
-        #error <- .extractErrorMessage(chi.result)
-        
-        #sup	<- .addFootnote(footnotes, error)
-        #row.footnotes[["value[CramerV]"]] <- list(sup)
-        
-      } else if (is.na(chi.result$cramer)) {
-        
-        row[["value[CramerV]"]] <- .clean(NaN)
-        
-        #sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
-        #row.footnotes[["value[CramerV]"]] <- list(sup)
-        
-      } else {
-        
-        row[["value[CramerV]"]] <- chi.result$cramer
-      }
-      
-    } else {
-      
-      row[["value[CramerV]"]] <- "."
-    }
-  }
-  if (options$lambda) {
-    
-    row[["type[LambdaR]"]] <- paste("Lambda (", options$rows, "dependent)", sep =  " ")
-    
-    if (ready) {
-      
-      N <- sum(counts.matrix)
-      E1 <- N- max(rowSums(counts.matrix))
-      E2 <- sum(apply(counts.matrix,2, function (x) sum(x)-max(x) ))
-      lambda<-(E1-E2)/E1
-      row[["value[LambdaR]"]] <- lambda
-      
-      if (is.na(lambda)) {
-        
-        row[["value[LambdaR]"]] <- .clean(NaN)
-        
-        #sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row sums or column sums contains all zeros")
-        #row.footnotes[["value[LambdaR]"]] <- list(sup)
-      }
-    } else {
-      
-      row[["value[LambdaR]"]] <- "."
-    }
-  }
-  if (options$lambda) {
-    
-    row[["type[LambdaC]"]] <- paste("Lambda (", options$columns, "dependent)", sep =  " ")
-    
-    if (ready) {
-      
-      N <- sum(counts.matrix)
-      E1 <- N- max(colSums(counts.matrix))
-      E2 <- sum(apply(counts.matrix,1, function (x) sum(x)-max(x) ))
-      lambda<-(E1-E2)/E1
-      #print(N)
-      #print(E1)
-      #print(E2)
-      #print(lambda)
-      row[["value[LambdaC]"]] <- lambda
-    } else {
-      row[["value[LambdaC]"]] <- "."
-    }
-  }
-  #row[[".footnotes"]] <- row.footnotes
-  list(row)
+  nominal <- createJaspState(nominal.rows)
+  nominal$dependOn(optionsFromObject = jaspResults[[paste0("tables", i)]][["crossTabNominal"]])
+  jaspResults[[paste0("tables", i)]][["resultsNominal"]] <- nominal
+  return(nominal.rows)
 }
 
-.crosstabsCreateOrdinalRows <- function(var.name, counts.matrix, options, group, ready) {
+.crosstabsCreateGammaRows <- function(var.name, group.matrices, 
+                                      groups, i, options, ready) {
   if (!options$gamma)
     return()
-  
-  row <- list()
-  for (layer in names(group)) {
-    
-    level <- group[[layer]]
-    
-    if (level == "") {
-      
-      row[[layer]] <- "Total"
-      
-    } else {
-      
-      row[[layer]] <- level
-    }
-  }
-
-  if (options$gamma) {
-    
-    row[["type[gammaCoef]"]] <- "Gamma coefficient"
-    
-    chi.result <- try({
-      chi.result <- vcdExtra::GKgamma(counts.matrix)
-    })
-      
-    #print(chi.result)
-    #print("we are here")
-      
-    if (class(chi.result) == "try-error") {
-      row[["value[gammaCoef]"]] <- .clean(NaN)
-      #error <- .extractErrorMessage(chi.result)
-        
-      #sup	<- .addFootnote(footnotes, error)
-      #row[[".footnotes"]] <- list("value[gammaCoef]"=list(sup))
-    } else {
-      row[["value[gammaCoef]"]] <- chi.result$gamma
-      row[["Sigma[gammaCoef]"]] <- chi.result$sigma
-      row[["low[gammaCoef]"]]   <- chi.result$CI[1]
-      row[["up[gammaCoef]"]]    <- chi.result$CI[2]
-    }
-  }
-  list(row)
-}
-
-.crosstabsCreateOrdinalTau <- function(var.name, counts.matrix, options, group, ready) {
-  if (!options$kendallsTauB)
+  if(!is.null(jaspResults[[paste0("tables", i)]][["resultsGamma"]]))
     return()
   
-  row <- list()
-  for (layer in names(group)) {
-    
-    level <- group[[layer]]
-    
-    if (level == "") {
-      
-      row[[layer]] <- "Total"
-      
-    } else {
-      
-      row[[layer]] <- level
+  ordinal.rows <- list()
+  for (g in 1:length(group.matrices)) {
+    counts.matrix <- group.matrices[[g]]
+    if (!is.null(groups)) 
+      group <- groups[[g]]
+    else 
+      group <- NULL
+    row <- list()
+    for (layer in names(group)) {
+      level <- group[[layer]]
+      if (level == "") 
+        row[[layer]] <- "Total"
+      else 
+        row[[layer]] <- level
     }
-  }
   
-  if (options$kendallsTauB) {
-    
-    row[["type[kTauB]"]] <- "Kendall's Tau-b"
-    
-    if (ready) {
+    if (options$gamma) {
+      
+      row[["type[gammaCoef]"]] <- "Gamma coefficient"
       
       chi.result <- try({
-        count.dat  <- stats::ftable(counts.matrix)
-        count.dat  <- as.data.frame(count.dat)
-        Var1       <- rep(count.dat[,1],times=count.dat$Freq)
-        Var2       <- rep(count.dat[,2],times=count.dat$Freq)
-        chi.result <- stats::cor.test(as.numeric(Var1), as.numeric(Var2), method="kendall")
+        chi.result <- vcdExtra::GKgamma(counts.matrix)
       })
-      
-      if (class(chi.result) == "try-error") {
-        
-        row[["value[kTauB]"]] <- .clean(NaN)
-        
-        #error <- .extractErrorMessage(chi.result)
-        
-        #sup	<- .addFootnote(footnotes, error)
-        #row[[".footnotes"]] <- list("value[kTauB]"=list(sup))
-        
+     if (class(chi.result) == "try-error") {
+        row[["value[gammaCoef]"]] <- .clean(NaN)
       } else {
-        row[["value[kTauB]"]] <- unname(chi.result$estimate)
-        row[["p[kTauB]"]]     <- chi.result$p.value
-        if (options$VovkSellkeMPR){
-          row[["MPR[kTauB]"]] <- .VovkSellkeMPR(row[["p[kTauB]"]])
-        }
-        row[["statistic[kTauB]"]] <- unname(chi.result$statistic)
+        row[["value[gammaCoef]"]] <- chi.result$gamma
+        row[["Sigma[gammaCoef]"]] <- chi.result$sigma
+        row[["low[gammaCoef]"]]   <- chi.result$CI[1]
+        row[["up[gammaCoef]"]]    <- chi.result$CI[2]
       }
-    } else {
-      row[["value[kTauB]"]] <- "."
-      row[["p[kTauB]"]]     <- "."
-      if (options$VovkSellkeMPR){
-        row[["MPR[kTauB]"]] <- "."
-      }
-      row[["statistic[kTauB]"]] <- "."
     }
+    ordinal.rows <- c(ordinal.rows, row)
   }
-  list(row)
+  gamma <- createJaspState(ordinal.rows)
+  gamma$dependOn(optionsFromObject = jaspResults[[paste0("tables", i)]][["crossTabGamma"]])
+  jaspResults[[paste0("tables", i)]][["resultsGamma"]] <- gamma
+  return(ordinal.rows)
+}
+
+.crosstabsCreateKendallsTauRows <- function(var.name, group.matrices, 
+                                            groups,  i, options, ready) {
+  if (!options$kendallsTauB)
+    return()
+  if(!is.null(jaspResults[[paste0("tables", i)]][["resultsKendallsTau"]]))
+    return()
+  kendalls.rows <- list()
+    
+  for (g in 1:length(group.matrices)) {
+    counts.matrix <- group.matrices[[g]]
+    if (!is.null(groups)) 
+      group <- groups[[g]]
+    else
+      group <- NULL
+    
+    row <- list()
+    for (layer in names(group)) {
+      level <- group[[layer]]
+      if (level == "")
+        row[[layer]] <- "Total"
+      else
+        row[[layer]] <- level
+    }
+    if (options$kendallsTauB) {
+      row[["type[kTauB]"]] <- "Kendall's Tau-b"
+      if (ready) {
+        chi.result <- try({
+          count.dat  <- stats::ftable(counts.matrix)
+          count.dat  <- as.data.frame(count.dat)
+          Var1       <- rep(count.dat[,1],times=count.dat$Freq)
+          Var2       <- rep(count.dat[,2],times=count.dat$Freq)
+          chi.result <- stats::cor.test(as.numeric(Var1), 
+                                        as.numeric(Var2), 
+                                        method="kendall")
+        })
+        
+        if (class(chi.result) == "try-error") {
+          row[["value[kTauB]"]] <- .clean(NaN)
+        } else {
+          row[["value[kTauB]"]] <- unname(chi.result$estimate)
+          row[["p[kTauB]"]]     <- chi.result$p.value
+          if (options$VovkSellkeMPR)
+            row[["MPR[kTauB]"]] <- .VovkSellkeMPR(row[["p[kTauB]"]])
+          row[["statistic[kTauB]"]] <- unname(chi.result$statistic)
+        }
+      } else {
+        row[["value[kTauB]"]] <- "."
+        row[["p[kTauB]"]]     <- "."
+        if (options$VovkSellkeMPR)
+          row[["MPR[kTauB]"]] <- "."
+        row[["statistic[kTauB]"]] <- "."
+      }
+    }
+    kendalls.rows <- c(kendalls.rows, row)
+  }
+  kendalls <- createJaspState(kendalls.rows)
+  kendalls$dependOn(optionsFromObject = jaspResults[[paste0("tables", i)]][["crossTabKendallTau"]])
+  jaspResults[[paste0("tables", i)]][["resultsKendallsTau"]] <- kendalls
+  return(kendalls.rows)
 }
