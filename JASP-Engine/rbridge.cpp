@@ -693,7 +693,7 @@ bool rbridge_columnUsedInFilter(const char * columnName)
 
 std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 {
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl << std::flush;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl;
 
 	std::string filterBase64 = filterCode;
 
@@ -725,7 +725,7 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 		}
 	}
 
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl << std::flush;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
 
 	return filterBase64;
 }
@@ -818,7 +818,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	if(arrayLength != rowCount)
 	{
 		std::stringstream msg;
-		msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl << std::flush;
+		msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl;
 		errorMsg = msg.str();
 		throw filterException(errorMsg);
 	}

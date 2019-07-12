@@ -216,7 +216,7 @@ void DataSetView::determineCurrentViewPortIndices()
 	_currentViewportRowMax = std::max(0, std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount()));
 
 #ifdef DATASETVIEW_DEBUG_VIEWPORT
-	Log::log() << "viewport X: " << _viewportX << " Y: " << _viewportY << " W: " << _viewportW << " H: " << _viewportH <<  std::endl << std::flush;
+	Log::log() << "viewport X: " << _viewportX << " Y: " << _viewportY << " W: " << _viewportW << " H: " << _viewportH <<  std::endl;
 	Log::log() << "_previousViewport\tColMin: " << _previousViewportColMin << "\tColMax: " << _previousViewportColMax << "\tRowMin: " << _previousViewportRowMin << "\tRowMax: " << _previousViewportRowMax << "\n";
 	Log::log() << "_currentViewport\tColMin: "  << _currentViewportColMin  << "\tColMax: " << _currentViewportColMax  << "\tRowMin: " << _currentViewportRowMin  << "\tRowMax: " << _currentViewportRowMax  << "\n" << std::flush;
 #endif

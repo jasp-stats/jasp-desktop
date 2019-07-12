@@ -135,10 +135,12 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 	_engineState = engineState::idle;
 
 #ifdef PRINT_ENGINE_MESSAGES
-			Log::log() << "msg is filter reply" << std::endl << std::flush;
+			Log::log() << "msg is filter reply" << std::endl;
 #endif
 
 	int requestId = json.get("requestId", -1).asInt();
+
+	emit filterDone(requestId);
 
 	if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
 	{

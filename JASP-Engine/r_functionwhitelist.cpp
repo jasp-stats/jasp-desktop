@@ -253,7 +253,7 @@ const std::regex	R_FunctionWhiteList::assignmentOperatorLeftMatcher(		"(?:->>?)\
 
 std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::string const & script)
 {
-	//Log::log() << "findIllegalFunctionsAliases with " << script << std::endl << std::flush;
+	//Log::log() << "findIllegalFunctionsAliases with " << script << std::endl;
 
 	std::set<std::string> illegalAliasesFound;
 

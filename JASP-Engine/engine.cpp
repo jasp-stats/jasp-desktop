@@ -150,7 +150,7 @@ bool Engine::receiveMessages(int timeout)
 		engineState typeRequest = engineStateFromString(jsonRequest.get("typeRequest", Json::nullValue).asString());
 
 #ifdef PRINT_ENGINE_MESSAGES
-		Log::log() << "received " << engineStateToString(typeRequest) <<" message" << std::endl << std::flush;
+		Log::log() << "received " << engineStateToString(typeRequest) <<" message" << std::endl;
 #endif
 		switch(typeRequest)
 		{
@@ -270,7 +270,7 @@ void Engine::sendRCodeResult(const std::string & rCodeResult, int rCodeRequestId
 
 void Engine::sendRCodeError(int rCodeRequestId)
 {
-	Log::log() << "R Code yielded error" << std::endl << std::flush;
+	Log::log() << "R Code yielded error" << std::endl;
 
 	Json::Value rCodeResponse		= Json::objectValue;
 	std::string RError				= jaspRCPP_getLastErrorMsg();

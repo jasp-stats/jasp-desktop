@@ -228,7 +228,7 @@ void Analyses::reload(Analysis *analysis)
 		endInsertRows();
 	}
 	else
-		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl;
 }
 
 

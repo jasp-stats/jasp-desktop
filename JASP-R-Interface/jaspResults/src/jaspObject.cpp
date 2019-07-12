@@ -47,7 +47,7 @@ std::vector<std::string> stringSplit(std::string str, char kar)
 void jaspPrint(std::string msg)
 {
 #ifdef JASP_R_INTERFACE_LIBRARY
-	std::cout << msg << std::endl << std::flush;
+	std::cout << msg << std::endl;
 #else
 	Rcpp::Rcout << msg << "\n";
 	//Rprintf(msg.c_str());

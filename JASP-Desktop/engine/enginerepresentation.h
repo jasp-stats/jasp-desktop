@@ -75,7 +75,8 @@ public slots:
 
 signals:
 	void engineTerminated();
-	void processFilterErrorMsg(			const QString & error, int requestId);
+	void filterDone(															int requestID);
+	void processFilterErrorMsg(			const QString & error,					int requestId);
 	void processNewFilterResult(		const std::vector<bool> & filterResult, int requestId);
 	void computeColumnErrorTextChanged(	const QString & error);
 
