@@ -502,7 +502,7 @@ Descriptives <- function(jaspResults, dataset, options) {
 }
 
 .descriptivesMatrixPlot <- function(dataset, options, name) {
-  variables <- unlist(options$variables)
+  variables <- .v(unlist(options$variables))
   l         <- length(variables)
   depends   <- c("plotCorrelationMatrix", "variables", "splitby")
 
@@ -513,13 +513,12 @@ Descriptives <- function(jaspResults, dataset, options) {
     return(createJaspPlot(error="Plotting is not possible: Too few rows", dependencies=depends))
 
   # check variables
-  d         <- vector("character",  length(.v(variables)))
-  sdCheck   <- vector("logical",    length(.v(variables)))
-  infCheck  <- vector("logical",    length(.v(variables)))
+  d         <- vector("character",  length(variables))
+  sdCheck   <- vector("logical",    length(variables))
+  infCheck  <- vector("logical",    length(variables))
 
-
-  for (i in seq_along(.v(variables))) {
-    variable2check  <- na.omit(dataset[[.v(variables)[i]]])
+  for (i in seq_along(variables)) {
+    variable2check  <- na.omit(dataset[[variables[i]]])
     d[i]            <- class(variable2check)
     sdCheck[i]      <- sd(variable2check) > 0
     infCheck[i]     <- all(is.finite(variable2check))
@@ -527,7 +526,6 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 
   numericCheck      <- d == "numeric" | d == "integer"
-  variables         <- .v(variables)
   variable.statuses <- vector("list", length(variables))
 
   for (i in seq_along(variables)) {
@@ -574,7 +572,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   labelPos <- matrix(.5, 4, 2)
   labelPos[1, 1] <- .55
   labelPos[4, 2] <- .65
-  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
+  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = options[["variables"]], topLabels = options[["variables"]],
   															scaleXYlabels = NULL, labelPos = labelPos)
 
   return(createJaspPlot(plot=p, width=250 * l + 20, aspectRatio=1, title=name, dependencies=depends))
