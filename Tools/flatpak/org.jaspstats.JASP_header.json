@@ -14,9 +14,13 @@
 	],
 	"build-options": {
 		"env": {
-			"PATH": "/usr/bin:/app/bin"
+			"PATH": 		"/usr/bin:/app/bin",
+			"CXX11":		"g++",
+			"CXX14":		"g++",
+			"CXX11FLAGS":	"-std=c++11",
+			"CXX14FLAGS":	"-std=c++14"
 		},
-		"cxxflags": "-std=c++14 -O2 -g",
+		"cxxflags": "-O2 -g -std=c++14",
 		"append-ld-library-path": "/app/lib;/app/lib64/R/lib",
 		"env": {
 			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
@@ -28,7 +32,7 @@
 		"/include"
 	],
 	"modules":[	
-		{
+		{ 
 			"name": "boost",
 			"buildsystem": "simple",
 			"build-commands":[
@@ -46,6 +50,14 @@
 		{
 			"name": "r",
 			"config-opts": ["--enable-R-shlib", "--disable-BLAS-shlib"],
+			"build-options": {
+				"env": {
+					"CXX11":		"g++",
+					"CXX14":		"g++",
+					"CXX11FLAGS":	"-std=c++11",
+					"CXX14FLAGS":	"-std=c++14"
+				}
+			},
 			"sources": [
 				{
 					"type":"archive",
@@ -54,4 +66,3 @@
 				}
 			]
 		},
-
