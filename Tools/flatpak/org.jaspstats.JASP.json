@@ -17,10 +17,10 @@
 			"PATH": 		"/usr/bin:/app/bin",
 			"CXX11":		"g++",
 			"CXX14":		"g++",
-			"CXX11FLAGS":	"-std=c++11",
-			"CXX14FLAGS":	"-std=c++14"
+			"CXX11FLAGS":	"-std=gnu++11",
+			"CXX14FLAGS":	"-std=gnu++14"
 		},
-		"cxxflags": "-O2 -g -std=c++14",
+		"cxxflags": "-O2 -g",
 		"append-ld-library-path": "/app/lib;/app/lib64/R/lib",
 		"env": {
 			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
@@ -54,8 +54,8 @@
 				"env": {
 					"CXX11":		"g++",
 					"CXX14":		"g++",
-					"CXX11FLAGS":	"-std=c++11",
-					"CXX14FLAGS":	"-std=c++14"
+					"CXX11FLAGS":	"-std=gnu++11",
+					"CXX14FLAGS":	"-std=gnu++14"
 				}
 			},
 			"sources": [
@@ -65,9 +65,7 @@
 					"sha256":"e53d8c3cf20f2b8d7a9c1631b6f6a22874506fb392034758b3bb341c586c5b62"
 				}
 			]
-		},
-
-		{
+		},		{
 			"name": "abind",
 			"buildsystem": "simple",
 			"sources": [
@@ -1438,8 +1436,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/rlang_0.3.1.tar.gz",
-					"sha256": "30427b2be2288e88acd30c4ea348ee06043a649fd73623a63148b1ad96317151"
+					"url": "http://static.jasp-stats.org/RPkgs/rlang_0.4.0.tar.gz",
+					"sha256": "9748a4a217548bbe5631c18fd88c94811950446f798ff21fb327703aebaa150d"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2179,8 +2177,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/OpenMx_2.12.2.tar.gz",
-					"sha256": "d8e779cc8e5dad0ef92d2dd1b7936f5c0b952db3b1e14b1ef0cf269dbc84b4d4"
+					"url": "http://static.jasp-stats.org/RPkgs/OpenMx_2.13.2.tar.gz",
+					"sha256": "b349b4100cf3349c630df523af1c3c9d7ccf33158bb0ed38fd927628780abe70"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
