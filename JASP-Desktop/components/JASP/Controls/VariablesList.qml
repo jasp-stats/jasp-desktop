@@ -510,7 +510,7 @@ JASPControl
 				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
-				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
+				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem && colName.truncated
 				QTCONTROLS.ToolTip.delay: 300
 				QTCONTROLS.ToolTip.text: model.name
 				
