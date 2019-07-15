@@ -201,7 +201,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       if (identical(counts, as.integer(counts)) == FALSE)          
         counts.fp <- TRUE
     }
-    
+
     if (options$countsExpected || options$percentagesRow || 
         options$percentagesColumn || options$percentagesTotal )  
       crossTabMain$addColumnInfo(name = "type[counts]", title = "", 
@@ -310,7 +310,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     analysisContainer <- jaspResults[[paste0("tables", i)]]
     if (!is.null(analysisContainer[["crossTabLogOdds"]])) 
       next
-    
+
     # Create table
     crossTabLogOdds <- createJaspTable(title = "Log Odds Ratio")
     crossTabLogOdds$dependOn(c("oddsRatio", "oddsRatioConfidenceIntervalInterval"))
@@ -355,7 +355,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     analysisContainer <- jaspResults[[paste0("tables", i)]]
     if (!is.null(analysisContainer[["crossTabNominal"]])) 
       next
-    
+
     # Create table
     crossTabNominal <- createJaspTable(title = "Nominal")
     crossTabNominal$dependOn(c("contingencyCoefficient", "phiAndCramersV"))
@@ -406,7 +406,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     analysisContainer <- jaspResults[[paste0("tables", i)]]
     if (!is.null(analysisContainer[["crossTabGamma"]])) 
       next
-    
+
     # Create table
     crossTabGamma <- createJaspTable(title = "Ordinal Gamma")
     crossTabGamma$dependOn(c("gamma"))
@@ -788,7 +788,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
             expected[["total[expected]"]] <- ""
           else 
             expected[["total[expected]"]] <- base::sum(expected.matrix[j,])
-          
+
           expected <- c(row.expected, expected)
           row <- c(row, expected)
         }
@@ -1387,7 +1387,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     row <- list()
     if (options$kendallsTauB) {
-      row[["type[kTauB]"]] <- "Kendall's Tau-b"
+      #row[["type[kTauB]"]] <- "Kendall's Tau-b"
       if (ready) {
         chi.result <- try({
           count.dat  <- stats::ftable(counts.matrix)
