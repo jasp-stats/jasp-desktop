@@ -6,7 +6,7 @@ linux {
 		contains(QMAKE_HOST.arch, x86_64):{
       		_R_HOME = /app/lib64/R
 		} else {
-			_R_HOME = /app/lib32/R
+			_R_HOME = /app/lib/R
 		}
   } else {
     exists(/usr/lib64/R) {
