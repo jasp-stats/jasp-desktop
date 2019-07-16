@@ -21,7 +21,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   dataset <- .regLogLinReadData(dataset, options)
   
   ready <- length(options$factors) != 0
-  
+
   # Error checking
   .regLogLinCheckErrors(dataset, options, ready)
    
@@ -182,7 +182,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
  
   if (!is.null(jaspResults[["AnovaResults"]])) 
     return(jaspResults[["AnovaResults"]]$object)
-  
+
   results <- list()
   empty.line <- list( #for empty elements in tables when given output
     "name"   = "",
@@ -205,7 +205,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
     dotted.line$VovkSellkeMPR <- "."
   
   if ( class(loglm.model$loglm.fit) == "glm") {
-    
+
     loglm.anova     <- anova(loglm.model$loglm.fit, test = "Chisq")
     loglm.estimates <- loglm.anova
     len.logreg      <- length(results) + 1
@@ -224,7 +224,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
         model.name <- .unvf(name)
         #may need to this line
         #model.name[[1]] <- " "
-        
+
         if(var == 1){
           results[[ len.logreg ]]$name     <- "NULL"
           results[[ len.logreg ]]$df       <- " "
@@ -247,7 +247,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
           res      <- 0
         
         results[[ len.logreg ]]$resDev <- res
-        
+
         len.logreg <- len.logreg + 1
       }
     }
@@ -340,7 +340,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
     alpha  <- (1 - sig) / 2
     lower  <- loglm.coeff + stats::qnorm(alpha)*loglm.estimates.SE
     upper  <- loglm.coeff + stats::qnorm(1-alpha)*loglm.estimates.SE
-    
+
     len.logreg <- length(results) + 1
     
     if (length(loglm.model$variables) > 0) {
@@ -350,7 +350,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
       coef <- base::strsplit (coefficients, split = ":", fixed = TRUE)
       
       for (i in seq_along(coef)) {
-        
+
         coefficient <- coef[[i]]
         
         actualName <- list()
@@ -471,7 +471,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   }
   
   jaspResults[["AnovaTable"]] <- anovaTable
-
+  
   .regLogLinReturnOrFill(jaspResults, dataset, options, model, ready, 
                          .regLogLinComputeAnovaResults, anovaTable)
 }
@@ -515,7 +515,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
                                     type = "number", format = "sf:4;dp:3")
   
   jaspResults[["CoefficientsTable"]] <- coefficientsTable
-  
+
   .regLogLinReturnOrFill(jaspResults, dataset, options, model, ready, 
                          .regLogLinComputeCoefficientsResults, coefficientsTable)
 }
