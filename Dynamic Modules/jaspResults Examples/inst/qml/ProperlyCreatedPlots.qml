@@ -23,34 +23,26 @@ import JASP.Widgets 1.0
 Form
 {
 	
+	Text
+	{
+		Layout.columnSpan: 2
+		text: "This example shows a method of creating a jaspPlot that should work for most situations.\n" +
+		"It involves no duplication and adds an empty plot if the analysis is not ready to show actual results.\n\n" +
+		"Checking `Plot` shows the plot.\n" +
+		"Checking `We are ready` emulates the analysis being ready to compute and show results."
+	}
+	
+	CheckBox
+	{
+		label: "Plot"
+		name: "weWantThisPlot"
+		checked: true
+	}
+	
 	CheckBox
 	{
 		label: "We are ready"
 		name: "weAreReady"
-	}
-
-	CheckBox
-	{
-		label: "Use the container code"
-		name: "useContainers"
-	}
-
-	CheckBox
-	{
-		label: "Optional table"
-		name: "optionalTable"
-	}
-
-	CheckBox
-	{
-		label: "A random dependency"
-		name: "randomDependency"
-	}
-
-	CheckBox
-	{
-		label: "Generate computation error"
-		name: "setError"
 	}
 	
 }

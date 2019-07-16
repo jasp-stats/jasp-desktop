@@ -2,7 +2,6 @@ UsingContainers <- function(jaspResults, dataset, options)
 {
   ready <- options$weAreReady
   
-  
   if (!options$useContainers) {
     # this is the more R-like way, but less optimal;
     # you have to copy dependencies, manually propogate errors and can't show default tables
@@ -21,14 +20,14 @@ UsingContainers <- function(jaspResults, dataset, options)
 
 .calculateModel <- function(jaspResults, options, ready) {
   if (!is.null(jaspResults[["stateModel"]]))
-    return()
+    return(jaspResults[["stateModel"]]$object)
+	
+	model <- list(result=NULL, error=NULL)
   
   # create a state item; we must do this at the start because we use 
   # dependOn(optionsFromObject=jaspResults[["stateModel"]]) in other functions
-  stateModel <- jaspResults[["stateModel"]] <- createJaspState()
+  stateModel <- jaspResults[["stateModel"]] <- createJaspState(model)
   stateModel$dependOn(c("randomDependency", "weAreReady", "useContainers", "setError"))
-  
-  model <- list(result=NULL, error=NULL)
   
   # if we're not ready we don't want to compute anything
   if (!ready)

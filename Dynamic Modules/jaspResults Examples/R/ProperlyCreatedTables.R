@@ -37,7 +37,7 @@ ProperlyCreatedTables <- function(jaspResults, dataset, options)
     return()
   
   # now in a subfunction we'll go ahead and fill the table up;
-  # note that we only have to supply table; it's pass-by-reference; so any change to table is reflected in jaspResults
+  # note that we only have to supply table; it's pass-by-reference, so any change to table is reflected in jaspResults
   .fillProperTable(table)
   
   # done

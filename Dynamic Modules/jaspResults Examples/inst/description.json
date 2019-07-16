@@ -1,9 +1,10 @@
 {
 	"moduleDescription" :
 	{
-		"title":									"Example Module",
+		"title":									"jaspResults Examples",
 		"icon": 									"test.svg",
 		"description": 								"A module that exemplifies some basic jaspResults principles.",
+		"requiresDataset":							false,
 		"version":									"1.0",
 		"author":									"Tim de Jong",
 		"maintainer":								"Tim de Jong <tim_jong@hotmail.com>",

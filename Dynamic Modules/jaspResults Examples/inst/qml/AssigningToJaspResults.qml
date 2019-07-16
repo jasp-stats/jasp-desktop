@@ -22,6 +22,15 @@ import JASP.Widgets 1.0
 
 Form
 {
+	Text
+	{
+		Layout.columnSpan: 2
+		text: "This example shows when you should assign a jasp element (container, table, etc) to jaspResults.\n" +
+		"If you do it too early, then the output element might still be lacking some markup, as is the case here.\n\n" +
+		"Checking `Good table` shows a table that was assigned to jaspResults once it was presentable.\n" +
+		"Checking `Bad table` shows a table that was assigned to jaspResults too soon."
+	}
+	
 	CheckBox
 	{
 		label: "Good table"
