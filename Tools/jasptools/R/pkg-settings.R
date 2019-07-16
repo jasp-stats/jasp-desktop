@@ -7,6 +7,7 @@
   data.dir = file.path("..", "Resources", "Data Sets"),
   pkgs.dir = "",
   tests.dir = file.path("..", "JASP-Tests", "R", "tests", "testthat"),
+  tests.figs.dir = file.path("..", "JASP-Tests", "R", "tests", "figs"),
   tests.data.dir = file.path("..", "JASP-Tests", "R", "tests", "datasets"),
   .ppi = 96
 ))
@@ -60,11 +61,12 @@ setPkgOption <- function(name, value) {
 .getPkgOption <- function(name, run = TRUE) {
   if (.jasptoolsReady() == FALSE) {
     if (run) {
-      stop("jasptools is not configured correctly. Please ensure the paths in viewPkgOptions() are correct.
-           If the paths are relative, your working directory must be correctly specified.")
+      stop("jasptools is not configured correctly. Did you run `jasptools::develop(\"path_to_jasp_desktop\")`?
+            If you did, then please manually ensure the paths in viewPkgOptions() are correct.
+            (If the paths are relative, you only need to set your working directory to path_to_jasp_desktop/Tools)")
     } else {
       warning("jasptools is not configured correctly. It will not find the needed resources.
-              Please set your working directory to %path%/to%jasp%jasp-desktop/Tools.")
+              Please run `jasptools::develop(\"path_to_jasp_desktop\")` or set your working directory to path_to_jasp_desktop/Tools.")
     }
   }
   return(get(name, envir = .pkgOptions))

@@ -4,10 +4,12 @@
 \alias{makeTestTable}
 \title{Aids in the creation of tests for tables.}
 \usage{
-makeTestTable(rows)
+makeTestTable(rows, print = TRUE)
 }
 \arguments{
 \item{rows}{A list with lists of rows (i.e., a JASP table).}
+
+\item{print}{Should the result be printed.}
 }
 \value{
 Copy-paste ready output which may serve as the reference to test
