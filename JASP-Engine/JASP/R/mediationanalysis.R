@@ -114,7 +114,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
   if (options$se == "bootstrap") {
-    jaspResults$startProgressbar(options$bootstrapNumber)
+    startProgressbar(options$bootstrapNumber)
     
     boot_1      <- lavaan::bootstrapLavaan(medResult, R = 1)
     bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
@@ -124,7 +124,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
       boot_i      <- lavaan::bootstrapLavaan(medResult, 1)
       if (length(boot_i) == 0) next # try again upon failure
       bootres[i,] <- boot_i
-      jaspResults$progressbarTick()
+      progressbarTick()
       i <- i + 1L
     }
     

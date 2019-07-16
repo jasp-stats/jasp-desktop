@@ -168,17 +168,17 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Bootstrapping with progress bar
   if (cfaResult[["spec"]]$bootstrap & options$bootstrapNumber > 50) {
-    jaspResults$startProgressbar(ceiling(options$bootstrapNumber / 50))
+    startProgressbar(ceiling(options$bootstrapNumber / 50))
     bootres <- lavaan::bootstrapLavaan(cfaResult[["lav"]], 50)
-    jaspResults$progressbarTick()
+    progressbarTick()
     for (i in 1:(floor(options$bootstrapNumber / 50) - 1)) {
       bootres <- rbind(bootres, lavaan::bootstrapLavaan(cfaResult[["lav"]], 50))
-      jaspResults$progressbarTick()
+      progressbarTick()
     }
     remainder <- options$bootstrapNumber %% 50
     if (remainder != 0) {
       bootres <- rbind(bootres, lavaan::bootstrapLavaan(cfaResult[["lav"]], remainder))
-      jaspResults$progressbarTick()
+      progressbarTick()
     }
 
     cfaResult[["lav"]]@ParTable$se[cfaResult[["lav"]]@ParTable$free != 0] <- apply(bootres, 2, sd)
