@@ -592,7 +592,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     else 
       row[[layer]] <- level
   }
-  #browser()
   return(row)
 }
 
@@ -1387,7 +1386,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     row <- list()
     if (options$kendallsTauB) {
-      #row[["type[kTauB]"]] <- "Kendall's Tau-b"
       if (ready) {
         chi.result <- try({
           count.dat  <- stats::ftable(counts.matrix)
