@@ -79,10 +79,46 @@ manageTestPlots <- function(analysis = NULL) {
     Sys.setenv("NOT_CRAN" = envirValue)
     .libPaths(oldLibPaths)
     unloadNamespace("SomePkg") # unload fake pkg in JASP unit tests, which is needed to run vdiffr
-  }) 
+  })
+  
+  versionMismatches <- .checkDepVersionMismatches()
+  if (length(versionMismatches[["newer"]]) > 0 || length(versionMismatches[["older"]]) > 0)
+    .handleVersionMismatches(versionMismatches, analysis)
 
   testDir <- .getPkgOption("tests.dir")
   vdiffr::manage_cases(testDir, analysis)
+}
+
+
+#' Allows users to add package dependencies to unit testing, specifically to plot testing
+#'
+#' Testing might fail if dependencies are not the same across platforms (e.g., different versions of JASPgraphs). 
+#' If this is the case then those dependencies should be monitored and errors given when they do not match.
+#' This function allows you to define "unit test breaking" dependencies for plots
+#'
+#'
+#' @param dep A single character value of a package name currently installed on your system
+#' @return This function only has a side effect: updating figs/jasp-deps.txt
+#' @examples
+#'
+#' addTestDependency("JASPgraphs")
+#'
+#' @export addTestDependency
+addTestDependency <- function(dep) {
+  if (!is.character(dep) || length(dep) > 1)
+    stop("Expecting single name of a package")
+  
+  depsInFile <- .getDepsFromFile()
+  if (dep %in% names(depsInFile))
+    stop("Package already exists in dependency file")
+  
+  if (!dep %in% installed.packages())
+    stop("The package is not installed on your system, cannot retrieve a version")
+  
+  depToWrite <- list()
+  depToWrite[[dep]] <- packageVersion(dep)
+  .writeDepsToFile(depToWrite)
+  print(paste0("Dependency `", dep, "` added to ", file.path(.getPkgOption("tests.figs.dir"), "jasp-deps.txt")))
 }
 
 
@@ -199,6 +235,108 @@ approxMatch <- function(new, old, tol = 1e-5) {
     idxNumOldMiss = idxNumOldMiss
   )))
 
+}
+
+
+.checkDepVersionMismatches <- function() {
+  depsInFile <- .getDepsFromFile()
+  userDeps <- .getDepsFromUser()
+  
+  depMismatches <- list(older=list(), newer=list())
+  for (i in seq_along(userDeps)) {
+    pkgName <- names(userDeps)[i]
+    pkgVersion <- userDeps[[i]]
+
+    if (pkgVersion == depsInFile[[pkgName]])
+      next
+    
+    type <- "older"
+    if (pkgVersion > depsInFile[[pkgName]])
+      type <- "newer"
+    
+    misMatch <- list(pkg=pkgName, userVersion=pkgVersion, fileVersion=depsInFile[[pkgName]])
+    depMismatches[[type]] <- c(depMismatches[[type]], list(misMatch))
+  }
+
+  return(depMismatches)
+}
+
+
+.handleVersionMismatches <- function(versionMismatches, analysis) {
+  onlyNewer <- length(versionMismatches[["newer"]]) > 0 && length(versionMismatches[["older"]]) == 0
+  if (onlyNewer) {
+    if (is.null(analysis)) {
+      print("The installed packages on your system are newer than the ones used to create the library of test plots. Automatically updated the dependencies file; please make sure there are no plot mismatches in the Shiny app")
+      .writeUpdatedDeps(versionMismatches[["newer"]])
+    } else {
+      stop("The library of test plots was created using older packages; to avoid version mismatches between plots from different analyses please validate ALL plots by running `jasptools::manageTestPlots()`")
+    }
+  } else {
+    stop("Some of your installed packages are outdated (the library of test plots was created with a newer version). Please update these packages:\n", .makeOutdatedDepsMsg(versionMismatches[["older"]]))
+  }
+}
+
+
+.makeOutdatedDepsMsg <- function(oldDeps) {
+  msg <- NULL
+  for (oldDep in oldDeps)
+    msg <- c(msg, paste0("- installed version of ", oldDep[["pkg"]], " (", oldDep[["userVersion"]], ") is older than that used to create the tests (", oldDep[["fileVersion"]], ")"))
+  return(paste(msg, collapse="\n"))
+}
+
+
+.getDepsFromFile <- function() {
+  pathToDeps <- file.path(.getPkgOption("tests.figs.dir"), "jasp-deps.txt")
+  
+  depLines <- readLines(pathToDeps, warn=FALSE)
+  pattern <- "^- ([a-zA-Z0-9.]{2,}(?<![.])): ((\\d+\\.?)+)$"
+  deps <- list()
+  for (depLine in depLines) {
+    if (!grepl(pattern, depLine, perl=TRUE))
+      stop("jasp-deps.txt is corrupted; each line should have the form `- valid.package.name: 0.1.5`")
+    matches <- stringr::str_match(depLine, pattern)
+    name <- matches[, 2]
+    version <- matches[, 3]
+    deps[[name]] <- version
+  }
+  return(deps)
+}
+
+
+.getDepsFromUser <- function() {
+  depPkgs <- names(.getDepsFromFile())
+  userDeps <- list()
+  for (dep in depPkgs) {
+    if (! dep %in% installed.packages())
+      stop("You must install the dependency ", dep, " before you can test plots")
+    userDeps[[dep]] <- packageVersion(dep)
+  }
+  return(userDeps)
+}
+
+
+.writeUpdatedDeps <- function(newDeps) {
+  deps <- vector("list", length(newDeps))
+  for (newDep in newDeps)
+    deps[[newDep[["pkg"]]]] <- newDep[["userVersion"]]
+  .writeDepsToFile(deps)
+}
+
+
+.writeDepsToFile <- function(deps) {
+  depsInFile <- .getDepsFromFile()
+  deps <- modifyList(depsInFile, deps)
+  
+  txt <- character(0)
+  for (i in seq_along(deps)) {
+    txt <- c(txt, paste0("- ", names(deps)[i], ": ", deps[[i]]))
+  }
+  txt <- paste(txt, collapse="\n")
+  
+  pathToDeps <- file.path(.getPkgOption("tests.figs.dir"), "jasp-deps.txt")
+  fileConn <- file(pathToDeps)
+  writeLines(txt, fileConn)
+  close(fileConn)
 }
 
 

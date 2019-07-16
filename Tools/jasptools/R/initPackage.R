@@ -131,6 +131,7 @@ isJaspDesktopDir <- function(path) {
       common.qml.dir = file.path("Resources"),
       data.dir = file.path("Resources", "Data Sets"),
       tests.dir = file.path("JASP-Tests", "R", "tests", "testthat"),
+      tests.figs.dir = file.path("JASP-Tests", "R", "tests", "figs"),
       tests.data.dir = file.path("JASP-Tests", "R", "tests", "datasets")
     )
 
