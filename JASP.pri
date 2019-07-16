@@ -16,7 +16,7 @@ DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 JASP_VERSION_MAJOR      = 0
 JASP_VERSION_MINOR      = 10
 JASP_VERSION_REVISION   = 1
-JASP_VERSION_BUILD      = 0 #Should be incremented or retrieved from somewhere
+JASP_VERSION_BUILD      = 1 #Should be incremented or retrieved from somewhere
 
 DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
 DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
