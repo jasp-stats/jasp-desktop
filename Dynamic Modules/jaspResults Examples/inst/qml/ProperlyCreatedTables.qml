@@ -23,6 +23,15 @@ import JASP.Widgets 1.0
 Form
 {
 	
+	Text
+	{
+		Layout.columnSpan: 2
+		text: "This example shows a method of creating a jaspTable that should work for most situations.\n" +
+		"It involves no duplication and adds an empty table if the analysis is not ready to show actual results.\n\n" +
+		"Checking `Table` shows the table.\n" +
+		"Checking `We are ready` emulates the analysis being ready to compute and show results."
+	}
+	
 	CheckBox
 	{
 		label: "Table"
