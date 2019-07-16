@@ -167,7 +167,8 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, const std::string &imageBackground, RCallback callback, bool useJaspResults)
 {
 	rbridge_callback	= callback;
-	rbridge_dataSet		= rbridge_dataSetSource();
+	if (rbridge_dataSet != NULL)
+		rbridge_dataSet		= rbridge_dataSetSource();
 
 
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), rfile.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults, imageBackground.c_str());
@@ -181,7 +182,8 @@ std::string rbridge_run(const std::string &name, const std::string &title, const
 std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
-	rbridge_dataSet		= rbridge_dataSetSource();
+	if (rbridge_dataSet != NULL)
+		rbridge_dataSet		= rbridge_dataSetSource();
 
 	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str());
 }
