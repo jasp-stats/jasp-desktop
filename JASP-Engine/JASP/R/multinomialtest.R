@@ -25,12 +25,12 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   errors <- .multinomCheckErrors(dataset, options)
   
   # Compute the results
-  chisqResults      <- .chisquareTest(jaspResults, dataset, options, ready)
+  chisqResults <- .chisquareTest(jaspResults, dataset, options, ready)
   
   # Output tables and plots
-  .chisqTable(                  jaspResults, chisqResults, options, ready)
+  .multinomialMainTable(        jaspResults, chisqResults, options, ready)
   .multinomialDescriptivesTable(jaspResults, chisqResults, options, ready)
-  .multinomialContainerPlots(   jaspResults, chisqResults, options, ready)
+  .multinomialContainerPlots(   jaspResults, chisqResults, options)
   .multinomialDescriptivesPlot( jaspResults, chisqResults, options, ready)
   
   return()
@@ -60,6 +60,10 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
 
 .multinomCheckErrors <- function(dataset, options) {
   #need .hasErrors Checks
+  .hasErrors(dataset, 
+             type = c('negativeValues', 'infinity'), 
+             all.target = c(options$counts), 
+             exitAnalysisIfErrors = TRUE)
 }
 
 # Results functions ----
@@ -74,14 +78,14 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   #
   # Return:
   #   jaspResults Object (chisquare test)
-  if (!ready) return()
+  if (!ready) 
+    return()
   
   # Take results from state if possible
   if (!is.null(jaspResults[["stateChisqResults"]])) 
     return(jaspResults[["stateChisqResults"]]$object)
   
   chisqResults <- NULL
-  
   fact <- options$factor
   
   if(fact != ""){
@@ -98,9 +102,8 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
       # check for invalid counts
       c <- dataset[[.v(options$counts)]]
       .checkCountsMultinomial(counts, nlev)
-      if (length(c) != length(levels(factorVariable))) {
+      if (length(c) != length(levels(factorVariable)))
         .quitAnalysis("Invalid counts: the number of counts does not equal the number of categories. Check your count dataset!")
-      }
       factorVariable <- factor(rep(factorVariable, c), levels = levels(factorVariable))
     } 
     
@@ -130,8 +133,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
                                                 "hypothesis", "tableWidget", "VovkSellkeMPR"))
   
   # Return results object
-  
-  return(chisqResults)  # return the out object
+  return(chisqResults)
 }
 
 .multinomComputeResults <- function(jaspResults, dataset, options, chisqResults, ready) {
@@ -156,19 +158,17 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   results <- list()
   if(!is.null(chisqResults)){
-    for (r in 1:length(chisqResults)) 
-      if (!is.null(chisqResults[[r]][["warn"]])) 
-        #results[["warn"]][[r]] <- chisqResults[[r]][["warn"]]
     
     # fill in results one row at a time
     for (r in 1:length(chisqResults)) {
       df   <- chisqResults[[r]][["parameter"]][["df"]]
       pVal <- chisqResults[[r]][["p.value"]]
-      if (is.na(df)) df <- "-" # This happens when the monte carlo option is checked
+      if (is.na(df)) 
+        df <- "-" # This happens when the simulate.p.value option is TRUE, i.e. using monte carlo
       results[[r]] <- list(case = names(chisqResults)[r],
-                                                chisquare = .clean(chisqResults[[r]][["statistic"]][["X-squared"]]),
-                                                df = .clean(df),
-                                                p = pVal)
+                           chisquare = .clean(chisqResults[[r]][["statistic"]][["X-squared"]]),
+                           df = .clean(df),
+                           p = pVal)
       
       if (options$VovkSellkeMPR)
         results[[r]][["VovkSellkeMPR"]] <- .VovkSellkeMPR(pVal)
@@ -233,8 +233,9 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   # Return results object
   return(results)
 }
+
 # Output functions ----
-.chisqTable <- function(jaspResults, chisqResults, options, ready) {
+.multinomialMainTable <- function(jaspResults, chisqResults, options, ready) {
   # Transform chi-square test object into table for JASP
   # chisqResults = list(H1 = obj, H2 = obj, ....)
   #
@@ -251,7 +252,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   # Create table
   chisqTable <- createJaspTable(title = "Multinomial Test")
-  chisqTable$dependOn(c("factor", "counts", "exProbVar", "hypothesis", "VovkSellkeMPR", "tableWidget"))
+  chisqTable$dependOn(optionsFromObject = jaspResults[["stateMultinomialResults"]])
   chisqTable$showSpecifiedColumnsOnly <- TRUE
   
   # Add columns to table
@@ -300,8 +301,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     fact <- options$factor
   
   descriptivesTable <- createJaspTable(title = "Descriptives")
-  descriptivesTable$dependOn(c("factor", "counts", "descriptives", "exProbVar", "hypothesis", "countProp",
-                               "confidenceInterval", "confidenceIntervalInterval", "tableWidget"))
+  descriptivesTable$dependOn(optionsFromObject = jaspResults[["stateDescriptivesResults"]])
   
   if(options$factor == ""){
     descriptivesTable$addColumnInfo(name="factor", title="Factor", type = "string")
@@ -363,20 +363,18 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
                            .multinomDescriptivesResults, descriptivesTable)
 }
 
-.multinomialContainerPlots <- function(jaspResults, chisqResults, options, ready) {
+.multinomialContainerPlots <- function(jaspResults, chisqResults, options) {
   # Create container for descriptives plot
   #
   # Args:
   #   jaspResults:
   #   chisqResults:
   #   options: user options
-  #   ready: need factor field filled in order to compute results 
   #   
   #
   # Return:
   #   jaspContainer for Descriptives plot
   if (!options$descriptivesPlot) return()
-  #if (!is.null(errors) && errors == "No variables") return()
   
   if (is.null(jaspResults[["descriptivesPlot"]])) {
     jaspResults[["descriptivesPlot"]] <- createJaspContainer("Descriptives plot")
@@ -511,7 +509,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     if (options$counts == "") 
       stop("Expected counts not supported without observed counts!")
     # use only exProbVar
-    fact <- dataset[[.v(options$factor)]]
+    fact   <- dataset[[.v(options$factor)]]
     eProps <- dataset[.v(options$exProbVar)]
     colnames(eProps) <- options$exProbVar
     rownames(eProps) <- fact
@@ -542,31 +540,20 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
 
 .checkCountsMultinomial <- function(counts, nlevels, expectedCounts = FALSE){
   
-  if(expectedCounts){
+  if(expectedCounts)
     variable <- "Invalid expected counts: "
-  } else {
+  else 
     variable <- "Invalid counts: "
-  }
-  
+
   # discard missing values
   counts <- counts[!is.na(counts)]
   
-  if (nlevels != length(counts)) {
-    stop(paste0(variable, "variable does not match the number of levels of factor."))
-  }
-  
-  if(any(is.infinite(counts))) {
-    stop(paste0(variable, "variable contains infinity."))
-  }
-  
-  if(any(counts < 0)){
-    stop(paste0(variable, "variable contains negative values"))
-  }
+  if (nlevels != length(counts)) 
+    .quitAnalysis(paste0(variable, "variable does not match the number of levels of factor."))
   
   # only applies for observed counts, expected counts can be proportions
-  if (!expectedCounts && !all(counts == round(counts))) {
-    stop(paste0(variable, "variable must contain only integer values."))
-  }
+  if (!expectedCounts && !all(counts == round(counts)))
+    .quitAnalysis(paste0(variable, "variable must contain only integer values."))
 }
 
 .multinomialReturnOrFill <- function(jaspResults, dataset, options, 
