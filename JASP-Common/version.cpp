@@ -44,7 +44,7 @@ Version::Version(std::string versionString)
 
 	if (v0 == 4 && !error)
 	{
-		build = buildIndex;
+		build = 255 + buildIndex;
 	}
 	else if (v0 < 4 && !error)
 	{
@@ -67,11 +67,20 @@ Version::Version(std::string versionString)
 				hasBuildIndex = v1 == 4;
 			}
 
-			if (hasBuildIndex)	build = buildIndex;
-			else				error = true;
+			if (hasBuild)
+			{
+				if (hasBuildIndex == true && strcmp(buildString, "Alpha") == 0)
+					build = buildIndex;
+				else if(hasBuildIndex == true && strcmp(buildString, "Beta") == 0)
+					build = 100 + buildIndex;
+				else if (hasBuildIndex == true && strcmp(buildString, "Release") == 0)
+					build = 255 + buildIndex;
+				else
+					error = true;
+			}
+			else
+				build = 255;
 		}
-		else
-			build = 0;
 	}
 
 	if (error)
@@ -86,33 +95,33 @@ Version::Version(std::string versionString)
 bool Version::operator>(const Version& version) const
 {
 	return ((this->major > version.major) ||
-			(this->major == version.major && this->minor > version.minor) ||
-			(this->major == version.major && this->minor == version.minor && this->revision > version.revision) ||
-			(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build > version.build));
+		(this->major == version.major && this->minor > version.minor) ||
+		(this->major == version.major && this->minor == version.minor && this->revision > version.revision) ||
+		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build > version.build));
 }
 
 bool Version::operator<(const Version& version) const
 {
 	return ((this->major < version.major) ||
-			(this->major == version.major && this->minor < version.minor) ||
-			(this->major == version.major && this->minor == version.minor && this->revision < version.revision) ||
-			(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build < version.build));
+		(this->major == version.major && this->minor < version.minor) ||
+		(this->major == version.major && this->minor == version.minor && this->revision < version.revision) ||
+		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build < version.build));
 }
 
 bool Version::operator>=(const Version& version) const
 {
 	return ((this->major > version.major) ||
-			(this->major == version.major && this->minor > version.minor) ||
-			(this->major == version.major && this->minor == version.minor && this->revision > version.revision) ||
-			(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build >= version.build));
+		(this->major == version.major && this->minor > version.minor) ||
+		(this->major == version.major && this->minor == version.minor && this->revision > version.revision) ||
+		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build >= version.build));
 }
 
 bool Version::operator<=(const Version& version) const
 {
 	return ((this->major < version.major) ||
-			(this->major == version.major && this->minor < version.minor) ||
-			(this->major == version.major && this->minor == version.minor && this->revision < version.revision) ||
-			(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build <= version.build));
+		(this->major == version.major && this->minor < version.minor) ||
+		(this->major == version.major && this->minor == version.minor && this->revision < version.revision) ||
+		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build <= version.build));
 }
 
 bool Version::operator==(const Version& version) const
@@ -125,22 +134,46 @@ bool Version::operator!=(const Version& version) const
 	return this->major != version.major || this->minor != version.minor || this->revision != version.revision || this->build != version.build;
 }
 
+bool Version::isRelease() const
+{
+	return build >= 255;
+}
+
+bool Version::isAlpha() const
+{
+	return build >= 1 && build <= 100;
+}
+
+bool Version::isBeta() const
+{
+	return build >= 101 && build <= 254;
+}
+
 std::string Version::asString(bool addDebugFlag) const
 {
 	std::stringstream stream;
 
 	stream << (int)major << "." << (int)minor;
 
-	if (revision != 0)
+	if (revision != 0 || build > 255 )
 		stream << "." << (int)revision;
 
-	if (build > 0)
-			stream << "." << (int)build;
+	/*if (isRelease()) {
+		if (build > 255)
+			stream << "." << (int)(build - 255);
+	}
+	else if (isAlpha())
+		stream << " Alpha " << (int)build;
+	else if (isBeta())
+		stream << " Beta " << (int)(build - 100);*/
 
+	if(addDebugFlag) //Moved from aboutmodel.cpp
+	{
 #ifdef JASP_DEBUG
-	if(addDebugFlag)
 		stream << "-Debug";
 #endif
+
+	}
 
 	return stream.str();
 }

@@ -3541,9 +3541,9 @@
 			"buildsystem": "qmake",
 			"sources":[
 				{
-					"type":"git",
-					"commit": "7fd9dee7127f0b9213d611f231a5f492ad16991c",
-					"url": "https://github.com/jasp-stats/jasp-desktop"
+					"type":	"git",
+					"tag":	"v0.10.2.0",
+					"url":	"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
 					"type": "shell",

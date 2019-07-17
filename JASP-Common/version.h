@@ -34,6 +34,9 @@ public:
 	bool operator==(const Version&) const;
 	bool operator!=(const Version&) const;
 
+	bool isRelease()	const;
+	bool isAlpha()		const;
+	bool isBeta()		const;
 	bool isEmpty()		const;
 
 	std::string asString(bool addDebugFlag = false) const;
