@@ -1212,30 +1212,15 @@ Descriptives <- function(jaspResults, dataset, options) {
     xhigh  <- max(pretty(xVar))
     xticks <- pretty(c(xlow, xhigh))
 
-    # format x labels
-    xLabs <- vector("character", length(xticks))
-    for (i in seq_along(xticks)) {
-      if (xticks[i] < 10^6) {
-        xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
-      } else {
-        xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
-      }
-    }
-
     # Format y ticks
     ylow   <- min(pretty(yVar))
     yhigh  <- max(pretty(yVar))
     yticks <- pretty(c(ylow, yhigh))
 
-    # format y labels
-    yLabs <- vector("character", length(yticks))
-    for (i in seq_along(yticks)) {
-      if (yticks[i] < 10^6) {
-        yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-      } else {
-        yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-      }
-    }
+    # format axes labels
+    xLabs <- JASPgraphs::axesLabeller(xticks)
+    yLabs <- JASPgraphs::axesLabeller(yticks)
+    
     p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = paste0("Standardised Residuals"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
     p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
     p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
