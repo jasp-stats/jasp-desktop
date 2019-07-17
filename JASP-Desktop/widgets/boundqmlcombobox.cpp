@@ -31,15 +31,6 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	initComboBox();
 }
 
-BoundQMLComboBox::BoundQMLComboBox(QMap<QString, QVariant> &properties, AnalysisForm *form)
-	: QMLItem(properties, form)
-	, QMLListView(nullptr, form)
-	, BoundQMLItem()
-
-{
-	initComboBox();
-}
-
 void BoundQMLComboBox::initComboBox()
 {
 	_currentIndex = getItemProperty("currentIndex").toInt();

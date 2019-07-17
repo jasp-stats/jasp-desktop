@@ -40,7 +40,9 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms)
 	
 	beginResetModel();
 	_terms.set(interactionTerms());
-	endResetModel();	
+	endResetModel();
+
+	initExtraControlTerms();
 }
 
 void ListModelInteractionAssigned::setAvailableModel(ListModelAvailableInterface *source)
