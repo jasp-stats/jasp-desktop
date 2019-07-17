@@ -256,10 +256,6 @@ svg > text
 	height: 100% ;
 }
 
-.error-state .jasp-image-image {
-	opacity: 0.33 ;
-}
-
 .etch-editor-panel {
 	position:fixed;
     top:0;
@@ -373,10 +369,17 @@ div.jasp-image-image.no-data {
 	max-width: 480px;
 }
 
+div.jasp-image-image.no-data.error {
+	background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)), url('images/empty-plot.png');
+}
+
 .error-state {
 	color: silver;
-	min-height: 200px;
+}
+
+.jasp-analysis.error-state {
 	min-width: 500px;
+	min-height: 200px;
 }
 
 .fatalError.error-message-box {
