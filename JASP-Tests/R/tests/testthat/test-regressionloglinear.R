@@ -13,7 +13,7 @@ test_that("Main table results match", {
     list(components=c("contBinom", "facGender"))
   )
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  table <- results[["results"]][["regressionLogLinearContainer"]][["collection"]][["regressionLogLinearContainer_AnovaTable"]][["data"]]
+  table <- results[["results"]][["Container"]][["collection"]][["Container_AnovaTable"]][["data"]]
   expect_equal_tables(table,
     list(" ", " ", "NULL", " ", 936.356249443911, 99, 9.73545292814663,
          1, "contBinom", 0.00180747470901472, 926.620796515764, 98, 7.02546792150429,
@@ -36,7 +36,7 @@ test_that("Coefficients table matches", {
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   options$regressionCoefficientsConfidenceIntervalsInterval <- 0.95
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  table <- results[["results"]][["regressionLogLinearContainer"]][["collection"]][["regressionLogLinearContainer_CoefficientsTable"]][["data"]]
+  table <- results[["results"]][["Container"]][["collection"]][["Container_CoefficientsTable"]][["data"]]
   expect_equal_tables(table,
     list(3.36441813015886, 0.0536828127084252, 62.6721656414034, 3.25920175066154,
     "(Intercept)", 0, 3.46963450965618, -0.63167531645938, 0.104937579028612,
@@ -59,4 +59,3 @@ test_that("Coefficients table matches", {
     "contBinom = 1*facFive = 5", 8.40882439228307e-07, 0.982919279644201)
   )
 })
-testAnalysis("")
