@@ -165,11 +165,11 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			var id = data.replace(/[^A-Za-z0-9]/g, '-');
 			var url = window.globSet.tempFolder + data;
 			html += ' id="' + id + '" style="';
-			html += 'background-image : url(\'' + url + '?x=' + Math.random() + '\'); '
+			html += error ? 'background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)),' : 'background-image:'
+			html += 'url(\'' + url + '?x=' + Math.random() + '\'); '
 			html += 'background-size : 100% 100%">'
-		} else {
-			if (height > 100 && width > 100)
-				html += '<div class="jasp-image-image no-data">';
+		} else if (height > 100 && width > 100) {
+			html += '<div class="jasp-image-image no-data' + (error ? ' error' : '') + '">'
 		}
 
 		if (error && error.errorMessage) {

@@ -550,6 +550,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			$result.append($lastResult.clone());
 
 		$result.find(".status").removeClass("waiting running");
+		$result.find(".error-message-box").remove();
 		$result.addClass('error-state');
 
 		$result.append('<div class="' + status + ' analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "fatalError" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + errorMessage + '</div>');
