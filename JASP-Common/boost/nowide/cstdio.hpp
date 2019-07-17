@@ -52,13 +52,13 @@ inline FILE *freopen(char const *file_name,char const *mode,FILE *stream)
 ///
 inline FILE *fopen(char const *file_name,char const *mode)
 {
-    wstackstring wname;
-    wshort_stackstring wmode;
-    if(!wname.convert(file_name) || !wmode.convert(mode)) {
-        errno = EINVAL;
-        return 0;
-    }
-    return _wfopen(wname.c_str(),wmode.c_str());
+	wstackstring wname;
+	wshort_stackstring wmode;
+	if(!wname.convert(file_name) || !wmode.convert(mode)) {
+		errno = EINVAL;
+		return 0;
+	}
+	return _wfopen(wname.c_str(),wmode.c_str());
 }
 ///
 /// \brief Same as rename but old_name and new_name are UTF-8 strings

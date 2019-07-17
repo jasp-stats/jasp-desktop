@@ -35,11 +35,11 @@ windows:INCLUDEPATH += ../../boost_1_64_0
 LIBS += -L.. -lJASP-Common
 
 windows:CONFIG(ReleaseBuild) {
-    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
+    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll -llibreadstat
 }
 
 windows:CONFIG(DebugBuild) {
-    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll -llibreadstat
     #CONFIG += console
 }
 
@@ -350,7 +350,8 @@ HEADERS += \
     widgets/listmodeltableviewbase.h \
     widgets/sortmenumodel.h \
     widgets/sortable.h \
-    widgets/listmodelfiltereddataentry.h
+    widgets/listmodelfiltereddataentry.h \
+    data/importers/readstat/readstat_io_unistd.h
 
 SOURCES += \
     analysis/analysisform.cpp \
