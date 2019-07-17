@@ -127,8 +127,10 @@ bool BoundQMLTextArea::isJsonValid(const Json::Value &optionValue)
 void BoundQMLTextArea::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
-	_item->setProperty("text", _text);
-	QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));	
+	setItemProperty("text", _text);
+
+	if (_item)
+		QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));
 }
 
 void BoundQMLTextArea::checkSyntax()

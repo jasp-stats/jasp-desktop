@@ -38,7 +38,6 @@ public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType };
 
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
-	BoundQMLTextInput(QMap<QString, QVariant>& properties, AnalysisForm *form);
 	void initTextInput();
 
 	void bindTo(Option *option)			override;

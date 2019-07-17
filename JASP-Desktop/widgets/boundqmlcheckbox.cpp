@@ -31,15 +31,6 @@ BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form)
 		QQuickItem::connect(item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
 }
 
-BoundQMLCheckBox::BoundQMLCheckBox(QMap<QString, QVariant>& properties, AnalysisForm *form)
-	: QMLItem(properties, form)
-	, QObject(form)
-	, BoundQMLItem()
-
-{
-	_checked = getItemProperty("checked").toBool();
-}
-
 void BoundQMLCheckBox::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionBoolean *>(option);
@@ -76,9 +67,7 @@ void BoundQMLCheckBox::resetQMLItem(QQuickItem *item)
 	BoundQMLItem::resetQMLItem(item);
 	setItemProperty("checked", _checked);
 	if (_item)
-	{
 		QQuickItem::connect(_item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
-	}
 }
 
 void BoundQMLCheckBox::setQMLItemChecked(bool checked)

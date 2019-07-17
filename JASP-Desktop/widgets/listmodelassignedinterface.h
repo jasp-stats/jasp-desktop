@@ -43,15 +43,12 @@ public:
 public slots:
 	virtual void availableTermsChanged(Terms *termsAdded, Terms *termsRemoved) {}
 
-signals:
-	void extraControlsChanged();
-
 protected:
 	void addExtraControlModels();
+	void initExtraControlTerms();
 	
 	ListModelAvailableInterface*			_source;
 	QVector<QMap<QString, QVariant> >		_extraControlsDefinitions;
-	QMap<QString, bool>						_extraControlsNames;
 	QMap<QString, ListModelExtraControls* > _extraControlsModels;
 	QMap<int, QString>						_rowNames;
 	QMap<QString, ListModelExtraControls* > _modelCache;

@@ -68,6 +68,7 @@ JASPControl
 	property bool	addInteractionOptions:	false
 	
 	property var	extraControlColumns:		[]
+	property var	extraControlComponents:		[]
 	property string extraControlOptionName:		""
 	property alias	extraControlTitles:	titles.model
 	
@@ -124,7 +125,7 @@ JASPControl
 	{
 		width:				parent.width
 		anchors.top:		variablesList.top;
-		spacing:			1
+		spacing:			5
 		layoutDirection:	Qt.RightToLeft
 		Repeater
 		{
@@ -256,7 +257,25 @@ JASPControl
 			{
 				var column = variablesList.resources[i];
 				if (column instanceof ExtraControlColumn)
-					variablesList.extraControlColumns.push(column);
+				{
+					if (!column.name)
+						form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has no name defined").arg(variablesList.name))
+					if (column.type)
+					{
+						var type = column.type
+						if (type === "DropDown") type = "ComboBox"
+						var component = Qt.createComponent(type + ".qml")
+						if (component.status === Component.Error)
+							form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has an unknown type: %2").arg(variablesList.name).arg(type))
+						else
+						{
+							variablesList.extraControlComponents.push(component)
+							variablesList.extraControlColumns.push(column);
+						}
+					}
+					else
+						form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has no type defined").arg(variablesList.name))
+				}
 			}
 		}
 
@@ -458,6 +477,12 @@ JASPControl
 			height:		listView.cellHeight
 			width:		listView.cellWidth
 			
+			Component.onDestruction:
+			{
+				if (itemRectangle.extraColumnsModel)
+					itemRectangle.extraColumnsModel.controlsDestroyed()
+			}
+
 			Rectangle
 			{
 				id:							itemRectangle
@@ -528,7 +553,7 @@ JASPControl
 					id:						colName
 					x:						(variablesList.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale
 					text:					model.name
-					width:					itemRectangle.width - x
+					width:					itemRectangle.width - x - extraControls.width
 					elide:					Text.ElideRight
 					anchors.verticalCenter:	parent.verticalCenter
 					horizontalAlignment:	itemRectangle.isLayer ? Text.AlignHCenter : undefined
@@ -538,9 +563,9 @@ JASPControl
 				
 				RowLayout
 				{
+					id:						extraControls
 					anchors.verticalCenter:	parent.verticalCenter
 					anchors.right:			parent.right
-					anchors.rightMargin:	10  * preferencesModel.uiScale
 					spacing:				1
 					z:						10
 					
@@ -552,20 +577,27 @@ JASPControl
 						
 						delegate: Loader
 						{
-							sourceComponent: model.type === "CheckBox" ? extraCheckBoxComponent :
-											(	(model.type === "ComboBox" || model.type === "Dropdown") ? extraComboBoxComponent :
-													(model.type === "IntegerField" ? extraIntegerFieldComponent :
-														extraTextFieldComponent
-													 )
-											 )
+							sourceComponent: variablesList.extraControlComponents[index]
 							asynchronous:	false
 
-							property double extraControlHeight:		itemRectangle.height
-							property string extraControlColName:    colName.text
-							property var    extraControlModel:      itemRectangle.extraColumnsModel
-							property string extraControlName:       model.name
-							property var    extraControlProperties: model.properties
+							onLoaded:
+							{
+								item.name = model.name
+								var keys = Object.keys(model.properties)
+								var values = Object.values(model.properties)
+								for (var i = 0; i < keys.length; i++) {
+									var name = keys[i]
+									if (item.hasOwnProperty(name))
+										item[name] = values[i]
+									else if (name === "rightMargin")
+										Layout.rightMargin = values[i]
+								}
+								itemRectangle.extraColumnsModel.controlLoaded(item.name, item)
+							}
+
+							onStatusChanged: if (status === Loader.Error) form.addError(qsTr("Error when trying to load control: %1").arg(sourceComponent.errorString()))
 						}
+
 					}
 				}
 				
@@ -717,82 +749,6 @@ JASPControl
 					}
 				}
 			}
-		}
-	}
-
-	Component
-	{
-		id: extraCheckBoxComponent
-
-		CheckBox
-		{
-			id:			extraCheckBoxControl
-			name:		extraControlName
-			checked:	extraControlProperties["checked"]
-
-			property string controlColName: extraControlColName
-			property var	controlModel:	extraControlModel
-
-			Component.onCompleted:		controlModel.controlLoaded(name, extraCheckBoxControl)
-			Component.onDestruction:	controlModel.controlDestroyed(name, extraCheckBoxControl)
-		}
-	}
-
-	Component
-	{
-		id: extraComboBoxComponent
-
-		ComboBox
-		{
-			id:				extraComboxControl
-			name:			extraControlName
-			values:			extraControlProperties["values"]
-			currentIndex:	extraControlProperties["currentIndex"]
-			control.implicitHeight:	extraControlHeight * 9/10
-
-			property string controlColName:	extraControlColName
-			property var	controlModel:	extraControlModel
-
-			Component.onCompleted:		controlModel.controlLoaded(name, extraComboxControl)
-			Component.onDestruction:	controlModel.controlDestroyed(name, extraComboxControl)
-		}
-	}
-
-	Component
-	{
-		id: extraTextFieldComponent
-
-		TextField
-		{
-			id:				extraTextFieldControl
-			name:			extraControlName
-			defaultValue:	extraControlProperties["defaultValue"]
-
-			property string controlColName: extraControlColName
-			property var	controlModel:	extraControlModel
-
-			Component.onCompleted:		controlModel.controlLoaded(name, extraTextFieldControl)
-			Component.onDestruction:	controlModel.controlDestroyed(name, extraTextFieldControl)
-		}
-	}
-
-	Component
-	{
-		id: extraIntegerFieldComponent
-
-		IntegerField
-		{
-			id:				extraIntegerFieldControl
-			name:			extraControlName
-			defaultValue:	extraControlProperties["defaultValue"]
-			min:			extraControlProperties["min"]
-			max:			extraControlProperties["max"]
-
-			property string controlColName: extraControlColName
-			property var	controlModel:	extraControlModel
-
-			Component.onCompleted:		controlModel.controlLoaded(name, extraIntegerFieldControl)
-			Component.onDestruction:	controlModel.controlDestroyed(name, extraIntegerFieldControl)
 		}
 	}
 

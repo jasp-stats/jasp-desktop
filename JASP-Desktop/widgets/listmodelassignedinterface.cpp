@@ -18,6 +18,8 @@
 
 #include "listmodelassignedinterface.h"
 #include "listmodelextracontrols.h"
+#include "boundqmllistviewterms.h"
+#include <QTimer>
 
 ListModelAssignedInterface::ListModelAssignedInterface(QMLListView* listView)
 	: ListModelDraggable(listView)
@@ -83,14 +85,22 @@ void ListModelAssignedInterface::addExtraControlModels()
 				_extraControlsModels[colName] = _modelCache[colName];
 			else
 			{
-				ListModelExtraControls* extraControlsModel = new ListModelExtraControls(this, colName, _extraControlsDefinitions);
+				ListModelExtraControls* extraControlsModel = new ListModelExtraControls(this, _extraControlsDefinitions);
 				_extraControlsModels[colName] = extraControlsModel;
 				_modelCache[colName] = extraControlsModel;
 			}
 		}
-
-        emit extraControlsChanged();
 	}
+}
+
+// This function is called by initTerms for models that may have extra columns
+void ListModelAssignedInterface::initExtraControlTerms()
+{
+	BoundQMLListViewTerms* listViewTerms = dynamic_cast<BoundQMLListViewTerms*>(listView());
+	if (listViewTerms)
+		// initTerms calls begin/endResetModel that will build the QML items in the List View.
+		// We must wait that these QML Items are completely built so that we can bind the extra controls (if they exist)
+		QTimer::singleShot(0, listViewTerms, &BoundQMLListViewTerms::bindExtraControlOptions);
 }
 
 void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *source)
@@ -100,8 +110,5 @@ void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *
 
 void ListModelAssignedInterface::addExtraControls(const QVector<QMap<QString, QVariant> > &extraControlColumns)
 {
-	_extraControlsDefinitions = extraControlColumns;
-	
-	for (const QMap<QString, QVariant>& extraControlDefinition : _extraControlsDefinitions)
-		_extraControlsNames[extraControlDefinition["name"].toString()] = false;
+	_extraControlsDefinitions = extraControlColumns;	
 }

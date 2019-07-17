@@ -33,5 +33,6 @@ VariablesList {
         type: "ComboBox"
         name: "contrast"
         values: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+		rightMargin: 5
     }
 }
