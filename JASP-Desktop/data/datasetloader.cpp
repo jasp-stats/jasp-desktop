@@ -24,14 +24,13 @@
 #include "dataset.h"
 
 #include "importers/csvimporter.h"
-#include "importers/spssimporter.h"
 #include "importers/jaspimporter.h"
 #include "importers/odsimporter.h"
+#include "importers/readstatimporter.h"
 
 #include <QFileInfo>
 
 using namespace std;
-using namespace spss;
 using namespace ods;
 using namespace boost::interprocess;
 using namespace boost;
@@ -50,8 +49,9 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 	string ext = getExtension(locator, extension);
 
 	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))	result = new CSVImporter(packageData);
-	else if (boost::iequals(ext,".sav"))							result = new SPSSImporter(packageData);
-	else if (boost::iequals(ext,".ods"))							result = new ODSImporter(packageData);
+	else if(boost::iequals(ext,".ods"))								result = new ODSImporter(packageData);
+	else if(ReadStatImporter::extSupported(ext))					result = new ReadStatImporter(packageData, ext);
+	else															throw std::runtime_error("Filetype " + ext + " is not supported!");
 
 	return result;
 }

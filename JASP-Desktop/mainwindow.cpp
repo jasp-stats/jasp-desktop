@@ -271,7 +271,7 @@ void MainWindow::makeConnections()
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
-	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
+	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
@@ -575,7 +575,7 @@ void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 	_analyses				-> setDataSet(dataSet);
 	_filterModel			-> setDataSetPackage(package);
 
-	setDatasetLoaded(dataSet != nullptr && dataSet->rowCount() > 0);
+	setDatasetLoaded(dataSet != nullptr && (dataSet->rowCount() > 0 || dataSet->columnCount() > 0));
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package,
@@ -941,8 +941,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_analyses->setVisible(false);
 			_analyses->clear();
 			setDataSetAndPackageInModels(nullptr);
+
 			if (_package->dataSet())
 				_loader.free(_package->dataSet());
+
 			_package->reset();
 			setWelcomePageVisible(true);
 
@@ -956,7 +958,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				setDataPanelVisible(false);
 				setDataAvailable(false);
 			}
-
 		}
 		else
 			_applicationExiting = false;
@@ -1024,10 +1025,8 @@ void MainWindow::populateUIfromDataSet()
 			}
 		}
 
-		if (corruptAnalyses == 1)
-			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
-		else if (corruptAnalyses > 1)
-			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+		if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
+		else if (corruptAnalyses > 1)		errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 
 		if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 			emit currentAnalysis->expandAnalysis();
@@ -1035,7 +1034,7 @@ void MainWindow::populateUIfromDataSet()
 
 	bool hasAnalyses = _analyses->count() > 0;
 
-	setDataAvailable(_package->dataSet()->rowCount() > 0);
+	setDataAvailable((_package->dataSet()->rowCount() > 0 || _package->dataSet()->columnCount() > 0));
 
 	hideProgress();
 
@@ -1075,10 +1074,7 @@ void MainWindow::resultsPageLoaded()
 	_resultsViewLoaded = true;
 
 	if (_openOnLoadFilename != "")
-	{
-		// this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
-        QTimer::singleShot(500, this, &MainWindow::_openFile);
-	}
+		QTimer::singleShot(500, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
 }
 
 void MainWindow::_openFile()

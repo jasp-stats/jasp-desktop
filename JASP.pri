@@ -45,7 +45,10 @@ DEFINES += PRINT_ENGINE_MESSAGES
 exists(/app/lib/*) {
   linux:  DEFINES += FLATPAK_USED
 } else {
-  linux:	CONFIG(debug, debug|release)  {  DEFINES += JASP_DEBUG }
+  linux:	CONFIG(debug, debug|release)  {
+    DEFINES += JASP_DEBUG
+    DEFINES += LINUX_NOT_FLATPAK
+  }
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
 
@@ -67,7 +70,8 @@ $$JASPTIMER_USED {
     DEFINES += PROFILE_JASP
 }
 
-exists(/app/lib/*)	{ INSTALLPATH = /app/bin
+exists(/app/lib/*)	{
+  INSTALLPATH = /app/bin
  } else	{
   INSTALLPATH = /usr/bin
 }

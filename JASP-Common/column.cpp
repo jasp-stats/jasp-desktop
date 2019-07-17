@@ -708,7 +708,7 @@ bool Column::setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is
 	return setColumnAsNominalOrOrdinal(values, uniqueValues, is_ordinal);
 }
 
-bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const map<int, string> &uniqueValues, bool is_ordinal)
 {
 	bool labelChanged	= _labels.syncInts(uniqueValues);
 	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);

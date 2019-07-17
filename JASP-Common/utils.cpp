@@ -36,16 +36,22 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
 
-const char* Utils::getFileTypeString(const Utils::FileType &fileType) {
-	switch (fileType) {
-        case Utils::csv: return "csv";
-		case Utils::txt: return "txt";
-		case Utils::sav: return "sav";
-		case Utils::ods: return "ods";
-		case Utils::jasp: return "jasp";
-        case Utils::html: return "html";
-        case Utils::pdf: return "pdf";
-		default: return "";
+const char* Utils::getFileTypeString(const Utils::FileType &fileType)
+{
+	switch (fileType)
+	{
+	case Utils::csv:		return "csv";
+	case Utils::txt:		return "txt";
+	case Utils::sav:		return "sav";
+	case Utils::ods:		return "ods";
+	case Utils::jasp:		return "jasp";
+	case Utils::html:		return "html";
+	case Utils::pdf:		return "pdf";
+	case Utils::sas7bdat:	return "sas7bdat";
+	case Utils::sas7bcat:	return "sas7bcat";
+	case Utils::por:		return "por";
+	case Utils::xpt:		return "xpt";
+	default: return "";
 	}
 }
 

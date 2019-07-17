@@ -54,11 +54,11 @@ public:
 	int		add(const std::string &display);
 	int		add(int key, const std::string &display, bool filterAllows, bool isText = true);
 	void	removeValues(std::set<int> valuesToRemove);
-	bool	syncInts(const std::set<int> &values);
-	bool	syncInts(std::map<int, std::string> &values);
-
 	std::set<int> getIntValues();
-	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
+
+	bool						syncInts(const std::set<int>				& values);
+	bool						syncInts(const std::map<int, std::string>	& values);
+	std::map<std::string, int>	syncStrings(const std::vector<std::string>	& new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
 
 	void	set(std::vector<Label> &labels);
 	size_t	size() const;

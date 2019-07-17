@@ -132,11 +132,11 @@ void FileMenu::sync()
 	if (path.isEmpty())
 	{
 		if(!MessageForwarder::showYesNo("No associated data file",
-					"JASP has no associated data file (csv, sav or ods file) to be synchronized with. "
+					"JASP has no associated data file to be synchronized with. "
 					"Do you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data."))
 			return;
 
-		path =  MessageForwarder::browseOpenFile("Find Data File", "", "Data File (*.csv *.txt *.sav *.ods)");
+		path =  MessageForwarder::browseOpenFile("Find Data File", "", "Data File (*.csv *.txt *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt");
 	}
 
 	dataSetOpenCurrentRequestHandler(path);

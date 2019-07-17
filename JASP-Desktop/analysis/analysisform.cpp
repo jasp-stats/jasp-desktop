@@ -175,7 +175,7 @@ void AnalysisForm::_parseQML()
 
 		switch(controlType)
 		{
-		case qmlControlType::CheckBox:			//fallthrough:
+		case qmlControlType::CheckBox:			[[clang::fallthrough]];
 		case qmlControlType::Switch:			control = new BoundQMLCheckBox(quickItem,		this);	break;
 		case qmlControlType::TextField:			control = new BoundQMLTextInput(quickItem,		this);	break;
 		case qmlControlType::RadioButtonGroup:	control = new BoundQMLRadioButtons(quickItem,	this);	break;

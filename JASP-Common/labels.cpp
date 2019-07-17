@@ -109,7 +109,7 @@ std::map<string, int> Labels::_resetLabelValues(int& maxValue)
 	return result;
 }
 
-bool Labels::syncInts(map<int, string> &values)
+bool Labels::syncInts(const map<int, string> &values)
 {
 	std::set<int> keys;
 	for (const auto &value : values)
@@ -119,9 +119,10 @@ bool Labels::syncInts(map<int, string> &values)
 
 	for (Label& label : _labels)
 	{
-		int value = label.value();
-		string &new_string_label = values[value];
-		string old_string_label = label.text();
+		int					value				= label.value();
+		const string	&	new_string_label	= values.at(value),
+							old_string_label	= label.text();
+
 		if (new_string_label != old_string_label)
 		{
 			_setNewStringForLabel(label, new_string_label);

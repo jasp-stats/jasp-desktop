@@ -43,13 +43,13 @@ windows:CONFIG(DebugBuild) {
     #CONFIG += console
 }
 
-   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
+   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz -lreadstat -liconv
 windows:LIBS += -lole32 -loleaut32
 
 linux {
     LIBS += -larchive
     exists(/app/lib/*)	{ LIBS += -L/app/lib }
-    LIBS += -lboost_filesystem -lboost_system -lrt
+    LIBS += -lboost_filesystem -lboost_system -lrt -lreadstat -liconv
 }
 
 $$JASPTIMER_USED {
@@ -218,33 +218,11 @@ HEADERS += \
     data/importers/ods/odsxmlcontentshandler.h \
     data/importers/ods/odsxmlhandler.h \
     data/importers/ods/odsxmlmanifesthandler.h \
-    data/importers/spss/characterencodingrecord.h \
-    data/importers/spss/cpconverter.h \
-    data/importers/spss/datainforecord.h \
-    data/importers/spss/datarecords.h \
-    data/importers/spss/dictionaryterminationrecord.h \
-    data/importers/spss/documentrecord.h \
-    data/importers/spss/extnumbercasesrecord.h \
-    data/importers/spss/fileheaderrecord.h \
-    data/importers/spss/floatinforecord.h \
-    data/importers/spss/integerinforecord.h \
-    data/importers/spss/longvarnamesrecord.h \
-    data/importers/spss/measures.h \
-    data/importers/spss/miscinforecord.h \
-    data/importers/spss/missingvaluechecker.h \
-    data/importers/spss/numericconverter.h \
-    data/importers/spss/readablerecord.h \
-    data/importers/spss/spssformattype.h \
-    data/importers/spss/spssimportcolumn.h \
-    data/importers/spss/spssimportdataset.h \
-    data/importers/spss/spssstream.h \
-    data/importers/spss/stringutils.h \
-    data/importers/spss/systemfileformat.h \
-    data/importers/spss/valuelabelvarsrecord.h \
-    data/importers/spss/vardisplayparamrecord.h \
-    data/importers/spss/variablerecord.h \
-    data/importers/spss/verylongstringrecord.h \
-    data/importers/codepageconvert.h \
+    data/importers/readstat/readstat.h \
+    data/importers/readstat/readstatimportcolumn.h \
+    data/importers/readstat/readstatimportdataset.h \
+    data/importers/readstatimporter.h \
+      data/importers/codepageconvert.h \
     data/importers/convertedstringcontainer.h \
     data/importers/csv.h \
     data/importers/csvimportcolumn.h \
@@ -255,7 +233,6 @@ HEADERS += \
     data/importers/importerutils.h \
     data/importers/jaspimporter.h \
     data/importers/odsimporter.h \
-    data/importers/spssimporter.h \
     data/asyncloader.h \
     data/asyncloaderthread.h \
     data/columnsmodel.h \
@@ -410,27 +387,9 @@ SOURCES += \
     data/importers/ods/odsxmlcontentshandler.cpp \
     data/importers/ods/odsxmlhandler.cpp \
     data/importers/ods/odsxmlmanifesthandler.cpp \
-    data/importers/spss/characterencodingrecord.cpp \
-    data/importers/spss/datainforecord.cpp \
-    data/importers/spss/datarecords.cpp \
-    data/importers/spss/dictionaryterminationrecord.cpp \
-    data/importers/spss/documentrecord.cpp \
-    data/importers/spss/extnumbercasesrecord.cpp \
-    data/importers/spss/fileheaderrecord.cpp \
-    data/importers/spss/floatinforecord.cpp \
-    data/importers/spss/integerinforecord.cpp \
-    data/importers/spss/longvarnamesrecord.cpp \
-    data/importers/spss/miscinforecord.cpp \
-    data/importers/spss/missingvaluechecker.cpp \
-    data/importers/spss/numericconvertor.cpp \
-    data/importers/spss/readablerecord.cpp \
-    data/importers/spss/spssimportcolumn.cpp \
-    data/importers/spss/spssimportdataset.cpp \
-    data/importers/spss/stringutils.cpp \
-    data/importers/spss/valuelabelvarsrecord.cpp \
-    data/importers/spss/vardisplayparamrecord.cpp \
-    data/importers/spss/variablerecord.cpp \
-    data/importers/spss/verylongstringrecord.cpp \
+    data/importers/readstat/readstatimportcolumn.cpp \
+    data/importers/readstat/readstatimportdataset.cpp \
+    data/importers/readstatimporter.cpp \
     data/importers/codepageconvert.cpp \
     data/importers/convertedstringcontainer.cpp \
     data/importers/csv.cpp \
@@ -441,7 +400,6 @@ SOURCES += \
     data/importers/importer.cpp \
     data/importers/jaspimporter.cpp \
     data/importers/odsimporter.cpp \
-    data/importers/spssimporter.cpp \
     data/asyncloader.cpp \
     data/asyncloaderthread.cpp \
     data/columnsmodel.cpp \

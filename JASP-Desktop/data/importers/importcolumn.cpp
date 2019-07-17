@@ -34,7 +34,7 @@ bool ImportColumn::isStringValueEqual(const string &value, Column &col, size_t r
 	return result;
 }
 
-string ImportColumn::getName() const
+string ImportColumn::name() const
 {
 	return _name;
 }
@@ -122,7 +122,7 @@ bool ImportColumn::convertValueToDouble(const string &strValue, double &doubleVa
 	return success;
 }
 
-bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intValues, set<int> &uniqueValues, map<int, string> &emptyValuesMap)
+bool ImportColumn::convertVecToInt(const vector<string> &values, vector<int> &intValues, set<int> &uniqueValues, map<int, string> &emptyValuesMap)
 {
 	emptyValuesMap.clear();
 	uniqueValues.clear();
@@ -151,7 +151,7 @@ bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intVa
 	return true;
 }
 
-bool ImportColumn::convertToDouble(const vector<string> &values, vector<double> &doubleValues, map<int, string> &emptyValuesMap)
+bool ImportColumn::convertVecToDouble(const vector<string> &values, vector<double> &doubleValues, map<int, string> &emptyValuesMap)
 {
 	emptyValuesMap.clear();
 	doubleValues.clear();

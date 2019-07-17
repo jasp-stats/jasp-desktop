@@ -67,7 +67,7 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 
 	for (ImportColumn *syncColumn : *importDataSet)
 	{
-		std::string syncColumnName = syncColumn->getName();
+		std::string syncColumnName = syncColumn->name();
 
 		if (missingColumns.find(syncColumnName) == missingColumns.end())
 			newColumns.push_back(std::pair<std::string, int>(syncColumnName, syncColNo));
@@ -144,11 +144,11 @@ void Importer::fillSharedMemoryColumnWithStrings(const std::vector<std::string> 
 	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
 	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
-	bool valuesAreIntegers = ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap);
+	bool valuesAreIntegers = ImportColumn::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
 
 	auto isNominalInt = [&](){ return valuesAreIntegers && uniqueValues.size() == 2; };
 	auto isOrdinal = [&](){ return valuesAreIntegers && uniqueValues.size() > 2 && uniqueValues.size() <= thresholdScale; };
-	auto isScalar  = [&]() { return ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap); };
+	auto isScalar  = [&]() { return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
 
 	if		(isOrdinal())					column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, true);
 	else if	(isNominalInt())				column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, false);
@@ -215,7 +215,7 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 		try
 		{
 			Column &column = _packageData->dataSet()->column(colNo);
-			column.setName(importColumn->getName());
+			column.setName(importColumn->name());
 			fillSharedMemoryColumn(importColumn, column);
 			success = true;
 		}

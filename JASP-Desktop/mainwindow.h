@@ -251,7 +251,7 @@ private:
 
 	QSettings						_settings;
 
-	int								_progressBarProgress,
+	int								_progressBarProgress,	//Runs from 0 to 100
 									_screenPPI		= 1;
 
 	QString							_openOnLoadFilename,
