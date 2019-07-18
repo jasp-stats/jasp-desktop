@@ -65,8 +65,10 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 		importer->loadDataSet(locator, progress);
 		delete importer;
 	}
-	else
+	else if(extension == ".jasp" || extension == "jasp")
 		JASPImporter::loadDataSet(packageData, locator, progress);
+	else
+		throw std::runtime_error("JASP does not support the file-type " + extension);
 }
 
 void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)

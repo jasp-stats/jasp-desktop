@@ -1092,7 +1092,7 @@ void MainWindow::fatalError()
 	{
 		exiting = true;
 		if(MessageForwarder::showYesNo("Error", "JASP has experienced an unexpected internal error:\n" + _fatalError.toStdString() + "\n\n"
-			"JASP cannot continue and will close.\n\nIt would however be greatly appreciated if you could report this error to the JASP team.", "Report", "Exit"))
+			"JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team.", "Report", "Exit"))
 		{
 			QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
 		}

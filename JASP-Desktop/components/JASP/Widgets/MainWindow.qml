@@ -104,14 +104,6 @@ Window
 			}
 		}
 
-		ProgressBarHolder
-		{
-			id:					progressBarHolder
-			visible:			mainWindow.progressBarVisible
-			z:					10
-			anchors.centerIn:	parent
-		}
-
 		WelcomePage
 		{
 			id:			welcomePage
@@ -214,5 +206,12 @@ Window
 	UIScaleNotifier
 	{
 		anchors.centerIn:	parent
+	}
+
+	ProgressBarHolder
+	{
+		visible:			mainWindow.progressBarVisible
+		z:					10
+		anchors.fill:		parent
 	}
 }
