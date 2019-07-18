@@ -35,14 +35,13 @@ test_that("Item Statistics table matches", {
   options$meanItem <- TRUE
   options$sdItem <- TRUE
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
-  table <- results[["results"]][["reliabilityItemContainer"]][["collection"]][["reliabilityItemContainer_table"]][["data"]]
+  table <- results[["results"]][["itemContainer"]][["collection"]][["itemContainer_table"]][["data"]]
   expect_equal_tables(table,
     list(0.0618194975467092, "contcor1", 0.560156128034403, 0.0319398198963565,
-         0.05254867287, 0.061902485553013, 1.01183864387684, 0.277152727398941,
-         "contcor2", 0.442807451055322, 0.161031927910319, 0.06968807084,
-         0.27739448681683, 1.0041493380131, 0.79299280264282, "contNormal",
-         0.106272823965938, 0.657010063712354, -0.18874858754, 0.793006727117146,
-         1.05841360919316)
+         0.05254867287, 0, 1.01183864387684, 0.277152727398941, "contcor2",
+         0.442807451055322, 0.161031927910319, 0.06968807084, 0, 1.0041493380131,
+         0.79299280264282, "contNormal", 0.106272823965938, 0.657010063712354,
+         -0.18874858754, 0.793006727117146, 1.05841360919316)
   )
 })
 
