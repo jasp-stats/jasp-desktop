@@ -94,6 +94,8 @@ public:
 
 	void		complete() { if(_status == "running") _status = "complete"; }
 
+	bool		canShowErrorMessage() override { return true; }
+
 	Json::Value	metaEntry() override { return constructMetaEntry("table"); }
 	Json::Value	dataEntry() override;
 	std::string	toHtml()	override;

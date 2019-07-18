@@ -31,15 +31,9 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 	_data[field] = obj; //If we overwrite anything: deletion will be taken care of by jaspObject::destroyAllAllocatedObjects()
 
 	obj->setName(field);
-	if (_passErrorMessageToNextChild)
-	{
-		obj->setError(_errorMessage);
-		_passErrorMessageToNextChild = false;
-	}
-	else if (_error)
-	{
+
+	if (_error)
 		obj->setError();
-	}
 
 	if(_data_order.count(field) == 0) //this way we can keep the order after removing the original object due to changes/options-changing or whatever because the order will stay the same
 		_data_order[field] = _order_increment++;
@@ -180,9 +174,21 @@ Json::Value jaspContainer::dataEntry()
 
 	Json::Value collection(Json::objectValue);
 
+	bool setErrorMessageInNextChild = _error && _errorMessage != "";
+
 	for(std::string field: getSortedDataFields())
 		if(_data[field]->shouldBePartOfResultsJson())
-			collection[_data[field]->getUniqueNestedName()] = _data[field]->dataEntry();
+		{
+			Json::Value dataEntryJson = _data[field]->dataEntry();
+
+			if(setErrorMessageInNextChild && _data[field]->canShowErrorMessage())
+			{
+				setErrorMessageInNextChild = false;
+				dataEntryJson["error"]["errorMessage"] = _errorMessage;
+			}
+
+			collection[_data[field]->getUniqueNestedName()] = dataEntryJson;
+		}
 
 	dataJson["collection"] = collection;
 
@@ -313,15 +319,6 @@ void jaspContainer::setError()
 
 void jaspContainer::setError(std::string message)
 {
-	jaspObject::setError(message);
-	if (_data.empty())
-	{
-		_passErrorMessageToNextChild = true;
-	} 
-	else
-	{
-		for(auto & d : _data)
-			d.second->setError();
-		_data.begin()->second->setError(message);
-	}
+	_errorMessage = message;
+	setError();
 }

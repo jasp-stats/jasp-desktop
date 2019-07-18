@@ -28,6 +28,8 @@ public:
 	Json::Value convertToJSON() override;
 	void		convertFromJSON_SetFields(Json::Value in) override;
 
+	bool		canShowErrorMessage() override { return true; }
+
 private:
 	void initEnvName();
 	void setChangedDimensionsFromStateObject();

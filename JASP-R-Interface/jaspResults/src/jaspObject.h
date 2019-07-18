@@ -48,6 +48,7 @@ public:
 			bool		getError()							{ return _error; }
 	virtual void		setError()							{ _error = true; }
 	virtual void		setError(std::string message)		{ _errorMessage = message; _error = true; }
+	virtual bool		canShowErrorMessage()				{ return false; }
 
 			void		print()								{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
 			void		addMessage(std::string msg)			{ _messages.push_back(msg); }
