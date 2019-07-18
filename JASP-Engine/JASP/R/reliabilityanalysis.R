@@ -275,7 +275,6 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
 # Output functions ----
 .reliabilityScaleTable <- function(jaspResults, dataset, options, ready) {
-  
   if (!is.null(jaspResults[["scaleTable"]])) return()
   
   # Create table
