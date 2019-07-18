@@ -51,9 +51,9 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))	result = new CSVImporter(packageData);
 	else if(boost::iequals(ext,".ods"))								result = new ODSImporter(packageData);
 	else if(ReadStatImporter::extSupported(ext))					result = new ReadStatImporter(packageData, ext);
-	else															throw std::runtime_error("Filetype " + ext + " is not supported!");
 
-	return result;
+
+	return result; //If NULL then JASP will load it as a .jasp file
 }
 
 void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)

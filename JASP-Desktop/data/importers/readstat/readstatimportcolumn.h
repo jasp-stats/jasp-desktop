@@ -1,13 +1,7 @@
 #ifndef ReadStatImportColumn_H
 #define ReadStatImportColumn_H
 
-
-#if defined _WIN32
-#include <stdint.h>
-//following are missing from windows and are substituted by MingW for readstat lib.
-typedef int64_t _off64_t;
-typedef long ssize_t;
-#endif
+#include "readstat_windows_helper.h"
 #include "readstat.h"
 #include "../importcolumn.h"
 

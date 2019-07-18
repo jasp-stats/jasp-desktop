@@ -351,7 +351,8 @@ HEADERS += \
     widgets/sortmenumodel.h \
     widgets/sortable.h \
     widgets/listmodelfiltereddataentry.h \
-    data/importers/readstat/readstat_io_unistd.h
+    data/importers/readstat/readstat_custom_io.h \
+    data/importers/readstat/readstat_windows_helper.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -514,7 +515,8 @@ SOURCES += \
     widgets/listmodeltableviewbase.cpp \
     widgets/sortmenumodel.cpp \
     widgets/sortable.cpp \
-    widgets/listmodelfiltereddataentry.cpp
+    widgets/listmodelfiltereddataentry.cpp \
+    data/importers/readstat/readstat_custom_io.cpp
 
 
 RESOURCES += \
