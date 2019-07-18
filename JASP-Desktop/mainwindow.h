@@ -255,7 +255,7 @@ private:
 									_screenPPI		= 1;
 
 	QString							_openOnLoadFilename,
-									_fatalError,
+									_fatalError				= "The engine crashed...",
 									_currentFilePath,
 									_progressBarStatus,
 									_windowTitle,
