@@ -7,7 +7,11 @@ Item
 {
 	id:							rect
 	focus:						true
-	onActiveFocusChanged:		if(activeFocus) datalibrarylist.forceActiveFocus()
+	onActiveFocusChanged:		if(activeFocus)
+								{
+									fileMenuModel.datalibrary.listModel.resetPath();
+									datalibrarylist.forceActiveFocus();
+								}
 
 	MenuHeader
 	{
@@ -20,8 +24,6 @@ Item
 	{
 		id:						datalibrarybreadcrumbs
 		model:					fileMenuModel.datalibrary.breadcrumbsmodel
-		width:					rect.width
-		height:					40 * preferencesModel.uiScale
 		onCrumbButtonClicked:	model.indexChanged(modelIndex)
 
 		anchors
@@ -30,6 +32,7 @@ Item
 			left:				parent.left
 			right:				parent.right
 			leftMargin:			Theme.generalMenuMargin
+			rightMargin:		Theme.generalMenuMargin
 		}
 
 	}

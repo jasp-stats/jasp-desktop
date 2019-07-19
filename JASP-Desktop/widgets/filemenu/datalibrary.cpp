@@ -27,7 +27,8 @@ DataLibrary::DataLibrary(QObject *parent) : FileMenuObject(parent)
 	setBreadcrumbsmodel(new DataLibraryBreadCrumbsListModel(this, QDir::separator()));
 	setListModel(new DataLibraryListModel(this, breadcrumbsmodel()));
 	
-	connect(_dataLibraryBreadCrumbsListModel, &DataLibraryBreadCrumbsListModel::crumbIndexChanged, _dataLibraryListModel, &DataLibraryListModel::changePathCrumbIndex);
+	connect(_dataLibraryBreadCrumbsListModel,	&DataLibraryBreadCrumbsListModel::crumbIndexChanged,	_dataLibraryListModel,	&DataLibraryListModel::changePathCrumbIndex	);
+	connect(this,								&DataLibrary::resetPath,								_dataLibraryListModel,	&DataLibraryListModel::resetPath			);
 }
 
 void DataLibrary::openFile(FileEvent *event)

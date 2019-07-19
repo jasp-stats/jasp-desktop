@@ -102,6 +102,7 @@ QtObject {
 	readonly property int defaultTextAreaHeight:			250 * uiScale
 	readonly property int jaspControlHighlightWidth:		Math.max(2, 3 * uiScale)
 	readonly property int defaultSingleItemListHeight:		49  * uiScale
+	readonly property int defaultRectangularButtonHeight:	32 * uiScale
 
 	readonly property int scrollbarBoxWidth:				12  * uiScale
 	readonly property int scrollbarBoxWidthBig:				16  * uiScale

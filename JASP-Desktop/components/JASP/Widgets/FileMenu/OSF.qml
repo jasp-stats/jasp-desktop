@@ -56,14 +56,10 @@ Item
 		anchors.top			: parent.top
 		anchors.rightMargin	: Theme.generalMenuMargin
 		anchors.topMargin	: Theme.generalMenuMargin
+
 		onClicked			: fileMenuModel.osf.logoutClicked()
-		KeyNavigation.tab	: newDirectoryButton.visible ?
-									newDirectoryButton :
-									foldernameText.visible ?
-										foldernameText :
-										filenameText.visible ?
-											filenameText :
-											osfList
+		KeyNavigation.tab	: newDirectoryButton
+
 	}
 
 	BreadCrumbs
@@ -72,16 +68,17 @@ Item
 		model	: fileMenuModel.osf.breadCrumbs
 		visible	: loggedin
 
-		width	: rect.width
-		height	: loggedin ? (40 * preferencesModel.uiScale) + (scrollBarVisible ? scrollBarHeight : 0) : 0
+		height	: loggedin ? implicitHeight : 0
 
-		anchors.top			: menuHeader.bottom
-		anchors.left		: menuHeader.left
-		anchors.right		: menuHeader.right
+		anchors
+		{
+			top			: menuHeader.bottom
+			left		: menuHeader.left
+			right		: sortMenuButton.left
+			rightMargin	: 4 * preferencesModel.uiScale
+		}
 
 		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
-
-		scrollBarRightMargin: sortMenuButton.width + 10 * preferencesModel.uiScale
 
 		MouseArea
 		{
@@ -90,6 +87,18 @@ Item
 			onClicked:		osfbreadcrumbs.forceActiveFocus()
 		}
 
+	}
+
+	SortMenuButton
+	{
+		id: sortMenuButton
+		anchors
+		{
+			right:			menuHeader.right
+			verticalCenter:	osfbreadcrumbs.verticalCenter
+		}
+		visible:		loggedin  && !fileExportDialog.visible
+		sortMenuModel:	fileMenuModel.osf.sortedMenuModel
 	}
 
 	ToolSeparator
@@ -103,19 +112,7 @@ Item
 		anchors.right	: menuHeader.right
 	}
 
-	SortMenuButton
-	{
-		id: sortMenuButton
-		anchors
-		{
-			bottom:			firstSeparator.top
-			right:			firstSeparator.right
-			rightMargin:	3 * preferencesModel.uiScale
-			topMargin:		3 * preferencesModel.uiScale
-		}
-		visible: loggedin  && !fileExportDialog.visible
-		sortMenuModel: fileMenuModel.osf.sortedMenuModel
-	}
+
 
 	/////////////////////////// File dialog to save in OSF ////////////////////////////////////
 
@@ -134,7 +131,7 @@ Item
 		anchors.top			: firstSeparator.bottom
 		anchors.topMargin	: Theme.generalAnchorMargin
 		onClicked			: { newDirectoryButton.visible = false; foldernameText.focus = true; }
-		KeyNavigation.tab	: filenameText
+		KeyNavigation.tab	: foldernameText
 	}
 
 	Item

@@ -23,12 +23,14 @@ public:
 	QHash<int, QByteArray>	roleNames()																			const	override { return FileMenuListItemTypeRoleNames; }
 	Qt::ItemFlags			flags(const QModelIndex& index)														const	override;
 
+
 public slots:
 	virtual void changePath(const QString& name, const QString& path);
 	virtual void changePathCrumbIndex(const int& index);
 	virtual void openFile(const QString& path);
 	virtual void saveFile(const QString& path);
 
+	void resetPath() { changePathCrumbIndex(0); }
 	bool mayOpen();
 
 protected:

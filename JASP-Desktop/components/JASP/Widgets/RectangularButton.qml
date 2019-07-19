@@ -35,7 +35,7 @@ Item
 	property bool	centerText:			true
 	property bool	iconLeft:			true
 
-	property real	_scaledDim:			32 * preferencesModel.uiScale
+	property real	_scaledDim:			Theme.defaultRectangularButtonHeight
 	property alias	_pressed:			buttonMouseArea.pressed
 	property alias  color:				rect.color
 	property alias	border:				rect.border
