@@ -346,7 +346,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   figures <- results$state$figures
   if (length(figures) > 1 && !is.null(names(figures)))
-    results$state$figures <- figures[order(names(figures))]
+    results$state$figures <- figures[order(as.numeric(tools::file_path_sans_ext(names(figures))))]
   
   if (makeTests)
     .makeUnitTestsFromResults(results, name, dataset, options, usesJaspResults)
