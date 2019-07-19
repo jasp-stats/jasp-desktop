@@ -25,7 +25,7 @@
 PlotRobustnessSequential <- function(
   dfLines, dfPoints = NULL, BF01 = NULL, hasRightAxis = TRUE, xName = NULL, yName = bfSubscripts,
   addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF01), evidenceLeveltxt = !is.null(BF01),
-  pointLegend = !is.null(dfPoints), linesLegend = !is.null(dfLines$g), bfSubscripts = "BF[0][1]",
+  pointLegend = !is.null(dfPoints), linesLegend = !is.null(dfLines$g), bfSubscripts = "BF[1][0]", 
   pizzaTxt = pizzaTxtFromBF(bfSubscripts), pointColors  = c("grey", "white", "black", "red"),
   lineColors = c("black", "grey", "black"), lineTypes = c("dotted", "solid", "solid"),
   addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5), ...) {
@@ -34,7 +34,14 @@ PlotRobustnessSequential <- function(
   if (!is.null(dfPoints) && !is.null(BF01)) {
     stop("Cannot provide both a BF pizzaplot and a points legend!")
   }
-
+  
+  if (grepl('+', bfSubscripts, fixed = TRUE)) {
+    hyp <- "greater"
+  } else if(grepl('-', bfSubscripts, fixed = TRUE)) {
+    hyp<- "less"
+  } else {
+    hyp <- "two.sided"
+  }
   yRange <- range(dfLines$y)
 
   if (all(abs(yRange) <= log(100))) {
@@ -184,15 +191,29 @@ PlotRobustnessSequential <- function(
   } else if (evidenceLeveltxt) {
 
     val <- BF01
-    if (val < 1)
+    if (val > 1) {
+      #returns 1 if val in [1, 3], 2 if val in [3, 10], ...
+      idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
+      evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
+      
+      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
+      gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
+    }
+    else{
       val <- 1 / val
-
     # returns 1 if val in [1, 3], 2 if val in [3, 10], ...
     idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
-    evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very Strong", "Extreme")[idx]
-
-    evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
+    evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
+    
+    if (hyp == "greater")
+      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['+'], ':')"))
+    else if (hyp == "less")
+      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['-'], ':')"))
+    else 
+      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[1], ':')"))
+    
     gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
+    }
   }
 
   if (addEvidenceArrowText) {
@@ -211,13 +232,19 @@ PlotRobustnessSequential <- function(
       y    = c(yBreaksL[2L] + 0.25 * d1, yBreaksL[n] + 0.25 * d2),
       yend = c(yBreaksL[2L] + 0.75 * d1, yBreaksL[n] + 0.75 * d2)
     )
-
+    
+    if(hyp == "greater")
+      arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['+']")
+    else if (hyp == "less")
+      arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['-']")
+    else
+      arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
+    
     dfArrowTxt <- data.frame(
       y = (dfArrow$y + dfArrow$yend) / 2,
       x = 1.5 * xlocation, # 15% of x-range
       # additional '' around for are necessary because otherwise it's parsed as a for loop
-      # label = c("Evidence", "'for'", "H[0]", "Evidence", "'for'", "H[1]")
-      label = c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
+      label = arrowLabel
     )
     g <- g + ggplot2::geom_segment(
       data    = dfArrow, aes(x = x, y = y, xend = xend, yend = yend),
