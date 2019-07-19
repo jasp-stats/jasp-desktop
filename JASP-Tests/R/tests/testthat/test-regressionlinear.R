@@ -184,7 +184,7 @@ test_that("Residuals vs. Dependent plot matches", {
   options$plotResidualsDependent <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
 
-  testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "residuals-dependent", dir="RegressionLinear")
 })
 
