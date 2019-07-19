@@ -34,19 +34,71 @@ isJaspDesktopDir <- function(path) {
   return(all(c("JASP-Common", "JASP-Desktop", "JASP-Engine", "JASP-R-Interface") %in% dirs))
 }
 
-.findDirPackages <- function(pathToBuild, needle=NULL) {
-  dirs <- list.dirs(pathToBuild, recursive=FALSE, full.names=FALSE)
-  locations <- NULL
-  if (!identical(dirs, character(0))) {
-    for (dirName in dirs) {
-      name <- unlist(strsplit(dirName, "[\\W_]", perl = TRUE))
-      if (is.null(needle) || all(needle %in% tolower(name))) {
-        location <- file.path(pathToBuild, dirName, "R", "library")
-        locations <- c(locations, location)
-      }
+.getDirOSXFramework <- function(pathJaspBuildEnvir) {
+  basePathPkgs <- file.path(pathJaspBuildEnvir, "Frameworks", "R.framework", "Versions")
+  rVersions <- list.files(basePathPkgs)
+  if (identical(rVersions, character(0)))
+    return(NULL)
+
+  rVersions <- suppressWarnings(as.numeric(rVersions))
+  r <- sort(rVersions, decreasing = TRUE)[1]
+  potentialPkgDir <- file.path(basePathPkgs, r, "Resources", "library")
+  
+  if (.dirHasBundledPackages(potentialPkgDir, hasPkg="Rcpp"))
+    return(potentialPkgDir)
+    
+  return(NULL)
+}
+
+.getDirPackagesInBuildEnvir <- function(pathJaspBuildEnvir, os) {
+  potentialPkgDirs <- .getPotentialPackageDirs(pathJaspBuildEnvir)
+  
+  if (os == "osx")
+    hasPkg <- "JASPgraphs"
+  else
+    hasPkg <- "Rcpp"
+    
+  for (potentialPkgDir in potentialPkgDirs) {
+    if (.dirHasBundledPackages(potentialPkgDir, hasPkg))
+      return(potentialPkgDir)
+  }
+  
+  return(NULL)
+}
+
+.dirHasBundledPackages <- function(dir, hasPkg) {
+  if (!dir.exists(dir))
+    return(FALSE)
+    
+  pkgs <- list.files(dir)
+  if (!identical(pkgs, character(0)) && hasPkg %in% pkgs) {
+    return(TRUE)
+  }
+  
+  return(FALSE)
+}
+
+.getPotentialPackageDirs <- function(pathJaspBuildEnvir) {
+  dirs <- list.dirs(pathJaspBuildEnvir, recursive=FALSE)
+  if (identical(dirs, character(0)))
+    return(NULL)
+  
+  # order by date; we want to use the library that was most recently updated if we have a choice
+  dirs <- dirs[order(file.mtime(dirs), decreasing=TRUE)]
+  
+  # put folders that contain references to 32 bit last on 64 bit machines
+  if (.Machine$sizeof.pointer == 8) { # it's a 64 bit machine
+    dir32 <- grepl("(32)|(x86)", dirs)
+    if (any(dir32)) {
+      indices <- which(dir32)
+      for (index in indices)
+        dirs <- c(dirs[-index], dirs[index])
     }
   }
-  return(locations)
+  
+  potentialPackageDirs <- file.path(dirs, "R", "library")
+  
+  return(potentialPackageDirs)
 }
 
 .getOS <- function() {
@@ -85,44 +137,23 @@ isJaspDesktopDir <- function(path) {
 
     os <- .getOS()
     if (!is.null(os)) {
-      if (os == "osx") {
-        basePathPackages <- file.path("..", "Frameworks", "R.framework", "Versions")
-        rVersions <- list.files(basePathPackages)
-        if (!identical(rVersions, character(0))) {
-          rVersions <- suppressWarnings(as.numeric(rVersions))
-          r <- sort(rVersions, decreasing = TRUE)[1]
-          pathsToPackages <- file.path(basePathPackages, r, "Resources", "library")
-        }
-      } else if (os == "windows") {
-        if (.Machine$sizeof.pointer == 8) { # 64 bits
-          pathsToPackages <- .findDirPackages(file.path(".."), "64")
-        } else { # 32 bits
-          pathsToPackages <- .findDirPackages(file.path(".."), "32")
-        }
-        pathsToPackages <- c(pathsToPackages, .findDirPackages(file.path("..")))
-          
-      } else if (os == "linux") {
+      if (os == "linux") {
         message("Identified OS as Linux. Assuming R packages required for JASP were installed manually.")
-      }
-
-    }
-
-    pathToPackages <- NULL
-    if (!is.null(pathsToPackages)) {
-      for (path in pathsToPackages) {
-        packages <- list.files(path)
-        if (!identical(packages, character(0)) && "Rcpp" %in% packages) {
-          message("Successfully found the bundled R packages.")
-          pathToPackages <- path
-          break
+      } else {
+        pathToPackages <- .getDirPackagesInBuildEnvir(file.path(".."), os)
+        if (os == "osx") {
+          pathToFramework <- .getDirOSXFramework(file.path(".."))
+          pathToPackages <- c(pathToFramework, pathToPackages)
         }
+        
+        if (!is.null(pathToPackages))
+          message("Successfully found the bundled R packages.")
       }
     }
 
-    if (is.null(pathToPackages) && (is.null(os) || os != "linux")) {
+    if (is.null(pathToPackages) && (is.null(os) || os != "linux"))
       message("Unable to find the bundled R packages.
       Required packages will have to be installed manually, or 'pkgs.dir' must be set.")
-    }
     
     # set locations of all required resources (json, analyses, html, packages)
     relativePaths <- list(

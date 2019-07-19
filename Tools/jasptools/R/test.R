@@ -280,8 +280,16 @@ approxMatch <- function(new, old, tol = 1e-5) {
 .makeOutdatedDepsMsg <- function(oldDeps) {
   msg <- NULL
   for (oldDep in oldDeps)
-    msg <- c(msg, paste0("- installed version of ", oldDep[["pkg"]], " (", oldDep[["userVersion"]], ") is older than that used to create the tests (", oldDep[["fileVersion"]], ")"))
-  return(paste(msg, collapse="\n"))
+    msg <- c(msg, paste0("- ", oldDep[["pkg"]], " (version ", oldDep[["userVersion"]], ") is older than the version used to create other plots (", oldDep[["fileVersion"]], ").\n",
+                         "* The ", oldDep[["pkg"]], " package is located at ", .getInstallLocationDep(oldDep[["pkg"]])))
+  return(paste(msg, collapse="\n\n"))
+}
+
+
+.getInstallLocationDep <- function(dep) {
+  pkgs <- installed.packages()
+  index <- min(which(row.names(pkgs) == dep))
+  return(pkgs[index, "LibPath"])
 }
 
 
