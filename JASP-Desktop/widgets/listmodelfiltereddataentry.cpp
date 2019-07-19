@@ -16,6 +16,7 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * paren
 	setColName(_tableView->getItemProperty("colName").toString());
 	setExtraCol(_tableView->getItemProperty("extraCol").toString());
 
+	connect(this,				&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter										);
 	connect(_tableView->item(), SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
 	connect(_tableView->item(), SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))														);
 	connect(_tableView->item(), SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))													);
@@ -43,8 +44,6 @@ void ListModelFilteredDataEntry::setFilter(QString filter)
 
 	_filter = filter;
 	emit filterChanged(_filter);
-
-	runFilter(filter);
 }
 
 void ListModelFilteredDataEntry::runFilter(QString filter)

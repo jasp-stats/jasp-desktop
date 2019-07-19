@@ -60,10 +60,12 @@ signals:
 	void	colNameChanged(QString colName);
 	void	extraColChanged(QString extraCol);
 
+private slots:
+	void	runFilter(QString filter);
+
 private:
 	void	setAcceptedRows(std::vector<bool> newRows);
 	void	setAcceptedRowsTrue()		{ setAcceptedRows(std::vector<bool>(getDataSetRowCount(), true)); }
-	void	runFilter(QString filter);
 	size_t	getDataSetRowCount();
 	void	fillTable();
 
