@@ -27,19 +27,19 @@ protected:
 
 private:
 	DataSet* setDataSetSize(int columnCount, int rowCount);
-	DataSet* setDataSetRowCount(int rowCount)				{ return setDataSetSize(_packageData->dataSet()->columnCount(), rowCount); }
+	DataSet* setDataSetRowCount(int rowCount)				{ return setDataSetSize(_packageData->dataSet()->columnCount(),		rowCount); }
 	DataSet* increaseDataSetColCount(int rowCount)			{ return setDataSetSize(_packageData->dataSet()->columnCount() + 1, rowCount); }
 
 	void _syncPackage(
 			ImportDataSet *syncDataSet,
-			std::vector<std::pair<std::string, int> > &newColumns,
-			std::vector<std::pair<int, Column *> > &changedColumns,
-			std::map<std::string, Column *> &missingColumns,
-			std::map<std::string, Column *> &changeNameColumns,
+			std::vector<std::pair<std::string, int> >	& newColumns,
+			std::vector<std::pair<int, Column *> >		& changedColumns,
+			std::map<std::string, Column *>				& missingColumns,
+			std::map<std::string, Column *>				& changeNameColumns,
 			bool rowCountChanged);
 
-	void initColumn(int colNo,				ImportColumn *importColumn);
-	void initColumn(std::string colName,	ImportColumn *importColumn);
+	void initColumn(int colNo,				ImportColumn * importColumn);
+	void initColumn(std::string colName,	ImportColumn * importColumn);
 };
 
 #endif // IMPORTER_H

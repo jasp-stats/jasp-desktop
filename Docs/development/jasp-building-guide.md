@@ -248,6 +248,15 @@ At certain points this may fail when it misses some kind of header or something.
 
 After installing the missing sources you can try to run `installRequiredPackages.R` again and see if it stops complaining, it will skip all packages that are already installed to save you time. And hopefully after some time it will be done and you can try everything included with JASP.
 
+Besides this we now use [ReadStat](https://github.com/WizardMac/ReadStat) to read a variety of data-formats into JASP. This is however not available as a package on (most) linuxes. Instead you can either build it yourself like:
+```
+cd To/some/folder/where/you/want/your/sources
+git clone https://github.com/WizardMac/ReadStat && cd ReadStat && git checkout v1.0.2
+./autogen.sh && ./configure --enable-static && make -j4
+cp .libs/libreadstat.a /path/to/your/jasp/build/folder
+```
+*or* you can take it easy and download the file from [jasp-required-files](https://github.com/jasp-stats/jasp-required-files/blob/Linux/libreadstat.a)
+
 #### Ubuntu (and alike)
 To build JASP under Ubuntu (17.10+), debian, and derivatives, you will need:
 ```
@@ -270,7 +279,7 @@ And (under fedora only), in R (started as root so packages are installed systemw
 install.packages(c("Rcpp","RInside"))
 ```
 
-Finally, under Fedora only, you need to create a symlink so that R is found:
+Finally, under Fedora only, you might need to create a symlink so that R is found: 
 
 ```
 sudo ln -s /usr/lib64/R/ /usr/lib/R

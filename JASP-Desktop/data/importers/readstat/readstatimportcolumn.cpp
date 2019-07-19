@@ -1,4 +1,4 @@
-#include "ReadStatImportColumn.h"
+#include "readstatimportcolumn.h"
 #include "utils.h"
 #include "log.h"
 
@@ -15,7 +15,7 @@ size_t ReadStatImportColumn::size() const
 {
 	switch(_type)
 	{
-	case Column::ColumnTypeUnknown:		return 0;
+	default:							return 0;
 	case Column::ColumnTypeScale:		return _doubles.size();
 	case Column::ColumnTypeOrdinal:		[[clang::fallthrough]];
 	case Column::ColumnTypeNominal:		return _ints.size();
@@ -29,7 +29,7 @@ std::string ReadStatImportColumn::valueAsString(size_t row) const
 
 	switch(_type)
 	{
-	case Column::ColumnTypeUnknown:		return Utils::emptyValue;
+	default:							return Utils::emptyValue;
 	case Column::ColumnTypeScale:		return std::to_string(_doubles[row]);
 	case Column::ColumnTypeOrdinal:		[[clang::fallthrough]];
 	case Column::ColumnTypeNominal:		return std::to_string(_ints[row]);

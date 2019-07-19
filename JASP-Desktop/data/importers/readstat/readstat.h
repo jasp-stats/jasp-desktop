@@ -5,10 +5,6 @@
 //  Copyright Evan Miller and ReadStat authors (see LICENSE)
 //
 
-#ifdef LINUX_NOT_FLATPAK
-#include <readstat.h>
-#endif
-
 #ifndef INCLUDE_READSTAT_H
 #define INCLUDE_READSTAT_H
 

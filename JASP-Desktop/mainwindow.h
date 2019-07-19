@@ -169,6 +169,7 @@ private:
 	void resumeEngines();
 
 	void _openFile();
+	void connectFileEventCompleted(FileEvent * event);
 
 signals:
 	void saveJaspFile();

@@ -32,7 +32,7 @@ bool operator<(const readstat_value_t & l, const readstat_value_t & r)
 	case READSTAT_TYPE_INT32:		return readstat_int32_value(l)	< readstat_int32_value(r);
 	case READSTAT_TYPE_FLOAT:		return readstat_float_value(l)	< readstat_float_value(r);
 	case READSTAT_TYPE_DOUBLE:		return readstat_double_value(l)	< readstat_double_value(r);
-	case READSTAT_TYPE_STRING_REF:	return 0;
+	default:						 return 0;
 	}
 }
 

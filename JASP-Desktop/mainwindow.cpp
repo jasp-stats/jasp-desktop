@@ -711,6 +711,11 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 	}
 }
 
+void MainWindow::connectFileEventCompleted(FileEvent * event)
+{
+	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
+}
+
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
@@ -725,7 +730,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
-			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+			connectFileEventCompleted(event);
 
 			setWelcomePageVisible(false);
 
@@ -747,14 +752,14 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		_package->setAnalysesData(analysesData);
 
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+		connectFileEventCompleted(event);
 
 		_loader.io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+		connectFileEventCompleted(event);
 
 		_resultsJsInterface->exportHTML();
 
@@ -763,7 +768,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+		connectFileEventCompleted(event);
 		_loader.io(event, _package);
 		showProgress();
 	}
@@ -772,7 +777,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		if (_package->dataSet() == nullptr)
 			return;
 
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+		connectFileEventCompleted(event);
 		_loader.io(event, _package);
 		showProgress();
 	}
@@ -792,7 +797,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			case MessageForwarder::DialogResponse::Save:
 				event->chain(_fileMenu->save());
-				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+				connectFileEventCompleted(event);
 				break;
 
 			case MessageForwarder::DialogResponse::Discard:
@@ -897,8 +902,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setDataSetAndPackageInModels(nullptr);
 			setWelcomePageVisible(true);
 
+			MessageForwarder::showWarning("Unable to open file because:\n" + event->message());
+
 			if (_openedUsingArgs)	_application->exit(1);
-			else					MessageForwarder::showWarning("Unable to open file.\n\n" + event->message());
 
 		}
 	}

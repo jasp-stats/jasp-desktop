@@ -49,7 +49,7 @@ windows:LIBS += -lole32 -loleaut32
 linux {
     LIBS += -larchive
     exists(/app/lib/*)	{ LIBS += -L/app/lib }
-    LIBS += -lboost_filesystem -lboost_system -lrt -lreadstat -liconv
+    LIBS += -lboost_filesystem -lboost_system -lrt -lreadstat -lm -lz
 }
 
 $$JASPTIMER_USED {

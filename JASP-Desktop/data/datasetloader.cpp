@@ -35,7 +35,8 @@ using namespace ods;
 using namespace boost::interprocess;
 using namespace boost;
 
-string DataSetLoader::getExtension(const string &locator, const string &extension) {
+string DataSetLoader::getExtension(const string &locator, const string &extension)
+{
 	filesystem::path path(locator);
 	string ext = path.extension().generic_string();
 
@@ -43,17 +44,13 @@ string DataSetLoader::getExtension(const string &locator, const string &extensio
 	return ext;
 }
 
-Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &locator, const string &extension)
+Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string & locator, const string &ext)
 {
-	Importer* result = NULL;
-	string ext = getExtension(locator, extension);
+	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))	return new CSVImporter(packageData);
+	else if(boost::iequals(ext,".ods"))								return new ODSImporter(packageData);
+	else if(ReadStatImporter::extSupported(ext))					return new ReadStatImporter(packageData, ext);
 
-	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))	result = new CSVImporter(packageData);
-	else if(boost::iequals(ext,".ods"))								result = new ODSImporter(packageData);
-	else if(ReadStatImporter::extSupported(ext))					result = new ReadStatImporter(packageData, ext);
-
-
-	return result; //If NULL then JASP will load it as a .jasp file
+	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
 void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
@@ -68,7 +65,7 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 	else if(extension == ".jasp" || extension == "jasp")
 		JASPImporter::loadDataSet(packageData, locator, progress);
 	else
-		throw std::runtime_error("JASP does not support the file-type " + extension);
+		throw std::runtime_error("JASP does not support loading the file-type \"" + extension + '"');
 }
 
 void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
