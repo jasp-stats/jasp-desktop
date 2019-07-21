@@ -339,7 +339,7 @@ std::string DynamicModule::generateModuleInstallingR()
 	//Fix Mac OS libraries
 		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n"
 	//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong
-		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _modulePackage << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"
+		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"
 	//Install module
 		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL))\");\n" //Running in separate R because otherwise we cannot capture output :s
 	//Check if install worked and through loadlog as error otherwise
