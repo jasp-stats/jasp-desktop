@@ -974,7 +974,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         options$percentagesCol == FALSE && options$percentagesTotal == FALSE)
       row[[".isNewGroup"]] <- TRUE
     
-    row <- .crossTabLayerNames(row, group)
+    #row <- .crossTabLayerNames(row, group)
     rows[[length(rows) + 1]] <- row
     counts.rows <- c(counts.rows, rows)
   }
@@ -1386,6 +1386,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     row <- list()
     if (options$kendallsTauB) {
+      row[["type[kTauB]"]] <- "Kendall's Tau-b"
       if (ready) {
         chi.result <- try({
           count.dat  <- stats::ftable(counts.matrix)

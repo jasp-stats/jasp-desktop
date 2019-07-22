@@ -150,7 +150,7 @@ test_that("Kendall's Tau table results match", {
   results <- jasptools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabKendallTau"]][["data"]]
   expect_equal_tables(table,
-    list(-0.0810440898473108, 0.420024632711394, 1,
+    list("Kendall's Tau-b", -0.0810440898473108, 0.420024632711394, 1,
          -0.806378512498144)
   )
 })
