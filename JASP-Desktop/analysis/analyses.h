@@ -67,7 +67,7 @@ public:
 
 	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
-	void		reload(Analysis* analysis);
+	void		reload(Analysis* analysis, bool logProblem);
 	
 	bool		allCreatedInCurrentVersion() const;
 

@@ -32,6 +32,15 @@ int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
 	}
 }
 
+std::string	ExtractArchive::stripRootDirPathModifier(std::string in)
+{
+	std::string::size_type firstDiv = in.find_first_of('/');
+
+	if(firstDiv == std::string::npos) return in;
+
+	return in.substr(firstDiv + 1);
+}
+
 bool ExtractArchive::_extractArchiveToFolder(std::string archiveFilename, std::string destination, std::function<std::string(std::string)> archiveEntryPathModifier, std::function<bool(std::string)> fileFilter)
 {
 	// https://github.com/libarchive/libarchive/wiki/Examples#A_Complete_Extractor
@@ -202,6 +211,8 @@ bool ExtractArchive::isFileAnArchive(std::string filename)
 
 std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archiveFilename, std::string desiredTextFileName)
 {
+	Log::log() << "Trying to extract file '" << desiredTextFileName << "' from archive: '" << archiveFilename << "'" << std::endl;
+
 	std::string dataFromFile = "";
 	struct archive_entry *entry;
 	int flags;

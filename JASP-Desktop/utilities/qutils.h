@@ -42,6 +42,8 @@ QString encrypt(const QString &input);
 QString decrypt(const QString &input);
 QString getSortableTimestamp();
 
+inline std::ostream& operator<<(std::ostream& os, const QString & qStr) { return (os << qStr.toStdString()); }
+
 #define GENERIC_SET_FUNCTION(WHAT_TO_SET, VARIABLE_TO_SET, EMIT_THIS, TYPE)	\
 void set##WHAT_TO_SET(TYPE new##WHAT_TO_SET)								\
 {																			\

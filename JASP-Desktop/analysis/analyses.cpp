@@ -212,7 +212,7 @@ void Analyses::clear()
 	emit countChanged();
 }
 
-void Analyses::reload(Analysis *analysis)
+void Analyses::reload(Analysis *analysis, bool logProblem)
 {
 	size_t i = 0;
 	for (; i < _orderedIds.size(); i++)
@@ -227,7 +227,7 @@ void Analyses::reload(Analysis *analysis)
 		beginInsertRows(QModelIndex(), ind, ind);
 		endInsertRows();
 	}
-	else
+	else if(logProblem)
 		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl;
 }
 
@@ -247,7 +247,7 @@ bool Analyses::allCreatedInCurrentVersion() const
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
 	emit emptyQMLCache();
-	reload(analysis);
+	reload(analysis, false); //Do not log problem because it can cause trouble!
 }
 
 Json::Value Analyses::asJson() const

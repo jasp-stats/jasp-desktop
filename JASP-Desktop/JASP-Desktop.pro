@@ -222,7 +222,7 @@ HEADERS += \
     data/importers/readstat/readstatimportcolumn.h \
     data/importers/readstat/readstatimportdataset.h \
     data/importers/readstatimporter.h \
-      data/importers/codepageconvert.h \
+    data/importers/codepageconvert.h \
     data/importers/convertedstringcontainer.h \
     data/importers/csv.h \
     data/importers/csvimportcolumn.h \
@@ -322,7 +322,7 @@ HEADERS += \
     resultstesting/compareresults.h \
     resultstesting/resultscomparetable.h \
     widgets/filemenu/filemenu.h \
-    $$PWD/gui/messageforwarder.h \
+    gui/messageforwarder.h \
     widgets/filemenu/filemenulistitem.h \
     widgets/filemenu/filemenubasiclistmodel.h \
     modules/ribbonmodelfiltered.h \

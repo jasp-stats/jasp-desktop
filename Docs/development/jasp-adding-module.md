@@ -7,6 +7,7 @@ The ability to add your own module to JASP is a recently added feature (as of 0.
 Table of Contents:
 - [Structure](#structure)
 - [Development Process](#development-process)
+- [Distributing Module](#distributing-the-module)
 
 ## Structure
 A module folder should look as follows:
@@ -161,9 +162,22 @@ The advantage of installing the module is that all changes you make from this po
 At this point you can start adding the various files the module requires. It is advisable to start with the .qml interface file before adding the analysis in R.
 
 ##### Distributing the module
-If you feel your module is  ready to be distributed you should package it as an R-source-package as follows:
-On linux and MacOS simply open up a terminal and go to the directory containing your module and enter the following: "`tar -czf <ModuleName>.tar.gz <ModuleName>`". 
+If you feel your module is  ready to be distributed you should package it as an R-source-package. This can be done the easy way if you developed your module in a GitHub repository or the hard way if not.
 
-On Windows this is slightly more complicated but can also be done relatively simple through [7zip](https://www.7-zip.org/), first your select you folder `<ModuleName>` and compress it to a `.tar` file and then you select that file and compress it to a `.gz` or "gzip" file leaving you with `<ModuleName>.tar.gz`. 
+###### Easy way through GitHub
+Commit and push your changes and make an annotated tag. Suppose you are releasing v1.0 of your jasp module, the following steps will make sure GitHub generates the module.tar.gz for you and will make it available online immediately:
+```bash
+cd /to/your/module/repository/directory
+git tag -a v1.0 #It will open an editor where you can add some information on your release
+git push -u origin v1.0
+```
+If you now go to your GitHub repository you can select `Releases` and download the generated .tar.gz, see the following, ahum, visual guide for more details:
+![Visual guide to finding a generated .tar.gz on GitHub](/imgs/FindingModuleTarGz.png)
+
+###### Hard way
+On linux and MacOS this is not so bad: simply open up a terminal and go to the directory containing your module and enter the following: "`tar -czf <ModuleName>.tar.gz <ModuleName>`". 
+
+On Windows this is a bit more complicated but can be done through [7zip](https://www.7-zip.org/), first your select you folder `<ModuleName>` and compress it to a `.tar` file and then you select that file and compress it to a `.gz` or "gzip" file leaving you with `<ModuleName>.tar.gz`. 
 
 As you can see this implies that the folder containing your module-files has the same name as your module (aka what is specified in the field `name` in [description.json](#description.json) or in the `Package` field of [DESCRIPTION](#package-metadata).
+

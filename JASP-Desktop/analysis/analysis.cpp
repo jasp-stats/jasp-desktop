@@ -132,7 +132,7 @@ void Analysis::imageEdited(const Json::Value & results)
 
 void Analysis::reload()
 {
-    _analyses->reload(this);
+	_analyses->reload(this, true);
 }
 
 void Analysis::exportResults()

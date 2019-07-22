@@ -25,6 +25,7 @@
 #include "tempfiles.h"
 #include <locale>
 #include "log.h"
+#include "utilities/qutils.h"
 
 namespace Modules
 {
@@ -34,6 +35,8 @@ ModuleException::ModuleException(std::string moduleName, std::string problemDesc
 {}
 
 const char * standardRIndent = "  ";
+
+std::string DynamicModule::_developmentModuleName = "?";
 
 ///This constructor takes the path to an installed jasp-module as path (aka a directory that contains a library of R packages, one of which is the actual module with QML etc)
 DynamicModule::DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
@@ -51,12 +54,31 @@ DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent) : Q
 	unpackage();
 }
 
-///This constructor is meant specifically for the development module and only it!
+QFileInfo DynamicModule::developmentModuleFolder()
+{
+	return QFileInfo(AppDirs::modulesDir() + QString::fromStdString(defaultDevelopmentModuleName()) + "/");
+}
+
+
+void DynamicModule::developmentModuleFolderCreate()
+{
+	if(developmentModuleFolder().dir().exists()) return;
+
+	QDir(AppDirs::modulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
+}
+
+///This constructor is meant specifically for the development module and only *it*!
 DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMod(true)
 {
-	_name			= developmentModuleName();
-	_moduleFolder	= QFileInfo(AppDirs::modulesDir() + QString::fromStdString(_name) + "/");
 	_modulePackage	= Settings::value(Settings::DEVELOPER_FOLDER).toString().toStdString();
+	_moduleFolder	= developmentModuleFolder();
+
+					_name = extractPackageNameFromFolder(_modulePackage);
+	if(_name == "") _name = defaultDevelopmentModuleName();
+
+	Log::log() << "Development Module is constructed with name: '" << _name << "' and will be installed to '" << _moduleFolder.absoluteFilePath().toStdString() << "' from source dir: '" << _modulePackage << "'" << std::endl;
+
+	_developmentModuleName = _name;
 }
 
 
@@ -237,7 +259,7 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 	return out.str();
 }
 
-Json::Value	DynamicModule::requestJsonForPackageInstallationRequest()
+Json::Value	DynamicModule::requestJsonForPackageInstallationRequest(bool onlyModPkg)
 {
 	if(!installNeeded())
 	{
@@ -248,7 +270,7 @@ Json::Value	DynamicModule::requestJsonForPackageInstallationRequest()
 
 	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::installNeeded);
 	requestJson["moduleName"]		= _name;
-	requestJson["moduleCode"]		= generateModuleInstallingR();
+	requestJson["moduleCode"]		= generateModuleInstallingR(onlyModPkg);
 
 	setInstalling(true);
 
@@ -293,14 +315,14 @@ void DynamicModule::unpackage()
 	std::string tmpDir = TempFiles::createTmpFolder(),
 				modDir = tmpDir + "/" + _name;
 
-	ExtractArchive::extractArchiveToFolder(_modulePackage, tmpDir);
+	ExtractArchive::extractArchiveToFolder(_modulePackage, modDir);
 
-	Log::log() << "Unpacked module to folder " << tmpDir << std::endl;
+	Log::log() << "Unpacked module to folder " << modDir << std::endl;
 
 	_modulePackage = modDir;
 }
 
-std::string DynamicModule::generateModuleInstallingR()
+std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 {
 	std::stringstream R;
 
@@ -314,7 +336,7 @@ std::string DynamicModule::generateModuleInstallingR()
 		return "stop('No package specified!')";
 	}
 
-	parseDescriptionFile(getDescriptionJsonFromDirectory(_modulePackage));
+	parseDescriptionFile(getDescriptionJsonFromFolder(_modulePackage));
 
 	try
 	{
@@ -333,16 +355,18 @@ std::string DynamicModule::generateModuleInstallingR()
 
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths(.Library))";
 
-	//First install dependencies:
-	R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', upgrade=TRUE, repos='https://cran.r-project.org'));\n"
+	if(!onlyModPkg)	//First install dependencies:
+		R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", devtools::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', upgrade=TRUE, repos='https://cran.r-project.org'));\n"
+		//And fix Mac OS libraries of dependencies:
+		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
 
-	//Fix Mac OS libraries
-		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n"
-	//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong
-		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"
-	//Install module
+		//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong)
+	R	<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"
+
+		//Install module
 		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL))\");\n" //Running in separate R because otherwise we cannot capture output :s
-	//Check if install worked and through loadlog as error otherwise
+
+		//Check if install worked and through loadlog as error otherwise
 		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
 
 
@@ -579,17 +603,22 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	if(_status == newStatus)
 		return;
 
+	// if we already need an install then we should only install the modpkg
+	if(_status == moduleStatus::installNeeded && newStatus == moduleStatus::installModPkgNeeded)
+		return;
+
 	_status = newStatus;
 
 	emit statusChanged();
 
 	switch(_status)
 	{
-	case moduleStatus::loadingNeeded:			emit registerForLoading(_name);			break;
-	case moduleStatus::installNeeded:			emit registerForInstalling(_name);		break;
+	case moduleStatus::loadingNeeded:			emit registerForLoading(_name);				break;
+	case moduleStatus::installNeeded:			emit registerForInstalling(_name);			break;
+	case moduleStatus::installModPkgNeeded:		emit registerForInstallingModPkg(_name);	break;
 	case moduleStatus::error:
 		Log::log() << "Just set an error on the status of module "<< _name << std::endl;	break;
-	default:																			break;
+	default:																				break;
 	}
 }
 
@@ -598,6 +627,7 @@ void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
 	if (_requiredPackages == requiredPackages)
 		return;
 
+	_previousReqPkgs  = _requiredPackages;
 	_requiredPackages = requiredPackages;
 	emit requiredPackagesChanged();
 }
@@ -615,7 +645,11 @@ void DynamicModule::reloadDescription()
 
 	parseDescriptionFile(descriptionFileText);
 
-	setStatus(moduleStatus::installNeeded);
+	if(_requiredPackages != _previousReqPkgs)
+	{
+		Log::log() << "Required packages of module '" << _name << "' changed, installing again" << std::endl;
+		setStatus(moduleStatus::installNeeded);
+	}
 }
 
 std::string DynamicModule::getDESCRIPTIONFromArchive(const std::string &  filepath)
@@ -627,17 +661,29 @@ std::string DynamicModule::getDESCRIPTIONFromArchive(const std::string &  filepa
 	}
 }
 
-std::string DynamicModule::getDescriptionJsonFromDirectory(const std::string &  filepath)
+std::string DynamicModule::getDESCRIPTIONFromFolder(const std::string & filepath)
 {
-
-	QString zoekHier = QString::fromStdString(filepath),
-			zoekMe   = "description.json";
-
-	return getFileFromDirectory(zoekHier, zoekMe).toStdString();
+	return getFileFromFolder(QString::fromStdString(filepath), "DESCRIPTION").toStdString();
 }
 
-QString DynamicModule::getFileFromDirectory(const QString &  filepath, const QString & searchMe)
+std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  filepath)
 {
+	try {
+		return ExtractArchive::extractSingleTextFileFromArchive(filepath, "description.json");
+	} catch (...) {
+		return "";
+	}
+}
+
+std::string DynamicModule::getDescriptionJsonFromFolder(const std::string &  filepath)
+{
+	return getFileFromFolder(QString::fromStdString(filepath), "description.json").toStdString();
+}
+
+QString DynamicModule::getFileFromFolder(const QString &  filepath, const QString & searchMe)
+{
+	Log::log() << "Trying to find '" << searchMe.toStdString() << "' in folder: '" << filepath.toStdString() << "'" << std::endl;
+
 	QDir dir(filepath);
 
 	if(!dir.exists())
@@ -653,7 +699,7 @@ QString DynamicModule::getFileFromDirectory(const QString &  filepath, const QSt
 
 	for(QString entry : dir.entryList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Dirs))
 	{
-		QString foundThis = getFileFromDirectory(dir.absoluteFilePath(entry), searchMe);
+		QString foundThis = getFileFromFolder(dir.absoluteFilePath(entry), searchMe);
 		if(foundThis != "")
 			return foundThis;
 	}
@@ -661,9 +707,38 @@ QString DynamicModule::getFileFromDirectory(const QString &  filepath, const QSt
 	return "";
 }
 
-std::string DynamicModule::extractPackageNameFromArchive(const std::string & filepath)
+std::string DynamicModule::getFileFromFolder(const std::string &  filepath, const std::string & searchMe)
 {
-	std::string DESCRIPTION = getDESCRIPTIONFromArchive(filepath);
+	return getFileFromFolder(QString::fromStdString(filepath), QString::fromStdString(searchMe)).toStdString();
+}
+
+std::string DynamicModule::extractPackageNameFromDescriptionJsonTxt(const std::string & descriptionTxt)
+{
+	std::string foundName = "";
+
+	if(descriptionTxt != "")
+	{
+		Json::Value descriptionJson;
+		Json::Reader().parse(descriptionTxt, descriptionJson);
+
+		try
+		{
+			Json::Value & moduleDescription = descriptionJson["moduleDescription"];
+
+			foundName = moduleDescription.get("name", "").asString();
+
+			if(foundName == "")
+				foundName = stringUtils::stripNonAlphaNum(moduleDescription.get("title", "").asString());
+		}
+		catch(...)
+		{ }
+	}
+
+	return foundName;
+}
+
+std::string DynamicModule::extractPackageNameFromDESCRIPTIONTxt(const std::string & DESCRIPTION)
+{
 	const std::string PackageField = "Package:";
 
 	auto PackagePos = DESCRIPTION.find_first_of(PackageField);
@@ -680,32 +755,19 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 
 		if(PackageName != "")
 			foundName = PackageName.toStdString();
-			//
 	}
 
-	if(foundName == "")
-	{	//Ok lets try to find description.json then
+	return foundName;
+}
 
-		std::string descriptionTxt = getDescriptionJsonFromDirectory(filepath);
+std::string DynamicModule::extractPackageNameFromArchive(const std::string & archiveFilepath)
+{
+	Log::log() << "Trying to extract package name from archive '" << archiveFilepath << "'" << std::endl;
 
-		if(descriptionTxt != "")
-		{
-			Json::Value descriptionJson;
-			Json::Reader().parse(descriptionTxt, descriptionJson);
+	std::string foundName = extractPackageNameFromDESCRIPTIONTxt(getDESCRIPTIONFromArchive(archiveFilepath));
 
-			try
-			{
-				Json::Value & moduleDescription = descriptionJson["moduleDescription"];
-
-				foundName = moduleDescription.get("name", "").asString();
-
-				if(foundName == "")
-					foundName = stringUtils::stripNonAlphaNum(moduleDescription.get("title", "").asString());
-			}
-			catch(...)
-			{ }
-		}
-	}
+	if(foundName == "") //Ok lets try to find description.json then
+		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromArchive(archiveFilepath));
 
 	if(foundName == "") //Then we will just use the archive name and see if that works..
 	{
@@ -713,7 +775,7 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 							tgz		= ".tgz",
 							zip		= ".zip";
 
-		std::string fileName = filepath.find_last_of('/') == std::string::npos ? filepath : filepath.substr(filepath.find_last_of('/') + 1);
+		std::string fileName = archiveFilepath.find_last_of('/') == std::string::npos ? archiveFilepath : archiveFilepath.substr(archiveFilepath.find_last_of('/') + 1);
 
 		auto removeExtension = [&](const std::string & ext){
 			if(fileName.size() - ext.size() > 0 && fileName.substr(fileName.size() - ext.size()) == ext)
@@ -728,7 +790,33 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & fil
 	}
 
 	if(foundName == "") //what the hell?
-		throw std::runtime_error("Trying to find package/module name in " + filepath + " but I can't...");
+		throw std::runtime_error("Trying to find package/module name in " + archiveFilepath + " but I can't...");
+
+	Log::log() << "Found name: '" << foundName << "'" << std::endl;
+
+	return foundName;
+}
+
+std::string DynamicModule::extractPackageNameFromFolder(const std::string & folderFilepath)
+{
+	Log::log() << "Trying to extract package name from folder '" << folderFilepath << "'" << std::endl;
+
+	std::string foundName = extractPackageNameFromDESCRIPTIONTxt(getDESCRIPTIONFromFolder(folderFilepath));
+
+	if(foundName == "") //Ok lets try to find description.json then
+		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromFolder(folderFilepath));
+
+	if(foundName == "") //Then we will just use the folder name and see if that works..
+	{
+		QDir folder(QString::fromStdString(folderFilepath));
+
+		foundName = folder.dirName().toStdString();
+	}
+
+	if(foundName == "") //what the hell?
+		throw std::runtime_error("Trying to find package/module name in " + folderFilepath + " but I can't...");
+
+	Log::log() << "Found name: '" << foundName << "'" << std::endl;
 
 	return foundName;
 }

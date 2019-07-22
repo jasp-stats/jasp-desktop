@@ -6,13 +6,13 @@ grid_arrange_shared_legend <- function(..., plotList = NULL, nrow = 1, ncol = le
     } else {
         plots <- plotList
     }
-    position <- match.arg(position)
-    g <- ggplot2::ggplotGrob(plots[[1]] + ggplot2::theme(legend.position = position))$grobs
-    legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
-    lheight <- sum(legend$height)
-    lwidth <- sum(legend$width)
-    gl <- lapply(plots, function(x) x + ggplot2::theme(legend.position = "none"))
-    gl <- c(gl, nrow = nrow, ncol = ncol)
+    position  <- match.arg(position)
+    g         <- ggplot2::ggplotGrob(plots[[1]] + ggplot2::theme(legend.position = position))$grobs
+    legend    <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+    lheight   <- sum(legend$height)
+    lwidth    <- sum(legend$width)
+    gl        <- lapply(plots, function(x) x + ggplot2::theme(legend.position = "none"))
+    gl        <- c(gl, nrow = nrow, ncol = ncol)
 
     # Todo: allow position == "left", "top" & "none".
     combined <- switch(position,
