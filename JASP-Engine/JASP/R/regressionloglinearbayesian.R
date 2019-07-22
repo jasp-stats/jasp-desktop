@@ -99,21 +99,19 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   if(!ready)
     return()
   
-  bfObject <- list("bcctObj"     = NULL, 
+  bfObject <- list("bcctObj"        = NULL, 
                    "variables"      = c("...", "... "),
                    "nModelsVisited" = NULL,
                    "nBurnIn"        = NULL,
-                   "bf10s"          = rep(".", length=2), 
-                   "postModelProbs" = rep(".", length=2), 
+                   "bf10s"          = rep(".", length = 2), 
+                   "postModelProbs" = rep(".", length = 2), 
                    "modelNames"     = NULL)
   numberOfModels   <- length(options$modelTerms)
   variablesInModel <- NULL
-  bcctObj       <- NULL
+  bcctObj          <- NULL
   
   if (options$counts == "")
     dataset <- plyr::count(dataset)
-  else
-    dataset <- dataset
   
   # Extract models needed to be compared
   if (options$counts == "")
@@ -123,7 +121,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   
   dependentBase64 <- .v(dependentVariable)
 
-    if (length(options$modelTerms) > 0) {
+  if (length(options$modelTerms) > 0) {
     variablesInModel <- NULL
     variablesInModelBase64 <- NULL
     
@@ -176,55 +174,45 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     # Calculate here
     #gives an object computed using Bayesian Analysis of Complete Contingency Tables
     bcctObj <- try(conting::bcct(formula = modelFormula, data = dataset, 
-                                    prior = "SBH", n.sample = 2000, 
-                                    a = options$priorShape, b = options$priorScale), 
-                      silent = TRUE)
+                                 prior = "SBH", n.sample = 2000, 
+                                 a = options$priorShape, b = options$priorScale), 
+                   silent = TRUE)
     bfObject$nBurnIn <- 2000 * 0.2
     
     # Always do auto and then manual adds additional samples
     if (options$sampleMode == "manual"){
       bcctObj <- try(conting::bcctu(object = bcctObj, 
-                                       n.sample = options$fixedSamplesNumber), 
-                        silent = TRUE)
+                                    n.sample = options$fixedSamplesNumber), 
+                     silent = TRUE)
       bfObject$nBurnIn <- (2000 + options$fixedSamplesNumber) * 0.2
     }
     
-    # Anthony object checking
+    # bcct object checking
     if (class(bcctObj) == "bcct")
       bfObject$bcctObj <- bcctObj
-    
-  } else if (isTRUE(bfObject$hasErrors)) {
-    # NAs: nModelsVisited, bf10s, postModelProbs
-    bfObject <- modifyList(bfObject, errorBfObj)
-  } else if (is.null(modelDefinition)) {
-    # NAs: nModelsVisited, bf10s, postModelProbs
-    bfObject <- modifyList(bfObject, errorBfObj)
-    stop("Cannot define model")
   }
   
   # Post processing
   if (class(bfObject$bcctObj) == "bcct") {
     # Good case
-    # TODO: Here check anthonySummary$totmodsvisit if this is one, 
+    # TODO: Here check bcctSummary$totmodsvisit if this is one, 
     # then nothing going on, resample
     #
-    anthonySummary <- try(conting::mod_probs(bfObject$bcctObj, scale = 0, 
+    bcctSummary <- try(conting::mod_probs(bfObject$bcctObj, scale = 0, 
                                              best = options$maxModels), silent = TRUE)
     
-    if (inherits(anthonySummary, "modprobs")) {
+    if (inherits(bcctSummary, "modprobs")) {
       # Good case
-      bfObject$nModelsVisited <- anthonySummary$totmodsvisit
-      modelnames <- anthonySummary$table$model_formula
-      bfObject$modelNames <- substring(as.character(modelnames), first=2)
+      bfObject$nModelsVisited <- bcctSummary$totmodsvisit
+      modelnames <- bcctSummary$table$model_formula
+      bfObject$modelNames <- substring(as.character(modelnames), first = 2)
       
-      if (bfObject$nModelsVisited == 1) {
-        bfObject$postModelProbs <- 1
-        bfObject$bf10s <- 1
-      } else if (bfObject$nModelsVisited > 1) {
+      if (bfObject$nModelsVisited == 1)
+        bfObject$postModelProbs <- bfObject$bf10s <- 1
+      else if (bfObject$nModelsVisited > 1) {
         # Note the following BFs are based on a uniform prior on the models
-        
-        if (!is.null(anthonySummary$table$prob.Freq)) {
-          postModelProbs <- anthonySummary$table$prob.Freq
+        if (!is.null(bcctSummary$table$prob.Freq)) {
+          postModelProbs <- bcctSummary$table$prob.Freq
           bfObject$postModelProbs <- postModelProbs
           bfObject$bf10s <-  postModelProbs/ max(postModelProbs)
         } else {
@@ -237,7 +225,6 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   jaspResults[["Container"]][["bfObject"]] <- createJaspState(bfObject)
   jaspResults[["Container"]][["bfObject"]]$dependOn(c("fixedSamplesNumber", "sampleMode", "priorShape",
                                                       "priorScale"))
-  
   return(bfObject)
 }
 
@@ -276,7 +263,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bfObject$bf10s))
     reportBfs <- bfObject$bf10s
   else # TODO: Too much with the error list already??
-    reportBfs <- rep(NA, length=nModelsReport) 
+    reportBfs <- rep(NA, length = nModelsReport) 
   
   if (is.numeric(reportBfs)) {
     if (options$bayesFactorType == "BF01")
@@ -288,7 +275,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bfObject$postModelProbs))
     reportPostModelProbs <- bfObject$postModelProbs
   else
-    reportPostModelProbs <- rep(NA, length=nModelsReport)
+    reportPostModelProbs <- rep(NA, length = nModelsReport)
   
   for (i in 1:nModelsReport){
     posteriorTableRows[[i]]           <- emptyRow
@@ -300,11 +287,11 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   
   results[["footnotes"]] <- paste("Total number of models visited =", bfObject$nModelsVisited, sep=" ")
  
-  results[["data"]]   <- posteriorTableRows
+  results[["data"]] <- posteriorTableRows
   
   jaspResults[["Container"]][["MainResults"]] <- createJaspState(results)
   jaspResults[["Container"]][["MainResults"]]$dependOn(
-    c("bayesFactorType", "maxModels", "posteriorProbabilityCutOff")
+    optionsFromObject = jaspResults[["Container"]][["MainTable"]]
   )
   return(results)
 }
@@ -316,18 +303,18 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     return()
   
   emptyRow <- list( #for empty elements in tables when given output
-    "Name" = "",
+    "Name"      = "",
     "post_prob" = "",
     "post_mean" = "",
-    "post_var" = "",
+    "post_var"  = "",
     "lower_lim" = "",
     "upper_lim" = "")
   
   dotted.line <- list( #for empty tables
-    "Name" = ".",
+    "Name"      = ".",
     "post_prob" = ".",
     "post_mean" = ".",
-    "post_var" = ".",
+    "post_var"  = ".",
     "lower_lim" = ".",
     "upper_lim" = ".")
   
@@ -340,7 +327,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     if ( class(bfObject$bcctObj) == "bcct") {
       probLevel <- options$regressionCoefficientsCredibleIntervalsInterval
       logBlm.summary   <- summary(bfObject$bcctObj, 
-                                  n.burnin=bfObject$nBurnIn, 
+                                  n.burnin = bfObject$nBurnIn, 
                                   cutoff = options$posteriorProbabilityCutOff, 
                                   prob.level = probLevel)
       logBlm.estimates <- logBlm.summary$int_stats
@@ -397,7 +384,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
             
             # if interaction term					
             vars <- unlist(strsplit(variablesInModel[var], split = ":"))
-            name <- paste0(vars, collapse="\u2009\u273b\u2009")
+            name <- paste0(vars, collapse = "\u2009\u273b\u2009")
             
           } else 
             name <- as.character(variablesInModel[ var])
@@ -420,10 +407,9 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   }
   
   jaspResults[["Container"]][["SummaryResults"]] <- createJaspState(results)
-  jaspResults[["Container"]][["SummaryResults"]]$dependOn(c("regressionCoefficientsEstimates",
-                                                            "regressionCoefficientsCredibleIntervals",
-                                                            "regressionCoefficientsCredibleIntervalsInterval"))
-  
+  jaspResults[["Container"]][["SummaryResults"]]$dependOn(
+    optionsFromObject = jaspResults[["Container"]][["SummaryResults"]]
+  )
   return(results)
 }
 
@@ -466,19 +452,15 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     if ( class(logBlm.subestimates) == "submod"){
       
       len.Blogreg <- length(results) + 1		
-      term.names <- logBlm.subestimates$term	
+      term.names  <- logBlm.subestimates$term	
       
       extractedModelFormula <- logBlm.subestimates$formula
       
       extractedModelFormula <- as.character(extractedModelFormula)
-      extractedModelFormula <- substring(extractedModelFormula, first=2)  # trim leading ~
+      extractedModelFormula <- substring(extractedModelFormula, first = 2)  # trim leading ~
       extractedModelFormula <- .unvf(extractedModelFormula)	
-      results[["footnotes"]][["modelFormula"]] <- extractedModelFormula
-      #.addFootnote (footnotes, symbol = "<em>Model formula:</em>", text = message1)
-      
+      results[["footnotes"]][["modelFormula"]]  <- extractedModelFormula
       results[["footnotes"]][["posteriorProb"]] <- round(logBlm.subestimates$post_prob, 3)
-      #.addFootnote (footnotes, symbol = "<em>Posterior model probability =</em>", 
-      #              text = Post.pob )	
       
       if (length(bfObject$variables) > 0) {
         
@@ -494,7 +476,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
           
           for (j in seq_along(terms))
             actualName[[j]] <- paste(lookup.table[[ terms[j] ]], collapse = " = ")
-          varName<-paste0(actualName, collapse="*")
+          varName <- paste0(actualName, collapse = "*")
           
           results[["data"]][[ len.Blogreg ]]$"Name"      <- varName
           results[["data"]][[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.subestimates$post_mean[var])
@@ -504,7 +486,6 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
             results[["data"]][[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.subestimates$lower[var])
             results[["data"]][[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.subestimates$upper[var])
           }
-          
           len.Blogreg <- len.Blogreg + 1
         }		
       }			
@@ -528,7 +509,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
             
             # if interaction term					
             vars <- unlist(strsplit(variablesInModel[var], split = ":"))
-            name <- paste0(vars, collapse="\u2009\u273b\u2009")
+            name <- paste0(vars, collapse = "\u2009\u273b\u2009")
             
           } else 
             name <- as.character(variablesInModel[ var])
@@ -551,12 +532,9 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   }
   
   jaspResults[["Container"]][["SubSummaryResults"]] <- createJaspState(results)
-  jaspResults[["Container"]][["SubSummaryResults"]]$dependOn(c("regressionCoefficientsSubmodel",
-                                                "regressionCoefficientsSubmodelCredibleIntervals",
-                                                "regressionCoefficientsSubmodelCredibleIntervalsInterval",
-                                                "regressionCoefficientsSubmodelNo",
-                                                "regressionCoefficientsSubmodelEstimates"))
-  
+  jaspResults[["Container"]][["SubSummaryResults"]]$dependOn(
+    optionsFromObject = jaspResults[["Container"]][["SubSummaryResults"]]
+  )
   return(results)
 }
 
@@ -575,7 +553,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   
   # Create table
   mainTable <- createJaspTable(title = "Model Comparison")
-  mainTable$dependOn(optionsFromObject = jaspResults[["Container"]][["MainResults"]])
+  mainTable$dependOn(c("bayesFactorType", "maxModels", "posteriorProbabilityCutOff"))
   .basRegLogLinCitation(mainTable)
   mainTable$showSpecifiedColumnsOnly <- TRUE
   mainTable$position <- 1
@@ -593,7 +571,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   mainTable$addColumnInfo(name = "pMdata", title = "P(M|data)", type = "number", 
                           format = "dp:3")
   mainTable$addColumnInfo(name = "bf",     title = bfTitle,     type = "number", 
-                          format="sf:4;dp:3")
+                          format = "sf:4;dp:3")
   
   jaspResults[["Container"]][["MainTable"]] <- mainTable
   if (!ready) 
@@ -612,7 +590,9 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     return()
   # Create table
   summaryTable <- createJaspTable(title = "Posterior Summary Statistics")
-  summaryTable$dependOn(optionsFromObject = jaspResults[["Container"]][["SummaryResults"]])
+  summaryTable$dependOn(c("regressionCoefficientsEstimates",
+                          "regressionCoefficientsCredibleIntervals",
+                          "regressionCoefficientsCredibleIntervalsInterval"))
   .basRegLogLinCitation(summaryTable)
   summaryTable$showSpecifiedColumnsOnly <- TRUE
   summaryTable$position <- 2
@@ -655,7 +635,11 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   title <- paste("Posterior Summary Statistics For Submodel", 
                  options$regressionCoefficientsSubmodelNo, sep=" ")
   subSummaryTable <- createJaspTable(title = title)
-  subSummaryTable$dependOn(optionsFromObject = jaspResults[["Container"]][["SubSummaryResults"]])
+  subSummaryTable$dependOn(c("regressionCoefficientsSubmodel",
+                             "regressionCoefficientsSubmodelCredibleIntervals",
+                             "regressionCoefficientsSubmodelCredibleIntervalsInterval",
+                             "regressionCoefficientsSubmodelNo",
+                             "regressionCoefficientsSubmodelEstimates"))
   .basRegLogLinCitation(subSummaryTable)
   subSummaryTable$showSpecifiedColumnsOnly <- TRUE
   subSummaryTable$position <- 3
@@ -698,12 +682,11 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
 .basRegLogLinSetErrorOrFill <- function(res, table) {
   if(isTryError(res))
     table$setError(res)
-  else {
+  else 
     for (level in 1:length(res[["data"]])) {
       row <- res[["data"]][[level]]
       table$addRows(row)
     }
-  }
 }
 
 .regressionLogLinearBayesianBuildLookup <- function(dataset, factors) {
