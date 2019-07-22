@@ -115,7 +115,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     dependentVariable <- unlist(options$counts)
   
   dependentBase64 <- .v(dependentVariable)
-  
+
   if (length(options$modelTerms) > 0) {
     variablesInModel <- NULL
     variablesInModelBase64 <- NULL
@@ -279,7 +279,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   #for empty elements in tables w/ output
   emptyRow    <- .basRegLogLinSummaryLine(char = "", prob = TRUE) 
   dotted.line <- .basRegLogLinSummaryLine(char = ".", prob = TRUE) #for empty tables
-  
+
   results <- list()
   
   lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
@@ -301,7 +301,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
       variablesInModel <- bfObject$variables
       terms <- as.character(logBlm.estimates$term)
       coef  <- base::strsplit (terms, split = ":", fixed = TRUE)				
-      
+
       for (var in seq_along(coef)) {
         
         results[[ len.Blogreg ]] <- emptyRow
@@ -330,7 +330,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
         len.Blogreg <- len.Blogreg + 1
       }		
     }			
-    
+
   } else {
     
     len.Blogreg <- length(results) + 1
@@ -514,7 +514,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   mainTable$addColumnInfo(name = "pMdata", title = "P(M|data)", type = "number", 
                           format = "dp:3")
   mainTable$addColumnInfo(name = "bf", title = bfTitle, type = "number")
-  
+
   jaspResults[["Container"]][["MainTable"]] <- mainTable
   if (!ready) 
     return()
