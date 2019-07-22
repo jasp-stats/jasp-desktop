@@ -172,7 +172,7 @@ git tag -a v1.0 #It will open an editor where you can add some information on yo
 git push -u origin v1.0
 ```
 If you now go to your GitHub repository you can select `Releases` and download the generated .tar.gz, see the following, ahum, visual guide for more details:
-![Visual guide to finding a generated .tar.gz on GitHub](/img/FindingModuleTarGz.png)
+![Visual guide to finding a generated .tar.gz on GitHub](/Docs/development/img/FindingModuleTarGz.png)
 
 ###### Hard way
 On linux and MacOS this is not so bad: simply open up a terminal and go to the directory containing your module and enter the following: "`tar -czf <ModuleName>.tar.gz <ModuleName>`". 
