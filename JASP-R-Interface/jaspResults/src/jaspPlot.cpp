@@ -71,15 +71,15 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 
 		// we need to overwrite plot functions with their recordedplot result
 		if(Rcpp::is<Rcpp::Function>(obj) && writeResult.containsElementNamed("obj"))
-			plotInfo["obj"] = writeResult[writeResult.findName("obj")];
+			plotInfo["obj"] = writeResult["obj"];
 		
 		if(writeResult.containsElementNamed("png"))
-			_filePathPng = Rcpp::as<std::string>(writeResult[writeResult.findName("png")]);
+			_filePathPng = Rcpp::as<std::string>(writeResult["png"]);
 
 		if(writeResult.containsElementNamed("error"))
 		{
 			_error			= "Error during writeImage";
-			_errorMessage	= Rcpp::as<std::string>(writeResult[writeResult.findName("error")]);
+			_errorMessage	= Rcpp::as<std::string>(writeResult["error"]);
 		}
 
 		if(_status == "waiting" || _status == "running")
