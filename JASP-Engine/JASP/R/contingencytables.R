@@ -219,7 +219,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     if (options$percentagesTotal) 
       crossTabMain$addColumnInfo(name = "type[proportions]", title = "", 
                                  type = "string")
-    
+
     .crossTabMainOvertitle(dataset, options, crossTabMain, analysis, counts.fp)
       
     # Totals columns
@@ -390,7 +390,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     }
     
     analysisContainer[["crossTabNominal"]] <- crossTabNominal
-    
+
     res <- try(.crossTabNominalRows(jaspResults, analysis$rows, 
                                     analyses$group.matrices[[i]], 
                                     analyses$groups[[i]], analysisContainer, options, ready))
@@ -582,6 +582,15 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   table$addColumnInfo(name = paste0("p[", fold, "]"),     title = "p",  type = "pvalue")
   if (options$VovkSellkeMPR)
     table$addColumnInfo(name = paste0("MPR[", fold, "]"), title = "VS-MPR\u002A", type = "number")
+}
+
+.crossTabChisqAddColInfo <- function(fold, table) {
+  table$addColumnInfo(name = paste0("type[", fold, "]"),  title = "", type = "string")
+  table$addColumnInfo(name = paste0("value[", fold, "]"), title = "Value", type = "number")
+  table$addColumnInfo(name = paste0("df[", fold, "]"),    title = "df", type = "integer")
+  table$addColumnInfo(name = paste0("p[", fold, "]"),     title = "p",  type = "pvalue")
+  if (options$VovkSellkeMPR)
+    table$addColumnInfo(name = paste0("MPR[", fold, "]"), title = "VS-MPR", type = "number")
 }
 
 .crossTabLayerNames <- function(row, group) {
