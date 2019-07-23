@@ -584,7 +584,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     table$addColumnInfo(name = paste0("MPR[", fold, "]"), title = "VS-MPR\u002A", type = "number")
 }
 
-.crossTabChisqAddColInfo <- function(fold, table) {
+.crossTabChisqAddColInfo <- function(fold, table, options) {
   table$addColumnInfo(name = paste0("type[", fold, "]"),  title = "", type = "string")
   table$addColumnInfo(name = paste0("value[", fold, "]"), title = "Value", type = "number")
   table$addColumnInfo(name = paste0("df[", fold, "]"),    title = "df", type = "integer")
