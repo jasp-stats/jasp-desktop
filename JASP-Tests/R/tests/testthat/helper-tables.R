@@ -3,6 +3,22 @@ roundToPrecision <- function(x) {
   else                x
 }
 
+isUnicodeMismatch <- function(mismatch) {
+  grepl("<unicode>", mismatch, fixed=TRUE)
+}
+
+excludeUnicodeMismatches <- function(mismatches) {
+  indicesToRemove <- NULL
+  for (i in seq_along(mismatches))
+    if (isUnicodeMismatch(mismatches[i]))
+      indicesToRemove <- c(indicesToRemove, i)
+  
+  if (!is.null(indicesToRemove))
+    return(mismatches[-indicesToRemove])
+  
+  return(mismatches)
+}
+
 getMismatchesEqualSizeTables <- function(test, ref, nRows, nCols, cellNames) {
   testVec <- tableListToAnnotatedCharacterVector(test, cellNames)
   refVec <- tableListToAnnotatedCharacterVector(ref)
@@ -17,21 +33,31 @@ getMismatchesEqualSizeTables <- function(test, ref, nRows, nCols, cellNames) {
       indicesMatch <- which(lookupRow %in% testVec[cell])
       if (length(indicesMatch) > 0)
         lookupRow <- lookupRow[-min(indicesMatch)]
-      else
+      else {
+        if (isUnicodeMismatch(names(testVec)[cell]))
+          next
         mismatches <- c(mismatches, 
                         paste0("New table value `", names(testVec)[cell], 
                                 "` (col `", attr(testVec, "cellNames")[cell], "`, row ", row, ")",
                                 " does not exist in old table"))
+      }
     }
     
-    if (length(lookupRow) == 1)
+    if (length(lookupRow) == 1) {
+      if (isUnicodeMismatch(names(lookupRow)))
+        next
       mismatches <- c(mismatches, 
                       paste0("Old table value `", names(lookupRow),
                               "` does not exist in new table"))
-    else if (length(lookupRow) > 1)
+    }
+    else if (length(lookupRow) > 1) {
+      lookupRow <- excludeUnicodeMismatches(lookupRow)
+      if (length(lookupRow) == 0)
+        next
       mismatches <- c(mismatches, 
                       paste0("Old table values `", paste0(names(lookupRow), collapse="`, `"),
                               "` do not exist in new table"))
+    }
   
   }
   
