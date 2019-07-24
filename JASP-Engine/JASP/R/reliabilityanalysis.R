@@ -41,7 +41,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 }  
 
 .reliabilityCheckErrors <- function(dataset, options) {
-  
+
   # Error check 1: 0 observations for a level of a variable
   for (variable in options$variables) {
     
@@ -97,14 +97,14 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     key.base64 <- .v(unlist(options$reverseScaledItems))
     relyFit    <- .quietDuringUnitTest(psych::alpha(dataList[["covariance"]], 
                                                     key = key.base64))
-    
+      
     # since we supply a correlation matrix and not raw data, we have to add these ourselves
     relyFit[["total"]][["mean"]]      <- mean(dataList[["itemMeans"]])
     relyFit[["total"]][["sd"]]        <- stats::sd(dataList[["itemMeans"]])
     relyFit[["item.stats"]][["mean"]] <- dataList[["itemMeans"]]
     relyFit[["item.stats"]][["sd"]]   <- dataList[["itemSds"]]
     relyFit[["nObs"]]                 <- nObs
-    
+      
     # calculate confidence interval for chronbach alpha
     relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(relyFit,	ci = options$confAlphaLevel)
     
@@ -182,7 +182,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     }
   } else #Initialise all as "."
     alpha <- lambda <- omega <- glb <- rho <- mu <- sd <- lower <- upper <- "."
-  
+
   results <- list(
     case    = "scale", 
     alpha   = alpha, 
@@ -333,7 +333,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     only be calculated for three or more variables.")
     scaleTable$addFootnote(message, symbol = "<em>Note.</em>")
   }
-  
+
   jaspResults[["scaleTable"]] <- scaleTable
   
   # Compute/get the results
@@ -397,13 +397,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   res <- try(.reliabilityItemFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
     itemTable$setError(.extractErrorMessage(res))
-  
+
   if (length(options$reverseScaledItems) > 0)
     itemTable$addFootnote("reverse-scaled item", symbol = "\u207B")
 }
 
 .reliabilityAlphaCI <- function(relyFit, ci, nullAlpha = 0) {
-  
+
   # code taken and modified from http://www.psyctc.org/stats/R/Feldt1.html
   # considering using the bootstrapped version inside psych as an alternative
   
