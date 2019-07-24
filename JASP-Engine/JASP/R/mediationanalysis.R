@@ -358,11 +358,11 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     
     pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
     
-    indtab[["x"]]        <- .unv(rep(options$predictor, each = length(options$mediators) * length(options$dependent)))
+    indtab[["x"]]        <- rep(options$predictor, each = length(options$mediators) * length(options$dependent))
     indtab[["op1"]]      <- rep("\u2192", nrow(pe_ind))
-    indtab[["m"]]        <- .unv(rep(options$mediators, length(options$dependent) * length(options$predictor)))
+    indtab[["m"]]        <- rep(options$mediators, length(options$dependent) * length(options$predictor))
     indtab[["op2"]]      <- rep("\u2192", nrow(pe_ind))
-    indtab[["y"]]        <- .unv(rep(rep(options$dependent, each = length(options$mediators)), length(options$predictor)))
+    indtab[["y"]]        <- rep(rep(options$dependent, each = length(options$mediators)), length(options$predictor))
     indtab[["est"]]      <- pe_ind$est
     indtab[["se"]]       <- pe_ind$se
     indtab[["z"]]        <- pe_ind$z
@@ -394,9 +394,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     
     pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
 
-    ttitab[["lhs"]]      <- .unv(rep(options$predictor, each = length(options$dependent)))
+    ttitab[["lhs"]]      <- rep(options$predictor, each = length(options$dependent))
     ttitab[["op"]]       <- rep("\u2192", nrow(pe_tti))
-    ttitab[["rhs"]]      <- .unv(rep(options$dependent, length(options$predictor)))
+    ttitab[["rhs"]]      <- rep(options$dependent, length(options$predictor))
     ttitab[["est"]]      <- pe_tti$est
     ttitab[["se"]]       <- pe_tti$se
     ttitab[["z"]]        <- pe_tti$z
@@ -427,9 +427,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     
     pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
     
-    tottab[["lhs"]]      <- .unv(rep(options$predictor, length(options$dependent)))
+    tottab[["lhs"]]      <- rep(options$predictor, length(options$dependent))
     tottab[["op"]]       <- rep("\u2192", nrow(pe_tot))
-    tottab[["rhs"]]      <- .unv(rep(options$dependent, each = length(options$predictor)))
+    tottab[["rhs"]]      <- rep(options$dependent, each = length(options$predictor))
     tottab[["est"]]      <- pe_tot$est
     tottab[["se"]]       <- pe_tot$se
     tottab[["z"]]        <- pe_tot$z
