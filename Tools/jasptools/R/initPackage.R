@@ -133,7 +133,7 @@ isJaspDesktopDir <- function(path) {
 
     # get the path to JASP R packages so users do not need to install any additional packages
     # retrieving os bit: http://conjugateprior.org/2015/06/identifying-the-os-from-r/
-    pathsToPackages <- NULL
+    pathToPackages <- NULL
 
     os <- .getOS()
     if (!is.null(os)) {
