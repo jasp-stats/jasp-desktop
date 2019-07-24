@@ -37,9 +37,9 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
 
 # Preprocessing functions ----
 .regLogLinReadData <- function(dataset, options) {
-  if (!is.null(dataset)) {
+  if (!is.null(dataset))
     return(dataset)
-  } else {
+  else {
     counts <- NULL
     factors <- NULL
     if(options$counts != "")
@@ -66,7 +66,6 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
       args$type <- c(args$type, "infinity", "negativeValues")
       args$missingValues.target <- c(options$counts, options$factors)
     }
-    
     do.call(.hasErrors, args)
   }
   
@@ -100,8 +99,6 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   # Fit Loglinear Model
   if (options$counts == "")
     dataset <- plyr::count(dataset)
-  else 
-    dataset <- dataset
   
   loglm.model <- list()
   empty.model <- list(loglm.fit = NULL, variables = NULL)
@@ -157,12 +154,10 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
       if (options$counts == "")
         names(dataset)[names(dataset) == "freq"] <- dependent.base64
       
-      loglm.fit <- try( stats::glm( model.formula, 
-                                    family = poisson(), 
-                                    data = dataset), 
-                        silent = TRUE)
+      loglm.fit <- try(stats::glm(model.formula, family = poisson(), 
+                                  data = dataset), silent = TRUE)
       
-      if ( class(loglm.fit) == "glm")
+      if (inherits(loglm.fit, "glm"))
         loglm.model <- list(loglm.fit = loglm.fit, 
                             variables = variables.in.model)
     } else 
@@ -177,22 +172,14 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   return(loglm.model)
 }
 
-.regLogLinComputeAnovaResults <- function(jaspResults, dataset, options, 
-                                          loglm.model, ready){
+.regLogLinAnovaResults <- function(jaspResults, dataset, options, loglm.model, ready){
  
   if (!is.null(jaspResults[["AnovaResults"]])) 
     return(jaspResults[["AnovaResults"]]$object)
 
   results <- list()
-  empty.line <- list( #for empty elements in tables when given output
-    "name"   = "",
-    "df"     = "",
-    "dev"    = "",
-    "resDf"  = "",
-    "resDev" = "",
-    "p"      = "")
-  if (options$VovkSellkeMPR)
-    empty.line$VovkSellkeMPR <- ""
+  empty.line  <-.regloglinAnovaLine(options, char = "") #for empty elements in computed tables
+  dotted.line <-.regloglinAnovaLine(options, char = ".") #for empty tables
   
   dotted.line <- list( #for empty tables
     "name"   = ".",
@@ -215,14 +202,14 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
     if (length(loglm.model$variables) > 0) {
       
       variables.in.model <- loglm.model$variables
-      l <- dim(loglm.estimates)[1]
+      l    <- dim(loglm.estimates)[1]
       name <- unlist(dimnames(loglm.estimates)[[1]])
       
       for (var in 1:l) {
         
         results[[ len.logreg ]] <- empty.line
         model.name <- .unvf(name)
-        #may need to this line
+        #may need to use this line
         #model.name[[1]] <- " "
 
         if(var == 1){
@@ -242,10 +229,9 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
             results[[ len.logreg ]]$VovkSellkeMPR <- .VovkSellkeMPR(pVal)
         }
         results[[ len.logreg ]]$resDf <- as.integer(loglm.estimates$"Resid. Df"[var])
-        res        <- as.numeric(loglm.estimates$"Resid. Dev"[var])
+        res <- as.numeric(loglm.estimates$"Resid. Dev"[var])
         if (abs(res) < 10^(-4))
-          res      <- 0
-        
+          res <- 0
         results[[ len.logreg ]]$resDev <- res
 
         len.logreg <- len.logreg + 1
@@ -292,45 +278,27 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   }
   # Save results to state
   jaspResults[["AnovaResults"]] <- createJaspState(results)
-  jaspResults[["AnovaResults"]]$dependOn(c("counts", "modelTerms", "VovkSellkeMPR"))
+  jaspResults[["AnovaResults"]]$dependOn(
+    optionsFromObject = jaspResults[["AnovaTable"]]
+  )
 
   return(results)
 }
 
-.regLogLinComputeCoefficientsResults <- function(jaspResults, dataset, options, 
-                                                 loglm.model, ready){
+.regLogLinCoefficientsResults <- function(jaspResults, dataset, options, loglm.model, ready){
   if (!options$regressionCoefficientsEstimates)
     return()
   if (!is.null(jaspResults[["CoefficientResults"]])) 
     return(jaspResults[["CoefficientResults"]]$object)
   
   results <- list()
-  empty.line <- list( #for empty elements in tables when given output
-    "name"  = "",
-    "Coeff" = "",
-    "SE"    = "",
-    "Z"     = "",
-    "p"     = "")
-  if(options$regressionCoefficientsConfidenceIntervals)
-    empty.line$lower <- empty.line$upper <- "" 
-  if (options$VovkSellkeMPR) 
-    empty.line$VovkSellkeMPR <- ""
-  
-  dotted.line <- list( #for empty tables
-    "name"  = ".",
-    "Coeff" = ".",
-    "SE"    = ".",
-    "Z"     = ".",
-    "p"     = ".")
-  if(options$regressionCoefficientsConfidenceIntervals)
-    dotted.line$lower <- dotted.line$upper <- "."
-  if (options$VovkSellkeMPR)
-    dotted.line$VovkSellkeMPR <- "."
+  empty.line  <- .regloglinCoeffLine(options, char = "") #for empty elements in computed tables
+  dotted.line <- .regloglinCoeffLine(options, char = ".")#for empty tables
   
   lookup.table <- .regLogLinBuildLookup(dataset, options$factors)
   lookup.table[["(Intercept)"]] <- "(Intercept)"
   
-  if ( class(loglm.model$loglm.fit) == "glm") {
+  if (inherits(loglm.model$loglm.fit, "glm")) {
       
     loglm.summary      <- summary(loglm.model$loglm.fit)
     loglm.estimates    <- loglm.summary$coefficients
@@ -429,11 +397,10 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
       }
     }
   }
-  dependList <- c("regressionCoefficientsEstimates", "VovkSellkeMPR",
-                  "regressionCoefficientsConfidenceIntervals",
-                  "regressionCoefficientsConfidenceIntervalsInterval")
   jaspResults[["CoefficientResults"]] <- createJaspState(results)
-  jaspResults[["CoefficientResults"]]$dependOn(c("counts","modelTerms", dependList))
+  jaspResults[["CoefficientResults"]]$dependOn(
+    optionsFromObject = jaspResults[["CoefficientsTable"]]
+    )
   return(results)
 }
 
@@ -452,16 +419,13 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   # Add columns to table
   anovaTable$addColumnInfo(name = "name",   title = "", type = "string")
   anovaTable$addColumnInfo(name = "df",     title = "df", type = "integer")
-  anovaTable$addColumnInfo(name = "dev",    title = "Deviance", type = "number", 
-                           format = "sf:4;dp:3")
+  anovaTable$addColumnInfo(name = "dev",    title = "Deviance", type = "number")
   anovaTable$addColumnInfo(name = "resDf",  title = "Residual df", type = "integer")
-  anovaTable$addColumnInfo(name = "resDev", title = "Residual Deviance", 
-                           type = "number", format = "sf:4;dp:3")
-  anovaTable$addColumnInfo(name = "p",      title = "p",  type = "number", 
-                           format = "dp:3;p:.001")
+  anovaTable$addColumnInfo(name = "resDev", title = "Residual Deviance", type = "number")
+  anovaTable$addColumnInfo(name = "p", title = "p",  type = "pvalue")
   if (options$VovkSellkeMPR) {
     anovaTable$addColumnInfo(name = "VovkSellkeMPR",  title = "VS-MPR\u002A",       
-                             type = "number", format = "sf:4;dp:3")
+                             type = "number")
     # Footnote
     message <- ("Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, 
                  the maximum possible odds in favor of H\u2081 over H\u2080 equals 
@@ -471,7 +435,7 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   }
   
   jaspResults[["AnovaTable"]] <- anovaTable
-  
+
   .regLogLinReturnOrFill(jaspResults, dataset, options, model, ready, 
                          .regLogLinComputeAnovaResults, anovaTable)
 }
@@ -485,17 +449,16 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   
   # Create table
   coefficientsTable <- createJaspTable(title = "Coefficients")
-  dependList <- c("regressionCoefficientsEstimates", "VovkSellkeMPR",
-                  "regressionCoefficientsConfidenceIntervals",
+  dependList <- c("counts", "modelTerms", "regressionCoefficientsEstimates", 
+                  "VovkSellkeMPR", "regressionCoefficientsConfidenceIntervals",
                   "regressionCoefficientsConfidenceIntervalsInterval")
-  coefficientsTable$dependOn(c("counts", "modelTerms", "VovkSellkeMPR", dependList))
+  coefficientsTable$dependOn(dependList)
   .regLogLinCitation(coefficientsTable)
   coefficientsTable$showSpecifiedColumnsOnly <- TRUE
   coefficientsTable$position <- 2
   
   # Add columns to table
-  coefficientsTable$addColumnInfo(name = "name",  title = "", 
-                                  type = "string")
+  coefficientsTable$addColumnInfo(name = "name",  title = "", type = "string")
   coefficientsTable$addColumnInfo(name = "Coeff", title = "Estimate", 
                                   type = "number", format = "dp:3")
   coefficientsTable$addColumnInfo(name = "SE",    title = "Standard Error", 
@@ -504,15 +467,15 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
     confIntVal <- options$regressionCoefficientsConfidenceIntervalsInterval
     overTitle <- paste0(100*confIntVal, "% Confidence Intervals")
     coefficientsTable$addColumnInfo(name = "lower", title = "Lower", type = "number", 
-                                    format = "sf:4;dp:3", overtitle = overTitle)
+                                    overtitle = overTitle)
     coefficientsTable$addColumnInfo(name = "upper", title = "Upper", type = "number", 
-                                    format = "sf:4;dp:3", overtitle = overTitle)
+                                    overtitle = overTitle)
   }
-  coefficientsTable$addColumnInfo(name = "Z",  type = "number", format = "sf:4;dp:3")
-  coefficientsTable$addColumnInfo(name = "p",  type = "number", format = "dp:3;p:.001")
+  coefficientsTable$addColumnInfo(name = "Z",  type = "number")
+  coefficientsTable$addColumnInfo(name = "p",  type = "pvalue")
   if (options$VovkSellkeMPR)
     coefficientsTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", 
-                                    type = "number", format = "sf:4;dp:3")
+                                    type = "number")
   
   jaspResults[["CoefficientsTable"]] <- coefficientsTable
 
@@ -524,15 +487,16 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
                                    model, ready, .resultfunction, table){
   if (!ready) 
     return()
-  res <- try(.resultfunction(jaspResults, dataset, options, model, ready))
+  res <- try(.regLogLinCoefficientsResults(jaspResults, dataset, options, model, ready))
+  .regLogLinSetErrorOrFill(res, coefficientsTable)
+}
+
+.regLogLinSetErrorOrFill <- function(res, table){
   if(isTryError(res))
     table$setError(res)
-  else {
-    for (level in 1:length(res)) {
-      row <- res[[level]]
-      table$addRows(row)
-    }
-  }
+  else 
+    for (level in 1:length(res)) 
+      table$addRows(res[[level]])
 }
 
 .regLogLinCitation <- function(table){
@@ -541,6 +505,33 @@ RegressionLogLinear <- function(jaspResults, dataset, options, ...) {
   R Foundation for Statistical Computing, Vienna, Austria. 
   URL https://www.R-project.org/.")
   table$addCitation(citation)
+}
+
+.regloglinAnovaLine <- function(options, char) {
+  line <- list(
+    "name"   = char,
+    "df"     = char,
+    "dev"    = char,
+    "resDf"  = char,
+    "resDev" = char,
+    "p"      = char)
+  if (options$VovkSellkeMPR) 
+    line$VovkSellkeMPR <- char
+  return(line)
+}
+
+.regloglinCoeffLine <- function(options, char) {
+  line <- list(
+    "name"  = char,
+    "Coeff" = char,
+    "SE"    = char,
+    "Z"     = char,
+    "p"     = char)
+  if(options$regressionCoefficientsConfidenceIntervals)
+    line$lower <- line$upper <- char 
+  if (options$VovkSellkeMPR) 
+    line$VovkSellkeMPR <- char
+  return(line)
 }
 
 # Other Results setup ----
