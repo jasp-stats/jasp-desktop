@@ -204,11 +204,17 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
         }
     }
 
-    if (!is.null(xBreaks) && !is.waive(xBreaks) && is.waive(xLimits))
+    if (!is.null(xBreaks) && !is.waive(xBreaks) && is.waive(xLimits)) {
         xLimits <- range(xBreaks)
+        if (is.waive(xLabels))
+          xLabels <- axesLabeller(xBreaks)
+    }
 
-    if (!is.null(yBreaks) && !is.waive(yBreaks) && is.waive(yLimits))
+    if (!is.null(yBreaks) && !is.waive(yBreaks) && is.waive(yLimits)) {
         yLimits <- range(yBreaks)
+        if (is.waive(yLabels))
+          yLabels <- axesLabeller(yBreaks)
+    }
 
     if (is.null(graph))
         graph <- ggplot2::ggplot()
