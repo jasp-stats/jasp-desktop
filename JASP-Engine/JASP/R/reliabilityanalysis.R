@@ -28,8 +28,8 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   relyFit <- .reliabilityComputeResults(jaspResults, dataset, options, ready)
   
   # Output tables
-  .reliabilityScaleTable(jaspResults, dataset, options, relyFit, ready)
-  .reliabilityItemTable (jaspResults, dataset, options, relyFit, ready)
+  .scaleTable(jaspResults, dataset, options, relyFit, ready)
+  .itemTable (jaspResults, dataset, options, relyFit, ready)
   
   return()
 }
@@ -46,17 +46,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .relCheckErrors <- function(dataset, options) {
   
-  # Error Check 1: Number of levels of the variables
-  .hasErrors(
-    dataset              = dataset,
-    perform              = "run",
-    type                 = "factorLevels",
-    factorLevels.target  = options$variables,
-    factorLevels.amount  = "< 1",
-    exitAnalysisIfErrors = TRUE
-  )
-  
-  # Error check 2: 0 observations for a level of a variable
+  # Error check 1: 0 observations for a level of a variable
   for (variable in options$variables) {
     
     column <- dataset[[.v(variable)]]
@@ -73,6 +63,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
       )
     }
   }
+  
+  # Error check 2: One or more variables has infinity
+  .hasErrors(dataset = dataset, 
+             perform = perform,
+             type    = "infinity",
+             infinity.target = options$variables,
+             exitAnalysisIfErrors = TRUE)
 } 
 
 # Results functions ----
@@ -87,67 +84,63 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   # This will be the object that we fill with results
   relyFit <- NULL
   
-  # obtain smoothed correlation and covariance matrix
-  dataList  <- .reliabilityConvertDataToCorrelation(dataset, options)
-  nObs      <- nrow(dataset)
-  nVar      <- ncol(dataset)
-  variables <- unlist(options$variables)
-  
-  # generate key for reverse scaled items
-  key <- NULL
-  if (length(options$reverseScaledItems) > 0) {
-    key <- rep(1, length(variables))
-    key[match(.v(unlist(options$reverseScaledItems)), colnames(dataset))] <- -1
-  }
-  
-  if(length(variables) > 1) {
+  if(length(options$variables) > 1) {
+    # obtain smoothed correlation and covariance matrix
+    dataList  <- .reliabilityConvertDataToCorrelation(dataset, options)
+    nObs      <- nrow(dataset)
+    nVar      <- ncol(dataset)
+    variables <- unlist(options$variables)
+    
+    # generate key for reverse scaled items
+    key <- NULL
+    if (length(options$reverseScaledItems) > 0) {
+      key <- rep(1, length(variables))
+      key[match(.v(unlist(options$reverseScaledItems)), colnames(dataset))] <- -1
+    }
     # calculate chronbach alpha, gutmanns lambda6, average inter item corrrelation
     key.base64 <- .v(unlist(options$reverseScaledItems))
     relyFit    <- .quietDuringUnitTest(psych::alpha(dataList[["covariance"]], 
                                                     key = key.base64))
-    
+      
     # since we supply a correlation matrix and not raw data, we have to add these ourselves
     relyFit[["total"]][["mean"]]      <- mean(dataList[["itemMeans"]])
     relyFit[["total"]][["sd"]]        <- stats::sd(dataList[["itemMeans"]])
     relyFit[["item.stats"]][["mean"]] <- dataList[["itemMeans"]]
     relyFit[["item.stats"]][["sd"]]   <- dataList[["itemSds"]]
     relyFit[["nObs"]]                 <- nObs
-    
+      
     # calculate confidence interval for chronbach alpha
     relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(relyFit,	ci = options$confAlphaLevel)
     
     # calculate the greatest lower bound -- only possible for more than 2 variables.
     if (nVar < 3)
       relyFit[["glb"]] <- "."
-    else { # try since the glb is error prone icm reverse scaled items. 
-           # Requires further investigation/ this might be a bug in psych.
+    else { 
+      # try since the glb is error prone icm reverse scaled items. 
+      # Requires further investigation/ this might be a bug in psych.
       r <- dataList[["correlation"]]
-      relyFit[["glb"]] <- .quietDuringUnitTest(try(psych::glb(r = r, 
-                                                              key = key)[["glb.max"]],
-                                                   silent = TRUE))
+      glb <- .quietDuringUnitTest(try(psych::glb(r = r, key = key)[["glb.max"]], 
+                                      silent = TRUE))
+      relyFit[["glb"]] <- glb
     }
     # calculate McDonalds omega
     relyFit[["omega"]] <- .quietDuringUnitTest(psych::omega(m = dataList[["correlation"]], 
-                                                            nfactors = 1, 
-                                                            flip = FALSE, 
-                                                            plot = FALSE,  
-                                                            n.iter = 1, 
+                                                            nfactors = 1, flip = FALSE, 
+                                                            plot = FALSE, n.iter = 1, 
                                                             n.obs = nObs)[["omega.tot"]])
     # calculate McDonalds omega if item dropped
     omegaDropped <- NULL
     if (nVar > 2) {
       omegaDropped <- numeric(length = nVar)
-      for (i in 1:nVar)
+      for (i in 1:nVar) {
         m <- dataList[["correlation"]][-i, -i]
-        omegaDropped[i] <- .quietDuringUnitTest(psych::omega(m = m, nfactors = 1, 
-                                                             n.iter = 1, n.obs = nObs,
-                                                             flip = FALSE, 
+        omegaDropped[i] <- .quietDuringUnitTest(psych::omega(m = m, nfactors = 1, n.iter = 1,
+                                                             n.obs = nObs, flip = FALSE, 
                                                              plot = FALSE)[["omega.tot"]])
+      }
       relyFit[["omegaDropped"]] <- omegaDropped
     }
-    
   }
-  
   # Save results to state
   jaspResults[["stateReliabilityResults"]] <- createJaspState(relyFit)
   dependList <- c("variables", "reverseScaledItems", "confAlphaLevel")
@@ -157,65 +150,47 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .reliabilityScaleResults <- function(jaspResults, dataset, options, relyFit, ready) {
-  if (!ready) return()
-  
   # Take results from state if possible
   if (!is.null(jaspResults[["scaleResults"]])) 
     return(jaspResults[["scaleResults"]]$object)
   
-  results <- list()
+  results   <- list()
   nObs      <- nrow(dataset)
   nVar      <- ncol(dataset)
   variables <- unlist(options$variables)
+  options   <- .reliabilitySetAlphaNms(options)
   
-  options <- .reliabilitySetAlphaNms(options)
-  
-  if(!is.null(relyFit)){
-    alpha  <- NULL
-    lambda <- NULL
-    mu     <- NULL
-    sd     <- NULL
-    rho    <- NULL
-    omega  <- NULL
-    glb    <- NULL
-    lower  <- NULL
-    upper  <- NULL
+  if(ready){
+    #Initialise all as null
+    alpha <- lambda <- omega <- glb <- rho <- mu <- sd <- lower <- upper <- NULL
     
-    if(nVar>=2){
+    if(nVar >= 2){
       if (options$alphaScale)
-        alpha  <- .clean(relyFit$total[[options$alphaNms]])
+        alpha  <- relyFit$total[[options$alphaNms]]
       if (options$gutmannScale)
-        lambda <- .clean(relyFit$total[["G6(smc)"]])
+        lambda <- relyFit$total[["G6(smc)"]]
       if (options$meanScale)
-        mu     <- .clean(relyFit$total$mean)
+        mu     <- relyFit$total$mean
       if (options$sdScale)
-        sd     <- .clean(relyFit$total$sd)
+        sd     <- relyFit$total$sd
       if (options$averageInterItemCor)
-        rho    <- .clean(relyFit$total$average_r)
+        rho    <- relyFit$total$average_r
       if (options$mcDonaldScale)
-        omega  <- .clean(relyFit$omega)
+        omega  <- relyFit$omega
       if (options$glbScale) {
         if (relyFit$glb == "." || isTryError(relyFit$glb)) # unusable information
           glb  <- "."
         else # a useable value
-          glb  <- .clean(relyFit$glb)
+          glb  <- relyFit$glb
       }
       if (options[["confAlpha"]]) {
-        lower <- .clean(relyFit[["ciAlpha"]][1])
-        upper <- .clean(relyFit[["ciAlpha"]][2])
+        lower <- relyFit[["ciAlpha"]][1]
+        upper <- relyFit[["ciAlpha"]][2]
       }
     }
-  } else {
-    alpha  <- "."
-    lambda <- "."
-    omega  <- "."
-    glb    <- "."
-    rho    <- "."
-    mu     <- "."
-    sd     <- "."
-    lower  <- "."
-    upper  <- "."
-  }
+  } else #Initialise all as "."
+    alpha <- lambda <- omega <- glb <- rho <- mu <- sd <- lower <- upper <- "."
+    
   results <- list(
     case    = "scale", 
     alpha   = alpha, 
@@ -231,11 +206,9 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   
   # Save results to state
   jaspResults[["scaleResults"]] <- createJaspState(results)
-  dependList <- c("variables", "confAlpha", "mcDonaldScale", "alphaScale", 
-                  "alphaScaleStandardized", "gutmannScale", "glbScale", 
-                  "averageInterItemCor", "meanScale", "sdScale",
-                  "missingValues",  "confAlpha", "confAlphaLevel")
-  jaspResults[["scaleResults"]]$dependOn(dependList)
+  jaspResults[["scaleResults"]]$dependOn(
+    optionsFromObject = jaspResults[["scaleTable"]]
+  )
   # Return results object
   return(results)
 }
@@ -259,17 +232,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
     # psych::alpha uses a minus to signify reverse scaled item. 
     rowNames <- gsub("-","", rownames(relyFit$alpha.drop))
     
-    if(length(variables) > 1) {
+    if(length(variables) > 1)
       for (var in variables) {
         varV  <- .v(var)
         index <- which(varV == rowNames)
         
-        alpha       <- NULL
-        lambda      <- NULL
-        itemRestCor <- NULL
-        mu          <- NULL
-        sd          <- NULL
-        omega       <- NULL
+        #Initialise all as null
+        alpha <- lambda <- itemRestCor <- mu <- sd <- omega <- NULL
         
         if (var %in% options$reverseScaledItems)
           case <- paste0(var,"\u207B")
@@ -277,17 +246,17 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
           case <- var
         
         if (options$alphaItem)
-          alpha       <- .clean(relyFit$alpha.drop[index, options$alphaNms])
+          alpha       <- relyFit$alpha.drop[index, options$alphaNms]
         if (options$gutmannItem)
-          lambda      <- .clean(relyFit$alpha.drop[index, "G6(smc)"])
+          lambda      <- relyFit$alpha.drop[index, "G6(smc)"]
         if (options$itemRestCor)
-          itemRestCor <- .clean(relyFit$item.stats[index,"r.drop"])
+          itemRestCor <- relyFit$item.stats[index,"r.drop"]
         if (options$meanItem)
-          mu          <- .clean(relyFit$item.stats[index,"mean"])
+          mu          <- relyFit$item.stats[index,"mean"]
         if (options$sdItem)
-          sd          <- .clean(relyFit$item.stats[index,"sd"])
+          sd          <- relyFit$item.stats[index,"sd"]
         if (options$mcDonaldItem)
-          omega       <- .clean(relyFit$omegaDropped[index])
+          omega       <- relyFit$omegaDropped[index]
         
         results[[var]] <- list(
           case        = case, 
@@ -299,7 +268,6 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
           sd          = sd
         )
       } 
-    }
   } else {
     variablesTemp <- variables
     
@@ -321,55 +289,54 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   
   # Save results to state
   jaspResults[["itemResults"]] <- createJaspState(results)
-  dependList <- c("variables", "reverseScaledItems", "mcDonaldItem", 
-                  "alphaItem", "gutmannItem", "meanItem", "sdItem", 
-                  "itemRestCor", "reverseScaledItems")
-  jaspResults[["itemResults"]]$dependOn(dependList)
+  jaspResults[["itemResults"]]$dependOn(
+    optionsFromObject = jaspResults[["itemContainer"]]
+  )
   # Return results object
   return(results)
 }
 
 # Output functions ----
-.reliabilityScaleTable <- function(jaspResults, dataset, options, relyFit, ready) {
+.scaleTable <- function(jaspResults, dataset, options, relyFit, ready) {
   
-  if (!is.null(jaspResults[["reliabilityScaleTable"]])) return()
+  if (!is.null(jaspResults[["scaleTable"]])) return()
   
   # Create table
-  reliabilityScaleTable <- createJaspTable(title = "Scale Reliability Statistics")
-  reliabilityScaleTable$dependOn(optionsFromObject = jaspResults[["scaleResults"]])
-  reliabilityScaleTable$showSpecifiedColumnsOnly <- TRUE
-  reliabilityScaleTable$position <- 1
+  scaleTable <- createJaspTable(title = "Scale Reliability Statistics")
+  dependList <- c("variables", "confAlpha", "mcDonaldScale", "alphaScale", "meanScale",
+                  "alphaScaleStandardized", "gutmannScale", "glbScale", "confAlpha",
+                  "averageInterItemCor",  "sdScale", "missingValues", "confAlphaLevel")
+  scaleTable$dependOn(dependList)
+  scaleTable$showSpecifiedColumnsOnly <- TRUE
+  scaleTable$position <- 1
   
   # Add columns to table
-  reliabilityScaleTable$addColumnInfo(name = "case", title = "", type = "string")
+  scaleTable$addColumnInfo(name = "case", title = "", type = "string")
   if (options$meanScale)
-    reliabilityScaleTable$addColumnInfo(name = "mu",    title = "mean",
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "mu", title = "mean", type = "number")
   if (options$sdScale)
-    reliabilityScaleTable$addColumnInfo(name = "sd",    title = "sd",
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "sd", title = "sd", type = "number")
   if (options$mcDonaldScale)
-    reliabilityScaleTable$addColumnInfo(name = "omega", title = "McDonald's \u03C9",     
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "omega", title = "McDonald's \u03C9",     
+                             type = "number")
   if (options$alphaScale)
-    reliabilityScaleTable$addColumnInfo(name = "alpha", title = "Cronbach's \u03B1",
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "alpha", title = "Cronbach's \u03B1",
+                             type = "number")
   if (options$gutmannScale)
-    reliabilityScaleTable$addColumnInfo(name = "lambda",title = "Gutmann's \u03BB6",
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "lambda", title = "Gutmann's \u03BB6",
+                             type = "number")
   if (options$glbScale)
-    reliabilityScaleTable$addColumnInfo(name = "glb",   title = "Greatest lower bound",
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "glb", title = "Greatest lower bound",
+                             type = "number")
   if (options$averageInterItemCor)
-    reliabilityScaleTable$addColumnInfo(name = "rho",   
-                                        title = "Average interitem correlation",
-                                        type = "number", format = "sf:4;dp:3")
+    scaleTable$addColumnInfo(name = "rho", title = "Average interitem correlation",
+                             type = "number")
   if (options$confAlpha){
     overTitle <- paste0(100*options$confAlphaLevel, "% Confidence Interval")
-    reliabilityScaleTable$addColumnInfo(name = "lower", title = "Lower", type = "number",
-                                        format = "sf:4;dp:3", overtitle = overTitle)
-    reliabilityScaleTable$addColumnInfo(name = "upper", title = "Upper", type = "number", 
-                                        format = "sf:4;dp:3", overtitle = overTitle)
+    scaleTable$addColumnInfo(name = "lower", title = "Lower", type = "number", 
+                             overtitle = overTitle)
+    scaleTable$addColumnInfo(name = "upper", title = "Upper", type = "number", 
+                             overtitle = overTitle)
   }
   
   if (options$missingValues == "excludeCasesListwise") 
@@ -382,96 +349,78 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   nExcluded <- sum(!complete.cases(dataset))
   nValid    <- nObs - nExcluded
   
-  message <- sprintf("Of the observations, %d were used, 
-                     %d were excluded%s, and %d were provided.",
-                     nValid, nExcluded, exclwise, nObs)
-  if (options$glbScale) {
-    if (length(variables) <= 2) 
-      paste(message, "Warning: Greatest lower bound can only be calculated for 
-                     three or more variables.")
-  }
-  reliabilityScaleTable$addFootnote(message, symbol = "<em>Note.</em>")
+  message <- sprintf("Of the observations, %d were used, %d were excluded%s, 
+                     and %d were provided.", nValid, nExcluded, exclwise, nObs)
+  if (options$glbScale && length(variables) <= 2)
+    message <- paste(message, "Warning: Greatest lower bound can 
+    only be calculated for three or more variables.")
+  scaleTable$addFootnote(message, symbol = "<em>Note.</em>")
   
-  jaspResults[["reliabilityScaleTable"]] <- reliabilityScaleTable
+  jaspResults[["scaleTable"]] <- scaleTable
   
   res <- try(.reliabilityScaleResults(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
-    reliabilityScaleTable$setError(res)
+    scaleTable$setError(.extractErrorMessage(res))
   else
-    reliabilityScaleTable$addRows(res)
+    scaleTable$addRows(res)
 }
 
-.reliabilityItemTable <- function (jaspResults, dataset, options, relyFit, ready) {
-  if (!options$alphaItem && !options$gutmannItem && 
-      !options$itemRestCor && !options$meanItem && 
-      !options$sdItem && !options$mcDonaldItem)
+.itemTable <- function (jaspResults, dataset, options, relyFit, ready) {
+  if (!(options$alphaItem || options$gutmannItem || options$itemRestCor ||
+        options$meanItem  ||options$mcDonaldItem || options$sdItem))
     return()
   
-  if (!is.null(jaspResults[["itemContainer"]])) 
+  if (!is.null(jaspResults[["itemContainer"]][["table"]])) 
     return()
   
   jaspResults[["itemContainer"]] <- createJaspContainer("Item Statistics")
-  
+  dependList <- c("variables", "reverseScaledItems","mcDonaldItem", "alphaItem", 
+                  "gutmannItem", "meanItem", "sdItem", "itemRestCor")
+  jaspResults[["itemContainer"]]$dependOn(dependList)
   # Create table
-  reliabilityItemTable <- createJaspTable("Item Reliability Statistics")
-  reliabilityItemTable$dependOn(optionsFromObject = jaspResults[["itemResults"]])
-  
-  reliabilityItemTable$showSpecifiedColumnsOnly <- TRUE
-  reliabilityItemTable$position <- 2
+  itemTable <- createJaspTable("Item Reliability Statistics")
+  itemTable$showSpecifiedColumnsOnly <- TRUE
+  itemTable$position <- 2
   
   overTitle <- paste0("If item dropped")
   
   # Add columns to table
-  reliabilityItemTable$addColumnInfo(name = "case", title = "", type = "string")
+  itemTable$addColumnInfo(name = "case", title = "", type = "string")
   if (options$meanItem)
-    reliabilityItemTable$addColumnInfo(name = "mu", title = "mean", type = "number", 
-                                       format = "sf:4;dp:3")
+    itemTable$addColumnInfo(name = "mu", title = "mean", type = "number")
   if (options$sdItem)
-    reliabilityItemTable$addColumnInfo(name = "sd", title = "sd",   type = "number", 
-                                       format = "sf:4;dp:3")
+    itemTable$addColumnInfo(name = "sd", title = "sd",   type = "number")
   if (options$itemRestCor)
-    reliabilityItemTable$addColumnInfo(name = "itemRestCor", 
-                                       title = "item-rest correlation", 
-                                       type = "number", format = "sf:4;dp:3")
+    itemTable$addColumnInfo(name = "itemRestCor", title = "item-rest correlation", 
+                            type = "number")
   if (options$mcDonaldItem)
-    reliabilityItemTable$addColumnInfo(name = "omega", title = "McDonald's \u03C9", 
-                                       type = "number", format = "sf:4;dp:3", 
-                                       overtitle = overTitle)
+    itemTable$addColumnInfo(name = "omega", title = "McDonald's \u03C9", 
+                            type = "number", overtitle = overTitle)
   if (options$alphaItem)
-    reliabilityItemTable$addColumnInfo(name = "alpha", title = "Cronbach's \u03B1", 
-                                       type = "number", format = "sf:4;dp:3", 
-                                       overtitle = overTitle)
+    itemTable$addColumnInfo(name = "alpha", title = "Cronbach's \u03B1", 
+                            type = "number", overtitle = overTitle)
   if (options$gutmannItem)
-    reliabilityItemTable$addColumnInfo(name = "lambda",title = "Gutmann's \u03BB6", 
-                                       type = "number", format = "sf:4;dp:3", 
-                                       overtitle = overTitle)
+    itemTable$addColumnInfo(name = "lambda", title = "Gutmann's \u03BB6", 
+                            type = "number", overtitle = overTitle)
   
   # can only be computed if there are at least 3 variables.
   if (options$mcDonaldItem && length(options$variables) < 3) {
     message <- "McDonald's \u03C9 if item dropped can only be calculated 
                 for three or more variables."
-    reliabilityItemTable$addFootnote(message, symbol = "\u1D43 Warning: ")
+    itemTable$addFootnote(message, symbol = "\u1D43 Warning: ")
   }
   
-  jaspResults[["itemContainer"]][["table"]] <- reliabilityItemTable 
+  jaspResults[["itemContainer"]][["table"]] <- itemTable 
   
   res <- try(.reliabilityItemResults(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
-    reliabilityItemTable$setError(res)
-  else {
-    for (level in 1:length(res)) {
-      row <- res[[level]]
-      reliabilityItemTable$addRows(row)
-    }
-  }
+    itemTable$setError(.extractErrorMessage(res))
+  else 
+    for (level in 1:length(res))
+      itemTable$addRows(res[[level]])
   
-  if (length(options$reverseScaledItems) > 0) {
-    reverseScaledItems <- unlist(options$reverseScaledItems)
-    message <- "reverse-scaled item"
-    reliabilityItemTable$addFootnote(message, symbol = "\u207B", 
-                                     rowNames = reverseScaledItems, 
-                                     colNames = "case")
-  }
+  if (length(options$reverseScaledItems) > 0)
+    itemTable$addFootnote("reverse-scaled item", symbol = "\u207B")
 }
 
 .reliabilityAlphaCI <- function(relyFit, ci, nullAlpha = 0) {
@@ -502,13 +451,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
 	nNum <- nObs - 1
 	# set the upper and lower p values for the desired C.I.
 	null.p <- stats::pf(f, nNum, nDen) 
-	p1  <- (1 - ci)/2
-	p2  <- ci + p1 # corresponding F values
-	f1  <- stats::qf(p1, nNum, nDen)
-	f2  <- stats::qf(p2, nNum, nDen) # confidence interval
-	lwr <- 1 - (1 - estAlpha) * f2
-	upr <- 1 - (1 - estAlpha) * f1
-	return(c(lwr, upr))
+	p1     <- (1 - ci)/2
+	p2     <- ci + p1 # corresponding F values
+	f1     <- stats::qf(p1, nNum, nDen)
+	f2     <- stats::qf(p2, nNum, nDen) 
+	lower  <- 1 - (1 - estAlpha) * f2
+	upper  <- 1 - (1 - estAlpha) * f1
+	return(c(lower, upper))
 }
 
 .reliabilityConvertDataToCorrelation <- function(dataset, options) {

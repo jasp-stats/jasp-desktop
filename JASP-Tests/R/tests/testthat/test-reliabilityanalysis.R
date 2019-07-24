@@ -16,7 +16,7 @@ test_that("Main table results match", {
   options$meanScale <- TRUE
   options$sdScale <- TRUE
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
-  table <- results[["results"]][["reliabilityScaleTable"]][["data"]]
+  table <- results[["results"]][["scaleTable"]][["data"]]
   expect_equal_tables(table,
     list("scale", -0.757822989578577, -0.0677657928415725, 0.667932535083157,
          0.622700230679449, -0.175972651899464, -0.02217061461, 0.144515070286093,
@@ -37,11 +37,12 @@ test_that("Item Statistics table matches", {
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
   table <- results[["results"]][["itemContainer"]][["collection"]][["itemContainer_table"]][["data"]]
   expect_equal_tables(table,
-    list(0.0618194975467092, "contcor1", 0.560156128034403, 0.0319398198963565,
-         0.05254867287, 0, 1.01183864387684, 0.277152727398941, "contcor2",
-         0.442807451055322, 0.161031927910319, 0.06968807084, 0, 1.0041493380131,
-         0.79299280264282, "contNormal", 0.106272823965938, 0.657010063712354,
-         -0.18874858754, 0.793006727117146, 1.05841360919316)
+    list("contcor1", 0.0618194975467092, 0.0319398198963565, 0.061902485553013,
+         0.560156128034403, 0.05254867287, 1.01183864387684, "contcor2",
+         0.277152727398941, 0.161031927910319, 0.27739448681683, 0.442807451055322,
+         0.06968807084, 1.0041493380131, "contNormal", 0.79299280264282,
+         0.657010063712354, 0.793006727117146, 0.106272823965938, -0.18874858754,
+         1.05841360919316)
   )
 })
 
@@ -59,10 +60,18 @@ test_that("Reverse scaled items match", {
   options$sdScale <- TRUE
   
   results <- jasptools::run("ReliabilityAnalysis", "Fear of Statistics.csv", options)
-  table <- results[["results"]][["reliabilityScaleTable"]][["data"]]
+  table <- results[["results"]][["scaleTable"]][["data"]]
   expect_equal_tables(table,
     list(0.820836210468446, "scale", 0.708529526625945, 0.813045844410605,
          0.81017314606981, 3.08727148969273, 0.724966918842779, 0.368244389782582,
          0.393585959365817, 0.831119838017159)
   )
+})
+
+test_that("Analysis handles errors - Infinity", {
+  options <- jasptools::analysisOptions("ReliabilityAnalysis")
+  options$variables <- c("debInf")
+  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
+  errorMsg <- results[["results"]][["errorMessage"]]
+  expect_is(errorMsg, "character")
 })
