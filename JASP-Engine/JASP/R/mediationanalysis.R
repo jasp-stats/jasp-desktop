@@ -522,9 +522,11 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medPathPlot <- function(modelContainer, options, ready) {
   if (!options$pathplot || !ready || !is.null(modelContainer[["plot"]])) return()
   
-  modelContainer[["plot"]] <- createJaspPlot(title = "Path plot", width = 600, height = 400)
-  modelContainer[["plot"]]$dependOn(options = c("pathplot", "plotpars", "plotlegend"))
-  modelContainer[["plot"]]$position <- 2
+  plt <- createJaspPlot(title = "Path plot", width = 600, height = 400)
+  plt$dependOn(options = c("pathplot", "plotpars", "plotlegend"))
+  plt$position <- 2
+  
+  modelContainer[["plot"]] <- plt
   
   if (modelContainer$getError()) return()
 
@@ -571,7 +573,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   # post-process plot
   pp <- .medPlotPostProcess(pp, options)
 
-  modelContainer[["plot"]]$plotObject <- pp
+  plt$plotObject <- pp
 }
 
 .medPathLayout <- function(n, min = -1, max = 1) {
