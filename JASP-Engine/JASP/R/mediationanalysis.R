@@ -20,16 +20,17 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Read dataset
   dataset <- .medReadData(dataset, options)
-  ready  <- .medCheckErrors(dataset, options)
+  ready   <- .medCheckErrors(dataset, options)
 
-  # Perform mediation analysis
-  medResult <- .medComputeResults(jaspResults, dataset, options, ready)
-
+  modelContainer <- .getModelContainer(jaspResults)
+  
   # Output functions
-  .medParTable(jaspResults, medResult, options, ready)
-  .medRsquared(jaspResults, medResult, options, ready)
-  .medPathPlot(jaspResults, medResult, options, ready)
-  .medSyntax(  jaspResults, medResult, options, ready)
+  .medParTable(   modelContainer, dataset, options, ready)
+  .medTotIndTable(modelContainer, options, ready)
+  .medResTable(   modelContainer, options, ready)
+  .medRsquared(   modelContainer, options, ready)
+  .medPathPlot(   modelContainer, options, ready)
+  .medSyntax(     modelContainer, options, ready)
 
 }
 
@@ -94,10 +95,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 # Results functions ----
-.medComputeResults <- function(jaspResults, dataset, options, ready) {
-  if (!ready) return()
-  if (!is.null(jaspResults[["stateMedResult"]])) return(jaspResults[["stateMedResult"]]$object)
-  
+
+.medComputeResults <- function(modelContainer, dataset, options, ready) {
   medResult <- try(lavaan::sem(
     model           = .medToLavMod(options),
     data            = dataset,
@@ -110,7 +109,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   if (inherits(medResult, "try-error")) {
     errmsg <- paste("Estimation failed\nMessage:\n", attr(medResult, "condition")$message)
-    .quitAnalysis(.decodeVarsInMessage(names(dataset), errmsg))
+    modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
   if (options$se == "bootstrap") {
@@ -132,11 +131,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     medResult@Options$se <- "bootstrap"
   }
   
-  jaspResults[["stateMedResult"]] <- createJaspState(medResult)
-  jaspResults[["stateMedResult"]]$dependOn(c(
-    "predictor", "mediators", "dependent", "confounds", "includemeanstructure", 
-    "bootstrapNumber", "fixManifestInterceptsToZero", "mimic", "se", "estimator", 
-    "std", "missing"))
+  modelContainer[["model"]] <- createJaspState(medResult)
   return(medResult)
 }
 
@@ -251,40 +246,28 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
 # Output functions ----
 
-.medParTable <- function(jaspResults, medResult, options, ready) {
-  showOpts <- c("showdir", "showind", "showtotind", "showtot", "showres")
-  if (!any(options[showOpts])) return()
+.getModelContainer <- function(jaspResults, options) {
+  if (!is.null(jaspResults[["modelContainer"]])) {
+    modelContainer <- jaspResults[["modelContainer"]]
+  } else {
+    modelContainer <- createJaspContainer()
+    modelContainer$dependOn(c(
+      "predictor", "mediators", "dependent", "confounds", "includemeanstructure", 
+      "bootstrapNumber", "fixManifestInterceptsToZero", "mimic", "se", "estimator", 
+      "std", "missing")
+    )
+    jaspResults[["modelContainer"]] <- modelContainer
+  }
   
-  jaspResults[["parest"]] <- pecont <- createJaspContainer("Parameter estimates")
-  pecont$dependOn(options = c("ciWidth", "bootCItype"), optionsFromObject = jaspResults[["stateMedResult"]])
+  return(modelContainer)
+}
+
+.medParTable <- function(modelContainer, dataset, options, ready) {
+  if (!is.null(modelContainer[["parest"]])) return()
+  modelContainer[["parest"]] <- pecont <- createJaspContainer("Parameter estimates")
+  pecont$dependOn(options = c("ciWidth", "bootCItype"))
   pecont$position <- 0
 
-  if (is.null(medResult)) {
-    pecont[["dir"]] <- dirtab <- createJaspTable(title = "Direct effects")
-    pecont[["ind"]] <- indtab <- createJaspTable(title = "Indirect effects")
-    pecont[["tot"]] <- tottab <- createJaspTable(title = "Total effects")
-
-    dirtab$addColumnInfo(name = "est",    title = "Estimate",   type = "number")
-    dirtab$addColumnInfo(name = "se",     title = "Std. Error", type = "number")
-    dirtab$addColumnInfo(name = "z",      title = "z-value",    type = "number")
-    dirtab$addColumnInfo(name = "pvalue", title = "p",          type = "number")
-
-    indtab$addColumnInfo(name = "est",    title = "Estimate",   type = "number")
-    indtab$addColumnInfo(name = "se",     title = "Std. Error", type = "number")
-    indtab$addColumnInfo(name = "z",      title = "z-value",    type = "number")
-    indtab$addColumnInfo(name = "pvalue", title = "p",          type = "number")
-
-    tottab$addColumnInfo(name = "est",    title = "Estimate",   type = "number")
-    tottab$addColumnInfo(name = "se",     title = "Std. Error", type = "number")
-    tottab$addColumnInfo(name = "z",      title = "z-value",    type = "number")
-    tottab$addColumnInfo(name = "pvalue", title = "p",          type = "number")
-
-    return()
-  }
-
-  pe <- lavaan::parameterEstimates(medResult, boot.ci.type = options$bootCItype, 
-                                   level = options$ciWidth)
-  
   se_type <- switch(options$se,
     "bootstrap" = "Delta method",
     "standard"  = "Delta method",
@@ -302,200 +285,248 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
   
   ## direct effects
-  if (options[["showdir"]]) {
-    dirtab <- createJaspTable(title = "Direct effects")
-    dirtab$dependOn("showdir")
-    
-    dirtab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-    dirtab$addColumnInfo(name = "op",       title = "",           type = "string")
-    dirtab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-    dirtab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-    dirtab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-    dirtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-    dirtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-    dirtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    dirtab$addFootnote(se_message)
-    
-    pecont[["dir"]] <- dirtab
-    
-    pe_dir <- pe[substr(pe$label, 1, 1) == "c", ]
-    dirtab[["lhs"]]      <- .unv(pe_dir$rhs)
-    dirtab[["op"]]       <- rep("\u2192", nrow(pe_dir))
-    dirtab[["rhs"]]      <- .unv(pe_dir$lhs)
-    dirtab[["est"]]      <- pe_dir$est
-    dirtab[["se"]]       <- pe_dir$se
-    dirtab[["z"]]        <- pe_dir$z
-    dirtab[["pvalue"]]   <- pe_dir$pvalue
-    dirtab[["ci.lower"]] <- pe_dir$ci.lower
-    dirtab[["ci.upper"]] <- pe_dir$ci.upper
-  }
+  dirtab <- createJaspTable(title = "Direct effects")
   
-
+  dirtab$addColumnInfo(name = "lhs",      title = "",           type = "string")
+  dirtab$addColumnInfo(name = "op",       title = "",           type = "string")
+  dirtab$addColumnInfo(name = "rhs",      title = "",           type = "string")
+  dirtab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
+  dirtab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
+  dirtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
+  dirtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
+  dirtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  dirtab$addFootnote(se_message)
+  
+  pecont[["dir"]] <- dirtab
+  
   ## indirect effects
-  if (options[["showind"]]) {
-    indtab <- createJaspTable(title = "Indirect effects")
-    indtab$dependOn("showind")
-    
-    indtab$addColumnInfo(name = "x",        title = "",           type = "string")
-    indtab$addColumnInfo(name = "op1",      title = "",           type = "string")
-    indtab$addColumnInfo(name = "m",        title = "",           type = "string")
-    indtab$addColumnInfo(name = "op2",      title = "",           type = "string")
-    indtab$addColumnInfo(name = "y",        title = "",           type = "string")
-    indtab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-    indtab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-    indtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-    indtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-    indtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    indtab$addFootnote(se_message)
-    
-    pecont[["ind"]] <- indtab 
-    
-    pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
-    
-    indtab[["x"]]        <- rep(options$predictor, each = length(options$mediators) * length(options$dependent))
-    indtab[["op1"]]      <- rep("\u2192", nrow(pe_ind))
-    indtab[["m"]]        <- rep(options$mediators, length(options$dependent) * length(options$predictor))
-    indtab[["op2"]]      <- rep("\u2192", nrow(pe_ind))
-    indtab[["y"]]        <- rep(rep(options$dependent, each = length(options$mediators)), length(options$predictor))
-    indtab[["est"]]      <- pe_ind$est
-    indtab[["se"]]       <- pe_ind$se
-    indtab[["z"]]        <- pe_ind$z
-    indtab[["pvalue"]]   <- pe_ind$pvalue
-    indtab[["ci.lower"]] <- pe_ind$ci.lower
-    indtab[["ci.upper"]] <- pe_ind$ci.upper
-    
-  }
+  indtab <- createJaspTable(title = "Indirect effects")
+  
+  indtab$addColumnInfo(name = "x",        title = "",           type = "string")
+  indtab$addColumnInfo(name = "op1",      title = "",           type = "string")
+  indtab$addColumnInfo(name = "m",        title = "",           type = "string")
+  indtab$addColumnInfo(name = "op2",      title = "",           type = "string")
+  indtab$addColumnInfo(name = "y",        title = "",           type = "string")
+  indtab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
+  indtab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
+  indtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
+  indtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
+  indtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  indtab$addFootnote(se_message)
+  
+  pecont[["ind"]] <- indtab
+  
+  ## total effects
+  tottab <- createJaspTable(title = "Total effects")
+  
+  tottab$addColumnInfo(name = "lhs",      title = "",           type = "string")
+  tottab$addColumnInfo(name = "op",       title = "",           type = "string")
+  tottab$addColumnInfo(name = "rhs",      title = "",           type = "string")
+  tottab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
+  tottab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
+  tottab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
+  tottab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
+  tottab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  tottab$addFootnote(se_message)
+  
+  pecont[["tot"]] <- tottab
+  
+  if (!ready) return()
+  
+  
+  # add data to the tables!
+  .medComputeResults(modelContainer, dataset, options, ready)
+  
+  if (modelContainer$getError()) return()
+  
+  pe <- lavaan::parameterEstimates(modelContainer[["model"]][["object"]], boot.ci.type = options$bootCItype, 
+                                   level = options$ciWidth)
+  
+  pe_dir <- pe[substr(pe$label, 1, 1) == "c", ]
+  dirtab[["lhs"]]      <- .unv(pe_dir$rhs)
+  dirtab[["op"]]       <- rep("\u2192", nrow(pe_dir))
+  dirtab[["rhs"]]      <- .unv(pe_dir$lhs)
+  dirtab[["est"]]      <- pe_dir$est
+  dirtab[["se"]]       <- pe_dir$se
+  dirtab[["z"]]        <- pe_dir$z
+  dirtab[["pvalue"]]   <- pe_dir$pvalue
+  dirtab[["ci.lower"]] <- pe_dir$ci.lower
+  dirtab[["ci.upper"]] <- pe_dir$ci.upper
 
-  ## total indirect effects
-  if (options[["showtotind"]] && length(options$mediators) > 1) {
-    ttitab <- createJaspTable(title = "Total indirect effects")
-    ttitab$dependOn("showtotind")
-    
-    ttitab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-    ttitab$addColumnInfo(name = "op",       title = "",           type = "string")
-    ttitab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-    ttitab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-    ttitab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-    ttitab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-    ttitab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-    ttitab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    ttitab$addFootnote(se_message)
-    
-    pecont[["tti"]] <- ttitab
-    
-    pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
-
-    ttitab[["lhs"]]      <- rep(options$predictor, each = length(options$dependent))
-    ttitab[["op"]]       <- rep("\u2192", nrow(pe_tti))
-    ttitab[["rhs"]]      <- rep(options$dependent, length(options$predictor))
-    ttitab[["est"]]      <- pe_tti$est
-    ttitab[["se"]]       <- pe_tti$se
-    ttitab[["z"]]        <- pe_tti$z
-    ttitab[["pvalue"]]   <- pe_tti$pvalue
-    ttitab[["ci.lower"]] <- pe_tti$ci.lower
-    ttitab[["ci.upper"]] <- pe_tti$ci.upper
-  }
-
-  if (options[["showtot"]]) {
-    ## total effects
-    tottab <- createJaspTable(title = "Total effects")
-    tottab$dependOn("showtot")
-
-    tottab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-    tottab$addColumnInfo(name = "op",       title = "",           type = "string")
-    tottab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-    tottab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-    tottab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-    tottab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-    tottab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-    tottab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    tottab$addFootnote(se_message)
-    
-    pecont[["tot"]] <- tottab
-    
-    pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
-    
-    tottab[["lhs"]]      <- rep(options$predictor, length(options$dependent))
-    tottab[["op"]]       <- rep("\u2192", nrow(pe_tot))
-    tottab[["rhs"]]      <- rep(options$dependent, each = length(options$predictor))
-    tottab[["est"]]      <- pe_tot$est
-    tottab[["se"]]       <- pe_tot$se
-    tottab[["z"]]        <- pe_tot$z
-    tottab[["pvalue"]]   <- pe_tot$pvalue
-    tottab[["ci.lower"]] <- pe_tot$ci.lower
-    tottab[["ci.upper"]] <- pe_tot$ci.upper
-    
-  }
-
-
-  ## residual covariances
-  if (options[["showres"]] && length(c(options$mediators, options$dependent)) > 2) {
-    restab <- createJaspTable(title = "Residual covariances")
-    restab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-    restab$addColumnInfo(name = "op",       title = "",           type = "string")
-    restab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-    restab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-    restab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-    restab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-    restab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-    restab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    restab$addFootnote(se_message)
-    
-    pecont[["res"]] <- restab 
-    
-    pe_res <- pe[pe$op == "~~" &
-                   pe$lhs != pe$rhs &
-                   !.unv(pe$lhs) %in% options$predictor &
-                   !.unv(pe$lhs) %in% options$confounds,]
-
-    restab[["lhs"]]      <- .unv(pe_res$lhs)
-    restab[["op"]]       <- rep("\u2194", nrow(pe_res))
-    restab[["rhs"]]      <- .unv(pe_res$rhs)
-    restab[["est"]]      <- pe_res$est
-    restab[["se"]]       <- pe_res$se
-    restab[["z"]]        <- pe_res$z
-    restab[["pvalue"]]   <- pe_res$pvalue
-    restab[["ci.lower"]] <- pe_res$ci.lower
-    restab[["ci.upper"]] <- pe_res$ci.upper
-  }
-
+  pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
+  
+  indtab[["x"]]        <- rep(options$predictor, each = length(options$mediators) * length(options$dependent))
+  indtab[["op1"]]      <- rep("\u2192", nrow(pe_ind))
+  indtab[["m"]]        <- rep(options$mediators, length(options$dependent) * length(options$predictor))
+  indtab[["op2"]]      <- rep("\u2192", nrow(pe_ind))
+  indtab[["y"]]        <- rep(rep(options$dependent, each = length(options$mediators)), length(options$predictor))
+  indtab[["est"]]      <- pe_ind$est
+  indtab[["se"]]       <- pe_ind$se
+  indtab[["z"]]        <- pe_ind$z
+  indtab[["pvalue"]]   <- pe_ind$pvalue
+  indtab[["ci.lower"]] <- pe_ind$ci.lower
+  indtab[["ci.upper"]] <- pe_ind$ci.upper
+  
+  pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
+  
+  tottab[["lhs"]]      <- rep(options$predictor, length(options$dependent))
+  tottab[["op"]]       <- rep("\u2192", nrow(pe_tot))
+  tottab[["rhs"]]      <- rep(options$dependent, each = length(options$predictor))
+  tottab[["est"]]      <- pe_tot$est
+  tottab[["se"]]       <- pe_tot$se
+  tottab[["z"]]        <- pe_tot$z
+  tottab[["pvalue"]]   <- pe_tot$pvalue
+  tottab[["ci.lower"]] <- pe_tot$ci.lower
+  tottab[["ci.upper"]] <- pe_tot$ci.upper
 }
 
-.medRsquared <- function(jaspResults, medResult, options, errors) {
-  if (!options$rsquared || !is.null(jaspResults[["rsquared"]])) return()
+.medTotIndTable <- function(modelContainer, options, ready) {
+  if (!options[["showtotind"]] || !length(options$mediators) > 1) return()
+  
+  se_type <- switch(options$se,
+    "bootstrap" = "Delta method",
+    "standard"  = "Delta method",
+    "robust"    = "Robust"
+  )
+  ci_type <- switch(options$se,
+    "bootstrap" = switch(options$bootCItype, 
+                         "perc"       = "percentile bootstrap", 
+                         "norm"       = "normal theory bootstrap", 
+                         "bca.simple" = "bias-corrected percentile bootstrap"
+    ),
+    "standard"  = "normal theory",
+    "robust"    = "robust"
+  )
+  se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
+    
+  ttitab <- createJaspTable(title = "Total indirect effects")
+  ttitab$dependOn("showtotind")
+  
+  ttitab$addColumnInfo(name = "lhs",      title = "",           type = "string")
+  ttitab$addColumnInfo(name = "op",       title = "",           type = "string")
+  ttitab$addColumnInfo(name = "rhs",      title = "",           type = "string")
+  ttitab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
+  ttitab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
+  ttitab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
+  ttitab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
+  ttitab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  ttitab$addFootnote(se_message)
+  
+  modelContainer[["parest"]][["tti"]] <- ttitab
+  
+  if (!ready || modelContainer$getError()) return()
+  
+  pe <- lavaan::parameterEstimates(modelContainer[["model"]][["object"]], boot.ci.type = options$bootCItype, 
+                                   level = options$ciWidth)
+  pe_tti <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "ind" & vapply(gregexpr("_", pe$lhs), length, 1) == 2,]
+  
+  ttitab[["lhs"]]      <- rep(options$predictor, each = length(options$dependent))
+  ttitab[["op"]]       <- rep("\u2192", nrow(pe_tti))
+  ttitab[["rhs"]]      <- rep(options$dependent, length(options$predictor))
+  ttitab[["est"]]      <- pe_tti$est
+  ttitab[["se"]]       <- pe_tti$se
+  ttitab[["z"]]        <- pe_tti$z
+  ttitab[["pvalue"]]   <- pe_tti$pvalue
+  ttitab[["ci.lower"]] <- pe_tti$ci.lower
+  ttitab[["ci.upper"]] <- pe_tti$ci.upper
+}
+
+.medResTable <- function(modelContainer, options, ready) {
+  if (!options[["showres"]] || !length(c(options$mediators, options$dependent)) > 2) return()
+  
+  se_type <- switch(options$se,
+    "bootstrap" = "Delta method",
+    "standard"  = "Delta method",
+    "robust"    = "Robust"
+  )
+  ci_type <- switch(options$se,
+    "bootstrap" = switch(options$bootCItype, 
+                         "perc"       = "percentile bootstrap", 
+                         "norm"       = "normal theory bootstrap", 
+                         "bca.simple" = "bias-corrected percentile bootstrap"
+    ),
+    "standard"  = "normal theory",
+    "robust"    = "robust"
+  )
+  se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
+  
+  restab <- createJaspTable(title = "Residual covariances")
+  restab$dependOn("showres")
+  
+  restab$addColumnInfo(name = "lhs",      title = "",           type = "string")
+  restab$addColumnInfo(name = "op",       title = "",           type = "string")
+  restab$addColumnInfo(name = "rhs",      title = "",           type = "string")
+  restab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
+  restab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
+  restab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
+  restab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
+  restab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  restab$addFootnote(se_message)
+  
+  modelContainer[["parest"]][["res"]] <- restab 
+  
+  if (!ready || modelContainer$getError()) return()
+  
+  pe <- lavaan::parameterEstimates(modelContainer[["model"]][["object"]], boot.ci.type = options$bootCItype, 
+                                   level = options$ciWidth)
+  
+  pe_res <- pe[pe$op == "~~" &
+                 pe$lhs != pe$rhs &
+                 !.unv(pe$lhs) %in% options$predictor &
+                 !.unv(pe$lhs) %in% options$confounds,]
+  
+  restab[["lhs"]]      <- .unv(pe_res$lhs)
+  restab[["op"]]       <- rep("\u2194", nrow(pe_res))
+  restab[["rhs"]]      <- .unv(pe_res$rhs)
+  restab[["est"]]      <- pe_res$est
+  restab[["se"]]       <- pe_res$se
+  restab[["z"]]        <- pe_res$z
+  restab[["pvalue"]]   <- pe_res$pvalue
+  restab[["ci.lower"]] <- pe_res$ci.lower
+  restab[["ci.upper"]] <- pe_res$ci.upper
+}
+
+.medRsquared <- function(modelContainer, options, ready) {
+  if (!options$rsquared || !is.null(modelContainer[["rsquared"]])) return()
   
   tabr2 <- createJaspTable("R-Squared")
   tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
   tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
-  tabr2$dependOn(options = "rsquared", optionsFromObject = jaspResults[["stateMedResult"]])
+  tabr2$dependOn(options = "rsquared")
   tabr2$position <- 1
   
-  jaspResults[["rsquared"]] <- tabr2 
+  modelContainer[["rsquared"]] <- tabr2 
   
-  if (is.null(medResult)) return()
+  if (!ready || modelContainer$getError()) return()
   
-  r2res              <- lavaan::inspect(medResult, "r2")
+  r2res              <- lavaan::inspect(modelContainer[["model"]][["object"]], "r2")
   tabr2[["__var__"]] <- .unv(names(r2res))
   tabr2[["rsq"]]     <- r2res
 }
 
-.medPathPlot <- function(jaspResults, medResult, options, ready) {
-  if (!options$pathplot || !ready) return()
+.medPathPlot <- function(modelContainer, options, ready) {
+  if (!options$pathplot || !ready || !is.null(modelContainer[["plot"]])) return()
+  
+  modelContainer[["plot"]] <- createJaspPlot(title = "Path plot", width = 600, height = 400)
+  modelContainer[["plot"]]$dependOn(options = c("pathplot", "plotpars", "plotlegend"))
+  modelContainer[["plot"]]$position <- 2
+  
+  if (modelContainer$getError()) return()
 
   # compute the layout from the options
   n_pred <- length(options$predictor)
@@ -516,8 +547,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   } else {
     conf_l <- NULL
   }
+  
   # create a qgraph object using semplot
-  po <- .medLavToPlotObj(medResult)
+  po <- .medLavToPlotObj(modelContainer[["model"]][["object"]])
   pp <- .suppressGrDevice(semPlot::semPaths(
     object         = po,
     layout         = rbind(deps_l, medi_l, pred_l, conf_l),
@@ -539,10 +571,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   # post-process plot
   pp <- .medPlotPostProcess(pp, options)
 
-  jaspResults[["plot"]] <- createJaspPlot(pp, title = "Path plot", width = 600, height = 400)
-  jaspResults[["plot"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]], 
-                                 options = c("pathplot", "plotpars", "plotlegend"))
-  jaspResults[["plot"]]$position <- 2
+  modelContainer[["plot"]]$plotObject <- pp
 }
 
 .medPathLayout <- function(n, min = -1, max = 1) {
@@ -582,10 +611,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   return(plt)
 }
 
-.medSyntax <- function(jaspResults, medResult, options, ready) {
+.medSyntax <- function(modelContainer, options, ready) {
   if (!options$showSyntax || !ready) return()
-  jaspResults[["syntax"]] <- createJaspHtml(.medToLavMod(options, FALSE), class = "jasp-code", title = "Model syntax")
-  jaspResults[["syntax"]]$dependOn(optionsFromObject = jaspResults[["stateMedResult"]])
-  jaspResults[["syntax"]]$position <- 3
+  modelContainer[["syntax"]] <- createJaspHtml(.medToLavMod(options, FALSE), class = "jasp-code", title = "Model syntax")
+  modelContainer[["syntax"]]$dependOn("showSyntax")
+  modelContainer[["syntax"]]$position <- 3
 }
 

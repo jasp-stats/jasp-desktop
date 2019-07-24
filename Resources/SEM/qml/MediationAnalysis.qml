@@ -68,14 +68,10 @@ Form
             }
             GroupBox
             {
-                title: qsTr("Parameter estimates")
-                CheckBox { label: qsTr("Direct effects");          name: "showdir";    checked: true }
-                CheckBox { label: qsTr("Indirect effects");        name: "showind";    checked: true }
+                title: qsTr("Additional parameter estimates")
                 CheckBox { label: qsTr("Total indirect effects");  name: "showtotind"; checked: true }
-                CheckBox { label: qsTr("Total effects");           name: "showtot";    checked: true }
                 CheckBox { label: qsTr("Residual covariances");    name: "showres";    checked: true }
             }
-
         }
         GroupBox
         {
