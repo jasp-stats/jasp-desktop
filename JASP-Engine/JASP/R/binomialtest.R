@@ -15,24 +15,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BinomialTest <- function(jaspResults, dataset, options, ...) {
+BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
+  ready <- length(options$variables) > 0
+  
+  if (ready) {
+    dataset <- .binomReadData(dataset, options)
 
-  # Read dataset
-  dataset <- .binomReadData(dataset, options)
+    .binomCheckErrors(dataset, options)
+  }
 
-  # Error checking
-  errors <- .binomCheckErrors(dataset, options)
-
-  # Compute the results
-  binomResults <- .binomComputeResults(jaspResults, dataset, options, errors)
-
-  # Output tables and plots
-  .binomTableMain(       jaspResults, dataset, options, binomResults, errors)
-  .binomContainerPlots(  jaspResults, dataset, options, binomResults, errors)
-  .binomPlotsDescriptive(jaspResults, dataset, options, binomResults, errors)
-
-  return()
-
+  .binomTableMain(       jaspResults, dataset, options, ready)
+  .binomPlotsDescriptive(jaspResults, dataset, options, ready)
 }
 
 # Preprocessing functions ----
@@ -45,14 +38,18 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 }
 
 .binomCheckErrors <- function(dataset, options) {
-
-  # Check if results can be computed
-  if (length(options$variables) == 0) return("No variables")
-
-  # Error Check 1: Number of levels of the variables
+  # perform a check on the hypothesis
+  custom <- function() {
+    if (options$testValue == 1 && options$hypothesis == "greaterThanTestValue")
+      return("Cannot test the hypothesis that the test value is greater than 1.")
+    else if (options$testValue == 0 && options$hypothesis == "lessThanTestValue")
+      return("Cannot test the hypothesis that the test value is less than 0.")
+  }
+  
+  # Error Check 1: Number of levels of the variables and the hypothesis
   .hasErrors(
     dataset              = dataset,
-    perform              = "run",
+    custom               = custom,
     type                 = "factorLevels",
     factorLevels.target  = options$variables,
     factorLevels.amount  = "< 1",
@@ -80,119 +77,102 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 }
 
 # Results functions ----
-.binomComputeResults <- function(jaspResults, dataset, options, errors) {
-
-  if (!is.null(errors) && errors == "No variables") return()
-
-  # Take results from state if possible
-  if (!is.null(jaspResults[["stateBinomResults"]])) return(jaspResults[["stateBinomResults"]]$object)
+.binomComputeTableResults <- function(jaspResults, dataset, options) {
+  if (!is.null(jaspResults[["binomTableResults"]]))
+    return(jaspResults[["binomTableResults"]]$object)
 
   # This will be the object that we fill with results
   results <- list()
-
-  # First, we perform precalculation of variables we use throughout the analysis
-  results[["spec"]] <- .binomCalcSpecs(dataset, options)
-  results[["binom"]] <- list()
+  hyp <- .binomTransformHypothesis(options$hypothesis)
 
   for (variable in options$variables) {
 
-    results[["binom"]][[variable]] <- list()
+    results[[variable]] <- list()
 
-    # Prepare for running the binomial test
-    column <- dataset[[.v(variable)]]
-    data   <- column[!is.na(column)]
-    levels <- levels(data)
+    data <- na.omit(dataset[[.v(variable)]])
 
-    for (level in levels) {
-      nObs   <- length(data)
+    for (level in levels(data)) {
+      
       counts <- sum(data == level)
-      prop   <- counts / nObs
-
-      # Main binomial test result for tables
       tableResults <- stats::binom.test(
         x           = counts,
-        n           = nObs,
+        n           = length(data),
         p           = options$testValue,
-        alternative = results$spec$hypothesisRec,
+        alternative = hyp,
         conf.level  = options$confidenceIntervalInterval
       )
 
       # sometimes p.value becomes true or false, convert this to 1 or 0
       p <- as.numeric(tableResults$p.value)
-      lowerCI <- tableResults$conf.int[1]
-      upperCI <- tableResults$conf.int[2]
-
-      # Binomial test for plots
-      plotResults <- stats::binom.test(
-        x           = counts,
-        n           = nObs,
-        p           = options$testValue,
-        alternative = "two.sided",
-        conf.level  = options$descriptivesPlotsConfidenceInterval
-      )
-
-      # Summary statistics for plots
-      plotDat <- data.frame(
-        label      = level,
-        proportion = prop,
-        lowerCI    = plotResults$conf.int[1],
-        upperCI    = plotResults$conf.int[2]
-      )
 
       # Add results for each level of each variable to results object
-      results[["binom"]][[variable]][[level]] <- list(
+      results[[variable]][[level]] <- list(
         variable      = variable,
         level         = level,
         counts        = counts,
-        total         = nObs,
-        proportion    = prop,
+        total         = length(data),
+        proportion    = counts / length(data),
         p             = p,
         VovkSellkeMPR = .VovkSellkeMPR(p),
-        lowerCI       = lowerCI,
-        upperCI       = upperCI,
-        plotDat       = plotDat
+        lowerCI       = tableResults$conf.int[1],
+        upperCI       = tableResults$conf.int[2]
       )
+      
     }
+    
   }
 
   # Save results to state
-  jaspResults[["stateBinomResults"]] <- createJaspState(results)
-  jaspResults[["stateBinomResults"]]$dependOn(
-    c("variables", "testValue", "hypothesis", "confidenceIntervalInterval", "descriptivesPlotsConfidenceInterval")
+  jaspResults[["binomTableResults"]] <- createJaspState(results)
+  jaspResults[["binomTableResults"]]$dependOn(
+    c("variables", "testValue", "hypothesis", "confidenceIntervalInterval")
   )
 
   # Return results object
   return(results)
 }
 
-.binomCalcSpecs <- function(dataset, options) {
-  specs <- list()
+.binomComputePlotResults <- function(variable, dataset, testValue, ci) {
+  results <- list()
+  data <- na.omit(dataset[[.v(variable)]])
 
-  # Recode the hypothesis for binom.test()
-  if (options$hypothesis == "notEqualToTestValue") {
-    specs$hypothesisRec <- "two.sided"
-  } else if (options$hypothesis == "greaterThanTestValue") {
-    specs$hypothesisRec <- "greater"
-  } else {
-    specs$hypothesisRec <- "less"
+  for (level in levels(data)) {
+    
+    counts <- sum(data == level)
+    plotResults <- stats::binom.test(
+      x           = counts,
+      n           = length(data),
+      p           = testValue,
+      alternative = "two.sided",
+      conf.level  = ci
+    )
+
+    # Summary statistics for plots
+    results[[level]] <- data.frame(
+      label      = level,
+      proportion = counts / length(data),
+      lowerCI    = plotResults$conf.int[1],
+      upperCI    = plotResults$conf.int[2]
+    )
+    
   }
 
-  # Precompute the levels of the different variables
-  specs[["levels"]] <- NULL
-  for (variable in options$variables) {
-    column <- dataset[[.v(variable)]]
-    data <- column[!is.na(column)]
-    levels <- levels(data)
-    specs[["levels"]] <- c(specs$levels, list(levels))
-    names(specs$levels)[which(options$variables %in% variable)] <- variable
-  }
+  return(results)
+}
 
-  return(specs)
+.binomTransformHypothesis <- function(hypothesis) {
+  if (hypothesis == "greaterThanTestValue")
+    return("greater")
+  else if (hypothesis == "lessThanTestValue")
+    return("less")
+  else
+    return("two.sided")
 }
 
 # Output functions ----
-.binomTableMain <- function(jaspResults, dataset, options, binomResults, errors) {
-  if (!is.null(jaspResults[["binomialTable"]])) return()
+.binomTableMain <- function(jaspResults, dataset, options, ready) {
+  if (!is.null(jaspResults[["binomialTable"]]))
+    return()
 
   # Create table
   binomialTable <- createJaspTable(title = "Binomial Test")
@@ -209,9 +189,8 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   binomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
   binomialTable$addColumnInfo(name = "p",          title = "p",          type = "pvalue")
 
-  if (options$VovkSellkeMPR) {
+  if (options$VovkSellkeMPR)
     binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR", type = "number")
-  }
 
   if (options$confidenceInterval) {
     binomialTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
@@ -220,72 +199,86 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
       overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
   }
   
+  # Add footnote: VovkSellkeMPR
+  if (options$VovkSellkeMPR)
+    binomialTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A", colNames="VovkSellkeMPR")
+    
+  # Add footnote: Alternative hypothesis
+  if (options$hypothesis == "lessThanTestValue")
+    note <- "For all tests, the alternative hypothesis specifies that the proportion is less than "
+  else if (options$hypothesis == "greaterThanTestValue")
+    note <- "For all tests, the alternative hypothesis specifies that the proportion is greater than "
+  else
+    note <- "Proportions tested against value: "
+  
+  binomialTable$addFootnote(message = paste0(note, options$testValue, "."))
+  
   jaspResults[["binomialTable"]] <- binomialTable
 
-  if (!is.null(errors) && errors == "No variables")
+  if (!ready)
     return()
-
-  for (variable in options$variables) {
-    for (level in binomResults[["spec"]][["levels"]][[variable]]) {
-      row <- binomResults[["binom"]][[variable]][[level]][1:9]
-      binomialTable$addRows(row, rowNames = paste0(variable, " - ", level))
-    }
-  }
-
-  # Add footnote: VovkSellkeMPR
-  if (options$VovkSellkeMPR) {
-    binomialTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A", colNames="VovkSellkeMPR")
-  }
-
-  # Add footnote: Alternative hypothesis
-  message <- switch(binomResults[["spec"]][["hypothesisRec"]],
-                    "two.sided" = .messages("footnote", "binomNeq",     value = options$testValue),
-                    "greater"   = .messages("footnote", "binomGreater", value = options$testValue),
-                    "less"      = .messages("footnote", "binomLess",    value = options$testValue)
-  )
-
-  binomialTable$addFootnote(message = message)
+  
+  binomialTable$setExpectedSize(sum(unlist(lapply(dataset, nlevels))))
+  
+  # Compute the results and fill the table
+  binomResults <- .binomComputeTableResults(jaspResults, dataset, options)
+  .binomFillTableMain(binomialTable, binomResults)
 }
 
-.binomContainerPlots <- function(jaspResults, dataset, options, binomResults, errors) {
-  if (!options$descriptivesPlots) return()
-  if (!is.null(errors) && errors == "No variables") return()
+.binomFillTableMain <- function(binomialTable, binomResults) {
+  for (variable in names(binomResults)) {
+    
+    isNewGroup <- TRUE
+    for (level in names(binomResults[[variable]])) {
+      row <- binomResults[[variable]][[level]]
+      row <- c(list(.isNewGroup = isNewGroup), row)
+      isNewGroup <- FALSE
+      binomialTable$addRows(row)
+    }
+    
+  }
+}
+
+.binomPlotsDescriptive <- function(jaspResults, dataset, options, ready, ciName = "descriptivesPlotsConfidenceInterval") {
+  if (!options$descriptivesPlots)
+    return()
 
   if (is.null(jaspResults[["containerPlots"]])) {
     jaspResults[["containerPlots"]] <- createJaspContainer("Descriptives Plots")
-    jaspResults[["containerPlots"]]$dependOn("descriptivesPlots")
+    jaspResults[["containerPlots"]]$dependOn(c("descriptivesPlots", "testValue", ciName))
   }
-}
-
-.binomPlotsDescriptive <- function(jaspResults, dataset, options, binomResults, errors) {
-  if (!options$descriptivesPlots) return()
-  if (!is.null(errors) && errors == "No variables") return()
-
-  # create pointer towards main container, created before
-  pct <- jaspResults[["containerPlots"]]
+    
+  plotContainer <- jaspResults[["containerPlots"]]
+  
+  if (!ready) {
+    # show a placeholder plot if someone says he wants a plot but does not enter any variables
+    plotContainer[["placeholder"]] <- createJaspPlot(width = 320, height = 320, dependencies = "variables")
+    return()
+  }
 
   # Create subcontainer for each variable
   for (variable in options$variables) {
 
     # If the plot for this variable already exists, we can skip recalculating the plots
-    if (!is.null(pct[[variable]])) next
+    if (!is.null(plotContainer[[variable]]))
+      next
 
-    pct[[variable]] <- createJaspContainer(variable)
-    pct[[variable]]$dependOn(options=c("testValue", "descriptivesPlotsConfidenceInterval"), optionContainsValue=list(variables=variable))
+    plotContainer[[variable]] <- createJaspContainer(variable)
+    plotContainer[[variable]]$dependOn(optionContainsValue = list(variables=variable))
 
-
-    for (level in binomResults[["spec"]][["levels"]][[variable]]) {
-      descriptivesPlot <- .binomPlotHelper(binomResults[["binom"]][[variable]][[level]]$plotDat, options$testValue)
-      pct[[variable]][[level]] <- createJaspPlot(plot = descriptivesPlot, title = level, width = 160, height = 320)
-      pct[[variable]][[level]]$dependOn("descriptivesPlots")
+    plotResults <- .binomComputePlotResults(variable, dataset, options[["testValue"]], options[[ciName]])
+    
+    for (level in names(plotResults)) {
+      plot <- createJaspPlot(title = level, width = 160, height = 320)
+      plotContainer[[variable]][[level]] <- plot
+      .binomFillDescriptivesPlot(plot, plotResults[[level]], options$testValue)
     }
 
   }
 
 }
 
-.binomPlotHelper <- function(plotDat, testValue) {
-
+.binomFillDescriptivesPlot <- function(plot, data, testValue) {
   base_breaks_y <- function(testValue) {
     d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
     list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
@@ -295,8 +288,8 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
   plotPosition <- ggplot2::position_dodge(0.2)
 
-  p <-
-    ggplot2::ggplot(plotDat, ggplot2::aes(x = label, y = proportion, group = 1)) +
+  plot$plotObject <-
+    ggplot2::ggplot(data, ggplot2::aes(x = label, y = proportion, group = 1)) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin = lowerCI, ymax = upperCI), colour = "black", width = 0.2,
                            position = plotPosition) +
     ggplot2::geom_point(position = plotPosition, size = 4) +
@@ -327,6 +320,4 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
       plot.margin       = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")
     ) +
     base_breaks_y(testValue)
-
-  return(p)
 }

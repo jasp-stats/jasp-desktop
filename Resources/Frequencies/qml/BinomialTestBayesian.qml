@@ -54,7 +54,7 @@ Form
         CheckBox
         {
             name: "descriptivesPlots";					label: qsTr("Descriptive plots")
-            CIField { name: "descriptivesPlotsConfidenceInterval"; label: qsTr("Confidence interval") }
+            CIField { name: "descriptivesPlotsCredibleInterval"; label: qsTr("Credible interval") }
         }
 	}
 
