@@ -165,12 +165,13 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   #   jaspResults:
   #   dataset: input dataset
   #   options: user options
+  #   chisqResults:
   #   
   # Return:
   #   No return, stores jaspResults Object (main table results)
   
   results <- list()
-  
+
   # Compute Results
   .chisquareTest(jaspResults, dataset, options)
   # Get Results
@@ -241,6 +242,12 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
                             options$confidenceIntervalInterval, 
                             scale = options$countProp)
     tableFrame <- cbind(tableFrame, ciDf)
+    message <- "Confidence intervals are based on independent binomial distributions."
+    results[["footnotes"]][["CImessage"]] <- message
+    if (any(is.nan(unlist(tableFrame[, c('lowerCI', 'upperCI')])))){
+      message <- "Could not compute confidence intervals."
+      results[["footnotes"]][["ciComputeError"]] <- message
+    }
   }
   
   for (i in 1:nrow(tableFrame))
