@@ -70,13 +70,13 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   }
   
   do.call(.hasErrors, args)
-
+  
   # Error check 2: 0 observations for a level of a variable
   for (factor in options$factors) {
     column <- dataset[[.v(factor)]]
     data   <- column[!is.na(column)]
     levels <- levels(data)
-  
+    
     for (level in levels) {
       .hasErrors(
         dataset              = data[data == level],
@@ -115,7 +115,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     dependentVariable <- unlist(options$counts)
   
   dependentBase64 <- .v(dependentVariable)
-
+  
   if (length(options$modelTerms) > 0) {
     variablesInModel <- NULL
     variablesInModelBase64 <- NULL
@@ -335,7 +335,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
     
     len.Blogreg <- length(results) + 1
     results[[ len.Blogreg ]] <- dotted.line
-    
+
     if (length(bfObject$variables) > 0) {
       
       variablesInModel <- bfObject$variables
@@ -345,7 +345,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
       for (var in 1:length(variablesInModel)) {
         
         results[[ len.Blogreg ]] <- dotted.line
-        
+
         if (base::grepl(":", variablesInModel[var])) {
           
           # if interaction term					
