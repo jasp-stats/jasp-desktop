@@ -1023,25 +1023,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
         
     yticks <- pretty(c(ylow, yhigh))
     
-    # format x labels
-    xLabs <- vector("character", length(xticks))
-    for (i in seq_along(xticks)) {
-        if (xticks[i] < 10^6) {
-            xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
-        } else {
-            xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
-        }
-    }
-    
-    # Format y labels
-    yLabs <- vector("character", length(yticks))
-    for (i in seq_along(yticks)) {
-        if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-        } else {
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-        }
-    }
+    # format axes labels
+    xLabs <- JASPgraphs::axesLabeller(xticks)
+    yLabs <- JASPgraphs::axesLabeller(yticks)
 
     p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
     p <- JASPgraphs::drawPoints(p, dat = d, size = 3)
