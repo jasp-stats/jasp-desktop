@@ -9,15 +9,14 @@ test_that("Main table results match", {
   options$priorB <- 2
   options$testValue <- 0.2
   results <- jasptools::run("BinomialTestBayesian", "test.csv", options)
-  table <- results[["results"]][["bayesianBinomialTable"]][["data"]]
+  table <- results[["results"]][["binomTable"]][["data"]]
   expect_equal_tables(table,
-    list(4.32337507642424e-15, "contBinom", 58, 0, 0.58, 100, 
-         3.43240614623212e-05, "contBinom", 42, 1, 0.42, 100)
+    list("TRUE", 4.32337507642424e-15, "contBinom", 58, 0, 0.58, 100,
+         "FALSE", 3.43240614623212e-05, "contBinom", 42, 1, 0.42, 100)
   )
 })
 
 test_that("Prior posterior plots match", {
-  skip("base plots are not supported in regression testing")
   options <- jasptools::analysisOptions("BinomialTestBayesian")
   options$variables <- "contBinom"
   options$plotPriorAndPosterior <- TRUE
