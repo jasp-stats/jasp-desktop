@@ -590,7 +590,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   table$addColumnInfo(name = paste0("df[", fold, "]"),    title = "df", type = "integer")
   table$addColumnInfo(name = paste0("p[", fold, "]"),     title = "p",  type = "pvalue")
   if (options$VovkSellkeMPR)
-    table$addColumnInfo(name = paste0("MPR[", fold, "]"), title = "VS-MPR", type = "number")
+    table$addColumnInfo(name = paste0("MPR[", fold, "]"), title = "VS-MPR\u002A", type = "number")
 }
 
 .crossTabLayerNames <- function(row, group) {
