@@ -1,6 +1,5 @@
 context("Mediation Analysis")
 
-skip("Unicode stuff in the tables needs fixing")
 test_that("Simple mediation analysis works", {
   options <- jasptools::analysisOptions("MediationAnalysis")
   options$predictor <- "contcor1"
@@ -12,9 +11,9 @@ test_that("Simple mediation analysis works", {
   options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options)
   
-  dir_tab <- results[["results"]][["parest"]][["collection"]][["parest_dir"]][["data"]]
-  ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
-  tot_tab <- results[["results"]][["parest"]][["collection"]][["parest_tot"]][["data"]]
+  dir_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_dir"]][["data"]]
+  ind_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_ind"]][["data"]]
+  tot_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_tot"]][["data"]]
   
   expect_equal_tables(dir_tab, list(
     -0.00931725107194831, 0.524832903921214, 0.257757826424633, "contcor1",
@@ -47,7 +46,7 @@ test_that("Categorical confounders work", {
   options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options)
   
-  ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
+  ind_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_ind"]][["data"]]
 
   expect_equal_tables(ind_tab, list(
     -0.231781905561682, 0.111397204712701, -0.0601923504244907, "contcor2",
@@ -68,7 +67,7 @@ test_that("Multiple mediation with missing values works", {
   options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options)
   
-  ind_tab <- results[["results"]][["parest"]][["collection"]][["parest_ind"]][["data"]]
+  ind_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_ind"]][["data"]]
  
   expect_equal_tables(ind_tab, list(
     -0.286287438147744, 0.0716044322927397, -0.107341502927502, "contcor2",
