@@ -373,6 +373,10 @@ div.jasp-image-image.no-data.error {
 	background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)), url('images/empty-plot.png');
 }
 
+.jasp-analysis.error-state div.jasp-image-image {
+	opacity: 0.33
+}
+
 .error-state {
 	color: silver;
 }
