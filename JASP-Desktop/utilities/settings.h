@@ -37,7 +37,8 @@ public:
 		QML_MAX_FLICK_VELOCITY,
 		MODULES_REMEMBER,
 		MODULES_REMEMBERED,
-		SAFE_GRAPHICS_MODE
+		SAFE_GRAPHICS_MODE,
+		CRAN_REPO_URL
 	};
 
 	static QVariant value(Settings::Type key);

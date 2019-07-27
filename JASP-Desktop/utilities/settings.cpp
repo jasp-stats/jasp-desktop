@@ -34,7 +34,8 @@ const Settings::Setting Settings::Values[] = {
 	{"maxFlickVelocity",			800},
 	{"modulesRemember",				true},
 	{"modulesRemembered",			""},
-	{"safeGraphicsMode",			false}
+	{"safeGraphicsMode",			false},
+	{"cranRepositoryURL",			"https://cloud.r-project.org"}
 
 };
 
