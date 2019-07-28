@@ -102,11 +102,11 @@ public:
 		return vecvec;
 	}
 
-	Json::Value	metaEntry() override { return constructMetaEntry("json"); }
-	Json::Value	dataEntry() override;
+	Json::Value	metaEntry()									const	override { return constructMetaEntry("json"); }
+	Json::Value	dataEntry(std::string & errorMessage)		const	override;
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 protected:
 	Json::Value _json;

@@ -23,32 +23,6 @@ import JASP.Widgets 1.0
 Form {
     id: form
 
-    VariablesForm { id: variablesFormPlanning; implicitHeight: 110
-            AvailableVariablesList { name: "variablesFormPlanning" }
-            AssignedVariablesList { name: "recordNumberVariable"; title: qsTr("Record numbers"); id: recordNumberVariable }
-           
-        }
-
-    TableView
-    {
-        id:         table
-        name:       "filteredData"
-        modelType:  "FilteredDataEntryModel"
-        filter:     filterID.value
-        source:     "recordNumberVariable"
-        colName:    "auditResult"
-    }
-
-    TextField
-    {
-        id:     filterID
-        name:   "hahahaFilter"
-        value:  table.filter
-        
-    }
-
-
-	ComputedColumnField { name: "hallo"; text: "fill me!"; }
     CheckBox
     {
         name: "checkbox_0"

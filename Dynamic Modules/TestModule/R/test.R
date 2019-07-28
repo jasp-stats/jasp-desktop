@@ -1,7 +1,23 @@
 testFunc <- function(jaspResults, dataset, options)
 {
-	tafel 						<- createJaspTable(title="Ik ben een test");
-    jaspResults[['testTafel']]  <- tafel
+  containerA <- createJaspContainer(title="A", position=1)
+  containerB <- createJaspContainer(title="B", position=1)
+  containerC <- createJaspContainer(title="C", position=2)
+
+  containerA[["B"]] <- containerB
+  containerA[["C"]] <- containerC
+
+  jaspResults[["A"]] <- containerA
+
+	tafel 						<- createJaspTable(title="Ik ben een test", position=5);
+
+  containerA[["Tssss"]] <- tafel
+
+  tafel2 <- createJaspTable(title="Ik ben nog een test", position=-5);
+  containerC[["T"]] <- tafel2
+
+  tafel2$setExpectedSize(3, 3)
+  tafel2$setError("AAAAAH!")
     
 	tafel$addColumnInfo(name="kol0", title="kolom 0!")
 	tafel$addColumnInfo(name="kol1", title="kolom 1!")
@@ -21,21 +37,4 @@ testFunc <- function(jaspResults, dataset, options)
 	tafel$addFootnote(message="msg 4", colNames="kol1", rowNames="a")
 	tafel$addFootnote(message="msg 5 moet voor 4", colNames="kol0", rowNames="a")
 	tafel$addFootnote(message="msg 6 moet na 1", colNames="kol1", rowNames="b")
-
-	filtered <- createJaspTable(title="Received Data")
-	filtered$addColumnInfo(name="rowName", 	title="Row")
-	filtered$addColumnInfo(name="data", 	title=options$filteredData$colName)
-
-	filtered[['data']]    <- options$filteredData[[1]]$values
-	filtered[['rowName']] <- options$filteredData[[1]]$rowIndices
-
-	jaspResults[['filteredDataEntryExample']] <- filtered
-
-	startProgressbar(10)
-
-	for(n in 1:10)
-	{
-		Sys.sleep(1)
-		progressbarTick()
-	}
 }

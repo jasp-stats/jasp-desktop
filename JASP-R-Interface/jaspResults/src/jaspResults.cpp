@@ -85,6 +85,8 @@ void jaspResults::complete()
 {
 	completeChildren();
 
+	_oldResults = nullptr; //It will get destroyed in DestroyAllAllocatedObjects
+
 	if(getStatus() == "running" || getStatus() == "waiting")
 		setStatus("complete");
 
@@ -167,8 +169,16 @@ void jaspResults::setOptions(std::string opts)
 		pruneInvalidatedData();
 }
 
+void jaspResults::storeOldResults()
+{
+	_oldResults = new jaspContainer();
+	_oldResults->convertFromJSON_SetFields(jaspContainer::convertToJSON());
+}
+
 void jaspResults::pruneInvalidatedData()
 {
+	storeOldResults();
+
 	checkDependenciesChildren(_currentOptions);
 }
 
@@ -221,7 +231,7 @@ const char * jaspResults::constructResultJson()
 {
 	_response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
 	_response["results"]		= dataEntry();
-	_response["name"]		= _response["results"]["title"];
+	_response["name"]			= _response["results"]["title"];
 
 	if(errorMessage != "" )
 	{
@@ -244,30 +254,43 @@ const char * jaspResults::constructResultJson()
 	return msg.c_str();
 }
 
-Json::Value jaspResults::metaEntry()
+
+
+Json::Value jaspResults::metaEntry() const
 {
 	Json::Value meta(Json::arrayValue);
 
-	std::vector<std::string> orderedDataFields = getSortedDataFields();
+	std::vector<std::string> orderedDataFields = getSortedDataFieldsWithOld(_oldResults);
 
 	for(std::string field: orderedDataFields)
-		if(_data[field]->shouldBePartOfResultsJson())
-			meta.append(_data[field]->metaEntry());
+	{
+		jaspObject *	obj			= getJaspObjectNewOrOld(field, _oldResults);
+		bool			objIsOld	= jaspObjectComesFromOldResults(field, _oldResults);
+
+		if(obj->shouldBePartOfResultsJson())
+			meta.append(obj->metaEntry(objIsOld || !_oldResults ? nullptr : _oldResults->getJaspObjectFromData(field)));
+	}
 
 	return meta;
 }
 
-Json::Value jaspResults::dataEntry()
+Json::Value jaspResults::dataEntry(std::string &) const
 {
-	Json::Value dataJson(jaspObject::dataEntry());
+	Json::Value dataJson(jaspObject::dataEntryBase());
 
 	dataJson["title"]	= _title;
 	dataJson["name"]	= getUniqueNestedName();
 	dataJson[".meta"]	= metaEntry();
 
-	for(std::string field: getSortedDataFields())
-		if(_data[field]->shouldBePartOfResultsJson())
-			dataJson[_data[field]->getUniqueNestedName()] = _data[field]->dataEntry();
+	for(std::string field: getSortedDataFieldsWithOld(_oldResults))
+	{
+		jaspObject *	obj			= getJaspObjectNewOrOld(field, _oldResults);
+		bool			objIsOld	= jaspObjectComesFromOldResults(field, _oldResults);
+		std::string		dummyError	= "";
+
+		if(obj->shouldBePartOfResultsJson())
+			dataJson[obj->getUniqueNestedName()]	= obj->dataEntry(objIsOld || !_oldResults ? nullptr : _oldResults->getJaspObjectFromData(field), dummyError);
+	}
 
 	return dataJson;
 }
@@ -277,7 +300,7 @@ Json::Value jaspResults::dataEntry()
 void jaspResults::setErrorMessage(std::string msg, std::string errorStatus)
 {
 	if(msg.find(_analysisChangedErrorMessage) != std::string::npos)
-		return; //we do not wanna report analysis changed as an error I think
+		return; //we do not want to report "analysis changed" as an error I think
 
 	errorMessage = msg;
 	setStatus(errorStatus);
@@ -398,7 +421,7 @@ Rcpp::List jaspResults::getKeepList()
 	return keep;
 }
 
-Json::Value jaspResults::convertToJSON()
+Json::Value jaspResults::convertToJSON() const
 {
 	Json::Value obj			= jaspContainer::convertToJSON();
 

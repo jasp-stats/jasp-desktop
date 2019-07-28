@@ -1102,8 +1102,7 @@ void MainWindow::fatalError()
 		{
 			QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
 		}
-
-		QApplication::exit(1);
+		_application->exit(1);
 	}
 }
 
@@ -1150,8 +1149,6 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 {
 	if (filename == "%PREVIEW%" || filename == "%EXPORT%")
 	{
-		std::cout << "void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)" << std::endl;
-
 		_package->setAnalysesHTML(fq(data));
 		_package->setAnalysesHTMLReady();
 

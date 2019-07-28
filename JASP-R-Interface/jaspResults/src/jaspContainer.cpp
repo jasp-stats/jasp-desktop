@@ -106,7 +106,7 @@ std::string jaspContainer::toHtml()
 	return out.str();
 }
 
-std::vector<std::string> jaspContainer::getSortedDataFields()
+std::vector<std::pair<double, std::string>> jaspContainer::getSortedDataFieldsSortVector() const
 {
 	std::vector<std::pair<double, std::string>> sortvec;
 
@@ -119,22 +119,69 @@ std::vector<std::string> jaspContainer::getSortedDataFields()
 	for(auto ord : _data_order)
 		if(_data.count(ord.first) > 0) //if it was removed from the data it should probably not be in the ordered list with its field
 		{
-			jaspObject * obj = _data[ord.first];
+			jaspObject * obj = _data.at(ord.first);
 			double sortVal = double(obj->_position) + (double(ord.second) * orderDivider);
 
 			sortvec.push_back(std::make_pair<double, std::string>(double(sortVal), std::string(ord.first)));
 		}
 
-	std::sort(sortvec.begin(), sortvec.end());
+	return sortvec;
+};
 
-	std::vector<std::string> out;
+std::vector<std::string> jaspContainer::convertSortedDataFieldsToStringVector(std::vector<std::pair<double, std::string>> sortvec, bool removeDuplicates)
+{
+	std::set<std::string>		dup;
+	std::vector<std::string>	out;
+
 	for(auto sortval : sortvec)
-		out.push_back(sortval.second);
+	{
+		if(!removeDuplicates || dup.count(sortval.second) == 0)
+			out.push_back(sortval.second);
+
+		if(removeDuplicates)
+			dup.insert(sortval.second);
+	}
 
 	return out;
 }
 
-std::string jaspContainer::getCommonDenominatorMetaType()
+std::vector<std::string> jaspContainer::getSortedDataFields() const
+{
+	std::vector<std::pair<double, std::string>> sortvec = getSortedDataFieldsSortVector();
+	std::sort(sortvec.begin(), sortvec.end());
+	return convertSortedDataFieldsToStringVector(sortvec);
+}
+
+bool jaspContainer::jaspObjectComesFromOldResults(std::string fieldName, jaspContainer * oldResult) const
+{
+	return !(oldResult == nullptr || _data.count(fieldName) > 0);
+}
+
+jaspObject * jaspContainer::getJaspObjectNewOrOld(std::string fieldName, jaspContainer * oldResult) const
+{
+	return jaspObjectComesFromOldResults(fieldName, oldResult) ? oldResult->getJaspObjectFromData(fieldName) :  _data.at(fieldName);
+}
+
+jaspObject * jaspContainer::getJaspObjectFromData(std::string fieldName) const
+{
+	return _data.count(fieldName) > 0 ? _data.at(fieldName) : nullptr;
+}
+
+std::vector<std::string> jaspContainer::getSortedDataFieldsWithOld(jaspContainer * oldResult) const
+{
+	auto newsortvec = getSortedDataFieldsSortVector();
+	auto oldsortvec = oldResult ? oldResult->getSortedDataFieldsSortVector() : std::vector<std::pair<double, std::string>>();
+
+	//Move old fields into the new one https://stackoverflow.com/a/21972296
+	newsortvec.insert( newsortvec.end(),	 std::make_move_iterator(oldsortvec.begin()),	 std::make_move_iterator(oldsortvec.end())  );
+	oldsortvec.clear();
+
+	std::sort(newsortvec.begin(), newsortvec.end());
+
+	return convertSortedDataFieldsToStringVector(newsortvec, true);
+}
+
+std::string jaspContainer::getCommonDenominatorMetaType() const
 {
 	std::string comDenom = "";
 
@@ -150,47 +197,51 @@ std::string jaspContainer::getCommonDenominatorMetaType()
 	return comDenom;
 }
 
-Json::Value jaspContainer::metaEntry()
+Json::Value jaspContainer::metaEntry(jaspObject * oldResult) const
 {
 	Json::Value submeta(Json::arrayValue), meta = constructMetaEntry("collection", getCommonDenominatorMetaType());
 
-	std::vector<std::string> orderedDataFields = getSortedDataFields();
+	jaspContainer * oldContainer = dynamic_cast<jaspContainer*>(oldResult); //dynamic_cast returns nullptr if not right type
+
+	std::vector<std::string> orderedDataFields = getSortedDataFieldsWithOld(oldContainer);
 
 	for(std::string field: orderedDataFields)
-		if(_data[field]->shouldBePartOfResultsJson())
-			submeta.append(_data[field]->metaEntry());
+	{
+		jaspObject *	obj			= getJaspObjectNewOrOld(field, oldContainer);
+		bool			objIsOld	= jaspObjectComesFromOldResults(field, oldContainer);
+
+		if(obj->shouldBePartOfResultsJson())
+			submeta.append(obj->metaEntry(objIsOld || !oldContainer ? nullptr : oldContainer->getJaspObjectFromData(field)));
+	}
 
 	meta["meta"] = submeta;
 
 	return meta;
 }
 
-Json::Value jaspContainer::dataEntry()
+Json::Value jaspContainer::dataEntry(jaspObject * oldResult, std::string & errorMsg) const
 {
-	Json::Value dataJson(jaspObject::dataEntry());
+	Json::Value dataJson			= jaspObject::dataEntryBase();					//jaspContainer should not try to set any errorMessage on itself
+	dataJson["title"]				= _title;
+	dataJson["name"]				= getUniqueNestedName();
+	dataJson["collection"]			= Json::objectValue;
+	bool cascaded					= errorMsg != "";
+	std::string cascadingMsg		= cascaded ? errorMsg : _errorMessage;	//cascading errorMessagues trumps local one
+	jaspContainer * oldContainer	= dynamic_cast<jaspContainer*>(oldResult);		//dynamic_cast returns nullptr if not right type
 
-	dataJson["title"] = _title;
-	dataJson["name"] = getUniqueNestedName();
+	for(std::string field: getSortedDataFieldsWithOld(oldContainer))
+	{
+		jaspObject *	obj			= getJaspObjectNewOrOld(field, oldContainer);
+		bool			objIsOld	= jaspObjectComesFromOldResults(field, oldContainer);
 
-	Json::Value collection(Json::objectValue);
-
-	bool setErrorMessageInNextChild = _error && _errorMessage != "";
-
-	for(std::string field: getSortedDataFields())
-		if(_data[field]->shouldBePartOfResultsJson())
+		if(obj->shouldBePartOfResultsJson())
 		{
-			Json::Value dataEntryJson = _data[field]->dataEntry();
+			dataJson["collection"][obj->getUniqueNestedName()] = obj->dataEntry(objIsOld || !oldContainer ? nullptr : oldContainer->getJaspObjectFromData(field), cascadingMsg);
 
-			if(setErrorMessageInNextChild && _data[field]->canShowErrorMessage())
-			{
-				setErrorMessageInNextChild = false;
-				dataEntryJson["error"]["errorMessage"] = _errorMessage;
-			}
-
-			collection[_data[field]->getUniqueNestedName()] = dataEntryJson;
+			if(cascaded && cascadingMsg == "")
+				errorMsg = "";
 		}
-
-	dataJson["collection"] = collection;
+	}
 
 	return dataJson;
 }
@@ -259,7 +310,16 @@ bool jaspContainer::containsNonContainer()
 	return false;
 }
 
-Json::Value jaspContainer::convertToJSON()
+bool jaspContainer::canShowErrorMessage() const
+{
+	for(auto keyval : _data)
+		if(keyval.second->canShowErrorMessage())
+			return true;
+
+	return false;
+}
+
+Json::Value jaspContainer::convertToJSON() const
 {
 	Json::Value obj			= jaspObject::convertToJSON();
 	obj["data"]				= Json::objectValue;

@@ -6,7 +6,7 @@ std::string jaspHtml::dataToString(std::string prefix)
     return convertTextToHtml(_rawText);
 }
 
-std::string jaspHtml::convertTextToHtml(std::string text)
+std::string jaspHtml::convertTextToHtml(std::string text) const
 {
     // @vankesteren with help from https://stackoverflow.com/a/24315631 and @jorisgoosen
 
@@ -38,9 +38,9 @@ std::string jaspHtml::toHtml()
 	return "<div class=\"jaspHtml\">" "\n" + htmlTitle() + "\n" + dataToString() + "</div>" "\n";
 }
 
-Json::Value jaspHtml::dataEntry()
+Json::Value jaspHtml::dataEntry(std::string & errorMessage) const
 {
-	Json::Value data(jaspObject::dataEntry());
+	Json::Value data(jaspObject::dataEntry(errorMessage));
 
     data["rawtext"]		= _rawText;
     data["text"]		= convertTextToHtml(_rawText);
@@ -53,7 +53,7 @@ Json::Value jaspHtml::dataEntry()
 }
 
 
-Json::Value jaspHtml::convertToJSON()
+Json::Value jaspHtml::convertToJSON() const
 {
 	Json::Value obj		= jaspObject::convertToJSON();
     obj["rawtext"]		= _rawText;

@@ -29,8 +29,9 @@ public:
 	std::string getStatus();
 
 	const char *	constructResultJson();
-	Json::Value		metaEntry() override;
-	Json::Value		dataEntry() override;
+	Json::Value		metaEntry()								const override;
+	Json::Value		dataEntry(std::string & errorMessage)	const override;
+	Json::Value		dataEntry()								const			{ std::string dummy(""); return dataEntry(dummy); }
 
 	void childrenUpdatedCallbackHandler() override;
 
@@ -52,8 +53,8 @@ public:
 
 	std::string _relativePathKeep;
 
-	Json::Value convertToJSON()								override;
-	void		convertFromJSON_SetFields(Json::Value in)	override;
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 
 	void startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs);
@@ -85,10 +86,14 @@ private:
 	Json::Value	_currentOptions		= Json::nullValue,
 				_previousOptions	= Json::nullValue;
 
+	jaspContainer					*	_oldResults	= nullptr;
+
 	void addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & pngImgObj);
 	void addPlotPathsForKeepFromJaspObject(jaspObject * obj, Rcpp::List & pngPathImgObj);
 	void addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & cumulativeList);
 	void fillEnvironmentWithStateObjects(Rcpp::List state);
+	void storeOldResults();
+
 
 	int		_progressbarExpectedTicks		= 100,
 			_progressbarLastUpdateTime		= -1,

@@ -16,7 +16,7 @@ struct jaspColRowCombination
 
 	std::string toString();
 
-	Json::Value convertToJSON() { throw std::runtime_error("Not implemented"); }
+	Json::Value convertToJSON() const { throw std::runtime_error("Not implemented"); }
 
 };
 
@@ -94,27 +94,26 @@ public:
 
 	void		complete() { if(_status == "running") _status = "complete"; }
 
-	bool		canShowErrorMessage() override { return true; }
+	bool		canShowErrorMessage()					const	override { return true; }
 
-	Json::Value	metaEntry() override { return constructMetaEntry("table"); }
-	Json::Value	dataEntry() override;
-	std::string	toHtml()	override;
+	Json::Value	metaEntry()								const	override { return constructMetaEntry("table"); }
+	Json::Value	dataEntry(std::string & errorMessage)	const	override;
+	std::string	toHtml()										override;
 
-	std::string defaultColName(size_t col)			{ return "col"+ std::to_string(col); }
-	std::string defaultRowName(size_t row)			{ return "row"+ std::to_string(row); }
-	std::string	getRowName(size_t row)				{ return _rowNames[row] == "" ? defaultRowName(row) : _rowNames[row]; }
-	std::string getColName(size_t col)				{ return _colNames[col] == "" ? defaultColName(col) : _colNames[col]; }
-	std::string getColType(size_t col);
+	std::string defaultColName(size_t col)	const	{ return "col"+ std::to_string(col); }
+	std::string defaultRowName(size_t row)	const	{ return "row"+ std::to_string(row); }
+	std::string	getRowName(size_t row)		const	{ return _rowNames[row] == "" ? defaultRowName(row) : _rowNames[row]; }
+	std::string getColName(size_t col)		const	{ return _colNames[col] == "" ? defaultColName(col) : _colNames[col]; }
+	std::string getColType(size_t col)		const;
 
-	bool		isSpecialColumn(size_t col);
+	bool		isSpecialColumn(size_t col)			const;
+	bool		columnSpecified(size_t col)			const { return _specifiedColumns.count(getColName(col)) > 0;	}
+	bool		columnSpecified(std::string col)	const { return _specifiedColumns.count(col) > 0;				}
 
-	bool		columnSpecified(size_t col)			{ return _specifiedColumns.count(getColName(col)) > 0;	}
-	bool		columnSpecified(std::string col)	{ return _specifiedColumns.count(col) > 0;				}
-
-	Json::Value	getCell(			size_t col, size_t row, size_t maxCol, size_t maxRow);
+	Json::Value	getCell(			size_t col, size_t row, size_t maxCol, size_t maxRow) const;
 	std::string	getCellFormatted(	size_t col, size_t row, size_t maxCol, size_t maxRow);
 
-	void		calculateMaxColRow(size_t & maxCol, size_t & maxRow);
+	void		calculateMaxColRow(size_t & maxCol, size_t & maxRow) const;
 
 	void		setExpectedSize(size_t columns, size_t rows)	{ setExpectedRows(rows); setExpectedColumns(columns);	}
 	void		setExpectedRows(size_t rows)					{ _expectedRowCount = rows;								}
@@ -135,15 +134,15 @@ private:
 	int getDesiredColumnIndexFromNameForColumnAdding(std::string colName);
 	int getDesiredColumnIndexFromNameForRowAdding(std::string colName, int previouslyAddedUnnamed);
 
-	Json::Value	schemaJson();
-	Json::Value	rowsJson();
-	std::string deriveColumnType(int col);
+	Json::Value	schemaJson()								const;
+	Json::Value	rowsJson()									const;
+	std::string deriveColumnType(int col)					const;
 
-	std::map<std::string, size_t> mapColNamesToIndices();
-	std::map<std::string, size_t> mapRowNamesToIndices();
+	std::map<std::string, size_t> mapColNamesToIndices()	const;
+	std::map<std::string, size_t> mapRowNamesToIndices()	const;
 
-	Json::Value convertToJSON()								override;
-	void		convertFromJSON_SetFields(Json::Value in)	override;
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 	void	addOrSetColumnInData(std::vector<Json::Value> column, std::string colName="");
 	int		pushbackToColumnInData(std::vector<Json::Value> column, std::string colName, int equalizedColumnsLength, int previouslyAddedUnnamed);

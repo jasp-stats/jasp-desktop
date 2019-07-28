@@ -26,9 +26,9 @@ std::string jaspPlot::dataToString(std::string prefix)
 	return out.str();
 }
 
-Json::Value jaspPlot::dataEntry()
+Json::Value jaspPlot::dataEntry(std::string & errorMessage) const
 {
-	Json::Value data(jaspObject::dataEntry());
+	Json::Value data(jaspObject::dataEntry(errorMessage));
 
 	data["title"]		= _title;
 	data["convertible"]	= true;
@@ -36,17 +36,7 @@ Json::Value jaspPlot::dataEntry()
 	data["height"]		= _height;
 	data["width"]		= _width;
 	data["aspectRatio"]	= _aspectRatio;
-	if(_error)
-    {
-		data["status"]                  = "error";
-		data["error"]					= Json::objectValue;
-		data["error"]["type"]			= "badData";//_error;
-		data["error"]["errorMessage"]	= _errorMessage;
-    }
-	else
-	{
-		data["status"]                  = _status;
-	}
+	data["status"]		= _error ? "error" : _status;
 	data["name"]		= getUniqueNestedName();
 
 	return data;
@@ -114,7 +104,7 @@ void jaspPlot::setChangedDimensionsFromStateObject()
 		_height = Rcpp::as<int>(plotInfoList["height"]);
 }
 
-Json::Value jaspPlot::convertToJSON()
+Json::Value jaspPlot::convertToJSON() const
 {
 	Json::Value obj		= jaspObject::convertToJSON();
 

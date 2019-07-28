@@ -465,6 +465,7 @@ void EngineSync::subProcessError(QProcess::ProcessError error)
 
 	Log::log() << "Engine error: " << error << std::endl;
 	emit engineTerminated();
+	_engineStarted = false;
 
 }
 
@@ -477,6 +478,7 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 	{
 		Log::log() << "subprocess finished" << exitCode << std::endl;
 		emit engineTerminated();
+		_engineStarted = false;
 
 	}
 }

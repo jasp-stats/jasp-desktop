@@ -22,39 +22,46 @@ public:
 
 	jaspContainer(const jaspContainer& that) = delete;
 
-	std::string dataToString(std::string prefix = "")	override;
-	std::string toHtml()								override;
+	std::string dataToString(std::string prefix = "")							override;
+	std::string toHtml()														override;
 
 	void			insert(std::string field, Rcpp::RObject value);
 	Rcpp::RObject	at(std::string field);
 
-	Json::Value	metaEntry() override;
-	Json::Value	dataEntry() override;
+	Json::Value	metaEntry(jaspObject * oldResult)							const	override;
+	Json::Value	dataEntry(jaspObject * oldResult, std::string & errorMsg)	const	override;
 
-	std::string getCommonDenominatorMetaType();
+	std::string getCommonDenominatorMetaType() const;
 
 	int	length() { return _data.size(); }
 
-	void childFinalizedHandler(jaspObject *child) override;
+	void childFinalizedHandler(jaspObject *child)								override;
 
 	static jaspContainer * jaspContainerFromRcppList(Rcpp::List convertThis);
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
-	void		checkDependenciesChildren(Json::Value currentOptions) override;
+	Json::Value convertToJSON()											const	override;
+	void		convertFromJSON_SetFields(Json::Value in)						override;
+	void		checkDependenciesChildren(Json::Value currentOptions)			override;
 
 	void		completeChildren();
-	void		setError() override;
-	void		setError(std::string message) override;
+	void		setError()														override;
+	void		setError(std::string message)									override;
 
 	bool		containsNonContainer();
+	bool		canShowErrorMessage()									const	override;
+
+	static std::vector<std::string>				convertSortedDataFieldsToStringVector(std::vector<std::pair<double, std::string>> sortvec, bool removeDuplicates = false);
+	std::vector<std::pair<double, std::string>> getSortedDataFieldsSortVector()														const;
+	std::vector<std::string>					getSortedDataFields()																const;
+	std::vector<std::string>					getSortedDataFieldsWithOld(jaspContainer * oldResult)								const;
+	jaspObject *								getJaspObjectNewOrOld(std::string fieldName, jaspContainer * oldResult)				const;
+	jaspObject *								getJaspObjectFromData(std::string fieldName)										const;
+	bool										jaspObjectComesFromOldResults(std::string fieldName, jaspContainer * oldResult)		const;
 
 protected:
 	std::map<std::string, jaspObject*>	_data;
 	std::map<std::string, int>			_data_order;
 	int									_order_increment = 0;
-	
-	std::vector<std::string>			getSortedDataFields();
 
 };
 

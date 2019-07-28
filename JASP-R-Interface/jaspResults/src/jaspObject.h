@@ -43,16 +43,14 @@ public:
 
 			std::string type() { return jaspObjectTypeToString(_type); }
 
-			std::string	getWarning()						{ return _warning; }
-			void		setWarning(std::string warning)		{ _warning = warning; _warningSet = true; }
-			bool		getError()							{ return _error; }
-	virtual void		setError()							{ _error = true; }
-	virtual void		setError(std::string message)		{ _errorMessage = message; _error = true; }
-	virtual bool		canShowErrorMessage()				{ return false; }
+			bool		getError()								{ return _error; }
+	virtual void		setError()								{ _error = true; }
+	virtual void		setError(std::string message)			{ _errorMessage = message; _error = true; }
+	virtual bool		canShowErrorMessage()			const	{ return false; }
 
-			void		print()								{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
-			void		addMessage(std::string msg)			{ _messages.push_back(msg); }
-	virtual void		childrenUpdatedCallbackHandler()	{} ///Can be called by jaspResults to send changes and stuff like that.
+			void		print()									{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
+			void		addMessage(std::string msg)				{ _messages.push_back(msg); }
+	virtual void		childrenUpdatedCallbackHandler()		{} ///Can be called by jaspResults to send changes and stuff like that.
 
 			void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis);
 			void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis);
@@ -70,13 +68,24 @@ public:
 			jaspObjectType	getType()						{ return _type; }
 			bool			shouldBePartOfResultsJson()		{ return _type != jaspObjectType::state && _type != jaspObjectType::json; }
 
-			Json::Value	constructMetaEntry(std::string type, std::string meta = "");
+			Json::Value	constructMetaEntry(std::string type, std::string meta = "") const;
 
-	virtual	Json::Value	metaEntry() { return Json::Value(Json::nullValue); }
-	virtual	Json::Value	dataEntry();
+	//These functions convert the object to a json that can be understood by the resultsviewer
+	virtual	Json::Value		metaEntry()															const { return Json::Value(Json::nullValue); }
+	virtual	Json::Value		dataEntry(std::string & errorMessage)								const ;
+	//These two are meant for jaspContainer and take old results into account and a possible errorMessage
+	virtual	Json::Value		metaEntry(jaspObject * oldResult)									const { return metaEntry(); }
+	virtual	Json::Value		dataEntry(jaspObject * oldResult, std::string & errorMessage)		const { return dataEntry(errorMessage); }
+
+			Json::Value		dataEntryBase()														const;
+
+	//These functions convert to object and all to a storable json-representation that can be written to disk and loaded again.
+	virtual Json::Value		convertToJSON() const;
+	static	jaspObject *	convertFromJSON(Json::Value in);
+	virtual	void			convertFromJSON_SetFields(Json::Value in);
 
 			///Gives nested name to avoid namingclashes
-			std::string getUniqueNestedName();
+			std::string getUniqueNestedName() const;
 			void		setName(std::string name) { _name = name; }
 
 			void		childrenUpdatedCallback();
@@ -107,11 +116,6 @@ public:
 
 	std::set<jaspObject*> & getChildren() { return children; }
 
-	virtual Json::Value convertToJSON();
-
-	static	jaspObject *	convertFromJSON(Json::Value in);
-	virtual	void			convertFromJSON_SetFields(Json::Value in);
-
 	Rcpp::DataFrame convertFactorsToCharacters(Rcpp::DataFrame df);
 
 	static Json::Value currentOptions;
@@ -122,10 +126,8 @@ public:
 
 protected:
 	jaspObjectType				_type;
-	std::string					_warning = "",
-								_errorMessage = "";
-	bool						_warningSet = false,
-								_error = false;
+	std::string					_errorMessage = "";
+	bool						_error = false;
 
 	std::vector<std::string>	_messages;
 	std::set<std::string>		_citations;
@@ -194,8 +196,6 @@ public:
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, std::string,	_title,		Title)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, int,			_position,	Position)
 
-	void		setWarning(std::string newWarning)	{ myJaspObject->setWarning(newWarning); }
-	std::string getWarning()						{ return myJaspObject->getWarning(); }
 	void		setError(std::string message)		{ myJaspObject->setError(message); }
 	bool		getError()							{ return myJaspObject->getError(); }
 

@@ -9,12 +9,12 @@ public:
 	jaspColumn(std::string columnName="") : jaspObject(jaspObjectType::column, "jaspColumn for " + columnName), _columnName(columnName) {  }
 
 
-	Json::Value		convertToJSON()								override;
-	void			convertFromJSON_SetFields(Json::Value in)	override;
-	std::string		dataToString(std::string prefix)			override;
+	Json::Value		convertToJSON()								const	override;
+	void			convertFromJSON_SetFields(Json::Value in)			override;
+	std::string		dataToString(std::string prefix)					override;
 
-	Json::Value	metaEntry() override { return constructMetaEntry("column"); }
-	Json::Value	dataEntry() override;
+	Json::Value	metaEntry()								const override { return constructMetaEntry("column"); }
+	Json::Value	dataEntry(std::string & errorMessage) const override;
 
 
 	void setScale(		Rcpp::RObject scalarData);

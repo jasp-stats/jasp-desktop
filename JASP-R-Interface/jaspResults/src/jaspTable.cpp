@@ -324,7 +324,7 @@ int jaspTable::equalizeColumnsLengths()
 	return maximumFoundColumnLength;
 }
 
-Json::Value jaspTable::getCell(size_t col, size_t row, size_t maxCol, size_t maxRow)
+Json::Value jaspTable::getCell(size_t col, size_t row, size_t maxCol, size_t maxRow) const
 {
 	if(col < _data.size() && row < _data[col].size())
 		return _data[col][row];
@@ -428,7 +428,7 @@ std::string	jaspTable::getCellFormatted(size_t col, size_t row, size_t maxCol, s
 	return out.str();
 }
 
-void jaspTable::calculateMaxColRow(size_t & maxCol, size_t & maxRow)
+void jaspTable::calculateMaxColRow(size_t & maxCol, size_t & maxRow) const
 {
 	maxRow = _expectedRowCount;
 	maxCol = 0;
@@ -1087,9 +1087,9 @@ void jaspTable::combineCells(Rcpp::map_named_args & named_args)
 
 }
 */
-Json::Value jaspTable::dataEntry()
+Json::Value jaspTable::dataEntry(std::string & errorMessage) const
 {
-	Json::Value dataJson(jaspObject::dataEntry());
+	Json::Value dataJson(jaspObject::dataEntry(errorMessage));
 
 	dataJson["title"]				= _title;
 
@@ -1100,19 +1100,9 @@ Json::Value jaspTable::dataEntry()
 	dataJson["casesAcrossColumns"]	= _transposeTable;
 	dataJson["overTitle"]			= _transposeWithOvertitle;
 
-	if(_error)
-	{
-		dataJson["status"]                  = "error";
-		dataJson["error"]					= Json::objectValue;
-		dataJson["error"]["type"]			= "badData";
-		dataJson["error"]["errorMessage"]	= _errorMessage;
-	}
-	else 
-	{
-		dataJson["status"]                  = _status;
-	}
+	dataJson["status"]				= _error ? "error" : _status;
 
-	//We do this so that any unset symbols will be filled in by the javascriptside of things
+	//We do this so that any unset symbols will be filled in by the javascriptside of things (symbolCounter stuff)
 	Json::Value footnotesSymbols	= _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 	int symbolCounter				= 0;
 
@@ -1122,13 +1112,10 @@ Json::Value jaspTable::dataEntry()
 
 	dataJson["footnotes"]			= footnotesSymbols;
 
-
 	return dataJson;
 }
 
-
-
-Json::Value	jaspTable::schemaJson()
+Json::Value	jaspTable::schemaJson() const
 {
     Json::Value schema(Json::objectValue);
 	Json::Value fields(Json::arrayValue);
@@ -1152,7 +1139,7 @@ Json::Value	jaspTable::schemaJson()
 		Json::Value field(Json::objectValue);
 
 		std::string colName		= getColName(col);
-		std::string colTitle	= _colTitles.containsField(colName) ? _colTitles[colName] : (_colTitles[col] != "" ? _colTitles[col] : colName);
+		std::string colTitle	= _colTitles.containsField(colName)  ? _colTitles[colName]  : (_colTitles[col]  != "" ? _colTitles[col]  : colName);
 		std::string colFormat	= _colFormats.containsField(colName) ? _colFormats[colName] : (_colFormats[col] != "" ? _colFormats[col] : "");
 
 		field["name"]	= colName;
@@ -1185,7 +1172,7 @@ Json::Value	jaspTable::schemaJson()
     return schema;
 }
 
-bool jaspTable::isSpecialColumn(size_t col)
+bool jaspTable::isSpecialColumn(size_t col) const
 {
 	if(_colNames[col] == "") return false;
 
@@ -1193,7 +1180,7 @@ bool jaspTable::isSpecialColumn(size_t col)
 }
 
 
-Json::Value	jaspTable::rowsJson()
+Json::Value	jaspTable::rowsJson() const
 {
 	Json::Value rows(Json::arrayValue);
 
@@ -1263,7 +1250,7 @@ Json::Value	jaspTable::rowsJson()
 	return rows;
 }
 
-std::string jaspTable::deriveColumnType(int col)
+std::string jaspTable::deriveColumnType(int col) const
 {
 	if(col >= _data.size())
 		return "null";
@@ -1313,7 +1300,7 @@ std::string jaspTable::deriveColumnType(int col)
 	}
 }
 
-std::string jaspTable::getColType(size_t col)
+std::string jaspTable::getColType(size_t col) const
 {
 	std::string colName = getColName(col);
 
@@ -1341,7 +1328,7 @@ void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::ROb
 }
 
 
-Json::Value jaspTable::convertToJSON()
+Json::Value jaspTable::convertToJSON() const
 {
 	Json::Value obj		= jaspObject::convertToJSON();
 
@@ -1434,7 +1421,7 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 		_specifiedColumns.insert(specifiedColumnName.asString());
 }
 
-std::map<std::string, size_t> jaspTable::mapColNamesToIndices()
+std::map<std::string, size_t> jaspTable::mapColNamesToIndices() const
 {
 	std::map<std::string, size_t> out;
 
@@ -1444,7 +1431,7 @@ std::map<std::string, size_t> jaspTable::mapColNamesToIndices()
 	return out;
 }
 
-std::map<std::string, size_t> jaspTable::mapRowNamesToIndices()
+std::map<std::string, size_t> jaspTable::mapRowNamesToIndices() const
 {
 	std::map<std::string, size_t> out;
 

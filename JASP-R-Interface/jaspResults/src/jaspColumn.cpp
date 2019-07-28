@@ -11,7 +11,7 @@ bool jaspRCPP_setColumnDataAsNominalText(	std::string, Rcpp::RObject) { jaspPrin
 #endif
 
 
-Json::Value jaspColumn::convertToJSON()
+Json::Value jaspColumn::convertToJSON() const
 {
 	Json::Value obj		= jaspObject::convertToJSON();
 
@@ -73,9 +73,9 @@ void jaspColumn::setNominalText(Rcpp::RObject nominalData)
 }
 
 
-Json::Value jaspColumn::dataEntry()
+Json::Value jaspColumn::dataEntry(std::string & errorMessage) const
 {
-	Json::Value data(jaspObject::dataEntry());
+	Json::Value data(jaspObject::dataEntry(errorMessage));
 
 	data["columnName"]	= _columnName;
 	data["columnType"]	= jaspColumnTypeToString(_columnType);

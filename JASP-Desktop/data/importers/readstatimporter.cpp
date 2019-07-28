@@ -97,8 +97,6 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 
 	data->setLabelsToColumns();
 
-	std::cout << std::endl;
-
 	if (error != READSTAT_OK)
 		throw std::runtime_error("Error processing " + locator + " " + readstat_error_message(error));
 

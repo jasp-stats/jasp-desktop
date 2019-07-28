@@ -11,15 +11,15 @@ public:
 	std::string dataToString(std::string prefix="") override;
 	std::string toHtml()							override;
 
-	Json::Value	metaEntry() override { return constructMetaEntry("htmlNode"); }
-	Json::Value	dataEntry() override;
+	Json::Value	metaEntry()								const override { return constructMetaEntry("htmlNode"); }
+	Json::Value	dataEntry(std::string & errorMessage)	const override;
 
     std::string _rawText, _elementType, _class;
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
-    std::string convertTextToHtml(const std::string text);
+	std::string convertTextToHtml(const std::string text)	const;
 
     void setText(std::string newRawText);
     std::string getText();

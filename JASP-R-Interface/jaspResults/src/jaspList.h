@@ -5,7 +5,7 @@ template<typename T>
 class jaspList : public jaspObject
 {
 public:
-	jaspList(std::string title = "") : jaspObject(jaspObjectType::list, title)
+	jaspList(std::string title = "") : jaspObject(jaspObjectType::list, title), _dummyVal()
 	{
 		allocatedObjects->erase(this); // lists are never newed!
 	}
@@ -40,7 +40,7 @@ public:
 	}
 
 	///using [] (in c++) will give you normal zero-based array but also grows the vector if your request lies outside of it, at() ([[]] in R) however gives you 1-based access and just returns a dummy value if you request something out of range.
-	T at(Rcpp::RObject field)
+	T at(Rcpp::RObject field) const
 	{
 		if(Rcpp::is<Rcpp::NumericVector>(field) || Rcpp::is<Rcpp::IntegerVector>(field))
 		{
@@ -55,7 +55,7 @@ public:
 		{
 			std::string fieldName = Rcpp::as<std::string>(field);
 
-			return _field_to_val[fieldName];
+			return _field_to_val.at(fieldName);
 		}
 		else
 			Rf_error("Did not get a number, integer or string to index on.");
@@ -122,8 +122,8 @@ public:
 		}
 	}
 
-	size_t rowCount()	{ return _rows.size(); }
-	size_t fieldCount()	{ return _field_to_val.size(); }
+	size_t rowCount()	const { return _rows.size(); }
+	size_t fieldCount()	const { return _field_to_val.size(); }
 
 	///using [] (in c++) will give you normal zero-based array but also grows the vector if your request lies outside of it, at() ([[]] in R) however gives you 1-based access and just returns a dummy value if you request something out of range.
 	T & operator[](size_t index)
@@ -133,12 +133,22 @@ public:
 		return _rows[index];
 	}
 
-	T & operator[](std::string field) {	return _field_to_val[field]; }
+	const T _dummyVal;
 
-	bool containsField(std::string field) { return _field_to_val.count(field) > 0; }
+	const T & operator[](size_t index) const
+	{
+		if(_rows.size() <= index)
+			return _dummyVal;
+		return _rows.at(index);
+	}
+
+			T & operator[](std::string field)				{ return _field_to_val[field];		}
+	const	T & operator[](std::string field)		const	{ return _field_to_val.count(field) > 0 ? _field_to_val.at(field) : _dummyVal; }
+
+	bool containsField(std::string field)	const	{ return _field_to_val.count(field) > 0; }
 
 
-	Json::Value convertToJSON() override
+	Json::Value convertToJSON() const override
 	{
 		Json::Value obj		= jaspObject::convertToJSON();
 		obj["rows"]			= Json::arrayValue;
@@ -160,10 +170,10 @@ public:
 	}
 
 	//Specialized in cpp
-	inline T convertStringFromJson(Json::Value value)				{ return T(); }
-	inline T convertDoubleFromJson(Json::Value value)				{ return T(); }
-	inline T convertIntFromJson(Json::Value value)					{ return T(); }
-	inline T convertBoolFromJson(Json::Value value)				{ return T(); }
+	inline T convertStringFromJson(	Json::Value value)		{ return T(); }
+	inline T convertDoubleFromJson(	Json::Value value)		{ return T(); }
+	inline T convertIntFromJson(	Json::Value value)		{ return T(); }
+	inline T convertBoolFromJson(	Json::Value value)		{ return T(); }
 
 	void		convertFromJSON_SetFields(Json::Value in) override
 	{
