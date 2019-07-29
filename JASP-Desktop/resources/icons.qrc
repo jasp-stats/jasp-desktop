@@ -129,5 +129,9 @@
         <file>icons/audit-planning.svg</file>
         <file>icons/sort-az.png</file>
         <file>icons/sort-za.png</file>
+        <file>icons/analysis-ml-classification.svg</file>
+        <file>icons/analysis-ml-regression.svg</file>
+        <file>icons/analysis-ml-clustering.svg</file>
+        <file>icons/analysis-ml-ribbon.svg</file>
     </qresource>
 </RCC>

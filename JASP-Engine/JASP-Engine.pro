@@ -144,6 +144,9 @@ DISTFILES += \
     JASP/R/commonClassicalAuditMethods.R \
     JASP/R/commonerrorcheck.R \
     JASP/R/commonglm.R \
+    JASP/R/commonMachineLearningClassification.R \
+    JASP/R/commonMachineLearningClustering.R \
+    JASP/R/commonMachineLearningRegression.R \
     JASP/R/commonmessages.R \
     JASP/R/commonMPR.R \
     JASP/R/commonsummarystats.R \
@@ -166,6 +169,19 @@ DISTFILES += \
     JASP/R/manova.R \
     JASP/R/massStepAIC.R \
     JASP/R/mediationanalysis.R \
+    JASP/R/mlClassificationBoosting.R \
+    JASP/R/mlClassificationKnn.R \
+    JASP/R/mlClassificationLda.R \
+    JASP/R/mlClassificationRandomForest.R \
+    JASP/R/mlClusteringDensityBased.R \
+    JASP/R/mlClusteringFuzzyCMeans.R \
+    JASP/R/mlClusteringHierarchical.R \
+    JASP/R/mlClusteringKMeans.R \
+    JASP/R/mlClusteringRandomForest.R \
+    JASP/R/mlRegressionBoosting.R \
+    JASP/R/mlRegressionKnn.R \
+    JASP/R/mlRegressionRandomForest.R \
+    JASP/R/mlRegressionRegularized.R \
     JASP/R/multilevelmetaanalysis.R \
     JASP/R/multinomialtest.R \
     JASP/R/multinomialtestbayesian.R \
