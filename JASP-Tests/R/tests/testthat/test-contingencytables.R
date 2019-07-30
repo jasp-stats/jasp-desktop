@@ -30,7 +30,7 @@ test_that("Main table results match", {
            "f", 0.396743153219837, 536, 536, 0.396743153219837, 1, " % within column",
            "Count", "Expected count", " % of total", " % within row", 1,
            654, 654, 0.484085862324204, 0.484085862324204, 1, 697, 697,
-           0.515914137675796, 0.515914137675796, "Total", 1, 1351, 1351,
+           0.515914137675796, 0.515914137675796, "Total", "f", 1, 1351, 1351,
            1, 1, " % within column", "Count", "Expected count", " % of total",
            " % within row", 0.338688085676037, 253, 271.013344453712, 0.211009174311927,
            0.581609195402299, 0.402654867256637, 182, 163.986655546289,
@@ -43,7 +43,7 @@ test_that("Main table results match", {
            764, 0.6371976647206, 1, " % within column", "Count", "Expected count",
            " % of total", " % within row", 1, 747, 747, 0.62301918265221,
            0.62301918265221, 1, 452, 452, 0.37698081734779, 0.37698081734779,
-           "Total", 1, 1199, 1199, 1, 1, " % within column", "Count", "Expected count",
+           "Total", "m", 1, 1199, 1199, 1, 1, " % within column", "Count", "Expected count",
            " % of total", " % within row", 0.408993576017131, 573, 686.764705882353,
            0.224705882352941, 0.4584, 0.589208006962576, 677, 563.235294117647,
            0.265490196078431, 0.5416, "control", "Total", 0.490196078431372,
@@ -55,7 +55,7 @@ test_that("Main table results match", {
            1300, 1300, 0.509803921568627, 1, " % within column", "Count",
            "Expected count", " % of total", " % within row", 1, 1401, 1401,
            0.549411764705882, 0.549411764705882, 1, 1149, 1149, 0.450588235294118,
-           0.450588235294118, "Total", ".", 1, 2550, 2550, 1, 1, " % within column",
+           0.450588235294118, "Total", "Total", 1, 2550, 2550, 1, 1, " % within column",
            "Count", "Expected count", " % of total", " % within row")
   )
 })
