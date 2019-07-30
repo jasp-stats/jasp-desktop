@@ -104,7 +104,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
           error  <- r[["error"]]
           ttestResults[["tValue"]][[var]] <- r[["tValue"]]
 
-          if (is.na(r[["error"]]) && grepl("approximation", r[["method"]])) {
+          if (!is.null(r[["error"]]) && is.na(r[["error"]]) && grepl("approximation", r[["method"]])) {
             ttestTable$addFootnote(
               message = "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.",
               symbol = "", rowNames = var, colNames = "error")
