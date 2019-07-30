@@ -89,12 +89,6 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
         .quitAnalysis(paste0(variable, "variable must contain only integer values."))
     }
   }
-  if (!is.null(dataset))
-    return(.vdf(dataset, columns.as.numeric = asnum, columns.as.factor = fact))
-  else
-    return(.readDataSetToEnd(columns.as.numeric  = asnum, 
-                             columns.as.factor   = fact,
-                             exclude.na.listwise = NULL))
 }
 
 # Results function ----
