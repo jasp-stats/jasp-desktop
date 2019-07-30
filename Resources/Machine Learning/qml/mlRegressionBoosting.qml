@@ -247,7 +247,7 @@ Form {
             }
 
             CheckBox { 
-                text: qsTr("Scale predictors") 
+                text: qsTr("Scale variables") 
                 name: "scaleEqualSD"
                 checked: true
             }

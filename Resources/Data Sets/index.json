@@ -611,9 +611,38 @@
         }
       ]
     },
+	{
+	  "name": "11. Machine Learning",
+	  "path": "11. Machine Learning",
+	  "description": "",
+	  "kind": "folder",
+	  "children": [
+		{
+		  "name": "Wine Types",
+		  "path": "",
+		  "description": "Example data set for regression, classification and clustering",
+		  "kind": "file",
+		  "associated_datafile": "wine.csv"
+		},
+		{
+		  "name": "Iris Species",
+		  "path": "",
+		  "description": "Example data set for classification and clustering",
+		  "kind": "file",
+		  "associated_datafile": "iris.csv"
+		},
+		{
+		  "name": "Spam or no Spam",
+		  "path": "",
+		  "description": "Large example data set for classification",
+		  "kind": "file",
+		  "associated_datafile": "spamdata.csv"
+		}
+	  ]
+	},
     {
-      "name": "11. Miscellaneous",
-      "path": "11. Miscellaneous",
+	  "name": "12. Miscellaneous",
+	  "path": "12. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
