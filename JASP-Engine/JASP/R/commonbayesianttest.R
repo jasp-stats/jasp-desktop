@@ -475,18 +475,12 @@
       descriptivesTable$dependOn(c("descriptives", "variables", "pairs"))
       descriptivesTable$position <- 1L
 
-      if (options[["descriptivesPlots"]]) {
-        CRI <- options[["descriptivesPlotsCredibleInterval"]]
-      } else {
-        CRI <- NULL
-      }
-
       .ttestBayesianDescriptivesTable(
         descriptives           = descriptivesTable,
         dataset                = dataset,
         dependents             = dependents,
         grouping               = grouping,
-        CRI                    = CRI,
+        CRI                    = options[["descriptivesPlotsCredibleInterval"]],
         canRun                 = canDoAnalysis,
         pairs                  = options[["pairs"]]
       )
@@ -733,20 +727,28 @@
 
   if (is.null(jaspResults[["ttestContainer"]][["inferentialPlots"]])) {
     inferentialPlotsCollection <- createJaspContainer("Inferential Plots")
-    inferentialPlotsCollection$dependOn("hypothesis")
+    inferentialPlotsCollection$dependOn(c("hypothesis", "testStatistic"))
     jaspResults[["ttestContainer"]][["inferentialPlots"]] <- inferentialPlotsCollection
   } else {
     inferentialPlotsCollection <- jaspResults[["ttestContainer"]][["inferentialPlots"]]
   }
+  
+  # for the independent samples t-test, some plots cannot be shown for the Wilcoxon test
+  if (is.null(options[["testStatistic"]]) || options[["testStatistic"]] == "Student") {
+    whichPlotTitles <- which(unlist(options[unlist(opts)]))
+  } else { # Wilcoxon
+    # only show prior and posterior plot (even if others are checked)
+    whichPlotTitles <- which(unlist(options[unlist(opts[1L])]))
+  }
+  
 
   # create all empty plots and containers before filling them in one-by-one, to avoid the screen from flashing
   dependencies <- list(
     c("plotPriorAndPosterior",     "plotPriorAndPosteriorAdditionalInfo"),
-    c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo"),
-    c("plotSequentialAnalysis",    "plotSequentialAnalysisRobustness")
+    c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo", "bayesFactorType"),
+    c("plotSequentialAnalysis",    "plotSequentialAnalysisRobustness",        "bayesFactorType")
   )
-  optionContainsValue <- list(NULL, options["bayesFactorType"], options["bayesFactorType"])
-  whichPlotTitles <- which(unlist(options[unlist(opts)]))
+
   plotTitles <- c("Prior and Posterior", "Bayes Factor Robustness Check", "Sequential Analysis")
   jaspTitles <- c("plotPriorAndPosterior", "plotRobustness", "plotSequential")
   for (var in dependents) { # was there a container for these plots for this variable?
@@ -765,7 +767,7 @@
     for (i in whichPlotTitles) { # add empty plot in the container for this variable
       if (is.null(container[[jaspTitles[i]]])) {
         plot <- createJaspPlot(title = plotTitles[i], width = 530, height = 400)
-        plot$dependOn(options = dependencies[[i]], optionContainsValue = optionContainsValue[[i]])
+        plot$dependOn(options = dependencies[[i]])
         plot$position <- i
         container[[jaspTitles[i]]] <- plot
       }
@@ -1256,6 +1258,7 @@
   } else {
     bfType <- "BF01"
     dfLines$y <- -dfLines$y
+    BF10user  <- 1 / BF10user
     maxBF10   <- 1 / maxBF10
     BF10w     <- 1 / BF10w
     BF10ultra <- 1 / BF10ultra
