@@ -18,53 +18,45 @@ test_that("Main table results match", {
   options$percentagesColumn <- TRUE
   options$percentagesTotal <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["Counts Table 1"]][["data"]]
+  table   <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabMain"]][["data"]]
   expect_equal_tables(table,
-    list("Count", "% of total", 320, 495, 815, "Expected count", 394.529977794227,
-         420.470022205773, 815, " % within row", 0.392638036809816, 0.607361963190184,
-         1, " % within column", 0.489296636085627, 0.710186513629842,
-         0.603256846780163, " % within row", 0.392638036809816, 0.607361963190184,
-         1, " % of total", 0.236861584011843, 0.36639526276832, 0.603256846780163,
-         "control", "f", "Count", "% of total", 334, 202, 536, "Expected count",
-         259.470022205773, 276.529977794227, 536, " % within row", 0.623134328358209,
-         0.376865671641791, 1, " % within column", 0.510703363914373,
-         0.289813486370158, 0.396743153219837, " % within row", 0.623134328358209,
-         0.376865671641791, 1, " % of total", 0.247224278312361, 0.149518874907476,
-         0.396743153219837, "experimental", "f", "Count", "% of total",
-         654, 697, 1351, "Expected count", 654, 697, 1351, " % within row",
-         0.484085862324204, 0.515914137675796, 1, " % within column",
-         1, 1, 1, " % within row", 0.484085862324204, 0.515914137675796,
-         1, 0.484085862324204, 0.515914137675796, 1, "Total", "f", "Count",
-         "% of total", 253, 182, 435, "Expected count", 271.013344453711,
-         163.986655546289, 435, " % within row", 0.581609195402299, 0.418390804597701,
-         1, " % within column", 0.338688085676037, 0.402654867256637,
-         0.362802335279399, " % within row", 0.581609195402299, 0.418390804597701,
-         1, " % of total", 0.211009174311927, 0.151793160967473, 0.3628023352794,
-         "control", "m", "Count", "% of total", 494, 270, 764, "Expected count",
-         475.986655546289, 288.013344453711, 764, " % within row", 0.646596858638743,
-         0.353403141361257, 1, " % within column", 0.661311914323963,
-         0.597345132743363, 0.6371976647206, " % within row", 0.646596858638743,
-         0.353403141361257, 1, " % of total", 0.412010008340284, 0.225187656380317,
-         0.6371976647206, "experimental", "m", "Count", "% of total",
-         747, 452, 1199, "Expected count", 747, 452, 1199, " % within row",
-         0.62301918265221, 0.37698081734779, 1, " % within column", 1,
-         1, 1, " % within row", 0.62301918265221, 0.37698081734779, 1,
-         0.62301918265221, 0.37698081734779, 1, "Total", "m", "Count",
-         "% of total", 573, 677, 1250, "Expected count", 686.764705882353,
-         563.235294117647, 1250, " % within row", 0.4584, 0.5416, 1,
-         " % within column", 0.408993576017131, 0.589208006962576, 0.490196078431373,
-         " % within row", 0.4584, 0.5416, 1, " % of total", 0.224705882352941,
-         0.265490196078431, 0.490196078431373, "control", "Total", "Count",
-         "% of total", 828, 472, 1300, "Expected count", 714.235294117647,
-         585.764705882353, 1300, " % within row", 0.636923076923077,
-         0.363076923076923, 1, " % within column", 0.591006423982869,
-         0.410791993037424, 0.509803921568627, " % within row", 0.636923076923077,
-         0.363076923076923, 1, " % of total", 0.324705882352941, 0.185098039215686,
-         0.509803921568627, "experimental", "Total", "Count", "% of total",
-         1401, 1149, 2550, "Expected count", 1401, 1149, 2550, " % within row",
-         0.549411764705882, 0.450588235294118, 1, " % within column",
-         1, 1, 1, " % within row", 0.549411764705882, 0.450588235294118,
-         1, 0.549411764705882, 0.450588235294118, 1, "Total", "Total")
+      list(0.489296636085627, 320, 394.529977794227, 0.236861584011843, 0.392638036809816,
+           0.710186513629842, 495, 420.470022205773, 0.36639526276832,
+           0.607361963190184, "control", "f", 0.603256846780163, 815, 815,
+           0.603256846780163, 1, " % within column", "Count", "Expected count",
+           " % of total", " % within row", 0.510703363914373, 334, 259.470022205773,
+           0.247224278312361, 0.623134328358209, 0.289813486370158, 202,
+           276.529977794227, 0.149518874907476, 0.376865671641791, "experimental",
+           "f", 0.396743153219837, 536, 536, 0.396743153219837, 1, " % within column",
+           "Count", "Expected count", " % of total", " % within row", 1,
+           654, 654, 0.484085862324204, 0.484085862324204, 1, 697, 697,
+           0.515914137675796, 0.515914137675796, "Total", 1, 1351, 1351,
+           1, 1, " % within column", "Count", "Expected count", " % of total",
+           " % within row", 0.338688085676037, 253, 271.013344453712, 0.211009174311927,
+           0.581609195402299, 0.402654867256637, 182, 163.986655546289,
+           0.151793160967473, 0.418390804597701, "control", "m", 0.362802335279399,
+           435, 435, 0.362802335279399, 1, " % within column", "Count",
+           "Expected count", " % of total", " % within row", 0.661311914323963,
+           494, 475.986655546288, 0.412010008340284, 0.646596858638743,
+           0.597345132743363, 270, 288.013344453712, 0.225187656380317,
+           0.353403141361257, "experimental", "m", 0.6371976647206, 764,
+           764, 0.6371976647206, 1, " % within column", "Count", "Expected count",
+           " % of total", " % within row", 1, 747, 747, 0.62301918265221,
+           0.62301918265221, 1, 452, 452, 0.37698081734779, 0.37698081734779,
+           "Total", 1, 1199, 1199, 1, 1, " % within column", "Count", "Expected count",
+           " % of total", " % within row", 0.408993576017131, 573, 686.764705882353,
+           0.224705882352941, 0.4584, 0.589208006962576, 677, 563.235294117647,
+           0.265490196078431, 0.5416, "control", "Total", 0.490196078431372,
+           1250, 1250, 0.490196078431373, 1, " % within column", "Count",
+           "Expected count", " % of total", " % within row", 0.591006423982869,
+           828, 714.235294117647, 0.324705882352941, 0.636923076923077,
+           0.410791993037424, 472, 585.764705882353, 0.185098039215686,
+           0.363076923076923, "experimental", "Total", 0.509803921568627,
+           1300, 1300, 0.509803921568627, 1, " % within column", "Count",
+           "Expected count", " % of total", " % within row", 1, 1401, 1401,
+           0.549411764705882, 0.549411764705882, 1, 1149, 1149, 0.450588235294118,
+           0.450588235294118, "Total", ".", 1, 2550, 2550, 1, 1, " % within column",
+           "Count", "Expected count", " % of total", " % within row")
   )
 })
 
@@ -82,8 +74,8 @@ test_that("Multiple row and column variables give multiple main tables", {
   )
 
   for (i in 1:4) {
-    rows <- results[["results"]][[paste("Counts Table", i)]][["schema"]][["fields"]][[1]][["name"]]
-    cols <- results[["results"]][[paste("Counts Table", i)]][["schema"]][["fields"]][[2]][["overTitle"]]
+    rows <- results[["results"]][[paste0("tables", i)]][["collection"]][[paste0("tables", i, "_crossTabMain")]][["schema"]][["fields"]][[1]][["name"]]
+    cols <- results[["results"]][[paste0("tables", i)]][["collection"]][[paste0("tables", i, "_crossTabMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
     expect_identical(c(rows, cols), pairs[[i]], label=paste("Table", i))
   }
 })
@@ -98,12 +90,12 @@ test_that("Chi-Squared test table results match", {
   options$likelihoodRatio <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["Tests Table 1"]][["data"]]
+  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabChisq"]][["data"]]
   expect_equal_tables(table,
-    list("N", "", "", "", 2550, "<unicode><unicode>", 82.0397085317219,
-         1, 1.33379878452991e-19, 63462127883801120, "<unicode><unicode> continuity correction",
-         81.3201582621313, 1, 1.91958529099645e-19, 44468347240355080,
-         "Likelihood ratio", 82.4643894680383, 1, 0, "<unicode>")
+    list("N", "", "", "", 2550, 
+         "<unicode>", 82.0397085317219, 1, 1.33379878452991e-19, 63462127883801120, 
+         "<unicode><unicode> continuity correction", 81.3201582621313, 1, 1.91958529099645e-19, 44468347240355080,
+         "Likelihood ratio", 82.4643894680383, 1, 0, "<unicode><unicode>")
   )
 })
 
@@ -114,7 +106,7 @@ test_that("Nominal table results match", {
   options$contingencyCoefficient <- TRUE
   options$phiAndCramersV <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["Nominal Table 1"]][["data"]]
+  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabNominal"]][["data"]]
   expect_equal_tables(table,
     list("Contingency coefficient", 0.0807792391722019, "Phi-coefficient",
          0.0810440898473108, "Cramer's V ", 0.0810440898473108)
@@ -128,7 +120,7 @@ test_that("Log Odds Ratio table results match", {
   options$oddsRatio <- TRUE
   options$oddsRatioConfidenceIntervalInterval <- 0.90
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["Odds Ratio Table 1"]][["data"]]
+  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabLogOdds"]][["data"]]
   expect_equal_tables(table,
     list("Odds ratio", -0.329205575243527, -0.998167649205055, 0.339756498718001,
          "Fisher's exact test ", -0.325882968750928, -1.07370478788709,
@@ -142,7 +134,7 @@ test_that("Ordinal Gamma table results match", {
   options$columns <- "contBinom"
   options$gamma <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["Ordinal Table 1"]][["data"]]
+  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabGamma"]][["data"]]
   expect_equal_tables(table,
     list("Gamma coefficient", -0.163132137030995, 0.197938461395245, -0.551084392520947,
          0.224820118458957)
@@ -156,7 +148,7 @@ test_that("Kendall's Tau table results match", {
   options$kendallsTauB <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["Kendalls Table 1"]][["data"]]
+  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabKendallTau"]][["data"]]
   expect_equal_tables(table,
     list("Kendall's Tau-b", -0.0810440898473108, 0.420024632711394, 1,
          -0.806378512498144)
@@ -169,6 +161,6 @@ test_that("Analysis handles errors", {
   options$columns <- "contBinom"
   options$counts <- "contNormal"
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  errorMsg <- results[["results"]][["Counts Table 1"]][["error"]][["errorMessage"]]
+  errorMsg <- results[["results"]][["errorMessage"]]
   expect_is(errorMsg, "character")
 })
