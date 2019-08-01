@@ -140,6 +140,7 @@ DISTFILES += \
     JASP/R/commonAnovaBayesian.R \
     JASP/R/commonAudit.R \
     JASP/R/commonAuditSampling.R \
+	JASP/R/commonbayesianttest.R \
     JASP/R/commonBayesianAuditMethods.R \
     JASP/R/commonClassicalAuditMethods.R \
     JASP/R/commonerrorcheck.R \

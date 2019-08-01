@@ -739,6 +739,9 @@
   } else { # Wilcoxon
     # only show prior and posterior plot (even if others are checked)
     whichPlotTitles <- which(unlist(options[unlist(opts[1L])]))
+	# ensure prior is Cauchy, not informed (people can hack this in and it would destroy the results)
+	options[["effectSizeStandardized"]]        <- "default"
+	options[["defaultStandardizedEffectSize"]] <- "cauchy"
   }
   
 
