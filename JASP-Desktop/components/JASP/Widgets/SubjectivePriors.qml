@@ -25,6 +25,7 @@ import JASP.Controls 1.0
 Section
 {
 	title: qsTr("Prior")
+    property alias informedPriorsEnabled: informedPriors.enabled
 
 	RadioButtonGroup
 	{
@@ -59,6 +60,7 @@ Section
 
 			RadioButton
 			{
+                id: informedPriors
 				label: qsTr("Informed"); name: "informative"
 				RadioButtonGroup
 				{

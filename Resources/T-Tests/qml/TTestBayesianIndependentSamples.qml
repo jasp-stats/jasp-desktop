@@ -105,5 +105,5 @@ Form {
 		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
 
-	SubjectivePriors { }
+    SubjectivePriors { informedPriorsEnabled: student.checked }
 }
