@@ -218,7 +218,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   )
   if (options$countProp == "descCounts")
     for (r in chisqResults)
-      tableFrame <- cbind(tableFrame, r[["expected"]])
+      tableFrame <- cbind(tableFrame, round(r[["expected"]]))
   else
     for (r in chisqResults){
       div <- sum(chisqResults[[1]][["observed"]])
@@ -511,3 +511,4 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   if(isTryError(res))
     table$setError(.extractErrorMessage(res))
 }
+
