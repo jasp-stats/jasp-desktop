@@ -205,9 +205,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   errorMessageTable <- NULL
   if (theta0 == 1 && hyp == "greater")
     errorMessageTable <- "Cannot test the hypothesis that the test value is greater than 1."
-
-  } else if (theta0 == 0 && hyp == "less") {
-
+  else if (theta0 == 0 && hyp == "less")
     errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
   
   jaspResults[["bayesianBinomialTable"]] <- bayesianBinomialTable
