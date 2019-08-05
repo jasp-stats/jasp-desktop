@@ -132,7 +132,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   binomTable$addFootnote(paste0(note, options$testValue, "."))
 
   jaspResults[["binomTable"]] <- binomTable
-  
+
   if (!ready)
     return()
   
