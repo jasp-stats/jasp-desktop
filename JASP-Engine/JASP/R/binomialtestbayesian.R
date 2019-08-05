@@ -21,7 +21,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   dataset <- .binomReadData(dataset, options)
   
   # Error checking
-  .binomCheckErrors(dataset, options)
+  errors <- .binomCheckErrors(dataset, options)
   
   # Compute the results
   bayesianBinomResults <- .bayesianBinomComputeResults(jaspResults, dataset, options, errors)
