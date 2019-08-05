@@ -256,7 +256,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   } else {
     inferentialPlots <- jaspResults[["inferentialPlots"]]
   }
-  
+
   if (!ready) {
     # show a placeholder plot if someone says he wants a plot but does not enter any variables
     inferentialPlots[["placeholder"]] <- createJaspPlot(width = 530, height = 400, dependencies = "variables")
