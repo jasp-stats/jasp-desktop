@@ -17,7 +17,7 @@
 
 ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   ready <- length(options$variables) != 0
-  
+
   if(ready) {
     dataset <- .relReadData(dataset, options)
     .reliabilityCheckErrors(dataset, options)
@@ -97,14 +97,14 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     key.base64 <- .v(unlist(options$reverseScaledItems))
     relyFit    <- .quietDuringUnitTest(psych::alpha(dataList[["covariance"]], 
                                                     key = key.base64))
-      
+    
     # since we supply a correlation matrix and not raw data, we have to add these ourselves
     relyFit[["total"]][["mean"]]      <- mean(dataList[["itemMeans"]])
     relyFit[["total"]][["sd"]]        <- stats::sd(dataList[["itemMeans"]])
     relyFit[["item.stats"]][["mean"]] <- dataList[["itemMeans"]]
     relyFit[["item.stats"]][["sd"]]   <- dataList[["itemSds"]]
     relyFit[["nObs"]]                 <- nObs
-      
+    
     # calculate confidence interval for chronbach alpha
     relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(relyFit,	ci = options$confAlphaLevel)
     
@@ -338,7 +338,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   # Compute/get the results
   relyFit <- .reliabilityComputeResults(jaspResults, dataset, options, ready)
-  
+
   res <- try(.reliabilityScaleFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
     scaleTable$setError(.extractErrorMessage(res))
@@ -393,7 +393,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   # Compute/get the results
   relyFit <- .reliabilityComputeResults(jaspResults, dataset, options, ready)
-  
+
   res <- try(.reliabilityItemFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
     itemTable$setError(.extractErrorMessage(res))
@@ -424,7 +424,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   f <- (1 - nullAlpha) / (1 - estAlpha)
   if(estAlpha > nullAlpha)
     f <- 1/f
-  
+
   nDen <- (nObs - 1) * (nVar - 1)
   nNum <- nObs - 1
   # set the upper and lower p values for the desired C.I.
