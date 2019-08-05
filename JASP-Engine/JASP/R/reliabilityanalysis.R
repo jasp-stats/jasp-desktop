@@ -329,12 +329,14 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   nExcluded <- sum(!complete.cases(dataset))
   nValid    <- nObs - nExcluded
   
-  message <- sprintf("Of the observations, %d were used, %d were excluded%s, 
+  if(length(variables) >= 2) {
+    message <- sprintf("Of the observations, %d were used, %d were excluded%s, 
                      and %d were provided.", nValid, nExcluded, exclwise, nObs)
-  if (options$glbScale && length(variables) <= 2)
-    message <- paste(message, "Warning: Greatest lower bound can 
+    if (options$glbScale && length(variables) == 2)
+      message <- paste(message, "Warning: Greatest lower bound can 
     only be calculated for three or more variables.")
-  scaleTable$addFootnote(message, symbol = "<em>Note.</em>")
+    scaleTable$addFootnote(message, symbol = "<em>Note.</em>")
+  }
   
   jaspResults[["scaleTable"]] <- scaleTable
   
