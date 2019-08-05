@@ -21,15 +21,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   dataset <- .relReadData(dataset, options)
   
   ready <- length(options$variables) != 0
+  
   # Error checking
   .relCheckErrors(dataset, options)
   
-  # Compute the results
-  relyFit <- .reliabilityComputeResults(jaspResults, dataset, options, ready)
-  
   # Output tables
-  .scaleTable(jaspResults, dataset, options, relyFit, ready)
-  .itemTable (jaspResults, dataset, options, relyFit, ready)
+  .reliabilityScaleTable(jaspResults, dataset, options, ready)
+  .reliabilityItemTable (jaspResults, dataset, options, ready)
   
   return()
 }
@@ -101,14 +99,14 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
     key.base64 <- .v(unlist(options$reverseScaledItems))
     relyFit    <- .quietDuringUnitTest(psych::alpha(dataList[["covariance"]], 
                                                     key = key.base64))
-      
+    
     # since we supply a correlation matrix and not raw data, we have to add these ourselves
     relyFit[["total"]][["mean"]]      <- mean(dataList[["itemMeans"]])
     relyFit[["total"]][["sd"]]        <- stats::sd(dataList[["itemMeans"]])
     relyFit[["item.stats"]][["mean"]] <- dataList[["itemMeans"]]
     relyFit[["item.stats"]][["sd"]]   <- dataList[["itemSds"]]
     relyFit[["nObs"]]                 <- nObs
-      
+    
     # calculate confidence interval for chronbach alpha
     relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(relyFit,	ci = options$confAlphaLevel)
     
@@ -149,11 +147,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   return(relyFit)
 }
 
-.reliabilityScaleResults <- function(jaspResults, dataset, options, relyFit, ready) {
-  # Take results from state if possible
-  if (!is.null(jaspResults[["scaleResults"]])) 
-    return(jaspResults[["scaleResults"]]$object)
-  
+.reliabilityScaleFill <- function(jaspResults, dataset, options, relyFit, ready) {
   results   <- list()
   nObs      <- nrow(dataset)
   nVar      <- ncol(dataset)
@@ -190,7 +184,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
     }
   } else #Initialise all as "."
     alpha <- lambda <- omega <- glb <- rho <- mu <- sd <- lower <- upper <- "."
-    
+  
   results <- list(
     case    = "scale", 
     alpha   = alpha, 
@@ -204,21 +198,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
     upper   = upper
   )
   
-  # Save results to state
-  jaspResults[["scaleResults"]] <- createJaspState(results)
-  jaspResults[["scaleResults"]]$dependOn(
-    optionsFromObject = jaspResults[["scaleTable"]]
-  )
-  # Return results object
-  return(results)
+  # Add to table
+  jaspResults[["scaleTable"]]$addRows(results)
 }
 
-.reliabilityItemResults <- function(jaspResults, dataset, options, relyFit, ready) {
-  if (!ready) return()
-  
-  # Take results from state if possible
-  if (!is.null(jaspResults[["itemResults"]])) 
-    return(jaspResults[["itemResults"]]$object)
+.reliabilityItemFill <- function(jaspResults, dataset, options, relyFit, ready) {
+  if (!ready) 
+    return()
   
   results <- list()
   nObs      <- nrow(dataset)
@@ -287,17 +273,11 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
     }
   }
   
-  # Save results to state
-  jaspResults[["itemResults"]] <- createJaspState(results)
-  jaspResults[["itemResults"]]$dependOn(
-    optionsFromObject = jaspResults[["itemContainer"]]
-  )
-  # Return results object
   return(results)
 }
 
 # Output functions ----
-.scaleTable <- function(jaspResults, dataset, options, relyFit, ready) {
+.reliabilityScaleTable <- function(jaspResults, dataset, options, ready) {
   
   if (!is.null(jaspResults[["scaleTable"]])) return()
   
@@ -358,14 +338,17 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   
   jaspResults[["scaleTable"]] <- scaleTable
   
-  res <- try(.reliabilityScaleResults(jaspResults, dataset, options, relyFit, ready))
+  # Compute the results
+  .reliabilityComputeResults(jaspResults, dataset, options, ready)
+  # Get results
+  relyFit <- jaspResults[["stateReliabilityResults"]]$object
+  
+  res <- try(.reliabilityScaleFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
     scaleTable$setError(.extractErrorMessage(res))
-  else
-    scaleTable$addRows(res)
 }
 
-.itemTable <- function (jaspResults, dataset, options, relyFit, ready) {
+.reliabilityItemTable <- function (jaspResults, dataset, options, ready) {
   if (!(options$alphaItem || options$gutmannItem || options$itemRestCor ||
         options$meanItem  ||options$mcDonaldItem || options$sdItem))
     return()
@@ -412,10 +395,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   
   jaspResults[["itemContainer"]][["table"]] <- itemTable 
   
-  res <- try(.reliabilityItemResults(jaspResults, dataset, options, relyFit, ready))
+  # Get results
+  relyFit <- jaspResults[["stateReliabilityResults"]]$object
+  
+  res <- try(.reliabilityItemFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
     itemTable$setError(.extractErrorMessage(res))
-  else 
+  else
     for (level in 1:length(res))
       itemTable$addRows(res[[level]])
   
@@ -424,60 +410,60 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .reliabilityAlphaCI <- function(relyFit, ci, nullAlpha = 0) {
-
-	# code taken and modified from http://www.psyctc.org/stats/R/Feldt1.html
-	# considering using the bootstrapped version inside psych as an alternative
-
-	#***********************************************************#
-	#* program using methods described in Feldt, Woodruff &    *#
-	#* Salih (1987) Applied Psychological Measurement 11(1),   *#
-	#* pp. 93-103 to carry out omnibus inferential test of     *#
-	#* similarity of alpha values from a single sample         *#
-	#***********************************************************#
-	
-	# relyFit is the output from psych::alpha and must contain the sample size as nObs
-	# ci is the width of the confidence interval about obs.a desired
-	
-	estAlpha <- relyFit[["total"]][["raw_alpha"]]
-	nVar     <- relyFit[["nvar"]]
-	nObs     <- relyFit[["nObs"]]
-
-	if(estAlpha > nullAlpha)
-		f <- (1 - estAlpha) / (1 - nullAlpha)
-	else
-		f <- (1 - nullAlpha) / (1 - estAlpha)
-	
-	nDen <- (nObs - 1) * (nVar - 1)
-	nNum <- nObs - 1
-	# set the upper and lower p values for the desired C.I.
-	null.p <- stats::pf(f, nNum, nDen) 
-	p1     <- (1 - ci)/2
-	p2     <- ci + p1 # corresponding F values
-	f1     <- stats::qf(p1, nNum, nDen)
-	f2     <- stats::qf(p2, nNum, nDen) 
-	lower  <- 1 - (1 - estAlpha) * f2
-	upper  <- 1 - (1 - estAlpha) * f1
-	return(c(lower, upper))
+  
+  # code taken and modified from http://www.psyctc.org/stats/R/Feldt1.html
+  # considering using the bootstrapped version inside psych as an alternative
+  
+  #***********************************************************#
+  #* program using methods described in Feldt, Woodruff &    *#
+  #* Salih (1987) Applied Psychological Measurement 11(1),   *#
+  #* pp. 93-103 to carry out omnibus inferential test of     *#
+  #* similarity of alpha values from a single sample         *#
+  #***********************************************************#
+  
+  # relyFit is the output from psych::alpha and must contain the sample size as nObs
+  # ci is the width of the confidence interval about obs.a desired
+  
+  estAlpha <- relyFit[["total"]][["raw_alpha"]]
+  nVar     <- relyFit[["nvar"]]
+  nObs     <- relyFit[["nObs"]]
+  
+  if(estAlpha > nullAlpha)
+    f <- (1 - estAlpha) / (1 - nullAlpha)
+  else
+    f <- (1 - nullAlpha) / (1 - estAlpha)
+  
+  nDen <- (nObs - 1) * (nVar - 1)
+  nNum <- nObs - 1
+  # set the upper and lower p values for the desired C.I.
+  null.p <- stats::pf(f, nNum, nDen) 
+  p1     <- (1 - ci)/2
+  p2     <- ci + p1 # corresponding F values
+  f1     <- stats::qf(p1, nNum, nDen)
+  f2     <- stats::qf(p2, nNum, nDen) 
+  lower  <- 1 - (1 - estAlpha) * f2
+  upper  <- 1 - (1 - estAlpha) * f1
+  return(c(lower, upper))
 }
 
 .reliabilityConvertDataToCorrelation <- function(dataset, options) {
-	
-	if (options[["missingValues"]] == "excludeCasesListwise")
-		dataset <- dataset[complete.cases(dataset), ]
-	
-	means  <- colMeans(dataset, na.rm = TRUE)
-	covmat <- stats::cov(dataset, use = "pairwise")
-	stdev  <- sqrt(diag(covmat))
-	cormat <- psych::cor.smooth(stats::cov2cor(covmat), 
-	                            eig.tol = sqrt(.Machine[["double.eps"]]))
-	
-	return(list(
-		correlation = cormat,
-		itemSds     = stdev,
-		itemMeans   = means,
-		# direct line from: corpcor::rebuild.cov
-		covariance  = sweep(sweep(cormat, 1, stdev, "*"), 2, stdev, "*")
-	))
+  
+  if (options[["missingValues"]] == "excludeCasesListwise")
+    dataset <- dataset[complete.cases(dataset), ]
+  
+  means  <- colMeans(dataset, na.rm = TRUE)
+  covmat <- stats::cov(dataset, use = "pairwise")
+  stdev  <- sqrt(diag(covmat))
+  cormat <- psych::cor.smooth(stats::cov2cor(covmat), 
+                              eig.tol = sqrt(.Machine[["double.eps"]]))
+  
+  return(list(
+    correlation = cormat,
+    itemSds     = stdev,
+    itemMeans   = means,
+    # direct line from: corpcor::rebuild.cov
+    covariance  = sweep(sweep(cormat, 1, stdev, "*"), 2, stdev, "*")
+  ))
 }
 
 .reliabilitySetAlphaNms <- function(options) {
