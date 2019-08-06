@@ -93,7 +93,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
         hyp <- "less"
       
       BF10  <- .bayesBinomialTest(counts, n, theta0=options$testValue, hypothesis = hyp, a = a, b = b)
-      
+
       BF <- BF10
       
       if (options$bayesFactorType == "BF01") {
@@ -118,7 +118,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   # Save results to state
   jaspResults[["stateBayesianBinomResults"]] <- createJaspState(results)
   jaspResults[["stateBayesianBinomResults"]]$dependOn(
-    c("variables", "testValue", "hypothesis", "descriptivesPlotsConfidenceInterval")
+    c("variables", "testValue", "hypothesis", "priorA", "priorB")
   )
   
   # Return results object
@@ -132,9 +132,9 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   theta0    <- options$testValue
   
   bayesianBinomialTable <- createJaspTable("Bayesian Binomial Test")
-  bayesianBinomialTable$dependOn(c("variables", "testValue", "hypothesis", "bayesFactorType", "Prior"))
+  bayesianBinomialTable$dependOn(c("variables", "testValue", "hypothesis", "bayesFactorType", "priorA", "priorB"))
   bayesianBinomialTable$position <- 1
-  
+
   bayesianBinomialTable$addCitation(c("Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
                                       "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
                                       "Haldane, J. B. S. (1932). A note on inverse probability. Mathematical Proceedings of the Cambridge Philosophical Society, 28, 55-61."))
@@ -202,16 +202,16 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   bayesianBinomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number", format = "sf:4;dp:3")
   bayesianBinomialTable$addColumnInfo(name = "BF",         title = bf.title,     type = "number", format = "sf:4;dp:3")
   
-  if (theta0 == 1 && hyp == "greater") {
-    
+  errorMessageTable <- NULL
+  if (theta0 == 1 && hyp == "greater")
     errorMessageTable <- "Cannot test the hypothesis that the test value is greater than 1."
-    
-  } else if (theta0 == 0 && hyp == "less") {
-    
+  else if (theta0 == 0 && hyp == "less")
     errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
-  }
   
   jaspResults[["bayesianBinomialTable"]] <- bayesianBinomialTable
+  
+  if(!is.null(errorMessageTable))
+    .quitAnalysis(errorMessageTable)
   
   if (!is.null(errors) && errors == "No variables")
     return()
@@ -335,7 +335,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   variables <- unlist(options$variables)
   if(is.null(jaspResults[["bayesianBinomPlots"]])) { 
     jaspResults[["bayesianBinomPlots"]] <- createJaspContainer("Inferential Plots")
-    jaspResults[["bayesianBinomPlots"]]$dependOn(c("Prior", "variables", "hypothesis", "plotPriorAndPosterior", "plotSequentialAnalsis", "plotPriorAndPosteriorAdditionalInfo"))
+    jaspResults[["bayesianBinomPlots"]]$dependOn(c("priorA", "priorB", "variables", "hypothesis", "plotPriorAndPosterior", "plotSequentialAnalsis", "plotPriorAndPosteriorAdditionalInfo"))
     jaspResults[["bayesianBinomPlots"]]$position <- 2
   }
   bayesianBinomPlots <- jaspResults[["bayesianBinomPlots"]]
@@ -388,7 +388,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
           plot        = p,
           aspectRatio = 0.7
         )
-        plot$dependOn(c("plotPriorAndPosterior", "Prior", "hypothesis", "plotPriorAndPosteriorAdditionalInfo"))
+        plot$dependOn(c("plotPriorAndPosterior", "priorA", "priorB", "hypothesis", "plotPriorAndPosteriorAdditionalInfo"))
         bayesianBinomPlots[[splitWord]][[paste0(var, lev)]] <- plot
       }
       if(options$plotSequentialAnalysis){
@@ -403,7 +403,7 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
           plot        = p,
           aspectRatio = 0.7
         )
-        plot$dependOn(c("plotSequentialAnalysis", "Prior", "hypothesis"))
+        plot$dependOn(c("plotSequentialAnalysis", "priorA", "priorB", "hypothesis"))
         bayesianBinomPlots[[splitWord]][[paste0(var, lev, "sequential")]] <- plot
       }
     }
@@ -437,9 +437,9 @@ BinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     linesPrior <- linesPosterior <- numeric(size) # initializes everything to 0
     idx        <- theta <= theta0 # the nonzero components
     # fill in the posterior
-    linesPosterior[idx] <- dbeta(theta[idx], a + counts, b + n - counts) / pbeta(theta0, a + counts, b + n - counts, lower.tail = FALSE)
+    linesPosterior[idx] <- dbeta(theta[idx], a + counts, b + n - counts) / pbeta(theta0, a + counts, b + n - counts, lower.tail = TRUE)
     # fill in the prior
-    linesPrior[idx] <- dbeta(theta[idx], a, b) / pbeta(theta0, a, b, lower.tail = FALSE)
+    linesPrior[idx] <- dbeta(theta[idx], a, b) / pbeta(theta0, a, b, lower.tail = TRUE)
     linesGroup      <- c(linesPosterior, linesPrior)
   }
   thetaGroup <- c(theta, theta)
