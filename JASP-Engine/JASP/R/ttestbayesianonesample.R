@@ -75,19 +75,20 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
         bf.raw <- r[["bf"]]
         error  <- r[["error"]]
         ttestResults[["tValue"]][[var]] <- r[["tValue"]]
+        ttestResults[["n1"]][var]       <- r[["n1"]]
+        # ttestResults[["n2"]][var]       <- r[["n2"]]
+        ttestResults[["tValue"]][var]   <- r[["tValue"]]
 
-        if (!is.null(r[["error"]]) && is.na(r[["error"]]) && grepl("approximation", r[["method"]])) {
+        if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
           ttestTable$addFootnote(
             message = "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.",
             symbol = "", rowNames = var, colNames = "error")
         }
-
-        bf.raw <- r[["bf"]]
-        error  <- r[["error"]]
-
-        ttestResults[["n1"]][var]       <- r[["n1"]]
-        # ttestResults[["n2"]][var]       <- r[["n2"]]
-        ttestResults[["tValue"]][var]   <- r[["tValue"]]
+        if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
+            options[["informativeStandardizedEffectSize"]] == "normal") {
+          error <- NA_real_
+          ttestTable$addFootnote(message = "No error estimate is available for normal priors.")
+        }
       }
 
       BF <- .recodeBFtype(bfOld     = bf.raw,
