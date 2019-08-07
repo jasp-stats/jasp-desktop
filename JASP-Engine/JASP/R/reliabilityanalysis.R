@@ -15,15 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
-  
-  # Read dataset
-  dataset <- .relReadData(dataset, options)
-  
+ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   ready <- length(options$variables) != 0
   
-  # Error checking
-  .relCheckErrors(dataset, options)
+  if(ready) {
+    dataset <- .relReadData(dataset, options)
+    .reliabilityCheckErrors(dataset, options)
+  }
   
   # Output tables
   .reliabilityScaleTable(jaspResults, dataset, options, ready)
@@ -42,7 +40,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
                              exclude.na.listwise = NULL))
 }  
 
-.relCheckErrors <- function(dataset, options) {
+.reliabilityCheckErrors <- function(dataset, options) {
   
   # Error check 1: 0 observations for a level of a variable
   for (variable in options$variables) {
@@ -206,7 +204,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!ready) 
     return()
   
-  results <- list()
+  results   <- list()
   nObs      <- nrow(dataset)
   nVar      <- ncol(dataset)
   variables <- unlist(options$variables)
@@ -272,8 +270,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
       )
     }
   }
-  
-  return(results)
+  jaspResults[["itemContainer"]][["table"]]$addRows(results)
 }
 
 # Output functions ----
@@ -340,10 +337,8 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   
   jaspResults[["scaleTable"]] <- scaleTable
   
-  # Compute the results
-  .reliabilityComputeResults(jaspResults, dataset, options, ready)
-  # Get results
-  relyFit <- jaspResults[["stateReliabilityResults"]]$object
+  # Compute/get the results
+  relyFit <- .reliabilityComputeResults(jaspResults, dataset, options, ready)
   
   res <- try(.reliabilityScaleFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
@@ -397,15 +392,12 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   
   jaspResults[["itemContainer"]][["table"]] <- itemTable 
   
-  # Get results
-  relyFit <- jaspResults[["stateReliabilityResults"]]$object
+  # Compute/get the results
+  relyFit <- .reliabilityComputeResults(jaspResults, dataset, options, ready)
   
   res <- try(.reliabilityItemFill(jaspResults, dataset, options, relyFit, ready))
   if(isTryError(res))
     itemTable$setError(.extractErrorMessage(res))
-  else
-    for (level in 1:length(res))
-      itemTable$addRows(res[[level]])
   
   if (length(options$reverseScaledItems) > 0)
     itemTable$addFootnote("reverse-scaled item", symbol = "\u207B")
@@ -430,17 +422,17 @@ ReliabilityAnalysis <- function(jaspResults, dataset, options, ...) {
   nVar     <- relyFit[["nvar"]]
   nObs     <- relyFit[["nObs"]]
   
+  f <- (1 - nullAlpha) / (1 - estAlpha)
   if(estAlpha > nullAlpha)
-    f <- (1 - estAlpha) / (1 - nullAlpha)
-  else
-    f <- (1 - nullAlpha) / (1 - estAlpha)
+    f <- 1/f
   
   nDen <- (nObs - 1) * (nVar - 1)
   nNum <- nObs - 1
   # set the upper and lower p values for the desired C.I.
   null.p <- stats::pf(f, nNum, nDen) 
   p1     <- (1 - ci)/2
-  p2     <- ci + p1 # corresponding F values
+  p2     <- ci + p1 
+  # corresponding F values
   f1     <- stats::qf(p1, nNum, nDen)
   f2     <- stats::qf(p2, nNum, nDen) 
   lower  <- 1 - (1 - estAlpha) * f2
