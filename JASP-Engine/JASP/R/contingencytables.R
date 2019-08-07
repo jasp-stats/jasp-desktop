@@ -49,7 +49,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     layer.variables <- c()
     for (layer in options$layers)
       layer.variables <- c(layer.variables, unlist(layer$variables))
-    
     counts.var <- options$counts
     if (counts.var == "")
       counts.var <- NULL
@@ -70,8 +69,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
 # Combinations of rows, columns, layers ----
 .crossTabComputeAnalyses <- function(dataset, options, ready) {
-  rows    <- as.vector(options$rows,    "character")
-  columns <- as.vector(options$columns, "character")
+  rows    <- as.character(options$rows)
+  columns <- as.character(options$columns)
   
   if (length(rows) == 0)
     rows <- ""
@@ -81,19 +80,18 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   analyses <- list()
   analyses$analyses <- data.frame("columns" = columns, stringsAsFactors = FALSE)
   analyses$analyses <- cbind(analyses$analyses, 
-                             "rows" = rep(rows, each = dim(analyses$analyses)[1]), 
+                             "rows" = rep(rows, each = nrow(analyses$analyses)), 
                     stringsAsFactors = FALSE)
   
   for (layer in options$layers) {
-    layer.vars <- as.vector(layer$variables, "character")
+    layer.vars <- as.character(layer$variables)
     analyses$analyses <- cbind(analyses$analyses, 
-                               rep(layer.vars, each = dim(analyses$analyses)[1]), 
+                               rep(layer.vars, each = nrow(analyses$analyses)), 
                       stringsAsFactors = FALSE)
-    names(analyses$analyses)[dim(analyses$analyses)[2]] <- layer$name
+    names(analyses$analyses)[ncol(analyses$analyses)] <- layer$name
   }
-  
   analyses$analyses <- .dataFrameToRowList(analyses$analyses)
-  for (i in 1:length(analyses$analyses)) {
+  for (i in seq_along(analyses$analyses)) {
     analysis   <- analyses$analyses[[i]]
     counts.var <- options$counts
     if (counts.var == "")
@@ -109,7 +107,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     # if no layers are specified, groups is null
     if (length(analysis) >= 3) {  # if layers are specified
       
-      lvls <- base::levels(subdataset[[ .v(analysis[[3]]) ]])
+      lvls <- levels(subdataset[[ .v(analysis[[3]]) ]])
       
       if (length(lvls) < 2)
         lvls <- ""
@@ -120,13 +118,13 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       # it is easiest to do this with a data frame
       # at the end we convert this to a list of rows
       
-      groups <- data.frame(lvls, stringsAsFactors=FALSE)
-      base::names(groups) <- analysis[[3]]
+      groups <- data.frame(lvls, stringsAsFactors = FALSE)
+      names(groups) <- analysis[[3]]
       
       if (length(analysis) >= 4) {
         
         for (j in 4:(length(analysis))) {
-          lvls <- base::levels(subdataset[[ .v(analysis[[j]]) ]])
+          lvls <- levels(subdataset[[ .v(analysis[[j]]) ]])
           lvls <- c(lvls, "")  # blank means total
           
           groups <- cbind(rep(lvls, each = dim(groups)[1]), groups, 
@@ -146,8 +144,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     grp.mat <- .crossTabGroupMatrices(subdataset, analysis$rows, 
                                              analysis$columns, groups, 
                                              counts.var, 
-                                             options$rowOrder=="descending", 
-                                             options$columnOrder=="descending", 
+                                             options$rowOrder == "descending", 
+                                             options$columnOrder == "descending", 
                                              ready)
     analyses$group.matrices[[i]] <- grp.mat
   }
@@ -156,24 +154,24 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
 # Container ----
 .crossTabContainer <- function(jaspResults, options, analyses, ready) {
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     analysis <- analyses$analyses[[i]]
-    if (is.null(jaspResults[[paste0("tables", i)]])) {
+    if (is.null(jaspResults[[paste0("container", i)]])) {
       container <- createJaspContainer()
       container$dependOn(options              = c("layers", "counts"),
                          optionContainsValue  = list(rows     = analysis$rows, 
                                                      columns  = analysis$columns))
-      jaspResults[[paste0("tables", i)]] <- container
+      jaspResults[[paste0("container", i)]] <- container
     }
   }
 }
 
 # Output Tables ----
 .crossTabMain <- function(jaspResults, dataset, options, analyses, ready) {
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     
     analysis <- analyses$analyses[[i]]
-    analysisContainer <- jaspResults[[paste0("tables", i)]]
+    analysisContainer <- jaspResults[[paste0("container", i)]]
     if (!is.null(analysisContainer[["crossTabMain"]])) 
       next
     
@@ -193,14 +191,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       crossTabMain$addColumnInfo(name = analysis$rows, type = "string", 
                                  combine = TRUE)
     
-    # whether the counts are float point or not; changes formatting
-    counts.fp <- FALSE  
-      
-    if (options$counts != "") {
-      counts <- dataset[[ .v(options$counts) ]]
-      if (identical(counts, as.integer(counts)) == FALSE)          
-        counts.fp <- TRUE
-    }
+    
+    counts.fp <- .crossTabCountsFp(dataset, options)
 
     if (options$countsExpected || options$percentagesRow || 
         options$percentagesColumn || options$percentagesTotal )  
@@ -255,9 +247,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
      !options$chiSquaredContinuityCorrection && 
      !options$likelihoodRatio) 
     return()
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     analysis <- analyses$analyses[[i]]
-    analysisContainer <- jaspResults[[paste0("tables", i)]]
+    analysisContainer <- jaspResults[[paste0("container", i)]]
     if (!is.null(analysisContainer[["crossTabChisq"]])) 
       next
     
@@ -268,14 +260,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     crossTabChisq$showSpecifiedColumnsOnly <- TRUE
     crossTabChisq$position <- 2
     
-    # whether the counts are float point or not; changes formatting
-    counts.fp <- FALSE  
-    
-    if (options$counts != "") {
-      counts <- dataset[[ .v(options$counts) ]]
-      if (identical(counts, as.integer(counts)) == FALSE)          
-        counts.fp <- TRUE
-    }
+    counts.fp <- .crossTabCountsFp(dataset, options)
     
     # Add columns to table
     .crossTabLayersColumns(crossTabChisq, analysis)
@@ -305,9 +290,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 .crossTabLogOdds <- function(jaspResults, dataset, options, analyses, ready) {
   if(!options$oddsRatio)
     return()
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     analysis <- analyses$analyses[[i]]
-    analysisContainer <- jaspResults[[paste0("tables", i)]]
+    analysisContainer <- jaspResults[[paste0("container", i)]]
     if (!is.null(analysisContainer[["crossTabLogOdds"]])) 
       next
 
@@ -350,9 +335,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 .crossTabNominal <- function(jaspResults, dataset, options, analyses, ready) {
   if (!options$contingencyCoefficient && !options$phiAndCramersV && !options$lambda)
     return()
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     analysis <- analyses$analyses[[i]]
-    analysisContainer <- jaspResults[[paste0("tables", i)]]
+    analysisContainer <- jaspResults[[paste0("container", i)]]
     if (!is.null(analysisContainer[["crossTabNominal"]])) 
       next
 
@@ -401,9 +386,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 .crossTabGamma <- function(jaspResults, dataset, options, analyses, ready) {
   if (!options$gamma)
     return()
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     analysis <- analyses$analyses[[i]]
-    analysisContainer <- jaspResults[[paste0("tables", i)]]
+    analysisContainer <- jaspResults[[paste0("container", i)]]
     if (!is.null(analysisContainer[["crossTabGamma"]])) 
       next
 
@@ -438,9 +423,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 .crossTabKendallTau <- function(jaspResults, dataset, options, analyses, ready) {
   if (!options$kendallsTauB)
     return()
-  for (i in 1:length(analyses$analyses)){
+  for (i in seq_along(analyses$analyses)){
     analysis <- analyses$analyses[[i]]
-    analysisContainer <- jaspResults[[paste0("tables", i)]]
+    analysisContainer <- jaspResults[[paste0("container", i)]]
     if (!is.null(analysisContainer[["crossTabKendallTau"]])) 
       next
     
@@ -456,8 +441,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
                                      type = "number")
     crossTabKendallTau$addColumnInfo(name = "statistic[kTauB]", title = "Z", 
                                      type = "number", format = "dp:3")
-    crossTabKendallTau$addColumnInfo(name = "p[kTauB]", title = "p", 
-                                     type = "number", format = "dp:3;p:.001")
+    crossTabKendallTau$addColumnInfo(name = "p[kTauB]", title = "p", type = "pvalue")
     if (options$VovkSellkeMPR) 
       crossTabKendallTau$addColumnInfo(name = "MPR[kTauB]", title = "VS-MPR\u002A", 
                                        type = "number")
@@ -486,7 +470,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   if(analysis$columns == "") {
     lvls <- c("a", "b")
     for (column.name in lvls) {
-      private.name <- base::paste(column.name,"[counts]", sep = "")
+      private.name <- paste0(column.name,"[counts]")
       
       if (counts.fp || options$countsExpected || options$percentagesRow || 
           options$percentagesColumn || options$percentagesTotal ) 
@@ -497,39 +481,39 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
                             overtitle = ".", type = "integer")
       
       if (options$countsExpected) { 
-        private.name <- base::paste(column.name,"[expected]", sep = "")
+        private.name <- paste0(column.name,"[expected]")
         table$addColumnInfo(name = private.name, title = ".", 
                             type = "number", format = "sf:4;dp:2")
       }
       if (options$percentagesRow) {
-        private.name <- base::paste(column.name,"[row.proportions]", sep = "")
+        private.name <- paste0(column.name,"[row.proportions]")
         table$addColumnInfo(name = private.name, title = ".", 
                             type = "number", format = "dp:1;pc")
       }
       if (options$percentagesColumn) {
-        private.name <- base::paste(column.name,"[col.proportions]", sep = "")
+        private.name <- paste0(column.name,"[col.proportions]")
         table$addColumnInfo(name = private.name, title = ".", 
                             type = "number", format = "dp:1;pc")
       }
       if (options$percentagesTotal) {
-        private.name <- base::paste(column.name,"[proportions]", sep = "")
+        private.name <- paste0(column.name,"[proportions]")
         table$addColumnInfo(name = private.name, title = ".", 
                             type = "number", format = "dp:1;pc")
       }
     }
   } else {
     if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-      lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
+      lvls <- levels(dataset[[ .v(analysis$columns) ]])
       if (options$columnOrder == "descending")
-        lvls <- base::rev(lvls)
+        lvls <- rev(lvls)
     } else {
-      lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
+      lvls <- unique(dataset[[ .v(analysis$columns) ]])
       if (options$columnOrder == "descending")
-        lvls <- base::rev(lvls, decreasing = TRUE)
+        lvls <- rev(lvls, decreasing = TRUE)
     }
       
     for (column.name in lvls) {
-      private.name <- base::paste(column.name,"[counts]", sep = "")
+      private.name <- paste0(column.name,"[counts]")
       
       if (counts.fp || options$countsExpected || options$percentagesRow || 
           options$percentagesColumn || options$percentagesTotal ) 
@@ -541,22 +525,22 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
                             overtitle = overTitle, type = "integer")
       
       if (options$countsExpected) { 
-        private.name <- base::paste(column.name,"[expected]", sep = "")
+        private.name <- paste0(column.name,"[expected]")
         table$addColumnInfo(name = private.name, title = column.name, 
                             type = "number", format = "sf:4;dp:2")
       }
       if (options$percentagesRow) {
-        private.name <- base::paste(column.name,"[row.proportions]", sep = "")
+        private.name <- paste0(column.name,"[row.proportions]")
         table$addColumnInfo(name = private.name, title = column.name, 
                             type = "number", format = "dp:1;pc")
       }
       if (options$percentagesColumn) {
-        private.name <- base::paste(column.name,"[col.proportions]", sep = "")
+        private.name <- paste0(column.name,"[col.proportions]")
         table$addColumnInfo(name = private.name, title = column.name, 
                             type = "number", format = "dp:1;pc")
       }
       if (options$percentagesTotal) {
-        private.name <- base::paste(column.name,"[proportions]", sep = "")
+        private.name <- paste0(column.name,"[proportions]")
         table$addColumnInfo(name = private.name, title = column.name, 
                             type = "number", format = "dp:1;pc")
       }
@@ -604,6 +588,47 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   return(row)
 }
 
+.crossTabCountsMatrixToRow <- function(matrix, counts.matrix, type) {
+  if (is.character(matrix[1,1]))
+    rowname <- matrix[1,]
+  else {
+    if(type %in% c("expected", "col.proportions", "proportions"))
+      row <- apply(matrix, 2, sum)
+    else if(type == "row.proportions"){
+      m <- margin.table(counts.matrix, 2)
+      rowprop <- prop.table(m)
+      row <- rowprop
+    }
+  }
+  
+  row <- as.list(row)
+  names(row) <- paste0(names(row),"[", type, "]")
+  
+  if (is.character(matrix[1,1]))
+    row[[paste0("total[", type, "]")]] <- ""
+  else {
+    if(type == "col.proportions") {
+      row.sum  <- margin.table(matrix, 1)
+      row.prop <- prop.table(row.sum)
+      col.prop <- sum(row.prop)
+      row[[paste0("total[", type, "]")]] <- col.prop
+    } else if(type == "row.proportions")
+      row[[paste0("total[", type, "]")]] <- sum(rowprop)
+    else
+      row[[paste0("total[", type, "]")]] <- sum(matrix)
+  }
+  return(row)
+}
+
+.crossTabCountsFp <- function(dataset, options) {
+  if (options$counts != "") {
+    counts <- dataset[[ .v(options$counts) ]]
+    if (identical(counts, as.integer(counts)) == FALSE)          
+      return(TRUE)
+  }
+  return(FALSE)
+}
+
 # Group matrix
 .crossTabGroupMatrices <- function(dataset, rows, columns, groups, counts = NULL, 
                                    rowOrderDescending = FALSE, 
@@ -620,33 +645,33 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       col.levels <- c(" .", " . ")
       
       if (rows != "")
-        row.levels <- base::levels(dataset[[ .v(rows) ]])
+        row.levels <- levels(dataset[[ .v(rows) ]])
       if (columns != "")
-        col.levels <- base::levels(dataset[[ .v(columns) ]])
+        col.levels <- levels(dataset[[ .v(columns) ]])
       
-      ss.matrix <- base::matrix(0, 
-                                nrow  = length(row.levels), 
-                                ncol     = length(col.levels), 
-                                dimnames = list(row.levels, col.levels))
+      ss.matrix <- matrix(0, 
+                          nrow     = length(row.levels), 
+                          ncol     = length(col.levels), 
+                          dimnames = list(row.levels, col.levels))
       
     } else if (is.null(counts)) {
-      ss.dataset <- base::subset(dataset, select = .v(c(rows, columns)))
-      ss.table   <- base::table(ss.dataset)
-      ss.matrix  <- base::matrix(ss.table, nrow = dim(ss.table)[1], 
-                                 ncol = dim(ss.table)[2], 
-                                 dimnames = dimnames(ss.table))
+      ss.dataset <- subset(dataset, select = .v(c(rows, columns)))
+      ss.table   <- table(ss.dataset)
+      ss.matrix  <- matrix(ss.table, nrow = dim(ss.table)[1], 
+                           ncol = dim(ss.table)[2], 
+                           dimnames = dimnames(ss.table))
       
     } else {
-      ss.dataset <- base::subset(dataset, select = .v(c(rows, columns, counts)))
-      ss.matrix  <- base::tapply(ss.dataset[[ .v(counts) ]], 
-                                 list(ss.dataset[[ .v(rows) ]], 
-                                      ss.dataset[[ .v(columns) ]]), 
-                                 base::sum)
+      ss.dataset <- subset(dataset, select = .v(c(rows, columns, counts)))
+      ss.matrix  <- tapply(ss.dataset[[ .v(counts) ]], 
+                           list(ss.dataset[[ .v(rows) ]], 
+                                ss.dataset[[ .v(columns) ]]), 
+                           sum)
       ss.matrix[is.na(ss.matrix)] <- 0
     }
     
     if (rowOrderDescending)
-      ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+      ss.matrix <- apply(ss.matrix, 2, rev)
     else 
       ss.matrix <- ss.matrix
     
@@ -655,7 +680,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     else 
       ss.matrix <- ss.matrix
     
-    ss.matrix[base::is.na(ss.matrix)] <- 0
+    ss.matrix[is.na(ss.matrix)] <- 0
     
     matrices[[1]] <- ss.matrix
   } else {
@@ -666,35 +691,35 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       
       if (!ready) { # do nothing
       } else if (length(group) == 0) {
-        ss.dataset <- base::subset(dataset, select = .v(c(rows, columns, counts)))
+        ss.dataset <- subset(dataset, select = .v(c(rows, columns, counts)))
       } else {
-        ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", 
+        ss.filter.string <- paste(.v(names(group)), "==\"", group, "\"", 
                                         sep = "", collapse = "&")
-        ss.expression    <- base::parse(text = ss.filter.string)
-        ss.dataset	     <- base::subset(dataset, 
-                                         select = .v(c(rows, columns, counts)), 
-                                         subset = eval(ss.expression))
+        ss.expression    <- parse(text = ss.filter.string)
+        ss.dataset	     <- subset(dataset, 
+                                   select = .v(c(rows, columns, counts)), 
+                                   subset = eval(ss.expression))
       }
       
       if (!ready) {
-        ss.matrix <- base::matrix(c(0,0,0,0), nrow = 2, ncol = 2)
+        ss.matrix <- matrix(c(0,0,0,0), nrow = 2, ncol = 2)
       } else if (is.null(counts)) {
-        ss.table  <- base::table(ss.dataset)
-        ss.matrix <- base::matrix(ss.table, 
-                                  nrow = dim(ss.table)[1], 
-                                  ncol = dim(ss.table)[2], 
-                                  dimnames = dimnames(ss.table))
+        ss.table  <- table(ss.dataset)
+        ss.matrix <- matrix(ss.table, 
+                            nrow     = dim(ss.table)[1], 
+                            ncol     = dim(ss.table)[2], 
+                            dimnames = dimnames(ss.table))
       } else {
-        ss.matrix <- base::tapply(ss.dataset[[ .v(counts) ]], 
-                                  list(ss.dataset[[ .v(rows) ]], 
-                                       ss.dataset[[ .v(columns) ]]), 
-                                  base::sum)
+        ss.matrix <- tapply(ss.dataset[[ .v(counts) ]], 
+                            list(ss.dataset[[ .v(rows) ]], 
+                                 ss.dataset[[ .v(columns) ]]), 
+                            sum)
       }
       
-      ss.matrix[base::is.na(ss.matrix)] <- 0
+      ss.matrix[is.na(ss.matrix)] <- 0
       
       if (rowOrderDescending)
-        ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+        ss.matrix <- apply(ss.matrix, 2, rev)
       else 
         ss.matrix <- ss.matrix
       
@@ -741,7 +766,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
       
       row.proportions.matrix <- try({
-        base::prop.table(counts.matrix, 1)
+        prop.table(counts.matrix, 1)
       })
       if (isTryError(row.proportions.matrix)) {
         row.proportions.matrix    <- counts.matrix
@@ -749,7 +774,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
       
       col.proportions.matrix <- try({
-        base::prop.table(counts.matrix, 2)
+        prop.table(counts.matrix, 2)
       })
       if (isTryError(col.proportions.matrix)) {
         col.proportions.matrix    <- counts.matrix
@@ -757,7 +782,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
       
       proportions.matrix <- try({
-        base::prop.table(counts.matrix, margin = NULL)
+        prop.table(counts.matrix, margin = NULL)
       })
       if (isTryError(proportions.matrix)) {
         proportions.matrix    <- counts.matrix
@@ -776,8 +801,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       if (ready) {
         
         row <- as.list(counts.matrix[j,])
-        names(row) <- base::paste(names(row),"[counts]",	sep = "")
-        sum <- base::sum(counts.matrix[j,])
+        names(row) <- paste0(names(row),"[counts]")
+        sum <- sum(counts.matrix[j,])
         if(counts.fp || options$countsExpected || options$percentagesRow || 
            options$percentagesColumn || options$percentagesTotal)
           row[["total[counts]"]] <- sum
@@ -792,7 +817,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           expected <- as.list(expected.matrix[j,])
           names(expected) <- paste(names(expected),"[expected]",  sep = "")
           
-          if (inherits(expected.matrix[1,1], "character"))
+          if (is.character(expected.matrix[1,1]))
             expected[["total[expected]"]] <- ""
           else 
             expected[["total[expected]"]] <- base::sum(expected.matrix[j,])
@@ -809,10 +834,10 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           names(row.proportions) <- paste(names(row.proportions),
                                           "[row.proportions]",  sep = "")
           
-          if (inherits(row.proportions.matrix[1,1], "character"))
+          if (is.character(row.proportions.matrix[1,1]))
             row.prop <- ""
           else
-            row.prop <- base::sum(row.proportions.matrix[j,])
+            row.prop <- sum(row.proportions.matrix[j,])
           row.proportions[["total[row.proportions]"]] <- row.prop
           
           row.proportions <- c(row.row.proportions, row.proportions)
@@ -827,11 +852,11 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           names(col.proportions) <- paste(names(col.proportions),
                                           "[col.proportions]",  sep = "")
           
-          if (inherits(col.proportions.matrix[1,1], "character")) {
+          if (is.character(col.proportions.matrix[1,1]))
             col.proportions[["total[col.proportions]"]] <- ""
-          } else {
-            row.sum  <- base::margin.table(counts.matrix, 1)
-            row.prop <- as.list( base::prop.table(row.sum))
+          else {
+            row.sum  <- margin.table(counts.matrix, 1)
+            row.prop <- as.list( prop.table(row.sum))
             col.proportions[["total[col.proportions]"]] <- row.prop[[j]]
           }
           
@@ -847,10 +872,10 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           names(total.proportions) <- paste(names(total.proportions),
                                             "[proportions]",  sep = "")
           
-          if (inherits(proportions.matrix[1,1], "character"))
+          if (is.character(proportions.matrix[1,1]))
             tot.prop <- ""
           else 
-            tot.prop <- base::sum(proportions.matrix[j,])
+            tot.prop <- sum(proportions.matrix[j,])
           total.proportions[["total[proportions]"]] <- tot.prop
           
           total.proportions <- c(row.total.proportions, total.proportions)
@@ -862,20 +887,18 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       row[[var.name]] <- dimnames(counts.matrix)[[1]][j]
       row <- .crossTabLayerNames(row, group)
       
-      if (j == 1 && options$countsExpected == FALSE && 
-          options$percentagesRow == FALSE && 
-          options$percentagesCol == FALSE && 
-          options$percentagesTotal == FALSE)
+      if (j == 1 && !options$countsExpected && !options$percentagesRow && 
+          !options$percentagesCol &&  !options$percentagesTotal)
         row[[".isNewGroup"]] <- TRUE
       rows[[length(rows) + 1]] <- row
     }
     
     if (ready) {
       
-      row <- apply(counts.matrix, 2, base::sum)
+      row <- apply(counts.matrix, 2, sum)
       row <- as.list(row)
-      names(row) <- base::paste(names(row),"[counts]",	sep = "")
-      sum <- base::sum(counts.matrix)
+      names(row) <- paste0(names(row),"[counts]")
+      sum <- sum(counts.matrix)
       if(counts.fp || options$countsExpected || options$percentagesRow || 
          options$percentagesColumn || options$percentagesTotal)
         row[["total[counts]"]] <- sum
@@ -884,19 +907,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       row <- c(row.count, row)
       
       if (options$countsExpected) {
-        
-        if (inherits(expected.matrix[1,1], "character"))
-          expected <- expected.matrix[1,]
-        else
-          expected <- apply(expected.matrix, 2, base::sum)
-        
-        expected <- as.list(expected)
-        names(expected) <- paste(names(expected),"[expected]", sep = "")
-        
-        if (inherits(expected.matrix[1,1], "character"))
-          expected[["total[expected]"]] <- ""
-        else 
-          expected[["total[expected]"]] <- base::sum(expected.matrix)
+        expected <- .crossTabCountsMatrixToRow(expected.matrix, counts.matrix, type = "expected")
         
         expected <- c(row.expected, expected)
         
@@ -904,23 +915,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
       
       if (options$percentagesRow) {
-        
-        if (inherits(row.proportions.matrix[1,1], "character"))
-          row.proportions <- row.proportions.matrix[1,]
-        else {
-          m <- base::margin.table(counts.matrix, 2)
-          rowproportion <- base::prop.table(m)
-        }
-        
-        row.proportions <- as.list(rowproportion)
-        names(row.proportions) <- paste(names(row.proportions),
-                                        "[row.proportions]", sep = "")
-        
-        if (inherits(row.proportions.matrix[1,1], "character"))
-          row.prop <- ""
-        else 
-          row.prop <- base::sum(rowproportion)
-        row.proportions[["total[row.proportions]"]] <- row.prop
+        row.proportions <- .crossTabCountsMatrixToRow(row.proportions.matrix, counts.matrix, type = "row.proportions")
         
         row.proportions<-c(row.row.proportions, row.proportions)
         
@@ -928,24 +923,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
       
       if (options$percentagesColumn) {
-        
-        if (inherits(col.proportions.matrix[1,1], "character"))
-          col.proportions <- col.proportions.matrix[1,]
-        else 
-          colproportion <- apply(col.proportions.matrix, 2, base::sum)
-        
-        col.proportions <- as.list(colproportion)
-        names(col.proportions) <- paste(names(col.proportions),
-                                        "[col.proportions]", sep = "")
-        
-        if (inherits(row.proportions.matrix[1,1], "character")) {
-          col.proportions[["total[col.proportions]"]] <- ""
-        } else {
-          row.sum  <- base::margin.table(counts.matrix, 1)
-          row.prop <- base::prop.table(row.sum)
-          col.prop <- base::sum(row.prop)
-          col.proportions[["total[col.proportions]"]] <- col.prop
-        }
+        col.proportions <- .crossTabCountsMatrixToRow(col.proportions.matrix, counts.matrix, type = "col.proportions")
         
         col.proportions<-c(row.col.proportions, col.proportions)
         
@@ -953,22 +931,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
       
       if (options$percentagesTotal) {
-        
-        if (inherits(proportions.matrix[1,1], "character"))
-          total.proportions <- proportions.matrix[1,]
-        else 
-          total.proportions <- apply(proportions.matrix, 2, base::sum)
-        
-        total.proportions <- as.list(total.proportions)
-        names(total.proportions) <- paste(names(total.proportions),
-                                          "[proportions]", sep = "")
-        
-        if (inherits(proportions.matrix[1,1], "character")) {
-          total.proportions[["total[proportions]"]] <- ""
-        } else {
-          tot.prop <- base::sum(proportions.matrix)
-          total.proportions[["total[proportions]"]] <- tot.prop
-        }
+        total.proportions <- .crossTabCountsMatrixToRow(proportions.matrix, counts.matrix, type = "proportions")
         
         total.proportions <- c(row.total.proportions, total.proportions)
         
@@ -979,8 +942,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       row <- list()
     if(var.name != "")
       row[[var.name]] <- "Total"
-    if (options$countsExpected == FALSE && options$percentagesRow   == FALSE && 
-        options$percentagesCol == FALSE && options$percentagesTotal == FALSE)
+    if (!options$countsExpected && !options$percentagesRow && 
+        !options$percentagesCol && !options$percentagesTotal)
       row[[".isNewGroup"]] <- TRUE
     
     #row <- .crossTabLayerNames(row, group)
@@ -1019,7 +982,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     row[["MPR[N]"]]  <- ""
     
     if (ready){
-      sum <- base::sum(counts.matrix)
+      sum <- sum(counts.matrix)
       if(counts.fp)
         row[["value[N]"]] <- sum
       else
@@ -1063,10 +1026,10 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         
         chi.result <- try({
           chi.result <- stats::chisq.test(counts.matrix)
-          #row <- list(Method="Pearson's Chi-squared", 
-                       #X2=unname(chi$statistic), 
-                       #df=unname(chi$parameter), 
-                       #p = chi$p.value)
+          #row <- list(Method = "Pearson's Chi-squared", 
+                       #X2 = unname(chi$statistic), 
+                       #df = unname(chi$parameter), 
+                       #p  = chi$p.value)
         })
         
         if (isTryError(chi.result) || is.na(chi.result$statistic)) {

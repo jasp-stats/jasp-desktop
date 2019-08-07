@@ -18,7 +18,7 @@ test_that("Main table results match", {
   options$percentagesColumn <- TRUE
   options$percentagesTotal <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table   <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabMain"]][["data"]]
+  table   <- results[["results"]][["container1"]][["collection"]][["container1_crossTabMain"]][["data"]]
   expect_equal_tables(table,
       list(0.489296636085627, 320, 394.529977794227, 0.236861584011843, 0.392638036809816,
            0.710186513629842, 495, 420.470022205773, 0.36639526276832,
@@ -74,8 +74,8 @@ test_that("Multiple row and column variables give multiple main tables", {
   )
 
   for (i in 1:4) {
-    rows <- results[["results"]][[paste0("tables", i)]][["collection"]][[paste0("tables", i, "_crossTabMain")]][["schema"]][["fields"]][[1]][["name"]]
-    cols <- results[["results"]][[paste0("tables", i)]][["collection"]][[paste0("tables", i, "_crossTabMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
+    rows <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_crossTabMain")]][["schema"]][["fields"]][[1]][["name"]]
+    cols <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_crossTabMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
     expect_identical(c(rows, cols), pairs[[i]], label=paste("Table", i))
   }
 })
@@ -90,7 +90,7 @@ test_that("Chi-Squared test table results match", {
   options$likelihoodRatio <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabChisq"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabChisq"]][["data"]]
   expect_equal_tables(table,
     list("N", "", "", "", 2550, 
          "<unicode>", 82.0397085317219, 1, 1.33379878452991e-19, 63462127883801120, 
@@ -106,7 +106,7 @@ test_that("Nominal table results match", {
   options$contingencyCoefficient <- TRUE
   options$phiAndCramersV <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabNominal"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabNominal"]][["data"]]
   expect_equal_tables(table,
     list("Contingency coefficient", 0.0807792391722019, "Phi-coefficient",
          0.0810440898473108, "Cramer's V ", 0.0810440898473108)
@@ -120,7 +120,7 @@ test_that("Log Odds Ratio table results match", {
   options$oddsRatio <- TRUE
   options$oddsRatioConfidenceIntervalInterval <- 0.90
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabLogOdds"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabLogOdds"]][["data"]]
   expect_equal_tables(table,
     list("Odds ratio", -0.329205575243527, -0.998167649205055, 0.339756498718001,
          "Fisher's exact test ", -0.325882968750928, -1.07370478788709,
@@ -134,7 +134,7 @@ test_that("Ordinal Gamma table results match", {
   options$columns <- "contBinom"
   options$gamma <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabGamma"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabGamma"]][["data"]]
   expect_equal_tables(table,
     list("Gamma coefficient", -0.163132137030995, 0.197938461395245, -0.551084392520947,
          0.224820118458957)
@@ -148,7 +148,7 @@ test_that("Kendall's Tau table results match", {
   options$kendallsTauB <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("ContingencyTables", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_crossTabKendallTau"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabKendallTau"]][["data"]]
   expect_equal_tables(table,
     list("Kendall's Tau-b", -0.0810440898473108, 0.420024632711394, 1,
          -0.806378512498144)
