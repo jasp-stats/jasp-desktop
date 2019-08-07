@@ -1,8 +1,5 @@
 context("Bayesian Log-Linear Regression")
 
-# does not test
-# - error handling
-
 initOpts <- function() {
   options <- jasptools::analysisOptions("RegressionLogLinearBayesian")
   options$sampleMode <- "manual"
