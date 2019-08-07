@@ -1,8 +1,5 @@
 context("Log-Linear Regression")
 
-# does not test
-# - error handling
-
 test_that("Main table results match", {
   options <- jasptools::analysisOptions("RegressionLogLinear")
   options$counts <- "facFifty"
