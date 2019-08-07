@@ -26,8 +26,8 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   # Output tables and plots
   .multinomialMainTable(        jaspResults, dataset, options, ready)
-  .multinomialDescriptivesTable(jaspResults, options, ready)
-  .multinomialDescriptivesPlot( jaspResults, options, ready)
+  .multinomialDescriptivesTable(jaspResults, dataset, options, ready)
+  .multinomialDescriptivesPlot( jaspResults, dataset, options, ready)
 
   return()
 }
@@ -60,10 +60,10 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   # Test 2: Expected Counts
   if (options$exProbVar != "" && options$counts == "") 
-    stop("Expected counts not supported without observed counts!")
+    .quitAnalysis("Expected counts not supported without observed counts!")
   if(options$exProbVar != "" || options$hypothesis != "multinomialTest")
      if(options$exProbVar == "" && length(options$tableWidget) == 0)
-       stop("No expected counts entered!")
+       .quitAnalysis("No expected counts entered!")
   
   # Test 3: Levels and integer check for counts
   if(options$factor != ""){
@@ -148,6 +148,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   jaspResults[["stateChisqResults"]] <- createJaspState(chisqResults)
   jaspResults[["stateChisqResults"]]$dependOn(c("factor", "counts", "hypothesis", 
                                                 "exProbVar", "tableWidget", "simulatepval"))
+  return(chisqResults)
 }
 
 # Filling Tables ----
@@ -167,25 +168,19 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   results <- list()
 
   # Compute Results
-  .chisquareTest(jaspResults, dataset, options)
-  # Get Results
-  chisqResults <- jaspResults[["stateChisqResults"]]$object
+  chisqResults <- .chisquareTest(jaspResults, dataset, options)
   
   if(!is.null(chisqResults)){
-    # fill in results one row at a time
-    for (r in 1:length(chisqResults)) {
-      df       <- chisqResults[[r]][["parameter"]][["df"]]
-      pVal     <- chisqResults[[r]][["p.value"]]
-      chisqVal <- chisqResults[[r]][["statistic"]][["X-squared"]]
-      # This happens when the simulate.p.value option is TRUE, i.e. using monte carlo
-      if (is.na(df)) 
-        df <- "-" 
-      results[[r]] <- list(case = names(chisqResults)[r],
-                           chisquare = chisqVal, df = df, p = pVal)
-      if (options$VovkSellkeMPR)
-        results[[r]][["VovkSellkeMPR"]] <- .VovkSellkeMPR(pVal)
-      jaspResults[["chisqTable"]]$addRows(results[[r]])
-    }
+    # extract relevant objects from chisqResults (this looks so convoluted is because its stored in an inconvenient way, but that's probably a legacy code thingy).
+    dataframe <- do.call(rbind.data.frame, 
+                         lapply(chisqResults, function(x) c(x[["statistic"]][["X-squared"]], x[["parameter"]][["df"]], x[["p.value"]])))
+    colnames(dataframe) <- c("chisquare", "df", "p")
+    dataframe <- cbind(case = names(chisqResults), dataframe)
+    
+    if (options$VovkSellkeMPR)
+      dataframe <- cbind(dataframe, VovkSellkeMPR = .VovkSellkeMPR(dataframe$p))
+    
+    jaspResults[["chisqTable"]]$setData(dataframe)
   }
 }
 
@@ -238,14 +233,12 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     tableFrame <- cbind(tableFrame, ciDf)
     message <- "Confidence intervals are based on independent binomial distributions."
     results[["footnotes"]][["CImessage"]] <- message
-    if (any(is.nan(unlist(tableFrame[, c('lowerCI', 'upperCI')])))){
+    if (anyNA(unlist(tableFrame[, c('lowerCI', 'upperCI')]))){
       message <- "Could not compute confidence intervals."
       results[["footnotes"]][["ciComputeError"]] <- message
     }
   }
-  
-  for (i in 1:nrow(tableFrame))
-    jaspResults[["descriptivesTable"]]$addRows(as.list(tableFrame[i,]))
+  jaspResults[["descriptivesTable"]]$setData(tableFrame)
 }
 
 # Output functions ----
@@ -293,7 +286,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   .multinomialSetError(res, chisqTable)
 }
 
-.multinomialDescriptivesTable <- function(jaspResults, options, ready) {
+.multinomialDescriptivesTable <- function(jaspResults, dataset, options, ready) {
   # Create multinomial descriptives table
   #
   # Args:
@@ -307,8 +300,8 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   if(!options$descriptives || !is.null(jaspResults[["descriptivesTable"]])) 
     return()
   
-  # Get Results
-  chisqResults <- jaspResults[["stateChisqResults"]]$object
+  # Compute/get Results
+  chisqResults <- .chisquareTest(jaspResults, dataset, options)
   
   descriptivesTable <- createJaspTable(title = "Descriptives")
   descriptivesTable$dependOn(c("factor", "counts", "exProbVar",  "hypothesis", "countProp",
@@ -363,14 +356,14 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   if(options$confidenceInterval) {
     message <- "Confidence intervals are based on independent binomial distributions."
     descriptivesTable$addFootnote(message)
-    if (any(is.nan(unlist(descriptivesTable[["data"]][, c('lowerCI', 'upperCI')])))){
+    if (anyNA(unlist(descriptivesTable[["data"]][, c('lowerCI', 'upperCI')]))){
       message <- "Could not compute confidence intervals."
       descriptivesTable$addFootnote(message)
     }
   }
 }
 
-.multinomialDescriptivesPlot <- function(jaspResults, options, ready) {
+.multinomialDescriptivesPlot <- function(jaspResults, dataset, options, ready) {
   if(!options$descriptivesPlot || !is.null(jaspResults[["descriptivesPlot"]]))
     return()
   
@@ -383,14 +376,14 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   if (!ready)
     return()
   
-  .multinomialDescriptivesPlotFill(jaspResults, descriptivesPlot, options)
+  .multinomialDescriptivesPlotFill(jaspResults, dataset, options, descriptivesPlot)
   
   return()
 }
 
-.multinomialDescriptivesPlotFill <- function(jaspResults, descriptivesPlot, options) {
-  # Get Results
-  chisqResults <- jaspResults[["stateChisqResults"]]$object
+.multinomialDescriptivesPlotFill <- function(jaspResults, dataset, options, descriptivesPlot) {
+  # Compute/get Results
+  chisqResults <- .chisquareTest(jaspResults, dataset, options)
   # Generate the plot
   f <- names(chisqResults[[1]][["observed"]])
   plotFrame <- data.frame(factor = factor(f, levels = rev(f)))
@@ -426,7 +419,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   # Determine y-axis margin: If CIs could not be computed, use observed counts
   plotFrame$yAxisMargin <- plotFrame$upperCI
   for(i in 1:nrow(plotFrame))
-    if(plotFrame$upperCI[i] == 0)
+    if(abs(plotFrame$upperCI) <= sqrt(.Machine$double.eps)) #near-zero value
       plotFrame$yAxisMargin[i] <- plotFrame$obs[i]
   
   # Create plot
