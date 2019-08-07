@@ -118,15 +118,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .translateFactorNames <- function(factor_name, options, back = FALSE) {
-  fac_names    <- vapply(options$factors,     function(x) x$name, "name")
+  # make dictionary
+  fac_names    <- vapply(options$factors, function(x) x$name, "name")
+  fac_titles   <- vapply(options$factors, function(x) x$title, "title")
   sofac_names  <- vapply(options$secondOrder, function(x) x$name, "name")
-  if (length(sofac_names) > 0) sofac_names <- paste0("so", sofac_names)
-  fac_titles   <- vapply(options$factors,     function(x) x$title, "title")
   sofac_titles <- vapply(options$secondOrder, function(x) x$title, "title")
-
   fnames  <- c(fac_names, sofac_names)
   ftitles <- c(fac_titles, sofac_titles)
-
+  # translate
   if (back) {
     idx <- vapply(factor_name, function(n) which(ftitles == n), 0L, USE.NAMES = FALSE)
     return(fnames[idx])
@@ -183,7 +182,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
   admissible <- .withWarnings(lavaan:::lav_object_post_check(cfaResult[["lav"]]))
-  print(admissible)
+
   if (!admissible$value) {
     JASP:::.quitAnalysis(paste("The model is not admissible:", admissible$warnings[[1]]$message))
   }
@@ -238,8 +237,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   spec <- list()
   spec$variables <- unlist(lapply(options$factors, function(x) x$indicators))
   spec$latents   <- vapply(options$factors,        function(x) x$name, "names")
-  spec$soLatents <- vapply(options$secondOrder,    function(x) x$name, "names")
-  if (length(spec$soLatents) > 0) spec$soLatents <- paste0("so", spec$soLatents)
+  if (length(options$secondOrder) > 0) {
+    spec$soIndics  <- .translateFactorNames(options$secondOrder[[1]]$indicators, options, back = TRUE)
+  }
   if (options$se == "bootstrap") {
     spec$se <- "standard"
     spec$bootstrap <- TRUE
@@ -271,22 +271,20 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
 
-  if (length(options$secondOrder) > 0) {
-    facs    <- options$secondOrder
-    soFacs  <- cfaResult[["spec"]]$soLatents
+  if (!is.null(cfaResult[["spec"]]$soIndics)) {
+    facs    <- cfaResult[["spec"]]$soIndics
     lenvars <- length(vars)
 
-    so <- "# Second-order factors"
-    for (i in 1:length(facs)) {
-      pre <- paste0("\n", soFacs[i], " =~ ")
-      len <- length(facs[[i]]$indicators)
-      labelledfacs <- labels[[i + lenvars]] <- character(len)
-      for (j in 1:len) {
-        labels[[i + lenvars]][j] <- paste0("gamma", i, j)
-        labelledfacs[j] <- paste0("gamma", i, j, "*", facs[[i]]$indicators[j])
-      }
-      so <- paste0(so, pre, paste0(labelledfacs, collapse = " + "))
+    so  <- "# Second-order factor"
+    pre <- "\nSecondOrder =~ "
+    len <- length(facs)
+    labelledfacs <- labels[[lenvars + 1]] <- character(len)
+    for (j in 1:len) {
+      labels[[lenvars + 1]][j] <- paste0("gamma1", j)
+      labelledfacs[j] <- paste0("gamma1", j, "*", facs[j])
     }
+    
+    so <- paste0(so, pre, paste0(labelledfacs, collapse = " + "))
   } else {
     so <- NULL
   }
@@ -386,10 +384,15 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (is.null(cfaResult)) return()
   
   r2res <- lavaan::inspect(cfaResult[["lav"]], "r2")
+  facNames <- cfaResult[["spec"]]$latents
   
   if (options$groupvar != "") {
     # add columns with Rsq overtitle
-    tabr2[["__var__"]] <- .unv(names(r2res[[1]]))
+    varnames <- names(r2res[[1]])
+    fac_idx  <- varnames %in% facNames
+    varnames[!fac_idx] <- .unv(varnames[!fac_idx])
+    varnames[fac_idx]  <- .translateFactorNames(varnames[fac_idx], options)
+    tabr2[["__var__"]] <- varnames
     lvls <- names(r2res)
     for (lvl in lvls) {
       tabr2$addColumnInfo(name = lvl, title = lvl, overtitle = "R\u00B2", type = "number", format = "sf:4;dp:3")
@@ -397,7 +400,11 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     }
   } else {
     tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
-    tabr2[["__var__"]] <- .unv(names(r2res))
+    varnames <- names(r2res)
+    fac_idx  <- varnames %in% facNames
+    varnames[!fac_idx] <- .unv(varnames[!fac_idx])
+    varnames[fac_idx]  <- .translateFactorNames(varnames[fac_idx], options)
+    tabr2[["__var__"]] <- varnames
     tabr2[["rsq"]]     <- r2res
   }
 }
@@ -500,7 +507,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .cfaParEstToTablesHelper <- function(pei, options, spec, jrobject) {
   pei <- as.data.frame(pei)
-  facNames <- c(spec$latents, spec$soLatents)
+  facNames <- c(spec$latents)
 
   colSel <- c("lhs", "rhs", "label", "est", "se", "z", "pvalue", "ci.lower", "ci.upper")
   if (options$std != "none") colSel <- c(colSel, paste0("std.", options$std))
@@ -561,7 +568,6 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     # add data
     fl2dat <- pei[pei$op == "=~" & pei$rhs %in% facNames, colSel]
     fl2dat$label <- gsub("gamma", "\u03b3", fl2dat$label)
-    fl2dat$lhs   <- .translateFactorNames(fl2dat$lhs, options)
     fl2dat$rhs   <- .translateFactorNames(fl2dat$rhs, options)
     fl2$setData(fl2dat)
     fl2$dependOn(optionsFromObject = jrobject)
@@ -588,7 +594,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                      type = "number", format = "sf:4;dp:3")
 
   # Add data
-  fvdat     <- pei[pei$op == "~~" & pei$lhs %in% facNames & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
+  fvdat     <- pei[pei$op == "~~" & pei$lhs %in% c(facNames, "SecondOrder") & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
   fvdat$lhs <- .translateFactorNames(fvdat$lhs, options)
   fv$setData(fvdat)
   fv$dependOn(optionsFromObject = jrobject)
@@ -650,7 +656,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                      format = "sf:4;dp:3")
 
   # add data
-  rvdat <- pei[pei$op == "~~" & !pei$lhs %in% facNames & pei$lhs == pei$rhs, colSel[-c(2, 3)]]
+  rvdat <- pei[pei$op == "~~" & !pei$lhs %in% facNames & !pei$lhs == "SecondOrder" & 
+                 pei$lhs == pei$rhs, colSel[-c(2, 3)]]
   rvdat$lhs <- .unv(rvdat$lhs)
   rv$setData(rvdat)
   rv$dependOn(optionsFromObject = jrobject)
@@ -735,7 +742,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                         type = "number", format = "sf:4;dp:3")
 
     # add data
-    vidat <- pei[pei$op == "~1" & !pei$lhs %in% facNames, colSel[-c(2, 3)]]
+    vidat <- pei[pei$op == "~1" & !pei$lhs == "SecondOrder" & !pei$lhs %in% facNames , colSel[-c(2, 3)]]
     vidat$lhs <- .unv(vidat$lhs)
     vi$setData(vidat)
     vi$dependOn(optionsFromObject = jrobject)
