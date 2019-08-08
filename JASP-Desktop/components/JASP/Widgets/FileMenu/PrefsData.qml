@@ -116,7 +116,7 @@ Item
 							Connections
 							{
 								target:					preferencesModel
-								onCustomEditorChanged:	customEditorText = preferencesModel.customEditor
+								onCustomEditorChanged:	customEditorText.text = preferencesModel.customEditor
 							}
 
 						}
