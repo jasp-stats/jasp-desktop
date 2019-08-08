@@ -69,6 +69,9 @@ test_that("Analysis handles errors - infinity", {
 test_that("Analysis handles errors - missing values (factors)", {
   options <- jasptools::analysisOptions("RegressionLogLinear")
   options$factors <- "debBinMiss20"
+  options$modelTerms <- list(
+    list(components="debBinMiss20")
+  )
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
   errorMsg <- results[["results"]][["errorMessage"]]
   expect_is(errorMsg, "character")
