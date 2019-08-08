@@ -14,13 +14,10 @@ test_that("Main table results match", {
   options$counts <- "facFifty"
   options$layers <- list(list(
     name = "Layer 1",
-    variables = "facGender"),
-  list( 
-    name = "Layer 2", 
-    variables = "facFive")
+    variables = "facGender")
   )
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_contTabBasMain"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasMain"]][["data"]]
   expect_equal_tables(table,
     list(320, 495, "Count", 815, "control", "f", "TRUE", 334, 202, "Count",
          536, "experimental", "f", 654, 697, "Count", 1351, "Total",
@@ -46,8 +43,8 @@ test_that("Multiple row and column variables give multiple main tables", {
   )
 
   for (i in 1:4) {
-    rows <- results[["results"]][[paste0("tables", i)]][["collection"]][[paste0("tables", i, "_contTabBasMain")]][["schema"]][["fields"]][[1]][["name"]]
-    cols <- results[["results"]][[paste0("tables", i)]][["collection"]][[paste0("tables", i, "_contTabBasMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
+    rows <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_contTabBasMain")]][["schema"]][["fields"]][[1]][["name"]]
+    cols <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_contTabBasMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
     expect_identical(c(rows, cols), pairs[[i]], label=paste("Table", i))
   }
 })
@@ -71,7 +68,7 @@ test_that("Bayesian Contingency Tables Tests table results match", {
   for (samplingModel in samplingModels) {
     options$samplingModel <- samplingModel
     results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
-    table <- results[["results"]][["tables1"]][["collection"]][["tables1_contTabBasBF"]][["data"]]
+    table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasBF"]][["data"]]
     expect_equal_tables(table, refTables[[samplingModel]], label=paste("Sampling model", samplingModel))
   }
 })
@@ -111,7 +108,7 @@ test_that("Bayesian Contingency Tables Tests table results match - different hyp
     for(hypothesis in hypotheses) {
       options$hypothesis <- hypothesis
       results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options, view = FALSE)
-      table <- results[["results"]][["tables1"]][["collection"]][["tables1_contTabBasBF"]][["data"]]
+      table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasBF"]][["data"]]
       #makeTestTable(table)
       expect_equal_tables(table, refTables[[samplingModel]][[hypothesis]], label=paste("Sampling model", samplingModel, "; hypothesis", hypothesis))
     }
@@ -126,7 +123,7 @@ test_that("Log Odds Ratio table results match", {
   options$oddsRatio <- TRUE
   options$oddsRatioCredibleIntervalInterval <- 0.90
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_contTabBasLogOdds"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasLogOdds"]][["data"]]
   expect_equal_tables(table,
     list("Odds ratio", -0.325226942981456, -0.981898524010587, 0.337174584207703)
   )
@@ -140,7 +137,7 @@ test_that("Cramer's V table results match", {
   options$effectSize <- TRUE
   options$effectSizeCredibleIntervalInterval <- 0.90
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
-  table <- results[["results"]][["tables1"]][["collection"]][["tables1_contTabBasCramersV"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasCramersV"]][["data"]]
   expect_equal_tables(table,
                       list("Cramer's V", 0.0698837782777569, 1.02065076979155e-16, 0.216657039422164)
   )
