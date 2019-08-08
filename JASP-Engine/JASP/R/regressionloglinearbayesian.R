@@ -117,8 +117,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   dependentBase64 <- .v(dependentVariable)
   
   if (length(options$modelTerms) > 0) {
-    variablesInModel <- NULL
-    variablesInModelBase64 <- NULL
+    variablesInModel <- variablesInModelBase64 <- NULL
     
     for (i in seq_along(options$modelTerms)) {
       components <- options$modelTerms[[i]]$components
@@ -277,7 +276,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
   bfObject <- .basRegLogLinComputeBFObject(jaspResults, dataset, options)
 
   #for empty elements in tables w/ output
-  emptyRow    <- .basRegLogLinSummaryLine(char = "", prob = TRUE) 
+  emptyRow    <- .basRegLogLinSummaryLine(char = "",  prob = TRUE) 
   dotted.line <- .basRegLogLinSummaryLine(char = ".", prob = TRUE) #for empty tables
 
   results <- list()
@@ -364,16 +363,14 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .basRegLogLinSubSummaryResults <- function(jaspResults, dataset, options) {
-  if(!is.null(jaspResults[["Container"]][["SubSummaryResults"]])) 
-    return()
-  if(!options$regressionCoefficientsSubmodel) 
+  if(!is.null(jaspResults[["Container"]][["SubSummaryResults"]]) || !options$regressionCoefficientsSubmodel) 
     return()
   # Get Model
   bfObject <- jaspResults[["Container"]][["bfObject"]]$object
   
 
   #for empty elements in tables w/ output
-  emptyRow <- .basRegLogLinSummaryLine(char = "") 
+  emptyRow    <- .basRegLogLinSummaryLine(char = "") 
   dotted.line <- .basRegLogLinSummaryLine(char = ".") #for empty tables
 
   results <- list()
@@ -523,7 +520,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .basRegLogLinSummaryTable <- function(jaspResults, dataset, options, ready){
-  if (!is.null(jaspResults[["Container"]][["SummaryTable"]]) || !options$regressionCoefficientsEstimates) 
+  if (!is.null(jaspResults[["Container"]][["SummaryTable"]]) || 
+      !options$regressionCoefficientsEstimates) 
     return()
   
   # Create table
@@ -563,7 +561,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .basRegLogLinSubSummaryTable <- function(jaspResults, dataset, options, ready){
-  if (!is.null(jaspResults[["Container"]][["SubSummaryTable"]]) || !options$regressionCoefficientsSubmodel) 
+  if (!is.null(jaspResults[["Container"]][["SubSummaryTable"]]) || 
+      !options$regressionCoefficientsSubmodel) 
     return()
   
   # Create table
