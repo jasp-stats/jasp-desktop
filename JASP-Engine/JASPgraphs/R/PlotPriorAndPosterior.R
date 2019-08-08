@@ -287,6 +287,8 @@ makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.nul
 #' @param bfSubscripts String, manually specify the BF labels.
 #' @param pizzaTxt String vector of length 2, text to be drawn above and below pizza plot.
 #' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
+#' @param CRItxt String, display the credible interval as \code{paste0(CRItxt, "[", lower, ", ", upper, "]")}.
+#' @param medianTxt String, display the median as \code{paste(medianTxt, formatC(median, 3, format = "f"))}.
 #' @param ... Unused.
 #'
 #' @return If BF, CRI, and median are all NULL a ggplot, otherwise a gtable.
@@ -300,7 +302,9 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
                                   hypothesis = c("equal", "smaller", "greater"),
                                   bfSubscripts = NULL,
                                   pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, 
-                                  bty = list(type = "n", ldwX = .5, lwdY = .5), ...) {
+                                  bty = list(type = "n", ldwX = .5, lwdY = .5),
+                                  CRItxt = "95% CI: ", medianTxt = "Median:",
+                                  ...) {
   
 	errCheckPlots(dfLines, dfPoints, CRI, median, BF)
   bfType <- match.arg(bfType)
@@ -339,14 +343,14 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
     #maxheight / 8
     #)
     if (drawCRItxt) {
-      labelsCRI <- paste("95% CI: [",
-                         bquote(.(formatC(dfCI$xmin, 3, format = "f"))), ", ",
-                         bquote(.(formatC(dfCI$xmax, 3, format = "f"))), "]", sep = "")
+      labelsCRI <- paste0(CRItxt, "[",
+                          bquote(.(formatC(dfCI$xmin, 3, format = "f"))), ", ",
+                          bquote(.(formatC(dfCI$xmax, 3, format = "f"))), "]")
     }
   }
 
   if (!is.null(median)) {
-  	labelsCRI <- c(labelsCRI, paste("Median:", formatC(median, 3, format = "f")))
+  	labelsCRI <- c(labelsCRI, paste(medianTxt, formatC(median, 3, format = "f")))
   }
 
   if (length(labelsCRI) > 0) {

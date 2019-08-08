@@ -67,10 +67,9 @@ Create a robustness or sequential plot
 }
 \examples{
 n <- 100
-x <- seq(-3, 3, length.out = n)
 dfLines <- data.frame(
   x = seq_len(n),
-  y = rnorm(x, seq_len(n) / 30, .5)
+  y = c(0, rnorm(n - 1, seq_len(n - 1) / 30, .5)) # log Bayes factor
 )
 
 PlotRobustnessSequential(
@@ -78,11 +77,11 @@ PlotRobustnessSequential(
   xName        = "n",
 )
 
-LogBF10 <- tail(dfLines, 1)$y
+BF10 <- exp(tail(dfLines, 1)$y)
 PlotRobustnessSequential(
   dfLines      = dfLines,
   xName        = "n",
-  BF           = LogBF10,
-  bfType       = "LogBF10"
+  BF           = BF10,
+  bfType       = "BF10"
 )
 }
