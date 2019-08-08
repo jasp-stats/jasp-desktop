@@ -106,6 +106,9 @@ test_that("Analysis handles errors - Missing values (factor)", {
   set.seed(0)
   options <- initOpts()
   options$factors <- "debBinMiss20"
+  options$modelTerms <- list(
+    list(components="debBinMiss20")
+  )
   results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
   errorMsg <- results[["results"]][["errorMessage"]]
   expect_is(errorMsg, "character")
