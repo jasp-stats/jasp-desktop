@@ -13,7 +13,7 @@
         {
           "name": "Field - Discovering Statistics",
           "path": "Field - Discovering Statistics",
-          "description": "This folder contains the data sets from Field, A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. These data sets were constructed by Andy Field who therefore owns the copyright. Andy Field generously agreed that we can include these data sets in the JASP data library. These data sets are also publicly available on the website that accompanies Andy Field's book: https://edge.sagepub.com/field5e. Without Andy Field's explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of  a CC BY-NC-ND license <br><br> Field - Discovering Statistics using IBM SPSS Statistics",
+          "description": "This folder contains the data sets from Field, A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. These data sets were constructed by Andy Field who therefore owns the copyright. Andy Field generously agreed that we can include these data sets in the JASP data library. These data sets are also publicly available on the website that accompanies Andy Field's book: https://edge.sagepub.com/field5e. Without Andy Field's explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of  a CC BY-NC-ND license <br><br> ",
           "kind": "folder",
           "children": [
             {
@@ -105,7 +105,7 @@
         {
           "name": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
           "path": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
-          "description": "This folder contains the data sets from Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). <i>Introduction to the Practice of Statistics<\/i> (7th ed.). New York: W. H. Freeman and Company. Moore, McCabe, and Craig generously agreed that we can include the data sets in the JASP data library. These data sets are also publicly available on the website that accompanies their book: whfreeman.com/ips7e. Without the authors' explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of a CC BY-NC-ND license <br><br> Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+          "description": "This folder contains the data sets from Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). <i>Introduction to the Practice of Statistics<\/i> (7th ed.). New York: W. H. Freeman and Company. Moore, McCabe, and Craig generously agreed that we can include the data sets in the JASP data library. These data sets are also publicly available on the website that accompanies their book: whfreeman.com/ips7e. Without the authors' explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of a CC BY-NC-ND license <br><br> ",
           "kind": "folder",
           "children": [
             {
@@ -608,14 +608,14 @@
         {
           "name": "BuildIt_Binary",
           "path": "BuildIt_Binary.jasp",
-          "description": "BuildIt's non-monetary audit population consisting of 3500 records. <br><br> The example JASP file demonstrates the use of an audit.<br><br> <i><\/i>",
+          "description": "BuildIt's non-monetary audit population consisting of 3500 records. <br><br> The example JASP file demonstrates the use of an audit.<br><br> <i>Data set used in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
           "kind": "file",
           "associated_datafile": "BuildIt_Binary.csv"
         },
         {
           "name": "BuildIt_Monetary",
           "path": "BuildIt_Monetary.jasp",
-          "description": "BuildIt's monetary audit population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of an audit.<br><br> <i><\/i>",
+          "description": "BuildIt's monetary audit population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of an audit.<br><br> <i>Data set used in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
           "kind": "file",
           "associated_datafile": "BuildIt_Monetary.csv"
         }
