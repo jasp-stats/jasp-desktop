@@ -29,7 +29,7 @@ test_that("Normality table matches", {
   options$pairs <- list(c("contNormal", "contGamma"))
   options$normalityTests <- TRUE
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
-  table <- results[["results"]][["assumptionChecks"]][["shapiroWilk"]][["data"]]
+  table <- results[["results"]][["AssumptionChecks"]][["collection"]][["AssumptionChecks_ttestNormalTable"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", "-", "contGamma", 0.969542808533914, 0.0203952735337306,
          "TRUE")
@@ -41,7 +41,7 @@ test_that("Descriptives table matches", {
   options$pairs <- list(c("contNormal", "contGamma"))
   options$descriptives <- TRUE
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["ttestDescriptives"]][["collection"]][["ttestDescriptives_table"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
          "contGamma", 100, 2.03296079621, 1.53241112621044, 0.153241112621044)
@@ -62,16 +62,16 @@ test_that("Analysis handles errors", {
 
   options$pairs <- list(c("contNormal", "debInf"))
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("infinity", msg, ignore.case=TRUE)), label = "Inf check")
 
   options$pairs <- list(c("contNormal", "debSame"))
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("variance", msg, ignore.case=TRUE)), label = "No variance check")
 
   options$pairs <- list(c("contNormal", "debMiss99"))
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("observations", msg, ignore.case=TRUE)), label = "Too few obs check")
 })

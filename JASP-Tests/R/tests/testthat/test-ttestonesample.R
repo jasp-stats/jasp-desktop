@@ -58,7 +58,7 @@ test_that("Normality table matches", {
   options$variables <- "contGamma"
   options$normalityTests <- TRUE
   results <- jasptools::run("TTestOneSample", "test.csv", options)
-  table <- results[["results"]][["assumptionChecks"]][["shapiroWilk"]][["data"]]
+  table <- results[["results"]][["AssumptionChecks"]][["collection"]][["AssumptionChecks_ttestNormalTable"]][["data"]]
   expect_equal_tables(table, list("contGamma", 0.876749741598208, 1.32551553117109e-07, "TRUE"))
 })
 
@@ -67,7 +67,7 @@ test_that("Descriptives table matches", {
   options$variables <- "contGamma"
   options$descriptives <- TRUE
   results <- jasptools::run("TTestOneSample", "test.csv", options)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["ttestDescriptives"]][["collection"]][["ttestDescriptives_table"]][["data"]]
   expect_equal_tables(table,
     list("contGamma", 100, 2.03296079621, 1.53241112621044, 0.153241112621044,
          "TRUE")
@@ -88,16 +88,16 @@ test_that("Analysis handles errors", {
 
   options$variables <- "debInf"
   results <- jasptools::run("TTestOneSample", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("infinity", msg, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- "debSame"
   results <- jasptools::run("TTestOneSample", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("variance", msg, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- "debMiss99"
   results <- jasptools::run("TTestOneSample", "test.csv", options)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("observations", msg, ignore.case=TRUE)), label = "Too few obs check")
 })
