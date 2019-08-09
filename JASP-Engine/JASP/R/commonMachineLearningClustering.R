@@ -18,25 +18,22 @@
 .readDataClusteringAnalyses <- function(dataset, options){
   predictors <- unlist(options[['predictors']])
   predictors <- predictors[predictors != ""]
-  if (is.null(dataset)) {
+  if (is.null(dataset))
     dataset <- .readDataSetToEnd(columns.as.numeric = predictors, exclude.na.listwise = predictors)
-  }
-  if(options[["scaleEqualSD"]]){
-    dataset <- scale(dataset)
-  }
+
+  if(options[["scaleEqualSD"]])
+    dataset <- as.data.frame(scale(dataset))
+
   return(dataset)
 }
 
 .errorHandlingClusteringAnalyses <- function(dataset, options){
   predictors <- unlist(options$predictors)
-  if(length(predictors[predictors != '']) > 0){
-      for(i in 1:length(predictors)){
-          errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
-                               all.target = predictors[i],
-                               observations.amount = "< 2",
-                               exitAnalysisIfErrors = TRUE)
-      }
-  }
+  
+  if(length(predictors[predictors != ""]) > 0L)
+    .hasErrors(dataset, perform, type = c('infinity', 'observations'), all.target = predictors, 
+               observations.amount = "< 2", exitAnalysisIfErrors = TRUE)
+  return()
 }
 
 .clusterAnalysesReady <- function(options){
