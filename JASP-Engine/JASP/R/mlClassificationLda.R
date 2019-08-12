@@ -449,23 +449,20 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   target <- as.numeric(dataset[, .v(options[["target"]])])
   predictors <- as.matrix(dataset[, .v(options[["predictors"]])])
 
-  tryCatch({
-    manovaResult <- manova(predictors ~ target)
-    manovaSummary <- summary(manovaResult, test="Wilks")
-    
-    # Individual models
-    anovaSummary <- summary.aov(manovaResult)
-    for(i in 1:length(anovaSummary)){
-      sumTmp <- as.matrix(anovaSummary[[i]])
-      Fstat <- sumTmp[1, 4]
-      df1 <- sumTmp[1, 1]
-      df2 <- sumTmp[2, 1]
-      p <- sumTmp[1, 5]
-      row <- data.frame(model = options[["predictors"]][i], f = Fstat, df1 = df1, df2 = df2, p = p)
-      manovaTable$addRows(row)
-    }
-  }, error = function(e) manovaTable$setError(.extractErrorMessage(e))
-  )
+  manovaResult <- manova(predictors ~ target)
+  manovaSummary <- summary(manovaResult, test="Wilks")
+
+  # Individual models
+  anovaSummary <- summary.aov(manovaResult)
+  for(i in 1:length(anovaSummary)){
+    sumTmp <- as.matrix(anovaSummary[[i]])
+    F <- sumTmp[1, 4]
+    df1 <- sumTmp[1, 1]
+    df2 <- sumTmp[2, 1]
+    p <- sumTmp[1, 5]
+    row <- data.frame(model = options[["predictors"]][i], f = F, df1 = df1, df2 = df2, p = p)
+    manovaTable$addRows(row)
+  }
 
 }
 

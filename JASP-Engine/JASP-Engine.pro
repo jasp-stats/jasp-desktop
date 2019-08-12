@@ -121,7 +121,6 @@ DISTFILES += \
     JASP/R/anovaoneway.R \
     JASP/R/anovarepeatedmeasures.R \
     JASP/R/anovarepeatedmeasuresbayesian.R \
-	JASP/R/assignFunctionInPackage.R \
     JASP/R/bainancovabayesian.R \
     JASP/R/bainanovabayesian.R \
     JASP/R/bainregressionlinearbayesian.R \
