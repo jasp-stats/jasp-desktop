@@ -20,16 +20,16 @@
   testSetIndicator          <- NULL 
   if(options[["target"]] != "")
     target                  <- options[["target"]]
-  predictors                <- unlist(options['predictors'])
+  predictors                <- unlist(options[["predictors"]])
   predictors                <- predictors[predictors != ""]
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]
   variables.to.read         <- c(target, predictors, testSetIndicator)
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns.as.numeric = variables.to.read, exclude.na.listwise = variables.to.read)
+    dataset <- .readDataSetToEnd(columns = variables.to.read, exclude.na.listwise = variables.to.read)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
-    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- scale(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
+    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
   return(dataset)
 }
 
@@ -398,3 +398,20 @@
     jaspResults[["testIndicatorColumn"]]$setNominal(testIndicatorColumn)
   }  
 }
+
+.scaleNumericData <- function(x) {
+  UseMethod(".scaleNumericData", x)
+}
+
+.scaleNumericData.data.frame <- function(x) {
+  idx <- sapply(x, is.numeric)
+  x[, idx] <- scale(x[, idx, drop = FALSE])
+  attr(x, which = "scaled:center") <- NULL
+  attr(x, which = "scaled:scale")  <- NULL
+  return(x)
+}
+
+.scaleNumericData.numeric <- function(x) {
+  return((x - mean(x)) / sd(x))
+}
+

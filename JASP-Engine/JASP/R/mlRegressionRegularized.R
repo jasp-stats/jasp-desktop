@@ -71,7 +71,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   }
   
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
-    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- scale(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
+    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
   
   return(dataset)
 }

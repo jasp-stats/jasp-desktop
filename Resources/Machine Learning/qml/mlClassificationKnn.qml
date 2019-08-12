@@ -135,9 +135,8 @@ Form {
                         max: 95 
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("of all data")
-                        enabled: true
                     }
                 }
             }
@@ -191,9 +190,8 @@ Form {
                         max: 95
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("for validation data")
-                        enabled: true
                     }
                 }
             }
@@ -213,9 +211,8 @@ Form {
                         fieldWidth: 30
                     } 
 
-                    Text {
+                    Label {
                         text: qsTr("folds")
-                        enabled: true
                     }
                 }
             }
