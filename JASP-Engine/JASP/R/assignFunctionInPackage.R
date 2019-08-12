@@ -67,3 +67,8 @@ fakeGbmCrossValErr <- function(cv.models, cv.folds, cv.group, nTrain, n.trees) {
     return(cv.error / nTrain)
 }
 
+
+
+# assign the functions ----
+assignFunctionInPackage(fakeGbmCrossValModelBuild, "gbmCrossValModelBuild", "gbm")
+assignFunctionInPackage(fakeGbmCrossValErr,        "gbmCrossValErr",        "gbm")

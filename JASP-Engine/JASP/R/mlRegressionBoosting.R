@@ -79,9 +79,6 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
   
-  assignFunctionInPackage(fakeGbmCrossValModelBuild, "gbmCrossValModelBuild", "gbm")
-  assignFunctionInPackage(fakeGbmCrossValErr, "gbmCrossValErr", "gbm")
-
   bfit <- gbm::gbm(formula = formula, data = train, n.trees = trees,
                                shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
                                cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]],
