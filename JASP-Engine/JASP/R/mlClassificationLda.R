@@ -372,13 +372,13 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 .ldaDensityplot <- function(classificationResult, options, col){
 
   target <- classificationResult[["train"]][, .v(options[["target"]])]
-    
+  lda.fit.scaled <- cbind.data.frame(
+    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]])]), scale = FALSE) %*% classificationResult[["scaling"]], 
+    V2 = classificationResult[["train"]][,.v(options[["target"]])]
+  )
+  
   if (length(colnames(classificationResult[["scaling"]])) == 1) {
-      lda.fit.scaled <- cbind.data.frame(
-                          scale(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]])]), scale = FALSE) %*% classificationResult[["scaling"]], 
-                          V2 = classificationResult[["train"]][,.v(options[["target"]])]
-                        )
-    
+
     p <- ggplot2::ggplot(data = lda.fit.scaled, ggplot2::aes(x = lda.fit.scaled[,paste("LD", col, sep = "")], group = as.factor(V2), color = as.factor(V2), show.legend = TRUE)) +
           JASPgraphs::geom_line(stat = "density") + 
           ggplot2::ylab("Density") + 
@@ -392,11 +392,6 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
     
   } else {
 
-    lda.fit.scaled <- cbind.data.frame(
-                        scale(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]])]), scale = FALSE) %*% classificationResult[["scaling"]], 
-                        V2 = classificationResult[["train"]][,.v(options[["target"]])]
-                        )
-      
     p <- ggplot2::ggplot(data = lda.fit.scaled, ggplot2::aes(x = lda.fit.scaled[,paste("LD", col, sep = "")], group = as.factor(V2), color = as.factor(V2), show.legend = FALSE)) +
           JASPgraphs::geom_line(stat = "density") + 
           ggplot2::ylab("Density") + 

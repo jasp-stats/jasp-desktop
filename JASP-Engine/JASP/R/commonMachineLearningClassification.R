@@ -20,16 +20,16 @@
   testSetIndicator          <- NULL 
   if(options[["target"]] != "")
     target                  <- options[["target"]]
-  predictors                <- unlist(options['predictors'])
+  predictors                <- unlist(options["predictors"])
   predictors                <- predictors[predictors != ""]
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]
   variables.to.read         <- c(target, predictors, testSetIndicator)
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns.as.numeric = variables.to.read, exclude.na.listwise = variables.to.read)
+    dataset <- .readDataSetToEnd(columns = variables.to.read, exclude.na.listwise = variables.to.read)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["scaleEqualSD"]])
-    dataset[,.v(options[["predictors"]])] <- scale(dataset[,.v(options[["predictors"]])])
+    dataset[,.v(options[["predictors"]])] <- .scaleNumericData(dataset[,.v(options[["predictors"]])])
   if(options[["target"]] != "")
     dataset[, .v(options[["target"]])] <- factor(dataset[, .v(options[["target"]])])
   return(dataset)
