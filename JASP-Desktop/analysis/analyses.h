@@ -65,7 +65,7 @@ public:
 	Analysis*	create(const QString &module, const QString &name, const QString &title)	{ return create(module, name, title, _nextId++, AppInfo::version);		}
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry)								{ return create(analysisEntry, _nextId++);						}
 
-	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
+	Analysis*	get(size_t id) const { return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
 	void		reload(Analysis* analysis, bool logProblem);
 	

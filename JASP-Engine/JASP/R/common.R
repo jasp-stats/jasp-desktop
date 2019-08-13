@@ -2216,78 +2216,97 @@ as.list.footnotes <- function(footnotes) {
 }
 
 .writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {
-	# Initialise output object
-	image <- list()
+  # Set values from JASP'S Rcpp when available
+  if (exists(".fromRCPP")) {
+    location        <- .fromRCPP(".requestTempFileNameNative", "png")
+    backgroundColor <- .fromRCPP(".imageBackground")
+    ppi             <- .fromRCPP(".ppi")
+  }
 
-	# Create png file location
-	location <- .fromRCPP(".requestTempFileNameNative", "png")
-	# TRUE if called from analysis, FALSE if called from editImage
-	if (is.null(relativePathpng))
-	  relativePathpng <- location$relativePath
+  # TRUE if called from analysis, FALSE if called from editImage
+  if (is.null(relativePathpng))
+    relativePathpng <- location$relativePath
 
-	fullPathpng <- paste(location$root, relativePathpng, sep="/")
-
-	base::Encoding(relativePathpng) <- "UTF-8"
-
-  root <- location$root
-  base::Encoding(root) <- "UTF-8"
-  oldwd <- getwd()
+  image                           <- list()
+  fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
+  plotEditingOptions              <- NULL
+  root                            <- location$root
+  base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(root)            <- "UTF-8"
+  oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
 
-  # Operating System information
-  type <- "cairo"
-  if (Sys.info()["sysname"]=="Darwin"){
+  type <- "cairo" # Operating System information (where to draw to)
+  if(Sys.info()["sysname"]=="Darwin")
     type <- "quartz"
-  }
-  backgroundColor <- .fromRCPP(".imageBackground")
+
+
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-    ppi <- .fromRCPP(".ppi")
 
     pngMultip <- ppi / 96
     ggplot2::ggsave(
-    	filename  = relativePathpng,
-    	plot      = plot,
-    	device    = grDevices::png,
-    	width     = width  * pngMultip,
-    	height    = height * pngMultip,
-    	dpi       = ppi,
-		bg        = backgroundColor,
-    	res       = 72 * pngMultip,
-    	type      = type,
-    	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
+      filename  = relativePathpng,
+      plot      = plot,
+      device    = grDevices::png,
+      width     = width  * pngMultip,
+      height    = height * pngMultip,
+      dpi       = ppi,
+      bg        = backgroundColor,
+      res       = 72 * pngMultip,
+      type      = type,
+      limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
     )
+
+    #If we have JASPgraphs available we can get the plotEditingOptions for this plot
+    if(requireNamespace("JASPgraphs", quietly = TRUE))
+      plotEditingOptions <- JASPgraphs::plotEditingOptions(graph=plot, asJSON=TRUE)
+
   } else {
-  	# Calculate pixel multiplier
-  	pngMultip <- .fromRCPP(".ppi") / 96
+
+    # Calculate pixel multiplier
+    pngMultip <- ppi / 96
     isRecordedPlot <- inherits(plot, "recordedplot")
 
     # Open graphics device and plot
     grDevices::png(filename=relativePathpng, width=width * pngMultip,
-	               height=height * pngMultip, bg=backgroundColor,
+                 height=height * pngMultip, bg=backgroundColor,
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {
+
       if (obj) dev.control('enable') # enable plot recording
       eval(plot())
       if (obj) plot <- recordPlot() # save plot to R object
+
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
-        .redrawPlot(plot) #(see below)
+
+      .redrawPlot(plot) #(see below)
+
     } else if (inherits(plot, "qgraph")) {
+
       qgraph:::plot.qgraph(plot)
+
     } else {
       plot(plot)
     }
+
     dev.off()
   }
 
 
-	# Save path & plot object to output
-	image[["png"]] <- relativePathpng
-	if (obj) image[["obj"]] <- plot
+  # Save path & plot object to output
+  image[["png"]] <- relativePathpng
+  if (obj) {
 
-	# Return relative paths in list
-	image
+    image[["obj"]]         <- plot
+    image[["editOptions"]] <- plotEditingOptions
+  }
+
+
+
+  # Return relative paths in list
+  image
 }
 
 
@@ -2712,9 +2731,16 @@ rewriteImages <- function() {
 }
 
 # not .editImage() because RInside (interface to CPP) cannot handle that
-editImage <- function(plotName, type, height, width) {
-
+editImage <- function(optionsJson) {
   # assumption: state[["figures"]][[plotName]] is either of class "ggplot2" or "recordedPlot"
+
+  optionsList   <- fromJSON(optionsJson)
+  plotName      <- optionsList[["data"]]
+  type          <- optionsList[["type"]]
+  width         <- optionsList[["width"]]
+  height        <- optionsList[["height"]]
+
+#We should get the extra special editing options out here and do something funky (https://www.youtube.com/watch?v=roQuEqxjDx4) with them ^^
 
   results       <- NULL
   state         <- .retrieveState()
@@ -2730,9 +2756,12 @@ editImage <- function(plotName, type, height, width) {
       # copy plot and check if we edit it
       plot <- oldPlot
       #if (type == "interactive" && isGgplot) {
-      if (FALSE && type == "interactive" && isGgplot) {
-        editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
-        plot <- editedPlot[["UpdatedPlots"]][[1]]
+      if (type == "interactive" && isGgplot) {
+
+print("DON here you should probably do something!")
+
+       # editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
+       # plot <- editedPlot[["UpdatedPlots"]][[1]]
       }
       
       # nothing was modified in ggedit, or editing was cancelled
@@ -2741,7 +2770,7 @@ editImage <- function(plotName, type, height, width) {
 
       # plot is modified or needs to be resized, let's save the new plot
       newPlot <- list()
-      content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName)
+      content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName) #Should we switch this over to the writeImage from jaspResults or we could also just directly use jaspPlot
 
       newPlot[["data"]]   <- content[["png"]]
       newPlot[["width"]]  <- width
@@ -2762,8 +2791,9 @@ editImage <- function(plotName, type, height, width) {
   # create json list for QT
   response <- list(
     status="imageEdited",
-    results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE)
+    results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE) #How do we give feedback? I guess the same as jaspPlot would, so that we may overwrite the info that is currently stored in results
   )
+  # The info should also go to jaspResults somehow... Not sure how, maybe update it from here? And perhaps it could also be used to send stuff back? Or at least to form the response json or smth...
 
   if (isTryError(results) || is.null(results)) {
 		

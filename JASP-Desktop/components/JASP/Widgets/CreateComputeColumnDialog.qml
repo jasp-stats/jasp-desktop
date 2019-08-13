@@ -4,19 +4,19 @@ import JASP.Theme 1.0
 
 Popup
 {
-	id: popupCreateComputedColumn;
-	modal: true; focus: true;
+	id:			popupCreateComputedColumn;
+	modal:		true;
 
-	y: (parent.height / 2) - (height / 2)
-	x: (parent.width / 2) - (width / 2)
+	y:			(parent.height / 2) - (height / 2)
+	x:			(parent.width / 2) - (width / 2)
+	width:		popupLoader.width
+	height:		popupLoader.height+1
 
 	closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 	property bool computeTypeIsJson: true
 
 	background: Item{}
 	padding:	0
-	width:		popupLoader.width
-	height:		popupLoader.height+1
 
 	Loader
 	{
@@ -33,13 +33,12 @@ Popup
 		{
 			id: rootCreateComputedColumn
 
-			//width: computeColumnIconRow.width
-			height: childrenRect.height + 20
-			width: Math.max(computeColumnIconRow.width, title.width) + 20
-			color: Theme.uiBackground
-			//radius: 20
-			border.color: Theme.uiBorder
-			border.width: 1
+
+			height:			childrenRect.height + 20
+			width:			Math.max(computeColumnIconRow.width, title.width) + 20
+			color:			Theme.uiBackground
+			border.color:	Theme.uiBorder
+			border.width:	1
 
 			Component.onCompleted:
 			{

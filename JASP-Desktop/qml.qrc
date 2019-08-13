@@ -114,5 +114,6 @@
         <file>components/JASP/Widgets/UIScaleNotifier.qml</file>
         <file>components/JASP/Controls/HelpButton.qml</file>
         <file>components/JASP/Widgets/SortMenuButton.qml</file>
+        <file>components/JASP/Widgets/PlotEditor.qml</file>
     </qresource>
 </RCC>

@@ -50,6 +50,7 @@
 #include "variablespage/levelstablemodel.h"
 #include "variablespage/labelfiltergenerator.h"
 #include "widgets/filemenu/filemenu.h"
+#include "results/ploteditormodel.h"
 
 class MainWindow : public QObject
 {
@@ -254,6 +255,7 @@ private:
 	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
+	PlotEditorModel				*	_plotEditorModel		= nullptr;
 
 	QSettings						_settings;
 

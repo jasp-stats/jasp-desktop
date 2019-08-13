@@ -322,12 +322,12 @@ void STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer)
     free(*arrayPointer);
 }
 
-const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
+const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
 {
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["plotName"]			= name;
+	rInside["plotName"]			= data;
 	rInside["format"]			= type;
 	rInside["height"]			= height;
 	rInside["width"]			= width;
@@ -339,19 +339,16 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 	return staticResult.c_str();
 }
 
-const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
+const char* STDCALL jaspRCPP_editImage(const char * optionsJson, const int ppi, const char* imageBackground)
 {
 
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["plotName"]			= name;
-	rInside["height"]			= height;
-	rInside["width"]			= width;
-	rInside["type"]				= type;
+	rInside["editImgOptions"]	= optionsJson;
 	rInside[".ppi"]				= ppi;
 
-	SEXP result = jaspRCPP_parseEval("editImage(plotName,type,height,width)");
+	SEXP result = jaspRCPP_parseEval("editImage(editImgOptions)");
 	static std::string staticResult;
 	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
 

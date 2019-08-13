@@ -352,7 +352,9 @@ HEADERS += \
     widgets/sortable.h \
     widgets/listmodelfiltereddataentry.h \
     data/importers/readstat/readstat_custom_io.h \
-    data/importers/readstat/readstat_windows_helper.h
+    data/importers/readstat/readstat_windows_helper.h \
+    results/ploteditormodel.h \
+    results/ploteditoraxismodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -516,7 +518,9 @@ SOURCES += \
     widgets/sortmenumodel.cpp \
     widgets/sortable.cpp \
     widgets/listmodelfiltereddataentry.cpp \
-    data/importers/readstat/readstat_custom_io.cpp
+    data/importers/readstat/readstat_custom_io.cpp \
+    results/ploteditormodel.cpp \
+    results/ploteditoraxismodel.cpp
 
 
 RESOURCES += \

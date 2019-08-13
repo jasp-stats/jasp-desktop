@@ -33,7 +33,8 @@ CustomMenu                  1.0 CustomMenu.qml
 ColumntypeModel             1.0 ColumnTypeModel
 SplitHandle                 1.0 SplitHandle.qml
 SpinBox                     1.0 SpinBox.qml
-SortMenuButton				1.0 SortMenuButton.qml
+SortMenuButton              1.0 SortMenuButton.qml
 WelcomePage                 1.0 WelcomePage.qml
 UIScaleNotifier             1.0 UIScaleNotifier.qml
 ModulesMenu                 1.0 ModulesMenu.qml
+PlotEditor                  1.0 PlotEditor.qml

@@ -55,6 +55,7 @@ public:
 	double			zoom()				const { return _webEngineZoom;	}
 
 	Q_INVOKABLE void purgeClipboard();
+	Q_INVOKABLE void analysisEditImage(int id, QString options);
 
 	//Callable from javascript through resultsJsInterfaceInterface...
 
@@ -64,7 +65,8 @@ signals:
 	Q_INVOKABLE void analysisUnselected();
 	Q_INVOKABLE void analysisChangedDownstream(int id, QString options);
 	Q_INVOKABLE void analysisSaveImage(int id, QString options);
-	Q_INVOKABLE void analysisEditImage(int id, QString options);
+				void analysisResizeImage(int id, QString options);
+				void showPlotEditor(int id, QString options);
 	Q_INVOKABLE void analysisSelected(int id);
 	Q_INVOKABLE void analysisTitleChangedInResults(int id, QString title);
 	Q_INVOKABLE void removeAnalysisRequest(int id);

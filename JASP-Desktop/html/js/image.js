@@ -34,7 +34,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	},
 
 	saveImageClicked: function(){
-	    var args = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
+		var args = { name: this.model.get("name"), data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
 	    this.model.trigger("SaveImage:clicked", args);
 	},
 
@@ -43,7 +43,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	},
 
 	editImageClicked: function(){
-		var args = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), type: "interactive"};
+		var args = { name: this.model.get("name"), data: this.model.get("data"), title: this.model.get("title"), editOptions: this.model.get("editOptions"), width: this.model.get("width"), height: this.model.get("height"), type: "interactive"};
 		this.model.trigger("EditImage:clicked", args);
 	},
 
@@ -85,9 +85,9 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 
 		this.resizer = new JASPWidgets.ResizeableView({ model: this.model, className: "jasp-resize" });
 
-		this.listenTo(this.resizer, "ResizeableView:resized", this.onResized)
-		this.listenTo(this.resizer, "ResizeableView:resizeStart", this.onResizeStart)
-		this.listenTo(this.resizer, "ResizeableView:resizeStop", this.onResizeStop)
+		this.listenTo(this.resizer, "ResizeableView:resized",		this.onResized)
+		this.listenTo(this.resizer, "ResizeableView:resizeStart",	this.onResizeStart)
+		this.listenTo(this.resizer, "ResizeableView:resizeStop",	this.onResizeStop)
 		var self = this;
 		this.resizer.resizeTargetElement = function () {
 			var t = self.$el;
@@ -103,7 +103,7 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	onResized: function (w, h) {
 		if (this.resizer.isResizing() && !this.resizeEventTriggered) {
 			this.resizeEventTriggered = true;
-			var args = { name: this.model.get("data"), width: w, height: h, type: "resize" };
+			var args = { name: this.model.get("name"), data: this.model.get("data"), width: w, height: h, type: "resize" };
 			this.model.trigger("EditImage:clicked", args);
 		}
 	},

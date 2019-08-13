@@ -189,14 +189,14 @@ void Analysis::refresh()
 void Analysis::saveImage(const Json::Value &options)
 {
 	setStatus(Analysis::SaveImg);
-	_saveImgOptions = options;
+	_imgOptions = options;
 	emit saveImageSignal(this);
 }
 
 void Analysis::editImage(const Json::Value &options)
 {
 	setStatus(Analysis::EditImg);
-	_saveImgOptions = options;
+	_imgOptions = options;
 	emit editImageSignal(this);
 }
 
@@ -412,7 +412,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 		json["imageBackground"] = imageBackground; //comes from engine representation!
 
 		if (perform == performType::saveImg || perform == performType::editImg)
-			json["image"] = getSaveImgOptions();
+			json["image"] = imgOptions();
 		else
 		{
 			json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSON();
