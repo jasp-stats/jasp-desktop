@@ -99,7 +99,10 @@ Form {
         }
     }
 
-    ML.DataSplit{leaveOneOutVisible: false; kFoldsVisible: false}
+    ML.DataSplit {
+        leaveOneOutVisible: false; 
+        kFoldsVisible: false
+    }
 
     Section {
         text: qsTr("Training Parameters")
