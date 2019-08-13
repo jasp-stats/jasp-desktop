@@ -86,7 +86,9 @@ Form {
         }
     }
 
-    ML.DataSplit{leaveOneOutVisible: false}
+    ML.DataSplit {
+        leaveOneOutVisible: false
+    }
 
     Section {
         title: qsTr("Training Parameters")

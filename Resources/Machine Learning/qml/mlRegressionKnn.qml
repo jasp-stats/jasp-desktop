@@ -74,7 +74,7 @@ Form {
         }
     }
     
-    ML.DataSplit{}
+    ML.DataSplit {}
     
     Section {
         title: qsTr("Training Parameters")
