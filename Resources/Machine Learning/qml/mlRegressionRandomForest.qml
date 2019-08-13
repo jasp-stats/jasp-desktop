@@ -21,6 +21,7 @@ import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP.Theme		1.0
+import "./common" as ML
 
 Form {
 
@@ -86,90 +87,7 @@ Form {
 
     }
 
-    Section {
-        title: qsTr("Data Split Preferences")
-
-        RadioButtonGroup {
-            title: qsTr("Holdout Test Data")
-            name: "holdoutData"
-
-            RadioButton {
-                id: holdoutManual
-                name: "holdoutManual"
-                childrenOnSameRow: true
-                text: qsTr("Sample")
-
-                RowLayout {
-                
-                    PercentField {    
-                        name: "testDataManual"
-                        defaultValue: 20
-                        min: 5
-                        max: 95 
-                    }
-
-                    Label {
-                        text: qsTr("of all data")
-                    }
-                }
-            }
-
-            CheckBox { 
-                id: addIndicator  
-                name: "addIndicator"
-                text: qsTr("Add generated indicator to data")
-                Layout.leftMargin: 20
-                enabled: holdoutManual.checked
-
-                ComputedColumnField { 
-                    name: 		"testIndicatorColumn"
-                    text: 		"Name: "
-                    fieldWidth: 120
-                    visible:    addIndicator.checked
-                }
-            }
-
-            RadioButton {
-                id: testSetIndicator
-                name: "testSetIndicator"
-                label: qsTr("Test set indicator:")
-                childrenOnSameRow: true
-
-                DropDown {
-                    name: "testSetIndicatorVariable"
-                    showVariableTypeIcon: true
-                    addEmptyValue: true
-                    placeholderText: qsTr("None")
-                }
-            }
-        }
-
-        RadioButtonGroup {
-            title: qsTr("Training and Validation Data")
-            name: "modelValid"
-
-            RadioButton {
-                name: "validationManual"
-                childrenOnSameRow: true
-                checked: true
-                text: qsTr("Sample")
-
-                RowLayout {
-
-                    PercentField {     
-                        name: "validationDataManual"
-                        defaultValue: 20
-                        min: 5
-                        max: 95
-                    }
-
-                    Label {
-                        text: qsTr("for validation data")
-                    }
-                }
-            }
-        }
-    }
+    ML.DataSplit{leaveOneOutVisible: false; kFoldsVisible: false}
 
     Section {
         title: qsTr("Training Parameters")
