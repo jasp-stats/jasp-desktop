@@ -20,7 +20,7 @@
   testSetIndicator          <- NULL 
   if(options[["target"]] != "")
     target                  <- options[["target"]]
-  predictors                <- unlist(options["predictors"])
+  predictors                <- unlist(options[["predictors"]])
   predictors                <- predictors[predictors != ""]
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]

@@ -22,7 +22,6 @@ import JASP.Theme		1.0
 
 Label
 {
-    property bool alwaysEnabled: false // ensures that Labels within RadioButton are always Enabled
 	font:	Theme.font
-	color:	alwaysEnabled ? Theme.textEnabled : enabled ? Theme.textEnabled : Theme.textDisabled
+	color:	enabled ? Theme.textEnabled : Theme.textDisabled
 }

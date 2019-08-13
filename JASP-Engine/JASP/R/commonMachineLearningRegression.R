@@ -399,19 +399,31 @@
   }  
 }
 
-.scaleNumericData <- function(x) {
+# these could also extend the S3 method scale although that could be somewhat unexpected
+.scaleNumericData <- function(x, ...) {
   UseMethod(".scaleNumericData", x)
 }
 
-.scaleNumericData.data.frame <- function(x) {
+.scaleNumericData.data.frame <- function(x, center = TRUE, scale = TRUE) {
   idx <- sapply(x, is.numeric)
-  x[, idx] <- scale(x[, idx, drop = FALSE])
+  x[, idx] <- scale(x[, idx, drop = FALSE], center, scale)
   attr(x, which = "scaled:center") <- NULL
   attr(x, which = "scaled:scale")  <- NULL
   return(x)
 }
 
-.scaleNumericData.numeric <- function(x) {
-  return((x - mean(x)) / sd(x))
+.scaleNumericData.matrix <- function(x, center = TRUE, scale = TRUE) {
+  x <- scale(x, center, scale)
+  attr(x, which = "scaled:center") <- NULL
+  attr(x, which = "scaled:scale")  <- NULL
+  return(x)
+}
+
+.scaleNumericData.numeric <- function(x, center = TRUE, scale = TRUE) {
+  if (center)
+    x <- x - mean(x)
+  if (scale)
+    x <- x / sd(x)
+  return(x)
 }
 
