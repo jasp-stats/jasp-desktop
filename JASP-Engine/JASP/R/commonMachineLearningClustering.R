@@ -19,7 +19,7 @@
   predictors <- unlist(options[['predictors']])
   predictors <- predictors[predictors != ""]
   if (is.null(dataset))
-    dataset <- .readDataSetToEnd(columns = predictors, exclude.na.listwise = predictors)
+    dataset <- .readDataSetToEnd(columns.as.numeric = predictors, exclude.na.listwise = predictors)
 
   if(options[["scaleEqualSD"]] && length(unlist(options[["predictors"]])) > 0)
     dataset <- .scaleNumericData(dataset)
