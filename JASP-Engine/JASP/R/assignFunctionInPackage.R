@@ -61,14 +61,5 @@ fakeGbmCrossValErr <- function(cv.models, cv.folds, cv.group, nTrain, n.trees) {
     model <- cv.models[[index]]
     model$valid.error * in.group[[index]]
   }, double(n.trees))
-  if (is.matrix(cv.error))
-    return(rowSums(cv.error)/nTrain)
-  else
-    return(cv.error / nTrain)
+  return(rowSums(as.matrix(cv.error))/nTrain)
 }
-
-
-
-# assign the functions ----
-assignFunctionInPackage(fakeGbmCrossValModelBuild, "gbmCrossValModelBuild", "gbm")
-assignFunctionInPackage(fakeGbmCrossValErr,        "gbmCrossValErr",        "gbm")

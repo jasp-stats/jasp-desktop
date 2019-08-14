@@ -102,12 +102,12 @@ Section
 
             RowLayout {
 
-                PercentField {     
+                PercentField {
                     name: "validationDataManual"
                     defaultValue: 20
                     min: 5
                     max: 95
-                    afterLabel: qStr("% for validation data")
+                    afterLabel: qsTr("% for validation data")
                 }
             }
         }
