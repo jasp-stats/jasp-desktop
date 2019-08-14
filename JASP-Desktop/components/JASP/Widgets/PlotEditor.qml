@@ -159,7 +159,7 @@ Popup
 						Image
 						{
 							id:					plotImg
-							source:				plotEditorModel.data
+							source:				plotEditorModel.imgFile
 							sourceSize.width:	plotEditorModel.width
 							sourceSize.height:	plotEditorModel.height
 							width:				parent.width - ( 2 * plotImgRect.border.width)

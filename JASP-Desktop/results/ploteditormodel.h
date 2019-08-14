@@ -1,6 +1,7 @@
 #ifndef PLOTEDITORMODEL_H
 #define PLOTEDITORMODEL_H
 
+#include <QUrl>
 #include <QObject>
 #include "jsonredirect.h"
 #include "ploteditoraxismodel.h"
@@ -14,6 +15,7 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(bool						visible			READ visible		WRITE setVisible		NOTIFY visibleChanged		)
 	Q_PROPERTY(QString					name			READ name			WRITE setName			NOTIFY nameChanged			)
 	Q_PROPERTY(QString					data			READ data			WRITE setData			NOTIFY dataChanged			)
+	Q_PROPERTY(QUrl						imgFile			READ imgFile								NOTIFY dataChanged			)
 	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged			)
 	Q_PROPERTY(int						width			READ width			WRITE setWidth			NOTIFY widthChanged			)
 	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged		)
@@ -26,7 +28,8 @@ public:
 
 	bool					visible()	const {	return _visible;	}
 	QString					name()		const { return _name;		}
-	QString					data()		const;
+	QString					data()		const { return _data;		}
+	QUrl					imgFile()	const;
 	QString					title()		const { return _title;		}
 	int						width()		const { return _width;		}
 	int						height()	const { return _height;		}
@@ -36,10 +39,10 @@ public:
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
-	void dataChanged(			QString		data			);
+	void dataChanged(										);
 	void titleChanged(			QString		title			);
 	void widthChanged(			int			width			);
-	void heightChanged(			int			height			);
+	void heightChanged(		int			height			);
 	void dummyAxisChanged();
 
 public slots:
@@ -73,3 +76,4 @@ private:
 };
 
 #endif // PLOTEDITORMODEL_H
+

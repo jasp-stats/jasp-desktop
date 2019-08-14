@@ -3,6 +3,7 @@
 #include "utilities/qutils.h"
 #include "log.h"
 #include "tempfiles.h"
+#include <QDir>
 
 PlotEditorModel::PlotEditorModel(Analyses * analyses)
 	: QObject(analyses), _analyses(analyses)
@@ -79,10 +80,13 @@ void PlotEditorModel::setName(QString name)
 	somethingChanged();
 }
 
-QString	PlotEditorModel::data() const
+QUrl	PlotEditorModel::imgFile() const
 {
-	static QString prefix = "file://" + tq(TempFiles::sessionDirName()) + "/";
-	return prefix + _data;
+	QString pad(tq(TempFiles::sessionDirName()) + "/" + _data);
+	
+	std::cout << "Pad='" << pad.toStdString() << "'" << std::endl;
+	
+	return QUrl::fromLocalFile(pad);
 }
 
 void PlotEditorModel::setData(QString data)
@@ -91,7 +95,7 @@ void PlotEditorModel::setData(QString data)
 		return;
 
 	_data = data;
-	emit dataChanged(_data);
+	emit dataChanged();
 	somethingChanged();
 }
 

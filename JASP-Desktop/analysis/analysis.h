@@ -187,8 +187,8 @@ protected:
 							_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
-							_imgOptions		= Json::nullValue;
-	int						_progress		= -1;
+							_imgOptions		= Json::nullValue,
+							_progress		= Json::nullValue;
 
 private:
 	size_t					_id,
