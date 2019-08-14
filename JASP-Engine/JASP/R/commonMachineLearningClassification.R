@@ -693,6 +693,8 @@
   validationMeasures$addColumnInfo(name = "support", title = "Support", type = "integer")
   validationMeasures$addColumnInfo(name = "auc", title = "AUC", type = "number")
 
+  validationMeasures$addFootnote(message= "Area Under Curve (AUC) is calculated for every class against all other classes." , symbol="<i>Note.</i>")
+
   if(options[["target"]] != "")
     validationMeasures[["group"]] <- c(levels(factor(dataset[, .v(options[["target"]])])), "Average / Total")
   
