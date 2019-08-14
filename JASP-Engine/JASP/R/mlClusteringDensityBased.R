@@ -64,7 +64,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   }
 
   if(noisePoints > 0) {
-    tss <- .tss(dist(dataset[, .v(options[["predictors"]])][dfit$cluster != 0]))
+    tss <- .tss(dist(dataset[, .v(options[["predictors"]])][dfit$cluster != 0, ]))
   } else {
     tss <- .tss(dist(dataset[, .v(options[["predictors"]])]))
   }
