@@ -1,7 +1,7 @@
 Guide to writing an analysis interface in QML
 =============================================
 
-QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components. It also gives the possiblility to insert JavaScript expressions to dynamically alter the interface based on actions a user makes. To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satify most analysis creators, although you can always [add your own](#advance-usage). 
+QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components. It also gives the possiblility to insert JavaScript expressions to dynamically alter the interface based on actions a user makes. To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satify most analysis creators, although you can always [add your own](#advance-usage).
 
 Table of Contents:
 - [Components](#components)
@@ -13,6 +13,7 @@ Table of Contents:
     + [DoubleField](#doublefield)
     + [IntegerField](#integerfield)
     + [PercentField](#percentfield)
+    + [CIField](#cifield)
     + [TextField](#textfield)
   * [Variable Specification](#variable-specification)
     + [AvailableVariablesList](#availablevariableslist)
@@ -54,12 +55,12 @@ Properties
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   CheckBox { name: "pearson"; label: qsTr("Pearson"); checked: true }
   ```
   ![Image example](/Docs/development/img/qml-guide/CheckBox_example_1.png)
-  
+
   ```qml
   CheckBox
   {
@@ -72,7 +73,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/CheckBox_example_2.png)
-  
+
 </details>
 
 #### RadioButton
@@ -93,7 +94,7 @@ RadioButton properties:
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   RadioButtonGroup
   {
@@ -104,7 +105,7 @@ RadioButton properties:
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/RadioButton_example_1.png)
-  
+
   ```qml
   RadioButtonGroup
   {
@@ -127,29 +128,31 @@ RadioButton properties:
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/RadioButton_example_2.png)
-  
+
 </details>
 
 #### DropDown
 Properties
 - `name`: string identifier (in your R code you will be able to retrieve the value of the dropdown through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the dropdown
-- `values`: array of (named) values that is shown in the dropdown list, in the case of an unnamed array the value and the label are the same, but when a named array is provided the label shown to the user can be different from the value send to R (see example below)
+- `values`: [optional, default: empty] array of (named) values that is shown in the dropdown list, in the case of an unnamed array the value and the label are the same, but when a named array is provided the label shown to the user can be different from the value send to R (see example below)
 - `indexDefaultValue`: [optional, default: `0`] integer specifying the index of the dropdown item that is selected by default, take note that the numbering starts at zero
-- `source`: if `values` is empty, you can use the name of a VariablesList (see [Variable Specification](#variable-specification)) to set the source of the values of the DropDown.
+- `source`: [optional, default: empty] if `values` is empty, you can use the name of a VariablesList (see [Variable Specification](#variable-specification)) to set the source of the values of the DropDown. Is source is also empty, then all available columns of the dataset are used.
+- `addEmptyValue`: [optional, default: `false`] if `true`, add an empty value with a place holder (see `placeHolderText`) as first element of the dropdown list
+- `placeHolderText`: [optional, default: `<no choice>`] name used if an ampty value is added in the dropdown list
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   DropDown
-  { 
+  {
     name: "orthogonalSelector"
-    values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "varimin"] 
+    values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "varimin"]
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/DropDown_example_1.png)
-  
+
   ```qml
   DropDown
   {
@@ -165,7 +168,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/DropDown_example_2.png)
-  
+
 </details>
 
 #### Slider
@@ -177,10 +180,12 @@ Properties
 - `min`: [optional, default: `0`] minimum value
 - `max`: [optional, default: `1`] maximum value
 - `vertical`: [optional, default: `true`] set whether the slider should be displayed vertically or horizontally
+- `decimals`: [optional, default: `2`] set the number of decimals the value gets
+
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   Slider
   {
@@ -190,7 +195,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/Slider_example_1.png)
-    
+
 </details>
 
 
@@ -201,15 +206,16 @@ Properties
 - `afterLabel`: [optional, default: `""`] text that will be shown to the right of the field
 - `defaultValue`: [optional, default: `0`] numeric specifying the default value shown; can be an integer or a decimal value, just be sure to use a dot and not a comma
 - `negativeValues`: [optional, default: `false`] specifies if the user should be able to input negative values (works only when the `min` argument is omitted)
-- `min`: [optional, default: `-Infinity`] numeric specifying the minimum value a user can enter
+- `min`: [optional, default: `0` if negativeValues is `false`, otherwise `-Infinity`] numeric specifying the minimum value a user can enter
 - `max`: [optional, default: `Infinity`] numeric specifying the maximum value a user can enter
+- `inclusive`: [optional, default: `yes`, possible values: `yes`, `minOnly`, `maxOnly`, `no`] specify whether the `min` and `max` parameters are inclusive or not. For example if `min` is `1` and `inclusive` is `yes` or `minOnly` then value `1` is allowed.
 - `decimals`: [optional, default: `3`] integer specifying how many decimals the user can enter
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
 
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   DoubleField
   {
@@ -220,20 +226,20 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/DoubleField_example_1.png)
-  
+
   ```qml
-  DoubleField 
+  DoubleField
   {
     name: "priorFixedEffects"
     label: qsTr("r scale fixed effects")
     defaultValue: 0.5
     fieldWidth: 50
     max: 2
-    decimals: 1 
+    decimals: 1
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/DoubleField_example_2.png)
-  
+
 </details>
 
 #### IntegerField
@@ -243,13 +249,14 @@ Properties
 - `afterLabel`: [optional, default: `""`] text that will be shown to the right of the field
 - `defaultValue`: [optional, default: `0`] integer specifying the default value shown
 - `negativeValues`: [optional, default: `false`] specifies if the user should be able to input negative values (works only when the `min` argument is omitted)
-- `min`: [optional, default: `0`] integer specifying the minimum value a user can enter
+- `min`: [optional, default: `0` if negativeValues is `false`, otherwise `-Infinity`] integer specifying the minimum value a user can enter
 - `max`: [optional, default: `Infinity`] integer specifying the maximum value a user can enter
+- `inclusive`: [optional, default: `yes`, possible values: `yes`, `minOnly`, `maxOnly`, `no`] specify whether the `min` and `max` parameters are inclusive or not. For example if `min` is `1` and `inclusive` is `yes` or `minOnly` then value `1` is allowed.
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   IntegerField
   {
@@ -260,7 +267,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/IntegerField_example_1.png)
-  
+
   ```qml
   IntegerField
   {
@@ -272,26 +279,38 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/IntegerField_example_2.png)
-  
+
 </details>
 
 #### PercentField
 Properties
 - `name`: string identifier (in your R code you will be able to retrieve the value of the field through this identifier)
 - `label`: text that will be shown to the left of the field
+- `afterLabel`: [optional, default `%`] text that will be shown to the right of the field
 - `defaultValue`: [optional, default: `50`] integer specifying the default percentage shown
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
 - `decimals`: [optional, default: `0`] integer specifying how many decimals the user can enter
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
-  PercentField { name: "estimatesPlotsCI"; label: qsTr("Confidence interval"); defaultValue: 95 }
+  CIField { name: "estimatesPlotsCI"; label: qsTr("Confidence interval") }
   ```
   ![Image example](/Docs/development/img/qml-guide/PercentField_example_1.png)
-  
+
 </details>
+
+#### CIField
+Specialized control for Confident Interval Input field (with right default values)<br>
+Properties:
+- `name`: string identifier (in your R code you will be able to retrieve the value of the field through this identifier)
+- `label`: [optional, default: `""`] text that will be shown to the left of the field
+- `afterLabel`: [optional, default: `"%"`] text that will be shown to the right of the field
+- `defaultValue`: [optional, default: `"95"`] default text before the user enters anything
+- `placeholderText`: [optional, default: `""`] text shown as a placeholder until a user enters something, will not be send to R if left unchanged by the user (mutually exclusive with `defaultValue`)
+- `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
+- `decimals`: [optional, default: `1`] integer specifying how many decimals the user can enter
 
 #### TextField
 Properties:
@@ -304,12 +323,12 @@ Properties:
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   TextField { name: "labelYAxis"; label: qsTr("Label y-axis"); fieldWidth: 200 }
   ```
   ![Image example](/Docs/development/img/qml-guide/TextField_example_1.png)
-  
+
 </details>
 
 
@@ -327,7 +346,7 @@ Note: `height` should be defined on `VariablesForm` itself.
 
 <details>
 	<summary>Examples</summary>
-  
+
   ```qml
   VariablesForm
   {
@@ -344,23 +363,34 @@ Note: `height` should be defined on `VariablesForm` itself.
   ```
   ![Image example](/Docs/development/img/qml-guide/availableVariablesList_example_1_1.png)
   ![Image example](/Docs/development/img/qml-guide/availableVariablesList_example_1_2.png)
-  
+
 </details>
 
 #### AssignedVariablesList
 Properties
 - `name`: identifier of the particular variable field (in your R code you will be able to retrieve the assigned variable(s) through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the variable field
-- `allowedColumns`: [optional, default: `["scale", "ordinal", "nominal"]`] array specifying the allowed column types
+- `allowedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the allowed column types
+- `suggestedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the suggested column types. These types will be displayed as icons at the bottom-right of the AssignedVariablesList. If `suggestedColumns` is empty and `allowedColumns` is specified, then `suggestedColumns` get automatically the value of `allowedColumns`. If `allowedColumns` is empty and `suggestedColumns` is specified, then the following rules apply:
+    * `scale` allows Nominal Integer and Ordinal columns
+    * `nominal` allows all Nominal columns (Integer or String), and Ordinal column
+    * if no `suggestedColumns` and no `allowedColumns` is specified, then all types of columns are allowed
 - `singleVariable`: [optional, default: `false`] boolean specifying if this field will accept a maximum of one variable
 - `listViewType`: [optional] string that specifies the type of `AssignedVariablesList`, when omitted we get a normal list,  options are `"Layers"` (see Contingency Tables), `"Pairs"` (see Paired Samples T-Test), `"Interaction"` (see ANOVA) and `"RepeatedMeasures"` (see Repeated Measures ANOVA)
-- `ExtraControlColumn`: [optional] addititional general input component (e.g., `"CheckBox"`) which is added to each variable and can be used to add extra control (e.g., you can specify the status of the variable within a linear model, see example below)
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 - `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.
 
+Extra Controls<br>
+It is possible to add a control (a CheckBox for example) for each assigned variable. To do this, add an `ExtraControlColumn` element with the following properties:
+- `type`: specify which control you want to add. This can be any control (CheckBox, DropDown, DoubleField, etc...) that passes in a row af a VariablesList
+- `name`: identifier of the control: in R code, if 1 or more ExtraControlColumn is used in an AssignedVariablesList, the list of the VariablesList will be a list of named array, `variable` gives the name of the variable, and each extra control can be retrieved with its own name.
+- `title`: [optional, default `""`] if set, the title will be displayed above the variable list
+- `values`: [optional, default empty] this is used to set the values for a DropDown control
+- `properties`: [optional, default empty] use properties to set all kinds of settings for the control. For example, for a DoubleField you can use it to specify decimals in defaultValue. Then specify properties with value { "decimals": 2, "defaultValue": 2 }
+
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
 	VariablesForm
 	{
@@ -376,7 +406,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/AssignedVariablesList_example_1.png)
-  
+
   ```qml
   VariablesForm
   {
@@ -398,7 +428,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/AssignedVariablesList_example_2.png)
-  
+
 </details>
 
 #### RepeatedMeasuresFactorsList
@@ -410,7 +440,7 @@ Properties
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   VariablesForm
   {
@@ -432,7 +462,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/RepeatedMeasuresFactorsList_example_1.png)
-  
+
 </details>
 
 
@@ -446,7 +476,7 @@ Properties
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   Group
   {
@@ -465,7 +495,7 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/Group_example_1.png)
-  
+
 </details>
 
 #### Section
@@ -476,7 +506,7 @@ Properties
 
 <details>
 	<summary>Examples</summary>
-	
+
   ```qml
   Section
   {
@@ -494,7 +524,7 @@ Properties
     {
       title: qsTr("Confidence Interval")
       enabled: chronbach.checked
-      CheckBox 
+      CheckBox
       {
         name: "confAlpha"
         label: qsTr("Cronbach's α analytical")
@@ -504,12 +534,12 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/ExpanderButton_example_1.png)
-  
+
 </details>
 
 
 ## Layout of Components
-By default JASP creates a two column grid that is filled row-wise. So each component you place in your QML file will be added to the input panel left to right, top to bottom. We will demonstrate what this means by the use of a table. 
+By default JASP creates a two column grid that is filled row-wise. So each component you place in your QML file will be added to the input panel left to right, top to bottom. We will demonstrate what this means by the use of a table.
 
 Imagine a simple table with two columns and two rows. We have three components (CheckBox A, B and C) and each must go in their own cell. When these components are added row-wise we get A in the top left cell, then next to it B and on its own row C:
 
@@ -567,42 +597,42 @@ In `AvailableVariablesList` we showed that through its `source` property, we can
 An example is enabling a checkbox if one of two different checkboxes is checked.
 <p><details>
 	<summary>Implementation</summary>
-	
+
   ```qml
   CheckBox { name: "checkboxA"; label: qsTr("Some label"), id: checkA}
   CheckBox { name: "checkboxB"; label: qsTr("Some label"), id: checkB}
 
   CheckBox { name: "checkboxC";	label: qsTr("Some Label too"); enabled: checkA.checked || checkB.checked }
   ```
-  
+
 </details></p>
 
-Here we make use of a JavaScript expression to evaluate if either CheckBox A or CheckBox B has been checked and if this is the case we enable CheckBox C. This JavaScript expression will be automatically updated each time that the checked values of checkA and checkB changes. 
+Here we make use of a JavaScript expression to evaluate if either CheckBox A or CheckBox B has been checked and if this is the case we enable CheckBox C. This JavaScript expression will be automatically updated each time that the checked values of checkA and checkB changes.
 
 Another example would be setting the visibility of some textfield to invisible if a checkbox is not checked.
 
 <details>
 	<summary>Implementation</summary>
-	
+
   ```qml
-  CheckBox 
+  CheckBox
   {
     name: "checkboxA"
     label: qsTr("Some label")
     id: checkA
     TextField { name: "textfieldA"; afterlabel: qsTr("x"); visible: checkA.checked}
-  
+
   }
   ```
-  
+
 </details>
 
-Any property can be set with an expression. A title of an ExpanderButton for example:
+Any property can be set with an expression. A title of a Section for example:
 <details>
 	<summary>Implementation</summary>
-	
+
   ```qml
-  
+
 	DropDown
 	{
 		id: estimator
@@ -610,17 +640,17 @@ Any property can be set with an expression. A title of an ExpanderButton for exa
 		label: qsTr("Estimator")
 		values: ["EBICglasso", "cor", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm"]
 	}
-	
-	ExpanderButton 
+
+	Section
 	{
 		title: qsTr("Analysis Options - ") + estimator.currentText
                 ....
 	}
 
   ```
-  
+
 </details>
-	
+
 
 ## An Example
 We'll create a simple analysis input panel to show the workflow.
@@ -632,14 +662,14 @@ We can begin actual work on the QML file, first we have to tell the engine where
 
 <details>
 	<summary>Code</summary>
-	
+
   ```qml
   import QtQuick 2.11
   import QtQuick.Layouts 1.3
   import JASP.Controls 1.0
   import JASP.Widgets 1.0
   ```
-  
+
 </details>
 
 
@@ -648,7 +678,7 @@ At this point we add a `Form` which will hold all our input components:
 
 <details>
 	<summary>Code</summary>
-	
+
   ```qml
   import QtQuick 2.11
   import QtQuick.Layouts 1.3
@@ -660,15 +690,15 @@ At this point we add a `Form` which will hold all our input components:
 
   }
   ```
-  
+
 </details>
 
 ### 3. Adding the Components
-It's now a matter of mixing and matching the previously shown components to create a form to our liking. Of course, if something isn't quite possible, you can also use QML features that were not covered here. 
+It's now a matter of mixing and matching the previously shown components to create a form to our liking. Of course, if something isn't quite possible, you can also use QML features that were not covered here.
 
 <details>
 	<summary>Code</summary>
-	
+
   ```qml
   import QtQuick 2.11
   import QtQuick.Layouts 1.3
@@ -707,12 +737,12 @@ It's now a matter of mixing and matching the previously shown components to crea
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/general_example.png)
-    
+
 </details>
 
 ## Advanced Usage
 QML is a very flexible format, besides giving you access to all of the built-in components and our JASP-components that are detailed under [components](#components) you can also add your own components! If you add a qml-file to the [qml directory](#jasp-adding-module.md#qml), for instance `Example.qml`, then it will be treated as a component by all other files in the directory. Make sure to give the file an actual capital as first letter though, otherwise qml will not see it as a component. Then you can use it in another qml file simply by adding `Example { id: yourExampleComponent }` and set any of the properties the root-component of your component if desired.
 
-This will give you the opportunity to create reusable parts, for instance, each of your analyses might share a common core. You could add this to a `Core.qml` and then this could be part of each analysis and be exactly the same everywhere. If you then also make sure to have a common function in R that uses the options specified in the `Core.qml`-component you can reuse that as well. 
+This will give you the opportunity to create reusable parts, for instance, each of your analyses might share a common core. You could add this to a `Core.qml` and then this could be part of each analysis and be exactly the same everywhere. If you then also make sure to have a common function in R that uses the options specified in the `Core.qml`-component you can reuse that as well.
 
 The possibilities here are rather extended and possibly even endless. See [the Qt QML tutorials](https://doc.qt.io/qt-5/qml-tutorial.html) or the [official documentation](https://doc.qt.io/qt-5/qtqml-index.html) for more information on this.
