@@ -407,11 +407,13 @@
       variables <- c(variables, monetaryVariable)
       dataset <- .readDataSetToEnd(columns.as.numeric = variables)
       jaspResults[["N"]]                  <- createJaspState(nrow(dataset))
+      jaspResults[["uniqueN"]]            <- createJaspState(length(unique(dataset[, .v(options[["recordNumberVariable"]])])))
       jaspResults[["total_data_value"]]   <- createJaspState( ceiling(sum(dataset[, .v(monetaryVariable)])))
       jaspResults[["ready"]]              <- createJaspState(TRUE) # Ready for analysis
     } else {
       dataset <- .readDataSetToEnd(columns.as.numeric = variables)
       jaspResults[["N"]]                  <- createJaspState(nrow(dataset))
+      jaspResults[["uniqueN"]]            <- createJaspState(length(unique(dataset[, .v(options[["recordNumberVariable"]])])))
       jaspResults[["total_data_value"]]   <- createJaspState(0.01)
       if(options[["materiality"]] == "materialityRelative"){
         jaspResults[["ready"]]            <- createJaspState(TRUE) # Ready for analysis
@@ -422,6 +424,7 @@
   } else {
       dataset                             <- NULL
       jaspResults[["N"]]                  <- createJaspState(0)
+      jaspResults[["uniqueN"]]            <- createJaspState(0)
       jaspResults[["total_data_value"]]   <- createJaspState(0.01)
       jaspResults[["ready"]]              <- createJaspState(FALSE)
   }
@@ -430,6 +433,7 @@
     jaspResults[["ready"]]              <- createJaspState(FALSE)
 
   jaspResults[["N"]]$dependOn(options = c("recordNumberVariable", "monetaryVariable"))
+  jaspResults[["uniqueN"]]$dependOn(options = c("recordNumberVariable", "monetaryVariable"))
   jaspResults[["total_data_value"]]$dependOn(options = c("recordNumberVariable", "monetaryVariable"))
   jaspResults[["ready"]]$dependOn(options = c("recordNumberVariable", "monetaryVariable", "materiality"))
   return(dataset)

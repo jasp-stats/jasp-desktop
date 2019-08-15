@@ -83,10 +83,12 @@ classicalAudit <- function(jaspResults, dataset, options, ...){
     jaspResults[["materiality"]]$dependOn(options = c("materialityValue", "materialityPercentage", "monetaryVariable", "recordNumberVariable", "materiality"))
 
     if(options[["materiality"]] == "materialityAbsolute" && options[["materialityValue"]] >= jaspResults[["total_data_value"]]$object && jaspResults[["ready"]]$object)
-     planningContainer$setError("Analysis not possible: Your materiality is higher than the total value of the observations.") 
+     planningContainer$setError("Analysis not possible: Your materiality is higher than the total value of the book values.") 
     expTMP <- ifelse(options[['expectedErrors']] == "expectedRelative", yes = options[["expectedPercentage"]], no = options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object)
     if(expTMP > materiality && jaspResults[["ready"]]$object)
       planningContainer$setError("Analysis not possible: Your expected errors are higher than materiality.")
+    if(jaspResults[["ready"]]$object && jaspResults[["uniqueN"]]$object != jaspResults[["N"]]$object)
+      planningContainer$setError("Analysis not possible: Your record identification numbers should only contain unique values.")
 
   }
   # Calculate the sample size and return the calculation as an object
