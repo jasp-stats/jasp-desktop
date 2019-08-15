@@ -19,7 +19,7 @@ if (!dir.exists(jaspDir))
   stop("Could not find directory ", jaspDir)
 
 subDirs <- list.dirs(jaspDir, recursive=FALSE, full.names=FALSE)
-if (!all(c("JASP-Engine", "JASP-R-Interface") %in% subDirs))
+if (!all(c("JASP-Engine", "JASP-R-Interface", "Dynamic Modules") %in% subDirs))
   stop("Could not locate JASP-Engine and JASP-R-Interface as subdirectories of ", jaspDir)
 
 dirs <- c(file.path(jaspDir, "JASP-Engine"), file.path(jaspDir, "JASP-R-Interface"))
