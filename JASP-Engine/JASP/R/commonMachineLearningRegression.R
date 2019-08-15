@@ -302,7 +302,7 @@
 
   regressionResult <- jaspResults[["regressionResult"]]$object
   
-  predPerformance <- data.frame(true = regressionResult[["testReal"]], predicted = regressionResult[["testPred"]])
+  predPerformance <- data.frame(true = c(regressionResult[["testReal"]]), predicted = regressionResult[["testPred"]])
 
   allBreaks <- JASPgraphs::getPrettyAxisBreaks(predPerformance[, 1], min.n = 4)
 

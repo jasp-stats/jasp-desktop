@@ -77,6 +77,11 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
     valid <- trainAndValid
   }
 
+  assignFunctionInPackage(fakeGbmCrossValModelBuild, "gbmCrossValModelBuild", "gbm")
+  assignFunctionInPackage(fakeGbmCrossValErr,        "gbmCrossValErr",        "gbm")
+  # gbm expects the columns in the data to be in the same order as the variables...
+  train <- train[, match(names(train), all.vars(formula))]
+
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
   
   bfit <- gbm::gbm(formula = formula, data = train, n.trees = trees,

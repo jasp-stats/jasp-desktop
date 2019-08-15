@@ -269,3 +269,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
   plotErrorVsK$plotObject <- p
   
 }
+
+# kknn::kknn calls stats::model.matrix which needs these two functions and looks for them by name in the global namespace
+contr.dummy   <- kknn::contr.dummy
+contr.ordinal <- kknn::contr.ordinal
