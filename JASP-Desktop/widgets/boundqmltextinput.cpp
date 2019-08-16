@@ -32,14 +32,6 @@ BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	initTextInput();
 }
 
-BoundQMLTextInput::BoundQMLTextInput(QMap<QString, QVariant> &properties, AnalysisForm *form)
-	: QMLItem(properties, form)
-	, QObject(form)
-	, BoundQMLItem()
-{
-	initTextInput();
-}
-
 void BoundQMLTextInput::initTextInput()
 {
 	QString type = getItemProperty("inputType").toString();
@@ -61,10 +53,11 @@ void BoundQMLTextInput::initTextInput()
 QString BoundQMLTextInput::_getPercentValue()
 {
 	double doubleValue = _number->value();
-	if (doubleValue <= 1)
+	if (doubleValue <= 1) // The value is internally divided by 100, but is displayed as a percent number
 		doubleValue = doubleValue * 100;
 	if (doubleValue > 100) doubleValue = 100;
 	else if (doubleValue < 0) doubleValue = 0;
+
 	return QString::number(doubleValue);
 }
 
@@ -105,17 +98,26 @@ void BoundQMLTextInput::bindTo(Option *option)
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:
-		_option = _integer = dynamic_cast<OptionInteger *>(option);
+		_integer = dynamic_cast<OptionInteger *>(option);
+		if (!_integer)
+			_integer = new OptionInteger();
+		_option = _integer;
 		_value = QString::number(_integer->value());
 		break;
 
 	case TextInputType::NumberInputType:
-		_option = _number = dynamic_cast<OptionNumber *>(option);
+		_number = dynamic_cast<OptionNumber *>(option);
+		if (!_number)
+			_number = new OptionNumber();
+		_option = _number;
 		_value = QString::number(_number->value());
 		break;
 
 	case TextInputType::PercentIntputType:
-		_option = _number = dynamic_cast<OptionNumber *>(option);
+		_number = dynamic_cast<OptionNumber *>(option);
+		if (!_number)
+			_number = new OptionNumber();
+		_option = _number;
 		_value = _getPercentValue();
 		break;
 
@@ -123,6 +125,7 @@ void BoundQMLTextInput::bindTo(Option *option)
 		_integerArray = dynamic_cast<OptionIntegerArray *>(option);
 		if (!_integerArray)
 		{
+			_integerArray = new OptionIntegerArray();
 			OptionDoubleArray* doubleArray = dynamic_cast<OptionDoubleArray *>(option);
 			if (doubleArray)
 			{
@@ -130,7 +133,6 @@ void BoundQMLTextInput::bindTo(Option *option)
 				const std::vector<double>& doubles = doubleArray->value();
 				for (double d : doubles)
 					integerArray.push_back(int(d));
-				_integerArray = new OptionIntegerArray();
 				_integerArray->setValue(integerArray);
 			}
 		}
@@ -141,6 +143,8 @@ void BoundQMLTextInput::bindTo(Option *option)
 
 	case TextInputType::DoubleArrayInputType:
 		_doubleArray = dynamic_cast<OptionDoubleArray *>(option);
+		if (!_doubleArray)
+			_doubleArray = new OptionDoubleArray();
 		_option = _doubleArray;
 		_value = _getDoubleArrayValue();
 		break;
@@ -153,7 +157,10 @@ void BoundQMLTextInput::bindTo(Option *option)
 		break;
 
 	default:
-		_option = _string = dynamic_cast<OptionString *>(option);
+		_string = dynamic_cast<OptionString *>(option);
+		if (!_string)
+			_string = new OptionString();
+		_option = _string;
 		_value  = QString::fromStdString(_string->value());
 		break;
 	}

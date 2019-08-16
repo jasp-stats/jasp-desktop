@@ -29,14 +29,13 @@ class BoundQMLCheckBox : public QObject, public BoundQMLItem
 	
 public:
 	BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form);
-	BoundQMLCheckBox(QMap<QString, QVariant>& properties,  AnalysisForm* form);
 	
-	void	bindTo(Option *option)						override;
-	Option* createOption()								override;
-	Option* boundTo()									override { return _boundTo; }
-	bool	isOptionValid(Option* option)				override;
-	bool	isJsonValid(const Json::Value& optionValue) override;
-	void	resetQMLItem(QQuickItem *item)				override;
+	void	bindTo(Option *option)							override;
+	Option* createOption()									override;
+	Option* boundTo()										override { return _boundTo; }
+	bool	isOptionValid(Option* option)					override;
+	bool	isJsonValid(const Json::Value& optionValue)		override;
+	void	resetQMLItem(QQuickItem *item)					override;
 	
 	void setQMLItemChecked(bool checked);
 

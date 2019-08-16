@@ -40,6 +40,8 @@ void ListModelTermsAssigned::initTerms(const Terms &terms)
 		if (!_copyTermsWhenDropped)
 			source()->removeTermsInAssignedList();
 	}
+
+	initExtraControlTerms();
 }
 
 void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* termsRemoved)

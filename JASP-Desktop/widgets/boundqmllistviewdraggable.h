@@ -38,12 +38,10 @@ public:
 	
 protected:
 	ListModelAvailableInterface*		_availableModel;
-	std::string							_extraControlOptionName;
+	std::string							_optionKeyName;
 	bool								_hasExtraControls	= false;
-	std::string							_nuisanceName;
+	std::string							_optionNuisanceName;
 	bool								_hasNuisanceControl = false;
-	
-	void addExtraOptions(Options* options);
 	
 private:
 	Terms								_tempTerms;
