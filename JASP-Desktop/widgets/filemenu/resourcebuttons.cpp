@@ -2,14 +2,14 @@
 
 ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 	_data({
-		{ButtonType::RecentFiles,	"Recent Files",	false,	"./RecentFiles.qml"		, true},
-		{ButtonType::CurrentFile,	"Current File",	false,	"./CurrentFile.qml"		, false},
-		{ButtonType::Computer,		"Computer",		false,	"./Computer.qml"		, true},
-		{ButtonType::OSF,			"OSF",			false,	"./OSF.qml"				, true},
-		{ButtonType::DataLibrary,	"Data Library",	false,	"./DataLibrary.qml"		, true},
-		{ButtonType::PrefsData,		"Data",			false,	"./PrefsData.qml"		, true},
-		{ButtonType::PrefsResults,	"Results",		false,	"./PrefsResults.qml"	, true},
-		{ButtonType::PrefsAdvanced,	"Advanced",		false,	"./PrefsAdvanced.qml"	, true}
+		{ButtonType::RecentFiles,	tr("Recent Files"),	false,	"./RecentFiles.qml"		, true},
+		{ButtonType::CurrentFile,	tr("Current File"),	false,	"./CurrentFile.qml"		, false},
+		{ButtonType::Computer,		tr("Computer"),		false,	"./Computer.qml"		, true},
+		{ButtonType::OSF,			tr("OSF"),			false,	"./OSF.qml"				, true},
+		{ButtonType::DataLibrary,	tr("Data Library"),	false,	"./DataLibrary.qml"		, true},
+		{ButtonType::PrefsData,		tr("Data"),			false,	"./PrefsData.qml"		, true},
+		{ButtonType::PrefsResults,	tr("Results"),		false,	"./PrefsResults.qml"	, true},
+		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true}
 	})
 {
 	for(size_t i=0; i<_data.size(); i++)

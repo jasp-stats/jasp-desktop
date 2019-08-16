@@ -13,7 +13,7 @@ Item
 		id:					headLabel
 		width:				400 * preferencesModel.uiScale
 		height:				30 * preferencesModel.uiScale
-		text:				"Current data file for synchronization"
+		text:				qsTr("Current data file for synchronization")
 		font:				Theme.fontLabel
 		color:				Theme.black
 		anchors

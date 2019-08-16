@@ -35,7 +35,8 @@ const Settings::Setting Settings::Values[] = {
 	{"modulesRemember",				true},
 	{"modulesRemembered",			""},
 	{"safeGraphicsMode",			false},
-	{"cranRepositoryURL",			"https://cloud.r-project.org"}
+	{"cranRepositoryURL",			"https://cloud.r-project.org"},
+	{"preferredLanguage",			QLocale::English}
 
 };
 

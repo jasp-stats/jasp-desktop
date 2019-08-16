@@ -3,6 +3,7 @@
 
 #include <QSettings>
 #include <QString>
+#include <QLocale>
 
 class Settings {
 
@@ -38,7 +39,8 @@ public:
 		MODULES_REMEMBER,
 		MODULES_REMEMBERED,
 		SAFE_GRAPHICS_MODE,
-		CRAN_REPO_URL
+		CRAN_REPO_URL,
+		PREFERRED_LANGUAGE
 	};
 
 	static QVariant value(Settings::Type key);

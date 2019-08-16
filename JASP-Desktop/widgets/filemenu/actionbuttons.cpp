@@ -5,15 +5,15 @@
 
 ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
 	_data({
-		{FileOperation::Open,			"Open",				true,	{ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF }},
-		{FileOperation::Save,			"Save",				false,	{}																												},
-		{FileOperation::SaveAs,			"Save As",			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		{FileOperation::ExportResults,	"Export Results",	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		{FileOperation::ExportData,		"Export Data",		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		{FileOperation::SyncData,		"Sync Data",		false,	{ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF }								},
-		{FileOperation::Close,			"Close",			false,	{}																												},
-		{FileOperation::Preferences,	"Preferences",		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsAdvanced }					},
-		{FileOperation::About,			"About",			true,	{}																												}
+		{FileOperation::Open,			tr("Open"),				true,	{ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF }},
+		{FileOperation::Save,			tr("Save"),				false,	{}																												},
+		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
+		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
+		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
+		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF }								},
+		{FileOperation::Close,			tr("Close"),			false,	{}																												},
+		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsAdvanced }					},
+		{FileOperation::About,			tr("About"),			true,	{}																												}
 	})
 {
 	for(size_t i=0; i<_data.size(); i++)

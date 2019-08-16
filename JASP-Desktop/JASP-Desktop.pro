@@ -157,8 +157,24 @@ win32 {
 macx {
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-    copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-    copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+	translate.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+
+	TRANSLATESCRIPT=$${OUT_PWD}/../translate.sh
+
+	maketranslations.commands += echo ${PATH} > $$TRANSLATESCRIPT ;
+	maketranslations.commands += echo $$PWD >> $$TRANSLATESCRIPT ;
+
+	maketranslations.commands += lupdate -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po  >> $$TRANSLATESCRIPT ;
+	maketranslations.commands += lupdate -extensions cpp,qml -source-language dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po  >> $$TRANSLATESCRIPT ;
+	maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm >> $$TRANSLATESCRIPT ;
+
+}
+
+macx {
+	RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+
+	copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+	copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 linux {
@@ -169,8 +185,10 @@ linux {
 }
 
 ! equals(PWD, $${OUT_PWD}) {
-    QMAKE_EXTRA_TARGETS += copyres
+	QMAKE_EXTRA_TARGETS += copyres
+	QMAKE_EXTRA_TARGETS += maketranslations
     POST_TARGETDEPS     += copyres
+	POST_TARGETDEPS     += maketranslations
 }
 
 INCLUDEPATH += $$PWD/
@@ -286,6 +304,7 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
+	utilities/languagemodel.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -451,6 +470,7 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
+	utilities/languagemodel.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \

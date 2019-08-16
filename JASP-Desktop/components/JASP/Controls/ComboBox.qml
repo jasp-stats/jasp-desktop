@@ -23,6 +23,7 @@ JASPControl
 	property alias	indexDefaultValue:		control.currentIndex
 	property alias	model:					control.model
 	property alias	values:					control.model
+	property alias	fieldWidth:				control.modelWidth
 	property string	textRole:				"label"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
@@ -37,6 +38,7 @@ JASPControl
 	property int	controlMinWidth:		0
 	property bool	setWidthInForm:			true
 	property bool	useExternalBorder:		true
+	property bool	useModelDefinedIcon:	false
     
     signal activated(int index);
 
@@ -247,7 +249,7 @@ JASPControl
 					x:							1 * preferencesModel.uiScale
 					height:						15 * preferencesModel.uiScale
 					width:						15 * preferencesModel.uiScale
-					source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
+					source:						useModelDefinedIcon ? model.iconfile : ((visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : "")
 					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 					anchors.verticalCenter:		parent.verticalCenter

@@ -97,6 +97,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 {
 	JASPTIMER_START(MainWindowConstructor);
 
+	_languageModel			= new LanguageModel("Resources/Translations", application, this);
+
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
@@ -128,6 +130,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
+
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -332,6 +335,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered);
 	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules);
 	_qml->rootContext()->setContextProperty("resultMenuModel",			_resultMenuModel);
+	_qml->rootContext()->setContextProperty("languageModel",			_languageModel);
 
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses);
