@@ -51,16 +51,25 @@ DataSet *SharedMemory::createDataSet()
 
 DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 {
-	if (_memory == NULL)
+	DataSet * data = nullptr;
+	try
 	{
-		if(parentPID == 0)
-			parentPID = ProcessInfo::parentPID();
+		if (_memory == nullptr)
+		{
+			if(parentPID == 0)
+				parentPID = ProcessInfo::parentPID();
 
-		_memoryName = "JASP-DATA-" + std::to_string(parentPID);
-		_memory		= new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
+			_memoryName = "JASP-DATA-" + std::to_string(parentPID);
+			_memory		= new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
+		}
+
+		data = _memory->find<DataSet>(interprocess::unique_instance).first;
 	}
+	catch (const interprocess::interprocess_exception& e)
+	{
+		data = nullptr;
 
-	DataSet * data = _memory->find<DataSet>(interprocess::unique_instance).first;
+	}
 
 	return data;
 }

@@ -64,13 +64,13 @@ void OptionsTable::set(const Json::Value &value)
 			_value.push_back(row);
 		}
 	}
-	else
+	if (!_template || _templateIsTemparory)
 		_cachedValue = value; // keep the value until a template is given
 }
 
 Option *OptionsTable::clone() const
 {
-	OptionsTable * c = new OptionsTable(_template == nullptr ? nullptr : static_cast<Options*>(_template->clone()));
+	OptionsTable * c = new OptionsTable(_template == nullptr ? nullptr : static_cast<Options*>(_template->clone()), _templateIsTemparory, _cachedValue);
 
 	std::vector<Options *> rows;
 
@@ -129,10 +129,10 @@ void OptionsTable::setTemplate(Options *templote)
 	_template = templote;
 	
 	if(!_cachedValue.isNull())
-	{
 		set(_cachedValue);
-		_cachedValue = Json::nullValue;
-	}
+
+	_templateIsTemparory = false;
+	_cachedValue = Json::nullValue;
 }
 
 std::set<std::string> OptionsTable::usedVariables() const

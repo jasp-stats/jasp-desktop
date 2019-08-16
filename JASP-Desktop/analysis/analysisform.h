@@ -73,20 +73,20 @@ protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
 
 public:
-	void		addError(const QString& error);
-
 	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
 	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
-	void		clearErrors()							{ _errorMessages.clear(); _setErrorMessages(); }
+	void		clearErrors();
 
 	Options*	options() { return _options; }
+	QMLItem*	buildQMLItem(QQuickItem* quickItem, qmlControlType& controlType);
 
 	Q_INVOKABLE void reset();
     Q_INVOKABLE void exportResults();
+	Q_INVOKABLE void addError(const QString& message);
 
 	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
@@ -106,7 +106,7 @@ private slots:
 	void		_formCompletedHandler();
 
 protected:
-	Analysis								*_analysis;
+	Analysis								*_analysis = nullptr;
 	QMap<QString, QMLItem* >				_controls;
 	QVector<QMLItem*>						_orderedControls;	
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
@@ -118,8 +118,9 @@ protected:
 private:
 	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels,
 											_allAvailableVariablesModelsWithSource;
-	QQuickItem								*_errorMessagesItem;
+	QQuickItem								*_errorMessagesItem = nullptr;
 	QList<QString>							_errorMessages;
+	long									_lastAddedErrorTimestamp = 0;
 };
 
 #endif // ANALYSISFORM_H

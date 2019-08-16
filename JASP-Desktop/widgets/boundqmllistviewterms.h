@@ -46,13 +46,10 @@ public:
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	void		setTermsAreInteractions()					override;	
-
-protected:
-	virtual void initExtraControlOptions(const QString &colName, Options *options);
+	void		bindExtraControlOptions();
 	
 protected slots:
-	void modelChangedHandler() override;
-	void bindExtraControlOptions();
+	void		modelChangedHandler() override;
 	
 private:
 	OptionVariables*				_optionVariables;
@@ -60,10 +57,12 @@ private:
 	ListModelAssignedInterface*		_termsModel;
 	bool							_singleItem		= false;
 	
-	void extraOptionsChangedSlot(Option *option);
-	void updateNuisances(bool checked);
+	QMap<std::string, Options*>		_transformTableOptionsInMap();
+	void							_checkOptionTemplate();
+	Options*						_createRowOptions(const Term& term);
+	void							_extraOptionsChangedHandler(Option *option);
+	void							_updateNuisances(bool checked);
 
-	void _fillOptionsMap(QMap<std::string, Options*>& optionsMap);
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H
