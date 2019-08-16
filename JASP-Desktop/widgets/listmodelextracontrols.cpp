@@ -19,16 +19,18 @@
 #include "listmodelextracontrols.h"
 #include "listmodelassignedinterface.h"
 #include "boundqmllistviewdraggable.h"
+#include "boundqmllistviewterms.h"
 #include "boundqmlcombobox.h"
 #include "boundqmlcheckbox.h"
 #include "boundqmltextinput.h"
+#include "analysis/analysisform.h"
 
 #include "log.h"
 
 #include <QQuickItem>
 
-ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* parent, const QString& colName, const QVector<QMap<QString, QVariant> >& controlColumns) 
-	: QAbstractTableModel(parent), _assignedModel(parent), _colName(colName)
+ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* parent, const QVector<QMap<QString, QVariant> >& controlColumns)
+	: QAbstractTableModel(parent), _assignedModel(parent)
 {
 	for (QMap<QString, QVariant> controlColumn: controlColumns)
 	{
@@ -45,34 +47,6 @@ ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* paren
 		{
 			_extraColumns[name] = new ExtraColumnType(name, type, controlColumn);
 			_names.push_back(name);
-		}
-
-
-		BoundQMLItem* boundItem = nullptr;
-		if (type == "CheckBox" || type == "Switch")
-			boundItem = new BoundQMLCheckBox(controlColumn,	_assignedModel->listView()->form());
-		else if (type == "ComboBox" || type == "Dropdown")
-			boundItem = new BoundQMLComboBox(controlColumn,	_assignedModel->listView()->form());
-		else if (type == "TextField" || type == "IntegerField" || type == "DoubleField" || type == "PercentField")
-		{
-			QString inputType = "string";
-			if (type == "IntegerField")
-				inputType = "integer";
-			else if (type == "DoubleField")
-				inputType = "double";
-			else if (type == "PercentField")
-				inputType = "percent";
-
-			controlColumn["inputType"] = inputType;
-			boundItem = new BoundQMLTextInput(controlColumn,  _assignedModel->listView()->form());
-		}
-		else
-			Log::log() << "Control type " << type.toStdString() << " not supported in TableView" << std::flush;
-
-		if (boundItem)
-		{
-			boundItem->setUp();
-			_boundItems[name] = boundItem;
 		}
 	}
 }
@@ -109,34 +83,38 @@ QVariant ListModelExtraControls::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-void ListModelExtraControls::controlLoaded(const QString& name, QVariant item)
+void ListModelExtraControls::controlLoaded(QString name, QVariant item)
 {
 	QQuickItem *quickItem = qobject_cast<QQuickItem *>(item.value<QObject *>());
 	if (quickItem)
 	{
+		BoundQMLItem* boundItem = nullptr;
 		if (_boundItems.contains(name))
 		{
-			BoundQMLItem* boundItem = _boundItems[name];
+			boundItem = _boundItems[name];
 			boundItem->resetQMLItem(quickItem);
 		}
 		else
-			Log::log() << "controlLoaded: Cannot find bound item " << name.toStdString() << std::flush;
+		{
+			qmlControlType controlType;
+			boundItem = dynamic_cast<BoundQMLItem*>(_assignedModel->listView()->form()->buildQMLItem(quickItem, controlType));
+			if (boundItem)
+			{
+				boundItem->setUp();
+				QString controlName = boundItem->name();
+				_boundItems[controlName] = boundItem;
+			}
+			else
+				Log::log() << "controlLoaded: Wrong type of control : " << qmlControlTypeToString(controlType) << std::endl;
+		}
 	}
 	else
-		Log::log() << "Quick Item not found" << std::flush;
+		Log::log() << "Quick Item not found" << std::endl;
 
 }
 
-void ListModelExtraControls::controlDestroyed(const QString &name, QVariant item)
+void ListModelExtraControls::controlsDestroyed()
 {
-	QQuickItem *quickItem = qobject_cast<QQuickItem *>(item.value<QObject *>());
-	if (_boundItems.contains(name))
-	{
-		BoundQMLItem* boundItem = _boundItems[name];
-		if (boundItem->item() == quickItem)
-			boundItem->resetQMLItem(nullptr);
-	}
-	else
-		Log::log() << "controlDestroyed: Cannot find bound item " << name.toStdString() << std::flush;
-
+	for (auto it : _boundItems)
+		it->resetQMLItem(nullptr);
 }

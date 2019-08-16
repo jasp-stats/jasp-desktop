@@ -35,18 +35,26 @@ BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form)
 void BoundQMLSlider::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionNumber *>(option);
-	_number = _boundTo->value();
-	_item->setProperty("value", _number);
+	if (_boundTo != nullptr)
+	{
+		_number = _boundTo->value();
+		_item->setProperty("value", _number);
+	}
+	else
+		Log::log()  << "Option is not an OptionNumber in BoundQMLSlider" << std::endl;
 }
 
 
 void BoundQMLSlider::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
+	setItemProperty("value", _number);
 	
-	_item->setProperty("value", _number);
-	QQuickItem::connect(_item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
-	QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
+	if (_item)
+	{
+		QQuickItem::connect(_item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
+		QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
+	}
 }
 
 Option *BoundQMLSlider::createOption()

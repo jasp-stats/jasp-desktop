@@ -40,6 +40,7 @@ JASPControl
 	property int	fieldWidth:			Theme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
+	property bool	showBorder:			useExternalBorder
 	property alias	placeholderText:	control.placeholderText
 	property bool	selectValueOnFocus:	false
 	
@@ -115,8 +116,8 @@ JASPControl
 			{
 				id:				controlBackground
 				color:			Theme.controlBackgroundColor
-				border.width:	textField.useExternalBorder && !control.activeFocus ? 1					: 0
-				border.color:	textField.useExternalBorder							? Theme.borderColor : "transparent"
+				border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
+				border.color:	textField.showBorder							? Theme.borderColor : "transparent"
 			}
 			
 			Rectangle

@@ -28,7 +28,8 @@
 class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
-	OptionsTable(Options *rowTemplate = nullptr) : OptionI(true), _template(rowTemplate) {}
+	OptionsTable(Options *rowTemplate = nullptr, bool temporaryTemplate = false, Json::Value cachedValue = Json::nullValue) :
+		OptionI(true), _template(rowTemplate), _templateIsTemparory(temporaryTemplate), _cachedValue(cachedValue) {}
 
 	~OptionsTable()														override { deleteOldValues(); }
 
@@ -42,13 +43,16 @@ public:
 
 	Options*				rowTemplate()									const				{ return _template;	}
 	void					setTemplate(Options* templote);
+	bool					hasTemporaryTemplate()							const				{ return _templateIsTemparory; }
+	void					setTemplateIsTemporary()											{ _templateIsTemparory = true; }
 
 private:
 	void					optionsChanged(Option *) { notifyChanged(); }
 	void					deleteOldValues();
 
 	Options		*_template = nullptr;
-	Json::Value _cachedValue; // this is used when a template does not yet exist and the set function is called
+	bool		_templateIsTemparory = false;
+	Json::Value _cachedValue; // this is used when a template does not exist, but the set method is already called: the values are cached until the template is set
 };
 
 #endif // OPTIONSTABLE_H

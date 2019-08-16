@@ -37,6 +37,7 @@ JASPControl
 	property int	controlMinWidth:		0
 	property bool	setWidthInForm:			true
 	property bool	useExternalBorder:		true
+	property bool	showBorder:				true
     
     signal activated(int index);
 
@@ -180,8 +181,8 @@ JASPControl
 		background: Rectangle
 		{
 			id:				comboBoxBackground
-			border.width:	comboBox.useExternalBorder && !control.activeFocus ? 1					: 0
-			border.color:	comboBox.useExternalBorder							? Theme.borderColor : "transparent"
+			border.width:	comboBox.showBorder && !control.activeFocus ? 1					: 0
+			border.color:	comboBox.showBorder							? Theme.borderColor : "transparent"
 			radius:			2
 			color:			enabled ? Theme.controlBackgroundColor : Theme.disableControlBackgroundColor
 		}

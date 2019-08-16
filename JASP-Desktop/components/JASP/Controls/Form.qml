@@ -72,18 +72,6 @@ AnalysisForm
 		}
 	}
 	
-	function addError(message)
-	{
-		errorMessagesText.text = message;
-		errorMessagesBox.visible = true;
-	}
-
-	function clearError()
-	{
-		errorMessagesBox.visible = false;
-		errorMessagesBox.parent = formContent
-	}
-
 	function showControlError(control, message, temporary)
 	{
 		controlErrorMessage.showMessage(control, message)
