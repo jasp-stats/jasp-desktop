@@ -120,6 +120,37 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 		Log::log() << "Unknown item " << controlName.toStdString() << std::endl;
 }
 
+QMLItem* AnalysisForm::buildQMLItem(QQuickItem* quickItem, qmlControlType& controlType)
+{
+	QMLItem* control = nullptr;
+	QString controlName = QQmlProperty(quickItem, "name").read().toString();
+	QString controlTypeStr = QQmlProperty(quickItem, "controlType").read().toString();
+	controlType = qmlControlType::JASPControl;
+	try						{ controlType	= qmlControlTypeFromQString(controlTypeStr);	}
+	catch(std::exception)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); }
+
+	switch(controlType)
+	{
+	case qmlControlType::CheckBox:			//fallthrough:
+	case qmlControlType::Switch:			control = new BoundQMLCheckBox(quickItem,		this);	break;
+	case qmlControlType::TextField:			control = new BoundQMLTextInput(quickItem,		this);	break;
+	case qmlControlType::RadioButtonGroup:	control = new BoundQMLRadioButtons(quickItem,	this);	break;
+	case qmlControlType::Slider:			control = new BoundQMLSlider(quickItem,			this);	break;
+	case qmlControlType::TextArea:			control = new BoundQMLTextArea(quickItem,		this);	break;
+	case qmlControlType::ComboBox:			control = new BoundQMLComboBox(quickItem,		this);	break;
+	case qmlControlType::RepeatedMeasuresFactorsList: control = new BoundQMLRepeatedMeasuresFactors(quickItem, this); break;
+	case qmlControlType::FactorsForm:		control = new BoundQMLFactorsForm(quickItem,	this);	break;
+	case qmlControlType::TableView:			control = new BoundQMLTableView(quickItem,		this);	break;
+	case qmlControlType::VariablesListView: control = nullptr;										break; // Cannot build the control here. We need more information to get the right VariableList object.
+	case qmlControlType::JASPControl:
+	default:
+		_errorMessages.append(QString::fromLatin1("Unknown type of JASPControl ") + controlName + QString::fromLatin1(" : ") + controlTypeStr);
+	}
+
+	return control;
+
+}
+
 void AnalysisForm::_parseQML()
 {
 	QQuickItem *root = this;
@@ -158,22 +189,14 @@ void AnalysisForm::_parseQML()
 		}
 		controlNames.append(controlName);
 
-		QMLItem *control = nullptr;
 		qmlControlType controlType;
-		try						{ controlType	= qmlControlTypeFromQString(controlTypeStr);	}
-		catch(std::exception&)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); continue; }
+		QMLItem *control = buildQMLItem(quickItem, controlType);
 
 		switch(controlType)
 		{
-		case qmlControlType::CheckBox:			[[clang::fallthrough]];
-		case qmlControlType::Switch:			control = new BoundQMLCheckBox(quickItem,		this);	break;
-		case qmlControlType::TextField:			control = new BoundQMLTextInput(quickItem,		this);	break;
-		case qmlControlType::RadioButtonGroup:	control = new BoundQMLRadioButtons(quickItem,	this);	break;
-		case qmlControlType::Slider:			control = new BoundQMLSlider(quickItem,			this);	break;
 		case qmlControlType::TextArea:
 		{
-			BoundQMLTextArea* boundQMLTextArea = new BoundQMLTextArea(quickItem,	this);
-			control = boundQMLTextArea;
+			BoundQMLTextArea* boundQMLTextArea = dynamic_cast<BoundQMLTextArea*>(control);
 			ListModelTermsAvailable* allVariablesModel = boundQMLTextArea->allVariablesModel();
 
 			if (allVariablesModel)
@@ -183,8 +206,7 @@ void AnalysisForm::_parseQML()
 		}
 		case qmlControlType::ComboBox:
 		{
-			BoundQMLComboBox* boundQMLComboBox = new BoundQMLComboBox(quickItem, this);
-			control = boundQMLComboBox;
+			BoundQMLComboBox* boundQMLComboBox = dynamic_cast<BoundQMLComboBox*>(control);
 			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
 			if (availableModel)
 			{
@@ -195,22 +217,14 @@ void AnalysisForm::_parseQML()
 		}
 		case qmlControlType::RepeatedMeasuresFactorsList:
 		{
-			BoundQMLRepeatedMeasuresFactors* factorList = new BoundQMLRepeatedMeasuresFactors(quickItem, this);
-			control = factorList;
+			BoundQMLRepeatedMeasuresFactors* factorList = dynamic_cast<BoundQMLRepeatedMeasuresFactors*>(control);
 			_modelMap[controlName] = factorList->model();
 			break;
 		}
 		case qmlControlType::FactorsForm:
 		{
-			BoundQMLFactorsForm* factorForm = new BoundQMLFactorsForm(quickItem, this);
-			control = factorForm;
+			BoundQMLFactorsForm* factorForm = dynamic_cast<BoundQMLFactorsForm*>(control);
 			_modelMap[controlName] = factorForm->model();
-			break;
-		}
-		case qmlControlType::TableView:
-		{
-			BoundQMLTableView* tableView = new BoundQMLTableView(quickItem, this);
-			control = tableView;
 			break;
 		}
 		case qmlControlType::VariablesListView:
@@ -270,9 +284,7 @@ void AnalysisForm::_parseQML()
 
 			break;
 		}
-		case qmlControlType::JASPControl:
-		default:
-			_errorMessages.append(QString::fromLatin1("Unknown type of JASPControl ") + controlName + QString::fromLatin1(" : ") + controlTypeStr);
+		default: break;
 		}
 
 		if (control)
@@ -526,7 +538,17 @@ void AnalysisForm::unbind()
 void AnalysisForm::addError(const QString &error)
 {
 	_errorMessages.append(error);
+	_lastAddedErrorTimestamp = Utils::currentSeconds();
 	_setErrorMessages();
+}
+
+void AnalysisForm::clearErrors()
+{
+	if (Utils::currentSeconds() - _lastAddedErrorTimestamp > 5)
+	{
+		_errorMessages.clear();
+		_setErrorMessages();
+	}
 }
 
 void AnalysisForm::formCompletedHandler()

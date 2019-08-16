@@ -21,14 +21,9 @@ QtObject {
     property string type
     property string name
     property string title
-	property var	model
 	property var	values
-	property int	width
-	property string value:			""
-	property bool	checked:		false
-	property string defaultValue:	""
-	property int	max:			2147483647
-	property int	min:			0
-	property int	currentIndex:	0
 	property string purpose
+	property bool	useExternalBorder:	false
+	property int	rightMargin: 0
+	property var	properties
 }

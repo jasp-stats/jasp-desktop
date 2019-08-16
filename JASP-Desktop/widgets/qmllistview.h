@@ -57,7 +57,7 @@ public:
 	const	QList<SourceType*>	& sourceModels()		const	{ return _sourceModels; }
 
 protected slots:
-	virtual void modelChangedHandler() {} // Model has changed: change the options
+	virtual void modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
 
 protected:
 	QList<SourceType*>	_sourceModels;

@@ -31,7 +31,6 @@ class QMLItem
 
 public:
 			 QMLItem(QQuickItem* item, AnalysisForm* form);
-			 QMLItem(QMap<QString, QVariant>& properties, AnalysisForm* form);
 	virtual ~QMLItem() {}
 
 	virtual void				setUp() {}
@@ -53,7 +52,6 @@ protected:
 	QString					_name;
 	AnalysisForm*			_form;
 	QVector<QMLItem*>		_depends;
-	QMap<QString, QVariant>	_properties;
 };
 
 #endif // QMLITEM_H
