@@ -36,15 +36,15 @@ public:
 		PropertiesRole
     };
 	
-	ListModelExtraControls(ListModelAssignedInterface* parent, const QString& colName, const QVector<QMap<QString, QVariant> >& controlColumns);
+	ListModelExtraControls(ListModelAssignedInterface* parent, const QVector<QMap<QString, QVariant> >& controlColumns);
 	
 	QHash<int, QByteArray>	roleNames()												const override;
 	int						rowCount(const QModelIndex &parent = QModelIndex())		const override;
 	int						columnCount(const QModelIndex &parent = QModelIndex())	const override { return 1; }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-	
-	Q_INVOKABLE	void controlLoaded(const QString& name, QVariant item);
-	Q_INVOKABLE void controlDestroyed(const QString& name, QVariant item);
+
+	Q_INVOKABLE	void controlLoaded(QString name, QVariant item);
+	Q_INVOKABLE void controlsDestroyed();
 	const QMap<QString, BoundQMLItem*>&	getBoundItems() const { return _boundItems; } 
 
 private:
@@ -59,7 +59,6 @@ private:
 	};
 
 	ListModelAssignedInterface*		_assignedModel;
-	QString							_colName;
 	QMap<QString, ExtraColumnType*>	_extraColumns;
 	QMap<QString, BoundQMLItem* >	_boundItems;
 	QVector<QString>				_names;

@@ -61,12 +61,28 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisF
 				if (!title.isEmpty())
 					extraControlTitles.push_back(value.toString());
 			}
-			else
+			else if (key != "properties")
+			{
+				if (key == "type" && value.toString() == "DropDown")
+					// DropDown is an alias to ComboBox
+					value = "ComboBox";
 				properties[key] = value;
+			}
+			else
+			{
+				QMap<QString, QVariant> map = value.toMap();
+				QMapIterator<QString, QVariant> it(map);
+				while (it.hasNext())
+				{
+					it.next();
+					properties[it.key()] = it.value();
+				}
+
+			}
 		}
 
 		if (_hasNuisanceControl)
-			_nuisanceName = properties["name"].toString().toStdString();
+			_optionNuisanceName = properties["name"].toString().toStdString();
 		_extraControlColumns.push_back(properties);
 	}
 	
@@ -114,37 +130,4 @@ void BoundQMLListViewDraggable::setUp()
 ListModelAssignedInterface* BoundQMLListViewDraggable::assignedModel()
 {
 	return dynamic_cast<ListModelAssignedInterface*>(model());
-}
-
-void BoundQMLListViewDraggable::addExtraOptions(Options *options)
-{
-	for (const QMap<QString, QVariant>& properties : _extraControlColumns)
-	{
-		QString type = properties["type"].toString();
-		Option* option = nullptr;
-		if (type == "CheckBox")
-		{
-			bool checked = (properties.contains("checked") ? properties["checked"].toBool() : false);
-			option = new OptionBoolean(checked);
-		}
-		else if (type == "ComboBox")
-		{
-			QString defaultValue = (properties.contains("value") ? properties["value"].toString() : "");
-			QStringList valueList = (properties.contains("values") ? properties["values"].toStringList() : QStringList());
-			std::vector<std::string> values;
-			for (const QString& oneValue : valueList)
-				values.push_back(oneValue.toStdString());
-			option = new OptionList(values, defaultValue.toStdString());
-		}
-		else if (type == "TextField")
-		{
-			QString value = (properties.contains("value") ? properties["value"].toString() : "");
-			option = new OptionString(value.toStdString());
-		}
-		if (option)
-			options->add(properties["name"].toString().toStdString(), option);
-		else
-			addError(QString::fromLatin1("Extra column in ") + name() + " has an unsupported type: " + type);
-	}
-	
 }

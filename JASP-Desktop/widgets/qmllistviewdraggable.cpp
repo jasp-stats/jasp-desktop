@@ -94,7 +94,6 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	_tempDropModel = dropModel;
 	_tempDropItemIndex = dropItemIndex;
 	_tempAssignOption = assignOption;
-	// We need to move the items with another thread, if not, the drag and drop in QML get confused:
 	// the call to itemsDropped is called from an item that will be removed (the items of the variable list
 	// will be re-created). So itemsDropped should not call _moveItems directly.
 	QTimer::singleShot(0, this, SLOT(moveItemsDelayedHandler()));
