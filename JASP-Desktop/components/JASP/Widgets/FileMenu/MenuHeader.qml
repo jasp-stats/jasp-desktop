@@ -37,7 +37,6 @@ Item
 		{
 			verticalCenter:	parent.verticalCenter
 			left:			parent.left
-			//margins:		Theme.generalAnchorMargin
 		}
 		font:				Theme.fontGroupTitle
 		color:				Theme.black

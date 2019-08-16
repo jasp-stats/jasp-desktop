@@ -134,15 +134,33 @@ win32 {
 
     RESOURCES_PATH ~= s,/,\\,g
     RESOURCES_PATH_DEST ~= s,/,\\,g
+	QTBIN=$$QMAKE_QMAKE
+	QTBIN ~= s,qmake.exe,,g
+	QTBIN ~= s,/,\\,g
+	EXTENSIONS=cpp,qml
+	WINPWD=$$PWD/..
+	WINPWD ~= s,/,\\,g
 
     copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+
+	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${WINPWD}\jasp.po) &&
+	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${WINPWD}\jasp_nl.po) &&
+	maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${WINPWD}\jasp_nl.po -qm $${WINPWD}\Resources\Translations\jasp_nl.qm) &&
+	maketranslations.commands += $$quote(copy $${RESOURCES_PATH}\Translations\*.qm $${RESOURCES_PATH_DEST}\Translations\ )
 }
 
 macx {
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-    copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-    copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+	maketranslations.commands += lupdate -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
+	maketranslations.commands += lupdate -extensions cpp,qml -source-language dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
+	maketranslations.commands += lupdate -extensions cpp,qml -target-language japanese -recursive $$PWD/.. -ts $$PWD/../jasp_ja.po ;
+	maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm ;
+	maketranslations.commands += lrelease $$PWD/../jasp_ja.po -qm $$PWD/../Resources/Translations/jasp_ja.qm ;
+	maketranslations.commands  += cp $$RESOURCES_PATH/Translations/*.qm $$RESOURCES_PATH_DEST/Translations/ ;
+
+	copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+	copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 linux {
@@ -153,8 +171,10 @@ linux {
 }
 
 ! equals(PWD, $${OUT_PWD}) {
-    QMAKE_EXTRA_TARGETS += copyres
+	QMAKE_EXTRA_TARGETS += copyres
+	QMAKE_EXTRA_TARGETS += maketranslations
     POST_TARGETDEPS     += copyres
+	POST_TARGETDEPS     += maketranslations
 }
 
 INCLUDEPATH += $$PWD/
@@ -252,6 +272,7 @@ HEADERS += \
     results/resultsjsinterface.h \
     utilities/settings.h \
     utilities/simplecrypt.h \
+    utilities/languagemodel.h \
     utilities/simplecryptkey.h \
     data/labelfiltergenerator.h \
     widgets/filemenu/filemenuobject.h \
@@ -425,6 +446,7 @@ SOURCES += \
     results/resultsjsinterface.cpp \
     utilities/settings.cpp \
     utilities/simplecrypt.cpp \
+    utilities/languagemodel.cpp \
     data/labelfiltergenerator.cpp \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \

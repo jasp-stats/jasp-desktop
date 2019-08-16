@@ -21,20 +21,23 @@
 
 QMap<Sortable::SortType, QString> SortMenuModel::_labels =
 {
-	{ Sortable::SortType::None, "None" },
-	{ Sortable::SortType::SortByName, "Sort by name" },
-	{ Sortable::SortType::SortByNameAZ, "Sort by name A-Z" },
-	{ Sortable::SortType::SortByNameZA, "Sort by name Z-A" },
-	{ Sortable::SortType::SortByType, "Sort by type" },
-	{ Sortable::SortType::SortByDate, "Sort by date" },
-	{ Sortable::SortType::SortBySize, "Sort by size" }
+	{ Sortable::SortType::None, tr("None") },
+	{ Sortable::SortType::SortByName, tr("Sort by name") },
+	{ Sortable::SortType::SortByNameAZ, tr("Sort by name A-Z") },
+	{ Sortable::SortType::SortByNameZA, tr("Sort by name Z-A") },
+	{ Sortable::SortType::SortByType, tr("Sort by type") },
+	{ Sortable::SortType::SortByDate, tr("Sort by date") },
+	{ Sortable::SortType::SortBySize, tr("Sort by size") }
 };
 
 SortMenuModel::SortMenuModel(QObject* parent, const QVector<Sortable::SortType> &menuEntries) : QAbstractListModel(parent)
 {
 	_sortable = dynamic_cast<Sortable*>(parent);
 	if (!_sortable)
-		throw new std::runtime_error("SortMenuModel not called with a sortable parent");
+	{
+		QString errormsg(tr("SortMenuModel not called with a sortable parent"));
+		throw new std::runtime_error(errormsg.toStdString().c_str());
+	}
 
 	for (const Sortable::SortType& sortType : menuEntries)
 		_menuEntries.push_back(new SortMenuItem(sortType));

@@ -19,8 +19,6 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
-
-
 #include <QSettings>
 #include <QQmlApplicationEngine>
 #include <QApplication>
@@ -51,6 +49,11 @@
 #include "data/asyncloader.h"
 #include "data/filtermodel.h"
 #include "data/fileevent.h"
+
+#include "utilities/languagemodel.h"
+#include <vector>
+
+using namespace std;
 
 using PlotEditor::PlotEditorModel;
 
@@ -89,6 +92,7 @@ public:
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
+	void loadQML();
 
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -139,7 +143,6 @@ private:
 	void startOnlineDataManager();
 	void startDataEditor(QString path);
 	void loadRibbonQML();
-	void loadQML();
 
 	void checkUsedModules();
 
@@ -176,6 +179,7 @@ private:
 
 	void _openFile();
 	void connectFileEventCompleted(FileEvent * event);
+	void setModulesToLoad(vector<string> & commonModules, vector<string>  & extraModules, vector<QString> & moduleDisplayNames);
 
 signals:
 	void saveJaspFile();
@@ -260,6 +264,7 @@ private:
 	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
+	LanguageModel				*	_languageModel			= nullptr;
 	LabelModel					*	_labelModel				= nullptr;
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
 

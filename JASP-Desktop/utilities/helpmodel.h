@@ -2,6 +2,7 @@
 #define HELPMODEL_H
 
 #include <QObject>
+#include "languagemodel.h"
 
 class HelpModel : public QObject
 {
