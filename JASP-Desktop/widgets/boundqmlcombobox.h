@@ -31,7 +31,6 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 	
 public:
 	BoundQMLComboBox(QQuickItem* item, AnalysisForm* form);
-	BoundQMLComboBox(QMap<QString, QVariant>& properties, AnalysisForm *form);
 
 	void		initComboBox();
 
