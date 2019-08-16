@@ -63,10 +63,6 @@ QString BoundQMLTextInput::_getPercentValue()
 	double doubleValue = _number->value();
 	if (doubleValue <= 1)
 		doubleValue = doubleValue * 100;
-	// Get only max 1 decimal
-	doubleValue = doubleValue * 10;
-	int intValue = int(doubleValue);
-	doubleValue = double(intValue) / 10;
 	if (doubleValue > 100) doubleValue = 100;
 	else if (doubleValue < 0) doubleValue = 0;
 	return QString::number(doubleValue);
