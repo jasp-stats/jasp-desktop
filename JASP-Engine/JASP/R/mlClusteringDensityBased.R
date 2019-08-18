@@ -142,26 +142,28 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
     knnDist <- dbscan::kNNdist(data , k = options[['minPts']])
   }
   knnDims <- dim(knnDist)
-  knnValues <- seq(from = 1, to = knnDims[1] * (knnDims[2]-1), by = 1)
 
-  d <- data.frame(x = knnValues, y = sort(knnDist[,2:options[['minPts']]]))
+  knnValues <- seq(from = 1, to = knnDims[1] * (knnDims[2]-1), by = 1)
+  knnDistances <- sort(knnDist[,2:options[['minPts']]])
+
+  d <- data.frame(x = knnValues, y = knnDistances)
 
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
   yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
+  yKnee <- KneeArrower::findCutoff(knnValues, knnDistances, method = "curvature")[["y"]]
+  suggestedLine <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = yKnee, yend = yKnee)
+  
   lineData <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = options[["eps"]], yend = options[["eps"]])
-
+ 
   p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
-        JASPgraphs::geom_line() +
         ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = range(xBreaks)) + 
         ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks)) +
-        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray")
+        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
+        ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= "Maximum curvature", x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred") +
+        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
+        JASPgraphs::geom_line()
   p <- JASPgraphs::themeJasp(p)
 
   kdistPlot$plotObject <- p
 }
-
-
-
-
-
