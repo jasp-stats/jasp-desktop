@@ -20,6 +20,8 @@
   predictors <- predictors[predictors != ""]
   if (is.null(dataset))
     dataset <- .readDataSetToEnd(columns.as.numeric = predictors, exclude.na.listwise = predictors)
+  if(nrow(dataset) == 0 && length(unlist(options[["predictors"]])) > 0) # For some reason, .hasErrors() does not catch this error (it has to happen before scaling).
+    JASP:::.quitAnalysis("Warning: Your dataset contains no values after removing missing values.")
   if(options[["scaleEqualSD"]] && length(unlist(options[["predictors"]])) > 0)
     dataset <- .scaleNumericData(dataset)
 
@@ -28,9 +30,9 @@
 
 .errorHandlingClusteringAnalyses <- function(dataset, options){
   predictors <- unlist(options$predictors)
-  
+
   if(length(predictors[predictors != ""]) > 0L)
-    .hasErrors(dataset, type = c('infinity', 'observations'), all.target = predictors, 
+    .hasErrors(dataset, type = c('infinity', 'observations'), all.target = predictors,
                observations.amount = "< 2", exitAnalysisIfErrors = TRUE)
   return()
 }
@@ -65,7 +67,7 @@
 }
 
 .clustering <- function(dataset, options, jaspResults, ready, type){
-  
+
   if(!is.null(jaspResults[["clusterResult"]])) return()
 
   # set the seed so that every time the same set is chosen (to prevent random results) ##
@@ -84,7 +86,7 @@
       clusterResult <- .randomForestClustering(dataset, options, jaspResults)
     }
     jaspResults[["clusterResult"]] <- createJaspState(clusterResult)
-    jaspResults[["clusterResult"]]$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed", 
+    jaspResults[["clusterResult"]]$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
                                                       "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "optimizationCriterion"))
   }
 }
@@ -128,7 +130,7 @@
     criterion <- base::switch(options[["optimizationCriterion"]], "validationAIC" = "AIC", "validationBIC" = "BIC", "validationSilh" = "silhouette")
     clusteringTable$addFootnote(message = paste0("The model is optimized with respect to the <i>", criterion, "</i> value."), symbol="<i>Note.</i>")
   }
-    
+
   if(clusterResult[["clusters"]] == options[["maxClusters"]] && options[["modelOpt"]] != "validationManual"){
     message <- "The optimum number of clusters is the maximum number of clusters. You might want to adjust the range of optimization."
     clusteringTable$addFootnote(message=message, symbol="<i>Note.</i>")
@@ -136,14 +138,14 @@
 
   if(type=="densitybased"){
     if(clusterResult[["zeroMark"]] == 1)
-      clusteringTable$addFootnote(message = "Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters.", symbol="<i>Note.</i>") 
+      clusteringTable$addFootnote(message = "Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters.", symbol="<i>Note.</i>")
     if(clusterResult[["oneMark"]] == 1)
-      clusteringTable$addFootnote(message = "Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters.", symbol="<i>Note.</i>") 
+      clusteringTable$addFootnote(message = "Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters.", symbol="<i>Note.</i>")
   }
 
   if(!options[["scaleEqualSD"]])
     clusteringTable$addFootnote(message = "The variables in the model are <b>unstandardized</b>.", symbol="<i>Note.</i>")
-  
+
   row <- data.frame(clusters = clusterResult[['clusters']], measure = clusterResult[['BSS']]/clusterResult[['TSS']], aic = round(clusterResult[['AIC']], 2),
                     bic = round(clusterResult[['BIC']], 2), Silh = round(clusterResult[['Silh_score']], 2), n = clusterResult[["N"]])
   clusteringTable$addRows(row)
@@ -169,7 +171,7 @@
     clusterInfoTable$addColumnInfo(name = 'silh_scores', title = 'Silhouette score', type = 'number', format = 'dp:2')
 
   jaspResults[["clusterInfoTable"]]       <- clusterInfoTable
-    
+
   if(!ready) return()
 
   clusterResult <- jaspResults[["clusterResult"]]$object
@@ -239,12 +241,12 @@
   if(!ready) return()
 
   clusterResult <- jaspResults[["clusterResult"]]$object
- 
+
   if(options[["seedBox"]]) set.seed(options[["seed"]])
 
   startProgressbar(2)
   progressbarTick()
-      
+
   unique.rows <- which(!duplicated(dataset[, .v(options[["predictors"]])]))
   if(is.null(jaspResults[["tsneOutput"]])){
     tsne_out <- Rtsne::Rtsne(as.matrix(dataset), perplexity = nrow(dataset) / 4, check_duplicates = FALSE)
@@ -253,11 +255,11 @@
   } else {
     tsne_out <- jaspResults[["tsneOutput"]]$object
   }
-  
+
   if(type == "kmeans" || type == "cmeans"){
     fit <- base::switch(type,
                         "kmeans" = kmeans(dataset, centers = clusterResult[["clusters"]], iter.max = options[['noOfIterations']], nstart = options[['noOfRandomSets']], algorithm = options[['algorithm']]),
-                        "cmeans" = e1071::cmeans(dataset, centers = clusterResult[["clusters"]], iter.max = options[['noOfIterations']], m = options[['m']]))  
+                        "cmeans" = e1071::cmeans(dataset, centers = clusterResult[["clusters"]], iter.max = options[['noOfIterations']], m = options[['m']]))
     pred.values <- fit$cluster
     colSize <- clusterResult[["clusters"]]
   } else if(type == "hierarchical"){
@@ -277,7 +279,7 @@
       pred.values <- fit$cluster
       colSize <- clusterResult[["clusters"]] + 1
   } else if(type == "randomForest"){
-    fit <- randomForest::randomForest(x = dataset, y = NULL, ntree = options[["noOfTrees"]], 
+    fit <- randomForest::randomForest(x = dataset, y = NULL, ntree = options[["noOfTrees"]],
                                       proximity = TRUE, oob.prox = TRUE)
     hrfit <- hclust(as.dist(1 - fit$proximity), method = "ward.D2")
     pred.values <- cutree(hrfit, k = clusterResult[["clusters"]])
@@ -286,11 +288,11 @@
 
   clusterAssignment <- factor(pred.values)
   if(type=="densitybased")
-    levels(clusterAssignment)[levels(clusterAssignment)=="0"] <- "Noisepoint"  
+    levels(clusterAssignment)[levels(clusterAssignment)=="0"] <- "Noisepoint"
   tsne_plot <- data.frame(x = tsne_out$Y[,1], y = tsne_out$Y[,2], Cluster = clusterAssignment)
-  p <- ggplot2::ggplot(tsne_plot) + 
-        ggplot2::geom_point(ggplot2::aes(x = x, y = y, fill = Cluster), size = 4, stroke = 1, shape = 21, color = "black") + 
-        ggplot2::xlab(NULL) + 
+  p <- ggplot2::ggplot(tsne_plot) +
+        ggplot2::geom_point(ggplot2::aes(x = x, y = y, fill = Cluster), size = 4, stroke = 1, shape = 21, color = "black") +
+        ggplot2::xlab(NULL) +
         ggplot2::ylab(NULL) +
         ggplot2::scale_fill_manual(values = colorspace::qualitative_hcl(n = colSize))
   if(options[["legend"]]){
@@ -301,10 +303,10 @@
   p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())
   if(options[["labels"]])
     p <- p + ggrepel::geom_text_repel(ggplot2::aes(label=rownames(dataset), x = x, y = y), hjust=-1, vjust=1, data = tsne_plot) # of (rownames(data))
-  
+
   progressbarTick()
   clusterPlot$plotObject <- p
-  
+
 }
 
 .elbowCurvePlot <- function(dataset, options, jaspResults, ready, position){
@@ -320,7 +322,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   if(!ready) return()
 
-  clusterResult <- jaspResults[["clusterResult"]]$object  
+  clusterResult <- jaspResults[["clusterResult"]]$object
 
   wss <- clusterResult[['wssStore']]
   aic <- clusterResult[['aicStore']]
@@ -329,27 +331,27 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
   values <- c(wss, aic, bic)
   type <- rep(c("Within Sum of Squares", "AIC", "BIC"), each = length(wss))
 
-  requiredPoint <- base::switch(options[["optimizationCriterion"]], 
-                                  "validationAIC" = "AIC", 
-                                  "validationBIC" = "BIC", 
+  requiredPoint <- base::switch(options[["optimizationCriterion"]],
+                                  "validationAIC" = "AIC",
+                                  "validationBIC" = "BIC",
                                   "validationSilh" = "Within Sum of Squares")
 
   d <- data.frame(x = rep(2:options[["maxClusters"]], 3), y = values, type = type)
-       
+
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
   yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
   yVals <- values[type == requiredPoint]
-  pointData <- data.frame(x = clusterResult[['clusters']], 
+  pointData <- data.frame(x = clusterResult[['clusters']],
                           y = yVals[clusterResult[['clusters']] - 1],
                           type = requiredPoint)
-   
+
   p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) +
-        JASPgraphs::geom_line() + 
+        JASPgraphs::geom_line() +
         ggplot2::scale_x_continuous(name = "Number of Clusters", breaks = xBreaks, labels = xBreaks) +
         ggplot2::scale_y_continuous(name = "", breaks = yBreaks, labels = yBreaks) +
         ggplot2::labs(linetype = "") +
-        ggplot2::scale_linetype_manual(values = c(3, 2, 1)) + 
+        ggplot2::scale_linetype_manual(values = c(3, 2, 1)) +
         JASPgraphs::geom_point(data = pointData, ggplot2::aes(x = x, y = y, linetype = type), fill = "red")
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
@@ -365,8 +367,8 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
   if(is.null(jaspResults[["clusterColumn"]])){
     clusterColumn <- clusterResult[["pred.values"]]
     jaspResults[["clusterColumn"]] <- createJaspColumn(columnName=options[["clusterColumn"]])
-    jaspResults[["clusterColumn"]]$dependOn(options = c("clusterColumn", "predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed", 
+    jaspResults[["clusterColumn"]]$dependOn(options = c("clusterColumn", "predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
                                                         "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "optimizationCriterion"))
     jaspResults[["clusterColumn"]]$setNominal(clusterColumn)
-  }  
+  }
 }
