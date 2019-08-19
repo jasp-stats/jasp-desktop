@@ -20,8 +20,6 @@
   predictors <- predictors[predictors != ""]
   if (is.null(dataset))
     dataset <- .readDataSetToEnd(columns.as.numeric = predictors, exclude.na.listwise = predictors)
-  if(nrow(dataset) == 0 && length(unlist(options[["predictors"]])) > 0) # For some reason, .hasErrors() does not catch this error (it has to happen before scaling).
-    JASP:::.quitAnalysis("Warning: Your dataset contains no values after removing missing values.")
   if(options[["scaleEqualSD"]] && length(unlist(options[["predictors"]])) > 0)
     dataset <- .scaleNumericData(dataset)
 
