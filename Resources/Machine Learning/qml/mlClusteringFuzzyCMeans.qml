@@ -116,12 +116,13 @@ Form {
                 fieldWidth: 60 
             }
 
-            IntegerField { 
+            DoubleField { 
                 name: "m"
                 text: qsTr("Fuzziness parameter:") 
                 defaultValue: 2
                 min: 1
-                max: 999999
+                max: 1000
+                decimals: 2
                 fieldWidth: 60 
             }
 
