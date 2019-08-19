@@ -226,7 +226,7 @@ where the blue files are the binaries that are added manually. The process will 
  4. Install packages in your local R for JASP to build JASPGraph: 
 
 ``` 
- install.packages(c("ggplot2", "scales", "cowplot", "gridExtra", "stringr","gbm"))
+ install.packages(c("ggplot2", "scales", "cowplot", "gridExtra", "stringr","gbm", "kknn"))
 ```
 If you do not have R installed:  
 In this case inside Qt you must specify where the R version
