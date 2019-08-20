@@ -96,8 +96,9 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult										);
 			connect(_engines[i],	&EngineRepresentation::filterDone,						this,			&EngineSync::filterDone													);
 			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg										);
+			connect(_engines[i],	&EngineRepresentation::columnDataTypeChanged,			this,			&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
 			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
-			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed										);
+			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailedHandler									);
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler								);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed									);

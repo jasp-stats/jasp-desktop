@@ -1,6 +1,7 @@
 #include "enginerepresentation.h"
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "utilities/qutils.h"
 #include "log.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
@@ -350,8 +351,12 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 			//jaspColumnType	columnType	= jaspColumnTypeFromString(results["columnType"].asString()); This would work if jaspColumn wasn't defined in jaspColumn.h and Windows would not need to have that separately in a DLL... But it isn't really needed here anyway.
 			std::string		columnName	= results["columnName"].asString();
 			bool			dataChanged	= results["dataChanged"].asBool();
+			bool			typeChanged	= results["typeChanged"].asBool();
 
-			emit computeColumnSucceeded(QString::fromStdString(columnName), "", dataChanged);
+			emit computeColumnSucceeded(tq(columnName), "", dataChanged);
+
+			if(typeChanged)
+				emit columnDataTypeChanged(tq(columnName));
 		}
 		else
 			for(std::string member : members)

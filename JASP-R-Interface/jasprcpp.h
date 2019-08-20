@@ -77,4 +77,6 @@ void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, size_t colMax);
 std::string _jaspRCPP_System(std::string cmd);
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames);
 
+ColumnType jaspRCPP_getColumnType(std::string columnName);
+
 #endif // JASPRCPP_H

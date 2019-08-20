@@ -26,6 +26,7 @@
 #include "dirs.h"
 #include "analyses.h"
 #include "analysisform.h"
+#include "utilities/qutils.h"
 
 
 
@@ -71,6 +72,12 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 
 Analysis::~Analysis()
 {
+	const auto & cols = columnsCreated();
+
+	if(cols.size() > 0)
+		for(const std::string & col : cols)
+			emit requestComputedColumnDestruction(tq(col));
+
 	delete _options;
 }
 

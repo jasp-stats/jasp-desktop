@@ -72,13 +72,14 @@ signals:
 	void	imageBackgroundChanged(const QString & value);
 
 	void	computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
-	void	computeColumnFailed(			const QString & columnName, const QString & error);
+	void	computeColumnFailed(		const QString & columnName, const QString & error);
+	void	columnDataTypeChanged(		const QString & columnName);
 
 	void	moduleInstallationSucceeded(	const QString & moduleName);
 	void	moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
-	void	moduleLoadingSucceeded(		const QString & moduleName);
+	void	moduleLoadingSucceeded(			const QString & moduleName);
 	void	moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
-	void	moduleUninstallingFinished(	const QString & moduleName);
+	void	moduleUninstallingFinished(		const QString & moduleName);
 
 	void	refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 

@@ -36,6 +36,7 @@ ReadDataSetDescriptionCB	readDataSetDescriptionCB;
 RequestSpecificFileSourceCB requestStateFileSourceCB,
 							requestJaspResultsFileSourceCB;
 
+GetColumnType				dataSetGetColumnType;
 SetColumnAsScale			dataSetColumnAsScale;
 SetColumnAsOrdinal			dataSetColumnAsOrdinal;
 SetColumnAsNominal			dataSetColumnAsNominal;
@@ -66,6 +67,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	dataSetRowCount							= callbacks->dataSetRowCount;
 	readFullDataSetCB						= callbacks->readFullDataSetCB;
 	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
+	dataSetGetColumnType					= callbacks->dataSetGetColumnType;
 	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
 	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
 	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
@@ -511,6 +513,11 @@ void jaspRCPP_setLog(SEXP Message)
 int jaspRCPP_dataSetRowCount()
 {
 	return dataSetRowCount();
+}
+
+ColumnType jaspRCPP_getColumnType(std::string columnName)
+{
+	return ColumnType(dataSetGetColumnType(columnName.c_str()));
 }
 
 bool jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::RObject scalarData)

@@ -54,6 +54,7 @@ extern "C" {
 	bool						STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
 	const char*					STDCALL rbridge_requestTempRootName();
 	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
+	int							STDCALL rbridge_getColumnType			(const char * columnName);
 	bool						STDCALL rbridge_setColumnAsScale		(const char* columnName, double *		scalarData,		size_t length);
 	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length,	const char ** levels, size_t numLevels);
 	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
@@ -72,10 +73,11 @@ extern "C" {
 
 	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground);
 
-	void rbridge_setColumnDataAsScaleSource(		boost::function< bool(const std::string&, const std::vector<double>&)											> source);
-	void rbridge_setColumnDataAsOrdinalSource(		boost::function< bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> source);
-	void rbridge_setColumnDataAsNominalSource(		boost::function< bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> source);
-	void rbridge_setColumnDataAsNominalTextSource(	boost::function< bool(const std::string&, const std::vector<std::string>&)										> source);
+	void rbridge_setColumnFunctionSources(			boost::function<int (const std::string &)																		> getTypeSource,
+													boost::function<bool(const std::string &, const std::vector<double>&)											> scaleSource,
+													boost::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> ordinalSource,
+													boost::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> nominalSource,
+													boost::function<bool(const std::string &, const std::vector<std::string>&)										> nominalTextSource);
 	void rbridge_setGetDataSetRowCountSource(		boost::function<int()> source);
 
 	std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, const std::string &imageBackground = "white", RCallback callback = NULL, bool useJaspResults = false);

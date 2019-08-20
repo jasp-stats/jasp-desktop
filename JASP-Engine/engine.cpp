@@ -69,10 +69,11 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	rbridge_setStateFileSource(			boost::bind(&Engine::provideStateFileName,			this, _1, _2));
 	rbridge_setJaspResultsFileSource(	boost::bind(&Engine::provideJaspResultsFileName,	this, _1, _2));
 
-	rbridge_setColumnDataAsScaleSource(			boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2));
-	rbridge_setColumnDataAsOrdinalSource(		boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3));
-	rbridge_setColumnDataAsNominalSource(		boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3));
-	rbridge_setColumnDataAsNominalTextSource(	boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
+	rbridge_setColumnFunctionSources(	boost::bind(&Engine::getColumnType,					this, _1),
+										boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2),
+										boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3),
+										boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3),
+										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 
@@ -681,7 +682,7 @@ bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string &
 			if(convertedChars == keyval.second.size()) //It was a number!
 				uniqueInts[keyval.first] = asInt;
 		}
-		catch(std::invalid_argument e) {}
+		catch(std::invalid_argument & e) {}
 	}
 
 	if(uniqueInts.size() == levels.size()) //everything was an int!

@@ -84,6 +84,7 @@ signals:
 
 	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
 	void computeColumnFailed(			const QString & columnName, const QString & error);
+	void columnDataTypeChanged(			const QString & columnName);
 
 	void moduleInstallationSucceeded(	const QString & moduleName);
 	void moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);

@@ -6,7 +6,7 @@
 class jaspColumn : public jaspObject
 {
 public:
-	jaspColumn(std::string columnName="") : jaspObject(jaspObjectType::column, "jaspColumn for " + columnName), _columnName(columnName) {  }
+	jaspColumn(std::string columnName="");
 
 
 	Json::Value		convertToJSON()								const	override;
@@ -23,9 +23,10 @@ public:
 	void setNominalText(Rcpp::RObject nominalData);
 
 private:
-	std::string		_columnName = "";
-	bool			_changed	= false;
-	jaspColumnType	_columnType	= jaspColumnType::unknown;
+	std::string		_columnName		= "";
+	bool			_dataChanged	= false,
+					_typeChanged	= false;
+	jaspColumnType	_columnType		= jaspColumnType::unknown;
 };
 
 
