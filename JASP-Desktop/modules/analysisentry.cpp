@@ -22,38 +22,23 @@
 namespace Modules
 {
 
-AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule) :
-	_title(				analysisEntry.get("title",				"???").asString()	),
-	_function(			analysisEntry.get("function",			"???").asString()	),
-	_qml(				analysisEntry.get("qml",				"???").asString()	),
-	_dynamicModule(		dynamicModule												),
-	_icon(				analysisEntry.get("icon",				"").asString())
+AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :
+	_title(				analysisEntry.get("title",			"???").asString()				),
+	_function(			analysisEntry.get("function",		"???").asString()				),
+	_qml(				analysisEntry.get("qml",			_function).asString()			),
+	_dynamicModule(		dynamicModule														),
+	_isSeparator(		true),
+	_requiresData(		analysisEntry.get("requiresData",	defaultRequiresData).asBool()	),
+	_icon(				analysisEntry.get("icon",			"").asString()					)
 {
-	if (_qml == "???")
-		_qml = _function;
-
-	_isSeparator = true;
 	for (size_t i = 0; i < _title.length(); ++i)
 		if (_title[i] != '-') _isSeparator = false;
 
-	if (!_isSeparator && _qml == "???")
-		_isGroupTitle = true;
-	else
-		_isAnalysis = true;
+	_isGroupTitle	= !_isSeparator && _qml == "???";
+	_isAnalysis		= ~_isGroupTitle;
 }
 
-AnalysisEntry::AnalysisEntry() :
-	_title("???"),
-	_function("???"),
-	_qml("???"),
-	_dynamicModule(nullptr),
-	_isSeparator(true),
-	_isGroupTitle(false),
-	_isAnalysis(false),
-	_isEnabled(true),
-	_icon("")
-{
-}
+AnalysisEntry::AnalysisEntry(){}
 
 DynamicModule*	AnalysisEntry::dynamicModule() const
 {

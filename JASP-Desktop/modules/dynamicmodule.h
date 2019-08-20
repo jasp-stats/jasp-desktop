@@ -79,7 +79,7 @@ public:
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(_name);			}
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
-	bool				requiresDataset()	const { return _requiresDataset;						}
+	bool				requiresData()		const;
 	std::string			author()			const { return _author;									}
 	std::string			version()			const { return _version;								}
 	std::string			website()			const { return _website;								}
@@ -143,14 +143,14 @@ public:
 
 	static QString		getFileFromFolder(const QString &  filepath, const QString & searchMe);
 	static std::string	getFileFromFolder(				const std::string & folderPath, const std::string & searchMe);
-	static std::string getDESCRIPTIONFromArchive(		const std::string & archivePath);
-	static std::string getDescriptionJsonFromArchive(	const std::string & archivePath);
-	static std::string getDESCRIPTIONFromFolder(		const std::string & folderPath);
-	static std::string getDescriptionJsonFromFolder(	const std::string & folderPath);
-	static std::string extractPackageNameFromArchive(	const std::string & archivePath);
-	static std::string extractPackageNameFromFolder(	const std::string & folderPath);
-	static std::string extractPackageNameFromDescriptionJsonTxt(const std::string & descriptionJsonTxt);
-	static std::string extractPackageNameFromDESCRIPTIONTxt(const std::string & DESCRIPTION);
+	static std::string	getDESCRIPTIONFromArchive(		const std::string & archivePath);
+	static std::string	getDescriptionJsonFromArchive(	const std::string & archivePath);
+	static std::string	getDESCRIPTIONFromFolder(		const std::string & folderPath);
+	static std::string	getDescriptionJsonFromFolder(	const std::string & folderPath);
+	static std::string	extractPackageNameFromArchive(	const std::string & archivePath);
+	static std::string	extractPackageNameFromFolder(	const std::string & folderPath);
+	static std::string	extractPackageNameFromDESCRIPTIONTxt(const std::string & DESCRIPTION);
+	static std::string	extractPackageNameFromDescriptionJsonTxt(const std::string & descriptionJsonTxt);
 
 	void unpackage();
 	bool initialized() const { return _initialized;	}
@@ -202,8 +202,7 @@ private:
 					_description,
 					_modulePackage		= "",
 					_version;
-	bool			_requiresDataset	= true,
-					_installing			= false,
+	bool			_installing			= false,
 					_installed			= false,
 					_loaded				= false,
 					_loading			= false,

@@ -29,12 +29,14 @@ RibbonButton::RibbonButton(QObject *parent, Json::Value descriptionJson, bool is
 	{
 		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
 
-		setRequiresDataset(	moduleDescription.get("requiresDataset",	true).asBool()		);
+		setRequiresData(	moduleDescription.get("requiresData",		true).asBool()		);
 		setIsDynamic(		moduleDescription.get("dynamic",			false).asBool()		); //It should never be dynamic here right?
 		setIsCommon(		isCommon														);
 		setTitle(			moduleDescription.get("title",				"???").asString()	);
 		setModuleName(		moduleDescription.get("name",				title()).asString()	);
 		setIconSource(QString::fromStdString(moduleDescription.get("icon", "").asString()));
+
+		bool defaultRequiresDataset = _requiresData;
 
 		for(Json::Value & menuEntry : descriptionJson["menu"])
 		{
@@ -42,7 +44,11 @@ RibbonButton::RibbonButton(QObject *parent, Json::Value descriptionJson, bool is
 			if (menuEntry.get("debug", false).asBool())
 				continue;
 #endif
-			_menuEntries.push_back(new Modules::AnalysisEntry(menuEntry, nullptr));
+			Modules::AnalysisEntry * entry = new Modules::AnalysisEntry(menuEntry, nullptr, defaultRequiresDataset);
+			_menuEntries.push_back(entry);
+
+			if(!entry->requiresData())
+				setRequiresData(false);
 		}
 
 		setMenu(_menuEntries);
@@ -63,7 +69,7 @@ RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : 
 	_analysisMenuModel = new AnalysisMenuModel(this);
 	setMenu(			_module->menu()	);
 	setTitle(			_module->title()			);
-	setRequiresDataset(	_module->requiresDataset()	);
+	setRequiresData(	_module->requiresData()	);
 	setIsDynamic(		true						);
 	setIsCommon(		false						);
 	setModuleName(		_module->name()				);
@@ -79,7 +85,7 @@ void RibbonButton::descriptionReloaded(Modules::DynamicModule * dynMod)
 {
 	setMenu(			_module->menu()	);
 	setTitle(			_module->title()			);
-	setRequiresDataset(	_module->requiresDataset()	);
+	setRequiresData(	_module->requiresData()	);
 }
 
 void RibbonButton::bindYourself()
@@ -98,12 +104,12 @@ void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
 	emit analysisMenuChanged();
 }
 
-void RibbonButton::setRequiresDataset(bool requiresDataset)
+void RibbonButton::setRequiresData(bool requiresDataset)
 {
-	if(_requiresDataset == requiresDataset)
+	if(_requiresData == requiresDataset)
 		return;
 
-	_requiresDataset = requiresDataset;
+	_requiresData = requiresDataset;
 	emit requiresDatasetChanged();
 }
 

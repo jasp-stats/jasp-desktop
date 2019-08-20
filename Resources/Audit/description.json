@@ -9,8 +9,7 @@
 		"maintainer":						"Koen Derks <k.derks@nyenrode.nl>",
 		"website":							"www.github.com/koenderks/JASP-for-Audit",
 		"license":							"GPL (>= 2)",
-		"icon":     						"audit-module.svg",
-		"requiresDataset": 					false
+		"icon":     						"audit-module.svg"
 	},
 
 	"requiredPackages":	[],
@@ -27,7 +26,8 @@
 		},
 		{
 			"title":						"Bayesian Audit Workflow",
-			"function":						"bayesianAudit"
+			"function":						"bayesianAudit",
+			"requiresData":					true
 		},
 		{
 			"title":    					"Planning",
@@ -35,7 +35,8 @@
 		},
 		{
 			"title":						"Planning",
-			"function":						"classicalPlanning"
+			"function":						"classicalPlanning",
+			"requiresData":					false
 		},
 		{
 			"title":						"Bayesian Planning",

@@ -139,7 +139,6 @@ void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
 		_title							= moduleDescription.get("title",			_name).asString();
 		_icon							= moduleDescription.get("icon",				"").asString();
 		_author							= moduleDescription.get("author",			"Unknown").asString();
-		_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
 		_license						= moduleDescription.get("license",			"Unknown").asString();
 		_website						= moduleDescription.get("website",			"Unknown").asString();
 		_maintainer						= moduleDescription.get("maintainer",		"JASP Team <info@jasp-stats.org>").asString();
@@ -153,8 +152,10 @@ void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
 			delete menuEntry;
 		_menuEntries.clear();
 
+		bool defaultRequiresData = moduleDescription.get("requiresData", true).asBool();
+
 		for(Json::Value & menuEntry : descriptionJson["menu"])
-			_menuEntries.push_back(new AnalysisEntry(menuEntry, this));
+			_menuEntries.push_back(new AnalysisEntry(menuEntry, this, defaultRequiresData));
 
 		emit descriptionReloaded(this);
 	}
@@ -819,6 +820,15 @@ std::string DynamicModule::extractPackageNameFromFolder(const std::string & fold
 	Log::log() << "Found name: '" << foundName << "'" << std::endl;
 
 	return foundName;
+}
+
+bool DynamicModule::requiresData() const
+{
+	for(const AnalysisEntry * entry : _menuEntries)
+		if(!entry->requiresData())
+			return false;
+
+	return true;
 }
 
 }

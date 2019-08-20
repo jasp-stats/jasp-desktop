@@ -31,7 +31,7 @@ class RibbonButton : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(bool		enabled			READ enabled			WRITE setEnabled			NOTIFY enabledChanged)
-	Q_PROPERTY(bool		requiresDataset	READ requiresDataset	WRITE setRequiresDataset	NOTIFY requiresDatasetChanged)
+	Q_PROPERTY(bool		requiresDataset	READ requiresDataset	WRITE setRequiresData	NOTIFY requiresDatasetChanged)
 	Q_PROPERTY(bool		isDynamic		READ isDynamic			WRITE setIsDynamic			NOTIFY isDynamicChanged)
 	Q_PROPERTY(bool		isCommon		READ isCommon			WRITE setIsCommon			NOTIFY isCommonChanged)
 	Q_PROPERTY(QString	title			READ titleQ				WRITE setTitleQ				NOTIFY titleChanged)
@@ -45,7 +45,7 @@ public:
 	RibbonButton(QObject *parent, Json::Value description, bool isCommon);
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
 
-	bool							requiresDataset()											const			{ return _requiresDataset;						}
+	bool							requiresDataset()											const			{ return _requiresData;						}
 	bool							isDynamic()													const			{ return _isDynamicModule;						}
 	bool							isCommon()													const			{ return _isCommonModule;						}
 	std::string						title()														const			{ return _title;								}
@@ -61,7 +61,7 @@ public:
 	std::vector<std::string>		getAllAnalysisNames()										const;
 
 public slots:
-	void setRequiresDataset(bool requiresDataset);
+	void setRequiresData(bool requiresDataset);
 	void setIsDynamic(bool isDynamicModule);
 	void setIsCommon(bool isCommonModule);
 	void setTitle(std::string title);
@@ -93,7 +93,7 @@ private:
 	AnalysisMenuModel*				_analysisMenuModel;
 	Modules::AnalysisEntries		_menuEntries;
 
-	bool							_requiresDataset	= true,
+	bool							_requiresData	= true,
 									_isDynamicModule	= true,
 									_isCommonModule		= false,
 									_enabled			= false;

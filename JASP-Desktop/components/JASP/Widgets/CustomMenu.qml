@@ -41,7 +41,6 @@ FocusScope
 	property bool	menuMinIsMin: false
 	property bool	showMe		: false
 	property var    sourceItem  : null
-
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 
 	onPropsChanged:
@@ -154,7 +153,7 @@ FocusScope
 						height	: Theme.menuItemHeight
 						color	:
 						{
-							if (!isEnabled)
+							if (!isEnabled || (requiresData && !mainWindow.datasetLoaded))
 								return "transparent"
 							return mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
 						}
@@ -183,7 +182,7 @@ FocusScope
 							id					: menuItemText
 							text				: displayText
 							font				: Theme.font
-							color				: isEnabled ? Theme.black : Theme.gray
+							color				: isEnabled && (!requiresData || mainWindow.datasetLoaded) ? Theme.black : Theme.gray
 							anchors
 							{
 								left			: menu.hasIcons ? menuItemImage.right : parent.left
@@ -199,7 +198,7 @@ FocusScope
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		: if (isEnabled) menu.props['functionCall'](index)
+							onClicked		: if (isEnabled && (!requiresData || mainWindow.datasetLoaded)) menu.props['functionCall'](index)
 						}
 					}
 				}
