@@ -22,7 +22,8 @@
 		},
 		{
 			"title":						"Audit Workflow",
-			"function":						"classicalAudit"
+			"function":						"classicalAudit",
+			"requiresData":					true
 		},
 		{
 			"title":						"Bayesian Audit Workflow",
@@ -40,7 +41,8 @@
 		},
 		{
 			"title":						"Bayesian Planning",
-			"function":						"bayesianPlanning"
+			"function":						"bayesianPlanning",
+			"requiresData":					false
 		}
 	]
 }
