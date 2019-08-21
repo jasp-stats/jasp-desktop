@@ -43,7 +43,8 @@ public:
 		CommonRole,
 		ModuleNameRole,
 		ModuleTitleRole,
-		ModuleRole
+		ModuleRole,
+		ActiveRole
 	};
 
 	RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});

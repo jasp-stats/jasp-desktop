@@ -81,6 +81,7 @@ RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : 
 	connect(_module, &Modules::DynamicModule::DynamicModule::descriptionReloaded, this, &RibbonButton::descriptionReloaded);
 }
 
+
 void RibbonButton::descriptionReloaded(Modules::DynamicModule * dynMod)
 {
 	setMenu(			_module->menu()	);
@@ -95,6 +96,13 @@ void RibbonButton::bindYourself()
 	connect(this, &RibbonButton::isDynamicChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this, &RibbonButton::titleChanged,			this, &RibbonButton::somePropertyChanged);
 	connect(this, &RibbonButton::moduleNameChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this, &RibbonButton::dataLoadedChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this, &RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this, &RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
+
+	connect(this, &RibbonButton::enabledChanged,		this, &RibbonButton::activeChanged);
+	connect(this, &RibbonButton::dataLoadedChanged,		this, &RibbonButton::activeChanged);
+	connect(this, &RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged);
 }
 
 void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
@@ -110,7 +118,7 @@ void RibbonButton::setRequiresData(bool requiresDataset)
 		return;
 
 	_requiresData = requiresDataset;
-	emit requiresDatasetChanged();
+	emit requiresDataChanged();
 }
 
 void RibbonButton::setTitle(std::string title)
@@ -203,4 +211,10 @@ std::vector<std::string> RibbonButton::getAllAnalysisNames() const
 	}
 
 	return allAnalyses;
+}
+
+void RibbonButton::setDynamicModules(DynamicModules * dynamicModules)
+{
+	_dynamicModules = dynamicModules;
+	connect(_dynamicModules, &DynamicModules::dataLoadedChanged, this, &RibbonButton::dataLoadedChanged);
 }

@@ -55,7 +55,7 @@ Item
 			moduleName:		model.moduleName
 			source:			model.ribbonButton ? ((model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource) : ""
 			menu:			model.ribbonButton ? model.ribbonButton.analysisMenu : undefined
-			enabled:		model.ribbonButton ? (model.ribbonEnabled && (!model.ribbonButton.requiresDataset || mainWindow.datasetLoaded)) : false
+			enabled:		model.ribbonButton ? model.active : false
 			visible:		model.ribbonButton ? true : false
 		}
 	}

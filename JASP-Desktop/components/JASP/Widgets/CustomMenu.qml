@@ -148,18 +148,18 @@ FocusScope
 
 					Rectangle
 					{
-						id		: menuItem
-						width	: initWidth
-						height	: Theme.menuItemHeight
-						color	:
-						{
-							if (!isEnabled || (requiresData && !mainWindow.datasetLoaded))
-								return "transparent"
-							return mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
-						}
+						id:		menuItem
+						width:	initWidth
+						height: Theme.menuItemHeight
+						color:	!model.isEnabled
+									? "transparent"
+									: mouseArea.pressed
+										? Theme.buttonColorPressed
+										: mouseArea.containsMouse
+											? Theme.buttonColorHovered
+											: "transparent"
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
-						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
 						Image
 						{
@@ -182,7 +182,7 @@ FocusScope
 							id					: menuItemText
 							text				: displayText
 							font				: Theme.font
-							color				: isEnabled && (!requiresData || mainWindow.datasetLoaded) ? Theme.black : Theme.gray
+							color				: isEnabled ? Theme.black : Theme.gray
 							anchors
 							{
 								left			: menu.hasIcons ? menuItemImage.right : parent.left
@@ -198,7 +198,8 @@ FocusScope
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		: if (isEnabled && (!requiresData || mainWindow.datasetLoaded)) menu.props['functionCall'](index)
+							onClicked		: menu.props['functionCall'](index)
+							enabled			: isEnabled
 						}
 					}
 				}

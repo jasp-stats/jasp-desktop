@@ -648,3 +648,12 @@ QString DynamicModules::getDescriptionJsonFromArchive(QString archiveFilePath)
 
 	return tq(json.toStyledString());
 }
+
+void DynamicModules::setDataLoaded(bool dataLoaded)
+{
+	if (_dataLoaded == dataLoaded)
+		return;
+
+	_dataLoaded = dataLoaded;
+	emit dataLoadedChanged(_dataLoaded);
+}

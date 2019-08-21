@@ -31,7 +31,8 @@ class DynamicModules : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool developersModuleInstallButtonEnabled READ developersModuleInstallButtonEnabled WRITE setDevelopersModuleInstallButtonEnabled NOTIFY developersModuleInstallButtonEnabledChanged)
+	Q_PROPERTY(bool developersModuleInstallButtonEnabled	READ developersModuleInstallButtonEnabled	WRITE setDevelopersModuleInstallButtonEnabled	NOTIFY developersModuleInstallButtonEnabledChanged	)
+	Q_PROPERTY(bool dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
 
 public:
 	explicit DynamicModules(QObject *parent) ;
@@ -85,6 +86,7 @@ public:
 	void startWatchingDevelopersModule();
 
 	bool developersModuleInstallButtonEnabled() const { return _developersModuleInstallButtonEnabled; }
+	bool dataLoaded()							const { return _dataLoaded;	}
 
 public slots:
 	void installationPackagesSucceeded(	const QString & moduleName);
@@ -96,6 +98,7 @@ public slots:
 
 	void registerForLoading(			const std::string & moduleName);
 	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
+	void setDataLoaded(bool dataLoaded);
 
 signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
@@ -111,6 +114,7 @@ signals:
 
 	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
 	void moduleEnabledChanged(QString moduleName, bool enabled);
+	void dataLoadedChanged(bool dataLoaded);
 
 private slots:
 	void enginesStopped();
@@ -139,7 +143,8 @@ private:
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
-	bool													_developersModuleInstallButtonEnabled = true;
+	bool													_developersModuleInstallButtonEnabled = true,
+															_dataLoaded = false;
 };
 
 #endif // DYNAMICMODULES_H

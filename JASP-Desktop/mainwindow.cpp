@@ -1528,6 +1528,7 @@ void MainWindow::setDatasetLoaded(bool datasetLoaded)
 
 	_datasetLoaded = datasetLoaded;
 	emit datasetLoadedChanged(_datasetLoaded);
+	_dynamicModules->setDataLoaded(_datasetLoaded); //Should be connected to some signal from datasetpackage after centralDatasetModel branch is merged
 }
 
 void MainWindow::setScreenPPI(int screenPPI)
