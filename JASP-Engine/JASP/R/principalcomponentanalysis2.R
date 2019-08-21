@@ -23,6 +23,10 @@ PrincipalComponentAnalysis2 <- function(jaspResults, dataset, options, ...) {
   ready   <- .pcaCheckErrors(dataset, options)
   
   modelContainer <- .pcaModelContainer(jaspResults)
+  
+  # output function
+  .pcaGoFTable(modelContainer, dataset, options, ready)
+  .pcaLoadingsTable(modelContainer, dataset, options, ready)
 }
 
 # Preprocessing functions ----
@@ -102,32 +106,13 @@ PrincipalComponentAnalysis2 <- function(jaspResults, dataset, options, ...) {
     )
   )
   
-  if (inherits(medResult, "try-error")) {
-    errmsg <- paste("Estimation failed\nMessage:\n", attr(medResult, "condition")$message)
+  if (inherits(pcaResult, "try-error")) {
+    errmsg <- paste("Estimation failed\nMessage:\n", attr(pcaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
   
-  if (options$se == "bootstrap") {
-    startProgressbar(options$bootstrapNumber)
-    
-    boot_1      <- lavaan::bootstrapLavaan(medResult, R = 1)
-    bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
-    bootres[1,] <- boot_1
-    i <- 2L
-    while (i <= options$bootstrapNumber) {
-      boot_i      <- lavaan::bootstrapLavaan(medResult, 1)
-      if (length(boot_i) == 0) next # try again upon failure
-      bootres[i,] <- boot_i
-      progressbarTick()
-      i <- i + 1L
-    }
-    
-    medResult@boot       <- list(coef = bootres)
-    medResult@Options$se <- "bootstrap"
-  }
-  
-  modelContainer[["model"]] <- createJaspState(medResult)
-  return(medResult)
+  modelContainer[["model"]] <- createJaspState(pcaResult)
+  return(pcaResult)
 }
 
 .pcaGetNComp <- function(dataset, options) {
@@ -136,4 +121,90 @@ PrincipalComponentAnalysis2 <- function(jaspResults, dataset, options, ...) {
   if (inherits(fa, "try-error"))                  return(1)
   if (options$factorMethod == "parallelAnalysis") return(max(1, fa$ncomp))
   if (options$factorMethod == "eigenValues")      return(sum(fa$pc.values > options$eigenValuesBox))
+}
+
+# Output functions ----
+.pcaGoFTable <- function(modelContainer, dataset, options, ready) {
+  if (!is.null(modelContainer[["goftab"]])) return()
+  
+  goftab <- createJaspTable(title = "Chi-squared Test")
+  goftab$addColumnInfo(name = "model", title = "",      type = "string")
+  goftab$addColumnInfo(name = "chisq", title = "Value", type = "number", format = "dp:3")
+  goftab$addColumnInfo(name = "df",    title = "df",    type = "integer")
+  goftab$addColumnInfo(name = "p",     title = "p",     type = "number", format = "dp:3;p:.001")
+  goftab$position <- 1
+  
+  modelContainer[["goftab"]] <- goftab
+  
+  if (!ready) return()
+  
+  pcaResults <- .pcaComputeResults(modelContainer, dataset, options)
+  
+  goftab[["model"]] <- "Model"
+  goftab[["chisq"]] <- pcaResults$STATISTIC
+  goftab[["df"]]    <- pcaResults$dof
+  goftab[["p"]]     <- pcaResults$PVAL
+  
+  if (pcaResults$dof < 0)
+    goftab$addFootnote(message = "Degrees of freedom below 0, model is unidentified.", symbol = "<em>Note.</em>")
+}
+
+.pcaLoadingsTable <- function(modelContainer, dataset, options, ready) {
+  if (!is.null(modelContainer[["loatab"]]) || !ready) return()
+  loatab <- createJaspTable("Component Loadings")
+  loatab$dependOn("highlightText")
+  loatab$position <- 2
+  modelContainer[["loatab"]] <- loatab
+  
+  if (modelContainer$getError()) return()
+  
+  pcaResults <- modelContainer[["model"]][["object"]]
+  
+  coltitle <- ifelse(options$rotationMethod == "orthogonal", "PC", "RC")
+  if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
+    loatab$addFootnote(message = "No rotation method applied.", symbol = "<em>Note.</em>")
+  } else {
+    loatab$addFootnote(
+      message = paste0(
+        "Applied rotation method is ", 
+        ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
+        "."
+      ),
+      symbol = "<em>Note.</em>"
+    )
+  }
+  
+  loads <- loadings(pcaResults)
+  loatab$addColumnInfo(name = "var", title = "", type = "string")
+  loatab[["var"]] <- .unv(rownames(loads))
+  
+  for (i in 1:ncol(loads)) {
+    # fix weird "all true" issue
+    if (all(abs(loads[, i]) < options$highlightText)) {
+      loatab$addColumnInfo(name = paste0("c", i), title = paste0(coltitle, i), type = "string")
+      loatab[[paste0("c", i)]] <- rep("", nrow(loads))
+    } else {
+      loatab$addColumnInfo(name = paste0("c", i), title = paste0(coltitle, i), type = "number", format = "dp:3")
+      loatab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
+    }
+  }
+  
+  loatab$addColumnInfo(name = "uni", title = "Uniqueness", type = "number", format = "dp:3")
+  loatab[["uni"]] <- pcaResults$uniquenesses
+}
+
+
+.pcaAddComponentsToData <- function(modelContainer, options, ready){
+  if(!ready || !options[["addPC"]] || options[["PCName"]] == "" || modelContainer$getError()) return()
+  
+  scores <- modelContainer[["model"]][["object"]][["scores"]]
+  
+  for (i in 1:ncol(scores)) {
+    scorename <- paste0(options[["PCName"]], "_", i)
+    if (is.null(jaspResults[[scorename]])) {
+      jaspResults[[scorename]] <- createJaspColumn(scorename)
+      jaspResults[[scorename]]$dependOn(optionsFromObject = modelContainer)
+      jaspResults[[scorename]]$setScale(scores[, i])
+    }
+  }
 }

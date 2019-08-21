@@ -19,6 +19,10 @@
 			"function":	"PrincipalComponentAnalysis"
 		},
 		{
+			"title":	"Principal Component Analysis 2",
+			"function":	"PrincipalComponentAnalysis2"
+		},
+		{
 			"title":	"Exploratory Factor Analysis",
 			"function":	"ExploratoryFactorAnalysis"
 		},
