@@ -24,9 +24,13 @@ PrincipalComponentAnalysis2 <- function(jaspResults, dataset, options, ...) {
   
   modelContainer <- .pcaModelContainer(jaspResults)
   
-  # output function
-  .pcaGoFTable(modelContainer, dataset, options, ready)
-  .pcaLoadingsTable(modelContainer, dataset, options, ready)
+  # output functions
+  .pcaGoFTable(           modelContainer, dataset, options, ready)
+  .pcaLoadingsTable(      modelContainer, dataset, options, ready)
+  .pcaCorrTable(          modelContainer, dataset, options, ready)
+  
+  # data saving
+  .pcaAddComponentsToData(jaspResults, modelContainer, options, ready)
 }
 
 # Preprocessing functions ----
@@ -193,14 +197,38 @@ PrincipalComponentAnalysis2 <- function(jaspResults, dataset, options, ...) {
   loatab[["uni"]] <- pcaResults$uniquenesses
 }
 
+.pcaCorrTable <- function(modelContainer, dataset, options, ready) {
+  if (!options[["incl_correlations"]] || !is.null(modelContainer[["cortab"]]) || !ready) return()
+  cortab <- createJaspTable("Component Correlations")
+  cortab$dependOn("incl_correlations")
+  cortab$position <- 3
+  modelContainer[["cortab"]] <- cortab
+  
+  if (modelContainer$getError()) return()
+  
+  coltitle <- ifelse(options$rotationMethod == "orthogonal", "PC", "RC")
+  cors <- zapsmall(modelContainer[["model"]][["object"]][["r.scores"]])
+  dims <- ncol(cors)
+  
+  
+  cortab$addColumnInfo(name = "col", title = "", type = "string")
+  cortab[["col"]] <- paste0(coltitle, 1:dims)
+  
+  for (i in 1:dims) {
+    thisname <- paste0(coltitle, i)
+    cortab$addColumnInfo(name = thisname, title = thisname, type = "number", format = "dp:3")
+    cortab[[thisname]] <- cors[,i]
+  }
+  
+}
 
-.pcaAddComponentsToData <- function(modelContainer, options, ready){
-  if(!ready || !options[["addPC"]] || options[["PCName"]] == "" || modelContainer$getError()) return()
+.pcaAddComponentsToData <- function(jaspResults, modelContainer, options, ready) {
+  if(!ready || !options[["addPC"]] || options[["PCPrefix"]] == "" || modelContainer$getError()) return()
   
   scores <- modelContainer[["model"]][["object"]][["scores"]]
   
   for (i in 1:ncol(scores)) {
-    scorename <- paste0(options[["PCName"]], "_", i)
+    scorename <- paste0(options[["PCPrefix"]], "_", i)
     if (is.null(jaspResults[[scorename]])) {
       jaspResults[[scorename]] <- createJaspColumn(scorename)
       jaspResults[[scorename]]$dependOn(optionsFromObject = modelContainer)
