@@ -610,6 +610,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   uni_edges <- !plt$Edgelist$bidirectional
   plt$graphAttributes$Edges$edge.label.position[uni_edges] <- 1/3
   
+  # change big numbers to scientific notation
+  labs <- vapply(plt$graphAttributes$Edges$labels, function(lab) format(as.numeric(lab), digits = 2), "")
+  plt$graphAttributes$Edges$labels <- labs
   return(plt)
 }
 
