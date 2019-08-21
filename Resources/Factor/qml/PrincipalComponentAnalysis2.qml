@@ -108,18 +108,18 @@ Form
 
 		CheckBox 
 		{
+			debug: true
             id: addPC
             name: "addPC"
             text: qsTr("Add PC scores to data")
             enabled: variables.count > 1
 
             ComputedColumnField { 
-                name: 		"PCName"
-                text: 		"Name: "
+                name: 		"PCPrefix"
+                text: 		"Prefix: "
                 fieldWidth: 120
                 visible:    addPC.checked
             }
-
         }
 	}
 }
