@@ -288,9 +288,10 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	datasetStatic[colMax].nbRows	= filteredRowCount;
 	int filteredRow					= 0;
 
+	//If you change anything here, make sure that "label outliers" in Descriptives still works properly (including with filters)
 	for(size_t i=0; i<rbridge_dataSet->rowCount() && filteredRow < datasetStatic[colMax].nbRows; i++)
 		if(!obeyFilter || (rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i]))
-			datasetStatic[colMax].ints[filteredRow++] = int(filteredRow + 1); //R needs 1-based index
+			datasetStatic[colMax].ints[filteredRow++] = int(i + 1); //R needs 1-based index
 
 
 	for (int colNo = 0; colNo < colMax; colNo++)

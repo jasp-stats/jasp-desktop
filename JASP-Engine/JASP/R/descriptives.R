@@ -808,13 +808,18 @@ Descriptives <- function(jaspResults, dataset, options) {
   yNoNAIndex      <- 1
 
   while(yWithNAIndex <= length(yWithNA)) {
+
     if(!is.na(yWithNA[[yWithNAIndex]])) {
+
       yIndexToActual[[yNoNAIndex]] <- row.names(dataset)[[yWithNAIndex]]
-      yNoNAIndex <- yNoNAIndex + 1
+      yNoNAIndex                   <- yNoNAIndex + 1
     }
 
     yWithNAIndex <- yWithNAIndex + 1
   }
+
+  print(paste0('row.names: ',      row.names(dataset)))
+  print(paste0('yIndexToActual: ', yIndexToActual))
 
   thePlot <- createJaspPlot(title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
 
