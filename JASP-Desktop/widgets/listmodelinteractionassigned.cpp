@@ -222,6 +222,34 @@ Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex, c
 	return nullptr;
 }
 
+void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
+{
+	qmlDropMode _dropMode = dropMode();
+	if (indexes.length() == 0 || _dropMode == qmlDropMode::None)
+		return;
+
+	beginResetModel();
+	Terms* terms = termsFromIndexes(indexes);
+	if (dropItemIndex == -1)
+		dropItemIndex = _terms.size();
+	for (int index : indexes)
+	{
+		if (index < dropItemIndex)
+			dropItemIndex--;
+	}
+
+	Terms newTerms = _interactionTerms;
+	newTerms.remove(*terms);
+	newTerms.insert(dropItemIndex, *terms);
+	_terms = _interactionTerms = newTerms;
+	delete terms;
+
+	endResetModel();
+
+	emit modelChanged();
+
+}
+
 void ListModelInteractionAssigned::setTerms()
 {	
 	beginResetModel();

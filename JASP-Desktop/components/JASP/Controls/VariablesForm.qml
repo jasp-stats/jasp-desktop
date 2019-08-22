@@ -221,10 +221,14 @@ Item
 		{
 			var assignedList = allAssignedVariablesList[i]
             availableVariablesList.dropKeys.push(assignedList.name);
+			availableVariablesList.draggingChanged.connect(assignedList.setEnabledState);
             assignedList.dropKeys.push(availableVariablesList.name);
 
 			for (var j = 0; j < allAssignedVariablesList.length; ++j)
-                assignedList.dropKeys.push(allAssignedVariablesList[j].name);		
+			{
+				assignedList.dropKeys.push(allAssignedVariablesList[j].name);
+				assignedList.draggingChanged.connect(allAssignedVariablesList[j].setEnabledState);
+			}
         }
 		
 		setControlsSize()
