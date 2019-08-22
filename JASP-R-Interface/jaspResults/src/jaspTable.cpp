@@ -1220,7 +1220,7 @@ Json::Value	jaspTable::rowsJson() const
 			if(hasDataHere)
 				aColumnKeepsGoing = true;
 
-			if(hasDataHere || !isSpecialColumn(col))
+			if((hasDataHere || !isSpecialColumn(col)) && (!_showSpecifiedColumnsOnly || columnSpecified(col)))
 				aRow[getColName(col)] = getCell(col, row, maxCol, maxRow);
 		}
 

@@ -21,6 +21,7 @@ testFunc <- function(jaspResults, dataset, options)
     
 	tafel$addColumnInfo(name="kol0", title="kolom 0!")
 	tafel$addColumnInfo(name="kol1", title="kolom 1!")
+  tafel$showSpecifiedColumnsOnly <- TRUE
 
 	#tafel$addColumnInfo(name="kol2")
 	tafel$addRows(list(kol0=1, kol1=2, 3), rowNames="a")
