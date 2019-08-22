@@ -1,6 +1,4 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage(sprintf("jasptools version: %s", utils::packageVersion("jasptools")))
-
   file <- file.path(libname, pkgname, "jasp-desktop_Location.txt")
   if (file.exists(file)) {
     path <- readLines(file)

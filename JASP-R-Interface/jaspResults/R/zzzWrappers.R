@@ -1,19 +1,14 @@
 .onAttach <- function(libname, pkgname) {
-	require(Rcpp)
-	message(sprintf("jaspResults version: %s", packageVersion("jaspResults")))
 	env <- globalenv()
 
 	if (exists("jaspResults", env)) {
-		message("Destroying all currently active jaspObjects, R will crash if you try to use any objects you still have loaded, and creating a *fresh* jaspResults.")
 		destroyAllAllocatedObjects()
 		destroyAllAllocatedRObjects()
 	}
 
 	env$jaspResults <- jaspResultsR$new(create_cpp_jaspResults("Analysis Test", NULL))
-
-	message("jaspResults has been created and can now be used to test/develop your analysis, try something like:\njaspResults$print()\nor\njaspResults[[\"aTable\"]] <- createJaspTable()")
-	return(invisible(TRUE))
 	
+	return(invisible(TRUE))
 }
 
 #For use inside jaspResults to store plots and states (as is obvious from the name)
