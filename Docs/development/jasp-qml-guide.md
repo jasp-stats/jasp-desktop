@@ -2,6 +2,7 @@ Guide to writing an analysis interface in QML
 =============================================
 
 QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components. It also gives the possiblility to insert JavaScript expressions to dynamically alter the interface based on actions a user makes. To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satify most analysis creators, although you can always [add your own](#advance-usage).
+To write a QML form you should follow the [styleguide](jasp-qml-style-example.qml).
 
 Table of Contents:
 - [Components](#components)
