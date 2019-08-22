@@ -1158,9 +1158,9 @@
   # without the container, the position could mess things up
   descriptivesContainer <- jaspResults[["descriptivesContainer"]]
   if (is.null(descriptivesContainer)) {
-    descriptivesContainer <- createJaspContainer()
+    descriptivesContainer <- createJaspContainer(title = "Descriptives")
     descriptivesContainer$dependOn(c("dependent", "repeatedMeasuresCells"))
-    descriptivesContainer$position <- 900 # always last
+    descriptivesContainer$position <- 9001 # always last
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
   }
 
@@ -1206,8 +1206,11 @@
   descriptivesTable$addColumnInfo(name = "Mean",  type = "number")
   descriptivesTable$addColumnInfo(name = "SD",    type = "number")
   descriptivesTable$addColumnInfo(name = "N",     type = "number", format = "dp:0")
-  descriptivesTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
-  descriptivesTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+  if (is.null(options$confidenceIntervalInterval)) {
+    descriptivesTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
+    descriptivesTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+  }
+  descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   jaspContainer[["tableDescriptives"]] <- descriptivesTable
 
   if (errors$noVariables) 
@@ -1299,8 +1302,10 @@
 
   } else {
     plotErrorBars <- options$plotErrorBars
-    errorBarType  <- "confidenceInterval"
+    errorBarType  <- options$errorBarType
     conf.interval <- options$confidenceIntervalInterval
+    descriptivesPlotContainer$dependOn(c("dependent", "plotErrorBars", "errorBarType", "confidenceIntervalInterval"))
+    
   }
 
   descriptivesPlotContainer$dependOn(c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots", "labelYAxis"))
@@ -1372,7 +1377,7 @@
     if (nPlots > 1L) {
       title <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
     } else {
-      title <- "Descriptives Plot"
+      title <- ""
     }
     descriptivesPlot <- createJaspPlot(title = title)
     descriptivesPlotContainer[[title]] <- descriptivesPlot

@@ -22,7 +22,7 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults: true
 	
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
@@ -59,6 +59,21 @@ Form
 		}
 	}
 	
+	Group
+	{
+		title: qsTr("Display")
+		CheckBox { name: "descriptives";		label: qsTr("Descriptive statistics") }
+		CheckBox
+		{
+			name: "effectSizeEstimates";	label: qsTr("Estimates of effect size")
+			columns: 3
+			CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
+			CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
+			CheckBox { name: "effectSizeGenEtaSquared";	label: qsTr("general η²")					}
+			CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
+		}
+		CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}
+	}
 	
 	Section
 	{
@@ -115,6 +130,14 @@ Form
 	{
 		title: qsTr("Contrasts")
 		ContrastsList { source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+		
+		CheckBox { name: "contrastAssumeEqualVariance"; label: qsTr("Assume equal variances"); checked: true }
+		CheckBox
+		{
+			name: "confidenceIntervalsContrast"; label: qsTr("Confidence intervals")
+			childrenOnSameRow: true
+			CIField { name: "confidenceIntervalIntervalContrast" }
+		}
 	}
 	
 	Section
@@ -150,6 +173,12 @@ Form
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
 			CheckBox { name: "postHocTestsTukey";		label: qsTr("Tukey")				}
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
+		}
+		
+		Group
+		{
+			title: qsTr("Display")
+			CheckBox { name: "postHocFlagSignificant";	label: qsTr("Flag Significant Comparisons") }
 		}
 	}
 	
@@ -194,7 +223,7 @@ Form
 	
 	Section
 	{
-		title: qsTr("Additional Options")
+		title: qsTr("Marginal Means")
 		columns: 1
 
 		Group
@@ -238,21 +267,6 @@ Form
 			}
 		}
 		
-		Group
-		{
-			title: qsTr("Display")
-			CheckBox { name: "descriptives";		label: qsTr("Descriptive statistics") }
-			CheckBox
-			{
-				name: "effectSizeEstimates";	label: qsTr("Estimates of effect size")
-				columns: 3
-				CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
-				CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
-				CheckBox { name: "effectSizeGenEtaSquared";	label: qsTr("general η²")					}
-				CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
-			}
-			CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}
-		}
 	}
 	
 	Section
