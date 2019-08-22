@@ -18,6 +18,7 @@
 
 #include "qmllistviewdraggable.h"
 #include "listmodeldraggable.h"
+#include "listmodelassignedinterface.h"
 #include "../analysis/analysisform.h"
 #include <QQuickItem>
 #include <QQmlProperty>
@@ -132,10 +133,19 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 			if (success && !targetModel->copyTermsWhenDropped() && sourceModel->removeTermsWhenDragged())
 			{
 				sourceModel->removeTerms(indexes);
-				if (removedTermsWhenDropping)
+				if (removedTermsWhenDropping && removedTermsWhenDropping->size() > 0)
 				{
-					if (removedTermsWhenDropping->size() > 0)
+					if (sourceModel->canAddTerms(removedTermsWhenDropping))
 						sourceModel->addTerms(removedTermsWhenDropping);
+					else
+					{
+						// Strange situation: the target has added the terms, but the source cannot add the terms sent back by the target.
+						// We try to find the available model and to add these terms there.
+						ListModelAssignedInterface* assignedModel = dynamic_cast<ListModelAssignedInterface*>(targetModel);
+						if (assignedModel)
+							assignedModel->source()->addTerms(removedTermsWhenDropping);
+					}
+
 					delete removedTermsWhenDropping;
 				}
 			}
