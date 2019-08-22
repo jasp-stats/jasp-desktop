@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.11
+import QtQuick			2.12
 import QtWebEngine		1.7
 import QtWebChannel		1.0
 import QtQuick.Controls 2.4
@@ -241,8 +241,8 @@ Item
 						customMenu.toggle(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
 
 						customMenu.scrollOri		= resultsView.scrollPosition;
-						customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x); });
-						customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y); });
+						customMenu.menuScroll.x		= Qt.binding(function() { return -0.58 * (resultsView.scrollPosition.x - customMenu.scrollOri.x) / resultsView.zoomFactor; });
+						customMenu.menuScroll.y		= Qt.binding(function() { return -0.58 * (resultsView.scrollPosition.y - customMenu.scrollOri.y) / resultsView.zoomFactor; });
 						customMenu.menuMinIsMin		= true
 					}
 

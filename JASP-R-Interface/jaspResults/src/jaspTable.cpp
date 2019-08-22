@@ -1220,8 +1220,11 @@ Json::Value	jaspTable::rowsJson() const
 			if(hasDataHere)
 				aColumnKeepsGoing = true;
 
-			if((hasDataHere || !isSpecialColumn(col)) && (!_showSpecifiedColumnsOnly || columnSpecified(col)))
-				aRow[getColName(col)] = getCell(col, row, maxCol, maxRow);
+			if(
+					(hasDataHere || !isSpecialColumn(col)) &&										//Either it is a normal entry, which can lack data but should still be included. Or it is a specialColumn without data and it shouldn't be included
+					(!_showSpecifiedColumnsOnly || columnSpecified(col) || isSpecialColumn(col))	//if not _showSpecifiedColumnsOnly then were done. Otherwise we need to check whether it is either specified or a specialColumn (with data)
+			)
+				aRow[getColName(col)] = getCell(col, row, maxCol, maxRow); //The add the data to the row!
 		}
 
 		std::string rowName = getRowName(row);
