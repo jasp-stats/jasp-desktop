@@ -32,7 +32,10 @@
 }
 
 # it is necessary to export custom S3 methods to the global envir as otherwise they are not registered
+# unneeded at present and seems unsupported on later R versions 
 .exportS3Methods <- function(env) {
+  return()
+  
   if (identical(env, .GlobalEnv)) {
     .setInternal("s3Methods", NULL)
     return(invisible(NULL))
@@ -49,7 +52,10 @@
   .setInternal("s3Methods", objs)
 }
 
+# unneeded at present and seems unsupported on later R versions 
 .removeS3Methods <- function() {
+  return()
+  
   objs <- .getInternal("s3Methods")
   if (length(objs))
     return(invisible(NULL))
