@@ -163,55 +163,63 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 		plot[["height"]] <- height
 		plot[["status"]] <- "waiting"
 
-		dontPlotData <- TRUE
-
 		if (run) {
-			dontPlotData <- FALSE
-		}
+			p <- try(silent = FALSE, expr = {
+				plotObj <- .priorPosteriorPlot.summarystats.binomial(
+						options = options, BF10 = bayesFactorObject, counts = options$successes, 
+						n = (options$failures + options$successes), hyp = hyp)
+				content <- .writeImage(width = width, height = height, plot = plotObj, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 
-		p <- try(silent = FALSE, expr = {
-			# image <- .beginSaveImage(width, height)
-			# .plotPosterior.binomTest(
-			# 		counts = options$successes, n = (options$failures + options$successes),
-			# 		theta0 = options$testValue, a = options$betaPriorParamA,
-			# 		b = options$betaPriorParamB, BF10 = bayesFactorObject, hypothesis = hyp,
-			# 		addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-			# 		dontPlotData = dontPlotData
-			# 	)
-			# plot[["data"]] <- .endSaveImage(image)
+			})
 
-			.plotFunc <- function() {
-				.plotPosterior.binomTest(
-					counts = options$successes, n = (options$failures + options$successes),
-					theta0 = options$testValue, a = options$betaPriorParamA,
-					b = options$betaPriorParamB, BF10 = bayesFactorObject, hypothesis = hyp,
-					addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-					dontPlotData = dontPlotData
-				)
+			if (class(p) == "try-error") {
+				errorMessage <- .extractErrorMessage(p)
+
+				plot[["error"]] <- list(error = "badData",
+								errorMessage = paste("Plotting is not possible: ", errorMessage))
 			}
-			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
-			plot[["convertible"]] <- TRUE
-			plot[["obj"]] <- content[["obj"]]
-			plot[["data"]] <- content[["png"]]
 
-		})
-
-		if (class(p) == "try-error") {
-			errorMessage <- .extractErrorMessage(p)
-
-			plot[["error"]] <- list(error = "badData",
-							errorMessage = paste("Plotting is not possible: ", errorMessage))
+			plot[["status"]] <- "complete"	
 		}
-
-		if (run) {
-			plot[["status"]] <- "complete"
-		}
+		
 		returnPlot <- plot
+		
 	}
 
 	return(returnPlot)
 }
 
+# this function should be replaced by .bayesBinomPriorPosteriorPlot once this analysis is rewritten to jaspResults;
+# the function signature is the same; only ensure the a/b param names match between this analysis and normal binomial
+.priorPosteriorPlot.summarystats.binomial <- function(options, BF10, counts, n, hyp) {
+	if (is.infinite(BF10))
+		stop("Bayes factor is infinite")
+
+	if (is.infinite(1/BF10))
+		stop("Bayes factor is too small")
+
+	quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, options$betaPriorParamA, options$betaPriorParamB, counts, n, hypothesis=hyp, theta0 = options$testValue)
+	dfLinesPP <- .dfLinesPP(a=options$betaPriorParamA, b=options$betaPriorParamB, hyp = hyp, theta0 = options$testValue, counts = counts, n = n)
+	dfPointsPP <- .dfPointsPP(a=options$betaPriorParamA, b=options$betaPriorParamB, hyp = hyp, theta0 = options$testValue, counts = counts, n = n)
+	xName <- expression(paste("Population proportion ", theta))
+
+	if (hyp == "less")
+		hyp <- "smaller"
+	else if (hyp == "two.sided")
+		hyp <- "equal"
+	
+	if (!options$plotPriorAndPosteriorAdditionalInfo)
+		p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName)
+	else
+		p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = BF10, bfType = "BF10",
+												CRI = c(quantiles$ci.lower, quantiles$ci.upper), median = quantiles$ci.median, 
+												hypothesis = hyp, drawCRItxt = TRUE)
+
+	return(p)
+}
 
 .getOutputRow.summarystats.binomial <- function(run, options, state, diff, hyp) {
 	# Returns a row to be shown in output tables
