@@ -495,68 +495,68 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     return()
   
   title <- ifelse(is.null(options$covariates), "ANOVA", "ANCOVA")
+  anovaTable <- createJaspTable(title = title, position = 1, 
+                           dependencies = c("homogeneityWelch", "homogeneityBrown", "homogeneityWelch", 
+                                            "VovkSellkeMPR", "effectSizeEstimates", "effectSizeEtaSquared", 
+                                            "effectSizePartialEtaSquared", "effectSizeOmegaSquared"))
   
-  table <- createJaspTable(title = title, position = 1)
-  table$dependOn <- c("homogeneityWelch", "homogeneityBrown", "homogeneityWelch", "VovkSellkeMPR",
-                      "effectSizeEstimates", "effectSizeEtaSquared", "effectSizePartialEtaSquared", 
-                      "effectSizeOmegaSquared")
   corrections <- c("None", "Brown-Forsythe", "Welch")[c(options$homogeneityNone, 
                                                         options$homogeneityBrown,
                                                         options$homogeneityWelch)]
 
   dfType <- "integer" # Make df an integer unless corrections are applied
   if ((length(corrections) > 1 || any(!"None" %in% corrections)) && is.null(options$covariates)) {
-    table$addColumnInfo(title = "Homogeneity Correction", name = "correction", type = "string")
+    anovaTable$addColumnInfo(title = "Homogeneity Correction", name = "correction", type = "string")
     dfType <- "number"
   }
   
-  table$addColumnInfo(title = "Cases", name = "cases", type = "string" )
-  table$addColumnInfo(title = "Sum of Squares", name = "Sum Sq", type = "number")
-  table$addColumnInfo(title = "df", name = "Df", type = dfType)
-  table$addColumnInfo(title = "Mean Square", name = "Mean Sq", type = "number")
-  table$addColumnInfo(title = "F", name = "F value", type = "number")
-  table$addColumnInfo(title = "p", name = "Pr(>F)", type = "number")
+  anovaTable$addColumnInfo(title = "Cases", name = "cases", type = "string" )
+  anovaTable$addColumnInfo(title = "Sum of Squares", name = "Sum Sq", type = "number")
+  anovaTable$addColumnInfo(title = "df", name = "Df", type = dfType)
+  anovaTable$addColumnInfo(title = "Mean Square", name = "Mean Sq", type = "number")
+  anovaTable$addColumnInfo(title = "F", name = "F value", type = "number")
+  anovaTable$addColumnInfo(title = "p", name = "Pr(>F)", type = "number")
   
   if (options$VovkSellkeMPR) {
-    table$addColumnInfo(title = "VS-MPR\u002A", name = "VovkSellkeMPR", type = "number")
-    table$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+    anovaTable$addColumnInfo(title = "VS-MPR\u002A", name = "VovkSellkeMPR", type = "number")
+    anovaTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   
   if (options$effectSizeEstimates) {
     
     if (options$effectSizeEtaSquared) {
-      table$addColumnInfo(title = "\u03B7\u00B2", name = "eta", type = "number")
+      anovaTable$addColumnInfo(title = "\u03B7\u00B2", name = "eta", type = "number")
     }
     
     if (options$effectSizePartialEtaSquared) {
-      table$addColumnInfo(title = "\u03B7\u00B2\u209A", name = "etaPart", type = "number")
+      anovaTable$addColumnInfo(title = "\u03B7\u00B2\u209A", name = "etaPart", type = "number")
     }
     
     if (options$effectSizeOmegaSquared) {
-      table$addColumnInfo(title = "\u03C9\u00B2", name = "omega", type = "number")
+      anovaTable$addColumnInfo(title = "\u03C9\u00B2", name = "omega", type = "number")
     }
     
   }
 
-  table$showSpecifiedColumnsOnly <- TRUE
+  anovaTable$showSpecifiedColumnsOnly <- TRUE
   
   # set the type footnote already
   typeFootnote <- switch(options$sumOfSquares,
                          type1 = "Type I Sum of Squares",
                          type2 = "Type II Sum of Squares",
                          type3 = "Type III Sum of Squares")
-  table$addFootnote(message = typeFootnote, symbol = "<em>Note.</em>")
+  anovaTable$addFootnote(message = typeFootnote, symbol = "<em>Note.</em>")
   
   
-  anovaContainer[["anovaTable"]] <- table
+  anovaContainer[["anovaTable"]] <- anovaTable
   
   
   if (!ready)
     return()
   
-  table$title <- paste0(title, " - ", options$dependent)
+  anovaTable$title <- paste0(title, " - ", options$dependent)
 
-  table$setExpectedSize(rows = length(options$modelTerms) * length(corrections))
+  anovaTable$setExpectedSize(rows = length(options$modelTerms) * length(corrections))
   
   # here we ask for the model to be computed
   .anovaResult(anovaContainer, options)
@@ -566,7 +566,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     return()
 
   model <- anovaContainer[["anovaResult"]]$object
-    table$setData(do.call("rbind", model))
+    anovaTable$setData(do.call("rbind", model))
 
   return()
 }
@@ -1574,8 +1574,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   simpleEffectsTable$addColumnInfo(name = "Sum Sq", type = "number", title = "Sum of Squares")
   simpleEffectsTable$addColumnInfo(name = "Df", type = "integer", title = "df")
   simpleEffectsTable$addColumnInfo(name = "Mean Sq", type = "number", title = "Mean Square")
-  simpleEffectsTable$addColumnInfo(name = "F", type = "number")
-  simpleEffectsTable$addColumnInfo(name = "p", type = "number")
+  simpleEffectsTable$addColumnInfo(name = "F value", title = "F", type = "number")
+  simpleEffectsTable$addColumnInfo(name = "Pr(>F)", title = "p", type = "number")
 
   simpleEffectsTable$showSpecifiedColumnsOnly <- TRUE
   
@@ -1588,12 +1588,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   # Remove moderator factors from model terms
   simpleOptions <- options
   simpleOptions$modelTerms <-  options$modelTerms[!(grepl(moderatorTerms[1], options$modelTerms) | 
-                                                    grepl(moderatorTerms[nMods], options$modelTerms))]
-  
-  reorderModelTerms <-  .reorderModelTerms(simpleOptions)
-  modelTerms <- reorderModelTerms$modelTerms
-  modelDef <- .modelFormula(modelTerms, simpleOptions)
-  simpleFormula <- as.formula(modelDef$model.def)
+                                                      grepl(moderatorTerms[nMods], options$modelTerms))]
+  simpleOptions$fixedFactors <- options$fixedFactors[!(grepl(moderatorTerms[1], options$fixedFactors) |
+                                                         grepl(moderatorTerms[nMods], options$fixedFactors))]
   
   lvls <- list()
   factors <- list()
@@ -1632,8 +1629,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
     } else {
 
-      # Add Sums of Squares types
-      allSimpleModels[[i]] <- summary(aov(simpleFormula, simpleDataset))[[1]][simpleFactorBase64, ]
+      .anovaModelContainer(anovaContainer[["simpleEffectsContainer"]], dataset = simpleDataset, options = simpleOptions, TRUE)
+      .anovaResult(anovaContainer[["simpleEffectsContainer"]], options = simpleOptions)
+      simpleResult <- anovaContainer[["simpleEffectsContainer"]][["anovaResult"]]$object$result
+
+      allSimpleModels[[i]] <- simpleResult[simpleFactorBase64, ]
+      anovaContainer[["simpleEffectsContainer"]][["model"]] <- NULL
       
     }
   }
@@ -1647,8 +1648,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   simpleEffectResult <- cbind(simpleEffectResult, do.call(rbind, allSimpleModels))
   
   # Apply corrections to F and p based on the original ANOVA
-  simpleEffectResult[["F"]] <- simpleEffectResult[["Mean Sq"]] / fullAnovaMS
-  simpleEffectResult[["p"]] <-  pf(simpleEffectResult[["F"]], simpleEffectResult[["Df"]], fullAnovaDf, lower.tail = FALSE)
+  simpleEffectResult[["F value"]] <- simpleEffectResult[["Mean Sq"]] / fullAnovaMS
+  simpleEffectResult[["Pr(>F)"]] <-  pf(simpleEffectResult[["F value"]], simpleEffectResult[["Df"]], 
+                                        fullAnovaDf, lower.tail = FALSE)
   
   simpleEffectsTable$setData(simpleEffectResult)
   

@@ -74,19 +74,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   .rmAnovaSimpleEffects(rmAnovaContainer, dataset, longData, options, ready) 
   
   return()
-  
- 
-  
-  
-  # Create Conover Table
-  result <- .rmAnovaConoverTable(dataset, options, perform, anovaModel$fullModel, status, stateConover, singular)
-  
-  
-  ## Create Marginal Means via Bootstrapping Tables
-  result <- .rmAnovaMarginalMeansBootstrappingTable(dataset, options, perform, status, fullModel)
-  
-  
-  return()
 }
 
 .getRMAnovaContainer <- function(jaspResults) {
@@ -294,7 +281,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   model.formula <- as.formula(modelDef$model.def)
 
   variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-  
+
   for (i in variables)
     dataset[[.v(i)]] <- .v(dataset[[.v(i)]])
 
@@ -352,12 +339,14 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
   }
 
+  if (class(tryResult) == "try-error") {
+    return(list(tryResult = "try-error"))
+  }
+
   if (bootstrappingCall)
     return(result)
   
-  if (class(tryResult) == "try-error") {
-    return(list(tryResult == "try-error"))
-  }
+
 
   # Now we reformat the results table some more to make it flow with jaspResults later
   interceptRow <- model["(Intercept", ]
@@ -565,55 +554,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   result["Residuals", "num Df"] <- result[["den Df"]][1]
   result["Residuals", "Sum Sq"] <- result[["Error SS"]][1]
   result["Residuals", "Mean Sq"] <- result[["Error SS"]][1] / result[["den Df"]][1]
-  
+
   betweenTable$setData(result)
+  
   return()
-  
-  
-  #     if (options$effectSizeEstimates) {
-  #       
-  #       if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
-  #         
-  #         SSt <- sum(resultTable[,"Sum Sq"])
-  #         SSr <- resultTable["Residuals","Sum Sq"]
-  #         MSr <- SSr/resultTable["Residuals","Df"]
-  # 
-  #         row[["eta"]] <- SS / SSt
-  #         row[["partialEta"]] <- SS / (SS + SSr)
-  #         row[["genEta"]] <- fullModel[["anova_table"]][modelTermsCase, "ges"]
-  #         
-  #         omega <- (SS - (df * MSr)) / (SSt + MSr) 
-  # 
-  #         if (omega < 0) {
-  #           row[["omega"]] <- 0
-  #         } else {
-  #           row[["omega"]] <- omega
-  #         }
-  #         
-  # 
-  # # } else {	# if sum of squares is equal to type 2 or 3
-  #   
-  #          # if (result[index,"Error SS"] > 0) {
-  #         # Is between subjects factor
-  #         
-  #         SSr <- result[index,"Error SS"]
-  #         SSt <- sum(result[indices,"Sum Sq"]) + SSr
-  #         MSr <- SSr/result[index,"den Df"]
-  # 
-  #         row[["eta"]] <- SS / SSt
-  #         row[["partialEta"]] <- SS / (SS + SSr)
-  #         row[["genEta"]] <- fullModel[["anova_table"]][modelTermsCase, "ges"]
-  #         
-  #         omega <- (SS - (df * MSr)) / (SSt + MSr)
-  # 
-  #         if (omega < 0) {
-  #           row[["omega"]] <- 0
-  #         } else {
-  #           row[["omega"]] <- omega
-  #         }
-  # 
-  return()
-  
 }
 
 .rmAnovaWithinSubjectsTable <- function(rmAnovaContainer, dataset, options, ready) {
@@ -692,7 +636,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     for (cor in corrections)
       anovaTable$addRows(withinResults[[cor]][case, ])
-#browser
+
     if (case %in% modelTerms) {
       currentCase <- case
     } else if (case %in% addResidualAfter) {
@@ -819,13 +763,13 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   }
   
   assumptionResult <- rmAnovaContainer[["anovaResult"]]$object$assumptionResult
+  anovaResult <- rmAnovaContainer[["anovaResult"]]$object$withinAnovaTable$None
   
-  if (nrow(assumptionResult) == 0) {
-    sphericityTable$setError("Cannot perform sphericity tests because there only two levels of the RM factor.")
+  # if (nrow(assumptionResult) == 0 || all(is.na(assumptionResult[["GG eps"]]))) {
+  if (all(is.na(anovaResult[["Test statistic"]]))) {
+  sphericityTable$setError("Cannot perform sphericity tests because there only two levels of the RM factor.")
     return()  
   }
-    
-  anovaResult <- rmAnovaContainer[["anovaResult"]]$object$withinAnovaTable$None
   
   df <- anovaResult[["num Df"]]
   anovaResult[["dfSphericity"]] <- df * (df + 1) / 2 - 1
@@ -1360,8 +1304,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
       marginalMeansTable$addColumnInfo(name="bias", type="number")
       
-      marginalMeansTable$addFootnote(message = paste0("Bootstrapping based on ", 
-                                                      options[['marginalMeansBootstrappingReplicates']], " replicates."))
       marginalMeansTable$addFootnote(message = paste0("Marginal Means estimate is based on the median of", 
                                                         " the bootstrap distribution."))
       marginalMeansTable$addFootnote(symbol = "\u002A", message = "Bias corrected accelerated.") 
@@ -1436,32 +1378,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
       nRows <- nrow(marginalResult)
       
-      .bootstrapMarginalMeansRmAnova <- function(data, indices, options, nRows){
-     
-        indices <- sample(indices, replace = TRUE)
-        resamples <- data[indices, , drop=FALSE]
-        
-        dataset <- .shortToLong(resamples, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, 
-                                c(options$betweenSubjectFactors, options$covariates))        
-        idx <- match(c("dependent", "subject"), colnames(dataset))
-        colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
-
-        anovaModelBoots <- .rmAnovaComputeResults(dataset, options, bootstrappingCall = TRUE) # refit model
-        resultBoots <- summary(emmeans::lsmeans(anovaModelBoots, formula), infer = c(FALSE,FALSE))
-        
-        progressbarTick()
-        
-        if(length(resultBoots$lsmean) == nRows){ # ensure that the bootstrap has all levels
-          return(resultBoots$lsmean)
-        } else {
-          return(rep(NA, length(term)))
-        }
-      }
-      
       bootstrapMarginalMeans <- try(boot::boot(data = dataset, statistic = .bootstrapMarginalMeansRmAnova, 
                                                R = options[["marginalMeansBootstrappingReplicates"]],
+                                               options = options,
                                                nRows = nRows,
-                                               options = options), silent = TRUE)
+                                               termLength = length(term),
+                                               formula = formula), silent = TRUE)
 
       bootstrapSummary <- summary(bootstrapMarginalMeans)
       
@@ -1479,9 +1401,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         }
       }))
       
-      if(ci.fails)
-        bootstrapTable$addFootnote(message = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
-      
+      if (ci.fails) {
+        marginalMeansContainer[[termBase64]]$addFootnote(message = paste0("Some confidence intervals could not be computed.", 
+                                                                          "Possibly too few bootstrap replicates."))
+      }
+
       marginalResult[["lower.CL"]] <- bootstrapMarginalMeansCI[,1]
       marginalResult[["upper.CL"]] <- bootstrapMarginalMeansCI[,2]
 
@@ -1489,13 +1413,40 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       marginalResult[["bias"]] <- bootstrapSummary[["bootBias"]]
       marginalResult[["SE"]] <- bootstrapSummary[["bootSE"]]
       
+      marginalMeansContainer[[termBase64]]$addFootnote(message = paste0("Bootstrapping based on ", 
+                                                                        bootstrapSummary$R[1], " replicates."))
     }
-    
-    marginalMeansContainer[[termBase64]]$setData(marginalResult)    
+
+    marginalMeansContainer[[termBase64]]$setData(as.data.frame(marginalResult))
     
   }
   
   return()
+}
+
+.bootstrapMarginalMeansRmAnova <- function(data, indices, options, nRows, termLength, formula){
+  
+  indices <- sample(indices, replace = TRUE)
+  resamples <- data[indices, , drop=FALSE]
+  
+  dataset <- .shortToLong(resamples, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, 
+                          c(options$betweenSubjectFactors, options$covariates))        
+  idx <- match(c("dependent", "subject"), colnames(dataset))
+  colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
+
+  anovaModelBoots <- .rmAnovaComputeResults(dataset, options, bootstrappingCall = TRUE) # refit model
+
+  if (!is.null(anovaModelBoots[["tryResult"]]))
+    return(rep(NA, termLength))
+  
+  resultBoots <- summary(emmeans::lsmeans(anovaModelBoots, formula), infer = c(FALSE,FALSE))
+  progressbarTick()
+  
+  if(length(resultBoots$lsmean) == nRows){ # ensure that the bootstrap has all levels
+    return(resultBoots$lsmean)
+  } else {
+    return(rep(NA, termLength))
+  }
 }
 
 .rmAnovaFriedmanTable <- function(rmAnovaContainer, longData, options, ready) {
@@ -1737,7 +1688,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   rmAnovaContainer[["simpleEffectsContainer"]] <- createJaspContainer(title = "Simple Main Effects",
                                                                       dependencies = c("simpleFactor", 
                                                                                        "moderatorFactorOne", 
-                                                                                       "moderatorFactorTwo"))
+                                                                                       "moderatorFactorTwo",
+                                                                                       "poolErrorTermSimpleEffects"))
   
   simpleEffectsTable <- createJaspTable(title = paste0("Simple Main Effects - ", options$simpleFactor))
   rmAnovaContainer[["simpleEffectsContainer"]][["simpleEffectsTable"]] <- simpleEffectsTable
@@ -1773,11 +1725,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   simpleEffectsTable$addCitation("Howell, D. C. (2002). Statistical Methods for Psychology (8th. ed.). Pacific Grove, CA: Duxberry. ")
   
-  if (!ready) 
+  if (!ready)
     return()
-
-  fullModel <- rmAnovaContainer[["anovaResult"]]$object$fullModel
-  fullTable <- rmAnovaContainer[["anovaResult"]]$object$anovaResult
   
   lvls <- list()
   factors <- list()
@@ -1832,17 +1781,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     simpleOptions[["fixedFactors"]]  <- simpleOptions[['betweenSubjectFactors']]
     simpleOptions[["modelTerms"]] <- simpleOptions[['betweenModelTerms']]
     simpleOptions[["dependent"]] <-  "dependent"
-
-    reorderModelTerms <-  .reorderModelTerms(simpleOptions)
-    modelTerms <- reorderModelTerms$modelTerms
-    simpleFormula <- as.formula(.modelFormula(modelTerms, simpleOptions)$model.def)
-    
-  } else {
-    
-    simpleFormula <- .rmModelFormula(simpleOptions)$model.def
+    simpleOptions[["homogeneityBrown"]] <- simpleOptions[["homogeneityWelch"]] <- FALSE
+    simpleOptions[["homogeneityNone"]] <- TRUE
     
   }
-    
+  
   emptyCaseIndices <- emptyCases <- NULL
   
   for (i in 1:nrow(simpleEffectResult)) {
@@ -1864,21 +1807,19 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
     } else if (performBetweenAnova) {
       
-      # To do: incorporate ancova functions from rewrite to take into account sum of squares
-      model <- aov(simpleFormula, simpleDataset)
-      anovaResult <-  stats::anova(model)
+      .anovaModelContainer(rmAnovaContainer[["simpleEffectsContainer"]], simpleDataset, simpleOptions, TRUE)
+      .anovaResult(rmAnovaContainer[["simpleEffectsContainer"]], options = simpleOptions)
+      anovaResult <- rmAnovaContainer[["simpleEffectsContainer"]][["anovaResult"]]$object$result
+      
+      rmAnovaContainer[["simpleEffectsContainer"]][["model"]] <- NULL
       
       if (!options$poolErrorTermSimpleEffects) {
         fullAnovaMS <-  anovaResult["Residuals", "Mean Sq"]
         fullAnovaDf <-  anovaResult["Residuals", "Df"]
       }
       
-      MS <- anovaResult[simpleFactorBase64, "Mean Sq"]
-      df <- anovaResult[simpleFactorBase64, "Df"]
-      F <- MS / fullAnovaMS
-      p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
-      simpleEffectResult[i, c("SumSq", "MeanSq", "Df", "F", "p")] <- c(anovaResult[simpleFactorBase64, "Sum Sq"], 
-                                                                       MS, df, F, p)
+      anovaResult <- anovaResult[simpleFactorBase64, ]
+      df <- anovaResult[["Df"]]
       
     } else {
       
@@ -1889,14 +1830,14 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         fullAnovaDf <-  anovaResult[["den Df"]]
       }
       
-      MS <- anovaResult[["Mean Sq"]]
       df <- anovaResult[["num Df"]]
-      F <- MS / fullAnovaMS
-      p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
-      simpleEffectResult[i, c("SumSq", "MeanSq", "Df", "F", "p")] <- c(anovaResult[["Sum Sq"]], 
-                                                                       MS, df, F, p)
       
     }
+    
+    MS <- anovaResult[["Mean Sq"]]
+    F <- MS / fullAnovaMS
+    p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
+    simpleEffectResult[i, c("SumSq", "MeanSq", "Df", "F", "p")] <- c(anovaResult[["Sum Sq"]], MS, df, F, p)
     
   }
   
