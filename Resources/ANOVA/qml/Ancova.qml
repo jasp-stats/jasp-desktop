@@ -22,7 +22,7 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults: true
 	
 	IntegerField { visible: false; name: "plotWidthQQPlot"                      ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightQQPlot"                     ; defaultValue: 300 }
@@ -69,7 +69,21 @@ Form
 			suggestedColumns: ["scale"]
 		}
 	}
-	
+			
+	Group
+	{
+		title: qsTr("Display")
+		CheckBox { name: "descriptives"; label: qsTr("Descriptive statistics") }
+		CheckBox
+		{
+			name: "effectSizeEstimates"; label: qsTr("Estimates of effect size")
+			columns: 3
+			CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²"); checked: true	}
+			CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")		}
+			CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")				}
+		}
+		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
+	}
 	
 	Section
 	{
@@ -130,35 +144,48 @@ Form
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }] }
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: "modelTerms" }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
+
 		}
 
-        Group
-        {
-            CheckBox
-            {
-                name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
-                childrenOnSameRow: true
-                CIField {name: "confidenceIntervalIntervalPostHoc" }
-            }
-            CheckBox
-            {
-                name: "postHocTestsBootstrapping"; label: qsTr("From")
-                childrenOnSameRow: true
-                IntegerField
-                {
-                    name: "postHocTestsBootstrappingReplicates"
-                    defaultValue: 1000
-                    fieldWidth: 50
-                    min: 100
-                    afterLabel: qsTr("bootstraps")
-                }
-            }
-        }
 
-		CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size") }
+		Group
+		{
+			title: qsTr("Type")
+			CheckBox 
+			{ 
+			name: "postHocTestsTypeStandard";	label: qsTr("Standard"); checked: true	
+			Group
+			{
+	            		CheckBox
+				{
+				name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
+				childrenOnSameRow: true
+				CIField {name: "confidenceIntervalIntervalPostHoc" }
+				 }
+				 CheckBox
+				 {
+					name: "postHocTestsBootstrapping"; label: qsTr("From")
+					childrenOnSameRow: true
+					IntegerField
+					{
+					    name: "postHocTestsBootstrappingReplicates"
+					    defaultValue: 1000
+					    fieldWidth: 50
+					    min: 100
+					    afterLabel: qsTr("bootstraps")
+					}
+				    }
+				}
+				CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size") }
+			}
+			CheckBox { name: "postHocTestsTypeGames";		label: qsTr("Games-Howell")				}
+			CheckBox { name: "postHocTestsTypeDunnett";		label: qsTr("Dunnett")					}
+			CheckBox { name: "postHocTestsTypeDunn";		label: qsTr("Dunn")						}
+		}
 		
+
 		Group
 		{
 			title: qsTr("Correction")
@@ -166,18 +193,15 @@ Form
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
 			CheckBox { name: "postHocTestsHolm";		label: qsTr("Holm")					}
-            CheckBox { name: "postHocTestsSidak";       label: qsTr("Šidák")                }
+            		CheckBox { name: "postHocTestsSidak";       label: qsTr("Šidák")                }
 		}
-
 		Group
 		{
-			title: qsTr("Type")
-			CheckBox { name: "postHocTestsTypeStandard";	label: qsTr("Standard"); checked: true	}
-			CheckBox { name: "postHocTestsTypeGames";		label: qsTr("Games-Howell")				}
-			CheckBox { name: "postHocTestsTypeDunnett";		label: qsTr("Dunnett")					}
-			CheckBox { name: "postHocTestsTypeDunn";		label: qsTr("Dunn")						}
+			title: qsTr("Display")
+			CheckBox { name: "postHocFlagSignificant";	label: qsTr("Flag Significant Comparisons") }
 		}
 	}
+	
 	
 	Section
 	{
@@ -214,29 +238,29 @@ Form
 	
 	Section
 	{
-		title: qsTr("Additional Options")
+		title: qsTr("Marginal Means")
 		columns: 1
 		
 		VariablesForm
 		{
 			height: 200
-			AvailableVariablesList { name: "marginalMeansTermsAvailable"; title: qsTr("Marginal Means"); source: [{ name: "modelTerms", discard: "covariates" }] }
-			AssignedVariablesList {	 name: "marginalMeansTerms" }
+			AvailableVariablesList { name: "marginalMeansTermsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }] }
+			AssignedVariablesList {	 name: "marginalMeansTerms"  }
 		}
 		
-        CheckBox
-        {
-            name: "marginalMeansBootstrapping"; label: qsTr("From")
-            childrenOnSameRow: true
-            IntegerField
-            {
-                name: "marginalMeansBootstrappingReplicates"
-                defaultValue: 1000
-                fieldWidth: 50
-                min: 100
-                afterLabel: qsTr("bootstraps")
-            }
-        }
+		CheckBox
+		{
+		    name: "marginalMeansBootstrapping"; label: qsTr("From")
+		    childrenOnSameRow: true
+		    IntegerField
+		    {
+		        name: "marginalMeansBootstrappingReplicates"
+		        defaultValue: 1000
+		        fieldWidth: 50
+		        min: 100
+		        afterLabel: qsTr("bootstraps")
+		    }
+		}
 
 		CheckBox
 		{
@@ -252,21 +276,7 @@ Form
 				]
 			}
 		}
-		
-		Group
-		{
-			title: qsTr("Display")
-			CheckBox { name: "descriptives"; label: qsTr("Descriptive statistics") }
-			CheckBox
-			{
-				name: "effectSizeEstimates"; label: qsTr("Estimates of effect size")
-				columns: 3
-				CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²"); checked: true	}
-				CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")		}
-				CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")				}
-			}
-			CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
-		}
+
 	}
 	
 	Section
@@ -294,7 +304,7 @@ Form
 			{
 				height: 200
 				AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis Test"); source: "fixedFactors" }
-				AssignedVariablesList {	name: "kruskalVariablesAssigned" }
+				AssignedVariablesList {	name: "kruskalVariablesAssigned"; title: qsTr(" ") }
 			}
 		}
 		
