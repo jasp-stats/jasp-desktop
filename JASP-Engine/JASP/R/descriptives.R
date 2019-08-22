@@ -818,9 +818,6 @@ Descriptives <- function(jaspResults, dataset, options) {
     yWithNAIndex <- yWithNAIndex + 1
   }
 
-  print(paste0('row.names: ',      row.names(dataset)))
-  print(paste0('yIndexToActual: ', yIndexToActual))
-
   thePlot <- createJaspPlot(title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
 
   if (!is.numeric(y)) {
