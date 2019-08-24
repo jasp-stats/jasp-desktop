@@ -803,3 +803,18 @@
   classProportionsTable[["test"]]    <- testValues
 
 }
+
+.classificationAddClassesToData <- function(options, jaspResults, ready){
+  if(!ready || !options[["addClasses"]] || options[["classColumn"]] == "")  return()
+
+  classificationResult <- jaspResults[["classificationResult"]]$object
+
+  if(is.null(jaspResults[["classColumn"]])){
+    classColumn <- classificationResult[["classes"]]
+    jaspResults[["classColumn"]] <- createJaspColumn(columnName=options[["classColumn"]])
+    jaspResults[["classColumn"]]$dependOn(options = c("classColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt",
+                                                            "target", "predictors", "seed", "seedBox", "modelValid", "maxK", "noOfFolds", "modelValid", "holdoutData", "testDataManual",
+                                                            "estimationMethod", "shrinkage", "intDepth", "nNode", "validationDataManual", "testSetIndicatorVariable", "testSetIndicator"))
+    jaspResults[["classColumn"]]$setNominal(classColumn)
+  }  
+}

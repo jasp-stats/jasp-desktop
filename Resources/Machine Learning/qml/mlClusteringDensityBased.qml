@@ -117,7 +117,7 @@ Form {
                 text: qsTr("Min. core points:") 
                 defaultValue: 5 
                 min: 2
-                max: 999999
+                max: 50000
                 fieldWidth: 60 
             }
 
@@ -174,14 +174,14 @@ Form {
         CheckBox {
             id: addClusters
             name: "addClusters"
-            text: qsTr("Add clusters to data")
+            text: qsTr("Add predicted clusters to data")
             enabled:    predictors.count > 1
             anchors.top: parent.top
 
             ComputedColumnField { 
                 id: 		clusterColumn
                 name: 		"clusterColumn"
-                text: 		"Name: "
+                text: 		"Column name: "
                 fieldWidth: 120
                 visible:    addClusters.checked
             }

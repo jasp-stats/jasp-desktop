@@ -191,7 +191,7 @@ Form {
                     text: qsTr("Max. trees:") 
                     defaultValue: 100
                     min: 1
-                    max: 999999
+                    max: 50000
                     fieldWidth: 60
                 }
             }
@@ -199,9 +199,26 @@ Form {
     }
 
     Item {
-        height: 			saveModel.height
+        height: 			addValues.height*2
         Layout.fillWidth: 	true
         Layout.columnSpan: 2
+
+        CheckBox {
+            id: addValues
+            name: "addValues"
+            text: qsTr("Add predicted values to data")
+            enabled:    predictors.count > 1 && target.count > 0
+            anchors.top: parent.top
+
+            ComputedColumnField { 
+                id: 		valueColumn
+                name: 		"valueColumn"
+                text: 		"Column name: "
+                fieldWidth: 120
+                visible:    addValues.checked
+            }
+
+        }
 
         Button 
         {

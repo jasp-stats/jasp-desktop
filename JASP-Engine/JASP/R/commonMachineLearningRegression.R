@@ -427,3 +427,20 @@
   return(x)
 }
 
+.regressionAddValuesToData <- function(options, jaspResults, ready){
+  if(!ready || !options[["addValues"]] || options[["valueColumn"]] == "")  return()
+
+  regressionResult <- jaspResults[["regressionResult"]]$object
+
+  if(is.null(jaspResults[["valueColumn"]])){
+    valueColumn <- regressionResult[["values"]]
+    jaspResults[["valueColumn"]] <- createJaspColumn(columnName=options[["valueColumn"]])
+    jaspResults[["valueColumn"]]$dependOn(options = c("valueColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
+                                                              "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
+                                                              "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda", "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac",
+                                                              "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
+                                                              "holdoutData", "testDataManual", "testIndicatorColumn"))
+    jaspResults[["valueColumn"]]$setScale(valueColumn)
+  }  
+}
+

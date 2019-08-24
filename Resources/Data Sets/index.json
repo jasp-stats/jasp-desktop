@@ -629,19 +629,19 @@
       "kind": "folder",
       "children": [
         {
-          "name": "iris",
+		  "name": "Iris Flowers",
           "path": "iris.csv",
           "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> <i>Data set included in R.<\/i>",
           "kind": "file"
         },
         {
-          "name": "spamdata",
-          "path": "spamdata.csv",
-          "description": "4601 emails of which 1813 are spam. Each e-mail has 57 measured attributes. <br><br> <i>Publicly available at http://archive.ics.uci.edu/ml/datasets/Spambase.<\/i>",
+		  "name": "Telco Customer Churn",
+		  "path": "telcoCustomerChurn.csv",
+		  "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
           "kind": "file"
         },
         {
-          "name": "wine",
+		  "name": "Wine",
           "path": "wine.csv",
           "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
           "kind": "file"
