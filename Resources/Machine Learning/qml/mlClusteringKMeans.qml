@@ -70,6 +70,11 @@ Form {
                 name: "tableClusterInfoTotalSumSquares" 
             }
         }
+
+        CheckBox {
+            text: qsTr("Evaluation metrics")
+            name: "clusterEvaluationMetrics"
+        }
     }
 
     GroupBox {

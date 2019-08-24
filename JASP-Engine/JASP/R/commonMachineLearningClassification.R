@@ -179,7 +179,7 @@
       classificationTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range op optimization.", symbol="<i>Note.</i>")
     }
 
-    distance  <- ifelse(classificationResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidian")    
+    distance  <- ifelse(classificationResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
     row <- data.frame(nn = classificationResult[["nn"]], 
                       weights = classificationResult[["weights"]], 
                       distance = distance, 

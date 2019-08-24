@@ -225,6 +225,44 @@
   }
 }
 
+.clusterEvaluationMetrics <- function(dataset, options, jaspResults, ready, position){
+
+  if(!is.null(jaspResults[["clusterEvaluationMetrics"]]) || !options[["clusterEvaluationMetrics"]]) return()
+
+  clusterEvaluationMetrics                        <- createJaspTable("Evaluation Metrics")
+  clusterEvaluationMetrics$dependOn(options =c("clusterEvaluationMetrics","predictors", "modelOpt", "noOfIterations",
+                                      "noOfClusters","noOfRandomSets", "optimizationCriterion", "scaleEqualSD", "minPts", "eps",
+                                      "maxClusters", "m", "linkage", "distance", "noOfTrees"))
+  clusterEvaluationMetrics$position               <- position
+
+  clusterEvaluationMetrics$addColumnInfo(name = 'metric', title = 'Metric', type = 'string')
+  clusterEvaluationMetrics$addColumnInfo(name = 'value', title = '', type = 'number')
+
+  jaspResults[["clusterEvaluationMetrics"]]       <- clusterEvaluationMetrics
+
+  if(!ready) return()
+
+  clusterResult <- jaspResults[["clusterResult"]]$object
+  clustering <- clusterResult[["pred.values"]]
+
+  distance <- dist(dataset)
+  metrics <- fpc::cluster.stats(distance, clustering, silhouette = FALSE, sepindex = FALSE, sepwithnoise = FALSE)
+
+  clusterEvaluationMetrics[["metric"]] <- c("Maximum diameter", "Minimum separation", "Pearson's \u03B3", "Dunn index", "Entropy", "Calinski-Harabasz index")
+
+  if(length(unique(clustering)) != 1){
+
+    clusterEvaluationMetrics[["value"]] <- c(metrics[["max.diameter"]], metrics[["min.separation"]], metrics[["pearsongamma"]], metrics[["dunn"]], metrics[["entropy"]], metrics[["ch"]])
+    clusterEvaluationMetrics$addFootnote(message="All metrics are based on the <i>euclidean</i> distance.", symbol="<i>Note.</i>")
+
+  } else {
+
+    clusterEvaluationMetrics$addFootnote(message="Evaluation metrics cannot be computed when there is only 1 cluster.", symbol="<i>Note.</i>")
+
+  }
+
+}
+
 .tsneClusterPlot <- function(dataset, options, jaspResults, ready, position, type){
 
   if(!is.null(jaspResults[["plot2dCluster"]]) || !options[["plot2dCluster"]]) return()

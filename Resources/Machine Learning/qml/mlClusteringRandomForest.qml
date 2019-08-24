@@ -66,6 +66,11 @@ Form {
             }
         }
 
+        CheckBox {
+            text: qsTr("Evaluation metrics")
+            name: "clusterEvaluationMetrics"
+        }
+
         CheckBox { 
             text: qsTr("Variable importance") 
             name: "importanceTable" 
