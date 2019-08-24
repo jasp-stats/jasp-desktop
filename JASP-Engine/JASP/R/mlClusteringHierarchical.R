@@ -49,11 +49,12 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   if(options[["modelOpt"]] == "validationManual"){
         
     if (options[["distance"]] == "Pearson correlation") {
-      hfit <- cutree(hclust(as.dist(1-cor(t(dataset[, .v(options[["predictors"]])]), method="pearson")),
-                                      method = options[["linkage"]]), k = options[['noOfClusters']])
+      distances <- as.dist(1 - cor(t(dataset[, .v(options[["predictors"]])]), method = "pearson"))
+      distances[is.na(distances)] <- 1 # We impute the missing correlations with a 1, as 1 - 1 = 0
+      hfit <- cutree(hclust(distances, method = options[["linkage"]]), k = options[['noOfClusters']])
     } else {
-      hfit <- cutree(hclust(dist(dataset[, .v(options[["predictors"]])]),
-                                  method = options[["linkage"]]), k = options[['noOfClusters']])
+      distances <- dist(dataset[, .v(options[["predictors"]])])
+      hfit <- cutree(hclust(distances, method = options[["linkage"]]), k = options[['noOfClusters']])
     }
 
     clusters <- options[['noOfClusters']]
@@ -71,13 +72,14 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
     for (i in clusterRange){
 
       if(options[["distance"]] == "Pearson correlation") {
-        hfit_tmp <- cutree(hclust(as.dist(1-cor(t(dataset[, .v(options[["predictors"]])]), method="pearson")),
-                                        method = options[["linkage"]]), k = i)
+        distances <- as.dist(1 - cor(t(dataset[, .v(options[["predictors"]])]), method = "pearson"))
+        distances[is.na(distances)] <- 1 # We impute the missing correlations with a 1, as 1 - 1 = 0
+        hfit_tmp <- cutree(hclust(distances, method = options[["linkage"]]), k = i)
       } else {
-        hfit_tmp <- cutree(hclust(dist(dataset[, .v(options[["predictors"]])]),
-                                    method = options[["linkage"]]), k = i)
+        distances <- dist(dataset[, .v(options[["predictors"]])])
+        hfit_tmp <- cutree(hclust(distances, method = options[["linkage"]]), k = i)
       }
-      silh <- summary(cluster::silhouette(hfit_tmp, dist(dataset[, .v(options[["predictors"]])])))
+      silh <- summary(cluster::silhouette(hfit_tmp, distances))
       avg_silh[i - 1] <- silh[["avg.width"]]
 
       m <- dim(as.data.frame(dataset[, .v(options[["predictors"]])]))[2]
@@ -108,13 +110,7 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
                               "validationAIC" = clusterRange[which.min(aicStore)],
                               "validationBIC" = clusterRange[which.min(bicStore)])
     
-    if (options[["distance"]] == "Pearson correlation") {
-        hfit <- cutree(hclust(as.dist(1-cor(t(dataset[, .v(options[["predictors"]])]), method="pearson")),
-                                        method = options[["linkage"]]), k = clusters)
-    } else {
-        hfit <- cutree(hclust(dist(dataset[, .v(options[["predictors"]])]),
-                                    method = options[["linkage"]]), k = clusters)
-    }
+    hfit <- cutree(hclust(distances, method = options[["linkage"]]), k = clusters)
 
   }
   
@@ -139,11 +135,8 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   aic <- D + 2*m*k
   bic <- D + log(n)*m*k
 
-  if(options[["distance"]] == "Pearson correlation") {
-    silhouettes <- summary(cluster::silhouette(hfit, as.dist(1-cor(t(dataset[, .v(options[["predictors"]])])))))
-  } else {
-    silhouettes <- summary(cluster::silhouette(hfit, dist(dataset[, .v(options[["predictors"]])])))
-  }
+  silhouettes <- summary(cluster::silhouette(hfit, distances))
+  
   Silh_score <- silhouettes[["avg.width"]]
   silh_scores <- silhouettes[["clus.avg.widths"]]
 

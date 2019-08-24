@@ -48,7 +48,8 @@ mlClusteringFuzzyCMeans <- function(jaspResults, dataset, options, ...) {
     cfit <- e1071::cmeans(dataset[, .v(options[["predictors"]])],
                             centers = options[['noOfClusters']],
                             iter.max = options[['noOfIterations']],
-                            m = options[["m"]])
+                            m = options[["m"]], 
+                            method = "ufcl") # method = "cmeans" can yield a number of clusters that is not equal to the requested number
 
     clusters <- options[['noOfClusters']]
 
@@ -66,7 +67,8 @@ mlClusteringFuzzyCMeans <- function(jaspResults, dataset, options, ...) {
       cfit_tmp <- e1071::cmeans(dataset[, .v(options[["predictors"]])],
                               centers = i,
                               iter.max = options[['noOfIterations']],
-                              m = options[["m"]])
+                              m = options[["m"]],
+                              method = "ufcl") # method = "cmeans" can yield a number of clusters that is not equal to the requested number
       silh <- summary(cluster::silhouette(cfit_tmp$cluster, dist(dataset[, .v(options[["predictors"]])])))
       avg_silh[i - 1] <- silh[["avg.width"]]
 

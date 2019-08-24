@@ -20,7 +20,6 @@
   predictors <- predictors[predictors != ""]
   if (is.null(dataset))
     dataset <- .readDataSetToEnd(columns.as.numeric = predictors, exclude.na.listwise = predictors)
-
   if(options[["scaleEqualSD"]] && length(unlist(options[["predictors"]])) > 0)
     dataset <- .scaleNumericData(dataset)
 
@@ -31,7 +30,7 @@
   predictors <- unlist(options$predictors)
   
   if(length(predictors[predictors != ""]) > 0L)
-    .hasErrors(dataset, perform, type = c('infinity', 'observations'), all.target = predictors, 
+    .hasErrors(dataset, type = c('infinity', 'observations'), all.target = predictors, 
                observations.amount = "< 2", exitAnalysisIfErrors = TRUE)
   return()
 }
