@@ -27,6 +27,9 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 	# Compute results and create the model summary table
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "regularized")
 
+  # If the user wants to add the values to the data set
+  .regressionAddValuesToData(options, jaspResults, ready)
+
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
 
@@ -135,6 +138,10 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
                         x = train_pred, y = train_target, weights = weights, offset = NULL,
                         alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
   
+  predictions <- predict(regfit_train, newx = as.matrix(dataset[,.v(options[["predictors"]])]), s = lambda, type = "link", exact = TRUE,
+                          x = as.matrix(dataset[,.v(options[["predictors"]])]), y = dataset[, .v(options[["target"]])], weights = weights, offset = NULL,
+                          alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
+  
   regressionResult <- list()
   regressionResult[["model"]]       <- regfit_train
   regressionResult[["lambda"]]      <- lambda
@@ -158,6 +165,8 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   testIndicatorColumn <- rep(1, nrow(dataset))
   testIndicatorColumn[train.index] <- 0
   regressionResult[["testIndicatorColumn"]] <- testIndicatorColumn
+
+  regressionResult[["values"]] <- predictions
   
   return(regressionResult)
 }

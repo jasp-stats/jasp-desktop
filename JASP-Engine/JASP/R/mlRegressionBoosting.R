@@ -27,6 +27,9 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
   # Compute results and create the model summary table
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")
 
+  # If the user wants to add the values to the data set
+  .regressionAddValuesToData(options, jaspResults, ready)
+
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
 
@@ -105,6 +108,8 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   pred_valid <- gbm::predict.gbm(bfit, valid, n.trees = noOfTrees, type = "response")
   pred_test <- gbm::predict.gbm(bfit, test, n.trees = noOfTrees, type = "response")
+
+  predictions <- gbm::predict.gbm(bfit, dataset, n.trees = noOfTrees, type = "response")
   
   # Create results object
   regressionResult <- list()
@@ -133,6 +138,8 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
   testIndicatorColumn <- rep(1, nrow(dataset))
   testIndicatorColumn[train.index] <- 0
   regressionResult[["testIndicatorColumn"]] <- testIndicatorColumn
+
+  regressionResult[["values"]] <- predictions
 
   return(regressionResult)
 }

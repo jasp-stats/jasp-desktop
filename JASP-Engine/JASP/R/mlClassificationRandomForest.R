@@ -27,6 +27,9 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
   # Compute results and create the model summary table
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "randomForest")
 
+  # If the user wants to add the classes to the data set
+  .classificationAddClassesToData(options, jaspResults, ready)
+
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "classification")
 
@@ -152,6 +155,8 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
     auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
   }
 
+  predictions <- predict(rfit_test, newdata = dataset)
+
   # Create results object
   classificationResult <- list()
   classificationResult[["rfit_test"]]           <- rfit_test
@@ -192,6 +197,8 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
   testIndicatorColumn <- rep(1, nrow(dataset))
   testIndicatorColumn[train.index] <- 0
   classificationResult[["testIndicatorColumn"]] <- testIndicatorColumn
+
+  classificationResult[["classes"]] <- predictions
 
   return(classificationResult)
 }

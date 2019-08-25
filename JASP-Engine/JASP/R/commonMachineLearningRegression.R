@@ -182,7 +182,7 @@
       regressionTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range op optimization.", symbol="<i>Note.</i>")
     }
 
-    distance  <- ifelse(regressionResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidian")    
+    distance  <- ifelse(regressionResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
     row <- data.frame(nn = regressionResult[["nn"]], 
                       weights = regressionResult[["weights"]], 
                       distance = distance, 
@@ -258,8 +258,8 @@
                                                               "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", "maxTrees",
                                                               "holdoutData", "testDataManual"))
 
-  validationMeasures$addColumnInfo(name = "measures", title = "Metric", type = "string")
-  validationMeasures$addColumnInfo(name = "values", title = "", type = "string")
+  validationMeasures$addColumnInfo(name = "measures", title = "", type = "string")
+  validationMeasures$addColumnInfo(name = "values", title = "Value", type = "string")
 
   measures <- c("MSE", "RMSE", "MAE", "MAPE", "R\u00B2")
   validationMeasures[["measures"]] <- measures
@@ -425,5 +425,22 @@
   if (scale)
     x <- x / sd(x)
   return(x)
+}
+
+.regressionAddValuesToData <- function(options, jaspResults, ready){
+  if(!ready || !options[["addValues"]] || options[["valueColumn"]] == "")  return()
+
+  regressionResult <- jaspResults[["regressionResult"]]$object
+
+  if(is.null(jaspResults[["valueColumn"]])){
+    valueColumn <- regressionResult[["values"]]
+    jaspResults[["valueColumn"]] <- createJaspColumn(columnName=options[["valueColumn"]])
+    jaspResults[["valueColumn"]]$dependOn(options = c("valueColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
+                                                              "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
+                                                              "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda", "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac",
+                                                              "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
+                                                              "holdoutData", "testDataManual", "testIndicatorColumn"))
+    jaspResults[["valueColumn"]]$setScale(valueColumn)
+  }  
 }
 

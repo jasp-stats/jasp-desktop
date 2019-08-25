@@ -33,14 +33,17 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   # Create the cluster information table
   .clusterInformationTable(options, jaspResults, ready, position = 2, type = "hierarchical")
 
+  # Create the cluster evaluation metrics table
+  .clusterEvaluationMetrics(dataset, options, jaspResults, ready, position = 3)
+
   # Create the within sum of squares plot
-  .elbowCurvePlot(dataset, options, jaspResults, ready, position = 3)
+  .elbowCurvePlot(dataset, options, jaspResults, ready, position = 4)
   
   # Create dendrogram
-  .hierarchicalClusteringDendogram(dataset, options, jaspResults, ready, position = 4)
+  .hierarchicalClusteringDendogram(dataset, options, jaspResults, ready, position = 5)
 
   # Create the cluster plot
-  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 5, type = "hierarchical")
+  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 6, type = "hierarchical")
   
 }
 

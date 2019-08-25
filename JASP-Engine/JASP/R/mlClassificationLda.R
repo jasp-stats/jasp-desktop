@@ -27,6 +27,9 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   # Compute results and create the model summary table
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "lda")
 
+  # If the user wants to add the classes to the data set
+  .classificationAddClassesToData(options, jaspResults, ready)
+
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "classification")
 
@@ -136,6 +139,8 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
     auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
   }
 
+  predictions <- predict(ldafit, newdata = dataset)$class
+
   # Create results object
   classificationResult <- list()
   classificationResult[["model"]]               <- ldafit
@@ -167,6 +172,8 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   testIndicatorColumn <- rep(1, nrow(dataset))
   testIndicatorColumn[train.index] <- 0
   classificationResult[["testIndicatorColumn"]] <- testIndicatorColumn
+
+  classificationResult[["classes"]] <- predictions
   
   return(classificationResult)
 }

@@ -27,6 +27,9 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   # Compute results and create the model summary table
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "randomForest")
 
+  # If the user wants to add the values to the data set
+  .regressionAddValuesToData(options, jaspResults, ready)
+
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
 
@@ -114,6 +117,8 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
                                     ntree = noOfTrees, mtry = noOfPredictors,
                                     sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
                                     importance = TRUE, keep.forest = TRUE)
+  
+  predictions <- predict(rfit_test, newdata = dataset)
 
   # Create results object
   regressionResult <- list()
@@ -149,6 +154,8 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   testIndicatorColumn <- rep(1, nrow(dataset))
   testIndicatorColumn[train.index] <- 0
   regressionResult[["testIndicatorColumn"]] <- testIndicatorColumn
+
+  regressionResult[["values"]] <- predictions
    
   return(regressionResult)
 }

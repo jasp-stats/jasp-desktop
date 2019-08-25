@@ -27,6 +27,9 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   # Compute results and create the model summary table
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")
 
+  # If the user wants to add the classes to the data set
+  .classificationAddClassesToData(options, jaspResults, ready)
+
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "classification")
 
@@ -143,17 +146,19 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
     typeData <- typeData[, -column]
     typeData <- cbind(typeData, levelVar = levelVar)
 
-    bfit <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
+    bfitAUC <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
                 shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
                 cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
                 distribution = "bernoulli", n.cores = 1) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
-    score <- predict(bfit, newdata = test, n.trees = noOfTrees, type = "response")
+    score <- predict(bfitAUC, newdata = test, n.trees = noOfTrees, type = "response")
     actual.class <- test[,.v(options[["target"]])] == lvls[i]
 
     pred <- ROCR::prediction(score, actual.class)
     auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
   }
 
+  probs_data <- gbm::predict.gbm(bfit, newdata = dataset, n.trees = noOfTrees, type = "response")
+  predictions <- colnames(probs_data)[apply(probs_data, 1, which.max)]
 
   # Create results object
   classificationResult <- list()
@@ -185,6 +190,8 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   testIndicatorColumn <- rep(1, nrow(dataset))
   testIndicatorColumn[train.index] <- 0
   classificationResult[["testIndicatorColumn"]] <- testIndicatorColumn
+  
+  classificationResult[["classes"]] <- predictions
 
   return(classificationResult)
 }

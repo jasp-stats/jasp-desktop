@@ -179,7 +179,7 @@
       classificationTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range op optimization.", symbol="<i>Note.</i>")
     }
 
-    distance  <- ifelse(classificationResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidian")    
+    distance  <- ifelse(classificationResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
     row <- data.frame(nn = classificationResult[["nn"]], 
                       weights = classificationResult[["weights"]], 
                       distance = distance, 
@@ -802,4 +802,19 @@
   classProportionsTable[["valid"]]   <- validValues
   classProportionsTable[["test"]]    <- testValues
 
+}
+
+.classificationAddClassesToData <- function(options, jaspResults, ready){
+  if(!ready || !options[["addClasses"]] || options[["classColumn"]] == "")  return()
+
+  classificationResult <- jaspResults[["classificationResult"]]$object
+
+  if(is.null(jaspResults[["classColumn"]])){
+    classColumn <- classificationResult[["classes"]]
+    jaspResults[["classColumn"]] <- createJaspColumn(columnName=options[["classColumn"]])
+    jaspResults[["classColumn"]]$dependOn(options = c("classColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt",
+                                                            "target", "predictors", "seed", "seedBox", "modelValid", "maxK", "noOfFolds", "modelValid", "holdoutData", "testDataManual",
+                                                            "estimationMethod", "shrinkage", "intDepth", "nNode", "validationDataManual", "testSetIndicatorVariable", "testSetIndicator"))
+    jaspResults[["classColumn"]]$setNominal(classColumn)
+  }  
 }

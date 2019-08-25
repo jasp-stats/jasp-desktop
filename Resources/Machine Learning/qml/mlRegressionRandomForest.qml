@@ -184,9 +184,26 @@ Form {
     }
 
     Item {
-        height: 			saveModel.height
+        height: 			addValues.height*2
         Layout.fillWidth: 	true
         Layout.columnSpan: 2
+
+        CheckBox {
+            id: addValues
+            name: "addValues"
+            text: qsTr("Add predicted values to data")
+            enabled:    predictors.count > 1 && target.count > 0
+            anchors.top: parent.top
+
+            ComputedColumnField { 
+                id: 		valueColumn
+                name: 		"valueColumn"
+                text: 		"Column name: "
+                fieldWidth: 120
+                visible:    addValues.checked
+            }
+
+        }
 
         Button 
         {

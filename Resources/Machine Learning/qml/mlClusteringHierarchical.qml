@@ -65,6 +65,11 @@ Form {
                 name: "tableClusterInfoTotalSumSquares" 
             }
         }
+
+        CheckBox {
+            text: qsTr("Evaluation metrics")
+            name: "clusterEvaluationMetrics"
+        }
     }
 
     GroupBox {
@@ -166,7 +171,7 @@ Form {
                     text: qsTr("Clusters:") 
                     defaultValue: 3 
                     min: 2
-                    max: 999999
+                    max: 5000
                     fieldWidth: 60
                     enabled: validationManual.checked 
                 }
@@ -196,7 +201,7 @@ Form {
                     text: qsTr("Max. clusters:") 
                     defaultValue: 10 
                     min: 2
-                    max: 999999
+                    max: 5000
                     fieldWidth: 60
                     enabled: !validationManual.checked 
                     Layout.leftMargin: 20
@@ -212,14 +217,14 @@ Form {
         CheckBox {
             id: addClusters
             name: "addClusters"
-            text: qsTr("Add clusters to data")
+            text: qsTr("Add predicted clusters to data")
             enabled:    predictors.count > 1
             anchors.top: parent.top
 
             ComputedColumnField { 
                 id: 		clusterColumn
                 name: 		"clusterColumn"
-                text: 		"Name: "
+                text: 		"Column name: "
                 fieldWidth: 120
                 visible:    addClusters.checked
             }
