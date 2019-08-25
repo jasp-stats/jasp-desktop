@@ -258,8 +258,8 @@
                                                               "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", "maxTrees",
                                                               "holdoutData", "testDataManual"))
 
-  validationMeasures$addColumnInfo(name = "measures", title = "Metric", type = "string")
-  validationMeasures$addColumnInfo(name = "values", title = "", type = "string")
+  validationMeasures$addColumnInfo(name = "measures", title = "", type = "string")
+  validationMeasures$addColumnInfo(name = "values", title = "Value", type = "string")
 
   measures <- c("MSE", "RMSE", "MAE", "MAPE", "R\u00B2")
   validationMeasures[["measures"]] <- measures

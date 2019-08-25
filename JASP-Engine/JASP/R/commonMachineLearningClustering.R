@@ -235,8 +235,8 @@
                                       "maxClusters", "m", "linkage", "distance", "noOfTrees"))
   clusterEvaluationMetrics$position               <- position
 
-  clusterEvaluationMetrics$addColumnInfo(name = 'metric', title = 'Metric', type = 'string')
-  clusterEvaluationMetrics$addColumnInfo(name = 'value', title = '', type = 'number')
+  clusterEvaluationMetrics$addColumnInfo(name = 'metric', title = '', type = 'string')
+  clusterEvaluationMetrics$addColumnInfo(name = 'value', title = 'Value', type = 'number')
 
   jaspResults[["clusterEvaluationMetrics"]]       <- clusterEvaluationMetrics
 
