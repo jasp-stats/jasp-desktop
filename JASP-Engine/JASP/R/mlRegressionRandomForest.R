@@ -58,49 +58,60 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
 .randomForestRegression <- function(dataset, options, jaspResults){
   
+  # Remove missing values from data set
   dataset                   <- na.omit(dataset)
+
+  # Set model-specific parameters
+  noOfPredictors <- base::switch(options[["noOfPredictors"]], "manual" = options[["numberOfPredictors"]], "auto" = floor(sqrt(length(options[["predictors"]]))))
+
+  # Split the data into training and test sets
   if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
+    # Select observations according to a user-specified indicator (included when indicator = 1)
     train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
   } else {
+    # Sample a percentage of the total data set
     train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
   }
   trainAndValid           <- dataset[train.index, ]
-  valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
-  test                    <- dataset[-train.index, ]
-  valid                   <- trainAndValid[valid.index, ]
-  train                   <- trainAndValid[-valid.index, ]
 
-  train_predictors <- train[, .v(options[["predictors"]])]
-  train_target <- train[, .v(options[["target"]])]
-  valid_predictors <- valid[, .v(options[["predictors"]])]
-  valid_target <- valid[, .v(options[["target"]])]
-  test_predictors <- test[, .v(options[["predictors"]])]
-  test_target <- test[, .v(options[["target"]])]
-
-  if(options[["noOfPredictors"]] == "manual") {
-    noOfPredictors <- options[["numberOfPredictors"]]
-  } else {
-    noOfPredictors <- floor(sqrt(length(options[["predictors"]])))
-  }
+  # Create the generated test set indicator
+  testIndicatorColumn <- rep(1, nrow(dataset))
+  testIndicatorColumn[train.index] <- 0
 
   if(options[["modelOpt"]] == "optimizationManual"){
+    # Just create a train and a test set (no optimization)
+    train                   <- trainAndValid
+    test                    <- dataset[-train.index, ]
 
-      rfit_valid <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = valid_predictors, ytest = valid_target,
-                                              ntree = options[["noOfTrees"]], mtry = noOfPredictors,
-                                              sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
-                                              importance = TRUE, keep.forest = TRUE)
-      rfit_test <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = test_predictors, ytest = test_target,
-                                              ntree = options[["noOfTrees"]], mtry = noOfPredictors,
-                                              sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
-                                              importance = TRUE, keep.forest = TRUE)
-      noOfTrees <- options[["noOfTrees"]]
+    train_predictors <- train[, .v(options[["predictors"]])]
+    train_target <- train[, .v(options[["target"]])]
+    test_predictors <- test[, .v(options[["predictors"]])]
+    test_target <- test[, .v(options[["target"]])]
+
+    rfit_test <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = test_predictors, ytest = test_target,
+                                            ntree = options[["noOfTrees"]], mtry = noOfPredictors,
+                                            sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                            importance = TRUE, keep.forest = TRUE)
+    noOfTrees <- options[["noOfTrees"]]
 
   } else if(options[["modelOpt"]] == "optimizationError"){
+    # Create a train, validation and test set (optimization)
+    valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
+    test                    <- dataset[-train.index, ]
+    valid                   <- trainAndValid[valid.index, ]
+    train                   <- trainAndValid[-valid.index, ]
+
+    train_predictors <- train[, .v(options[["predictors"]])]
+    train_target <- train[, .v(options[["target"]])]
+    valid_predictors <- valid[, .v(options[["predictors"]])]
+    valid_target <- valid[, .v(options[["target"]])]
+    test_predictors <- test[, .v(options[["predictors"]])]
+    test_target <- test[, .v(options[["target"]])]
 
     rfit_valid <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = valid_predictors, ytest = valid_target,
-                                        ntree = options[["maxTrees"]], mtry = noOfPredictors,
-                                        sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
-                                        importance = TRUE, keep.forest = TRUE)
+                                    ntree = options[["maxTrees"]], mtry = noOfPredictors,
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                    importance = TRUE, keep.forest = TRUE)
     oobError <- rfit_valid$mse
     optimTrees <- which.min(oobError)[length(which.min(oobError))]
 
@@ -110,52 +121,46 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
                                             importance = TRUE, keep.forest = TRUE)
 
     noOfTrees <- optimTrees
-
   }
 
+  # Train a model for 
   rfit_train <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = train_predictors, ytest = train_target,
                                     ntree = noOfTrees, mtry = noOfPredictors,
                                     sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
                                     importance = TRUE, keep.forest = TRUE)
   
+  # Use the specified model to make predictions for dataset
   predictions <- predict(rfit_test, newdata = dataset)
 
   # Create results object
   regressionResult <- list()
   regressionResult[["rfit_test"]]           <- rfit_test
-  regressionResult[["rfit_valid"]]          <- rfit_valid
   regressionResult[["rfit_train"]]          <- rfit_train
-
   regressionResult[["noOfTrees"]]           <- noOfTrees
   regressionResult[["predPerSplit"]]        <- noOfPredictors
   regressionResult[["bagFrac"]]             <- ceiling(options[["bagFrac"]]*nrow(dataset))
-
-  regressionResult[["validMSE"]]            <- mean((rfit_valid$test[["predicted"]] - valid[,.v(options[["target"]])])^2)
   regressionResult[["testMSE"]]             <- mean((rfit_test$test[["predicted"]] - test[,.v(options[["target"]])])^2)
-
   regressionResult[["testPred"]]            <- rfit_test$test[["predicted"]]
   regressionResult[["testReal"]]            <- test[,.v(options[["target"]])]
-
   regressionResult[["oobError"]]            <- rfit_test$mse[length(rfit_test$mse)]
-  regressionResult[["varImp"]]              <- plyr::arrange(data.frame(
-                                                              Variable = .unv(as.factor(names(rfit_test$importance[,1]))),
-                                                              MeanIncrMSE = rfit_test$importance[, 1],
-                                                              TotalDecrNodeImp = rfit_test$importance[, 2]
-                                                            ), -TotalDecrNodeImp)
-
   regressionResult[["ntrain"]]              <- nrow(train)
-  regressionResult[["nvalid"]]              <- nrow(valid)
   regressionResult[["ntest"]]               <- nrow(test)
-
   regressionResult[["train"]]               <- train
-  regressionResult[["valid"]]               <- valid
   regressionResult[["test"]]                <- test
-
-  testIndicatorColumn <- rep(1, nrow(dataset))
-  testIndicatorColumn[train.index] <- 0
   regressionResult[["testIndicatorColumn"]] <- testIndicatorColumn
+  regressionResult[["values"]]              <- predictions
+  regressionResult[["varImp"]]              <- plyr::arrange(data.frame(
+                                                            Variable = .unv(as.factor(names(rfit_test$importance[,1]))),
+                                                            MeanIncrMSE = rfit_test$importance[, 1],
+                                                            TotalDecrNodeImp = rfit_test$importance[, 2]
+                                                          ), -TotalDecrNodeImp)
 
-  regressionResult[["values"]] <- predictions
+  if(options[["modelOpt"]] != "optimizationManual"){
+    regressionResult[['validMSE']]    <- mean((rfit_valid$test[["predicted"]] - valid[,.v(options[["target"]])])^2)
+    regressionResult[["nvalid"]]      <- nrow(valid)
+    regressionResult[["valid"]]       <- valid
+    regressionResult[["rfit_valid"]]  <- rfit_valid
+  }
    
   return(regressionResult)
 }
@@ -213,31 +218,55 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
                           "regression" = "Out-of-bag \nMean Squared Error")
 
   values <- base::switch(purpose,
-                        "classification" = 1 - result[["rfit_valid"]]$err.rate[1:result[["noOfTrees"]],1],
-                        "regression" = result[["rfit_valid"]]$mse[1:result[["noOfTrees"]]])
+                        "classification" = 1 - result[["rfit_train"]]$err.rate[,1],
+                        "regression" = result[["rfit_train"]]$mse)
 
-  values2 <- base::switch(purpose,
-                          "classification" = 1 - result[["rfit_train"]]$err.rate[,1],
-                          "regression" = result[["rfit_train"]]$mse)
-  values <- c(values, values2)
+  if(options[["modelOpt"]] != "optimizationManual"){
 
-  treesMSE <- data.frame(
-    trees = rep(1:length(values2), 2),
-    error = values, 
-    type = rep(c("Validation set", "Training set"), each = length(values2))
-  )
+    values2 <- base::switch(purpose,
+                      "classification" = 1 - result[["rfit_valid"]]$err.rate[1:result[["noOfTrees"]],1],
+                      "regression" = result[["rfit_valid"]]$mse[1:result[["noOfTrees"]]])
+    
+    values <- c(values2, values)
 
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["error"]], min.n = 4)
-  
-  p <- ggplot2::ggplot(data = treesMSE, mapping = ggplot2::aes(x = trees, y = error, linetype = type)) +
-        JASPgraphs::geom_line()
+    treesMSE <- data.frame(
+      trees = rep(1:length(values2), 2),
+      error = values, 
+      type = rep(c("Validation set", "Training set"), each = length(values2))
+    )
 
-  p <- p + ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
-            ggplot2::scale_y_continuous(name = xTitle, labels = yBreaks, breaks = yBreaks) +
-            ggplot2::labs(linetype = "") +
-            ggplot2::scale_linetype_manual(values = c(2,1))
-  p <- JASPgraphs::themeJasp(p, legend.position = "top")
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["error"]], min.n = 4)
+    
+    p <- ggplot2::ggplot(data = treesMSE, mapping = ggplot2::aes(x = trees, y = error, linetype = type)) +
+          JASPgraphs::geom_line()
+
+    p <- p + ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
+              ggplot2::scale_y_continuous(name = xTitle, labels = yBreaks, breaks = yBreaks) +
+              ggplot2::labs(linetype = "") +
+              ggplot2::scale_linetype_manual(values = c(2,1))
+    p <- JASPgraphs::themeJasp(p, legend.position = "top")
+
+  } else {
+
+    treesMSE <- data.frame(
+      trees = 1:length(values),
+      error = values, 
+      type = rep("Training set", each = length(values))
+    )
+
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["error"]], min.n = 4)
+    
+    p <- ggplot2::ggplot(data = treesMSE, mapping = ggplot2::aes(x = trees, y = error, linetype = type)) +
+          JASPgraphs::geom_line()
+
+    p <- p + ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
+              ggplot2::scale_y_continuous(name = xTitle, labels = yBreaks, breaks = yBreaks) +
+              ggplot2::labs(linetype = "")
+    p <- JASPgraphs::themeJasp(p, legend.position = "top")    
+
+  }
 
   plotTreesVsModelError$plotObject <- p
 }

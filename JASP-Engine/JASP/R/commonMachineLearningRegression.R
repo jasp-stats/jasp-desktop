@@ -114,6 +114,7 @@
                                           "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac", "intDepth", "nNode", "distance",
                                           "testSetIndicatorVariable", "testSetIndicator", "validationDataManual","holdoutData", "testDataManual"))
 
+  # Add analysis-specific columns
   if(type == "knn"){
 
     regressionTable$addColumnInfo(name = 'nn', title = 'Nearest neighbors', type = 'integer')
@@ -140,16 +141,25 @@
 
   }
 
+  # Add common columns
   regressionTable$addColumnInfo(name = 'ntrain', title = 'n(Train)', type = 'integer')
-  regressionTable$addColumnInfo(name = 'nvalid', title = 'n(Validation)', type = 'integer')
-  regressionTable$addColumnInfo(name = 'ntest', title = 'n(Test)', type = 'integer')
-  regressionTable$addColumnInfo(name = 'validMSE', title = 'Validation MSE', type = 'number', format = 'dp:3')
-  regressionTable$addColumnInfo(name = 'testMSE', title = 'Test MSE', type = 'number', format = 'dp:3')
 
+  if(options[["modelOpt"]] != "optimizationManual")
+    regressionTable$addColumnInfo(name = 'nvalid', title = 'n(Validation)', type = 'integer')
+
+  regressionTable$addColumnInfo(name = 'ntest', title = 'n(Test)', type = 'integer')
+
+  if(options[["modelOpt"]] != "optimizationManual")
+    regressionTable$addColumnInfo(name = 'validMSE', title = 'Validation MSE', type = 'number')
+
+  regressionTable$addColumnInfo(name = 'testMSE', title = 'Test MSE', type = 'number')
+
+  # Add analysis-specific columns after common columns
   if(type == "randomForest"){
     regressionTable$addColumnInfo(name = 'oob', title = 'OOB Error', type = 'number')
   }
 
+  # If no analysis is run, specify the required variables in a footnote
   requiredVars <- ifelse(type == "knn", yes = 1, no = 2)
   if(!ready)
     regressionTable$addFootnote(message = paste0("Please provide a target variable and at least ", requiredVars, " predictor variable(s)."), symbol = "<i>Note.</i>")
@@ -162,17 +172,22 @@
 
   regressionResult <- jaspResults[["regressionResult"]]$object
 
-  # Adjust train and test numbers for cross-validation
   nTrain <- regressionResult[["ntrain"]]
-  nValid <- regressionResult[["nvalid"]]
-  if(options[["modelValid"]] == "validationKFold"){
-    nValid <- floor(nValid / options[["noOfFolds"]])
-    nTrain <- nTrain - nValid
-  } else if(options[["modelValid"]] == "validationLeaveOneOut"){
-    nValid <- 1
-    nTrain <- nTrain - 1
+
+  if(options[["modelOpt"]] != "optimizationManual"){
+    nValid <- regressionResult[["nvalid"]]
+
+    if(options[["modelValid"]] == "validationKFold"){
+      # Adjust displayed train and test size for cross-validation
+      nValid <- floor(nValid / options[["noOfFolds"]])
+      nTrain <- nTrain - nValid
+    } else if(options[["modelValid"]] == "validationLeaveOneOut"){
+      nValid <- 1
+      nTrain <- nTrain - 1
+    }
   }
   
+  # Fill the table per analysis
   if(type == "knn"){
 
     if(options[["modelOpt"]] == "optimizationError")
@@ -186,16 +201,16 @@
     row <- data.frame(nn = regressionResult[["nn"]], 
                       weights = regressionResult[["weights"]], 
                       distance = distance, 
-                      ntrain = nTrain, 
-                      nvalid = nValid,
-                      ntest = regressionResult[["ntest"]], 
-                      validMSE = regressionResult[["validMSE"]],
+                      ntrain = nTrain,
+                      ntest = regressionResult[["ntest"]],
                       testMSE = regressionResult[["testMSE"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validMSE = regressionResult[["validMSE"]])
     regressionTable$addRows(row)
 
   } else if(type == "regularized"){
 
-    if(options[["shrinkage"]] != "manual")
+    if(options[["modelOpt"]] != "optimizationManual")
       regressionTable$addFootnote(message="The model is optimized with respect to the <i>validation set mean squared error</i>.", symbol="<i>Note.</i>")
 
     if (regressionResult[["lambda"]] == 0)
@@ -204,10 +219,10 @@
     row <- data.frame(penalty = regressionResult[["penalty"]], 
                       lambda = regressionResult[["lambda"]], 
                       ntrain = nTrain, 
-                      nvalid = nValid,
                       ntest = regressionResult[["ntest"]], 
-                      validMSE = regressionResult[["validMSE"]],
                       testMSE = regressionResult[["testMSE"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validMSE = regressionResult[["validMSE"]])
     if(options[["penalty"]] == "elasticNet")
       row <- cbind(row, alpha = regressionResult[["alpha"]])
     regressionTable$addRows(row)
@@ -219,12 +234,12 @@
 
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
                       preds = regressionResult[["predPerSplit"]], 
-                      ntrain = nTrain, 
-                      nvalid = nValid,
-                      ntest = regressionResult[["ntest"]], 
-                      validMSE = regressionResult[["validMSE"]], 
+                      ntrain = nTrain,
+                      ntest = regressionResult[["ntest"]],
                       testMSE = regressionResult[["testMSE"]], 
                       oob = regressionResult[["oobError"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validMSE = regressionResult[["validMSE"]])
     regressionTable$addRows(row)
 
   } else if(type == "boosting"){
@@ -236,11 +251,11 @@
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
                       shrinkage = options[["shrinkage"]], 
                       distribution = distribution, 
-                      ntrain = nTrain, 
-                      nvalid = nValid,
-                      ntest = regressionResult[["ntest"]], 
-                      validMSE = regressionResult[["validMSE"]],
+                      ntrain = nTrain,
+                      ntest = regressionResult[["ntest"]],
                       testMSE = regressionResult[["testMSE"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validMSE = regressionResult[["validMSE"]])
     regressionTable$addRows(row)
 
   }
@@ -322,7 +337,7 @@
 
   dataSplitPlot <- createJaspPlot(plot = NULL, title = "Data Split", width = 800, height = 70)
   dataSplitPlot$position <- position
-  dataSplitPlot$dependOn(options = c("dataSplitPlot", "target", "predictors", "trainingDataManual", "modelValid", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", "holdoutData", "testDataManual"))
+  dataSplitPlot$dependOn(options = c("dataSplitPlot", "target", "predictors", "trainingDataManual", "modelValid", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", "holdoutData", "testDataManual", "modelOpt"))
   jaspResults[["dataSplitPlot"]] <- dataSplitPlot
 
   if(!ready) return()
@@ -330,49 +345,76 @@
     result <- base::switch(purpose,
   						"classification" = jaspResults[["classificationResult"]]$object,
 						  "regression" = jaspResults[["regressionResult"]]$object)
+  
+  if(options[["modelOpt"]] == "optimizationManual"){
+    # For a fixed model, draw only a training and a test set
 
-  if(options[["modelValid"]] == "validationManual" || type == "randomForest" || type == "regularized" || type == "lda"){
+      nTrain    <- result[["ntrain"]]
+      nTest     <- result[["ntest"]]
 
-    nTrain    <- result[["ntrain"]]
-    nValid    <- result[["nvalid"]]
-    nTest     <- result[["ntest"]]
+      d <- data.frame(y = c(nTrain, nTest), x = c("Train", "Test"), group = c(1,1))
 
-    d <- data.frame(y = c(nTrain, nValid, nTest), x = c("Train", "Validation", "Test"), group = c(1,1,1))
+      p <- ggplot2::ggplot(data = d, ggplot2::aes(x = group, y = y, fill = factor(x, levels = c("Test", "Train")))) +
+            ggplot2::geom_bar(stat = "identity", col = "black", size = 0.5) +
+            ggplot2::scale_y_continuous(limits = c(0, nTrain + nTest + ((nTrain + nTest)/5))) + # adjust limits to include "Total" text
+            ggplot2::coord_flip() +
+            ggplot2::labs(fill = "") +
+            ggplot2::xlab("") +
+            ggplot2::ylab("") +
+            ggplot2::scale_fill_manual(values = c("tomato2", "steelblue2")) +
+            ggplot2::annotate("text", y = c(0, nTrain, nTrain + nTest), x = 1, label = c(paste0("Train: ", nTrain), paste0("Test: ", nTest), paste0("Total: ", nTrain + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
+      p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
 
-    p <- ggplot2::ggplot(data = d, ggplot2::aes(x = group, y = y, fill = factor(x, levels = c("Test", "Validation", "Train")))) +
-          ggplot2::geom_bar(stat = "identity", col = "black", size = 0.5) +
-          ggplot2::scale_y_continuous(limits = c(0, nTrain + nValid + nTest + ((nTrain + nValid + nTest)/5))) + # adjust limits to include "Total" text
-          ggplot2::coord_flip() +
-          ggplot2::labs(fill = "") +
-          ggplot2::xlab("") +
-          ggplot2::ylab("") +
-          ggplot2::scale_fill_manual(values = c("tomato2", "darkgoldenrod2", "steelblue2")) +
-          ggplot2::annotate("text", y = c(0, nTrain, nTrain + nValid, nTrain + nValid + nTest), x = 1, label = c(paste0("Train: ", nTrain), paste0("Validation: ", nValid), paste0("Test: ", nTest), paste0("Total: ", nTrain + nValid + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
-    p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
-
-    p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
-                            axis.text.y = ggplot2::element_blank(), 
-                            axis.text.x = ggplot2::element_blank())
+      p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
+                              axis.text.y = ggplot2::element_blank(), 
+                              axis.text.x = ggplot2::element_blank())
 
   } else {
+    # For an optimized model, draw a training, a validation, and a test set
+    if(options[["modelValid"]] == "validationManual" || type == "randomForest" || type == "regularized" || type == "lda"){
 
-    nTrainAndValid    <- result[["nvalid"]]
-    nTest             <- result[["ntest"]]
+      nTrain    <- result[["ntrain"]]
+      nValid    <- result[["nvalid"]]
+      nTest     <- result[["ntest"]]
 
-    d <- data.frame(y = c(nTrainAndValid, nTest), x = c("Train and validation", "Test"), group = c(1,1))
+      d <- data.frame(y = c(nTrain, nValid, nTest), x = c("Train", "Validation", "Test"), group = c(1,1,1))
 
-    p <- ggplot2::ggplot(data = d, ggplot2::aes(x = group, y = y, fill = factor(x, levels = c("Test", "Train and validation")))) +
-          ggplot2::geom_bar(stat = "identity", col = "black", size = 0.5) +
-          ggplot2::scale_y_continuous(limits = c(0, nTrainAndValid + nTest + ((nTrainAndValid + nTest)/5))) + # adjust limits to include "Total" text
-          ggplot2::coord_flip() +
-          ggplot2::labs(fill = "") +
-          ggplot2::xlab("") +
-          ggplot2::ylab("") +
-          ggplot2::scale_fill_manual(values = c("tomato2", "seagreen2")) +
-          ggplot2::annotate("text", y = c(0, nTrainAndValid, nTrainAndValid + nTest), x = 1, label = c(paste0("Train and validation: ", nTrainAndValid), paste0("Test: ", nTest), paste0("Total: ", nTrainAndValid + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
-    p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
+      p <- ggplot2::ggplot(data = d, ggplot2::aes(x = group, y = y, fill = factor(x, levels = c("Test", "Validation", "Train")))) +
+            ggplot2::geom_bar(stat = "identity", col = "black", size = 0.5) +
+            ggplot2::scale_y_continuous(limits = c(0, nTrain + nValid + nTest + ((nTrain + nValid + nTest)/5))) + # adjust limits to include "Total" text
+            ggplot2::coord_flip() +
+            ggplot2::labs(fill = "") +
+            ggplot2::xlab("") +
+            ggplot2::ylab("") +
+            ggplot2::scale_fill_manual(values = c("tomato2", "darkgoldenrod2", "steelblue2")) +
+            ggplot2::annotate("text", y = c(0, nTrain, nTrain + nValid, nTrain + nValid + nTest), x = 1, label = c(paste0("Train: ", nTrain), paste0("Validation: ", nValid), paste0("Test: ", nTest), paste0("Total: ", nTrain + nValid + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
+      p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
 
-    p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank())
+      p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
+                              axis.text.y = ggplot2::element_blank(), 
+                              axis.text.x = ggplot2::element_blank())
+
+    } else {
+
+      nTrainAndValid    <- result[["nvalid"]]
+      nTest             <- result[["ntest"]]
+
+      d <- data.frame(y = c(nTrainAndValid, nTest), x = c("Train and validation", "Test"), group = c(1,1))
+
+      p <- ggplot2::ggplot(data = d, ggplot2::aes(x = group, y = y, fill = factor(x, levels = c("Test", "Train and validation")))) +
+            ggplot2::geom_bar(stat = "identity", col = "black", size = 0.5) +
+            ggplot2::scale_y_continuous(limits = c(0, nTrainAndValid + nTest + ((nTrainAndValid + nTest)/5))) + # adjust limits to include "Total" text
+            ggplot2::coord_flip() +
+            ggplot2::labs(fill = "") +
+            ggplot2::xlab("") +
+            ggplot2::ylab("") +
+            ggplot2::scale_fill_manual(values = c("tomato2", "seagreen2")) +
+            ggplot2::annotate("text", y = c(0, nTrainAndValid, nTrainAndValid + nTest), x = 1, label = c(paste0("Train and validation: ", nTrainAndValid), paste0("Test: ", nTest), paste0("Total: ", nTrainAndValid + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
+      p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
+
+      p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank())
+
+    }
 
   }
 

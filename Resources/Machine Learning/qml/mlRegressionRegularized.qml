@@ -102,6 +102,7 @@ Form {
     ML.DataSplit {
         leaveOneOutVisible: false; 
         kFoldsVisible: false
+        trainingValidationSplit: !fixedModel.checked 
     }
 
     Section {
@@ -171,12 +172,12 @@ Form {
 
         RadioButtonGroup {
             title: qsTr("Lambda (\u03BB)")
-            name: "shrinkage"
+            name: "modelOpt"
 
             RadioButton { 
-                id: validationManual
+                id: fixedModel
                 text: qsTr("Fixed")                       
-                name: "manual"  
+                name: "optimizationManual"  
 
                 DoubleField { 
                     name: "lambda"
