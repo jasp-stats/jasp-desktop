@@ -169,6 +169,7 @@ Form {
     ML.DataSplit {
         leaveOneOutVisible: false; 
         kFoldsVisible: false
+        trainingValidationSplit: false
     }
 
     Section {
@@ -208,6 +209,16 @@ Form {
                     max: 999999
                     fieldWidth: 60 
                 } 
+            }
+        }
+
+        RadioButtonGroup {
+            name: "modelOpt"
+            visible: false
+
+            RadioButton {                    
+                name: "optimizationManual" 
+                checked: true
             }
         }
     }

@@ -123,7 +123,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     noOfTrees <- optimTrees
   }
 
-  # Train a model for 
+  # Train a model on the training data
   rfit_train <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = train_predictors, ytest = train_target,
                                     ntree = noOfTrees, mtry = noOfPredictors,
                                     sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),

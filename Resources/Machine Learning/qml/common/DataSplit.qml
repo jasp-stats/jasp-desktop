@@ -26,7 +26,7 @@ Section
 {
     property alias leaveOneOutVisible:              leaveOneOut.visible
     property alias kFoldsVisible:                   kFolds.visible
-    property alias trainingValidationSplit:         trainingValidationSplit.enabled
+    property alias trainingValidationSplit:         trainingValidationSplit.visible
     
     title: qsTr("Data Split Preferences")
 

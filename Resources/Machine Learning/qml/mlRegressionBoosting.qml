@@ -120,7 +120,7 @@ Form {
                 text: qsTr("Min. observations in node:")
                 defaultValue: 10  
                 min: 1
-                max: 999999
+                max: 50000
                 fieldWidth: 60 
             }
 
