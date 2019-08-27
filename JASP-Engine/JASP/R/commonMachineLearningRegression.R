@@ -427,6 +427,12 @@
   return(x)
 }
 
+.scaleNumericData.default <- function(x, center = TRUE, scale = TRUE) {
+  warning(".scaleNumericData.default was called! you probably didn't want that!")
+  # just do nothing
+  return(x)
+}
+
 .regressionAddValuesToData <- function(options, jaspResults, ready){
   if(!ready || !options[["addValues"]] || options[["valueColumn"]] == "")  return()
 

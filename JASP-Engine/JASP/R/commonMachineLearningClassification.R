@@ -29,7 +29,7 @@
     dataset <- .readDataSetToEnd(columns = variables.to.read, exclude.na.listwise = variables.to.read)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["scaleEqualSD"]])
-    dataset[,.v(options[["predictors"]])] <- .scaleNumericData(dataset[,.v(options[["predictors"]])])
+    dataset[,.v(options[["predictors"]])] <- .scaleNumericData(dataset[,.v(options[["predictors"]]), drop = FALSE])
   if(options[["target"]] != "")
     dataset[, .v(options[["target"]])] <- factor(dataset[, .v(options[["target"]])])
   return(dataset)
