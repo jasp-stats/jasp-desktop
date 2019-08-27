@@ -2,7 +2,9 @@ expect_equal_plots <- function(test, name, dir) {
   if (length(test) == 0) {
     errorMsg <- jasptools:::.getErrorMsgFromLastResults()
     if (! is.null(errorMsg))
-        stop(paste("Tried retrieving plot from results, but last run of jasptools exited with an error:", errorMsg), call.=FALSE)
+      stop(paste("Tried retrieving plot from results, but last run of jasptools exited with an error:", errorMsg), call.=FALSE)
+    else
+      stop("The new plot has no data. Please check your unit test; is the index path to the plot specified correctly?", call.=FALSE)
   }
 
   if (inherits(test, "grob"))
