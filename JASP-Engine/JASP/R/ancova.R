@@ -427,10 +427,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     result[["VovkSellkeMPR"]] <-  ifelse(result[['Pr(>F)']] != "", .VovkSellkeMPR(na.omit(result[['Pr(>F)']])), "")
   }
   
-  if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
-    anovaContainer$setError("The Brown-Forsythe and Welch corrections are only available for one-way ANOVA")
+  if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) 
     return()
-  }
   
   anovaResult <- list()
   if (options$homogeneityNone) {
@@ -496,7 +494,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   title <- ifelse(is.null(options$covariates), "ANOVA", "ANCOVA")
   anovaTable <- createJaspTable(title = title, position = 1, 
-                           dependencies = c("homogeneityWelch", "homogeneityBrown", "homogeneityWelch", 
+                           dependencies = c("homogeneityWelch", "homogeneityBrown", "homogeneityNone", 
                                             "VovkSellkeMPR", "effectSizeEstimates", "effectSizeEtaSquared", 
                                             "effectSizePartialEtaSquared", "effectSizeOmegaSquared"))
   
@@ -547,9 +545,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                          type3 = "Type III Sum of Squares")
   anovaTable$addFootnote(message = typeFootnote, symbol = "<em>Note.</em>")
   
-  
   anovaContainer[["anovaTable"]] <- anovaTable
-  
   
   if (!ready)
     return()
@@ -561,12 +557,16 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   # here we ask for the model to be computed
   .anovaResult(anovaContainer, options)
   
-  # we check to see if the calculation did not cause any errors;
+  if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
+    anovaTable$setError("The Brown-Forsythe and Welch corrections are only available for one-way ANOVA")
+    return()
+  }
+    
   if (anovaContainer$getError())
     return()
 
   model <- anovaContainer[["anovaResult"]]$object
-    anovaTable$setData(do.call("rbind", model))
+  anovaTable$setData(do.call("rbind", model))
 
   return()
 }
