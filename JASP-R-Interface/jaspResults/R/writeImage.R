@@ -81,7 +81,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
       eval(plot())
       if (obj) plot <- recordPlot() # save plot to R object
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
-      .redrawPlot(plot) #(see below)
+      redrawPlotJaspResults(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
       qgraph:::plot.qgraph(plot)
     } else {
