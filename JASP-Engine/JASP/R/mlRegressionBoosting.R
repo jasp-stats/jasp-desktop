@@ -201,15 +201,26 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
     ylab <- paste0("OOB Change in \n", distribution, " Deviance")
   }
 
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(oobDev[["trees"]], min.n = 4)
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(oobDev[["oobImprove"]], min.n = 4)
+  if (nrow(oobDev) <= 5L) {
+    geom <- JASPgraphs::geom_point
+    xend <- nrow(oobDev) + 1L
+    xBreaks <- 1:xend
+  } else {
+    geom <- JASPgraphs::geom_line
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(oobDev[["trees"]], min.n = 4)
+    xend <- nrow(oobDev)
+  }
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, oobDev[["oobImprove"]]), min.n = 4)
+  xLabels <- JASPgraphs::axesLabeller(xBreaks)
+  yLabels <- JASPgraphs::axesLabeller(yBreaks)
   
   p <- ggplot2::ggplot(data = oobDev, mapping = ggplot2::aes(x = trees, y = oobImprove)) +
-        ggplot2::geom_segment(data = data.frame(xstart = 0, xend = nrow(oobDev), ystart = 0, yend = 0), ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
-        JASPgraphs::geom_line() +
-        ggplot2::geom_smooth(size = 1, colour = "darkred", se = FALSE) +
-        ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
-        ggplot2::scale_y_continuous(name = ylab, labels = yBreaks, breaks = yBreaks)
+    ggplot2::geom_segment(data = data.frame(xstart = 0, xend = xend, ystart = 0, yend = 0), ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
+    geom() +
+    ggplot2::geom_smooth(size = 1, colour = "darkred", se = FALSE) +
+    ggplot2::scale_x_continuous(name = "Number of Trees", labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
+    ggplot2::scale_y_continuous(name = ylab,              labels = yLabels, breaks = yBreaks, limits = range(yBreaks))
+  
   p <- JASPgraphs::themeJasp(p)
 
   plotOOBChangeDev$plotObject <- p
@@ -239,9 +250,6 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
     what = rep(c("Out-of-bag", "Cross-validated"), c(length(result[["model"]]$train.error), length(result[["model"]]$cv.error)))
   )
 
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(deviance[["trees"]], min.n = 4)
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, deviance[["trainError"]]), min.n = 4)
-  
   if(purpose == "classification"){
     if (nlevels(result[["test"]][,.v(options[["target"]])]) > 2L) {
       ylab <- "Multinomial Deviance"
@@ -252,16 +260,31 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
     distribution <- base::switch(options[["distance"]], "tdist" = "t", "gaussian" = "Gaussian", "laplace" = "Laplace")
     ylab <- paste0(distribution, " Deviance")
   }
+
+  if (max(deviance[["trees"]]) <= 5L) {
+    geom <- JASPgraphs::geom_point
+    xend <- max(deviance[["trees"]]) + 1L
+    xBreaks <- 1:xend
+  } else {
+    geom <- ggplot2::geom_line
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(oobDev[["trees"]], min.n = 4)
+    xend <- length(result[["model"]]$train.error)
+  }
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, deviance[["trainError"]]), min.n = 4)
+
+  xLabels <- JASPgraphs::axesLabeller(xBreaks)
+  yLabels <- JASPgraphs::axesLabeller(yBreaks)
   
   p <- ggplot2::ggplot(data = deviance, mapping = ggplot2::aes(x = trees, y = trainError, group = what, color = what)) +
-        ggplot2::geom_segment(data = data.frame(xstart = 0, xend = length(result[["model"]]$train.error), ystart = 0, yend = 0, group = "Out-of-bag", what = "Out-of-bag"), ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
-        ggplot2::geom_line(size = 1, show.legend = result[["method"]] != "OOB") +
-        ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
-        ggplot2::scale_y_continuous(name = ylab, labels = yBreaks, breaks = yBreaks) +
+        ggplot2::geom_segment(data = data.frame(xstart = 1, xend = xend, ystart = 0, yend = 0, group = "Out-of-bag", what = "Out-of-bag"), 
+                              ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
+        geom(show.legend = result[["method"]] != "OOB") +
+        ggplot2::scale_x_continuous(name = "Number of Trees", labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
+        ggplot2::scale_y_continuous(name = ylab,              labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
         ggplot2::scale_color_manual(name = "", values = c("Out-of-bag" = "gray20", "Cross-validated" = "#99c454"))
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
-   plotDeviance$plotObject <- p
+  plotDeviance$plotObject <- p
 }
 
 .boostingRelativeInfluencePlot <- function(options, jaspResults, ready, position, purpose){
