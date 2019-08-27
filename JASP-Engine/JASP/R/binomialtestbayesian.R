@@ -130,9 +130,9 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     note <- "For all tests, the alternative hypothesis specifies that the proportion is less than "
 
   binomTable$addFootnote(paste0(note, options$testValue, "."))
-  
+
   jaspResults[["binomTable"]] <- binomTable
-  
+
   if (!ready)
     return()
   
@@ -256,7 +256,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   } else {
     inferentialPlots <- jaspResults[["inferentialPlots"]]
   }
-  
+
   if (!ready) {
     # show a placeholder plot if someone says he wants a plot but does not enter any variables
     inferentialPlots[["placeholder"]] <- createJaspPlot(width = 530, height = 400, dependencies = "variables")
@@ -310,12 +310,14 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   dfPointsPP <- .dfPointsPP(a=options$priorA, b=options$priorB, hyp = hyp, theta0 = options$testValue, counts = counts, n = n)
   xName <- expression(paste("Population proportion ", theta))
   
+  hypForPlots <- .binomHypothesisForPlots(hyp)
+  
   if (!options$plotPriorAndPosteriorAdditionalInfo)
-    p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, bfSubscripts = bfSubscripts)
+    p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName)
   else
-    p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = 1/BF10,
-                                            CRI = c(quantiles$ci.lower, quantiles$ci.upper), median = quantiles$ci.median, 
-                                            drawCRItxt = TRUE, bfSubscripts = bfSubscripts)
+    p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = BF10, bfType = "BF10",
+                                           CRI = c(quantiles$ci.lower, quantiles$ci.upper), median = quantiles$ci.median, 
+                                           hypothesis = hypForPlots, drawCRItxt = TRUE)
   plot$plotObject <- p
 }
 
@@ -328,12 +330,14 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[[plotName]] <- plot
   
+  hypForPlots <- .binomHypothesisForPlots(hyp)
+  
   p <- try({
     bfSubscripts <- .bayesBinomGetSubscript(options$hypothesis)
     dfLinesSR   <- .dfLinesSR(d = data, var = var, split = level, a = options$priorA, b = options$priorB, hyp = hyp, theta0 = options$testValue)
     dfPointsSR  <- NULL
     xName       <- "n"
-    JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF = 1/BF10, hasRightAxis = TRUE, bfSubscripts = bfSubscripts)
+    JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF = BF10, hasRightAxis = TRUE, bfType = "BF10", hypothesis = hypForPlots)
   })
   
   if (inherits(p, "try-error"))
@@ -444,4 +448,15 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   
   return(list(ci.lower = quantiles[1], ci.median = quantiles[2], ci.upper = quantiles[3]))
   
+}
+
+.binomHypothesisForPlots <- function(hyp){
+  if(hyp == "greater")
+    return("greater")
+  else if(hyp == "less")
+    return("smaller")
+  else if(hyp == "two.sided")
+    return("equal")
+  else
+    stop("Undefined hypothesis")
 }
