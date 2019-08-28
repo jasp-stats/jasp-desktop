@@ -89,7 +89,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   nvars <- lapply(options$factors, function(x) length(x$indicators))
   if (all(nvars == 0)) return("No variables")
   if (any(nvars == 1)) {
-    JASP:::.quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
+    .quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
   }
 
 
@@ -97,18 +97,18 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (options$groupvar == "") {
 
-    JASP:::.hasErrors(dataset[, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE,
+    .hasErrors(dataset[, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE,
                varCovData.corFun = stats::cov)
 
   } else {
 
-    JASP:::.hasErrors(dataset, perform, type = "factorLevels", factorLevels.target = options$groupvar,
+    .hasErrors(dataset, perform, type = "factorLevels", factorLevels.target = options$groupvar,
                factorLevels.amount = '< 2', exitAnalysisIfErrors = TRUE)
 
     for (group in levels(dataset[[.v(options$groupvar)]])) {
 
       idx <- dataset[[.v(options$groupvar)]] == group
-      JASP:::.hasErrors(dataset[idx, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE,
+      .hasErrors(dataset[idx, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE,
                  varCovData.corFun = stats::cov)
 
     }
@@ -177,22 +177,22 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Quit analysis on error
   if (inherits(cfaResult[["lav"]], "try-error")) {
-    JASP:::.quitAnalysis(paste("The model could not be estimated. Error message:\n\n",
+    .quitAnalysis(paste("The model could not be estimated. Error message:\n\n",
                          attr(cfaResult[["lav"]], "condition")$message))
   }
 
   admissible <- .withWarnings(lavaan:::lav_object_post_check(cfaResult[["lav"]]))
 
   if (!admissible$value) {
-    JASP:::.quitAnalysis(paste("The model is not admissible:", admissible$warnings[[1]]$message))
+    .quitAnalysis(paste("The model is not admissible:", admissible$warnings[[1]]$message))
   }
 
   if (!cfaResult[["lav"]]@optim$converged) {
-    JASP:::.quitAnalysis("The model could not be estimated due to nonconvergence.")
+    .quitAnalysis("The model could not be estimated due to nonconvergence.")
   }
 
   if (cfaResult[["lav"]]@test[[1]]$df < 0) {
-    JASP:::.quitAnalysis("The model could not be estimated: No degrees of freedom left.")
+    .quitAnalysis("The model could not be estimated: No degrees of freedom left.")
   }
 
 
