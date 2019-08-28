@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults: true
 
 	CheckBox { name: "incl_GoF"; checked: true; visible: false }
 	CheckBox { name: "incl_fitIndices"; checked: false; visible: false }
@@ -37,8 +37,9 @@ Form
 	{
 		height: Theme.smallDefaultVariablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }
-		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["scale"] }
+		AssignedVariablesList  { id: variables; name: "variables"; title: qsTr("Variables"); suggestedColumns: ["scale"] }
 	}
+
 
 	RadioButtonGroup
 	{
@@ -60,21 +61,44 @@ Form
 		}
 	}
 
-	RadioButtonGroup
-	{
-		name: "rotationMethod"
-		title: qsTr("Rotation")
-		RadioButton
-		{
-			value: "orthogonal";	label: qsTr("Orthogonal")
-			DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"] }
-		}
-		RadioButton
-		{
-			value: "oblique";		label: qsTr("Oblique");  checked: true
-			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ] }
-		}
-	}
+    Group
+    {
+        RadioButtonGroup
+        {
+            name: "rotationMethod"
+            title: qsTr("Rotation")
+            RadioButton
+            {
+                value	: "orthogonal"
+                label	: qsTr("Orthogonal")
+                DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT"] }
+            }
+            RadioButton
+            {
+                value	: "oblique"
+                label	: qsTr("Oblique")
+                checked	: true
+                DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster", "geominQ" ] }
+            }
+        }
+
+        RadioButtonGroup
+        {
+            name: "basedOn"
+            title: qsTr("Base decomposition on")
+            RadioButton
+            {
+                value: "correlation"
+                label: qsTr("Correlation matrix")
+                checked: true
+            }
+            RadioButton
+            {
+                value: "covariance"
+                label: qsTr("Covariance matrix")
+            }
+        }
+    }
 
 	Section
 	{
@@ -91,8 +115,8 @@ Form
 		{
 			title: qsTr("Includes Tables")
 			CheckBox { name: "incl_correlations";	label: qsTr("Component correlations")	}
-			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")			}
-			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")			}
+			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")				}
+			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")				}
 		}
 
 		RadioButtonGroup
@@ -100,7 +124,23 @@ Form
 			name: "missingValues"
 			title: qsTr("Missing Values")
 			RadioButton { value: "pairwise";		label: qsTr("Exclude cases pairwise"); checked: true	}
-			RadioButton { value: "listwise";		label: qsTr("Exclude cases listwise")				}
+			RadioButton { value: "listwise";		label: qsTr("Exclude cases listwise")					}
 		}
+
+		CheckBox 
+		{
+			debug: true
+            id: addPC
+            name: "addPC"
+            text: qsTr("Add PC scores to data")
+            enabled: variables.count > 1
+
+            ComputedColumnField { 
+                name: 		"PCPrefix"
+                text: 		"Prefix: "
+                fieldWidth: 120
+                visible:    addPC.checked
+            }
+        }
 	}
 }

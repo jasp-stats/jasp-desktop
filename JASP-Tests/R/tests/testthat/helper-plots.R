@@ -8,6 +8,11 @@ expect_equal_plots <- function(test, name, dir) {
 
   if (inherits(test, "grob"))
     skip("Cannot reliably test matrix plots (they fail Windows <-> OSX)")
-
+  
+  if (inherits(test, "qgraph")) {
+    qq <- test
+    test <- function() plot(qq)
+  }
+  
   vdiffr::expect_doppelganger(paste(dir, name, sep="-"), test, path=dir)
 }
