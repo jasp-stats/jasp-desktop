@@ -413,6 +413,10 @@
 }
 
 .scaleNumericData.matrix <- function(x, center = TRUE, scale = TRUE) {
+  if (!is.numeric(x)) {
+    warning(sprintf("Object passed to .scaleNumericData.matrix was not numeric!"))
+    return(x)
+  }
   x <- scale(x, center, scale)
   attr(x, which = "scaled:center") <- NULL
   attr(x, which = "scaled:scale")  <- NULL
@@ -427,11 +431,8 @@
   return(x)
 }
 
-.scaleNumericData.default <- function(x, center = TRUE, scale = TRUE) {
-  warning(".scaleNumericData.default was called! you probably didn't want that!")
-  # just do nothing
-  return(x)
-}
+# fallback when .scaleNumericData is called with factor/ character data
+.scaleNumericData.default <- function(x, center = TRUE, scale = TRUE) return(x)
 
 .regressionAddValuesToData <- function(options, jaspResults, ready){
   if(!ready || !options[["addValues"]] || options[["valueColumn"]] == "")  return()
