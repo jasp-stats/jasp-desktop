@@ -57,11 +57,10 @@ public:
 	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 
-	void startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs);
+	void startProgressbar(int expectedTicks, std::string label);
 	void progressbarTick();
 
-	static void staticStartProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs) { _jaspResults->startProgressbarMs(expectedTicks, timeBetweenUpdatesInMs); }
-	static void staticStartProgressbar(int expectedTicks)								{ staticStartProgressbarMs(expectedTicks, 250); }
+	static void staticStartProgressbar(int expectedTicks, std::string label)			{ _jaspResults->startProgressbar(expectedTicks, label); }
 	static void staticProgressbarTick()													{ _jaspResults->progressbarTick(); }
 
 	void resetProgressbar();
@@ -98,8 +97,8 @@ private:
 	int		_progressbarExpectedTicks		= 100,
 			_progressbarLastUpdateTime		= -1,
 			_progressbarTicks				= 0,
-			_progressbarBetweenUpdatesTime	= 500,
 			_sendingFeedbackLastTime		= -1,
+			_progressbarBetweenUpdatesTime	= 250,
 			_sendingFeedbackInterval		= 500;
 };
 
@@ -118,13 +117,9 @@ public:
 	Rcpp::List	getOtherObjectsForState()			{ return ((jaspResults*)myJaspObject)->getOtherObjectsForState();	}
 	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState();	}
 	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList();				}
-	//void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick();					}
 	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults();				}
 	
 	void		setErrorMessage(std::string msg, std::string errorStatus)			{ ((jaspResults*)myJaspObject)->setErrorMessage(msg, errorStatus);							}
-	
-	//void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks);							}
-	//void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs);	}
 
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }

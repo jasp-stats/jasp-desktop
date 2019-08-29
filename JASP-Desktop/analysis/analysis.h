@@ -86,8 +86,7 @@ signals:
 public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
 	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
-
-	void setResults(	const Json::Value & results, int progress = -1);
+	void setResults(	const Json::Value & results, const Json::Value & progress = Json::nullValue);
 	void imageSaved(	const Json::Value & results);
 	void saveImage(		const Json::Value & options);
 	void editImage(		const Json::Value & options);
@@ -184,8 +183,8 @@ protected:
 							_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
-							_saveImgOptions	= Json::nullValue;
-	int						_progress		= -1;
+							_saveImgOptions	= Json::nullValue,
+							_progress		= Json::nullValue;
 
 private:
 	size_t					_id,

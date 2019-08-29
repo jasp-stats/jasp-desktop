@@ -115,7 +115,7 @@ void Analysis::abort()
 }
 
 
-void Analysis::setResults(const Json::Value & results, int progress)
+void Analysis::setResults(const Json::Value & results, const Json::Value & progress)
 {
 	_results = results;
 	_progress = progress;

@@ -213,7 +213,7 @@
   internalTable[, 1L] <- 1 / nmodels
 
   #Now compute Bayes Factors for each model in the list, and populate the tables accordingly
-  startProgressbar(nmodels)
+  startProgressbar(nmodels, "Computing Bayes factors")
 
   # check if any models can be resued from the state
   if (!is.null(stateObj[["modelTerms"]])) {
@@ -1487,7 +1487,7 @@
   h <- (1 - options[["credibleInterval"]]) / 2
   probs <- c(h, 1-h)
 
-  startProgressbar(nmodels)
+  startProgressbar(nmodels, "Sampling posteriors")
   for (i in seq_len(nmodels)) {
     if (is.na(reuseable[i])) {
 
