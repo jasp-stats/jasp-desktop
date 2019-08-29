@@ -30,8 +30,8 @@ Window
 	height:				768
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 
-	minimumWidth:		800
-	minimumHeight:		600
+	minimumWidth:		800 * preferencesModel.uiScale
+	minimumHeight:		600 * preferencesModel.uiScale
 
 	onVisibleChanged:	if(!visible) helpModel.visible = false
 	//onWidthChanged:		customMenu.hide()
@@ -136,7 +136,7 @@ Window
 
 		MouseArea
 		{
-			visible:					fileMenuModel.visible || modulesMenu.opened || customMenu.visible
+			enabled: 					fileMenuModel.visible || darkeningBackgroundRect.visible
 			z:							1
 			hoverEnabled:				true
 			onContainsMouseChanged:		if(containsMouse) ribbonModel.highlightedModuleIndex = -1

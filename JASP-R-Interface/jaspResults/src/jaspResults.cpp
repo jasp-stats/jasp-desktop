@@ -56,8 +56,14 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 
 	if(_RStorageEnv != nullptr)
 		delete _RStorageEnv;
-	_RStorageEnv = new Rcpp::Environment(_insideJASP ? Rcpp::Environment::global_env() : Rcpp::as<Rcpp::Environment>(Rcpp::Environment::namespace_env("jaspResults")[".plotStateStorage"]));
 
+	if(_insideJASP)
+	{
+		Rcpp::Environment::global_env()["RStorageEnv"] = Rcpp::Environment::global_env().new_child(true);
+		_RStorageEnv = new Rcpp::Environment(Rcpp::Environment::global_env()["RStorageEnv"]);
+	}
+	else
+		_RStorageEnv = new Rcpp::Environment(Rcpp::as<Rcpp::Environment>(Rcpp::Environment::namespace_env("jaspResults")[".plotStateStorage"]));
 
 	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState))
 		fillEnvironmentWithStateObjects(Rcpp::as<Rcpp::List>(oldState));
