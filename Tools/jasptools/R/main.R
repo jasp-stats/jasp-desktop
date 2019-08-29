@@ -258,25 +258,21 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     opts <- options()
     libPaths <- .libPaths()
     on.exit({
-      .removeS3Methods()
-      .resetRunTimeInternals()
       if (! "options" %in% sideEffects || identical(sideEffects, FALSE))
         .restoreOptions(opts)
       if (! "libpaths" %in% sideEffects || identical(sideEffects, FALSE))
         .libPaths(libPaths)
-      # if (! "loadedPkgs" %in% sideEffects || identical(sideEffects, FALSE))
-      #   .restoreNamespaces(loadedPkgs)
-      if (quiet)
-        suppressWarnings(sink(NULL))
-    })
-  } else { # no side effects, but we still need on.exit
-    on.exit({
-      .removeS3Methods()
-      .resetRunTimeInternals()
-      if (quiet)
-        suppressWarnings(sink(NULL))
     })
   }
+  
+  on.exit({
+    .removeS3Methods()
+    .resetRunTimeInternals()
+    if (quiet)
+      suppressWarnings(sink(NULL))
+    if (!identical(envir, .GlobalEnv))
+      rm(envir)
+  }, add = TRUE)
   
   .initRunEnvironment(envir = envir, dataset = dataset, perform = perform)
 
@@ -299,7 +295,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   if (usesJaspResults) {
     runFun <- "runJaspResults"
     
-    suppressMessages(jaspResults::initJaspResults())
+    initJaspResults()
     
     # this list is a stand in for the 'jaspResultsModule' inside runJaspResults()
     envir[["jaspResultsModule"]] <- list(

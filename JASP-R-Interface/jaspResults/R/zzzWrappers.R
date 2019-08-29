@@ -4,6 +4,7 @@
 	if (exists("jaspResults", env)) {
 		destroyAllAllocatedObjects()
 		destroyAllAllocatedRObjects()
+		rm(list=ls(envir=.plotStateStorage), envir=.plotStateStorage)
 	}
 
 	env$jaspResults <- jaspResultsR$new(create_cpp_jaspResults("Analysis Test", NULL))
