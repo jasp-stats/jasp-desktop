@@ -130,6 +130,7 @@ Form {
     
     ML.DataSplit {
         leaveOneOutVisible: false
+        trainingValidationSplit: optimizeModel.checked
     }
 
     Section {
@@ -161,7 +162,7 @@ Form {
                 text: qsTr("Min. observations in node:")
                 defaultValue: 10  
                 min: 1
-                max: 999999
+                max: 50000
                 fieldWidth: 60 
             }
 
@@ -205,12 +206,13 @@ Form {
                     text: qsTr("Trees:")
                     defaultValue: 100
                     min: 1
-                    max: 999999
+                    max: 50000
                     fieldWidth: 60
                 }
             }
             
             RadioButton { 
+                id: optimizeModel
                 text: qsTr("Optimized")
                 name: "optimizationOOB"
                 checked: true 

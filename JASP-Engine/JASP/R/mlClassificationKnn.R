@@ -61,31 +61,48 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
 
 .knnClassification <- function(dataset, options, jaspResults){
 
-  formula <- jaspResults[["formula"]]$object
+  # Import model formula from jaspResults
+	formula <- jaspResults[["formula"]]$object
 
+	# Set model specific parameters
+	weights <- options[["weights"]]
+	distance <- options[["distanceParameterManual"]]
+
+	# Remove missing values from data set
   dataset                   <- na.omit(dataset)
-  if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
-    train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
-  } else {
-    train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
-  }
-  trainAndValid           <- dataset[train.index, ]
-  valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
-  test                    <- dataset[-train.index, ]
-  valid                   <- trainAndValid[valid.index, ]
-  train                   <- trainAndValid[-valid.index, ]
 
-  if(options[["modelValid"]] == "validationManual"){
+	# Split the data into training and test sets
+	if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
+		# Select observations according to a user-specified indicator (included when indicator = 1)
+		train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
+	} else {
+		# Sample a percentage of the total data set
+		train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
+	}
+	trainAndValid           <- dataset[train.index, ]
 
-    if(options[["modelOpt"]] == "optimizationManual"){
+  # Create the generated test set indicator
+	testIndicatorColumn <- rep(1, nrow(dataset))
+  testIndicatorColumn[train.index] <- 0
+	
+	if(options[["modelOpt"]] == "optimizationManual"){
+		# Just create a train and a test set (no optimization)
+		train                   <- trainAndValid
+		test                    <- dataset[-train.index, ]
 
-        kfit_valid <- kknn::kknn(formula = formula, train = train, test = valid, k = options[['noOfNearestNeighbours']], 
-            distance = options[['distanceParameterManual']], kernel = options[['weights']], scale = FALSE)
-        kfit_test <- kknn::kknn(formula = formula, train = train, test = test, k = options[['noOfNearestNeighbours']], 
-                    distance = options[['distanceParameterManual']], kernel = options[['weights']], scale = FALSE)
-        nn <- options[['noOfNearestNeighbours']]
+		kfit_test <- kknn::kknn(formula = formula, train = train, test = test, k = options[['noOfNearestNeighbours']], 
+			                      distance = distance, kernel = weights, scale = FALSE)
+		nn <- options[['noOfNearestNeighbours']]
 
-    } else { 
+  } else if(options[["modelOpt"]] == "optimizationError") {
+
+    # Create a train, validation and test set (optimization)
+		valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
+		test                    <- dataset[-train.index, ]
+		valid                   <- trainAndValid[valid.index, ]
+		train                   <- trainAndValid[-valid.index, ]
+
+    if(options[["modelValid"]] == "validationManual"){
 
       nnRange             <- 1:options[["maxK"]]
       accuracyStore       <- numeric(length(nnRange))
@@ -107,48 +124,7 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
       kfit_test <- kknn::kknn(formula = formula, train = train, test = test, k = nn, 
                 distance = options[['distanceParameterManual']], kernel = options[['weights']], scale = FALSE)
 
-    }
-
-    weights <- options[["weights"]]
-    distance <- options[["distanceParameterManual"]]
-
-  } else if(options[["modelValid"]] == "validationLeaveOneOut"){
-
-    if(options[["modelOpt"]] == "optimizationManual"){
-
-      kfit_valid <- kknn::train.kknn(formula = formula, data = trainAndValid, ks = options[['noOfNearestNeighbours']], scale = FALSE, distance = options[['distanceParameterManual']], kernel = options[['weights']])
-      nn <- options[['noOfNearestNeighbours']]
-
-    } else {
-
-      nnRange <- 1:options[["maxK"]]
-      kfit_valid <- kknn::train.kknn(formula = formula, data = trainAndValid, ks = nnRange, scale = FALSE, distance = options[['distanceParameterManual']], kernel = options[['weights']])  
-      accuracyStore <- as.numeric(1 - kfit_valid$MISCLASS)
-      nn <- base::switch(options[["modelOpt"]],
-                            "optimizationError" = nnRange[which.max(accuracyStore)])
-
-    }
-
-    kfit_valid <- list(fitted.values = kfit_valid[["fitted.values"]][[1]])
-
-    weights <- options[["weights"]]
-    distance <- options[["distanceParameterManual"]]
-
-    kfit_test <- kknn::kknn(formula = formula, train = trainAndValid, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
-
-    train   <- trainAndValid
-    valid   <- trainAndValid
-		test    <- test
-
-  } else if(options[["modelValid"]] == "validationKFold"){
-
-    if(options[["modelOpt"]] == "optimizationManual"){
-
-      kfit_valid <- kknn::cv.kknn(formula = formula, data = trainAndValid, distance = options[['distanceParameterManual']], kernel = options[['weights']],
-                            kcv = options[['noOfFolds']], k = options[['noOfNearestNeighbours']])
-      nn <- options[['noOfNearestNeighbours']]
-
-    } else {
+    } else if(options[["modelValid"]] == "validationKFold"){
 
       nnRange <- 1:options[["maxK"]]
       accuracyStore <- numeric(length(nnRange))
@@ -167,20 +143,31 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
                         "optimizationError" = nnRange[which.max(accuracyStore)])
 
       kfit_valid <- kknn::cv.kknn(formula = formula, data = trainAndValid, distance = options[['distanceParameterManual']], kernel = options[['weights']],
-                            kcv = options[['noOfFolds']], k = nn)
+                            kcv = options[['noOfFolds']], k = nn)   
+      kfit_valid <- list(fitted.values = kfit_valid[[1]][, 2])
+
+      kfit_test <- kknn::kknn(formula = formula, train = trainAndValid, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
+
+      train <- trainAndValid
+      valid <- trainAndValid
+      test <- test
+
+    } else if(options[["modelValid"]] == "validationLeaveOneOut"){
+
+      nnRange <- 1:options[["maxK"]]
+      kfit_valid <- kknn::train.kknn(formula = formula, data = trainAndValid, ks = nnRange, scale = FALSE, distance = options[['distanceParameterManual']], kernel = options[['weights']])  
+      accuracyStore <- as.numeric(1 - kfit_valid$MISCLASS)
+      nn <- base::switch(options[["modelOpt"]],
+                            "optimizationError" = nnRange[which.max(accuracyStore)])
+
+      kfit_valid <- list(fitted.values = kfit_valid[["fitted.values"]][[1]])
+
+      kfit_test <- kknn::kknn(formula = formula, train = trainAndValid, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
+
+      train   <- trainAndValid
+      valid   <- trainAndValid
+      test    <- test
     }
-      
-    kfit_valid <- list(fitted.values = kfit_valid[[1]][, 2])
-
-    weights <- options[["weights"]]
-    distance <- options[["distanceParameterManual"]]
-
-    kfit_test <- kknn::kknn(formula = formula, train = trainAndValid, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
-
-    train <- trainAndValid
-    valid <- trainAndValid
-    test <- test
-
   }
 
   # Calculate AUC
@@ -205,6 +192,7 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
     auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
   }
 
+  # Use the specified model to make predictions for dataset
   predictions <- predictions <- predict(kknn::kknn(formula = formula, train = train, test = dataset, k = nn, distance = distance, kernel = weights, scale = FALSE))
 
   # Create results object
@@ -215,34 +203,28 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
   classificationResult[["nn"]]                  <- nn
   classificationResult[["weights"]]             <- weights
   classificationResult[["distance"]]            <- distance
-
-  classificationResult[["validationConfTable"]] <- table('Pred' = kfit_valid$fitted.values, 'Real' = valid[,.v(options[["target"]])])
-  classificationResult[['validAcc']]            <- sum(diag(prop.table(classificationResult[['validationConfTable']])))
   classificationResult[['confTable']]           <- table('Pred' = kfit_test$fitted.values, 'Real' = test[,.v(options[["target"]])])
   classificationResult[['testAcc']]             <- sum(diag(prop.table(classificationResult[['confTable']])))
   classificationResult[["auc"]]                 <- auc
-  
   classificationResult[["ntrain"]]              <- nrow(train)
   classificationResult[["ntest"]]               <- nrow(test)
-  classificationResult[["nvalid"]]              <- nrow(valid)
-
   classificationResult[["testReal"]]            <- test[,.v(options[["target"]])]
   classificationResult[["testPred"]]            <- kfit_test$fitted.values
-
   classificationResult[["train"]]               <- train 
   classificationResult[["test"]]                <- test 
-  classificationResult[["valid"]]               <- valid
-
-  if(options[["modelOpt"]] == "optimizationError")
-    classificationResult[["accuracyStore"]] <- accuracyStore
-  if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual")
-		classificationResult[["trainAccuracyStore"]] <- trainAccuracyStore
-
-  testIndicatorColumn <- rep(1, nrow(dataset))
-  testIndicatorColumn[train.index] <- 0
   classificationResult[["testIndicatorColumn"]] <- testIndicatorColumn
+  classificationResult[["classes"]]             <- predictions
 
-  classificationResult[["classes"]] <- predictions
+  if(options[["modelOpt"]] != "optimizationManual"){
+    classificationResult[["accuracyStore"]]       <- accuracyStore
+    classificationResult[["valid"]]               <- valid
+    classificationResult[["nvalid"]]              <- nrow(valid)
+    classificationResult[["validationConfTable"]] <- table('Pred' = kfit_valid$fitted.values, 'Real' = valid[,.v(options[["target"]])])
+    classificationResult[['validAcc']]            <- sum(diag(prop.table(classificationResult[['validationConfTable']])))
+
+    if(options[["modelValid"]] == "validationManual")
+      classificationResult[["trainAccuracyStore"]]  <- trainAccuracyStore
+  }
 
   return(classificationResult)
 }

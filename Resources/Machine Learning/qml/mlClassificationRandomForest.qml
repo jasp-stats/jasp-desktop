@@ -130,6 +130,7 @@ Form {
     ML.DataSplit {
         leaveOneOutVisible: false; 
         kFoldsVisible: false
+        trainingValidationSplit: optimizeModel.checked
     }
 
     Section {
@@ -161,8 +162,8 @@ Form {
                 IntegerField  { 
                     name: "numberOfPredictors"
                     defaultValue: 1
-                    min: -999999
-                    max: 999999
+                    min: 0
+                    max: 10000
                     visible: noOfPredictors.currentIndex == 1 
                 }
             }
@@ -201,12 +202,13 @@ Form {
                     text: qsTr("Trees:")
                     defaultValue: 100
                     min: 1
-                    max: 50000
+                    max: 500000
                     fieldWidth: 60
                 }
             }
             
             RadioButton { 
+                id: optimizeModel
                 text: qsTr("Optimized")
                 name: "optimizationError"
                 checked: true 
@@ -216,7 +218,7 @@ Form {
                     text: qsTr("Max. trees:") 
                     defaultValue: 100
                     min: 1
-                    max: 999999
+                    max: 500000
                     fieldWidth: 60
                 }
             }

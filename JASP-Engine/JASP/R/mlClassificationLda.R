@@ -93,19 +93,26 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 # Compute results 
 .ldaClassification <- function(dataset, options, jaspResults){
 
-  formula <- jaspResults[["formula"]]$object
+  # Import model formula from jaspResults
+	formula <- jaspResults[["formula"]]$object
 
+  # Remove missing values from data set
   dataset                   <- na.omit(dataset)
-  if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
-    train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
-  } else {
-    train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
-  }
-  trainAndValid           <- dataset[train.index, ]
-  valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
-  test                    <- dataset[-train.index, ]
-  valid                   <- trainAndValid[valid.index, ]
-  train                   <- trainAndValid[-valid.index, ]
+
+	# Split the data into training and test sets
+	if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
+		# Select observations according to a user-specified indicator (included when indicator = 1)
+		train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
+	} else {
+		# Sample a percentage of the total data set
+		train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
+	}
+	train                     <- dataset[train.index, ]
+  test                      <- dataset[-train.index, ]
+
+  # Create the generated test set indicator
+	testIndicatorColumn <- rep(1, nrow(dataset))
+  testIndicatorColumn[train.index] <- 0
 
   method <- base::switch(options[["estimationMethod"]], 
                           "moment" = "moment",
@@ -113,7 +120,6 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
                           "covMve" = "mve",
                           "t" = "t")
   ldafit      <- MASS::lda(formula = formula, data = train, method = method, CV = FALSE)
-  pred_valid  <- stats::predict(ldafit, newdata = valid)
   pred_test   <- stats::predict(ldafit, newdata = test)
 
   # Calculate AUC
@@ -139,6 +145,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
     auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
   }
 
+  # Use the specified model to make predictions for dataset
   predictions <- predict(ldafit, newdata = dataset)$class
 
   # Create results object
@@ -146,34 +153,21 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   classificationResult[["model"]]               <- ldafit
   classificationResult[["method"]]              <- method
   classificationResult[["scaling"]]             <- ldafit[["scaling"]]
-
-  classificationResult[["validationConfTable"]] <- table('Pred' = pred_valid[["class"]], 'Real' = valid[,.v(options[["target"]])])
-  classificationResult[['validAcc']]            <- sum(diag(prop.table(classificationResult[['validationConfTable']])))
   classificationResult[['confTable']]           <- table('Pred' = pred_test[["class"]], 'Real' = test[,.v(options[["target"]])])
   classificationResult[['testAcc']]             <- sum(diag(prop.table(classificationResult[['confTable']])))
   classificationResult[["auc"]]                 <- auc
-
   classificationResult[["testPred"]]            <- pred_test[["class"]]
   classificationResult[["testReal"]]            <- test[,.v(options[["target"]])]
-
   classificationResult[["meanTable"]]           <- ldafit[["means"]]
   classificationResult[["relInf"]]              <- summary(ldafit, plot = FALSE)
   classificationResult[["prior"]]               <- ldafit[["prior"]]
   classificationResult[["postprob"]]            <- colMeans(pred_test[["posterior"]])
-
   classificationResult[["ntrain"]]              <- nrow(train)
-  classificationResult[["nvalid"]]              <- nrow(valid)
   classificationResult[["ntest"]]               <- nrow(test)
-
   classificationResult[["train"]]               <- train
-  classificationResult[["valid"]]               <- valid
   classificationResult[["test"]]                <- test
-
-  testIndicatorColumn <- rep(1, nrow(dataset))
-  testIndicatorColumn[train.index] <- 0
   classificationResult[["testIndicatorColumn"]] <- testIndicatorColumn
-
-  classificationResult[["classes"]] <- predictions
+  classificationResult[["classes"]]             <- predictions
   
   return(classificationResult)
 }

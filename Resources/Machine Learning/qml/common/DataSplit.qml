@@ -24,8 +24,9 @@ import JASP.Theme		1.0
 
 Section
 {
-    property alias leaveOneOutVisible:  leaveOneOut.visible
-    property alias kFoldsVisible:       kFolds.visible
+    property alias leaveOneOutVisible:              leaveOneOut.visible
+    property alias kFoldsVisible:                   kFolds.visible
+    property alias trainingValidationSplit:         trainingValidationSplit.visible
     
     title: qsTr("Data Split Preferences")
 
@@ -65,7 +66,7 @@ Section
             ComputedColumnField 
             { 
                 name: 		"testIndicatorColumn"
-                text: 		"Name: "
+                text: 		"Column name: "
                 fieldWidth: 120
                 visible:    addIndicator.checked
             }
@@ -90,6 +91,7 @@ Section
 
     RadioButtonGroup 
     {
+        id: trainingValidationSplit
         title: qsTr("Training and Validation Data")
         name: "modelValid"
 

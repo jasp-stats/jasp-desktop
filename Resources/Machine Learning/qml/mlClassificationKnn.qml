@@ -80,7 +80,7 @@ Form {
         CheckBox { 
             text: qsTr("Classification accuracy") 
             name: "plotErrorVsK"
-            enabled: !optimizationManual.checked 
+            enabled: optimizeModel.checked 
         }
 
         CheckBox { 
@@ -114,7 +114,9 @@ Form {
         }
     }
 
-    ML.DataSplit {}
+    ML.DataSplit {
+        trainingValidationSplit: optimizeModel.checked 
+    }
     
     Section {
         title: qsTr("Training Parameters")
@@ -185,12 +187,13 @@ Form {
                     text: qsTr("Nearest neighbors:")
                     defaultValue: 3
                     min: 1
-                    max: 999999
+                    max: 50000
                     fieldWidth: 60
                 }
             }
             
             RadioButton { 
+                id: optimizeModel
                 text: qsTr("Optimized")
                 name: "optimizationError"
                 checked: true 
@@ -200,7 +203,7 @@ Form {
                     text: qsTr("Max. nearest neighbors:") 
                     defaultValue: 10 
                     min: 1
-                    max: 999999
+                    max: 50000
                     fieldWidth: 60
                 }
             }

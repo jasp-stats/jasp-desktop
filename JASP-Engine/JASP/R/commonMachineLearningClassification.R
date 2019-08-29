@@ -114,6 +114,7 @@
                                           "estimationMethod", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
                                           "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
 
+  # Add analysis-specific columns
   if(type == "knn"){
 
     classificationTable$addColumnInfo(name = 'nn', title = 'Nearest neighbors', type = 'integer')
@@ -136,16 +137,21 @@
   
   }
   
+  # Add common columns
   classificationTable$addColumnInfo(name = 'ntrain', title = 'n(Train)', type = 'integer')
-  classificationTable$addColumnInfo(name = 'nvalid', title = 'n(Validation)', type = 'integer')
+  if(options[["modelOpt"]] != "optimizationManual")
+    classificationTable$addColumnInfo(name = 'nvalid', title = 'n(Validation)', type = 'integer')
   classificationTable$addColumnInfo(name = 'ntest', title = 'n(Test)', type = 'integer')
-  classificationTable$addColumnInfo(name = 'validAcc', title = 'Validation Accuracy', type = 'number')
+  if(options[["modelOpt"]] != "optimizationManual")
+    classificationTable$addColumnInfo(name = 'validAcc', title = 'Validation Accuracy', type = 'number')
   classificationTable$addColumnInfo(name = 'testAcc', title = 'Test Accuracy', type = 'number')
   
+  # Add analysis-specific columns after common columns
   if(type == "randomForest"){
     classificationTable$addColumnInfo(name = 'oob', title = 'OOB Accuracy', type = 'number')
   }
 
+  # If no analysis is run, specify the required variables in a footnote
   requiredVars <- ifelse(type == "knn", yes = 1, no = 2)
   if(!ready)
     classificationTable$addFootnote(message = paste0("Please provide a target variable and at least ", requiredVars, " predictor variable(s)."), symbol = "<i>Note.</i>")
@@ -154,22 +160,26 @@
   
   if(!ready)  return()
 
-  # Run the analysis
   .classification(dataset, options, jaspResults, ready, type = type)
 
   classificationResult <- jaspResults[["classificationResult"]]$object
 
-  # Adjust train and test numbers for cross-validation
   nTrain <- classificationResult[["ntrain"]]
-  nValid <- classificationResult[["nvalid"]]
-  if(options[["modelValid"]] == "validationKFold"){
-    nValid <- floor(nValid / options[["noOfFolds"]])
-    nTrain <- nTrain - nValid
-  } else if(options[["modelValid"]] == "validationLeaveOneOut"){
-    nValid <- 1
-    nTrain <- nTrain - 1
+
+  if(options[["modelOpt"]] != "optimizationManual"){
+    nValid <- classificationResult[["nvalid"]]
+
+    if(options[["modelValid"]] == "validationKFold"){
+      # Adjust displayed train and test size for cross-validation
+      nValid <- floor(nValid / options[["noOfFolds"]])
+      nTrain <- nTrain - nValid
+    } else if(options[["modelValid"]] == "validationLeaveOneOut"){
+      nValid <- 1
+      nTrain <- nTrain - 1
+    }
   }
   
+  # Fill the table per analysis
   if(type == "knn"){
 
     if(options[["modelOpt"]] == "optimizationError")
@@ -184,10 +194,10 @@
                       weights = classificationResult[["weights"]], 
                       distance = distance, 
                       ntrain = nTrain, 
-                      nvalid = nValid, 
                       ntest = classificationResult[["ntest"]], 
-                      validAcc = classificationResult[["validAcc"]], 
                       testAcc = classificationResult[["testAcc"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validAcc = classificationResult[["validAcc"]])
     classificationTable$addRows(row)
 
   } else if(type =="lda"){
@@ -196,9 +206,7 @@
     row <- data.frame(lda = ncol(classificationResult[["scaling"]]), 
                       method = method, 
                       ntrain = nTrain, 
-                      nvalid = nValid,
-                      ntest = classificationResult[["ntest"]], 
-                      validAcc = classificationResult[["validAcc"]],
+                      ntest = classificationResult[["ntest"]],
                       testAcc = classificationResult[["testAcc"]])
     classificationTable$addRows(row)
 
@@ -210,11 +218,11 @@
     row <- data.frame(trees = classificationResult[["noOfTrees"]], 
                       preds = classificationResult[["predPerSplit"]], 
                       ntrain = nTrain, 
-                      nvalid = nValid,
                       ntest = classificationResult[["ntest"]], 
-                      validAcc = classificationResult[["validAcc"]],
                       testAcc = classificationResult[["testAcc"]], 
                       oob = classificationResult[["oobAccuracy"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validAcc = classificationResult[["validAcc"]])
     classificationTable$addRows(row)
 
   } else if(type == "boosting"){
@@ -225,10 +233,10 @@
     row <- data.frame(trees = classificationResult[["noOfTrees"]], 
                       shrinkage = options[["shrinkage"]], 
                       ntrain = nTrain, 
-                      nvalid = nValid,
-                      ntest = classificationResult[["ntest"]], 
-                      validAcc = classificationResult[["validAcc"]],
+                      ntest = classificationResult[["ntest"]],
                       testAcc = classificationResult[["testAcc"]])
+    if(options[["modelOpt"]] != "optimizationManual")
+      row <- cbind(row, nvalid = nValid, validAcc = classificationResult[["validAcc"]])
     classificationTable$addRows(row)
 
   }
@@ -757,8 +765,20 @@
 
   classProportionsTable$addColumnInfo(name = "group", title = "", type = "string")
   classProportionsTable$addColumnInfo(name = "dataset", title = "Data Set", type = "number")
-  classProportionsTable$addColumnInfo(name = "train", title = "Training Set", type = "number")
-  classProportionsTable$addColumnInfo(name = "valid", title = "Validation Set", type = "number")
+
+  if(options[["modelOpt"]] == "optimizationManual"){
+
+    classProportionsTable$addColumnInfo(name = "train", title = "Training Set", type = "number")
+
+  } else {
+    if(options[["modelValid"]] == "validationManual"){
+      classProportionsTable$addColumnInfo(name = "train", title = "Training Set", type = "number")
+      classProportionsTable$addColumnInfo(name = "valid", title = "Validation Set", type = "number")
+    } else {
+      classProportionsTable$addColumnInfo(name = "train", title = "Training and Validation Set", type = "number")
+    }
+  }
+  
   classProportionsTable$addColumnInfo(name = "test", title = "Test Set", type = "number")
 
   if(options[["target"]] != ""){
@@ -774,12 +794,14 @@
 
   dataValues      <- rep(0, length(classProportionsTable[["group"]]))
   trainingValues  <- rep(0, length(classProportionsTable[["group"]]))
-  validValues     <- rep(0, length(classProportionsTable[["group"]]))
+  if(options[["modelOpt"]] != "optimizationManual")
+    validValues     <- rep(0, length(classProportionsTable[["group"]]))
   testValues      <- rep(0, length(classProportionsTable[["group"]]))
 
   dataTable       <- prop.table(table(dataset[,.v(options[["target"]])]))
   trainingTable   <- prop.table(table(classificationResult[["train"]][,.v(options[["target"]])]))
-  validTable      <- prop.table(table(classificationResult[["valid"]][,.v(options[["target"]])]))
+  if(options[["modelOpt"]] != "optimizationManual")
+    validTable      <- prop.table(table(classificationResult[["valid"]][,.v(options[["target"]])]))
   testTable       <- prop.table(table(classificationResult[["test"]][,.v(options[["target"]])]))
 
   for(i in 1:length(Dlevels)){
@@ -790,8 +812,10 @@
     trainingIndex                   <- which(names(trainingTable) == as.character(Dlevels)[i])
     trainingValues[trainingIndex]   <- as.numeric(trainingTable)[trainingIndex]
     # Validation set
-    validIndex                      <- which(names(validTable) == as.character(Dlevels)[i])
-    validValues[validIndex]           <- as.numeric(validTable)[validIndex]
+    if(options[["modelOpt"]] != "optimizationManual"){
+      validIndex                      <- which(names(validTable) == as.character(Dlevels)[i])
+      validValues[validIndex]           <- as.numeric(validTable)[validIndex]
+    }
     # Test set
     testIndex                       <- which(names(testTable) == as.character(Dlevels)[i])
     testValues[testIndex]           <- as.numeric(testTable)[testIndex]
@@ -799,6 +823,7 @@
 
   classProportionsTable[["dataset"]] <- dataValues
   classProportionsTable[["train"]]   <- trainingValues
+    if(options[["modelOpt"]] != "optimizationManual")
   classProportionsTable[["valid"]]   <- validValues
   classProportionsTable[["test"]]    <- testValues
 

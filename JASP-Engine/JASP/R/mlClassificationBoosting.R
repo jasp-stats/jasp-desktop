@@ -70,46 +70,68 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
 
 .boostingClassification <- function(dataset, options, jaspResults){
 
-  formula <- jaspResults[["formula"]]$object
-  
-  dataset                   <- na.omit(dataset)
-  if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
-    train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
-  } else {
-    train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
-  }
-  trainAndValid           <- dataset[train.index, ]
-  valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
-  test                    <- dataset[-train.index, ]
-  valid                   <- trainAndValid[valid.index, ]
-  train                   <- trainAndValid[-valid.index, ]
-
-
-  if(options[["modelValid"]] == "validationManual"){
-    noOfFolds <- 0
-  } else if(options[["modelValid"]] == "validationKFold"){
-    noOfFolds <- options[["noOfFolds"]]
-    train <- trainAndValid
-    valid <- trainAndValid
-  }
-
   assignFunctionInPackage(fakeGbmCrossValModelBuild, "gbmCrossValModelBuild", "gbm")
   assignFunctionInPackage(fakeGbmCrossValErr,        "gbmCrossValErr",        "gbm")
-  # gbm expects the columns in the data to be in the same order as the variables...
-  train <- train[, match(names(train), all.vars(formula))]
 
+  # Import model formula from jaspResults
+  formula <- jaspResults[["formula"]]$object
+
+  # Set model-specific parameters
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
 
-  bfit <- gbm::gbm(formula = formula, data = train, n.trees = trees,
-                          shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
-                          cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
-                          distribution = "multinomial", n.cores = 1, keep.data = TRUE) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
+  # Remove missing values from data set
+  dataset                   <- na.omit(dataset)
+
+  # Split the data into training and test sets
+  if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
+    # Select observations according to a user-specified indicator (included when indicator = 1)
+    train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
+  } else {
+    # Sample a percentage of the total data set
+    train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
+  }
+  trainAndValid             <- dataset[train.index, ]
+
+  # Create the generated test set indicator
+  testIndicatorColumn <- rep(1, nrow(dataset))
+  testIndicatorColumn[train.index] <- 0
+
+  # gbm expects the columns in the data to be in the same order as the variables...
+  trainAndValid <- trainAndValid[, match(names(trainAndValid), all.vars(formula))]
 
   if(options[["modelOpt"]] == "optimizationManual"){
-    
+    # Just create a train and a test set (no optimization)
+    train                   <- trainAndValid
+    test                    <- dataset[-train.index, ]
+    noOfFolds               <- 0
+
+    bfit <- gbm::gbm(formula = formula, data = train, n.trees = trees,
+                      shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
+                      cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
+                      distribution = "multinomial", n.cores = 1, keep.data = TRUE) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
+ 
     noOfTrees <- options[["noOfTrees"]]
 
   } else if(options[["modelOpt"]] == "optimizationOOB"){
+
+    # Create a train, validation and test set (optimization)
+    valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
+    test                    <- dataset[-train.index, ]
+    valid                   <- trainAndValid[valid.index, ]
+    train                   <- trainAndValid[-valid.index, ]
+
+    if(options[["modelValid"]] == "validationManual"){
+      noOfFolds             <- 0
+    } else if(options[["modelValid"]] == "validationKFold"){
+      noOfFolds             <- options[["noOfFolds"]]
+      train                 <- trainAndValid
+      valid                 <- trainAndValid
+    }
+
+    bfit <- gbm::gbm(formula = formula, data = train, n.trees = trees,
+                        shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
+                        cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
+                        distribution = "multinomial", n.cores = 1, keep.data = TRUE) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
 
     noOfTrees <- gbm::gbm.perf(bfit, plot.it = FALSE, method = "OOB")[1]
     bfit <- gbm::gbm(formula = formula, data = train, n.trees = noOfTrees,
@@ -117,13 +139,9 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
                         cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
                         distribution = "multinomial", n.cores = 1) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
 
+    probs_valid <- gbm::predict.gbm(bfit, newdata = valid, n.trees = noOfTrees, type = "response")
+    pred_valid <- colnames(probs_valid)[apply(probs_valid, 1, which.max)]
   }
-
-  probs_valid <- gbm::predict.gbm(bfit, newdata = valid, n.trees = noOfTrees, type = "response")
-  pred_valid <- colnames(probs_valid)[apply(probs_valid, 1, which.max)]
-
-  probs_test <- gbm::predict.gbm(bfit, newdata = test, n.trees = noOfTrees, type = "response")
-  pred_test <- colnames(probs_test)[apply(probs_test, 1, which.max)]
 
   # Calculate AUC
   lvls <- levels(factor(test[, .v(options[["target"]])]))
@@ -157,8 +175,12 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
     auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
   }
 
+  # Use the specified model to make predictions for dataset
   probs_data <- gbm::predict.gbm(bfit, newdata = dataset, n.trees = noOfTrees, type = "response")
   predictions <- colnames(probs_data)[apply(probs_data, 1, which.max)]
+
+  # Predictions for test set
+  pred_test <- predictions[-train.index]
 
   # Create results object
   classificationResult <- list()
@@ -166,32 +188,26 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   classificationResult[["formula"]]             <- formula
   classificationResult[["noOfFolds"]]           <- noOfFolds
   classificationResult[["noOfTrees"]]           <- noOfTrees
-
-  classificationResult[["validationConfTable"]] <- table('Pred' = pred_valid, 'Real' = valid[,.v(options[["target"]])])
-  classificationResult[['validAcc']]            <- sum(diag(prop.table(classificationResult[['validationConfTable']])))
   classificationResult[['confTable']]           <- table('Pred' = pred_test, 'Real' = test[,.v(options[["target"]])])
   classificationResult[['testAcc']]             <- sum(diag(prop.table(classificationResult[['confTable']])))
   classificationResult[["relInf"]]              <- summary(bfit, plot = FALSE)
-  classificationResult[["auc"]]                 <- auc
-  
+  classificationResult[["auc"]]                 <- auc 
   classificationResult[["ntrain"]]              <- nrow(train)
-  classificationResult[["nvalid"]]              <- nrow(valid)
   classificationResult[["ntest"]]               <- nrow(test)
-
   classificationResult[["testPred"]]            <- pred_test
   classificationResult[["testReal"]]            <- test[,.v(options[["target"]])]
-
   classificationResult[["train"]]               <- train
-  classificationResult[["valid"]]               <- valid
   classificationResult[["test"]]                <- test
-
-  classificationResult[["method"]]      <- ifelse(options[["modelValid"]] == "validationManual", yes = "OOB", no = "")
-
-  testIndicatorColumn <- rep(1, nrow(dataset))
-  testIndicatorColumn[train.index] <- 0
+  classificationResult[["method"]]              <- ifelse(options[["modelValid"]] == "validationManual", yes = "OOB", no = "")
   classificationResult[["testIndicatorColumn"]] <- testIndicatorColumn
-  
-  classificationResult[["classes"]] <- predictions
+  classificationResult[["classes"]]             <- predictions
+
+  if(options[["modelOpt"]] != "optimizationManual"){
+    classificationResult[["validationConfTable"]] <- table('Pred' = pred_valid, 'Real' = valid[,.v(options[["target"]])])
+    classificationResult[['validAcc']]            <- sum(diag(prop.table(classificationResult[['validationConfTable']])))
+    classificationResult[["nvalid"]]              <- nrow(valid)
+    classificationResult[["valid"]]               <- valid
+  }
 
   return(classificationResult)
 }

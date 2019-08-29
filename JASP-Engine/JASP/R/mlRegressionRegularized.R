@@ -81,21 +81,13 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 
 .regularizedRegression <- function(dataset, options, jaspResults){
 
+  # Import model formula from jaspResults
   formula <- jaspResults[["formula"]]$object
-  
+
+  # Remove missing values from data set
   dataset                   <- na.omit(dataset)
-	if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
-		train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
-	} else {
-		train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
-	}
-  trainAndValid           <- dataset[train.index, ]
-  valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
-  test                    <- dataset[-train.index, ]
-  valid                   <- trainAndValid[valid.index, ]
-  train                   <- trainAndValid[-valid.index, ]
-  
-  # Choosing the regularization method
+
+  # Set model-specific parameters
   if(options[["penalty"]] == "ridge") {
     alpha <- 0
     penalty <- "L2 (Ridge)"
@@ -108,65 +100,106 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   }
 
   if(options[["weights"]] != ""){
-    weights <- train[, .v(options[["weights"]])]
+    weights <- dataset[, .v(options[["weights"]])]
   } else {
-    weights <- rep(1, nrow(train))
+    weights <- rep(1, nrow(dataset))
   }
 
-  train_pred <- as.matrix(train[,.v(options[["predictors"]])])
-  train_target <- train[, .v(options[["target"]])]
-  valid_pred <- as.matrix(valid[,.v(options[["predictors"]])])
-  valid_target <- valid[, .v(options[["target"]])]
-  test_pred <- as.matrix(test[,.v(options[["predictors"]])])
-  test_target <- test[, .v(options[["target"]])]
-  
-  regfit_train <- glmnet::cv.glmnet(x = train_pred, y = train_target, nfolds = 10, type.measure = "deviance",
-                                  family = "gaussian", weights = weights, offset = NULL,
-                                  alpha = alpha, standardize = FALSE,
-                                  intercept = options[["intercept"]], thresh = options[["thresh"]])
-  
-  lambda <- base::switch(options[["shrinkage"]],
-                          "manual" = options[["lambda"]],
-                          "optMin" = regfit_train[["lambda.min"]],
-                          "opt1SE" = regfit_train[["lambda.1se"]])
+  # Split the data into training and test sets
+	if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
+    # Select observations according to a user-specified indicator (included when indicator = 1)
+		train.index             <- which(dataset[,.v(options[["testSetIndicatorVariable"]])] == 0)
+	} else {
+    # Sample a percentage of the total data set
+		train.index             <- sample.int(nrow(dataset), size = ceiling( (1 - options[['testDataManual']]) * nrow(dataset)))
+	}
+  trainAndValid           <- dataset[train.index, ]
 
-  pred_valid <- predict(regfit_train, newx = valid_pred, s = lambda, type = "link", exact = TRUE,
-                          x = train_pred, y = train_target, weights = weights, offset = NULL,
+  # Create the generated test set indicator
+  testIndicatorColumn <- rep(1, nrow(dataset))
+  testIndicatorColumn[train.index] <- 0
+  
+  if(options[["modelOpt"]] == "optimizationManual"){
+    # Just create a train and a test set (no optimization)
+		train                   <- trainAndValid
+		test                    <- dataset[-train.index, ]
+
+    weights_train           <- weights[train.index]
+
+    train_pred <- as.matrix(train[,.v(options[["predictors"]])])
+    train_target <- train[, .v(options[["target"]])]
+    test_pred <- as.matrix(test[,.v(options[["predictors"]])])
+    test_target <- test[, .v(options[["target"]])]
+
+    regfit_train <- glmnet::cv.glmnet(x = train_pred, y = train_target, nfolds = 10, type.measure = "deviance",
+                                family = "gaussian", weights = weights_train, offset = NULL, alpha = alpha, 
+                                standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
+    
+    lambda <- options[["lambda"]]
+
+    pred_test <- predict(regfit_train, newx = test_pred, s = lambda, type = "link", exact = TRUE,
+                      x = train_pred, y = train_target, weights = weights_train, offset = NULL,
+                      alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
+
+  } else {
+    # Create a train, validation and test set (optimization)
+		valid.index             <- sample.int(nrow(trainAndValid), size = ceiling(options[['validationDataManual']] * nrow(trainAndValid)))
+		test                    <- dataset[-train.index, ]
+		valid                   <- trainAndValid[valid.index, ]
+		train                   <- trainAndValid[-valid.index, ]
+
+    weights_train           <- weights[train.index]
+    weights_train           <- weights_train[-valid.index]
+
+    train_pred <- as.matrix(train[,.v(options[["predictors"]])])
+    train_target <- train[, .v(options[["target"]])]
+    valid_pred <- as.matrix(valid[,.v(options[["predictors"]])])
+    valid_target <- valid[, .v(options[["target"]])]
+    test_pred <- as.matrix(test[,.v(options[["predictors"]])])
+    test_target <- test[, .v(options[["target"]])]
+    
+    regfit_train <- glmnet::cv.glmnet(x = train_pred, y = train_target, nfolds = 10, type.measure = "deviance",
+                                    family = "gaussian", weights = weights_train, offset = NULL, alpha = alpha, 
+                                    standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
+    
+    lambda <- base::switch(options[["modelOpt"]],
+                            "optMin" = regfit_train[["lambda.min"]],
+                            "opt1SE" = regfit_train[["lambda.1se"]])
+
+    pred_valid <- predict(regfit_train, newx = valid_pred, s = lambda, type = "link", exact = TRUE,
+                            x = train_pred, y = train_target, weights = weights_train, offset = NULL,
+                            alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
+
+    pred_test <- predict(regfit_train, newx = test_pred, s = lambda, type = "link", exact = TRUE,
+                          x = train_pred, y = train_target, weights = weights_train, offset = NULL,
                           alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
-
-  pred_test <- predict(regfit_train, newx = test_pred, s = lambda, type = "link", exact = TRUE,
-                        x = train_pred, y = train_target, weights = weights, offset = NULL,
-                        alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
+  }
   
+  # Use the specified model to make predictions for dataset
   predictions <- predict(regfit_train, newx = as.matrix(dataset[,.v(options[["predictors"]])]), s = lambda, type = "link", exact = TRUE,
                           x = as.matrix(dataset[,.v(options[["predictors"]])]), y = dataset[, .v(options[["target"]])], weights = weights, offset = NULL,
                           alpha = alpha, standardize = FALSE, intercept = options[["intercept"]], thresh = options[["thresh"]])
   
   regressionResult <- list()
-  regressionResult[["model"]]       <- regfit_train
-  regressionResult[["lambda"]]      <- lambda
-  regressionResult[["penalty"]]     <- penalty
-  regressionResult[["alpha"]]       <- alpha
-
-  regressionResult[["validMSE"]]    <- mean( (as.numeric(pred_valid) -  valid[,.v(options[["target"]])])^2 )
-  regressionResult[["testMSE"]]     <- mean( (as.numeric(pred_test) -  valid[,.v(options[["target"]])])^2 )
-
-  regressionResult[["testReal"]]    <- test[,.v(options[["target"]])]
-  regressionResult[["testPred"]]    <- as.numeric(pred_test)
-
-  regressionResult[["ntrain"]]      <- nrow(train)
-  regressionResult[["nvalid"]]      <- nrow(valid)
-	regressionResult[["ntest"]]       <- nrow(test)
-
-  regressionResult[["coefTable"]]   <- coef(regfit_train, s = lambda)
-  regressionResult[["cvMSE"]]       <- regfit_train[["cvm"]][regfit_train[["lambda"]] == lambda]
-  regressionResult[["cvMSELambda"]] <- data.frame(lambda = regfit_train[["lambda"]], MSE = regfit_train[["cvm"]], sd = regfit_train[["cvsd"]])
-
-  testIndicatorColumn <- rep(1, nrow(dataset))
-  testIndicatorColumn[train.index] <- 0
+  regressionResult[["model"]]               <- regfit_train
+  regressionResult[["lambda"]]              <- lambda
+  regressionResult[["penalty"]]             <- penalty
+  regressionResult[["alpha"]]               <- alpha
+  regressionResult[["testMSE"]]             <- mean( (as.numeric(pred_test) -  test[,.v(options[["target"]])])^2 )
+  regressionResult[["testReal"]]            <- test[,.v(options[["target"]])]
+  regressionResult[["testPred"]]            <- as.numeric(pred_test)
+  regressionResult[["ntrain"]]              <- nrow(train)
+	regressionResult[["ntest"]]               <- nrow(test)
+  regressionResult[["coefTable"]]           <- coef(regfit_train, s = lambda)
+  regressionResult[["cvMSE"]]               <- regfit_train[["cvm"]][regfit_train[["lambda"]] == lambda]
+  regressionResult[["cvMSELambda"]]         <- data.frame(lambda = regfit_train[["lambda"]], MSE = regfit_train[["cvm"]], sd = regfit_train[["cvsd"]])
   regressionResult[["testIndicatorColumn"]] <- testIndicatorColumn
+  regressionResult[["values"]]              <- predictions
 
-  regressionResult[["values"]] <- predictions
+  if(options[["modelOpt"]] != "optimizationManual"){
+    regressionResult[["validMSE"]]          <- mean( (as.numeric(pred_valid) -  valid[,.v(options[["target"]])])^2 )
+    regressionResult[["nvalid"]]            <- nrow(valid)
+  }
   
   return(regressionResult)
 }
@@ -179,7 +212,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   coefTable$position <- position
   coefTable$dependOn(options =c("coefTable","trainingDataManual", "weights", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid",
-                                          "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda",
+                                          "penalty", "alpha", "thresh", "intercept", "modelOpt", "lambda",
                                           "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
                                           "holdoutData", "testDataManual"))
   
@@ -221,7 +254,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   variableTrace$position <- position
   variableTrace$dependOn(options = c("variableTrace", "variableTraceLegend" ,"trainingDataManual", "weights", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid",
-                                          "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda",
+                                          "penalty", "alpha", "thresh", "intercept", "modelOpt", "lambda",
                                           "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
                                           "holdoutData", "testDataManual"))
   jaspResults[["variableTrace"]] <- variableTrace
@@ -263,7 +296,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   lambdaEvaluation$position <- position
   lambdaEvaluation$dependOn(options = c("lambdaEvaluation", "lambdaEvaluationLegend" ,"trainingDataManual", "weights", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid",
-                                          "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda",
+                                          "penalty", "alpha", "thresh", "intercept", "modelOpt", "lambda",
                                           "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
                                           "holdoutData", "testDataManual"))
   jaspResults[["lambdaEvaluation"]] <- lambdaEvaluation
