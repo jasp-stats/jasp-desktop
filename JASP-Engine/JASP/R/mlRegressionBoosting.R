@@ -234,14 +234,15 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
   xLabels <- JASPgraphs::axesLabeller(xBreaks)
   yLabels <- JASPgraphs::axesLabeller(yBreaks)
 
-  p <- ggplot2::ggplot(data = oobDev, mapping = ggplot2::aes(x = trees, y = oobImprove)) +
+  p <- ggplot2::ggplot(data = oobDev, mapping = ggplot2::aes(x = trees, y = oobImprove, linetype = type)) +
     ggplot2::geom_segment(data = data.frame(xstart = 0, xend = xend, ystart = 0, yend = 0), ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
     geom() +
     ggplot2::geom_smooth(size = 1, colour = "darkred", se = FALSE) +
     ggplot2::scale_x_continuous(name = "Number of Trees", labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
-    ggplot2::scale_y_continuous(name = ylab,              labels = yLabels, breaks = yBreaks, limits = range(yBreaks))
+    ggplot2::scale_y_continuous(name = ylab,              labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
+    ggplot2::labs(linetype = "")
 
-  p <- JASPgraphs::themeJasp(p)
+  p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
   plotOOBChangeDev$plotObject <- p
 }
