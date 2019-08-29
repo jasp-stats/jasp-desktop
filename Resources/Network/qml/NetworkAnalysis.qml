@@ -23,7 +23,6 @@ import JASP.Controls 1.0
 
 Form
 {
-	usesJaspResults: false
 	
 	CheckBox	 { name: "parallelBootstrap";		checked: false;		visible: false }
 	IntegerField { name: "plotHeightBootstrapPlot";	defaultValue: 320;	visible: false }
@@ -258,9 +257,35 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
-			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
-            AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true; suggestedColumns: ["nominal"]}
+//			height: 200
+//			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
+//            AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true; suggestedColumns: ["nominal"]}
+            
+            height: 200
+            AvailableVariablesList  { 
+                name: "variablesForColor"
+                source: ["variables"] 
+                ExtraControlColumn
+                {
+                    type : "TextField"
+                    name: "group"
+                    title: "Group"
+                }
+                ExtraControlColumn
+                {
+                    type : "DropDown"
+                    name: "iets"
+                    title: "Group"
+                    values: ["Categorical", "Continuous", "Count"]
+                }
+            }
+            AssignedVariablesList
+            {
+                name: "colorNodesBy"
+                title: qsTr("Color Nodes By")
+//                listViewType: "RepeatedMeasures"
+//                source: "variables"
+            }          
 		}
 		
 		Group

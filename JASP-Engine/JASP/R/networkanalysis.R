@@ -15,18 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-NetworkAnalysis <- function (
-	dataset = NULL,
-	options,
-	perform = "run",
-	callback = function(...) list(status = "ok"),
-	state = NULL,
-	...
-) {
+NetworkAnalysis <- function(jaspResults, dataset, options) {
 	if (base::isNamespaceLoaded("bootnet") == FALSE) {
 		try(base::loadNamespace("bootnet"), silent=TRUE)
 	}
 
+  dataset <- .networkAnalysisReadData(dataset, options)
+
+  return()  
 	## Read Dataset ## ----
 	variables <- unlist(options$variables)
 
@@ -357,6 +353,66 @@ NetworkAnalysis <- function (
 
 	}
 
+}
+
+.networkAnalysisReadData <- function(dataset, options) {
+  if (!is.null(dataset))
+    return(dataset)
+  
+  variables <- unlist(options$variables)
+  
+  varsAsFactor <- NULL
+  if (options[["groupingVariable"]] != "")
+    varsAsFactor <- options[["groupingVariable"]]
+  
+  options[["layoutInvalid"]] <- FALSE
+  
+  dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = varsAsFactor, exclude.na.listwise = NULL)
+  newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
+  variables <- variables[newOrder]
+  
+  if (options[["colorNodesBy"]] != "") { # load data from variable that indicates groups
+    options[["colorNodesByData"]] <- .readDataSetToEnd(columns = options[["colorNodesBy"]], exclude.na.listwise = options[["colorNodesBy"]])[[1]]
+    colorNodes <- .networkAnalysisSanitizeColorNodesByData(variables, options)
+    options[["colorNodesByData"]] <- colorNodes[["newData"]]
+    options[["colorNodesByDataMessage"]] <- colorNodes[["message"]]
+    
+  }
+  if (options[["mgmVariableType"]] != "") {# load data from variable that indicates variable type
+    options[["mgmVariableTypeData"]] <- .readDataSetToEnd(columns = options[["mgmVariableType"]], exclude.na.listwise = options[["mgmVariableType"]])[[1]]
+    
+    # some robustness
+    if (length(options[["mgmVariableTypeData"]]) < length(variables)) { # too short
+      options[["mgmVariableTypeDataOkay"]] <- -1
+    } else if (length(options[["mgmVariableTypeData"]]) > length(variables)) { # too long
+      options[["mgmVariableTypeDataOkay"]] <- 1
+    }
+    options[["mgmVariableTypeData"]] <- options[["mgmVariableTypeData"]][seq_along(variables)]
+    options[["mgmVariableTypeData"]][is.na(options[["mgmVariableTypeData"]])] <- "g" # set missing to gaussian (in case of too few types supplied)
+    
+  }
+  if (options[["layoutX"]] != "" && options[["layoutY"]] != "") {
+    
+    options[["layoutXData"]] <- .readDataSetToEnd(columns = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1]]
+    options[["layoutYData"]] <- .readDataSetToEnd(columns = options[["layoutY"]], exclude.na.listwise = options[["layoutY"]])[[1]]
+    xyCoords <- .networkAnalysisSanitizeLayoutData(variables, options)
+    options[["layoutXData"]] <- xyCoords[["x"]]
+    options[["layoutYData"]] <- xyCoords[["y"]]
+    options[["layoutMessage"]] <- xyCoords[["message"]]
+    
+  }
+  
+  # some sanity checks -- redundant due to
+  if (anyNA(c(options[["layoutXData"]], options[["layoutYData"]])) ||
+      length(options[["layoutXData"]]) < length(variables) ||
+      length(options[["layoutYData"]]) < length(variables)) {
+    
+    options[["layoutInvalid"]] <- TRUE # TODO: footnote in table if this one is true
+    
+  }
+  
+  
+  return(dataset)
 }
 
 # functions for running analyses ----
