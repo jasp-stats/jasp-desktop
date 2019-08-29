@@ -227,7 +227,8 @@ Item
 			for (var j = 0; j < allAssignedVariablesList.length; ++j)
 			{
 				assignedList.dropKeys.push(allAssignedVariablesList[j].name);
-				assignedList.draggingChanged.connect(allAssignedVariablesList[j].setEnabledState);
+				if (assignedList != allAssignedVariablesList[j])
+					assignedList.draggingChanged.connect(allAssignedVariablesList[j].setEnabledState);
 			}
         }
 		
