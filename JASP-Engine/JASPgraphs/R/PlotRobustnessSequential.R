@@ -22,6 +22,10 @@
 #' @param addLineAtOne Logical, should a black line be draw at BF = 1?
 #' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
 #' @param plotLineOrPoint String, should the main geom in the plot be a line or a point?
+#' @param pointShapesSmallN String, if \code{plotLineOrPoint == "point"} then this controls the shape aestethic.
+#' @param pointFillsSmallN String, if \code{plotLineOrPoint == "point"} then this controls the fill aestethic.
+#' @param pointColorsSmallN String, if \code{plotLineOrPoint == "point"} then this controls the color aestethic.
+#' @param pointColorsSmallN String, if \code{plotLineOrPoint == "point"} then this controls the size aestethic.
 #' @param ... Unused.
 #'
 #' @example inst/examples/ex-PlotRobustnessSequential.R
@@ -37,7 +41,12 @@ PlotRobustnessSequential <- function(
   pointColors  = c("red", "grey", "black", "white"),
   lineColors = c("black", "grey", "black"), lineTypes = c("dotted", "solid", "solid"),
   addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5),
-  plotLineOrPoint = c("line", "point"), ...) {
+  plotLineOrPoint = c("line", "point"),
+  pointShapesSmallN = rep(21, 3),
+  pointFillsSmallN  = c("grey", "black", "white"),
+  pointColorsSmallN = rep("black", 3),
+  pointSizeSmallN = c(3, 2, 2),
+  ...) {
 
   errCheckPlots(dfLines = dfLines, dfPoints = dfPoints, BF = BF)
   bfType <- match.arg(bfType)
@@ -166,13 +175,26 @@ PlotRobustnessSequential <- function(
 
   if (is.null(dfLines$g)) {
     mapping <- aes(x = x, y = y)
-    scaleCol <- scaleLty <- NULL
+    scaleCol <- scaleLty <- scaleShape <- scaleFill <- scaleSize <- NULL
   } else {
     if (length(unique(dfLines$g)) != length(lineColors) || length(lineColors) != length(lineTypes))
       stop("lineColors and lineTypes must have the same length as the number of groups in dfLines.")
-    mapping  <- aes(x = x, y = y, group = g, linetype = g, color = g)
-    scaleCol <- ggplot2::scale_color_manual(values = lineColors)
-    scaleLty <- ggplot2::scale_linetype_manual(values = lineTypes)
+    
+    mapping  <- aes(x = x, y = y, group = g, linetype = g, color = g, shape = g, fill = g, size = g)
+    scaleCol   <- ggplot2::scale_color_manual(values =  if (plotLineOrPoint == "line") lineColors else pointFillsSmallN)
+    scaleLty   <- ggplot2::scale_linetype_manual(values = lineTypes)
+    if (plotLineOrPoint == "line") {
+      scaleLty   <- ggplot2::scale_linetype_manual(values = lineTypes)
+      scaleCol   <- ggplot2::scale_color_manual(values = lineColors)
+      scaleShape <- scaleFill <- scaleSize <- NULL
+    } else {
+      scaleLty   <- NULL
+      scaleCol   <- ggplot2::scale_color_manual(values = pointColorsSmallN)
+      scaleFill  <- ggplot2::scale_fill_manual(values = pointFillsSmallN)
+      scaleShape <- ggplot2::scale_shape_manual(values = pointShapesSmallN)
+      scaleSize  <- ggplot2::scale_size_manual(values = pointSizeSmallN)
+    }
+
   }
 
   nYbreaksL <- length(yBreaksL)
@@ -209,7 +231,7 @@ PlotRobustnessSequential <- function(
     scale_x_continuous(
       name   = xName,
       breaks = xBreaks
-    ) + scaleCol + scaleLty
+    ) + scaleCol + scaleLty + scaleFill + scaleShape + scaleSize
 
   legendPlot <- list()
   if (!is.null(dfPoints)) {
@@ -240,7 +262,8 @@ PlotRobustnessSequential <- function(
   linesLegendPlot <- gTextEvidence <- NULL
   if (linesLegend && !is.null(dfLines$g)) {
     evidenceLeveltxt <- FALSE
-    linesLegendPlot <- makeLegendPlot(dfLines$g, colors = lineColors, linetypes = lineTypes, type = plotLineOrPoint)
+    linesLegendPlot <- makeLegendPlot(dfLines$g, colors = lineColors, linetypes = lineTypes, type = plotLineOrPoint,
+                                      fill = pointFillsSmallN, sizes = pointSizeSmallN)
   } else if (evidenceLeveltxt) {
 
     val <- BF
