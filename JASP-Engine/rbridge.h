@@ -33,7 +33,7 @@
 #include <boost/function.hpp>
 #include "../JASP-Common/dataset.h"
 #include "../JASP-R-Interface/jasprcpp_interface.h"
-#include "../JASP-Common/r_functionwhitelist.h"
+#include "r_functionwhitelist.h"
 
 /* The R Bridge provides functions to the R analyses;
  * i.e. functions to read the data set from shared memory

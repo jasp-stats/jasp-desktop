@@ -19,7 +19,7 @@
 #include "boundqmltextarea.h"
 #include "../analysis/analysisform.h"
 #include "qmllistviewtermsavailable.h"
-#include "../../JASP-Common/r_functionwhitelist.h"
+#include "r_functionwhitelist.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QQuickTextDocument>
