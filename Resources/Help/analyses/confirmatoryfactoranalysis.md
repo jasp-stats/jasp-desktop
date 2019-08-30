@@ -9,7 +9,7 @@ In the assignment box, continuous variables in your dataset can be assigned to d
 
 Second-order factor
 -------
-JASP allows the factors in turn to be indicators of a second-order factor. This can be specified by dragging the factor names to the second-order assignment box.
+JASP allows the factors in turn to be indicators of a second-order factor. This can be specified by dragging the factor names to the second-order assignment box. Any factors not assigned as indicators of the second-order factor will be allowed to covary with each other and with the second-order factor, but not with the indicators of the second-order factor.
 
 Model options
 -------
