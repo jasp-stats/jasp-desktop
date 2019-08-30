@@ -403,7 +403,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
   result['cases'] <- c(termsNormal, "Residuals")
   result <- as.data.frame(result)
-  result[['.isNewGroup']] <- FALSE
+  result[['.isNewGroup']] <- c(TRUE, rep(FALSE, nrow(result)-2), TRUE)
+  if (length(options$covariates) > 0)
+    result[.v(options$covariates), ][[".isNewGroup"]] <- TRUE 
   
   result[1, 'correction'] <- "None"
 
@@ -694,7 +696,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       # multcompView::multcompLetters(p)
       
       # Todo: add stars/filter significance
-      
+      thisContrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(thisContrastResult)-1))
       contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(thisContrastResult)
       
     }
@@ -800,7 +802,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
     allContrasts <- strsplit(as.character(resultPostHoc[[1]]$contrast), split = " - ")
     
-    if (options$confidenceIntervalsPostHoc & nrow(resultPostHoc[[1]]) > 1)
+    if (options$confidenceIntervalsPostHoc & nrow(resultPostHoc[[1]]) > 1 & !options$postHocTestsBootstrapping)
       postHocStandardContainer[[thisVarName]]$addFootnote(
         message = gsub(x = attr(resultPostHoc[[1]], "mesg")[3], "Conf-level", "Confidence interval"),
         symbol = "<i>Note.</i>")
@@ -886,9 +888,11 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       resultPostHoc[["bias"]] <- bootStrapSummary[["bootBias"]]
       resultPostHoc[["SE"]] <- bootStrapSummary[["bootSE"]]
-
+      resultPostHoc[["estimate"]] <- bootStrapSummary[["bootMed"]]
+      
     }
     
+    resultPostHoc[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(resultPostHoc)-1))
     postHocStandardContainer[[thisVarName]]$setData(resultPostHoc)
     
     
@@ -1477,8 +1481,11 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
     r <- summary(emmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
     
-    if (nCol > 1)
+    if (nCol > 1) {
       r[[".isNewGroup"]] <- !duplicated(r[, nCol])
+    } else {
+      r[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(r)-1))
+    }
     
     names(r)[1:length(individualTerms)] <- individualTerms
     
@@ -1517,6 +1524,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       r[["bias"]] <- bootStrapSummary[["bootBias"]]
       r[["SE"]] <- bootStrapSummary[["bootSE"]]
+      r[["lsmean"]] <- bootStrapSummary[["bootMed"]]
       
     }
     marginalMeansContainer[[thisVarName]]$setData(r)
@@ -1592,9 +1600,11 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   simpleOptions$fixedFactors <- options$fixedFactors[!(grepl(moderatorTerms[1], options$fixedFactors) |
                                                          grepl(moderatorTerms[nMods], options$fixedFactors))]
   
+  # simpleOptions$covariates <- NULL
+  # simpleOptions$modelTerms <- list(list(components = "facExperim"))
   lvls <- list()
   factors <- list()
-  
+
   for (variable in moderatorTerms) {
     
     factor <- dataset[[ .v(variable) ]]
@@ -1605,8 +1615,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   simpleEffectResult <- rev(expand.grid(rev(lvls), stringsAsFactors = FALSE))
   colnames(simpleEffectResult) <- c("modOne", "modTwo")[1:nMods]
   
-  simpleEffectResult[[".isNewGroup"]] <- FALSE
-  
+  simpleEffectResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(simpleEffectResult)-1))
   emptyCaseIndices <- emptyCases <- NULL
   allSimpleModels <- list()
   
@@ -1617,7 +1626,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                                               "\"", sep = "", collapse = " & ")))
     simpleDataset <- base::subset(dataset, subsetStatement)
     
-    if (simpleEffectResult[i, nMods] == lvls[[ nMods ]][1])
+    if (simpleEffectResult[i, nMods] == lvls[[ nMods ]][1] && nMods == 2)
       simpleEffectResult[[i, ".isNewGroup"]] <- TRUE
     
     if (nrow(simpleDataset) < 2 || 
@@ -1632,7 +1641,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       .anovaModelContainer(anovaContainer[["simpleEffectsContainer"]], dataset = simpleDataset, options = simpleOptions, TRUE)
       .anovaResult(anovaContainer[["simpleEffectsContainer"]], options = simpleOptions)
       simpleResult <- anovaContainer[["simpleEffectsContainer"]][["anovaResult"]]$object$result
-
+      simpleResult[[".isNewGroup"]] <- NULL
+      
       allSimpleModels[[i]] <- simpleResult[simpleFactorBase64, ]
       anovaContainer[["simpleEffectsContainer"]][["model"]] <- NULL
       
@@ -1646,12 +1656,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   # Combine the ANOVA results with the cases
   simpleEffectResult <- cbind(simpleEffectResult, do.call(rbind, allSimpleModels))
-  
+
   # Apply corrections to F and p based on the original ANOVA
   simpleEffectResult[["F value"]] <- simpleEffectResult[["Mean Sq"]] / fullAnovaMS
   simpleEffectResult[["Pr(>F)"]] <-  pf(simpleEffectResult[["F value"]], simpleEffectResult[["Df"]], 
                                         fullAnovaDf, lower.tail = FALSE)
-  
+
   simpleEffectsTable$setData(simpleEffectResult)
   
   return()  

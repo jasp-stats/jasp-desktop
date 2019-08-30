@@ -1330,6 +1330,9 @@
                             conf.interval = conf.interval, na.rm = TRUE, .drop = FALSE,
                             errorBarType = errorBarType)
 
+  if (options[["plotHorizontalAxis"]] %in% options[["covariates"]])
+    summaryStat <- dataset
+  
   colnames(summaryStat)[colnames(summaryStat) == dependentV] <- "dependent"
 
   if (options$plotHorizontalAxis != "") {
@@ -1395,7 +1398,7 @@
       summaryStatSubset <- summaryStat
     }
 
-    if(options$plotSeparateLines == "") {
+    if (options$plotSeparateLines == "") {
 
       p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
                                                            y=dependent,
@@ -1411,7 +1414,7 @@
 
     }
 
-    if (plotErrorBars) {
+    if (plotErrorBars && !(options[["plotHorizontalAxis"]] %in% options[["covariates"]])) {
 
       pd <- ggplot2::position_dodge(.2)
       p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
@@ -1424,9 +1427,17 @@
 
     }
 
-    guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)), title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3, default.unit = "inch")
+    guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)), 
+                                         title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3, 
+                                         default.unit = "inch")
 
-    p <- p + ggplot2::geom_line(position=pd, size = .7) +
+    if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
+      line <- ggplot2::geom_smooth(method = "lm", size = .7, color = "black", se = FALSE)
+    } else {
+      line <- ggplot2::geom_line(position=pd, size = .7)
+    }
+        
+    p <- p + line +
       ggplot2::geom_point(position=pd, size=4) +
       ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
       ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
@@ -1434,7 +1445,7 @@
       ggplot2::labs(y = yLabel, x = options[["plotHorizontalAxis"]]) +
       base_breaks_y(summaryStat, plotErrorBars) +
       base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
-
+  
     p <- JASPgraphs::themeJasp(p, legend.position = "right")
 
     descriptivesPlot$plotObject <- p
