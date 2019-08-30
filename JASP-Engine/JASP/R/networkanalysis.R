@@ -1674,7 +1674,7 @@ NetworkAnalysis <- function (
 
 			bt <- allBootstraps[[v]]
 
-            p <- try(plot(bt, statistic = statistic, order = "sample"))
+            p <- try(.suppressGrDevice(plot(bt, statistic = statistic, order = "sample")))
 
             if (!isTryError(p)) {
 
