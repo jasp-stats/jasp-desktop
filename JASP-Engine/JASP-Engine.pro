@@ -101,13 +101,11 @@ QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 
 SOURCES += main.cpp \
   engine.cpp \
-    rbridge.cpp \
-    r_functionwhitelist.cpp
+    rbridge.cpp
 
 HEADERS += \
   engine.h \
-    rbridge.h \
-    r_functionwhitelist.h
+    rbridge.h
 
 DISTFILES += \
     JASP/DESCRIPTION \
