@@ -277,7 +277,8 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	int id						= json.get("id",		-1).asInt();
 	int revision				= json.get("revision",	-1).asInt();
-	int progress				= json.get("progress",	-1).asInt();
+	
+	Json::Value progress		= json.get("progress",	Json::nullValue);
 	Json::Value results			= json.get("results",	Json::nullValue);
 
 	analysisResultStatus status	= analysisResultStatusFromString(json.get("status", "error").asString());

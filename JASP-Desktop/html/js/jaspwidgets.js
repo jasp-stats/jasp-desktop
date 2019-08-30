@@ -1060,83 +1060,137 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	}
 })
 
-JASPWidgets.Progressbar = function() {
-
-	var containerProgressbar = $("<div class='jasp-progressbar-container'></div>");
-
-	this._get = function(attr) {
-		var $bar = containerProgressbar.find(".jasp-progressbar");
-		if (typeof attr !== "undefined") {
-			return $bar.attr(attr);
-		}
-		return $bar;
+JASPWidgets.Progressbar = Backbone.Model.extend({
+	defaults: {
+		analysis: {},
+		label: "",
+		value: -1,
+		maxValue: 100
+	},
+	
+	getFromAnalysis: function(item) {
+		return this.attributes.analysis.model.get(item);
 	}
+});
 
-	this._update = function(attr, value) {
-		var $bar = this._get();
-		if ($bar.length > 0) {
-			if (attr == "value" && value > 100) {
-				containerProgressbar.find(".jasp-progressbar").attr("value", 100);
-			} else {
-				containerProgressbar.find(".jasp-progressbar").attr(attr, value);
-			}
-		}
-	}
-
-	this._create = function(value, id) {
-		var $bar = this._get();
-		if ($bar.length == 0) {
-			$bar = $("<progress class=''></progress>");
-			$bar.attr({
-				class: "jasp-progressbar",
-				id: "progressbar-" + id,
-				value: value,
-				max: 100
-			})
-			containerProgressbar.append($bar);
-		}
-	}
-
-	this._reset = function() {
-		var $bar = this._get();
-		if ($bar.length > 0)
-		containerProgressbar = $("<div class='jasp-progressbar-container'></div>");
-		//containerProgressbar.find(".jasp-progressbar").remove();
-	}
-
-	this.init = function(value, id, status) {
-		var haveProgressbar = this._get().length > 0;
-		if (this.status() == "progress-complete" || (status != "running" && status != "complete")) {
-			this._reset();
-		} else if (status == "running") {
-			if (! haveProgressbar && value >= 0) {
-				this._create(value, id);
-			} else if (value >= 0) {
-				this._update("value", value);
-			} else {
-				return(containerProgressbar)
-			}
-		} else if (status == "complete" && haveProgressbar) {
-			this._update("value", 100);
+JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
+	initialize: function() {
+		this.fadeOutActive = false;
+		this.fadeOutDuration = 500;
+	},
+	
+	render: function() {
+		var label = this.model.getFromAnalysis("progress").label
+		var value = this.model.getFromAnalysis("progress").value
+		if (this._progressbarNeedsToComplete(value)) {
+			label = this.model.get("label");
+			value = this.model.get("maxValue");
 		} else {
-			this._reset();
-		}
-		return(containerProgressbar)
-	}
+			label = this._ellipsify(label);
 
-	this.status = function() {
-		var status = "progress-init";
-		if (this._get().length > 0) {
-			if (this._get("value") >= 100) {
-				status = "progress-complete";
-			} else {
-				status = "progress-running";
+			var maxValue = this.model.get("maxValue");
+			if (value > maxValue)
+				value = maxValue;
+		}
+		
+		this.model.set("value", value);
+		this.model.set("label", label);
+		
+		if (value == -1 && this.fadeOutActive)
+			return this; // allow previously started fade out to complete, avoid calling .clear()
+		
+		this.clear();
+		
+		if (value != -1) {
+			this._insertBar();
+		
+			if (this._isComplete()) {
+				this._resetModel();
+				this._fadeOut();
 			}
 		}
-		return status;
-	}
 
-}
+		return this;
+	},
+	
+	isActive: function() {
+		return this.model.get("value") != -1;
+	},
+	
+	clear: function() {
+		this.$el.empty();
+		this.$el.addClass("jasp-progressbar-container");
+		this.fadeOutActive = false;
+	},
+	
+	_isComplete: function() {
+		return this.model.get("value") >= this.model.get("maxValue");
+	},
+	
+	_progressbarNeedsToComplete(value) {
+		analysisStatus	= this.model.getFromAnalysis("status");
+		return this.isActive() && (value == -1 || analysisStatus == "complete");
+	},
+	
+	_resetModel: function() {
+		var defaults = this.model.defaults;
+		defaults.analysis = this.model.get("analysis");
+		this.model.clear().set(defaults);
+	},
+	
+	_fadeOut: function() {
+		this.fadeOutActive = true;
+		var self = this;
+		window.setTimeout(function() { 
+			self._getCurrent().fadeOut();
+			self.fadeOutActive = false;
+		}, this.fadeOutDuration);
+	},
+	
+	_getCurrent: function() {
+		return this.$el.find(".jasp-progressbar");
+	},
+	
+	_insertBar: function() {
+		$progressbar = $("<div/>");
+		$progressbar.attr({
+			class: "jasp-progressbar",
+			id: "progressbar-" + this.model.getFromAnalysis("id")
+		});
+		
+		$bar = $("<progress class=''></progress>");
+		$bar.attr({
+			value: this.model.get("value"),
+			max: this.model.get("maxValue")
+		});
+		
+		$label = $("<span/>");
+		$label.attr({
+			class: "jasp-progressbar-label"
+		});
+		$label.html(this.model.get("label"));
+		
+		$progressbar.append($bar);
+		$progressbar.append($label);
+
+		this.$el.append($progressbar);
+	},
+	
+	_ellipsify: function(label) {
+		if (label.length == 0)
+			return label;
+		
+		var alphaNumericOrDotEnding = label.match(/[a-z0-9.]$/i)||[];
+		if (alphaNumericOrDotEnding.length == 0)
+			return label; // might look weird otherwise, e.g., ~~~...
+			
+		var endingDots = label.match(/\.+$/g)||[""];
+		var numDotsToAdd = 3 - endingDots[0].length;
+		if (numDotsToAdd < 0)
+			return label.slice(0, numDotsToAdd);
+		return label + ".".repeat(numDotsToAdd);
+	}
+});
 
 JASPWidgets.ActionView = JASPWidgets.View.extend({
 	initialize: function () {

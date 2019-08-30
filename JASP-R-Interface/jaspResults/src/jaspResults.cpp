@@ -32,7 +32,11 @@ void jaspResults::setResponseData(int analysisID, int revision)
 {
 	_response["id"]			= analysisID;
 	_response["revision"]	= revision;
-	_response["progress"]	= -1;
+	
+	Json::Value progress;
+	progress["value"]		= -1;
+	progress["label"]		= "";
+	_response["progress"]	= progress;
 }
 
 void jaspResults::setSaveLocation(const std::string & root, const std::string & relativePath)
@@ -448,14 +452,16 @@ void jaspResults::convertFromJSON_SetFields(Json::Value in)
 
 
 
-void jaspResults::startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)
+void jaspResults::startProgressbar(int expectedTicks, std::string label)
 {
 	_progressbarExpectedTicks		= expectedTicks;
-	_progressbarBetweenUpdatesTime	= timeBetweenUpdatesInMs;
 	_progressbarLastUpdateTime		= getCurrentTimeMs();
 	_progressbarTicks				= 0;
 
-	_response["progress"]			= 0;
+	Json::Value progress;
+	progress["value"]		= 0;
+	progress["label"]		= label;
+	_response["progress"]	= progress;
 
 	send();
 }
@@ -466,17 +472,17 @@ void jaspResults::progressbarTick()
 
 	_progressbarTicks++;
 
-	int progress			= int(std::lround(100.0f * (float(_progressbarTicks) / float(_progressbarExpectedTicks))));
-	progress				= std::min(100, std::max(progress, 0));
-	_response["progress"]	= progress;
+	int progressValue				= int(std::lround(100.0f * (float(_progressbarTicks) / float(_progressbarExpectedTicks))));
+	progressValue					= std::min(100, std::max(progressValue, 0));
+	_response["progress"]["value"]	= progressValue;
 
 	int curTime = getCurrentTimeMs();
-	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progress == 100)
+	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progressValue == 100)
 	{
 		send();
 		
-		if (progress == 100)	resetProgressbar();
-		else					_progressbarLastUpdateTime = curTime;
+		if (progressValue == 100)	resetProgressbar();
+		else						_progressbarLastUpdateTime = curTime;
 	}
 }
 
@@ -485,9 +491,11 @@ void jaspResults::resetProgressbar()
 	_progressbarExpectedTicks      = 100;
 	_progressbarLastUpdateTime     = -1;
 	_progressbarTicks              = 0;
-	_progressbarBetweenUpdatesTime = 500;
 	
-	_response["progress"] = -1;
+	Json::Value progress;
+	progress["value"]		= -1;
+	progress["label"]		= "";
+	_response["progress"]	= progress;
 }
 
 //implementation here in jaspResults.cpp to make sure we have access to all constructors

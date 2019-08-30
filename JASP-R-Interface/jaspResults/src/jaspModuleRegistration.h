@@ -21,7 +21,6 @@ RCPP_MODULE(jaspResults)
 
 
 	Rcpp::function("startProgressbar",	jaspResults::staticStartProgressbar);
-	//Rcpp::function("startProgressbar",	jaspResults::staticStartProgressbarMs);
 	Rcpp::function("progressbarTick",	jaspResults::staticProgressbarTick);
 
 	Rcpp::function("destroyAllAllocatedObjects", jaspObject::destroyAllAllocatedObjects);
@@ -186,11 +185,7 @@ RCPP_MODULE(jaspResults)
 											&jaspResults_Interface::setRelativePathKeep,					"The relative path to where state is kept")
 
 		.method("getResults",				&jaspResults_Interface::getResults,								"Returns the latest version of the results json as a string")
-/*
-		.method("startProgressbar",			&jaspResults_Interface::startProgressbar,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will update results every 500ms.")
-		.method("startProgressbar",			&jaspResults_Interface::startProgressbarMs,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will keep at least timeBetweenUpdatesInMs milliseconds between consecutive updates.")
-		.method("progressbarTick",			&jaspResults_Interface::progressbarTick,						"Adds a tick to the progressbar")
-*/
+
 		.method("setOptions",				&jaspResults_Interface::setOptions,								"Tells jaspResults which options are currently set, should not be used in an analysis!")
 		.method("changeOptions",			&jaspResults_Interface::changeOptions,							"Changes the currently set options and removes all objects that depend on the changed options. Mostly useful for unit tests because this we we can simulate re-running the analysis. Should not be used in an analysis!")
 	;

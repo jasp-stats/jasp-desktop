@@ -17,9 +17,12 @@
 
 initJaspResults <- function() .onAttach()
 
-startProgressbar <- function(expectedTicks, timeBetweenUpdatesInMs=NULL) {
-  if(is.null(timeBetweenUpdatesInMs))   jaspResultsModule$startProgressbar(expectedTicks)
-  else                                  jaspResultsModule$startProgressbar(expectedTicks, timeBetweenUpdatesInMs)
+startProgressbar <- function(expectedTicks, label="") {
+	if (!is.numeric(expectedTicks) || !is.character(label))
+		stop("`expectedTicks` must be numeric and `label` a character")
+	if (nchar(label) > 40)
+		stop("The label must be 40 characters at most")
+	jaspResultsModule$startProgressbar(expectedTicks, label)
 }
 
 progressbarTick <- function() { jaspResultsModule$progressbarTick(); }

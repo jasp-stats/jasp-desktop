@@ -78,7 +78,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar  jasp-title-toolbar" })
 
-		this.progressbar = new JASPWidgets.Progressbar();
+		var progressbarModel = new JASPWidgets.Progressbar({analysis: this});
+		this.progressbar = new JASPWidgets.ProgressbarView({ model: progressbarModel });
 
 		this.imageBeingEdited = null;
 		this.model.on("analysis:resizeStarted", function (image) {
@@ -139,13 +140,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
-	},
-
-	handleVisibilityProgressbar: function(statusProgress) {
-		if (statusProgress == "progress-complete") {
-			var id = this.model.get("id");
-			window.setTimeout(function() { $("#progressbar-" + id).fadeOut()}, 500);
-		}
 	},
 
 	undoImageResize: function() {
@@ -563,6 +557,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		if ($selectedAnalysis.height() < errorBoxHeight)
 			$selectedAnalysis.height(errorBoxHeight);
 	},
+	
+	updateProgressbarInResults: function() {
+		this.progressbar.render();
+		this.$el.find(".jasp-progressbar-container").replaceWith(this.progressbar.$el);
+	},
 
 	editTitleClicked: function () {
 		var id = this.model.get("id");
@@ -610,13 +609,19 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	render: function () {
 
 		var results = this.model.get("results");
+		
+		// once everything becomes jaspResults this is always an object and the following can be removed
+		var progress = this.model.get("progress")
+		if (typeof progress == "number")
+			this.model.set("progress", { value: progress, label: "" })
+		else if (!progress)
+			this.model.set("progress", { value: -1, label: "" })
+		// up to here
+		
 		if (results == "" || results == null) {
-			var progress = this.model.get("progress");
-			if (progress > -1) {  // called to update progressbar
-				var $progressbar = this.progressbar.init(progress, this.model.get("id"), this.model.get("status"));
-				this.$el.find(".jasp-progressbar-container").replaceWith($progressbar);
-				this.handleVisibilityProgressbar(this.progressbar.status());
-			}
+			progress = this.model.get("progress"); 
+			if (progress.value > -1)
+				this.updateProgressbarInResults();
 			return this;
 		}
 
@@ -653,9 +658,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		else
 			this._setTitle(results.title, 'h2');
 
-		var $progressbar = this.progressbar.init(this.model.get("progress"), this.model.get("id"), this.model.get("status"));
-		$innerElement.prepend($progressbar);
-		this.handleVisibilityProgressbar(this.progressbar.status());
+		this.progressbar.render();
+		$innerElement.prepend(this.progressbar.$el);
 
 		this.viewNotes.lastNoteNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteNoteBox.$el);

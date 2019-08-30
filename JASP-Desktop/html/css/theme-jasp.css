@@ -595,7 +595,18 @@ pre {
 }
 
 .jasp-progressbar-container {
-	min-height: 1.2em;
+	min-height: 1.25em;
+}
+
+.jasp-progressbar {
+	display: table;
+}
+
+.jasp-progressbar-label {
+	display: table-cell;
+	vertical-align: middle;
+	padding-left: 15px;
+	color: gray;
 }
 
 /*.jasp-indent {

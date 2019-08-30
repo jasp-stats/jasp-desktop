@@ -24,9 +24,6 @@
     \item{\code{setOptions}:}{Uses the passed list as current options. This is usually passed by JASP directly but could be useful to set when developing your analysis, aka in jaspTools. }
     \item{\code{changeOptions}:}{Changes the currently set options and removes all objects that depend on the changed options. Mostly useful for unit tests because this we we can simulate re-running the analysis. Should not be used in an analysis!}
 
-		\item{\code{startProgressbar(expectedTicks, timeBetweenUpdatesInMs=NULL)}:}{Opens a progressbar in the results when running in JASP. The first parameter is the expectedTicks, aka how many steps it should take. The optional second parameter is timeBetweenUpdatesInMs and this will make sure it will only update the progressbar when more ms have passed than this. Call \code{progressbarTick} for each step.}
-		\item{\code{progressbarTick()}:}{Increases the progressbar one tick.}
-
 		\item{\code{getKeepList}:}{Internal function, generates a list of all files that should be kept, aka plot-images, statefile and save location of the results themselves.}
 		\item{\code{getPlotObjectsForState}:}{Internal function.}
 

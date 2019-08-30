@@ -442,7 +442,7 @@
     todo <- todo - sum(sapply(ttestState[["delta"]], Negate(is.null)))
   if (todo > 0L) {
     # times 5 since there are 5 chains by default
-    startProgressbar(5L * todo * noSamples, 100)
+    startProgressbar(5L * todo * noSamples)
   }
 }
 
