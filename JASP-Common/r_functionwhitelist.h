@@ -5,7 +5,14 @@
 #include <regex>
 #include <sstream>
 
-#include "../JASP-R-Interface/jasprcpp_interface.h"
+///New exception to give feedback about possibly failing filters and such
+class filterException : public std::logic_error
+{
+public:
+	filterException(const std::string & what_arg)	: std::logic_error(what_arg) {}
+	filterException(const char * what_arg)			: std::logic_error(what_arg) {}
+};
+
 
 class R_FunctionWhiteList
 {

@@ -22,6 +22,7 @@
 #include "appinfo.h"
 #include "tempfiles.h"
 #include "log.h"
+#include "../JASP-Common/r_functionwhitelist.h"
 
 DataSet						*	rbridge_dataSet		= NULL;
 RCallback						rbridge_callback	= NULL;

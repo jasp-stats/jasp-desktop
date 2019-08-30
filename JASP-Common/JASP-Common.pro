@@ -42,6 +42,7 @@ SOURCES += \
 	label.cpp \
 	labels.cpp \
 	processinfo.cpp \
+	r_functionwhitelist.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp \
@@ -81,6 +82,7 @@ HEADERS += \
 	libzip/archive.h \
 	libzip/archive_entry.h \
 	processinfo.h \
+	r_functionwhitelist.h \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \

@@ -136,12 +136,4 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 
 } // extern "C"
 
-///New exception to give feedback about possibly failing filters and such
-class filterException : public std::logic_error
-{
-public:
-	filterException(const std::string & what_arg)	: std::logic_error(what_arg) {}
-	filterException(const char * what_arg)			: std::logic_error(what_arg) {}
-};
-
 #endif // JASPRCPP_INTERFACE_H
