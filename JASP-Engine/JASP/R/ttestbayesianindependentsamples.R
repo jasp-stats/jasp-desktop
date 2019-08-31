@@ -154,7 +154,8 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
           }
         }
 
-        ttestResults[["tValue"]][[var]] <- median(ttestResults[["delta"]][[var]])
+        if (!is.null(ttestResults[["delta"]][[var]]))
+          ttestResults[["tValue"]][[var]] <- median(ttestResults[["delta"]][[var]])
         wValue <- unname(wilcox.test(group2, group1, paired = FALSE)[["statistic"]])
         error <- wValue
 
