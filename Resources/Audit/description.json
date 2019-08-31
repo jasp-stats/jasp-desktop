@@ -50,7 +50,7 @@
 		},
 		{
 			"title":						"Estimation",
-			"function":						"classicalRegressionEstimation",
+			"function":						"classicalEstimation",
 			"requiresData":					true
 		}
 	]

@@ -51,6 +51,7 @@ Form {
 				fieldWidth: 	100
 				min: 			0
 				decimals: 		2
+				enabled:		!mpu.checked
 			}
 		}
 
@@ -85,6 +86,7 @@ Form {
 			title: 			qsTr("Book values")
 			singleVariable:	true
 			allowedColumns:	["scale"]
+			enabled: 		!mpu.checked
 		}
 
 		AssignedVariablesList
@@ -112,7 +114,8 @@ Form {
 				name: 		"estimator"
 
 				RadioButton 
-				{
+				{	
+					id:			mpu
 					text: 		qsTr("Mean-per-unit")
 					name: 		"mpu"
 				}
