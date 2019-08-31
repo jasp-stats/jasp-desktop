@@ -43,6 +43,15 @@
 			"title":						"Bayesian Planning",
 			"function":						"bayesianPlanning",
 			"requiresData":					false
+		},
+		{
+			"title":    					"Estimation",
+			"icon":							"audit-estimation.svg"
+		},
+		{
+			"title":						"Estimation",
+			"function":						"classicalEstimation",
+			"requiresData":					true
 		}
 	]
 }
