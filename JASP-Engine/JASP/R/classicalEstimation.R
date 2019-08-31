@@ -32,8 +32,10 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
   .classicalRegressionTable(dataset, options, jaspResults, ready, position = 2)
 
   # Required sample size table
+  .requiredSampleSizeTable(dataset, options, jaspResults, ready, position = 3)
 
   # Correlation plot
+  .estimationCorrelationPlot(dataset, options, jaspResults, ready, position = 4)
 
 }
 
@@ -77,8 +79,13 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
   jaspResults[["regressionTable"]]      <- regressionTable
 
-  if(!ready)
-    regressionTable$addFootnote(message = "Please specify the population size, population value, and your sample variables.", symbol="<i>Note.</i>")
+  if(!ready){
+    if(options[["estimator"]] == "mpu"){
+      regressionTable$addFootnote(message = "Please specify the population size and your audit values.", symbol="<i>Note.</i>")
+    } else {
+      regressionTable$addFootnote(message = "Please specify the population size, population value, and your sample variables.", symbol="<i>Note.</i>")
+    }
+  }
 
   if(!ready) return()
 
@@ -99,6 +106,8 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
     upperCI         <- round(pointEstimate + qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sW * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
     uncertainty     <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sW * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
 
+    result <- list(sW = sW)
+
   } else if(options[["estimator"]] == "difference"){
 
     B               <- round(options[["populationValue"]], 2)
@@ -109,6 +118,8 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
     lowerCI         <- round(pointEstimate - qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sE * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
     upperCI         <- round(pointEstimate + qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sE * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
     uncertainty     <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sE * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
+
+    result <- list(sE = sE)
 
   } else if(options[["estimator"]] == "ratio"){
 
@@ -126,6 +137,8 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
     lowerCI       <- round(pointEstimate - qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * s * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
     upperCI       <- round(pointEstimate + qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * s * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
     uncertainty   <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * s * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
+
+    result <- list(s = s)
  
   } else if(options[["estimator"]] == "regression"){
 
@@ -143,10 +156,14 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
     upperCI       <- round(pointEstimate + qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * s * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
     uncertainty   <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * s * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
 
+    result <- list(sW = sW, r = r)
+
   }
 
   row             <- data.frame(estimate = pointEstimate, uncertainty = uncertainty, lower = lowerCI, upper = upperCI)
   regressionTable$addRows(row)
+
+  jaspResults[["result"]] <- createJaspState(result)
 }
 
 .calculationsClassicalRegression <- function(dataset, options, jaspResults, ready, position){
@@ -173,13 +190,13 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc2 <- paste0(calc2, " = ", n)
       }
 
-      calc3 <- "The mean of the sample true values <i>w&#772</i>"
+      calc3 <- "The mean of the sample audit values <i>w&#772</i>"
       if(options[["auditValues"]] != ""){
         meanW <- round(mean(dataset[, .v(options[["auditValues"]])]), 2)
         calc3 <- paste0(calc3, " = ", meanW)
       } 
 
-      calc4 <- "The standard deviation of the sample true values <i>s<sub>w</sub></i>"
+      calc4 <- "The standard deviation of the sample audit values <i>s<sub>w</sub></i>"
       if(options[["auditValues"]] != ""){
         sW <- round(sd(dataset[, .v(options[["auditValues"]])]), 2)
         calc4 <- paste0(calc4, " = ", sW)
@@ -325,19 +342,19 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc5 <- paste0(calc5, " = ", sB)
       } 
 
-      calc6 <- "The mean of the sample true values <i>w&#772</i>"
+      calc6 <- "The mean of the sample audit values <i>w&#772</i>"
       if(options[["auditValues"]] != ""){
         meanW <- round(mean(dataset[, .v(options[["auditValues"]])]), 2)
         calc6 <- paste0(calc6, " = ", meanW)
       } 
 
-      calc7 <- "The standard deviation of the sample true values <i>s<sub>w</sub></i>"
+      calc7 <- "The standard deviation of the sample audit values <i>s<sub>w</sub></i>"
       if(options[["auditValues"]] != ""){
         sW <- round(sd(dataset[, .v(options[["auditValues"]])]), 2)
         calc7 <- paste0(calc7, " = ", sW)
       } 
 
-      calc8 <- "The correlation coefficient of the sample book values and true values <i>r<sub>bw</sub></i>"
+      calc8 <- "The correlation coefficient of the sample book values and audit values <i>r<sub>bw</sub></i>"
       if(ready){
         r <- round(cor(dataset[, .v(options[["bookValues"]])], dataset[, .v(options[["auditValues"]])]), 2)
         calc8 <- paste0(calc8, " = ", r)
@@ -417,25 +434,25 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc4 <- paste0(calc4, " = ", meanB)
       } 
 
-      calc5 <- "The mean of the sample true values <i>w&#772</i>"
+      calc5 <- "The mean of the sample audit values <i>w&#772</i>"
       if(options[["auditValues"]] != ""){
         meanW <- round(mean(dataset[, .v(options[["auditValues"]])]), 2)
         calc5 <- paste0(calc5, " = ", meanW)
       } 
 
-      calc6 <- "The standard deviation of the sample true values <i>s<sub>w</sub></i>"
+      calc6 <- "The standard deviation of the sample audit values <i>s<sub>w</sub></i>"
       if(options[["auditValues"]] != ""){
         sW <- round(sd(dataset[, .v(options[["auditValues"]])]), 2)
         calc6 <- paste0(calc6, " = ", sW)
       } 
 
-      calc7 <- "The correlation coefficient of the sample book values and true values <i>r<sub>bw</sub></i>"
+      calc7 <- "The correlation coefficient of the sample book values and audit values <i>r<sub>bw</sub></i>"
       if(ready){
         r <- round(cor(dataset[, .v(options[["bookValues"]])], dataset[, .v(options[["auditValues"]])]), 2)
         calc7 <- paste0(calc7, " = ", r)
       } 
 
-      calc8 <- "The regression coefficient of the sample book values and true values <i>b<sub>1</sub></i>"
+      calc8 <- "The regression coefficient of the sample book values and audit values <i>b<sub>1</sub></i>"
       if(ready){
         b1 <- round((sum(dataset[, .v(options[["bookValues"]])] * dataset[, .v(options[["auditValues"]])]) - n * meanB * meanW) / (sum(dataset[, .v(options[["bookValues"]])]^2) - (sum(dataset[, .v(options[["bookValues"]])])^2) / n), 2)
         calc8 <- paste0(calc8, " = ", b1)
@@ -481,5 +498,116 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
     return()
 
+  }
+}
+
+.requiredSampleSizeTable <- function(dataset, options, jaspResults, ready, position){
+
+  if(!is.null(jaspResults[["requiredSampleSizeTable"]]) || !options[["requiredSampleSizeTable"]]) return() #The options for this table didn't change so we don't need to rebuild it
+
+  title <- base::switch(options[["estimator"]],
+                        "mpu"         = "Mean-per-unit",
+                        "difference"  = "Difference",
+                        "ratio"       = "Ratio",
+                        "regression"  = "Regression")
+
+  requiredSampleSizeTable <- createJaspTable("Required Sample Size")
+  requiredSampleSizeTable$position <- position
+  requiredSampleSizeTable$dependOn(options = c("requiredSampleSizeTable", "bookValues", "auditValues", "populationValue", "populationSize", "confidence", "estimator", "requiredUncertainty"))
+
+  requiredSampleSizeTable$addColumnInfo(name = 'estimator', title = 'Estimator', type = 'string')
+  requiredSampleSizeTable$addColumnInfo(name = 'uncertainty', title = 'Uncertainty', type = 'string')
+  requiredSampleSizeTable$addColumnInfo(name = 'n', title = 'Required <i>n</i>', type = 'string')
+  requiredSampleSizeTable$addColumnInfo(name = 'nextra', title = 'Additional <i>n</i>', type = 'string')
+
+  requiredSampleSizeTable[["estimator"]]    <- title
+  E                                         <- options[["requiredUncertainty"]]
+  requiredSampleSizeTable[["uncertainty"]]  <- E
+
+  jaspResults[["requiredSampleSizeTable"]]  <- requiredSampleSizeTable
+
+  if(!ready) return()
+
+  result <- jaspResults[["result"]]$object
+
+  if(options[["estimator"]] == "mpu"){
+    gamma <- E^2 / (qt(p = (1 - (1 - options[["confidence"]])/2), df = nrow(dataset) - 1)^2 * options[["populationSize"]] * result[["sW"]]^2)
+  } else if(options[["estimator"]] == "difference"){
+    gamma <- E^2 / (qt(p = (1 - (1 - options[["confidence"]])/2), df = nrow(dataset) - 1)^2 * options[["populationSize"]] * result[["sE"]]^2)
+  } else if(options[["estimator"]] == "ratio"){
+    gamma <- E^2 / (qt(p = (1 - (1 - options[["confidence"]])/2), df = nrow(dataset) - 1)^2 * options[["populationSize"]] * result[["s"]]^2)
+  } else if(options[["estimator"]] == "regression"){
+    gamma <- E^2 / (qt(p = (1 - (1 - options[["confidence"]])/2), df = nrow(dataset) - 1)^2 * options[["populationSize"]] * result[["sW"]]^2 * (1 - result[["r"]]^2))
+  }
+  n2 <- ceiling(options[["populationSize"]] / (1 + gamma))
+
+  requiredSampleSizeTable[["n"]] <- n2
+  nExtra <- n2 - nrow(dataset)
+  if(nExtra < 1)
+    nExtra <- 0
+  requiredSampleSizeTable[["nextra"]] <- nExtra
+
+}
+
+.estimationCorrelationPlot <- function(dataset, options, jaspResults, ready, position){
+
+  if(!is.null(jaspResults[["correlationPlot"]]) || !options[["correlationPlot"]]) return()
+
+  correlationPlot <- createJaspPlot(plot = NULL, title = "Correlation Plot", width = 500, height = 400)
+  correlationPlot$position <- position
+  correlationPlot$dependOn(options = c("correlationPlot", "bookValues", "auditValues", "explanatoryText"))
+
+  jaspResults[["correlationPlot"]] <- correlationPlot
+
+  if(!ready) return()
+
+  d <- data.frame(xx= dataset[,.v(options[["bookValues"]])], yy= dataset[,.v(options[["auditValues"]])])
+  co <- cor(d$xx, d$yy, method = "pearson")
+  d <- na.omit(d)
+  d <- ceiling(d)
+  xVar <- d$xx
+  yVar <- d$yy
+
+  fit <- vector("list", 1)# vector("list", 4)
+  fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), data = d)
+
+  bestModel <- 1 # which.min(Bic)
+
+  # format x labels
+  xlow <- min(pretty(xVar))
+  xhigh <- max(pretty(xVar))
+  xticks <- pretty(c(xlow, xhigh))
+  xLabs <- vector("character", length(xticks))
+  xLabs <- format(xticks, digits= 3, scientific = FALSE)
+
+  # Format y labels
+  yticks <- xticks
+  yLabs <- vector("character", length(yticks))
+  yLabs <- format(yticks, digits= 3, scientific = FALSE)
+
+  co <- round(co, 2)
+
+  cols <- rep("gray", nrow(d))
+  cols[which(d$xx != d$yy)] <- "red"
+
+  p <- JASPgraphs::drawAxis(xName = "Book values", yName = "Audit values", xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
+  p <- JASPgraphs::drawPoints(p, dat = d, size = 3, fill = cols)
+  p <- .poly.predJfA(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)
+  p <- p + ggplot2::annotate("text", x = xticks[1], y = (yticks[length(yticks)] - ((yticks[length(yticks)] - yticks[length(yticks) - 1]) / 2)),
+                              label = paste0("italic(r) == ", co), size = 8, parse = TRUE, hjust = -0.5, vjust = 0.5)
+  p <- p + ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb"), panel.grid.major.y = ggplot2::element_line(color="#cbcbcb"))
+  
+  p <- JASPgraphs::themeJasp(p)
+
+  correlationPlot$plotObject <- p
+
+  if(options[["explanatoryText"]]){
+      figure1 <- createJaspHtml(paste0("<b>Figure 1.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
+                                        did not match their original book value. If these red dots lie in the bottom part of the graph, the observations are overstated. 
+                                        If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient 
+                                        of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables."), "p")
+      figure1$position <- position + 1
+      figure1$dependOn(optionsFromObject = correlationPlot)
+      jaspResults[["figure1"]] <- figure1
   }
 }

@@ -175,14 +175,15 @@ Form {
 			{
 				id: requiredSampleSize
 				text: qsTr("Required sample size")
-				name: "reqsamplesize"
+				name: "requiredSampleSizeTable"
 
 				DoubleField 
 				{
+					name: 			"requiredUncertainty"
 					visible: 		requiredSampleSize.checked
 					text: 			qsTr("for an uncertainty of:")
-					defaultValue: 	0
-					fieldWidth: 	200
+					defaultValue: 	100000
+					fieldWidth: 	100
 					min: 			0
 					decimals: 		2
 				}
@@ -196,7 +197,8 @@ Form {
 			CheckBox 
 			{
 				text: qsTr("Correlation plot")
-				name: "correlationplot"
+				name: "correlationPlot"
+				enabled: !mpu.checked
 			}
 		}
 	}
