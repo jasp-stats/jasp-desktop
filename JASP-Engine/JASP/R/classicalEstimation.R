@@ -21,6 +21,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
   # Read data
   dataset <- .readDataEstimation(dataset, options)
+  .errorHandlingEstimation(dataset, options)
 
   # Ready for analysis
   ready <- .classicalEstimationReady(options)
@@ -50,6 +51,18 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
   return(dataset)
 }
 
+.errorHandlingEstimation <- function(dataset, options){
+  variables <- NULL
+  if(options[["bookValues"]] != "")
+    variables <- c(variables, options[["bookValues"]])
+  if(options[["auditValues"]] != "")
+    variables <- c(variables, options[["auditValues"]])
+
+    .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
+            all.target = variables, message="short", observations.amount= "< 3",
+            exitAnalysisIfErrors = TRUE)
+}
+
 .classicalEstimationReady <- function(options){
   if(options[["estimator"]] == "mpu"){
     ready <- options[["auditValues"]] != "" && options[["populationSize"]] != 0
@@ -63,7 +76,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
   if(!is.null(jaspResults[["regressionTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   title <- base::switch(options[["estimator"]],
-                        "mpu"         = "Mean-per-unit estimator",
+                        "mpu"         = "Direct estimator",
                         "difference"  = "Difference estimator",
                         "ratio"       = "Ratio estimator",
                         "regression"  = "Regression estimator")
@@ -72,7 +85,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
   regressionTable$position <- position
   regressionTable$dependOn(options = c("bookValues", "auditValues", "populationValue", "populationSize", "confidence", "estimator"))
 
-  regressionTable$addColumnInfo(name = 'estimate', title = 'Point estimate', type = 'string')
+  regressionTable$addColumnInfo(name = 'estimate', title = 'Estimate W&#770', type = 'string')
   regressionTable$addColumnInfo(name = 'uncertainty', title = 'Uncertainty', type = 'string')
   regressionTable$addColumnInfo(name = 'lower', title = 'Lower', type = 'string', overtitle = paste0(round(options[["confidence"]] * 100, 2), "% Confidence interval"))
   regressionTable$addColumnInfo(name = 'upper', title = 'Upper', type = 'string', overtitle = paste0(round(options[["confidence"]] * 100, 2), "% Confidence interval"))
@@ -176,7 +189,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
     if(options[["estimator"]] == "mpu"){
 
-      calculationsContainer[["intro"]] <- createJaspHtml(paste0("The required information for the <b>mean-per-unit</b> estimator consists of:"), "p")
+      calculationsContainer[["intro"]] <- createJaspHtml(paste0("The required information for the <b>direct</b> estimator consists of:"), "p")
 
       calc1 <- "The population size <i>N</i>"
       if(options[["populationSize"]] != 0){
@@ -202,9 +215,9 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc4 <- paste0(calc4, " = ", sW)
       } 
 
-      calc5 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>\u03B1/2</sub></i>")
+      calc5 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i>")
       if(options[["auditValues"]] != ""){
-        calc5 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>\u03B1/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
+        calc5 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
       } 
 
       calculations <- paste0(calc1, "
@@ -216,13 +229,13 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
 
-      pointEstimate <- "The point estimate of the true population value <i>W&#770 = N x w&#772</i>"
+      pointEstimate <- "The point estimate of the true population value <i>W&#770 = N \u00D7 w&#772</i>"
       if(ready){
         W <- round(N * meanW, 2)
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
-      
-      uncertainty <- "The uncertainty of the estimator <i>U = t<sub>\u03B1/2</sub> x s<sub>w</sub> x (N / \u221A n) x \u221A (N-n) / (N - 1)</i>"
+
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>w</sub> \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sW * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -271,9 +284,9 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc5 <- paste0(calc5, " = ", sE)
       } 
 
-      calc6 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>\u03B1/2</sub></i>")
+      calc6 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i>")
       if(options[["auditValues"]] != ""){
-        calc6 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>\u03B1/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
+        calc6 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
       } 
 
       calculations <- paste0(calc1, "
@@ -286,13 +299,13 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
 
-      pointEstimate <- "The point estimate of the true population value <i>W&#770 = B - N x e&#772</i>"
+      pointEstimate <- "The point estimate of the true population value <i>W&#770 = B - N \u00D7 e&#772</i>"
       if(ready){
         W <- round(B - N * meanE, 2)
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
 
-      uncertainty <- "The uncertainty of the estimator <i>U = t<sub>\u03B1/2</sub> x s<sub>e</sub> x (N / \u221A n) x \u221A (N-n) / (N - 1)</i>"
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>e</sub> \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sE * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -366,9 +379,9 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc9 <- paste0(calc9, " = ", q)
       } 
 
-      calc10 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>\u03B1/2</sub></i>")
+      calc10 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i>")
       if(options[["auditValues"]] != ""){
-        calc10 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>\u03B1/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
+        calc10 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
       } 
 
       calculations <- paste0(calc1, "
@@ -385,13 +398,13 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
 
-      pointEstimate <- "The point estimate of the true population value <i>W&#770 = q x B</i>"
+      pointEstimate <- "The point estimate of the true population value <i>W&#770 = q \u00D7 B</i>"
       if(ready){
         W <- round(q * B, 2)
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
 
-      uncertainty <- "The uncertainty of the estimator <i>U = t<sub>\u03B1/2</sub> x \u221A(s<sub>w</sub><sup>2</sup> - 2 x q x r x s<sub>b</sub> x s<sub>w</sub> + q<sup>2</sup> x s<sub>b</sub><sup>2</sup>) x (N / \u221A n) x \u221A (N-n) / (N - 1)</i>"
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 \u221A(s<sub>w</sub><sup>2</sup> - 2 \u00D7 q \u00D7 r \u00D7 s<sub>b</sub> \u00D7 s<sub>w</sub> + q<sup>2</sup> \u00D7 s<sub>b</sub><sup>2</sup>) \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sqrt( sW^2 - 2*q*r*sB*sW + q^2 * sB^2 ) * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -458,6 +471,11 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         calc8 <- paste0(calc8, " = ", b1)
       } 
 
+      calc9 <- paste0("The t-value <i>(df = n - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i>")
+      if(options[["auditValues"]] != ""){
+        calc9 <- paste0("The t-value <i>(df = ", n ," - 1)</i> corresponding to ", round(options[["confidence"]] * 100), "% confidence <i>t<sub>", round(1 - options[["confidence"]], 2), "/2</sub></i> = ", round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1), 3))
+      } 
+
       calculations <- paste0(calc1, "
             ", calc2, "
             ", calc3, "
@@ -465,17 +483,18 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
             ", calc5, "
             ", calc6, "
             ", calc7, "
-            ", calc8)
+            ", calc8, "
+            ", calc9)
       calculationsContainer[["all"]] <- createJaspHtml(calculations, "p")
 
       calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
-      pointEstimate <- "The point estimate of the true population value <i>W&#770 = N x w&#772 + b<sub>1</sub> x (B - N x b&#772)</i>"
+      pointEstimate <- "The point estimate of the true population value <i>W&#770 = N \u00D7 w&#772 + b<sub>1</sub> x (B - N \u00D7 b&#772)</i>"
       if(ready){
         W <- round(N * meanW + b1 * (B - N * meanB), 2)
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
       
-      uncertainty <- "The uncertainty of the estimator <i>U = t<sub>\u03B1/2</sub> x s<sub>w</sub> x \u221A(1 - r<sup>2</sup>) x (N / \u221A n) x \u221A (N-n) / (N - 1)</i>"
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>w</sub> \u00D7 \u221A(1 - r<sup>2</sup>) \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sW * sqrt(1 - r^2) * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -506,7 +525,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
   if(!is.null(jaspResults[["requiredSampleSizeTable"]]) || !options[["requiredSampleSizeTable"]]) return() #The options for this table didn't change so we don't need to rebuild it
 
   title <- base::switch(options[["estimator"]],
-                        "mpu"         = "Mean-per-unit",
+                        "mpu"         = "Direct",
                         "difference"  = "Difference",
                         "ratio"       = "Ratio",
                         "regression"  = "Regression")
@@ -551,7 +570,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
 .estimationCorrelationPlot <- function(dataset, options, jaspResults, ready, position){
 
-  if(!is.null(jaspResults[["correlationPlot"]]) || !options[["correlationPlot"]]) return()
+  if(!is.null(jaspResults[["correlationPlot"]]) || !options[["correlationPlot"]] || options[["estimator"]] == "mpu") return()
 
   correlationPlot <- createJaspPlot(plot = NULL, title = "Correlation Plot", width = 500, height = 400)
   correlationPlot$position <- position

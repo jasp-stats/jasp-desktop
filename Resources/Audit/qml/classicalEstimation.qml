@@ -116,7 +116,7 @@ Form {
 				RadioButton 
 				{	
 					id:			mpu
-					text: 		qsTr("Mean-per-unit")
+					text: 		qsTr("Direct")
 					name: 		"mpu"
 				}
 
