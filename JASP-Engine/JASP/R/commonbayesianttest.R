@@ -438,7 +438,7 @@
 .ttestBayesianSetupWilcoxProgressBar <- function(nvar, ttestState, noSamples) {
   # all variables minus the ones we sampled before
   todo <- nvar
-  if (!is.null(ttestState[["delta"]]))
+  if (length(ttestState[["delta"]]) > 0L)
     todo <- todo - sum(sapply(ttestState[["delta"]], Negate(is.null)))
   if (todo > 0L) {
     # times 5 since there are 5 chains by default
