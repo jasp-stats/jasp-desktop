@@ -102,7 +102,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
   if(!ready) return()
 
-  regressionTable$addFootnote(message = "Displayed numbers are estimates of the true value of the population.", symbol="<i>Note.</i>")
+  regressionTable$addFootnote(message = "Displayed numbers may differ from exact outcomes due to rounding in the calculations.", symbol="<i>Note.</i>")
 
   dataset           <- na.omit(dataset)
 
@@ -143,7 +143,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
     sW            <- round(sd(dataset[, .v(options[["auditValues"]])]), 2)
     r             <- round(cor(dataset[, .v(options[["bookValues"]])], dataset[, .v(options[["auditValues"]])]), 2)
 
-    q             <- round(meanW / meanB, 2)
+    q             <- round(meanW / meanB, 4)
     s             <- sqrt( sW^2 - 2*q*r*sB*sW + q^2 * sB^2 )
 
     pointEstimate <- round(q * B, 2)
@@ -189,7 +189,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
     if(options[["estimator"]] == "mpu"){
 
-      calculationsContainer[["intro"]] <- createJaspHtml(paste0("The required information for the <b>direct</b> estimator consists of:"), "p")
+      calculationsContainer[["intro"]] <- createJaspHtml(paste0("<i>The required information for the <b>direct</b> estimator consists of:</i>"), "p")
 
       calc1 <- "The population size <i>N</i>"
       if(options[["populationSize"]] != 0){
@@ -227,7 +227,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
                         ", calc5)
       calculationsContainer[["all"]] <- createJaspHtml(calculations, "p")
 
-      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
+      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("<i>This information allows for calculation of:</i>"), "p")
 
       pointEstimate <- "The point estimate of the true population value <i>W&#770 = N \u00D7 w&#772</i>"
       if(ready){
@@ -235,7 +235,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
 
-      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>w</sub> \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>w</sub> \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sW * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -252,7 +252,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
     } else if(options[["estimator"]] == "difference"){
 
-      calculationsContainer[["intro"]] <- createJaspHtml(paste0("The required information for the <b>difference</b> estimator consists of:"), "p")
+      calculationsContainer[["intro"]] <- createJaspHtml(paste0("<i>The required information for the <b>difference</b> estimator consists of:</i>"), "p")
 
       calc1 <- "The population size <i>N</i>"
       if(options[["populationSize"]] != 0){
@@ -297,7 +297,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
                         ", calc6)
       calculationsContainer[["all"]] <- createJaspHtml(calculations, "p")
 
-      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
+      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("<i>This information allows for calculation of:</i>"), "p")
 
       pointEstimate <- "The point estimate of the true population value <i>W&#770 = B - N \u00D7 e&#772</i>"
       if(ready){
@@ -305,7 +305,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
 
-      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>e</sub> \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>e</sub> \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sE * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -323,7 +323,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
       
     } else if(options[["estimator"]] == "ratio"){
 
-      calculationsContainer[["intro"]] <- createJaspHtml(paste0("The required information for the <b>ratio</b> estimator consists of:"), "p")
+      calculationsContainer[["intro"]] <- createJaspHtml(paste0("<i>The required information for the <b>ratio</b> estimator consists of:</i>"), "p")
 
       calc1 <- "The population size <i>N</i>"
       if(options[["populationSize"]] != 0){
@@ -375,7 +375,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calc9 <- "The correctness ratio <i>q<sub>bw</sub></i>"
       if(ready){
-        q <- round(meanW / meanB, 2)
+        q <- round(meanW / meanB, 4)
         calc9 <- paste0(calc9, " = ", q)
       } 
 
@@ -396,15 +396,15 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
                   ", calc10)
       calculationsContainer[["all"]] <- createJaspHtml(calculations, "p")
 
-      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
+      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("<i>This information allows for calculation of:</i>"), "p")
 
-      pointEstimate <- "The point estimate of the true population value <i>W&#770 = q \u00D7 B</i>"
+      pointEstimate <- "The point estimate of the true population value <i>W&#770 = q<sub>bw</sub> \u00D7 B</i>"
       if(ready){
         W <- round(q * B, 2)
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
 
-      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 \u221A(s<sub>w</sub><sup>2</sup> - 2 \u00D7 q \u00D7 r \u00D7 s<sub>b</sub> \u00D7 s<sub>w</sub> + q<sup>2</sup> \u00D7 s<sub>b</sub><sup>2</sup>) \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 \u221A(s<sub>w</sub><sup>2</sup> - 2 \u00D7 q<sub>bw</sub> \u00D7 r<sub>bw</sub> \u00D7 s<sub>b</sub> \u00D7 s<sub>w</sub> + q<sub>bw</sub><sup>2</sup> \u00D7 s<sub>b</sub><sup>2</sup>) \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sqrt( sW^2 - 2*q*r*sB*sW + q^2 * sB^2 ) * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -421,7 +421,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
       
     } else if(options[["estimator"]] == "regression"){
 
-            calculationsContainer[["intro"]] <- createJaspHtml(paste0("The required information for the <b>regression</b> estimator consists of:"), "p")
+            calculationsContainer[["intro"]] <- createJaspHtml(paste0("<i>The required information for the <b>regression</b> estimator consists of:</i>"), "p")
 
       calc1 <- "The population size <i>N</i>"
       if(options[["populationSize"]] != 0){
@@ -487,14 +487,14 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
             ", calc9)
       calculationsContainer[["all"]] <- createJaspHtml(calculations, "p")
 
-      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("This information allows for calculation of:"), "p")
+      calculationsContainer[["intro2"]] <- createJaspHtml(paste0("<i>This information allows for calculation of:</i>"), "p")
       pointEstimate <- "The point estimate of the true population value <i>W&#770 = N \u00D7 w&#772 + b<sub>1</sub> x (B - N \u00D7 b&#772)</i>"
       if(ready){
         W <- round(N * meanW + b1 * (B - N * meanB), 2)
         pointEstimate <- paste0(pointEstimate, " = ", W)
       }
       
-      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>w</sub> \u00D7 \u221A(1 - r<sup>2</sup>) \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A <sup>N - n</sup>&frasl;<sub>N - 1</sub></i>")
+      uncertainty <- paste0("The uncertainty of the estimator <i>U = t<sub>", round(1 - options[["confidence"]], 2), "/2</sub> \u00D7 s<sub>w</sub> \u00D7 \u221A(1 - r<sub>bw</sub><sup>2</sup>) \u00D7 <sup>N</sup>&frasl;<sub>\u221A n</sub> \u00D7 \u221A (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>")
       if(ready){
         U <- round(qt(p = (1 - (1 - options[["confidence"]])/2), df = n - 1) * sW * sqrt(1 - r^2) * (N / sqrt(n)) * sqrt((N-n)/(N-1)), 2)
         uncertainty <- paste0(uncertainty, " = ", U)
@@ -574,7 +574,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
   correlationPlot <- createJaspPlot(plot = NULL, title = "Correlation Plot", width = 500, height = 400)
   correlationPlot$position <- position
-  correlationPlot$dependOn(options = c("correlationPlot", "bookValues", "auditValues", "explanatoryText"))
+  correlationPlot$dependOn(options = c("correlationPlot", "bookValues", "auditValues", "explanatoryText", "estimator"))
 
   jaspResults[["correlationPlot"]] <- correlationPlot
 
@@ -622,7 +622,7 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
 
   if(options[["explanatoryText"]]){
       figure1 <- createJaspHtml(paste0("<b>Figure 1.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
-                                        did not match their original book value. If these red dots lie in the bottom part of the graph, the observations are overstated. 
+                                        did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. 
                                         If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient 
                                         of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables."), "p")
       figure1$position <- position + 1
