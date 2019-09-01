@@ -18,7 +18,7 @@
 mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
 	# Preparatory work
-	dataset <- .readDataRegressionAnalyses(dataset, options)
+	dataset <- .readDataRegressionAnalyses(dataset, options, jaspResults)
 	.errorHandlingRegressionAnalyses(dataset, options)
 
 	# Check if analysis is ready to run
@@ -66,9 +66,6 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   # Set model-specific parameters
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
-
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
 
   # Split the data into training and test sets
   if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){

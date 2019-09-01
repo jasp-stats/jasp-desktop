@@ -15,11 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.readDataClusteringAnalyses <- function(dataset, options){
+.readDataClusteringAnalyses <- function(dataset, options, jaspResults){
   predictors <- unlist(options[['predictors']])
   predictors <- predictors[predictors != ""]
-  if (is.null(dataset))
-    dataset <- .readDataSetToEnd(columns.as.numeric = predictors, exclude.na.listwise = predictors)
+  if (is.null(dataset)){
+    dataset <- .readDataSetToEnd(columns = predictors)
+    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
+    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
+    dataset <- na.omit(dataset)
+  }
   if(options[["scaleEqualSD"]] && length(unlist(options[["predictors"]])) > 0)
     dataset <- .scaleNumericData(dataset)
 
@@ -401,7 +405,9 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
   clusterResult <- jaspResults[["clusterResult"]]$object
 
   if(is.null(jaspResults[["clusterColumn"]])){
-    clusterColumn <- clusterResult[["pred.values"]]
+    predictions <- clusterResult[["pred.values"]]
+    clusterColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
+    clusterColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
     jaspResults[["clusterColumn"]] <- createJaspColumn(columnName=options[["clusterColumn"]])
     jaspResults[["clusterColumn"]]$dependOn(options = c("clusterColumn", "predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
                                                         "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "optimizationCriterion"))

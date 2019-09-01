@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.readDataRegressionAnalyses <- function(dataset, options){
+.readDataRegressionAnalyses <- function(dataset, options, jaspResults){
   target                    <- NULL
   testSetIndicator          <- NULL 
   if(options[["target"]] != "")
@@ -26,10 +26,13 @@
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]
   variables.to.read         <- c(target, predictors, testSetIndicator)
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns = variables.to.read, exclude.na.listwise = variables.to.read)
+    dataset <- .readDataSetToEnd(columns = variables.to.read)
+    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
+    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
+    dataset <- na.omit(dataset)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
-    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
+    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]])), drop = FALSE])
   return(dataset)
 }
 
@@ -482,7 +485,9 @@
   regressionResult <- jaspResults[["regressionResult"]]$object
 
   if(is.null(jaspResults[["valueColumn"]])){
-    valueColumn <- regressionResult[["values"]]
+    predictions <- regressionResult[["values"]]
+    valueColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
+    valueColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
     jaspResults[["valueColumn"]] <- createJaspColumn(columnName=options[["valueColumn"]])
     jaspResults[["valueColumn"]]$dependOn(options = c("valueColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
                                                               "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",

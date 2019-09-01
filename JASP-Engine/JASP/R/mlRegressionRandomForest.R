@@ -18,7 +18,7 @@
 mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   
 	# Preparatory work
-	dataset <- .readDataRegressionAnalyses(dataset, options)
+	dataset <- .readDataRegressionAnalyses(dataset, options, jaspResults)
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
@@ -58,9 +58,6 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
 .randomForestRegression <- function(dataset, options, jaspResults){
   
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
-
   # Set model-specific parameters
   noOfPredictors <- base::switch(options[["noOfPredictors"]], "manual" = options[["numberOfPredictors"]], "auto" = floor(sqrt(length(options[["predictors"]]))))
 

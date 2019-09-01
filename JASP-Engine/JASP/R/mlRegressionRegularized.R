@@ -18,7 +18,7 @@
 mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   
 	# Preparatory work
-	dataset <- .readDataRegularizedRegression(dataset, options)
+	dataset <- .readDataRegularizedRegression(dataset, options, jaspResults)
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
@@ -54,7 +54,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 }
 
 # Read dataset
-.readDataRegularizedRegression <- function(dataset, options){
+.readDataRegularizedRegression <- function(dataset, options, jaspResults){
   
   target                    <- NULL
   weights                   <- NULL
@@ -70,11 +70,14 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   variables.to.read         <- c(target, predictors, weights, testSetIndicator)
 
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns.as.numeric = variables.to.read, exclude.na.listwise = variables.to.read)
+    dataset <- .readDataSetToEnd(columns = variables.to.read)
+    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
+    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
+    dataset <- na.omit(dataset)
   }
   
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
-    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
+    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]])), drop = FALSE])
   
   return(dataset)
 }
@@ -83,9 +86,6 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 
   # Import model formula from jaspResults
   formula <- jaspResults[["formula"]]$object
-
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
 
   # Set model-specific parameters
   if(options[["penalty"]] == "ridge") {

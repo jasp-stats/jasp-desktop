@@ -18,7 +18,7 @@
 mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
-  dataset <- .readDataClassificationAnalyses(dataset, options)
+  dataset <- .readDataClassificationAnalyses(dataset, options, jaspResults)
   .errorHandlingClassificationAnalyses(dataset, options)
   
   # Check if analysis is ready to run
@@ -78,9 +78,6 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
 
   # Set model-specific parameters
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
-
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
 
   # Split the data into training and test sets
   if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){

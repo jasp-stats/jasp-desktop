@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.readDataClassificationAnalyses <- function(dataset, options){
+.readDataClassificationAnalyses <- function(dataset, options, jaspResults){
   target                    <- NULL
   testSetIndicator          <- NULL 
   if(options[["target"]] != "")
@@ -26,7 +26,10 @@
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]
   variables.to.read         <- c(target, predictors, testSetIndicator)
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns = variables.to.read, exclude.na.listwise = variables.to.read)
+    dataset <- .readDataSetToEnd(columns = variables.to.read)
+    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
+    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
+    dataset <- na.omit(dataset)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["scaleEqualSD"]])
     dataset[,.v(options[["predictors"]])] <- .scaleNumericData(dataset[,.v(options[["predictors"]]), drop = FALSE])
@@ -835,7 +838,12 @@
   classificationResult <- jaspResults[["classificationResult"]]$object
 
   if(is.null(jaspResults[["classColumn"]])){
-    classColumn <- classificationResult[["classes"]]
+    predictions <- as.character(classificationResult[["classes"]])
+    print(predictions)
+    classColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
+    classColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
+    classColumn <- factor(classColumn)
+    print(classColumn)
     jaspResults[["classColumn"]] <- createJaspColumn(columnName=options[["classColumn"]])
     jaspResults[["classColumn"]]$dependOn(options = c("classColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt",
                                                             "target", "predictors", "seed", "seedBox", "modelValid", "maxK", "noOfFolds", "modelValid", "holdoutData", "testDataManual",

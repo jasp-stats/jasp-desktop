@@ -18,7 +18,7 @@
 mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
 	# Preparatory work
-	dataset <- .readDataRegressionAnalyses(dataset, options)
+	dataset <- .readDataRegressionAnalyses(dataset, options, jaspResults)
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
@@ -55,9 +55,6 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 	# Set model specific parameters
 	weights <- options[["weights"]]
 	distance <- options[["distanceParameterManual"]]
-
-	# Remove missing values from data set
-  	dataset                   <- na.omit(dataset)
 
 	# Split the data into training and test sets
 	if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){

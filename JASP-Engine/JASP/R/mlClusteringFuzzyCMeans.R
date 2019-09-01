@@ -18,7 +18,7 @@
 mlClusteringFuzzyCMeans <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
-  dataset <- .readDataClusteringAnalyses(dataset, options)
+  dataset <- .readDataClusteringAnalyses(dataset, options, jaspResults)
   .errorHandlingClusteringAnalyses(dataset, options)
   
   # Check if analysis is ready to run
