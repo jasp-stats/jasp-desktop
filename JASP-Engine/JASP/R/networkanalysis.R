@@ -16,11 +16,15 @@
 #
 
 NetworkAnalysis <- function(jaspResults, dataset, options) {
-	if (base::isNamespaceLoaded("bootnet") == FALSE) {
-		try(base::loadNamespace("bootnet"), silent=TRUE)
-	}
+	if (!isNamespaceLoaded("bootnet"))
+		try(loadNamespace("bootnet"), silent = TRUE)
 
-  dataset <- .networkAnalysisReadData(dataset, options)
+  dataset <- .networkAnalysisReadData      (dataset, options)
+  options <- .networkAnalysisDerivedOptions(dataset, options)
+  .networkAnalysisErrorCheck(dataset, options)
+  
+  network <- .networkAnalysisRun(jaspResults, dataset, options, variables)
+  
 
   return()  
 	## Read Dataset ## ----
@@ -356,41 +360,29 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 }
 
 .networkAnalysisReadData <- function(dataset, options) {
+
   if (!is.null(dataset))
     return(dataset)
+
+  variables <- unlist(options[["variables"]])
+  groupingVariable <- options[["groupingVariable"]]
+  vars2read <- c(variables, groupingVariable)
+  vars2read <- vars2read[vars2read != ""]
+  dataset <- .readDataSetToEnd(columns = variables)
   
-  variables <- unlist(options$variables)
-  
-  varsAsFactor <- NULL
-  if (options[["groupingVariable"]] != "")
-    varsAsFactor <- options[["groupingVariable"]]
-  
-  options[["layoutInvalid"]] <- FALSE
-  
-  dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = varsAsFactor, exclude.na.listwise = NULL)
-  newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
-  variables <- variables[newOrder]
-  
-  if (options[["colorNodesBy"]] != "") { # load data from variable that indicates groups
-    options[["colorNodesByData"]] <- .readDataSetToEnd(columns = options[["colorNodesBy"]], exclude.na.listwise = options[["colorNodesBy"]])[[1]]
-    colorNodes <- .networkAnalysisSanitizeColorNodesByData(variables, options)
-    options[["colorNodesByData"]] <- colorNodes[["newData"]]
-    options[["colorNodesByDataMessage"]] <- colorNodes[["message"]]
-    
+  if (options[["groupingVariable"]] == "") { # one network
+    dataset <- list(dataset) # for compatability with the split behaviour
+  } else { # multiple networks
+    groupingVariableData <- dataset[[.v(options[["groupingVariable"]])]]
+    dataset[[.v(options[["groupingVariable"]])]] <- NULL
+    dataset <- split(dataset, groupingVariableData, drop = TRUE)
   }
-  if (options[["mgmVariableType"]] != "") {# load data from variable that indicates variable type
-    options[["mgmVariableTypeData"]] <- .readDataSetToEnd(columns = options[["mgmVariableType"]], exclude.na.listwise = options[["mgmVariableType"]])[[1]]
-    
-    # some robustness
-    if (length(options[["mgmVariableTypeData"]]) < length(variables)) { # too short
-      options[["mgmVariableTypeDataOkay"]] <- -1
-    } else if (length(options[["mgmVariableTypeData"]]) > length(variables)) { # too long
-      options[["mgmVariableTypeDataOkay"]] <- 1
-    }
-    options[["mgmVariableTypeData"]] <- options[["mgmVariableTypeData"]][seq_along(variables)]
-    options[["mgmVariableTypeData"]][is.na(options[["mgmVariableTypeData"]])] <- "g" # set missing to gaussian (in case of too few types supplied)
-    
-  }
+  return(dataset)
+  
+}
+
+.networkAnalysisDerivedOptions <- function(dataset, options) {
+  
   if (options[["layoutX"]] != "" && options[["layoutY"]] != "") {
     
     options[["layoutXData"]] <- .readDataSetToEnd(columns = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1]]
@@ -410,180 +402,306 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     options[["layoutInvalid"]] <- TRUE # TODO: footnote in table if this one is true
     
   }
-  
-  
-  return(dataset)
+  options[["nGraphs"]] <- length(dataset)
+  options[["ready"]] <- length(options[["variables"]]) < 3
+  print(options[["ready"]])
+  return(options)
 }
 
+.networkAnalysisErrorCheck <- function(dataset, options) {
+  
+  # some analyses, such as Sacha's EBIGglasso with cor_auto, completely ignore the missing argument
+  # and always use pairwise information even though their documentation says they can do listwise
+  if (length(options[["variables"]]) < 3)
+    return()
+  
+  if (options[["missingValues"]] == "listwise")
+    dataset <- dataset[complete.cases(dataset), ]
+  
+  # check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
+  if (is.null(state[["network"]])) {
+    
+    customChecks <- NULL
+    
+    # check if data must be binarized
+    if (options[["estimator"]] %in% c("IsingFit", "IsingSampler")) {
+      idx <- colnames(dataset) != .v(options[["groupingVariable"]])
+      dataset[idx] <- bootnet::binarize(dataset[idx], split = options[["split"]], verbose = FALSE, removeNArows = FALSE)
+      
+      if (options[["estimator"]] == "IsingFit") {
+        # required check since IsingFit removes these variables from the analyses
+        customChecks <- c(customChecks,
+                          function() {
+                            tbs <- apply(dataset, 2, table)
+                            if (any(tbs <= 1)) {
+                              idx <- which(tbs <= 1, arr.ind = TRUE)
+                              return(sprintf(
+                                "After binarizing the data too little variance remained in variable(s): %s.",
+                                paste0(.unv(colnames(tbs[, idx[, 2], drop = FALSE])), collapse = ", ")
+                              ))
+                            }
+                            return(NULL)
+                          }
+        )
+      }
+    }
+    
+    
+    # default error checks
+    checks <- c("infinity", "variance", "observations", "varCovData")
+    
+    groupingVariable <- NULL
+    if (options[["groupingVariable"]] != "") {
+      groupingVariable <- options[["groupingVariable"]]
+      # these cannot be chained unfortunately
+      .hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
+                 type = c("factorLevels", "observations"),
+                 factorLevels.target = groupingVariable,
+                 factorLevels.amount = "< 2",
+                 observations.amount = "< 10",
+                 observations.grouping = groupingVariable,
+                 exitAnalysisIfErrors = TRUE)
+    }
+    
+    # estimator 'mgm' requires some additional checks
+    categoricalVars <- NULL
+    if (options[["estimator"]] == "mgm" && "c" %in% options[["mgmVariableTypeData"]]) {
+      categoricalVars <- variables[options[["mgmVariableTypeData"]] == "c"]
+      checks <- c(checks, "factorLevels")
+    }
+    
+    # check for errors
+    fun <- cor
+    if (options[["correlationMethod"]] == "cov")
+      fun <- cov
+    .hasErrors(dataset = dataset, perform = perform,
+               type = checks,
+               variance.target = variables, # otherwise the grouping variable always has variance == 0
+               variance.grouping = groupingVariable,
+               factorLevels.target = categoricalVars,
+               factorLevels.amount = "> 10", # probably a misspecification of mgmVariableType when this happens.
+               factorLevels.grouping = groupingVariable,
+               observations.amount = " < 3",
+               observations.grouping = groupingVariable,
+               varCovData.grouping = groupingVariable,
+               varCovData.corFun = fun,
+               varCovData.corArgs = list(use = "pairwise"),
+               custom = customChecks,
+               exitAnalysisIfErrors = TRUE)
+  }
+}
+
+# tables ----
+.networkAnalysisSetupMainContainer(jaspResults) {
+  
+  cont <- jaspResults[["mainContainer"]]
+  if (is.null(jaspResults[["mainContainer"]])) {
+    cont <- createJaspContainer(dependencies = c(
+      # data
+      "variables", "groupingVariable", "mgmVariableType",
+      # what kind of network is estimated
+      "estimator",
+      # arguments for the estimator
+      "correlationMethod", "tuningParameter", "criterion", "isingEstimator",
+      "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", "thresholdValue",
+      # general arguments
+      "weightedNetwork", "signedNetwork", "missingValues"
+    ))
+  }
+  return(cont)
+}
+
+.networkAnalysisMainTableMeta <- function(jaspContainer, options) {
+  
+  tb <- createJaspTable("Summary of Network")
+  if (options[["nGraphs"]] > 1L)
+    tb$addColumnInfo(name = "info",     title = "Network",                  type = "string")
+
+  tb$addColumnInfo(name = "nodes",    title = "Number of nodes",          type = "integer")
+  tb$addColumnInfo(name = "nonZero",  title = "Number of non-zero edges", type = "string")
+  tb$addColumnInfo(name = "Sparsity", title = "Sparsity",                 type = "number")
+  
+  if (options[["estimator"]] %in% c("IsingFit", "IsingSampler") && !all(unlist(dataset[!is.na(dataset)]) %in% 0:1))
+    tb$addFootnote(sprintf("Data was binarized using %s. ",	options[["split"]]))
+  
+  jaspContainer[["generalTable"]] <- tb
+  return()
+}
+  
+#   
+#   if (is.null(network[["network"]])) { # fill in with .
+#     
+#     TBcolumns <- list(
+#       info = paste("Network", 1:nGraphs),
+#       nodes = rep(".", nGraphs),
+#       nonZero = rep(".", nGraphs),
+#       Sparsity = rep(".", nGraphs)
+#     )
+#     
+#   } else { # fill in with info from bootnet:::print.bootnet
+#     
+#     TBcolumns <- list(info = names(network[["network"]]),
+#                       nodes = NULL, nonZero = NULL, Sparsity = NULL)
+#     
+#     nVar <- ncol(network[["network"]][[1]][["graph"]])
+#     for (i in seq_len(nGraphs)) {
+#       
+#       nw <- network[["network"]][[i]]
+#       TBcolumns[["nodes"]][i] <- nrow(nw[["graph"]])
+#       TBcolumns[["nonZero"]][i] <- paste(sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] != 0), "/", nVar * (nVar-1) / 2)
+#       TBcolumns[["Sparsity"]][i] <- mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
+#       
+#     }
+#     
+#     # add footnotes for detected as?
+#     if (options[["estimator"]] %in% c("IsingFit", "IsingSampler") &&
+#         !all(unlist(dataset[!is.na(dataset)]) %in% 0:1))  {
+#       
+#       msg <- c(msg,
+#                sprintf("Data was binarized using %s. ",	options$split)
+#       )
+#       
+#     }
+#     
+#   }
+# }
+
+.networkAnalysisMakeBootnetArgs <- function(options, dataset) {
+  options[["rule"]] <- toupper(options[["rule"]])
+  if (options[["correlationMethod"]] == "auto")
+    options[["correlationMethod"]] <- "cor_auto"
+  
+  options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
+                                        "pseudoLikelihood" = "pl",
+                                        "univariateRegressions" = "uni",
+                                        "bivariateRegressions" = "bi",
+                                        "logLinear" = "ll"
+  )
+  
+  # additional checks for mgm
+  level <- NULL # the levels of categorical variables
+  type <- NULL  # the type of each variable
+  if (options[["estimator"]] == "mgm") {
+    
+    nvar <- length(variables)
+    level <- rep(1, nvar)
+    if (is.null(options[["mgmVariableTypeData"]])) {
+      type <- rep("g", nvar)
+    } else {
+      type <- options[["mgmVariableTypeData"]]
+      invalidType <- is.na(type) | !(type %in% c("g", "c", "p"))
+      type[invalidType] <- "g" # set missing to gaussian. TODO: add to table message.
+      
+      if (any(invalidType))
+        networkList[["message"]] <- c(networkList[["message"]],
+                                      sprintf("The variable types supplied in %s contain missing values or values that do not start with 'g', 'c', or 'p'. These have been reset to gaussian ('g'). They were indices %s.",
+                                              options[["mgmVariableType"]], paste(which(invalidType), sep = ", ")))
+      
+      # find out the levels of each categorical variable
+      for (i in which(type == "c"))
+        level[i] <- max(1, nlevels(dataset[[1]][[i]]), length(unique(dataset[[1]][[i]])))
+      
+    }
+    
+  }
+  
+  if (options[["thresholdBox"]] == "value") {
+    threshold <- options[["thresholdValue"]]
+  } else { # options[["thresholdBox"]] == "method"
+    threshold <- options[["thresholdString"]]
+  }
+  
+  # names of .dots must match argument names of bootnet_{estimator name}
+  .dots <- list(
+    corMethod   = options[["correlationMethod"]],
+    tuning      = options[["tuningParameter"]],
+    missing     = options[["missingValues"]],
+    method      = options[["isingEstimator"]],
+    rule        = options[["rule"]],
+    nFolds      = options[["nFolds"]],
+    weighted    = options[["weightedNetwork"]],
+    signed      = options[["signedNetwork"]],
+    split       = options[["split"]],
+    criterion   = options[["criterion"]],
+    sampleSize  = options[["sampleSize"]],
+    type        = type,
+    lev         = level,
+    threshold   = threshold
+  )
+  
+  # get available arguments for specific network estimation function. Removes unused ones.
+  # FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
+  funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
+  
+  nms2keep <- names(funArgs)
+  .dots <- .dots[names(.dots) %in% nms2keep]
+  
+  # for safety, when estimator is changed but missing was pairwise (the default).
+  if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]])))
+    .dots[["missing"]] <- "listwise"
+  
+  # some manual adjustments for these estimators
+  if (options[["estimator"]] == "huge") {
+    
+    if (.dots[["criterion"]] == "cv")
+      .dots[["criterion"]] == "ebic"
+    
+  } else if (options[["estimator"]] == "mgm") {
+    
+    .dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
+    
+    if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
+      .dots[["criterion"]] <- "EBIC"
+    
+  } else if (options[["estimator"]] == "adalasso") {
+    
+    if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
+      .dots[["nFolds"]] <- 2
+    
+  }
+  return(dots)
+}
+
+
 # functions for running analyses ----
-.networkAnalysisRun <- function(dataset, options, variables, perform, oldNetwork = NULL) {
+.networkAnalysisRun <- function(jaspResults, dataset, options) {
 
-	# early return if init, return NULL or results from state
-	if (perform != "run") {
-
-		if (!is.null(oldNetwork))
-			oldNetwork[["status"]] <- .networkAnalysisNetworkHasErrors(oldNetwork)
-
-		return(oldNetwork)
-
-	}
-
-	if (options[["groupingVariable"]] == "") { # one network
-
-		dataset <- list(dataset) # for compatability with the split behaviour
-
-	} else { # multiple networks
-		
-		groupingVariableData <- dataset[[.v(options[["groupingVariable"]])]]
-		dataset[[.v(options[["groupingVariable"]])]] <- NULL
-		dataset <- split(dataset, groupingVariableData, drop = TRUE)
-
-	}
-
-	# list that contains state or is empty
-	networkList <- list(
-		network = oldNetwork[["network"]],
-		centrality = oldNetwork[["centrality"]],
-		clustering = oldNetwork[["clustering"]],
-		layout = oldNetwork[["layout"]]
-	)
+  cont <- .networkAnalysisSetupMainContainer(jaspResults)
+  .networkAnalysisMainTableMeta(jaspContainer, options)
+  
+  if (!options[["ready"]])
+    return()
+  
+  # list that contains state or is empty
+  networkList <- list(
+    network    = jaspResults[["mainContainer"]][["networkState"]]$object,
+    centrality = jaspResults[["mainContainer"]][["centralityState"]]$object,
+    clustering = jaspResults[["mainContainer"]][["clusteringState"]]$object,
+    layout     = jaspResults[["mainContainer"]][["layoutState"]]$object
+  )
 
 	if (is.null(networkList[["network"]])) { # estimate network
 
-		# first setup all bootnet arguments, then loop over datasets to estimate networks
-
-		# fix input to match bootnet preferences
-		options[["rule"]] <- toupper(options[["rule"]])
-		if (options[["correlationMethod"]] == "auto")
-			options[["correlationMethod"]] <- "cor_auto"
-
-		options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
-											  "pseudoLikelihood" = "pl",
-											  "univariateRegressions" = "uni",
-											  "bivariateRegressions" = "bi",
-											  "logLinear" = "ll"
-		)
-
-		# additional checks for mgm
-		level <- NULL # the levels of categorical variables
-		type <- NULL  # the type of each variable
-		if (options[["estimator"]] == "mgm") {
-
-			nvar <- length(variables)
-			level <- rep(1, nvar)
-			if (is.null(options[["mgmVariableTypeData"]])) {
-				type <- rep("g", nvar)
-			} else {
-				type <- options[["mgmVariableTypeData"]]
-				invalidType <- is.na(type) | !(type %in% c("g", "c", "p"))
-				type[invalidType] <- "g" # set missing to gaussian. TODO: add to table message.
-
-				if (any(invalidType))
-					networkList[["message"]] <- c(networkList[["message"]],
-												  sprintf("The variable types supplied in %s contain missing values or values that do not start with 'g', 'c', or 'p'. These have been reset to gaussian ('g'). They were indices %s.",
-												  		options[["mgmVariableType"]], paste(which(invalidType), sep = ", ")))
-
-				# find out the levels of each categorical variable
-				for (i in which(type == "c"))
-					level[i] <- max(1, nlevels(dataset[[1]][[i]]), length(unique(dataset[[1]][[i]])))
-
-			}
-
-		}
-
-		if (options[["thresholdBox"]] == "value") {
-			threshold <- options[["thresholdValue"]]
-		} else { # options[["thresholdBox"]] == "method"
-			threshold <- options[["thresholdString"]]
-		}
-
-		# names of .dots must match argument names of bootnet_{estimator name}
-		.dots <- list(
-			corMethod   = options[["correlationMethod"]],
-			tuning      = options[["tuningParameter"]],
-			missing     = options[["missingValues"]],
-			method      = options[["isingEstimator"]],
-			rule        = options[["rule"]],
-			nFolds      = options[["nFolds"]],
-			weighted    = options[["weightedNetwork"]],
-			signed      = options[["signedNetwork"]],
-			split       = options[["split"]],
-			criterion   = options[["criterion"]],
-			sampleSize  = options[["sampleSize"]],
-			type        = type,
-			lev         = level,
-			threshold   = threshold
-		)
-
-		# get available arguments for specific network estimation function. Removes unused ones.
-		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
-		funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
-
-		nms2keep <- names(funArgs)
-		.dots <- .dots[names(.dots) %in% nms2keep]
-
-		# for safety, when estimator is changed but missing was pairwise (the default).
-		if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]])))
-			.dots[["missing"]] <- "listwise"
-
-		# some manual adjustments for these estimators
-		if (options[["estimator"]] == "huge") {
-
-			if (.dots[["criterion"]] == "cv")
-				.dots[["criterion"]] == "ebic"
-
-		} else if (options[["estimator"]] == "mgm") {
-
-			.dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
-
-			if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
-				.dots[["criterion"]] <- "EBIC"
-
-		} else if (options[["estimator"]] == "adalasso") {
-
-			if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
-				.dots[["nFolds"]] <- 2
-
-		}
-
-		# timings
-		timing <- numeric(length(dataset))
+		# setup all bootnet arguments, then loop over datasets to estimate networks
+	  .dots <- .networkAnalysisMakeBootnetArgs()
 
 		# for every dataset do the analysis
 		for (nw in seq_along(dataset)) {
-
-			data <- dataset[[nw]]
-
-			# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
-			# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
-			tempFileName <- .networkAnalysisGetTempFileName()
-			grDevices::png(filename = tempFileName)
-
-			t0 <- Sys.time()
-			# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...") (TODO: use this info)
-			msg <- capture.output(
-				network <- bootnet::estimateNetwork(
-					data = data,
-					default = options[["estimator"]],
-					.dots = .dots
-				)
-				, type = "message"
-			)
-			t1 <- Sys.time()
-
-			dev.off() # close the fake png
-			if (file.exists(tempFileName))
-				file.remove(tempFileName) # remove the fake png file
-
-			timing[nw] <- difftime(t1, t0, units = "secs") # ensure times are always seconds
+		  
+		  .suppressGrDevice(
+		    msg <- capture.output(
+		      network <- bootnet::estimateNetwork(
+		        data    = dataset[[nw]],
+		        default = options[["estimator"]],
+		        .dots   = .dots
+		      )
+		      , type = "message"
+		    )
+		  )
+		  
 			network[["corMessage"]] <- msg
 			networkList[["network"]][[nw]] <- network
-
 		}
-
-		# store timings in first network (always exists)
-		networkList[["network"]][[1]][["timing"]] <- mean(timing)
-
 	}
 
 	if (is.null(networkList[["centrality"]])) { # calculate centrality measures
