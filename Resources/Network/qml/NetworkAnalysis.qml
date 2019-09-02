@@ -38,9 +38,21 @@ Form
 	VariablesForm 
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-        AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]}
+        AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]; id: networkVariables}
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 	}
+//    CheckBox {
+//        id: readyCheck
+//        name: "ready"
+//        checked: networkVariables.length > 3
+//        visible: false
+//        Component.onCompleted: checked = networkVariables.length > 3
+//        Connections
+//        {
+//            target: networkVariables
+//            onStatusChanged: readyCheck.checked = networkVariables.length > 3
+//        }
+//    }
 	
 	DropDown
 	{
@@ -214,8 +226,24 @@ Form
 		{
 			visible: [7].includes(estimator.currentIndex)
 			height: 150
-			AvailableVariablesList { name: "variablesTypeAvailable" }
-			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleVariable: true; suggestedColumns: ["nominal"] }
+            AvailableVariablesList  {
+                title: qsTr("Variables in network")
+                name: "variablesTypeAvailable"
+                source: ["variables"]
+            }
+			AssignedVariablesList
+            {
+                name: "mgmVariableType"
+                title: qsTr("Variable Type")
+                ExtraControlColumn
+                {
+                    type : "DropDown"
+                    name: "iets"
+                    title: qsTr("Type")
+                    values: ["Categorical", "Continuous", "Count"]
+                    useExternalBorder: true
+                }
+            }
 		}
 	}
 
@@ -254,38 +282,28 @@ Form
 	Section 
 	{
 		title: qsTr("Graphical Options")
-		
+
 		VariablesForm
 		{
-//			height: 200
-//			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
-//            AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true; suggestedColumns: ["nominal"]}
-            
             height: 200
             AvailableVariablesList  { 
+                title: qsTr("Variables in network")
                 name: "variablesForColor"
                 source: ["variables"] 
-                ExtraControlColumn
-                {
-                    type : "TextField"
-                    name: "group"
-                    title: "Group"
-                }
-                ExtraControlColumn
-                {
-                    type : "DropDown"
-                    name: "iets"
-                    title: "Group"
-                    values: ["Categorical", "Continuous", "Count"]
-                }
             }
             AssignedVariablesList
             {
                 name: "colorNodesBy"
                 title: qsTr("Color Nodes By")
-//                listViewType: "RepeatedMeasures"
-//                source: "variables"
-            }          
+                source: "variables"
+                ExtraControlColumn
+                {
+                    type : "TextField"
+                    name: "colorNodesByGroup"
+                    title: qsTr("Group")
+                    useExternalBorder: true
+                }
+            }
 		}
 		
 		Group
