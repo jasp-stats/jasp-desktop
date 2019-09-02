@@ -839,11 +839,9 @@
 
   if(is.null(jaspResults[["classColumn"]])){
     predictions <- as.character(classificationResult[["classes"]])
-    print(predictions)
     classColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
     classColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
     classColumn <- factor(classColumn)
-    print(classColumn)
     jaspResults[["classColumn"]] <- createJaspColumn(columnName=options[["classColumn"]])
     jaspResults[["classColumn"]]$dependOn(options = c("classColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt",
                                                             "target", "predictors", "seed", "seedBox", "modelValid", "maxK", "noOfFolds", "modelValid", "holdoutData", "testDataManual",
