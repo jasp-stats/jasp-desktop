@@ -29,48 +29,32 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
   ready <- all(options$repeatedMeasuresCells != "") &&  length(options$withinModelTerms) > 0
   
-  ## Error checking
-  # .rmAnovaCheckErrors(dataset, options, ready)
   .BANOVAerrorhandling(longData, options, "RM-ANOVA")
   
-  ## Create container 
   rmAnovaContainer <- .getRMAnovaContainer(jaspResults)
 
-  ## Compute All Anova Results
   .rmAnovaComputeResultsContainer(rmAnovaContainer, longData, options, ready)
   
-  ## Create Within Subjects Effects Table
   .rmAnovaWithinSubjectsTable(rmAnovaContainer, dataset, options, ready)  
   
-  ## Create Between Subjects Effects Table
   .rmAnovaBetweenSubjectsTable(rmAnovaContainer, dataset, options, ready)
   
-  ## Create Reference Grid
   .referenceGrid(rmAnovaContainer, options, ready)
   
-  ## Create Sphericity Table
   .rmAnovaAssumptionsContainer(rmAnovaContainer, dataset, options, ready)
   
-  # Descriptives
-  options[["credibleInterval"]] <- 0.95
-  # plotDepends <- c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots", "plotErrorBars", "usePooledStandErrorCI")
   .BANOVAdescriptives(rmAnovaContainer, longData, options, list(noVariables=FALSE), "RM-ANOVA")
   
-  ## Create Post Hoc Tables
   .rmAnovaPostHocTable(rmAnovaContainer, dataset, options, ready)
 
-  ## Create Contrast Tables
   .rmAnovaContrastTable(rmAnovaContainer, longData, options, ready)
 
-  ## Create Marginal Means Tables
   .rmAnovaMarginalMeansTable(rmAnovaContainer, dataset, options, ready)
   
-  # Create Friedman Table
   .rmAnovaFriedmanTable(rmAnovaContainer, longData, options, ready)
   
   .rmAnovaConoverTable(rmAnovaContainer, longData, options, ready)
   
-  ## Create Simple Effects Table
   .rmAnovaSimpleEffects(rmAnovaContainer, dataset, longData, options, ready) 
   
   return()
@@ -282,8 +266,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
   variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
 
-  for (i in variables)
-    dataset[[.v(i)]] <- .v(dataset[[.v(i)]])
+  for (variable in variables)
+    dataset[[.v(variable)]] <- .v(dataset[[.v(variable)]])
 
   options(contrasts=c("contr.sum","contr.poly"))
   
@@ -352,7 +336,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   interceptRow <- model["(Intercept", ]
   model <- model[-1,]
   rownames(model) <- trimws(rownames(model))
-  model[["isWithinTerm"]] <- model[[".isNewGroup"]] <- numeric(nrow(model))
+  model[["isWithinTerm"]] <- model[[".isNewGroup"]] <- logical(nrow(model))
 
   sortedModel <- model
   cases <- unlist(sapply(modelDef$terms.base64, function(x) x[[1]]))
@@ -378,7 +362,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   sortedModel[["case"]] <- unlist(modelDef$terms.normal)
   sortedModel[["Mean Sq"]] <- sortedModel[["Sum Sq"]] / sortedModel[["num Df"]]
   sortedModel[["VovkSellkeMPR"]] <- .VovkSellkeMPR(sortedModel[["Pr(>F)"]])
-  
+
   rownames(residualResults) <- cases
   residualResults[["Mean Sq"]] <- residualResults[["Sum Sq"]] / residualResults[["num Df"]]
   residualResults[["case"]] <- "Residuals"
@@ -390,7 +374,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   sortedModel[["eta"]] <- sortedModel[["Sum Sq"]] / (sum(sortedModel[["Sum Sq"]]) + sum(residualResults[["Sum Sq"]]))
   sortedModel[["etaPart"]] <- sortedModel[["Sum Sq"]] / (sortedModel[["Sum Sq"]] + SSr)
   sortedModel[["genEta"]]<- result[["anova_table"]][["ges"]]
-  
+
   n <- interceptRow[["den Df"]] + 1
   MSb <- interceptRow[["Error SS"]] / (n-1)
   MSm <- sortedModel[["Mean Sq"]]
@@ -399,70 +383,88 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   omega <- (df / (n * (df + 1)) * (MSm - MSr)) / (MSr + ((MSb - MSr) / (df + 1)) + 
                                                                      (df / (n * (df + 1))) * (MSm - MSr))
   sortedModel[["omega"]] <- sapply(omega, max, 0)
-  # Now we include the results from the corrections
   for (i in .indices(summaryResult)) {
     if (any(rownames(summaryResult[[i]]) == "(Intercept)")) 
       summaryResult[[i]] <- summaryResult[[i]][-1, ]
   }
 
-  corrections <- summaryResult$pval.adjustments
-  # if (any(rownames(corrections) == "(Intercept)")) corrections <- corrections[-1, ]
-  withinAnovaTable <- ggTable <- hfTable <- subset(sortedModel, isWithinTerm == 1)
+  # Now we include the results from the corrections
+  withinAnovaTable <- ggTable <- hfTable <- subset(sortedModel, isWithinTerm == TRUE)
   withinAnovaTable[["correction"]] <- "None"
+  corrections <- summaryResult$pval.adjustments
+  sphericityTests <- as.data.frame(unclass(summaryResult$sphericity.tests))
   
-  wResidualResults <- wResidualResultsGG <- wResidualResultsHF <- subset(residualResults, isWithinTerm == 1)
-  wResidualResults[["correction"]] <- "None"
-
   if (!is.null(rownames(corrections))) {
-    withinIndices <- .mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections))
+    corrections <- corrections[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
+    sphericityTests <- sphericityTests[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
+    rownames(corrections) <- rownames(sphericityTests) <- 
+      rownames(withinAnovaTable)[.mapAnovaTermsToTerms(rownames(corrections), rownames(withinAnovaTable))]
+  }
   
-    ggTable[["num Df"]] <- withinAnovaTable[["num Df"]] * corrections[withinIndices, "GG eps"]
-    ggTable[["Mean Sq"]] <-  withinAnovaTable[["Sum Sq"]] / ggTable[["num Df"]]
-    ggTable[["den Df"]] <- withinAnovaTable[["den Df"]] * corrections[withinIndices, "GG eps"]
-    ggTable[["Pr(>F)"]] <-  pf(withinAnovaTable[["F value"]], ggTable[["num Df"]], 
-                               ggTable[["den Df"]], lower.tail = FALSE)
-    ggTable[["correction"]] <-  "Greenhouse-Geisser"
-    ggTable[[".isNewGroup"]] <- FALSE 
+  # Add NA rows to corrections and sphericity tests for within factors with 2 levels
+  if (nrow(sphericityTests) != nrow(withinAnovaTable)) {
     
-    hfTable[["num Df"]] <-  withinAnovaTable[["num Df"]] * corrections[withinIndices, "HF eps"]
-    hfTable[["Mean Sq"]] <- withinAnovaTable[["Sum Sq"]] / hfTable[["num Df"]]
-    hfTable[["den Df"]] <- withinAnovaTable[["den Df"]] * corrections[withinIndices, "HF eps"]
-    hfTable[["Pr(>F)"]] <-  pf(withinAnovaTable[["F value"]], hfTable[["num Df"]], 
-                               hfTable[["den Df"]], lower.tail = FALSE)
-    hfTable[["correction"]] <-  "Huyn-Feldt"
-    hfTable[[".isNewGroup"]] <- FALSE 
-  
-    residualIndices <- .mapAnovaTermsToTerms(rownames(wResidualResults), rownames(corrections))
-    wResidualResultsGG[["num Df"]] <- wResidualResults[["num Df"]] * corrections[residualIndices, "GG eps"]
-    wResidualResultsGG[["Mean Sq"]] <- wResidualResults[["Sum Sq"]] / wResidualResultsGG[["num Df"]]
-    wResidualResultsGG[["correction"]] <-  "Greenhouse-Geisser"
-    
-    wResidualResultsHF[["num Df"]] <- wResidualResults[["num Df"]] * corrections[residualIndices, "HF eps"]
-    wResidualResultsHF[["Mean Sq"]] <- wResidualResults[["Sum Sq"]] / wResidualResultsHF[["num Df"]]
-    wResidualResultsHF[["correction"]] <-  "Huyn-Feldt"
-    
-    if (nrow(summaryResult$sphericity.tests) == 0) 
-      summaryResult$sphericity.tests <- data.frame(Test = rep(NA, nrow(sortedModel)),
-                                                   statistic = rep(NA, nrow(sortedModel)),
-                                                   p = rep(NA, nrow(sortedModel)))
-  
-    if (is.null(rownames(corrections[withinIndices, ]))) {
-      withinAnovaTable <- cbind(withinAnovaTable, corrections, unclass(summaryResult$sphericity.tests))
+    unavailableCases <- rownames(withinAnovaTable)[!rownames(withinAnovaTable) %in% rownames(sphericityTests)]
+    emptyCorrections <- matrix(ncol = 4, nrow = length(unavailableCases), NA, 
+                               dimnames = list(unavailableCases, c("GG eps", "Pr(>F[GG])", "HF eps", "Pr(>F[HF])")))
+    if (is.null(rownames(corrections)) || all(is.na(corrections[, "GG eps"]))) {
+      corrections <- as.data.frame(emptyCorrections)
     } else {
-      withinAnovaTable <- cbind(withinAnovaTable, corrections[withinIndices, ], 
-                              summaryResult$sphericity.tests[withinIndices, ])
+      corrections <- rbind(corrections, as.data.frame(emptyCorrections))
     }
     
-    # Makes lists with results
-    withinAnovaTableCollection <- list("None" = withinAnovaTable, "Huyn-Feldt" = hfTable, "Greenhouse-Geisser" = ggTable)
-    wResidualResultsList <- list("None" = wResidualResults, "Huyn-Feldt" = wResidualResultsHF, 
-                                 "Greenhouse-Geisser" = wResidualResultsGG)
-  } else {
-    # Corrections not available
-    withinAnovaTableCollection <- list("None" = withinAnovaTable)
-    wResidualResultsList <- list("None" = wResidualResults)
+    emptyTests <- matrix(ncol = 2, nrow = length(unavailableCases), NA, 
+                         dimnames = list(unavailableCases, colnames(sphericityTests)))
+    sphericityTests <- as.data.frame(rbind(sphericityTests, emptyTests))
     
+  } else {
+    corrections <- as.data.frame(corrections)
   }
+
+  withinIndices <- .mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections))
+
+  ggTable[["num Df"]] <- withinAnovaTable[["num Df"]] * corrections[withinIndices, "GG eps"]
+  ggTable[["Mean Sq"]] <-  withinAnovaTable[["Sum Sq"]] / ggTable[["num Df"]]
+  ggTable[["den Df"]] <- withinAnovaTable[["den Df"]] * corrections[withinIndices, "GG eps"]
+  ggTable[["Pr(>F)"]] <-  pf(withinAnovaTable[["F value"]], ggTable[["num Df"]], 
+                             ggTable[["den Df"]], lower.tail = FALSE)
+  ggTable[["correction"]] <-  "Greenhouse-Geisser"
+  ggTable[[".isNewGroup"]] <- FALSE 
+
+  hfTable[["num Df"]] <-  withinAnovaTable[["num Df"]] * corrections[withinIndices, "HF eps"]
+  hfTable[["Mean Sq"]] <- withinAnovaTable[["Sum Sq"]] / hfTable[["num Df"]]
+  hfTable[["den Df"]] <- withinAnovaTable[["den Df"]] * corrections[withinIndices, "HF eps"]
+  hfTable[["Pr(>F)"]] <-  pf(withinAnovaTable[["F value"]], hfTable[["num Df"]], 
+                             hfTable[["den Df"]], lower.tail = FALSE)
+  hfTable[["correction"]] <-  "Huynh-Feldt"
+  hfTable[[".isNewGroup"]] <- FALSE 
+
+  residualResults[["eta"]] <- residualResults[["etaPart"]] <- residualResults[["genEta"]] <- 
+    residualResults[["omega"]] <- residualResults[["p"]] <- as.numeric(NA)
+  
+  wResidualResults <- wResidualResultsGG <- wResidualResultsHF <- subset(residualResults, isWithinTerm == TRUE)
+  wResidualResults[["correction"]] <- "None"
+  wResidualResults[[".isNewGroup"]] <- TRUE
+  
+  residualIndices <- .mapAnovaTermsToTerms(rownames(wResidualResults), rownames(corrections))
+  wResidualResultsGG[["num Df"]] <- wResidualResults[["num Df"]] * corrections[residualIndices, "GG eps"]
+  wResidualResultsGG[["Mean Sq"]] <- wResidualResults[["Sum Sq"]] / wResidualResultsGG[["num Df"]]
+  wResidualResultsGG[["correction"]] <-  "Greenhouse-Geisser"
+
+  wResidualResultsHF[["num Df"]] <- wResidualResults[["num Df"]] * corrections[residualIndices, "HF eps"]
+  wResidualResultsHF[["Mean Sq"]] <- wResidualResults[["Sum Sq"]] / wResidualResultsHF[["num Df"]]
+  wResidualResultsHF[["correction"]] <-  "Huynh-Feldt"
+
+  withinAnovaTable <- cbind(withinAnovaTable, corrections[withinIndices, ], sphericityTests[withinIndices, ])
+
+  # Makes lists with results
+  withinAnovaTableCollection <- list("None" = withinAnovaTable, "Huynh-Feldt" = hfTable, "Greenhouse-Geisser" = ggTable)
+  wResidualResultsList <- list("None" = wResidualResults, "Huynh-Feldt" = wResidualResultsHF, 
+                               "Greenhouse-Geisser" = wResidualResultsGG)
+  # # Corrections not available
+  # withinAnovaTableCollection <- list("None" = withinAnovaTable)
+  # wResidualResultsList <- list("None" = wResidualResults)
+    
  
   wResidualResultsList[["None"]]["BetweenResidualResults", c("Sum Sq", "num Df")] <- interceptRow[, c("Error SS", "den Df")]
   wResidualResultsList[["None"]]["BetweenResidualResults", "Mean Sq"] <- interceptRow[["Error SS"]] / interceptRow[["den Df"]]
@@ -474,7 +476,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   return(list(anovaResult = sortedModel, 
               residualTable = wResidualResultsList, 
               withinAnovaTable = withinAnovaTableCollection,
-              assumptionResult = cbind(summaryResult$sphericity.tests, summaryResult$pval.adjustments), 
+              assumptionResult = cbind(sphericityTests, corrections[withinIndices, ]), 
               fullModel = result, 
               tryResult = "tryResult"))
 }
@@ -499,7 +501,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 }
 
 .rmAnovaBetweenSubjectsTable <- function(rmAnovaContainer, dataset, options, ready) {
-  if(!is.null(rmAnovaContainer[["betweenTable"]]) || length(options$betweenSubjectFactors) == 0)
+  if(!is.null(rmAnovaContainer[["betweenTable"]])) # || length(options$betweenSubjectFactors) == 0)
     return()
   
   betweenTable <- createJaspTable(title = "Between Subjects Effects")
@@ -546,15 +548,17 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (!ready) {
     return()
   }
-  
-  result <- rmAnovaContainer[["anovaResult"]]$object$anovaResult
-  result <- result[result$isWithinTerm == 0, ]
-  result["Residuals", ] <- NA
-  result["Residuals", "case"] <- "Residuals"
-  result["Residuals", "num Df"] <- result[["den Df"]][1]
-  result["Residuals", "Sum Sq"] <- result[["Error SS"]][1]
-  result["Residuals", "Mean Sq"] <- result[["Error SS"]][1] / result[["den Df"]][1]
 
+  result <- rmAnovaContainer[["anovaResult"]]$object$anovaResult
+  result <- result[result$isWithinTerm == FALSE, ]
+  betweenwResidualResult <- rmAnovaContainer[["anovaResult"]]$object$residualTable$None["BetweenResidualResults", ]
+  
+  result["Residuals", "num Df"] <- betweenwResidualResult[["num Df"]]
+  result["Residuals", "Sum Sq"] <- betweenwResidualResult[["Sum Sq"]]
+  result["Residuals", "Mean Sq"] <- betweenwResidualResult[["Mean Sq"]]
+  result["Residuals", "case"] <- "Residuals"
+  result["Residuals", ".isNewGroup"] <- TRUE
+  
   betweenTable$setData(result)
   
   return()
@@ -572,7 +576,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                         "effectSizePartialEtaSquared", "effectSizeGenEtaSquared", "effectSizeOmegaSquared"))
 
   if (options$sphericityCorrections) {
-    corrections <- c("None", "Greenhouse-Geisser", "Huyn-Feldt")[c(options$sphericityNone, 
+    corrections <- c("None", "Greenhouse-Geisser", "Huynh-Feldt")[c(options$sphericityNone, 
                                                                    options$sphericityGreenhouseGeisser,
                                                                    options$sphericityHuynhFeldt)]
   } else 
@@ -590,7 +594,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   anovaTable$addColumnInfo(title = "df", name = "num Df", type = dfType)
   anovaTable$addColumnInfo(title = "Mean Square", name = "Mean Sq", type = "number")
   anovaTable$addColumnInfo(title = "F", name = "F value", type = "number")
-  anovaTable$addColumnInfo(title = "p", name = "Pr(>F)", type = "number")
+  anovaTable$addColumnInfo(name = "p", type = "number")
   
   if (options$VovkSellkeMPR) {
     anovaTable$addColumnInfo(title = "VS-MPR\u002A", name = "VovkSellkeMPR", type = "number")
@@ -628,23 +632,46 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   withinResults <- rmAnovaContainer[["anovaResult"]]$object$withinAnovaTable
   residualResults <- rmAnovaContainer[["anovaResult"]]$object$residualTable
+  mauchlyResult <- rmAnovaContainer[["anovaResult"]]$object$assumptionResult
+  
+  for(i in .indices(withinResults)) {
+    names(withinResults[[i]])[names(withinResults[[i]]) == "Pr(>F)"] <- "p"
+  }
+  
   modelTerms <- .rmModelFormula(options)$termsRM.base64
   allCases <- rownames(withinResults[[1]])
   addResidualAfter <- allCases[.mapAnovaTermsToTerms(modelTerms, allCases) + (length(allCases) / length(modelTerms)) - 1]
-
+  
   for (case in allCases) {
+
+    for (i in .indices(corrections)) {
     
-    for (cor in corrections)
-      anovaTable$addRows(withinResults[[cor]][case, ])
+      withinResults[[corrections[i]]][case, ".isNewGroup"] <- i == 1
+      anovaTable$addRows(as.list(withinResults[[corrections[i]]][case, ]),
+                         rowNames=paste0(case, corrections[i]))
+    }
 
     if (case %in% modelTerms) {
       currentCase <- case
-    } else if (case %in% addResidualAfter) {
-      for (cor in corrections)
-        anovaTable$addRows(residualResults[[cor]][currentCase, ])
+    }  
+    if (case %in% addResidualAfter) {
+      
+      for (i in .indices(corrections)) {
+
+        residualResults[[corrections[i]]][currentCase, ".isNewGroup"] <- i == 1  
+        anovaTable$addRows(as.list(residualResults[[corrections[i]]][currentCase, ]), 
+                           rowNames=paste0(currentCase, "Resid", corrections[i]))
+        
+      }
     }
   }
-  
+
+  if (!all(is.na(withinResults[[1]][["Test statistic"]]))) {
+    violatedMauchlyCases <- rownames(mauchlyResult)[mauchlyResult[, "p-value"] < 0.05]
+    anovaTable$addFootnote(message = "Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).",
+                           colNames = c("Sum Sq", "num Df", "F value", "Mean Sq", "Pr(F)", "p"),
+                           rowNames = paste0(violatedMauchlyCases, "None"))
+  }
   
   return()
 }
@@ -767,7 +794,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   # if (nrow(assumptionResult) == 0 || all(is.na(assumptionResult[["GG eps"]]))) {
   if (all(is.na(anovaResult[["Test statistic"]]))) {
-  sphericityTable$setError("Cannot perform sphericity tests because there only two levels of the RM factor.")
+    sphericityTable$setError("Cannot perform sphericity tests because there only two levels of the RM factor.")
     return()  
   }
   
@@ -779,8 +806,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   anovaResult[["LB"]] <- 1 / df
   anovaResult[["HF eps"]] <- sapply(anovaResult[["HF eps"]], min, 1)
   anovaResult[[".isNewGroup"]] <- FALSE
-  
-  sphericityTable$setData(anovaResult)
+
+  includeInTable <- rownames(anovaResult) %in% sapply(options$withinModelTerms, function(x) paste(.v(unlist(x)), collapse=":"))
+  sphericityTable$setData(anovaResult[includeInTable & (!is.na(anovaResult[["approxChi"]])), ])
   
   return()
 }
@@ -822,7 +850,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
   }
   
-  rmAnovaContainer[["referenceGrid"]] <- createJaspState(object = referenceGridList)
+  rmAnovaContainer[["referenceGrid"]] <- createJaspState(object = referenceGridList, 
+                                                         dependencies = c("withinModelTerms",
+                                                                          "betweenModelterms",
+                                                                          "postHocTestsVariables"))
   
   return()
 }
@@ -833,9 +864,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   postHocContainer <- createJaspContainer(title = "Post Hoc Tests")
   postHocContainer$dependOn(c("postHocTestsVariables", "postHocTestEffectSize", "postHocTestsBonferroni", 
-                                      "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey",
-                                      "postHocFlagSignificant", "confidenceIntervalsPostHoc", 
-                                      "confidenceIntervalIntervalPostHoc", "postHocTestPooledError"))
+                              "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey",
+                              "postHocFlagSignificant", "confidenceIntervalsPostHoc", 
+                              "confidenceIntervalIntervalPostHoc", "postHocTestPooledError"))
   
   rmAnovaContainer[["postHocStandardContainer"]] <- postHocContainer
   
@@ -944,18 +975,26 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     resultPostHoc[["contrast_B"]] <- lapply(comparisons, function(x) paste(.unv(strsplit(x[[2]], ",")[[1]]), 
                                                                            collapse = ", "))
 
-    if (options$confidenceIntervalsPostHoc & nrow(resultPostHoc) > 1)
+    pValMessage <- attr(resultPostHoc, "mesg")[grep(attr(resultPostHoc, "mesg"), pattern = "P value adjustment")]
+    if (length(pValMessage) != 0)
       postHocContainer[[var]]$addFootnote(
-        message = gsub(x = attr(resultPostHoc, "mesg")[3], "Conf-level", "Confidence interval"),
+        message = gsub(x = pValMessage, ": bonferroni method", "Confidence interval"),
+        symbol = "<i>Note.</i>")
+    
+    confMessage <- attr(resultPostHoc, "mesg")[grep(attr(resultPostHoc, "mesg"), pattern = "Conf-level")]
+    if (length(confMessage) != 0 && options[["confidenceIntervalsPostHoc"]])
+      postHocContainer[[var]]$addFootnote(
+        message = gsub(x = confMessage, "Conf-level", "Confidence interval"),
         symbol = "<i>Note.</i>")
 
-    avFootnote <- attr(resultPostHoc, "mesg")[1]
-    avTerms <- .unv(strsplit(gsub(avFootnote, pattern = "Results are averaged over the levels of: ", replacement = ""), 
-                             ", ")[[1]])
-    
-    postHocContainer[[var]]$addFootnote(
-      message = paste0("Results are averaged over the levels of: ", paste(avTerms, collapse = ", ")),
-      symbol = "<i>Note.</i>")
+    avFootnote <- attr(resultPostHoc, "mesg")[grep(attr(resultPostHoc, "mesg"), pattern = "Results are averaged")]
+    if (length(avFootnote) != 0) {
+      avTerms <- .unv(strsplit(gsub(avFootnote, pattern = "Results are averaged over the levels of: ", replacement = ""), 
+                                 ", ")[[1]])
+      postHocContainer[[var]]$addFootnote(
+        message = paste0("Results are averaged over the levels of: ", paste(avTerms, collapse = ", ")),
+        symbol = "<i>Note.</i>")
+    }
 
     for (pCorrection in c("bonferroni", "scheffe", "tukey", "holm")) {
       if (options$postHocFlagSignificant) {
@@ -971,6 +1010,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       }
     }
     
+    resultPostHoc[[".isNewGroup"]] <- !duplicated(resultPostHoc[["contrast_A"]])
     postHocContainer[[var]]$setData(resultPostHoc)
   }
   
@@ -1012,7 +1052,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   postHocTable$addColumnInfo(name="t.ratio", title="t", type="number")
   
-  if (options$postHocTestEffectSize & !interactionTerm) {
+  if (options$postHocTestEffectSize ) {
     postHocTable$addColumnInfo(name="cohenD", title="Cohen's d", type="number")
     postHocTable$addFootnote("Cohen's d does not correct for multiple comparisons.")
   }
@@ -1173,7 +1213,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   }
   
   
-  
   for (contrast in options$contrasts) {
     
     if (contrast$contrast != "none") {
@@ -1203,14 +1242,17 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       contrCoef <- lapply(as.data.frame(contrastMatrix), as.vector)
       names(contrCoef) <- .v(.anovaContrastCases(column, contrast$contrast))
       
-      r <- emmeans::contrast(referenceGrid[[.v(contrast$variable)]], contrCoef)
+      contrastResult <- emmeans::contrast(referenceGrid[[.v(contrast$variable)]], contrCoef)
 
+
+    # if (!is.null(contrastResult@misc$avgd.over)) 
       contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$addFootnote(
-        message = paste0("Results are averaged over the levels of: ", paste(.unv(r@misc$avgd.over), collapse = ", ")),
+        message = paste0("Results are averaged over the levels of: ", paste(.unv(contrastResult@misc$avgd.over), collapse = ", ")),
         symbol = "<i>Note.</i>")
       
-      r <- cbind(r, confint(r, level = options$confidenceIntervalIntervalContrast)[,5:6])
-      r[["Comparison"]] <- .unv(r[["contrast"]])
+      contrastResult <- cbind(contrastResult, confint(contrastResult, 
+                                                      level = options$confidenceIntervalIntervalContrast)[,5:6])
+      contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
       
       # New feature - verify To do!!!!
       if (options$contrastAssumeEqualVariance == FALSE) {
@@ -1228,13 +1270,13 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
           allTestResults[[coefIndex]] <- t.test(as.matrix(newDF) %*% contrCoef[[coefIndex]])
         }
         
-        r[["t.ratio"]] <- sapply(allTestResults, function(x) x[["statistic"]])
-        r[["df"]] <- sapply(allTestResults, function(x) x[["parameter"]])
-        r[["SE"]] <- sapply(allTestResults, function(x) x[["estimate"]] /  x[["statistic"]])
-        r[["p.value"]] <- sapply(allTestResults, function(x) x[["p.value"]])
+        contrastResult[["t.ratio"]] <- sapply(allTestResults, function(x) x[["statistic"]])
+        contrastResult[["df"]] <- sapply(allTestResults, function(x) x[["parameter"]])
+        contrastResult[["SE"]] <- sapply(allTestResults, function(x) x[["estimate"]] /  x[["statistic"]])
+        contrastResult[["p.value"]] <- sapply(allTestResults, function(x) x[["p.value"]])
       }
       
-      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(r)
+      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(contrastResult)
     }
   }
  
@@ -1243,33 +1285,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 .rmAnovaMarginalMeansTable <- function(rmAnovaContainer, dataset, options, ready) {
   if (!is.null(rmAnovaContainer[["marginalMeansContainer"]]) || length(options$marginalMeansTerms) == 0)
     return ()
-  
-
-  # the following adds automatically interactions of repeated measures terms with between subject terms
-  # (a workaround the qml/ui stuff)
-  # repeatedMeasuresFactors <- sapply(options$repeatedMeasuresFactors, function(fac) fac$name)
-  # repeatedMeasuresTerms <- sapply(terms, function(term) any(term$components %in% repeatedMeasuresFactors))
-  # if(any(!repeatedMeasuresTerms)){
-  #   termsInteract <- list()
-  #   for(rmterm in which(repeatedMeasuresTerms)){
-  #     for(bsterm in which(!repeatedMeasuresTerms)){
-  #       termsInteract <- c(termsInteract, list(list(components = c(terms[[bsterm]]$components, terms[[rmterm]]$components))))
-  #     }
-  #   }
-  #   terms <- c(terms, termsInteract)
-  # }
-  # terms.base64 <- c()
-  # terms.normal <- c()
-  # 
-  # for (term in terms) {
-  #   
-  #   components <- unlist(term)
-  #   term.base64 <- paste(.v(components), collapse=":", sep="")
-  #   term.normal <- paste(components, collapse=" \u273B ", sep="")
-  #   
-  #   terms.base64 <- c(terms.base64, term.base64)
-  #   terms.normal <- c(terms.normal, term.normal)
-  # }
   
   marginalMeansContainer <- createJaspContainer(title = "Marginal Means")
   marginalMeansContainer$dependOn(c("marginalMeansTerms",  "marginalMeansCompareMainEffects", "marginalMeansCIAdjustment",
@@ -1361,10 +1376,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     }
     
     marginalResult <- summary(emmeans::lsmeans(fullModel, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
-    
-    if (length(term) > 1)
-      marginalResult[[".isNewGroup"]] <- !duplicated(marginalResult[, length(term)])
-    
+
+    marginalResult[[".isNewGroup"]] <- FALSE
+    marginalResult[[".isNewGroup"]][which(marginalResult[, 1] == marginalResult[1, 1])] <- TRUE
+
     names(marginalResult)[1:length(term)] <- term
     
     for (var in term) 
@@ -1450,12 +1465,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 }
 
 .rmAnovaFriedmanTable <- function(rmAnovaContainer, longData, options, ready) {
-  if (!is.null(rmAnovaContainer[["friedmanContainer"]]) || length(options$friedmanWithinFactor) == 0 || !ready)
+  if (!is.null(rmAnovaContainer[["nonparametricContainer"]]) || length(options$friedmanWithinFactor) == 0 || !ready)
     return ()
   
-  rmAnovaContainer[["friedmanContainer"]] <- createJaspContainer("Nonparametrics")
-  rmAnovaContainer$dependOn(c("friedmanWithinFactor",
-                              "friedmanBetweenFactor"))
+  rmAnovaContainer[["nonparametricContainer"]] <- createJaspContainer("Nonparametrics")
+  rmAnovaContainer[["nonparametricContainer"]]$dependOn(c("friedmanWithinFactor",
+                                                           "friedmanBetweenFactor"))
 
   friedmanTable <- createJaspTable(title = "Friedman Test")
   friedmanTable$addColumnInfo(name="Factor", type="string")
@@ -1464,7 +1479,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   friedmanTable$addColumnInfo(name="p", type="number")
   friedmanTable$addColumnInfo(name="kendall", title="Kendall's W", type="number")
 
-  rmAnovaContainer[["friedmanContainer"]][["friedmanTable"]] <- friedmanTable
+  rmAnovaContainer[["nonparametricContainer"]][["friedmanTable"]] <- friedmanTable
 
   if (!ready)
     return()
@@ -1573,12 +1588,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 }
 
 .rmAnovaConoverTable <- function(rmAnovaContainer, longData, options, ready) {
-  if (!is.null(rmAnovaContainer[["friedmanContainer"]][["conoverContainer"]]) || options$conoverTest == FALSE)
+  if (!is.null(rmAnovaContainer[["nonparametricContainer"]][["conoverContainer"]]) || options$conoverTest == FALSE)
     return ()
-  # Todo - put in function for nonpara container and fix state
-   
+
   conoverContainer <- createJaspContainer("Conover Test")
-  rmAnovaContainer[["friedmanContainer"]][["conoverContainer"]] <- conoverContainer
+  rmAnovaContainer[["nonparametricContainer"]][["conoverContainer"]] <- conoverContainer
   conoverContainer$dependOn(c("conoverTest"))
   
   createConoverTable <- function(myTitle) {
@@ -1674,7 +1688,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     }
       
     conoverTable$setData(as.data.frame(do.call(rbind, rows)))
-    rmAnovaContainer[["friedmanContainer"]][[groupingVar]] <- conoverTable
+    rmAnovaContainer[["nonparametricContainer"]][[groupingVar]] <- conoverTable
   }
   
   return()
@@ -1849,388 +1863,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   simpleEffectsTable$setData(simpleEffectResult)
   
   return()
-}
-
-.rmAnovaDescriptivesTable <- function(dataset, options, perform, status, stateDescriptivesTable) {
-  
-  if (options$descriptives == FALSE)
-    return(list(result=NULL, status=status))
-  
-  rmFactors <- c()
-  rmLevels <- list()
-  
-  for (i in .indices(options$repeatedMeasuresFactors)) {
-    
-    rmFactors[i] <- options$repeatedMeasuresFactors[[i]]$name
-    rmLevels[[i]] <- options$repeatedMeasuresFactors[[i]]$levels
-    
-  }
-  
-  bsFactors <- c()
-  bsLevels <- list()
-  
-  for (i in .indices(options$betweenSubjectFactors)) {
-    
-    bsFactors[i] <- options$betweenSubjectFactors[i]
-    bsLevels[[i]] <- levels(dataset[[ .v(options$betweenSubjectFactors[i]) ]])
-    
-  }
-  
-  factors <- c(rmFactors, bsFactors)
-  lvls <- c(rmLevels, bsLevels)
-  
-  descriptives.table <- list()
-  
-  descriptives.table[["title"]] <- "Descriptives"
-  
-  fields <- list()
-  
-  for (variable in factors) {
-    
-    name <- paste(".", variable, sep="")  # in case variable is "Mean", "SD" or "N"
-    fields[[length(fields)+1]] <- list(name=name, type="string", title=variable, combine=TRUE)
-    
-  }
-  
-  fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
-  fields[[length(fields)+1]] <- list(name="SD", type="number", format="sf:4;dp:3")
-  fields[[length(fields)+1]] <- list(name="N", type="integer")
-  
-  descriptives.table[["schema"]] <- list(fields=fields)
-  
-  cases <- rev(expand.grid(rev(lvls)))
-  
-  namez <- unlist(factors)
-  column.names <- paste(".", namez, sep="")
-  
-  if (length(factors) > 0) {
-    
-    rows <- list()
-    
-    if (perform == "run" && status$ready && status$error == FALSE) {
-      
-      dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-      
-      for (i in 1:dim(cases)[1]) {
-        
-        row <- list()
-        
-        for (j in 1:dim(cases)[2])
-          row[[ column.names[[j]] ]] <- as.character(cases[i, j])
-        
-        sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
-        
-        data <- base::subset(dataset, sub, select="dependent")[[1]]
-        
-        N <- base::length(data)
-        
-        row[["N"]] <- N
-        
-        if (N == 0) {
-          
-          row[["Mean"]] <- ""
-          row[["SD"]]   <- ""
-          
-        } else if (N == 1) {
-          
-          row[["Mean"]] <- data
-          row[["SD"]]   <- ""
-          
-        } else {
-          
-          row[["Mean"]] <- base::mean(data)
-          row[["SD"]]   <- stats::sd(data)
-        }
-        
-        if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][[1]]) {
-          row[[".isNewGroup"]] <- TRUE
-        } else {
-          row[[".isNewGroup"]] <- FALSE
-        }
-        
-        rows[[i]] <- row
-      }
-      
-    } else {
-      
-      for (i in 1:dim(cases)[1]) {
-        
-        row <- list()
-        
-        for (j in 1:dim(cases)[2])
-          row[[ column.names[[j]] ]] <- as.character(cases[i, j])
-        
-        if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][[1]]) {
-          row[[".isNewGroup"]] <- TRUE
-        } else {
-          row[[".isNewGroup"]] <- FALSE
-        }
-        
-        rows[[i]] <- row
-      }
-    }
-    
-    descriptives.table[["data"]] <- rows
-    
-    if (perform == "run" && status$ready && status$error == FALSE)
-      descriptives.table[["status"]] <- "complete"
-  }
-  
-  if (status$error)
-    descriptives.table[["error"]] <- list(error="badData")
-  
-  if (perform == "run" && status$ready && status$error == FALSE) {
-    
-    stateDescriptivesTable <- descriptives.table
-    
-  } else {
-    
-    stateDescriptivesTable <- NULL
-    
-  }
-  
-  list(result=descriptives.table, status=status, stateDescriptivesTable=stateDescriptivesTable)
-}
-
-.rmAnovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
-  
-  descriptivesPlotList <- list()
-  
-  if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "") {
-    
-    dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-    
-    groupVars <- c(options$plotHorizontalAxis, options$plotSeparateLines, options$plotSeparatePlots)
-    groupVars <- groupVars[groupVars != ""]
-    groupVarsV <- .v(groupVars)
-    
-    betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
-    repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
-    
-    usePooledSE <- ifelse(is.null(options$usePooledStandErrorCI), FALSE, options$usePooledStandErrorCI)
-    
-    if (length(repeatedMeasuresFactors) == 0) {
-      
-      summaryStat <- .summarySE(as.data.frame(dataset), measurevar = "dependent", groupvars = .v(betweenSubjectFactors),
-                                conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType, 
-                                usePooledSE=usePooledSE)
-      
-    } else {
-      
-      summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors),
-                                      idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType, 
-                                      usePooledSE=usePooledSE)
-      
-    }
-    
-    if ( options$plotHorizontalAxis != "" ) {
-      colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
-    }
-    
-    if ( options$plotSeparateLines != "" ) {
-      colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparateLines))] <- "plotSeparateLines"
-    }
-    
-    if ( options$plotSeparatePlots != "" ) {
-      colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparatePlots))] <- "plotSeparatePlots"
-    }
-    
-    base_breaks_x <- function(x){
-      b <- unique(as.numeric(x))
-      d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-      list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
-    }
-    
-    base_breaks_y <- function(x, plotErrorBars){
-      if (plotErrorBars) {
-        ci.pos <- c(x[,"dependent"], x[,"ciLower"],x[,"ciUpper"])
-        b <- pretty(ci.pos)
-        d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-        list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-             ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
-      } else {
-        b <- pretty(x[,"dependent"])
-        d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-        list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-             ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
-      }
-    }
-    
-    if (options$plotSeparatePlots != "") {
-      subsetPlots <- levels(summaryStat[,"plotSeparatePlots"])
-      nPlots <- length(subsetPlots)
-    } else {
-      nPlots <- 1
-    }
-    
-    for (i in 1:nPlots) {
-      
-      descriptivesPlot <- list()
-      
-      if (options$plotSeparateLines != "") {
-        
-        descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotLegend
-        descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotLegend
-        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotLegend", height="plotHeightDescriptivesPlotLegend")
-        
-      } else {
-        
-        descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotNoLegend
-        descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotNoLegend
-        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotNoLegend", height="plotHeightDescriptivesPlotNoLegend")
-        
-      }
-      
-      if (options$plotSeparatePlots != "") {
-        summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
-      } else {
-        summaryStatSubset <- summaryStat
-      }
-      
-      if(options$plotSeparateLines == "") {
-        
-        p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
-                                                             y=dependent,
-                                                             group=1))
-        
-      } else {
-        
-        p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
-                                                             y=dependent,
-                                                             group=plotSeparateLines,
-                                                             shape=plotSeparateLines,
-                                                             fill=plotSeparateLines))
-        
-      }
-      
-      if (options$plotErrorBars) {
-        
-        pd <- ggplot2::position_dodge(.2)
-        p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
-                                                     ymax=ciUpper),
-                                        colour="black", width=.2, position=pd)
-        
-      } else {
-        
-        pd <- ggplot2::position_dodge(0)
-        
-      }
-      
-      p <- p + ggplot2::geom_line(position=pd, size = .7) +
-        ggplot2::geom_point(position=pd, size=4) +
-        ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100))) +
-        ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112)) +
-        ggplot2::scale_color_manual(values = rep("black",200)) +
-        ggplot2::ylab(options$labelYAxis) +
-        ggplot2::xlab(options$plotHorizontalAxis) +
-        ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
-        base_breaks_y(summaryStat, options$plotErrorBars) +
-        base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
-      
-      nrowsInLegend <- min(10, nlevels(as.factor(summaryStatSubset[["plotSeparateLines"]])))
-      guide <- ggplot2::guide_legend(nrow = nrowsInLegend)
-      p <- p + ggplot2::guides(fill = guide, shape = guide, color = guide)
-      
-      p <- JASPgraphs::themeJasp(p, legend.position="right")
-      
-      if (nPlots > 1) {
-        descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
-      } else {
-        descriptivesPlot[["title"]] <- "Descriptives Plot"
-      }
-      
-      if (options$plotSeparateLines != "") {
-        
-        # image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
-        content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend, 
-                               height = options$plotHeightDescriptivesPlotLegend, 
-                               plot = p, obj = TRUE)
-        
-      } else {
-        
-        # image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
-        content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend, 
-                               height = options$plotHeightDescriptivesPlotNoLegend, 
-                               plot = p, obj = TRUE)
-        
-      }
-      
-      # content <- .endSaveImage(image)
-      
-      descriptivesPlot[["convertible"]] <- TRUE
-      descriptivesPlot[["obj"]] <- content[["obj"]]
-      descriptivesPlot[["data"]] <- content[["png"]]
-      
-      # descriptivesPlot[["data"]] <- content
-      descriptivesPlot[["status"]] <- "complete"
-      
-      descriptivesPlotList[[i]] <- descriptivesPlot
-      
-    }
-    
-    stateDescriptivesPlot <- descriptivesPlotList
-    
-  } else if (options$plotHorizontalAxis != "") {
-    
-    if (options$plotSeparatePlots != "") {
-      
-      repeatedMeasuresNames <- sapply(options$repeatedMeasuresFactors, function(x) x$name)
-      repeatedMeasuresLevels <- lapply(options$repeatedMeasuresFactors, function(x) x$levels)
-      
-      if (sum(options$plotSeparatePlots == repeatedMeasuresNames) > 0) {
-        
-        index <- which(options$plotSeparatePlots == repeatedMeasuresNames)
-        nPlots <- length(unlist(repeatedMeasuresLevels[[index]]))
-        
-      } else {
-        
-        nPlots <- length(levels(dataset[[ .v(options$plotSeparatePlots) ]]))
-        
-      }
-      
-    } else {
-      
-      nPlots <- 1
-      
-    }
-    
-    for (i in 1:nPlots) {
-      
-      descriptivesPlot <- list()
-      
-      if (nPlots == 1) {
-        descriptivesPlot[["title"]] <- "Descriptives Plot"
-      } else {
-        descriptivesPlot[["title"]] <- ""
-      }
-      
-      if (options$plotSeparateLines != "") {
-        
-        descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotLegend
-        descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotLegend
-        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotLegend", height="plotHeightDescriptivesPlotLegend")
-        
-      } else {
-        
-        descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotNoLegend
-        descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotNoLegend
-        descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotNoLegend", height="plotHeightDescriptivesPlotNoLegend")
-        
-      }
-      
-      descriptivesPlot[["data"]] <- ""
-      
-      if (status$error)
-        descriptivesPlot[["error"]] <- list(errorType="badData")
-      
-      descriptivesPlotList[[i]] <- descriptivesPlot
-    }
-    
-    stateDescriptivesPlot <- NULL
-    
-  }
-  
-  list(result=descriptivesPlotList, status=status, stateDescriptivesPlot=stateDescriptivesPlot)
 }
 
 .summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, 

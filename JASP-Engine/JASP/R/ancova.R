@@ -22,7 +22,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   factorVariables <- c(unlist(options$fixedFactors),unlist(options$randomFactors))
   factorVariables <- factorVariables[factorVariables != ""]
   
-  # Check if we're ready to actually compute something or just show empty tables
   ready <- options$dependent != "" && length(options$fixedFactors) > 0 && length(options$modelTerms) > 0
   
   # Set corrections to FALSE when performing ANCOVA
@@ -40,47 +39,33 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       dataset <- droplevels(dataset)
       
   } 
-
-  ## Setup Contrasts
+  options[["credibleInterval"]] <- options$confidenceIntervalInterval # hack for BANOVA descriptives
+  
   dataset <- .anovaSetupContrasts(dataset, options, ready)
   
-  ## Error checking
   .anovaCheckErrors(dataset, options, ready)
   
-  ## Create container 
   anovaContainer <- .getAnovaContainer(jaspResults)
 
-  ## Create Linear model
   .anovaModelContainer(anovaContainer, dataset, options, ready)
   
-  ## Create ANOVA Table
   .anovaTable(anovaContainer, options, ready)
   
-  ## Create Descriptives Container
-  options[["credibleInterval"]] <- 0.95
   .BANOVAdescriptives(anovaContainer, dataset, options, list(noVariables=FALSE), "ANCOVA")
   
-  ## Create Assumptions Table for Levene and Q-Q plots
   .anovaAssumptionsContainer(anovaContainer, dataset, options, ready)
   
-  ## Create Contrasts Table
   .anovaContrastsTable(anovaContainer, dataset, options, ready)
   
-  ## Create Post Hoc Tables
   .anovaPostHocTableCollection(anovaContainer, dataset, options, ready)
   
-  ## Create Marginal Means Table
   .anovaMarginalMeans(anovaContainer, dataset, options, ready)
 
-  ## Create Simple Effects Table
   .anovaSimpleEffects(anovaContainer, dataset, options, ready)
   
-  ## Create Kruskal Table
   .anovaKruskal(anovaContainer, dataset, options, ready)
   
-  
   return()
-  
 }
 
 .getAnovaContainer <- function(jaspResults) {
@@ -1479,15 +1464,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       adjMethod <- "none"
     }
     
-    r <- summary(emmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
+    marginalResult <- summary(emmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
     
-    if (nCol > 1) {
-      r[[".isNewGroup"]] <- !duplicated(r[, nCol])
-    } else {
-      r[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(r)-1))
-    }
+    marginalResult[[".isNewGroup"]] <- FALSE
+    marginalResult[[".isNewGroup"]][which(marginalResult[, 1] == marginalResult[1, 1])] <- TRUE
     
-    names(r)[1:length(individualTerms)] <- individualTerms
+    names(marginalResult)[1:length(individualTerms)] <- individualTerms
     
     if (options$marginalMeansBootstrapping) {
       
@@ -1519,15 +1501,15 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         marginalMeansContainer[[thisVarName]]$addFootnote(message = paste0("Some confidence intervals could not be", 
                                                                            "computed. Possibly too few bootstrap replicates."))
       
-      r[["lower.CL"]] <- bootstrapMarginalMeansCI[,1]
-      r[["upper.CL"]] <- bootstrapMarginalMeansCI[,2]
+      marginalResult[["lower.CL"]] <- bootstrapMarginalMeansCI[,1]
+      marginalResult[["upper.CL"]] <- bootstrapMarginalMeansCI[,2]
       
-      r[["bias"]] <- bootStrapSummary[["bootBias"]]
-      r[["SE"]] <- bootStrapSummary[["bootSE"]]
-      r[["lsmean"]] <- bootStrapSummary[["bootMed"]]
+      marginalResult[["bias"]] <- bootStrapSummary[["bootBias"]]
+      marginalResult[["SE"]] <- bootStrapSummary[["bootSE"]]
+      marginalResult[["lsmean"]] <- bootStrapSummary[["bootMed"]]
       
     }
-    marginalMeansContainer[[thisVarName]]$setData(r)
+    marginalMeansContainer[[thisVarName]]$setData(marginalResult)
   }
   
   return()

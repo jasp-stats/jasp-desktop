@@ -1304,7 +1304,8 @@
     plotErrorBars <- options$plotErrorBars
     errorBarType  <- options$errorBarType
     conf.interval <- options$confidenceIntervalInterval
-    descriptivesPlotContainer$dependOn(c("dependent", "plotErrorBars", "errorBarType", "confidenceIntervalInterval"))
+    descriptivesPlotContainer$dependOn(c("dependent", "plotErrorBars", "errorBarType", "confidenceIntervalInterval",
+                                         "usePooledStandErrorCI"))
     
   }
 
