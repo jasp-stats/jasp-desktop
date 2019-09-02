@@ -181,6 +181,11 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
       dataframe <- cbind(dataframe, VovkSellkeMPR = .VovkSellkeMPR(dataframe$p))
     
     jaspResults[["chisqTable"]]$setData(dataframe)
+    
+    for (r in 1:length(chisqResults)) {
+      if (!is.null(chisqResults[[r]][["warn"]]))
+        jaspResults[["chisqTable"]]$addFootnote(chisqResults[[r]][["warn"]])
+    }
   }
 }
 
@@ -304,7 +309,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   chisqResults <- .chisquareTest(jaspResults, dataset, options)
   
   descriptivesTable <- createJaspTable(title = "Descriptives")
-  descriptivesTable$dependOn(c("factor", "counts", "exProbVar",  "hypothesis", "countProp",
+  descriptivesTable$dependOn(c("factor", "counts", "exProbVar",  "hypothesis", "countProp", "descriptives",
                                "confidenceInterval", "tableWidget", "confidenceIntervalInterval"))
 
   if(options$factor == ""){

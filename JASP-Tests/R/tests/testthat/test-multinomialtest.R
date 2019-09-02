@@ -48,8 +48,8 @@ test_that("Analysis handles errors - Negative Values", {
   options$factor <- "facExperim"
   options$counts <- "contNormal"
   results <- jasptools::run("MultinomialTest", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - wrong levels", {
@@ -57,8 +57,8 @@ test_that("Analysis handles errors - wrong levels", {
   options$factor <- "facExperim"
   options$counts <- "debSame"
   results <- jasptools::run("MultinomialTest", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - Infinities", {
@@ -66,6 +66,6 @@ test_that("Analysis handles errors - Infinities", {
   options$factor <- "facExperim"
   options$counts <- "debInf"
   results <- jasptools::run("MultinomialTest", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
