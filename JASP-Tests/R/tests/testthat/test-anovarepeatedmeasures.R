@@ -242,7 +242,7 @@ test_that("Post-hoc tests match (Field Chapter 8)", {
   expect_equal_tables(table, refTable)
   
 })
-return()
+
 test_that("Descriptives Match", {
   options <- initOpts()
   
