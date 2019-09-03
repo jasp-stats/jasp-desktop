@@ -1152,8 +1152,9 @@
 }
 
 # Descriptives ----
-.BANOVAdescriptives <- function(jaspResults, dataset, options, errors, analysisType) {
-
+.BANOVAdescriptives <- function(jaspResults, dataset, options, errors, analysisType, ready = TRUE) {
+  if (!ready)
+    return()
   # the main use of this function is that descriptives can now be reused for the frequentist ANOVAs
   # without the container, the position could mess things up
   descriptivesContainer <- jaspResults[["descriptivesContainer"]]

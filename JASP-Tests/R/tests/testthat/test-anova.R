@@ -229,12 +229,12 @@ test_that("Descriptives plots match", {
 
   options$errorBarType <- "confidenceInterval"
   results <- jasptools::run("Anova", "test.csv", options, view = FALSE)
-  testPlot <- results$state$figures$`3.png`$obj
+  testPlot <- results$state$figures[[1]]$obj
   expect_equal_plots(testPlot, "descriptives-ci", dir="Anova")
 
   options$errorBarType <- "standardError"
   results <- jasptools::run("Anova", "test.csv", options,  view = FALSE)
-  testPlot <-  results$state$figures$`4.png`$obj
+  testPlot <-  results$state$figures[[1]]$obj
   expect_equal_plots(testPlot, "descriptives-se", dir="Anova")
 })
 
