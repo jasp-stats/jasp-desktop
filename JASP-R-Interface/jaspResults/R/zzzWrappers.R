@@ -22,10 +22,19 @@ startProgressbar <- function(expectedTicks, label="") {
 		stop("`expectedTicks` must be numeric and `label` a character")
 	if (nchar(label) > 40)
 		stop("The label must be 40 characters at most")
-	jaspResultsModule$startProgressbar(expectedTicks, label)
+		
+	if (jaspResultsCalledFromJasp())
+		jaspResultsModule$cpp_startProgressbar(expectedTicks, label)
+	else
+		cpp_startProgressbar(expectedTicks, label)
 }
 
-progressbarTick <- function() { jaspResultsModule$progressbarTick(); }
+progressbarTick <- function() { 
+	if (jaspResultsCalledFromJasp())
+		jaspResultsModule$cpp_progressbarTick()
+	else
+		cpp_progressbarTick()
+}
 
 checkForJaspResultsInit <- function() {if (!exists("jaspResults", .GlobalEnv)) .onAttach()}
 

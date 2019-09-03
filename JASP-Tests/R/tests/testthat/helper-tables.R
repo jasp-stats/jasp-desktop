@@ -106,13 +106,12 @@ tableListToAnnotatedCharacterVector <- function(tableList, cellNames=NULL) {
 }
 
 expect_equal_tables <- function(test, ref, label=NULL) {
-  if (length(test) == 0) {
-    errorMsg <- jasptools:::.getErrorMsgFromLastResults()
-    if (! is.null(errorMsg))
-      stop(paste("Tried retrieving table data from results, but last run of jasptools exited with an error:", errorMsg), call.=FALSE)
-    else
+  errorMsg <- jasptools:::.getErrorMsgFromLastResults()
+  if (!is.null(errorMsg))
+    stop(paste("Tried retrieving table from results, but last run of jasptools exited with an error:", errorMsg), call.=FALSE)
+    
+  if (length(test) == 0)
       stop("The new table has no data. Please check your unit test; is the index path to the table specified correctly?", call.=FALSE)
-  }
   
   if (is.null(label))
     label <- "New table"
