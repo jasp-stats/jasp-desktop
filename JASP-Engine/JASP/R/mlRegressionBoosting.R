@@ -18,7 +18,7 @@
 mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
 	# Preparatory work
-	dataset <- .readDataRegressionAnalyses(dataset, options, jaspResults)
+	dataset <- .readDataRegressionAnalyses(dataset, options)
 	.errorHandlingRegressionAnalyses(dataset, options)
 
 	# Check if analysis is ready to run
@@ -28,7 +28,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")
 
   # If the user wants to add the values to the data set
-  .regressionAddValuesToData(options, jaspResults, ready)
+  .regressionAddValuesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")

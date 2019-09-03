@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.readDataClassificationAnalyses <- function(dataset, options, jaspResults){
+.readDataClassificationAnalyses <- function(dataset, options){
   target                    <- NULL
   testSetIndicator          <- NULL 
   if(options[["target"]] != "")
@@ -26,10 +26,7 @@
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]
   variables.to.read         <- c(target, predictors, testSetIndicator)
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns = variables.to.read)
-    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
-    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
-    dataset <- na.omit(dataset)
+    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["scaleEqualSD"]])
     dataset[,.v(options[["predictors"]])] <- .scaleNumericData(dataset[,.v(options[["predictors"]]), drop = FALSE])
@@ -832,15 +829,15 @@
 
 }
 
-.classificationAddClassesToData <- function(options, jaspResults, ready){
+.classificationAddClassesToData <- function(dataset, options, jaspResults, ready){
   if(!ready || !options[["addClasses"]] || options[["classColumn"]] == "")  return()
 
   classificationResult <- jaspResults[["classificationResult"]]$object
 
   if(is.null(jaspResults[["classColumn"]])){
     predictions <- as.character(classificationResult[["classes"]])
-    classColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
-    classColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
+    classColumn <- rep(NA, max(as.numeric(rownames(dataset))))
+    classColumn[as.numeric(rownames(dataset))] <- predictions
     classColumn <- factor(classColumn)
     jaspResults[["classColumn"]] <- createJaspColumn(columnName=options[["classColumn"]])
     jaspResults[["classColumn"]]$dependOn(options = c("classColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt",

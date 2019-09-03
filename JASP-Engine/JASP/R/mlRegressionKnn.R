@@ -18,7 +18,7 @@
 mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
 	# Preparatory work
-	dataset <- .readDataRegressionAnalyses(dataset, options, jaspResults)
+	dataset <- .readDataRegressionAnalyses(dataset, options)
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
@@ -28,7 +28,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "knn")
 
 	# If the user wants to add the values to the data set
-  	.regressionAddValuesToData(options, jaspResults, ready)
+  	.regressionAddValuesToData(dataset, options, jaspResults, ready)
 
 	# Add test set indicator to data
   	.addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")

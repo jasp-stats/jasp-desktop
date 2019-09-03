@@ -18,7 +18,7 @@
 mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
-  dataset <- .readDataClusteringAnalyses(dataset, options, jaspResults)
+  dataset <- .readDataClusteringAnalyses(dataset, options)
   .errorHandlingClusteringAnalyses(dataset, options)
   
   # Check if analysis is ready to run
@@ -28,7 +28,7 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   .clusteringTable(dataset, options, jaspResults, ready, position = 1, type = "hierarchical")
 
   # If the user wants to add the clusters to the data set
-  .clusteringAddClustersToData(options, jaspResults, ready)
+  .clusteringAddClustersToData(dataset, options, jaspResults, ready)
   
   # Create the cluster information table
   .clusterInformationTable(options, jaspResults, ready, position = 2, type = "hierarchical")

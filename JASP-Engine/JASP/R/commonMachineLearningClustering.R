@@ -15,14 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.readDataClusteringAnalyses <- function(dataset, options, jaspResults){
+.readDataClusteringAnalyses <- function(dataset, options){
   predictors <- unlist(options[['predictors']])
   predictors <- predictors[predictors != ""]
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns = predictors)
-    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
-    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
-    dataset <- na.omit(dataset)
+    dataset <- .readAndAddCompleteRowIndices(dataset, predictors)
   }
   if(options[["scaleEqualSD"]] && length(unlist(options[["predictors"]])) > 0)
     dataset <- .scaleNumericData(dataset)
@@ -399,15 +396,15 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
 }
 
-.clusteringAddClustersToData <- function(options, jaspResults, ready){
+.clusteringAddClustersToData <- function(dataset, options, jaspResults, ready){
   if(!ready || !options[["addClusters"]] || options[["clusterColumn"]] == "")  return()
 
   clusterResult <- jaspResults[["clusterResult"]]$object
 
   if(is.null(jaspResults[["clusterColumn"]])){
     predictions <- clusterResult[["pred.values"]]
-    clusterColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
-    clusterColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
+    clusterColumn <- rep(NA, max(as.numeric(rownames(dataset))))
+    clusterColumn[as.numeric(rownames(dataset))] <- predictions
     jaspResults[["clusterColumn"]] <- createJaspColumn(columnName=options[["clusterColumn"]])
     jaspResults[["clusterColumn"]]$dependOn(options = c("clusterColumn", "predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
                                                         "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "optimizationCriterion"))

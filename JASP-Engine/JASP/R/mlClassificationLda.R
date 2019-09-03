@@ -18,7 +18,7 @@
 mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
-  dataset <- .readDataClassificationAnalyses(dataset, options, jaspResults)
+  dataset <- .readDataClassificationAnalyses(dataset, options)
   .errorHandlingClassificationAnalyses(dataset, options)
   
   # Check if analysis is ready to run
@@ -28,7 +28,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "lda")
 
   # If the user wants to add the classes to the data set
-  .classificationAddClassesToData(options, jaspResults, ready)
+  .classificationAddClassesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "classification")

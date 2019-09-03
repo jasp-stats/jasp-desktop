@@ -18,7 +18,7 @@
 mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   
 	# Preparatory work
-	dataset <- .readDataRegularizedRegression(dataset, options, jaspResults)
+	dataset <- .readDataRegularizedRegression(dataset, options)
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
@@ -28,7 +28,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "regularized")
 
   # If the user wants to add the values to the data set
-  .regressionAddValuesToData(options, jaspResults, ready)
+  .regressionAddValuesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
@@ -54,7 +54,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 }
 
 # Read dataset
-.readDataRegularizedRegression <- function(dataset, options, jaspResults){
+.readDataRegularizedRegression <- function(dataset, options){
   
   target                    <- NULL
   weights                   <- NULL
@@ -70,10 +70,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   variables.to.read         <- c(target, predictors, weights, testSetIndicator)
 
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns = variables.to.read)
-    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
-    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
-    dataset <- na.omit(dataset)
+    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read)
   }
   
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])

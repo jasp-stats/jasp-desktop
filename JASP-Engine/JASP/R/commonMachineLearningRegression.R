@@ -26,14 +26,19 @@
     testSetIndicator                  <- options[["testSetIndicatorVariable"]]
   variables.to.read         <- c(target, predictors, testSetIndicator)
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns = variables.to.read)
-    jaspResults[["lengthOriginalDataset"]] <- createJaspState(nrow(dataset))
-    jaspResults[["indexOfCompleteCases"]] <- createJaspState(which(complete.cases(dataset)))
-    dataset <- na.omit(dataset)
+    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read)
   }
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
     dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]])), drop = FALSE])
   return(dataset)
+}
+
+.readAndAddCompleteRowIndices <- function(dataset, variables.to.read){
+    dataset             <- .readDataSetToEnd(columns = variables.to.read)
+    complete.index      <- which(complete.cases(dataset))
+    dataset             <- na.omit(dataset)
+    rownames(dataset)   <- as.character(complete.index)
+    return(dataset)
 }
 
 .errorHandlingRegressionAnalyses <- function(dataset, options){
@@ -479,15 +484,15 @@
 # fallback when .scaleNumericData is called with factor/ character data
 .scaleNumericData.default <- function(x, center = TRUE, scale = TRUE) return(x)
 
-.regressionAddValuesToData <- function(options, jaspResults, ready){
+.regressionAddValuesToData <- function(dataset, options, jaspResults, ready){
   if(!ready || !options[["addValues"]] || options[["valueColumn"]] == "")  return()
 
   regressionResult <- jaspResults[["regressionResult"]]$object
 
   if(is.null(jaspResults[["valueColumn"]])){
     predictions <- regressionResult[["values"]]
-    valueColumn <- rep(NA, jaspResults[["lengthOriginalDataset"]]$object)
-    valueColumn[jaspResults[["indexOfCompleteCases"]]$object] <- predictions
+    valueColumn <- rep(NA, max(as.numeric(rownames(dataset))))
+    valueColumn[as.numeric(rownames(dataset))] <- predictions
     jaspResults[["valueColumn"]] <- createJaspColumn(columnName=options[["valueColumn"]])
     jaspResults[["valueColumn"]]$dependOn(options = c("valueColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
                                                               "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
