@@ -28,10 +28,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   longData <- .BANOVAreadRManovaData(dataset, options)
 
   ready <- all(options$repeatedMeasuresCells != "") &&  length(options$withinModelTerms) > 0
+
+  rmAnovaContainer <- .getRMAnovaContainer(jaspResults)
   
   .BANOVAerrorhandling(longData, options, "RM-ANOVA")
-  
-  rmAnovaContainer <- .getRMAnovaContainer(jaspResults)
 
   .rmAnovaComputeResultsContainer(rmAnovaContainer, longData, options, ready)
   
@@ -43,9 +43,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   .rmAnovaAssumptionsContainer(rmAnovaContainer, dataset, options, ready)
   
-  .BANOVAdescriptives(rmAnovaContainer, longData, options, list(noVariables=FALSE), "RM-ANOVA")
+  .BANOVAdescriptives(rmAnovaContainer, longData, options, list(noVariables=FALSE), "RM-ANOVA", ready)
   
-  .rmAnovaPostHocTable(rmAnovaContainer, dataset, options, ready)
+  .rmAnovaPostHocTable(rmAnovaContainer, dataset, longData, options, ready)
 
   .rmAnovaContrastTable(rmAnovaContainer, longData, options, ready)
 
@@ -259,7 +259,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   rmAnovaContainer[["anovaResult"]] <- createJaspState(object = rmAnovaResult)
 }
 
-.rmAnovaComputeResults <- function(dataset, options, bootstrappingCall = FALSE) {
+.rmAnovaComputeResults <- function(dataset, options, returnResultsEarly = FALSE) {
   
   modelDef <- .rmModelFormula(options)
   model.formula <- as.formula(modelDef$model.def)
@@ -327,8 +327,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     return(list(tryResult = "try-error"))
   }
 
-  if (bootstrappingCall)
-    return(result)
+  if (returnResultsEarly)
+    return(list(result = result, model = model))
   
 
 
@@ -393,8 +393,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   withinAnovaTable[["correction"]] <- "None"
   corrections <- summaryResult$pval.adjustments
   sphericityTests <- as.data.frame(unclass(summaryResult$sphericity.tests))
-  
+
   if (!is.null(rownames(corrections))) {
+    corrections <- as.data.frame(corrections)
     corrections <- corrections[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
     sphericityTests <- sphericityTests[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
     rownames(corrections) <- rownames(sphericityTests) <- 
@@ -417,10 +418,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                          dimnames = list(unavailableCases, colnames(sphericityTests)))
     sphericityTests <- as.data.frame(rbind(sphericityTests, emptyTests))
     
-  } else {
-    corrections <- as.data.frame(corrections)
-  }
-
+  } 
+  
   withinIndices <- .mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections))
 
   ggTable[["num Df"]] <- withinAnovaTable[["num Df"]] * corrections[withinIndices, "GG eps"]
@@ -501,10 +500,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 }
 
 .rmAnovaBetweenSubjectsTable <- function(rmAnovaContainer, dataset, options, ready) {
-  if(!is.null(rmAnovaContainer[["betweenTable"]])) # || length(options$betweenSubjectFactors) == 0)
+  if(!is.null(rmAnovaContainer[["betweenTable"]])) 
     return()
   
-  betweenTable <- createJaspTable(title = "Between Subjects Effects")
+  betweenTable <- createJaspTable(title = "Between Subjects Effects", position = 2)
   
   betweenTable$addColumnInfo(title = "Cases", name = "case", type = "string" )
   betweenTable$addColumnInfo(title = "Sum of Squares", name = "Sum Sq", type = "number")
@@ -513,12 +512,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   betweenTable$addColumnInfo(title = "F", name = "F value", type = "number")
   betweenTable$addColumnInfo(title = "p", name = "Pr(>F)", type = "number")
   
-  if (options$VovkSellkeMPR) {
+  if (options$VovkSellkeMPR && length(options$betweenSubjectFactors) > 0) {
     betweenTable$addColumnInfo(title = "VS-MPR\u002A", name = "VovkSellkeMPR", type = "number")
     betweenTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   
-  if (options$effectSizeEstimates) {
+  if (options$effectSizeEstimates && length(options$betweenSubjectFactors) > 0) {
     
     if (options$effectSizeEtaSquared) 
       betweenTable$addColumnInfo(title = "\u03B7\u00B2", name = "eta", type = "number")
@@ -586,7 +585,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   dfType <- "integer" # Make df an integer unless corrections are applied
   if ((length(corrections) > 1 || any(!"None" %in% corrections)) && options$sphericityCorrections) {
-    anovaTable$addColumnInfo(title = "Sphericity Correction", name = "correction", type = "string", combine = TRUE)
+    anovaTable$addColumnInfo(title = "Sphericity Correction", name = "correction", type = "string")
     dfType <- "number"
   }
   
@@ -645,10 +644,15 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   for (case in allCases) {
 
     for (i in .indices(corrections)) {
-    
+
       withinResults[[corrections[i]]][case, ".isNewGroup"] <- i == 1
-      anovaTable$addRows(as.list(withinResults[[corrections[i]]][case, ]),
-                         rowNames=paste0(case, corrections[i]))
+      if (!is.na(withinResults[[corrections[i]]][case, "num Df"])) {
+        anovaTable$addRows(as.list(withinResults[[corrections[i]]][case, ]),
+                           rowNames=paste0(case, corrections[i]))  
+      } else {
+        anovaTable$addFootnote("Sphericity corrections not available for factors with 2 levels.")
+      }
+      
     }
 
     if (case %in% modelTerms) {
@@ -658,10 +662,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
       for (i in .indices(corrections)) {
 
-        residualResults[[corrections[i]]][currentCase, ".isNewGroup"] <- i == 1  
-        anovaTable$addRows(as.list(residualResults[[corrections[i]]][currentCase, ]), 
+        if (!is.na(withinResults[[corrections[i]]][currentCase, "num Df"])) {
+          residualResults[[corrections[i]]][currentCase, ".isNewGroup"] <- i == 1  
+          anovaTable$addRows(as.list(residualResults[[corrections[i]]][currentCase, ]), 
                            rowNames=paste0(currentCase, "Resid", corrections[i]))
-        
+        }
       }
     }
   }
@@ -858,7 +863,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-.rmAnovaPostHocTable <- function(rmAnovaContainer, dataset, options, ready) {
+.rmAnovaPostHocTable <- function(rmAnovaContainer, dataset, longData, options, ready) {
   if(!is.null(rmAnovaContainer[["postHocStandardContainer"]]) || length(options$postHocTestsVariables) ==0)
     return()
   
@@ -888,20 +893,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   referenceGrid <- rmAnovaContainer[["referenceGrid"]]$object
   fullModel <- rmAnovaContainer[["anovaResult"]]$object$fullModel
-  
-
-  postHocData <- fullModel$data$wide
-  factorNamesV <- colnames(postHocData) # Names to use to refer to variables in data
-  # Because there are multiple names for each variable in JASP, one of the things the following code does is make sure to get the correct naming
-  # and refer to the correct actual variable. The different names are the actual name of the variable, the name the user gives in jasp for the lvel and factor, 
-  # and also the name that JASP gives to it, which is a concatenation of "Level#_Level#', where the first refers to the factor and second to the level. 
- 
-  rmFactorIndex <- 1
   allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
 
   for (var in variables) {
     
-    # Results using the Bonferroni method
     resultPostHoc <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), 
                           infer = TRUE, level = options$confidenceIntervalIntervalPostHoc)
     
@@ -922,53 +917,45 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
       if (!options$postHocTestPooledError) {
 
-        levelsOfThisFactor <- unlist(lapply(options$repeatedMeasuresFactors[rmFactorIndex], function(x) x$levels)) # Levels within Factor
-        numberOfLevels <- length(unique(levelsOfThisFactor))
-        splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[indexofOrderFactors[rmFactorIndex]]))
-        listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
+        numberOfLevels <- length(levels(longData[[var]]))
         
-        for(i in 1:numberOfLevels){
+        # Loop over all the levels within factor and do pairwise t.tests on them
+        bonfAdjustCIlevel <- 1-((1-options$confidenceIntervalIntervalPostHoc)/choose(numberOfLevels, 2))
+        
+        for (compIndex in .indices(comparisons)) {
           
-          listVarNamesToLevel[[i]] <- factorNamesV[(splitNames %in% .v(levelsOfThisFactor[i]))]  
-        
-        }
-        
-        countr <- 1
-        for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
+          levelA <- comparisons[[compIndex]][1]
+          levelB <- comparisons[[compIndex]][2]
+
+          x <- subset(longData, longData[[var]] == .unv(levelA))
+          x <- tapply(x[[.v("dependent")]], x[["Xc3ViamVjdA"]], mean)
+          y <- subset(longData, longData[[var]] == .unv(levelB))
+          y <- tapply(y[[.v("dependent")]], y[["Xc3ViamVjdA"]], mean)
           
-          for (i in .seqx(k+1, numberOfLevels)) {
-            
-            bonfAdjustCIlevel <- 1-((1-options$confidenceIntervalIntervalPostHoc)/choose(numberOfLevels, 2))
-            tResult <- t.test(rowMeans(postHocData[listVarNamesToLevel[[k]]]),rowMeans(postHocData[listVarNamesToLevel[[i]]]),
-                              paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
-            resultPostHoc[["estimate"]][countr] <- tResult$estimate
-            resultPostHoc[["t.ratio"]][countr] <- tResult$statistic
-            resultPostHoc[["SE"]][countr] <- tResult$estimate / tResult$statistic
-            resultPostHoc[["p.value"]][countr] <- tResult$p.value
-            resultPostHoc[["lower.CL"]][countr] <- tResult$conf.int[1]
-            resultPostHoc[["upper.CL"]][countr] <- tResult$conf.int[2]
-            countr <- countr + 1
-            
-          }
+          tResult <- t.test(x, y, paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
+          tResult <- unname(unlist(tResult[c("estimate", "statistic", "p.value", "conf.int")]))
+          resultPostHoc[compIndex, c("estimate", "t.ratio", "p.value", "lower.CL", "upper.CL")] <- tResult
           
         }
+        
+        resultPostHoc[["SE"]] <- resultPostHoc[["estimate"]] / resultPostHoc[["t.ratio"]]
         resultPostHoc[["bonferroni"]] <- p.adjust(resultPostHoc[["p.value"]], method = "bonferroni")
         resultPostHoc[["holm"]] <- p.adjust(resultPostHoc[["p.value"]], method = "holm")
+        
       }
+      
       resultPostHoc[["scheffe"]] <- "."
       resultPostHoc[["tukey"]] <-  "."
-      
       if (options$postHocTestsScheffe || options$postHocTestsTukey) {
         cors <- paste(c("Tukey", "Scheffe")[c(options$postHocTestsTukey, options$postHocTestsScheffe)], collapse = " and ")
         
         postHocContainer[[var]]$addFootnote(paste(cors, "corrected p-values are not appropriate for repeated", 
                                                    "measures post-hoc tests (Maxwell, 1980; Field, 2012)."))
       }
-      rmFactorIndex <- rmFactorIndex + 1
     }
 
-    
-    resultPostHoc[['cohenD']] <- resultPostHoc[['t.ratio']] / sqrt(nrow(dataset))
+    if (!grepl(var, pattern = ":"))
+      resultPostHoc[['cohenD']] <- resultPostHoc[['t.ratio']] / sqrt(nrow(dataset))
 
     resultPostHoc[["contrast_A"]] <- lapply(comparisons, function(x) paste(.unv(strsplit(x[[1]], ",")[[1]]), 
                                                                            collapse = ", "))
@@ -978,7 +965,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     pValMessage <- attr(resultPostHoc, "mesg")[grep(attr(resultPostHoc, "mesg"), pattern = "P value adjustment")]
     if (length(pValMessage) != 0)
       postHocContainer[[var]]$addFootnote(
-        message = gsub(x = pValMessage, ": bonferroni method", "Confidence interval"),
+        message = gsub(x = pValMessage, ": bonferroni method", ""),
         symbol = "<i>Note.</i>")
     
     confMessage <- attr(resultPostHoc, "mesg")[grep(attr(resultPostHoc, "mesg"), pattern = "Conf-level")]
@@ -1022,7 +1009,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   preTitle <- if (!makeBootstrapTable) "Post Hoc Comparisons - " else "Bootstrapped Post Hoc Comparisons - "
   postHocTable <- createJaspTable(title = paste0(preTitle, myTitle))
   
-  # postHocTable$addColumnInfo(name="contrast", title="Comparison", type="string")
   postHocTable$addColumnInfo(name="contrast_A", title=" ", type="string", combine = TRUE)
   postHocTable$addColumnInfo(name="contrast_B", title=" ", type="string")
   
@@ -1052,7 +1038,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   postHocTable$addColumnInfo(name="t.ratio", title="t", type="number")
   
-  if (options$postHocTestEffectSize ) {
+  if (options$postHocTestEffectSize & !interactionTerm) {
     postHocTable$addColumnInfo(name="cohenD", title="Cohen's d", type="number")
     postHocTable$addFootnote("Cohen's d does not correct for multiple comparisons.")
   }
@@ -1069,7 +1055,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (options$postHocTestsHolm)
     postHocTable$addColumnInfo(name="holm",title="p<sub>holm</sub>", type="number")
   
-  if(options$postHocTestsSidak)
+  if (options$postHocTestsSidak)
     postHocTable$addColumnInfo(name="sidak",title="p<sub>sidak</sub>", type="number")
   
   
@@ -1292,57 +1278,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   rmAnovaContainer[["marginalMeansContainer"]] <- marginalMeansContainer
   
-  createMarginalMeansTable <- function(myTitle, options, individualTerms, makeBootstrapTable = FALSE, dfType = "integer" ) {
-    
-    preTitle <- if (!makeBootstrapTable) "Marginal Means - " else "Bootstrapped Marginal Means - "
-    marginalMeansTable <- createJaspTable(title = paste0(preTitle, myTitle))
-    
-    for (i in 1:length(individualTerms))
-      marginalMeansTable$addColumnInfo(name=individualTerms[i], type="string", combine = TRUE)
-    
-    marginalMeansTable$addColumnInfo(name="lsmean", title="Marginal Mean", type="number")
-    
-    if (makeBootstrapTable) {
-      thisOverTitle <- paste0("95% bca\u002A CI")
-    } else {
-      thisOverTitle <- paste0("95% CI for Mean Difference")
-    }
-    
-    marginalMeansTable$addColumnInfo(name="lower.CL", type = "number", title = "Lower",
-                                     overtitle = thisOverTitle, )
-    marginalMeansTable$addColumnInfo(name="upper.CL", type = "number", title = "Upper",
-                                     overtitle = thisOverTitle)
-    
-    marginalMeansTable$addColumnInfo(name="SE", type="number")
-    
-    if (makeBootstrapTable) {
-      
-      marginalMeansTable$addColumnInfo(name="bias", type="number")
-      
-      marginalMeansTable$addFootnote(message = paste0("Marginal Means estimate is based on the median of", 
-                                                        " the bootstrap distribution."))
-      marginalMeansTable$addFootnote(symbol = "\u002A", message = "Bias corrected accelerated.") 
-      
-    }
-    
-    if (options$marginalMeansCompareMainEffects) {
-      marginalMeansTable$addColumnInfo(name="t.ratio", title="t", type="number")
-      marginalMeansTable$addColumnInfo(name="df", type = dfType)
-      marginalMeansTable$addColumnInfo(name="p.value", title="p", type="number")
-      
-      if (options$marginalMeansCIAdjustment == "bonferroni") {
-        marginalMeansTable$addFootnote(message = "Bonferroni CI adjustment")
-      } else if (options$marginalMeansCIAdjustment == "sidak") {
-        marginalMeansTable$addFootnote(message = "Sidak CI adjustment")
-      }
-    }
-    
-    marginalMeansTable$showSpecifiedColumnsOnly <- TRUE
-    
-    return(marginalMeansTable)
-  }
-
-  
   marginalTerms <- unlist(options$marginalMeansTerms, recursive = FALSE)
 
 
@@ -1350,10 +1285,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     thisVarName <- paste(term, collapse = " \u273B ")
     individualTerms <- term
     if (any(term %in% unlist(options$withinModelTerms))) dfType <- "number" else dfType <- "integer"
-    marginalMeansContainer[[paste0(.v(term), collapse = ":")]] <- createMarginalMeansTable(thisVarName, options, 
-                                                                                           individualTerms, 
-                                                                                           options$marginalMeansBootstrapping,
-                                                                                           dfType = dfType)
+    marginalMeansContainer[[paste0(.v(term), collapse = ":")]] <- .createMarginalMeansTableAnova(thisVarName, options, 
+                                                                                                 individualTerms, 
+                                                                                                 options$marginalMeansBootstrapping,
+                                                                                                 dfType = dfType)
   }
   
   if (!ready)
@@ -1392,7 +1327,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       startProgressbar(options[["marginalMeansBootstrappingReplicates"]])
       
       nRows <- nrow(marginalResult)
-      
+
       bootstrapMarginalMeans <- try(boot::boot(data = dataset, statistic = .bootstrapMarginalMeansRmAnova, 
                                                R = options[["marginalMeansBootstrappingReplicates"]],
                                                options = options,
@@ -1403,12 +1338,13 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       bootstrapSummary <- summary(bootstrapMarginalMeans)
       
       ci.fails <- FALSE
+      # bootstrapMarginalMeansCI <- confint(bootstrapMarginalMeans, level = 0.95, type = c("bca"))
       bootstrapMarginalMeansCI <- t(sapply(1:nrow(bootstrapSummary), function(index){
         res <- try(boot::boot.ci(boot.out = bootstrapMarginalMeans, conf = 0.95, type = "bca",
                                  index = index)[['bca']][1,4:5])
         if(!inherits(res, "try-error")){
           return(res)
-        } else if(identical(attr(res, "condition")$message, "estimated adjustment 'a' is NA")){
+        } else if (identical(attr(res, "condition")$message, "estimated adjustment 'a' is NA")) {
           ci.fails <<- TRUE
           return(c(NA, NA))
         } else{
@@ -1439,9 +1375,59 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
+.createMarginalMeansTableAnova <- function(myTitle, options, individualTerms, makeBootstrapTable = FALSE, dfType = "integer" ) {
+  
+  preTitle <- if (!makeBootstrapTable) "Marginal Means - " else "Bootstrapped Marginal Means - "
+  marginalMeansTable <- createJaspTable(title = paste0(preTitle, myTitle))
+  
+  for (i in 1:length(individualTerms))
+    marginalMeansTable$addColumnInfo(name=individualTerms[i], type="string", combine = TRUE)
+  
+  marginalMeansTable$addColumnInfo(name="lsmean", title="Marginal Mean", type="number")
+  
+  if (makeBootstrapTable) {
+    thisOverTitle <- paste0("95% bca\u002A CI")
+  } else {
+    thisOverTitle <- paste0("95% CI for Mean Difference")
+  }
+  
+  marginalMeansTable$addColumnInfo(name="lower.CL", type = "number", title = "Lower",
+                                   overtitle = thisOverTitle, )
+  marginalMeansTable$addColumnInfo(name="upper.CL", type = "number", title = "Upper",
+                                   overtitle = thisOverTitle)
+  
+  marginalMeansTable$addColumnInfo(name="SE", type="number")
+  
+  if (makeBootstrapTable) {
+    
+    marginalMeansTable$addColumnInfo(name="bias", type="number")
+    
+    marginalMeansTable$addFootnote(message = paste0("Marginal Means estimate is based on the median of", 
+                                                    " the bootstrap distribution."))
+    marginalMeansTable$addFootnote(symbol = "\u002A", message = "Bias corrected accelerated.") 
+    
+  }
+  
+  if (options$marginalMeansCompareMainEffects) {
+    marginalMeansTable$addColumnInfo(name="t.ratio", title="t", type="number")
+    marginalMeansTable$addColumnInfo(name="df", type = dfType)
+    marginalMeansTable$addColumnInfo(name="p.value", title="p", type="number")
+    
+    if (options$marginalMeansCIAdjustment == "bonferroni") {
+      marginalMeansTable$addFootnote(message = "Bonferroni CI adjustment")
+    } else if (options$marginalMeansCIAdjustment == "sidak") {
+      marginalMeansTable$addFootnote(message = "Sidak CI adjustment")
+    }
+  }
+  
+  marginalMeansTable$showSpecifiedColumnsOnly <- TRUE
+  
+  return(marginalMeansTable)
+}
+
 .bootstrapMarginalMeansRmAnova <- function(data, indices, options, nRows, termLength, formula){
   
-  indices <- sample(indices, replace = TRUE)
+  # indices <- sample(indices, replace = TRUE)
   resamples <- data[indices, , drop=FALSE]
   
   dataset <- .shortToLong(resamples, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, 
@@ -1449,7 +1435,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   idx <- match(c("dependent", "subject"), colnames(dataset))
   colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
 
-  anovaModelBoots <- .rmAnovaComputeResults(dataset, options, bootstrappingCall = TRUE) # refit model
+  anovaModelBoots <- .rmAnovaComputeResults(dataset, options, returnResultsEarly = TRUE)$result # refit model
 
   if (!is.null(anovaModelBoots[["tryResult"]]))
     return(rep(NA, termLength))
@@ -1836,8 +1822,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       df <- anovaResult[["Df"]]
       
     } else {
-      
-      anovaResult <-  .rmAnovaComputeResults(simpleDataset, simpleOptions)$anovaResult[simpleFactorBase64, ]
+
+      anovaResult <-  .rmAnovaComputeResults(simpleDataset, simpleOptions, returnResultsEarly = TRUE)$model[simpleFactorBase64, ]
 
       if (!options$poolErrorTermSimpleEffects) {
         fullAnovaMS <-  anovaResult[["Error SS"]] / anovaResult[["den Df"]]
@@ -1847,8 +1833,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       df <- anovaResult[["num Df"]]
       
     }
-    
-    MS <- anovaResult[["Mean Sq"]]
+
+    MS <- anovaResult[["Mean Sq"]] <- anovaResult[["Sum Sq"]] /  anovaResult[["num Df"]]
     F <- MS / fullAnovaMS
     p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
     simpleEffectResult[i, c("SumSq", "MeanSq", "Df", "F", "p")] <- c(anovaResult[["Sum Sq"]], MS, df, F, p)
