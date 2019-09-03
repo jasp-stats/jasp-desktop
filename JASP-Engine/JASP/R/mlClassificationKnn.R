@@ -185,8 +185,12 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
     score <- predict(kfit_auc, test, type = 'prob')[, 'TRUE']
     actual.class <- test[,.v(options[["target"]])] == lvls[i]
 
-    pred <- ROCR::prediction(score, actual.class)
-    auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
+    if(length(levels(factor(actual.class))) == 2){
+      pred <- ROCR::prediction(score, actual.class)
+      auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
+    } else { # This variable is not in the test set, we should skip it
+      auc[i] <- 0 # Gets removed in table
+    }
   }
 
   # Use the specified model to make predictions for dataset

@@ -331,6 +331,7 @@
   classificationResult <- jaspResults[["classificationResult"]]$object
 
   variables <- options[["predictors"]]
+  variables <- variables[ !sapply(dataset[, .v(variables)], is.factor) ] # remove factors from boundary plot
   l <- length(variables)
 
   if (l <= 2) {
@@ -365,7 +366,7 @@
           plotMat[[row, col]] <- p
       }  
       if (col < row) {
-          predictors <- dataset[, .v(options[["predictors"]])]
+          predictors <- dataset[, .v(variables)]
           predictors <- predictors[, c(col, row)]
           formula <- formula(paste(.v(options[["target"]]), "~", paste(colnames(predictors), collapse=" + ")))
           plotMat[[row-1, col]] <- .decisionBoundaryPlot(dataset, options, jaspResults, predictors, target, formula, l, type = type)
@@ -518,6 +519,12 @@
       column <- which(colnames(typeData) == .v(options[["target"]]))
       typeData <- typeData[, -column]
 
+      actual.class <- test[,.v(options[["target"]])] == lvls[i]
+
+      if(length(levels(factor(actual.class))) != 2){ # This variable is not in the test set, we should skip it
+        next
+      }
+
       if(type == "knn"){
 
         kfit <- kknn::kknn(formula = formula, train = typeData, test = test, k = classificationResult[["nn"]], 
@@ -555,8 +562,6 @@
         score <- predict(rfit, test, type = "prob")[, 'TRUE']
 
       }
-
-      actual.class <- test[,.v(options[["target"]])] == lvls[i]
   
       pred <- ROCR::prediction(score, actual.class)
       nbperf <- ROCR::performance(pred, "tpr", "fpr")
@@ -567,6 +572,7 @@
     }
 
     rocData <- data.frame(x = rocXstore, y = rocYstore, name = rocNamestore)
+    rocData <- na.omit(rocData) # Remove classes that are not in the test set
     p <- p + JASPgraphs::geom_line(data = rocData, mapping = ggplot2::aes(x = x, y = y, col = name)) +
               ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(lvls))) +
               ggplot2::scale_y_continuous(limits = c(0, 1.1), breaks = seq(0,1,0.2)) +
@@ -746,6 +752,7 @@
   support[length(support) + 1]        <- sum(support, na.rm = TRUE)
   auc[length(auc) + 1]                <- mean(auc, na.rm = TRUE)
 
+  validationMeasures[["group"]]       <- c(levels(factor(classificationResult[["test"]][, .v(options[["target"]])])), "Average / Total") # fill again to adjust for missing categories
   validationMeasures[["precision"]]   <- precision
   validationMeasures[["recall"]]      <- recall
   validationMeasures[["f1"]]          <- f1

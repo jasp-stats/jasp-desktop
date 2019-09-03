@@ -138,8 +138,12 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
     score <- predict(ldafit_auc, test, type = "prob")$posterior[, 'TRUE']
     actual.class <- test[,.v(options[["target"]])] == lvls[i]
 
-    pred <- ROCR::prediction(score, actual.class)
-    auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
+    if(length(levels(factor(actual.class))) == 2){
+      pred <- ROCR::prediction(score, actual.class)
+      auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
+    } else { # This variable is not in the test set, we should skip it
+      auc[i] <- 0 # Gets removed in table
+    }
   }
 
   # Use the specified model to make predictions for dataset
@@ -371,7 +375,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 
   target <- classificationResult[["train"]][, .v(options[["target"]])]
   lda.fit.scaled <- cbind.data.frame(
-    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]])]), scale = FALSE) %*% classificationResult[["scaling"]], 
+    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]]), drop = FALSE]), scale = FALSE) %*% classificationResult[["scaling"]], 
     V2 = classificationResult[["train"]][,.v(options[["target"]])]
   )
   
