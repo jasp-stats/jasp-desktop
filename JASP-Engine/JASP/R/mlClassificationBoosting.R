@@ -28,7 +28,7 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")
 
   # If the user wants to add the classes to the data set
-  .classificationAddClassesToData(options, jaspResults, ready)
+  .classificationAddClassesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "classification")
@@ -78,9 +78,6 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
 
   # Set model-specific parameters
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
-
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
 
   # Split the data into training and test sets
   if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){

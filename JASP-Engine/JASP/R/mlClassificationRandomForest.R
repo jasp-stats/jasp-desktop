@@ -28,7 +28,7 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "randomForest")
 
   # If the user wants to add the classes to the data set
-  .classificationAddClassesToData(options, jaspResults, ready)
+  .classificationAddClassesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "classification")
@@ -70,9 +70,6 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
 
 .randomForestClassification <- function(dataset, options, jaspResults){
   
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
-
   # Set model-specific parameters
   noOfPredictors <- base::switch(options[["noOfPredictors"]], "manual" = options[["numberOfPredictors"]], "auto" = floor(sqrt(length(options[["predictors"]]))))
 

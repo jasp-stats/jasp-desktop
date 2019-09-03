@@ -28,7 +28,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "regularized")
 
   # If the user wants to add the values to the data set
-  .regressionAddValuesToData(options, jaspResults, ready)
+  .regressionAddValuesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
@@ -70,11 +70,11 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   variables.to.read         <- c(target, predictors, weights, testSetIndicator)
 
   if (is.null(dataset)){
-    dataset <- .readDataSetToEnd(columns.as.numeric = variables.to.read, exclude.na.listwise = variables.to.read)
+    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read)
   }
   
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
-    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]]))])
+    dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]])), drop = FALSE])
   
   return(dataset)
 }
@@ -83,9 +83,6 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 
   # Import model formula from jaspResults
   formula <- jaspResults[["formula"]]$object
-
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
 
   # Set model-specific parameters
   if(options[["penalty"]] == "ridge") {

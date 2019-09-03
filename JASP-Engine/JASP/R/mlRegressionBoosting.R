@@ -28,7 +28,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")
 
   # If the user wants to add the values to the data set
-  .regressionAddValuesToData(options, jaspResults, ready)
+  .regressionAddValuesToData(dataset, options, jaspResults, ready)
 
   # Add test set indicator to data
   .addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
@@ -66,9 +66,6 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   # Set model-specific parameters
   trees <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfTrees"]], "optimizationOOB" = options[["maxTrees"]])
-
-  # Remove missing values from data set
-  dataset                   <- na.omit(dataset)
 
   # Split the data into training and test sets
   if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){

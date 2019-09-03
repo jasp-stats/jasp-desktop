@@ -28,7 +28,7 @@ mlClusteringKMeans <- function(jaspResults, dataset, options, ...) {
   .clusteringTable(dataset, options, jaspResults, ready, position = 1, type = "kmeans")
 
   # If the user wants to add the clusters to the data set
-  .clusteringAddClustersToData(options, jaspResults, ready)
+  .clusteringAddClustersToData(dataset, options, jaspResults, ready)
   
   # Create the cluster information table
   .clusterInformationTable(options, jaspResults, ready, position = 2, type = "kmeans")

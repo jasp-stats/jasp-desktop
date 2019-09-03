@@ -28,7 +28,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "knn")
 
 	# If the user wants to add the values to the data set
-  	.regressionAddValuesToData(options, jaspResults, ready)
+  	.regressionAddValuesToData(dataset, options, jaspResults, ready)
 
 	# Add test set indicator to data
   	.addTestIndicatorToData(options, jaspResults, ready, purpose = "regression")
@@ -55,9 +55,6 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 	# Set model specific parameters
 	weights <- options[["weights"]]
 	distance <- options[["distanceParameterManual"]]
-
-	# Remove missing values from data set
-  	dataset                   <- na.omit(dataset)
 
 	# Split the data into training and test sets
 	if(options[["holdoutData"]] == "testSetIndicator" && options[["testSetIndicatorVariable"]] != ""){
