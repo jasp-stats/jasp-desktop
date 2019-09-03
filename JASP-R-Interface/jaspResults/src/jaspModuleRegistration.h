@@ -20,8 +20,8 @@ RCPP_MODULE(jaspResults)
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspContainer);
 
 
-	Rcpp::function("startProgressbar",	jaspResults::staticStartProgressbar);
-	Rcpp::function("progressbarTick",	jaspResults::staticProgressbarTick);
+	Rcpp::function("cpp_startProgressbar",	jaspResults::staticStartProgressbar);
+	Rcpp::function("cpp_progressbarTick",	jaspResults::staticProgressbarTick);
 
 	Rcpp::function("destroyAllAllocatedObjects", jaspObject::destroyAllAllocatedObjects);
 	Rcpp::class_<jaspObject_Interface>("jaspObject")
