@@ -1,0 +1,206 @@
+#
+# Copyright (C) 2019 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+LDbinomial <- function(jaspResults, dataset, options, state=NULL){
+  options <- .ldRecodeOptionsBinomial(options)
+  
+  #### Show binomial section ----
+  .ldIntroText(jaspResults, options, "binomial distribution")
+  .ldBinomialParsSupportMoments(jaspResults, options)
+  
+  
+  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", "Probability Mass Function", 3)
+  .ldFillPMFContainer(pmfContainer, options, .ldFormulaBinomialPMF)
+  
+  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", "Cumulative Distribution Function", 4)
+  .ldFillCMFContainer(cmfContainer, options, .ldFormulaBinomialCDF)
+  
+  
+  #### Generate and Display data section ----
+  # simulate and read data
+  .simulateData(jaspResults, options)
+  
+  ready <- options[['variable']] != ""
+  errors <- FALSE
+  if(ready && is.null(dataset)){
+    dataset <- .readDataSetToEnd(columns.as.numeric = options[['variable']])
+    
+    variable <- dataset[[.v(options[['variable']])]]
+    variable <- variable[!is.na(variable)]
+    errors <- .hasErrors(dataset, type = c("observations", "variance", "infinity", "limits"),
+                         observations.amount = "<1",
+                         limits.min = options$support$min, limits.max = options$support$max, 
+                         exitAnalysisIfErrors = FALSE)
+    errors <- .ldCheckInteger(variable, errors)
+  }
+  
+  # overview of the data
+  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
+  
+  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
+  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
+  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
+  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "discrete")
+  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
+  
+  
+  #### Fit data and assess fit ----
+  
+  readyFit <- ready && isFALSE(errors)
+  #### Maximum Likelihood ----
+  if(options$methodMLE){
+    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
+    
+    # parameter estimates
+    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
+    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR,
+                                  .ldBinomialMethodMLEStructureResults)
+    .ldFillBinomialEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
+    
+    # fit assessment
+    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
+
+    # fit statistics
+    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
+    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
+    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
+    #return()
+    # fit plots
+    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
+    
+  }
+  
+  #### Method of moments ----
+  
+  #### Unbiased estimate ----
+  
+  return()
+}
+
+### options ----
+.ldRecodeOptionsBinomial <- function(options){
+  
+  options[['parValNames']] <- c("prob", "size")
+  
+  options[['pars']]   <- list(prob = options[['prob']], size = options[['size']])
+  options[['fix.pars']] <- list(size = options[['size']])
+    
+  options[['pdfFun']] <- dbinom
+  options[['cdfFun']] <- pbinom
+  options[['qFun']]   <- qbinom
+  options[['rFun']]   <- rbinom
+  options[['distNameInR']] <- "binom"
+  
+  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
+  
+  options[['highlightmin']] <- options[['min']]
+  options[['highlightmax']] <- options[['max']]
+ 
+  options$support <- list(min = 0, max = options[['size']])
+  options$lowerBound <- c(0)
+  options$upperBound <- c(1)
+  
+  options
+}
+
+### text fill functions -----
+.ldBinomialParsSupportMoments <- function(jaspResults, options){
+  if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
+    formulas <- createJaspHtml(title = "Parameters, Support, and Moments")
+    formulas$dependOn(c("parsSupportMoments", "parametrization"))
+    formulas$position <- 2
+    
+    text <- "<b>Parameters</b>
+    probability of success: p \u2208 \u211D: 0 \u2264 p \u2264 1
+    number of trials: n \u2208 \u2124: n \u2265 0"
+    
+    text2 <- "<b>Support</b>
+    x \u2208 \u2124: 0 \u2264 x \u2264 n"
+    
+    text3 <- "<b>Moments</b> 
+    E(X)   = np
+    Var(X) = np(1-p)
+    
+    E(X/n)   = p
+    Var(X/n) = p(1-p)"
+    
+    formulas$text <- paste(text, text2, text3, sep = "<br><br>")
+    
+    jaspResults[['parsSupportMoments']] <- formulas
+  }
+}
+
+.ldFormulaBinomialPMF <- function(options){
+    text <- "<MATH>
+    f(x; <span style='color:red'>p</span>, <span style='color:blue'>n</span>) = 
+    </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+.ldFormulaBinomialCDF <- function(options){
+  text <- "<MATH>
+    F(x; <span style='color:red'>p</span>, <span style='color:blue'>n</span>) = 
+    </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+.ldFormulaBinomialQF <- function(options){
+  text <- "<MATH>
+    Q(x; <span style='color:red'>p</span>, <span style='color:blue'>n</span>) = 
+    </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+#### Table functions ----
+
+.ldFillBinomialEstimatesTable <- function(table, results, options, ready){
+  if(!ready) return()
+  if(is.null(results)) return()
+  if(is.null(table)) return()
+  
+  res <- results$structured
+  res$parName <- c("p")
+  
+  if(results$fitdist$convergence != 0){
+    table$addFootnote("The optimization did not converge, try adjusting the parameter values.", symbol = "<i>Warning.</i>")
+  }
+  if(!is.null(results$fitdist$optim.message)){
+    table$addFootnote(results$fitdist$message, symbol = "<i>Warning.</i>")
+  }
+  
+  table$addFootnote(message = sprintf("Parameter n was fixed at value %s.", options[['size']]))
+  table$setData(res)
+  
+  return()
+}
+
+.ldBinomialMethodMLEStructureResults <- function(fit, options){
+  if(is.null(fit)) return()
+  
+  transformations <- c(prob = "prob")
+  
+  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
+  rownames(res) <- c("estimate", "se", "lower", "upper")
+  res <- t(res)
+  res <- cbind(par = rownames(res), res)
+  res <- as.data.frame(res)
+  
+  return(res)
+}

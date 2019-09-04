@@ -1,0 +1,199 @@
+#
+# Copyright (C) 2019 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
+  options <- .ldRecodeOptionsBernoulli(options)
+  
+  #### Show bernoulli section ----
+  .ldIntroText(jaspResults, options, "bernoulli distribution")
+  .ldBernoulliParsSupportMoments(jaspResults, options)
+  
+  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", "Probability Mass Function", 3)
+  .ldFillPMFContainer(pmfContainer, options, .ldFormulaBernoulliPMF)
+  
+  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", "Cumulative Distribution Function", 4)
+  .ldFillCMFContainer(cmfContainer, options, .ldFormulaBernoulliCDF)
+  
+  
+  #### Generate and Display data section ----
+  # simulate and read data
+  .simulateData(jaspResults, options, as="nominal")
+  
+  ready <- options[['variable']] != ""
+  errors <- FALSE
+  if(ready && is.null(dataset)){
+    dataset <- .readDataSetToEnd(columns.as.factor = options[['variable']])
+    #dataset[[options[['variable']]]] <- as.factor(dataset[[options[['variable']]]])
+    
+    variable <- dataset[[.v(options[['variable']])]]
+    variable <- variable[!is.na(variable)]
+    errors <- .hasErrors(dataset, type = c("observations", "factorLevels"),
+                         observations.amount = "<2",
+                         factorLevels.amount = "!=2",
+                         exitAnalysisIfErrors = FALSE)
+  }
+  
+  # overview of the data
+  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
+  
+  readyDesc <- ready && isFALSE(errors)
+  .ldSummaryFactorTableMain    (dataContainer, variable, options, readyDesc)
+  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "factor")
+  
+  
+  #### Fit data and assess fit ----
+  
+  readyFit <- ready && isFALSE(errors)
+  #### Maximum Likelihood ----
+  if(options$methodMLE){
+    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
+    
+    # parameter estimates
+    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
+    mleResults   <- .ldMLEResults(mleContainer, as.numeric(variable) - 1, options, readyFit, options$distNameInR,
+                                  .ldBernoulliMethodMLEStructureResults)
+    .ldFillBernoulliEstimatesTable(mleEstimatesTable, mleResults, options, readyFit, levels(variable))
+    
+    # fit assessment
+    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
+
+    # fit plots
+    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, as.numeric(variable)-1, readyFit)
+    
+  }
+  
+  #### Method of moments ----
+  
+  #### Unbiased estimate ----
+  
+  return()
+}
+
+### options ----
+.ldRecodeOptionsBernoulli <- function(options){
+  
+  options[['parValNames']] <- c("prob")
+  
+  options[['pars']]   <- list(prob = options[['prob']])
+  options[['fix.pars']] <- list(size = 1)
+    
+  options[['pdfFun']] <- function(x, size = 1, prob, log = FALSE){ 
+    dbinom(x = x, size = size, prob = prob, log = log) 
+    }
+  options[['cdfFun']] <- function(q, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
+    pbinom(q = q, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+    }
+  options[['qFun']]   <- function(p, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
+    pbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+  }
+  options[['rFun']]   <- function(n, size = 1, prob) { rbinom(n = n, size = 1, prob = prob)}
+  options[['distNameInR']] <- "binom"
+  
+  options[['range_x']] <- c(0, 1)
+  
+  options[['highlightmin']] <- 0
+  options[['highlightmax']] <- 1
+ 
+  options$support <- list(min = 0, max = 1)
+  options$lowerBound <- c(0)
+  options$upperBound <- c(1)
+  
+  options
+}
+
+### text fill functions -----
+.ldBernoulliParsSupportMoments <- function(jaspResults, options){
+  if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
+    formulas <- createJaspHtml(title = "Parameters, Support, and Moments")
+    formulas$dependOn(c("parsSupportMoments", "parametrization"))
+    formulas$position <- 2
+    
+    text <- "<b>Parameters</b>
+    probability of success: p \u2208 \u211D: 0 \u2264 p \u2264 1"
+    
+    text2 <- "<b>Support</b>
+    x \u2208 \u2124: 0 \u2264 x \u2264 1"
+    
+    text3 <- "<b>Moments</b> 
+    E(X)   = p
+    Var(X) = p(1-p)"
+    
+    formulas$text <- paste(text, text2, text3, sep = "<br><br>")
+    
+    jaspResults[['parsSupportMoments']] <- formulas
+  }
+}
+
+.ldFormulaBernoulliPMF <- function(options){
+    text <- "<MATH>
+    f(x; <span style='color:red'>p</span>) = 
+    </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+.ldFormulaBernoulliCDF <- function(options){
+  text <- "<MATH>
+    F(x; <span style='color:red'>p</span>) = 
+    </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+.ldFormulaBernoulliQF <- function(options){
+  text <- "<MATH>
+    Q(x; <span style='color:red'>p</span>) = 
+    </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+#### Table functions ----
+
+.ldFillBernoulliEstimatesTable <- function(table, results, options, ready, levels){
+  if(!ready) return()
+  if(is.null(results)) return()
+  if(is.null(table)) return()
+  
+  res <- results$structured
+  res$parName <- sprintf("p (%s)", levels)
+  
+  if(results$fitdist$convergence != 0){
+    table$addFootnote("The optimization did not converge, try adjusting the parameter values.", symbol = "<i>Warning.</i>")
+  }
+  if(!is.null(results$fitdist$optim.message)){
+    table$addFootnote(results$fitdist$message, symbol = "<i>Warning.</i>")
+  }
+  
+  table$setData(res)
+  
+  return()
+}
+
+.ldBernoulliMethodMLEStructureResults <- function(fit, options){
+  if(is.null(fit)) return()
+  
+  transformations <- c(prob0 = "1-prob", prob1 = "prob")
+  
+  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
+  rownames(res) <- c("estimate", "se", "lower", "upper")
+  res <- t(res)
+  res <- cbind(par = rownames(res), res)
+  res <- as.data.frame(res)
+  
+  return(res)
+}

@@ -1,0 +1,214 @@
+#
+# Copyright (C) 2019 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+LDbeta <- function(jaspResults, dataset, options, state=NULL){
+  options <- .ldRecodeOptionsBeta(options)
+  
+  #### Show beta section ----
+  .ldIntroText(jaspResults, options, "beta distribution")
+  .ldBetaParsSupportMoments(jaspResults, options)
+  
+  
+  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", "Probability Density Function", 3)
+  .ldFillPDFContainer(pdfContainer, options, .ldFormulaBetaPDF)
+  
+  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", "Cumulative Beta Function", 4)
+  .ldFillCDFContainer(cdfContainer, options, .ldFormulaBetaCDF)
+  
+  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", "Quantile Function", 5)
+  .ldFillQFContainer(qfContainer,   options, .ldFormulaBetaQF)
+  
+  #### Generate and Display data section ----
+  # simulate and read data
+  .simulateData(jaspResults, options)
+  
+  ready <- options[['variable']] != ""
+  errors <- FALSE
+  if(ready && is.null(dataset)){
+    dataset <- .readDataSetToEnd(columns.as.numeric = options[['variable']])
+    
+    variable <- dataset[[.v(options[['variable']])]]
+    variable <- variable[!is.na(variable)]
+    errors <- .hasErrors(dataset, type = c("observations", "variance", "infinity", "limits"),
+                         observations.amount = "<2",
+                         limits.min = options$support$min, limits.max = options$support$max, 
+                         exitAnalysisIfErrors = FALSE)
+  }
+  
+  # overview of the data
+  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
+  
+  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
+  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
+  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
+  .ldPlotHistogram             (dataContainer, variable, options, readyDesc)
+  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
+  
+  
+  #### Fit data and assess fit ----
+  
+  readyFit <- ready && isFALSE(errors)
+  #### Maximum Likelihood ----
+  if(options$methodMLE){
+    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
+    
+    # parameter estimates
+    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
+    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR,
+                                  .ldBetaMethodMLEStructureResults)
+    .ldFillBetaEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
+    
+    
+    # fit assessment
+    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
+    
+    # fit statistics
+    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
+    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
+    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
+    # fit plots
+    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
+    
+  }
+  
+  #### Method of moments ----
+  
+  #### Unbiased estimate ----
+  
+  return()
+}
+
+### options ----
+.ldRecodeOptionsBeta <- function(options){
+  options[['parValNames']] <- c("alpha", "beta")
+  
+  options[['pars']]   <- list(shape1 = options[['alpha']], shape2 = options[['beta']])
+  options[['pdfFun']] <- dbeta
+  options[['cdfFun']] <- pbeta
+  options[['qFun']]   <- qbeta
+  options[['rFun']]   <- rbeta
+  options[['distNameInR']] <- "beta"
+  
+  options[['range_x']] <- c(0, 1)
+  
+  if(options[['highlightType']] == "minmax"){
+    options[['highlightmin']] <- options[['min']]
+    options[['highlightmax']] <- options[['max']]
+  } else if(options[['highlightType']] == "lower"){
+    options[['highlightmin']] <- options[['range_x']][1]
+    options[['highlightmax']] <- options[['lower_max']]
+  } else if(options[['highlightType']] == "upper"){
+    options[['highlightmin']] <- options[['upper_min']]
+    options[['highlightmax']] <- options[['range_x']][2]
+  } else{
+    options[['highlightmin']] <- options[['highlightmax']] <- NULL
+  }
+  
+  options$support <- list(min = 0, max = 1)
+  options$lowerBound <- c(0, 0)
+  options$upperBound <- c(Inf, Inf)
+  
+  options
+}
+
+### text fill functions -----
+
+.ldBetaParsSupportMoments <- function(jaspResults, options){
+  if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
+    formulas <- createJaspHtml(title = "Parameters, Support, and Moments")
+    formulas$dependOn(c("parsSupportMoments", "parametrization"))
+    formulas$position <- 2
+    
+    text <- "<b>Parameters</b>
+    shape: &alpha; \u2208 \u211D<sup>+</sup>
+    shape: &beta;  \u2208 \u211D<sup>+</sup>"
+    
+    text2 <- "<b>Support</b>
+    x \u2208 [0, 1]"
+    
+    text3 <- "<b>Moments</b> 
+    E(X) = &alpha; (&alpha; + &beta;)<sup>-1</sup>
+    Var(X) = &alpha;&beta; (&alpha; + &beta;)<sup>-2</sup> (&alpha; + &beta; + 1)<sup>-1</sup>"
+    
+    formulas$text <- paste(text, text2, text3, sep = "<br><br>")
+    
+    jaspResults[['parsSupportMoments']] <- formulas
+  }
+}
+
+.ldFormulaBetaPDF <- function(options){
+  text <- "<MATH>
+  f(x; <span style='color:red'>&alpha;</span>, <span style='color:blue'>&beta;</span>) = 
+  </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+.ldFormulaBetaCDF <- function(options){
+  text <- "<MATH>
+  F(x; <span style='color:red'>&alpha;</span>, <span style='color:blue'>&beta;</span>) = 
+  </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+.ldFormulaBetaQF <- function(options){
+  text <- "<MATH>
+  Q(p; <span style='color:red'>&alpha;</span>, <span style='color:blue'>&beta;</span>) = 
+  </MATH>"
+  
+  return(gsub(pattern = "\n", replacement = " ", x = text))
+}
+
+#### Table functions ----
+
+.ldFillBetaEstimatesTable <- function(table, results, options, ready){
+  if(!ready) return()
+  if(is.null(results)) return()
+  if(is.null(table)) return()
+  
+  pars <- c(alpha = "\u03B1", beta = "\u03B2")
+
+  res <- results$structured
+  res <- res[res$par %in% names(pars),]
+  res$parName <- c(pars)
+  
+  if(results$fitdist$convergence != 0){
+    table$addFootnote("The optimization did not converge, try adjusting the parameter values.", symbol = "<i>Warning.</i>")
+  }
+  if(!is.null(results$fitdist$optim.message)){
+    table$addFootnote(results$fitdist$message, symbol = "<i>Warning.</i>")
+  }
+  
+  table$setData(res)
+  
+  return()
+}
+
+.ldBetaMethodMLEStructureResults <- function(fit, options){
+  if(is.null(fit)) return()
+  
+  transformations <- c(alpha = "shape1", beta = "shape2")
+  
+  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
+  rownames(res) <- c("estimate", "se", "lower", "upper")
+  res <- t(res)
+  res <- cbind(par = rownames(res), res)
+  res <- as.data.frame(res)
+  
+  return(res)
+}
