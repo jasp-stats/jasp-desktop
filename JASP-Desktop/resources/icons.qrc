@@ -134,5 +134,8 @@
         <file>icons/analysis-ml-regression.svg</file>
         <file>icons/analysis-ml-clustering.svg</file>
         <file>icons/analysis-ml-ribbon.svg</file>
+        <file>icons/learnStats-distributions.svg</file>
+        <file>icons/learnStats-discreteDist.svg</file>
+        <file>icons/learnStats-continuousDist.svg</file>
     </qresource>
 </RCC>
