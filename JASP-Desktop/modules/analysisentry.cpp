@@ -25,7 +25,7 @@ namespace Modules
 AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :
 	_title(				analysisEntry.get("title",			"???").asString()				),
 	_function(			analysisEntry.get("function",		"???").asString()				),
-	_qml(				analysisEntry.get("qml",			_function).asString()			),
+	_qml(				analysisEntry.get("qml",			_function != "???" ? _function + ".qml" : "???").asString()			),
 	_dynamicModule(		dynamicModule														),
 	_isSeparator(		true),
 	_requiresData(		analysisEntry.get("requiresData",	defaultRequiresData).asBool()	),
@@ -34,8 +34,8 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynami
 	for (size_t i = 0; i < _title.length(); ++i)
 		if (_title[i] != '-') _isSeparator = false;
 
-	_isGroupTitle	= !_isSeparator && _qml == "???";
-	_isAnalysis		= ~_isGroupTitle;
+	_isGroupTitle	= !_isSeparator && !(analysisEntry.isMember("qml") || analysisEntry.isMember("function"));
+	_isAnalysis		= !_isGroupTitle;
 }
 
 AnalysisEntry::AnalysisEntry(){}
