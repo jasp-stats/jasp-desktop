@@ -90,6 +90,7 @@ extern "C" {
 	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesToBase64(		const std::string & filterCode);
 	std::string			rbridge_decodeColumnNamesFromBase64(	const std::string & messageBase64);
+	std::vector<int>	rbridge_getPositionsColumnNameMatches(	const std::string & filterBase64, const std::string & columnName);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode);
 	bool				rbridge_columnUsedInFilter(				const char * columnName);
 	void				rbridge_findColumnsUsedInDataSet();

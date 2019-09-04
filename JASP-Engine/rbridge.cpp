@@ -726,13 +726,12 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
 
 	//for now we simply replace any found columnname by its Base64 variant if found
-	size_t foundPos = -1;
 	for(std::string col : columnNamesInDataSet)
 	{
 		std::string columnName64 = Base64::encode("X", col, Base64::RVarEncoding);
-
-		while((foundPos = filterBase64.find(col, foundPos + 1)) != std::string::npos)
-		{
+		std::vector<int> foundColPositions = rbridge_getPositionsColumnNameMatches(filterBase64, col);
+		std::reverse(foundColPositions.begin(), foundColPositions.end());
+		for (int foundPos : foundColPositions) {
 			size_t foundPosEnd = foundPos + col.length();
 			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
 			bool startIsFree	= foundPos == 0							|| std::regex_match(filterBase64.substr(foundPos - 1, 1),	nonNameChar);
@@ -745,13 +744,38 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 				if(filterColumnsUsed.count(col) == 0)
 					filterColumnsUsed.insert(col);
 			}
-		}
-	}
+        }
+    }
 
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
+    //Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
 
-	return filterBase64;
+    return filterBase64;
 }
+std::vector<int> rbridge_getPositionsColumnNameMatches(const std::string & filterBase64, const std::string & columnName)
+{
+    std::vector<int> positions;
+    bool inString = false;
+    char delim;
+    for (std::string::size_type pos = 0; pos < filterBase64.length(); ++pos)
+        if (!inString && filterBase64.substr(pos, columnName.length()) == columnName)
+            positions.push_back(int(pos));
+        else if (filterBase64[pos] == '"' || filterBase64[pos] == '\'')
+        {
+            if (inString && filterBase64[pos] == delim)
+            {
+                inString = false;
+            }
+            else if (!inString)
+            {
+                delim = filterBase64[pos];
+                inString = true;
+            }
+        }
+
+    return positions;
+}
+
+
 
 std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase64)
 {
