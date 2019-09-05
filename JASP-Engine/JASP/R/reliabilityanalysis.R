@@ -311,7 +311,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     if (options$glbScale && length(variables) == 2)
       message <- paste(message, "Warning: Greatest lower bound can 
     only be calculated for three or more variables.")
-    jaspResults[["scaleTable"]]$addFootnote(message, symbol = "<em>Note.</em>")
+    jaspResults[["scaleTable"]]$addFootnote(message)
   }
 
   jaspResults[["scaleTable"]] <- scaleTable
