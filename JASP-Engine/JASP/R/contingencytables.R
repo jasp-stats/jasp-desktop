@@ -619,7 +619,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     else if (is.na(chi.result[[val]])) {
       row[[paste0("value[", type, "]")]] <- NaN
       message <- "Value could not be calculated - At least one row or column contains all zeros"
-      analysisContainer[["crossTabNominal"]]$addFootnote(message)
+      row[["type[", type ,"]"]] <- paste0(row[["type[", type ,"]"]], "\u207A")
+      analysisContainer[["crossTabNominal"]]$addFootnote(message, symbol = "\u207A")
     } else
       row[[paste0("value[", type, "]")]] <- chi.result[[val]]
   } 
@@ -964,7 +965,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       group <- NULL
     
     row <- list()
-    
     row[["type[N]"]] <- "N"
     row[["df[N]"]]   <- ""
     row[["p[N]"]]    <- ""
@@ -995,8 +995,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["df[chiSquared]"]]    <- " "
           row[["p[chiSquared]"]]     <- " "
           row[["MPR[chiSquared]"]]   <- " "
+          row[["type[chiSquared]"]] <- "\u03A7\u00B2\u207B"
           message <- "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros"
-          analysisContainer[["crossTabChisq"]]$addFootnote(message)
+          analysisContainer[["crossTabChisq"]]$addFootnote(message, symbol = "\u207B")
         } else {
           row[["value[chiSquared]"]] <- unname(chi.result$statistic)
           row[["df[chiSquared]"]]    <- unname(chi.result$parameter)
@@ -1022,14 +1023,13 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         })
         
         if (isTryError(chi.result) || is.na(chi.result$statistic)) {
-          
           row[["value[chiSquared-cc]"]] <- NaN
           row[["df[chiSquared-cc]"]]    <- " "
           row[["p[chiSquared-cc]"]]     <- " "
           row[["MPR[chiSquared-cc]"]]   <- " "
+          row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction\u1D43"
           message <- "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros"
-          analysisContainer[["crossTabChisq"]]$addFootnote(message)
-          
+          analysisContainer[["crossTabChisq"]]$addFootnote(message, symbol = "\u1D43")
         } else {
           row[["value[chiSquared-cc]"]] <- unname(chi.result$statistic)
           row[["df[chiSquared-cc]"]]    <- unname(chi.result$parameter)
