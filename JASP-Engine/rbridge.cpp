@@ -747,9 +747,9 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 		}
 	}
 
-    //Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
 
-    return filterBase64;
+	return filterBase64;
 }
 std::vector<int> rbridge_getPositionsColumnNameMatches(const std::string & filterBase64, const std::string & columnName)
 {
@@ -768,8 +768,8 @@ std::vector<int> rbridge_getPositionsColumnNameMatches(const std::string & filte
 			}
 			else if (!inString)
 			{
-			delim = filterBase64[pos];
-			inString = true;
+				delim = filterBase64[pos];
+				inString = true;
 			}
 		}
 	
