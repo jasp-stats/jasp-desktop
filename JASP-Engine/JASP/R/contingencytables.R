@@ -311,6 +311,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     # Add columns to table
     .crossTabLayersColumns(crossTabGamma, analysis)
+    #crossTabGamma$addColumnInfo(name = "type[gammaCoef]",  title = "", type="string")
     crossTabGamma$addColumnInfo(name = "value[gammaCoef]", title = "Gamma",          
                                 type = "number")
     crossTabGamma$addColumnInfo(name = "Sigma[gammaCoef]", title = "Standard Error", 
@@ -347,6 +348,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     # Add columns to table
     .crossTabLayersColumns(crossTabKendallTau, analysis)
+    #crossTabKendallTau$addColumnInfo(name = "type[kTauB]",  title = "", type="string")
     crossTabKendallTau$addColumnInfo(name = "value[kTauB]", title = "Kendall's Tau-b ", 
                                      type = "number")
     crossTabKendallTau$addColumnInfo(name = "statistic[kTauB]", title = "Z", 
@@ -947,13 +949,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 }
 
 .crossTabTestsRows <- function(analysisContainer, var.name, groupList, options, ready, counts.fp) {
-  if(!options$chiSquared && 
-     !options$chiSquaredContinuityCorrection && 
-     !options$likelihoodRatio) 
-    return()
-  if(!is.null(analysisContainer[["resultsChisq"]]))
-    return()
-  
   tests.rows     <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
@@ -1072,10 +1067,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     row <- .crossTabLayerNames(row, group)
     tests.rows[[length(tests.rows) + 1]] <- row
   }
-  chisq <- createJaspState(tests.rows)
-  table <- analysisContainer[["crossTabChisq"]]
-  chisq$dependOn(optionsFromObject = table)
-  analysisContainer[["resultsChisq"]] <- chisq
   return(tests.rows)
 }
 
@@ -1162,9 +1153,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 }
 
 .crossTabNominalRows <- function(analysisContainer, var.name, groupList, options, ready) {
-  if (!options$contingencyCoefficient && !options$phiAndCramersV && !options$lambda)
-    return()
-  
   nominal.rows   <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
@@ -1212,9 +1200,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 }
 
 .crossTabGammaRows <- function(analysisContainer, var.name, groupList, options, ready) {
-  if (!options$gamma)
-    return()
-  
   ordinal.rows   <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
@@ -1253,8 +1238,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 }
 
 .crossTabKendallsTauRows <- function(analysisContainer, var.name, groupList, options, ready) {
-  if (!options$kendallsTauB)
-    return()
   kendalls.rows  <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
