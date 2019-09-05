@@ -11,10 +11,10 @@ test_that("Main table results match", {
   options$y2 <- "y2"
 
   results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
-  table    <- results[["results"]][["abTestTable"]][["data"]]
+  table    <- results[["results"]][["abTestBayesianTable"]][["data"]]
   refTable <- list("Log odds ratio = 0", 1                , 0.517752872701024, 0.5,
-                   "Log odds ratio > 0", 1.23201979244712 , 0.318940893382007, 0.25,
-                   "Log odds ratio < 0", 0.630826954431096, 0.163306233916969, 0.25)
+                   "Log odds ratio &gt; 0", 1.23201979244712 , 0.318940893382007, 0.25,
+                   "Log odds ratio &lt; 0", 0.630826954431096, 0.163306233916969, 0.25)
 
   expect_equal_tables(table, refTable)
 })
@@ -29,7 +29,7 @@ test_that("Descriptives table results match", {
   options$descriptives <- TRUE
 
   results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
-  table    <- results[["results"]][["descriptivesTable"]][["data"]]
+  table    <- results[["results"]][["abTestBayesianDescriptivesTable"]][["data"]]
 
   refTable <- list("Group 1", 2, 4, 0.500,
                    "Group 2", 3, 4, 0.750)
@@ -52,12 +52,12 @@ test_that("Main table results, log odds neq 0", {
   options$orNotEqualTo1Prob  <- 0.168
 
   results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
-  table    <- results[["results"]][["abTestTable"]][["data"]]
+  table    <- results[["results"]][["abTestBayesianTable"]][["data"]]
 
   refTable <- list("Log odds ratio = 0"        , 1                , 0.51649969761886 , 0.495495495495495,
-                   "Log odds ratio > 0"        , 1.23201979244712 , 0.215969209785004, 0.168168168168168,
+                   "Log odds ratio &gt; 0"     , 1.23201979244712 , 0.215969209785004, 0.168168168168168,
                    "Log odds ratio <unicode> 0", 0.895333193589823, 0.15694910382065 , 0.168168168168168,
-                   "Log odds ratio < 0"        , 0.630826954431096, 0.110581988775487, 0.168168168168168)
+                   "Log odds ratio &lt; 0"     , 0.630826954431096, 0.110581988775487, 0.168168168168168)
 
   expect_equal_tables(table, refTable)
 })
@@ -77,10 +77,10 @@ test_that("Main table results, only 2 hypotheses", {
   options$orNotEqualTo1Prob  <- 0
 
   results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
-  table    <- results[["results"]][["abTestTable"]][["data"]]
+  table    <- results[["results"]][["abTestBayesianTable"]][["data"]]
 
-  refTable <- list("Log odds ratio > 0", 1                , 0.55197529906147, 0.5,
-                   "Log odds ratio = 0", 0.811675271883202, 0.44802470093853, 0.5)
+  refTable <- list("Log odds ratio &gt; 0", 1                , 0.55197529906147, 0.5,
+                   "Log odds ratio = 0"   , 0.811675271883202, 0.44802470093853, 0.5)
 
   expect_equal_tables(table, refTable)
 })
