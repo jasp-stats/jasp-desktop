@@ -41,8 +41,8 @@ FocusScope
 			{
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
 				levelsTableViewRectangle.focus = true //So we just put it somewhere
-				columnNameVariablesWindow.text = dataSetModel.columnTitle(chosenColumn)
-				levelsTableModel.setColumnFromQML(chosenColumn)
+				columnNameVariablesWindow.text = dataSetModel.columnTitle(levelsTableModel.chosenColumn)
+				levelsTableModel.setColumnFromQML(levelsTableModel.chosenColumn)
 				levelsTableView.selection.clear()
 			}
 		}
