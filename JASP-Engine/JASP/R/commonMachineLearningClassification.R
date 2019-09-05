@@ -853,3 +853,67 @@
     jaspResults[["classColumn"]]$setNominal(classColumn)
   }  
 }
+
+.classificationCalcAUC <- function(test, train, options, class, ...) {
+  lvls <- levels(factor(test[, .v(options[["target"]])]))
+  auc <- numeric(length(lvls)) 
+
+  predictorNames <- .v(options[["predictors"]])
+  AUCformula <- formula(paste("levelVar", "~", paste(predictorNames, collapse=" + ")))
+  class(AUCformula) <- c(class(AUCformula), class)
+
+  for (i in 1:length(lvls)) {
+    
+    levelVar <- train[,.v(options[["target"]])] == lvls[i]
+    typeData <- cbind(train, levelVar = factor(levelVar))
+    typeData <- typeData[, -which(colnames(typeData) == .v(options[["target"]]))]
+    
+    score <- .calcAUCScore(AUCformula, test, typeData, levelVar, options, ...)
+    
+    actual.class <- test[,.v(options[["target"]])] == lvls[i]
+    
+    if (length(levels(factor(actual.class))) == 2) {
+      pred <- ROCR::prediction(score, actual.class)
+      auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
+    } else { # This variable is not in the test set, we should skip it
+      auc[i] <- 0 # Gets removed in table
+    }
+  }
+  
+  return(auc)
+}
+
+.calcAUCScore <- function(x, ...) {
+  UseMethod(".calcAUCScore", x)
+}
+
+.calcAUCScore.ldaClassification <- function(AUCformula, test, typeData, LDAmethod, ...) {
+  ldafit_auc <- MASS::lda(formula = AUCformula, data = typeData, method = LDAmethod, CV = FALSE)
+  score <- predict(ldafit_auc, test, type = "prob")$posterior[, 'TRUE']
+  return(score)
+}
+
+.calcAUCScore.boostingClassification <- function(AUCformula, test, typeData, levelVar, options, noOfFolds, noOfTrees, ...) {
+  levelVar <- as.numeric(levelVar)
+  typeData$levelVar <- levelVar
+  bfitAUC <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
+      shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
+      cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
+      distribution = "bernoulli", n.cores = 1) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
+  score <- predict(bfitAUC, newdata = test, n.trees = noOfTrees, type = "response")
+  return(score)
+}
+
+.calcAUCScore.knnClassification <- function(AUCformula, test, typeData, nn, distance, weights, ...) {
+  kfit_auc <- kknn::kknn(formula = AUCformula, train = typeData, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
+  score <- predict(kfit_auc, test, type = 'prob')[, 'TRUE']
+  return(score)
+}
+
+.calcAUCScore.randomForestClassification <- function(AUCformula, test, typeData, levelVar, options, dataset, noOfTrees, noOfPredictors, ...) {
+  typeData <- typeData[, -which(colnames(typeData) == "levelVar")]
+  rfit_auc <- randomForest::randomForest(x = typeData, y = factor(levelVar), ntree = noOfTrees, mtry = noOfPredictors,
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)), importance = TRUE, keep.forest = TRUE)
+  score <- predict(rfit_auc, test, type = "prob")[, 'TRUE']
+  return(score)
+}

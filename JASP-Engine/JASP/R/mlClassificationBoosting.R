@@ -141,40 +141,7 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   }
 
   # Calculate AUC
-  lvls <- levels(factor(test[, .v(options[["target"]])]))
-  auc <- numeric(length(lvls)) 
-
-  predictorNames <- .v(options[["predictors"]])
-  AUCformula <- formula(paste("levelVar", "~", paste(predictorNames, collapse=" + ")))
-
-  for(i in 1:length(lvls)){
-
-    levelVar <- train[,.v(options[["target"]])] == lvls[i]
-    typeData <- cbind(train, levelVar = factor(levelVar))
-    column <- which(colnames(typeData) == .v(options[["target"]]))
-    typeData <- typeData[, -column]
-    levelVar <- as.character(levelVar)
-    levelVar[levelVar == "TRUE"] <- 1
-    levelVar[levelVar == "FALSE"] <- 0
-    levelVar <- as.numeric(levelVar)
-    column <- which(colnames(typeData) == "levelVar")
-    typeData <- typeData[, -column]
-    typeData <- cbind(typeData, levelVar = levelVar)
-
-    bfitAUC <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
-                shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
-                cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
-                distribution = "bernoulli", n.cores = 1) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
-    score <- predict(bfitAUC, newdata = test, n.trees = noOfTrees, type = "response")
-    actual.class <- test[,.v(options[["target"]])] == lvls[i]
-
-    if(length(levels(factor(actual.class))) == 2){
-      pred <- ROCR::prediction(score, actual.class)
-      auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
-    } else { # This variable is not in the test set, we should skip it
-      auc[i] <- 0 # Gets removed in table
-    }
-  }
+  auc <- .classificationCalcAUC(test, train, options, "boostingClassification", noOfFolds=noOfFolds, noOfTrees=noOfTrees)
 
   # Use the specified model to make predictions for dataset
   probs_data <- gbm::predict.gbm(bfit, newdata = dataset, n.trees = noOfTrees, type = "response")
