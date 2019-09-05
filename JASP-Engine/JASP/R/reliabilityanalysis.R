@@ -54,7 +54,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
         dataset              = data[data == level],
         perform              = "run",
         type                 = "observations",
-        observations.amount  = "< 1",
+        observations.amount  = "< 3",
         exitAnalysisIfErrors = TRUE
       )
     }
@@ -139,17 +139,14 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
   # Save results to state
   jaspResults[["stateReliabilityResults"]] <- createJaspState(relyFit)
-  dependList <- c("variables", "reverseScaledItems", "confAlphaLevel")
+  dependList <- c("variables", "reverseScaledItems", "confAlphaLevel", "missingValues")
   jaspResults[["stateReliabilityResults"]]$dependOn(dependList)
   # Return results object
   return(relyFit)
 }
 
 .reliabilityScaleFill <- function(jaspResults, dataset, options, relyFit) {
-  results   <- list()
-  nObs      <- nrow(dataset)
   nVar      <- ncol(dataset)
-  variables <- unlist(options$variables)
   options   <- .reliabilitySetAlphaNms(options)
   
   if(ready){
@@ -195,18 +192,24 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     lower   = lower, 
     upper   = upper
   )
-  
+
   # Add to table
-  jaspResults[["scaleTable"]]$addRows(results)
+  jaspResults[["scaleTable"]]$addRows(list(case    = "scale", 
+                                           alpha   = alpha, 
+                                           lambda  = lambda, 
+                                           omega   = omega, 
+                                           glb     = glb, 
+                                           rho     = rho, 
+                                           mu      = mu, 
+                                           sd      = sd, 
+                                           lower   = lower, 
+                                           upper   = upper))
 }
 
 .reliabilityItemFill <- function(jaspResults, dataset, options, relyFit) {
-  results   <- list()
-  nObs      <- nrow(dataset)
   nVar      <- ncol(dataset)
   variables <- unlist(options$variables)
-  
-  options <- .reliabilitySetAlphaNms(options)
+  options   <- .reliabilitySetAlphaNms(options)
   
   # Item table results
   if(!is.null(relyFit)){
@@ -217,9 +220,6 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
       for (var in variables) {
         varV  <- .v(var)
         index <- which(varV == rowNames)
-        
-        #Initialise all as null
-        alpha <- lambda <- itemRestCor <- mu <- sd <- omega <- NULL
         
         if (var %in% options$reverseScaledItems)
           case <- paste0(var,"\u207B")
@@ -233,35 +233,15 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
         sd          <- relyFit$item.stats[index,"sd"]
         omega       <- relyFit$omegaDropped[index]
         
-        results[[var]] <- list(
-          case        = case, 
-          alpha       = alpha, 
-          lambda      = lambda, 
-          omega       = omega, 
-          itemRestCor = itemRestCor, 
-          mu          = mu, 
-          sd          = sd
-        )
+        jaspResults[["itemTable"]]$addRows(list(case        = case, 
+                                                alpha       = alpha, 
+                                                lambda      = lambda, 
+                                                omega       = omega, 
+                                                itemRestCor = itemRestCor, 
+                                                mu          = mu, 
+                                                sd          = sd))
       } 
-  } else {
-    variablesTemp <- variables
-    
-    if (is.null(variables)) 
-      variablesTemp <- "..."
-    
-    for (var in variablesTemp) {
-      results[[var]] <- list(
-        case        = var, 
-        alpha       = ".", 
-        lambda      = ".", 
-        omega       = ".", 
-        itemRestCor = ".", 
-        mu          = ".", 
-        sd          = "."
-      )
-    }
   }
-  jaspResults[["itemTable"]]$addRows(results)
 }
 
 # Output functions ----
@@ -307,9 +287,9 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   if (options$missingValues == "excludeCasesListwise") 
-    exclwise = " listwise"
+    exclwise <- " listwise"
   else 
-    exclwise = " pairwise"
+    exclwise <- " pairwise"
   
   jaspResults[["scaleTable"]] <- scaleTable
   
@@ -318,9 +298,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Compute/get the results
   relyFit <- .reliabilityComputeResults(jaspResults, dataset, options)
   
-  res <- .reliabilityScaleFill(jaspResults, dataset, options, relyFit)
-  if(isTryError(res))
-    scaleTable$setError(.extractErrorMessage(res))
+  .reliabilityScaleFill(jaspResults, dataset, options, relyFit)
   
   variables <- unlist(options$variables)
   nObs      <- nrow(dataset)
@@ -348,10 +326,8 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
 .reliabilityItemTable <- function (jaspResults, dataset, options, ready) {
   if (!(options$alphaItem || options$gutmannItem || options$itemRestCor ||
-        options$meanItem  ||options$mcDonaldItem || options$sdItem))
-    return()
-  
-  if (!is.null(jaspResults[["itemTable"]])) 
+        options$meanItem  ||options$mcDonaldItem || options$sdItem) ||
+      !is.null(jaspResults[["itemTable"]]))
     return()
   
   # Create table
