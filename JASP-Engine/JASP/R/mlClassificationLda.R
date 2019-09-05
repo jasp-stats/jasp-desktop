@@ -120,27 +120,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   pred_test   <- stats::predict(ldafit, newdata = test)
 
   # Calculate AUC
-  lvls <- levels(factor(test[, .v(options[["target"]])]))
-  auc <- numeric(length(lvls)) 
-
-  predictorNames <- .v(options[["predictors"]])
-  AUCformula <- formula(paste("levelVar", "~", paste(predictorNames, collapse=" + ")))
-
-  for(i in 1:length(lvls)){
-
-    levelVar <- train[,.v(options[["target"]])] == lvls[i]
-    typeData <- cbind(train, levelVar = factor(levelVar))
-    column <- which(colnames(typeData) == .v(options[["target"]]))
-    typeData <- typeData[, -column]
-
-    ldafit_auc <- MASS::lda(formula = AUCformula, data = typeData, method = method, CV = FALSE)
-    
-    score <- predict(ldafit_auc, test, type = "prob")$posterior[, 'TRUE']
-    actual.class <- test[,.v(options[["target"]])] == lvls[i]
-
-    pred <- ROCR::prediction(score, actual.class)
-    auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
-  }
+  auc <- .classificationCalcAUC(test, train, options, "ldaClassification", LDAmethod=method)
 
   # Use the specified model to make predictions for dataset
   predictions <- predict(ldafit, newdata = dataset)$class
@@ -371,7 +351,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 
   target <- classificationResult[["train"]][, .v(options[["target"]])]
   lda.fit.scaled <- cbind.data.frame(
-    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]])]), scale = FALSE) %*% classificationResult[["scaling"]], 
+    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]]), drop = FALSE]), scale = FALSE) %*% classificationResult[["scaling"]], 
     V2 = classificationResult[["train"]][,.v(options[["target"]])]
   )
   

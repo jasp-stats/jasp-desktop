@@ -331,6 +331,7 @@
   classificationResult <- jaspResults[["classificationResult"]]$object
 
   variables <- options[["predictors"]]
+  variables <- variables[ !sapply(dataset[, .v(variables)], is.factor) ] # remove factors from boundary plot
   l <- length(variables)
 
   if (l <= 2) {
@@ -365,7 +366,7 @@
           plotMat[[row, col]] <- p
       }  
       if (col < row) {
-          predictors <- dataset[, .v(options[["predictors"]])]
+          predictors <- dataset[, .v(variables)]
           predictors <- predictors[, c(col, row)]
           formula <- formula(paste(.v(options[["target"]]), "~", paste(colnames(predictors), collapse=" + ")))
           plotMat[[row-1, col]] <- .decisionBoundaryPlot(dataset, options, jaspResults, predictors, target, formula, l, type = type)
@@ -518,6 +519,12 @@
       column <- which(colnames(typeData) == .v(options[["target"]]))
       typeData <- typeData[, -column]
 
+      actual.class <- test[,.v(options[["target"]])] == lvls[i]
+
+      if(length(levels(factor(actual.class))) != 2){ # This variable is not in the test set, we should skip it
+        next
+      }
+
       if(type == "knn"){
 
         kfit <- kknn::kknn(formula = formula, train = typeData, test = test, k = classificationResult[["nn"]], 
@@ -555,8 +562,6 @@
         score <- predict(rfit, test, type = "prob")[, 'TRUE']
 
       }
-
-      actual.class <- test[,.v(options[["target"]])] == lvls[i]
   
       pred <- ROCR::prediction(score, actual.class)
       nbperf <- ROCR::performance(pred, "tpr", "fpr")
@@ -567,6 +572,7 @@
     }
 
     rocData <- data.frame(x = rocXstore, y = rocYstore, name = rocNamestore)
+    rocData <- na.omit(rocData) # Remove classes that are not in the test set
     p <- p + JASPgraphs::geom_line(data = rocData, mapping = ggplot2::aes(x = x, y = y, col = name)) +
               ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(lvls))) +
               ggplot2::scale_y_continuous(limits = c(0, 1.1), breaks = seq(0,1,0.2)) +
@@ -746,6 +752,7 @@
   support[length(support) + 1]        <- sum(support, na.rm = TRUE)
   auc[length(auc) + 1]                <- mean(auc, na.rm = TRUE)
 
+  validationMeasures[["group"]]       <- c(levels(factor(classificationResult[["test"]][, .v(options[["target"]])])), "Average / Total") # fill again to adjust for missing categories
   validationMeasures[["precision"]]   <- precision
   validationMeasures[["recall"]]      <- recall
   validationMeasures[["f1"]]          <- f1
@@ -845,4 +852,68 @@
                                                             "estimationMethod", "shrinkage", "intDepth", "nNode", "validationDataManual", "testSetIndicatorVariable", "testSetIndicator"))
     jaspResults[["classColumn"]]$setNominal(classColumn)
   }  
+}
+
+.classificationCalcAUC <- function(test, train, options, class, ...) {
+  lvls <- levels(factor(test[, .v(options[["target"]])]))
+  auc <- numeric(length(lvls)) 
+
+  predictorNames <- .v(options[["predictors"]])
+  AUCformula <- formula(paste("levelVar", "~", paste(predictorNames, collapse=" + ")))
+  class(AUCformula) <- c(class(AUCformula), class)
+
+  for (i in 1:length(lvls)) {
+    
+    levelVar <- train[,.v(options[["target"]])] == lvls[i]
+    typeData <- cbind(train, levelVar = factor(levelVar))
+    typeData <- typeData[, -which(colnames(typeData) == .v(options[["target"]]))]
+    
+    score <- .calcAUCScore(AUCformula, test, typeData, levelVar, options, ...)
+    
+    actual.class <- test[,.v(options[["target"]])] == lvls[i]
+    
+    if (length(levels(factor(actual.class))) == 2) {
+      pred <- ROCR::prediction(score, actual.class)
+      auc[i] <- ROCR::performance(pred, "auc")@y.values[[1]]
+    } else { # This variable is not in the test set, we should skip it
+      auc[i] <- 0 # Gets removed in table
+    }
+  }
+  
+  return(auc)
+}
+
+.calcAUCScore <- function(x, ...) {
+  UseMethod(".calcAUCScore", x)
+}
+
+.calcAUCScore.ldaClassification <- function(AUCformula, test, typeData, LDAmethod, ...) {
+  ldafit_auc <- MASS::lda(formula = AUCformula, data = typeData, method = LDAmethod, CV = FALSE)
+  score <- predict(ldafit_auc, test, type = "prob")$posterior[, 'TRUE']
+  return(score)
+}
+
+.calcAUCScore.boostingClassification <- function(AUCformula, test, typeData, levelVar, options, noOfFolds, noOfTrees, ...) {
+  levelVar <- as.numeric(levelVar)
+  typeData$levelVar <- levelVar
+  bfitAUC <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
+      shrinkage = options[["shrinkage"]], interaction.depth = options[["intDepth"]],
+      cv.folds = noOfFolds, bag.fraction = options[["bagFrac"]], n.minobsinnode = options[["nNode"]],
+      distribution = "bernoulli", n.cores = 1) # Multiple cores breaks modules in JASP, see: INTERNAL-jasp#372
+  score <- predict(bfitAUC, newdata = test, n.trees = noOfTrees, type = "response")
+  return(score)
+}
+
+.calcAUCScore.knnClassification <- function(AUCformula, test, typeData, nn, distance, weights, ...) {
+  kfit_auc <- kknn::kknn(formula = AUCformula, train = typeData, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
+  score <- predict(kfit_auc, test, type = 'prob')[, 'TRUE']
+  return(score)
+}
+
+.calcAUCScore.randomForestClassification <- function(AUCformula, test, typeData, levelVar, options, dataset, noOfTrees, noOfPredictors, ...) {
+  typeData <- typeData[, -which(colnames(typeData) == "levelVar")]
+  rfit_auc <- randomForest::randomForest(x = typeData, y = factor(levelVar), ntree = noOfTrees, mtry = noOfPredictors,
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)), importance = TRUE, keep.forest = TRUE)
+  score <- predict(rfit_auc, test, type = "prob")[, 'TRUE']
+  return(score)
 }
