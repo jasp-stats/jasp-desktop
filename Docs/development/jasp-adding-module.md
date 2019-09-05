@@ -17,6 +17,7 @@ A module folder should look as follows:
     - [description.json](#descriptionjson)
     - [icons/](#icons)
     - [qml/](#qml)
+    - [help/](#help)
   - [R/](#r)
   - [DESCRIPTION](#package-metadata)
   - [NAMESPACE](#package-metadata)
@@ -129,6 +130,9 @@ The qml folder is where you place your [qml](https://en.wikipedia.org/wiki/QML) 
 
 #### R
 In the R folder you should place your R file(s). You could add all your analyses into one file, or store separately them into separate files (recommended). You might event want to separate the reusable parts of your code further into their own file(s). The important part is that the name(s) of your main function(s) match the name(s) you specified under `function` in the analysis-entries of the [menu](#description-menu). A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
+
+#### help
+The help folder is where you place the documentation for your module. You should name the helpfile for each analysis with the exact same name/title as your analysis has. Only all characters should be lowercase.
 
 #### Package Metadata
 Because a JASP Module is also, to a certain extent, an R package it can contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 
