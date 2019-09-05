@@ -111,6 +111,8 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
     return()
 
   .abTestBayesianFillTableMain(abTestBayesianTable, ab_obj, options)
+
+  abTestBayesianTable$addFootnote("A positive log odds ratio means that the success rate in Group 2 is higher than in Group 1.")
 }
 
 
