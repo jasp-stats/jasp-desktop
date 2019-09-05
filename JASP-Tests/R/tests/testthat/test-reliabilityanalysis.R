@@ -35,7 +35,7 @@ test_that("Item Statistics table matches", {
   options$meanItem <- TRUE
   options$sdItem <- TRUE
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
-  table <- results[["results"]][["itemContainer"]][["collection"]][["itemContainer_table"]][["data"]]
+  table <- results[["results"]][["itemTable"]][["data"]]
   expect_equal_tables(table,
     list("contcor1", 0.0618194975467092, 0.0319398198963565, 0.061902485553013,
          0.560156128034403, 0.05254867287, 1.01183864387684, "contcor2",
@@ -72,6 +72,6 @@ test_that("Analysis handles errors - Infinity", {
   options <- jasptools::analysisOptions("ReliabilityAnalysis")
   options$variables <- c("debInf")
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
