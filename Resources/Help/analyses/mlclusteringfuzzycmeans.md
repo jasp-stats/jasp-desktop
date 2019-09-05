@@ -11,6 +11,18 @@ Fuzzy c-means clustering is a soft partitioning method that provides an output t
 #### Assignment Box 
 - Variables: In this box, the variables are selected that are included in the analysis. 
 
+#### Training Parameters 
+#### Algorithmic Settings
+- Max. iterations: sets the maximum number of iterations. The maximum number of iterations reflects the number of possible instances the algorithm iterates for finding the optimal clustering solution. At default, this is set to 25.
+- Fuzziness parameter: is a scalar and controls the fuzziness of the clustering output. Meaning that if its value increases (> 1) the uncertainty of the memberships to the different clusters also increases. In other words, if the fuzziness parameter approaches 1, the result of the fuzzy clustering is similar to a hard-clustering method, and if the parameter increases, the clustering result becomes fuzzier.
+- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
+- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
+
+#### Cluster Determination
+- Fixed: enables you to generate a fixed amount of clusters. This allows you to generate your own specified number of clusters, and thus, optimize manually.
+- Optimized according to: enables you to choose an optimization method. The options are AIC, BIC, and silhouette. The AIC uses the within sum of squares (within-cluster variation), the number of generated clusters and the number of dimensions for optimizing the clustering output. The BIC uses the within sum of squares (within-cluster variation), the number of generated clusters, the number of dimensions, and the sample size for optimizing the clustering output. The silhouette value uses the similarity of observations within a cluster and their dissimilarity to other clusters for optimizing the clustering output. BIC optimization is set as default.
+- Max. clusters: sets the maximum number of possible clusters to be generated. At default, this is set to 10.
+
 #### Tables  
 - Cluster information: displays the size of each cluster. This option is selected by default. 
 - Within sum of squares: displays the within sum of squares of each cluster. This option is selected by default.
@@ -19,24 +31,14 @@ Fuzzy c-means clustering is a soft partitioning method that provides an output t
 - Between sum of squares: notes the between sum of squares of the cluster model beneath the cluster information table.
 - Total sum of squares: notes the total sum of squares of the cluster model beneath the cluster information table.
 
-#### Training Parameters 
-#### Algorithmic Settings
-- Max. iterations: sets the maximum number of iterations. The maximum number of iterations reflects the number of possible instances the algorithm iterates for finding the optimal clustering solution. At default, this is set to 25.
-- Fuzziness parameter: is a scalar and controls the fuzziness of the clustering output. Meaning that if its value increases (> 1) the uncertainty of the memberships to the different clusters also increases. In other words, if the fuzziness parameter approaches 1, the result of the fuzzy clustering is similar to a hard-clustering method, and if the parameter increases, the clustering result becomes fuzzier.
-- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASp uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
-- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
-- Add clusters to data: generates a new column in your dataset with the cluster labels of your cluster result. This gives you the option to inspect, classify, or predict the generated cluster labels.
-
-#### Cluster Determination
-- Fixed: enables you to generate a fixed amount of clusters. This allows you to generate your own specified number of clusters, and thus, optimize manually.
-- Optimized according to: enables you to choose an optimization method. The options are AIC, BIC, and silhouette. The AIC uses the within sum of squares (within-cluster variation), the number of generated clusters and the number of dimensions for optimizing the clustering output. The BIC uses the within sum of squares (within-cluster variation), the number of generated clusters, the number of dimensions, and the sample size for optimizing the clustering output. The silhouette value uses the similarity of observations within a cluster and their dissimilarity to other clusters for optimizing the clustering output. BIC optimization is set as default.
-- Max. clusters: sets the maximum number of possible clusters to be generated. At default, this is set to 10.
-
 #### Plots
 - Elbow method: generates a plot with the total within sum of squares on the y-axis and the number of clusters on the x-axis. This plot can be used for determining the optimal number of clusters. The plot shows three curves using AIC, BIC, and 'elbow method' optimization.
 - T-sne cluster plot: generates a T-sne plot of the clustering output. T-sne plots are used for visualizing high-dimensional data in a low-dimensional space of two dimensions aiming to illustrate the relative distances between data observations. The T-sne two-dimensional space makes the axes uninterpretable. A T-sne plot seeks to give an impression of the relative distances between observations and clusters
 - Legend: sets a legend showing the cluster number for each observation. This option is set by default.
 - Labels: shows the clustering labels of the different observations.
+
+#### Add Predicted Clusters to Data
+Generates a new column in your dataset with the cluster labels of your cluster result. This gives you the option to inspect, classify, or predict the generated cluster labels.
 
 ### Output
 -------

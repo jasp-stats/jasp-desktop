@@ -11,6 +11,14 @@ Density-based clustering is a soft clustering method where clusters are construc
 #### Assignment Box 
 - Variables: In this box, the variables are selected that are included in the analysis. 
 
+#### Training Parameters 
+#### Algorithmic Settings
+- Epsilon neighborhood size: reflects the size of the radius wherein there must be a minimal amount of core points that results in the density of that neighborhood to exceed a certain threshold. By exceeding this threshold, point (i.e., observations) can generate a cluster.
+- Min. core points: reflects the minimal amount of points that need to be in the Epsilon neighborhood to let points form a cluster. The Eps and MinPts parameters determine the density level and regulate how many points need to be in a given radius to exceed a certain threshold for forming a cluster.
+- Distance: specify the used dissimilarity measurement. Normal density uses the geometric distance between two points and is entirely based on the magnitude of the distance. In contrast, correlated density is a correlation-based dissimilarity measurement, which examines the linear association observations and if these correlations are high, these observations are considered to be similar. Normal density is set as default.
+- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
+- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
+
 #### Tables  
 - Cluster information: displays the size of each cluster. This option is selected by default. 
 - Within sum of squares: displays the within sum of squares of each cluster. This option is selected by default.
@@ -18,20 +26,14 @@ Density-based clustering is a soft clustering method where clusters are construc
 - Between sum of squares: notes the between sum of squares of the cluster model beneath the cluster information table.
 - Total sum of squares: notes the total sum of squares of the cluster model beneath the cluster information table.
 
-#### Training Parameters 
-#### Algorithmic Settings
-- Epsilon neighborhood size: reflects the size of the radius wherein there must be a minimal amount of core points that results in the density of that neighborhood to exceed a certain threshold. By exceeding this threshold, point (i.e., observations) can generate a cluster.
-- Min. core points: reflects the minimal amount of points that need to be in the Epsilon neighborhood to let points form a cluster. The Eps and MinPts parameters determine the density level and regulate how many points need to be in a given radius to exceed a certain threshold for forming a cluster.
-- Distance: specify the used dissimilarity measurement. Normal density uses the geometric distance between two points and is entirely based on the magnitude of the distance. In contrast, correlated density is a correlation-based dissimilarity measurement, which examines the linear association observations and if these correlations are high, these observations are considered to be similar. Normal density is set as default.
-- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASp uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
-- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
-- Add clusters to data: generates a new column in your dataset with the cluster labels of your cluster result. This gives you the option to inspect, classify, or predict the generated cluster labels.
-
 #### Plots
 - K-distance plot: generates a plot with the nearest neighbors distance (the amount of nearest neighbors is determined by the Min. core points parameter) on the y-axis and the points sorted by distance on the x-axis. This plot can be used for determining the optimal Epsilon value. The value where the graph shows a kink represents the optimal Epsilon value (the y-axis value).
 - T-sne cluster plot: generates a T-sne plot of the clustering output. T-sne plots are used for visualizing high-dimensional data in a low-dimensional space of two dimensions aiming to illustrate the relative distances between data observations. The T-sne two-dimensional space makes the axes uninterpretable. A T-sne plot seeks to give an impression of the relative distances between observations and clusters
 - Legend: sets a legend showing the cluster number for each observation. This option is set by default.
 - Labels: shows the clustering labels of the different observations.
+
+#### Add Predicted Clusters to Data
+Generates a new column in your dataset with the cluster labels of your cluster result. This gives you the option to inspect, classify, or predict the generated cluster labels.
 
 ### Output
 -------
