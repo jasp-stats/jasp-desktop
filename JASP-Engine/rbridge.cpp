@@ -744,8 +744,8 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 				if(filterColumnsUsed.count(col) == 0)
 					filterColumnsUsed.insert(col);
 			}
-        }
-    }
+		}
+	}
 
     //Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
 
@@ -753,28 +753,28 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 }
 std::vector<int> rbridge_getPositionsColumnNameMatches(const std::string & filterBase64, const std::string & columnName)
 {
-    std::vector<int> positions;
-    bool inString = false;
-    char delim;
-    for (std::string::size_type pos = 0; pos < filterBase64.length(); ++pos)
-        if (!inString && filterBase64.substr(pos, columnName.length()) == columnName)
-            positions.push_back(int(pos));
-        else if (filterBase64[pos] == '"' || filterBase64[pos] == '\'')
-        {
-            if (inString && filterBase64[pos] == delim)
-            {
-                inString = false;
-            }
-            else if (!inString)
-            {
-                delim = filterBase64[pos];
-                inString = true;
-            }
-        }
+	std::vector<int> positions;
+	bool inString = false;
+	char delim;
 
-    return positions;
+	for (std::string::size_type pos = 0; pos < filterBase64.length(); ++pos)
+		if (!inString && filterBase64.substr(pos, columnName.length()) == columnName)
+			positions.push_back(int(pos));
+		else if (filterBase64[pos] == '"' || filterBase64[pos] == '\'')
+		{
+			if (inString && filterBase64[pos] == delim)
+			{
+				inString = false;
+			}
+			else if (!inString)
+			{
+			delim = filterBase64[pos];
+			inString = true;
+			}
+		}
+	
+	return positions;
 }
-
 
 
 std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase64)
