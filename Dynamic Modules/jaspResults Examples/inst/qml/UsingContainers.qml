@@ -30,8 +30,8 @@ Form
 		"Stratey two uses an unorthodox approach: computing the model when it's actually required\n" +
 		"and relying on pass-by-reference mechanics to get it to all functions that need it.\n" +
 		"This is accomplished by using containers\n\n" +
-		"The second approach has the benefit that passing errors is easier, dependencies are shared and\n" +
-		"an empty table is shown while the model is computing.\n\n" +
+		"The second approach has the benefit that passing errors is easier, dependencies are shared (and\n" +
+		"an empty table is always shown while the model is computing).\n\n" +
 		"Checking `We are ready` emulates the analysis being ready to compute and show results.\n" +
 		"Checking `Use the container code` forces the analysis to use strategy two (otherwise it uses one).\n" +
 		"Checking `Optional table` creates an optional table (as analyses often have optional elements).\n" +
