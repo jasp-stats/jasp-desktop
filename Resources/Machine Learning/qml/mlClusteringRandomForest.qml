@@ -31,7 +31,7 @@ Form {
             name: "predictors"
             title: qsTr("Variables")
             singleVariable: false
-            allowedColumns: ["ordinal", "scale"]
+            allowedColumns: ["scale"]
         }
     }
 
