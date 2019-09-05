@@ -50,12 +50,6 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
       counts <- sum(data == level)
       BF10  <- .bayesBinomialTest(counts, length(data), theta0=options$testValue, hypothesis = hyp, a = options$priorA, b = options$priorB)
       
-      BF <- BF10
-      if (options$bayesFactorType == "BF01")
-        BF <- 1/BF10
-      else if(options$bayesFactorType == "LogBF10")
-        BF <- log(BF10)
-      
       # Add results for each level of each variable to results object
       results[[variable]][[level]] <- list(
         case          = variable,
@@ -63,7 +57,9 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
         counts        = counts,
         total         = length(data),
         proportion    = counts / length(data),
-        BF            = BF
+        BF10          = BF10,
+        BF01          = 1/BF10,
+        LogBF10       = log(BF10)
       )
     
     }
@@ -87,32 +83,27 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   binomTable <- createJaspTable("Bayesian Binomial Test")
   binomTable$dependOn(c("variables", "testValue", "hypothesis", "bayesFactorType", "priorA", "priorB"))
   binomTable$position <- 1
+  binomTable$showSpecifiedColumnsOnly <- TRUE
   
   binomTable$addCitation(c("Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
                                       "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
                                       "Haldane, J. B. S. (1932). A note on inverse probability. Mathematical Proceedings of the Cambridge Philosophical Society, 28, 55-61."))
   
-  if (options$bayesFactorType == "BF01") {
-    if (options$hypothesis == "notEqualToTestValue") 
-      bf.title <- "BF\u2080\u2081"
-    else if (options$hypothesis == "greaterThanTestValue")
-      bf.title <- "BF\u2080\u208A"
-    else if (options$hypothesis == "lessThanTestValue")
-      bf.title <- "BF\u2080\u208B"
-  } else if (options$bayesFactorType == "BF10") {
-    if (options$hypothesis == "notEqualToTestValue")
-      bf.title <- "BF\u2081\u2080"
-    else if (options$hypothesis == "greaterThanTestValue")
-      bf.title <- "BF\u208A\u2080"
-    else if (options$hypothesis == "lessThanTestValue")
-      bf.title <- "BF\u208B\u2080"
-  } else if (options$bayesFactorType == "LogBF10") {
-    if (options$hypothesis == "notEqualToTestValue")
-      bf.title <- "Log(\u0042\u0046\u2081\u2080)"
-    else if (options$hypothesis == "greaterThanTestValue")
-      bf.title <-"Log(\u0042\u0046\u208A\u2080)"
-    else if (options$hypothesis == "lessThanTestValue")
-      bf.title <- "Log(\u0042\u0046\u208B\u2080)"
+  bfTitleSpec <- list(null="\u2080")
+  if (options$hypothesis == "notEqualToTestValue")
+    bfTitleSpec[["other"]] <- "\u2081"
+  else if (options$hypothesis == "greaterThanTestValue")
+    bfTitleSpec[["other"]] <- "\u208A"
+  else if (options$hypothesis == "lessThanTestValue")
+    bfTitleSpec[["other"]] <- "\u208B"
+  
+  bfType <- options$bayesFactorType
+  if (grepl("BF10", bfType)) {
+    bfTitle <- paste0("BF", bfTitleSpec[["other"]], bfTitleSpec[["null"]])
+    if (bfType == "LogBF10")
+      bfTitle <- paste0("Log(", bfTitle, ")")
+  } else {
+    bfTitle <- paste0("BF", bfTitleSpec[["null"]], bfTitleSpec[["other"]])
   }
   
   binomTable$addColumnInfo(name = "case",       title = "",           type = "string", combine = TRUE)
@@ -120,7 +111,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   binomTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
   binomTable$addColumnInfo(name = "total",      title = "Total",      type = "integer")
   binomTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
-  binomTable$addColumnInfo(name = "BF",         title = bf.title,     type = "number")
+  binomTable$addColumnInfo(name = bfType,       title = bfTitle,      type = "number")
   
   if (options$hypothesis == "notEqualToTestValue")
     note <- "Proportions tested against value: "
