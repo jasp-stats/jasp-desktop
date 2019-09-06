@@ -25,6 +25,29 @@ testAnalysis <- function(analysis) {
 }
 
 
+.adjustTestthatForPlotTesting <- function() {
+  
+  test_thatStandIn <- function(desc, code) {
+      code <- substitute(code)
+      
+      envirPlotTest <- Sys.getenv("JASP_PLOT_TEST")
+      if (envirPlotTest == "true" && !any(grepl("expect_equal_plots", code, fixed=TRUE)))
+          return()
+      
+      testthat:::test_code(desc, code, env = parent.frame())
+  }
+  
+  Sys.setenv("JASP_PLOT_TEST" = "true")
+  .replaceFn("test_that", test_thatStandIn, "testthat")
+}
+
+
+.undoPlotTestingChanges <- function(originalFn) {
+  Sys.unsetenv("JASP_PLOT_TEST")
+  .replaceFn("test_that", originalFn, "testthat")
+}
+
+
 #' Test all JASP analyses.
 #'
 #' Tests all R analyses found under JASP-Tests. Useful to perform before making
@@ -85,6 +108,10 @@ manageTestPlots <- function(analysis = NULL) {
   if (length(versionMismatches[["newer"]]) > 0 || length(versionMismatches[["older"]]) > 0)
     .handleVersionMismatches(versionMismatches, analysis)
 
+  originalFn <- testthat::test_that
+  on.exit(.undoPlotTestingChanges(originalFn), add=TRUE)
+  .adjustTestthatForPlotTesting()
+  
   testDir <- .getPkgOption("tests.dir")
   vdiffr::manage_cases(testDir, analysis)
 }
