@@ -334,6 +334,11 @@
   variables <- variables[ !sapply(dataset[, .v(variables)], is.factor) ] # remove factors from boundary plot
   l <- length(variables)
 
+  if(l == 1){
+    decisionBoundary$setError("Cannot create matrix: only 1 numeric variable remains after removing factor variables.")
+    return()
+  }
+
   if (l <= 2) {
     width <- 580
     height <- 580
