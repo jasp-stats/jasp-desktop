@@ -248,6 +248,19 @@ collapseTable <- function(rows) {
   return(FALSE)
 }
 
+.replaceFn <- function(fnName, fn, pkgName) {
+  reAssign <- function(env) {
+    unlockBinding(fnName, env)
+    assign(fnName, fn, env)
+    lockBinding(fnName, env)
+  }
+  
+  try(silent=TRUE, {
+    reAssign(getNamespace(pkgName)) # if not attached
+    reAssign(as.environment(paste0("package:", pkgName))) # if attached
+  })
+}
+
 .getErrorMsgFromLastResults <- function() {
   lastResults <- .getInternal("lastResults")
   if (jsonlite::validate(lastResults))
