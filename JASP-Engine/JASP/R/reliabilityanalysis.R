@@ -251,7 +251,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Create table
   scaleTable <- createJaspTable(title = "Scale Reliability Statistics")
   dependList <- c("variables", "confAlpha", "mcDonaldScale", "alphaScale", "meanScale",
-                  "alphaScaleStandardized", "gutmannScale", "glbScale", "confAlpha",
+                  "alphaScaleStandardized", "gutmannScale", "glbScale",
                   "averageInterItemCor",  "sdScale", "missingValues", "confAlphaLevel")
   scaleTable$dependOn(dependList)
   scaleTable$showSpecifiedColumnsOnly <- TRUE
