@@ -1208,6 +1208,7 @@ RegressionLinearBayesian <- function (
 	means = x$conditionalmeans[sel, i, drop = TRUE]
 	sds = x$conditionalsd[sel, i, drop = TRUE]
 	name = x$namesx[i]
+	name = gsub("\u2009\u273b\u2009", " x ", name, fixed = TRUE) # ggplot can't show the interaction symbol
 	df.sel = df[sel]
 
 	df <- df.sel # modified from original
