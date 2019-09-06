@@ -154,7 +154,7 @@ Form {
 		{
 			title: qsTr("Models")
 			CheckBox { name: "plotLogPosteriorOdds";	label: qsTr("Log posterior odds")				}
-			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data)M)) vs. model size")	}
+			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data|M)) vs. model size")	}
 			CheckBox { name: "plotModelProbabilities";	label: qsTr("Model probabilities")				}
 		}
 
