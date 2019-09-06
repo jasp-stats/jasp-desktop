@@ -166,3 +166,41 @@ test_that("Fields Book - Chapter 10 results match", {
                            -0.524604985275458, "FALSE")
   )
 })
+
+# test the methods for entering predictors
+options <- jasptools::analysisOptions("RegressionLogistic")
+options$covariates <- list("contNormal")
+options$dependent <- "contBinom"
+options$modelTerms <- list(list(components = list("contNormal"), isNuisance = FALSE))
+  
+#backward
+test_that("Method=backward model summary table results match", {
+  options$method <- "backward"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+	table <- results[["results"]][["modelSummary"]][["data"]]
+	expect_equal_tables(table,
+		list(1, 135.466477068092, 139.466477068092, 144.676817440068, 98, "",
+			 "", 0, 0, 0.043287762682406, 0, 2, 136.058400038431, 138.058400038431,
+			 140.663570224419, 99, 0.59192297033843, 0.441676479938567, -0.00435050662194492,
+			 -0.00793790496945946, 0, -0.00590174557777201))
+})
+
+#forward
+test_that("Method=forward model summary table results match", {
+  options$method <- "forward"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+	table <- results[["results"]][["modelSummary"]][["data"]]
+	expect_equal_tables(table,
+		list(1, 136.058400038431, 138.058400038431, 140.663570224419, 99, "",
+			 "", 0, "", 0, ""))
+})
+
+#stepwise
+test_that("Method=stepwise model summary table results match", {
+  options$method <- "stepwise"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+	table <- results[["results"]][["modelSummary"]][["data"]]
+	expect_equal_tables(table,
+		list(1, 136.058400038431, 138.058400038431, 140.663570224419, 99, "",
+			 "", 0, "", 0, ""))
+})

@@ -129,7 +129,6 @@
   } else {
     # translate method to stepAIC direction
     direct <- ifelse(method == "forward", method, "both")
-    #browser()
     stepOut <- JASPstepAIC(nullModel, full, trace = 0,
                            direction = direct,
                            keep = function(m, b) list(m))
@@ -357,7 +356,6 @@
         rn <- rownames(s)
         rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
         # `c` should be renamed to something better
-        # c <- qnorm(1 - (100 - options[["coeffCIInterval"]]) / 200)
         c <- qnorm(1 - (1 - options[['coeffCIInterval']])/2)
         beta <- .stdEst(glmObj[[2]], type = "X") # stand. X continuous vars
         
@@ -421,7 +419,7 @@
           rn <- rownames(s)
           rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
           # `c` should be renamed to something better
-          # c <- qnorm(1 - (100 - options[["coeffCIInterval"]]) / 200)
+          c <- qnorm(1 - (1 - options[['coeffCIInterval']])/2)
           beta <- .stdEst(mObj, type = "X") # stand. X continuous vars
           
           # Confidence intervals on the odds ratio scale
