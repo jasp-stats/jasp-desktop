@@ -285,7 +285,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
     xBreaks <- 1:xend
   } else {
     geom <- ggplot2::geom_line
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(oobDev[["trees"]], min.n = 4)
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(deviance[["trees"]], min.n = 4)
     xend <- length(result[["model"]]$train.error)
   }
   yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, deviance[["trainError"]]), min.n = 4)
