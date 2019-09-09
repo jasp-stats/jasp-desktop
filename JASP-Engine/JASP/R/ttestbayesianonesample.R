@@ -150,11 +150,12 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   jaspTable$addColumnInfo(name = "variable", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "BF",       title = bfTitle, type = "number")
 
-  if (options$hypothesis == "notEqualToTestValue") { # TODO: does this even matter?
-      jaspTable$addColumnInfo(name = "error", type = "number", format = "sf:4;dp:3",  title = "error %")
+  if (options[["hypothesis"]] == "notEqualToTestValue") {
+    fmt <- "sf:4;dp:3"
   } else {
-      jaspTable$addColumnInfo(name = "error", type = "number", format = "sf:4;dp:3;~", title= "error %")
+    fmt <- "sf:4;dp:3;~"
   }
+  jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = "error %")
   return(jaspTable)
 }
 

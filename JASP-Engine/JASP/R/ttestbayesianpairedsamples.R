@@ -144,9 +144,9 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   jaspTable$addColumnInfo(name = "variable1", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "separator", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "variable2", title = "",      type = "string")
-  jaspTable$addColumnInfo(name = "BF",        title = bfTitle, type = "number", format = "sf:4;dp:3")
+  jaspTable$addColumnInfo(name = "BF",        title = bfTitle, type = "number")
 
-  if (options[["hypothesis"]] == "notEqualToTestValue") { # TODO: does this even matter?
+  if (options[["hypothesis"]] == "groupsNotEqual") {
     fmt <- "sf:4;dp:3"
   } else {
     fmt <- "sf:4;dp:3;~"

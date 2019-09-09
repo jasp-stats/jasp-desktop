@@ -220,7 +220,12 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
     jaspTable$addFootnote(paste("Result based on data augmentation algorithm with 5 chains of",
                                 options[["wilcoxonSamplesNumber"]], "iterations."))
   } else {
-    jaspTable$addColumnInfo(name = "error", type = "number", title = "error %")
+    if (options[["hypothesis"]] == "groupsNotEqual") {
+      fmt <- "sf:4;dp:3"
+    } else {
+      fmt <- "sf:4;dp:3;~"
+    }
+    jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = "error %")
   }
 
   if (!(is.null(g1) || is.null(g2))) {
