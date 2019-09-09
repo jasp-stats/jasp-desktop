@@ -182,6 +182,7 @@ void AsyncLoader::loadPackage(QString id)
 
 		try
 		{
+			JASPTIMER_RESUME(AsyncLoader::loadPackage);
 			Log::log()  << "AsyncLoader::loadPackage(" << id.toStdString() << ")" << std::endl;
 			string path = fq(_currentEvent->path());
 			string extension = "";
@@ -244,7 +245,7 @@ void AsyncLoader::loadPackage(QString id)
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
-			_currentEvent->setComplete(false, e.what());	
+			_currentEvent->setComplete(false, e.what());
 		}
 		catch (exception & e)
 		{
@@ -254,6 +255,8 @@ void AsyncLoader::loadPackage(QString id)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
+
+		JASPTIMER_STOP(AsyncLoader::loadPackage);
 	}
 }
 

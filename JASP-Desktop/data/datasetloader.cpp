@@ -30,6 +30,8 @@
 
 #include <QFileInfo>
 
+#include "timers.h"
+
 using namespace std;
 using namespace ods;
 using namespace boost::interprocess;
@@ -55,6 +57,8 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 
 void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
+	JASPTIMER_RESUME(DataSetLoader::loadPackage);
+
 	Importer* importer = getImporter(packageData, locator, extension);
 
 	if (importer)
@@ -66,6 +70,8 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 		JASPImporter::loadDataSet(packageData, locator, progress);
 	else
 		throw std::runtime_error("JASP does not support loading the file-type \"" + extension + '"');
+
+	JASPTIMER_STOP(DataSetLoader::loadPackage);
 }
 
 void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)

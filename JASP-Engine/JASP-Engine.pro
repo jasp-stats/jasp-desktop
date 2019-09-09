@@ -83,13 +83,25 @@ exists(/app/lib/*) {
     InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASP
     InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASPgraphs
 } else {
+    win32:RemoveJASPRPkgLock.commands   = IF exist \"$$OUT_PWD/../R/library/00LOCK-JASP/\" (rd /s /q \"$$OUT_PWD/../R/library/00LOCK-JASP/\" && echo Lock removed!) ELSE (echo No lock found!);
     win32:InstallJASPRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$OUT_PWD/../R/library\'); install.packages(\'$$PWD/JASP\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
-    unix:InstallJASPRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASP\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
+    unix: InstallJASPRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASP\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
+
+    win32:RemoveJASPgraphsRPkgLock.commands   = IF exist \"$$OUT_PWD/../R/library/00LOCK-JASPgraphs/\" (rd /s /q \"$$OUT_PWD/../R/library/00LOCK-JASPgraphs/\" && echo Lock removed!) ELSE (echo No lock found!);
     win32:InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$OUT_PWD/../R/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
-    unix:InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
+    unix: InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
 }
 
-InstallJASPgraphsRPackage.depends
+win32 {
+  InstallJASPgraphsRPackage.depends = RemoveJASPgraphsRPkgLock
+  InstallJASPRPackage.depends = RemoveJASPRPkgLock
+
+  QMAKE_EXTRA_TARGETS += RemoveJASPgraphsRPkgLock
+  POST_TARGETDEPS     += RemoveJASPgraphsRPkgLock
+
+  QMAKE_EXTRA_TARGETS += RemoveJASPRPkgLock
+  POST_TARGETDEPS     += RemoveJASPRPkgLock
+}
 
 QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
 POST_TARGETDEPS     += InstallJASPgraphsRPackage
@@ -120,7 +132,7 @@ DISTFILES += \
     JASP/R/anovaoneway.R \
     JASP/R/anovarepeatedmeasures.R \
     JASP/R/anovarepeatedmeasuresbayesian.R \
-	JASP/R/assignFunctionInPackage.R \
+    JASP/R/assignFunctionInPackage.R \
     JASP/R/bainancovabayesian.R \
     JASP/R/bainanovabayesian.R \
     JASP/R/bainregressionlinearbayesian.R \

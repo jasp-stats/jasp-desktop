@@ -16,7 +16,10 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 	bool enginesLoaded = !_packageData->enginesInitializing();
 
 	if(enginesLoaded)
+	{
+		Log::log() << "Pausing engines for loadDataSet package because they are initialized!" << std::endl;
 		_packageData->pauseEngines();
+	}
 
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
@@ -248,7 +251,10 @@ void Importer::_syncPackage(
 	bool enginesLoaded = !_packageData->enginesInitializing();
 
 	if(enginesLoaded)
+	{
+		Log::log() << "Pausing engines for syncing package because they are initialized!" << std::endl;
 		_packageData->pauseEngines();
+	}
 	_packageData->dataSet()->setSynchingData(true);
 
 	std::vector<std::string>			_changedColumns;

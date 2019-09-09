@@ -40,6 +40,8 @@
 
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {	
+	JASPTIMER_RESUME(JASPImporter::loadDataSet INIT);
+
 	packageData->setIsArchive(true);
 	packageData->setDataSet(SharedMemory::createDataSet()); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
 
@@ -49,9 +51,15 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &p
 
 	if (compatibility == JASPImporter::NotCompatible)	throw std::runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 	else if (compatibility == JASPImporter::Limited)	packageData->setWarningMessage("This file was created by a newer version of JASP and may not have complete functionality.");
+	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
+	JASPTIMER_RESUME(JASPImporter::loadDataSet loadDataArchive);
 	loadDataArchive(packageData, path, progressCallback);
+	JASPTIMER_STOP(JASPImporter::loadDataSet loadDataArchive);
+
+	JASPTIMER_RESUME(JASPImporter::loadDataSet loadJASPArchive);
 	loadJASPArchive(packageData, path, progressCallback);
+	JASPTIMER_STOP(JASPImporter::loadDataSet loadJASPArchive);
 }
 
 
@@ -357,6 +365,7 @@ void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const std::strin
 
 void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
+	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
 	if (parseJsonEntry(analysesData, path, "analyses.json", false))
@@ -365,29 +374,61 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 	
 		for (std::string resource : resources)
 		{
+
+
 			FileReader resourceEntry = FileReader(path, resource);
 	
 			std::string filename	= resourceEntry.fileName();
 			std::string dir			= resource.substr(0, resource.length() - filename.length() - 1);
+
+			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Create resource files);
+
+			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 TempFiles::createSpecific);
 			std::string destination = TempFiles::createSpecific(dir, resourceEntry.fileName());
+			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 TempFiles::createSpecific);
 	
+			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream);
 			boost::nowide::ofstream file(destination.c_str(),  std::ios::out | std::ios::binary);
+
+			static char streamBuff[8192 * 32];
+			file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770
 	
-			char	copyBuff[8016];
-			int		bytes		= 0,
-					errorCode	= 0;
-			while ((bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode)) > 0 && errorCode == 0)
-				file.write(copyBuff, bytes);
+			static char copyBuff[8192 * 4];
+			int			bytes		= 0,
+						errorCode	= 0;
+
+			do
+			{
+				JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream - read data);
+				bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode);
+				JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream - read data);
+
+				if(bytes > 0 && errorCode == 0)
+				{
+					JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream - write to stream);
+					file.write(copyBuff, bytes);
+					JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream - write to stream);
+				}
+				else break;
+			}
+			while (true);
 
 			file.flush();
 			file.close();
+			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream);
 	
 			if (errorCode != 0)
 				throw std::runtime_error("Could not read resource files.");
+
+			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Create resource files);
 		}
 	}
+
+	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	
+	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 	packageData->setAnalysesData(analysesData);
+	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 
 }
 

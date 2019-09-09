@@ -23,6 +23,7 @@
 #include <QQuickWindow>
 #include "utilities/settings.h"
 
+
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
 					saveArg			= "--save",
