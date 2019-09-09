@@ -636,10 +636,17 @@
         },
         {
 		  "name": "Telco Customer Churn",
-		  "path": "telcoCustomerChurn.csv",
+		  "path": "telcoCustomerChurn.jasp",
 		  "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
-          "kind": "file"
+		  "kind": "file",
+		  "associated_datafile": "telcoCustomerChurn.csv"
         },
+		{
+		  "name": "Student Grades",
+		  "path": "studentGrades.csv",
+		  "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+		  "kind": "file"
+		},
         {
 		  "name": "Wine Types",
           "path": "wine.csv",

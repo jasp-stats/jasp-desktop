@@ -37,7 +37,7 @@ Form {
         AssignedVariablesList  { 
             name: "predictors"
             title: qsTr("Predictors")
-            allowedColumns: ["scale", "ordinal", "nominal"]
+            allowedColumns: ["scale", "ordinal"]
             id: predictors                                        
         }
     }
