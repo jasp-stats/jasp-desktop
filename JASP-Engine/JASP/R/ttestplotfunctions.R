@@ -2294,7 +2294,7 @@
 			ggplot2::geom_point(position=pd, size=4) +
 			ggplot2::ylab(dependentName) +
 			ggplot2::xlab(groupingName) +
-			.base_breaks_y3(summaryStat) +
+			.base_breaks_y2(summaryStat, NULL) +
 			.base_breaks_x(summaryStat$groupingVariable)
 
 	p <- JASPgraphs::themeJasp(p)
@@ -2334,14 +2334,4 @@
   d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
   list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
        ggplot2::scale_y_continuous(breaks=c(min(b), testValue, max(b))))
-}
-
-# only used by bain!
-.base_breaks_y3 <- function(x) {
-
-	ci.pos <- c(x$ciLower, x$ciUpper)
-	b <- pretty(ci.pos)
-	d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-	list(	ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-			ggplot2::scale_y_continuous(breaks=c(min(b),max(b)))	)
 }
