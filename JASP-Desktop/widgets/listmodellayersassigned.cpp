@@ -40,6 +40,12 @@ void ListModelLayersAssigned::initLayers(const std::vector<std::vector<std::stri
 			layer.push_back(QString::fromStdString(variable));
 		_variables.push_back(layer);
 	}
+
+	if (source() != nullptr)
+	{
+		if (!_copyTermsWhenDropped)
+			source()->removeTermsInAssignedList();
+	}
 	
 	endResetModel();
 }
@@ -214,6 +220,18 @@ void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
 	endResetModel();
 	
 	emit modelChanged();
+}
+
+const Terms &ListModelLayersAssigned::terms(const QString &)
+{
+	_tempTerms.clear();
+	for (const QList<QString>& layer : _variables)
+	{
+		for (const QString& variable : layer)
+			_tempTerms.add(variable);
+	}
+
+	return _tempTerms;
 }
 
 int ListModelLayersAssigned::rowCount(const QModelIndex &parent) const

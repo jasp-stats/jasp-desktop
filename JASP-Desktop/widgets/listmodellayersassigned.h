@@ -33,6 +33,7 @@ public:
 	Terms*		addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
 	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
 	void		removeTerms(const QList<int>& indexes)												override;
+	const Terms& terms(const QString& what = QString())												override;
 	
 	void		initLayers(const std::vector<std::vector<std::string> >& allVariables);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getLayers()				const;
@@ -40,7 +41,8 @@ public:
 private:
 	int _getLayer(int index, int& realIndex) const;
 	
-	QList<QList<QString> > _variables;
+	QList<QList<QString> >	_variables;
+	Terms					_tempTerms;
 };
 
 #endif // LISTMODELLAYERSASSIGNED_H
