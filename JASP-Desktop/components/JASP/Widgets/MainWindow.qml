@@ -136,6 +136,19 @@ Window
 
 		MouseArea
 		{
+			enabled:					!fileMenuModel.visible && !darkeningBackgroundRect.visible
+			anchors.fill:				parent
+			z:							1
+			propagateComposedEvents:	true
+			onPressed:
+			{
+				customMenu.hide()
+				mouse.accepted = false;
+			}
+		}
+
+		MouseArea
+		{
 			enabled: 					fileMenuModel.visible || darkeningBackgroundRect.visible
 			z:							1
 			hoverEnabled:				true
