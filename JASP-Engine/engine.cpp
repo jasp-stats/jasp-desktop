@@ -39,7 +39,13 @@ bool PollMessagesFunctionForJaspResults()
 		if(Engine::theEngine()->paused())
 			return true;
 		else
-			return Engine::theEngine()->getAnalysisStatus() == engineAnalysisStatus::changed;
+			switch(Engine::theEngine()->getAnalysisStatus())
+			{
+			case engineAnalysisStatus::changed:
+			case engineAnalysisStatus::aborted:
+			case engineAnalysisStatus::stopped:	return true;
+			default:							break;
+			}
 	}
 	return false;
 }
