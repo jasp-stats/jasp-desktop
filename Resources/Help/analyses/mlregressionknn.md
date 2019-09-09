@@ -4,14 +4,22 @@ K-Nearest Neighbors Regression
 K-nearest neighbors is a method of regression that looks at the *k* number of predictor observations that are most similar to new observations to make a prediction for their values. The number of nearest neighbors is intrinsincly linked to model complexity, as small numbers increase the flexibility of the model.
 
 ### Assumptions
-- The predictors consist of continuous, nominal, or ordinal variables.
-- The target is a continuous variable.
+- The target variable is a continuous variable.
+- The predictor variables consist of continuous, nominal, or ordinal variables.
 
 ### Input 
 -------
 #### Assignment Box 
 - Target: In this box, the variable that needs to be predicted should be entered. 
-- Predictors: In this box the variables that provide information about the target variable should be entered. 
+- Predictors: In this box, the variables that provide information about the target variable should be entered. 
+
+#### Tables  
+- Evaluation metrics: Shows commonly used classification evaluation metrics like mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
+
+#### Plots
+- Data split: Shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
+- Mean squared error: Plots the number of nearest neighbors against the mean squared error of the model. Accuracy is assessed for the training (and validation) set.
+- Predictive performance: Shows the selected test set observations against their predicted values.
 
 ### Data Split Preferences
 #### Holdout Test Data
@@ -26,23 +34,15 @@ K-nearest neighbors is a method of regression that looks at the *k* number of pr
 
 ### Training Parameters 
 #### Algorithmic Settings
-- Weights: sets the weighting scheme for the nearest neighbors. The default rectangular option results in standard knn, while the other options expand the algorithm by weighing the nearest neighbors. See also the kknn package.
-- Distance: the distance metric to be used when determining the similarity between nearest neighbors. Can be either Euclidean or Manhattan distance.
-- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
-- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
+- Weights: Sets the weighting scheme for the nearest neighbors. The default rectangular option results in standard knn, while the other options expand the algorithm by weighing the nearest neighbors. See also the kknn package.
+- Distance: The distance metric to be used when determining the similarity between nearest neighbors. Can be either Euclidean or Manhattan distance.
+- Scale variables: Scales the continuous variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
+- Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis. For example, setting a seed makes it possible to re-run analyses with the same data splits.
 
 #### Number of Nearest Neighbors
-- Fixed: enables you to use a user-specified number of nearest neighbors. 
-- Optimized: enables you to optimize the prediction error on a validation data set with respect to the number of nearest neighbors. 
-- Max. number of nearest neighbors: sets the maximum number of possible nearest neighbors to be considered. At default, this is set to 10.
-
-#### Tables  
-- Evaluation metrics: shows commonly used classification evaluation metrics like mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
-
-#### Plots
-- Data split: shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
-- Mean squared error: plots the number of nearest neighbors against the mean squared error of the model. Accuracy is assessed for the training (and validation) set.
-- Predictive performance: shows the selected test set observations against their predicted values.
+- Fixed: Enables you to use a user-specified number of nearest neighbors. 
+- Optimized: Enables you to optimize the prediction error on a validation data set with respect to the number of nearest neighbors. 
+- Max. number of nearest neighbors: Sets the maximum number of possible nearest neighbors to be considered. At default, this is set to 10.
 
 #### Add Predicted Values to Data
 Generates a new column in your dataset with the values of your regression result. This gives you the option to inspect, cluster, or predict the generated values.
@@ -71,5 +71,5 @@ Generates a new column in your dataset with the values of your regression result
 
 ### Example 
 --- 
-- For an example go to `Open` --> `Data Library` --> `Machine Learning` --> `Student Grades`.  
+- For an example data set go to `Open` --> `Data Library` --> `Machine Learning` --> `Student Grades`.  
 

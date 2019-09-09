@@ -4,14 +4,25 @@ Random Forest Regression
 Random Forest is a method of regression that creates a set of decision trees that consists of a large number of individual trees which operate as an ensemble. 
 
 ### Assumptions
-- The predictors consist of continuous, nominal, or ordinal variables.
-- The target is a continuous variable.
+- The target variable is a continuous variable.
+- The predictor variables consist of continuous, nominal, or ordinal variables.
 
 ### Input 
 -------
 #### Assignment Box 
 - Target: In this box, the variable that needs to be predicted should be entered. 
-- Predictors: In this box the variables that provide information about the target variable should be entered. 
+- Predictors: In this box, the variables that provide information about the target variable should be entered. 
+
+#### Tables  
+- Evaluation metrics: Shows commonly used classification evaluation metrics like mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
+- Variable importance: Shows the mean decrease in accuracy and total increase in node purity for all predictor variables. These are indicators of the importance of the predictors.
+
+#### Plots
+- Data split: Shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
+- Out-of-bag accuracy: Plots the number of trees against the out-of-bag classification accuracy of the model. Accuracy is assessed for the training (and validation) set.
+- Predictive performance: Shows the selected test set observations against their predicted values.
+- Mean decrease in accuracy: Displays the variable mean decrease in accuracy for the model.
+- Total increase in node purity: Displays the variable total increase in node purity for the model.
 
 ### Data Split Preferences
 #### Holdout Test Data
@@ -24,26 +35,15 @@ Random Forest is a method of regression that creates a set of decision trees tha
 
 ### Training Parameters 
 #### Algorithmic Settings
-- Training data used per tree: select the percentage of training data that is used to train each individual tree.
-- Predictors per split: set the number of predictor variables that is used within each split in the decision trees. Auto defaults to  
-- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
-- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
+- Training data used per tree: Select the percentage of training data that is used to train each individual tree.
+- Predictors per split: Set the number of predictor variables that is used within each split in the decision trees. Auto defaults to  
+- Scale variables: Scales the continuous variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
+- Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis. For example, setting a seed makes it possible to re-run analyses with the same data splits.
 
 #### Number of Trees
-- Fixed: enables you to use a user-specified number of decision trees. 
-- Optimized: enables you to optimize the prediction error on a validation data set with respect to the number of trees. 
-- Max. number of trees: sets the maximum number of possible decision trees to be considered. At default, this is set to 100.
-
-#### Tables  
-- Evaluation metrics: shows commonly used classification evaluation metrics like mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
-- Variable importance: shows the mean decrease in accuracy and total increase in node purity for all predictor variables. These are indicators of the importance of the predictors.
-
-#### Plots
-- Data split: shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
-- Out-of-bag accuracy: plots the number of trees against the out-of-bag classification accuracy of the model. Accuracy is assessed for the training (and validation) set.
-- Predictive performance: shows the selected test set observations against their predicted values.
-- Mean decrease in accuracy: displays the variable mean decrease in accuracy for the model.
-- Total increase in node purity: displays the variable total increase in node purity for the model.
+- Fixed: Enables you to use a user-specified number of decision trees. 
+- Optimized: Enables you to optimize the prediction error on a validation data set with respect to the number of trees. 
+- Max. number of trees: Sets the maximum number of possible decision trees to be considered. At default, this is set to 100.
 
 #### Add Predicted Values to Data
 Generates a new column in your dataset with the values of your regression result. This gives you the option to inspect, cluster, or predict the generated values.
@@ -72,6 +72,6 @@ Generates a new column in your dataset with the values of your regression result
 
 ### Example 
 --- 
-- For an example go to `Open` --> `Data Library` --> `Machine Learning` --> `Student Grades`.  
+- For an example data set go to `Open` --> `Data Library` --> `Machine Learning` --> `Student Grades`.  
 
 

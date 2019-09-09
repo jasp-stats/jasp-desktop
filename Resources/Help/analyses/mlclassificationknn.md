@@ -4,14 +4,26 @@ K-Nearest Neighbors Classification
 K-nearest neighbors is a method of classification that looks at the *k* number of predictor observations that are most similar to new observations to make a prediction for their class assignments. The number of nearest neighbors is intrinsincly linked to model complexity, as small numbers increase the flexibility of the model.
 
 ### Assumptions
-- The predictors consist of continuous, nominal, or ordinal variables.
-- The target is a nominal or ordinal variable
+- The target is a nominal or ordinal variable. 
+- The predictor variables consist of continuous, nominal, or ordinal variables.
 
 ### Input 
 -------
 #### Assignment Box 
 - Target: In this box, the variable that needs to be predicted should be entered. 
 - Predictors: In this box the variables that provide information about the target variable should be entered. 
+
+#### Tables  
+- Confusion matrix: Displays a table that shows the observed classes against the predicted classes. Used to assess model accuracy.
+- Class proportions: Displays a table that shows the proportions of each class in the data set, training (and validaton), and test set.
+- Evaluation metrics: Shows commonly used classification evaluation metrics like precision, recall, the F1-score, support and AUC (area under the ROC curve).
+
+#### Plots
+- Data split: Shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
+- Classification accuracy: Plots the number of nearest neighbors against the classification accuracy of the model. Accuracy is assessed for the training (and validation) set.
+- ROC curves: Displays ROC curves for each class predicted against all other classes.
+- Andrews curves: Is a way to visualize structure in high-dimensional data. Lines that cluster are observations that are more alike. 
+- Decision boundary matrix: Creates a *n* x *n* plot that visualizes how every observation would be classified if predicted through the current model. Boundaries between classes are visualized. Can only be made for numeric predictors.
 
 ### Data Split Preferences
 #### Holdout Test Data
@@ -26,27 +38,15 @@ K-nearest neighbors is a method of classification that looks at the *k* number o
 
 ### Training Parameters 
 #### Algorithmic Settings
-- Weights: sets the weighting scheme for the nearest neighbors. The default rectangular option results in standard knn, while the other options expand the algorithm by weighing the nearest neighbors. See also the kknn package.
-- Distance: the distance metric to be used when determining the similarity between nearest neighbors. Can be either Euclidean or Manhattan distance.
-- Scale variables: scales the variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
-- Set seed: gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
+- Weights: Sets the weighting scheme for the nearest neighbors. The default rectangular option results in standard knn, while the other options expand the algorithm by weighing the nearest neighbors. See also the kknn package.
+- Distance: The distance metric to be used when determining the similarity between nearest neighbors. Can be either Euclidean or Manhattan distance.
+- Scale variables: Scales the continuous variables. Standardization ensures that values of variables from different scales range into a specific similar scale. As a result, standardizing provides numerical stability, which improves the clustering output. JASP uses the Z-score standardization of a mean of 0 and a standard deviation of 1. This option is selected by default.
+- Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis. For example, setting a seed makes it possible to re-run analyses with the same data splits.
 
 #### Number of Nearest Neighbors
-- Fixed: enables you to use a user-specified number of nearest neighbors. 
-- Optimized: enables you to optimize the prediction error on a validation data set with respect to the number of nearest neighbors. 
-- Max. number of nearest neighbors: sets the maximum number of possible nearest neighbors to be considered. At default, this is set to 10.
-
-#### Tables  
-- Confusion matrix: displays a table that shows the observed classes against the predicted classes. Used to assess model accuracy.
-- Class proportions: displays a table that shows the proportions of each class in the data set, training (and validaton), and test set.
-- Evaluation metrics: shows commonly used classification evaluation metrics like precision, recall, the F1-score, support and AUC (area under the ROC curve).
-
-#### Plots
-- Data split: shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
-- Classification accuracy: plots the number of nearest neighbors against the classification accuracy of the model. Accuracy is assessed for the training (and validation) set.
-- ROC curves: displays ROC curves for each class predicted against all other classes.
-- Andrews curves: is a way to visualize structure in high-dimensional data. Lines that cluster are observations that are more alike. 
-- Decision boundary matrix: creates a n x n plot that visualizes how every observation would be classified if predicted through the current model. Boundaries between classes are visualized. Can only be made for numeric predictors.
+- Fixed: Enables you to use a user-specified number of nearest neighbors. 
+- Optimized: Enables you to optimize the prediction error on a validation data set with respect to the number of nearest neighbors. 
+- Max. number of nearest neighbors: Sets the maximum number of possible nearest neighbors to be considered. At default, this is set to 10.
 
 #### Add Predicted Classes to Data
 Generates a new column in your dataset with the class labels of your classification result. This gives you the option to inspect, classify, or predict the generated class labels.
@@ -73,8 +73,7 @@ Generates a new column in your dataset with the class labels of your classificat
 - kknn
 - ROCR
 
-
 ### Example 
 --- 
-- For an example go to `Open` --> `Data Library` --> `Machine Learning` --> `Telco Customer Churn`.  
+- For an example data set go to `Open` --> `Data Library` --> `Machine Learning` --> `Telco Customer Churn`.  
 
