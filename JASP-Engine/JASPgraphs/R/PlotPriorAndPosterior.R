@@ -13,9 +13,10 @@ getEmptyTheme <- function() {
     rect              = getBackgroundRect(getGraphOption("debug")),
     panel.spacing     = unit(0, "null"),
     plot.margin       = ggplot2::margin(),
-    panel.background  = element_blank(),
+    panel.background  = ggplot2::element_rect(color = "transparent", fill = "transparent"),
     panel.grid.major  = element_blank(),
     panel.grid.minor  = element_blank(),
+    plot.background   = ggplot2::element_rect(fill = "transparent", color = "transparent"),
     axis.ticks        = element_blank(),
     axis.text.x       = element_blank(),
     axis.text.y       = element_blank(),
@@ -106,7 +107,8 @@ errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, B
   return(invisible(TRUE))
 }
 
-makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetypes = NULL, type = c("point", "line")) {
+makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetypes = NULL, sizes = NULL,
+                           type = c("point", "line")) {
 
   type <- match.arg(type)
   if (is.factor(groupingVariable)) {
@@ -123,9 +125,15 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
       y = factor(seq_along(l)),
       l = rev(l) # y = 1, 2, ... so first one at the bottom, hence reverse the labels
     )
+    
+    if (is.null(sizes)) {
+      gp <- geom_point(show.legend = FALSE, size = 1.15 * jaspGeomPoint$default_aes$size)
+    } else {
+      gp <- geom_point(show.legend = FALSE)
+    }
 
-    legendPlot <- ggplot(data = dfLegendPlot, aes(x = x, y = y, fill = y, label = l)) +
-      geom_point(show.legend = FALSE, size = 1.15 * jaspGeomPoint$default_aes$size) +
+    legendPlot <- ggplot(data = dfLegendPlot, aes(x = x, y = y, fill = y, label = l, size = y)) +
+      gp +
       ggplot2::geom_text(nudge_x = 0.1, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
       ggplot2::xlim(c(0, 1)) +
@@ -157,6 +165,8 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
     legendPlot <- legendPlot + ggplot2::scale_color_manual(values = rev(colors))
   if (!is.null(linetypes))
     legendPlot <- legendPlot + ggplot2::scale_linetype_manual(values = rev(linetypes))
+  if (!is.null(sizes))
+    legendPlot <- legendPlot + ggplot2::scale_size_manual(values = 1.15 * rev(sizes))
 
   return(legendPlot)
 }

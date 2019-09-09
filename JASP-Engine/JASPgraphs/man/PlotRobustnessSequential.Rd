@@ -14,7 +14,10 @@ PlotRobustnessSequential(dfLines, dfPoints = NULL, BF = NULL,
   pointColors = c("red", "grey", "black", "white"),
   lineColors = c("black", "grey", "black"), lineTypes = c("dotted",
   "solid", "solid"), addLineAtOne = TRUE, bty = list(type = "n", ldwX =
-  0.5, lwdY = 0.5), plotLineOrPoint = c("line", "point"), ...)
+  0.5, lwdY = 0.5), plotLineOrPoint = c("line", "point"),
+  pointShapesSmallN = rep(21, 3), pointFillsSmallN = c("grey", "black",
+  "white"), pointColorsSmallN = rep("black", 3), pointSizeSmallN = c(3,
+  2, 2), ...)
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}. \code{$y} is assumed to be on the log scale.}
@@ -60,7 +63,15 @@ Ignored if \code{!is.null(dfLines$g) && linesLegend}.}
 
 \item{plotLineOrPoint}{String, should the main geom in the plot be a line or a point?}
 
+\item{pointShapesSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the shape aestethic.}
+
+\item{pointFillsSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the fill aestethic.}
+
+\item{pointColorsSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the color aestethic.}
+
 \item{...}{Unused.}
+
+\item{pointColorsSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the size aestethic.}
 }
 \description{
 Create a robustness or sequential plot
