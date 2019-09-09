@@ -22,7 +22,7 @@ void FilterModel::setDataSetPackage(DataSetPackage * package)
 		setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
 		_setRFilter(QString::fromStdString(_package->dataFilter()));
 
-		//sendGeneratedAndRFilter(); //setDataSetPackage means we just loaded a package right? So the filter should already be good.
+		sendGeneratedAndRFilter();
 	}
 	else
 		reset();

@@ -294,6 +294,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 		if(!obeyFilter || (rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i]))
 			datasetStatic[colMax].ints[filteredRow++] = int(i + 1); //R needs 1-based index
 
+	//std::cout << "reading " << colMax << " columns!\nRowCount: " << filteredRowCount << "" << std::endl;
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
