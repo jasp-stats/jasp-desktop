@@ -1058,23 +1058,6 @@
 }
 
 # plot functions  ----
-.addPlotToJaspObj0 <- function(title, var, obj = NULL, errors = "",  w = 530, h = 400) {
-
-	# convenience function
-	if (is.null(obj)) {
-		plot <- createJaspPlot(title = title, width = w, height = h,
-													 error = "badData", errorMessage = errors)
-	} else if (identical(obj, "empty")) {
-		plot <- createJaspPlot(title = title, width = w, height = h)
-	} else if (isTryError(obj)) {
-		plot <- createJaspPlot(title = title, width = w, height = h,
-													 error = "badData", errorMessage = .extractErrorMessage(obj))
-	} else {
-		plot <- createJaspPlot(title = title, width = w, height = h, plot = obj)
-	}
-	return(plot)
-}
-
 .ttestBayesianPlotKGroupMeans <- function(data, var, grouping = NULL,
 																					groupNames = NULL, CRI = .95,
 																					testValueOpt = NULL, paired = FALSE) {

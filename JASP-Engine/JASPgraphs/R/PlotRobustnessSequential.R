@@ -180,21 +180,19 @@ PlotRobustnessSequential <- function(
     if (length(unique(dfLines$g)) != length(lineColors) || length(lineColors) != length(lineTypes))
       stop("lineColors and lineTypes must have the same length as the number of groups in dfLines.")
     
-    mapping  <- aes(x = x, y = y, group = g, linetype = g, color = g, shape = g, fill = g, size = g)
-    scaleCol   <- ggplot2::scale_color_manual(values =  if (plotLineOrPoint == "line") lineColors else pointFill)
-    scaleLty   <- ggplot2::scale_linetype_manual(values = lineTypes)
     if (plotLineOrPoint == "line") {
-      scaleLty   <- ggplot2::scale_linetype_manual(values = lineTypes)
+      mapping    <- aes(x = x, y = y, group = g, linetype = g, color = g)
       scaleCol   <- ggplot2::scale_color_manual(values = lineColors)
+      scaleLty   <- ggplot2::scale_linetype_manual(values = lineTypes)
       scaleShape <- scaleFill <- scaleSize <- NULL
     } else {
-      scaleLty   <- NULL
+      mapping    <- aes(x = x, y = y, group = g, color = g, shape = g, fill = g, size = g)
       scaleCol   <- ggplot2::scale_color_manual(values = pointColor)
       scaleFill  <- ggplot2::scale_fill_manual(values = pointFill)
       scaleShape <- ggplot2::scale_shape_manual(values = pointShape)
       scaleSize  <- ggplot2::scale_size_manual(values = pointSize)
+      scaleLty   <- NULL
     }
-
   }
 
   nYbreaksL <- length(yBreaksL)
