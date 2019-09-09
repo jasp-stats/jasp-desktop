@@ -62,8 +62,8 @@ test_that("Analysis handles errors - infinity", {
   options$factors <- "facGender"
   options$counts <- "debInf"
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - missing values (factors)", {
@@ -73,8 +73,8 @@ test_that("Analysis handles errors - missing values (factors)", {
     list(components="debBinMiss20")
   )
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - missing values (counts)", {
@@ -82,8 +82,8 @@ test_that("Analysis handles errors - missing values (counts)", {
   options$factors <- "contBinom"
   options$counts <- "debMiss30"
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - negatives", {
@@ -91,6 +91,6 @@ test_that("Analysis handles errors - negatives", {
   options$factors <- "facGender"
   options$counts <- "contNormal"
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
