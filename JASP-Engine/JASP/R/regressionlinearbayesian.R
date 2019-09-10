@@ -480,10 +480,10 @@ RegressionLinearBayesian <- function (
 	# parameter for hyper-g's or jzs (all use same alpha param in bas.lm)
 	alpha <- switch(
 		options$priorRegressionCoefficients,
-		hyper_g = options$alpha,
-		hyper_g_laplace = options$alpha,
-		hyper_g_n = options$alpha,
-		JZS = options$rScale^2,
+		"hyper-g" = options$alpha,
+		"hyper-g-laplace" = options$alpha,
+		"hyper-g-n" = options$alpha,
+		"JZS" = options$rScale^2,
 		NULL
 	)
 
