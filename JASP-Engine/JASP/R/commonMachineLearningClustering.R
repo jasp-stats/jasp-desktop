@@ -124,16 +124,7 @@
 
   clusteringTable$addCitation("Hartigan, J. A., & Wong, M. A. (1979). Algorithm AS 136: A k-means clustering algorithm. Journal of the Royal Statistical Society. Series C (Applied Statistics), 28(1), 100-108.")
 
-  if(type != "densitybased"){
-    clusters  <- base::switch(options[["modelOpt"]], "validationManual" = options[["noOfClusters"]], "validationOptimized" = options[["maxClusters"]])
-    tooMuch   <- clusters > (nrow(dataset) - 1)
-
-    if(!ready && tooMuch)
-      clusteringTable$addFootnote(message = "You have specified more clusters than distinct data points.", symbol="<b>Warning.</b>")
-    if(!ready && !tooMuch) clusteringTable$addFootnote(message="Please provide at least 2 variables.", symbol="<i>Note.</i>")
-  } else {
-    if(!ready) clusteringTable$addFootnote(message="Please provide at least 2 variables.", symbol="<i>Note.</i>")
-  }
+  if(!ready) clusteringTable$addFootnote(message="Please provide at least 2 variables.", symbol="<i>Note.</i>")
 
   jaspResults[["clusteringTable"]]      <- clusteringTable
 
