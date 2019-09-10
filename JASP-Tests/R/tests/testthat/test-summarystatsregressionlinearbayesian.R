@@ -21,6 +21,6 @@ test_that("Model Comparison table results match", {
 	table <- results[["results"]][["table"]][["data"]]
 	expect_equal_tables(table,
 		list(3, "Null model", 0.2, 4.40008152727808e-06, 1.3254648491404e-05,
-			 "Alternative model", 5, 0.8, 227268.516231018, 1.54506020907333e-08
+			 "Alternative model", 5, 0.8, 227681.407133399, 1.54506020907333e-08
 			))
 })

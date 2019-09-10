@@ -60,7 +60,7 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
-		DoubleField { name: "betaPriorParamA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1 }
-		DoubleField { name: "betaPriorParamB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1 }
+		DoubleField { name: "betaPriorParamA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
+		DoubleField { name: "betaPriorParamB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
 	}
 }
