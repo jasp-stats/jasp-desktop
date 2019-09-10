@@ -136,21 +136,9 @@ Window
 
 		MouseArea
 		{
-			enabled:					!fileMenuModel.visible && !darkeningBackgroundRect.visible
-			anchors.fill:				parent
-			z:							1
-			propagateComposedEvents:	true
-			onPressed:
-			{
-				customMenu.hide()
-				mouse.accepted = false;
-			}
-		}
-
-		MouseArea
-		{
-			enabled: 					fileMenuModel.visible || darkeningBackgroundRect.visible
-			z:							1
+			//visible:					enabled
+			enabled: 					fileMenuModel.visible || modulesMenu.opened || customMenu.visible
+			z:							enabled ? 1 : -5
 			hoverEnabled:				true
 			onContainsMouseChanged:		if(containsMouse) ribbonModel.highlightedModuleIndex = -1
 			anchors.fill:				parent
@@ -179,11 +167,14 @@ Window
 
 			onPressed:
 			{
+				if(customMenu.visible)
+				{
+					customMenu.hide()
+					mouse.accepted = false;
+				}
 
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
-				
-				customMenu.hide()
 			}
 		}
 

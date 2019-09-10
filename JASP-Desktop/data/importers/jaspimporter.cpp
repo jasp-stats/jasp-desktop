@@ -51,22 +51,22 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &p
 
 	if (compatibility == JASPImporter::NotCompatible)	throw std::runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 	else if (compatibility == JASPImporter::Limited)	packageData->setWarningMessage("This file was created by a newer version of JASP and may not have complete functionality.");
+
 	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
-	JASPTIMER_RESUME(JASPImporter::loadDataSet loadDataArchive);
 	loadDataArchive(packageData, path, progressCallback);
-	JASPTIMER_STOP(JASPImporter::loadDataSet loadDataArchive);
-
-	JASPTIMER_RESUME(JASPImporter::loadDataSet loadJASPArchive);
 	loadJASPArchive(packageData, path, progressCallback);
-	JASPTIMER_STOP(JASPImporter::loadDataSet loadJASPArchive);
 }
 
 
 void JASPImporter::loadDataArchive(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->dataArchiveVersion().major == 1)
+	{
+		JASPTIMER_RESUME(JASPImporter::loadDataSet loadDataArchive);
 		loadDataArchive_1_00(packageData, path, progressCallback);
+		JASPTIMER_STOP(JASPImporter::loadDataSet loadDataArchive);
+	}
 	else
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
@@ -95,7 +95,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	Json::Value jsonFilterConstructor = metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON);
 	packageData->setFilterConstructorJson(jsonFilterConstructor.isObject() ? jsonFilterConstructor.toStyledString() : jsonFilterConstructor.asString());
-	
+
 	Json::Value &emptyValuesJson = metaData["emptyValues"];
 	if (emptyValuesJson.isNull())
 	{
@@ -335,6 +335,20 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue));
 
+	std::vector<bool> filterVector;
+	for(const Json::Value & filteredRow : dataSetDesc.get("filterVector", Json::arrayValue))
+		filterVector.push_back(filteredRow.asBool());
+	packageData->dataSet()->setFilterVector(filterVector);
+
+	//Filter should be run if filterVector was not filled and either of the filters was different from default.
+	bool filterShouldBeRun =
+			filterVector.size() == 0 &&
+			(	metaData.get("filterData",				DEFAULT_FILTER).asString()		!= DEFAULT_FILTER
+			||	metaData.get("filterConstructorJSON",	DEFAULT_FILTER_JSON).asString() != DEFAULT_FILTER_JSON	);
+
+	packageData->setFilterShouldRunInit(filterShouldBeRun);
+
+
 	//Take out for the time being
 	/*string entryName3 = "results.html";
 	FileReader dataEntry3 = FileReader(path, entryName3);
@@ -358,7 +372,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->archiveVersion().major >= 1 && packageData->archiveVersion().major <= 3) //2.x version have a different analyses.json structure but can be loaded using the 1_00 loader. 3.x adds computed columns
+	{
+		JASPTIMER_RESUME(JASPImporter::loadDataSet loadJASPArchive);
 		loadJASPArchive_1_00(packageData, path, progressCallback);
+		JASPTIMER_STOP(JASPImporter::loadDataSet loadJASPArchive);
+	}
 	else
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }

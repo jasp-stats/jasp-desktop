@@ -588,8 +588,9 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 {
 	setDataSetAndPackageInModels(package);
 
-	_labelFilterGenerator->regenerateFilter();
-	_filterModel->sendGeneratedAndRFilter();
+	//Already done in filterModel::setDatasetPackage:
+	//_labelFilterGenerator->regenerateFilter();
+	//_filterModel->sendGeneratedAndRFilter();
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged, hasNewColumns);
 }

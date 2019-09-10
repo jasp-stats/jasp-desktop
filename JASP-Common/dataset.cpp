@@ -28,6 +28,7 @@ void DataSet::setRowCount(size_t newRowCount)
 	{
 		_columns.setRowCount(newRowCount);
 
+		_filteredRowCount = newRowCount;
 		_filterVector.clear();
 		for(size_t i=0; i<newRowCount; i++)
 			_filterVector.push_back(true);
@@ -98,16 +99,20 @@ bool DataSet::setFilterVector(std::vector<bool> filterResult)
 {
 	bool changed = false;
 
-	_filteredRowCount = 0;
 
 	for(size_t i=0; i<filterResult.size(); i++)
 	{
 		if(_filterVector[i] != filterResult[i])
 			changed = true;
 
-		if((_filterVector[i] = filterResult[i])) //economy
-			_filteredRowCount++;
+		_filterVector[i] = filterResult[i];
 	}
+
+	_filteredRowCount = 0;
+
+	for(bool row : _filterVector)
+		if(row)
+			_filteredRowCount++;
 
 	return changed;
 }

@@ -38,6 +38,7 @@ void DataSetPackage::reset()
 	_dataFilter					= DEFAULT_FILTER;
 	_filterConstructorJSON		= DEFAULT_FILTER_JSON;
 	_computedColumns			= ComputedColumns(this);
+	_filterShouldRunInit		= false;
 
 	setModified(false);
 	resetEmptyValues();
