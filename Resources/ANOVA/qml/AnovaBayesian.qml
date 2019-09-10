@@ -198,8 +198,8 @@ Form
 		Group
 		{
 			title: qsTr("Prior")
-			DoubleField { name: "priorFixedEffects";	label: qsTr("r scale fixed effects");  defaultValue: 0.5; max: 2; decimals: 3 }
-			DoubleField { name: "priorRandomEffects";	label: qsTr("r scale random effects"); defaultValue: 1;   max: 2; decimals: 3 }
+			DoubleField { name: "priorFixedEffects";	label: qsTr("r scale fixed effects");  defaultValue: 0.5; max: 2; inclusive: "maxOnly"; decimals: 3 }
+			DoubleField { name: "priorRandomEffects";	label: qsTr("r scale random effects"); defaultValue: 1;   max: 2; inclusive: "maxOnly"; decimals: 3 }
 		}
 
         RadioButtonGroup

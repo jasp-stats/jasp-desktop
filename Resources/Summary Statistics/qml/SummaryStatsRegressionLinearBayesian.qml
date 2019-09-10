@@ -63,7 +63,7 @@ Form
         Group
 		{
             title: qsTr("Prior")
-			DoubleField { label: qsTr("r scale covariates"); defaultValue: 0.354 ; name: "priorWidth" ; fieldWidth: 80; max: 2; decimals: 3 }
+			DoubleField { label: qsTr("r scale covariates"); defaultValue: 0.354 ; name: "priorWidth" ; fieldWidth: 80; max: 2; inclusive: "maxOnly"; decimals: 3 }
         }
     }
 }
