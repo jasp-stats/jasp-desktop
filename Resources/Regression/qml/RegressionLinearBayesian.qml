@@ -232,7 +232,7 @@ Form {
 				{
 					value: "Bernoulli"; label: qsTr("Bernouilli")
 					childrenOnSameRow: true
-					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; decimals: 2 }
+					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; inclusive: "no"; decimals: 3 }
 				}
 				RadioButton { value: "uniform"; label: qsTr("Uniform") }
 			}
