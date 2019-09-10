@@ -35,43 +35,51 @@
   return(dataset)
 }
 
-.errorHandlingClassificationAnalyses <- function(dataset, options){
+.errorHandlingClassificationAnalyses <- function(dataset, options, type){
   predictors                <- unlist(options['predictors'])
   predictors                <- predictors[predictors != ""]
   target                    <- NULL
   if(options[["target"]] != "")
     target                  <- options[["target"]]
   variables.to.read         <- c(predictors, target)
+
+  checkNearestNeighbors <- function( ){
+    if(type == "knn"){
+      # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
+      nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
+      if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
+        nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
+      } else {
+        nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
+      }
+      if(options[["modelOpt"]] == "optimizationError"){
+        if(options[["modelValid"]] == "validationManual")
+          nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
+        if(options[["modelValid"]] == "validationKFold")
+          nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
+        if(options[["modelValid"]] == "validationLeaveOneOut")
+          nTrain <- nTrain - 1
+      }
+      if(nn >= nTrain)
+        return(paste0("You have specified more nearest neighbors than observations in the training set. Please choose a number lower than ", nTrain, "."))
+    }
+  }
+
   errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
-                       all.target = variables.to.read,
+                       all.target = variables.to.read, custom = checkNearestNeighbors,
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
-  dataset <- na.omit(dataset)
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2){
     JASP:::.quitAnalysis("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set).")
   }
 }
 
-.classificationAnalysesReady <- function(dataset, options, type){
+.classificationAnalysesReady <- function(options, type){
   if(type == "lda" || type == "randomForest" || type == "boosting"){
     ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 2 && options[["target"]] != ""
   } else if(type == "knn"){
     ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 1 && options[["target"]] != ""
-    # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
-    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
-    if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
-      nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
-    } else {
-      nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
-    }
-    if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual"){
-      nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
-    } else if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationKFold"){
-      nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
-    }
-    if(nn >= nTrain)
-      ready <- FALSE # Too many nearest neighbors
   }
   return(ready)
 }
@@ -165,28 +173,10 @@
     classificationTable$addColumnInfo(name = 'oob', title = 'OOB Accuracy', type = 'number')
   }
 
-  # If no analysis is cannot be run, specify why in the footnore
-  if(type == "knn"){
-    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
-    if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
-      nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
-    } else {
-      nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
-    }
-    if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual"){
-      nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
-    } else if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationKFold"){
-      nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
-    }
-    tooMuch <- (nn >= nTrain) # Too many nearest neighbors
-    if(!ready && tooMuch)
-      classificationTable$addFootnote(message = "You have specified more nearest neighbors than distinct data points in the training set.", symbol="<b>Warning.</b>")
-    if(!ready && !tooMuch)
-      classificationTable$addFootnote(message = "Please provide a target variable and at least 1 predictor variable.", symbol = "<i>Note.</i>")
-  } else {
-    if(!ready)
-      classificationTable$addFootnote(message = "Please provide a target variable and at least 2 predictor variables.", symbol = "<i>Note.</i>")
-  }
+# If no analysis is run, specify the required variables in a footnote
+  requiredVars <- ifelse(type == "knn", yes = 1, no = 2)
+  if(!ready)
+    classificationTable$addFootnote(message = paste0("Please provide a target variable and at least ", requiredVars, " predictor variable(s)."), symbol = "<i>Note.</i>")
 
   jaspResults[["classificationTable"]] <- classificationTable
   

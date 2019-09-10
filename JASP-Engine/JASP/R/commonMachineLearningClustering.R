@@ -27,22 +27,26 @@
   return(dataset)
 }
 
-.errorHandlingClusteringAnalyses <- function(dataset, options){
+.errorHandlingClusteringAnalyses <- function(dataset, options, type){
   predictors <- unlist(options$predictors)
 
+  checkClusters <- function() {
+    if (type != "densitybased") {
+      clusters  <- base::switch(options[["modelOpt"]], "validationManual" = options[["noOfClusters"]], "validationOptimized" = options[["maxClusters"]])
+      if (clusters > (nrow(dataset) - 1))
+        return(paste0("You have specified more clusters than distinct data points. Please choose a number lower than ", nrow(dataset), "."))
+    }
+  }
+
   if(length(predictors[predictors != ""]) > 0L)
-    .hasErrors(dataset, type = c('infinity', 'observations'), all.target = predictors,
+    .hasErrors(dataset, type = c('infinity', 'observations'), custom=checkClusters, all.target = predictors,
                observations.amount = "< 2", exitAnalysisIfErrors = TRUE)
+
   return()
 }
 
-.clusterAnalysesReady <- function(dataset, options, checkForClusters = TRUE){
+.clusterAnalysesReady <- function(options){
   ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 2
-  if(!is.null(dataset) && checkForClusters){
-    clusters <- base::switch(options[["modelOpt"]], "validationManual" = options[["noOfClusters"]], "validationOptimized" = options[["maxClusters"]])
-    if(clusters > (nrow(dataset) - 1))
-      ready <- FALSE
-  }
   return(ready)
 }
 

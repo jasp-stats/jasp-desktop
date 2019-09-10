@@ -19,10 +19,10 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
   dataset <- .readDataClassificationAnalyses(dataset, options)
-  .errorHandlingClassificationAnalyses(dataset, options)
+  .errorHandlingClassificationAnalyses(dataset, options, type = "randomForest")
   
   # Check if analysis is ready to run
-  ready <- .classificationAnalysesReady(dataset, options, type = "randomForest")
+  ready <- .classificationAnalysesReady(options, type = "randomForest")
 
   # Compute results and create the model summary table
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "randomForest")
