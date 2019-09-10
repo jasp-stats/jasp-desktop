@@ -293,8 +293,10 @@
 
   regressionResult <- jaspResults[["regressionResult"]]$object
 
-  obs <- regressionResult[["testReal"]]
-  pred <- regressionResult[["testPred"]]
+  predDat <- data.frame(obs = regressionResult[["testReal"]], pred = regressionResult[["testPred"]])
+  predDat <- predDat[complete.cases(predDat), ]
+  obs <- predDat[["obs"]]
+  pred <- predDat[["pred"]]
 
   mse <- round(regressionResult[["testMSE"]], 3)
   rmse <- round(sqrt(mse), 3)
@@ -305,6 +307,9 @@
   values <- c(mse, rmse, mae, mape, r_squared)
 
   validationMeasures[["values"]] <- values
+
+  if(is.na(r_squared))
+    validationMeasures$addFootnote(message="R\u00B2 cannot be computed due to lack of variance in the predictions.</i>", symbol="<i>Note.</i>")
   
 }
 

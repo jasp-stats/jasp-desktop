@@ -22,7 +22,7 @@ mlClusteringRandomForest <- function(jaspResults, dataset, options, ...) {
   .errorHandlingClusteringAnalyses(dataset, options)
 
   # Check if analysis is ready to run
-  ready  <- .clusterAnalysesReady(options)
+  ready  <- .clusterAnalysesReady(dataset, options, checkForClusters = TRUE)
 
   # Compute results and create the model summary table
   .clusteringTable(dataset, options, jaspResults, ready, position = 1, type = "randomForest")

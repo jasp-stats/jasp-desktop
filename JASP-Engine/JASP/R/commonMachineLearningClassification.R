@@ -873,7 +873,7 @@
     typeData <- cbind(train, levelVar = factor(levelVar))
     typeData <- typeData[, -which(colnames(typeData) == .v(options[["target"]]))]
     
-    score <- .calcAUCScore(AUCformula, test, typeData, levelVar, options, ...)
+    score <- .calcAUCScore(AUCformula, train, test, typeData, levelVar, options, ...)
     
     actual.class <- test[,.v(options[["target"]])] == lvls[i]
     
@@ -892,13 +892,13 @@
   UseMethod(".calcAUCScore", x)
 }
 
-.calcAUCScore.ldaClassification <- function(AUCformula, test, typeData, LDAmethod, ...) {
+.calcAUCScore.ldaClassification <- function(AUCformula, train, test, typeData, LDAmethod, ...) {
   ldafit_auc <- MASS::lda(formula = AUCformula, data = typeData, method = LDAmethod, CV = FALSE)
   score <- predict(ldafit_auc, test, type = "prob")$posterior[, 'TRUE']
   return(score)
 }
 
-.calcAUCScore.boostingClassification <- function(AUCformula, test, typeData, levelVar, options, noOfFolds, noOfTrees, ...) {
+.calcAUCScore.boostingClassification <- function(AUCformula, train, test, typeData, levelVar, options, noOfFolds, noOfTrees, ...) {
   levelVar <- as.numeric(levelVar)
   typeData$levelVar <- levelVar
   bfitAUC <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
@@ -909,16 +909,16 @@
   return(score)
 }
 
-.calcAUCScore.knnClassification <- function(AUCformula, test, typeData, nn, distance, weights, ...) {
+.calcAUCScore.knnClassification <- function(AUCformula, train, test, typeData, nn, distance, weights, ...) {
   kfit_auc <- kknn::kknn(formula = AUCformula, train = typeData, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
   score <- predict(kfit_auc, test, type = 'prob')[, 'TRUE']
   return(score)
 }
 
-.calcAUCScore.randomForestClassification <- function(AUCformula, test, typeData, levelVar, options, dataset, noOfTrees, noOfPredictors, ...) {
+.calcAUCScore.randomForestClassification <- function(AUCformula, train, test, typeData, levelVar, options, dataset, noOfTrees, noOfPredictors, ...) {
   typeData <- typeData[, -which(colnames(typeData) == "levelVar")]
   rfit_auc <- randomForest::randomForest(x = typeData, y = factor(levelVar), ntree = noOfTrees, mtry = noOfPredictors,
-                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)), importance = TRUE, keep.forest = TRUE)
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(train)), importance = TRUE, keep.forest = TRUE)
   score <- predict(rfit_auc, test, type = "prob")[, 'TRUE']
   return(score)
 }

@@ -99,7 +99,7 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
 
     rfit_test <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = test_predictors, ytest = test_target,
                                             ntree = options[["noOfTrees"]], mtry = noOfPredictors,
-                                            sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                            sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                             importance = TRUE, keep.forest = TRUE)
     noOfTrees <- options[["noOfTrees"]]
     
@@ -119,14 +119,14 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
 
     rfit_valid <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = valid_predictors, ytest = valid_target,
                                         ntree = options[["maxTrees"]], mtry = noOfPredictors,
-                                        sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                        sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                         importance = TRUE, keep.forest = TRUE)
     oobAccuracy <- 1 - rfit_valid$err.rate[, 1]
     optimTrees <- which.max(oobAccuracy)
 
     rfit_test <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = test_predictors, ytest = test_target,
                                             ntree = optimTrees, mtry = noOfPredictors,
-                                            sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                            sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                             importance = TRUE, keep.forest = TRUE)
 
     noOfTrees <- optimTrees
@@ -136,7 +136,7 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
   # Train a model on the training data
   rfit_train <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = train_predictors, ytest = train_target,
                                     ntree = noOfTrees, mtry = noOfPredictors,
-                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                     importance = TRUE, keep.forest = TRUE)
 
   # Calculate AUC
