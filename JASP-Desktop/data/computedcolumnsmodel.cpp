@@ -266,13 +266,20 @@ void ComputedColumnsModel::clearColumn(std::string columnName)
 
 }
 
+///Called from datatype changed
 void ComputedColumnsModel::recomputeColumn(std::string columnName)
 {
-	clearColumn(columnName);
-	_computedColumns->findAllColumnNames();
+
 	try
 	{
 		ComputedColumn * col = &((*_computedColumns)[columnName]);
+
+		if(col->codeType() == ComputedColumn::computedType::analysis || col->codeType() == ComputedColumn::computedType::analysisNotComputed)
+			return;
+
+		clearColumn(columnName);
+		_computedColumns->findAllColumnNames();
+
 		col->findDependencies();
 	}
 	catch(columnNotFound e){}

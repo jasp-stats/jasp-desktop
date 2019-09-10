@@ -62,31 +62,35 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	RInside &rInside = rinside->instance();
 
+	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
+	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
+	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
+	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
+	dataSetColumnAsNominal					= callbacks->dataSetColumnAsNominal;
+	dataSetColumnAsOrdinal					= callbacks->dataSetColumnAsOrdinal;
+	requestTempRootNameCB					= callbacks->requestTempRootNameCB;
+	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
+	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
+	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
+	dataSetGetColumnType					= callbacks->dataSetGetColumnType;
+	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
+	readFullDataSetCB						= callbacks->readFullDataSetCB;
+	dataSetRowCount							= callbacks->dataSetRowCount;
 	runCallbackCB							= callbacks->runCallbackCB;
 	readDataSetCB							= callbacks->readDataSetCB;
-	dataSetRowCount							= callbacks->dataSetRowCount;
-	readFullDataSetCB						= callbacks->readFullDataSetCB;
-	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
-	dataSetGetColumnType					= callbacks->dataSetGetColumnType;
-	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
-	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
-	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
-	requestTempRootNameCB					= callbacks->requestTempRootNameCB;
-	dataSetColumnAsOrdinal					= callbacks->dataSetColumnAsOrdinal;
-	dataSetColumnAsNominal					= callbacks->dataSetColumnAsNominal;
-	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
-	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
-	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
-	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
 
 	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
 	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
+	rInside[".columnIsScale"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsScale);
 	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
 	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
+	rInside[".columnIsOrdinal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
+	rInside[".columnIsNominal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
+	rInside[".columnIsNominalText"]			= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
 	rInside[".setColumnDataAsScale"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rInside[".setColumnDataAsOrdinal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
@@ -519,6 +523,11 @@ ColumnType jaspRCPP_getColumnType(std::string columnName)
 {
 	return ColumnType(dataSetGetColumnType(columnName.c_str()));
 }
+
+bool jaspRCPP_columnIsScale(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeScale;			}
+bool jaspRCPP_columnIsOrdinal(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeOrdinal;		}
+bool jaspRCPP_columnIsNominal(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeNominal;		}
+bool jaspRCPP_columnIsNominalText(	std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeNominalText;	}
 
 bool jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::RObject scalarData)
 {

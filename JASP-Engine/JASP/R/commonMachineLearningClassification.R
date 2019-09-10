@@ -855,7 +855,12 @@
     jaspResults[["classColumn"]]$dependOn(options = c("classColumn", "noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt",
                                                             "target", "predictors", "seed", "seedBox", "modelValid", "maxK", "noOfFolds", "modelValid", "holdoutData", "testDataManual",
                                                             "estimationMethod", "shrinkage", "intDepth", "nNode", "validationDataManual", "testSetIndicatorVariable", "testSetIndicator"))
-    jaspResults[["classColumn"]]$setNominal(classColumn)
+
+    #make sure to create to classification column with the same type as the target!
+    if(.columnIsScale(options$target))       jaspResults[["classColumn"]]$setScale(classColumn)
+    if(.columnIsOrdinal(options$target))     jaspResults[["classColumn"]]$setOrdinal(classColumn)
+    if(.columnIsNominal(options$target))     jaspResults[["classColumn"]]$setNominal(classColumn)
+    if(.columnIsNominalText(options$target)) jaspResults[["classColumn"]]$setNominalText(classColumn)
   }  
 }
 
