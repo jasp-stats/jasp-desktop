@@ -34,10 +34,10 @@ This function allows you to compute Bayes factor corresponding to a one sample t
     - *Normal*: Mean and Standard deviation
     - *Student's t*: Scale, Location and Degrees of freedom (df)
 
-- **Raw effect size (Dienes)**
-  - *Half-Normal*: Standard deviation
-  - *Normal*: Mean and Standard deviation
-  - *Uniform*: Lower and Upper bounds
+[comment]: # (- **Raw effect size (Dienes)**)
+[comment]: # ( - *Half-Normal*: Standard deviation)
+[comment]: # (  - *Normal*: Mean and Standard deviation)
+[comment]: # (  - *Uniform*: Lower and Upper bounds)
 
 
 ### Output

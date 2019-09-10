@@ -35,11 +35,10 @@ Test value specified in the null hypothesis.
     - Normal: Mean and standard deviation.
     - Student's t: Scale, location and degrees of freedom (df).
 
-- Raw effect size (Dienes)
-  - Half-Normal: Standard deviation.
-  - Normal: Mean and standard deviation.
-  - Uniform: Lower and upper bounds.
-
+[comment]: # (- Raw effect size (Dienes))
+[comment]: # (  - Half-Normal: Standard deviation.)
+[comment]: # (  - Normal: Mean and standard deviation.)
+[comment]: # (  - Uniform: Lower and upper bounds.)
 
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, and standard error of the mean.
