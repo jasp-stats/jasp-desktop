@@ -39,7 +39,8 @@ PlotRobustnessSequential <- function(
   bfType = c("BF01", "BF10", "LogBF10"),
   hypothesis = c("equal", "smaller", "greater"),
   pointColors  = c("red", "grey", "black", "white"),
-  lineColors = c("black", "grey", "black"), lineTypes = c("dotted", "solid", "solid"),
+  lineColors = c("black", "grey", "black"), #lineTypes = c("dotted", "solid", "solid"),
+  lineTypes = c("solid", "solid", "dotted"),
   addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5),
   plotLineOrPoint = c("line", "point"),
   pointShape = rep(21, 3),
@@ -107,10 +108,14 @@ PlotRobustnessSequential <- function(
     to <- ceiling(yRange[2L])
     # rounding + unique avoids fractional breaks which aren't nicely displayed
     yBreaksL <- unique(as.integer(getPrettyAxisBreaks(x = c(from, to))))
+    step <- yBreaksL[2L] - yBreaksL[1L]
+    # add additional breaks to avoid overlap if there are arrows
+    if (addEvidenceArrowText)
+      yBreaksL <- c(yBreaksL[1L] - step, yBreaksL, yBreaksL[length(yBreaksL)] + step)
     if (yBreaksL[1L] == 0)
-      yBreaksL <- c(-1, yBreaksL)
+      yBreaksL <- c(-step, yBreaksL)
     if (yBreaksL[length(yBreaksL)] == 0)
-      yBreaksL <- c(yBreaksL, 1)
+      yBreaksL <- c(yBreaksL, step)
 
     if (max(abs(yBreaksL)) < 6L) { # below 1 000 000
       # show 1 / 100, 1 / 10, ..., 10 , 100, ..., 100 000

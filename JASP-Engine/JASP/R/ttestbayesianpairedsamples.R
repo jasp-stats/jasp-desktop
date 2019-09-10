@@ -87,6 +87,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
           ttestResults[["tValue"]][var]   <- r[["tValue"]]
 
           if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
+            error <- NaN
             ttestTable$addFootnote(
               message = "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.",
               symbol = "", rowNames = var, colNames = "error")

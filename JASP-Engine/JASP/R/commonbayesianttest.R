@@ -1094,29 +1094,14 @@
 
 	pd <- ggplot2::position_dodge(.2)
 
-	p <-	ggplot2::ggplot(summaryStat, mapping = mapping) +
+	p <-	JASPgraphs::themeJasp(ggplot2::ggplot(summaryStat, mapping = mapping) +
 			ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
 			ggplot2::geom_line(position=pd, size = .7) +
 			ggplot2::geom_point(position=pd, size=4) +
-			xlab + ylab +
-			ggplot2::theme_bw() +
-			ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-				panel.grid.major=ggplot2::element_blank(),
-				axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-				axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-				panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-				plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-				legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-				panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-				legend.key = ggplot2::element_blank(),
-				legend.title = ggplot2::element_text(size=12),
-				legend.text = ggplot2::element_text(size = 12),
-				axis.ticks = ggplot2::element_line(size = 0.5),
-				# axis.ticks.margin = grid::unit(1,"mm"),
-				axis.ticks.length = grid::unit(3, "mm"),
-				plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				.base_breaks_y2(summaryStat, testValueOpt) +
-				.base_breaks_x(summaryStat$groupingVariable)
+			xlab + ylab) + 
+	    JASPgraphs::themeJaspRaw() +
+			.base_breaks_y2(summaryStat, testValueOpt) +
+			.base_breaks_x(summaryStat$groupingVariable)
 
 	if (!is.null(testValueOpt))
 		p <- p + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept=testValue), linetype="dashed")

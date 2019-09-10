@@ -1,8 +1,8 @@
 Package: JASPgraphs
 Type: Package
 Title: Custom graphs for JASP
-Version: 0.3.6
-Author: Don vd Bergh
+Version: 0.3.7
+Author: Don van den Bergh
 Maintainer: JASP-team <info@jasp-stats.nl>
 Description: ...
 License: GPL
