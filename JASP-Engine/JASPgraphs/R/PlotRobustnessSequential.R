@@ -39,7 +39,7 @@ PlotRobustnessSequential <- function(
   bfType = c("BF01", "BF10", "LogBF10"),
   hypothesis = c("equal", "smaller", "greater"),
   pointColors  = c("red", "grey", "black", "white"),
-  lineColors = c("black", "grey", "black"), #lineTypes = c("dotted", "solid", "solid"),
+  lineColors = c("black", "grey", "black"),
   lineTypes = c("solid", "solid", "dotted"),
   addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5),
   plotLineOrPoint = c("line", "point"),
