@@ -1115,7 +1115,7 @@
 				# axis.ticks.margin = grid::unit(1,"mm"),
 				axis.ticks.length = grid::unit(3, "mm"),
 				plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				.base_breaks_y4(summaryStat, testValueOpt) +
+				.base_breaks_y2(summaryStat, testValueOpt) +
 				.base_breaks_x(summaryStat$groupingVariable)
 
 	if (!is.null(testValueOpt))
@@ -1123,16 +1123,6 @@
 
 	return(p)
 
-}
-
-.base_breaks_y4 <- function(x, testValue) {
-
-  values <- c(testValue, x$ciLower, x$ciUpper)
-  ci.pos <- c(min(values), max(values))
-  b <- pretty(ci.pos)
-  d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-  list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-       ggplot2::scale_y_continuous(breaks=c(min(b), testValue, max(b))))
 }
 
 .base_breaks_x <- function(x) {

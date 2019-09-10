@@ -2294,7 +2294,7 @@
 			ggplot2::geom_point(position=pd, size=4) +
 			ggplot2::ylab(dependentName) +
 			ggplot2::xlab(groupingName) +
-			.base_breaks_y3(summaryStat) +
+			.base_breaks_y2(summaryStat, NULL) +
 			.base_breaks_x(summaryStat$groupingVariable)
 
 	p <- JASPgraphs::themeJasp(p)
