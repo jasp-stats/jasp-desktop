@@ -19,7 +19,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
 
   # Preparatory work
   dataset <- .readDataClusteringAnalyses(dataset, options)
-  .errorHandlingClusteringAnalyses(dataset, options)
+  .errorHandlingClusteringAnalyses(dataset, options, type = "densitybased")
   
   # Check if analysis is ready to run
   ready  <- .clusterAnalysesReady(options)
@@ -163,7 +163,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
         ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = range(xBreaks)) + 
         ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks)) +
         ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
-        ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= "Maximum curvature", x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred") +
+        ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= paste0("Maximum curvature = ", round(yend, 2), ""), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred") +
         ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
         JASPgraphs::geom_line()
   p <- JASPgraphs::themeJasp(p)

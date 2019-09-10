@@ -19,7 +19,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
   dataset <- .readDataClassificationAnalyses(dataset, options)
-  .errorHandlingClassificationAnalyses(dataset, options)
+  .errorHandlingClassificationAnalyses(dataset, options, type = "lda")
   
   # Check if analysis is ready to run
   ready <- .classificationAnalysesReady(options, type = "lda")

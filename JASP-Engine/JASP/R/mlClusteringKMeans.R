@@ -19,7 +19,7 @@ mlClusteringKMeans <- function(jaspResults, dataset, options, ...) {
     
   # Preparatory work
   dataset <- .readDataClusteringAnalyses(dataset, options)
-  .errorHandlingClusteringAnalyses(dataset, options)
+  .errorHandlingClusteringAnalyses(dataset, options, type = "kmeans")
   
   # Check if analysis is ready to run
   ready  <- .clusterAnalysesReady(options)

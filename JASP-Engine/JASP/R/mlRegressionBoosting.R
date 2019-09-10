@@ -19,7 +19,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
 	# Preparatory work
 	dataset <- .readDataRegressionAnalyses(dataset, options)
-	.errorHandlingRegressionAnalyses(dataset, options)
+	.errorHandlingRegressionAnalyses(dataset, options, type = "boosting")
 
 	# Check if analysis is ready to run
 	ready <- .regressionAnalysesReady(options, type = "boosting")

@@ -19,7 +19,7 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   
   # Preparatory work
   dataset <- .readDataClusteringAnalyses(dataset, options)
-  .errorHandlingClusteringAnalyses(dataset, options)
+  .errorHandlingClusteringAnalyses(dataset, options, type = "hierarchical")
   
   # Check if analysis is ready to run
   ready  <- .clusterAnalysesReady(options)

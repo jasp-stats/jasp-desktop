@@ -19,7 +19,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
 	# Preparatory work
 	dataset <- .readDataRegressionAnalyses(dataset, options)
-	.errorHandlingRegressionAnalyses(dataset, options)
+	.errorHandlingRegressionAnalyses(dataset, options, type = "knn")
 	
 	# Check if analysis is ready to run
 	ready <- .regressionAnalysesReady(options, type = "knn")		

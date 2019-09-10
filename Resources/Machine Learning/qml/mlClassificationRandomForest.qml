@@ -143,6 +143,8 @@ Form {
                 name: "bagFrac"       
                 text: qsTr("Training data used per tree:")
                 defaultValue: 50 
+                min: 5
+                max: 95
             }
             
             RowLayout {

@@ -19,7 +19,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   
 	# Preparatory work
 	dataset <- .readDataRegressionAnalyses(dataset, options)
-	.errorHandlingRegressionAnalyses(dataset, options)
+	.errorHandlingRegressionAnalyses(dataset, options, type = "randomForest")
 	
 	# Check if analysis is ready to run
 	ready <- .regressionAnalysesReady(options, type = "randomForest")
@@ -87,7 +87,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
     rfit_test <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = test_predictors, ytest = test_target,
                                             ntree = options[["noOfTrees"]], mtry = noOfPredictors,
-                                            sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                            sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                             importance = TRUE, keep.forest = TRUE)
     noOfTrees <- options[["noOfTrees"]]
 
@@ -107,14 +107,14 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
     rfit_valid <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = valid_predictors, ytest = valid_target,
                                     ntree = options[["maxTrees"]], mtry = noOfPredictors,
-                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                     importance = TRUE, keep.forest = TRUE)
     oobError <- rfit_valid$mse
     optimTrees <- which.min(oobError)[length(which.min(oobError))]
 
     rfit_test <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = test_predictors, ytest = test_target,
                                             ntree = optimTrees, mtry = noOfPredictors,
-                                            sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                            sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                             importance = TRUE, keep.forest = TRUE)
 
     noOfTrees <- optimTrees
@@ -123,7 +123,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   # Train a model on the training data
   rfit_train <- randomForest::randomForest(x = train_predictors, y = train_target, xtest = train_predictors, ytest = train_target,
                                     ntree = noOfTrees, mtry = noOfPredictors,
-                                    sampsize = ceiling(options[["bagFrac"]]*nrow(dataset)),
+                                    sampsize = ceiling(options[["bagFrac"]]*nrow(train)),
                                     importance = TRUE, keep.forest = TRUE)
   
   # Use the specified model to make predictions for dataset
