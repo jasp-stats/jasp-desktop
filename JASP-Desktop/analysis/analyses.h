@@ -123,6 +123,7 @@ public slots:
 	void refreshAvailableVariables();
 	void setCurrentFormPrevH(double currentFormPrevH);
 	void move(int fromIndex, int toIndex);
+	void duplicateAnalysis(size_t id);
 
 signals:
 	void analysesUnselected();

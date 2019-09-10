@@ -70,6 +70,33 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	bindOptionHandlers();
 }
 
+Analysis::Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe)
+	: QObject(			analyses					)
+	, _status(			duplicateMe->_status		)
+	, _options(			static_cast<Options*>(duplicateMe->_options->clone()))
+	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
+	, _results(			duplicateMe->_results		)
+	, _imgResults(		duplicateMe->_imgResults	)
+	, _userData(		duplicateMe->_userData		)
+	, _saveImgOptions(	duplicateMe->_saveImgOptions)
+	, _progress(		duplicateMe->_progress		)
+	, _id(				id							)
+	, _module(			duplicateMe->_module		)
+	, _name(			duplicateMe->_name			)
+	, _titleDefault(	duplicateMe->_titleDefault	)
+	, _title("Copy of "+duplicateMe->_title			)
+	, _rfile(			duplicateMe->_rfile			)
+	, _useJaspResults(	duplicateMe->_useJaspResults)
+	, _version(			duplicateMe->_version		)
+	, _moduleData(		duplicateMe->_moduleData	)
+	, _dynamicModule(	duplicateMe->_dynamicModule	)
+	, _analyses(						analyses	)
+	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry)
+	, _helpFile(						duplicateMe->_helpFile)
+{
+	bindOptionHandlers();
+}
+
 Analysis::~Analysis()
 {
 	const auto & cols = columnsCreated();
@@ -400,6 +427,12 @@ void Analysis::setTitleQ(QString title)
 	emit titleChanged();
 }
 
+void Analysis::emitDuplicationSignals()
+{
+	emit resultsChangedSignal(this);
+	emit titleChanged();
+}
+
 void Analysis::refreshAvailableVariablesModels()
 {
 	if(form() != nullptr)
@@ -410,4 +443,9 @@ QString	Analysis::fullHelpPath(QString helpFileName)
 {
 	if(isDynamicModule())	return dynamicModule()->helpFolderPath() + helpFileName;
 	else					return "analyses/" + helpFileName;
+}
+
+void Analysis::duplicateMe()
+{
+	_analyses->duplicateAnalysis(_id);
 }
