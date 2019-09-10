@@ -22,7 +22,7 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   .errorHandlingClassificationAnalyses(dataset, options)
   
   # Check if analysis is ready to run
-  ready <- .classificationAnalysesReady(options, type = "boosting")
+  ready <- .classificationAnalysesReady(dataset, options, type = "boosting")
 
   # Compute results and create the model summary table
   .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")

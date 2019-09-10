@@ -22,7 +22,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
-	ready <- .regressionAnalysesReady(options, type = "knn")		
+	ready <- .regressionAnalysesReady(dataset, options, type = "knn")		
 
 	# Compute results and create the model summary table
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "knn")

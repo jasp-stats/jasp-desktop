@@ -53,11 +53,25 @@
   }
 }
 
-.classificationAnalysesReady <- function(options, type){
+.classificationAnalysesReady <- function(dataset, options, type){
   if(type == "lda" || type == "randomForest" || type == "boosting"){
     ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 2 && options[["target"]] != ""
   } else if(type == "knn"){
     ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 1 && options[["target"]] != ""
+    # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
+    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
+    if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
+      nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
+    } else {
+      nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
+    }
+    if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual"){
+      nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
+    } else if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationKFold"){
+      nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
+    }
+    if(nn >= nTrain)
+      ready <- FALSE # Too many nearest neighbors
   }
   return(ready)
 }
@@ -151,10 +165,28 @@
     classificationTable$addColumnInfo(name = 'oob', title = 'OOB Accuracy', type = 'number')
   }
 
-  # If no analysis is run, specify the required variables in a footnote
-  requiredVars <- ifelse(type == "knn", yes = 1, no = 2)
-  if(!ready)
-    classificationTable$addFootnote(message = paste0("Please provide a target variable and at least ", requiredVars, " predictor variable(s)."), symbol = "<i>Note.</i>")
+  # If no analysis is cannot be run, specify why in the footnore
+  if(type == "knn"){
+    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
+    if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
+      nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
+    } else {
+      nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
+    }
+    if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual"){
+      nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
+    } else if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationKFold"){
+      nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
+    }
+    tooMuch <- (nn >= nTrain) # Too many nearest neighbors
+    if(!ready && tooMuch)
+      classificationTable$addFootnote(message = "You have specified more nearest neighbors than distinct data points in the training set.", symbol="<b>Warning.</b>")
+    if(!ready && !tooMuch)
+      classificationTable$addFootnote(message = "Please provide a target variable and at least 1 predictor variable.", symbol = "<i>Note.</i>")
+  } else {
+    if(!ready)
+      classificationTable$addFootnote(message = "Please provide a target variable and at least 2 predictor variables.", symbol = "<i>Note.</i>")
+  }
 
   jaspResults[["classificationTable"]] <- classificationTable
   
@@ -335,7 +367,7 @@
   l <- length(variables)
 
   if(l < 2){ # Need at least 2 numeric variables to create a matrix
-    decisionBoundary$setError("Cannot create matrix: not enough numeric variables remain after removing factor variables.")
+    decisionBoundary$setError("Cannot create matrix: not enough numeric variables remain after removing factor variables. You need at least 2 numeric variables.")
     return()
   }
 
@@ -873,7 +905,7 @@
     typeData <- cbind(train, levelVar = factor(levelVar))
     typeData <- typeData[, -which(colnames(typeData) == .v(options[["target"]]))]
     
-    score <- .calcAUCScore(AUCformula, train, test, typeData, levelVar, options, ...)
+    score <- .calcAUCScore(AUCformula, train = train, test = test, typeData = typeData, levelVar = levelVar, options = options, ...)
     
     actual.class <- test[,.v(options[["target"]])] == lvls[i]
     
@@ -892,13 +924,13 @@
   UseMethod(".calcAUCScore", x)
 }
 
-.calcAUCScore.ldaClassification <- function(AUCformula, train, test, typeData, LDAmethod, ...) {
+.calcAUCScore.ldaClassification <- function(AUCformula, test, typeData, LDAmethod, ...) {
   ldafit_auc <- MASS::lda(formula = AUCformula, data = typeData, method = LDAmethod, CV = FALSE)
   score <- predict(ldafit_auc, test, type = "prob")$posterior[, 'TRUE']
   return(score)
 }
 
-.calcAUCScore.boostingClassification <- function(AUCformula, train, test, typeData, levelVar, options, noOfFolds, noOfTrees, ...) {
+.calcAUCScore.boostingClassification <- function(AUCformula, test, typeData, levelVar, options, noOfFolds, noOfTrees, ...) {
   levelVar <- as.numeric(levelVar)
   typeData$levelVar <- levelVar
   bfitAUC <- gbm::gbm(formula = AUCformula, data = typeData, n.trees = noOfTrees,
@@ -909,13 +941,13 @@
   return(score)
 }
 
-.calcAUCScore.knnClassification <- function(AUCformula, train, test, typeData, nn, distance, weights, ...) {
+.calcAUCScore.knnClassification <- function(AUCformula, test, typeData, nn, distance, weights, ...) {
   kfit_auc <- kknn::kknn(formula = AUCformula, train = typeData, test = test, k = nn, distance = distance, kernel = weights, scale = FALSE)
   score <- predict(kfit_auc, test, type = 'prob')[, 'TRUE']
   return(score)
 }
 
-.calcAUCScore.randomForestClassification <- function(AUCformula, train, test, typeData, levelVar, options, dataset, noOfTrees, noOfPredictors, ...) {
+.calcAUCScore.randomForestClassification <- function(AUCformula, train, test, typeData, levelVar, options, noOfTrees, noOfPredictors, ...) {
   typeData <- typeData[, -which(colnames(typeData) == "levelVar")]
   rfit_auc <- randomForest::randomForest(x = typeData, y = factor(levelVar), ntree = noOfTrees, mtry = noOfPredictors,
                                     sampsize = ceiling(options[["bagFrac"]]*nrow(train)), importance = TRUE, keep.forest = TRUE)

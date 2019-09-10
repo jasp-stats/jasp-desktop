@@ -22,7 +22,7 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
     .errorHandlingClassificationAnalyses(dataset, options)
     
     # Check if analysis is ready to run
-    ready <- .classificationAnalysesReady(options, type = "knn")
+    ready <- .classificationAnalysesReady(dataset, options, type = "knn")
     
     # Compute results and create the model summary table
     .classificationTable(dataset, options, jaspResults, ready, position = 1, type = "knn")

@@ -22,7 +22,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 	.errorHandlingRegressionAnalyses(dataset, options)
 
 	# Check if analysis is ready to run
-	ready <- .regressionAnalysesReady(options, type = "boosting")
+	ready <- .regressionAnalysesReady(dataset, options, type = "boosting")
 
   # Compute results and create the model summary table
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "boosting")

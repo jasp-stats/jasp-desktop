@@ -22,7 +22,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 	.errorHandlingRegressionAnalyses(dataset, options)
 	
 	# Check if analysis is ready to run
-	ready <- .regressionAnalysesReady(options, type = "randomForest")
+	ready <- .regressionAnalysesReady(dataset, options, type = "randomForest")
 
   # Compute results and create the model summary table
 	.regressionMachineLearningTable(dataset, options, jaspResults, ready, position = 1, type = "randomForest")

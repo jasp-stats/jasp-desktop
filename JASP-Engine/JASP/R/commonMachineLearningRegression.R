@@ -59,11 +59,25 @@
   }
 }
 
-.regressionAnalysesReady <- function(options, type){
+.regressionAnalysesReady <- function(dataset, options, type){
   if(type == "randomForest" || type == "boosting" || type == "regularized"){
     ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 2 && options[["target"]] != ""
   } else if(type == "knn"){
     ready <- length(options[["predictors"]][options[["predictors"]] != ""]) >= 1 && options[["target"]] != ""
+    # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
+    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
+    if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
+      nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
+    } else {
+      nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
+    }
+    if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual"){
+      nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
+    } else if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationKFold"){
+      nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
+    }
+    if(nn >= nTrain)
+      ready <- FALSE # Too many nearest neighbors
   }
   return(ready)
 }
@@ -167,11 +181,28 @@
     regressionTable$addColumnInfo(name = 'oob', title = 'OOB Error', type = 'number')
   }
 
-  # If no analysis is run, specify the required variables in a footnote
-  requiredVars <- ifelse(type == "knn", yes = 1, no = 2)
-  if(!ready)
-    regressionTable$addFootnote(message = paste0("Please provide a target variable and at least ", requiredVars, " predictor variable(s)."), symbol = "<i>Note.</i>")
-
+  # If no analysis is cannot be run, specify why in the footnore
+  if(type == "knn"){
+    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
+    if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
+      nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
+    } else {
+      nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
+    }
+    if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationManual"){
+      nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
+    } else if(options[["modelOpt"]] == "optimizationError" && options[["modelValid"]] == "validationKFold"){
+      nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
+    }
+    tooMuch <- (nn >= nTrain) # Too many nearest neighbors
+    if(!ready && tooMuch)
+      regressionTable$addFootnote(message = "You have specified more nearest neighbors than distinct data points in the training set.", symbol="<b>Warning.</b>")
+    if(!ready && !tooMuch)
+      regressionTable$addFootnote(message = "Please provide a target variable and at least 1 predictor variable.", symbol = "<i>Note.</i>")
+  } else {
+    if(!ready)
+      regressionTable$addFootnote(message = "Please provide a target variable and at least 2 predictor variables.", symbol = "<i>Note.</i>")
+  }
   jaspResults[["regressionTable"]] <- regressionTable
   
   if(!ready)  return()

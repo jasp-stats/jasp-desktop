@@ -125,7 +125,7 @@
     tooMuch   <- clusters > (nrow(dataset) - 1)
 
     if(!ready && tooMuch)
-      clusteringTable$addFootnote(message = "You have specified more clusters than distinct data points", symbol="<b>Warning.</b>")
+      clusteringTable$addFootnote(message = "You have specified more clusters than distinct data points.", symbol="<b>Warning.</b>")
     if(!ready && !tooMuch) clusteringTable$addFootnote(message="Please provide at least 2 variables.", symbol="<i>Note.</i>")
   } else {
     if(!ready) clusteringTable$addFootnote(message="Please provide at least 2 variables.", symbol="<i>Note.</i>")
