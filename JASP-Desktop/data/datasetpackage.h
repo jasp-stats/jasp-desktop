@@ -46,39 +46,41 @@ public:
 			DataSet			*	dataSet()									{ return _dataSet;						}
 			bool				isLoaded()							const	{ return _isLoaded;						}
 			bool				isArchive()							const	{ return _isArchive;					}
-			bool				isModified()						const	{ return _isModified;					}
-			std::string			dataFilter()						const	{ return _dataFilter;					 }
-			std::string			initialMD5()						const	{ return _initialMD5;					  }
-			bool				hasAnalyses()						const	{ return _analysesData.size() > 0;		   }
-			std::string			dataFilePath()						const	{ return _dataFilePath;						}
-	const	std::string		&	analysesHTML()						const	{ return _analysesHTML;						 }
-	const	Json::Value		&	analysesData()						const	{ return _analysesData;						  }
-	const	std::string		&	warningMessage()					const	{ return _warningMessage;					   }
-	const	Version			&	archiveVersion()					const	{ return _archiveVersion;						}
-	const	emptyValsType	&	emptyValuesMap()					const	{ return _emptyValuesMap;						 }
-			bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						  }
-			uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					   }
-	const	Version			&	dataArchiveVersion()				const	{ return _dataArchiveVersion;						}
+			bool				isModified()						const	{ return _isModified;					 }
+			std::string			dataFilter()						const	{ return _dataFilter;					  }
+			std::string			initialMD5()						const	{ return _initialMD5;					   }
+			bool				hasAnalyses()						const	{ return _analysesData.size() > 0;		    }
+			std::string			dataFilePath()						const	{ return _dataFilePath;						 }
+	const	std::string		&	analysesHTML()						const	{ return _analysesHTML;						  }
+	const	Json::Value		&	analysesData()						const	{ return _analysesData;						   }
+	const	std::string		&	warningMessage()					const	{ return _warningMessage;					    }
+	const	Version			&	archiveVersion()					const	{ return _archiveVersion;						 }
+	const	emptyValsType	&	emptyValuesMap()					const	{ return _emptyValuesMap;						  }
+			bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						   }
+			uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					    }
+	const	Version			&	dataArchiveVersion()				const	{ return _dataArchiveVersion;						 }
+			bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;						 }
 	const	std::string		&	filterConstructorJson()				const	{ return _filterConstructorJSON;					}
 
 			void			setDataArchiveVersion(Version archiveVersion)	{ _dataArchiveVersion			= archiveVersion;	}
-			void			setFilterConstructorJson(std::string json)		{ _filterConstructorJSON		= json;				}
-			void			setAnalysesData(Json::Value analysesData)		{ _analysesData					= analysesData;		}
-			void			setArchiveVersion(Version archiveVersion)		{ _archiveVersion				= archiveVersion;	}
+			void			setFilterShouldRunInit(bool shouldIt)			{ _filterShouldRunInit			= shouldIt;			 }
+			void			setFilterConstructorJson(std::string json)		{ _filterConstructorJSON		= json;				  }
+			void			setAnalysesData(Json::Value analysesData)		{ _analysesData					= analysesData;		  }
+			void			setArchiveVersion(Version archiveVersion)		{ _archiveVersion				= archiveVersion;	 }
 			void			setWarningMessage(std::string message)			{ _warningMessage				= message;			}
-			void			setDataFilePath(std::string filePath)			{ _dataFilePath					= filePath;			}
-			void			setInitialMD5(std::string initialMD5)			{ _initialMD5					= initialMD5;		}
-			void			setDataFileTimestamp(uint timestamp)			{ _dataFileTimestamp			= timestamp;		}
+			void			setDataFilePath(std::string filePath)			{ _dataFilePath					= filePath;			 }
+			void			setInitialMD5(std::string initialMD5)			{ _initialMD5					= initialMD5;		  }
+			void			setDataFileTimestamp(uint timestamp)			{ _dataFileTimestamp			= timestamp;		 }
 			void			setDataFileReadOnly(bool readOnly)				{ _dataFileReadOnly				= readOnly;			}
-			void			setAnalysesHTML(std::string html)				{ _analysesHTML					= html;				}
-			void			setDataFilter(std::string filter)				{ _dataFilter					= filter;			}
-			void			setDataSet(DataSet * dataSet)					{ _dataSet						= dataSet;			}
+			void			setAnalysesHTML(std::string html)				{ _analysesHTML					= html;				 }
+			void			setDataFilter(std::string filter)				{ _dataFilter					= filter;			  }
+			void			setDataSet(DataSet * dataSet)					{ _dataSet						= dataSet;			 }
 			void			setIsArchive(bool isArchive)					{ _isArchive					= isArchive;		}
 			void			setModified(bool value);
 			void			setAnalysesHTMLReady()							{ _analysesHTMLReady			= true;				}
-			void			setId(std::string id)							{ _id							= id;				}
-			void			setWaitingForReady()							{ _analysesHTMLReady			= false;			}
-			void			setLoaded()										{ _isLoaded						= true;				}
+			void			setId(std::string id)							{ _id							= id;				 }
+			void			setWaitingForReady()							{ _analysesHTMLReady			= false;			  }
+			void			setLoaded()										{ _isLoaded						= true;				 }
 			void			setHasAnalysesWithoutData()						{ _hasAnalysesWithoutData		= true;				}
 
 			bool		isColumnNameFree(std::string name)		const;
@@ -120,7 +122,8 @@ private:
 						_isModified					= false,
 						_isLoaded					= false,
 						_hasAnalysesWithoutData		= false,
-						_analysesHTMLReady			= false;
+						_analysesHTMLReady			= false,
+						_filterShouldRunInit		= false;
 
 	Json::Value			_analysesData;
 	Version				_archiveVersion,

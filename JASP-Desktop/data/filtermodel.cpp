@@ -22,7 +22,8 @@ void FilterModel::setDataSetPackage(DataSetPackage * package)
 		setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
 		_setRFilter(QString::fromStdString(_package->dataFilter()));
 
-		sendGeneratedAndRFilter();
+		if(!_package->isArchive() || _package->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
+			sendGeneratedAndRFilter();
 	}
 	else
 		reset();
