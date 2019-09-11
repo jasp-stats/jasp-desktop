@@ -324,7 +324,7 @@ void jaspObject::copyDependenciesFromJaspObject(jaspObject * other)
 
 bool jaspObject::checkDependencies(Json::Value currentOptions)
 {
-	if((_optionMustBe.size() + _optionMustContain.size()) == 0)
+	if((_optionMustBe.size() + _optionMustContain.size()) != 0)
 	{
 
 		for(auto & keyval : _optionMustBe)
