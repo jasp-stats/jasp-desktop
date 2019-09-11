@@ -492,9 +492,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
 
-	removeMenuClicked: function () {
-		this.trigger("analysis:remove", this.model.get('id'));
-	},
+   removeMenuClicked: function () {
+	   this.trigger("analysis:remove", this.model.get('id'));
+   },
+
+   duplicateMenuClicked: function () {
+	   this.trigger("analysis:duplicate", this.model.get('id'));
+   },
 
 	menuName: "Analysis",
 

@@ -665,3 +665,15 @@ void Analyses::refreshAvailableVariables()
 {
 	applyToAll([](Analysis * a) { a->refreshAvailableVariablesModels();	});
 }
+
+void Analyses::duplicateAnalysis(size_t id)
+{
+	if(!get(id)) return;
+
+	Analysis	* original = get(id),
+				* analysis = new Analysis(this, ++_nextId, original);
+
+	storeAnalysis(analysis, analysis->id(), true);
+	bindAnalysisHandler(analysis);
+	analysis->emitDuplicationSignals();
+}

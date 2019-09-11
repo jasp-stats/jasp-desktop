@@ -188,6 +188,19 @@ Item
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
 					function analysisTitleChangedInResults(id, title)	{ resultsJsInterface.analysisTitleChangedInResults(id, title)	}
+					function updateUserData()							{ resultsJsInterface.updateUserData()							}
+					function analysisSaveImage(id, options)				{ resultsJsInterface.analysisSaveImage(id, options)				}
+					function analysisEditImage(id, options)				{ resultsJsInterface.analysisEditImage(id, options)				}
+					function removeAnalysisRequest(id)					{ resultsJsInterface.removeAnalysisRequest(id)					}
+					function pushToClipboard(mime, raw, coded)			{ resultsJsInterface.pushToClipboard(mime, raw, coded)			}
+					function pushImageToClipboard(raw, coded)			{ resultsJsInterface.pushImageToClipboard(raw, coded)			}
+					function saveTempImage(index, path, base64)			{ resultsJsInterface.saveTempImage(index, path, base64)			}
+					function getImageInBase64(index, path)				{ resultsJsInterface.getImageInBase64(index, path)				}
+					function resultsDocumentChanged()					{ resultsJsInterface.resultsDocumentChanged()					}
+					function displayMessageFromResults(msg)				{ resultsJsInterface.displayMessageFromResults(msg)				}
+					function setAllUserDataFromJavascript(json)			{ resultsJsInterface.setAllUserDataFromJavascript(json)			}
+					function setResultsMetaFromJavascript(json)			{ resultsJsInterface.setResultsMetaFromJavascript(json)			}
+					function duplicateAnalysis(id)						{ resultsJsInterface.duplicateAnalysis(id)						}
 
 
 					function showAnalysesMenu(options)
@@ -245,19 +258,6 @@ Item
 						customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y) / resultsView.zoomFactor; });
 						customMenu.menuMinIsMin		= true
 					}
-
-					function updateUserData()						{ resultsJsInterface.updateUserData()						}
-					function analysisSaveImage(id, options)			{ resultsJsInterface.analysisSaveImage(id, options)			}
-					function analysisEditImage(id, options)			{ resultsJsInterface.analysisEditImage(id, options)			}
-					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
-					function pushToClipboard(mime, raw, coded)		{ resultsJsInterface.pushToClipboard(mime, raw, coded)		}
-					function pushImageToClipboard(raw, coded)		{ resultsJsInterface.pushImageToClipboard(raw, coded)		}
-					function saveTempImage(index, path, base64)		{ resultsJsInterface.saveTempImage(index, path, base64)		}
-					function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
-					function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
-					function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
-					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
-					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
 				}
 			}
 		}

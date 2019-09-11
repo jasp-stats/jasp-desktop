@@ -265,7 +265,7 @@ HEADERS += \
     utilities/application.h \
     utilities/jsonutilities.h \
     utilities/qutils.h \
-    utilities/resultsjsinterface.h \
+    results/resultsjsinterface.h \
     utilities/settings.h \
     utilities/simplecrypt.h \
     utilities/simplecryptkey.h \
@@ -432,7 +432,7 @@ SOURCES += \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \
     utilities/qutils.cpp \
-    utilities/resultsjsinterface.cpp \
+    results/resultsjsinterface.cpp \
     utilities/settings.cpp \
     utilities/simplecrypt.cpp \
     variablespage/labelfiltergenerator.cpp \

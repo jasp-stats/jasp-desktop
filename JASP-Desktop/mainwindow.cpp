@@ -126,7 +126,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_fileMenu				= new FileMenu(this, _package);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
-
 	_resultMenuModel		= new ResultMenuModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
@@ -251,6 +250,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				&Analyses::duplicateAnalysis								);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);

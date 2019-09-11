@@ -305,6 +305,25 @@ DropArea
 					anchors
 					{
 						top:		parent.top
+						right:		copyButton.left
+						bottom:		parent.bottom
+						margins:	4 * preferencesModel.uiScale
+					}
+				}
+
+				MenuButton
+				{
+					id:					copyButton
+					width:				height
+					iconSource:			"qrc:/icons/duplicate.png" // Original Icon made by Chanut from https://www.flaticon.com/
+					enabled:			expanderButton.expanded
+					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
+					toolTip:			qsTr("Duplicate this analysis")
+					radius:				height
+					opacity:			enabled ? 1 : 0.5
+					anchors
+					{
+						top:		parent.top
 						right:		helpButton.left
 						bottom:		parent.bottom
 						margins:	4 * preferencesModel.uiScale

@@ -197,6 +197,14 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+	window.duplicateMenuClicked = function () {
+		if (window.menuObject.duplicateMenuClicked)
+			window.menuObject.duplicateMenuClicked();
+
+		setSelection(false);
+		window.menuObject = null;
+	}
+
 	window.analysisMenuHidden = function () {
 		if (window.menuObject !== undefined && window.menuObject !== null) {
 			window.menuObject.toolbar.completeEvent();
@@ -544,6 +552,10 @@ $(document).ready(function () {
 
 			jaspWidget.on("analysis:remove", function (id) {
 				jasp.removeAnalysisRequest(id);
+			});
+
+			jaspWidget.on("analysis:duplicate", function (id) {
+				jasp.duplicateAnalysis(id);
 			});
 
 			jaspWidget.on("analysis:userDataChanged", function () {

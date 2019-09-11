@@ -43,7 +43,7 @@
 #include "modules/ribbonmodelfiltered.h"
 #include "gui/preferencesmodel.h"
 #include "results/resultmenumodel.h"
-#include "utilities/resultsjsinterface.h"
+#include "results/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "utilities/aboutmodel.h"

@@ -27,13 +27,14 @@ std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
 	{	"hasSaveImg",				ResultMenuEntry("Save Image As",	"hasSaveImg",				"qrc:/icons/document-save-as.png",	"window.saveImageClicked();")		},
 	{	"hasEditImg",				ResultMenuEntry("Edit Image",		"hasEditImage",				"qrc:/icons/editImage.png",			"window.editImageClicked();")		},
 	{	"hasNotes",					ResultMenuEntry("Add Note",			"hasNotes",					"",									"")									},
-	{	"hasRemove",				ResultMenuEntry("Remove",			"hasRemove",				"",									"window.removeMenuClicked();")		},
-	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",		"hasRemoveAllAnalyses",		"",									"")									},
+	{	"hasDuplicate",				ResultMenuEntry("Duplicate",		"hasDuplicate",				"qrc:/icons/duplicate.png",			"window.duplicateMenuClicked();")	},
+	{	"hasRemove",				ResultMenuEntry("Remove",			"hasRemove",				"qrc:/images/close-button.png",		"window.removeMenuClicked();")		},
+	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",		"hasRemoveAllAnalyses",		"qrc:/images/close-button.png",		"")									},
 	{	"hasRefreshAllAnalyses",	ResultMenuEntry("Refresh All",		"hasRefreshAllAnalyses",	"",									"")									},
 };
 
 QStringList ResultMenuEntry::EntriesOrder = {"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg",
-                                             "hasEditImg", "hasNotes", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses"};
+											 "hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses"};
 
 ResultMenuEntry::ResultMenuEntry(QString displayText, QString name, QString menuImageSource, QString jsFunction)
 	: _displayText(displayText)

@@ -49,6 +49,7 @@ public:
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
 
+	Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe);
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
 	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
 
@@ -60,6 +61,7 @@ public:
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
+	Q_INVOKABLE void	duplicateMe();
 
 signals:
 	void				nameChanged();
@@ -81,6 +83,7 @@ signals:
 	void				titleChanged();
 
 	Q_INVOKABLE void	expandAnalysis();
+
 
 
 public:
@@ -161,7 +164,7 @@ public slots:
 	void					setTitleQ(QString title);
 	void					setTitle(std::string title) { setTitleQ(QString::fromStdString(title)); }
 	void					refreshAvailableVariablesModels();
-
+	void					emitDuplicationSignals();
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
@@ -201,7 +204,7 @@ private:
 	Modules::AnalysisEntry*	_moduleData		= nullptr;
 	Modules::DynamicModule* _dynamicModule	= nullptr;
 	Analyses*				_analyses		= nullptr;
-	AnalysisForm*			_analysisForm	= nullptr;	
+	AnalysisForm*			_analysisForm	= nullptr;
 
 	std::string				_codedReferenceToAnalysisEntry = "";
 	QString					_helpFile;

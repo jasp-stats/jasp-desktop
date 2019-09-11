@@ -71,6 +71,7 @@ signals:
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
 	Q_INVOKABLE void removeAllAnalyses();
+	Q_INVOKABLE void duplicateAnalysis(int id);
 
 public slots:
 	void setZoom(double zoom);

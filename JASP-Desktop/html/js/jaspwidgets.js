@@ -1015,6 +1015,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasEditImg:				(parent.isEditable		=== undefined || parent.isEditable())		&& parent.editImageClicked		!== undefined,
 			hasEditTitle:			(parent.hasEditTitle	=== undefined || parent.hasEditTitle())		&& parent.editTitleClicked		!== undefined,
 			hasRemove:				(parent.hasRemove		=== undefined || parent.hasRemove())		&& parent.removeMenuClicked		!== undefined,
+			hasDuplicate:			(parent.hasDuplicate	=== undefined || parent.hasDuplicate())		&& parent.duplicateMenuClicked	!== undefined,
 			hasCollapse:			(parent.hasCollapse		=== undefined || parent.hasCollapse())		&& parent.collapseMenuClicked	!== undefined,
 			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())		&& parent.latexCodeMenuClicked	!== undefined,
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
@@ -1023,7 +1024,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse || this.options.hasLaTeXCode;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasDuplicate || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse || this.options.hasLaTeXCode;
 	},
 
 	selectionElement: function() {
