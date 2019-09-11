@@ -315,7 +315,7 @@ DropArea
 				{
 					id:					copyButton
 					width:				height
-					iconSource:			"qrc:/icons/duplicate.png" // Original Icon made by Chanut from https://www.flaticon.com/
+					iconSource:			enabled ? "qrc:/icons/duplicate.png" : "qrc:/icons/duplicate_disabled.png"
 					enabled:			expanderButton.expanded
 					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
 					toolTip:			qsTr("Duplicate this analysis")
@@ -354,6 +354,7 @@ DropArea
 					id:					closeButton
 					width:				height
 					iconSource:			enabled ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
+					opacity:			enabled ? 1 : 0.5
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			analysesModel.removeAnalysis(loader.myAnalysis)

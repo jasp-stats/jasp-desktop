@@ -20,7 +20,7 @@
 
 std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
     {	"hasCollapse",				ResultMenuEntry("",					"hasCollapse",				"",									"window.collapseMenuClicked();")	},
-	{	"hasEditTitle",				ResultMenuEntry("Edit Title",		"hasEditTitle",				"",									"window.editTitleMenuClicked();")	},
+	{	"hasEditTitle",				ResultMenuEntry("Edit Title",		"hasEditTitle",				"qrc:/icons/edit-pencil.png",		"window.editTitleMenuClicked();")	},
 	{	"hasCopy",					ResultMenuEntry("Copy",				"hasCopy",					"qrc:/icons/copy.png",				"window.copyMenuClicked();")		},
 	{	"hasLaTeXCode",				ResultMenuEntry("Copy LaTeX",		"hasLaTeXCode",				"qrc:/icons/code-icon.png",			"window.latexCodeMenuClicked();")	},
 	{	"hasCite",					ResultMenuEntry("Copy Citations",	"hasCite",					"qrc:/icons/cite.png",				"window.citeMenuClicked();")		},

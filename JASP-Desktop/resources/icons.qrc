@@ -135,5 +135,6 @@
         <file>icons/analysis-ml-clustering.svg</file>
         <file>icons/analysis-ml-ribbon.svg</file>
         <file>icons/duplicate.png</file>
+        <file>icons/duplicate_disabled.png</file>
     </qresource>
 </RCC>

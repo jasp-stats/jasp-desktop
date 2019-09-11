@@ -111,10 +111,12 @@ private:
 	IPCChannel*	_channel			= nullptr;
 	Analysis*	_analysisInProgress = nullptr;
 	engineState	_engineState		= engineState::initializing;
-	int			_ppi				= 96;
+	int			_ppi				= 96,
+				_idRemovedAnalysis	= -1;
 	QString		_imageBackground	= "white";
 	bool		_pauseRequested		= false,
 				_stopRequested		= false;
+
 };
 
 #endif // ENGINEREPRESENTATION_H

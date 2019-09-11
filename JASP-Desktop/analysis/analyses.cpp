@@ -676,4 +676,7 @@ void Analyses::duplicateAnalysis(size_t id)
 	storeAnalysis(analysis, analysis->id(), true);
 	bindAnalysisHandler(analysis);
 	analysis->emitDuplicationSignals();
+
+	if(analysis->status() != Analysis::Status::Complete)
+		analysis->refresh();
 }

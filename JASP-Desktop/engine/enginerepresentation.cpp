@@ -233,8 +233,9 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 	Log::log() << "sending: " << json.toStyledString() << std::endl;
 #endif
 
-	if(analysis->isAborted())
-		clearAnalysisInProgress();
+	//It is dangerous to clear an aborted analysis because it might still be running and ignoring this!
+	//if(analysis->isAborted())
+	//	clearAnalysisInProgress();
 
 }
 
@@ -259,8 +260,13 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 	if(_engineState != engineState::analysis || _analysisInProgress != analysis)
 		return;
 
+	_idRemovedAnalysis = analysis->id();
+	if(analysis->status() != Analysis::Status::Aborting && analysis->status() != Analysis::Status::Aborting)
+		analysis->setStatus(Analysis::Status::Aborting);
+
 	runAnalysisOnProcess(analysis); //should abort
-	clearAnalysisInProgress();
+	_analysisInProgress = nullptr; //Because it will be deleted!
+	//But we keep the engineState at analysis to make sure another analysis won't try to run until the aborted one gets the message!
 }
 
 void EngineRepresentation::processAnalysisReply(Json::Value & json)
@@ -282,6 +288,22 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	Json::Value results			= json.get("results",	Json::nullValue);
 
 	analysisResultStatus status	= analysisResultStatusFromString(json.get("status", "error").asString());
+
+	if(_analysisInProgress == nullptr && id == _idRemovedAnalysis)
+	{
+		switch(status)
+		{
+		case analysisResultStatus::changed:
+		case analysisResultStatus::complete:
+		case analysisResultStatus::fatalError:
+		case analysisResultStatus::validationError:
+			_engineState		= engineState::idle;
+			_idRemovedAnalysis	= -1;
+			break;
+		}
+		return;
+	}
+
 	Analysis *analysis			= _analysisInProgress;
 
 	if (analysis->id() != id || analysis->revision() < revision)
@@ -367,7 +389,7 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 
 void EngineRepresentation::handleRunningAnalysisStatusChanges()
 {
-	if (_engineState != engineState::analysis)
+	if (_engineState != engineState::analysis || _idRemovedAnalysis >= 0)
 		return;
 
 	if(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted())

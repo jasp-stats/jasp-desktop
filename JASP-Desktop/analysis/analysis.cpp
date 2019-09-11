@@ -332,6 +332,7 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	case Analysis::SaveImg:		return(performType::saveImg);
 	case Analysis::EditImg:		return(performType::editImg);
 	case Analysis::RewriteImgs:	return(performType::rewriteImgs);
+	case Analysis::Aborted:
 	case Analysis::Aborting:	return(performType::abort);
 	default:					return(performType::run);
 	}
