@@ -68,7 +68,6 @@ Generates a new column in your dataset with the values of your regression result
 ### R-packages 
 --- 
 - randomForest
-- ROCR
 
 ### Example 
 --- 
