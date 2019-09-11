@@ -261,7 +261,7 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 		return;
 
 	_idRemovedAnalysis = analysis->id();
-	if(analysis->status() != Analysis::Status::Aborting && analysis->status() != Analysis::Status::Aborting)
+	if(analysis->status() != Analysis::Status::Aborting && analysis->status() != Analysis::Status::Aborted)
 		analysis->setStatus(Analysis::Status::Aborting);
 
 	runAnalysisOnProcess(analysis); //should abort
