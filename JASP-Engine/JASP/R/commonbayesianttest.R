@@ -470,8 +470,7 @@
     descriptivesContainer <- createJaspContainer("")
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
     descriptivesContainer$dependOn(c(
-      "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval", "descriptivesPlots",
-      "pairs"
+      "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval", "descriptivesPlots"
     ))
     descriptivesContainer$position <- 2L
   } else {
@@ -505,7 +504,7 @@
   if (options[["descriptivesPlots"]]) {
     if (is.null(descriptivesContainer[["plots"]])) {
 
-      descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
+      descriptivesPlots <- createJaspContainer(title = "Descriptives Plots", dependencies = "descriptivesPlots")
       descriptivesPlots$position <- 2L
       descriptivesContainer[["plots"]] <- descriptivesPlots
       runDescriptives <- TRUE
