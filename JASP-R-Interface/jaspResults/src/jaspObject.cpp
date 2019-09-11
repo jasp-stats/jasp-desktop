@@ -325,22 +325,23 @@ void jaspObject::copyDependenciesFromJaspObject(jaspObject * other)
 bool jaspObject::checkDependencies(Json::Value currentOptions)
 {
 	if((_optionMustBe.size() + _optionMustContain.size()) == 0)
-		return true;
-
-	for(auto & keyval : _optionMustBe)
-		if(currentOptions.get(keyval.first, Json::nullValue) != keyval.second)
-			return false;
-
-	for(auto & keyval : _optionMustContain)
 	{
-		bool foundIt = false;
 
-		for(auto & contains : currentOptions.get(keyval.first, Json::arrayValue))
-			if(contains == keyval.second)
-				foundIt = true;
+		for(auto & keyval : _optionMustBe)
+			if(currentOptions.get(keyval.first, Json::nullValue) != keyval.second)
+				return false;
 
-		if(!foundIt)
-			return false;
+		for(auto & keyval : _optionMustContain)
+		{
+			bool foundIt = false;
+
+			for(auto & contains : currentOptions.get(keyval.first, Json::arrayValue))
+				if(contains == keyval.second)
+					foundIt = true;
+
+			if(!foundIt)
+				return false;
+		}
 	}
 
 	checkDependenciesChildren(currentOptions);
