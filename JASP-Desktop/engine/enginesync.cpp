@@ -43,7 +43,7 @@ using namespace boost::interprocess;
 EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent = 0)
 	: QObject(parent), _analyses(analyses), _package(package), _dynamicModules(dynamicModules)
 {
-	/* The analyses really do not need to trigger process. It will be called every 50ms anyway. And seeing as how Analyses can now get triggered from QML (Which runs in a separate thread) this is even quite dangerous.
+	/* The analyses really do not need to trigger process. It will be called every 50ms anyway.
 	connect(_analyses,			&Analyses::analysisAdded,							this,					&EngineSync::ProcessAnalysisRequests			);
 	connect(_analyses,			&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests			);
 	connect(_analyses,			&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests			);
@@ -397,6 +397,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #elif __APPLE__
 
 	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("JASP_R_HOME",		rHome.absolutePath()); //Used by the modified R script in jasp-required-files/Framework/etc/bin to make sure we use the actual R of JASP! (https://github.com/jasp-stats/INTERNAL-jasp/issues/452)
 	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
 
 	//env.insert("R_ENVIRON",			"something-which-doesnt-exist");

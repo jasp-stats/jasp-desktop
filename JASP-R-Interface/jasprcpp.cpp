@@ -999,10 +999,10 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 #endif
 	};
 
-	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/Rscript\"");
+	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/R\"");
 
 	std::string codestr = Rcpp::as<std::string>(code),
-				command = R + " -e \"" + codestr + "\"";
+				command = R + " --slave -e \"" + codestr + "\"";
 
 	jaspRCPP_parseEvalPreface(command);
 
