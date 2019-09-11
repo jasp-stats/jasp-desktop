@@ -35,8 +35,9 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
   # create empty object for the table, this has previously computed rows already filled in
   ttestRows <- .ttestBayesianCreateTtestRows(dependents, options, derivedOptions, ttestState)
-  ttestTable$setData(ttestRows)
   alreadyComputed <- !is.na(ttestRows[, "BF"])
+  ttestTable$setData(ttestRows)
+  .ttestBayesianSetFootnotesMainTable(ttestTable, ttestResults, dependents[alreadyComputed])
 
   oneSided <- derivedOptions[["oneSided"]]
   bf.type <- options[["bayesFactorType"]]
@@ -50,7 +51,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
       errorMessage <- errors[[var]]$message
       ttestTable$addFootnote(errorMessage, rowNames = var)
       ttestResults[["status"]][var] <- "error"
-      ttestResults[["errorFootnotes"]][var] <- errorMessage
+      ttestResults[["errorFootnotes"]][[var]] <- errorMessage
 
     } else {
 
@@ -68,7 +69,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
         errorMessage <- .extractErrorMessage(r)
     		ttestResults[["status"]][var] <- "error"
-    		ttestResults[["errorFootnotes"]][var] <- errorMessage
+    		ttestResults[["errorFootnotes"]][[var]] <- errorMessage
     		ttestTable$addFootnote(message = errorMessage, rowNames = var)
 
       } else {
@@ -82,14 +83,16 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
         if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
           error <- NaN
-          ttestTable$addFootnote(
-            message = "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.",
-            symbol = "", rowNames = var, colNames = "error")
+          message <- "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given."
+          ttestTable$addFootnote(message = message, symbol = "", rowNames = var, colNames = "error")
+          ttestResults[["footnotes"]][[var]] <- c(ttestResults[["footnotes"]][[var]], message)
         }
         if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
             options[["informativeStandardizedEffectSize"]] == "normal") {
           error <- NA_real_
-          ttestTable$addFootnote(message = "No error estimate is available for normal priors.")
+          message <- "No error estimate is available for normal priors."
+          ttestTable$addFootnote(message = message)
+          ttestResults[["globalFootnotes"]] <- c(ttestResults[["globalFootnotes"]], message)
         }
       }
 

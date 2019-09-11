@@ -372,7 +372,8 @@
       n1              = rep(NA, nvar),
       n2              = rep(NA, nvar),
       plottingError   = vector("list", nvar),
-      errorFootnotes  = rep("no", nvar),
+      errorFootnotes  = vector("list", nvar),
+      footnotes       = vector("list", nvar),
       delta           = vector("list", nvar)
     )
 
@@ -433,6 +434,19 @@
       )
   }
   return(ttestRows)
+}
+
+.ttestBayesianSetFootnotesMainTable <- function(ttestTable, ttestResults, dependents) {
+  
+  for (message in ttestResults[["globalFootnotes"]])
+    ttestTable$addFootnote(message = message)
+  
+  for (var in dependents) {
+    if (!is.null(ttestResults[["errorFootnotes"]][[var]]))
+      ttestTable$addFootnote(ttestResults[["errorFootnotes"]][[var]], rowNames = var)
+    if (!is.null(ttestResults[["footnotes"]][[var]]))
+      ttestTable$addFootnote(message = ttestResults[["footnotes"]][[var]], symbol = "", rowNames = var, colNames = "error")
+  }
 }
 
 .ttestBayesianSetupWilcoxProgressBar <- function(nvar, ttestState, noSamples) {

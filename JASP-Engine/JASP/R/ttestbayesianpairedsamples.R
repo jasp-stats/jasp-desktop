@@ -35,6 +35,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
     return(ttestResults)
 
   alreadyComputed <- !is.na(ttestRows[, "BF"])
+  .ttestBayesianSetFootnotesMainTable(ttestTable, ttestResults, dependents[alreadyComputed])
   .ttestBayesianInitBayesFactorPackageOptions()
 
   oneSided <- derivedOptions[["oneSided"]]
@@ -53,7 +54,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
         errorMessage <- errors[[var]]$message
         ttestTable$addFootnote(errorMessage, rowNames = var)
         ttestResults[["status"]][var] <- "error"
-        ttestResults[["errorFootnotes"]][var] <- errorMessage
+        ttestResults[["errorFootnotes"]][[var]] <- errorMessage
 
       } else {
 
@@ -74,7 +75,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
 
           errorMessage <- .extractErrorMessage(r)
           ttestResults[["status"]][var] <- "error"
-          ttestResults[["errorFootnotes"]][var] <- errorMessage
+          ttestResults[["errorFootnotes"]][[var]] <- errorMessage
           ttestTable$addFootnote(message = errorMessage, rowNames = var)
 
         } else {
