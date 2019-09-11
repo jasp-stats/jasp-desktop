@@ -374,6 +374,11 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 		runAnalysisOnProcess(_analysisInProgress);
 }
 
+void EngineRepresentation::killEngine()
+{
+	_slaveProcess->kill();
+}
+
 void EngineRepresentation::stopEngine()
 {
 	_stopRequested = true;

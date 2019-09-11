@@ -39,6 +39,7 @@ public:
 	void runModuleRequestOnProcess(Json::Value request);
 	void sendLogCfg();
 
+	void killEngine();
 	void stopEngine();
 	void pauseEngine();
 	void resumeEngine();

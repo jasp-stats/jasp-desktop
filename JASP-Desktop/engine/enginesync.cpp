@@ -66,7 +66,13 @@ EngineSync::~EngineSync()
 {
 	if (_engineStarted)
 	{		
-		stopEngines();
+		try			{ stopEngines(); }
+		catch(...)	{ /* Whatever! */ }
+
+		for(EngineRepresentation * engine : _engines)
+			if(!engine->stopped())
+				engine->killEngine();
+
 		_engines.clear();
 		TempFiles::deleteAll();
 	}
@@ -486,7 +492,7 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 void EngineSync::stopEngines()
 {
-	auto timeout = QDateTime::currentSecsSinceEpoch() + 60; //shouldnt take more than a minute
+	auto timeout = QDateTime::currentSecsSinceEpoch() + 15; //shouldnt take more than a minute
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
