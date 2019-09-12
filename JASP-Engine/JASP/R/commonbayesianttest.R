@@ -507,26 +507,22 @@
       descriptivesPlots <- createJaspContainer(title = "Descriptives Plots", dependencies = "descriptivesPlots")
       descriptivesPlots$position <- 2L
       descriptivesContainer[["plots"]] <- descriptivesPlots
-      runDescriptives <- TRUE
 
     } else {
       descriptivesPlots <- descriptivesContainer[["plots"]]
-      runDescriptives   <- derivedOptions[["anyNewVariables"]]
     }
 
-    if (runDescriptives) {
-      .ttestBayesianDescriptivesPlots(
-        descriptivePlots = descriptivesPlots,
-        dataset          = dataset,
-        dependents       = dependents,
-        errors           = errors,
-        grouping         = grouping,
-        CRI              = options[["descriptivesPlotsCredibleInterval"]],
-        canRun           = canDoAnalysis,
-        testValueOpt     = options[["testValue"]],
-        pairs            = derivedOptions[["pairs"]]
-      )
-    }
+    .ttestBayesianDescriptivesPlots(
+      descriptivePlots = descriptivesPlots,
+      dataset          = dataset,
+      dependents       = dependents,
+      errors           = errors,
+      grouping         = grouping,
+      CRI              = options[["descriptivesPlotsCredibleInterval"]],
+      canRun           = canDoAnalysis,
+      testValueOpt     = options[["testValue"]],
+      pairs            = derivedOptions[["pairs"]]
+    )
   }
   return()
 }
