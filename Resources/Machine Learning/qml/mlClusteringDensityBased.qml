@@ -112,7 +112,7 @@ Form {
                 text: qsTr("Epsilon neighborhood size:") 
                 decimals: 2
                 defaultValue: 2 
-                min: 0.001
+                min: 0.01
                 max: 999999
                 fieldWidth: 60
                 enabled: validationManual.checked 
