@@ -20,7 +20,7 @@ Boosting works by sequentially adding predictors to an decision tree ensemble, e
 - Relative influence: Shows the relative influence of the predictors.
 
 #### Plots
-- Data split: Shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
+- Data split: Shows how the data is split into training (and validation), and test set.
 - Out-of-bag improvement: Plots the number of trees against the out-of-bag classification accuracy improvement of the model. Accuracy is assessed for the training set.
 - ROC curves: Displays ROC curves for each class predicted against all other classes.
 - Andrews curves: Is a way to visualize structure in high-dimensional data. Lines that cluster are observations that are more alike. 
@@ -32,7 +32,7 @@ Boosting works by sequentially adding predictors to an decision tree ensemble, e
 #### Holdout Test Data
 - Sample *x*% of all data: Choose a percentage to randomly sample from your data to derive prediction error. Generates an internal indicator variable that indicates whether the observation is included (1) or excluded (0) from the test set.
 - Add generated indicator to data: Add the generated test set indicator from the option above to your data set. Requires a column name.
-- Test set indicator: Use an indicator variable to select data for the test set.
+- Test set indicator: Use an indicator variable to select data for the test set. This indicator should be a column in your data that consists of only 0 (excluded from the test set) and 1 (included in the test set). The data will then be split into a training (and validation if requested) set (0), and a test set (1) according to your indicator.
 
 #### Training and Validation Data
 - Sample *x*% for validation data: Randomly sample a percentage from the remaining data (after selecting the test set).
