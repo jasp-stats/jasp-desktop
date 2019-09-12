@@ -43,30 +43,9 @@
     target                  <- options[["target"]]
   variables.to.read         <- c(predictors, target)
 
-  checkNearestNeighbors <- function( ){
-    if(type == "knn"){
-      # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
-      nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
-      if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
-        nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
-      } else {
-        nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
-      }
-      if(options[["modelOpt"]] == "optimizationError"){
-        if(options[["modelValid"]] == "validationManual")
-          nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
-        if(options[["modelValid"]] == "validationKFold")
-          nTrain <- ceiling(nTrain - nTrain / (options[["noOfFolds"]] - 1))
-        if(options[["modelValid"]] == "validationLeaveOneOut")
-          nTrain <- nTrain - 1
-      }
-      if(nn >= nTrain)
-        return(paste0("You have specified more nearest neighbors than observations in the training set. Please choose a number lower than ", nTrain, "."))
-    }
-  }
-
-  errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
-                       all.target = variables.to.read, custom = checkNearestNeighbors,
+  customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
+  errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'), customChecks,
+                       all.target = variables.to.read, custom = ,
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
