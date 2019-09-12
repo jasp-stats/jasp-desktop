@@ -16,14 +16,14 @@ Regularized linear regression is an adaptation of linear regression in which the
 - Weights: In this box, an optional variable containing case weights can be entered.
 
 #### Tables  
-- Evaluation metrics: shows commonly used regression evaluation metrics such as mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
-- Regression coefficients: gives the regression coefficient for each predictor.
+- Evaluation metrics: Shows commonly used regression evaluation metrics such as mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
+- Regression coefficients: Gives the regression coefficient for each predictor.
 
 #### Plots
-- Data split: shows how the data is split into training (and validation), and test set.
-- Predictive performance: shows the selected test set observations against their predicted values.
-- Variable trace: shows the development of the coefficients as lambda increases.
-- \u03BB evaluation: shows the cross-validated MSE across different values of \u03BB, including an indication for the optimal \u03BB values.
+- Data split: Shows how the data is split into training (and validation), and test set.
+- Predictive performance: Shows the selected test set observations against their predicted values.
+- Variable trace: Shows the development of the coefficients as lambda increases.
+- \u03BB evaluation: Shows the cross-validated MSE across different values of \u03BB, including an indication for the optimal \u03BB values.
 
 ### Data Split Preferences
 #### Holdout Test Data
