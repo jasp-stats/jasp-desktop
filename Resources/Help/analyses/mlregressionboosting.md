@@ -64,6 +64,13 @@ Generates a new column in your dataset with the values of your regression result
 - Validation MSE: The MSE on the validation set (enabled when model is optimized).
 - Test set MSE: The MSE on the test set.
 
+#### Evaluation Metrics
+- MSE: The mean squared error of the model.
+- RMSE: The root mean squared error of the model.
+- MAE: The mean absolute error of the model.
+- MAPE: The mean absolute percentage error of the model.
+- R<sup>2</sup>: The proportion of the variance for a dependent variable that's explained by an independent variable or variables.
+
 ### References
 -------
 - James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning. Springer New York.
