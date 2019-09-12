@@ -233,6 +233,7 @@ DropArea
 						left:			expanderIcon.right
 						right:			editButton.left
 						leftMargin:		expanderIcon.anchors.leftMargin
+						rightMargin:	2 * preferencesModel.uiScale
 						verticalCenter:	parent.verticalCenter
 					}
 
@@ -301,13 +302,14 @@ DropArea
 					onClicked:			analysisTitleInput.startEditing();
 					toolTip:			qsTr("Edit the title of this analysis")
 					radius:				height
-					opacity:			enabled ? 1 : 0.5
+					opacity:			enabled ? 1 : 0.1
 					anchors
 					{
-						top:		parent.top
-						right:		copyButton.left
-						bottom:		parent.bottom
-						margins:	4 * preferencesModel.uiScale
+						top:			parent.top
+						right:			copyButton.left
+						bottom:			parent.bottom
+						topMargin:		4 * preferencesModel.uiScale
+						bottomMargin:	4 * preferencesModel.uiScale
 					}
 				}
 
@@ -320,13 +322,14 @@ DropArea
 					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
 					toolTip:			qsTr("Duplicate this analysis")
 					radius:				height
-					opacity:			enabled ? 1 : 0.5
+					opacity:			editButton.opacity
 					anchors
 					{
-						top:		parent.top
-						right:		helpButton.left
-						bottom:		parent.bottom
-						margins:	4 * preferencesModel.uiScale
+						top:			parent.top
+						right:			helpButton.left
+						bottom:			parent.bottom
+						topMargin:		editButton.anchors.topMargin
+						bottomMargin:	editButton.anchors.bottomMargin
 					}
 				}
 
@@ -334,7 +337,8 @@ DropArea
 				{
 					id:					helpButton
 					width:				height
-					iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-grey.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+					iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			helpModel.showOrTogglePage(loader.myAnalysis.helpFile)
@@ -342,10 +346,11 @@ DropArea
 					radius:				height
 					anchors
 					{
-						top:		parent.top
-						right:		closeButton.left
-						bottom:		parent.bottom
-						margins:	editButton.anchors.margins
+						top:			parent.top
+						right:			closeButton.left
+						bottom:			parent.bottom
+						topMargin:		editButton.anchors.topMargin
+						bottomMargin:	editButton.anchors.bottomMargin
 					}
 				}
 
@@ -353,8 +358,8 @@ DropArea
 				{
 					id:					closeButton
 					width:				height
-					iconSource:			enabled ? "qrc:/images/close-button.png" : "qrc:/images/close-button-grey.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
-					opacity:			enabled ? 1 : 0.5
+					iconSource:			enabled ? "qrc:/images/close-button.png" : "qrc:/images/close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
+					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			analysesModel.removeAnalysis(loader.myAnalysis)
@@ -362,10 +367,11 @@ DropArea
 					radius:				height
 					anchors
 					{
-						top:		parent.top
-						right:		parent.right
-						bottom:		parent.bottom
-						margins:	editButton.anchors.margins
+						top:			parent.top
+						right:			parent.right
+						bottom:			parent.bottom
+						topMargin:		editButton.anchors.topMargin
+						bottomMargin:	editButton.anchors.bottomMargin
 					}
 				}
 			}
