@@ -17,15 +17,15 @@ K-nearest neighbors is a method of regression that looks at the *k* number of pr
 - Evaluation metrics: Shows commonly used classification evaluation metrics like mean squared error (MSE), root mean squared error (RMSE) and R<sup>2</sup>.
 
 #### Plots
-- Data split: Shows how the data is split into training (and validation), and test set. Numbers displayes is the size of each set.
-- Mean squared error: Plots the number of nearest neighbors against the mean squared error of the model. Accuracy is assessed for the training (and validation) set.
+- Data split: Shows how the data is split into training (and validation), and test set.
+- Mean squared error: Plots the number of nearest neighbors against the MSE of the model. Accuracy is assessed for the training (and validation) set.
 - Predictive performance: Shows the selected test set observations against their predicted values.
 
 ### Data Split Preferences
 #### Holdout Test Data
 - Sample *x*% of all data: Choose a percentage to randomly sample from your data to derive prediction error. Generates an internal indicator variable that indicates whether the observation is included (1) or excluded (0) from the test set.
 - Add generated indicator to data: Add the generated test set indicator from the option above to your data set. Requires a column name.
-- Test set indicator: Use an indicator variable to select data for the test set.
+- Test set indicator: Use an indicator variable to select data for the test set. This indicator should be a column in your data that consists of only 0 (excluded from the test set) and 1 (included in the test set). The data will then be split into a training (and validation if requested) set (0), and a test set (1) according to your indicator.
 
 #### Training and Validation Data
 - Sample *x*% for validation data: Randomly sample a percentage from the remaining data (after selecting the test set).
@@ -57,8 +57,8 @@ Generates a new column in your dataset with the values of your regression result
 - n(Train): The number of observations in the training set.
 - n(Validation): The number of observations in the validation set (enabled when model is optimized).
 - n(Test): The number of observations in the test set.
-- Validation MSE: The mean squared error on the validation set (enabled when model is optimized).
-- Test set MSE: The mean squared error on the test set.
+- Validation MSE: The MSE on the validation set (enabled when model is optimized).
+- Test set MSE: The MSE on the test set.
 
 ### References
 -------
@@ -67,7 +67,6 @@ Generates a new column in your dataset with the values of your regression result
 ### R-packages 
 --- 
 - kknn
-- ROCR
 
 ### Example 
 --- 
