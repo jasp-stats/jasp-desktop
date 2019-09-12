@@ -291,6 +291,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	if(_analysisInProgress == nullptr && id == _idRemovedAnalysis)
 	{
+		Log::log() << "Reply was for an analysis that was removed, we now check if it was done or not, the resultstatus was: " << analysisResultStatusToString(status) << std::endl;
 		switch(status)
 		{
 		case analysisResultStatus::changed:
@@ -299,6 +300,12 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		case analysisResultStatus::validationError:
 			_engineState		= engineState::idle;
 			_idRemovedAnalysis	= -1;
+
+			Log::log() << "Analysis got the message and we now reset the engineStatus to idle!" << std::endl;
+			break;
+
+		default:
+			Log::log() << "Analysis ignores the abort it got and keeps going..." << std::endl;
 			break;
 		}
 		return;

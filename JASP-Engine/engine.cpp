@@ -413,7 +413,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 
 void Engine::runAnalysis()
 {
-	Log::log() << "Engine::runAnalysis()" << std::endl;
+	Log::log() << "Engine::runAnalysis() " << _analysisTitle << " (" << _analysisId << ") revision: " << _analysisRevision << std::endl;
 
 	if(_analysisStatus == Status::saveImg)		{ saveImage();		return; }
 	if(_analysisStatus == Status::editImg)		{ editImage();		return; }
@@ -423,6 +423,7 @@ void Engine::runAnalysis()
 	{
 		_analysisStatus	= Status::empty;
 		_engineState	= engineState::idle;
+		Log::log() << "Engine::state <= idle because it does not need to be run now (empty || aborted)" << std::endl;
 		return;
 	}
 
@@ -434,6 +435,8 @@ void Engine::runAnalysis()
 	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange	= false;
+
+	Log::log() << "Analysis will be run now." << std::endl;
 
 	_analysisResultsString = _dynamicModuleCall != "" ?
 			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground)

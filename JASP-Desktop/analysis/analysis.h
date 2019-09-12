@@ -48,6 +48,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
+	std::string statusToString(Status status) const;
 
 	Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe);
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
@@ -197,7 +198,8 @@ private:
 							_titleDefault,
 							_title,
 							_rfile;
-	bool					_useJaspResults = false;
+	bool					_useJaspResults = false,
+							_isDuplicate	= false;
 	Version					_version;
 	int						_revision		= 0;
 

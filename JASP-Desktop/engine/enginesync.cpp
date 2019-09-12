@@ -314,7 +314,6 @@ void EngineSync::ProcessAnalysisRequests()
 
 		if(needsToRun)
 		{
-
 			try
 			{
 				for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)

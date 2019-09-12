@@ -27,7 +27,7 @@
 #include "analyses.h"
 #include "analysisform.h"
 #include "utilities/qutils.h"
-
+#include "log.h"
 
 
 Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
@@ -87,6 +87,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe)
 	, _title("Copy of "+duplicateMe->_title			)
 	, _rfile(			duplicateMe->_rfile			)
 	, _useJaspResults(	duplicateMe->_useJaspResults)
+	, _isDuplicate(		true						)
 	, _version(			duplicateMe->_version		)
 	, _moduleData(		duplicateMe->_moduleData	)
 	, _dynamicModule(	duplicateMe->_dynamicModule	)
@@ -227,11 +228,32 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 {
-	_analysisForm	= form;
-	_status			= isNewAnalysis ? Empty : Complete;
+						_analysisForm	= form;
+	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
 	connect(_analyses, &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
 	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
+}
+
+std::string Analysis::statusToString(Status status) const
+{
+	switch (status)
+	{
+	case Analysis::Empty:			return "empty";
+	case Analysis::Inited:			return "inited";
+	case Analysis::Initing:			return "initing";
+	case Analysis::Running:			return "running";
+	case Analysis::Complete:		return "complete";
+	case Analysis::Aborted:			return "aborted";
+	case Analysis::Aborting:		return "aborting";
+	case Analysis::SaveImg:			return "SaveImg";
+	case Analysis::EditImg:			return "EditImg";
+	case Analysis::RewriteImgs:		return "RewriteImgs";
+	case Analysis::ValidationError:	return "validationError";
+	case Analysis::Initializing:	return "initializing";
+	case Analysis::FatalError:		return "fatalError";
+	default:						return "?????";
+	}
 }
 
 Json::Value Analysis::asJSON() const
@@ -262,7 +284,7 @@ Json::Value Analysis::asJSON() const
 	case Analysis::RewriteImgs:		status = "RewriteImgs";		break;
 	case Analysis::ValidationError:	status = "validationError";	break;
 	case Analysis::Initializing:	status = "initializing";	break;
-	default:						status = "fatalError";	break;
+	default:						status = "fatalError";		break;
 	}
 
 	analysisAsJson["status"]	= status;
@@ -283,12 +305,18 @@ void Analysis::loadExtraFromJSON(Json::Value & options)
 
 void Analysis::setStatus(Analysis::Status status)
 {
+	if(_status == status)
+		return;
+
 	if ((status == Analysis::Running || status == Analysis::Initing) && _version != AppInfo::version)
 	{
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
 		_version = AppInfo::version;
 	}
+
 	_status = status;
+
+	Log::log() << "Analysis " << title() << " (" << id() << ") now has status: " << statusToString(_status) << std::endl;
 }
 
 DataSet *Analysis::getDataSet() const

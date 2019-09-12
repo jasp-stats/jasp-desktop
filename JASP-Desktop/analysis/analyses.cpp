@@ -214,20 +214,23 @@ void Analyses::clear()
 
 void Analyses::reload(Analysis *analysis, bool logProblem)
 {
-	size_t i = 0;
-	for (; i < _orderedIds.size(); i++)
-		if (_analysisMap[_orderedIds[i]] == analysis) break;
 
-	if (i < _orderedIds.size())
-	{
-		int ind = int(i);
-		// Force the loader to load again the QML file
-		beginRemoveRows(QModelIndex(), ind, ind);
-		endRemoveRows();
-		beginInsertRows(QModelIndex(), ind, ind);
-		endInsertRows();
-	}
-	else if(logProblem)
+	for (size_t i = 0; i < _orderedIds.size(); i++)
+		if (_analysisMap[_orderedIds[i]] == analysis)
+		{
+			int ind = int(i);
+			// Force the loader to load again the QML file
+			beginRemoveRows(QModelIndex(), ind, ind);
+			endRemoveRows();
+
+			beginInsertRows(QModelIndex(), ind, ind);
+			endInsertRows();
+
+			return;
+		}
+
+
+	if(logProblem)
 		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl;
 }
 
@@ -235,12 +238,9 @@ void Analyses::reload(Analysis *analysis, bool logProblem)
 bool Analyses::allCreatedInCurrentVersion() const
 {
 	for (auto idAnalysis : _analysisMap)
-	{
-		Analysis* analysis = idAnalysis.second;
-		if (analysis->version() != AppInfo::version)
+		if (idAnalysis.second->version() != AppInfo::version)
 			return false;
-	}
-	
+
 	return true;
 }
 
