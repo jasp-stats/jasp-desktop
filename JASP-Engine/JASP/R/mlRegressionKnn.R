@@ -220,7 +220,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
     type <- rep(c("Validation set", "Training set"), each = length(yvalues1))
     d <- data.frame(x = xvalues, y = yvalues, type = type)
 
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$x), min.n = 4)
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
     pointData <- data.frame(x = result[["nn"]], 
@@ -229,7 +229,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
     p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) + 
 			JASPgraphs::geom_line() +
-			ggplot2::scale_x_continuous(name = "Number of Nearest Neighbors", breaks = xBreaks, labels = xBreaks) + 
+			ggplot2::scale_x_continuous(name = "Number of Nearest Neighbors", breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
 			ggplot2::scale_y_continuous(name = ylabel, breaks = yBreaks, labels = yBreaks) +
 			ggplot2::labs(linetype = "") +
 			ggplot2::scale_linetype_manual(values = c(2,1)) + 
@@ -243,12 +243,12 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 	type <- rep("Training and validation set", each = length(xvalues))
     d <- data.frame(x = xvalues, y = yvalues, type = type)
 
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$x), min.n = 4)
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
       
     p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) + 
 			JASPgraphs::geom_line() +
-			ggplot2::scale_x_continuous(name = "Number of Nearest Neighbors", breaks = xBreaks, labels = xBreaks) + 
+			ggplot2::scale_x_continuous(name = "Number of Nearest Neighbors", breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
 			ggplot2::scale_y_continuous(name = ylabel, breaks = yBreaks, labels = yBreaks) + 
 			JASPgraphs::geom_point(ggplot2::aes(x = x, y = y, linetype = type), data = data.frame(x = result[["nn"]], y = yvalues[result[["nn"]]], type = "Training and validation set"), fill = "red") +
 			ggplot2::labs(linetype = "")

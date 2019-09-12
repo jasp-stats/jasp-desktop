@@ -277,7 +277,7 @@
 
   if(!is.null(jaspResults[["plot2dCluster"]]) || !options[["plot2dCluster"]]) return()
 
-  clusterPlot <- createJaspPlot(plot = NULL, title = "T-sne Cluster Plot", width = 500, height = 300)
+  clusterPlot <- createJaspPlot(plot = NULL, title = "t-SNE Cluster Plot", width = 500, height = 300)
   clusterPlot$position <- position
   clusterPlot$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "algorithm", "eps", "minPts", "distance",
                                           "noOfIterations", "modelOpt", "ready", "seed", "plot2dCluster", "maxClusters", "scaleEqualSD", "seedBox",

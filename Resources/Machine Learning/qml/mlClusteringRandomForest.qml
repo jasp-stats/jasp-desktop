@@ -87,7 +87,7 @@ Form {
         }
 
         CheckBox { 
-            text: qsTr("T-sne cluster plot")     
+            text: qsTr("t-SNE cluster plot")     
             name: "plot2dCluster" 
 
             RowLayout { 
