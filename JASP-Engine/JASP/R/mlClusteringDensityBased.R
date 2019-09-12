@@ -154,17 +154,22 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
   yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
-  yKnee <- KneeArrower::findCutoff(knnValues, knnDistances, method = "curvature")[["y"]]
-  suggestedLine <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = yKnee, yend = yKnee)
+  if(length(knnValues) < 900){ # KneeArrower cannot handle more than 899 values...
+    yKnee <- KneeArrower::findCutoff(knnValues, knnDistances, method = "curvature")[["y"]]
+    suggestedLine <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = yKnee, yend = yKnee)
+  }
   
   lineData <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = options[["eps"]], yend = options[["eps"]])
  
   p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
         ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = range(xBreaks)) + 
-        ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks)) +
-        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
-        ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= paste0("Maximum curvature = ", round(yend, 2), ""), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred") +
-        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
+        ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks))
+  if(length(knnValues) < 900) {
+    # Draw the dotted line underneath the solid line, that is why we check whether to draw it here
+    p <- p + ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
+        ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= paste0("Maximum curvature = ", round(yend, 2), ""), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred")
+  }
+  p <- p + ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
         JASPgraphs::geom_line()
   p <- JASPgraphs::themeJasp(p)
 
