@@ -56,7 +56,7 @@
         if(options[["modelValid"]] == "validationManual")
           nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
         if(options[["modelValid"]] == "validationKFold")
-          nTrain <- ceiling(nTrain - nTrain / options[["noOfFolds"]])
+          nTrain <- ceiling(nTrain - nTrain / (options[["noOfFolds"]] - 1))
         if(options[["modelValid"]] == "validationLeaveOneOut")
           nTrain <- nTrain - 1
       }
