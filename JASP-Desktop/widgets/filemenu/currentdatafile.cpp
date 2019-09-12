@@ -49,6 +49,7 @@ QString CurrentDataFile::getHeaderText()
 
 void CurrentDataFile::syncFile(FileEvent *event)
 {
+	emit setCheckAutomaticSync(false);
 	emit dataSetIORequest(event);
 }
 

@@ -64,7 +64,7 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 		std::string colName = orgColumn.name();
 
 		// make sure "missing" columns aren't actually computed columns
-		if(!_packageData->isColumnComputed(colName))
+		if (!_packageData->isColumnComputed(colName))
 			missingColumns[orgColumn.name()] = &orgColumn;
 	}
 
@@ -130,8 +130,13 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 	}
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
-		_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
+	{
+		bool doSync = true;
+		_packageData->checkDoSync(doSync);
+		if (doSync)
+			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 
+	}
 	delete importDataSet;
 }
 
@@ -255,6 +260,7 @@ void Importer::_syncPackage(
 		Log::log() << "Pausing engines for syncing package because they are initialized!" << std::endl;
 		_packageData->pauseEngines();
 	}
+
 	_packageData->dataSet()->setSynchingData(true);
 
 	std::vector<std::string>			_changedColumns;

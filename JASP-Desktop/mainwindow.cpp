@@ -101,6 +101,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
+	_loader					= new AsyncLoader(this);
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
 	_dynamicModules			= new DynamicModules(this);
@@ -165,7 +166,7 @@ MainWindow::~MainWindow()
 		delete _engineSync;
 		if (_package && _package->dataSet())
 		{
-			_loader.free(_package->dataSet());
+			_loader->free(_package->dataSet());
 			_package->reset();
 		}
 	}
@@ -174,11 +175,24 @@ MainWindow::~MainWindow()
 	}
 }
 
+void MainWindow::checkDoSync(bool &check)
+{
+	check = true;
+	if (checkAutomaticSync())
+	{
+		if (!MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
+		{
+			check = false;
+			_preferences->setDataAutoSynchronization(false);
+		}
+	}
+}
+
 void MainWindow::startOnlineDataManager()
 {
-	_loader.moveToThread(&_loaderThread);
+	_loader->moveToThread(&_loaderThread);
 	_loaderThread.start();
-	_loader.setOnlineDataManager(_odm);
+	_loader->setOnlineDataManager(_odm);
 
 	_fileMenu->setOnlineDataManager(_odm);
 
@@ -272,7 +286,8 @@ void MainWindow::makeConnections()
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
-	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
+	connect(_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
+	connect(_loader,				&AsyncLoader::checkDoSyncSig,						this,					&MainWindow::checkDoSync);
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
@@ -736,7 +751,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			setWelcomePageVisible(false);
 
-			_loader.io(event, _package);
+			_loader->io(event, _package);
 			showProgress();
 		}
 	}
@@ -756,7 +771,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		connectFileEventCompleted(event);
 
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
@@ -765,13 +780,13 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		_resultsJsInterface->exportHTML();
 
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
 		connectFileEventCompleted(event);
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -780,7 +795,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			return;
 
 		connectFileEventCompleted(event);
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
@@ -879,7 +894,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				{
 					uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toTime_t();
 					if (currentDataFileTimestamp > _package->dataFileTimestamp())
-						emit event->dataFileChanged(event->dataFilePath());
+					{
+						setCheckAutomaticSync(true);
+						_fileMenu->syncDataFile(dataFilePath);
+					}
 				}
 				else
 				{
@@ -899,7 +917,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		else
 		{
 			if (_package->dataSet() != nullptr)
-				_loader.free(_package->dataSet());
+				_loader->free(_package->dataSet());
 			_package->reset();
 			setDataSetAndPackageInModels(nullptr);
 			setWelcomePageVisible(true);
@@ -951,7 +969,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setDataSetAndPackageInModels(nullptr);
 
 			if (_package->dataSet())
-				_loader.free(_package->dataSet());
+				_loader->free(_package->dataSet());
 
 			_package->reset();
 			setWelcomePageVisible(true);
@@ -1197,7 +1215,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 void MainWindow::startDataEditorHandler()
 {
-
+	setCheckAutomaticSync(false);
 	QString path = QString::fromStdString(_package->dataFilePath());
 	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly())
 	{
@@ -1263,7 +1281,7 @@ void MainWindow::startDataEditorHandler()
 		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
 		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
 		event->setPath(path);
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else
