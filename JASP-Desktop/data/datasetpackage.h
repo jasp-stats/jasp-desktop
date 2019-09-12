@@ -39,7 +39,7 @@ public:
 
 			void				reset();
 			void				storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)	{ _emptyValuesMap[columnName] = emptyValues;	}
-			void				resetEmptyValues()																	{ _emptyValuesMap.clear();											}
+			void				resetEmptyValues()																	{ _emptyValuesMap.clear();						}
 
 			std::string			id()								const	{ return _id;							}
 			bool				isReady()							const	{ return _analysesHTMLReady;			}
@@ -104,6 +104,7 @@ public:
 			boost::signals2::signal<void()>																pauseEngines,
 																										resumeEngines;
 			boost::signals2::signal<bool()>																enginesInitializing;
+			boost::signals2::signal<void (bool& check)>													checkDoSync;
 
 private:
 	DataSet			*	_dataSet = nullptr;

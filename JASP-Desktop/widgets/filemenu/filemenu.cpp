@@ -23,9 +23,11 @@
 #include "gui/messageforwarder.h"
 #include "log.h"
 #include "data/datasetpackage.h"
+#include "mainwindow.h"
 
 FileMenu::FileMenu(QObject *parent, DataSetPackage* package) : QObject(parent), _package(package)
 {	
+	_mainWindow				= dynamic_cast<MainWindow*>(parent);
 	_recentFiles			= new RecentFiles(parent);
 	_currentDataFile		= new CurrentDataFile(parent);
 	_computer				= new Computer(parent);
@@ -44,6 +46,7 @@ FileMenu::FileMenu(QObject *parent, DataSetPackage* package) : QObject(parent), 
 	connect(_actionButtons,		&ActionButtons::buttonClicked,				this, &FileMenu::actionButtonClicked	);
 	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this, &FileMenu::setFileoperation		);
 	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this, &FileMenu::resourceButtonClicked	);
+	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow, &MainWindow::setCheckAutomaticSync	);
 
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
 	_actionButtons->setEnabled(ActionButtons::Save,				false);
@@ -139,7 +142,8 @@ void FileMenu::sync()
 		path =  MessageForwarder::browseOpenFile("Find Data File", "", "Data File (*.csv *.txt *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt");
 	}
 
-	dataSetOpenCurrentRequestHandler(path);
+	_mainWindow->setCheckAutomaticSync(false);
+	setSyncRequest(path);
 	
 }
 
@@ -291,19 +295,22 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 }
 
-void FileMenu::dataFileModifiedHandler(QString path)
+void FileMenu::syncDataFile(const QString& path)
 {
-
 	int autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
 	if (autoSync > 0)
-		dataSetOpenCurrentRequestHandler(path);
-	
+		setSyncRequest(path);
+}
+
+void FileMenu::dataFileModifiedHandler(QString path)
+{
+	_mainWindow->setCheckAutomaticSync(false);
+	syncDataFile(path);
 }
 
 void FileMenu::dataSetIORequestHandler(FileEvent *event)
 {
 	connect(event, &FileEvent::completed,		this, &FileMenu::dataSetIOCompleted			);
-	connect(event, &FileEvent::dataFileChanged, this, &FileMenu::dataFileModifiedHandler	);
 
 	emit dataSetIORequest(event);
 	
@@ -383,7 +390,7 @@ void FileMenu::showAboutRequest()
 	emit showAbout();
 }
 
-void FileMenu::dataSetOpenCurrentRequestHandler(QString path)
+void FileMenu::setSyncRequest(const QString& path)
 {
 	if (path.isEmpty())
 		return;

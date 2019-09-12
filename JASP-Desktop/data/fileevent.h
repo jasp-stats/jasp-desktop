@@ -58,7 +58,6 @@ public:
 
 signals:
 	void completed(FileEvent *event);
-	void dataFileChanged(QString dataFilePath);
 
 private slots:
 	void chainedComplete(FileEvent *event) { setComplete(event->isSuccessful(), event->message()); }
