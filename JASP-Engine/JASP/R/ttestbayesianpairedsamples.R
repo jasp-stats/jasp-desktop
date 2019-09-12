@@ -35,6 +35,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
     return(ttestResults)
 
   alreadyComputed <- !is.na(ttestRows[, "BF"])
+  .ttestBayesianSetFootnotesMainTable(ttestTable, ttestResults, dependents[alreadyComputed])
   .ttestBayesianInitBayesFactorPackageOptions()
 
   oneSided <- derivedOptions[["oneSided"]]
@@ -53,7 +54,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
         errorMessage <- errors[[var]]$message
         ttestTable$addFootnote(errorMessage, rowNames = var)
         ttestResults[["status"]][var] <- "error"
-        ttestResults[["errorFootnotes"]][var] <- errorMessage
+        ttestResults[["errorFootnotes"]][[var]] <- errorMessage
 
       } else {
 
@@ -74,7 +75,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
 
           errorMessage <- .extractErrorMessage(r)
           ttestResults[["status"]][var] <- "error"
-          ttestResults[["errorFootnotes"]][var] <- errorMessage
+          ttestResults[["errorFootnotes"]][[var]] <- errorMessage
           ttestTable$addFootnote(message = errorMessage, rowNames = var)
 
         } else {
@@ -87,6 +88,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
           ttestResults[["tValue"]][var]   <- r[["tValue"]]
 
           if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
+            error <- NaN
             ttestTable$addFootnote(
               message = "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.",
               symbol = "", rowNames = var, colNames = "error")

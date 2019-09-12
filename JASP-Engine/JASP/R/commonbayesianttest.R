@@ -372,7 +372,8 @@
       n1              = rep(NA, nvar),
       n2              = rep(NA, nvar),
       plottingError   = vector("list", nvar),
-      errorFootnotes  = rep("no", nvar),
+      errorFootnotes  = vector("list", nvar),
+      footnotes       = vector("list", nvar),
       delta           = vector("list", nvar)
     )
 
@@ -435,6 +436,19 @@
   return(ttestRows)
 }
 
+.ttestBayesianSetFootnotesMainTable <- function(ttestTable, ttestResults, dependents) {
+  
+  for (message in ttestResults[["globalFootnotes"]])
+    ttestTable$addFootnote(message = message)
+  
+  for (var in dependents) {
+    if (!is.null(ttestResults[["errorFootnotes"]][[var]]))
+      ttestTable$addFootnote(ttestResults[["errorFootnotes"]][[var]], rowNames = var)
+    if (!is.null(ttestResults[["footnotes"]][[var]]))
+      ttestTable$addFootnote(message = ttestResults[["footnotes"]][[var]], symbol = "", rowNames = var, colNames = "error")
+  }
+}
+
 .ttestBayesianSetupWilcoxProgressBar <- function(nvar, ttestState, noSamples) {
   # all variables minus the ones we sampled before
   todo <- nvar
@@ -456,8 +470,7 @@
     descriptivesContainer <- createJaspContainer("")
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
     descriptivesContainer$dependOn(c(
-      "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval", "descriptivesPlots",
-      "pairs"
+      "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval", "descriptivesPlots"
     ))
     descriptivesContainer$position <- 2L
   } else {
@@ -491,29 +504,25 @@
   if (options[["descriptivesPlots"]]) {
     if (is.null(descriptivesContainer[["plots"]])) {
 
-      descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
+      descriptivesPlots <- createJaspContainer(title = "Descriptives Plots", dependencies = "descriptivesPlots")
       descriptivesPlots$position <- 2L
       descriptivesContainer[["plots"]] <- descriptivesPlots
-      runDescriptives <- TRUE
 
     } else {
       descriptivesPlots <- descriptivesContainer[["plots"]]
-      runDescriptives   <- derivedOptions[["anyNewVariables"]]
     }
 
-    if (runDescriptives) {
-      .ttestBayesianDescriptivesPlots(
-        descriptivePlots = descriptivesPlots,
-        dataset          = dataset,
-        dependents       = dependents,
-        errors           = errors,
-        grouping         = grouping,
-        CRI              = options[["descriptivesPlotsCredibleInterval"]],
-        canRun           = canDoAnalysis,
-        testValueOpt     = options[["testValue"]],
-        pairs            = derivedOptions[["pairs"]]
-      )
-    }
+    .ttestBayesianDescriptivesPlots(
+      descriptivePlots = descriptivesPlots,
+      dataset          = dataset,
+      dependents       = dependents,
+      errors           = errors,
+      grouping         = grouping,
+      CRI              = options[["descriptivesPlotsCredibleInterval"]],
+      canRun           = canDoAnalysis,
+      testValueOpt     = options[["testValue"]],
+      pairs            = derivedOptions[["pairs"]]
+    )
   }
   return()
 }
@@ -1094,29 +1103,14 @@
 
 	pd <- ggplot2::position_dodge(.2)
 
-	p <-	ggplot2::ggplot(summaryStat, mapping = mapping) +
+	p <-	JASPgraphs::themeJasp(ggplot2::ggplot(summaryStat, mapping = mapping) +
 			ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
 			ggplot2::geom_line(position=pd, size = .7) +
 			ggplot2::geom_point(position=pd, size=4) +
-			xlab + ylab +
-			ggplot2::theme_bw() +
-			ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-				panel.grid.major=ggplot2::element_blank(),
-				axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-				axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-				panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-				plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-				legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-				panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-				legend.key = ggplot2::element_blank(),
-				legend.title = ggplot2::element_text(size=12),
-				legend.text = ggplot2::element_text(size = 12),
-				axis.ticks = ggplot2::element_line(size = 0.5),
-				# axis.ticks.margin = grid::unit(1,"mm"),
-				axis.ticks.length = grid::unit(3, "mm"),
-				plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				.base_breaks_y2(summaryStat, testValueOpt) +
-				.base_breaks_x(summaryStat$groupingVariable)
+			xlab + ylab) + 
+	    JASPgraphs::themeJaspRaw() +
+			.base_breaks_y2(summaryStat, testValueOpt) +
+			.base_breaks_x(summaryStat$groupingVariable)
 
 	if (!is.null(testValueOpt))
 		p <- p + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept=testValue), linetype="dashed")

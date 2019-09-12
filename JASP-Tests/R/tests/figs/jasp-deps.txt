@@ -1,1 +1,1 @@
-- JASPgraphs: 0.3.6
+- JASPgraphs: 0.3.7
