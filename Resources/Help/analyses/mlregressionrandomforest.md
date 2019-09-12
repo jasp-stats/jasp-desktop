@@ -61,9 +61,17 @@ Generates a new column in your dataset with the values of your regression result
 - Test set MSE: The MSE on the test set.
 - OOB Error: The out-of-bag MSE on the test set.
 
+#### Evaluation Metrics
+- MSE: The mean squared error of the model.
+- RMSE: The root mean squared error of the model.
+- MAE: The mean absolute error of the model.
+- MAPE: The mean absolute percentage error of the model.
+- R<sup>2<\sup>: The proportion of the variance for a dependent variable that's explained by an independent variable or variables.
+
 ### References
 -------
 - James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning. Springer New York.
+- Breiman, Leo. (2001). Random forests. Machine Learning. Springer, 45(1), 5-32
 
 ### R-packages 
 --- 

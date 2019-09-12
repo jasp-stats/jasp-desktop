@@ -59,10 +59,18 @@ Generates a new column in your dataset with the cluster labels of your cluster r
 - Between sum of squares: The between sum of squares of the model noted underneath the table.
 - Total sum of squares: The total sum of squares of the model noted underneath the table.
 
+#### Evaluation Metrics Table
+- Maximum diameter: The maximum cluster diameter in *euclidean* distance.
+- Minimum separation: The minimum cluster separation in *euclidean* distance.
+- Pearson's \u03B3: Correlation between distances and a 0-1-vector where 0 means same cluster, 1 means different clusters. 
+- Dunn index: Minimum separation / maximum diameter. 
+- Entropy: Entropy of the distribution of cluster memberships.
+- Calinski-Harabasz index: The variance ratio criterion of the cluster memberships.
+
 ### References
 -------
 - James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning. Springer New York.
-- Akaike, H. (1987). Factor analysis and AIC. Psychometrika, 52(3), 317–332.
+- Breiman, Leo. (2001). Random forests. Machine Learning. Springer, 45(1), 5-32
 - Tibshirani, R., Walther, G., & Hastie, T. (2001). Estimating the number of clusters in a data set via the gap statistic. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 63(2), 411–423.
 - Matthiesen, R. (Ed.). (2010). Bioinformatics methods in clinical research. Humana Press.
 - Schwarz, G., et al. (1978). Estimating the dimension of a model. The annals of statistics, 6(2), 461–464.

@@ -65,9 +65,17 @@ Generates a new column in your dataset with the class labels of your classificat
 - Test set accuracy: The classification accuracy on the test set.
 - OOB accuracy: The out-of-bag classification accuracy on the test set.
 
+#### Evaluation Metrics
+- Precision: The ratio of correct positive predictions to the total predicted positives.
+- Recall: Ratio of correct positive predictions to the total positive observations.
+- F1 Score: The harmonic mean of the precision and recall scores.
+- Support: The number of class observations in the test set.
+- AUC: Area under the ROC curve. Every class is predicted against all other classes. See also ROC curves.
+
 ### References
 -------
 - James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning. Springer New York.
+- Breiman, Leo. (2001). Random forests. Machine Learning. Springer, 45(1), 5-32
 
 ### R-packages 
 --- 
