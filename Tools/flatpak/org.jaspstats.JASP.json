@@ -4,13 +4,15 @@
 	"runtime-version": "5.12",
 	"sdk": "org.kde.Sdk",
 	"command": "org.jaspstats.JASP",
+	"inherit-extensions" : [ "org.freedesktop.Platform.GL" ],
 	"finish-args":[
 		"--socket=x11",
 		"--socket=wayland",
 		"--share=ipc",
 		"--share=network",
 		"--filesystem=home",
-		"--env=PATH=/usr/bin:/app/bin"
+		"--env=PATH=/usr/bin:/app/bin",
+		"--device=dri"
 	],
 	"build-options": {
 		"env": {
@@ -65,7 +67,8 @@
 					"sha256":"e53d8c3cf20f2b8d7a9c1631b6f6a22874506fb392034758b3bb341c586c5b62"
 				}
 			]
-		},		{
+		},
+		{
 			"name": "abind",
 			"buildsystem": "simple",
 			"sources": [
@@ -807,6 +810,19 @@
 		},
 
 		{
+			"name": "lsei",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/lsei_1.2-0.tar.gz",
+					"sha256": "4781ebd9ef93880260d5d5f23066580ac06061e95c1048fb25e4e838963380f6"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "magrittr",
 			"buildsystem": "simple",
 			"sources": [
@@ -1022,6 +1038,19 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/nortest_1.0-4.tar.gz",
 					"sha256": "a3850a048181d5d059c1e74903437569873b430c915b709808237d71fee5209f"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
+			"name": "npsurv",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/npsurv_0.4-0.tar.gz",
+					"sha256": "404cf7135dc40a04e9b81224a543307057a8278e11109ba1fcaa28e87c6204f3"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1418,6 +1447,19 @@
 		},
 
 		{
+			"name": "rex",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/rex_1.1.2.tar.gz",
+					"sha256": "bd3c74ceaf335336f5dd04314d0a791f6311e421a2158f321f5aab275f539a2a"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "rjson",
 			"buildsystem": "simple",
 			"sources": [
@@ -1522,6 +1564,19 @@
 		},
 
 		{
+			"name": "som",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/som_0.3-5.1.tar.gz",
+					"sha256": "a6f4c0e5b36656b7a8ea144b057e3d7642a8b71972da387a7133f3dd65507fb9"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "sourcetools",
 			"buildsystem": "simple",
 			"sources": [
@@ -1566,8 +1621,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/StanHeaders_2.18.1-10.tar.gz",
-					"sha256": "8a9f7e22105428e97d14f44f75395c37cf8c809de148d279c620024452b3565a"
+					"url": "http://static.jasp-stats.org/RPkgs/StanHeaders_2.19.0.tar.gz",
+					"sha256": "a0ab8f996a7a903a37491f6e4e8cf8b9f51bf0c13a5326171fab90692fe14592"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1774,8 +1829,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/xml2_1.2.0.tar.gz",
-					"sha256": "0a7a916fe9c5da9ac45aeb4c6b6b25d33c07652d422b9f2bb570f2e8f4ac9494"
+					"url": "http://static.jasp-stats.org/RPkgs/xml2_1.2.2.tar.gz",
+					"sha256": "3050f147c4335be2925a576557bbda36bd52a5bba3110d47b740a2dd811a78f4"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1951,6 +2006,19 @@
 		},
 
 		{
+			"name": "fitdistrplus",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/fitdistrplus_1.0-14.tar.gz",
+					"sha256": "85082590f62aa08d99048ea3414c5cc1e5b780d97b3779d2397c6cb435470083"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "foreach",
 			"buildsystem": "simple",
 			"sources": [
@@ -2114,6 +2182,19 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/lavaan_0.6-3.tar.gz",
 					"sha256": "bffb89d7fb70f6bde5c984009803b3ab9b9802cc2608d2acb1f887b0a7298843"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
+			"name": "lifecycle",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/lifecycle_0.1.0.tar.gz",
+					"sha256": "961c28c016d54beee496572a88602fe94d8456ee6455ac88cb2e0fc3273c3387"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2328,6 +2409,19 @@
 		},
 
 		{
+			"name": "rversions",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/rversions_2.0.0.tar.gz",
+					"sha256": "b50c321d9e973284ae6b1d0c89bd46a40f5174de51fb28e3c77cd12ef34f6f56"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "sandwich",
 			"buildsystem": "simple",
 			"sources": [
@@ -2398,8 +2492,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/testthat_2.1.1.tar.gz",
-					"sha256": "776ebc8ba07ba41ac4f402e4cf1a525a66e9a50763931515b8fe9c4c21c84f0e"
+					"url": "http://static.jasp-stats.org/RPkgs/testthat_2.2.1.tar.gz",
+					"sha256": "67ee0512bb312695c81fd74338bb8ce9e2e58763681ddbcdfdf35f52dfdb0b78"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2452,6 +2546,19 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/vctrs_0.2.0.tar.gz",
 					"sha256": "5bce8f228182ecaa51230d00ad8a018de9cf2579703e82244e0931fe31f20016"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
+			"name": "visNetwork",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/visNetwork_2.0.8.tar.gz",
+					"sha256": "89ca01cabfcb40513314580daf25dccda0bd8fc74cbe8789e1d7ed6426093051"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2926,6 +3033,19 @@
 		},
 
 		{
+			"name": "wTO",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/wTO_1.6.3.tar.gz",
+					"sha256": "d69672bb02b1a9b97c4a38c8ea6b37d6698f4ba1514b88cbbb918cb3cee0ebb1"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "arm",
 			"buildsystem": "simple",
 			"sources": [
@@ -2946,6 +3066,19 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/cellranger_1.1.0.tar.gz",
 					"sha256": "5d38f288c752bbb9cea6ff830b8388bdd65a8571fd82d8d96064586bd588cf99"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
+			"name": "covr",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/covr_3.3.1.tar.gz",
+					"sha256": "9ae19c58ec0999a71bde5c6c27689a4cc86011ad0b06c3d5343d043eca3e6d3b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3238,13 +3371,26 @@
 		},
 
 		{
-			"name": "devtools",
+			"name": "crosstalk",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/devtools_2.0.1.tar.gz",
-					"sha256": "0ef5f1cfca9f6184d32ba62d69b42f1cc574c25807cc815f0eed27cb22bedadb"
+					"url": "http://static.jasp-stats.org/RPkgs/crosstalk_1.0.0.tar.gz",
+					"sha256": "b31eada24cac26f24c9763d9a8cbe0adfd87b264cf57f8725027fe0c7742ca51"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
+			"name": "DT",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/DT_0.8.tar.gz",
+					"sha256": "90195054148806cf31c7db5c41f72d5389c75adc0b1183606a9babd2c6ae8e21"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3349,6 +3495,19 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/car_3.0-2.tar.gz",
 					"sha256": "df59a9ba8fed67eef5ddb8f92f2b41745df715d5695c71d562d7031513f37c50"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
+			"name": "devtools",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/devtools_2.0.1.tar.gz",
+					"sha256": "0ef5f1cfca9f6184d32ba62d69b42f1cc574c25807cc815f0eed27cb22bedadb"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3541,9 +3700,9 @@
 			"buildsystem": "qmake",
 			"sources":[
 				{
-					"type":	"git",
-					"tag":	"v0.10.2.0",
-					"url":	"https://github.com/jasp-stats/jasp-desktop"
+					"type":		"git",
+					"branch":	"development",
+					"url":		"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
 					"type": "shell",

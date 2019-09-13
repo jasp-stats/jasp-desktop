@@ -4,13 +4,15 @@
 	"runtime-version": "5.12",
 	"sdk": "org.kde.Sdk",
 	"command": "org.jaspstats.JASP",
+	"inherit-extensions" : [ "org.freedesktop.Platform.GL" ],
 	"finish-args":[
 		"--socket=x11",
 		"--socket=wayland",
 		"--share=ipc",
 		"--share=network",
 		"--filesystem=home",
-		"--env=PATH=/usr/bin:/app/bin"
+		"--env=PATH=/usr/bin:/app/bin",
+		"--device=dri"
 	],
 	"build-options": {
 		"env": {
