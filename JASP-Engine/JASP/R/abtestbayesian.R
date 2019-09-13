@@ -44,6 +44,10 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (options$plotSequentialAnalysis)
     .abTestPlotSequential(jaspResults, ab_obj, ready)
 
+  ### ROBUSTNESS PLOT          ###
+  if (options$plotRobustness)
+    .abTestPlotRobustness(jaspResults, ab_obj, ready)
+
   ### PRIOR PLOT               ###
   if (options$plotPriorOnly)
     .abTestPlotPriorOnly(jaspResults, options)
@@ -319,6 +323,30 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   plotFunc <- function() {
       abtest::plot_sequential(x = ab_obj)
+  }
+
+  return (plotFunc)
+}
+
+.abTestPlotRobustness <- function(jaspResults, ab_obj, ready) {
+
+  abTestRobustnessPlot <- createJaspPlot(title = "Bayes Factor Robustness Check",  width = 530, height = 400)
+  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "plotRobustness"))
+  jaspResults[["abTestRobustnessPlot"]] <- abTestRobustnessPlot
+
+  if (!ready)
+    return()
+
+  abTestRobustnessPlot$plotObject <- .plotRobustness.abTest(ab_obj)
+}
+
+
+.plotRobustness.abTest <- function(ab_obj) {
+  # Args:
+  #   ab_obj: ab test object
+
+  plotFunc <- function() {
+      abtest::plot_robustness(x = ab_obj, mu_steps = 5, sigma_steps = 5)
   }
 
   return (plotFunc)
