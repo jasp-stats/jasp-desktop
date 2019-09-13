@@ -178,7 +178,7 @@ if(options[["modelOpt"]] == "validationManual"){
   importanceTable <- createJaspTable(title = "Variable Importance")
   importanceTable$position <- position
   importanceTable$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed", "optimizationCriterion",
-                                                      "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "importanceTable"))
+                                                      "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees", "importanceTable"))
   
   # Add column info
   importanceTable$addColumnInfo(name = "variable",  title = " ", type = "string")
