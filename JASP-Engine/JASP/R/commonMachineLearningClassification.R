@@ -187,7 +187,7 @@
       classificationTable$addFootnote(message="The model is optimized with respect to the <i>validation set accuracy</i>.", symbol="<i>Note.</i>")
 
     if(classificationResult[["nn"]] == options[["maxK"]] && options[["modelOpt"]] != "validationManual"){
-      classificationTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range op optimization.", symbol="<i>Note.</i>")
+      classificationTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization.", symbol="<i>Note.</i>")
     }
 
     distance  <- ifelse(classificationResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
