@@ -1,13 +1,14 @@
 JASPWidgets.image = JASPWidgets.Resizeable.extend({
 
 	defaults: {
-		title:	"",
-		width:	480,
-		height: 320,
-		data:	null,
-		custom: null,
-		error:	null,
-		name:	""
+		title:		"",
+		width:		480,
+		height:		320,
+		data:		null,
+		custom:		null,
+		error:		null,
+		name:		"",
+		revision:	0
 	}
 });
 
@@ -120,6 +121,8 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	},
 	
 	reRender: function () {
+		revision = this.model.get("revision");
+		this.model.set("revision", revision + 1);
 		this.$el.find(".jasp-image-image").remove();
 		this.render();
 	},
@@ -143,7 +146,7 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 			var url = window.globSet.tempFolder + data;
 			html += ' id="' + id + '" style="';
 			html += error ? 'background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)),' : 'background-image:'
-			html += 'url(\'' + url + '?x=' + Math.random() + '\'); '
+			html += 'url(\'' + url + '?' + this.model.get("revision") + '\'); '
 			html += 'background-size : 100% 100%">'
 		} else if (height > 100 && width > 100) {
 			html += '<div class="jasp-image-image no-data' + (error ? ' error' : '') + '">'
