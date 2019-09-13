@@ -69,7 +69,7 @@
   else
     nTrainAndValid <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
 
-  # Adjust for too many nearest neighbors (nn > nTrain) before the analysis starts
+  # check for too many nearest neighbors (nn > nTrain) before the analysis starts
   checkNearestNeighbors <- function() {
     if (type != "knn")
       return()
@@ -91,7 +91,7 @@
       return(paste0("You have specified more nearest neighbors than there are observations in the training set. Please choose a number lower than ", valueToTest, "."))
   }
   
-  # Adjust for too many folds (folds > nTrain+validation) before the analysis starts
+  # check for too many folds (folds > nTrain+validation) before the analysis starts
   checkIfFoldsExceedValidation <- function() {
     if (options[["modelValid"]] == "validationKFold")  {
       kFolds <- options[["noOfFolds"]]
@@ -100,7 +100,25 @@
     }
   }
   
-  return(list(checkNearestNeighbors, checkIfFoldsExceedValidation))
+  # check for too many observations in end nodes before the analysis starts
+  checkMinObsNode <- function() {
+    if (type != "boosting")
+      return()
+      
+    procentTrain <- (1 - options[["testDataManual"]])
+    if (options[["modelOpt"]] == "optimizationOOB")
+      procentTrain <- procentTrain * (1 - options[["validationDataManual"]])
+      
+    nTrain <- nrow(dataset) * procentTrain
+    bag.fraction <- options[["bagFrac"]]
+    n.minobsinnode <- options[["nNode"]]
+    if (nTrain * bag.fraction <= 2 * n.minobsinnode + 1)
+      return(paste0("The minimum number of observations per node is too large. ",
+                    "Ensure that `2 * Min. observations in node + 1` > ",
+                    "`Training data used per tree * available training data` (in this case the minimum can be ", nTrain * bag.fraction / 2 - 1, " at most)", collapse = ""))
+  }
+  
+  return(list(checkNearestNeighbors, checkIfFoldsExceedValidation, checkMinObsNode))
 }
 
 .regressionAnalysesReady <- function(options, type){
