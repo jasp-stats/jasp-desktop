@@ -134,64 +134,62 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   rowCount    <- 0
 
   if (orEqualTo1Prob > 0) {
-      rowCount = rowCount + 1
-      output.rows[[rowCount]] <- list(
-          "Models" = "Log odds ratio = 0",
-          "BF" = .clean(1.00),
-          "P(M|data)" = ab_obj$post_prob[["H0"]],
-          "P(M)" = .clean(orEqualTo1Prob)
-      )
+    rowCount = rowCount + 1
+    output.rows[[rowCount]] <- list(
+      "Models"    = "Log odds ratio = 0",
+      "BF"        = 1.00,
+      "P(M|data)" = ab_obj$post_prob[["H0"]],
+      "P(M)"      = orEqualTo1Prob
+    )
   }
 
   if (orGreaterThan1Prob > 0) {
-      rowCount = rowCount + 1
-      output.rows[[rowCount]] <- list(
-          "Models" = "Log odds ratio > 0",
-          "BF" = .clean(ab_obj$bf[["bfplus0"]]),
-          "P(M|data)" = ab_obj$post_prob[["H+"]],
-          "P(M)" = .clean(orGreaterThan1Prob)
-      )
+    rowCount = rowCount + 1
+    output.rows[[rowCount]] <- list(
+      "Models"    = "Log odds ratio > 0",
+      "BF"        = ab_obj$bf[["bfplus0"]],
+      "P(M|data)" = ab_obj$post_prob[["H+"]],
+      "P(M)"      = orGreaterThan1Prob
+    )
   }
 
   if (orLessThan1Prob > 0) {
-      rowCount = rowCount + 1
-      output.rows[[rowCount]] <- list(
-          "Models" = "Log odds ratio < 0",
-          "BF" = .clean(ab_obj$bf[["bfminus0"]]),
-          "P(M|data)" = ab_obj$post_prob[["H-"]],
-          "P(M)" = .clean(orLessThan1Prob)
-      )
+    rowCount = rowCount + 1
+    output.rows[[rowCount]] <- list(
+      "Models"    = "Log odds ratio < 0",
+      "BF"        = ab_obj$bf[["bfminus0"]],
+      "P(M|data)" = ab_obj$post_prob[["H-"]],
+      "P(M)"      = orLessThan1Prob
+    )
   }
 
   if (orNotEqualTo1Prob > 0) {
-      rowCount = rowCount + 1
-      output.rows[[rowCount]] <- list(
-          "Models" = "Log odds ratio ≠ 0",
-          "BF" = .clean(ab_obj$bf[["bf10"]]),
-          "P(M|data)" = ab_obj$post_prob[["H1"]],
-          "P(M)" = .clean(orNotEqualTo1Prob)
-      )
+    rowCount = rowCount + 1
+    output.rows[[rowCount]] <- list(
+      "Models"    = "Log odds ratio ≠ 0",
+      "BF"        = ab_obj$bf[["bf10"]],
+      "P(M|data)" = ab_obj$post_prob[["H1"]],
+      "P(M)"      = orNotEqualTo1Prob
+    )
   }
 
   if (options$bayesFactorOrder == "bestModelTop") {
+    ordered       <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
+    best_model_bf <- ordered[[1]]$BF
+    output.rows   <- list()
 
-      ordered       <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
-      best_model_bf <- ordered[[1]]$BF
-
-      output.rows   <- list()
-      for (r in 1:rowCount) {
-          ordered[[r]]$BF  <-.clean(ordered[[r]]$BF / best_model_bf)
-      }
-      output.rows   <- ordered
-
+    for (r in 1:rowCount) {
+      ordered[[r]]$BF  <- ordered[[r]]$BF / best_model_bf
+    }
+    output.rows   <- ordered
   }
 
   for (r in 1:rowCount) {
-      if (options$bayesFactorType == "BF01") {
-          output.rows[[r]]$BF <- .clean(1 / output.rows[[r]]$BF)
-      } else if (options$bayesFactorType == "LogBF10") {
-          output.rows[[r]]$BF <- .clean(base::log(output.rows[[r]]$BF))
-      }
+    if        (options$bayesFactorType == "BF01") {
+      output.rows[[r]]$BF <- 1 / output.rows[[r]]$BF
+    } else if (options$bayesFactorType == "LogBF10") {
+      output.rows[[r]]$BF <- base::log(output.rows[[r]]$BF)
+    }
   }
 
   abTestBayesianTable$addRows(output.rows)
@@ -289,12 +287,14 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   # Args:
   #   ab_obj: ab test object
   #   posteriorPlotType
-
-  what <- ifelse(posteriorPlotType == "LogOddsRatio", "logor",
-          ifelse(posteriorPlotType == "OddsRatio",    "or",
-          ifelse(posteriorPlotType == "RelativeRisk", "rrisk",
-          ifelse(posteriorPlotType == "AbsoluteRisk", "arisk",
-          ifelse(posteriorPlotType == "p1&p2",        "p1p2")))))
+  what <- switch(
+      posteriorPlotType,
+      "LogOddsRatio" = "logor",
+      "OddsRatio"    = "or",
+      "RelativeRisk" = "rrisk",
+      "AbsoluteRisk" = "arisk",
+      "p1&p2"        = "p1p2"
+  )
 
   plotFunc <- function() {
       abtest::plot_posterior(x = ab_obj, what = what, hypothesis = "H1")
@@ -374,12 +374,12 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   what <- switch(
       options$plotPriorType,
       "LogOddsRatio" = "logor",
-      "OddsRatio" = "or",
+      "OddsRatio"    = "or",
       "RelativeRisk" = "rrisk",
       "AbsoluteRisk" = "arisk",
-      "p1&p2" = "p1p2",
-      "p1" = "p1",
-      "p2" = "p2"
+      "p1&p2"        = "p1p2",
+      "p1"           = "p1",
+      "p2"           = "p2"
   )
 
   plotFunc <- function() {
