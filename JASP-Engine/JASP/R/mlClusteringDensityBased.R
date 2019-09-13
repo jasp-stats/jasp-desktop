@@ -101,7 +101,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
       silhouettes <- summary(cluster::silhouette(dfit$cluster, as.dist(1-cor(t(dataset[, .v(options[["predictors"]])])))))
     }
   } else {
-    silhouettes <- list("avg.width" = 0, "clus.avg.widths" = rep(0, clusters))
+    silhouettes <- list("avg.width" = 0, "clus.avg.widths" = rep(0, max(1, clusters)))
   }
 
   Silh_score <- silhouettes[["avg.width"]]
