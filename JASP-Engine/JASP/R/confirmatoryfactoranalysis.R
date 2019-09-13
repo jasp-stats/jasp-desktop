@@ -86,12 +86,16 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # TODO (vankesteren) content error checks, e.g., posdef covmat
 
   # Number of variables in the factors
-  nvars <- lapply(options$factors, function(x) length(x$indicators))
-  if (all(nvars == 0)) return("No variables")
-  if (any(nvars == 1)) {
-    .quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
-  }
-
+  
+  nVarsPerFactor <- unlist(lapply(options$factors, function(x) setNames(length(x$indicators), x$title)))
+  if (all(nVarsPerFactor == 0)) return("No variables")
+  if (any(nVarsPerFactor == 1)) .quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
+  
+  # TODO (tj), call error handling before all the options get screwed around so we can simply do `for (factor in options[["secondOrder"]])`
+  if (length(options[["secondOrder"]]) > 0)
+    for (factor in options[["secondOrder"]][[1]][["indicators"]])
+      if (!factor %in% names(nVarsPerFactor) || nVarsPerFactor[factor] <= 0)
+       .quitAnalysis("The model could not be estimated. A factor with less than 2 variables was added in Second-Order.")
 
   vars <- unique(unlist(lapply(options$factors, function(x) x$indicators)))
 
