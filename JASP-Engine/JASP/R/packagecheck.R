@@ -157,6 +157,7 @@
 	expected <- rbind(expected, c('jomo', '2.6-7'))
 	expected <- rbind(expected, c('jpeg', '0.1-8'))
 	expected <- rbind(expected, c('jsonlite', '1.6'))
+	expected <- rbind(expected, c('kknn', '1.3.1'))
 	expected <- rbind(expected, c('knitr', '1.21'))
 	expected <- rbind(expected, c('kutils', '1.67'))
 	expected <- rbind(expected, c('labeling', '0.3'))

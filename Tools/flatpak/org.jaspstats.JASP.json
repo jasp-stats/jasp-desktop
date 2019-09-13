@@ -2149,6 +2149,19 @@
 		},
 
 		{
+			"name": "kknn",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/kknn_1.3.1.tar.gz",
+					"sha256": "22840e70ec2afa40371e274b583634c8f6d27149a87253ee411747d5db78f3db"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
+		{
 			"name": "later",
 			"buildsystem": "simple",
 			"sources": [
@@ -3700,9 +3713,9 @@
 			"buildsystem": "qmake",
 			"sources":[
 				{
-					"type":		"git",
-					"branch":	"development",
-					"url":		"https://github.com/jasp-stats/jasp-desktop"
+					"type":	"git",
+					"tag":	"v0.10.2.0",
+					"url": 	"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
 					"type": "shell",
