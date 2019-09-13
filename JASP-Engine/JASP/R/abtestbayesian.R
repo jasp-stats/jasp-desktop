@@ -63,17 +63,11 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (!is.null(dataset))
     return (dataset)
 
-  n1 <- .readDataSetToEnd(columns.as.numeric = c(options$n1), exclude.na.listwise = c(options$n1))
-  y1 <- .readDataSetToEnd(columns.as.numeric = c(options$y1), exclude.na.listwise = c(options$y1))
-  n2 <- .readDataSetToEnd(columns.as.numeric = c(options$n2), exclude.na.listwise = c(options$n2))
-  y2 <- .readDataSetToEnd(columns.as.numeric = c(options$y2), exclude.na.listwise = c(options$y2))
-
-  dataset = list()
-
-  dataset[["n1"]] <- n1[[.v(options$n1)]]
-  dataset[["y1"]] <- y1[[.v(options$y1)]]
-  dataset[["n2"]] <- n2[[.v(options$n2)]]
-  dataset[["y2"]] <- y2[[.v(options$y2)]]
+  asNum             <- c(options$n1, options$y1, options$n2, options$y2)
+  dataset           <- .readDataSetToEnd(columns.as.numeric = asNum, excluse.na.listwise = asNum)
+  new_names         <- setNames(c("n1", "n2", "y1", "y2"),
+                                c(.v(options$n1), .v(options$n2), .v(options$y1), .v(options$y2)))
+  colnames(dataset) <- stringr::str_replace_all(colnames(dataset), new_names)
 
   return(dataset)
 }
