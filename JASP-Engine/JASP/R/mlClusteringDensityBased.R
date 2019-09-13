@@ -154,19 +154,123 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
   yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
-  yKnee <- KneeArrower::findCutoff(knnValues, knnDistances, method = "curvature")[["y"]]
-  suggestedLine <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = yKnee, yend = yKnee)
+  yKnee <- try(findCutoff(knnValues, knnDistances, method = "curvature")[["y"]])
+  if (inherits(yKnee, "try-error")) # this can cause a stackoverflow, in which case we abort and don't add it
+    suggestedLine <- NULL
+  else
+    suggestedLine <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = yKnee, yend = yKnee)
   
   lineData <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = options[["eps"]], yend = options[["eps"]])
  
-  p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
+  p <-  ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
         ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = range(xBreaks)) + 
-        ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks)) +
-        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
-        ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= paste0("Maximum curvature = ", round(yend, 2), ""), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred") +
-        ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
+        ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks))
+  
+  if (!is.null(suggestedLine)) {
+        p <-  p + ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
+                  ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= paste0("Maximum curvature = ", round(yend, 2), ""), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred")
+  }
+  
+  p <-  p + ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
         JASPgraphs::geom_line()
-  p <- JASPgraphs::themeJasp(p)
+  p <-  JASPgraphs::themeJasp(p)
 
   kdistPlot$plotObject <- p
+}
+
+# this function is a direct replicate of KneeArrower::findCutoff(), with added stackoverflow protection
+# the algorithm should probably be rewritten in a way that does not require recursion
+findCutoff <- function (x, y, method = "first", frac.of.steepest.slope = 0.5) {
+  stack <- Cstack_info()[names(Cstack_info()) == "eval_depth"] * 6 # each run adds 6 to the stack
+  if (getOption("expressions") <= (stack + 6)) 
+    stop("End of recursion reached without converging")
+
+  is.invalid <- function(x) {
+      any((!is.numeric(x)) | is.infinite(x))
+  }
+  if (is.invalid(x) || is.invalid(y)) {
+      stop("x and y must be numeric and finite. Missing values not allowed.")
+  }
+  if (length(x) != length(y)) {
+      stop("x and y must be of equal length.")
+  }
+  
+  new.x <- seq(from = min(x), to = max(x), length.out = length(x))
+  sp <- smooth.spline(x, y)
+  new.y <- predict(sp, new.x)$y
+  largest.odd.num.lte <- function(x) {
+      x.int <- floor(x)
+      if (x.int%%2 == 0) {
+          x.int - 1
+      }
+      else {
+          x.int
+      }
+  }
+  smoothen <- function(y, p = p, filt.length = NULL, ...) {
+      ts <- (max(new.x) - min(new.x))/length(new.x)
+      p <- 3
+      if (is.null(filt.length)) {
+          filt.length <- min(largest.odd.num.lte(length(new.x)), 
+              7)
+      }
+      if (filt.length <= p) {
+          stop("Need more points to find cutoff.")
+      }
+      signal::sgolayfilt(y, p = p, n = filt.length, ts = ts, 
+          ...)
+  }
+  first.deriv <- smoothen(new.y, m = 1)
+  second.deriv <- smoothen(new.y, m = 2)
+  pick.sign <- function(x) {
+      most.extreme <- which(abs(x) == max(abs(x), na.rm = TRUE))[1]
+      sign(x[most.extreme])
+  }
+  first.deriv.sign <- pick.sign(first.deriv)
+  second.deriv.sign <- pick.sign(second.deriv)
+  x.sign <- 1
+  y.sign <- 1
+  if ((first.deriv.sign == -1) && (second.deriv.sign == -1)) {
+      x.sign <- -1
+  }
+  else if ((first.deriv.sign == -1) && (second.deriv.sign == 
+      1)) {
+      y.sign <- -1
+  }
+  else if ((first.deriv.sign == 1) && (second.deriv.sign == 
+      1)) {
+      x.sign <- -1
+      y.sign <- -1
+  }
+  if ((x.sign == -1) || (y.sign == -1)) {
+      results <- findCutoff(x.sign * x, y.sign * y, method = method, 
+          frac.of.steepest.slope = frac.of.steepest.slope)
+      return(list(x = x.sign * results$x, y = y.sign * results$y))
+  }
+  cutoff.x <- NA
+  if (method == "first") {
+      if (is.invalid(frac.of.steepest.slope)) {
+          stop("Need to specify fraction of maximum slope.")
+      }
+      if (frac.of.steepest.slope <= 0 || frac.of.steepest.slope > 
+          1) {
+          stop("Fraction of maximum slope must be positive and be less than or equal to 1.")
+      }
+      slope.cutoff <- frac.of.steepest.slope * max(first.deriv)
+      cutoff.x <- findInverse(new.x, first.deriv, slope.cutoff)
+  }
+  else if (method == "curvature") {
+      curvature <- abs(second.deriv)/(1 + first.deriv^2)^(3/2)
+      cutoff.x <- findInverse(new.x, curvature, max(curvature))
+  }
+  else {
+      stop("Method must be either 'first' or 'curvature'.")
+  }
+  if (is.na(cutoff.x)) {
+      warning("Cutoff point is beyond range. Returning NA.")
+      list(x = NA, y = NA)
+  }
+  else {
+      approx(new.x, new.y, cutoff.x)
+  }
 }
