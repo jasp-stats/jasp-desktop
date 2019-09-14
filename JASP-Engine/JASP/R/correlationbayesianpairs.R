@@ -599,13 +599,18 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						    BF10post[i] <- log(bfObject$bfMin0)
 						}
 					}
-
-					if (is.null(errorMessage) && is.infinite(BF10post[i])) {
-						unplotable <- TRUE
-						unplotableMessage <- "Bayes factor is infinity"
-					} else if (is.null(errorMessage) && BF10post[i] == 1 / Inf) {
-						unplotable <- TRUE
-						unplotableMessage <- "The Bayes factor is too small"
+					
+					if (is.null(errorMessage)) {
+					  if (is.na(BF10post[i])) {
+					    unplotable <- TRUE
+					    unplotableMessage <- "The Bayes factor could not be computed"
+					  } else if (is.infinite(BF10post[i])) {
+					    unplotable <- TRUE
+					    unplotableMessage <- "Bayes factor is infinity"
+					  } else if (BF10post[i] == 1 / Inf) {
+					    unplotable <- TRUE
+					    unplotableMessage <- "The Bayes factor is too small"
+					  }
 					}
 
 					if (!is.null(index)) {

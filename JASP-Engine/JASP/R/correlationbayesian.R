@@ -1135,7 +1135,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     candidateAcceptance[iter] <- logTargetCandidates[iter]+.logProposal(z=zCurrent, n=n, r=r)-
       (.logTarget(rho=rhoCurrent, n=n, r=r, kappa=kappa)+logPropCandidates[iter])
     
-    if (log(acceptMechanism[iter]) <= candidateAcceptance[iter]) {
+    if (is.finite(candidateAcceptance[iter]) && log(acceptMechanism[iter]) <= candidateAcceptance[iter]) {
       # Accept candidate and update rhoCurrent for next iteration
       rhoCurrent <- rhoCandidates[iter]
     } 
@@ -1626,7 +1626,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         # 4. Marsman sampler
 
         result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method=methodNumber, ciValue=ciValue, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
-        #}
         methodNumber <- methodNumber+1
     }
 
@@ -2160,10 +2159,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 .betaParameterEstimates <- function(someMean, someVar) {
 	# someMean \in (0, 1)
 	# TODO: think about someMean = 0
-	some.a <- someMean*(someMean*(1-someMean)/someVar-1)
-	some.b <- (1-someMean)*(someMean*(1-someMean)/someVar-1)
+  result <- list(betaA=NA, betaB=NA)
+  if (!is.finite(someMean) || !is.finite(someVar) || someVar == 0)
+    return(result)
+    
+	result$betaA <- someMean*(someMean*(1-someMean)/someVar-1)
+	result$betaB <- (1-someMean)*(someMean*(1-someMean)/someVar-1)
 
-	result <- list(betaA=some.a, betaB=some.b)
 	return(result)
 }
 

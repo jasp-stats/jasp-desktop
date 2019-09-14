@@ -482,6 +482,8 @@
 }
 
 .scaleNumericData.data.frame <- function(x, center = TRUE, scale = TRUE) {
+  if (nrow(x) == 0)
+    return(x)
   idx <- sapply(x, is.numeric)
   x[, idx] <- scale(x[, idx, drop = FALSE], center, scale)
   attr(x, which = "scaled:center") <- NULL
