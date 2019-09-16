@@ -84,3 +84,84 @@ test_that("Main table results, only 2 hypotheses", {
 
   expect_equal_tables(table, refTable)
 })
+
+
+test_that("Prior plot matches", {
+  set.seed(0)
+
+  options <- jasptools::analysisOptions("ABTestBayesian")
+  options$orEqualTo1Prob     <- 0.5
+  options$orGreaterThan1Prob <- 0.5
+  options$orLessThan1Prob    <- 0
+  options$orNotEqualTo1Prob  <- 0
+  options$plotPriorOnly      <- TRUE
+
+  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+
+  expect_equal_plots(testPlot, "prioronly", dir="ABTestBayesian")
+})
+
+
+test_that("Posterior plot matches", {
+  set.seed(0)
+
+  options <- jasptools::analysisOptions("ABTestBayesian")
+  options$n1 <- "n1"
+  options$y1 <- "y1"
+  options$n2 <- "n2"
+  options$y2 <- "y2"
+  options$orEqualTo1Prob     <- 0.5
+  options$orGreaterThan1Prob <- 0.5
+  options$orLessThan1Prob    <- 0
+  options$orNotEqualTo1Prob  <- 0
+  options$plotPriorAndPosterior <- TRUE
+
+  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+
+  expect_equal_plots(testPlot, "posterior", dir="ABTestBayesian")
+})
+
+
+test_that("Sequential plot matches", {
+  skip("This test need to be verified")
+  set.seed(0)
+
+  options <- jasptools::analysisOptions("ABTestBayesian")
+  options$n1 <- "n1"
+  options$y1 <- "y1"
+  options$n2 <- "n2"
+  options$y2 <- "y2"
+  options$orEqualTo1Prob     <- 0.5
+  options$orGreaterThan1Prob <- 0.5
+  options$orLessThan1Prob    <- 0
+  options$orNotEqualTo1Prob  <- 0
+  options$plotSequentialAnalysis <- TRUE
+
+  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+
+  expect_equal_plots(testPlot, "sequential", dir="ABTestBayesian")
+})
+
+
+test_that("plotRobustness plot matches", {
+  set.seed(0)
+
+  options <- jasptools::analysisOptions("ABTestBayesian")
+  options$n1 <- "n1"
+  options$y1 <- "y1"
+  options$n2 <- "n2"
+  options$y2 <- "y2"
+  options$orEqualTo1Prob     <- 0.5
+  options$orGreaterThan1Prob <- 0.5
+  options$orLessThan1Prob    <- 0
+  options$orNotEqualTo1Prob  <- 0
+  options$plotRobustness     <- TRUE
+
+  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+
+  expect_equal_plots(testPlot, "robustness", dir="ABTestBayesian")
+})
