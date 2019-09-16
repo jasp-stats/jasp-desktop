@@ -274,3 +274,14 @@ findCutoff <- function (x, y, method = "first", frac.of.steepest.slope = 0.5) {
       approx(new.x, new.y, cutoff.x)
   }
 }
+
+findInverse <- function (x, y, y0) 
+{
+    if (y0 < min(y) | max(y) < y0) {
+        return(NA)
+    }
+    else {
+        f <- approxfun(x, y, rule = 1)
+        return(optimize(function(x) abs(f(x) - y0), range(x))$minimum)
+    }
+}
