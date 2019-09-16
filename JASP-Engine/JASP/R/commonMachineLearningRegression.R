@@ -49,36 +49,76 @@
     target                  <- options[["target"]]
   variables.to.read         <- c(predictors, target)
 
-  checkNearestNeighbors <- function( ){
-    if(type == "knn"){
-      # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
-      nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
-      if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
-        nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
-      } else {
-        nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
-      }
-      if(options[["modelOpt"]] == "optimizationError"){
-        if(options[["modelValid"]] == "validationManual")
-          nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
-        if(options[["modelValid"]] == "validationKFold")
-          nTrain <- ceiling(nTrain - nTrain / (options[["noOfFolds"]] - 1))
-        if(options[["modelValid"]] == "validationLeaveOneOut")
-          nTrain <- nTrain - 1
-      }
-      if(nn >= nTrain)
-        return(paste0("You have specified more nearest neighbors than observations in the training set. Please choose a number lower than ", nTrain, "."))
-    }
-  }
-
+  customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
   errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
-                       all.target = variables.to.read, custom = checkNearestNeighbors,
+                       all.target = variables.to.read, custom = customChecks,
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2){
     JASP:::.quitAnalysis("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set).")
   }
+}
+
+.getCustomErrorChecksKnnBoosting <- function(dataset, options, type) {
+  if (!type %in% c("knn", "boosting"))
+    return()
+
+  if (options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
+    nTrainAndValid <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
+  else
+    nTrainAndValid <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
+
+  # check for too many nearest neighbors (nn > nTrain) before the analysis starts
+  checkNearestNeighbors <- function() {
+    if (type != "knn")
+      return()
+
+    nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
+
+    valueToTest <- nTrainAndValid
+    if (options[["modelOpt"]] == "optimizationError") {
+      if (options[["modelValid"]] == "validationManual")
+        nTrain <- ceiling(nTrainAndValid - nTrainAndValid * options[['validationDataManual']])
+      if (options[["modelValid"]] == "validationKFold")
+        nTrain <- ceiling(nTrainAndValid - nTrainAndValid / (options[["noOfFolds"]] - 1))
+      if (options[["modelValid"]] == "validationLeaveOneOut")
+        nTrain <- nTrainAndValid - 1
+      valueToTest <- nTrain
+    }
+    
+    if (nn >= valueToTest)
+      return(paste0("You have specified more nearest neighbors than there are observations in the training set. Please choose a number lower than ", valueToTest, "."))
+  }
+  
+  # check for too many folds (folds > nTrain+validation) before the analysis starts
+  checkIfFoldsExceedValidation <- function() {
+    if (options[["modelValid"]] == "validationKFold")  {
+      kFolds <- options[["noOfFolds"]]
+      if (kFolds > nTrainAndValid)
+        return(paste0("You have specified more folds than there are observations in the training and validation set. Please choose a number lower than ", nTrainAndValid + 1, "."))
+    }
+  }
+  
+  # check for too many observations in end nodes before the analysis starts
+  checkMinObsNode <- function() {
+    if (type != "boosting")
+      return()
+      
+    procentTrain <- (1 - options[["testDataManual"]])
+    if (options[["modelOpt"]] == "optimizationOOB")
+      procentTrain <- procentTrain * (1 - options[["validationDataManual"]])
+      
+    nTrain <- nrow(dataset) * procentTrain
+    bag.fraction <- options[["bagFrac"]]
+    n.minobsinnode <- options[["nNode"]]
+    if (nTrain * bag.fraction <= 2 * n.minobsinnode + 1)
+      return(paste0("The minimum number of observations per node is too large. ",
+                    "Ensure that `2 * Min. observations in node + 1` > ",
+                    "`Training data used per tree * available training data` (in this case the minimum can be ", nTrain * bag.fraction / 2 - 1, " at most)", collapse = ""))
+  }
+  
+  return(list(checkNearestNeighbors, checkIfFoldsExceedValidation, checkMinObsNode))
 }
 
 .regressionAnalysesReady <- function(options, type){
@@ -224,7 +264,7 @@
       regressionTable$addFootnote(message="The model is optimized with respect to the <i>validation set mean squared error</i>.", symbol="<i>Note.</i>")
 
     if(regressionResult[["nn"]] == options[["maxK"]] && options[["modelOpt"]] != "validationManual"){
-      regressionTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range op optimization.", symbol="<i>Note.</i>")
+      regressionTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization.", symbol="<i>Note.</i>")
     }
 
     distance  <- ifelse(regressionResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
@@ -315,7 +355,7 @@
 
   regressionResult <- jaspResults[["regressionResult"]]$object
 
-  predDat <- data.frame(obs = regressionResult[["testReal"]], pred = regressionResult[["testPred"]])
+  predDat <- data.frame(obs = unname(regressionResult[["testReal"]]), pred = unname(regressionResult[["testPred"]]))
   predDat <- predDat[complete.cases(predDat), ]
   obs <- predDat[["obs"]]
   pred <- predDat[["pred"]]

@@ -43,30 +43,9 @@
     target                  <- options[["target"]]
   variables.to.read         <- c(predictors, target)
 
-  checkNearestNeighbors <- function( ){
-    if(type == "knn"){
-      # Adjust for too much nearest neighbors (nn > nTrain) before the analysis starts
-      nn <- base::switch(options[["modelOpt"]], "optimizationManual" = options[["noOfNearestNeighbours"]], "optimizationError" = options[["maxK"]])
-      if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator"){
-        nTrain <- length(which(dataset[, .v(options[["testSetIndicatorVariable"]])] == 0))
-      } else {
-        nTrain <- ceiling(nrow(dataset) - nrow(dataset)*options[['testDataManual']])
-      }
-      if(options[["modelOpt"]] == "optimizationError"){
-        if(options[["modelValid"]] == "validationManual")
-          nTrain <- ceiling(nTrain - nTrain*options[['validationDataManual']])
-        if(options[["modelValid"]] == "validationKFold")
-          nTrain <- ceiling(nTrain - nTrain / (options[["noOfFolds"]] - 1))
-        if(options[["modelValid"]] == "validationLeaveOneOut")
-          nTrain <- nTrain - 1
-      }
-      if(nn >= nTrain)
-        return(paste0("You have specified more nearest neighbors than observations in the training set. Please choose a number lower than ", nTrain, "."))
-    }
-  }
-
-  errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
-                       all.target = variables.to.read, custom = checkNearestNeighbors,
+  customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
+  errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'), customChecks,
+                       all.target = variables.to.read, custom = ,
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
@@ -114,7 +93,7 @@
     jaspResults[["classificationResult"]] <- createJaspState(classificationResult)
     jaspResults[["classificationResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
                                                               "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
-                                                              "estimationMethod", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
+                                                              "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
                                                               "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
   }
 }
@@ -133,7 +112,7 @@
   classificationTable$position <- position
   classificationTable$dependOn(options =c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
                                           "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
-                                          "estimationMethod", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
+                                          "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
                                           "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
 
   # Add analysis-specific columns
@@ -208,7 +187,7 @@
       classificationTable$addFootnote(message="The model is optimized with respect to the <i>validation set accuracy</i>.", symbol="<i>Note.</i>")
 
     if(classificationResult[["nn"]] == options[["maxK"]] && options[["modelOpt"]] != "validationManual"){
-      classificationTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range op optimization.", symbol="<i>Note.</i>")
+      classificationTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization.", symbol="<i>Note.</i>")
     }
 
     distance  <- ifelse(classificationResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
@@ -272,7 +251,7 @@
   confusionTable$position <- position
   confusionTable$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
                                           "target", "predictors", "seed", "seedBox", "confusionTable", "confusionProportions", "maxK", "noOfFolds", "modelValid", 
-                                          "estimationMethod", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
+                                          "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
                                           "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
   
   jaspResults[["confusionTable"]] <- confusionTable
@@ -338,7 +317,7 @@
   decisionBoundary$dependOn(options = c("decisionBoundary", "plotDensities", "plotStatistics", "trainingDataManual", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid", "estimationMethod", 
                                           "maxK", "noOfFolds", "modelValid", "noOfNearestNeighbors", "distanceParameterManual", "weights",
-                                          "plotLegend", "plotPoints", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", 
+                                          "plotLegend", "plotPoints", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", 
                                           "shrinkage", "intDepth", "nNode", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", 
                                           "holdoutData", "testDataManual"))
   jaspResults[["decisionBoundary"]] <- decisionBoundary 
@@ -514,7 +493,7 @@
     rocCurve$dependOn(options = c("rocCurve", "trainingDataManual", "scaleEqualSD", "modelOpt", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
                                     "target", "predictors", "seed", "seedBox", "modelValid", "estimationMethod",
                                     "maxK", "noOfFolds", "modelValid", "noOfNearestNeighbors", "distanceParameterManual", "weights",
-                                    "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode", "holdoutData", "testDataManual"))
+                                    "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode", "holdoutData", "testDataManual"))
     jaspResults[["rocCurve"]] <- rocCurve
 
     if(!ready) return()
