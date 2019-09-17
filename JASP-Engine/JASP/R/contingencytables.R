@@ -311,7 +311,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     # Add columns to table
     .crossTabLayersColumns(crossTabGamma, analysis)
-    #crossTabGamma$addColumnInfo(name = "type[gammaCoef]",  title = "", type="string")
     crossTabGamma$addColumnInfo(name = "value[gammaCoef]", title = "Gamma",          
                                 type = "number")
     crossTabGamma$addColumnInfo(name = "Sigma[gammaCoef]", title = "Standard Error", 
@@ -348,7 +347,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     # Add columns to table
     .crossTabLayersColumns(crossTabKendallTau, analysis)
-    #crossTabKendallTau$addColumnInfo(name = "type[kTauB]",  title = "", type="string")
     crossTabKendallTau$addColumnInfo(name = "value[kTauB]", title = "Kendall's Tau-b ", 
                                      type = "number")
     crossTabKendallTau$addColumnInfo(name = "statistic[kTauB]", title = "Z", 
@@ -1211,7 +1209,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       group <- NULL
     
     row <- list()
-    row[["type[gammaCoef]"]] <- "Gamma coefficient"
     if(ready) {
       chi.result <- try({
         chi.result <- vcdExtra::GKgamma(counts.matrix)
@@ -1250,7 +1247,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       group <- NULL
     
     row <- list()
-    row[["type[kTauB]"]] <- "Kendall's Tau-b"
     if (ready) {
       chi.result <- try({
         count.dat  <- stats::ftable(counts.matrix)

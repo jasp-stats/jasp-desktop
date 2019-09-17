@@ -136,8 +136,7 @@ test_that("Ordinal Gamma table results match", {
   results <- jasptools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabGamma"]][["data"]]
   expect_equal_tables(table,
-    list("Gamma coefficient", -0.163132137030995, 0.197938461395245, -0.551084392520947,
-         0.224820118458957)
+    list(-0.163132137030995, 0.197938461395245, -0.551084392520947, 0.224820118458957)
   )
 })
 
@@ -150,8 +149,7 @@ test_that("Kendall's Tau table results match", {
   results <- jasptools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabKendallTau"]][["data"]]
   expect_equal_tables(table,
-    list("Kendall's Tau-b", -0.0810440898473108, 0.420024632711394, 1,
-         -0.806378512498144)
+    list(-0.0810440898473108, 0.420024632711394, 1, -0.806378512498144)
   )
 })
 
