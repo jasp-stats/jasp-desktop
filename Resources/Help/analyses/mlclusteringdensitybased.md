@@ -20,7 +20,7 @@ Density-based clustering is a soft clustering method where clusters are construc
 
 #### Plots
 - K-distance plot: Generates a plot with the nearest neighbors distance (the amount of nearest neighbors is determined by the Min. core points parameter) on the y-axis and the points sorted by distance on the x-axis. This plot can be used for determining the optimal Epsilon value. The value where the graph shows a kink represents the optimal Epsilon value (the y-axis value).
-- T-sne cluster plot: Generates a T-sne plot of the clustering output. T-sne plots are used for visualizing high-dimensional data in a low-dimensional space of two dimensions aiming to illustrate the relative distances between data observations. The T-sne two-dimensional space makes the axes uninterpretable. A T-sne plot seeks to give an impression of the relative distances between observations and clusters
+- t-SNE cluster plot: Generates a t-SNE plot of the clustering output. t-SNE plots are used for visualizing high-dimensional data in a low-dimensional space of two dimensions aiming to illustrate the relative distances between data observations. The T-sne two-dimensional space makes the axes uninterpretable. A t-SNE plot seeks to give an impression of the relative distances between observations and clusters. To recreate the same t-SNE plot across several clustering analyses you can set their seed to the same value, as the t-SNE algorithm uses random starting values.
 - Legend: Sets a legend showing the cluster number for each observation. This option is set by default.
 - Labels: Shows the clustering labels of the different observations.
 
@@ -73,10 +73,7 @@ Generates a new column in your dataset with the cluster labels of your cluster r
 ### R-packages 
 --- 
 - cluster
-- colorspace
 - dbscan
-- e1017
-- ggdendro
 - Rtsne
 
 ### Example 
