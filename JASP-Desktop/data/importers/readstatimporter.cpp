@@ -76,9 +76,10 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	//typedef int (*readstat_note_handler)(int note_index, const char *note, void *ctx); //Could be nice to have the notes from whatever file in JASP? Although I am not sure where we would show the data.
 	//typedef int (*readstat_value_label_handler)(const char *val_labels, readstat_value_t value, const char *label, void *ctx);
 
+#ifdef WIN32
 	init_io_handlers(parser);
+#endif
 
-	readstat_set_open_handler(			parser, &handle_open		);
 	readstat_set_metadata_handler(		parser, &handle_metadata	);
 	readstat_set_variable_handler(		parser, &handle_variable	);
 	readstat_set_value_handler(			parser, &handle_value		);
@@ -93,7 +94,10 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	else							throw std::runtime_error("JASP does not support extension " + _ext);
 
 	readstat_parser_free(parser);
+
+#ifdef WIN32
 	io_cleanup();
+#endif
 
 	data->setLabelsToColumns();
 
