@@ -30,6 +30,16 @@
 .errorHandlingClusteringAnalyses <- function(dataset, options, type){
   predictors <- unlist(options$predictors)
 
+  customChecks <- .getCustomErrorChecksClustering(dataset, options, type)
+  if(length(predictors[predictors != ""]) > 0L)
+    .hasErrors(dataset, type = c('infinity', 'observations'), custom=customChecks, 
+                all.target = predictors, observations.amount = "< 2", exitAnalysisIfErrors = TRUE)
+
+  return()
+}
+
+.getCustomErrorChecksClustering <- function(dataset, options, type){
+
   checkClusters <- function() {
     if (type != "densitybased") {
       clusters  <- base::switch(options[["modelOpt"]], "validationManual" = options[["noOfClusters"]], "validationOptimized" = options[["maxClusters"]])
@@ -38,11 +48,15 @@
     }
   }
 
-  if(length(predictors[predictors != ""]) > 0L)
-    .hasErrors(dataset, type = c('infinity', 'observations'), custom=checkClusters, all.target = predictors,
-               observations.amount = "< 2", exitAnalysisIfErrors = TRUE)
+  checkDataHierarchicalClustering <- function() {
+    if(type != "hierarchical")
+      return()
 
-  return()
+    if(nrow(dataset) >= 65536L)
+      return("R package error: The hclust clustering algorithm from the stats R package cannot handle data that has 65536 or more rows. Please try another algorithm, as we are working towards a solution for this problem.")
+  }
+
+  return(list(checkClusters, checkDataHierarchicalClustering))
 }
 
 .clusterAnalysesReady <- function(options){
