@@ -104,8 +104,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	dataSet["filterVector"]				= Json::arrayValue;
 
-	for(bool filteredRow : package->dataSet()->filterVector())
-		dataSet["filterVector"].append(filteredRow);
+	if (dataset)
+	{
+		for (bool filteredRow : dataset->filterVector())
+			dataSet["filterVector"].append(filteredRow);
+	}
 
 	dataSet["emptyValuesMap"]			= Json::objectValue;
 
