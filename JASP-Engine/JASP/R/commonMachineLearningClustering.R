@@ -53,7 +53,7 @@
       return()
 
     if(nrow(dataset) >= 65536L)
-      return("R package error: The hclust clustering algorithm from the stats R package cannot handle data that has 65536 or more rows. Please try another algorithm, as we are working towards a solution for this problem.")
+      return("R package error: The hclust clustering algorithm from the stats R package cannot handle data that has 65536 or more rows. We are working on a solution for this problem. Please try another algorithm in the meantime.")
   }
 
   return(list(checkClusters, checkDataHierarchicalClustering))
