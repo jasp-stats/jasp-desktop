@@ -77,4 +77,5 @@ private:
 };
 
 Q_DECLARE_METATYPE(FileEvent *)
+Q_DECLARE_METATYPE(FileEvent::FileMode)
 #endif // FILEEVENT_H

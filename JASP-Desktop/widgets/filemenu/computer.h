@@ -30,9 +30,6 @@ class Computer : public FileMenuObject
 public:
 	explicit Computer(QObject *parent = nullptr);
 
-	FileEvent *browseOpen(const QString &path = "");
-	FileEvent *browseSave(const QString &path = "", FileEvent::FileMode mode = FileEvent::FileSave);
-	
 	void setFileName(const QString &filename);
 	void clearFileName();
 	void addRecentFolder(const QString &path);
@@ -44,13 +41,16 @@ protected:
 	//bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
 
 public slots:
-	void browsePath(QString path);
-	void browseMostRecent();
-	
-	void setListModel(ComputerListModel * listModel);
+	void		browsePath(QString path);
+	void		browseMostRecent();
+	FileEvent *	browseOpen(const QString &path = "");
+	FileEvent *	browseSave(const QString &path = "", FileEvent::FileMode mode = FileEvent::FileSave);
+	void		setListModel(ComputerListModel * listModel);
 
 signals:
 	void listModelChanged(ComputerListModel * listModel);
+	void browseOpenSignal(const QString & path = "");
+	void browseSaveSignal(const QString & path = "", FileEvent::FileMode mode = FileEvent::FileSave);
 
 private:
 	// these two variables are a hack!

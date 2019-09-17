@@ -19,10 +19,16 @@
 #include "computer.h"
 #include <QDir>
 #include "gui/messageforwarder.h"
+#include "log.h"
 
 Computer::Computer(QObject *parent): FileMenuObject(parent)
 {
 	setListModel(new ComputerListModel(this));
+
+	qRegisterMetaType<FileEvent::FileMode>("FileEvent::FileMode");
+
+	connect(this, &Computer::browseOpenSignal, this, &Computer::browseOpen, Qt::QueuedConnection);
+	connect(this, &Computer::browseSaveSignal, this, &Computer::browseSave, Qt::QueuedConnection);
 }
 
 FileEvent *Computer::browseOpen(const QString &path)
@@ -37,7 +43,9 @@ FileEvent *Computer::browseOpen(const QString &path)
 	if (_mode == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
 
+	Log::log() << "Now calling MessageForwarder::browseOpenFile(\"Open\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
 	QString finalPath = MessageForwarder::browseOpenFile("Open", browsePath, filter);
+	Log::log() << "Chosen path: \"" << finalPath.toStdString() << "\"" << std::endl;
 
 	FileEvent *event = new FileEvent(this, _mode);
 
@@ -57,7 +65,7 @@ FileEvent *Computer::browseOpen(const QString &path)
 FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
 	QString caption = "Save";
-	QString filter = "JASP Files (*.jasp)";
+	QString filter  = "JASP Files (*.jasp)";
 
 	QString browsePath = path;
 	if (path == "")
@@ -87,7 +95,7 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 
 	case FileEvent::FileSyncData:
 		caption = "Sync Data";
-		filter = "Data Files (*.csv *.txt *.sav *.ods)";
+		filter  = "Data Files (*.csv *.txt *.sav *.ods)";
 		break;
 
 	case FileEvent::FileSave:
@@ -97,22 +105,20 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 		throw std::runtime_error("Wrong FileEvent type for saving!");
 	}
 
+	Log::log() << "Now calling MessageForwarder::browseSaveFile(\"" << caption.toStdString() << "\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
 	QString finalPath = MessageForwarder::browseSaveFile(caption, browsePath, filter);
+	Log::log() << "Chosen path: \"" << finalPath.toStdString() << "\"" << std::endl;
+
 	FileEvent *event = new FileEvent(this, mode);
 
 	if (finalPath != "")
 	{
 		// Default file extensions if not specified
-		if		(mode == FileEvent::FileSave			&&	!finalPath.endsWith(".jasp", Qt::CaseInsensitive))
-			finalPath.append(QString(".jasp"));
+		if		(mode == FileEvent::FileSave			&&	 !finalPath.endsWith(".jasp", Qt::CaseInsensitive)	)	finalPath.append(QString(".jasp"));
 		else if	(mode == FileEvent::FileExportResults	&&	(!finalPath.endsWith(".html", Qt::CaseInsensitive) &&
-															!finalPath.endsWith(".pdf", Qt::CaseInsensitive)))
-			finalPath.append(QString(".html"));
-		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv", Qt::CaseInsensitive) &&
-															!finalPath.endsWith(".txt", Qt::CaseInsensitive)))
-
-			finalPath.append(QString(".csv"));
-
+															 !finalPath.endsWith(".pdf",  Qt::CaseInsensitive))	)	finalPath.append(QString(".html"));
+		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv",  Qt::CaseInsensitive) &&
+															 !finalPath.endsWith(".txt",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));
 		event->setPath(finalPath);
 		emit dataSetIORequest(event);
 	}
@@ -146,14 +152,15 @@ void Computer::clearFileName()
 	_hasFileName = false;
 }
 
-
-//Slots
 void Computer::browsePath(QString path)
 {
+
+	Log::log() << "void Computer::browsePath(\"" << path.toStdString() << "\") called, now sending out signal to show " << (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData ? "Open " : "Save ") << "file dialog." << std::endl;
+
 	if (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData)
-		browseOpen(path);
+		emit browseOpenSignal(path);
 	else
-		browseSave(path, _mode);
+		emit browseSaveSignal(path, _mode);
 }
 
 void Computer::browseMostRecent()

@@ -22,7 +22,8 @@
 			"CXX11FLAGS":	"-std=gnu++11",
 			"CXX14FLAGS":	"-std=gnu++14"
 		},
-		"cxxflags": "-O2 -g",
+		"cxxflags": "-O2 -g -Wno-error",
+		"cflags": "-Wno-error",
 		"append-ld-library-path": "/app/lib;/app/lib64/R/lib",
 		"env": {
 			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
@@ -3709,13 +3710,23 @@
 		},
 
 		{
+			"name": "readstat",
+			"sources":[
+				{
+					"type":	"git",
+					"tag":	"v1.1.0",
+					"url": 	"https://github.com/WizardMac/ReadStat"
+				}]
+		},
+
+		{
 			"name": "jasp",
 			"buildsystem": "qmake",
 			"sources":[
 				{
 					"type":	"git",
-					"tag":	"v0.10.2.0",
-					"url": 	"https://github.com/jasp-stats/jasp-desktop"
+					"branch":	"fixingBrowseFileLinux",
+					"url": 	"https://github.com/JorisGoosen/jasp-desktop"
 				},
 				{
 					"type": "shell",

@@ -1,4 +1,14 @@
 		{
+			"name": "readstat",
+			"sources":[
+				{
+					"type":	"git",
+					"tag":	"v1.1.0",
+					"url": 	"https://github.com/WizardMac/ReadStat"
+				}]
+		},
+		
+		{
 			"name": "jasp",
 			"buildsystem": "qmake",
 			"sources":[
