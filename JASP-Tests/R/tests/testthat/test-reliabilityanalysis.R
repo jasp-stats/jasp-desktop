@@ -18,7 +18,7 @@ test_that("Main table results match", {
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
   table <- results[["results"]][["scaleTable"]][["data"]]
   expect_equal_tables(table,
-    list("scale", -0.757822989578577, -0.0677657928415725, 0.667932535083157,
+    list("scale", -0.757822989578577, -0.0677657928415725, 0.197235966525379,
          0.622700230679449, -0.175972651899464, -0.02217061461, 0.144515070286093,
          -1.45211881901153, -0.235388804018903)
   )
@@ -62,7 +62,7 @@ test_that("Reverse scaled items match", {
   results <- jasptools::run("ReliabilityAnalysis", "Fear of Statistics.csv", options)
   table <- results[["results"]][["scaleTable"]][["data"]]
   expect_equal_tables(table,
-    list("scale", 0.820836210468446, 0.813045844410605, 0.724966918842779,
+    list("scale", 0.820836210468446, 0.813045844410605, 0.824827780086911,
          0.708529526625945, 0.368244389782582, 3.08727148969273, 0.393585959365817,
          0.81017314606981, 0.831119838017159)
   )
