@@ -22,7 +22,7 @@ K-means clustering is a hard partitioning algorithm which aims to partition data
 
 #### Plots
 - Elbow method: Generates a plot with the total within sum of squares on the y-axis and the number of clusters on the x-axis. This plot can be used for determining the optimal number of clusters. The plot shows three curves using AIC, BIC, and 'elbow method' optimization.
-- T-sne cluster plot: Generates a T-sne plot of the clustering output. T-sne plots are used for visualizing high-dimensional data in a low-dimensional space of two dimensions aiming to illustrate the relative distances between data observations. The T-sne two-dimensional space makes the axes uninterpretable. A T-sne plot seeks to give an impression of the relative distances between observations and clusters
+- t-SNE cluster plot: Generates a t-SNE plot of the clustering output. t-SNE plots are used for visualizing high-dimensional data in a low-dimensional space of two dimensions aiming to illustrate the relative distances between data observations. The T-sne two-dimensional space makes the axes uninterpretable. A t-SNE plot seeks to give an impression of the relative distances between observations and clusters. To recreate the same t-SNE plot across several clustering analyses you can set their seed to the same value, as the t-SNE algorithm uses random starting values.
 - Legend: Sets a legend showing the cluster number for each observation. This option is set by default.
 - Labels: Shows the clustering labels of the different observations.
 
@@ -80,10 +80,7 @@ Generates a new column in your dataset with the cluster labels of your cluster r
 ### R-packages 
 --- 
 - cluster
-- colorspace
-- dbscan
-- e1017
-- ggdendro
+- stats
 - Rtsne
 
 ### Example 
