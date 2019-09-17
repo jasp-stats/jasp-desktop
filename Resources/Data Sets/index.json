@@ -630,9 +630,10 @@
       "children": [
         {
 		  "name": "Iris Flowers",
-          "path": "iris.csv",
+          "path": "iris.jasp",
           "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> <i>Data set included in R.<\/i>",
-          "kind": "file"
+          "kind": "file",
+          "associated_datafile": "iris.csv"
         },
         {
 		  "name": "Telco Customer Churn",
@@ -643,15 +644,17 @@
         },
 		{
 		  "name": "Student Grades",
-		  "path": "studentGrades.csv",
+                  "path": "studentGrades.jasp",
 		  "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
-		  "kind": "file"
+                  "kind": "file",
+                  "associated_datafile": "studentGrades.csv"
 		},
         {
 		  "name": "Wine Types",
-          "path": "wine.csv",
+          "path": "wine.jasp",
           "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
-          "kind": "file"
+          "kind": "file",
+          "associated_datafile": "wine.csv"
         }
       ],
       "debug": false
