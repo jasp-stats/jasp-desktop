@@ -1,16 +1,25 @@
 #include "readstat_custom_io.h"
+
+
+#ifdef _WIN32
+
 #include "boost/nowide/cstdio.hpp"
+#include <fcntl.h>
+#include <io.h>
+
+extern "C"
+{
 
 struct jasp_io_ctx
 {
-	FILE * file = NULL;
+	int fd = -1;
 };
 
 jasp_io_ctx * localIoCtx = NULL;
 
 readstat_error_t init_io_handlers(readstat_parser_t * parser)
 {
-	readstat_error_t		retval = READSTAT_OK;
+	readstat_error_t retval = READSTAT_OK;
 
 	if ((retval = readstat_set_open_handler(	parser, handle_open))	!= READSTAT_OK)	return retval;
 	if ((retval = readstat_set_close_handler(	parser, handle_close))	!= READSTAT_OK)	return retval;
@@ -33,19 +42,26 @@ void io_cleanup()
 
 int handle_open(const char *path, void * io_ctx)
 {
-	FILE * file = boost::nowide::fopen(path, "rb");
-	static_cast<jasp_io_ctx*>(io_ctx)->file = file;
+	boost::nowide::wstackstring wname;
 
-	return file != NULL;
+	if(!wname.convert(path)) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	int fd = _wopen(wname.c_str(), O_RDONLY | O_BINARY);
+
+	static_cast<jasp_io_ctx*>(io_ctx)->fd = fd;
+
+	return fd >= 0 ? READSTAT_OK : READSTAT_ERROR_OPEN;
 }
-
 
 int handle_close(void *io_ctx)
 {
-	FILE * file = static_cast<jasp_io_ctx*>(io_ctx)->file;
+	int fd = static_cast<jasp_io_ctx*>(io_ctx)->fd;
 
-	if (file != NULL)	return fclose(file);
-	else				return 0;
+	if (fd >= 0)	return _close(fd);
+	else			return 0;
 }
 
 readstat_off_t handle_seek(readstat_off_t offset, readstat_io_flags_t whence, void *io_ctx)
@@ -59,18 +75,15 @@ readstat_off_t handle_seek(readstat_off_t offset, readstat_io_flags_t whence, vo
 	default:											return -1;
 	}
 
-	FILE * file = static_cast<jasp_io_ctx*>(io_ctx)->file;
-#ifdef _WIN32
-	return _fseeki64(	file, offset, flag);
-#else
-	return fseek(		file, offset, flag);
-#endif
+	int fd = static_cast<jasp_io_ctx*>(io_ctx)->fd;
+
+	return _lseeki64(fd, offset, flag);
 }
 
 ssize_t handle_read(void *buf, size_t nbyte, void *io_ctx)
 {
-	FILE * file = static_cast<jasp_io_ctx*>(io_ctx)->file;
-	ssize_t out = fread(buf, sizeof(char), nbyte, file); //fread might work ok on 64bit stuff because seek fixed that already?
+	int fd = static_cast<jasp_io_ctx*>(io_ctx)->fd;
+	ssize_t out = _read(fd, buf, nbyte);
 
 	return out;
 }
@@ -79,3 +92,6 @@ readstat_error_t handle_update(long file_size, readstat_progress_handler progres
 {
 	return READSTAT_OK;
 }
+
+}
+#endif
