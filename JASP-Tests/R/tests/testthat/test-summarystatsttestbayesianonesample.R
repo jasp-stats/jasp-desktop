@@ -1,29 +1,31 @@
-context("SummaryStatsTTestBayesianOneSample")
+context("Summary Statistics Bayesian One Sample T-Test")
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianOneSample")
-options$n1Size <- 25
-options$plotBayesFactorRobustness <- TRUE
-options$plotPriorAndPosterior <- TRUE
-options$tStatistic <- 1.8
-set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "test.csv", options)
-
-
-test_that("Bayesian One Sample T-Test table results match", {
-	table <- results[["results"]][["table"]][["data"]]
-	expect_equal_tables(table,
-		list(0.853217271320418, 1.8, 25, 6.13707302160764e-05, 0.0844448509229511
-			))
+test_that("Main table results match", {
+  set.seed(0)
+  options <- analysisOptions("SummaryStatsTTestBayesianOneSample")
+  options$tStatistic      <- 2.3
+  options$n1Size          <- 23
+  options$bayesFactorType <- "LogBF10"
+  options$hypothesis      <- "greaterThanTestValue"
+  results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
+  
+  table <- results[["results"]][["oneSampleTTestTable"]][["data"]]
+  expect_equal_tables(table, list(1.32450670641619, 2.3, 23, 3.95778537281638e-05, 0.015654342509863))
 })
 
-test_that("Prior and Posterior plot matches", {
-	plotName <- results[["results"]][["inferentialPlots"]][["PriorPosteriorPlot"]][["data"]]
-	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsTTestBayesianOneSample")
-})
-
-test_that("Bayes Factor Robustness Check plot matches", {
-	plotName <- results[["results"]][["inferentialPlots"]][["BFrobustnessPlot"]][["data"]]
-	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	expect_equal_plots(testPlot, "bayes-factor-robustness-check", dir="SummaryStatsTTestBayesianOneSample")
-})
+# test_that("Prior posterior plot matches and BF robustness check plot matches", {
+#   # with additional info
+#   set.seed(0)
+#   options <- analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
+#   options$tStatistic            <- 2.3
+#   options$n1Size                <- 10
+#   options$n2Size                <- 13
+#   options$bayesFactorType           <- "LogBF10"
+#   options$plotPriorAndPosterior     <- TRUE
+#   options$plotBayesFactorRobustness <- TRUE
+#   results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
+#   testPlot <- results[["results"]][["inferentialPlots"]][["BFrobustnessPlot"]][["data"]]
+#   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianIndependentSamples")
+#   
+#   # without additional info
+# })

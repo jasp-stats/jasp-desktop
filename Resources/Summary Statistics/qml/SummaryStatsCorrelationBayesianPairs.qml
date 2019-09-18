@@ -24,7 +24,7 @@ import JASP.Widgets 1.0
 
 Form 
 {
-	usesJaspResults: false
+	usesJaspResults: true
 
 	IntegerField { name: "sampleSize"; label: qsTr("Sample size") }
 
