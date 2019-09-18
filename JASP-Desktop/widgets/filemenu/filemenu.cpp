@@ -367,6 +367,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 
 	case ActionButtons::FileOperation::Close:
 		close();
+		setSaveMode(FileEvent::FileOpen);
 		_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 		break;
 
