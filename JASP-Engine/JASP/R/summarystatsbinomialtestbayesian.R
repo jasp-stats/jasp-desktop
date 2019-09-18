@@ -39,29 +39,29 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   }
   
   # Take results from state if possible
-  if (!jaspResults[["binomialContainer"]][["bayesianBinomialTable"]])
+  if (!is.null(jaspResults[["binomialContainer"]][["bayesianBinomialTable"]]))
     return(jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]]$object)
   
   # creates the empty table before executing the test
   hypothesisList        <- .hypothesisType.summarystats.binomial(options$hypothesis, options$testValue, options$bayesFactorType)
-  jaspResults[["binomialContainer"]][["bayesianBinomialTable"]] <- .summaryStatsBinomialTableMain(jaspResults, options, hypothesisList)
-
+  jaspResults[["binomialContainer"]][["bayesianBinomialTable"]] <- .summaryStatsBinomialTableMain(options, hypothesisList)
+  
   if (!is.null(jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]])) {
     results <- jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]]$object
     # only change is BF type
     results[["binomTable"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
-    results <- computResults(hypothesisList, options)
+    results <- computeResults(hypothesisList, options)
     # Save results to state
     jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]] <- createJaspState(results)
     
     if (!is.null(results[["errorMessageTable"]]))
-      jaspResults[["binomialContainer"]]$setError(results[["errorMessageTable"]])
+      jaspResults[["binomialContainer"]][["bayesianBinomialTable"]]$setError(results[["errorMessageTable"]])
   }
   
   #  fill table if ready
   if (results[["ready"]])
-    jaspResults[["bayesianBinomialTable"]]$setData(results[["binomTable"]])
+    jaspResults[["binomialContainer"]][["bayesianBinomialTable"]]$setData(results[["binomTable"]])
 
   return(results)
 }
@@ -137,7 +137,6 @@ computeResults <- function(hypothesisList, options) {
   
   # Return results object
   return(results)
->>>>>>> rewrite to JASP results
 }
 
 
