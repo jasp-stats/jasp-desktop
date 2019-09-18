@@ -176,7 +176,7 @@ Form {
                     name: "noOfTrees"
                     text: qsTr("Trees:")
                     defaultValue: 100
-                    min: 3
+					min: 1
                     max: 500000
                     fieldWidth: 60
                 }
@@ -192,7 +192,7 @@ Form {
                     name: "maxTrees"
                     text: qsTr("Max. trees:") 
                     defaultValue: 100
-                    min: 1
+					min: 3
                     max: 500000
                     fieldWidth: 60
                 }
