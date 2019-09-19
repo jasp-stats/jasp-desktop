@@ -1,5 +1,3 @@
-[
-
 		{
 			"name": "abind",
 			"buildsystem": "simple",
@@ -3938,7 +3936,4 @@
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
 		}
-
-
-]
 

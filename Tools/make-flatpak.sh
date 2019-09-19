@@ -19,8 +19,6 @@ then
 	cd flatpak
 	R -e "source('gather-r-package-info.R'); createFlatpakJson();"
 
-	cp RPackages.json ../../flatpak-builder-folder/RPackages.json
-
 	echo "Now we make sure all of those packages are available on static.jasp-stats.org"
 	cd pkg-source-files
 	rsync -csav * $1@static.jasp-stats.org:static.jasp-stats.org/RPkgs/
@@ -46,6 +44,7 @@ then
 	fi
 else
 	echo "A second argument was given which wasn't prepare and it means you do *not* want to wait for all R-pkgs and the online repository to be downloaded because you already waited long enough..."
+	cd ../flatpak-builder-folder
 fi
 
 echo "Starting flatpak builder x64"

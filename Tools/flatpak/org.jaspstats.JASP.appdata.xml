@@ -34,7 +34,7 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-		<release version="0.11.0" date="2019-09-20">
+		<release version="0.11.0" date="2019-09-23">
 			<description>
 				This version adds the Machine Learning Module, which adds a variety of classification, regression and clustering analyses.
 				It also adds support for reading Stata and SAS files while updating the SPSS support through the use of ReadStat.
