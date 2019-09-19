@@ -21,16 +21,16 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   # Error checking is not necessary
   
   # Compute the results and create main results table
-  summaryStatsBinomialResults <- .summaryStatsBinomialComputeResults(jaspResults, options)
+  summaryStatsBinomialResults <- .summaryStatsBinomialMainFunction(jaspResults, options)
   
-  # Output tables and plots
+  # Output plots
   .summaryStatsBinomialPlot(     jaspResults, options, summaryStatsBinomialResults)
   
   return()
 }
 
 # Execute Bayesian binomial test ----
-.summaryStatsBinomialComputeResults <- function(jaspResults, options) {
+.summaryStatsBinomialMainFunction <- function(jaspResults, options) {
   
   # This function is the main workhorse, and also makes the table
   if (is.null(jaspResults[["binomialContainer"]])) {
@@ -51,8 +51,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     # only change possinle: BF type
     results[["binomTable"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
-    browser()
-    results <- computeResults(hypothesisList, options)
+    results <- .summaryStatsBinomialComputeResults(hypothesisList, options)
     # Save results to state
     jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]] <- createJaspState(results)
     
@@ -67,7 +66,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   return(results)
 }
 
-computeResults <- function(hypothesisList, options) {
+.summaryStatsBinomialComputeResults <- function(hypothesisList, options) {
   
   # Extract important information from options list
   hypothesis <- hypothesisList$hypothesis
@@ -100,7 +99,6 @@ computeResults <- function(hypothesisList, options) {
   if (!ready)
     return(list(ready = ready))
   
-  
   # Conduct frequentist and Bayesian binomial test
   pValue <- stats::binom.test(x = successes, n = n, p = theta0, alternative = hypothesis)$p.value
   BF10   <- .bayesBinomialTest(counts = successes, n = n, theta0 = theta0, hypothesis = hypothesis, a = a, b = b)
@@ -109,7 +107,7 @@ computeResults <- function(hypothesisList, options) {
                  BF01    = 1/BF10,
                  LogBF10 = log(BF10))
   
-  # add rows to the main table
+  # Add rows to the main table
   binomTable <- list(
     successes = successes,
     failures  = failures,
@@ -118,7 +116,7 @@ computeResults <- function(hypothesisList, options) {
     pValue    = pValue
   )
   
-  # Add results to results object
+  # Add information for plot
   binomPlot <- list(
     a         = a,
     b         = b,
@@ -139,7 +137,6 @@ computeResults <- function(hypothesisList, options) {
   # Return results object
   return(results)
 }
-
 
 # Main table ----
 .summaryStatsBinomialTableMain <- function(options, hypothesisList){
