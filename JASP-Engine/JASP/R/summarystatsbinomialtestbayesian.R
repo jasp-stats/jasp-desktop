@@ -38,19 +38,20 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     jaspResults[["binomialContainer"]]$dependOn(c("successes", "failures", "betaPriorParamA", "betaPriorParamB", "testValue", "hypothesis"))
   }
   
-  # Take results from state if possible
+  # If table already exists in the state, return it
   if (!is.null(jaspResults[["binomialContainer"]][["bayesianBinomialTable"]]))
     return(jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]]$object)
   
-  # creates the empty table before executing the test
+  # Otherwise: create the empty table before executing the analysis
   hypothesisList        <- .hypothesisType.summarystats.binomial(options$hypothesis, options$testValue, options$bayesFactorType)
   jaspResults[["binomialContainer"]][["bayesianBinomialTable"]] <- .summaryStatsBinomialTableMain(options, hypothesisList)
   
   if (!is.null(jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]])) {
     results <- jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]]$object
-    # only change is BF type
+    # only change possinle: BF type
     results[["binomTable"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
+    browser()
     results <- computeResults(hypothesisList, options)
     # Save results to state
     jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]] <- createJaspState(results)
