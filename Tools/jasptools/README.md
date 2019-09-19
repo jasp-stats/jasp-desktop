@@ -10,6 +10,9 @@ It is necessary to install some packages:
 This can be done as follows:
 
 `install.packages("Rcpp")`
+
+and 
+
 `install.packages("~/desktop/jasp/jasp-desktop/JASP-R-Interface/jaspResults/", repos = NULL, type = "source")`
 
 To install jasptools itself use: 
