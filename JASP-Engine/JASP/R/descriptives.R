@@ -36,6 +36,8 @@ Descriptives <- function(jaspResults, dataset, options) {
     # remove missing values from the grouping variable
     dataset <- dataset[!is.na(splitFactor), ]
     dataset.factors <- dataset.factors[!is.na(splitFactor), ]
+	# Actually remove missing values from the split factor
+	splitFactor <- na.omit(splitFactor)
     # create a list of datasets, one for each level
     splitDat         <- split(dataset[.v(variables)],         splitFactor)
     splitDat.factors <- split(dataset.factors[.v(variables)], splitFactor)
