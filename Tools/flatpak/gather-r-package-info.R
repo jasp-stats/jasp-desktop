@@ -131,8 +131,11 @@ giveOrderedDependencies <- function()
 }
 
 specials <- new.env(hash = TRUE, parent = parent.frame())
-specials[['BAS']]   <- list(type='github', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='vandenman/BAS')
-specials[['Bain']]  <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
+specials[['BAS']]          <- list(type='github', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='vandenman/BAS')
+specials[['Bain']]         <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
+specials[['KneeArrower']]  <- list(type='github', commit='cdb14e574e00914e4e7019a4cf3c5fcda7426466', repo='agentlans/KneeArrower')
+
+
 
 createFlatpakJson <- function()
 {
@@ -191,7 +194,7 @@ createFlatpakJson <- function()
 
   ind             <- '\t\t'
   buildOptionsEtc <- paste0(
-    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'},\n',
+    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'}\n',
     sep='',
     collapse='')
 
@@ -241,17 +244,14 @@ createFlatpakJson <- function()
       collapse=''))
   }
 
-  jsonLines <- as.character(lapply(orderedPkgs, convertToJsonLine))
+  jsonLines <- c('[\n', paste0(as.character(lapply(orderedPkgs, convertToJsonLine)), collapse=',\n'), '\n]\n')
   #print(jsonLines)
-  jsonFile  <- "expectedPackages.json"
+  jsonFile  <- "RPackages.json"
   fileConn  <- file(jsonFile)
   writeLines(jsonLines, fileConn)
   close(fileConn)
 
-
-  system2("cat",args=c("org.jaspstats.JASP_header.json", jsonFile, "org.jaspstats.JASP_footer.json"), stdout="org.jaspstats.JASP.json")
-
-  print(paste0("Expected packages are written as json to ", jsonFile, " and a fresh org.jaspstats.JASP.json has been generated!"))
+  print(paste0("Expected packages are written as json to ", jsonFile, " and that means org.jaspstats.JASP.json is ready to go!"))
 }
 
 getInstalledPackageEnv <- function()
