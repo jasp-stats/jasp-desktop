@@ -167,7 +167,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   stats$position          <- 1
 
   stats$dependOn(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
-    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "iqr", "mad","minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
+    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "iqr", "mad","madrobust", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
 
   if (wantsSplit) {
     stats$transposeWithOvertitle <- TRUE
@@ -186,6 +186,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (options$mode)                 stats$addColumnInfo(name="Mode",                        type="number")
   if (options$standardDeviation)    stats$addColumnInfo(name="Std. Deviation",              type="number")
   if (options$mad)                  stats$addColumnInfo(name="MAD",                         type="number")
+  if (options$madrobust)            stats$addColumnInfo(name="MAD Robust",                  type="number")
   if (options$iqr)                  stats$addColumnInfo(name="IQR",                         type="number")
   if (options$variance)             stats$addColumnInfo(name="Variance",                    type="number")
   if (options$skewness) {           stats$addColumnInfo(name="Skewness",                    type="number")
@@ -275,7 +276,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Valid"]]   <- length(na.omitted)
   resultsCol[["Missing"]] <- rows - length(na.omitted)
 
-  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$iqr || options$mad || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum)) {
+  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$iqr || options$mad || options$madrobust || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum)) {
     shouldAddNominalTextFootnote <- TRUE
   }
     
@@ -283,7 +284,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Std. Error of Mean"]]      <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardErrorMean, na.omitted, function(param) { sd(param)/sqrt(length(param))} )
   resultsCol[["Median"]]                  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$median,            na.omitted, median)
   resultsCol[["Std. Deviation"]]          <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardDeviation, na.omitted, sd)
-  resultsCol[["MAD"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mad,               na.omitted, mad)
+  resultsCol[["MAD"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mad,               na.omitted, function(param) { mad(param, constant = 1) } )
+  resultsCol[["MAD Robust"]]              <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$madrobust,         na.omitted, mad)
   resultsCol[["IQR"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$iqr,               na.omitted, .descriptivesIqr)
   resultsCol[["Variance"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$variance,          na.omitted, var)
   resultsCol[["Kurtosis"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesKurtosis)
