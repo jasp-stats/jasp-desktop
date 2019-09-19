@@ -19,6 +19,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   variables <- unlist(options$variables)
   splitName <- options$splitby
   makeSplit <- splitName != ""
+  numberMissingSplitBy <- 0
 
   if (is.null(dataset)) {
     if (makeSplit) {
@@ -36,14 +37,17 @@ Descriptives <- function(jaspResults, dataset, options) {
     # remove missing values from the grouping variable
     dataset <- dataset[!is.na(splitFactor), ]
     dataset.factors <- dataset.factors[!is.na(splitFactor), ]
-	# Actually remove missing values from the split factor
-	splitFactor <- na.omit(splitFactor)
+    
+    numberMissingSplitBy <- sum(is.na(splitFactor))
+    
+    # Actually remove missing values from the split factor
+    splitFactor <- na.omit(splitFactor)
     # create a list of datasets, one for each level
     splitDat         <- split(dataset[.v(variables)],         splitFactor)
     splitDat.factors <- split(dataset.factors[.v(variables)], splitFactor)
   }
 
-  .descriptivesDescriptivesTable(dataset, options, jaspResults)
+  .descriptivesDescriptivesTable(dataset, options, jaspResults, numberMissingSplitBy=numberMissingSplitBy)
 
   # Frequency table
   if (options$frequencyTables) {
@@ -157,7 +161,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   return()
 }
 
-.descriptivesDescriptivesTable <- function(dataset, options, jaspResults) {
+.descriptivesDescriptivesTable <- function(dataset, options, jaspResults, numberMissingSplitBy=0) {
   if (!is.null(jaspResults[["stats"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   wantsSplit              <- options$splitby != ""
@@ -167,6 +171,11 @@ Descriptives <- function(jaspResults, dataset, options) {
   stats                   <- createJaspTable("Descriptive Statistics")
   stats$transpose         <- TRUE
   stats$position          <- 1
+  
+  if (numberMissingSplitBy) {
+    stats$addFootnote(message=paste("Excluded", numberMissingSplitBy, "rows from the analysis that correspond to the", 
+                                    "missing values of the split-by variable", options$splitby))
+  }
 
   stats$dependOn(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
     "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "iqr", "mad","madrobust", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
@@ -234,7 +243,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     split       <- dataset[[.v(options$splitby)]]
     splitLevels <- levels(split)
     nLevels     <- length(levels(split))
-
+    
     for (variable in variables) {
       for (l in 1:nLevels) {
         column    <- dataset[[ .v(variable) ]][split==splitLevels[l]]
@@ -264,7 +273,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   
   if(shouldAddModeMoreThanOnceFootnote) 
     stats$addFootnote(message="More than one mode exists, only the first is reported", colNames="Mode")
-    
+  
   return(stats)
 }
 
