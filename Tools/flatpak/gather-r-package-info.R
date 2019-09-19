@@ -3,8 +3,9 @@ options(warn=1) #print warnings as they occur
 options(nCpus=8)
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
-CRAN       <- "https://cran.r-project.org/" #
-  #"https://cran.rstudio.com/"
+CRAN       <- "https://cran.rstudio.com/"
+#"https://cran.r-project.org/" #
+  
 
 giveOrderedDependencies <- function()
 {
@@ -54,6 +55,9 @@ giveOrderedDependencies <- function()
                                             use.names = FALSE)
 
       deps              <- deps[!(deps %in% base_pkgs)] #remove base pkgs
+
+      if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
+
       pkgDeps[[curPkg]] <- deps
       pkgs              <- append(pkgs, deps, i)
     }

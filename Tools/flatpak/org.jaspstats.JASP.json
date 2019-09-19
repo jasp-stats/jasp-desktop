@@ -68,9 +68,7 @@
 					"sha256":"e53d8c3cf20f2b8d7a9c1631b6f6a22874506fb392034758b3bb341c586c5b62"
 				}
 			]
-		},
-		
-		{
+		},		{
 			"name": "abind",
 			"buildsystem": "simple",
 			"sources": [
@@ -81,8 +79,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "acepack",
 			"buildsystem": "simple",
@@ -94,8 +92,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "assertthat",
 			"buildsystem": "simple",
@@ -107,8 +105,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "AUC",
 			"buildsystem": "simple",
@@ -120,8 +118,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "backports",
 			"buildsystem": "simple",
@@ -133,8 +131,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Bain",
 			"buildsystem": "simple",
@@ -146,8 +144,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "BAS",
 			"buildsystem": "simple",
@@ -159,8 +157,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "base64enc",
 			"buildsystem": "simple",
@@ -172,8 +170,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "BH",
 			"buildsystem": "simple",
@@ -185,8 +183,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "bitops",
 			"buildsystem": "simple",
@@ -198,8 +196,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "BMS",
 			"buildsystem": "simple",
@@ -211,8 +209,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "brew",
 			"buildsystem": "simple",
@@ -224,8 +222,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ca",
 			"buildsystem": "simple",
@@ -237,8 +235,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "carData",
 			"buildsystem": "simple",
@@ -250,8 +248,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "caTools",
 			"buildsystem": "simple",
@@ -263,8 +261,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "checkmate",
 			"buildsystem": "simple",
@@ -276,8 +274,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "clipr",
 			"buildsystem": "simple",
@@ -289,8 +287,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "clisymbols",
 			"buildsystem": "simple",
@@ -302,8 +300,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "cmprsk",
 			"buildsystem": "simple",
@@ -315,8 +313,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "cocor",
 			"buildsystem": "simple",
@@ -328,8 +326,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "coda",
 			"buildsystem": "simple",
@@ -341,8 +339,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "colorspace",
 			"buildsystem": "simple",
@@ -354,8 +352,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "commonmark",
 			"buildsystem": "simple",
@@ -367,8 +365,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "contfrac",
 			"buildsystem": "simple",
@@ -380,8 +378,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "corpcor",
 			"buildsystem": "simple",
@@ -393,8 +391,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "corrplot",
 			"buildsystem": "simple",
@@ -406,8 +404,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "crayon",
 			"buildsystem": "simple",
@@ -419,8 +417,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "curl",
 			"buildsystem": "simple",
@@ -432,8 +430,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "data.table",
 			"buildsystem": "simple",
@@ -445,8 +443,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "DBI",
 			"buildsystem": "simple",
@@ -458,8 +456,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "DEoptimR",
 			"buildsystem": "simple",
@@ -471,8 +469,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "deSolve",
 			"buildsystem": "simple",
@@ -484,8 +482,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "digest",
 			"buildsystem": "simple",
@@ -497,8 +495,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "diptest",
 			"buildsystem": "simple",
@@ -510,8 +508,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "e1071",
 			"buildsystem": "simple",
@@ -523,8 +521,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "eigenmodel",
 			"buildsystem": "simple",
@@ -536,8 +534,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ellipse",
 			"buildsystem": "simple",
@@ -549,8 +547,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "elliptic",
 			"buildsystem": "simple",
@@ -562,8 +560,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "estimability",
 			"buildsystem": "simple",
@@ -575,8 +573,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "evaluate",
 			"buildsystem": "simple",
@@ -588,8 +586,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "fansi",
 			"buildsystem": "simple",
@@ -601,8 +599,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "fdrtool",
 			"buildsystem": "simple",
@@ -614,8 +612,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Formula",
 			"buildsystem": "simple",
@@ -627,8 +625,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "generics",
 			"buildsystem": "simple",
@@ -640,8 +638,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "git2r",
 			"buildsystem": "simple",
@@ -653,8 +651,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "glasso",
 			"buildsystem": "simple",
@@ -666,8 +664,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "glue",
 			"buildsystem": "simple",
@@ -679,8 +677,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "goftest",
 			"buildsystem": "simple",
@@ -692,8 +690,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "GPArotation",
 			"buildsystem": "simple",
@@ -705,8 +703,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gtable",
 			"buildsystem": "simple",
@@ -718,8 +716,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gtools",
 			"buildsystem": "simple",
@@ -731,8 +729,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "highr",
 			"buildsystem": "simple",
@@ -744,8 +742,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "hmeasure",
 			"buildsystem": "simple",
@@ -757,8 +755,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "hypergeo",
 			"buildsystem": "simple",
@@ -770,8 +768,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ini",
 			"buildsystem": "simple",
@@ -783,8 +781,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "invgamma",
 			"buildsystem": "simple",
@@ -796,8 +794,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "iterators",
 			"buildsystem": "simple",
@@ -809,8 +807,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "jpeg",
 			"buildsystem": "simple",
@@ -822,8 +820,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "jsonlite",
 			"buildsystem": "simple",
@@ -835,8 +833,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "kernlab",
 			"buildsystem": "simple",
@@ -848,21 +846,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
-		{
-			"name": "KneeArrower",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/agentlans/KneeArrower",
-					"commit": "cdb14e574e00914e4e7019a4cf3c5fcda7426466"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "labeling",
 			"buildsystem": "simple",
@@ -874,8 +859,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lazyeval",
 			"buildsystem": "simple",
@@ -887,8 +872,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lisrelToR",
 			"buildsystem": "simple",
@@ -900,8 +885,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "logspline",
 			"buildsystem": "simple",
@@ -913,8 +898,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "longitudinal",
 			"buildsystem": "simple",
@@ -926,8 +911,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lsei",
 			"buildsystem": "simple",
@@ -939,8 +924,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "magrittr",
 			"buildsystem": "simple",
@@ -952,8 +937,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "matrixcalc",
 			"buildsystem": "simple",
@@ -965,8 +950,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "MatrixModels",
 			"buildsystem": "simple",
@@ -978,8 +963,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "matrixStats",
 			"buildsystem": "simple",
@@ -991,8 +976,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mclust",
 			"buildsystem": "simple",
@@ -1004,8 +989,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mdscore",
 			"buildsystem": "simple",
@@ -1017,8 +1002,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "memoise",
 			"buildsystem": "simple",
@@ -1030,8 +1015,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "metafor",
 			"buildsystem": "simple",
@@ -1043,8 +1028,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mime",
 			"buildsystem": "simple",
@@ -1056,8 +1041,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mitools",
 			"buildsystem": "simple",
@@ -1069,8 +1054,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mnormt",
 			"buildsystem": "simple",
@@ -1082,8 +1067,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "modeltools",
 			"buildsystem": "simple",
@@ -1095,8 +1080,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "modules",
 			"buildsystem": "simple",
@@ -1108,8 +1093,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "moments",
 			"buildsystem": "simple",
@@ -1121,8 +1106,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "munsell",
 			"buildsystem": "simple",
@@ -1134,8 +1119,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mvtnorm",
 			"buildsystem": "simple",
@@ -1147,8 +1132,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "nloptr",
 			"buildsystem": "simple",
@@ -1160,8 +1145,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "nnls",
 			"buildsystem": "simple",
@@ -1173,8 +1158,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "nortest",
 			"buildsystem": "simple",
@@ -1186,8 +1171,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "npsurv",
 			"buildsystem": "simple",
@@ -1199,8 +1184,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "numDeriv",
 			"buildsystem": "simple",
@@ -1212,8 +1197,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pan",
 			"buildsystem": "simple",
@@ -1225,8 +1210,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pbapply",
 			"buildsystem": "simple",
@@ -1238,8 +1223,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pbivnorm",
 			"buildsystem": "simple",
@@ -1251,8 +1236,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pkgconfig",
 			"buildsystem": "simple",
@@ -1264,8 +1249,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "plogr",
 			"buildsystem": "simple",
@@ -1277,8 +1262,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "plotrix",
 			"buildsystem": "simple",
@@ -1290,8 +1275,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "png",
 			"buildsystem": "simple",
@@ -1303,8 +1288,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "polynom",
 			"buildsystem": "simple",
@@ -1316,8 +1301,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ppcor",
 			"buildsystem": "simple",
@@ -1329,8 +1314,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ppls",
 			"buildsystem": "simple",
@@ -1342,8 +1327,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "prabclus",
 			"buildsystem": "simple",
@@ -1355,8 +1340,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "praise",
 			"buildsystem": "simple",
@@ -1368,8 +1353,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "prettyunits",
 			"buildsystem": "simple",
@@ -1381,8 +1366,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ps",
 			"buildsystem": "simple",
@@ -1394,8 +1379,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "psych",
 			"buildsystem": "simple",
@@ -1407,8 +1392,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "psychTools",
 			"buildsystem": "simple",
@@ -1420,8 +1405,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pwr",
 			"buildsystem": "simple",
@@ -1433,8 +1418,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "quadprog",
 			"buildsystem": "simple",
@@ -1446,8 +1431,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "qvcalc",
 			"buildsystem": "simple",
@@ -1459,8 +1444,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "R.methodsS3",
 			"buildsystem": "simple",
@@ -1472,8 +1457,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "R.oo",
 			"buildsystem": "simple",
@@ -1485,8 +1470,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "R.utils",
 			"buildsystem": "simple",
@@ -1498,8 +1483,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "R6",
 			"buildsystem": "simple",
@@ -1511,8 +1496,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "randomForest",
 			"buildsystem": "simple",
@@ -1524,8 +1509,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "RColorBrewer",
 			"buildsystem": "simple",
@@ -1537,8 +1522,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Rcpp",
 			"buildsystem": "simple",
@@ -1550,8 +1535,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "RcppArmadillo",
 			"buildsystem": "simple",
@@ -1563,8 +1548,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "RcppEigen",
 			"buildsystem": "simple",
@@ -1576,8 +1561,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "relimp",
 			"buildsystem": "simple",
@@ -1589,8 +1574,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rematch",
 			"buildsystem": "simple",
@@ -1602,8 +1587,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "remotes",
 			"buildsystem": "simple",
@@ -1615,8 +1600,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rex",
 			"buildsystem": "simple",
@@ -1628,8 +1613,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rjson",
 			"buildsystem": "simple",
@@ -1641,21 +1626,21 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rlang",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/rlang_0.3.1.tar.gz",
-					"sha256": "30427b2be2288e88acd30c4ea348ee06043a649fd73623a63148b1ad96317151"
+					"url": "http://static.jasp-stats.org/RPkgs/rlang_0.4.0.tar.gz",
+					"sha256": "9748a4a217548bbe5631c18fd88c94811950446f798ff21fb327703aebaa150d"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "robustbase",
 			"buildsystem": "simple",
@@ -1667,8 +1652,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rpf",
 			"buildsystem": "simple",
@@ -1680,8 +1665,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rprojroot",
 			"buildsystem": "simple",
@@ -1693,8 +1678,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rstudioapi",
 			"buildsystem": "simple",
@@ -1706,8 +1691,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Rtsne",
 			"buildsystem": "simple",
@@ -1719,8 +1704,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "RUnit",
 			"buildsystem": "simple",
@@ -1732,8 +1717,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "signal",
 			"buildsystem": "simple",
@@ -1745,8 +1730,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sn",
 			"buildsystem": "simple",
@@ -1758,8 +1743,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "snow",
 			"buildsystem": "simple",
@@ -1771,8 +1756,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "som",
 			"buildsystem": "simple",
@@ -1784,8 +1769,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sourcetools",
 			"buildsystem": "simple",
@@ -1797,8 +1782,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sp",
 			"buildsystem": "simple",
@@ -1810,8 +1795,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "SparseM",
 			"buildsystem": "simple",
@@ -1823,8 +1808,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "StanHeaders",
 			"buildsystem": "simple",
@@ -1836,8 +1821,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "stringi",
 			"buildsystem": "simple",
@@ -1849,8 +1834,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "stringr",
 			"buildsystem": "simple",
@@ -1862,8 +1847,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "SuppDists",
 			"buildsystem": "simple",
@@ -1875,8 +1860,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sys",
 			"buildsystem": "simple",
@@ -1888,8 +1873,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "TH.data",
 			"buildsystem": "simple",
@@ -1901,8 +1886,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "truncnorm",
 			"buildsystem": "simple",
@@ -1914,8 +1899,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ucminf",
 			"buildsystem": "simple",
@@ -1927,8 +1912,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "utf8",
 			"buildsystem": "simple",
@@ -1940,8 +1925,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "VGAM",
 			"buildsystem": "simple",
@@ -1953,8 +1938,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "viridisLite",
 			"buildsystem": "simple",
@@ -1966,8 +1951,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "whisker",
 			"buildsystem": "simple",
@@ -1979,8 +1964,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "withr",
 			"buildsystem": "simple",
@@ -1992,8 +1977,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "wordcloud",
 			"buildsystem": "simple",
@@ -2005,8 +1990,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "xfun",
 			"buildsystem": "simple",
@@ -2018,8 +2003,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "XML",
 			"buildsystem": "simple",
@@ -2031,8 +2016,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "xml2",
 			"buildsystem": "simple",
@@ -2044,8 +2029,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "xtable",
 			"buildsystem": "simple",
@@ -2057,8 +2042,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "yaml",
 			"buildsystem": "simple",
@@ -2070,8 +2055,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "zeallot",
 			"buildsystem": "simple",
@@ -2083,8 +2068,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "zip",
 			"buildsystem": "simple",
@@ -2096,8 +2081,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "zoo",
 			"buildsystem": "simple",
@@ -2109,8 +2094,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "abtest",
 			"buildsystem": "simple",
@@ -2122,8 +2107,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "askpass",
 			"buildsystem": "simple",
@@ -2135,8 +2120,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "BayesFactor",
 			"buildsystem": "simple",
@@ -2148,8 +2133,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "BSDA",
 			"buildsystem": "simple",
@@ -2161,8 +2146,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "cli",
 			"buildsystem": "simple",
@@ -2174,8 +2159,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "dbscan",
 			"buildsystem": "simple",
@@ -2187,8 +2172,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "desc",
 			"buildsystem": "simple",
@@ -2200,8 +2185,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ellipsis",
 			"buildsystem": "simple",
@@ -2213,8 +2198,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "etm",
 			"buildsystem": "simple",
@@ -2226,8 +2211,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "fitdistrplus",
 			"buildsystem": "simple",
@@ -2239,8 +2224,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "flexmix",
 			"buildsystem": "simple",
@@ -2252,8 +2237,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "foreach",
 			"buildsystem": "simple",
@@ -2265,8 +2250,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "fpc",
 			"buildsystem": "simple",
@@ -2278,8 +2263,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "fs",
 			"buildsystem": "simple",
@@ -2291,8 +2276,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gdata",
 			"buildsystem": "simple",
@@ -2304,8 +2289,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "GeneNet",
 			"buildsystem": "simple",
@@ -2317,8 +2302,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "glmnet",
 			"buildsystem": "simple",
@@ -2330,8 +2315,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gnm",
 			"buildsystem": "simple",
@@ -2343,8 +2328,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gplots",
 			"buildsystem": "simple",
@@ -2356,8 +2341,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gridExtra",
 			"buildsystem": "simple",
@@ -2369,8 +2354,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "htmltools",
 			"buildsystem": "simple",
@@ -2382,8 +2367,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "htmlwidgets",
 			"buildsystem": "simple",
@@ -2395,8 +2380,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "igraph",
 			"buildsystem": "simple",
@@ -2408,8 +2393,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "kknn",
 			"buildsystem": "simple",
@@ -2421,8 +2406,21 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
+		{
+			"name": "KneeArrower",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/agentlans/KneeArrower",
+					"commit": "cdb14e574e00914e4e7019a4cf3c5fcda7426466"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+
 		{
 			"name": "later",
 			"buildsystem": "simple",
@@ -2434,8 +2432,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "latticeExtra",
 			"buildsystem": "simple",
@@ -2447,8 +2445,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lavaan",
 			"buildsystem": "simple",
@@ -2460,8 +2458,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lifecycle",
 			"buildsystem": "simple",
@@ -2473,8 +2471,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lmtest",
 			"buildsystem": "simple",
@@ -2486,8 +2484,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "maptools",
 			"buildsystem": "simple",
@@ -2499,8 +2497,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "markdown",
 			"buildsystem": "simple",
@@ -2512,8 +2510,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "minqa",
 			"buildsystem": "simple",
@@ -2525,21 +2523,21 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "OpenMx",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/OpenMx_2.12.2.tar.gz",
-					"sha256": "d8e779cc8e5dad0ef92d2dd1b7936f5c0b952db3b1e14b1ef0cf269dbc84b4d4"
+					"url": "http://static.jasp-stats.org/RPkgs/OpenMx_2.13.2.tar.gz",
+					"sha256": "b349b4100cf3349c630df523af1c3c9d7ccf33158bb0ed38fd927628780abe70"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "openssl",
 			"buildsystem": "simple",
@@ -2551,8 +2549,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "openxlsx",
 			"buildsystem": "simple",
@@ -2564,8 +2562,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ordinal",
 			"buildsystem": "simple",
@@ -2577,8 +2575,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "plyr",
 			"buildsystem": "simple",
@@ -2590,8 +2588,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "processx",
 			"buildsystem": "simple",
@@ -2603,8 +2601,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "promises",
 			"buildsystem": "simple",
@@ -2616,8 +2614,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "purrr",
 			"buildsystem": "simple",
@@ -2629,8 +2627,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "quantreg",
 			"buildsystem": "simple",
@@ -2642,8 +2640,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "R.matlab",
 			"buildsystem": "simple",
@@ -2655,8 +2653,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "reshape2",
 			"buildsystem": "simple",
@@ -2668,8 +2666,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ROCR",
 			"buildsystem": "simple",
@@ -2681,8 +2679,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Rsolnp",
 			"buildsystem": "simple",
@@ -2694,8 +2692,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rversions",
 			"buildsystem": "simple",
@@ -2707,8 +2705,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sandwich",
 			"buildsystem": "simple",
@@ -2720,8 +2718,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "scales",
 			"buildsystem": "simple",
@@ -2733,8 +2731,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "semTools",
 			"buildsystem": "simple",
@@ -2746,8 +2744,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sessioninfo",
 			"buildsystem": "simple",
@@ -2759,8 +2757,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "survey",
 			"buildsystem": "simple",
@@ -2772,8 +2770,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "testthat",
 			"buildsystem": "simple",
@@ -2785,8 +2783,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "tidyselect",
 			"buildsystem": "simple",
@@ -2798,8 +2796,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "vcd",
 			"buildsystem": "simple",
@@ -2811,8 +2809,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "vcdExtra",
 			"buildsystem": "simple",
@@ -2824,8 +2822,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "vctrs",
 			"buildsystem": "simple",
@@ -2837,8 +2835,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "visNetwork",
 			"buildsystem": "simple",
@@ -2850,8 +2848,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "xopen",
 			"buildsystem": "simple",
@@ -2863,8 +2861,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "xts",
 			"buildsystem": "simple",
@@ -2876,8 +2874,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "BDgraph",
 			"buildsystem": "simple",
@@ -2889,8 +2887,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "callr",
 			"buildsystem": "simple",
@@ -2902,8 +2900,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "d3Network",
 			"buildsystem": "simple",
@@ -2915,8 +2913,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "doParallel",
 			"buildsystem": "simple",
@@ -2928,8 +2926,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "doSNOW",
 			"buildsystem": "simple",
@@ -2941,8 +2939,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "emmeans",
 			"buildsystem": "simple",
@@ -2954,8 +2952,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Epi",
 			"buildsystem": "simple",
@@ -2967,8 +2965,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gbm",
 			"buildsystem": "simple",
@@ -2980,8 +2978,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ggm",
 			"buildsystem": "simple",
@@ -2993,8 +2991,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "hms",
 			"buildsystem": "simple",
@@ -3006,8 +3004,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "httpuv",
 			"buildsystem": "simple",
@@ -3019,8 +3017,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "httr",
 			"buildsystem": "simple",
@@ -3032,8 +3030,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "huge",
 			"buildsystem": "simple",
@@ -3045,8 +3043,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "IsingSampler",
 			"buildsystem": "simple",
@@ -3058,8 +3056,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "knitr",
 			"buildsystem": "simple",
@@ -3071,8 +3069,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "kutils",
 			"buildsystem": "simple",
@@ -3084,8 +3082,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lme4",
 			"buildsystem": "simple",
@@ -3097,8 +3095,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "multcomp",
 			"buildsystem": "simple",
@@ -3110,8 +3108,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "parcor",
 			"buildsystem": "simple",
@@ -3123,8 +3121,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pbkrtest",
 			"buildsystem": "simple",
@@ -3136,8 +3134,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pillar",
 			"buildsystem": "simple",
@@ -3149,8 +3147,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pkgbuild",
 			"buildsystem": "simple",
@@ -3162,8 +3160,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "pkgload",
 			"buildsystem": "simple",
@@ -3175,8 +3173,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "progress",
 			"buildsystem": "simple",
@@ -3188,8 +3186,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rcmdcheck",
 			"buildsystem": "simple",
@@ -3201,8 +3199,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "regsem",
 			"buildsystem": "simple",
@@ -3214,8 +3212,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "relaimpo",
 			"buildsystem": "simple",
@@ -3227,8 +3225,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rockchalk",
 			"buildsystem": "simple",
@@ -3240,8 +3238,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "roxygen2",
 			"buildsystem": "simple",
@@ -3253,8 +3251,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "shiny",
 			"buildsystem": "simple",
@@ -3266,8 +3264,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "shinyAce",
 			"buildsystem": "simple",
@@ -3279,8 +3277,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "shinyBS",
 			"buildsystem": "simple",
@@ -3292,8 +3290,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "shinyjs",
 			"buildsystem": "simple",
@@ -3305,8 +3303,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "tibble",
 			"buildsystem": "simple",
@@ -3318,8 +3316,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "TTR",
 			"buildsystem": "simple",
@@ -3331,8 +3329,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "wTO",
 			"buildsystem": "simple",
@@ -3344,8 +3342,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "arm",
 			"buildsystem": "simple",
@@ -3357,8 +3355,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "cellranger",
 			"buildsystem": "simple",
@@ -3370,8 +3368,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "covr",
 			"buildsystem": "simple",
@@ -3383,8 +3381,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "dplyr",
 			"buildsystem": "simple",
@@ -3396,8 +3394,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "forcats",
 			"buildsystem": "simple",
@@ -3409,8 +3407,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ggplot2",
 			"buildsystem": "simple",
@@ -3422,8 +3420,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ggrepel",
 			"buildsystem": "simple",
@@ -3435,8 +3433,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "gh",
 			"buildsystem": "simple",
@@ -3448,8 +3446,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "htmlTable",
 			"buildsystem": "simple",
@@ -3461,8 +3459,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "jomo",
 			"buildsystem": "simple",
@@ -3474,8 +3472,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "lmerTest",
 			"buildsystem": "simple",
@@ -3487,8 +3485,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mi",
 			"buildsystem": "simple",
@@ -3500,8 +3498,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "miniUI",
 			"buildsystem": "simple",
@@ -3513,8 +3511,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "quantmod",
 			"buildsystem": "simple",
@@ -3526,8 +3524,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "readr",
 			"buildsystem": "simple",
@@ -3539,8 +3537,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "readxl",
 			"buildsystem": "simple",
@@ -3552,8 +3550,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "sem",
 			"buildsystem": "simple",
@@ -3565,8 +3563,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "tidyr",
 			"buildsystem": "simple",
@@ -3578,8 +3576,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "tseries",
 			"buildsystem": "simple",
@@ -3591,8 +3589,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "usethis",
 			"buildsystem": "simple",
@@ -3604,8 +3602,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "viridis",
 			"buildsystem": "simple",
@@ -3617,8 +3615,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "broom",
 			"buildsystem": "simple",
@@ -3630,8 +3628,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "colourpicker",
 			"buildsystem": "simple",
@@ -3643,8 +3641,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "conting",
 			"buildsystem": "simple",
@@ -3656,8 +3654,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "cowplot",
 			"buildsystem": "simple",
@@ -3669,8 +3667,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "crosstalk",
 			"buildsystem": "simple",
@@ -3682,8 +3680,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "DT",
 			"buildsystem": "simple",
@@ -3695,8 +3693,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ggdendro",
 			"buildsystem": "simple",
@@ -3708,8 +3706,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "ggedit",
 			"buildsystem": "simple",
@@ -3721,8 +3719,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "haven",
 			"buildsystem": "simple",
@@ -3734,8 +3732,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "Hmisc",
 			"buildsystem": "simple",
@@ -3747,8 +3745,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mitml",
 			"buildsystem": "simple",
@@ -3760,8 +3758,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "qgraph",
 			"buildsystem": "simple",
@@ -3773,8 +3771,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "rio",
 			"buildsystem": "simple",
@@ -3786,8 +3784,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "semPlot",
 			"buildsystem": "simple",
@@ -3799,8 +3797,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "car",
 			"buildsystem": "simple",
@@ -3812,8 +3810,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "devtools",
 			"buildsystem": "simple",
@@ -3825,8 +3823,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "graphicalVAR",
 			"buildsystem": "simple",
@@ -3838,8 +3836,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "heplots",
 			"buildsystem": "simple",
@@ -3851,8 +3849,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "IsingFit",
 			"buildsystem": "simple",
@@ -3864,8 +3862,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mgm",
 			"buildsystem": "simple",
@@ -3877,8 +3875,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "mice",
 			"buildsystem": "simple",
@@ -3890,8 +3888,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "NetworkComparisonTest",
 			"buildsystem": "simple",
@@ -3903,8 +3901,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "NetworkToolbox",
 			"buildsystem": "simple",
@@ -3916,8 +3914,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "onewaytests",
 			"buildsystem": "simple",
@@ -3929,8 +3927,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "weights",
 			"buildsystem": "simple",
@@ -3942,8 +3940,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "afex",
 			"buildsystem": "simple",
@@ -3955,8 +3953,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "candisc",
 			"buildsystem": "simple",
@@ -3968,8 +3966,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "smacof",
 			"buildsystem": "simple",
@@ -3981,8 +3979,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "networktools",
 			"buildsystem": "simple",
@@ -3994,8 +3992,8 @@
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
-		}
-,
+		},
+
 		{
 			"name": "bootnet",
 			"buildsystem": "simple",
@@ -4008,6 +4006,7 @@
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
+
 
 		{
 			"name": "readstat",
