@@ -1863,3 +1863,202 @@
 				x.intersp = .6, seg.len = 1.2)
 	}
 }
+
+### New analyses
+
+# Inferential plots ----
+.summaryStatsTTestBayesianInferentialPlots <- function(jaspResults, options, summaryStatsOneSampleResults) {
+  
+  opts <- c("plotPriorAndPosterior", "plotBayesFactorRobustness")
+  if (!any(unlist(options[opts])))
+    return()
+  
+  if (is.null(jaspResults[["ttestContainer"]][["inferentialPlots"]])) {
+    inferentialPlotsCollection <- createJaspContainer("Inferential Plots")
+    inferentialPlotsCollection$dependOn(c("plotPriorAndPosterior", "plotPriorAndPosteriorAdditionalInfo", "plotBayesFactorRobustness"))
+    jaspResults[["ttestContainer"]][["inferentialPlots"]] <- inferentialPlotsCollection
+  } else {
+    inferentialPlotsCollection <- jaspResults[["ttestContainer"]][["inferentialPlots"]]
+  }
+  
+  # determine plot titles
+  whichPlotTitles <- which(unlist(options[unlist(opts)]))
+  
+  # create all empty plots and containers before filling them in one-by-one, to avoid the screen from flashing
+  dependencies <- list(
+    c("plotPriorAndPosterior",     "plotPriorAndPosteriorAdditionalInfo"),
+    c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo", "bayesFactorType")
+  )
+  
+  plotTitles <- c("Prior and Posterior", "Bayes Factor Robustness Check")
+  jaspTitles <- c("plotPriorAndPosterior", "plotRobustness")
+  
+  for (i in whichPlotTitles) { # add empty plot in the container for this variable
+    if (is.null(inferentialPlotsCollection[[jaspTitles[i]]])) {
+      plot <- createJaspPlot(title = plotTitles[i], width = 530, height = 400)
+      plot$dependOn(options = dependencies[[i]])
+      plot$position <- i
+      inferentialPlotsCollection[[jaspTitles[i]]] <- plot
+    }
+  }
+  
+  if (!summaryStatsOneSampleResults[["ready"]])
+    return()
+  
+  hypothesisList <- summaryStatsOneSampleResults[["hypothesisList"]]
+  
+  if (options[["plotPriorAndPosterior"]]) {
+    .ttestBayesianPriorPosteriorPlot.summarystats(
+      collection         = inferentialPlotsCollection,
+      priorPosteriorInfo = summaryStatsOneSampleResults[["ttestPriorPosteriorPlot"]], 
+      options            = options
+    )
+  }
+  
+  if (options[["plotBayesFactorRobustness"]]) {
+    .ttestBayesianPlotRobustness.summarystats(
+      collection     = inferentialPlotsCollection,
+      robustnessInfo = summaryStatsOneSampleResults[["ttestRobustnessPlot"]],
+      hypothesisList = hypothesisList,
+      options        = options
+    )
+  }
+  
+}
+
+# Prior Posterior plot 
+.ttestBayesianPriorPosteriorPlot.summarystats <- function(collection, priorPosteriorInfo, options){
+  
+  if (is.null(collection[["plotPriorAndPosterior"]]$plotObject)) {
+    
+    plot <- collection[["plotPriorAndPosterior"]]
+    plot$status <- "running"
+    
+    obj <- try(.plotPriorPosterior(
+      t                      = priorPosteriorInfo$t,
+      n1                     = priorPosteriorInfo$n1,
+      n2                     = priorPosteriorInfo$n2,
+      paired                 = priorPosteriorInfo$paired,
+      oneSided               = priorPosteriorInfo$oneSided,
+      BF                     = priorPosteriorInfo$BF,
+      BFH1H0                 = priorPosteriorInfo$BFH1H0,
+      rscale                 = options$priorWidth, 
+      addInformation         = options$plotPriorAndPosteriorAdditionalInfo,
+      options                = options
+    ))
+    
+    if (isTryError(obj)) {
+      plot$setError(.extractErrorMessage(obj))
+    } else {
+      plot$plotObject <- obj
+    }
+  }
+}
+
+# Robustness plot
+.ttestBayesianPlotRobustness.summarystats <- function(collection, robustnessInfo, hypothesisList, options){
+  if (is.null(collection[["plotRobustness"]]$plotObject)) {
+    
+    plot <- collection[["plotRobustness"]]
+    plot$status <- "running"
+    
+    obj <- try(.plotBF.robustnessCheck.ttest.summarystats(
+      t                     = robustnessInfo$t,
+      n1                    = robustnessInfo$n1,
+      n2                    = robustnessInfo$n2,
+      paired                = robustnessInfo$paired,
+      BF10user              = robustnessInfo$BF10user,
+      bfType                = options$bayesFactorType,
+      nullInterval          = hypothesisList$nullInterval,
+      rscale                = robustnessInfo$rscale,
+      oneSided              = hypothesisList$oneSided,
+      isInformative         = robustnessInfo$isInformative,
+      additionalInformation = robustnessInfo$additionalInformation
+    ))
+    if (isTryError(obj)) {
+      plot$setError(.extractErrorMessage(obj))
+    } else {
+      plot$plotObject <- obj
+    }
+  }
+}
+.plotBF.robustnessCheck.ttest.summarystats <- function(t, n1, n2, paired = FALSE, BF10user, bfType = "BF10", nullInterval, rscale = 0.707, oneSided = FALSE,
+                                                       isInformative = FALSE, additionalInformation = FALSE) {
+  
+  # Error checking: cannot plot robustness check for informative priors
+  if (isInformative) {
+    error("Bayes factor robustness check plot currently not supported for informed prior.")
+  } 
+  
+  if (rscale > 1.5) {
+    rValues <- seq(0.0005, 2.0, length.out = 535)
+  } else {
+    rValues <- seq(0.0005, 1.5, length.out = 400)
+  }
+  
+  # compute BF10
+  BF10 <- vector("numeric", length(rValues))
+  for (i in seq_along(rValues)) {
+    BF10[i] <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval, rscale = rValues[i])$bf
+  }
+  
+  # maximum BF value
+  idx       <- which.max(BF10)
+  maxBF10   <- exp(BF10[idx])
+  maxBFrVal <- rValues[idx]
+  
+  # BF10 prior
+  BF10m     <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval, rscale = "medium")$bf
+  BF10w     <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval, rscale = "wide")$bf
+  BF10ultra <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval, rscale = "ultrawide")$bf
+  
+  BF10m     <- .clean(exp(BF10m))
+  BF10w     <- .clean(exp(BF10w))
+  BF10ultra <- .clean(exp(BF10ultra))
+  
+  dfLines <- data.frame(
+    x = rValues,
+    y = BF10
+  )
+  
+  BFH1H0 <- !(bfType == "BF01")
+  if (!BFH1H0) {
+    dfLines$y <- - dfLines$y
+    BF10user  <- 1 / BF10user
+    maxBF10   <- 1 / maxBF10
+    BF10w     <- 1 / BF10w
+    BF10ultra <- 1 / BF10ultra
+  }
+  
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
+  
+  dfPoints <- data.frame(
+    x = c(maxBFrVal, rscale, 1, sqrt(2)),
+    y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
+    g = JASPgraphs::parseThis(c(
+      sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~'r'==%s)", BFsubscript, format(maxBF10  , digits = 4), format(maxBFrVal, digits = 4)),
+      sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)"          , BFsubscript, format(BF10user , digits = 4)),
+      sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~%s==%s)"         , BFsubscript, format(BF10w    , digits = 4)),
+      sprintf("paste(ultrawide~prior, ':', ~%s==%s)"                       , BFsubscript, format(BF10ultra, digits = 4))
+    )),
+    stringsAsFactors = FALSE
+  )
+  
+  hypothesis <- switch(oneSided,
+                       "right" = "greater",
+                       "left"  = "smaller",
+                       "equal"
+  )
+  
+  plot <- JASPgraphs::PlotRobustnessSequential(
+    dfLines      = dfLines,
+    dfPoints     = dfPoints,
+    pointLegend  = additionalInformation,
+    xName        = "Cauchy prior width",
+    hypothesis   = hypothesis,
+    bfType       = bfType
+  )
+  
+  return(plot)
+  
+}
