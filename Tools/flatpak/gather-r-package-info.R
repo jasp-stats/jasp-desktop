@@ -197,7 +197,7 @@ createFlatpakJson <- function()
 
   ind             <- '\t\t'
   buildOptionsEtc <- paste0(
-    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'},\n',
+    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'}',
     sep='',
     collapse='')
 
@@ -247,7 +247,7 @@ createFlatpakJson <- function()
       collapse=''))
   }
 
-  jsonLines <- as.character(lapply(orderedPkgs, convertToJsonLine))
+  jsonLines <- c('{\n\t"name": "RPackages",\n\t"buildsystem": "simple",\n\t"build-commands": [],\n\t"modules":\n\t[', paste0(as.character(lapply(orderedPkgs, convertToJsonLine)), collapse=",\n"), '\n\t]\n}\n')
   #print(jsonLines)
   jsonFile  <- "RPackages.json"
   fileConn  <- file(jsonFile)
@@ -255,9 +255,9 @@ createFlatpakJson <- function()
   close(fileConn)
 
 
-  system2("cat",args=c("org.jaspstats.JASP_header.json", jsonFile, "org.jaspstats.JASP_footer.json"), stdout="org.jaspstats.JASP.json")
+  #system2("cat",args=c("org.jaspstats.JASP_header.json", jsonFile, "org.jaspstats.JASP_footer.json"), stdout="org.jaspstats.JASP.json")
 
-  print(paste0("Expected packages are written as json to ", jsonFile, " and a fresh org.jaspstats.JASP.json has been generated!"))
+  print(paste0("Expected packages are written as json to ", jsonFile, " and org.jaspstats.JASP.json knows where to look for it."))
 }
 
 getInstalledPackageEnv <- function()

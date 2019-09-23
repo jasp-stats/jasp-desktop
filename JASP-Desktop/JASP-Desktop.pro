@@ -82,7 +82,8 @@ exists(/app/lib/*) {
 	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
 	INSTALLS += flatpak_icon
 
-	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jaspstats.JASP.xml.gz < org.jaspstats.JASP.appdata.xml"
+  #flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jaspstats.JASP.xml.gz < org.jaspstats.JASP.appdata.xml"
+  flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/meta-info/ && cp org.jaspstats.JASP.appdata.xml /app/share/meta-info/"
 	QMAKE_EXTRA_TARGETS += flatpak_appinfo
 	PRE_TARGETDEPS      += flatpak_appinfo
 

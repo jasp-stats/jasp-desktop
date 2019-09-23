@@ -29,7 +29,8 @@ then
 	mkdir ../flatpak-builder-folder/jasp-repo
 
 	echo "Moving org.jaspstats.JASP.json to flatpak-builder-folder"
-	cp flatpak/org.jaspstats.JASP.json ../flatpak-builder-folder/org.jaspstats.JASP.json
+	cp flatpak/org.jaspstats.JASP.json 	../flatpak-builder-folder/
+	cp flatpak/RPackages.json 			../flatpak-builder-folder/
 	cd ../flatpak-builder-folder
 
 	echo "Getting current flatpak repository from static.jasp-stats.org"
