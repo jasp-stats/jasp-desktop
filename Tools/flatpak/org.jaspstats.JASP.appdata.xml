@@ -27,7 +27,7 @@
 	<screenshots>
 		<screenshot type="default">
 			<caption xml:lang="en-GB">Shows the dataviewer of JASP flanked with the options and output for the Independent Samples T-Test</caption>
-			<image>https://github.com/jasp-stats/jasp-desktop/blob/development/Tools/flatpak/JASP-screenshot-0.png</image>
+			<image type="source" width="1600" height="900">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/JASP-screenshot-0.png</image>
 		</screenshot>
 	</screenshots>
 	<url type="homepage">http://www.jasp-stats.org</url>
