@@ -15,7 +15,7 @@
 			"sources":[
 				{
 					"type":		"git",
-					"branch":	"development",
+					"tag":		"v0.11.0.0",
 					"url": 		"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
