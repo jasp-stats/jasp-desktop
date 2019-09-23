@@ -101,7 +101,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
-	_loader					= new AsyncLoader(this);
+	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
 	_dynamicModules			= new DynamicModules(this);
