@@ -4024,7 +4024,7 @@
 			"sources":[
 				{
 					"type":		"git",
-					"tag":		"v0.11.0.0",
+					"tag":		"v0.11.0.0_1",
 					"url": 		"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
