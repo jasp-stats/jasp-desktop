@@ -91,7 +91,7 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 }
 
 
-const Terms& ListModelFactorsForm::terms(const QString& what) const
+const Terms& ListModelFactorsForm::terms(const QString& what)
 {
 	if (what == "title")
 		return _titles;

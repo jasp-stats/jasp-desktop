@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=JASP
+Comment=Statistical analysis package
+Keywords=statistics;data
+Exec=org.jaspstats.JASP %f
+Terminal=false
+Type=Application
+MimeType=application/jasp
+StartupWMClass=org.jaspstats.JASP
+StartupNotify=true
+Icon=org.jaspstats.JASP

@@ -18,7 +18,7 @@
 #include "appinfo.h"
 #include <sstream> 
 
-const Version AppInfo::version = Version(JASP_VERSION_MAJOR, JASP_VERSION_MINOR, JASP_VERSION_REVISION, JASP_VERSION_BUILD + 255); //Why the 255???
+const Version AppInfo::version = Version(JASP_VERSION_MAJOR, JASP_VERSION_MINOR, JASP_VERSION_REVISION, JASP_VERSION_BUILD + 255);
 const std::string AppInfo::name = "JASP";
 const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 
@@ -34,7 +34,7 @@ std::string AppInfo::getBuildYear()
 }
 
 std::string AppInfo::getRVersion()
-{	
+{
 	std::stringstream ss;
 	ss << CURRENT_R_VERSION;
 	std::string str;

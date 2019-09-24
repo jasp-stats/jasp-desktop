@@ -18,7 +18,7 @@ DESTDIR = ..
 
 windows:TARGET = JASP
    macx:TARGET = JASP
-  linux:{ exists(/app/lib/*) {TARGET = org.jasp-stats.JASP } else { TARGET = jasp }}
+  linux:{ exists(/app/lib/*) {TARGET = org.jaspstats.JASP } else { TARGET = jasp }}
 
 DEPENDPATH = ..
 INCLUDEPATH += ../JASP-Common/
@@ -35,21 +35,21 @@ windows:INCLUDEPATH += ../../boost_1_64_0
 LIBS += -L.. -lJASP-Common
 
 windows:CONFIG(ReleaseBuild) {
-    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
+    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll -llibreadstat
 }
 
 windows:CONFIG(DebugBuild) {
-    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll -llibreadstat
     #CONFIG += console
 }
 
-   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
+   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz -lreadstat -liconv
 windows:LIBS += -lole32 -loleaut32
 
 linux {
     LIBS += -larchive
     exists(/app/lib/*)	{ LIBS += -L/app/lib }
-    LIBS += -lboost_filesystem -lboost_system -lrt
+    LIBS += -lboost_filesystem -lboost_system -lrt -lreadstat -lm -lz
 }
 
 $$JASPTIMER_USED {
@@ -74,33 +74,34 @@ QML_IMPORT_PATH = $$PWD/imports
 
 
 exists(/app/lib/*) {
-	flatpak_desktop.files = ../Tools/flatpak/org.jasp-stats.JASP.desktop
+	flatpak_desktop.files = ../Tools/flatpak/org.jaspstats.JASP.desktop
 	flatpak_desktop.path = /app/share/applications
 	INSTALLS += flatpak_desktop
 
-	flatpak_icon.files = ../Tools/flatpak/org.jasp-stats.JASP.svg
+	flatpak_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
 	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
 	INSTALLS += flatpak_icon
 
-	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jasp-stats.JASP.xml.gz < org.jasp-stats.JASP.appdata.xml"
+	#flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jaspstats.JASP.xml.gz < org.jaspstats.JASP.appdata.xml"
+	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/metainfo/ && cp org.jaspstats.JASP.appdata.xml /app/share/metainfo/"
 	QMAKE_EXTRA_TARGETS += flatpak_appinfo
 	PRE_TARGETDEPS      += flatpak_appinfo
 
-	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jasp-stats.JASP.appdata.xml
+	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jaspstats.JASP.appdata.xml
 	#flatpak_appinfo_xml.path = /app/share/appdata
 	#INSTALLS += flatpak_appinfo_xml
 
 
-	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jasp-stats.JASP.svg
-	flatpak_appinfo_icon.path = /app/share/app-info/icons/flatpak/scalable
+	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
+	flatpak_appinfo_icon.path = /app/share/icons/hicolor/scalable/apps/
 	INSTALLS += flatpak_appinfo_icon
 
-	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jasp-stats.JASP.png
-	flatpak_appinfo_icon64.path = /app/share/app-info/icons/flatpak/64x64
+	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jaspstats.JASP.png
+	flatpak_appinfo_icon64.path = /app/share/icons/hicolor/64x64/apps/
 	INSTALLS += flatpak_appinfo_icon64
 
-	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jasp-stats.JASP.png
-	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
+	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jaspstats.JASP.png
+	flatpak_appinfo_icon128.path = /app/share/icons/hicolor/128x128/apps/
 	INSTALLS += flatpak_appinfo_icon128
 }
 
@@ -218,32 +219,10 @@ HEADERS += \
     data/importers/ods/odsxmlcontentshandler.h \
     data/importers/ods/odsxmlhandler.h \
     data/importers/ods/odsxmlmanifesthandler.h \
-    data/importers/spss/characterencodingrecord.h \
-    data/importers/spss/cpconverter.h \
-    data/importers/spss/datainforecord.h \
-    data/importers/spss/datarecords.h \
-    data/importers/spss/dictionaryterminationrecord.h \
-    data/importers/spss/documentrecord.h \
-    data/importers/spss/extnumbercasesrecord.h \
-    data/importers/spss/fileheaderrecord.h \
-    data/importers/spss/floatinforecord.h \
-    data/importers/spss/integerinforecord.h \
-    data/importers/spss/longvarnamesrecord.h \
-    data/importers/spss/measures.h \
-    data/importers/spss/miscinforecord.h \
-    data/importers/spss/missingvaluechecker.h \
-    data/importers/spss/numericconverter.h \
-    data/importers/spss/readablerecord.h \
-    data/importers/spss/spssformattype.h \
-    data/importers/spss/spssimportcolumn.h \
-    data/importers/spss/spssimportdataset.h \
-    data/importers/spss/spssstream.h \
-    data/importers/spss/stringutils.h \
-    data/importers/spss/systemfileformat.h \
-    data/importers/spss/valuelabelvarsrecord.h \
-    data/importers/spss/vardisplayparamrecord.h \
-    data/importers/spss/variablerecord.h \
-    data/importers/spss/verylongstringrecord.h \
+    data/importers/readstat/readstat.h \
+    data/importers/readstat/readstatimportcolumn.h \
+    data/importers/readstat/readstatimportdataset.h \
+    data/importers/readstatimporter.h \
     data/importers/codepageconvert.h \
     data/importers/convertedstringcontainer.h \
     data/importers/csv.h \
@@ -255,7 +234,6 @@ HEADERS += \
     data/importers/importerutils.h \
     data/importers/jaspimporter.h \
     data/importers/odsimporter.h \
-    data/importers/spssimporter.h \
     data/asyncloader.h \
     data/asyncloaderthread.h \
     data/columnsmodel.h \
@@ -288,7 +266,7 @@ HEADERS += \
     utilities/application.h \
     utilities/jsonutilities.h \
     utilities/qutils.h \
-    utilities/resultsjsinterface.h \
+    results/resultsjsinterface.h \
     utilities/settings.h \
     utilities/simplecrypt.h \
     utilities/simplecryptkey.h \
@@ -296,13 +274,13 @@ HEADERS += \
     variablespage/levelstablemodel.h \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
+    widgets/filemenu/filesystem.h \
+    widgets/filemenu/osffilesystem.h \
     widgets/filemenu/recentfiles.h \
     widgets/filemenu/computer.h \
     widgets/filemenu/osf.h \
     widgets/filemenu/datalibrarybreadcrumbsmodel.h \
     widgets/filemenu/datalibrarylistmodel.h \
-    widgets/filemenu/filesystemmodel.h \
-    widgets/filemenu/osffilesystem.h \
     widgets/filemenu/computerfilesystem.h \
     widgets/filemenu/filesystementry.h \
     widgets/boundqmlcheckbox.h \
@@ -345,7 +323,7 @@ HEADERS += \
     resultstesting/compareresults.h \
     resultstesting/resultscomparetable.h \
     widgets/filemenu/filemenu.h \
-    $$PWD/gui/messageforwarder.h \
+    gui/messageforwarder.h \
     widgets/filemenu/filemenulistitem.h \
     widgets/filemenu/filemenubasiclistmodel.h \
     modules/ribbonmodelfiltered.h \
@@ -369,7 +347,13 @@ HEADERS += \
     utilities/aboutmodel.h \
     modules/ribbonbutton.h \
     widgets/filemenu/currentdatafile.h \
-    gui/jaspversionchecker.h
+    gui/jaspversionchecker.h \
+    widgets/listmodeltableviewbase.h \
+    widgets/sortmenumodel.h \
+    widgets/sortable.h \
+    widgets/listmodelfiltereddataentry.h \
+    data/importers/readstat/readstat_custom_io.h \
+    data/importers/readstat/readstat_windows_helper.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -406,27 +390,9 @@ SOURCES += \
     data/importers/ods/odsxmlcontentshandler.cpp \
     data/importers/ods/odsxmlhandler.cpp \
     data/importers/ods/odsxmlmanifesthandler.cpp \
-    data/importers/spss/characterencodingrecord.cpp \
-    data/importers/spss/datainforecord.cpp \
-    data/importers/spss/datarecords.cpp \
-    data/importers/spss/dictionaryterminationrecord.cpp \
-    data/importers/spss/documentrecord.cpp \
-    data/importers/spss/extnumbercasesrecord.cpp \
-    data/importers/spss/fileheaderrecord.cpp \
-    data/importers/spss/floatinforecord.cpp \
-    data/importers/spss/integerinforecord.cpp \
-    data/importers/spss/longvarnamesrecord.cpp \
-    data/importers/spss/miscinforecord.cpp \
-    data/importers/spss/missingvaluechecker.cpp \
-    data/importers/spss/numericconvertor.cpp \
-    data/importers/spss/readablerecord.cpp \
-    data/importers/spss/spssimportcolumn.cpp \
-    data/importers/spss/spssimportdataset.cpp \
-    data/importers/spss/stringutils.cpp \
-    data/importers/spss/valuelabelvarsrecord.cpp \
-    data/importers/spss/vardisplayparamrecord.cpp \
-    data/importers/spss/variablerecord.cpp \
-    data/importers/spss/verylongstringrecord.cpp \
+    data/importers/readstat/readstatimportcolumn.cpp \
+    data/importers/readstat/readstatimportdataset.cpp \
+    data/importers/readstatimporter.cpp \
     data/importers/codepageconvert.cpp \
     data/importers/convertedstringcontainer.cpp \
     data/importers/csv.cpp \
@@ -437,7 +403,6 @@ SOURCES += \
     data/importers/importer.cpp \
     data/importers/jaspimporter.cpp \
     data/importers/odsimporter.cpp \
-    data/importers/spssimporter.cpp \
     data/asyncloader.cpp \
     data/asyncloaderthread.cpp \
     data/columnsmodel.cpp \
@@ -468,20 +433,20 @@ SOURCES += \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \
     utilities/qutils.cpp \
-    utilities/resultsjsinterface.cpp \
+    results/resultsjsinterface.cpp \
     utilities/settings.cpp \
     utilities/simplecrypt.cpp \
     variablespage/labelfiltergenerator.cpp \
     variablespage/levelstablemodel.cpp \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
+    widgets/filemenu/filesystem.cpp \
+    widgets/filemenu/osffilesystem.cpp \
     widgets/filemenu/recentfiles.cpp \
     widgets/filemenu/computer.cpp \
     widgets/filemenu/osf.cpp \
     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp \
     widgets/filemenu/datalibrarylistmodel.cpp \
-    widgets/filemenu/filesystemmodel.cpp \
-    widgets/filemenu/osffilesystem.cpp \
     widgets/filemenu/computerfilesystem.cpp \
     widgets/boundqmlcheckbox.cpp \
     widgets/boundqmlradiobuttons.cpp \
@@ -547,7 +512,13 @@ SOURCES += \
     utilities/aboutmodel.cpp \
     modules/ribbonbutton.cpp \
     widgets/filemenu/currentdatafile.cpp \
-    gui/jaspversionchecker.cpp
+    gui/jaspversionchecker.cpp \
+    widgets/listmodeltableviewbase.cpp \
+    widgets/sortmenumodel.cpp \
+    widgets/sortable.cpp \
+    widgets/listmodelfiltereddataentry.cpp \
+    data/importers/readstat/readstat_custom_io.cpp
+
 
 RESOURCES += \
     html/html.qrc \

@@ -72,7 +72,6 @@ createChildren <- function(folder){
 
 # recursive function to create kind = file
 createEntries <- function(folder){
-  
   jaspfiles <- gtools::mixedsort(dir(folder,
                                      recursive = FALSE,
                                      include.dirs = FALSE,
@@ -86,14 +85,13 @@ createEntries <- function(folder){
   txtfiles <- dir(folder, recursive = FALSE,
                   include.dirs = FALSE,
                   full.names = FALSE,
-                  pattern = "license")
+                  pattern = "(license|.txt)")
 
-  
   # if the folder contains folders, and not files, create the folders
-  if(length(jaspfiles)==0 && length(txtfiles) == 0){
+  if(length(jaspfiles)==0 && length(csvfiles) == 0 && length(txtfiles) == 0){
     return(createChildren(folder))
   # if the folder contains files, create them  
-  } else if (length(jaspfiles)==0 && length(txtfiles) != 0){
+  } else if (length(jaspfiles)==0 && length(csvfiles) == 0 && length(txtfiles) != 0){
     return(data.frame(
       name = "",
       path = "",
@@ -101,7 +99,7 @@ createEntries <- function(folder){
       kind = "",
       stringsAsFactors = FALSE
     ))
-  } else{
+  } else if (length(jaspfiles) != 0){
     name <- gsub(".jasp", "", jaspfiles)
     
     # load a description
@@ -133,6 +131,29 @@ createEntries <- function(folder){
     )
     
     entries <- dplyr::full_join(jaspfiles, csvfiles, by = "name")
+    entries$children <- NULL
+    return(entries)
+  } else if(length(csvfiles) != 0){
+    name <- gsub(".csv", "", csvfiles)
+    
+    # load a description
+    description <- descriptions[match(name, descriptions$Chapter), "Description.for.the.JASP.files"]
+    description <- paste(description, "<br><br>")
+    
+    # load the source information
+    origin <- descriptions[match(name, descriptions$Chapter), "Origin"]
+    origin <- paste0("<i>", origin, "</i>")
+    
+    
+    csvfiles <- data.frame(
+      name = gsub(".csv", "", csvfiles),
+      path = csvfiles,
+      description = paste(description, origin),
+      kind = "file",
+      stringsAsFactors = FALSE
+    )
+    
+    entries <- csvfiles
     entries$children <- NULL
     return(entries)
   }  
@@ -177,24 +198,21 @@ DataLibrary[['children']][[1]][['children']][[2]] <- DataLibrary[['children']][[
 index$children <- DataLibrary
 #index <- data.frame(index, stringsAsFactors = FALSE)
 
-# create jsons
-jsonIndex <- jsonlite::toJSON(index, pretty = TRUE)
-write(jsonIndex, "index.json")
-
-
 # include debug data set
 debugdata <- data.frame(name = "Debug Dataset (JASP Team, 2017)",
                         path = "../debug.csv",
                         description = "For testing. Readme: is.gd/jaspdata",
                         kind = "file",
-						debug ="true",
-                        children = "NULL")
+                        children = "NULL",
+                        debug ="true")
 
+
+index$children$debug <- "false"
 index$children <- rbind(index$children, debugdata)
 
+# create jsons
 jsonIndex <- jsonlite::toJSON(index, pretty = TRUE)
-#write(jsonIndex, "indexdebug.json")
-
+write(jsonIndex, "index.json")
 
 ############################
 #####  DO NOT FORGET #######

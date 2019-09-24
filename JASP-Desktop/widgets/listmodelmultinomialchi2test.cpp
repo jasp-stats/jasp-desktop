@@ -16,217 +16,51 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodelmultinomialchi2test.h"
-
-
-#include <fstream>
-
-#include "../analysis/analysisform.h"
-#include <QSize>
-
-
+#include "log.h"
 #include "utilities/qutils.h"
+#include "listmodelmultinomialchi2test.h"
+#include "analysis/analysisform.h"
+#include "analysis/options/optionstring.h"
+#include "analysis/options/optiondoublearray.h"
 
-using namespace std;
-
-ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(QMLListView* parent, QString tableType) :
-	ListModel(parent)
+void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *)
 {
-	_tableType = tableType;
-}
-
-
-int ListModelMultinomialChi2Test::rowCount(const QModelIndex &parent) const
-{
-	Q_UNUSED(parent);
-	return _rowNames.length();
-}
-
-int ListModelMultinomialChi2Test::columnCount(const QModelIndex &parent) const
-{
-	Q_UNUSED(parent);
-	return int(_columnCount);
-}
-
-QVariant ListModelMultinomialChi2Test::data(const QModelIndex &index, int role) const
-{
-	if (_rowNames.length() == 0)
-		return QVariant();
-
-	int column = index.column();
-	int row = index.row();
-
-	if (column > -1 && column < columnCount() && row > -1 && row < _rowNames.length())
-	{
-		if(role == Qt::DisplayRole)
-			return QVariant(_values[column][row]);
-		else if(role == int(specialRoles::lines))
-		{
-			bool	belowMeIsActive = index.row() < rowCount() - 1;
-
-			bool	up		= true,
-					left	= true,
-					down	= !belowMeIsActive,
-					right	= index.column() == columnCount() - 1; //always draw left line and right line only if last col
-
-			return	(left ?		1 : 0) +
-					(right ?	2 : 0) +
-					(up ?		4 : 0) +
-					(down ?		8 : 0);
-		}
-
-
-	}
-
-	return QVariant();
-}
-
-
-int ListModelMultinomialChi2Test::getMaximumColumnWidthInCharacters(size_t columnIndex) const
-{
-	if (columnIndex >= _columnCount) return 0;
-
-	return 6;
-}
-
-void ListModelMultinomialChi2Test::addColumn()
-{
-	beginResetModel();
-
-	if (_columnCount < _maxColumn)
-	{
-		_colNames.push_back(_getColName(_columnCount));
-		_columnCount++;
-		QVector<double> newValues(_rowNames.length(), 1);
-		_values.push_back(newValues);
-	}
-
-	endResetModel();
-
-	emit modelChanged();
-}
-
-void ListModelMultinomialChi2Test::removeColumn(size_t col)
-{
-	beginResetModel();
-
-	if (col < _columnCount)
-	{
-		_values.removeAt(int(col));
-		_colNames.pop_back();
-		_columnCount--;
-	}
-
-	endResetModel();
-
-	emit modelChanged();
-}
-
-void ListModelMultinomialChi2Test::reset()
-{
-	beginResetModel();
-
-	_colNames.clear();
-	_values.clear();
-	if (_rowNames.length() > 0)
-	{
-		_columnCount = 1;
-		QVector<double> newValues(_rowNames.length(), 1);
-		_values.push_back(newValues);
-		_colNames.push_back(_getColName(0));
-	}
-	else
-	{
-		_columnCount = 0;
-	}
-
-	endResetModel();
-
-	emit modelChanged();
-}
-
-void ListModelMultinomialChi2Test::itemChanged(int column, int row, double value)
-{
-	if (column > -1 && column < columnCount() && row > -1 && row < _rowNames.length())
-	{
-		if (_values[column][row] != value)
-		{
-			_values[column][row] = value;
-			emit modelChanged();
-		}
-	}
-}
-
-void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& colNames, std::vector<std::string>& levels, const std::vector<std::vector<double> > &values)
-{
-	_columnCount = colNames.size();
-	for (std::string colName : colNames)
-		_colNames.push_back(QString::fromStdString(colName));
-	for (std::string level : levels)
-		_rowNames.push_back(QString::fromStdString(level));
-
-	if (values.size() != _columnCount)
-		addError("Wrong number of columns for Chi2 Test!!!");
-	else if (values.size() > 0 && int(values[0].size()) != _rowNames.size())
-		addError("Wrong number of rows for Chi2 Test!!!!");
-
-	beginResetModel();
-
-	for (size_t i = 0; i < values.size(); ++i)
-	{
-		QVector<double> colValues;
-		for (double val : values[i])
-			colValues.push_back(val);
-		for (int j = int(values[i].size()); j < _rowNames.size(); j++)
-			colValues.push_back(1);
-		_values.push_back(colValues);
-	}
-
-	for (size_t i = values.size(); i < _columnCount; ++i)
-	{
-		QVector<double> extraColumn(_rowNames.length(), 1);
-		_values.push_back(extraColumn);
-	}
-
-	endResetModel();
-}
-
-
-void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
-{
-	Q_UNUSED(termsRemoved);
-
 	beginResetModel();
 
 	_rowNames.clear();
 	_colNames.clear();
 	_values.clear();
 	_columnCount = 0;
+
 	if (termsAdded && termsAdded->size() > 0)
 	{
-		const std::string& colName = termsAdded->at(0).asString();
-		DataSet* dataset = listView()->form()->getDataSet();
-		Column& column = dataset->columns().get(colName);
-		Labels& labels = column.labels();
-		for (auto it = labels.begin(); it != labels.end(); ++it)
-		{
-			_rowNames.push_back(tq(it->text()));
-		}
-		_columnCount = 1;
+		const std::string	& colName	= termsAdded->at(0).asString();
+		DataSet				* dataset	= listView()->form()->getDataSet();
+		Column				& column	= dataset->columns().get(colName);
+		Labels				& labels	= column.labels();
+
+		for (auto label : labels)
+			_rowNames.push_back(tq(label.text()));
+
 		QVector<double> newValues(_rowNames.length(), 1);
 		_values.push_back(newValues);
-		_colNames.push_back(_getColName(0));
+		_colNames.push_back(getColName(0));
+		_columnCount = 1;
+
 	}
 
 	endResetModel();
 
+	emit columnCountChanged();
+	emit rowCountChanged();
 	emit modelChanged();
 }
 
-QString ListModelMultinomialChi2Test::_getColName(size_t index)
+
+QString ListModelMultinomialChi2Test::getColName(size_t index)
 {
 	if (_tableType == "PriorCounts")
-		return tq("Counts");
+		return "Counts";
 
 	if (index >= _maxColumn)
 		index = _maxColumn - 1;
@@ -235,50 +69,90 @@ QString ListModelMultinomialChi2Test::_getColName(size_t index)
 	return tq("H₀ (") + letter + tq(")");
 }
 
-QVariant ListModelMultinomialChi2Test::headerData( int section, Qt::Orientation orientation, int role) const
+OptionsTable *ListModelMultinomialChi2Test::createOption()
 {
-	if (role == Qt::DisplayRole && section >= 0)
-	{
-		if (orientation == Qt::Horizontal && section < _colNames.length())
-		{
-			return QVariant(_colNames[section]);
-		}
-		else if (section < _rowNames.length())
-		{
-			return QVariant(_rowNames[section]);
-		}
-	}
-	else if (role == int(specialRoles::maxColString)) //A query from DataSetView for the maximumlength string to be expected! This to accomodate columnwidth
-	{
-		//calculate some maximum string?
-		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX";
-		int colWidth = getMaximumColumnWidthInCharacters(size_t(section));
+	Options* optsTemplate =		new Options();
+	optsTemplate->add("name",	new OptionString());
+	optsTemplate->add("levels", new OptionVariables());
+	optsTemplate->add("values", new OptionDoubleArray());
 
-		while(colWidth > dummyText.length())
-			dummyText += "X";
-
-		return dummyText;
-	}
-	else if(role == Qt::TextAlignmentRole)
-		return QVariant(Qt::AlignCenter);
-
-	return QVariant();
+	return new OptionsTable(optsTemplate);
 }
 
-QHash<int, QByteArray> ListModelMultinomialChi2Test::roleNames() const
+void ListModelMultinomialChi2Test::initValues(OptionsTable * bindHere)
 {
-	QHash<int, QByteArray> roles = ListModel::roleNames();
+	_colNames.clear();
+	_rowNames.clear();
+	_values.clear();
+
+	_boundTo = bindHere;
+
+	std::vector<Options *>	options = bindHere->value();
+
+	OptionVariables		* optionLevels = nullptr;
+
+	for (Options * newRow : options)
+	{
+		OptionString		*	optionName		= static_cast<OptionString		*>(newRow->get("name"));
+								optionLevels	= static_cast<OptionVariables	*>(newRow->get("levels")); // why not store it once?
+		OptionDoubleArray	*	optionValues	= static_cast<OptionDoubleArray	*>(newRow->get("values"));
+
+		_colNames.push_back(QString::fromStdString(optionName->value()));
+		//levels = optionLevels->variables(); //The old code (in boundqmltableview.cpp) seemed to specify to simply use the *last* OptionVariables called "levels" in the binding option. So I'll just repeat that despite not getting it.
+		_values.push_back(QVector<double>::fromStdVector(optionValues->value()));
+	}
+
+	if(optionLevels)
+		for(const std::string & level : optionLevels->variables())
+			_rowNames.push_back(QString::fromStdString(level));
+
+	//No need to check colnames to cols in values because they are created during the same loop and thus crash if non-matching somehow
+	if (_values.size() > 0 && int(_values[0].size()) != _rowNames.size())
+		addError("Number of rows specifed in Options for ListModelMultinomialChi2Test does not match number of rows in values!");
 
 
-	roles[int(specialRoles::active)]						= QString("active").toUtf8();
-	roles[int(specialRoles::lines)]							= QString("lines").toUtf8();
-	roles[int(specialRoles::maxColString)]					= QString("maxColString").toUtf8();
+	beginResetModel();
 
-	return roles;
+	_columnCount = _colNames.size();
+
+	for(auto & col : _values)
+		if(_rowNames.size() < col.size())
+		{
+			Log::log() << "Too many rows in a column of OptionsTable for ListModelMultinomialChi2Test! Shrinking column to fit." << std::endl;
+			col.resize(_rowNames.size());
+		}
+		else
+			for (int row = col.size(); row < _rowNames.size(); row++)
+				col.push_back(1);
+
+	//Ok, going to assume that the following: for (size_t i = values.size(); i < _columnCount; ++i) means we should add columns in case the data wasn't filled correctly (aka colNames did not match with values) but that cannot be now.
+
+	endResetModel();
+
+	emit columnCountChanged();
+	emit rowCountChanged();
 }
 
-Qt::ItemFlags ListModelMultinomialChi2Test::flags(const QModelIndex &index) const
+void ListModelMultinomialChi2Test::modelChangedSlot() // Should move this to listmodeltableviewbase as well probably? And also connect columnCount and colNames etc
 {
-	Q_UNUSED(index);
-	return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+	if (_boundTo)
+	{
+		std::vector<std::string> stdlevels;
+		for (const QString& rowName : _rowNames)
+			stdlevels.push_back(rowName.toStdString());
+
+		std::vector<Options*> allOptions;
+
+		for (int colIndex = 0; colIndex < _colNames.size(); colIndex++)
+		{
+			Options* options =		new Options();
+			options->add("name",	new OptionString(_colNames[colIndex].toStdString()));
+			options->add("levels",	new OptionVariables(stdlevels));
+			options->add("values",	new OptionDoubleArray(_values[colIndex].toStdVector()));
+
+			allOptions.push_back(options);
+		}
+
+		_boundTo->setValue(allOptions);
+	}
 }

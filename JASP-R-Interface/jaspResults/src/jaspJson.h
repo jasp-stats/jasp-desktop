@@ -102,25 +102,24 @@ public:
 		return vecvec;
 	}
 
-	Json::Value	metaEntry() override { return constructMetaEntry("json"); }
-	Json::Value	dataEntry() override;
+	Json::Value	metaEntry()									const	override { return constructMetaEntry("json"); }
+	Json::Value	dataEntry(std::string & errorMessage)		const	override;
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 protected:
 	Json::Value _json;
 };
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<INTSXP>(Rcpp::Vector<INTSXP> obj, int row)					{ return (int)(obj[row]) == NA_INTEGER	? "" : Json::Value((int)(obj[row]));			}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<INTSXP>(Rcpp::MatrixColumn<INTSXP> obj, int row)		{ return (int)(obj[row]) == NA_INTEGER	? "" : Json::Value((int)(obj[row]));			}
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<INTSXP>(Rcpp::Vector<INTSXP> obj, int row)					{ return obj[row] == NA_INTEGER	? "" : Json::Value((int)(obj[row]));			}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<INTSXP>(Rcpp::MatrixColumn<INTSXP> obj, int row)		{ return obj[row] == NA_INTEGER	? "" : Json::Value((int)(obj[row]));			}
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<LGLSXP>(Rcpp::Vector<LGLSXP> obj, int row)					{ return (bool)(obj[row]) == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<LGLSXP>(Rcpp::MatrixColumn<LGLSXP> obj, int row)		{ return (bool)(obj[row]) == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<LGLSXP>(Rcpp::Vector<LGLSXP> obj, int row)					{ return obj[row] == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<LGLSXP>(Rcpp::MatrixColumn<LGLSXP> obj, int row)		{ return obj[row] == NA_LOGICAL	? "" : Json::Value((bool)(obj[row]));			}
 
-template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<STRSXP>(Rcpp::Vector<STRSXP> obj, int row)					{ return obj[row] == NA_STRING			? "" : Json::Value(stringUtils::escapeHtmlStuff((std::string)(obj[row])));	}
-template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(Rcpp::MatrixColumn<STRSXP> obj, int row)		{ return obj[row] == NA_STRING			? "" : Json::Value(stringUtils::escapeHtmlStuff((std::string)(obj[row])));	}
-
+template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<STRSXP>(Rcpp::Vector<STRSXP> obj, int row)					{ return obj[row] == NA_STRING	? "" : Json::Value(stringUtils::escapeHtmlStuff((std::string)(obj[row])));	}
+template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(Rcpp::MatrixColumn<STRSXP> obj, int row)		{ return obj[row] == NA_STRING	? "" : Json::Value(stringUtils::escapeHtmlStuff((std::string)(obj[row])));	}
 
 #define TO_INFINITY_AND_BEYOND																					\
 {																												\

@@ -3828,23 +3828,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
     yticks <- pretty(c(ylow, yhigh, 0))
 	
-		xLabs <- vector("character", length(xticks))
-		for (i in seq_along(xticks)) {
-			if (xticks[i] < 10^6) {
-				xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
-			} else {
-				xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
-			}
-		}
-
-    yLabs <- vector("character", length(yticks))
-    for (i in seq_along(yticks)) {
-        if (yticks[i] < 10^6) {
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-        } else {
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-        }
-    }
+		# format axes labels
+    xLabs <- JASPgraphs::axesLabeller(xticks, digits = 3)
+    yLabs <- JASPgraphs::axesLabeller(yticks, digits = 3)
 
 	if (standardizedResiduals == TRUE) {
 		

@@ -1,19 +1,15 @@
 .onAttach <- function(libname, pkgname) {
-	require(Rcpp)
-	message(sprintf("jaspResults version: %s", packageVersion("jaspResults")))
 	env <- globalenv()
 
 	if (exists("jaspResults", env)) {
-		message("Destroying all currently active jaspObjects, R will crash if you try to use any objects you still have loaded, and creating a *fresh* jaspResults.")
 		destroyAllAllocatedObjects()
 		destroyAllAllocatedRObjects()
+		rm(list=ls(envir=.plotStateStorage), envir=.plotStateStorage)
 	}
 
 	env$jaspResults <- jaspResultsR$new(create_cpp_jaspResults("Analysis Test", NULL))
-
-	message("jaspResults has been created and can now be used to test/develop your analysis, try something like:\njaspResults$print()\nor\njaspResults[[\"aTable\"]] <- createJaspTable()")
-	return(invisible(TRUE))
 	
+	return(invisible(TRUE))
 }
 
 #For use inside jaspResults to store plots and states (as is obvious from the name)
@@ -21,11 +17,30 @@
 
 initJaspResults <- function() .onAttach()
 
+startProgressbar <- function(expectedTicks, label="") {
+	if (!is.numeric(expectedTicks) || !is.character(label))
+		stop("`expectedTicks` must be numeric and `label` a character")
+	if (nchar(label) > 40)
+		stop("The label must be 40 characters at most")
+		
+	if (jaspResultsCalledFromJasp())
+		jaspResultsModule$cpp_startProgressbar(expectedTicks, label)
+	else
+		cpp_startProgressbar(expectedTicks, label)
+}
+
+progressbarTick <- function() { 
+	if (jaspResultsCalledFromJasp())
+		jaspResultsModule$cpp_progressbarTick()
+	else
+		cpp_progressbarTick()
+}
+
 checkForJaspResultsInit <- function() {if (!exists("jaspResults", .GlobalEnv)) .onAttach()}
 
 is.JaspResultsObj <- function(x) {
 	inherits(x, "R6") && 
-	inherits(x, c("jaspResultsR", "jaspContainerR", "jaspObjR", "jaspOutputObjR", "jaspPlotR", "jaspTableR", "jaspHtmlR", "jaspStateR"))
+  inherits(x, c("jaspResultsR", "jaspContainerR", "jaspObjR", "jaspOutputObjR", "jaspPlotR", "jaspTableR", "jaspHtmlR", "jaspStateR", "jaspColumnR"))
 }
 
 destroyAllAllocatedRObjects <- function() {
@@ -80,7 +95,10 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
 	return(jaspHtmlR$new(text = text, elementType = elementType, class = class, dependencies = dependencies, title = title, position = position))
 
 createJaspState <- function(object=NULL, dependencies=NULL)
-	return(jaspStateR$new(object = object, dependencies = dependencies))
+  return(jaspStateR$new(object = object, dependencies = dependencies))
+
+createJaspColumn <- function(columnName="", dependencies=NULL)
+  return(jaspColumnR$new(columnName = columnName, dependencies = dependencies))
 
 # also imported but that doesn't work in JASP
 R6Class <- R6::R6Class
@@ -92,6 +110,7 @@ R6Class <- R6::R6Class
 #																					->	2.2.2. jaspContainer
 #																					->	2.2.3. jaspPlot
 #																					->	2.2.4. jaspTable
+#																					->	2.2.5. jaspColumn
 
 # R6 definitions
 
@@ -114,13 +133,6 @@ jaspResultsR <- R6Class(
 			for (i in seq_along(x))
 				private$jaspObject$addCitation(x[i])
 		},
-
-		startProgressbar = function(ntick, updateMs) {
-      if (missing(updateMs))  private$jaspObject$startProgressbar(ntick)
-      else            				private$jaspObject$startProgressbar(ntick, updateMs)
-		},
-
-		progressbarTick = function()	private$jaspObject$progressbarTick(),
 		print           = function()	private$jaspObject$print(),
 		printHtml       = function()	private$jaspObject$printHtml(),
 		setError        = function(x)	private$jaspObject$setError(x),
@@ -135,7 +147,8 @@ jaspResultsR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
+        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
+        "Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
 			))
@@ -212,8 +225,6 @@ jaspObjR <- R6Class(
 				for (i in seq_along(optionContainsValue)) {
 					name <- names(optionContainsValue)[i]
 					value <- optionContainsValue[[i]]
-					if (length(value) != 1 || !is.atomic(value))
-						stop("value provided in `optionContainsValue` must be of type atomic and length 1")
 					private$jaspObject$setOptionMustContainDependency(name, value)
 				}
 			}
@@ -353,6 +364,7 @@ jaspContainerR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
+        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
 				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
@@ -499,30 +511,56 @@ jaspTableR <- R6Class(
 					format <- "dp:3;p:.001"
 			}
 			private$jaspObject$addColumnInfoHelper(name, title, type, format, combine, overtitle)
-		},
-		addRows = function(rows, rowNames = NULL) {
-			if (is.null(rowNames))
-				private$jaspObject$addRows(rows) 
-			else
-				private$jaspObject$addRows(rows, rowNames)
-		},
+    },
+    addRows = function(rows, rowNames = NULL) {
+
+      maxElementLength <- 0 # Lets check if the users means a single row...
+      if(is.list(rows) & !is.data.frame(rows))  maxElementLength <- max(unlist(lapply(rows, length)))
+      else if(is.vector(rows))                  maxElementLength <- 1
+
+      if(maxElementLength == 1)
+      {
+        if (is.null(rowNames))    private$jaspObject$addRow(rows)
+        else                      private$jaspObject$addRow(rows, rowNames)
+      }
+      else
+      {
+        if (is.null(rowNames))    private$jaspObject$addRows(rows)
+        else                      private$jaspObject$addRows(rows, rowNames)
+      }
+  },
 		setExpectedSize = function(rows=NULL, cols=NULL) {
 			inputTypes <- c(mode(rows), mode(cols))
-			if (!all(inputTypes %in% c("numeric", "NULL")))
-				stop("Please use numeric values to set the expected size")
-			if (!is.null(rows) && !is.null(cols))
-				private$jaspObject$setExpectedSize(cols, rows)
-			else if (!is.null(rows))
-				private$jaspObject$setExpectedRows(rows)
-			else
-				private$jaspObject$setExpectedColumns(cols)
-		}
+
+      if (!all(inputTypes %in% c("numeric", "NULL")))	stop("Please use numeric values to set the expected size")
+
+      if (!is.null(rows) && !is.null(cols))		private$jaspObject$setExpectedSize(cols, rows)
+      else if (!is.null(rows))        				private$jaspObject$setExpectedRows(rows)
+      else if(!is.null(cols))         				private$jaspObject$setExpectedColumns(cols)
+      else                                    stop("Enter cols, rows or both in setExpectedSize!")
+    },
+    getColumnName       = function(columnIndex)               { return( private$jaspObject$colNames           [[columnIndex]]);               },
+    setColumnName       = function(columnIndex, newName)      {         private$jaspObject$colNames$insert(     columnIndex,  newName);       },
+    getColumnTitle      = function(columnName)                { return( private$jaspObject$colTitles          [[columnName]]);                },
+    setColumnTitle      = function(columnName, newTitle)      {         private$jaspObject$colTitles$insert(    columnName,   newTitle);      },
+    getColumnOvertitle  = function(columnName)                { return( private$jaspObject$colOvertitles      [[columnName]]);                },
+    setColumnOvertitle  = function(columnName, newOvertitle)  {         private$jaspObject$colOvertitles$insert(columnName,   newOvertitle);  },
+    getColumnFormat     = function(columnName)                { return( private$jaspObject$colFormats         [[columnName]]);                },
+    setColumnFormat     = function(columnName, newFormat)     {         private$jaspObject$colFormats$insert(   columnName,   newFormat);     },
+    getColumnCombine    = function(columnName)                { return( private$jaspObject$colCombines        [[columnName]]);                },
+    setColumnCombine    = function(columnName, newCombine)    {         private$jaspObject$colCombines$insert(  columnName,   newCombine);    },
+    getColumnType       = function(columnName)                { return( private$jaspObject$colTypes           [[columnName]]);                },
+    setColumnType       = function(columnName, newType)       {         private$jaspObject$colTypes$insert(     columnName,   newType);       },
+    getRowName          = function(rowIndex)                  { return( private$jaspObject$rowNames           [[rowIndex]]);                  },
+    setRowName          = function(rowIndex, newName)         {         private$jaspObject$rowNames$insert(     rowIndex,     newName);       },
+    getRowTitle         = function(rowName)                   { return( private$jaspObject$rowTitles          [[rowName]]);                   },
+    setRowTitle         = function(rowName, newTitle)         {         private$jaspObject$rowTitles$insert(    rowName,      newTitle);      }
 	),
 	active = list(
 		transpose                = function(x) if (missing(x)) private$jaspObject$transpose                else private$jaspObject$transpose                <- x,
 		transposeWithOvertitle   = function(x) if (missing(x)) private$jaspObject$transposeWithOvertitle   else private$jaspObject$transposeWithOvertitle   <- x,
 		status                   = function(x) if (missing(x)) private$jaspObject$status                   else private$jaspObject$status                   <- x,
-		showSpecifiedColumnsOnly = function(x) if (missing(x)) private$jaspObject$showSpecifiedColumnsOnly else private$jaspObject$showSpecifiedColumnsOnly <- x
+    showSpecifiedColumnsOnly = function(x) if (missing(x)) private$jaspObject$showSpecifiedColumnsOnly else private$jaspObject$showSpecifiedColumnsOnly <- x
 	),
 	private = list(
 		setField = function(field, value) private$jaspObject[[field]] <- value,
@@ -536,3 +574,42 @@ jaspTableR <- R6Class(
 }
 `[[.jaspTableR`   <- function(x, field)
 	x$.__enclos_env__$private$getField(field)
+
+jaspColumnR <- R6Class(
+  classname = "jaspColumnR",
+  inherit   = jaspOutputObjR,
+  cloneable = FALSE,
+  public    = list(
+    initialize = function(columnName="", dependencies=NULL, scalarData=NULL, ordinalData=NULL, nominalData=NULL, nominalTextData=NULL, jaspObject = NULL) {
+      if (!is.null(jaspObject)) {
+        private$jaspObject <- jaspObject
+        return()
+      }
+
+      if (columnName == "")
+        stop("You MUST specify a name for the column you want to change the data of")
+
+      if (jaspResultsCalledFromJasp()) {
+        columnObj <- jaspResultsModule$create_cpp_jaspColumn(columnName)
+      } else {
+        checkForJaspResultsInit()
+        columnObj <- create_cpp_jaspColumn(columnName)
+      }
+
+      if(!is.null(scalarData))      columnObj$setScale(scalarData)
+      if(!is.null(ordinalData))     columnObj$setOrdinal(ordinalData)
+      if(!is.null(nominalData))     columnObj$setNominal(nominalData)
+      if(!is.null(nominalTextData)) columnObj$setNominalText(nominalTextData)
+
+      if (!is.null(dependencies))
+        columnObj$dependOnOptions(dependencies)
+
+      private$jaspObject <- columnObj
+      return()
+    },
+    setScale        = function(scalarData)  private$jaspObject$setScale(scalarData),
+    setOrdinal      = function(ordinalData) private$jaspObject$setOrdinal(ordinalData),
+    setNominal      = function(nominalData) private$jaspObject$setNominal(nominalData),
+    setNominalText  = function(nominalData) private$jaspObject$setNominalText(nominalData)
+  )
+)

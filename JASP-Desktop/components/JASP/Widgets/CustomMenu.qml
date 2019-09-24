@@ -21,11 +21,12 @@ import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.12
 import JASP.Theme 1.0
 
-Item
+FocusScope
 {
 	id							: menu
 	width						: menuRectangle.width
 	height						: menuRectangle.height
+	visible						: showMe && activeFocus
 	x							: Math.min(menuMinPos.x + (menuMinIsMin ? Math.max(0, menuX) : menuX), menuMaxPos.x - (width  + 2) )
 	y							: Math.min(menuMinPos.y + (menuMinIsMin ? Math.max(0, menuY) : menuY), menuMaxPos.y - (height + 2) )
 	property var	props		: undefined
@@ -38,7 +39,8 @@ Item
 	property point	menuMinPos	: "0,0"
 	property point	menuMaxPos	: "0,0"
 	property bool	menuMinIsMin: false
-
+	property bool	showMe		: false
+	property var    sourceItem  : null
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 
 	onPropsChanged:
@@ -49,20 +51,29 @@ Item
 			resultsJsInterface.runJavaScript("window.setSelection(false);")
 	}
 
-	function showMenu(item, props, x_offset, y_offset)
+	function toggle(item, props, x_offset, y_offset)
 	{
-		customMenu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
-		customMenu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
-		customMenu.menuMinPos	= item.mapToItem(null, 1, 1);
-		customMenu.props		= props;
-		customMenu.menuOffset.x	= x_offset;
-		customMenu.menuOffset.y	= y_offset;
-		customMenu.visible		= true;
+		if (item === menu.sourceItem && menu.visible)
+			hide()
+		else
+		{
+			menu.sourceItem     = item;
+			menu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
+			menu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
+			menu.menuMinPos     = item.mapToItem(null, 1, 1);
+			menu.props          = props;
+			menu.menuOffset.x	= x_offset;
+			menu.menuOffset.y	= y_offset;
+			menu.menuScroll		= "0,0";
+			menu.showMe			= true;
+			menu.forceActiveFocus();
+		}
 	}
 
 	function hide()
 	{
-		menu.visible		= false;
+		menu.showMe			= false;
+		menu.sourceItem     = null;
 		menu.props			= undefined;
 		menu.menuMinIsMin	= false;
 		menu.menuOffset		= "0,0"
@@ -81,6 +92,13 @@ Item
 		id		: menuRectangle
 		z		: menuShadow.z + 1
 		color	: Theme.fileMenuColorBackground
+		focus	: true
+
+		MouseArea
+		{
+			anchors.fill	: parent
+		}
+
 	}
 
 	Column
@@ -130,18 +148,18 @@ Item
 
 					Rectangle
 					{
-						id		: menuItem
-						width	: initWidth
-						height	: Theme.menuItemHeight
-						color	:
-						{
-							if (!isEnabled)
-								return "transparent"
-							return mouseArea.pressed ? Theme.buttonColorPressed : mouseArea.containsMouse ? Theme.buttonColorHovered : "transparent"
-						}
+						id:		menuItem
+						width:	initWidth
+						height: Theme.menuItemHeight
+						color:	!model.isEnabled
+									? "transparent"
+									: mouseArea.pressed
+										? Theme.buttonColorPressed
+										: mouseArea.containsMouse
+											? Theme.buttonColorHovered
+											: "transparent"
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
-						// 15 = menuItemImage.leftMargin + menuItemText.leftMargin + menuItemText.rightMargin + menuItemImage.smallerBy
 
 						Image
 						{
@@ -180,7 +198,8 @@ Item
 							id				: mouseArea
 							hoverEnabled	: true
 							anchors.fill	: parent
-							onClicked		: if (isEnabled) menu.props['functionCall'](index)
+							onClicked		: menu.props['functionCall'](index)
+							enabled			: isEnabled
 						}
 					}
 				}

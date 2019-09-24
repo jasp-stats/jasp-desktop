@@ -20,8 +20,9 @@ Item
 		{
 			top:			parent.top
 			left:			parent.left  //Position Recent Files label
-			leftMargin:		12 * preferencesModel.uiScale
-			topMargin:		12 * preferencesModel.uiScale
+			topMargin:		Theme.generalMenuMargin
+			leftMargin:		Theme.generalMenuMargin
+			rightMargin:	Theme.generalMenuMargin
 		}
 	}
 	

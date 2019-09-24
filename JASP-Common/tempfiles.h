@@ -49,6 +49,9 @@ public:
 	static void			attach(long _sessionId);
 	static void			heartbeat();
 
+	static void			createSessionDir();
+	static void			clearSessionDir();
+
 	static std::string	createSpecific_clipboard(const std::string &filename);
 	static void			purgeClipboard();
 

@@ -26,7 +26,7 @@
 #include "log.h"
 
 ComputerFileSystem::ComputerFileSystem(QObject *parent)
-	: FileSystemModel(parent)
+	: FileSystem(parent)
 {
 
 }

@@ -54,6 +54,11 @@ Labels &Column::labels()
 	return _labels;
 }
 
+const Labels & Column::labels() const
+{
+	return _labels;
+}
+
 bool Column::isEmptyValue(const string& val)
 {
 	if (val.empty()) return true;
@@ -503,7 +508,7 @@ bool Column::_changeColumnToNominalOrOrdinal(ColumnType newColumnType)
 
 		if (success)
 			setColumnAsNominalOrOrdinal(values, uniqueIntValues, newColumnType == ColumnTypeOrdinal);
-		else
+		else if (newColumnType == ColumnType::ColumnTypeNominal)
 		{
 			vector<string> values;
 			Doubles::iterator doubles = AsDoubles.begin();
@@ -703,7 +708,7 @@ bool Column::setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is
 	return setColumnAsNominalOrOrdinal(values, uniqueValues, is_ordinal);
 }
 
-bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const map<int, string> &uniqueValues, bool is_ordinal)
 {
 	bool labelChanged	= _labels.syncInts(uniqueValues);
 	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
@@ -765,7 +770,7 @@ bool Column::setColumnAsScale(const std::vector<double> &values)
 		if(doubleInputItr == AsDoubles.end())
 			throw std::runtime_error("Column::setColumnAsScale ran out of Doubles in assigning..");
 
-		if(*doubleInputItr != value) //clang warns us this is unsafe but what does IT know?! If it changes it changes!
+		if(*doubleInputItr != value && (isnan(*doubleInputItr) != isnan(value))) //clang warns us this is unsafe but what does IT know?! If it changes it changes! Maybe clang was right after all, nan != nan == true...
 			changedSomething = true;
 
 		*doubleInputItr = value;
@@ -850,7 +855,15 @@ string Column::_getLabelFromKey(int key) const
 		return Utils::emptyValue;
 
 	if (_labels.size() > 0)
-		return _labels.getLabelObjectFromKey(key).text();
+		try
+		{
+			return _labels.getLabelObjectFromKey(key).text();
+		}
+		catch (const labelNotFound & e)
+		{
+			Log::log() << "Label not found, msg: " << e.what() << "\n";
+			return Utils::emptyValue;
+		}
 
 	stringstream ss;
 	ss << key;
@@ -946,9 +959,17 @@ bool Column::isValueEqual(int row, int value)
 
 	if (_labels.size() > 0)
 	{
-		Label label = _labels.getLabelObjectFromKey(intValue);
-		if (label.hasIntValue())
-			return label.value() == value;
+		try
+		{
+			Label label = _labels.getLabelObjectFromKey(intValue);
+			if (label.hasIntValue())
+				return label.value() == value;
+		}
+		catch (const labelNotFound & e)
+		{
+			Log::log() << "Label not found, msg: " << e.what() << "\n";
+			return false;
+		}
 	}
 	return false;
 }

@@ -23,7 +23,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
+    usesJaspResults: true
 	
 	VariablesForm
 	{
@@ -51,6 +51,11 @@ Form
 			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox { name: "plotSequentialAnalysis";		label: qsTr("Sequential analysis") }
+        CheckBox
+        {
+            name: "descriptivesPlots";					label: qsTr("Descriptive plots")
+            CIField { name: "descriptivesPlotsCredibleInterval"; label: qsTr("Credible interval") }
+        }
 	}
 
 	BayesFactorType {}
@@ -58,7 +63,7 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
-		DoubleField { name: "priorA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1; min: 0.1; max: 9999; decimals: 1 }
-		DoubleField { name: "priorB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1; min: 0.1; max: 9999; decimals: 1 }
+		DoubleField { name: "priorA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
+		DoubleField { name: "priorB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
 	}
 }

@@ -41,16 +41,18 @@ class Analysis : public QObject
 	Q_PROPERTY(QString name		READ nameQ						NOTIFY nameChanged		)
 	Q_PROPERTY(QString helpFile	READ helpFile					NOTIFY helpFileChanged	)
 	Q_PROPERTY(QString title	READ titleQ		WRITE setTitleQ	NOTIFY titleChanged		)
-	
+
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
 public:
 
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
+	std::string statusToString(Status status) const;
 
+	Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe);
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
-	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "");
+	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
 
@@ -59,9 +61,12 @@ public:
 	Options				*options()					const	{ return _options;			}
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
+	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
+	Q_INVOKABLE void	duplicateMe();
+
 signals:
 	void				nameChanged();
-	void				sendRScript(			Analysis * analysis, QString script, QString controlName);
+	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
 	void				optionsChanged(			Analysis * analysis);
 	void				saveImageSignal(		Analysis * analysis);
 	void				editImageSignal(		Analysis * analysis);
@@ -81,11 +86,11 @@ signals:
 	Q_INVOKABLE void	expandAnalysis();
 
 
+
 public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
 	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
-
-	void setResults(	const Json::Value & results, int progress = -1);
+	void setResults(	const Json::Value & results, const Json::Value & progress = Json::nullValue);
 	void imageSaved(	const Json::Value & results);
 	void saveImage(		const Json::Value & options);
 	void editImage(		const Json::Value & options);
@@ -128,7 +133,7 @@ public:
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
-			void		loadFromJSON(Json::Value & options);
+			void		loadExtraFromJSON(Json::Value & options);
 			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
 
 	static	Status		parseStatus(std::string name);
@@ -159,7 +164,8 @@ public slots:
 	void					setHelpFile(QString helpFile);
 	void					setTitleQ(QString title);
 	void					setTitle(std::string title) { setTitleQ(QString::fromStdString(title)); }
-
+	void					refreshAvailableVariablesModels();
+	void					emitDuplicationSignals();
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
@@ -181,24 +187,26 @@ protected:
 							_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
-							_saveImgOptions	= Json::nullValue;
-	int						_progress		= -1;
+							_saveImgOptions	= Json::nullValue,
+							_progress		= Json::nullValue;
 
 private:
-	size_t					_id;
+	size_t					_id,
+							_counter		= 0;
 	std::string				_module			= "dynamic",
 							_name,
 							_titleDefault,
 							_title,
 							_rfile;
-	bool					_useJaspResults = false;
+	bool					_useJaspResults = false,
+							_isDuplicate	= false;
 	Version					_version;
 	int						_revision		= 0;
 
 	Modules::AnalysisEntry*	_moduleData		= nullptr;
 	Modules::DynamicModule* _dynamicModule	= nullptr;
 	Analyses*				_analyses		= nullptr;
-	AnalysisForm*			_analysisForm	= nullptr;	
+	AnalysisForm*			_analysisForm	= nullptr;
 
 	std::string				_codedReferenceToAnalysisEntry = "";
 	QString					_helpFile;

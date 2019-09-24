@@ -124,9 +124,8 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 
 void CSVImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
 {
-	CSVImportColumn *csvColumn = dynamic_cast<CSVImportColumn *>(importColumn);
-	const vector<string> &values = csvColumn->getValues();
+	CSVImportColumn * csvColumn = dynamic_cast<CSVImportColumn *>(importColumn);
 
-	fillSharedMemoryColumnWithStrings(values, column);
+	fillSharedMemoryColumnWithStrings(csvColumn->getValues(), column);
 }
 

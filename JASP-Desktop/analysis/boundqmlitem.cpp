@@ -19,12 +19,12 @@
 #include "boundqmlitem.h"
 #include "analysisform.h"
 
-void BoundQMLItem::runRScript(const QString &script)
+void BoundQMLItem::runRScript(const QString &script, bool whiteListedVersion)
 {
-	_form->runRScript(script, name());
+	_form->runRScript(script, name(), whiteListedVersion);
 }
 
-void BoundQMLItem::rScriptDoneHandler(const QString &result)
+void BoundQMLItem::rScriptDoneHandler(const QString & result)
 {
 	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
 }

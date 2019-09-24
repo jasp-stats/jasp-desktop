@@ -34,6 +34,7 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
   - S.E. Mean: Standard error of the mean.
   - Std. deviation: Standard deviation of the data points.
   - MAD: Median absolute deviation of the data points.
+  - MAD Robust: Median absolute deviation of the data points, adjusted by a factor for asymptotically normal consistency.
   - IQR: Interquartile range of the data points; 75th percentile - 25th percentile.
   - Variance: Variance of the data points.
   - Range: Range of the data points; maximum - minimum.

@@ -74,6 +74,17 @@ ScrollView
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
+				KeyNavigation.tab:	safeGraphicsMode
+				KeyNavigation.down:	safeGraphicsMode
+			}
+
+			CheckBox
+			{
+				id:					safeGraphicsMode
+				label:				qsTr("Safe Graphics Mode")
+				checked:			preferencesModel.safeGraphics
+				onCheckedChanged:	preferencesModel.safeGraphics = checked
+				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
 				KeyNavigation.tab:	developerMode
 				KeyNavigation.down:	developerMode
 			}
@@ -138,6 +149,7 @@ ScrollView
 						color:				Theme.textEnabled
 						KeyNavigation.tab:	overwriteDescriptionEtc
 						KeyNavigation.down:	overwriteDescriptionEtc
+						selectByMouse:		true
 
 						anchors
 						{
@@ -165,14 +177,72 @@ ScrollView
 					//font:				Theme.font
 					height:				implicitHeight * preferencesModel.uiScale
 					toolTip:			qsTr("Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
-					KeyNavigation.tab:	logToFile
-					KeyNavigation.down:	logToFile
+					KeyNavigation.tab:	cranRepoUrl
+					KeyNavigation.down:	cranRepoUrl
 
 					anchors
 					{
 						left:			parent.left
 						leftMargin:		Theme.subOptionOffset
 						top:			developerFolderTextRect.bottom
+					}
+				}
+			}
+
+			Item
+			{
+				id:		cranRepoUrlItem
+				width:	parent.width
+				height:	cranRepoUrlRect.height
+
+				Label
+				{
+					id:		cranRepoUrlLabel
+					text:	"Change the CRAN repository: "
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						margins:		Theme.generalAnchorMargin
+					}
+				}
+
+				Rectangle
+				{
+					id:					cranRepoUrlRect
+
+					height:				browseDeveloperFolderButton.height
+
+					color:				Theme.white
+					border.color:		Theme.buttonBorderColor
+					border.width:		1
+
+					anchors
+					{
+						left:		cranRepoUrlLabel.right
+						right:		parent.right
+					}
+
+					TextInput
+					{
+						id:					cranRepoUrl
+						text:				preferencesModel.cranRepoURL
+						clip:				true
+						font:				Theme.font
+						onTextChanged:		preferencesModel.cranRepoURL = text
+						color:				Theme.textEnabled
+						KeyNavigation.tab:	logToFile
+						KeyNavigation.down:	logToFile
+						selectByMouse:		true
+
+						anchors
+						{
+							left:			parent.left
+							right:			parent.right
+							verticalCenter:	parent.verticalCenter
+							margins:		Theme.generalAnchorMargin
+						}
 					}
 				}
 			}

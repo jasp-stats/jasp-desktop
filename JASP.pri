@@ -3,8 +3,8 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = JASP-R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION =  6 # Interface changes
-JASP_R_INTERFACE_MINOR_VERSION = 11 # Code changes
+JASP_R_INTERFACE_MAJOR_VERSION =  7  # Interface changes
+JASP_R_INTERFACE_MINOR_VERSION =  14 # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -14,14 +14,14 @@ DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 
 #JASP Version
 JASP_VERSION_MAJOR      = 0
-JASP_VERSION_MINOR      = 10
+JASP_VERSION_MINOR      = 11
 JASP_VERSION_REVISION   = 0
-JASP_VERSION_BUILD      = 0 #Should be incremented or retrieved from somewhere
+JASP_VERSION_BUILD      = 0 #Should be ignored because the code handling it is buggy as hell (aka https://www.youtube.com/watch?v=otCpCn0l4Wo )
 
 DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
 DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
-DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
 DEFINES +=    "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
+DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
 
 
 BUILDING_JASP_ENGINE=false
@@ -45,7 +45,10 @@ DEFINES += PRINT_ENGINE_MESSAGES
 exists(/app/lib/*) {
   linux:  DEFINES += FLATPAK_USED
 } else {
-  linux:	CONFIG(debug, debug|release)  {  DEFINES += JASP_DEBUG }
+  linux:	CONFIG(debug, debug|release)  {
+    DEFINES += JASP_DEBUG
+    DEFINES += LINUX_NOT_FLATPAK
+  }
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
 
@@ -67,7 +70,8 @@ $$JASPTIMER_USED {
     DEFINES += PROFILE_JASP
 }
 
-exists(/app/lib/*)	{ INSTALLPATH = /app/bin
+exists(/app/lib/*)	{
+  INSTALLPATH = /app/bin
  } else	{
   INSTALLPATH = /usr/bin
 }

@@ -12,7 +12,8 @@ FocusScope
 
 	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
 
-	Behavior on width { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+	Behavior on width { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+
 
 	Rectangle
 	{
@@ -24,27 +25,41 @@ FocusScope
 		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
-		NumberAnimation
-		{
-			id: showExpandedForm
-			target: analysesFlickable
-			property: "contentY"; duration: 200; easing.type: Easing.OutQuad; easing.amplitude: 3
-		}
+		property real singleButtonHeight: Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing
+
+		function getOffset(formIndex) { return formIndex < 0 ? 0 : formIndex * singleButtonHeight; }
+
 
 
 		function scrollToForm(formIndex)
 		{
-			var offset = formIndex * (Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing)
-			if (scrollAnalyses.height + offset <= analysesFlickable.contentHeight)
+			if(formIndex < 0) return;
+
+			var offset = getOffset(formIndex);
+
+			if(formIndex === 0)
 			{
-				showExpandedForm.to = offset
-				showExpandedForm.start();
+				//console.log("first item so setting contentY to zero!")
+				analysesFlickable.contentY = 0;
+				return;
 			}
-			else if (analysesFlickable.contentHeight > scrollAnalyses.height)
+
+			if (analysesModel.currentFormHeight + offset + singleButtonHeight <= analysesFlickable.contentHeight || analysesModel.currentFormHeight + singleButtonHeight > scrollAnalyses.height)
 			{
-				showExpandedForm.to = analysesFlickable.contentHeight - scrollAnalyses.height
-				showExpandedForm.start();
+				//console.log("Setting contenty to offset: "+offset)
+				analysesFlickable.contentY = offset;
+				return;
 			}
+
+			//console.log("Setting contenty to Math.max(0, offset + analysesModel.currentFormHeight+ singleButtonHeight - scrollAnalyses.height): "+(Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height)));
+			analysesFlickable.contentY = Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height);
+
+		}
+
+		Connections
+		{
+			target:							analysesModel
+			onCurrentAnalysisIndexChanged:	formsBackground.scrollToForm(analysesModel.currentAnalysisIndex);
 		}
 
 		Rectangle
@@ -121,18 +136,41 @@ FocusScope
 					rightMargin:	verticalScrollbar.width
 				}
 
+				Behavior on contentY
+				{
+					id:			contentYBehaviour
+					enabled:	!(analysesFlickable.flicking || analysesFlickable.moving) && !preferencesModel.safeGraphics;
+					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
+				}
 
+				//onContentYChanged: console.log("ContentY changed to: " + contentY)
 
 				Connections
 				{
 					target:							analysesModel
-					onAnalysisSelectedIndexResults:
-						if(row > -1)
+					//onAnalysisSelectedIndexResults:	reposition();
+					onCurrentFormHeightChanged:		if(analysesModel.currentFormHeight > analysesModel.currentFormPrevH) reposition(); //If it got larger it probably means an expander opened and we should reposition if possible
+
+					function reposition()
+					{
+						var row = analysesModel.currentAnalysisIndex;
+
+						if(row > -1 && row === analysesModel.currentAnalysisIndex)
 						{
-							var heightImplodedButton		= (Theme.formExpanderHeaderHeight + analysesColumn.spacing + (Theme.formMargin * 2))
-							var previousChildBottomButton	= row <= 0 ? 0 : row * heightImplodedButton
-							analysesFlickable.contentY		=  (previousChildBottomButton + analysesModel.currentFormHeight < analysesFlickable.height) ? 0 : previousChildBottomButton
+							var previousAnalysisButtonBottom	= formsBackground.getOffset(row);
+
+							//Should we scroll the analysis a bit?
+							if(		previousAnalysisButtonBottom	> analysesFlickable.contentY										// We can actually scroll up a bit if necessary
+								||	analysesFlickable.contentY		> previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
+							)
+							{
+								//console.log("Ok, size changed and we should have this analysis be visible, so calling scrollToForm!");
+
+								if(!contentYBehaviour.animation.running)
+									formsBackground.scrollToForm(row);
+							}
 						}
+					}
 
 				}
 
@@ -140,7 +178,15 @@ FocusScope
 				{
 					id:				analysesColumn
 					width:			analysesFlickable.width
-					spacing:		1
+					spacing:		0
+
+					move: Transition
+					{
+						// This animation may interfere during the Analysis expanding animation.
+						// So ensure that it is enabled only when an analysis is dragging
+						enabled: analysesModel.moving
+						NumberAnimation { properties: "y"; easing.type: Easing.OutQuad }
+					}
 
 					Repeater
 					{
@@ -149,11 +195,10 @@ FocusScope
 
 						delegate: AnalysisFormExpander
 						{
-							myIndex:			index
-							myID:				model.analysisID
-							myAnalysis:         model.analysis
-							formQmlUrl:			model.formPath
-							background:			formsBackground
+							myIndex:				index
+							myAnalysis:				model.analysis
+							formQmlUrl:				model.formPath
+							backgroundFlickable:	analysesFlickable
 						}
 					}
 				}

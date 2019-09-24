@@ -21,6 +21,9 @@ import QtQuick.Controls 2.2
 import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
+//import JASP.Controls    1.0
+//import QtQuick.Layouts  1.3
+
 Item
 {
 	id	: rect
@@ -28,6 +31,13 @@ Item
 	property bool loggedin			: fileMenuModel.osf.loggedin
 	property bool processing		: fileMenuModel.osf.processing
 	property bool showfiledialog	: fileMenuModel.osf.showfiledialog
+
+	MouseArea
+	{
+		z:				-5
+		anchors.fill:	parent
+		onClicked:		rect.forceActiveFocus()
+	}
 
 	MenuHeader
 	{
@@ -46,14 +56,10 @@ Item
 		anchors.top			: parent.top
 		anchors.rightMargin	: Theme.generalMenuMargin
 		anchors.topMargin	: Theme.generalMenuMargin
+
 		onClicked			: fileMenuModel.osf.logoutClicked()
-		KeyNavigation.tab	: newDirectoryButton.visible ?
-									newDirectoryButton :
-									foldernameText.visible ?
-										foldernameText :
-										filenameText.visible ?
-											filenameText :
-											osfList
+		KeyNavigation.tab	: newDirectoryButton
+
 	}
 
 	BreadCrumbs
@@ -62,16 +68,37 @@ Item
 		model	: fileMenuModel.osf.breadCrumbs
 		visible	: loggedin
 
-		anchors.rightMargin: Theme.generalMenuMargin * preferencesModel.uiScale
+		height	: loggedin ? implicitHeight : 0
 
-		width	: rect.width
-		height	: loggedin ? (40 * preferencesModel.uiScale) + (scrollBarVisible ? scrollBarHeight : 0) : 0
-
-		anchors.top			: menuHeader.bottom
-		anchors.left		: menuHeader.left
-		anchors.right		: parent.right
+		anchors
+		{
+			top			: menuHeader.bottom
+			left		: menuHeader.left
+			right		: sortMenuButton.left
+			rightMargin	: 4 * preferencesModel.uiScale
+		}
 
 		onCrumbButtonClicked: fileMenuModel.osf.breadCrumbs.indexChanged(modelIndex);
+
+		MouseArea
+		{
+			z:				-5
+			anchors.fill:	parent
+			onClicked:		osfbreadcrumbs.forceActiveFocus()
+		}
+
+	}
+
+	SortMenuButton
+	{
+		id: sortMenuButton
+		anchors
+		{
+			right:			menuHeader.right
+			verticalCenter:	osfbreadcrumbs.verticalCenter
+		}
+		visible:		loggedin  && !fileExportDialog.visible
+		sortMenuModel:	fileMenuModel.osf.sortedMenuModel
 	}
 
 	ToolSeparator
@@ -84,6 +111,8 @@ Item
 		anchors.left	: menuHeader.left
 		anchors.right	: menuHeader.right
 	}
+
+
 
 	/////////////////////////// File dialog to save in OSF ////////////////////////////////////
 
@@ -102,7 +131,7 @@ Item
 		anchors.top			: firstSeparator.bottom
 		anchors.topMargin	: Theme.generalAnchorMargin
 		onClicked			: { newDirectoryButton.visible = false; foldernameText.focus = true; }
-		KeyNavigation.tab	: filenameText
+		KeyNavigation.tab	: foldernameText
 	}
 
 	Item

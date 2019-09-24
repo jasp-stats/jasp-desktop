@@ -1,7 +1,7 @@
 #include "jaspState.h"
 #include "jaspResults.h"
 
-Json::Value jaspState::convertToJSON()
+Json::Value jaspState::convertToJSON() const
 {
 	Json::Value obj			= jaspObject::convertToJSON();
 	obj["environmentName"]	= _envName;

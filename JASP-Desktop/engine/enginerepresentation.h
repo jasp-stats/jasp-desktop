@@ -37,7 +37,9 @@ public:
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
 	void runModuleRequestOnProcess(Json::Value request);
+	void sendLogCfg();
 
+	void killEngine();
 	void stopEngine();
 	void pauseEngine();
 	void resumeEngine();
@@ -60,14 +62,11 @@ public:
 	void processEngineResumedReply();
 	void processLogCfgReply();
 
-	void sendLogCfg();
-
-	size_t channelNumber()								{ return _channel->channelNumber(); }
-
+	size_t	channelNumber()		{ return _channel->channelNumber(); }
+	int		engineChannelID()	{ return _channel->channelNumber(); }
 
 	void sendString(std::string str);
 
-	int engineChannelID()							{ return _channel->channelNumber(); }
 
 public slots:
 	void ppiChanged(int newPPI);
@@ -77,7 +76,8 @@ public slots:
 
 signals:
 	void engineTerminated();
-	void processFilterErrorMsg(			const QString & error, int requestId);
+	void filterDone(															int requestID);
+	void processFilterErrorMsg(			const QString & error,					int requestId);
 	void processNewFilterResult(		const std::vector<bool> & filterResult, int requestId);
 	void computeColumnErrorTextChanged(	const QString & error);
 
@@ -85,6 +85,7 @@ signals:
 
 	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
 	void computeColumnFailed(			const QString & columnName, const QString & error);
+	void columnDataTypeChanged(			const QString & columnName);
 
 	void moduleInstallationSucceeded(	const QString & moduleName);
 	void moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
@@ -101,6 +102,7 @@ private:
 	void rerunRunningAnalysis();
 	void setChannel(IPCChannel * channel)			{ _channel = channel; }
 	void setSlaveProcess(QProcess * slaveProcess);
+	void checkForComputedColumns(const Json::Value & results);
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
@@ -109,10 +111,12 @@ private:
 	IPCChannel*	_channel			= nullptr;
 	Analysis*	_analysisInProgress = nullptr;
 	engineState	_engineState		= engineState::initializing;
-	int			_ppi				= 96;
+	int			_ppi				= 96,
+				_idRemovedAnalysis	= -1;
 	QString		_imageBackground	= "white";
 	bool		_pauseRequested		= false,
 				_stopRequested		= false;
+
 };
 
 #endif // ENGINEREPRESENTATION_H

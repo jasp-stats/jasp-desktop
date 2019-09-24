@@ -480,10 +480,10 @@ RegressionLinearBayesian <- function (
 	# parameter for hyper-g's or jzs (all use same alpha param in bas.lm)
 	alpha <- switch(
 		options$priorRegressionCoefficients,
-		hyper_g = options$alpha,
-		hyper_g_laplace = options$alpha,
-		hyper_g_n = options$alpha,
-		JZS = options$rScale^2,
+		"hyper-g" = options$alpha,
+		"hyper-g-laplace" = options$alpha,
+		"hyper-g-n" = options$alpha,
+		"JZS" = options$rScale^2,
 		NULL
 	)
 
@@ -760,8 +760,10 @@ RegressionLinearBayesian <- function (
 	table <- list()
 	table[["title"]] <- "Model Comparison"
 	table[["citation"]] <- list(
-		"Clyde, M. A. (2017). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.4.7)[Computer software].", #FIXME: fix version
-		"Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. Journal of Computational and Graphical Statistics, 20, 80-101.")
+		"Clyde, M. A. (2018). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.5.3)[Computer software].", #FIXME: fix version
+		"Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. Journal of Computational and Graphical Statistics, 20, 80-101.",
+		"Consonni, G., Fouskakis, D., Liseo, B., & Ntzoufras, I. (2018). Prior Distributions for Objective Bayesian Analysis. Bayesian Analysis, 13, 627-679.",
+		"Liang, F., Paulo, R., Molina, G., Clyde, M. A., & Berger, J. O. (2008). Mixtures of g Priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, 410-423.")
 	table[["schema"]] <- list(fields = fields)
 
 	if (! is.null(data) && ! status$error) {
@@ -1206,6 +1208,7 @@ RegressionLinearBayesian <- function (
 	means = x$conditionalmeans[sel, i, drop = TRUE]
 	sds = x$conditionalsd[sel, i, drop = TRUE]
 	name = x$namesx[i]
+	name = gsub("\u2009\u273b\u2009", " x ", name, fixed = TRUE) # ggplot can't show the interaction symbol
 	df.sel = df[sel]
 
 	df <- df.sel # modified from original

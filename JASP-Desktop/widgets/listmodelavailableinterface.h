@@ -22,21 +22,27 @@
 #include "listmodeldraggable.h"
 #include "analysis/options/terms.h"
 #include "analysis/options/variableinfo.h"
+#include "sortmenumodel.h"
+#include "sortable.h"
 
 class ListModelAssignedInterface;
 
-class ListModelAvailableInterface: public ListModelDraggable, public VariableInfoProvider
+class ListModelAvailableInterface: public ListModelDraggable, public VariableInfoProvider, public Sortable
 {
 	Q_OBJECT
 public:
-	ListModelAvailableInterface(QMLListView* listView) : ListModelDraggable(listView) {}
+	ListModelAvailableInterface(QMLListView* listView, bool mixedModelTerms = false)
+		: ListModelDraggable(listView), _mixedModelTerms(mixedModelTerms) {}
 	
-	virtual const Terms& allTerms() const { return _allTerms; }
-			void initTerms(const Terms &terms) override;
-	virtual void resetTermsFromSourceModels(bool updateAssigned = true) = 0;
+	virtual const Terms& allTerms()												const { return _allSortedTerms; }
+			void initTerms(const Terms &terms)									override;
+	virtual void resetTermsFromSourceModels(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	
-			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;	
+			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;
+
+			void sortItems(SortType sortType)								override;
+			void addEmptyValue()												{ _addEmptyValue = true; }
 
 signals:
 			void allAvailableTermsChanged(Terms* termsAdded, Terms* termsRemoved);
@@ -45,9 +51,14 @@ public slots:
 			void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
 
 protected:
-	Terms _allTerms;
-	Terms _tempRemovedTerms;
-	Terms _tempAddedTerms;	
+	bool					_addEmptyValue = false;
+	Terms					_allTerms;
+	Terms					_allSortedTerms;
+	bool					_mixedModelTerms = false;
+
+	Terms					_tempRemovedTerms;
+	Terms					_tempAddedTerms;
+
 	
 	void setChangedTerms(const Terms &newTerms);
 };

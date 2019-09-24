@@ -4,15 +4,11 @@
 \alias{analysisOptions}
 \title{Obtain options to run JASP analyses with.}
 \usage{
-analysisOptions(source, hint = FALSE)
+analysisOptions(source)
 }
 \arguments{
 \item{source}{String containing valid json, or the name of a JASP analysis.
 If you provide json, be sure to use single quotes.}
-
-\item{hint}{Boolean. Should additional hints be placed in the output so you
-know how to give values to differents types of options? Only works if
-\code{source} is set to the name of an analysis.}
 }
 \value{
 A list containing options you can supply to \code{jasptools::run}.

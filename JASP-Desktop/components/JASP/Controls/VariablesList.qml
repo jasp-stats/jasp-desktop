@@ -21,17 +21,18 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4 as QTCONTROLS
 import QtQml.Models 2.2
 import JASP.Theme 1.0
+import JASP.Widgets 1.0
 import QtQuick.Layouts 1.3
 
 JASPControl
 {
-	id:					variablesList
-	controlType:		"VariablesListView"
-	background:			rectangle
-	width:				parent.width
-	implicitWidth:		width
-	height:				singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
-	implicitHeight:		height
+	id:						variablesList
+	controlType:			"VariablesListView"
+	background:				variablesListRectangle
+	width:					parent.width
+	implicitWidth:			width
+	height:					singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
+	implicitHeight:			height
 	useControlMouseArea:	false
 	
 	property var	model
@@ -45,6 +46,8 @@ JASPControl
 	property bool	draggable:			true
 	property var	source
 	property alias	syncModels:			variablesList.source
+	property var	sortMenuModel:		null
+	property bool	showSortMenu:		true
 	property bool	singleVariable:		false
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
@@ -70,11 +73,12 @@ JASPControl
 	
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
-	readonly property int rectangleY: rectangle.y
+	readonly property int rectangleY: variablesListRectangle.y
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
 	signal hasSelectedItemsChanged();
+	signal draggingChanged(var context, bool dragging);
 
 	function setSelectedItems()
 	{
@@ -96,59 +100,45 @@ JASPControl
 		hasSelectedItemsChanged();
 	}
 
+	function setEnabledState(source, dragging)
+	{
+		var result = !dragging;
+		if (dragging)
+		{
+			if (source.selectedItems.length > 0)
+			{
+				if (variablesList.allowedColumns.length > 0)
+				{
+					result = true;
+					for (var i = 0; i < source.selectedItemsTypes.length; i++)
+					{
+						var itemType = source.selectedItemsTypes[i];
+						if (!variablesList.allowedColumns.includes(itemType))
+							result = false;
+					}
+				}
+				else
+					result = true;
+			}
+		}
+
+		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
+		variablesListRectangle.enabled = result
+		variablesListTitle.enabled = result
+	}
+
+
 	function moveSelectedItems(target)
 	{
 		if (listView.selectedItems.length === 0) return;
-		
-		var assignOption = target.interactionControl ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
+
+		var assignOption = (target && target.interactionControl) ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedItems, target, -1, assignOption);
-		listView.clearSelectedItems(true);
-	}
-	
-	DropArea
-	{
-		id: dropArea
-		anchors.fill: parent
-		
-		property bool canDrop: containsDrag && (variablesList.allowedColumns.length === 0 || variablesList.allowedColumns.indexOf(drag.source.columnType) >=0 )
-		
-		onPositionChanged:
-		{
-			if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
-			var itemIndex = Math.floor((drag.y - text.height) / listView.cellHeight);
-			if (variablesList.columns > 1)
-			{
-				itemIndex = itemIndex * 2 + Math.floor(drag.x / listView.cellWidth);
-			}
-			
-			if (itemIndex >= 0 && itemIndex < listView.contentItem.children.length)
-			{
-				var item = listView.contentItem.children[itemIndex].children[0];
-				if (item && item.objectName === "itemRectangle") {
-					listView.itemContainingDrag = item
-					variablesList.indexInDroppedListViewOfDraggedItem = itemIndex
-				}
-				else
-				{
-					console.log("dropArea: could not find child!")
-				}
-			}
-			else
-			{
-				listView.itemContainingDrag = null
-				variablesList.indexInDroppedListViewOfDraggedItem = -1
-			}
-		}
-		onExited:
-		{
-			listView.itemContainingDrag = null
-			variablesList.indexInDroppedListViewOfDraggedItem = -1
-		}
-	}
+	}	
 	
 	Text
 	{
-		id:				text
+		id:				variablesListTitle
 		anchors.top:	parent.top
 		anchors.left:	parent.left
 		text:			title
@@ -173,28 +163,15 @@ JASPControl
 	
 	Rectangle
 	{
-		id:				rectangle
-		anchors.top:	text.bottom
+		id:				variablesListRectangle
+		anchors.top:	variablesListTitle.bottom
 		anchors.left:	parent.left
-		height:			variablesList.height - text.height
+		height:			variablesList.height - variablesListTitle.height
 		width:			parent.width
 		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
 		border.width:	1
-		border.color:	dropArea.canDrop ? Theme.containsDragBorderColor : Theme.borderColor
+		border.color:	Theme.borderColor
 		
-		states: [
-			State
-			{
-				when: dropArea.canDrop
-				PropertyChanges
-				{
-					target:			rectangle
-					border.width:	4  * preferencesModel.uiScale
-					radius:			3 * preferencesModel.uiScale
-				}
-			}
-		]
-
 		Repeater
 		{
 			model: suggestedColumns
@@ -208,13 +185,66 @@ JASPControl
 				z:		2
 				anchors
 				{
-					bottom:			rectangle.bottom;
+					bottom:			variablesListRectangle.bottom;
 					bottomMargin:	4  * preferencesModel.uiScale
-					right:			rectangle.right;
+					right:			variablesListRectangle.right;
 					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 				}
 			}
 		}
+
+		DropArea
+		{
+			id:				dropArea
+			anchors.fill:	parent
+
+			onPositionChanged:
+			{
+				if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+
+				var onTop = true;
+				var item = listView.itemAt(drag.x, drag.y + listView.contentY)
+				if (item && item.children.length > 0)
+					item = item.children[0];
+				if (!item || item.objectName !== "itemRectangle")
+				{
+					if (listView.count > 0)
+					{
+						var items = listView.getExistingItems();
+						if (items.length > 0)
+						{
+							var lastItem = items[items.length - 1];
+							if (lastItem.rank === (listView.count - 1) && drag.y > (lastItem.height * listView.count))
+							{
+								item = lastItem
+								onTop = false;
+							}
+						}
+					}
+				}
+				if (item && item.objectName === "itemRectangle")
+				{
+					dropLine.parent = item
+					dropLine.visible = true
+					dropLine.onTop = onTop
+					listView.itemContainingDrag = item
+					variablesList.indexInDroppedListViewOfDraggedItem = onTop ? item.rank : -1
+				}
+				else
+				{
+					dropLine.visible = false
+					listView.itemContainingDrag = null
+					variablesList.indexInDroppedListViewOfDraggedItem = -1
+				}
+			}
+			onExited:
+			{
+				dropLine.visible = false
+				listView.itemContainingDrag = null
+				variablesList.indexInDroppedListViewOfDraggedItem = -1
+			}
+		}
+
 		
 		Component.onCompleted:
 		{
@@ -278,7 +308,35 @@ JASPControl
 				margins:	2
 			}
 		}
-		
+
+		Rectangle
+		{
+			id:				dropLine
+			height:			1
+			width:			parent ? parent.width : 0
+			anchors.top:	parent ? (onTop ? parent.top : parent.bottom) : undefined
+			anchors.left:	parent ? parent.left : undefined
+			color:			Theme.blueLighter
+			visible:		false
+
+			property bool onTop: true
+		}
+
+		SortMenuButton
+		{
+			visible: variablesList.showSortMenu && variablesList.sortMenuModel && listView.count > 1
+			anchors
+			{
+				top:			parent.top
+				right:			parent.right
+				rightMargin:	5 * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
+				topMargin:		5 * preferencesModel.uiScale
+			}
+
+			sortMenuModel: variablesList.sortMenuModel
+			scrollYPosition: backgroundForms.contentY
+		}
+
 		GridView
 		{
 			id:						listView
@@ -479,23 +537,16 @@ JASPControl
 					else if (mouseArea.containsMouse)											return Theme.itemHoverColor;
 					else																		return Theme.controlBackgroundColor;
 				}
+
 				Drag.keys:		[variablesList.name]
 				Drag.active:	mouseArea.drag.active
 				Drag.hotSpot.x:	itemRectangle.width / 2
 				Drag.hotSpot.y:	itemRectangle.height / 2
 				
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
-				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem
+				QTCONTROLS.ToolTip.visible: mouseArea.containsMouse && model.name && !itemRectangle.containsDragItem && colName.truncated
 				QTCONTROLS.ToolTip.delay: 300
 				QTCONTROLS.ToolTip.text: model.name
-				
-				Rectangle
-				{
-					height:		2
-					width:		parent.width
-					color:		Theme.red
-					visible:	itemRectangle.containsDragItem && variablesList.dropModeInsert
-				}
 				
 				Image
 				{
@@ -577,7 +628,7 @@ JASPControl
 				
 				MouseArea
 				{
-					id: mouseArea
+					id:				mouseArea
 					anchors.fill:	parent
 					drag.target:	parent
 					hoverEnabled:	true
@@ -646,6 +697,7 @@ JASPControl
 					
 					drag.onActiveChanged:
 					{
+						variablesList.draggingChanged(variablesList, drag.active)
 						if (drag.active)
 						{
 							if (itemRectangle.selected)
@@ -687,7 +739,7 @@ JASPControl
 							}
 							if (itemRectangle.Drag.target)
 							{
-								var dropTarget = itemRectangle.Drag.target.parent
+								var dropTarget = itemRectangle.Drag.target.parent.parent
 								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
 									return;
 								

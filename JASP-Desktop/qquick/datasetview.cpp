@@ -82,6 +82,8 @@ void DataSetView::calculateCellSizes()
 
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
+	_storedLineFlags.clear();
+	_storedDisplayText.clear();
 
 	for(auto col : _cellTextItems)
 	{
@@ -142,14 +144,12 @@ void DataSetView::calculateCellSizes()
 
 	_dataWidth = w;
 
-	setWidth(	_dataRowsMaxHeight + _dataWidth					);
+	setWidth(	(_extraColumnItem != nullptr ? _dataRowsMaxHeight : 0 ) + _dataWidth					);
 	setHeight(	_dataRowsMaxHeight * (_model->rowCount() + 1)	);
 	_recalculateCellSizes = false;
 
 	emit itemSizeChanged();
 
-	_storedLineFlags.clear();
-	_storedDisplayText.clear();
 
 	JASPTIMER_STOP(calculateCellSizes);
 }
@@ -157,6 +157,9 @@ void DataSetView::calculateCellSizes()
 void DataSetView::viewportChanged()
 {
 	if(_model == nullptr || _viewportX != _viewportX || _viewportY != _viewportY || _viewportW != _viewportW || _viewportH != _viewportH ) //only possible if they are NaN
+		return;
+
+	if(_dataColsMaxWidth.size() != _model->columnCount())
 		return;
 
 	JASPTIMER_RESUME(viewportChanged);
@@ -213,7 +216,7 @@ void DataSetView::determineCurrentViewPortIndices()
 	_currentViewportRowMax = std::max(0, std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount()));
 
 #ifdef DATASETVIEW_DEBUG_VIEWPORT
-	Log::log() << "viewport X: " << _viewportX << " Y: " << _viewportY << " W: " << _viewportW << " H: " << _viewportH <<  std::endl << std::flush;
+	Log::log() << "viewport X: " << _viewportX << " Y: " << _viewportY << " W: " << _viewportW << " H: " << _viewportH <<  std::endl;
 	Log::log() << "_previousViewport\tColMin: " << _previousViewportColMin << "\tColMax: " << _previousViewportColMax << "\tRowMin: " << _previousViewportRowMin << "\tRowMax: " << _previousViewportRowMax << "\n";
 	Log::log() << "_currentViewport\tColMin: "  << _currentViewportColMin  << "\tColMax: " << _currentViewportColMax  << "\tRowMin: " << _currentViewportRowMin  << "\tRowMax: " << _currentViewportRowMax  << "\n" << std::flush;
 #endif
@@ -385,11 +388,11 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 				pos1x(pos0x + _dataColsMaxWidth[col]),
 				pos1y(pos0y + _dataRowsMaxHeight);
 
-		if(pos0x  > _rowNumberMaxWidth + _viewportX && pos0x < maxXForVerticalLine)
+		if(pos0x  > _rowNumberMaxWidth + _viewportX && pos0x <= maxXForVerticalLine)
 			addLine(pos0x, pos0y, pos0x, pos1y);
 
 
-		if(col == _model->columnCount() - 1 && pos1x  > _rowNumberMaxWidth + _viewportX && pos1x < maxXForVerticalLine)
+		if(col == _model->columnCount() - 1 && pos1x  > _rowNumberMaxWidth + _viewportX && pos1x <= maxXForVerticalLine)
 			addLine(pos1x, pos0y, pos1x, pos1y);
 #endif
 	}
@@ -735,7 +738,7 @@ void DataSetView::updateExtraColumnItem()
 		return;
 
 	_extraColumnItem->setHeight(_dataRowsMaxHeight);
-	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width());
+	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
 	_extraColumnItem->setY(_viewportY);
 
 	connect(_extraColumnItem, &QQuickItem::widthChanged, [&](){	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width()); });
@@ -743,8 +746,12 @@ void DataSetView::updateExtraColumnItem()
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)
 {
-	if(_storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
-		_storedDisplayText[row][col] = _model->data(_model->index(row, col)).toString();
+	QModelIndex idx = _model->index(row, col);
+
+	bool isEditable(_model->flags(idx) & Qt::ItemIsEditable);
+
+	if(isEditable || _storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
+		_storedDisplayText[row][col] = _model->data(idx).toString();
 
 	QString text = _storedDisplayText[row][col];
 
@@ -753,6 +760,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 
 	previousContext->setContextProperty("itemText",			text);
 	previousContext->setContextProperty("itemActive",		active);
+	previousContext->setContextProperty("itemEditable",		isEditable);
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
 	previousContext->setContextProperty("dataFont",			_font);

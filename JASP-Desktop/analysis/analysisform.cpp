@@ -90,9 +90,15 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 }
 
-void AnalysisForm::runRScript(QString script, QString controlName)
+void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
-	emit _analysis->sendRScript(_analysis, script, controlName);
+	if(_analysis != nullptr && !_removed)
+		emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
+}
+
+void AnalysisForm::refreshAnalysis()
+{
+	_analysis->refresh();
 }
 
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
@@ -106,14 +112,18 @@ void AnalysisForm::_cleanUpForm()
 {
 	_removed = true;
 	for (QMLItem* control : _orderedControls)
-		// controls will be automatically deleted by the delation of AnalysisForm
+		// controls will be automatically deleted by the deletion of AnalysisForm
 		// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
 		control->cleanUp();
 }
 
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
 {	
+	if(_removed)
+		return;
+
 	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
+
 	if (item)
 		item->rScriptDoneHandler(result);
 	else
@@ -165,7 +175,7 @@ void AnalysisForm::_parseQML()
 
 		switch(controlType)
 		{
-		case qmlControlType::CheckBox:			//fallthrough:
+		case qmlControlType::CheckBox:			[[clang::fallthrough]];
 		case qmlControlType::Switch:			control = new BoundQMLCheckBox(quickItem,		this);	break;
 		case qmlControlType::TextField:			control = new BoundQMLTextInput(quickItem,		this);	break;
 		case qmlControlType::RadioButtonGroup:	control = new BoundQMLRadioButtons(quickItem,	this);	break;
@@ -175,8 +185,10 @@ void AnalysisForm::_parseQML()
 			BoundQMLTextArea* boundQMLTextArea = new BoundQMLTextArea(quickItem,	this);
 			control = boundQMLTextArea;
 			ListModelTermsAvailable* allVariablesModel = boundQMLTextArea->allVariablesModel();
+
 			if (allVariablesModel)
 				_allAvailableVariablesModels.push_back(allVariablesModel);
+
 			break;
 		}
 		case qmlControlType::ComboBox:
@@ -236,12 +248,14 @@ void AnalysisForm::_parseQML()
 			{
 				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteraction);
 				listView = availableVariablesListView;
-				if (availableVariablesListView->sourceModels().isEmpty()) // If there is no sourceModels, set all available variables.
-				{
-					ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-					if (availableModel)
-						_allAvailableVariablesModels.push_back(availableModel);
-				}
+
+				bool noSource = availableVariablesListView->sourceModels().isEmpty(); // If there is no sourceModels, set all available variables.
+
+				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
+
+				if (availableModel)
+					(noSource ? _allAvailableVariablesModels : _allAvailableVariablesModelsWithSource).push_back(availableModel);
+
 				break;
 			}
 			default:
@@ -398,6 +412,7 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
 	{
 		model->initTerms(columnNames);
+
 		if (refreshAssigned)
 		{
 			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
@@ -409,6 +424,11 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 			}
 		}
 	}
+
+	if(refreshAssigned)
+		for(ListModelTermsAvailable * model : _allAvailableVariablesModelsWithSource)
+			model->resetTermsFromSourceModels(true);
+
 }
 
 void AnalysisForm::bindTo()
@@ -533,21 +553,24 @@ void AnalysisForm::_formCompletedHandler()
 	if (!analysisVariant.isNull())
 	{
 		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
+		_dataSet = _analysis->getDataSet();
+
 		_parseQML();
+
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
+
 		bindTo();
 		_analysis->resetOptionsFromJASPFile();
 		_analysis->initialized(this, isNewAnalysis);
 	}
 }
 
-void AnalysisForm::dataSetChanged()
+void AnalysisForm::dataSetChangedHandler()
 {
 	if (!_removed)
 	{
 		_dataSet = _analysis->getDataSet();
 		_setAllAvailableVariablesModel(true);
+		emit dataSetChanged();
 	}
 }
-
-

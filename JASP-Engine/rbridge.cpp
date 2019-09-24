@@ -22,21 +22,25 @@
 #include "appinfo.h"
 #include "tempfiles.h"
 #include "log.h"
+#include "r_functionwhitelist.h"
 
-DataSet		*rbridge_dataSet = NULL;
-RCallback	rbridge_callback = NULL;
+DataSet						*	rbridge_dataSet		= NULL;
+RCallback						rbridge_callback	= NULL;
+std::unordered_set<std::string> filterColumnsUsed;
+std::vector<std::string>		columnNamesInDataSet;
+
+boost::function<DataSet *()>				rbridge_dataSetSource		= NULL;
+boost::function<size_t()>					rbridge_getDataSetRowCount	= NULL;
+boost::function<int(const std::string &)>	rbridge_getColumnTypeEngine = NULL;
+
 boost::function<void(const std::string &, std::string &, std::string &)>	rbridge_fileNameSource			= NULL;
 boost::function<void(std::string &, std::string &)>							rbridge_stateFileSource			= NULL,
 																			rbridge_jaspResultsFileSource	= NULL;
-boost::function<DataSet *()>	rbridge_dataSetSource = NULL;
-std::unordered_set<std::string> filterColumnsUsed;
-std::vector<std::string>		columnNamesInDataSet;
-boost::function<size_t()>		rbridge_getDataSetRowCount = NULL;
 
-boost::function<bool(const std::string&, const	std::vector<double>&)											> rbridge_setColumnDataAsScaleEngine		= NULL;
-boost::function<bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsOrdinalEngine		= NULL;
-boost::function<bool(const std::string&,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsNominalEngine		= NULL;
-boost::function<bool(const std::string&, const	std::vector<std::string>&)										> rbridge_setColumnDataAsNominalTextEngine	= NULL;
+boost::function<bool(const std::string &, const	std::vector<double>&)											> rbridge_setColumnDataAsScaleEngine		= NULL;
+boost::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsOrdinalEngine		= NULL;
+boost::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> rbridge_setColumnDataAsNominalEngine		= NULL;
+boost::function<bool(const std::string &, const	std::vector<std::string>&)										> rbridge_setColumnDataAsNominalTextEngine	= NULL;
 
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
@@ -67,6 +71,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_readFullDataSet,
 		rbridge_readDataSetForFiltering,
 		rbridge_requestJaspResultsFileSource,
+		rbridge_getColumnType,
 		rbridge_setColumnAsScale,
 		rbridge_setColumnAsOrdinal,
 		rbridge_setColumnAsNominal,
@@ -91,10 +96,18 @@ void rbridge_setFileNameSource(			boost::function<void (const std::string &, std
 void rbridge_setStateFileSource(		boost::function<void (std::string &, std::string &)> source)						{	rbridge_stateFileSource			= source; }
 void rbridge_setJaspResultsFileSource(	boost::function<void (std::string &, std::string &)> source)						{	rbridge_jaspResultsFileSource	= source; }
 
-void rbridge_setColumnDataAsScaleSource(		boost::function<bool(const std::string &, const std::vector<double>&)													> source)	{	rbridge_setColumnDataAsScaleEngine			= source; }
-void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(const std::string &,		std::vector<int>&,					const std::map<int, std::string>&)	> source)	{	rbridge_setColumnDataAsOrdinalEngine		= source; }
-void rbridge_setColumnDataAsNominalSource(		boost::function<bool(const std::string &,		std::vector<int>&,					const std::map<int, std::string>&)	> source)	{	rbridge_setColumnDataAsNominalEngine		= source; }
-void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(const std::string &, const std::vector<std::string>&)												> source)	{	rbridge_setColumnDataAsNominalTextEngine	= source; }
+void rbridge_setColumnFunctionSources(			boost::function<int (const std::string &)																		> getTypeSource,
+												boost::function<bool(const std::string &, const std::vector<double>		&)										> scaleSource,
+												boost::function<bool(const std::string &,		std::vector<int>		&,	const std::map<int, std::string>&)	> ordinalSource,
+												boost::function<bool(const std::string &,		std::vector<int>		&,	const std::map<int, std::string>&)	> nominalSource,
+												boost::function<bool(const std::string &, const std::vector<std::string>&)										> nominalTextSource)
+{
+	rbridge_getColumnTypeEngine					= getTypeSource;
+	rbridge_setColumnDataAsScaleEngine			= scaleSource;
+	rbridge_setColumnDataAsOrdinalEngine		= ordinalSource;
+	rbridge_setColumnDataAsNominalEngine		= nominalSource;
+	rbridge_setColumnDataAsNominalTextEngine	= nominalTextSource;
+}
 
 void rbridge_setGetDataSetRowCountSource(boost::function<int()> source)	{	rbridge_getDataSetRowCount = source;	}
 
@@ -166,10 +179,10 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 
 std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, const std::string &imageBackground, RCallback callback, bool useJaspResults)
 {
-	rbridge_callback = callback;
-	if (rbridge_dataSet != NULL) {
-		rbridge_dataSet = rbridge_dataSetSource();
-	}
+	rbridge_callback	= callback;
+	if (rbridge_dataSet != NULL)
+		rbridge_dataSet		= rbridge_dataSetSource();
+
 
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), rfile.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults, imageBackground.c_str());
 	rbridge_callback = NULL;
@@ -181,18 +194,16 @@ std::string rbridge_run(const std::string &name, const std::string &title, const
 
 std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground)
 {
-	rbridge_callback = NULL; //Only jaspResults here so callback is not needed
-
+	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (rbridge_dataSet != NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+		rbridge_dataSet		= rbridge_dataSetSource();
 
 	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str());
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
 
 	if(rbridge_dataSet == NULL)
 		return NULL;
@@ -220,8 +231,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMax)
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
 
 	Columns &columns = rbridge_dataSet->columns();
 
@@ -259,8 +269,10 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	if (colHeaders == NULL)
 		return NULL;
 
-	//if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
+
+	if(rbridge_dataSet == NULL)
+		return NULL;
 
 	Columns &columns = rbridge_dataSet->columns();
 
@@ -277,10 +289,12 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	datasetStatic[colMax].nbRows	= filteredRowCount;
 	int filteredRow					= 0;
 
+	//If you change anything here, make sure that "label outliers" in Descriptives still works properly (including with filters)
 	for(size_t i=0; i<rbridge_dataSet->rowCount() && filteredRow < datasetStatic[colMax].nbRows; i++)
 		if(!obeyFilter || (rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i]))
-			datasetStatic[colMax].ints[filteredRow++] = int(filteredRow + 1); //R needs 1-based index
+			datasetStatic[colMax].ints[filteredRow++] = int(i + 1); //R needs 1-based index
 
+	//std::cout << "reading " << colMax << " columns!\nRowCount: " << filteredRowCount << "" << std::endl;
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
@@ -431,12 +445,11 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 
 extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 {
-	if (rbridge_dataSet == NULL)
-			rbridge_dataSet = rbridge_dataSetSource();
+					rbridge_dataSet = rbridge_dataSetSource();
+	Columns		&	columns			= rbridge_dataSet->columns();
+	static int		staticColMax	= 0;
+	static char	**	staticResult	= NULL;
 
-	Columns &columns = rbridge_dataSet->columns();
-	static int staticColMax = 0;
-	static char** staticResult = NULL;
 	if (staticResult)
 	{
 		for (int i = 0; i < staticColMax; i++)
@@ -459,17 +472,16 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	if (!columnsType)
 		return NULL;
 
-	static size_t lastColMax = 0;
-	static RBridgeColumnDescription* resultCols = NULL;
+	static size_t						lastColMax = 0;
+	static RBridgeColumnDescription	*	resultCols = NULL;
+
 	if (resultCols != NULL)
 		freeRBridgeColumnDescription(resultCols, lastColMax);
-	lastColMax = colMax;
-	resultCols = (RBridgeColumnDescription*)calloc(colMax, sizeof(RBridgeColumnDescription));
 
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
-
-	Columns &columns = rbridge_dataSet->columns();
+	lastColMax			= colMax;
+	resultCols			= static_cast<RBridgeColumnDescription*>(calloc(colMax, sizeof(RBridgeColumnDescription)));
+	rbridge_dataSet		= rbridge_dataSetSource();
+	Columns &columns	= rbridge_dataSet->columns();
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
@@ -554,6 +566,13 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	return resultCols;
 }
 
+extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
+{
+	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
+
+	return rbridge_getColumnTypeEngine(colName);
+}
+
 extern "C" bool STDCALL rbridge_setColumnAsScale(const char* columnName, double * scalarData, size_t length)
 {
 	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
@@ -617,8 +636,8 @@ void freeRBridgeColumns()
 	free(datasetStatic[datasetColMax].ints); //rownames/numbers
 	free(datasetStatic);
 
-	datasetStatic = NULL;
-	datasetColMax = 0;
+	datasetStatic	= NULL;
+	datasetColMax	= 0;
 }
 
 void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax)
@@ -698,7 +717,7 @@ bool rbridge_columnUsedInFilter(const char * columnName)
 
 std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 {
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl << std::flush;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl;
 
 	std::string filterBase64 = filterCode;
 
@@ -708,13 +727,12 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
 
 	//for now we simply replace any found columnname by its Base64 variant if found
-	size_t foundPos = -1;
 	for(std::string col : columnNamesInDataSet)
 	{
 		std::string columnName64 = Base64::encode("X", col, Base64::RVarEncoding);
-
-		while((foundPos = filterBase64.find(col, foundPos + 1)) != std::string::npos)
-		{
+		std::vector<int> foundColPositions = rbridge_getPositionsColumnNameMatches(filterBase64, col);
+		std::reverse(foundColPositions.begin(), foundColPositions.end());
+		for (int foundPos : foundColPositions) {
 			size_t foundPosEnd = foundPos + col.length();
 			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
 			bool startIsFree	= foundPos == 0							|| std::regex_match(filterBase64.substr(foundPos - 1, 1),	nonNameChar);
@@ -730,10 +748,35 @@ std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
 		}
 	}
 
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl << std::flush;
+	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
 
 	return filterBase64;
 }
+std::vector<int> rbridge_getPositionsColumnNameMatches(const std::string & filterBase64, const std::string & columnName)
+{
+	std::vector<int> positions;
+	bool inString = false;
+	char delim;
+
+	for (std::string::size_type pos = 0; pos < filterBase64.length(); ++pos)
+		if (!inString && filterBase64.substr(pos, columnName.length()) == columnName)
+			positions.push_back(int(pos));
+		else if (filterBase64[pos] == '"' || filterBase64[pos] == '\'')
+		{
+			if (inString && filterBase64[pos] == delim)
+			{
+				inString = false;
+			}
+			else if (!inString)
+			{
+				delim = filterBase64[pos];
+				inString = true;
+			}
+		}
+	
+	return positions;
+}
+
 
 std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase64)
 {
@@ -757,10 +800,8 @@ std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase6
 
 void rbridge_findColumnsUsedInDataSet()
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
-
-	Columns &columns = rbridge_dataSet->columns();
+	rbridge_dataSet		= rbridge_dataSetSource();
+	Columns &columns	= rbridge_dataSet->columns();
 
 	columnNamesInDataSet.clear();
 
@@ -791,10 +832,10 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	bool * arrayPointer = NULL;
 
-	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();\n"
-								 "rowcount <- " + std::to_string(rowCount) +  ";\n"
-								 "attach(data);\n"
-								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);\n";
+	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();"												"\n"
+								 "rowcount <- " + std::to_string(rowCount) +  ";"										"\n"
+								 "attach(data);"																		"\n"
+								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
 
 	jaspRCPP_runScript(setupFilterEnv.c_str());//first we load the data to be filtered
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
@@ -825,7 +866,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	if(arrayLength != rowCount)
 	{
 		std::stringstream msg;
-		msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl << std::flush;
+		msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl;
 		errorMsg = msg.str();
 		throw filterException(errorMsg);
 	}
@@ -836,16 +877,23 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
+	int rowCount	= rbridge_dataSet == NULL ? 0 : rbridge_dataSet->rowCount();
+
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64(rbridge_encodeColumnNamesToBase64(rCode));
+	std::string rCode64("local({" +rbridge_encodeColumnNamesToBase64(rCode) + "})");
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
-	catch(filterException e)	{ jaspRCPP_setErrorMsg(e.what()); return "script is not safe..";	}
+	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
 
-	if(filterColumnsUsed.size() > 0)	jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
+	std::string setupFilterEnv = "data     <- .readFilterDatasetToEnd();"												"\n"
+								 "rowcount <- " + std::to_string(rowCount) +  ";"										"\n"
+								 "attach(data);"																		"\n"
+								 "options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
+
+	jaspRCPP_runScript(setupFilterEnv.c_str()); //first we load the data to be filtered
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
-	if(filterColumnsUsed.size() > 0)	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(rbridge_decodeColumnNamesFromBase64(jaspRCPP_getLastErrorMsg()).c_str());
 

@@ -47,7 +47,7 @@ std::vector<std::string> stringSplit(std::string str, char kar)
 void jaspPrint(std::string msg)
 {
 #ifdef JASP_R_INTERFACE_LIBRARY
-	std::cout << msg << std::endl << std::flush;
+	std::cout << msg << std::endl;
 #else
 	Rcpp::Rcout << msg << "\n";
 	//Rprintf(msg.c_str());
@@ -183,9 +183,12 @@ Rcpp::DataFrame jaspObject::convertFactorsToCharacters(Rcpp::DataFrame df)
 
 			Rcpp::CharacterVector	factorLevels	= originalColumn.attr("levels");
 
+/*#ifdef JASP_DEBUG
+			//In ifdef because we dont really have access to log here.
 			std::cout	<< "converting factors to characters for dataframe\n"
 						<< "originalColumn: " << originalColumn << "\n"
 						<< "factorLevels: " << factorLevels << std::endl;
+#endif*/
 
 			Rcpp::CharacterVector	charCol(originalColumn.size());
 
@@ -198,7 +201,7 @@ Rcpp::DataFrame jaspObject::convertFactorsToCharacters(Rcpp::DataFrame df)
 	return df;
 }
 
-Json::Value	jaspObject::constructMetaEntry(std::string type, std::string meta)
+Json::Value	jaspObject::constructMetaEntry(std::string type, std::string meta) const
 {
 	Json::Value obj(Json::objectValue);
 
@@ -211,7 +214,7 @@ Json::Value	jaspObject::constructMetaEntry(std::string type, std::string meta)
 	return obj;
 }
 
-std::string jaspObject::getUniqueNestedName()
+std::string jaspObject::getUniqueNestedName() const
 {
 	std::string parent_prefix = parent == NULL || parent->getUniqueNestedName() == "" ? "" :  parent->getUniqueNestedName() + "_";
 
@@ -231,7 +234,7 @@ void jaspObjectFinalizer(jaspObject * obj)
 	obj->finalized();
 }
 
-Json::Value jaspObject::convertToJSON()
+Json::Value jaspObject::convertToJSON() const
 {
 	Json::Value obj(Json::objectValue);
 
@@ -239,11 +242,13 @@ Json::Value jaspObject::convertToJSON()
 	obj["title"]		= _title;
 	obj["type"]			= jaspObjectTypeToString(_type);
 	obj["error"]        = _error;
-	obj["warning"]		= _warning;
+	obj["errorMessage"] = _errorMessage;
 	obj["position"]		= _position;
-	obj["warningSet"]	= _warningSet;
-	obj["citations"]	= _citations;
+	obj["citations"]	= Json::arrayValue;;
 	obj["messages"]		= Json::arrayValue;
+
+	for(auto c : _citations)
+		obj["citations"].append(c);
 
 	for(auto m : _messages)
 		obj["messages"].append(m);
@@ -262,15 +267,17 @@ Json::Value jaspObject::convertToJSON()
 
 void jaspObject::convertFromJSON_SetFields(Json::Value in)
 {
-	_name		= in.get("name",		"null").asString();
-	_title		= in.get("title",		"null").asString();
-	_warning	= in.get("warning",		"null").asString();
-	_warningSet	= in.get("warningSet",	false).asBool();
-	_position	= in.get("position",	JASPOBJECT_DEFAULT_POSITION).asInt();
-	_citations	= in.get("citations",	Json::arrayValue);
+	_name			= in.get("name",			"null").asString();
+	_title			= in.get("title",			"null").asString();
+	_error			= in.get("error",			false).asBool();
+	_errorMessage	= in.get("errorMessage",	"").asString();
+	_position		= in.get("position",		JASPOBJECT_DEFAULT_POSITION).asInt();
+
+	_citations.clear();
+	for(auto & citation : in.get("citations", Json::nullValue))
+		_citations.insert(citation.asString());
 
 	_messages.clear();
-
 	for(auto & msg : in.get("messages", Json::nullValue))
 		_messages.push_back(msg.asString());
 
@@ -317,23 +324,24 @@ void jaspObject::copyDependenciesFromJaspObject(jaspObject * other)
 
 bool jaspObject::checkDependencies(Json::Value currentOptions)
 {
-	if((_optionMustBe.size() + _optionMustContain.size()) == 0)
-		return true;
-
-	for(auto & keyval : _optionMustBe)
-		if(currentOptions.get(keyval.first, Json::nullValue) != keyval.second)
-			return false;
-
-	for(auto & keyval : _optionMustContain)
+	if((_optionMustBe.size() + _optionMustContain.size()) != 0)
 	{
-		bool foundIt = false;
 
-		for(auto & contains : currentOptions.get(keyval.first, Json::arrayValue))
-			if(contains == keyval.second)
-				foundIt = true;
+		for(auto & keyval : _optionMustBe)
+			if(currentOptions.get(keyval.first, Json::nullValue) != keyval.second)
+				return false;
 
-		if(!foundIt)
-			return false;
+		for(auto & keyval : _optionMustContain)
+		{
+			bool foundIt = false;
+
+			for(auto & contains : currentOptions.get(keyval.first, Json::arrayValue))
+				if(contains == keyval.second)
+					foundIt = true;
+
+			if(!foundIt)
+				return false;
+		}
 	}
 
 	checkDependenciesChildren(currentOptions);
@@ -343,20 +351,35 @@ bool jaspObject::checkDependencies(Json::Value currentOptions)
 
 void jaspObject::addCitation(std::string fullCitation)
 {
-	_citations.append(fullCitation);
-
-	notifyParentOfChanges();
+	bool citationAdded = _citations.insert(fullCitation).second;
+	if (citationAdded)
+		notifyParentOfChanges();
 }
 
-Json::Value	jaspObject::dataEntry()
+Json::Value	jaspObject::dataEntry(std::string & errorMessage) const
 {
-	Json::Value baseObject(Json::objectValue);
-	if(_citations.size() > 0)
-		baseObject["citation"] = _citations;
+	Json::Value baseObject(dataEntryBase());
 
+	//cascaded errorMessage supersedes _errorMessage
+	if(canShowErrorMessage() && (errorMessage != "" || _errorMessage != "" || _error))
+	{
+		baseObject["error"]					= Json::objectValue;
+		baseObject["error"]["type"]			= "badData"; // I guess?
+		baseObject["error"]["errorMessage"] = errorMessage != "" ? errorMessage : _errorMessage; //I guess the errormessage will be blank if only _error is set somehow?
+
+		errorMessage						= ""; //because this is a reference this will make sure it will not be added to the next child
+	}
 
 	return baseObject;
+}
 
+Json::Value	jaspObject::dataEntryBase() const
+{
+	Json::Value baseObject(Json::objectValue);
+	for(auto c : _citations)
+		baseObject["citation"].append(c);
+
+	return baseObject;
 }
 
 int jaspObject::getCurrentTimeMs()

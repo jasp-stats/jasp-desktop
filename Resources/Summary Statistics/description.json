@@ -4,7 +4,7 @@
 		"title"          : "Summary Statistics",
 		"description"    : "Summary Statistics module",
 		"icon"			 : "analysis-bayesian-ttest.svg",
-		"requiresDataset": false,
+		"requiresData"	 : false,
 		"version"        : 1,
 		"author"         : "JASP Team",
 		"maintainer"     : "JASP Team <jasp-stats.org>",

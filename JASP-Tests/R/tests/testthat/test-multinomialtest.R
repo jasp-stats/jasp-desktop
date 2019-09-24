@@ -15,8 +15,7 @@ test_that("Main table results match", {
     )
   )
   results <- jasptools::run("MultinomialTest",
-                            "test.csv", options, view=FALSE,
-                            quiet=TRUE)
+                            "test.csv", options)
   maintable <- results[["results"]][["chisq"]][["data"]]
   desctable <- results[["results"]][["descriptivesTable"]][["data"]]
 
@@ -39,8 +38,7 @@ test_that("Descriptives plot matches", {
   options <- jasptools::analysisOptions("MultinomialTest")
   options$factor <- "facFive"
   options$descriptivesPlot <- TRUE
-  results <- jasptools::run("MultinomialTest", "test.csv", options,
-                            view=FALSE, quiet=TRUE)
+  results <- jasptools::run("MultinomialTest", "test.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives-1", dir="MultinomialTest")
 })

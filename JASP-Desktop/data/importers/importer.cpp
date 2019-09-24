@@ -16,7 +16,10 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 	bool enginesLoaded = !_packageData->enginesInitializing();
 
 	if(enginesLoaded)
+	{
+		Log::log() << "Pausing engines for loadDataSet package because they are initialized!" << std::endl;
 		_packageData->pauseEngines();
+	}
 
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
@@ -25,6 +28,7 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 
 	if (columnCount == 0)
 		return;
+
 	int rowCount = importDataSet->rowCount();
 
 	setDataSetSize(columnCount, rowCount);
@@ -60,13 +64,13 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 		std::string colName = orgColumn.name();
 
 		// make sure "missing" columns aren't actually computed columns
-		if(!_packageData->isColumnComputed(colName))
+		if (!_packageData->isColumnComputed(colName))
 			missingColumns[orgColumn.name()] = &orgColumn;
 	}
 
 	for (ImportColumn *syncColumn : *importDataSet)
 	{
-		std::string syncColumnName = syncColumn->getName();
+		std::string syncColumnName = syncColumn->name();
 
 		if (missingColumns.find(syncColumnName) == missingColumns.end())
 			newColumns.push_back(std::pair<std::string, int>(syncColumnName, syncColNo));
@@ -126,8 +130,13 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 	}
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || rowCountChanged)
-		_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
+	{
+		bool doSync = true;
+		_packageData->checkDoSync(doSync);
+		if (doSync)
+			_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 
+	}
 	delete importDataSet;
 }
 
@@ -143,11 +152,11 @@ void Importer::fillSharedMemoryColumnWithStrings(const std::vector<std::string> 
 	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
 	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
-	bool valuesAreIntegers = ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap);
+	bool valuesAreIntegers = ImportColumn::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
 
 	auto isNominalInt = [&](){ return valuesAreIntegers && uniqueValues.size() == 2; };
 	auto isOrdinal = [&](){ return valuesAreIntegers && uniqueValues.size() > 2 && uniqueValues.size() <= thresholdScale; };
-	auto isScalar  = [&]() { return ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap); };
+	auto isScalar  = [&]() { return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
 
 	if		(isOrdinal())					column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, true);
 	else if	(isNominalInt())				column.setColumnAsNominalOrOrdinal(intValues, uniqueValues, false);
@@ -214,7 +223,7 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 		try
 		{
 			Column &column = _packageData->dataSet()->column(colNo);
-			column.setName(importColumn->getName());
+			column.setName(importColumn->name());
 			fillSharedMemoryColumn(importColumn, column);
 			success = true;
 		}
@@ -247,7 +256,11 @@ void Importer::_syncPackage(
 	bool enginesLoaded = !_packageData->enginesInitializing();
 
 	if(enginesLoaded)
+	{
+		Log::log() << "Pausing engines for syncing package because they are initialized!" << std::endl;
 		_packageData->pauseEngines();
+	}
+
 	_packageData->dataSet()->setSynchingData(true);
 
 	std::vector<std::string>			_changedColumns;
@@ -320,7 +333,7 @@ void Importer::_syncPackage(
 	}
 
 	_packageData->dataSet()->setSynchingData(false);
-	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
+	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged, newColumns.size() > 0);
 
 	if(enginesLoaded)
 		_packageData->resumeEngines();

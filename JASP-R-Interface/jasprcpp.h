@@ -41,7 +41,7 @@ RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
 void			jaspRCPP_logString(const std::string & code);
 SEXP			jaspRCPP_CreateCaptureConnection();
 
-const char * jaspRCPP_requestJaspResultsRelativeFilePath();
+bool jaspRCPP_requestJaspResultsRelativeFilePath(std::string & root, std:: string & relativePath);
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);
@@ -51,15 +51,20 @@ void jaspRCPP_setLog(SEXP Message);
 
 int jaspRCPP_dataSetRowCount();
 
-bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::RObject scalarData);
-bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::RObject ordinalData);
-bool jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::RObject nominalData);
-bool jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::RObject nominalData);
+bool jaspRCPP_columnIsScale(				std::string columnName	);
+bool jaspRCPP_columnIsOrdinal(				std::string columnName		  );
+bool jaspRCPP_columnIsNominal(				std::string columnName				 );
+bool jaspRCPP_columnIsNominalText(			std::string columnName						);
 
-bool _jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData);
-bool _jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData);
-bool _jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::Vector<INTSXP> nominalData);
-bool _jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::Vector<STRSXP> nominalData);
+bool jaspRCPP_setColumnDataAsScale(			std::string columnName,	Rcpp::RObject scalarData	);
+bool jaspRCPP_setColumnDataAsOrdinal(		std::string columnName,	Rcpp::RObject ordinalData		);
+bool jaspRCPP_setColumnDataAsNominal(		std::string columnName,	Rcpp::RObject nominalData			);
+bool jaspRCPP_setColumnDataAsNominalText(	std::string columnName,	Rcpp::RObject nominalData			);
+
+bool _jaspRCPP_setColumnDataAsScale(		std::string columnName,	Rcpp::Vector<REALSXP> scalarData	);
+bool _jaspRCPP_setColumnDataAsOrdinal(		std::string columnName,	Rcpp::Vector<INTSXP> ordinalData	);
+bool _jaspRCPP_setColumnDataAsNominal(		std::string columnName,	Rcpp::Vector<INTSXP> nominalData	);
+bool _jaspRCPP_setColumnDataAsNominalText(	std::string columnName,	Rcpp::Vector<STRSXP> nominalData	);
 
 void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels);
 
@@ -76,5 +81,7 @@ void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, size_t colMax);
 
 std::string _jaspRCPP_System(std::string cmd);
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames);
+
+ColumnType jaspRCPP_getColumnType(std::string columnName);
 
 #endif // JASPRCPP_H

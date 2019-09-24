@@ -139,6 +139,9 @@ view <- function(results) {
   content <- .parseUnicode(content)
   content <- gsub("<div class=stack-trace>", "<div>", content, fixed=TRUE) # this makes sure the stacktrace is not hidden
 
+  
+  content <- gsub("\\\"", "\\\\\"", content, fixed=TRUE) # double escape all escaped quotes (otherwise the printed json is invalid)
+  
   html <- readChar(file.path(.getPkgOption("html.dir"), "index.html"), 1000000)
   insertedJS <- paste0(
     "<script>
@@ -184,6 +187,7 @@ view <- function(results) {
 #' @param view Boolean indicating whether to view the results in a webbrowser.
 #' @param quiet Boolean indicating whether to suppress messages from the
 #' analysis.
+#' @param makeTests Boolean indicating whether to create testthat unit tests and print them to the terminal.
 #' @param sideEffects Boolean or character vector indicating which side effects
 #' are allowed.  Side effects are persistent changes made by jasptools or
 #' analyses run in jasptools, they include loading of packages ("pkgLoading"),
@@ -230,7 +234,7 @@ view <- function(results) {
 #' jasptools::run("BinomialTest", "debug.csv", options, sideEffects=c("globalEnv", "libPaths"))
 #'
 #' @export run
-run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, sideEffects = FALSE) {
+run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, makeTests = FALSE, sideEffects = FALSE) {
 
   if (missing(name)) {
     name <- attr(options, "analysisName")
@@ -254,25 +258,21 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     opts <- options()
     libPaths <- .libPaths()
     on.exit({
-      .removeS3Methods()
-      .resetRunTimeInternals()
       if (! "options" %in% sideEffects || identical(sideEffects, FALSE))
         .restoreOptions(opts)
       if (! "libpaths" %in% sideEffects || identical(sideEffects, FALSE))
         .libPaths(libPaths)
-      # if (! "loadedPkgs" %in% sideEffects || identical(sideEffects, FALSE))
-      #   .restoreNamespaces(loadedPkgs)
-      if (quiet)
-        suppressWarnings(sink(NULL))
-    })
-  } else { # no side effects, but we still need on.exit
-    on.exit({
-      .removeS3Methods()
-      .resetRunTimeInternals()
-      if (quiet)
-        suppressWarnings(sink(NULL))
     })
   }
+  
+  on.exit({
+    .removeS3Methods()
+    .resetRunTimeInternals()
+    if (quiet)
+      suppressWarnings(sink(NULL))
+    if (!identical(envir, .GlobalEnv))
+      rm(envir)
+  }, add = TRUE)
   
   .initRunEnvironment(envir = envir, dataset = dataset, perform = perform)
 
@@ -293,14 +293,10 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
 
   usesJaspResults <- .usesJaspResults(name)
   if (usesJaspResults) {
-    
-    if (! "jaspResults" %in% .packages())
-      suppressMessages(library(jaspResults))
-    else
-      suppressMessages(jaspResults::initJaspResults())
-    
     runFun <- "runJaspResults"
-
+    
+    initJaspResults()
+    
     # this list is a stand in for the 'jaspResultsModule' inside runJaspResults()
     envir[["jaspResultsModule"]] <- list(
       create_cpp_jaspResults   = function(name, state) get("jaspResults", envir = .GlobalEnv)$.__enclos_env__$private$jaspObject
@@ -313,6 +309,9 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   argNames <- intersect(names(possibleArgs), names(runArgs))
   args <- possibleArgs[argNames]
 
+  if (makeTests)
+    set.seed(1)
+  
   if (quiet) {
     sink(tempfile())
     results <- suppressWarnings(do.call(envir[[runFun]], args, envir=envir))
@@ -336,6 +335,13 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
     results <- jsonlite::fromJSON(results, simplifyVector=FALSE)
 
   results[["state"]] <- .getInternal("state")
+
+  figures <- results$state$figures
+  if (length(figures) > 1 && !is.null(names(figures)))
+    results$state$figures <- figures[order(as.numeric(tools::file_path_sans_ext(names(figures))))]
+  
+  if (makeTests)
+    .makeUnitTestsFromResults(results, name, dataset, options, usesJaspResults)
 
   return(invisible(results))
 }

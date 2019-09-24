@@ -28,22 +28,27 @@
 class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
-	OptionsTable(Options *rowTemplate = NULL) : OptionI(true), _template(rowTemplate) {}
+	OptionsTable(Options *rowTemplate = nullptr) : OptionI(true), _template(rowTemplate) {}
 
-	void		init(const Json::Value &data)							override;
-	void		set(const Json::Value &value)							override;
-	Json::Value asJSON()										const	override;
-	Option*		clone()											const	override;
-	void		setValue(const std::vector<Options *> &value)			override;
-	void		connectOptions(const std::vector<Options *> &value);
+	~OptionsTable()														override { deleteOldValues(); }
 
-	Options*	rowTemplate() const;
-	void		setTemplate(Options* templote);
+	void					init(const Json::Value &data)							override;
+	void					set(const Json::Value &value)							override;
+	Json::Value				asJSON()										const	override;
+	Option*					clone()											const	override;
+	void					setValue(const std::vector<Options *> &value)			override;
+	std::set<std::string>	usedVariables()									const	override;
+	void					connectOptions(const std::vector<Options *> &value);
+
+	Options*				rowTemplate()									const				{ return _template;	}
+	void					setTemplate(Options* templote);
+
 private:
-	Options *_template;
-	
+	void					optionsChanged(Option *) { notifyChanged(); }
+	void					deleteOldValues();
+
+	Options		*_template = nullptr;
 	Json::Value _cachedValue; // this is used when a template does not yet exist and the set function is called
-	void optionsChanged(Option *);	
 };
 
 #endif // OPTIONSTABLE_H

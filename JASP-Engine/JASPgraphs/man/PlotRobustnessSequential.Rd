@@ -4,22 +4,27 @@
 \alias{PlotRobustnessSequential}
 \title{Create a robustness or sequential plot}
 \usage{
-PlotRobustnessSequential(dfLines, dfPoints = NULL, BF01 = NULL,
-  hasRightAxis = TRUE, xName = NULL, yName = bfSubscripts,
-  addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF01),
-  evidenceLeveltxt = !is.null(BF01), pointLegend = !is.null(dfPoints),
-  linesLegend = !is.null(dfLines$g), bfSubscripts = "BF[0][1]",
-  pizzaTxt = pizzaTxtFromBF(bfSubscripts), pointColors = c("grey",
-  "white", "black", "red"), lineColors = c("black", "grey", "black"),
-  lineTypes = c("dotted", "solid", "solid"), addLineAtOne = TRUE,
-  bty = list(type = "n", ldwX = 0.5, lwdY = 0.5), ...)
+PlotRobustnessSequential(dfLines, dfPoints = NULL, BF = NULL,
+  hasRightAxis = TRUE, xName = NULL, yName = NULL,
+  addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF),
+  evidenceLeveltxt = !is.null(BF), pointLegend = !is.null(dfPoints),
+  linesLegend = !is.null(dfLines$g), bfSubscripts = NULL,
+  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, bfType = c("BF01",
+  "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater"),
+  pointColors = c("red", "grey", "black", "white"),
+  lineColors = c("black", "grey", "black"), lineTypes = c("dotted",
+  "solid", "solid"), addLineAtOne = TRUE, bty = list(type = "n", ldwX =
+  0.5, lwdY = 0.5), plotLineOrPoint = c("line", "point"),
+  pointShapesSmallN = rep(21, 3), pointFillsSmallN = c("grey", "black",
+  "white"), pointColorsSmallN = rep("black", 3), pointSizeSmallN = c(3,
+  2, 2), ...)
 }
 \arguments{
-\item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}
+\item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}. \code{$y} is assumed to be on the log scale.}
 
 \item{dfPoints}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}
 
-\item{BF01}{Numeric, with value of Bayes factor.}
+\item{BF}{Numeric, with value of Bayes factor. This MUST correspond to bfType.}
 
 \item{hasRightAxis}{Logical, should there be a right axis displaying evidence?}
 
@@ -38,9 +43,13 @@ Ignored if \code{!is.null(dfLines$g) && linesLegend}.}
 
 \item{linesLegend}{Logical, should a legend of \code{dfLines$g} be shown?}
 
-\item{bfSubscripts}{String, to be parsed as expression. Indicates what BF type to display.}
+\item{bfSubscripts}{String, manually specify the BF labels.}
 
 \item{pizzaTxt}{String vector of length 2, text to be drawn above and below pizza plot.}
+
+\item{bfType}{String, what is the type of BF? Options are "BF01", "BF10", or "LogBF10".}
+
+\item{hypothesis}{String, what was the hypothesis? Options are "equal", "smaller", or "greater".}
 
 \item{pointColors}{String vector, colors for points if \code{dfPoints$g} is not \code{NULL}.}
 
@@ -52,8 +61,38 @@ Ignored if \code{!is.null(dfLines$g) && linesLegend}.}
 
 \item{bty}{List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.}
 
+\item{plotLineOrPoint}{String, should the main geom in the plot be a line or a point?}
+
+\item{pointShapesSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the shape aestethic.}
+
+\item{pointFillsSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the fill aestethic.}
+
+\item{pointColorsSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the color aestethic.}
+
 \item{...}{Unused.}
+
+\item{pointColorsSmallN}{String, if \code{plotLineOrPoint == "point"} then this controls the size aestethic.}
 }
 \description{
 Create a robustness or sequential plot
+}
+\examples{
+n <- 100
+dfLines <- data.frame(
+  x = seq_len(n),
+  y = c(0, rnorm(n - 1, seq_len(n - 1) / 30, .5)) # log Bayes factor
+)
+
+PlotRobustnessSequential(
+  dfLines      = dfLines,
+  xName        = "n",
+)
+
+BF10 <- exp(tail(dfLines, 1)$y)
+PlotRobustnessSequential(
+  dfLines      = dfLines,
+  xName        = "n",
+  BF           = BF10,
+  bfType       = "BF10"
+)
 }

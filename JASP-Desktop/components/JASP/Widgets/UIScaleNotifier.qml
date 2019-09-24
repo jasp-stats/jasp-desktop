@@ -33,7 +33,7 @@ Item
 		color:				Theme.grayDarker
 		opacity:			uiScaleNotifier.uiScaleIsLoadedFromSettings && uiScaleTimer.running ? 0.8 : 0
 
-		Behavior on opacity	{ PropertyAnimation { duration: 100 } }
+		Behavior on opacity	{ enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: 100 } }
 	}
 
 	Timer

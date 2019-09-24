@@ -76,7 +76,7 @@ signals:
 	void refreshAllAnalyses();
 	void filterUpdated();
 
-	void sendFilter(QString generatedFilter, QString rFilter, int requestID);
+	int sendFilter(QString generatedFilter, QString rFilter);
 
 	void defaultRFilterChanged(); //Will never be called
 

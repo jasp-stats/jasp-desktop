@@ -81,6 +81,8 @@ public:
 	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
 	void			showPreferences();
+	void			syncDataFile(const QString& path);
+
 
 	ActionButtons::FileOperation		fileoperation()				const	{ return _fileoperation;			}
 	DataLibrary						*	datalibrary()				const	{ return _dataLibrary;				}
@@ -118,12 +120,13 @@ public slots:
 
 private slots:
 	void dataSetOpenRequestHandler(QString path) { open(path); }
-	void dataSetOpenCurrentRequestHandler(QString path);
 	void dataSetIORequestHandler(FileEvent *event);
 
 private:
 			bool checkSyncFileExists(const QString &path);
 			void clearSyncData();
+			void setSyncRequest(const QString& path);
+
 	static	bool clearOSFFromRecentList(QString path);
 
 private:
@@ -145,6 +148,7 @@ private:
 									_visible					= false;
 	ActionButtons::FileOperation	_fileoperation				= ActionButtons::None;
 	DataSetPackage*					_package					= nullptr;
+	MainWindow*						_mainWindow					= nullptr;
 };
 
 #endif // FILEMENU_H

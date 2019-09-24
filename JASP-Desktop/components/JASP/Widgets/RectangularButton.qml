@@ -35,7 +35,7 @@ Item
 	property bool	centerText:			true
 	property bool	iconLeft:			true
 
-	property real	_scaledDim:			32 * preferencesModel.uiScale
+	property real	_scaledDim:			Theme.defaultRectangularButtonHeight
 	property alias	_pressed:			buttonMouseArea.pressed
 	property alias  color:				rect.color
 	property alias	border:				rect.border
@@ -99,12 +99,13 @@ Item
 			width:	Math.min(filterButtonRoot.width - (2 * buttonPadding), height)
 			height: filterButtonRoot.height - (2 * buttonPadding)
 
-			sourceSize.width:	Math.max(96, width  * 2)
-			sourceSize.height:	Math.max(96, height * 2)
+		//	sourceSize.width:	Math.max(96, width  * 2)
+		//	sourceSize.height:	Math.max(96, height * 2)
 
 			visible:	filterButtonRoot.iconSource != "" || filterButtonRoot.showIconAndText
 			source:		filterButtonRoot.iconSource
 			mipmap:		true
+			smooth:		true
 		}
 
 		Text

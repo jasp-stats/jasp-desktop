@@ -40,7 +40,7 @@ FocusScope
 		border.width:	1
 		border.color:	Theme.uiBorder
 
-		Behavior on x { PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		Behavior on x { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 		MouseArea

@@ -201,11 +201,11 @@ FocusScope
 	{
 		id: rectDescription
 
-		height:				visible ? Math.max(40,textDescription.contentHeight) + 30 : 0
+		height:				visible ? Math.max(40,textDescription.contentHeight) + 30 : 1
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		anchors.top:		rectTitle.bottom
-		anchors.margins:	height > 0 ? 1 : 0
+		anchors.margins:	visible ? 1 : 0
 
 		color:				rectTitleAndDescripton.color//allHovered ? Theme.buttonColorHovered : Theme.buttonColor
 		visible:			model.description !== ""

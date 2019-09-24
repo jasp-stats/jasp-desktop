@@ -9,9 +9,9 @@ public:
 	void			setObject(Rcpp::RObject obj);
 	Rcpp::RObject	getObject();
 
-	Json::Value		convertToJSON()								override;
-	void			convertFromJSON_SetFields(Json::Value in)	override;
-	std::string		dataToString(std::string prefix)			override;
+	Json::Value		convertToJSON()								const	override;
+	void			convertFromJSON_SetFields(Json::Value in)			override;
+	std::string		dataToString(std::string prefix)					override;
 	std::string		_envName;
 
 private:

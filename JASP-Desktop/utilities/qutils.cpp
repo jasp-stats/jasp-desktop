@@ -47,11 +47,11 @@ QStringList tql(const std::vector<string> &from)
 	return result;
 }
 
-vector<string> fromQstringToStdVector(const QString &input, const QString &delimetor)
+vector<string> fromQstringToStdVector(const QString &input, const QString &delimeter)
 {
 	QStringList list;
 	vector<string> result;
-	list = input.split(delimetor);
+	list = input.split(delimeter);
 	for (const QString & itm : list)
 		result.push_back(stripFirstAndLastChar(itm,"\"").toStdString());
 	
@@ -94,4 +94,26 @@ QString decrypt(const QString &input)
 QString getSortableTimestamp()
 {
 	return QDateTime::currentDateTime().toString("yyyy-MM-dd hh_mm_ss"); //This order gets an easy alphanumeric sort by default and sadly enough the character : is not allowed on unix/macx
+}
+
+QVector<QString> tq(const std::vector<std::string> & vec)
+{
+	std::vector<QString> out;
+	out.reserve(vec.size());
+	for(const std::string & s : vec)
+		out.push_back(tq(s));
+
+	return QVector<QString>::fromStdVector(out);
+}
+
+std::vector<std::string> fq(const QVector<QString> & vec)
+{
+	std::vector<std::string> out;
+	out.reserve(static_cast<size_t>(vec.size()));
+
+	for(const QString & s : vec)
+		out.push_back(fq(s));
+
+	return out;
+
 }

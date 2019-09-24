@@ -47,6 +47,8 @@ signals:
 	void progress(const QString &status, int progress);
 	void beginFileUpload(QString nodePath, QString sourcePath);
 
+	void checkDoSyncSig(bool &check);
+
 private slots:
 	void loadTask(FileEvent *event, DataSetPackage *package);
 	void saveTask(FileEvent *event, DataSetPackage *package);
@@ -59,13 +61,13 @@ private:
 	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
 	void progressHandler(std::string status, int progress);
-	DataSetLoader _loader;
 
-	FileEvent *_currentEvent;
-	DataSetPackage *_currentPackage;
+	void checkDoSyncSlot(bool& check);
 
-	OnlineDataManager *_odm = NULL;
-	
+	DataSetLoader		_loader;
+	FileEvent *			_currentEvent = nullptr;
+	DataSetPackage *	_currentPackage = nullptr;
+	OnlineDataManager *	_odm = nullptr;
 };
 
 #endif // ASYNCLOADER_H

@@ -312,10 +312,11 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 												mu = options$testValue,
 												conf.level = percentConfidenceMeanDiff, conf.int = TRUE)
 						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-						maxw <- (n*(n+1))/2
-						d <- as.numeric((r$statistic/maxw) * 2 - 1)
-						wSE <- sqrt((n*(n+1)*(2*n+1))/6) /2
-						mrSE <- sqrt(wSE^2  * 4 * (1/maxw^2)) 
+						nd <- sum(dat != 0)
+						maxw <- (nd * (nd + 1)) / 2
+						d <- as.numeric((r$statistic / maxw) * 2 - 1)
+						wSE <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) /2
+						mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
 						# zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
 						zmbiss <- atanh(d)
 						d <- .clean(d)
@@ -345,41 +346,28 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				      confIntEffSize <- r$conf.int/options$stddev
 					  }
 					} else {
+					  
 						r <- stats::t.test(dat, alternative = direction,
 										   mu = options$testValue, conf.level = percentConfidenceMeanDiff)
 						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
 						d <- .clean((mean(dat) - options$testValue) / sd(dat))
 						t <- as.numeric(r$statistic)
+						
 						confIntEffSize <- c(0,0)
+						
 						if (wantsConfidenceEffSize) {
-	
-						  alphaLevels <- sort( c( (1-percentConfidenceEffSize), percentConfidenceEffSize ) )
+
+						  ciEffSize <- options$effSizeConfidenceIntervalPercent
+						  alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
 						  
-						  if (direction == "two.sided") {
-						    alphaLevels[1] <- (1-percentConfidenceEffSize) / 2
-						    alphaLevels[2] <- (percentConfidenceEffSize + 1) / 2
-						  } 
+						  confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, alpha.lower = alphaLevel,
+						                                                 alpha.upper = alphaLevel)[c(1, 3)]
+						  confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
 						  
-						  end1 <- abs(t)
-						  while( pt(q=t,df=df,ncp=end1) > alphaLevels[1]){
-						    end1 = end1 * 2
-						  }
-						  ncp1 <- uniroot(function(x) alphaLevels[1] - pt(q=t, df=df, ncp=x),
-						                  c(2*t-end1,end1))$root
-						  
-						  end2 = -abs(t)
-						  while( pt(q=t,df=df,ncp=end2) < alphaLevels[2]){
-						    end2 = end2 * 2
-						    # end2 <- end2 - abs(t)
-						  }
-					    ncp2 <- uniroot(function(x) alphaLevels[2] - pt(q=t, df=df, ncp=x),
-					                    c(end2,2*t-end2))$root						    
-					    confIntEffSize <- sort(c(ncp1/sqrt(n), ncp2/sqrt(n)))[order(c(1-percentConfidenceEffSize, percentConfidenceEffSize ))]
-						    
-					    if (direction == "greater") {
-					      confIntEffSize[2] <- Inf
-					    } else if (direction == "less") 
-					      confIntEffSize[1] <- -Inf				
+						  if (direction == "greater") {
+						    confIntEffSize[2] <- Inf
+						  } else if (direction == "less")
+						    confIntEffSize[1] <- -Inf
 					    
 					    confIntEffSize <- sort(confIntEffSize)
 						}

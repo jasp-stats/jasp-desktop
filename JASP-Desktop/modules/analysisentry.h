@@ -31,7 +31,7 @@ class DynamicModule;
 class AnalysisEntry
 {
 public:
-	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule);
+	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);
 	AnalysisEntry();
 
 	std::string		title()					const { return _title;				}
@@ -42,6 +42,7 @@ public:
 	bool			isGroupTitle()			const { return _isGroupTitle;		}
 	bool			isAnalysis()			const { return _isAnalysis;			}
 	bool			isEnabled()				const { return _isEnabled;			}
+	bool			requiresData()			const { return _requiresData;		}
 
 	DynamicModule*	dynamicModule()			const;
 	std::string		qmlFilePath()			const;
@@ -53,16 +54,16 @@ public:
 	std::string		buttonMenuString()		const;
 
 private:
-	std::string		_title		= "",
-					_function	= "",
-					_qml		= "";
-	DynamicModule*	_dynamicModule = nullptr;
-	bool			_isSeparator = false;
-	bool			_isGroupTitle = false;
-	bool			_isAnalysis = false;
-	bool			_isEnabled = true;
-	std::string		_icon		= "";
-
+	std::string		_title			= "???",
+					_function		= "???",
+					_qml			= "???";
+	DynamicModule*	_dynamicModule	= nullptr;
+	bool			_isSeparator	= true,
+					_isGroupTitle	= false,
+					_isAnalysis		= false,
+					_isEnabled		= true,
+					_requiresData	= true;
+	std::string		_icon			= "";
 };
 
 typedef std::vector<AnalysisEntry*> AnalysisEntries;

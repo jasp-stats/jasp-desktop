@@ -27,7 +27,7 @@ JASPControl
 	controlType:		"CheckBox"
 	implicitWidth:		childrenOnSameRow
 							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
-							: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
+							: Math.max(control.implicitWidth, control.padding + checkIndicator.width + control.spacing + childControlsArea.implicitWidth)
 	implicitHeight:		childrenOnSameRow
 							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
 							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
@@ -112,13 +112,18 @@ JASPControl
 	GridLayout
 	{
 		id:				childControlsArea
+		anchors
+		{
+			top:		childrenOnSameRow ? control.top : control.bottom
+			topMargin:	childrenOnSameRow ? 0 : Theme.rowGroupSpacing
+			left:		childrenOnSameRow ? control.right : control.left
+			leftMargin: childrenOnSameRow ? Theme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
+		}
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
 		columns:		childrenOnSameRow ? children.length : 1
 		rowSpacing:		Theme.rowGroupSpacing
 		columnSpacing:	Theme.columnGridSpacing
-
-		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
 	}
 
 	Component.onCompleted:
@@ -127,21 +132,10 @@ JASPControl
 		{
 			if (childrenOnSameRow)
 			{
-				childControlsArea.x = childControlsArea.childControlsPadding
-				childControlsArea.anchors.top = control.top
 				if (childControlsArea.implicitHeight < control.implicitHeight)
 					childControlsArea.anchors.topMargin = control.padding - 1 // border width
 			}
-			else
-			{
-				childControlsArea.anchors.top = control.bottom
-				childControlsArea.anchors.topMargin = Theme.rowGroupSpacing
-				childControlsArea.anchors.left = control.left
-				childControlsArea.anchors.leftMargin = childControlsArea.childControlsPadding
-			}
 		}
-
 	}
-
 
 }

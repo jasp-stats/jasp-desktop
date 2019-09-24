@@ -21,9 +21,14 @@ void MessageForwarder::showWarning(QString title, QString message)
 	QMessageBox::warning(nullptr, title, message);
 }
 
-bool MessageForwarder::showYesNo(QString title, QString message)
+bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
 {
-	return QMessageBox::question(nullptr, title, message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No);
+
+	box.setButtonText(QMessageBox::Yes,		YesButtonText);
+	box.setButtonText(QMessageBox::No,		NoButtonText);
+
+	return box.exec() == QMessageBox::Yes;
 }
 
 MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title, QString message, QString YesButtonText, QString NoButtonText, QString CancelButtonText)

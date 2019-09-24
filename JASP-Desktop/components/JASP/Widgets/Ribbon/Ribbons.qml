@@ -34,6 +34,7 @@ Item
 		orientation:	ListView.Horizontal
 		currentIndex:	ribbonModelFiltered.highlightedModuleIndex
 		height:			parent.height
+		width:          Math.min(contentWidth, fadeOutRight.x - fadeOutLeft.width)
 		boundsBehavior:	Flickable.StopAtBounds
 
 		highlightFollowsCurrentItem:	true
@@ -44,7 +45,6 @@ Item
 		anchors
 		{
 			left:			fadeOutLeft.right
-			right:			fadeOutRight.left
 			verticalCenter:	parent.verticalCenter
 		}
 
@@ -55,7 +55,7 @@ Item
 			moduleName:		model.moduleName
 			source:			model.ribbonButton ? ((model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource) : ""
 			menu:			model.ribbonButton ? model.ribbonButton.analysisMenu : undefined
-			enabled:		model.ribbonButton ? (model.ribbonEnabled && (!model.ribbonButton.requiresDataset || mainWindow.datasetLoaded)) : false
+			enabled:		model.ribbonButton ? model.active : false
 			visible:		model.ribbonButton ? true : false
 		}
 	}

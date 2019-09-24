@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.11
+import QtQuick			2.12
 import QtWebEngine		1.7
 import QtWebChannel		1.0
 import QtQuick.Controls 2.4
@@ -188,6 +188,19 @@ Item
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
 					function analysisTitleChangedInResults(id, title)	{ resultsJsInterface.analysisTitleChangedInResults(id, title)	}
+					function updateUserData()							{ resultsJsInterface.updateUserData()							}
+					function analysisSaveImage(id, options)				{ resultsJsInterface.analysisSaveImage(id, options)				}
+					function analysisEditImage(id, options)				{ resultsJsInterface.analysisEditImage(id, options)				}
+					function removeAnalysisRequest(id)					{ resultsJsInterface.removeAnalysisRequest(id)					}
+					function pushToClipboard(mime, raw, coded)			{ resultsJsInterface.pushToClipboard(mime, raw, coded)			}
+					function pushImageToClipboard(raw, coded)			{ resultsJsInterface.pushImageToClipboard(raw, coded)			}
+					function saveTempImage(index, path, base64)			{ resultsJsInterface.saveTempImage(index, path, base64)			}
+					function getImageInBase64(index, path)				{ resultsJsInterface.getImageInBase64(index, path)				}
+					function resultsDocumentChanged()					{ resultsJsInterface.resultsDocumentChanged()					}
+					function displayMessageFromResults(msg)				{ resultsJsInterface.displayMessageFromResults(msg)				}
+					function setAllUserDataFromJavascript(json)			{ resultsJsInterface.setAllUserDataFromJavascript(json)			}
+					function setResultsMetaFromJavascript(json)			{ resultsJsInterface.setResultsMetaFromJavascript(json)			}
+					function duplicateAnalysis(id)						{ resultsJsInterface.duplicateAnalysis(id)						}
 
 
 					function showAnalysesMenu(options)
@@ -238,26 +251,13 @@ Item
 							"functionCall"	: functionCall
 						};
 
-						customMenu.showMenu(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
+						customMenu.toggle(resultsView, props, (optionsJSON['rXright'] + 10) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale);
 
 						customMenu.scrollOri		= resultsView.scrollPosition;
-						customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x); });
-						customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y); });
+						customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x) / resultsView.zoomFactor; });
+						customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y) / resultsView.zoomFactor; });
 						customMenu.menuMinIsMin		= true
 					}
-
-					function updateUserData()						{ resultsJsInterface.updateUserData()						}
-					function analysisSaveImage(id, options)			{ resultsJsInterface.analysisSaveImage(id, options)			}
-					function analysisEditImage(id, options)			{ resultsJsInterface.analysisEditImage(id, options)			}
-					function removeAnalysisRequest(id)				{ resultsJsInterface.removeAnalysisRequest(id)				}
-					function pushToClipboard(mime, raw, coded)		{ resultsJsInterface.pushToClipboard(mime, raw, coded)		}
-					function pushImageToClipboard(raw, coded)		{ resultsJsInterface.pushImageToClipboard(raw, coded)		}
-					function saveTempImage(index, path, base64)		{ resultsJsInterface.saveTempImage(index, path, base64)		}
-					function getImageInBase64(index, path)			{ resultsJsInterface.getImageInBase64(index, path)			}
-					function resultsDocumentChanged()				{ resultsJsInterface.resultsDocumentChanged()				}
-					function displayMessageFromResults(msg)			{ resultsJsInterface.displayMessageFromResults(msg)			}
-					function setAllUserDataFromJavascript(json)		{ resultsJsInterface.setAllUserDataFromJavascript(json)		}
-					function setResultsMetaFromJavascript(json)		{ resultsJsInterface.setResultsMetaFromJavascript(json)		}
 				}
 			}
 		}

@@ -19,10 +19,10 @@
 #ifndef COMPUTERFILESYSTEM_H
 #define COMPUTERFILESYSTEM_H
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 #include "common.h"
 
-class ComputerFileSystem : public FileSystemModel
+class ComputerFileSystem : public FileSystem
 {
 public:
 	explicit ComputerFileSystem(QObject *parent = NULL);

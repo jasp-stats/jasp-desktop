@@ -33,7 +33,7 @@ public:
 	Option					*clone()						const	override;
 
 	std::string				variable()						const;
-	std::set<std::string>	usedVariables()							override { return std::set<std::string>({ variable() }); }
+	std::set<std::string>	usedVariables()					const	override { return std::set<std::string>({ variable() }); }
 	void					removeUsedVariable(std::string var)		override;
 
 };

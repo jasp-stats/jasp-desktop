@@ -40,6 +40,8 @@
 
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {	
+	JASPTIMER_RESUME(JASPImporter::loadDataSet INIT);
+
 	packageData->setIsArchive(true);
 	packageData->setDataSet(SharedMemory::createDataSet()); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
 
@@ -50,6 +52,8 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &p
 	if (compatibility == JASPImporter::NotCompatible)	throw std::runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 	else if (compatibility == JASPImporter::Limited)	packageData->setWarningMessage("This file was created by a newer version of JASP and may not have complete functionality.");
 
+	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
+
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);
 }
@@ -58,7 +62,11 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &p
 void JASPImporter::loadDataArchive(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->dataArchiveVersion().major == 1)
+	{
+		JASPTIMER_RESUME(JASPImporter::loadDataSet loadDataArchive);
 		loadDataArchive_1_00(packageData, path, progressCallback);
+		JASPTIMER_STOP(JASPImporter::loadDataSet loadDataArchive);
+	}
 	else
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
@@ -87,7 +95,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	Json::Value jsonFilterConstructor = metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON);
 	packageData->setFilterConstructorJson(jsonFilterConstructor.isObject() ? jsonFilterConstructor.toStyledString() : jsonFilterConstructor.asString());
-	
+
 	Json::Value &emptyValuesJson = metaData["emptyValues"];
 	if (emptyValuesJson.isNull())
 	{
@@ -183,8 +191,10 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 			}
 		}
 
-		do {
-			try {
+		do
+		{
+			try
+			{
 				Column &column = packageData->dataSet()->column(i);
 				Column::ColumnType columnType = parseColumnType(columnDesc["measureType"].asString());
 
@@ -194,21 +204,22 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				Labels &labels = column.labels();
 				labels.clear();
 				int index = 1;
-				for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
+
+				for (Json::Value keyValueFilterTrip : labelsDesc)
 				{
-					Json::Value keyValueFilterPair = *iter;
-					int zero		= 0; // ???
-					int key			= keyValueFilterPair.get(zero, Json::nullValue).asInt();
-					std::string val = keyValueFilterPair.get(1, Json::nullValue).asString();
-					bool fil		= keyValueFilterPair.get(2, true).asBool();
+					int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
+					int key			= keyValueFilterTrip.get(zero,	Json::nullValue).asInt();
+					std::string val = keyValueFilterTrip.get(1,			Json::nullValue).asString();
+					bool fil		= keyValueFilterTrip.get(2,			true).asBool();
 					int labelValue	= key;
+
 					if (columnType == Column::ColumnTypeNominalText)
 					{
-						labelValue = index;
-						mapValues[key] = labelValue;
+						labelValue		= index;
+						mapValues[key]	= labelValue;
 					}
 
-					labels.add(labelValue, val, fil);
+					labels.add(labelValue, val, fil, columnType == Column::ColumnTypeNominalText);
 
 					index++;
 				}
@@ -217,10 +228,13 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				{
 					for (Json::Value keyValuePair : orgStringValuesDesc)
 					{
-						int zero		= 0; // ???
-						int key			= keyValuePair.get(zero, Json::nullValue).asInt();
-						std::string val = keyValuePair.get(1, Json::nullValue).asString();
-						key = mapValues[key];
+						int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
+						int key			= keyValuePair.get(zero,	Json::nullValue).asInt();
+						std::string val = keyValuePair.get(1,		Json::nullValue).asString();
+						if (mapValues.find(key) != mapValues.end())
+							key = mapValues[key];
+						else
+							Log::log() << "Cannot find key " << key << std::flush;
 						labels.setOrgStringValues(key, val);
 					}
 				}
@@ -235,7 +249,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				}
 				catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");		}
 			}
-			catch (std::exception e)		{ Log::log() << "n " << e.what() << std::endl;	}
+			catch (std::exception &e)		{ Log::log() << "std::exception " << e.what() << std::endl;	}
 			catch (...)						{ Log::log() << "something else" << std::endl;	}
 		} while (success == false);
 
@@ -262,6 +276,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		Column::ColumnType columnType	= column.columnType();
 		int typeSize					= (columnType == Column::ColumnTypeScale) ? sizeof(double) : sizeof(int);
 		std::map<int, int>& mapValues	= mapNominalTextValues[column.name()];
+		Labels &labels					= column.labels();
 
 		for (int r = 0; r < rowCount; r++)
 		{
@@ -278,6 +293,19 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				int value = *(int*)buff;
 				if (columnType == Column::ColumnTypeNominalText && value != INT_MIN)
 					value = mapValues[value];
+
+				//Maybe something went wrong somewhere and we do no have labels for all values...
+				try
+				{
+					if (value != INT_MIN)
+						labels.getLabelObjectFromKey(value);
+				}
+				catch (const labelNotFound &)
+				{
+					Log::log() << "Value '" << value << "' in column '" << column.name() << "' did not have a corresponding label, adding one now.\n";
+					labels.add(value, std::to_string(value), true, columnType == Column::ColumnTypeNominalText);
+				}
+
 				column.setValue(r, value);
 			}
 
@@ -307,6 +335,20 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue));
 
+	std::vector<bool> filterVector;
+	for(const Json::Value & filteredRow : dataSetDesc.get("filterVector", Json::arrayValue))
+		filterVector.push_back(filteredRow.asBool());
+	packageData->dataSet()->setFilterVector(filterVector);
+
+	//Filter should be run if filterVector was not filled and either of the filters was different from default.
+	bool filterShouldBeRun =
+			filterVector.size() == 0 &&
+			(	metaData.get("filterData",				DEFAULT_FILTER).asString()		!= DEFAULT_FILTER
+			||	metaData.get("filterConstructorJSON",	DEFAULT_FILTER_JSON).asString() != DEFAULT_FILTER_JSON	);
+
+	packageData->setFilterShouldRunInit(filterShouldBeRun);
+
+
 	//Take out for the time being
 	/*string entryName3 = "results.html";
 	FileReader dataEntry3 = FileReader(path, entryName3);
@@ -330,13 +372,18 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->archiveVersion().major >= 1 && packageData->archiveVersion().major <= 3) //2.x version have a different analyses.json structure but can be loaded using the 1_00 loader. 3.x adds computed columns
+	{
+		JASPTIMER_RESUME(JASPImporter::loadDataSet loadJASPArchive);
 		loadJASPArchive_1_00(packageData, path, progressCallback);
+		JASPTIMER_STOP(JASPImporter::loadDataSet loadJASPArchive);
+	}
 	else
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
 void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
+	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
 	if (parseJsonEntry(analysesData, path, "analyses.json", false))
@@ -345,29 +392,61 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 	
 		for (std::string resource : resources)
 		{
+
+
 			FileReader resourceEntry = FileReader(path, resource);
 	
 			std::string filename	= resourceEntry.fileName();
 			std::string dir			= resource.substr(0, resource.length() - filename.length() - 1);
+
+			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Create resource files);
+
+			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 TempFiles::createSpecific);
 			std::string destination = TempFiles::createSpecific(dir, resourceEntry.fileName());
+			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 TempFiles::createSpecific);
 	
+			JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream);
 			boost::nowide::ofstream file(destination.c_str(),  std::ios::out | std::ios::binary);
+
+			static char streamBuff[8192 * 32];
+			file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770
 	
-			char	copyBuff[8016];
-			int		bytes		= 0,
-					errorCode	= 0;
-			while ((bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode)) > 0 && errorCode == 0)
-				file.write(copyBuff, bytes);
+			static char copyBuff[8192 * 4];
+			int			bytes		= 0,
+						errorCode	= 0;
+
+			do
+			{
+				JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream - read data);
+				bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode);
+				JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream - read data);
+
+				if(bytes > 0 && errorCode == 0)
+				{
+					JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 Write file stream - write to stream);
+					file.write(copyBuff, bytes);
+					JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream - write to stream);
+				}
+				else break;
+			}
+			while (true);
 
 			file.flush();
 			file.close();
+			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Write file stream);
 	
 			if (errorCode != 0)
 				throw std::runtime_error("Could not read resource files.");
+
+			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Create resource files);
 		}
 	}
+
+	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	
+	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 	packageData->setAnalysesData(analysesData);
+	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 
 }
 

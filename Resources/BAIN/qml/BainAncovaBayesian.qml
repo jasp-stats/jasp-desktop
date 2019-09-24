@@ -46,7 +46,7 @@ Form
 		}
 	}
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Tables")
 
@@ -54,7 +54,7 @@ Form
 		CheckBox { name: "coefficients";		text: qsTr("Coefficients")			}
 	}
 
-	GroupBox
+	Group
 	{
 		title: qsTr("Plots")
 
@@ -62,7 +62,7 @@ Form
 		CheckBox { name: "descriptivesPlot";	text: qsTr("Descriptives plot")			}
 	}
 
-	ExpanderButton
+	Section
 	{
 		text: qsTr("Model Constraints")
 		columns: 1
@@ -73,9 +73,10 @@ Form
 		{
 			name: "model"
 			implicitHeight: 200
-			infoText: Qt.platform.os == "osx" ? "\u2318 + Enter to apply" : "Crtl + Enter to apply"
+			infoText: Qt.platform.os == "osx" ? "\u2318 + Enter to apply" : "Ctrl + Enter to apply"
 			text: ""
 			textType: "model"
+			trim: true
 	   }
 	}
 }

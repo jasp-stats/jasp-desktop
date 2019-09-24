@@ -72,13 +72,10 @@ void ImportDataSet::erase(ImportColumns::iterator it)
 	_columns.erase(it);
 }
 
-/**
- * @brief buildDictionary Build the dictiontary/mapping.
- */
 void ImportDataSet::buildDictionary()
 {
 	_nameToColMap.clear();
-	for (ImportColumns::iterator colIt = begin(); colIt != end(); ++colIt)
-		_nameToColMap.insert(make_pair((*colIt)->getName(), *colIt));
+	for(ImportColumn * col : *this)
+		_nameToColMap[col->name()] = col;
 }
 

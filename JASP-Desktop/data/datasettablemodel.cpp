@@ -197,35 +197,6 @@ void DataSetTableModel::resetAllFilters()
 	emit headerDataChanged(Qt::Horizontal, 0, columnCount());
 }
 
-int DataSetTableModel::getMaximumColumnWidthInCharacters(size_t columnIndex) const
-{
-	if(columnIndex >= _dataSet->columnCount()) return 0;
-
-	Column & col = _dataSet->column(columnIndex);
-
-	int extraPad = 2;
-
-	switch(col.columnType())
-	{
-	case Column::ColumnTypeScale:
-		return 6 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + some padding because of dots and whatnot
-
-	case Column::ColumnTypeUnknown:
-		return 0;
-
-	default:
-	{
-		int tempVal = 0;
-
-		for(size_t labelIndex=0; labelIndex < col.labels().size(); labelIndex++)
-			tempVal = std::max(tempVal, (int)col.labels().getLabelFromRow(labelIndex).length());
-
-		return tempVal + extraPad;
-	}
-	}
-
-}
-
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
 	if (_dataSet == nullptr)
@@ -247,7 +218,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		//calculate some maximum string?
 		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX" + (isComputedColumn(section) ? "XXXXX" : ""); //Bit of padding for filtersymbol and columnIcon
-		int colWidth = getMaximumColumnWidthInCharacters(section);
+		int colWidth = _dataSet->getMaximumColumnWidthInCharacters(section);
 
 		while(colWidth > dummyText.length())
 			dummyText += "X";
@@ -342,10 +313,13 @@ void DataSetTableModel::columnWasOverwritten(std::string columnName, std::string
 
 int DataSetTableModel::setColumnTypeFromQML(int columnIndex, int newColumnType)
 {
-	setColumnType(columnIndex, (Column::ColumnType)newColumnType);
+	bool changed = setColumnType(columnIndex, (Column::ColumnType)newColumnType);
 
-	emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
-	emit columnDataTypeChanged(_dataSet->column(columnIndex).name());
+	if (changed)
+	{
+		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
+		emit columnDataTypeChanged(_dataSet->column(columnIndex).name());
+	}
 
 	return getColumnType(columnIndex);
 }

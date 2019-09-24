@@ -53,18 +53,21 @@ public:
 				void			bindTo();
 				void			unbind();
 
-				void			runRScript(QString script, QString controlName);
+				void			runRScript(QString script, QString controlName, bool whiteListedVersion);
+				void			refreshAnalysis();
 				
 				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
-				void			dataSetChanged();
+				void			dataSetChangedHandler();
 
 signals:
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
 				void			formCompleted();
+				void			dataSetChanged();
+				void			refreshTableViewModels();
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
@@ -84,6 +87,8 @@ public:
 
 	Q_INVOKABLE void reset();
     Q_INVOKABLE void exportResults();
+
+	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
@@ -108,11 +113,11 @@ protected:
 	std::map<QString, ListModel* >			_modelMap;
 	DataSet									*_dataSet;
 	Options									*_options;
-
 	bool									_removed = false;
 	
 private:
-	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
+	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels,
+											_allAvailableVariablesModelsWithSource;
 	QQuickItem								*_errorMessagesItem;
 	QList<QString>							_errorMessages;
 };

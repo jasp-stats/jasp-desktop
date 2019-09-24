@@ -16,7 +16,7 @@ struct jaspColRowCombination
 
 	std::string toString();
 
-	Json::Value convertToJSON() { throw std::runtime_error("Not implemented"); }
+	Json::Value convertToJSON() const { throw std::runtime_error("Not implemented"); }
 
 };
 
@@ -33,8 +33,9 @@ struct footnotes
 	
 	void		insert(std::string text, std::string symbol, std::vector<Json::Value> colNames, std::vector<Json::Value> rowNames);
 	void		convertFromJSON_SetFields(Json::Value footnotes);
-	Json::Value	convertToJSON() const; 
-	
+	Json::Value	convertToJSON() const;
+	Json::Value	convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames) const;
+
 	private:
 		std::map<std::string, tableFields> _data;
 };
@@ -81,9 +82,11 @@ public:
 	void		addColumns(Rcpp::RObject newColumns);
 
 	///Accepts data.frame, list, matrix or vector. If the input is one-dimensional it is assumed to be a single row, if two-dimensional then it will be assumed to be rows {cells/cols}, if three-dimensional or higher things probably break. Also fills up each column up to the maximum length one with nulls.
-	void		addRows(Rcpp::RObject newRows, Rcpp::CharacterVector _rowNames);
+	void		addRows(Rcpp::RObject newRows,	Rcpp::CharacterVector _rowNames);
+	void		addRow (Rcpp::RObject newRow,	Rcpp::CharacterVector _rowName);
 
 	void		addRowsWithoutNames(Rcpp::RObject newRows) { addRows(newRows, Rcpp::CharacterVector()); }
+	void		addRowWithoutNames (Rcpp::RObject newRow)  { addRow (newRow,  Rcpp::CharacterVector()); }
 
 	void		setColumn(std::string columnName, Rcpp::RObject column);
 
@@ -91,21 +94,26 @@ public:
 
 	void		complete() { if(_status == "running") _status = "complete"; }
 
-	Json::Value	metaEntry() override { return constructMetaEntry("table"); }
-	Json::Value	dataEntry() override;
-	std::string	toHtml()	override;
+	bool		canShowErrorMessage()					const	override { return true; }
 
-	std::string defaultColName(size_t col)			{ return "col"+ std::to_string(col); }
-	std::string defaultRowName(size_t row)			{ return "row"+ std::to_string(row); }
-	std::string	getRowName(size_t row)				{ return _rowNames[row] == "" ? defaultRowName(row) : _rowNames[row]; }
-	std::string getColName(size_t col)				{ return _colNames[col] == "" ? defaultColName(col) : _colNames[col]; }
-	std::string getColType(size_t col);
+	Json::Value	metaEntry()								const	override { return constructMetaEntry("table"); }
+	Json::Value	dataEntry(std::string & errorMessage)	const	override;
+	std::string	toHtml()										override;
 
-	bool		columnSpecified(size_t col)			{ return _specifiedColumns.count(getColName(col)) > 0;	}
-	bool		columnSpecified(std::string col)	{ return _specifiedColumns.count(col) > 0;				}
+	std::string defaultColName(size_t col)	const	{ return "col"+ std::to_string(col); }
+	std::string defaultRowName(size_t row)	const	{ return "row"+ std::to_string(row); }
+	std::string	getRowName(size_t row)		const	{ return _rowNames[row] == "" ? defaultRowName(row) : _rowNames[row]; }
+	std::string getColName(size_t col)		const	{ return _colNames[col] == "" ? defaultColName(col) : _colNames[col]; }
+	std::string getColType(size_t col)		const;
 
-	Json::Value	getCell(size_t col, size_t row);
-	std::string	getCellFormatted(size_t col, size_t row);
+	bool		isSpecialColumn(size_t col)			const;
+	bool		columnSpecified(size_t col)			const { return _specifiedColumns.count(getColName(col)) > 0;	}
+	bool		columnSpecified(std::string col)	const { return _specifiedColumns.count(col) > 0;				}
+
+	Json::Value	getCell(			size_t col, size_t row, size_t maxCol, size_t maxRow) const;
+	std::string	getCellFormatted(	size_t col, size_t row, size_t maxCol, size_t maxRow);
+
+	void		calculateMaxColRow(size_t & maxCol, size_t & maxRow) const;
 
 	void		setExpectedSize(size_t columns, size_t rows)	{ setExpectedRows(rows); setExpectedColumns(columns);	}
 	void		setExpectedRows(size_t rows)					{ _expectedRowCount = rows;								}
@@ -114,24 +122,27 @@ public:
 private:
 	std::vector<std::string>	getDisplayableColTitles(bool normalizeLengths = true, bool onlySpecifiedColumns = true);
 	std::vector<std::string>	getDisplayableRowTitles(bool normalizeLengths = true);
-	void						rectangularDataWithNamesToString(std::stringstream & out, std::string prefix, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
-	void						rectangularDataWithNamesToHtml(std::stringstream & out, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
+	void						rectangularDataWithNamesToString(	std::stringstream & out, std::string prefix,	std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
+	void						rectangularDataWithNamesToHtml(		std::stringstream & out,						std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles);
 
 
 	std::map<std::string, std::string>				getOvertitlesMap();
-	std::vector<std::vector<std::string>>			dataToRectangularVector(bool normalizeColLengths = false, bool normalizeRowLengths = false, bool onlySpecifiedColumns = true);
+	std::vector<std::vector<std::string>>			dataToRectangularVector(bool normalizeColLengths = false, bool normalizeRowLengths = false);
 	std::vector<std::vector<std::string>>			transposeRectangularVector(const std::vector<std::vector<std::string>> & in);
 	std::map<std::string, std::map<size_t, size_t>> getOvertitleRanges(std::vector<std::string> names, std::map<std::string,std::string> overtitles);
 
 	int getDesiredColumnIndexFromNameForColumnAdding(std::string colName);
 	int getDesiredColumnIndexFromNameForRowAdding(std::string colName, int previouslyAddedUnnamed);
 
-	Json::Value	schemaJson();
-	Json::Value	rowsJson();
-	std::string deriveColumnType(int col);
+	Json::Value	schemaJson()								const;
+	Json::Value	rowsJson()									const;
+	std::string deriveColumnType(int col)					const;
 
-	Json::Value convertToJSON()								override;
-	void		convertFromJSON_SetFields(Json::Value in)	override;
+	std::map<std::string, size_t> mapColNamesToIndices()	const;
+	std::map<std::string, size_t> mapRowNamesToIndices()	const;
+
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 	void	addOrSetColumnInData(std::vector<Json::Value> column, std::string colName="");
 	int		pushbackToColumnInData(std::vector<Json::Value> column, std::string colName, int equalizedColumnsLength, int previouslyAddedUnnamed);
@@ -223,52 +234,8 @@ private:
 						static size_t lengthFromList(Rcpp::List list)				{ return list.size();	}
 	template<int RTYPE> static size_t lengthFromVector(Rcpp::Vector<RTYPE> vec)		{ return vec.size();	}
 
-	void addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames)
-	{
-		size_t elementLenghts = 0;
-		for(int el=0; el<newData.size(); el++)
-			elementLenghts = std::max(lengthFromRObject((Rcpp::RObject)newData[el]), elementLenghts);
-
-		if(elementLenghts <= 1 && newData.size() > 1) //each entry is 1 or 0, this must be a single row with columnnames and not a set of rows with rownames..
-		{
-			Rcpp::List newRowList;
-			auto shield = new Rcpp::Shield<Rcpp::List>(newRowList);
-			newRowList.push_back(newData);
-			addRowsFromList(newRowList, newRowNames);
-			delete shield;
-
-			return;
-		}
-
-		int equalizedColumnsLength = equalizeColumnsLengths();
-		int previouslyAddedUnnamedCols = 0;
-
-		std::vector<std::string> localRowNames = extractElementOrColumnNames(newData);
-
-		for(size_t row=0; row<localRowNames.size(); row++)
-			_rowNames[row + equalizedColumnsLength] = localRowNames[row];
-
-		for(size_t row=0; row<newRowNames.size(); row++)
-			_rowNames[row + equalizedColumnsLength] = newRowNames[row];
-
-
-		for(size_t row=0; row<newData.size(); row++)
-		{
-			Rcpp::RObject rij = (Rcpp::RObject)newData[row];
-
-			std::vector<std::string> localColNames;
-
-			if(Rcpp::is<Rcpp::List>(rij))
-				 localColNames = extractElementOrColumnNames<Rcpp::List>(Rcpp::as<Rcpp::List>(rij));
-
-			auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
-
-			for(size_t col=0; col<jsonRij.size(); col++)
-				previouslyAddedUnnamedCols = pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
-
-		}
-
-	}
+	void addRowFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames);
+	void addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames);
 
 	void addRowsFromDataFrame(Rcpp::DataFrame newData)
 	{
@@ -390,7 +357,6 @@ private:
 	std::vector<jaspColRowCombination>		_colRowCombinations;
 	size_t									_expectedColumnCount	= 0,
 											_expectedRowCount		= 0;
-
 };
 
 class jaspTable_Interface : public jaspObject_Interface
@@ -427,6 +393,8 @@ public:
 
 	void addRows(Rcpp::RObject newRows, Rcpp::CharacterVector rowNames)	{ ((jaspTable*)myJaspObject)->addRows(newRows, rowNames);		}
 	void addRowsWithoutNames(Rcpp::RObject newRows)						{ ((jaspTable*)myJaspObject)->addRowsWithoutNames(newRows);		}
+	void addRow(Rcpp::RObject newRow, Rcpp::CharacterVector rowNames)	{ ((jaspTable*)myJaspObject)->addRow(newRow, rowNames);		}
+	void addRowWithoutNames(Rcpp::RObject newRow)						{ ((jaspTable*)myJaspObject)->addRowWithoutNames(newRow);		}
 	void setColumn(std::string columnName, Rcpp::RObject column)		{ ((jaspTable*)myJaspObject)->setColumn(columnName, column);	}
 
 	void setExpectedSize(size_t columns, size_t rows)	{ ((jaspTable*)myJaspObject)->setExpectedSize(columns, rows);	}

@@ -35,27 +35,36 @@ typedef boost::container::vector<Label, LabelAllocator> LabelVector;
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/const_iterator.hpp>
 
+
+struct labelNotFound : public std::runtime_error
+{
+	labelNotFound(std::string msg) : std::runtime_error("Label not found! " + msg) {}
+	const char* what() const noexcept override;
+};
+
+
 class Labels
 {
 public:
-	Labels(boost::interprocess::managed_shared_memory *mem);
+			Labels(boost::interprocess::managed_shared_memory *mem);
 	virtual ~Labels();
 
-	void clear();
-	int add(int display);
-	int add(const std::string &display);
-	int add(int key, const std::string &display, bool filterAllows);
-	void removeValues(std::set<int> valuesToRemove);
-	bool syncInts(const std::set<int> &values);
-	bool syncInts(std::map<int, std::string> &values);
-	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
+	void	clear();
+	int		add(int display);
+	int		add(const std::string &display);
+	int		add(int key, const std::string &display, bool filterAllows, bool isText = true);
+	void	removeValues(std::set<int> valuesToRemove);
 	std::set<int> getIntValues();
 
-	void set(std::vector<Label> &labels);
-	size_t size() const;
+	bool						syncInts(const std::set<int>				& values);
+	bool						syncInts(const std::map<int, std::string>	& values);
+	std::map<std::string, int>	syncStrings(const std::vector<std::string>	& new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
 
-	Labels& operator=(const Labels& labels);
-	Label& operator[](size_t index);
+	void	set(std::vector<Label> &labels);
+	size_t	size() const;
+
+	Labels	& operator=(const Labels& labels);
+	Label	& operator[](size_t index);
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 	typedef LabelVector::const_iterator const_iterator;
@@ -75,20 +84,23 @@ public:
 	// Variable in the table (as displayed to the user).
 	// getValueFromRow will maybe need the _orgStringValues if the value is a string and has been
 	// changed by the user: the original value is then stored in _orgStringValues
-	std::string getLabelFromRow(int);
-	std::string getValueFromRow(int);
+	std::string getLabelFromRow(int) const;
+	std::string getValueFromRow(int) const;
 	bool setLabelFromRow(int row, const std::string &display);
 
-private:
-	void _setNewStringForLabel(Label &label, const std::string &display);
-	std::string _getValueFromLabel(const Label &label) const;
-	std::string _getOrgValueFromLabel(const Label &label) const;
-	std::map<std::string, int> _resetLabelValues(int &maxValue);
+	void log();
 
-	boost::interprocess::managed_shared_memory *_mem;
-	LabelVector _labels;
-	int _id;
-	static int _counter;
+private:
+	void						_setNewStringForLabel(Label &label, const std::string &display);
+	std::string					_getValueFromLabel(const Label &label) const;
+	std::string					_getOrgValueFromLabel(const Label &label) const;
+	std::map<std::string, int>	_resetLabelValues(int &maxValue);
+
+	boost::interprocess::managed_shared_memory * _mem = nullptr;
+
+	LabelVector		_labels;
+	int				_id;
+	static int		_counter;
 	// Original string values: used only when value is a string and when the label has been changed
 	// This map is not in the shared memory (it's only used by the JASP-Desktop): this allows this map to grow
 	// without risking to fill up the shared memory.

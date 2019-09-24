@@ -17,5 +17,10 @@ FOR /F "tokens=*" %%h IN ('git rev-parse --verify HEAD')     do (SET GIT_COMMIT=
 
 SET DEST_FILE=JASP-nightly-%GIT_BRANCH%-%GIT_COMMIT%.msi
 echo "Copying MSI to jasp-static with filename : %DEST_FILE%"
-scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/%DEST_FILE%
+
+if "%ARCH%"=="32" (
+	scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows32/%DEST_FILE%
+) else (
+	scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/%DEST_FILE%
+)
 endlocal

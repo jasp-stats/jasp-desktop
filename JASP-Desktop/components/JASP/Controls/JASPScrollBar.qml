@@ -25,7 +25,7 @@ Item
 									id							: scrollbar
 									width						: vertical ? breadth   : undefined
 									height						: vertical ? undefined : breadth
-									visible						: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0
+									visible						: flickable.visible && ((vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0)
 
 	readonly	property int		visibleBreadth				: bigBar ? Theme.scrollbarBoxWidthBig : Theme.scrollbarBoxWidth
 				property int		breadth						: visible ? visibleBreadth : 0
@@ -225,7 +225,7 @@ Item
 				color:			clicker.pressed || clicker.containsMouse	? pressedColor	: fgColor
 				anchors.fill:	parent
 				
-				Behavior on opacity { NumberAnimation { duration: 150; } }
+				Behavior on opacity { enabled: !preferencesModel.safeGraphics; NumberAnimation { duration: 150; } }
 			}
 		}
 	}

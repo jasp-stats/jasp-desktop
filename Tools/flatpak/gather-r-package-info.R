@@ -3,7 +3,9 @@ options(warn=1) #print warnings as they occur
 options(nCpus=8)
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
-CRAN       <- "https://cran.r-project.org/" #"https://cran.rstudio.com/"
+CRAN       <- "https://cran.rstudio.com/"
+#"https://cran.r-project.org/" #
+  
 
 giveOrderedDependencies <- function()
 {
@@ -53,6 +55,9 @@ giveOrderedDependencies <- function()
                                             use.names = FALSE)
 
       deps              <- deps[!(deps %in% base_pkgs)] #remove base pkgs
+
+      if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
+
       pkgDeps[[curPkg]] <- deps
       pkgs              <- append(pkgs, deps, i)
     }
@@ -130,8 +135,10 @@ giveOrderedDependencies <- function()
 }
 
 specials <- new.env(hash = TRUE, parent = parent.frame())
-specials[['BAS']]   <- list(type='github', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='vandenman/BAS')
-specials[['Bain']]  <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
+specials[['BAS']]          <- list(type='github', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='vandenman/BAS')
+specials[['Bain']]         <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
+specials[['KneeArrower']]  <- list(type='github', commit='cdb14e574e00914e4e7019a4cf3c5fcda7426466', repo='agentlans/KneeArrower')
+
 
 createFlatpakJson <- function()
 {
@@ -164,7 +171,7 @@ createFlatpakJson <- function()
       tryCatch(error=function(e) e, exp={
         download.file(url=curVer, destfile=destFile);
         succes <- TRUE;
-        downloaded[[curPkg]]$downloadUrl <- curVer
+        #downloaded[[curPkg]]$downloadUrl <- curVer
       })
       
       if(!succes)
@@ -173,15 +180,16 @@ createFlatpakJson <- function()
         tryCatch(error=function(e) e, exp={
           download.file(url=oldVer, destfile=destFile);
           succes <- TRUE;
-          downloaded[[curPkg]]$downloadUrl <- oldVer
+          #downloaded[[curPkg]]$downloadUrl <- oldVer
         })
       }
 
       if(!succes)
         stop("Both downloads failed...")
 
-      sha256sumOutput             <- system2('sha256sum', args=destFile, stdout=TRUE)
-      downloaded[[curPkg]]$sha256 <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
+      sha256sumOutput                  <- system2('sha256sum', args=destFile, stdout=TRUE)
+      downloaded[[curPkg]]$sha256      <- strsplit(sha256sumOutput, ' ')[[1]][[1]]
+      downloaded[[curPkg]]$downloadUrl <- paste0("http://static.jasp-stats.org/RPkgs/", filePkg)
     }
 
     i <- i + 1L
@@ -189,9 +197,7 @@ createFlatpakJson <- function()
 
   ind             <- '\t\t'
   buildOptionsEtc <- paste0(
-    ind,'\t"build-options": {\n',ind,'\t\t"append-ld-library-path": "/app/lib;/app/lib64/R/lib",\n',
-    ind,'\t\t"env": {\n',ind,'\t\t\t"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",\n',ind,'\t\t\t"R_HOME": "/app/lib64/R/",\n',ind,'\t\t\t"PREFIX": "/app"\n',ind,'\t\t}\n',ind,'\t},\n',
-    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'},\n',
+    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'}',
     sep='',
     collapse='')
 
@@ -241,17 +247,17 @@ createFlatpakJson <- function()
       collapse=''))
   }
 
-  jsonLines <- as.character(lapply(orderedPkgs, convertToJsonLine))
+  jsonLines <- c('{\n\t"name": "RPackages",\n\t"buildsystem": "simple",\n\t"build-commands": [],\n\t"modules":\n\t[', paste0(as.character(lapply(orderedPkgs, convertToJsonLine)), collapse=",\n"), '\n\t]\n}\n')
   #print(jsonLines)
-  jsonFile  <- "expectedPackages.json"
+  jsonFile  <- "RPackages.json"
   fileConn  <- file(jsonFile)
   writeLines(jsonLines, fileConn)
   close(fileConn)
 
 
-  system2("cat",args=c("org.jasp-stats.JASP_header.json", jsonFile, "org.jasp-stats.JASP_footer.json"), stdout="org.jasp-stats.JASP.json")
+  #system2("cat",args=c("org.jaspstats.JASP_header.json", jsonFile, "org.jaspstats.JASP_footer.json"), stdout="org.jaspstats.JASP.json")
 
-  print(paste0("Expected packages are written as json to ", jsonFile, " and a fresh org.jasp-stats.JASP.json has been generated!"))
+  print(paste0("Expected packages are written as json to ", jsonFile, " and org.jaspstats.JASP.json knows where to look for it."))
 }
 
 getInstalledPackageEnv <- function()
@@ -312,4 +318,4 @@ installRequiredPackages <- function()
   print('All packages installed!')
 }
 
-print('Run createFlatpakJson() to transform the expected packages of JASP into a fresh org.jasp-stats.JASP.json for flatpak.\nOr run installRequiredPackages() as administrator to get you local installed version of R up to speed with the same packages.')
+print('Run createFlatpakJson() to transform the expected packages of JASP into a fresh org.jaspstats.JASP.json for flatpak.\nOr run installRequiredPackages() as administrator to get you local installed version of R up to speed with the same packages.')

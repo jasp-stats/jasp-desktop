@@ -2273,6 +2273,34 @@
   }
 }
 
+# only used by bain!
+.plot2GroupMeansBayesIndTtest <- function(v1=NULL, v2=NULL, nameV1=NULL, nameV2=NULL, groupingName=NULL, dependentName=NULL, descriptivesPlotsCredibleInterval=.95) {
+
+	v1 <- na.omit(v1)
+	v2 <- na.omit(v2)
+
+	posteriorSummary1 <- .posteriorSummaryGroupMean(variable=v1, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
+	posteriorSummary2 <- .posteriorSummaryGroupMean(variable=v2, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
+	summaryStat <- data.frame(	groupingVariable=c(nameV1, nameV2), dependent=c(posteriorSummary1$median, posteriorSummary2$median),
+								ciLower=c(posteriorSummary1$ciLower, posteriorSummary2$ciLower), ciUpper=c(posteriorSummary1$ciUpper,
+								posteriorSummary2$ciUpper),
+								group = 1)
+
+	pd <- ggplot2::position_dodge(.2)
+
+	p <-	ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=group)) +
+			ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
+			ggplot2::geom_line(position=pd, size = .7) +
+			ggplot2::geom_point(position=pd, size=4) +
+			ggplot2::ylab(dependentName) +
+			ggplot2::xlab(groupingName) +
+			.base_breaks_y2(summaryStat, NULL) +
+			.base_breaks_x(summaryStat$groupingVariable)
+
+	p <- JASPgraphs::themeJasp(p)
+
+	return(p)
+}
 
 .plotGroupMeanBayesOneSampleTtest <- function(variable=1:10, variableName="test1", testValueOpt=0, descriptivesPlotsCredibleInterval=.95) {
 

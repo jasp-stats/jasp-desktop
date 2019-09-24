@@ -31,7 +31,8 @@ class DynamicModules : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool developersModuleInstallButtonEnabled READ developersModuleInstallButtonEnabled WRITE setDevelopersModuleInstallButtonEnabled NOTIFY developersModuleInstallButtonEnabledChanged)
+	Q_PROPERTY(bool developersModuleInstallButtonEnabled	READ developersModuleInstallButtonEnabled	WRITE setDevelopersModuleInstallButtonEnabled	NOTIFY developersModuleInstallButtonEnabledChanged	)
+	Q_PROPERTY(bool dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
 
 public:
 	explicit DynamicModules(QObject *parent) ;
@@ -57,7 +58,7 @@ public:
 
 	Json::Value	getJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
 	Json::Value getJsonForPackageUnloadingRequest();
-	Json::Value	getJsonForPackageInstallationRequest()	{ return requestModuleForSomethingAndRemoveIt(_modulesInstallPackagesNeeded)->requestJsonForPackageInstallationRequest();	}
+	Json::Value	getJsonForPackageInstallationRequest();
 	Json::Value	getJsonForReloadingActiveModules();
 
 	Modules::DynamicModule*	dynamicModule(	const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
@@ -66,24 +67,26 @@ public:
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 
 	Q_INVOKABLE bool	isFileAnArchive(				const QString & filepath);
-	Q_INVOKABLE QString getDescriptionJsonFromArchive(	const QString & filepath);
 
 	Q_INVOKABLE void	installJASPModule(				const QString & filepath);
 	Q_INVOKABLE	void	uninstallJASPModule(			const QString & moduleName);
 	Q_INVOKABLE void	installJASPDeveloperModule();
 
-
+	Q_INVOKABLE QString getDescriptionJsonFromArchive(QString archiveFilePath);
 
 	int numberOfModules()												{ return _modules.size(); }
 	const std::vector<std::string> & moduleNames() const				{ return _moduleNames; }
 
 	Q_INVOKABLE Modules::DynamicModule*	dynamicModule(QString moduleName) const { return dynamicModule(moduleName.toStdString()); }
 
-	static std::string  developmentModuleName()  { return Modules::DynamicModule::developmentModuleName(); }
+	static std::string  developmentModuleName()			{ return Modules::DynamicModule::developmentModuleName(); }
+	static std::string  defaultDevelopmentModuleName()	{ return Modules::DynamicModule::defaultDevelopmentModuleName(); }
+	static QString		developmentModuleFolder()		{ return Modules::DynamicModule::developmentModuleFolder().absoluteFilePath(); }
 
 	void startWatchingDevelopersModule();
 
 	bool developersModuleInstallButtonEnabled() const { return _developersModuleInstallButtonEnabled; }
+	bool dataLoaded()							const { return _dataLoaded;	}
 
 public slots:
 	void installationPackagesSucceeded(	const QString & moduleName);
@@ -91,8 +94,11 @@ public slots:
 	void loadingSucceeded(				const QString & moduleName);
 	void loadingFailed(					const QString & moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string & moduleName);
+	void registerForInstallingModPkg(	const std::string & moduleName);
+
 	void registerForLoading(			const std::string & moduleName);
 	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
+	void setDataLoaded(bool dataLoaded);
 
 signals:
 	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
@@ -108,6 +114,7 @@ signals:
 
 	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
 	void moduleEnabledChanged(QString moduleName, bool enabled);
+	void dataLoadedChanged(bool dataLoaded);
 
 private slots:
 	void enginesStopped();
@@ -118,12 +125,13 @@ private:
 	void						devModCopyDescription();
 	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
 	void						regenerateDeveloperModuleRPackage();
+	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);
 
 private:
 	std::vector<std::string>								_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>			_modules;
-	std::set<std::string>									_modulesInstallPackagesNeeded,
-															_modulesToBeLoaded;
+	std::map<std::string, bool>								_modulesInstallPackagesNeeded; //bool true ==> only modPkg
+	std::set<std::string>									_modulesToBeLoaded;
 	std::map<std::string, Json::Value>						_modulesToBeUnloaded;
 	boost::filesystem::path									_modulesInstallDirectory;
 	QString													_currentInstallMsg = "",
@@ -134,7 +142,9 @@ private:
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
-	bool													_developersModuleInstallButtonEnabled = true;
+	Modules::DynamicModule								*	_devModule					= nullptr;
+	bool													_developersModuleInstallButtonEnabled = true,
+															_dataLoaded = false;
 };
 
 #endif // DYNAMICMODULES_H

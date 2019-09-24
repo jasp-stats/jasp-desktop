@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2019 University of Amsterdam -->
+<component type="desktop">
+	<id>org.jaspstats.JASP</id>
+	<launchable type="desktop-id">org.jaspstats.JASP.desktop</launchable>
+	<name>JASP</name>
+	<summary>Offers standard analysis procedures in both their classical and Bayesian form</summary>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>AGPL-3.0+</project_license>
+	<content_rating type="oars-1.1" />
+	<developer_name>University of Amsterdam</developer_name>
+    <update_contact>joris@jorisgoosen.nl</update_contact>
+	<description>
+		<p>
+			​JASP is a cross platform statistical software program with a state-of-the-art graphical user interface. 
+			It offers standard analysis procedures in both	their classical and Bayesian form. 
+		</p>
+		<p>
+			It was designed with the user in mind: APA-formatted tables can be copy-pasted in your word processor, output can be extensively annotated, adjustment of input options dynamically changes the output, and selecting 
+			old output revives the associated input choices for inspection and adjustment.
+		</p>
+		<p>
+			JASP is also statistically inclusive, as it offers both frequentist and Bayesian analysis methods. 
+			Indeed, the primary motivation for JASP is to make it easier for statistical practitioners to conduct Bayesian analyses.
+		</p>
+	</description>
+	<translation/>
+	<screenshots>
+		<screenshot type="default">
+			<caption xml:lang="en-GB">Shows the dataviewer of JASP flanked with the options and output for the Independent Samples T-Test</caption>
+			<image type="source" width="1600" height="900">https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Tools/flatpak/JASP-screenshot-0.png</image>
+		</screenshot>
+	</screenshots>
+	<url type="homepage">http://www.jasp-stats.org</url>
+	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
+	<url type="donation">https://jasp-stats.org/donate/</url>
+	<releases>
+		<release version="0.11.0" date="2019-09-24">
+			<description>
+				This version adds the Machine Learning Module, which adds a variety of classification, regression and clustering analyses.
+				It also adds support for reading Stata and SAS files while updating the SPSS support through the use of ReadStat.
+			</description>
+		</release>
+		<release version="0.10.2" date="2019-07-18">
+			<description>
+				This version adds the AUDIT Module, includes Mediation Analysis, and contains improvements for other analyses.
+			</description>
+		</release>
+		<release version="0.10.0" date="2019-06-11">
+			<description>
+				User Interface completely rewritten and many many other changes.
+				See https://jasp-stats.org/blog/ for more info!
+			</description>
+		</release>
+		<release version="0.9.2" date="2018-12-10">
+			<description>
+				Computed columns stabilized and some extra stuff.
+			</description>
+		</release>
+		<release version="0.9.1" date="2018-10-11">
+			<description>
+				New version of JASP with a first version of computed columns and many other things.
+			</description>
+		</release>
+		<release version="0.9.0" date="2018-06-27">
+			<description>
+				New version of JASP with filtering, a partially rebuilt interface and many other things.
+			</description>
+		</release>
+		<release version="0.8.6" date="2018-02-22">
+			<description>
+				First flatpak release
+			</description>
+		</release>
+	</releases>
+​</component>

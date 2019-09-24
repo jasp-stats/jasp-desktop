@@ -37,7 +37,7 @@ public:
 	virtual bool isOptionValid(Option* option) = 0;
 	virtual bool isJsonValid(const Json::Value& optionValue) = 0;
 	
-	void runRScript(const QString& script);	
+			void runRScript(const QString& script, bool whiteListedVersion = true);
 	virtual void rScriptDoneHandler(const QString& result);
 };
 

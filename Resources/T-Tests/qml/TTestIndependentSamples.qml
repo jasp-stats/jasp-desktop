@@ -58,12 +58,18 @@ Form
 		}
 		CheckBox
 		{
-			name: "effectSize"; label: qsTr("Effect size")
-			CheckBox
-			{
-				name: "effSizeConfidenceIntervalCheckbox"; label: qsTr("Confidence interval")
-				childrenOnSameRow: true
-				CIField { name: "descriptivesEffectSizeConfidenceIntervalPercent" }
+			name: "effectSize"; label: qsTr("Effect Size")
+			RadioButtonGroup {
+				name: "effectSizesType";
+				RadioButton { value: "cohensD"; label: qsTr("Cohen's d") ; checked: true }
+				RadioButton { value: "glassD"; label: qsTr("Glass' delta") }
+				RadioButton { value: "hedgesG"; label: qsTr("Hedges' g") }
+				CheckBox
+				{
+					name: "effSizeConfidenceIntervalCheckbox"; label: qsTr("Confidence interval")
+					childrenOnSameRow: true
+					PercentField { name: "descriptivesEffectSizeConfidenceIntervalPercent"; defaultValue: 95 }
+				}
 			}
 		}
 		CheckBox { name: "descriptives";	label: qsTr("Descriptives")								}

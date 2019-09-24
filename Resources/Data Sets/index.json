@@ -13,7 +13,7 @@
         {
           "name": "Field - Discovering Statistics",
           "path": "Field - Discovering Statistics",
-          "description": "This folder contains the data sets from Field, A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. These data sets were constructed by Andy Field who therefore owns the copyright.<br>Andy Field generously agreed that we can include these data sets in the JASP data library.<br><br>These data sets are also publicly available on the website that accompanies Andy Field's book: https://edge.sagepub.com/field5e.<br><br>Without Andy Field's explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of  a CC BY-NC-ND license; https://creativecommons.org/licenses/by-nc-nd/3.0/).",
+          "description": "This folder contains the data sets from Field, A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. These data sets were constructed by Andy Field who therefore owns the copyright. Andy Field generously agreed that we can include these data sets in the JASP data library. These data sets are also publicly available on the website that accompanies Andy Field's book: https://edge.sagepub.com/field5e. Without Andy Field's explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of  a CC BY-NC-ND license <br><br> ",
           "kind": "folder",
           "children": [
             {
@@ -105,7 +105,7 @@
         {
           "name": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
           "path": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
-          "description": "This folder contains the data sets from Moore, D. S., McCabe, G. P., & Craig, B. A. (2012).<br><i>Introduction to the Practice of Statistics<\/i> (7th ed.).<br>New York: W. H. Freeman and Company. Moore, McCabe, and Craig generously agreed that we can include the data sets in the JASP data library.<br><br>These data sets are also publicly available on the website that accompanies their book: whfreeman.com/ips7e.<br><br>Without the authors' explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of a CC BY-NC-ND license; https://creativecommons.org/licenses/by-nc-nd/3.0/).",
+          "description": "This folder contains the data sets from Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). <i>Introduction to the Practice of Statistics<\/i> (7th ed.). New York: W. H. Freeman and Company. Moore, McCabe, and Craig generously agreed that we can include the data sets in the JASP data library. These data sets are also publicly available on the website that accompanies their book: whfreeman.com/ips7e. Without the authors' explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of a CC BY-NC-ND license <br><br> ",
           "kind": "folder",
           "children": [
             {
@@ -180,7 +180,8 @@
             }
           ]
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "1. Descriptives",
@@ -202,7 +203,8 @@
           "kind": "file",
           "associated_datafile": "Sleep.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "2. T-Tests",
@@ -259,7 +261,8 @@
           "kind": "file",
           "associated_datafile": "Weight Gain.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "3. ANOVA",
@@ -358,7 +361,8 @@
           "kind": "file",
           "associated_datafile": "Viagra.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "4. Regression",
@@ -443,7 +447,8 @@
           "kind": "file",
           "associated_datafile": "Titanic.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "5. Frequencies",
@@ -527,7 +532,8 @@
           "description": "The number of times that each of two experimental coins landed on its edge (out of 1,000 tosses).  <br><br> The example JASP file demonstrates the use of a Bayesian binomial test using summary statistics.<br><br> <i>Data collected by Matthew Parker.<\/i>",
           "kind": "file"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "6. Factor",
@@ -542,11 +548,12 @@
           "kind": "file",
           "associated_datafile": "G Factor.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
-      "name": "7. Meta-analysis",
-      "path": "7. Meta-analysis",
+      "name": "7. Meta-Analysis",
+      "path": "7. Meta-Analysis",
       "description": "",
       "kind": "folder",
       "children": [
@@ -557,7 +564,8 @@
           "kind": "file",
           "associated_datafile": "BCG Vaccine.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "8. Network Analysis",
@@ -572,7 +580,8 @@
           "kind": "file",
           "associated_datafile": "BFI Network.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
       "name": "9. SEM",
@@ -587,11 +596,72 @@
           "kind": "file",
           "associated_datafile": "Political Democracy.csv"
         }
-      ]
+      ],
+      "debug": false
     },
     {
-      "name": "10. Miscellaneous",
-      "path": "10. Miscellaneous",
+      "name": "10. Audit",
+      "path": "10. Audit",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+		  "name": "BuildIt Binary",
+          "path": "BuildIt_Binary.jasp",
+          "description": "BuildIt's non-monetary audit population consisting of 3500 records. <br><br> The example JASP file demonstrates the use of a binary audit workflow.<br><br> <i>Data set used in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
+          "kind": "file",
+          "associated_datafile": "BuildIt_Binary.csv"
+        },
+        {
+		  "name": "BuildIt Monetary",
+          "path": "BuildIt_Monetary.jasp",
+          "description": "BuildIt's monetary audit population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of a monetary audit workflow.<br><br> <i>Data set used in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
+          "kind": "file",
+          "associated_datafile": "BuildIt_Monetary.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "11. Machine Learning",
+      "path": "11. Machine Learning",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+		  "name": "Iris Flowers",
+          "path": "iris.jasp",
+          "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "iris.csv"
+        },
+        {
+		  "name": "Telco Customer Churn",
+		  "path": "telcoCustomerChurn.jasp",
+		  "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+		  "kind": "file",
+		  "associated_datafile": "telcoCustomerChurn.csv"
+        },
+		{
+		  "name": "Student Grades",
+                  "path": "studentGrades.jasp",
+		  "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+                  "kind": "file",
+                  "associated_datafile": "studentGrades.csv"
+		},
+        {
+		  "name": "Wine Types",
+          "path": "wine.jasp",
+          "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "wine.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "12. Miscellaneous",
+      "path": "12. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
@@ -605,7 +675,7 @@
         {
           "name": "Missing Data",
           "path": "Missing Data.jasp",
-          "description": "Synthetic data with missing values. <br><br> This example showcases how JASP deals with missing values. <br><br> <i>Fictional data from Alexander Ly.<\/i>",
+          "description": "Synthetic data with missing values. <br><br> The example JASP file demonstrates the use of missing values.<br><br> <i>Fictional data from Alexander Ly.<\/i>",
           "kind": "file",
           "associated_datafile": "Missing Data.csv"
         },
@@ -616,15 +686,16 @@
           "kind": "file",
           "associated_datafile": "Presidents' Height.csv"
         }
-      ]
-	},
-	{
-	  "name": "Debug Dataset (JASP Team, 2017)",
-	  "path": "../debug.csv",
-	  "description": "For testing. Readme: is.gd/jaspdata",
-	  "kind": "file",
-	  "debug":"true",
-	  "children": ["NULL"]
-	}
+      ],
+      "debug": false
+    },
+    {
+      "name": "Debug Dataset (JASP Team, 2017)",
+      "path": "../debug.csv",
+      "description": "For testing. Readme: is.gd/jaspdata",
+      "kind": "file",
+      "children": ["NULL"],
+      "debug": true
+    }
   ]
 }

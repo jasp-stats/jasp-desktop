@@ -77,7 +77,7 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
-        DoubleField { name: "priorWidth"; label: qsTr("Stretched beta prior width"); defaultValue: 1.0; min: 0.003; max: 2; decimals: 1 }
+        DoubleField { name: "priorWidth"; label: qsTr("Stretched beta prior width"); defaultValue: 1.0; min: 0.003; max: 2; decimals: 3 }
 	}
 
 	Section

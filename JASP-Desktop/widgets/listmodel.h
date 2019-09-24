@@ -47,7 +47,7 @@ public:
 
 	QMLListView*			listView() const								{ return _listView; }
 	const QString&			name() const									{ return _listView->name(); }
-	virtual const Terms&	terms(const QString& what = QString()) const	{ return _terms; }
+	virtual const Terms&	terms(const QString& what = QString())			{ return _terms; }
 	bool					areTermsVariables() const						{ return _areTermsVariables; }
 	bool					areTermsInteractions() const					{ return _areTermsInteractions; }
 	virtual QString			getItemType(const Term& term) const				{ return _itemType; }	
@@ -68,7 +68,7 @@ public slots:
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 protected:
-	QMLListView*	_listView;
+	QMLListView*	_listView = nullptr;
 	QString			_itemType;
 	Terms			_terms;
 	bool			_areTermsVariables;

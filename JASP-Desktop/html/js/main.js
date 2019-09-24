@@ -44,6 +44,10 @@ $(document).ready(function () {
 		analyses.reRender();
 	}
 
+	window.moveAnalyses = function (fromId, toId) {
+		analyses.move(fromId, toId);
+	}
+
 	window.refreshEditedImage = function(id, results) {
 		var analysis = analyses.getAnalysis(id);
 		if (analysis !== undefined) {
@@ -188,6 +192,14 @@ $(document).ready(function () {
 	window.removeMenuClicked = function () {
 		if (window.menuObject.removeMenuClicked)
 			window.menuObject.removeMenuClicked();
+
+		setSelection(false);
+		window.menuObject = null;
+	}
+
+	window.duplicateMenuClicked = function () {
+		if (window.menuObject.duplicateMenuClicked)
+			window.menuObject.duplicateMenuClicked();
 
 		setSelection(false);
 		window.menuObject = null;
@@ -540,6 +552,10 @@ $(document).ready(function () {
 
 			jaspWidget.on("analysis:remove", function (id) {
 				jasp.removeAnalysisRequest(id);
+			});
+
+			jaspWidget.on("analysis:duplicate", function (id) {
+				jasp.duplicateAnalysis(id);
 			});
 
 			jaspWidget.on("analysis:userDataChanged", function () {

@@ -67,7 +67,7 @@ vector<string> OptionVariables::variables() const
 	return values;
 }
 
-std::set<std::string> OptionVariables::usedVariables()
+std::set<std::string> OptionVariables::usedVariables() const
 {
 	std::set<std::string> values;
 

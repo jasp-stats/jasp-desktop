@@ -17,77 +17,53 @@
 //
 
 #include "boundqmltableview.h"
-
 #include "../analysis/analysisform.h"
 #include "analysis/options/optiondoublearray.h"
-#include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
+#include "analysis/options/optionstring.h"
+#include "listmodelmultinomialchi2test.h"
+#include "listmodelfiltereddataentry.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QTimer>
 #include "log.h"
+
 
 BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QMLListView(item, form)
 	, BoundQMLItem()
 {
-	_boundTo = nullptr;
-	QString modelType = _item->property("modelType").toString();
-	QString tableType = _item->property("tableType").toString();
+	QString modelType = _item->property("modelType").toString(),
+			tableType = _item->property("tableType").toString();
 
-	if (modelType == "MultinomialChi2Model")
-		_tableModel	= _multinomialChi2TestModel = new ListModelMultinomialChi2Test(this, tableType);
+	if (modelType == "MultinomialChi2Model")	_tableModel	= new ListModelMultinomialChi2Test(	this, tableType);
+	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType);
 
-	QQuickItem::connect(item, SIGNAL(addColumn()), this, SLOT(addColumnSlot()));
-	QQuickItem::connect(item, SIGNAL(removeColumn(int)), this, SLOT(removeColumnSlot(int)));
-	QQuickItem::connect(item, SIGNAL(reset()), this, SLOT(resetSlot()));
-	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)), this, SLOT(itemChangedSlot(int, int, QString)));
+	if(!_tableModel) addError("No model specified for TableView!");
 
-	connect(_tableModel, &ListModel::modelChanged, this, &BoundQMLTableView::modelChangedSlot);
+	QQuickItem::connect(item, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
+	QQuickItem::connect(item, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
+	QQuickItem::connect(item, SIGNAL(reset()),							this, SLOT(resetSlot()));
+	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)),	this, SLOT(itemChangedSlot(int, int, QString)));
+
+	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ _item->setProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
+	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ _item->setProperty("rowCount",		_tableModel->rowNames().size()); });
+	connect(form,		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
 }
 
 void BoundQMLTableView::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
-	if (_boundTo != nullptr)
-	{
-		std::vector<Options *> _groups = _boundTo->value();
-		std::vector<std::vector<double> > values;
-		std::vector<std::string> levels;
-		std::vector<std::string> colNames;
-
-		for (std::vector<Options *>::iterator it = _groups.begin(); it != _groups.end(); ++it) {
-
-			Options *newRow = static_cast<Options *>(*it);
-			OptionString *optionName = static_cast<OptionString *>(newRow->get("name"));
-			OptionVariables *optionLevels = static_cast<OptionVariables *>(newRow->get("levels"));
-			OptionDoubleArray *optionValues = static_cast<OptionDoubleArray *>(newRow->get("values"));
-			colNames.push_back(optionName->value());
-			levels = optionLevels->variables();
-			values.push_back(optionValues->value());
-		}
-
-		if (_multinomialChi2TestModel)
-			_multinomialChi2TestModel->initValues(colNames, levels, values);
-
-		_item->setProperty("columnCount", (int)(colNames.size()));
-		_item->setProperty("rowCount", (int)(levels.size()));
-
-	}
-	else
-		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
+	if (_boundTo != nullptr && _tableModel)		_tableModel->initValues(_boundTo);
+	else										Log::log()  << "could not bind to OptionTable in boundqmltableview.cpp" << std::endl;
 }
 
 
 Option *BoundQMLTableView::createOption()
 {
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("levels", new OptionVariables());
-	templote->add("values", new OptionDoubleArray());
-	return new OptionsTable(templote);
+	return !_tableModel ? nullptr : _tableModel->createOption();
 }
 
 bool BoundQMLTableView::isOptionValid(Option *option)
@@ -107,67 +83,42 @@ void BoundQMLTableView::setUp()
 
 void BoundQMLTableView::addColumnSlot()
 {
-	if (_multinomialChi2TestModel)
-		_multinomialChi2TestModel->addColumn();
+	if (_tableModel)
+		_tableModel->addColumn();
 }
 
 void BoundQMLTableView::removeColumnSlot(int col)
 {
-	if (_multinomialChi2TestModel)
-		_multinomialChi2TestModel->removeColumn(col);
+	if (_tableModel)
+		_tableModel->removeColumn(col);
 }
 
 void BoundQMLTableView::resetSlot()
 {
-	if (_multinomialChi2TestModel)
-		_multinomialChi2TestModel->reset();
+	if (_tableModel)
+		_tableModel->reset();
 }
 
 void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)
 {
-	if (_multinomialChi2TestModel)
+	if (_tableModel)
 	{
-		bool ok = false;
-		double val = value.toDouble(&ok);
-		if (ok)
-			_multinomialChi2TestModel->itemChanged(col, row, val);
-		else
-			QTimer::singleShot(0, _multinomialChi2TestModel, SLOT(refreshModel()));
+		bool	ok	= false;
+		double	val = value.toDouble(&ok);
+
+		if (ok)	_tableModel->itemChanged(col, row, val);
+		else	QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
 	}
 }
 
-void BoundQMLTableView::modelChangedSlot()
+void BoundQMLTableView::rScriptDoneHandler(const QString & result)
 {
-	if (_multinomialChi2TestModel)
-	{
-		const QVector<QVector<double> >& allValues = _multinomialChi2TestModel->values();
-		const QVector<QString>& colNames = _multinomialChi2TestModel->colNames();
-		const QVector<QString>& rowNames = _multinomialChi2TestModel->rowNames();
+	if(_tableModel)
+		_tableModel->rScriptDoneHandler(result);
+}
 
-		std::vector<std::string> stdlevels;
-		for (const QString& rowName : rowNames)
-			stdlevels.push_back(rowName.toStdString());
-
-		std::vector<Options*> allOptions;
-		int colIndex = 0;
-		for (const QString& colName : colNames)
-		{
-			Options* options = new Options();
-			options->add("name", new OptionString(colName.toStdString()));
-			OptionVariables* levels = new OptionVariables();
-			levels->setValue(stdlevels);
-			options->add("levels", levels);
-			OptionDoubleArray* values = new OptionDoubleArray();
-			values->setValue(allValues[colIndex].toStdVector());
-			options->add("values", values);
-
-			allOptions.push_back(options);
-			colIndex++;
-		}
-
-		_boundTo->setValue(allOptions);
-
-		_item->setProperty("columnCount", colNames.length());
-		_item->setProperty("rowCount", rowNames.length());
-	}
+void BoundQMLTableView::refreshMe()
+{
+	if(_tableModel)
+		_tableModel->refreshModel();
 }

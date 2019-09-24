@@ -17,8 +17,6 @@
 //
 
 #include "analyses.h"
-
-#include "boost/foreach.hpp"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "processinfo.h"
@@ -71,6 +69,8 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	Analysis *analysis;
 
+	Json::Value &	optionsJson	= analysisData["options"];
+
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
 		Json::Value	&	versionJson		= analysisData["version"];
@@ -82,7 +82,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
 						title				= QString::fromStdString(analysisData.get("title", "").asString());
 
-		Json::Value &	optionsJson	= analysisData["options"];
+
 
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 
@@ -91,13 +91,13 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		
 		analysis = create(module, name, title, id, version, &optionsJson, status, false);
 
-		analysis->loadFromJSON(analysisData);
+		analysis->loadExtraFromJSON(analysisData);
 	}
 	else
 	{
 		std::string title			= analysisData.get("title", "").asString();
 		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-				analysis			= create(analysisEntry, id, status, false, title);
+				analysis			= create(analysisEntry, id, status, false, title, &optionsJson);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
 		if(!dynMod->loaded())
@@ -121,9 +121,9 @@ Analysis* Analyses::create(const QString &module, const QString &name, const QSt
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, Json::Value *options)
 {
-	Analysis *analysis = new Analysis(this, id, analysisEntry, title);
+	Analysis *analysis = new Analysis(this, id, analysisEntry, title, options);
 
 	analysis->setStatus(status);
 	analysis->setResults(analysisEntry->getDefaultResults());
@@ -195,9 +195,11 @@ void Analyses::clear()
 {
 	setCurrentAnalysisIndex(-1);
 	beginResetModel();
-	for (auto idAnalysis : _analysisMap)
+	for (auto & idAnalysis : _analysisMap)
 	{
 		Analysis* analysis = idAnalysis.second;
+		idAnalysis.second  = nullptr;
+
 		emit analysisRemoved(analysis);
 		delete analysis;
 	}
@@ -210,42 +212,42 @@ void Analyses::clear()
 	emit countChanged();
 }
 
-void Analyses::reload(Analysis *analysis)
+void Analyses::reload(Analysis *analysis, bool logProblem)
 {
-	size_t i = 0;
-	for (; i < _orderedIds.size(); i++)
-		if (_analysisMap[_orderedIds[i]] == analysis) break;
 
-	if (i < _orderedIds.size())
-	{
-		int ind = int(i);
-		// Force the loader to load again the QML file
-		beginRemoveRows(QModelIndex(), ind, ind);
-		endRemoveRows();
-		beginInsertRows(QModelIndex(), ind, ind);
-		endInsertRows();
-	}
-	else
-		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl << std::flush;
+	for (size_t i = 0; i < _orderedIds.size(); i++)
+		if (_analysisMap[_orderedIds[i]] == analysis)
+		{
+			int ind = int(i);
+			// Force the loader to load again the QML file
+			beginRemoveRows(QModelIndex(), ind, ind);
+			endRemoveRows();
+
+			beginInsertRows(QModelIndex(), ind, ind);
+			endInsertRows();
+
+			return;
+		}
+
+
+	if(logProblem)
+		Log::log() << "Analysis " << analysis->title() << " not found!" << std::endl;
 }
 
 
 bool Analyses::allCreatedInCurrentVersion() const
 {
 	for (auto idAnalysis : _analysisMap)
-	{
-		Analysis* analysis = idAnalysis.second;
-		if (analysis->version() != AppInfo::version)
+		if (idAnalysis.second->version() != AppInfo::version)
 			return false;
-	}
-	
+
 	return true;
 }
 
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
 	emit emptyQMLCache();
-	reload(analysis);
+	reload(analysis, false); //Do not log problem because it can cause trouble!
 }
 
 Json::Value Analyses::asJson() const
@@ -358,8 +360,17 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 }
 
 
-void Analyses::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames)
+void Analyses::refreshAnalysesUsingColumns(
+		std::vector<std::string> &changedColumns,
+		std::vector<std::string> &missingColumns,
+		std::map<std::string, std::string> &changeNameColumns,
+		std::vector<std::string> &oldColumnNames,
+		bool hasNewColumns)
 {
+	if (hasNewColumns || missingColumns.size() > 0 || changeNameColumns.size() > 0 || changedColumns.size() > 0)
+		// Apparently this must be done at the end of the event loop
+		QTimer::singleShot(0, this, &Analyses::refreshAvailableVariables);
+
 	std::set<Analysis *> analysesToRefresh;
 
 	for (auto idAnalysis : _analysisMap)
@@ -407,14 +418,15 @@ void Analyses::refreshAnalysesUsingColumns(std::vector<std::string> &changedColu
 void Analyses::applyToSome(std::function<bool(Analysis *analysis)> applyThis)
 {
 	for(size_t id : _orderedIds)
-		if(!applyThis(_analysisMap[id]))
+		if(_analysisMap[id] != nullptr && !applyThis(_analysisMap[id]))
 			return;
 }
 
 void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis)
 {
 	for(size_t id : _orderedIds)
-		applyThis(_analysisMap[id]);
+		if(_analysisMap[id] != nullptr)
+			applyThis(_analysisMap[id]);
 }
 
 QVariant Analyses::data(const QModelIndex &index, int role)	const
@@ -451,6 +463,31 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 	return roles;
 }
 
+void Analyses::move(int fromIndex, int toIndex)
+{
+	int size = int(_orderedIds.size());
+	if (fromIndex < 0 || toIndex < 0)
+	{
+		Log::log() << "Index in Analyses swaping negative!" << std::flush;
+		return;
+	}
+	if (fromIndex >= size || toIndex >= size)
+	{
+		Log::log() << "Index in Analyses swaping too big: " << fromIndex << ", " << toIndex << ", size: " << _orderedIds.size();
+		return;
+	}
+	if (fromIndex == toIndex)
+		return;
+
+	size_t fromId = _orderedIds[size_t(fromIndex)];
+	if (beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex > fromIndex ? (toIndex + 1) : toIndex))
+	{
+		_orderedIds.erase(_orderedIds.begin() + fromIndex);
+		_orderedIds.insert(_orderedIds.begin() + toIndex, fromId);
+		endMoveRows();
+	}
+}
+
 void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
@@ -473,11 +510,11 @@ void Analyses::rCodeReturned(QString result, int requestId)
 		Log::log()  << "Unkown Returned Rcode request ID " << requestId << std::endl;
 }
 
-void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName)
+void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion)
 {
 	_scriptIDMap[_scriptRequestID] = qMakePair(analysis, controlName);
 
-	emit sendRScript(script, _scriptRequestID++);
+	emit sendRScript(script, _scriptRequestID++, whiteListedVersion);
 }
 
 void Analyses::selectAnalysis(Analysis * analysis)
@@ -493,6 +530,9 @@ void Analyses::selectAnalysis(Analysis * analysis)
 
 void Analyses::setDataSet(DataSet *dataSet)
 {
+	if(_dataSet == dataSet)
+		return;
+
 	_dataSet = dataSet;
 	
 	emit dataSetChanged();
@@ -552,8 +592,22 @@ void Analyses::setCurrentFormHeight(double currentFormHeight)
 	if (qFuzzyCompare(_currentFormHeight, currentFormHeight))
 		return;
 
+	setCurrentFormPrevH(_currentFormHeight);
 	_currentFormHeight = currentFormHeight;
+
+	//std::cout << "cur form H: "<<_currentFormHeight << std::endl;
 	emit currentFormHeightChanged(_currentFormHeight);
+}
+
+void Analyses::setCurrentFormPrevH(double currentFormPrevH)
+{
+	if (qFuzzyCompare(_currentFormPrevH, currentFormPrevH))
+		return;
+
+	_currentFormPrevH = currentFormPrevH;
+	//std::cout << "cur form Prev H: "<<_currentFormPrevH << std::endl;
+
+	emit currentFormPrevHChanged(_currentFormPrevH);
 }
 
 void Analyses::setVisible(bool visible)
@@ -571,6 +625,26 @@ void Analyses::setVisible(bool visible)
 	}
 }
 
+void Analyses::setMoving(bool moving)
+{
+	if (_moving == moving)
+		return;
+
+	_moving = moving;
+
+	if (moving)
+		_orderedIdsBeforeMoving = _orderedIds;
+	emit movingChanged(_moving);
+}
+
+Analysis* Analyses::getAnalysisBeforeMoving(size_t index)
+{
+	Analysis* result = nullptr;
+	if (index >= 0 && index < _orderedIdsBeforeMoving.size())
+		result = _analysisMap.at(_orderedIdsBeforeMoving[index]);
+	return result;
+}
+
 void Analyses::analysisTitleChangedInResults(int id, QString title)
 {
 	Analysis * analysis = get(id);
@@ -585,4 +659,24 @@ void Analyses::setChangedAnalysisTitle()
 
     if (analysis != nullptr)
         emit analysisTitleChanged(analysis);
+}
+
+void Analyses::refreshAvailableVariables()
+{
+	applyToAll([](Analysis * a) { a->refreshAvailableVariablesModels();	});
+}
+
+void Analyses::duplicateAnalysis(size_t id)
+{
+	if(!get(id)) return;
+
+	Analysis	* original = get(id),
+				* analysis = new Analysis(this, ++_nextId, original);
+
+	storeAnalysis(analysis, analysis->id(), true);
+	bindAnalysisHandler(analysis);
+	analysis->emitDuplicationSignals();
+
+	if(analysis->status() != Analysis::Status::Complete)
+		analysis->refresh();
 }

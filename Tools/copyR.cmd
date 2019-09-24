@@ -17,9 +17,10 @@ if "%2" == "" (
 set DESTDIR=%2
 
 
-SET ARCH=i386
-if NOT "%3"=="i386" (
+SET ARCH=%3
+if "%3"=="" (
     SET ARCH=x64
+    echo ARCH was not specified so defaulting to x64
 )
 
 echo Copying R %ARCH% from %SOURCEDIR% to %DESTDIR%

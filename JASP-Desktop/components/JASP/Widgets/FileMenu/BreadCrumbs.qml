@@ -7,14 +7,16 @@ import JASP.Controls 1.0
 
 ListView
 {
-	id : listView
+	id :							listView
 			
-	orientation:	ListView.Horizontal
-	boundsBehavior:	Flickable.StopAtBounds
-	clip:			true
+	orientation:					ListView.Horizontal
+	boundsBehavior:					Flickable.StopAtBounds
+	clip:							true
 
-	property alias scrollBarVisible:	scrollBar.visible
-	property alias scrollBarHeight:		scrollBar.height
+	implicitHeight:					Theme.defaultRectangularButtonHeight + (scrollBar.visible ? scrollBar.height + ( 4 * preferencesModel.uiScale ) : 0)
+	height:							implicitHeight
+	onCountChanged:					currentIndex = count - 1;
+	highlightFollowsCurrentItem:	true
 
 	JASPScrollBar
 	{
@@ -49,7 +51,8 @@ ListView
 				width:		index > 0 ? height   : 0
 				visible:	index > 0
 
-				Image {
+				Image
+				{
 					id:					rightArrow
 					anchors.centerIn: 	parent
 					source:				"qrc:/icons/right-arrow.png"

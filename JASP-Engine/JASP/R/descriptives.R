@@ -19,6 +19,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   variables <- unlist(options$variables)
   splitName <- options$splitby
   makeSplit <- splitName != ""
+  numberMissingSplitBy <- 0
 
   if (is.null(dataset)) {
     if (makeSplit) {
@@ -36,12 +37,17 @@ Descriptives <- function(jaspResults, dataset, options) {
     # remove missing values from the grouping variable
     dataset <- dataset[!is.na(splitFactor), ]
     dataset.factors <- dataset.factors[!is.na(splitFactor), ]
+    
+    numberMissingSplitBy <- sum(is.na(splitFactor))
+    
+    # Actually remove missing values from the split factor
+    splitFactor <- na.omit(splitFactor)
     # create a list of datasets, one for each level
     splitDat         <- split(dataset[.v(variables)],         splitFactor)
     splitDat.factors <- split(dataset.factors[.v(variables)], splitFactor)
   }
 
-  .descriptivesDescriptivesTable(dataset, options, jaspResults)
+  .descriptivesDescriptivesTable(dataset, options, jaspResults, numberMissingSplitBy=numberMissingSplitBy)
 
   # Frequency table
   if (options$frequencyTables) {
@@ -111,10 +117,51 @@ Descriptives <- function(jaspResults, dataset, options) {
       }
     }
   }
+
+  # QQ plots
+  if (options$descriptivesQQPlot) {
+    if(is.null(jaspResults[["QQPlots"]])) {
+      if(length(variables)>1 || length(levels(dataset[[.v(splitName)]]))>1) #there will be more than one Q-Q Plot
+        jaspResults[["QQPlots"]] <- createJaspContainer("Q-Q Plots")
+      else #only one Q-Q Plot
+        jaspResults[["QQPlots"]] <- createJaspContainer("Q-Q Plot")
+      jaspResults[["QQPlots"]]$dependOn(c("descriptivesQQPlot", "splitby"))
+      jaspResults[["QQPlots"]]$position <- 8
+    }
+    QQPlots <- jaspResults[["QQPlots"]]
+    if(makeSplit) {
+      qqSplitFactor     <- dataset[[.v(splitName)]]
+      if(length(qqSplitFactor)==0)
+        return(createJaspPlot(error="Plotting is not possible: Variable only contains NA!", dependencies="splitby"))
+      #gives the different split values
+      qqSplitLevels     <- levels(qqSplitFactor)
+      # remove missing values from the grouping variable
+      dataset           <- dataset[!is.na(qqSplitFactor), ]
+      for(var in variables){ 
+        if(!is.null(QQPlots[[var]]))
+          next
+        deeperQQPlots <- createJaspContainer(paste0(var))
+        deeperQQPlots$dependOn(optionContainsValue=list(variables=var))
+        QQPlots[[var]] <- deeperQQPlots
+        #splits dataset according to split values
+        qqSplitData     <- split(dataset, qqSplitFactor)
+        for( lev in 1:length(qqSplitLevels)){
+          QQPlots[[var]][[paste0(var, lev)]] <- .descriptivesQQPlot(dataset=qqSplitData[[lev]], options=options, qqvar=var, levelName=qqSplitLevels[lev])
+        }
+      }
+    }
+    else { #no split
+      for(var in variables){
+        if(is.null(QQPlots[[var]])) {
+          QQPlots[[var]] <- .descriptivesQQPlot(dataset=dataset, options=options, qqvar=var)
+        }
+      }
+    }
+  }
   return()
 }
 
-.descriptivesDescriptivesTable <- function(dataset, options, jaspResults) {
+.descriptivesDescriptivesTable <- function(dataset, options, jaspResults, numberMissingSplitBy=0) {
   if (!is.null(jaspResults[["stats"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   wantsSplit              <- options$splitby != ""
@@ -124,9 +171,14 @@ Descriptives <- function(jaspResults, dataset, options) {
   stats                   <- createJaspTable("Descriptive Statistics")
   stats$transpose         <- TRUE
   stats$position          <- 1
+  
+  if (numberMissingSplitBy) {
+    stats$addFootnote(message=paste("Excluded", numberMissingSplitBy, "rows from the analysis that correspond to the", 
+                                    "missing values of the split-by variable", options$splitby))
+  }
 
   stats$dependOn(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
-    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "iqr", "mad","minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
+    "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "shapiro", "range", "iqr", "mad","madrobust", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
 
   if (wantsSplit) {
     stats$transposeWithOvertitle <- TRUE
@@ -145,6 +197,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (options$mode)                 stats$addColumnInfo(name="Mode",                        type="number")
   if (options$standardDeviation)    stats$addColumnInfo(name="Std. Deviation",              type="number")
   if (options$mad)                  stats$addColumnInfo(name="MAD",                         type="number")
+  if (options$madrobust)            stats$addColumnInfo(name="MAD Robust",                  type="number")
   if (options$iqr)                  stats$addColumnInfo(name="IQR",                         type="number")
   if (options$variance)             stats$addColumnInfo(name="Variance",                    type="number")
   if (options$skewness) {           stats$addColumnInfo(name="Skewness",                    type="number")
@@ -190,7 +243,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     split       <- dataset[[.v(options$splitby)]]
     splitLevels <- levels(split)
     nLevels     <- length(levels(split))
-
+    
     for (variable in variables) {
       for (l in 1:nLevels) {
         column    <- dataset[[ .v(variable) ]][split==splitLevels[l]]
@@ -220,7 +273,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   
   if(shouldAddModeMoreThanOnceFootnote) 
     stats$addFootnote(message="More than one mode exists, only the first is reported", colNames="Mode")
-    
+  
   return(stats)
 }
 
@@ -234,7 +287,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Valid"]]   <- length(na.omitted)
   resultsCol[["Missing"]] <- rows - length(na.omitted)
 
-  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$iqr || options$mad || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum)) {
+  if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$iqr || options$mad || options$madrobust || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum)) {
     shouldAddNominalTextFootnote <- TRUE
   }
     
@@ -242,7 +295,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Std. Error of Mean"]]      <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardErrorMean, na.omitted, function(param) { sd(param)/sqrt(length(param))} )
   resultsCol[["Median"]]                  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$median,            na.omitted, median)
   resultsCol[["Std. Deviation"]]          <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardDeviation, na.omitted, sd)
-  resultsCol[["MAD"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mad,               na.omitted, mad)
+  resultsCol[["MAD"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mad,               na.omitted, function(param) { mad(param, constant = 1) } )
+  resultsCol[["MAD Robust"]]              <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$madrobust,         na.omitted, mad)
   resultsCol[["IQR"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$iqr,               na.omitted, .descriptivesIqr)
   resultsCol[["Variance"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$variance,          na.omitted, var)
   resultsCol[["Kurtosis"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesKurtosis)
@@ -273,9 +327,9 @@ Descriptives <- function(jaspResults, dataset, options) {
     
   if (options$percentileValuesQuartiles) {
     if (base::is.factor(na.omitted) == FALSE) {
-      resultsCol[["q1"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
-      resultsCol[["q2"]] <- .clean(quantile(na.omitted, c(.5),  type=6, names=F))
-      resultsCol[["q3"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+      resultsCol[["q1"]] <- .clean(quantile(na.omitted, c(.25), names=F))
+      resultsCol[["q2"]] <- .clean(quantile(na.omitted, c(.5), names=F))
+      resultsCol[["q3"]] <- .clean(quantile(na.omitted, c(.75), names=F))
     } else {
       resultsCol[["q1"]] <- ""
       resultsCol[["q2"]] <- ""
@@ -311,14 +365,14 @@ Descriptives <- function(jaspResults, dataset, options) {
     if (options$percentileValuesEqualGroups) {
       
       for (i in seq(equalGroupsNo - 1)) 
-        resultsCol[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+        resultsCol[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), names=F))
       
     }
     
     if (options$percentileValuesPercentiles) {
       
       for (i in percentilesPercentiles) 
-        resultsCol[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+        resultsCol[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), names=F))
 
     }
   } else {
@@ -407,7 +461,8 @@ Descriptives <- function(jaspResults, dataset, options) {
           "Frequency"           = alltotal - total,
           "Percent"             = (alltotal - total)/alltotal*100,
           "Valid Percent"       = "",
-          "Cumulative Percent"  = ""
+          "Cumulative Percent"  = "",
+          ".isNewGroup"         = FALSE
         )
 
         rows[[length(rows) + 1]] <- list(
@@ -416,7 +471,8 @@ Descriptives <- function(jaspResults, dataset, options) {
           "Frequency"           = alltotal,
           "Percent"             = 100,
           "Valid Percent"       = "",
-          "Cumulative Percent"  = ""
+          "Cumulative Percent"  = "",
+          ".isNewGroup"         = FALSE
         )
       }
     } else {
@@ -459,7 +515,7 @@ Descriptives <- function(jaspResults, dataset, options) {
 }
 
 .descriptivesMatrixPlot <- function(dataset, options, name) {
-  variables <- unlist(options$variables)
+  variables <- .v(unlist(options$variables))
   l         <- length(variables)
   depends   <- c("plotCorrelationMatrix", "variables", "splitby")
 
@@ -470,21 +526,19 @@ Descriptives <- function(jaspResults, dataset, options) {
     return(createJaspPlot(error="Plotting is not possible: Too few rows", dependencies=depends))
 
   # check variables
-  d         <- vector("character",  length(.v(variables)))
-  sdCheck   <- vector("logical",    length(.v(variables)))
-  infCheck  <- vector("logical",    length(.v(variables)))
+  d         <- vector("character",  length(variables))
+  sdCheck   <- vector("logical",    length(variables))
+  infCheck  <- vector("logical",    length(variables))
 
-
-  for (i in seq_along(.v(variables))) {
-    variable2check  <- na.omit(dataset[[.v(variables)[i]]])
+  for (i in seq_along(variables)) {
+    variable2check  <- na.omit(dataset[[variables[i]]])
     d[i]            <- class(variable2check)
-    sdCheck[i]      <- sd(variable2check) > 0
+    sdCheck[i]      <- if (d[i] != "factor") sd(variable2check) > 0 else FALSE
     infCheck[i]     <- all(is.finite(variable2check))
   }
 
 
   numericCheck      <- d == "numeric" | d == "integer"
-  variables         <- .v(variables)
   variable.statuses <- vector("list", length(variables))
 
   for (i in seq_along(variables)) {
@@ -531,7 +585,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   labelPos <- matrix(.5, 4, 2)
   labelPos[1, 1] <- .55
   labelPos[4, 2] <- .65
-  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
+  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = options[["variables"]], topLabels = options[["variables"]],
   															scaleXYlabels = NULL, labelPos = labelPos)
 
   return(createJaspPlot(plot=p, width=250 * l + 20, aspectRatio=1, title=name, dependencies=depends))
@@ -767,9 +821,11 @@ Descriptives <- function(jaspResults, dataset, options) {
   yNoNAIndex      <- 1
 
   while(yWithNAIndex <= length(yWithNA)) {
+
     if(!is.na(yWithNA[[yWithNAIndex]])) {
+
       yIndexToActual[[yNoNAIndex]] <- row.names(dataset)[[yWithNAIndex]]
-      yNoNAIndex <- yNoNAIndex + 1
+      yNoNAIndex                   <- yNoNAIndex + 1
     }
 
     yWithNAIndex <- yWithNAIndex + 1
@@ -799,12 +855,13 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotDat <- data.frame(group = group, y = y)
     row.names(plotDat) <- yIndexToActual
 
-    # Identify outliers to label
+    # Identify outliers to label. Note that ggplot uses the unchangeable quantiles(type=7), 
+    # if we ever change the quantile type then the boxplot needs to be overwritten with stat_summary(geom='boxplot')
     plotDat$outlier <- FALSE
 
     for (level in levels(plotDat$group)) {
       v         <- plotDat[plotDat$group == level,]$y
-      quantiles <- quantile(v, probs=c(0.25,0.75), type=6)
+      quantiles <- quantile(v, probs=c(0.25,0.75))
       obsIQR       <- quantiles[2] - quantiles[1]
       plotDat[plotDat$group == level,]$outlier <- v < (quantiles[1]-1.5*obsIQR) | v > (quantiles[2]+1.5*obsIQR)
     }
@@ -1106,8 +1163,8 @@ Descriptives <- function(jaspResults, dataset, options) {
 }
 
 .descriptivesIqr <- function(x) {
-  # Interquartile range based on the stats package, type 6 is used by Minitab and SPSS, see quartile
-  return(stats::IQR(x=x, type=6))
+  # Interquartile range based on the stats package
+  return(stats::IQR(x))
 }
 
 .descriptivesSkewness <- function(x) {
@@ -1143,6 +1200,57 @@ Descriptives <- function(jaspResults, dataset, options) {
   SEK <- 2 * .descriptivesSES(x) * sqrt((n^2 - 1) / ((n - 3) * (n + 5)))
 
   return(SEK)
+}
+
+.descriptivesQQPlot <- function(dataset, options,  qqvar, levelName=NULL) {
+
+  #to put a subtitle if there is a split
+  title <- qqvar
+  if(!is.null(levelName))
+    title <- levelName
+  
+  if (!is.null(qqvar)) {
+
+    varCol<-dataset[[.v(qqvar)]]
+    varCol<-varCol[!is.na(varCol)]
+
+    standResid <- as.data.frame(stats::qqnorm(varCol, plot.it=FALSE))
+
+    standResid <- na.omit(standResid)
+    xVar <- standResid$x
+    yVar <- standResid$y
+    yVar<-yVar-mean(yVar)
+    yVar<-yVar/(sd(yVar))
+
+    # Format x ticks
+    xlow   <- min(pretty(xVar))
+    xhigh  <- max(pretty(xVar))
+    xticks <- pretty(c(xlow, xhigh))
+
+    # Format y ticks
+    ylow   <- min(pretty(yVar))
+    yhigh  <- max(pretty(yVar))
+    yticks <- pretty(c(ylow, yhigh))
+
+    # format axes labels
+    xLabs <- JASPgraphs::axesLabeller(xticks)
+    yLabs <- JASPgraphs::axesLabeller(yticks)
+    
+    p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = paste0("Standardised Residuals"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+    p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
+
+    # JASP theme
+    p <- JASPgraphs::themeJasp(p)
+
+  } else {
+
+    p<-NULL
+  }
+  descriptivesQQPlot <- createJaspPlot(plot=p, width=400, aspectRatio=1, title=title)
+  if (is.null(levelName))
+    descriptivesQQPlot$dependOn(optionContainsValue=list(variables=qqvar))
+  return(descriptivesQQPlot)
 }
 
 # </editor-fold> HELPER FUNCTIONS BLOCK

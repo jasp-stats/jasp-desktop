@@ -19,6 +19,7 @@
 #include "boundqmltextarea.h"
 #include "../analysis/analysisform.h"
 #include "qmllistviewtermsavailable.h"
+#include "r_functionwhitelist.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QQuickTextDocument>
@@ -34,6 +35,8 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 
 	if (textType == "lavaan")
 	{
+		connect(_form, &AnalysisForm::dataSetChanged,	this, &BoundQMLTextArea::dataSetChangedHandler,	Qt::QueuedConnection	);
+
 		_textType = TextType::Lavaan;
 		QMLListViewTermsAvailable* listView = new QMLListViewTermsAvailable(item, form); // Hack to get allVariablesModel
 		_allVariablesModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
@@ -86,9 +89,29 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 		font.setPointSize(10);
 		_item->setProperty("font", font);
 	}
+	else if (textType == "Rcode")
+	{
+		_textType = TextType::Rcode;
+
+#ifdef __APPLE__
+		_applyScriptInfo = "\u2318 + Enter to apply";
+#else
+		_applyScriptInfo = "Ctrl + Enter to apply";
+#endif
+		_item->setProperty("applyScriptInfo", _applyScriptInfo);
+
+		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+
+		QFont font(family);
+		font.setStyleHint(QFont::Monospace);
+		font.setPointSize(10);
+		_item->setProperty("font", font);
+				
+	}
 	else
 		_textType = TextType::Default;
-	
+
 	QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));
 	
 }
@@ -169,14 +192,35 @@ void BoundQMLTextArea::checkSyntax()
 			.append(colNames)
 			.append(")");
 		
-		runRScript(checkCode);
+		runRScript(checkCode, false);
+	}
+	else if (_textType == TextType::Rcode)
+	{
+		try							
+		{ 
+			R_FunctionWhiteList::scriptIsSafe(_text.toStdString()); 
+			_item->setProperty("hasScriptError", false);
+			_item->setProperty("infoText", "valid R code");
+		}
+		catch(filterException & e)
+		{
+			_item->setProperty("hasScriptError", true);
+			std::string errorMessage = std::string("R code is not safe because of: ") + e.what();
+			_item->setProperty("infoText", errorMessage.c_str());
+		}		
+		
 	}
 	else
 	{
 		if (_boundTo != nullptr)
 			_boundTo->setValue(_text.toStdString());
 	}
-		
+
+}
+
+void BoundQMLTextArea::dataSetChangedHandler()
+{
+	form()->refreshAnalysis();
 }
 
 void BoundQMLTextArea::rScriptDoneHandler(const QString & result)

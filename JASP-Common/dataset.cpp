@@ -28,6 +28,7 @@ void DataSet::setRowCount(size_t newRowCount)
 	{
 		_columns.setRowCount(newRowCount);
 
+		_filteredRowCount = newRowCount;
 		_filterVector.clear();
 		for(size_t i=0; i<newRowCount; i++)
 			_filterVector.push_back(true);
@@ -98,16 +99,20 @@ bool DataSet::setFilterVector(std::vector<bool> filterResult)
 {
 	bool changed = false;
 
-	_filteredRowCount = 0;
 
 	for(size_t i=0; i<filterResult.size(); i++)
 	{
 		if(_filterVector[i] != filterResult[i])
 			changed = true;
 
-		if((_filterVector[i] = filterResult[i])) //economy
-			_filteredRowCount++;
+		_filterVector[i] = filterResult[i];
 	}
+
+	_filteredRowCount = 0;
+
+	for(bool row : _filterVector)
+		if(row)
+			_filteredRowCount++;
 
 	return changed;
 }
@@ -134,7 +139,38 @@ size_t DataSet::rowCount()	const
 
 void DataSet::setSynchingData(bool newVal)
 {
+	if (newVal == _synchingData)
+		return;
 	Log::log() << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl;
 
 	_synchingData = newVal;
+}
+
+int DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
+{
+	if(columnIndex >= columnCount()) return 0;
+
+	const Column & col = column(columnIndex);
+
+	int extraPad = 2;
+
+	switch(col.columnType())
+	{
+	case Column::ColumnTypeScale:
+		return 9 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + 3 because Im seeing some weird stuff with exp-notation  etc + some padding because of dots and whatnot
+
+	case Column::ColumnTypeUnknown:
+		return 0;
+
+	default:
+	{
+		int tempVal = 0;
+
+		for(int labelIndex=0; labelIndex < static_cast<int>(col.labels().size()); labelIndex++)
+			tempVal = std::max(tempVal, static_cast<int>(col.labels().getLabelFromRow(labelIndex).length()));
+
+		return tempVal + extraPad;
+	}
+	}
+
 }

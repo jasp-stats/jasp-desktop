@@ -20,7 +20,7 @@
 
 #include <QtCore/qglobal.h>
 
-//unix use same compiler so no need for dll-hoops to jump through
+//unix uses same compiler for both R-Interface and Engine so no need for dll-hoops to jump through
 #ifdef _WIN32
 #if defined(JASP_R_INTERFACE_LIBRARY)
 #  define RBRIDGE_TO_JASP_INTERFACE Q_DECL_EXPORT
@@ -77,6 +77,7 @@ typedef bool						(STDCALL *RequestSpecificFileSourceCB)	(const char **root, con
 typedef bool						(STDCALL *RequestTempFileNameCB)        (const char* extensionAsString, const char **root, const char **relativePath);
 typedef const char*					(STDCALL *RequestTempRootNameCB)        ();
 typedef bool						(STDCALL *RunCallbackCB)                (const char* in, int progress, const char** out);
+typedef int							(STDCALL *GetColumnType)				(const char* columnName);
 typedef bool						(STDCALL *SetColumnAsScale)             (const char* columnName, double *       scalarData,		size_t length);
 typedef bool						(STDCALL *SetColumnAsOrdinal)           (const char* columnName, int *          ordinalData,	size_t length, const char ** levels, size_t numLevels);
 typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
@@ -95,6 +96,7 @@ struct RBridgeCallBacks {
 	ReadADataSetCB				readFullDataSetCB;
 	ReadADataSetCB				readFilterDataSetCB;
 	RequestSpecificFileSourceCB	requestJaspResultsFileSourceCB;
+	GetColumnType				dataSetGetColumnType;
 	SetColumnAsScale			dataSetColumnAsScale;
 	SetColumnAsOrdinal			dataSetColumnAsOrdinal;
 	SetColumnAsNominal			dataSetColumnAsNominal;
@@ -133,13 +135,5 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 
 } // extern "C"
-
-///New exception to give feedback about possibly failing filters and such
-class filterException : public std::logic_error
-{
-public:
-	filterException(const std::string & what_arg)	: std::logic_error(what_arg) {}
-	filterException(const char * what_arg)			: std::logic_error(what_arg) {}
-};
 
 #endif // JASPRCPP_INTERFACE_H

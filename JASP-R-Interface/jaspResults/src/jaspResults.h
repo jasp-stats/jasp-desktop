@@ -18,7 +18,7 @@ public:
 	static void setSendFunc(sendFuncDef sendFunc);
 	static void setPollMessagesFunc(pollMessagesFuncDef pollFunc);
 	static void setResponseData(int analysisID, int revision);
-	static void setSaveLocation(const char * newSaveLocation);
+	static void setSaveLocation(const std::string & root, const std::string & relativePath);
 	static void setBaseCitation(std::string baseCitation);
 	static void setInsideJASP();
 	static bool isInsideJASP() { return _insideJASP; }
@@ -29,8 +29,9 @@ public:
 	std::string getStatus();
 
 	const char *	constructResultJson();
-	Json::Value		metaEntry() override;
-	Json::Value		dataEntry() override;
+	Json::Value		metaEntry()								const override;
+	Json::Value		dataEntry(std::string & errorMessage)	const override;
+	Json::Value		dataEntry()								const			{ std::string dummy(""); return dataEntry(dummy); }
 
 	void childrenUpdatedCallbackHandler() override;
 
@@ -52,11 +53,16 @@ public:
 
 	std::string _relativePathKeep;
 
-	Json::Value convertToJSON() override;
-	void		convertFromJSON_SetFields(Json::Value in) override;
+	Json::Value convertToJSON()								const	override;
+	void		convertFromJSON_SetFields(Json::Value in)			override;
 
-	void startProgressbar(int expectedTicks, int timeBetweenUpdatesInMs = 500);
+
+	void startProgressbar(int expectedTicks, std::string label);
 	void progressbarTick();
+
+	static void staticStartProgressbar(int expectedTicks, std::string label)			{ _jaspResults->startProgressbar(expectedTicks, label); }
+	static void staticProgressbarTick()													{ _jaspResults->progressbarTick(); }
+
 	void resetProgressbar();
 
 	static Rcpp::RObject	getObjectFromEnv(std::string envName);
@@ -64,31 +70,35 @@ public:
 	static bool				objectExistsInEnv(std::string envName);
 
 private:
-	static Json::Value				_response;
-	static sendFuncDef				_ipccSendFunc;
-	static pollMessagesFuncDef		_ipccPollFunc;
-	static std::string				_saveResultsHere;
-	static std::string				_baseCitation;
-	static bool						_insideJASP;
-	static const std::string		analysisChangedErrorMessage;
-
+	static jaspResults				*	_jaspResults;
 	static Rcpp::Environment		*	_RStorageEnv; //we need this environment to store R objects in a "named" fashion, because then the garbage collector doesn't throw away everything...
+	static Json::Value					_response;
+	static sendFuncDef					_ipccSendFunc;
+	static pollMessagesFuncDef			_ipccPollFunc;
+	static std::string					_saveResultsHere;
+	static std::string					_saveResultsRoot;
+	static std::string					_baseCitation;
+	static bool							_insideJASP;
+	static const std::string			_analysisChangedErrorMessage;
 
 	std::string	errorMessage = "";
 	Json::Value	_currentOptions		= Json::nullValue,
 				_previousOptions	= Json::nullValue;
 
+	jaspContainer					*	_oldResults	= nullptr;
+
 	void addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & pngImgObj);
 	void addPlotPathsForKeepFromJaspObject(jaspObject * obj, Rcpp::List & pngPathImgObj);
 	void addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj, Rcpp::List & cumulativeList);
 	void fillEnvironmentWithStateObjects(Rcpp::List state);
+	void storeOldResults();
 
 
 	int		_progressbarExpectedTicks		= 100,
 			_progressbarLastUpdateTime		= -1,
 			_progressbarTicks				= 0,
-			_progressbarBetweenUpdatesTime	= 500,
 			_sendingFeedbackLastTime		= -1,
+			_progressbarBetweenUpdatesTime	= 250,
 			_sendingFeedbackInterval		= 500;
 };
 
@@ -107,13 +117,9 @@ public:
 	Rcpp::List	getOtherObjectsForState()			{ return ((jaspResults*)myJaspObject)->getOtherObjectsForState();	}
 	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState();	}
 	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList();				}
-	void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick();					}
 	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults();				}
 	
 	void		setErrorMessage(std::string msg, std::string errorStatus)			{ ((jaspResults*)myJaspObject)->setErrorMessage(msg, errorStatus);							}
-	
-	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks);							}
-	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs);	}
 
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }

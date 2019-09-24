@@ -40,13 +40,18 @@ TempFiles::stringvec	TempFiles::_shmemNames		= TempFiles::stringvec();
 
 void TempFiles::init(long sessionId)
 {
-	system::error_code error;
-
 	_sessionId		= sessionId;
 	_nextFileId		= 0;
 	_sessionDirName	= Dirs::tempDir() + "/" + std::to_string(sessionId);
 	_statusFileName	= _sessionDirName +  "/status";
 	_clipboard		= Dirs::tempDir() + "/clipboard";
+
+	createSessionDir();
+}
+
+void TempFiles::createSessionDir()
+{
+	system::error_code error;
 
 	filesystem::path sessionPath = Utils::osPath(_sessionDirName);
 
@@ -60,6 +65,35 @@ void TempFiles::init(long sessionId)
 	//filesystem::path clipboardPath = Utils::osPath(clipboard);
 	//if ( ! filesystem::exists(clipboardPath, error))
 	//	filesystem::create_directories(clipboardPath, error);
+}
+
+void TempFiles::clearSessionDir()
+{
+	filesystem::path sessionPath = Utils::osPath(_sessionDirName);
+	system::error_code error;
+	
+	if(!filesystem::exists(sessionPath, error) || error)
+		return;
+
+	std::vector<filesystem::path> deleteUs;
+
+	for(filesystem::directory_entry & it : filesystem::directory_iterator{sessionPath})
+	{
+		bool leaveMeBe = false;
+
+		for (const filesystem::path & pp : it.path())
+		{
+			std::string pathComp = pp.generic_string();
+			if(pathComp.find("tmp") != std::string::npos || pathComp == "status")
+				leaveMeBe = true;
+		}
+
+		if(!leaveMeBe)
+			deleteUs.push_back(it.path());
+	}
+
+	for(auto dir : deleteUs)
+		filesystem::remove_all(dir);
 }
 
 void TempFiles::attach(long sessionId)
@@ -199,7 +233,7 @@ string TempFiles::createSpecific_clipboard(const string &filename)
 	filesystem::path	path	= Utils::osPath(fullPath),
 						dirPath	= path.parent_path();
 
-	if (filesystem::exists(dirPath, error) == false || error)
+	if (!filesystem::exists(dirPath, error) || error)
 		filesystem::create_directories(dirPath, error);
 
 	return fullPath;
@@ -211,7 +245,7 @@ string TempFiles::createSpecific(const string &dir, const string &filename)
 	string fullPath			= _sessionDirName + "/" + dir;
 	filesystem::path path	= Utils::osPath(fullPath);
 
-	if (filesystem::exists(path, error) == false || error)
+	if (!filesystem::exists(path, error) || error)
 		filesystem::create_directories(path, error);
 
 	return fullPath + "/" + filename;
@@ -224,7 +258,7 @@ void TempFiles::createSpecific(const string &name, int id, string &root, string 
 	filesystem::path path	= Utils::osPath(root + "/" + relativePath);
 
 	system::error_code error;
-	if (filesystem::exists(path, error) == false || error)
+	if (!filesystem::exists(path, error) || error)
 		filesystem::create_directories(path, error);
 
 	relativePath += "/" + name;
@@ -239,7 +273,7 @@ void TempFiles::create(const string &extension, int id, string &root, string &re
 
 	filesystem::path path	= Utils::osPath(resources);
 
-	if (filesystem::exists(resources, error) == false)
+	if (!filesystem::exists(resources, error) || error)
 		filesystem::create_directories(resources, error);
 
 	string suffix = extension == "" ? "" : "." + extension;
@@ -261,7 +295,7 @@ std::string TempFiles::createTmpFolder()
 		std::string tmpFolder	= _sessionDirName + "/tmp" + std::to_string(_nextTmpFolderId++) + "/";
 		filesystem::path path	= Utils::osPath(tmpFolder);
 
-		if (!filesystem::exists(path, error))
+		if (!filesystem::exists(path, error) || error)
 		{
 			filesystem::create_directories(path, error);
 			return tmpFolder;

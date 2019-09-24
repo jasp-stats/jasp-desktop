@@ -25,8 +25,6 @@ Form
 {
 	usesJaspResults: false
 	
-	TextField	 { name: "layoutX";					value: "";			visible: false }
-	TextField	 { name: "layoutY";					value: "";			visible: false }
 	CheckBox	 { name: "parallelBootstrap";		checked: false;		visible: false }
 	IntegerField { name: "plotHeightBootstrapPlot";	defaultValue: 320;	visible: false }
 	IntegerField { name: "plotHeightCentrality";	defaultValue: 320;	visible: false }
@@ -377,8 +375,17 @@ Form
 				childrenOnSameRow: true
 				DoubleField { name: "repulsion"; label: qsTr("Repulsion"); defaultValue: 1; max: 10 }
 			}
-			RadioButton { value: "circle";	label: qsTr("Circle")	}
-			RadioButton { value: "data";	label: qsTr("Data")		}
+			RadioButton { value: "circle";	label: qsTr("Circle")							}
+			RadioButton { value: "data";	label: qsTr("Data");	id: dataRatioButton		}
+		}
+		
+		VariablesForm
+		{
+			visible: dataRatioButton.checked
+			height: 200
+			AvailableVariablesList	{ name: "allXYVariables" }
+			AssignedVariablesList	{ name: "layoutX"; title: qsTr("x"); singleVariable: true}
+			AssignedVariablesList	{ name: "layoutY"; title: qsTr("y"); singleVariable: true}
 		}
 	}
 }

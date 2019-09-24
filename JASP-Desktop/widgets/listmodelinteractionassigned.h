@@ -38,6 +38,7 @@ public:
 	Terms*	termsFromIndexes(const QList<int> &indexes)								const	override;
 	bool	canAddTerms(Terms *terms) const override;
 	Terms*	addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") override;
+	void	moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void	removeTerms(const QList<int> &indices)											override;
 	QString getItemType(const Term &term)											const	override;
 	

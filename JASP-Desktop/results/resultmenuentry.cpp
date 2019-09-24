@@ -20,20 +20,21 @@
 
 std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
     {	"hasCollapse",				ResultMenuEntry("",					"hasCollapse",				"",									"window.collapseMenuClicked();")	},
-	{	"hasEditTitle",				ResultMenuEntry("Edit Title",		"hasEditTitle",				"",									"window.editTitleMenuClicked();")	},
+	{	"hasEditTitle",				ResultMenuEntry("Edit Title",		"hasEditTitle",				"qrc:/icons/edit-pencil.png",		"window.editTitleMenuClicked();")	},
 	{	"hasCopy",					ResultMenuEntry("Copy",				"hasCopy",					"qrc:/icons/copy.png",				"window.copyMenuClicked();")		},
 	{	"hasLaTeXCode",				ResultMenuEntry("Copy LaTeX",		"hasLaTeXCode",				"qrc:/icons/code-icon.png",			"window.latexCodeMenuClicked();")	},
 	{	"hasCite",					ResultMenuEntry("Copy Citations",	"hasCite",					"qrc:/icons/cite.png",				"window.citeMenuClicked();")		},
 	{	"hasSaveImg",				ResultMenuEntry("Save Image As",	"hasSaveImg",				"qrc:/icons/document-save-as.png",	"window.saveImageClicked();")		},
 	{	"hasEditImg",				ResultMenuEntry("Edit Image",		"hasEditImage",				"qrc:/icons/editImage.png",			"window.editImageClicked();")		},
 	{	"hasNotes",					ResultMenuEntry("Add Note",			"hasNotes",					"",									"")									},
-	{	"hasRemove",				ResultMenuEntry("Remove",			"hasRemove",				"",									"window.removeMenuClicked();")		},
-	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",		"hasRemoveAllAnalyses",		"",									"")									},
+	{	"hasDuplicate",				ResultMenuEntry("Duplicate",		"hasDuplicate",				"qrc:/icons/duplicate.png",			"window.duplicateMenuClicked();")	},
+	{	"hasRemove",				ResultMenuEntry("Remove",			"hasRemove",				"qrc:/images/close-button.png",		"window.removeMenuClicked();")		},
+	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",		"hasRemoveAllAnalyses",		"qrc:/images/close-button.png",		"")									},
 	{	"hasRefreshAllAnalyses",	ResultMenuEntry("Refresh All",		"hasRefreshAllAnalyses",	"",									"")									},
 };
 
 QStringList ResultMenuEntry::EntriesOrder = {"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg",
-                                             "hasEditImg", "hasNotes", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses"};
+											 "hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses"};
 
 ResultMenuEntry::ResultMenuEntry(QString displayText, QString name, QString menuImageSource, QString jsFunction)
 	: _displayText(displayText)

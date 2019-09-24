@@ -101,6 +101,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
+	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage();
 	_dynamicModules			= new DynamicModules(this);
@@ -121,12 +122,11 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_filterModel			= new FilterModel(_package, this);
 	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences,
 									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-									{ "Network", "Meta Analysis", "SEM", "Summary Statistics", "BAIN" });
+									{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" });
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this, _package);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
-
 	_resultMenuModel		= new ResultMenuModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
@@ -158,22 +158,41 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 MainWindow::~MainWindow()
 {
-	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
-
-	delete _resultsJsInterface;
-	delete _engineSync;
-	if (_package && _package->dataSet())
+	try
 	{
-		_loader.free(_package->dataSet());
-		_package->reset();
+		_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
+
+		delete _resultsJsInterface;
+		delete _engineSync;
+		if (_package && _package->dataSet())
+		{
+			_loader->free(_package->dataSet());
+			_package->reset();
+		}
+	}
+	catch(...)
+	{
+	}
+}
+
+void MainWindow::checkDoSync(bool &check)
+{
+	check = true;
+	if (checkAutomaticSync())
+	{
+		if (!MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
+		{
+			check = false;
+			_preferences->setDataAutoSynchronization(false);
+		}
 	}
 }
 
 void MainWindow::startOnlineDataManager()
 {
-	_loader.moveToThread(&_loaderThread);
+	_loader->moveToThread(&_loaderThread);
 	_loaderThread.start();
-	_loader.setOnlineDataManager(_odm);
+	_loader->setOnlineDataManager(_odm);
 
 	_fileMenu->setOnlineDataManager(_odm);
 
@@ -184,7 +203,7 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 void MainWindow::makeConnections()
 {
 	_package->isModifiedChanged.connect(	boost::bind(&MainWindow::packageChanged,		this,	_1));
-	_package->dataChanged.connect(			boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
+	_package->dataChanged.connect(			boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5, _6));
 	_package->enginesInitializing.connect(	boost::bind(&MainWindow::enginesInitializing,	this));
 	_package->pauseEngines.connect(			boost::bind(&MainWindow::pauseEngines,			this));
 	_package->resumeEngines.connect(		boost::bind(&MainWindow::resumeEngines,			this));
@@ -207,10 +226,11 @@ void MainWindow::makeConnections()
 	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh,									Qt::QueuedConnection);
 	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
-	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_analyses,				&Analyses::dataSetChanged									);
+	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_analyses,				&Analyses::dataSetColumnsChanged							);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
+	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_analyses,				&Analyses::dataSetColumnsChanged							);
 	connect(_engineSync,			&EngineSync::processNewFilterResult,				_filterModel,			&FilterModel::processFilterResult							);
 	connect(_engineSync,			&EngineSync::processFilterErrorMsg,					_filterModel,			&FilterModel::processFilterErrorMsg							);
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
@@ -229,6 +249,7 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showResultsPanel								);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_analyses,				&Analyses::refreshAvailableVariables,						Qt::QueuedConnection);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -243,6 +264,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				&Analyses::duplicateAnalysis								);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -264,7 +286,8 @@ void MainWindow::makeConnections()
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
-	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
+	connect(_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
+	connect(_loader,				&AsyncLoader::checkDoSyncSig,						this,					&MainWindow::checkDoSync,									Qt::BlockingQueuedConnection);
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
@@ -508,7 +531,7 @@ void MainWindow::packageChanged(DataSetPackage *package)
 }
 
 
-void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged)
+void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged, bool hasNewColumns)
 {
 	std::vector<std::string> oldColumnNames;
 
@@ -519,7 +542,11 @@ void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedCo
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	_analyses->refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldColumnNames);
+	_analyses->refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldColumnNames, hasNewColumns);
+	if(rowCountChanged)
+	{
+		QTimer::singleShot(0, _analyses, &Analyses::refreshAllAnalyses);
+	}
 
 	_computedColumnsModel->packageSynchronized(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
@@ -564,21 +591,23 @@ void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 	_analyses				-> setDataSet(dataSet);
 	_filterModel			-> setDataSetPackage(package);
 
-	setDatasetLoaded(dataSet != nullptr && dataSet->rowCount() > 0);
+	setDatasetLoaded(dataSet != nullptr && (dataSet->rowCount() > 0 || dataSet->columnCount() > 0));
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package,
 									vector<string> &changedColumns,
 									vector<string> &missingColumns,
 									map<string, string> &changeNameColumns,
-									bool rowCountChanged)
+									bool rowCountChanged,
+									bool hasNewColumns)
 {
 	setDataSetAndPackageInModels(package);
 
-	_labelFilterGenerator->regenerateFilter();
-	_filterModel->sendGeneratedAndRFilter();
+	//Already done in filterModel::setDatasetPackage:
+	//_labelFilterGenerator->regenerateFilter();
+	//_filterModel->sendGeneratedAndRFilter();
 
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged, hasNewColumns);
 }
 
 
@@ -699,6 +728,11 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 	}
 }
 
+void MainWindow::connectFileEventCompleted(FileEvent * event)
+{
+	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
+}
+
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
@@ -713,11 +747,11 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
-			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+			connectFileEventCompleted(event);
 
 			setWelcomePageVisible(false);
 
-			_loader.io(event, _package);
+			_loader->io(event, _package);
 			showProgress();
 		}
 	}
@@ -735,24 +769,24 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		_package->setAnalysesData(analysesData);
 
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+		connectFileEventCompleted(event);
 
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+		connectFileEventCompleted(event);
 
 		_resultsJsInterface->exportHTML();
 
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
-		_loader.io(event, _package);
+		connectFileEventCompleted(event);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -760,8 +794,8 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		if (_package->dataSet() == nullptr)
 			return;
 
-		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
-		_loader.io(event, _package);
+		connectFileEventCompleted(event);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
@@ -780,7 +814,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			case MessageForwarder::DialogResponse::Save:
 				event->chain(_fileMenu->save());
-				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+				connectFileEventCompleted(event);
 				break;
 
 			case MessageForwarder::DialogResponse::Discard:
@@ -849,7 +883,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->isSuccessful())
 		{
 			populateUIfromDataSet();
-			QString name = QFileInfo(event->path()).baseName();
+			QString name = QFileInfo(event->path()).completeBaseName();
 			setWindowTitle(name);
 			_currentFilePath = event->path();
 
@@ -860,28 +894,37 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				{
 					uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toTime_t();
 					if (currentDataFileTimestamp > _package->dataFileTimestamp())
-						emit event->dataFileChanged(event->dataFilePath());
+					{
+						setCheckAutomaticSync(true);
+						_fileMenu->syncDataFile(dataFilePath);
+					}
 				}
 				else
 				{
 					_package->setDataFilePath("");
-					_package->setModified(true);
 				}
 			}
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
-				QTimer::singleShot(1000, this, &MainWindow::startComparingResults);
+			{
+				//Make sure the engine gets enough time to load data
+				_engineSync->pause();
+				_engineSync->resume();
+				QTimer::singleShot(666, this, &MainWindow::startComparingResults);
+			}
 
 		}
 		else
 		{
 			if (_package->dataSet() != nullptr)
-				_loader.free(_package->dataSet());
+				_loader->free(_package->dataSet());
 			_package->reset();
 			setDataSetAndPackageInModels(nullptr);
+			setWelcomePageVisible(true);
+
+			MessageForwarder::showWarning("Unable to open file because:\n" + event->message());
 
 			if (_openedUsingArgs)	_application->exit(1);
-			else					MessageForwarder::showWarning("Unable to open file.\n\n" + event->message());
 
 		}
 	}
@@ -891,7 +934,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 		if (event->isSuccessful())
 		{
-			QString name = QFileInfo(event->path()).baseName();
+			QString name = QFileInfo(event->path()).completeBaseName();
 
 			_package->setModified(false);
 			setWindowTitle(name);
@@ -924,12 +967,16 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_analyses->setVisible(false);
 			_analyses->clear();
 			setDataSetAndPackageInModels(nullptr);
+
 			if (_package->dataSet())
-				_loader.free(_package->dataSet());
+				_loader->free(_package->dataSet());
+
 			_package->reset();
 			setWelcomePageVisible(true);
 
 			setWindowTitle("JASP");
+
+			_engineSync->cleanUpAfterClose();
 
 			if (_applicationExiting)	QApplication::exit();
 			else
@@ -937,10 +984,10 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				setDataPanelVisible(false);
 				setDataAvailable(false);
 			}
-
 		}
 		else
 			_applicationExiting = false;
+
 	}
 }
 
@@ -970,7 +1017,7 @@ void MainWindow::populateUIfromDataSet()
 			if (!analysesData.isArray())
 			{
 				analysesDataList = analysesData.get("analyses", Json::arrayValue);
-				Json::Value meta = analysesData.get("meta", Json::nullValue);
+				Json::Value meta = analysesData.get("meta",		Json::nullValue);
 
 				if (!meta.isNull())
 				{
@@ -1004,10 +1051,8 @@ void MainWindow::populateUIfromDataSet()
 			}
 		}
 
-		if (corruptAnalyses == 1)
-			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
-		else if (corruptAnalyses > 1)
-			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+		if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
+		else if (corruptAnalyses > 1)		errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 
 		if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 			emit currentAnalysis->expandAnalysis();
@@ -1015,7 +1060,7 @@ void MainWindow::populateUIfromDataSet()
 
 	bool hasAnalyses = _analyses->count() > 0;
 
-	setDataAvailable(_package->dataSet()->rowCount() > 0);
+	setDataAvailable((_package->dataSet()->rowCount() > 0 || _package->dataSet()->columnCount() > 0));
 
 	hideProgress();
 
@@ -1055,10 +1100,7 @@ void MainWindow::resultsPageLoaded()
 	_resultsViewLoaded = true;
 
 	if (_openOnLoadFilename != "")
-	{
-		// this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
-        QTimer::singleShot(500, this, &MainWindow::_openFile);
-	}
+		QTimer::singleShot(500, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
 }
 
 void MainWindow::_openFile()
@@ -1075,8 +1117,12 @@ void MainWindow::fatalError()
 	if (exiting == false)
 	{
 		exiting = true;
-		MessageForwarder::showWarning("Error", "JASP has experienced an unexpected internal error.\n\n" + _fatalError.toStdString() + "\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n");
-		QApplication::exit(1);
+		if(MessageForwarder::showYesNo("Error", "JASP has experienced an unexpected internal error:\n" + _fatalError.toStdString() + "\n\n"
+			"JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team.", "Report", "Exit"))
+		{
+			QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
+		}
+		_application->exit(1);
 	}
 }
 
@@ -1114,7 +1160,7 @@ void MainWindow::emptyValuesChangedHandler()
 		_package->dataSet()->setSynchingData(false);
 		_package->resumeEngines();
 		_package->setModified(true);
-		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false);
+		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false, false);
 	}
 }
 
@@ -1169,7 +1215,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 void MainWindow::startDataEditorHandler()
 {
-
+	setCheckAutomaticSync(false);
 	QString path = QString::fromStdString(_package->dataFilePath());
 	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly())
 	{
@@ -1203,7 +1249,7 @@ void MainWindow::startDataEditorHandler()
 			if (!_currentFilePath.isEmpty())
 			{
 				QFileInfo file(_currentFilePath);
-				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
+				name = file.absolutePath() + QDir::separator() + file.completeBaseName().replace('#', '_') + ".csv";
 			}
 
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
@@ -1235,7 +1281,7 @@ void MainWindow::startDataEditorHandler()
 		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
 		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
 		event->setPath(path);
-		_loader.io(event, _package);
+		_loader->io(event, _package);
 		showProgress();
 	}
 	else
@@ -1501,6 +1547,7 @@ void MainWindow::setDatasetLoaded(bool datasetLoaded)
 
 	_datasetLoaded = datasetLoaded;
 	emit datasetLoadedChanged(_datasetLoaded);
+	_dynamicModules->setDataLoaded(_datasetLoaded); //Should be connected to some signal from datasetpackage after centralDatasetModel branch is merged
 }
 
 void MainWindow::setScreenPPI(int screenPPI)
@@ -1599,4 +1646,11 @@ void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
 
 	_downloadNewJASPUrl = downloadNewJASPUrl;
 	emit downloadNewJASPUrlChanged(_downloadNewJASPUrl);
+}
+
+void MainWindow::moveAnalysesResults(Analysis* fromAnalysis, int index)
+{
+	Analysis* toAnalysis = _analyses->getAnalysisBeforeMoving(size_t(index));
+	if (fromAnalysis && toAnalysis && fromAnalysis != toAnalysis)
+		_resultsJsInterface->moveAnalyses(fromAnalysis->id(), toAnalysis->id());
 }

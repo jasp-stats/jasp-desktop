@@ -154,7 +154,7 @@ Form {
 		{
 			title: qsTr("Models")
 			CheckBox { name: "plotLogPosteriorOdds";	label: qsTr("Log posterior odds")				}
-			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data)M)) vs. model size")	}
+			CheckBox { name: "plotModelComplexity";		label: qsTr("Log(P(data|M)) vs. model size")	}
 			CheckBox { name: "plotModelProbabilities";	label: qsTr("Model probabilities")				}
 		}
 
@@ -186,16 +186,19 @@ Form {
 				columnSpacing: 0
 				Group
 				{
-					RadioButton { value: "hyper-g";			label: qsTr("Hyper-g!");			id: hyperg			}
+					RadioButton { value: "hyper-g";			label: qsTr("Hyper-g");			    id: hyperg			}
 					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");		id: hyperglaplace	}
 					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");			id: hypergn			}
 				}
 				DoubleField
 				{
-					name: "alpha";
-					label: qsTr("alpha");
+					name: "alpha"
+					label: qsTr("alpha")
 					enabled: hyperg.checked || hyperglaplace.checked || hypergn.checked
 					defaultValue: 3.0
+                    min: 2
+                    max: 4
+                    inclusive: "no"
 				}
 				RadioButton { value: "JZS"; label: qsTr("JZS"); checked: true; id: jzs }
 				DoubleField
@@ -206,6 +209,7 @@ Form {
 					fieldWidth: 50
 					defaultValue: 0.354
 					max: 100000
+                    inclusive: "maxOnly"
 				}
 			}
 		}
@@ -221,14 +225,14 @@ Form {
 					value: "beta.binomial"; label: qsTr("Beta binomial"); checked: true
 					childrenOnSameRow: true
 					childrenArea.columnSpacing: 1
-					DoubleField { name: "betaBinomialParamA"; label: qsTr("a");  defaultValue: 1 }
-					DoubleField { name: "betaBinomialParamB"; label: qsTr("b");  defaultValue: 1 }
+					DoubleField { name: "betaBinomialParamA"; label: qsTr("a"); defaultValue: 1; inclusive: "maxOnly"}
+					DoubleField { name: "betaBinomialParamB"; label: qsTr("b"); defaultValue: 1; inclusive: "maxOnly"}
 				}
 				RadioButton
 				{
 					value: "Bernoulli"; label: qsTr("Bernouilli")
 					childrenOnSameRow: true
-					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; decimals: 2 }
+					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; inclusive: "no"; decimals: 3 }
 				}
 				RadioButton { value: "uniform"; label: qsTr("Uniform") }
 			}

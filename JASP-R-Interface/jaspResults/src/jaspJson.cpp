@@ -103,9 +103,9 @@ std::vector<Json::Value> jaspJson::RList_to_VectorJson(Rcpp::List obj)
 	return vec;
 }
 
-Json::Value jaspJson::dataEntry()
+Json::Value jaspJson::dataEntry(std::string & errorMessage) const
 {
-	Json::Value data(jaspObject::dataEntry());
+	Json::Value data(jaspObject::dataEntry(errorMessage));
 
 	data["title"]		= _title;
 	data["json"]		= data;
@@ -114,7 +114,7 @@ Json::Value jaspJson::dataEntry()
 	return data;
 }
 
-Json::Value jaspJson::convertToJSON()
+Json::Value jaspJson::convertToJSON() const
 {
 	Json::Value obj = jaspObject::convertToJSON();
 	obj["json"]		= _json;

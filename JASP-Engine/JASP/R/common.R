@@ -211,14 +211,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   if (inherits(analysisResult, "error")) {		
 		
 		if (inherits(analysisResult, "validationError")) {
-			errorStatus <- "validationError"
+      errorStatus  <- "validationError"
 			errorMessage <- analysisResult$message
 		} else {
-			errorStatus <- "fatalError"
-			
-			error <- .sanitizeForJson(analysisResult)
-			stackTrace <- .sanitizeForJson(analysisResult$stackTrace)
-			stackTrace <- paste(stackTrace, collapse="<br><br>")
+      errorStatus  <- "fatalError"
+      error        <- .sanitizeForJson(analysisResult)
+      stackTrace   <- .sanitizeForJson(analysisResult$stackTrace)
+      stackTrace   <- paste(stackTrace, collapse="<br><br>")
 			errorMessage <- .generateErrorMessage(type=errorStatus, error=error, stackTrace=stackTrace)
 		}
 		
@@ -299,6 +298,7 @@ checkLavaanModel <- function(model, availableVars) {
   if (!missing(availableVars)) {
     latents <- unique(parsed[parsed$op == "=~",]$lhs)
     modelVars <- setdiff(unique(c(parsed$lhs, parsed$rhs)), latents)
+    modelVars <- modelVars[modelVars != ""] # e.g., x1 ~ 1 yields an empty rhs entry
 
     modelVarsInAvailableVars <- (modelVars %in% vvars)
     if (!all(modelVarsInAvailableVars)) {
@@ -2201,6 +2201,18 @@ as.list.footnotes <- function(footnotes) {
 	}
 
   return(NULL)
+}
+
+.suppressGrDevice <- function(plotFunc) {
+  plotFunc <- substitute(plotFunc)
+  tmpFile <- tempfile()
+  png(tmpFile)
+  on.exit({
+    dev.off()
+    if (file.exists(tmpFile))
+      file.remove(tmpFile)
+  })
+  eval(plotFunc, parent.frame())
 }
 
 .writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {

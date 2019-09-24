@@ -266,13 +266,20 @@ void ComputedColumnsModel::clearColumn(std::string columnName)
 
 }
 
+///Called from datatype changed
 void ComputedColumnsModel::recomputeColumn(std::string columnName)
 {
-	clearColumn(columnName);
-	_computedColumns->findAllColumnNames();
+
 	try
 	{
 		ComputedColumn * col = &((*_computedColumns)[columnName]);
+
+		if(col->codeType() == ComputedColumn::computedType::analysis || col->codeType() == ComputedColumn::computedType::analysisNotComputed)
+			return;
+
+		clearColumn(columnName);
+		_computedColumns->findAllColumnNames();
+
 		col->findDependencies();
 	}
 	catch(columnNotFound e){}
@@ -283,11 +290,18 @@ void ComputedColumnsModel::recomputeColumn(std::string columnName)
 void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe)
 {
 	for(ComputedColumn * col : *_computedColumns)
-		if(col->dependsOn(columnName) || (refreshMe && col->name() == columnName))
+		if(	col->codeType() != ComputedColumn::computedType::analysis				&&
+			col->codeType() != ComputedColumn::computedType::analysisNotComputed	&&
+			(
+					col->dependsOn(columnName) ||
+					(refreshMe && col->name() == columnName)
+			) )
 			invalidate(QString::fromStdString(col->name()));
 
 	for(ComputedColumn * col : *_computedColumns)
-		if(col->iShouldBeSentAgain())
+		if(	col->codeType() != ComputedColumn::computedType::analysis				&&
+			col->codeType() != ComputedColumn::computedType::analysisNotComputed	&&
+			col->iShouldBeSentAgain() )
 			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCodeCommentStripped()), col->columnType());
 
 	checkForDependentAnalyses(columnName);
@@ -515,4 +529,13 @@ void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 
 	for(const QString & col : colsToRemove)
 		requestComputedColumnDestruction(col);
+}
+
+void ComputedColumnsModel::setShowThisColumn(QString showThisColumn)
+{
+	if (_showThisColumn == showThisColumn)
+		return;
+
+	_showThisColumn = showThisColumn;
+	emit showThisColumnChanged(_showThisColumn);
 }

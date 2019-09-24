@@ -36,6 +36,7 @@ ReadDataSetDescriptionCB	readDataSetDescriptionCB;
 RequestSpecificFileSourceCB requestStateFileSourceCB,
 							requestJaspResultsFileSourceCB;
 
+GetColumnType				dataSetGetColumnType;
 SetColumnAsScale			dataSetColumnAsScale;
 SetColumnAsOrdinal			dataSetColumnAsOrdinal;
 SetColumnAsNominal			dataSetColumnAsNominal;
@@ -61,30 +62,35 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	RInside &rInside = rinside->instance();
 
+	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
+	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
+	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
+	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
+	dataSetColumnAsNominal					= callbacks->dataSetColumnAsNominal;
+	dataSetColumnAsOrdinal					= callbacks->dataSetColumnAsOrdinal;
+	requestTempRootNameCB					= callbacks->requestTempRootNameCB;
+	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
+	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
+	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
+	dataSetGetColumnType					= callbacks->dataSetGetColumnType;
+	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
+	readFullDataSetCB						= callbacks->readFullDataSetCB;
+	dataSetRowCount							= callbacks->dataSetRowCount;
 	runCallbackCB							= callbacks->runCallbackCB;
 	readDataSetCB							= callbacks->readDataSetCB;
-	dataSetRowCount							= callbacks->dataSetRowCount;
-	readFullDataSetCB						= callbacks->readFullDataSetCB;
-	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
-	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
-	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
-	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
-	requestTempRootNameCB					= callbacks->requestTempRootNameCB;
-	dataSetColumnAsOrdinal					= callbacks->dataSetColumnAsOrdinal;
-	dataSetColumnAsNominal					= callbacks->dataSetColumnAsNominal;
-	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
-	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
-	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
-	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
 
-	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
 	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
+	rInside[".columnIsScale"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsScale);
 	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
+	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
+	rInside[".columnIsOrdinal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
+	rInside[".columnIsNominal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
+	rInside[".columnIsNominalText"]			= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
 	rInside[".setColumnDataAsScale"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rInside[".setColumnDataAsOrdinal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
@@ -117,6 +123,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//Adding some functions in R to the RefClass (generator) in the module
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
+
 	rInside["jasp.analyses"] = Rcpp::List();
 
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
@@ -168,7 +175,10 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	{
 		///Some stuff for jaspResults etc
 		jaspResults::setResponseData(analysisID, analysisRevision);
-		jaspResults::setSaveLocation(jaspRCPP_requestJaspResultsRelativeFilePath());
+
+		std::string root, relativePath;
+		jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
+		jaspResults::setSaveLocation(root, relativePath);
 
 		results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey)");
 	}
@@ -197,20 +207,23 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	jsonOptions.set_encoding(Encoding);
 
 
+	rInside[".ppi"]				= ppi;
 	rInside["name"]				= name;
 	rInside["title"]			= title;
-	rInside["requiresInit"]		= false;
 	rInside["dataKey"]			= dataKey;
 	rInside["options"]			= jsonOptions;
-	rInside["resultsMeta"]		= "null";
-	rInside["stateKey"]			= stateKey;
 	rInside["perform"]			= perform;
+	rInside["stateKey"]			= stateKey;
 	rInside["moduleCall"]		= moduleCall;
-	rInside[".ppi"]				= ppi;
+	rInside["resultsMeta"]		= "null";
+	rInside["requiresInit"]		= false;
 	rInside[".imageBackground"]	= imageBackground;
 
 	jaspResults::setResponseData(analysisID, analysisRevision);
-	jaspResults::setSaveLocation(jaspRCPP_requestJaspResultsRelativeFilePath());
+
+	std::string root, relativePath;
+	jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
+	jaspResults::setSaveLocation(root, relativePath);
 
 	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)");
 
@@ -313,13 +326,12 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 {
 	RInside &rInside = rinside->instance();
 
+	rInside[".imageBackground"] = imageBackground;
 	rInside["plotName"]			= name;
 	rInside["format"]			= type;
-
 	rInside["height"]			= height;
 	rInside["width"]			= width;
 	rInside[".ppi"]				= ppi;
-	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = jaspRCPP_parseEval("saveImage(plotName,format,height,width)");
 	static std::string staticResult;
@@ -332,12 +344,12 @@ const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const
 
 	RInside &rInside = rinside->instance();
 
+	rInside[".imageBackground"] = imageBackground;
 	rInside["plotName"]			= name;
-	rInside["type"]				= type;
 	rInside["height"]			= height;
 	rInside["width"]			= width;
+	rInside["type"]				= type;
 	rInside[".ppi"]				= ppi;
-	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = jaspRCPP_parseEval("editImage(plotName,type,height,width)");
 	static std::string staticResult;
@@ -358,7 +370,6 @@ void STDCALL jaspRCPP_rewriteImages(const int ppi, const char* imageBackground) 
 	jaspRCPP_parseEvalQNT("rewriteImages()");
 }
 
-
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	// Function to evaluate arbitrary R code from C++
 	// Returns string if R result is a string, else returns "null"
@@ -372,15 +383,24 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
 		"tryCatch(				"
-		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode)) }),		"
-		"		error	= function(e) { .setRError(toString(e$message))	}		"
+		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"		error	= function(e) { .setRError(toString(e$message))	  }, 	"
+		"		warning	= function(w) { .setRWarning(toString(w$message)) }		"
 		");			"
 		"returnVal	");
 
 	SEXP result = jaspRCPP_parseEval(rCodeTryCatch);
 
 	static std::string staticResult;
-	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+	try
+	{
+		staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+	}
+	catch(...)
+	{
+		staticResult = NullString;
+	}
+
 	return staticResult.c_str();
 }
 
@@ -411,15 +431,21 @@ SEXP jaspRCPP_requestTempRootNameSEXP()
 }
 
 
-const char * jaspRCPP_requestJaspResultsRelativeFilePath()
+bool jaspRCPP_requestJaspResultsRelativeFilePath(std::string & root, std:: string & relativePath)
 {
-	const char* root;
-	const char* relativePath;
+	root		 = "";
+	relativePath = "";
 
-	if (!requestJaspResultsFileSourceCB(&root, &relativePath))
-		return "";
+	const char	* _root,
+				* _relativePath;
 
-	return relativePath;
+	if (!requestJaspResultsFileSourceCB(&_root, &_relativePath))
+		return false;
+
+	root			= _root;
+	relativePath	= _relativePath;
+
+	return true;
 }
 
 SEXP jaspRCPP_requestStateFileNameSEXP()
@@ -493,19 +519,31 @@ int jaspRCPP_dataSetRowCount()
 	return dataSetRowCount();
 }
 
+ColumnType jaspRCPP_getColumnType(std::string columnName)
+{
+	return ColumnType(dataSetGetColumnType(columnName.c_str()));
+}
+
+bool jaspRCPP_columnIsScale(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeScale;			}
+bool jaspRCPP_columnIsOrdinal(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeOrdinal;		}
+bool jaspRCPP_columnIsNominal(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeNominal;		}
+bool jaspRCPP_columnIsNominalText(	std::string columnName) { return jaspRCPP_getColumnType(columnName) == ColumnType::ColumnTypeNominalText;	}
+
 bool jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::RObject scalarData)
 {
 	if(Rcpp::is<Rcpp::Vector<REALSXP>>(scalarData))
 		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(scalarData));
 
-	(*rinside)["jaspRCPP_setColumnDataAsScaleData"] = scalarData;
-	//rinside->parseEvalNT("jaspRCPP_setColumnDataAsScaleData");
-	Rcpp::RObject result = jaspRCPP_parseEval("suppressWarnings(as.numeric(as.character(jaspRCPP_setColumnDataAsScaleData)))");
+	static Rcpp::Function asNumeric("as.numeric");
 
-	if(Rcpp::is<Rcpp::Vector<REALSXP>>(result))
-		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(result));
-
-	Rf_error("Something went wrong with the conversion to scalar..");
+	try
+	{
+		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(asNumeric(scalarData)));
+	}
+	catch(...)
+	{
+		Rf_error("Something went wrong with the conversion to scalar..");
+	}
 }
 
 bool _jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::Vector<REALSXP> scalarData)
@@ -527,14 +565,16 @@ bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::RObject ordin
 	if(Rcpp::is<Rcpp::Vector<INTSXP>>(ordinalData))
 		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(ordinalData));
 
-	(*rinside)["jaspRCPP_setColumnDataAsOrdinalData"] = ordinalData;
-	//rinside->parseEvalNT("jaspRCPP_setColumnDataAsOrdinalData");
-	Rcpp::RObject result = jaspRCPP_parseEval("suppressWarnings(as.factor(as.character(jaspRCPP_setColumnDataAsOrdinalData)))");
+	static Rcpp::Function asFactor("as.factor");
 
-	if(Rcpp::is<Rcpp::Vector<INTSXP>>(result))
-		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(result));
-
-	Rf_error("Something went wrong with the conversion to ordinal..");
+	try
+	{
+		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(asFactor(ordinalData)));
+	}
+	catch(...)
+	{
+		Rf_error("Something went wrong with the conversion to ordinal..");
+	}
 }
 
 bool _jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::Vector<INTSXP> ordinalData)
@@ -563,14 +603,16 @@ bool jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::RObject nomin
 	if(Rcpp::is<Rcpp::Vector<INTSXP>>(nominalData))
 		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(nominalData));
 
-	(*rinside)["jaspRCPP_setColumnDataAsNominalData"] = nominalData;
-	//rinside->parseEvalNT("jaspRCPP_setColumnDataAsNominalData");
-	Rcpp::RObject result = jaspRCPP_parseEval("suppressWarnings(as.factor(as.character(jaspRCPP_setColumnDataAsNominalData)))");
+	static Rcpp::Function asFactor("as.factor");
 
-	if(Rcpp::is<Rcpp::Vector<INTSXP>>(result))
-		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(result));
-
-	Rf_error("Something went wrong with the conversion to nominal..");
+	try
+	{
+		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(asFactor(nominalData)));
+	}
+	catch(...)
+	{
+		Rf_error("Something went wrong with the conversion to nominal..");
+	}
 }
 
 bool _jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::Vector<INTSXP> nominalData)
@@ -957,10 +999,10 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 #endif
 	};
 
-	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/Rscript\"");
+	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/R\"");
 
 	std::string codestr = Rcpp::as<std::string>(code),
-				command = R + " -e \"" + codestr + "\"";
+				command = R + " --slave -e \"" + codestr + "\"";
 
 	jaspRCPP_parseEvalPreface(command);
 

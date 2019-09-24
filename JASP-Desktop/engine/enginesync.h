@@ -48,40 +48,42 @@ public:
 	bool allEnginesInitializing();
 
 public slots:
-	void sendFilter(	const QString & generatedFilter,	const QString & filter,			int requestID);
-	void sendRCode(		const QString & rCode,				int requestId);
-	void computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
-	void pause();
-	void resume();
-	void refreshAllPlots();
-	void stopEngines();
-	void logCfgRequest();
-	void logToFileChanged(bool logToFile) { logCfgRequest(); }
+	int		sendFilter(		const QString & generatedFilter,	const QString & filter);
+	void	sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
+	void	computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
+	void	pause();
+	void	resume();
+	void	refreshAllPlots();
+	void	stopEngines();
+	void	logCfgRequest();
+	void	logToFileChanged(bool) { logCfgRequest(); }
+	void	cleanUpAfterClose();
+	void	filterDone(int requestID);
 
 	
 signals:
-	void processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
-	void processFilterErrorMsg(const QString & error, int requestID);
-	void engineTerminated();
-	void filterUpdated(int requestID);
-	void filterErrorTextChanged(const QString & error);
+	void	processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
+	void	processFilterErrorMsg(const QString & error, int requestID);
+	void	engineTerminated();
+	void	filterUpdated(int requestID);
+	void	filterErrorTextChanged(const QString & error);
 
-	void ppiChanged(int newPPI);
-	void imageBackgroundChanged(const QString & value);
+	void	ppiChanged(int newPPI);
+	void	imageBackgroundChanged(const QString & value);
 
-	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
-	void computeColumnFailed(			const QString & columnName, const QString & error);
+	void	computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
+	void	computeColumnFailed(		const QString & columnName, const QString & error);
+	void	columnDataTypeChanged(		const QString & columnName);
 
-	void moduleInstallationSucceeded(	const QString & moduleName);
-	void moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
-	void moduleLoadingSucceeded(		const QString & moduleName);
-	void moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
-	void moduleUninstallingFinished(	const QString & moduleName);
+	void	moduleInstallationSucceeded(	const QString & moduleName);
+	void	moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
+	void	moduleLoadingSucceeded(			const QString & moduleName);
+	void	moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
+	void	moduleUninstallingFinished(		const QString & moduleName);
 
-	void refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
+	void	refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 
 private:
-	bool		idleEngineAvailable();
 	bool		allEnginesStopped();
 	bool		allEnginesPaused();
 	bool		allEnginesResumed();
@@ -89,47 +91,49 @@ private:
 	void		processScriptQueue();
 	void		processLogCfgRequests();
 	void		processDynamicModules();
+	void		processFilterScript();
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
 	void		setModuleWideCastVars(Json::Value newVars);
 	bool		amICastingAModuleRequestWide()	{ return !_requestWideCastModuleJson.isNull(); }
 
 private slots:
-	void ProcessAnalysisRequests();
-	void deleteOrphanedTempFiles();
-	void heartbeatTempFiles();
+	void	ProcessAnalysisRequests();
+	void	deleteOrphanedTempFiles();
+	void	heartbeatTempFiles();
 
-	void process();
+	void	process();
 
-	void subProcessStarted();
-	void subProcessError(QProcess::ProcessError error);
-	void subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	void	subProcessStarted();
+	void	subProcessError(QProcess::ProcessError error);
+	void	subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
-	void moduleLoadingFailedHandler(		const QString & moduleName, const QString & errorMessage, int channelID);
-	void moduleLoadingSucceededHandler(		const QString & moduleName, int channelID);
-	void moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
+	void	moduleLoadingFailedHandler(		const QString & moduleName, const QString & errorMessage, int channelID);
+	void	moduleLoadingSucceededHandler(		const QString & moduleName, int channelID);
+	void	moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
 
-	void restartEngines();
+	void	restartEngines();
 
-	void logCfgReplyReceived(size_t channelNr);
+	void	logCfgReplyReceived(size_t channelNr);
 
 private:
-	Analyses		*_analyses			= nullptr;
-	bool			_engineStarted		= false;
-	DataSetPackage	*_package			= nullptr;
-	DynamicModules	*_dynamicModules	= nullptr;
+	Analyses						*	_analyses						= nullptr;
+	DataSetPackage					*	_package						= nullptr;
+	DynamicModules					*	_dynamicModules					= nullptr;
+	RFilterStore					*	_waitingFilter					= nullptr;
+
+	bool								_engineStarted					= false,
+										_filterRunning					= false;
+	int									_filterCurrentRequestID			= 0;
+	std::string							_memoryName,
+										_engineInfo,
+										_requestWideCastModuleName		= "";
+	Json::Value							_requestWideCastModuleJson		= Json::nullValue;
+	std::map<int, std::string>			_requestWideCastModuleResults;
+	std::set<size_t>					_logCfgRequested				= {};
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::vector<EngineRepresentation*>	_engines;
-	RFilterStore						*_waitingFilter = nullptr;
-
-	std::string _memoryName,
-				_engineInfo;
-
-	std::string					_requestWideCastModuleName		= "";
-	Json::Value					_requestWideCastModuleJson		= Json::nullValue;
-	std::map<int, std::string>	_requestWideCastModuleResults;
-	std::set<size_t>			_logCfgRequested				= {};
 };
 
 #endif // ENGINESYNC_H

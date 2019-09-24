@@ -5,6 +5,7 @@ JASP_OBJECT_CREATOR(jaspHtml)
 JASP_OBJECT_CREATOR(jaspPlot)
 JASP_OBJECT_CREATOR(jaspTable)
 JASP_OBJECT_CREATOR(jaspState)
+JASP_OBJECT_CREATOR(jaspColumn)
 JASP_OBJECT_CREATOR(jaspContainer)
 JASP_OBJECT_CREATOR_ARG(jaspResults, oldState)
 
@@ -14,8 +15,13 @@ RCPP_MODULE(jaspResults)
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspHtml);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspTable);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspState);
+	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspColumn);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspResults);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspContainer);
+
+
+	Rcpp::function("cpp_startProgressbar",	jaspResults::staticStartProgressbar);
+	Rcpp::function("cpp_progressbarTick",	jaspResults::staticProgressbarTick);
 
 	Rcpp::function("destroyAllAllocatedObjects", jaspObject::destroyAllAllocatedObjects);
 	Rcpp::class_<jaspObject_Interface>("jaspObject")
@@ -28,9 +34,8 @@ RCPP_MODULE(jaspResults)
 		.method("addCitation",						&jaspObject_Interface::addCitation,										"Add a citation to this object")
 
 		.property("title",							&jaspObject_Interface::getTitle,	&jaspObject_Interface::setTitle,	"Set the title of this object")
-		.property("warning",						&jaspObject_Interface::getWarning,	&jaspObject_Interface::setWarning,	"Set a warning on this object to be shown in the output")
 		.property("position",						&jaspObject_Interface::getPosition,	&jaspObject_Interface::setPosition,	"Set the position of this object in it's container. By default this is at the end in the order of adding. You can specify any other value, they do not need to be next to each other or unique. The rule is: lower values (including negative) are higher in the container and when multiple objects in a container have the same position-value order is derived from adding-order.")
-		.property("type",							&jaspObject_Interface::type,										"The type of this jaspObject as a string, something like: container, table, plot, json, list, results, html, state")
+		.property("type",							&jaspObject_Interface::type,											"The type of this jaspObject as a string, something like: container, table, plot, json, list, results, html, state")
 
 		.method("setOptionMustBeDependency",		&jaspObject_Interface::setOptionMustBeDependency,						"Specifies an option and it's required value, if the analysis is restarted and this option is no longer defined (like that) it will automatically destroy the object. Otherwise it will keep it.")
 		.method("setOptionMustContainDependency",	&jaspObject_Interface::setOptionMustContainDependency,					"Specifies an option that should define an array and a required value that should be in it, if the analysis is restarted and this option is no longer defined or no longer contains the specified value it will automatically destroy the object. Otherwise it will keep it.")
@@ -65,11 +70,15 @@ RCPP_MODULE(jaspResults)
 	JASPLIST_MODULE_EXPORT(jaspIntlist_Interface,		"jaspIntlist")
 	JASPLIST_MODULE_EXPORT(jaspBoollist_Interface,		"jaspBoollist")
 
-	const std::string addRowsDoc = "Add one or more rows to the table, where 'rows' is a list, dataframe, matrix or vector. "
+	const std::string addRowsGeneralDoc =
 			"Before the data is added all existing columns will be made the same length by appending null-values. "
 			"If the new data contains more columns than currently present empty columns will be added. "
 			"Columnnames will be extracted and used to place the data in the correct column, they can be specified through the elementnames of a list, names of a data.frame and colnames of a matrix. "
 			"To also set the rownames you can fill pass a characterVector with the desired names in the second argument.";
+
+	const std::string addRowsDoc = "Add rows to the table, where 'rows' is a list (of rows), dataframe or matrix. " + addRowsGeneralDoc;
+	const std::string addRowDoc  = "Add a row to the table, where 'rows' is a list (of values) or vector. " + addRowsGeneralDoc;
+
 
 	Rcpp::class_<jaspTable_Interface>("jaspTable")
 		.derives<jaspObject_Interface>("jaspObject")
@@ -107,6 +116,9 @@ RCPP_MODULE(jaspResults)
 
 		.method("addRows",						&jaspTable_Interface::addRows,						addRowsDoc.c_str())
 		.method("addRows",						&jaspTable_Interface::addRowsWithoutNames,			addRowsDoc.c_str())
+
+		.method("addRow",						&jaspTable_Interface::addRow,						addRowDoc.c_str())
+		.method("addRow",						&jaspTable_Interface::addRowWithoutNames,			addRowDoc.c_str())
 
 		//.method("addColumn",					&jaspTable_Interface::addColumns,					"Add one or more columns to the object, this class accepts the same datatypes as setdata.  Column- and rownames will be extracted as well but used only if the corresponding names aren't set yet.")
 		.method("addColumns",					&jaspTable_Interface::addColumns,					"Add one or more columns to the object, this class accepts the same datatypes as setdata.  Column- and rownames will be extracted as well but used only if the corresponding names aren't set yet.")
@@ -147,6 +159,14 @@ RCPP_MODULE(jaspResults)
 		.property("object", &jaspState_Interface::getObject, &jaspState_Interface::setObject, "The object that you might want to keep for the next revision of your analysis.")
 	;
 
+	Rcpp::class_<jaspColumn_Interface>("jaspColumn")
+		.derives<jaspObject_Interface>("jaspObject")
+		.method("setScale",				&jaspColumn_Interface::setScale,		"Overwrite the contents of the specified column with scalar data.")
+		.method("setOrdinal",			&jaspColumn_Interface::setOrdinal,		"Overwrite the contents of the specified column with ordinal data.")
+		.method("setNominal",			&jaspColumn_Interface::setNominal,		"Overwrite the contents of the specified column with nominal data.")
+		.method("setNominalText",		&jaspColumn_Interface::setNominalText,	"Overwrite the contents of the specified column with nominal text data.")
+	;
+
 	Rcpp::class_<jaspResults_Interface>("jaspResultsClass")
 		.derives<jaspContainer_Interface>("jaspContainer")
 		.method("send",						&jaspResults_Interface::send,									"Constructs the results/response-json and sends it to JASP-Desktop, but only if jaspResults::setSendFunc was called with an appropriate sendFuncDef first.")
@@ -165,10 +185,6 @@ RCPP_MODULE(jaspResults)
 											&jaspResults_Interface::setRelativePathKeep,					"The relative path to where state is kept")
 
 		.method("getResults",				&jaspResults_Interface::getResults,								"Returns the latest version of the results json as a string")
-
-		.method("startProgressbar",			&jaspResults_Interface::startProgressbar,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will update results every 500ms.")
-		.method("startProgressbar",			&jaspResults_Interface::startProgressbarMs,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will keep at least timeBetweenUpdatesInMs milliseconds between consecutive updates.")
-		.method("progressbarTick",			&jaspResults_Interface::progressbarTick,						"Adds a tick to the progressbar")
 
 		.method("setOptions",				&jaspResults_Interface::setOptions,								"Tells jaspResults which options are currently set, should not be used in an analysis!")
 		.method("changeOptions",			&jaspResults_Interface::changeOptions,							"Changes the currently set options and removes all objects that depend on the changed options. Mostly useful for unit tests because this we we can simulate re-running the analysis. Should not be used in an analysis!")

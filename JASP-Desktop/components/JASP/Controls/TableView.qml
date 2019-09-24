@@ -17,13 +17,14 @@
 //
 
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Theme 1.0
-import QtQuick.Window 2.3
-import JASP 1.0
+import QtQuick			2.11
+import QtQuick.Controls	2.5
+import QtQuick.Controls	2.5 as QTC
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Theme		1.0
+import QtQuick.Window	2.3
+import JASP				1.0
 
 JASPControl
 {
@@ -31,22 +32,38 @@ JASPControl
 
 	controlType:		"TableView"
 	activeFocusOnTab:	false
+	width:				implicitWidth
+	height:				implicitHeight
+	implicitWidth:		400
+	implicitHeight:		400
 
 	property var	source
-	property alias	syncModels:	tableView.source
+	property alias	syncModels:		tableView.source
 	property string	modelType
-	property string	itemType:	"string"
+	property string	itemType:		"string"
+	property string filter:			"rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
+	property string colName:		"data"					//Used by ListModelFilteredDataEntry
+	property string	extraCol:		""
 	property string	tableType
-	property alias	model:		theView.model
-	property var	validator:	(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
-	property int	colSelected: -1
-	property int	columnCount: 0
-	property int	rowCount: 0
+	property alias	model:			theView.model
+	property var	validator:		(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
+	property int	colSelected:	-1
+	property int	columnCount:	0
+	property int	rowCount:		0
 
-	signal addColumn();
-	signal removeColumn(int col);
-	signal reset();
+	signal reset()
+	signal addColumn()
 	signal itemChanged(int col, int row, string value)
+	signal removeColumn(int col)
+
+	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
+	signal filterSignal(string filter)
+	signal colNameSignal(string filter)
+	signal extraColSignal(string extraCol)
+
+	onFilterChanged:	filterSignal(tableView.filter)
+	onColNameChanged:	colNameSignal(tableView.colName)
+	onExtraColChanged:	extraColSignal(tableView.extraCol)
 
 	function removeAColumn()
 	{
@@ -68,7 +85,10 @@ JASPControl
 	Flickable
 	{
 		id:				myFlickable
-		anchors.fill:	parent
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		anchors.right:	vertiScroller.left
+		anchors.bottom: horiScroller.top
 		contentWidth:	theView.width
 		contentHeight:	theView.height
 		clip:			true
@@ -118,45 +138,102 @@ JASPControl
 					height:					parent.width
 					font:					Theme.font
 				}
-
-				ToolTip.visible:			mouseAreaItem.containsMouse
-				ToolTip.delay:				Theme.toolTipDelay
-				ToolTip.timeout:			Theme.toolTipTimeout
-				ToolTip.text:				headerText
-
-				MouseArea
-				{
-					id:				mouseAreaItem
-					hoverEnabled:	true
-					anchors.fill:	parent
-				}
 			}
 
-			JASPDoubleValidator	{ id: intValidator; bottom: 0; decimals: 0 }
-			JASPDoubleValidator { id: doubleValidator; bottom: 0; decimals: 1 }
-			RegExpValidator { id: stringValidator }
+			JASPDoubleValidator	{ id: intValidator;		bottom: 0; decimals: 0	}
+			JASPDoubleValidator { id: doubleValidator;	bottom: 0; decimals: 1	}
+			RegExpValidator		{ id: stringValidator							}
 
 			itemDelegate: Rectangle
 			{
-				TextField
+				Text
 				{
-					fieldWidth:			parent.width
-					fieldHeight:		parent.height
-					value:				itemText;
-					inputType:			tableView.itemType
-					useExternalBorder:	false
-					isBound:			false
-					validator:			tableView.validator
+					id:					textDisplay
+					anchors.fill:	 	parent
+					font:				Theme.font
+					color:				itemEditable ? Theme.textEnabled : Theme.textDisabled
+					visible:			!textInput.visible
+					text:				itemText
+					padding:			Theme.jaspControlPadding
+					leftPadding:		Theme.labelSpacing
+					verticalAlignment:	Text.AlignVCenter
+				}
+
+				MouseArea
+				{
+					anchors.fill:		parent
+					visible:			itemEditable && !textInput.visible
+					z:					2
+					onClicked:
+					{
+						textInput.visible			= true;
+						textInput.forceActiveFocus();
+					}
+					cursorShape:		Qt.IBeamCursor
+				}
+
+				QTC.TextField
+				{
+					id:					textInput
+					anchors.fill:		parent
+					visible:			false
+					text:				itemText
+					font:				Theme.font
+					leftPadding:		Theme.labelSpacing
+					padding:			Theme.jaspControlPadding
+					verticalAlignment:	Text.AlignVCenter
+					validator:			doubleValidator
 					onPressed:			tableView.colSelected = columnIndex
-					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
+					onEditingFinished:
+					{
+						tableView.itemChanged(columnIndex, rowIndex, text)
+						focus = false;
+					}
+					onActiveFocusChanged: if(!activeFocus) visible = false;
+
 				}
 			}
 
-			leftTopCornerItem: Rectangle { color: Theme.analysisBackgroundColor }
+			leftTopCornerItem: Rectangle
+			{
+				color: Theme.analysisBackgroundColor
+
+				Text
+				{
+					text:					"Row #"
+					horizontalAlignment:	Text.AlignHCenter
+					verticalAlignment:		Text.AlignVCenter
+					leftPadding:			3 * preferencesModel.uiScale
+					elide:					Text.ElideRight;
+					width:					parent.width
+					height:					parent.height
+					font:					Theme.font
+					anchors.right:			parent.right
+					anchors.bottom:			parent.bottom
+				}
+			}
 
 		}
+	}
 
-		ScrollBar.vertical:		ScrollBar   { z: 0; stepSize: 0.025 }
-		ScrollBar.horizontal:	ScrollBar	{ z: 0; stepSize: 0.025	}
+	JASPScrollBar
+	{
+		id:				vertiScroller;
+		flickable:		myFlickable
+		anchors.top:	parent.top
+		anchors.right:	parent.right
+		anchors.bottom: horiScroller.top
+		bigBar:			false
+	}
+
+	JASPScrollBar
+	{
+		id:				horiScroller;
+		flickable:		myFlickable
+		vertical:		false
+		anchors.left:	parent.left
+		anchors.right:	vertiScroller.left
+		anchors.bottom: parent.bottom
+		bigBar:			false
 	}
 }

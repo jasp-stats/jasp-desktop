@@ -32,7 +32,7 @@ class BoundQMLTextArea : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
 	
-	enum TextType {Default, Lavaan, Model};
+	enum TextType {Default, Lavaan, Model, Rcode};
 	
 public:
 	BoundQMLTextArea(QQuickItem* item, AnalysisForm* form);
@@ -49,6 +49,7 @@ public:
 
 private slots:
 	void checkSyntax();
+	void dataSetChangedHandler();
     
 protected:
 	OptionString*				_boundTo = nullptr;

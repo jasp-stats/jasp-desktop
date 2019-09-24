@@ -15,35 +15,41 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Manova <- function(jaspResults, dataset, options) {
+Manova <- function(jaspResults, dataset = NULL, options) {
   
+  # Check if we're ready to actually compute something or just show empty tables
+  ready <- length(options$dependent) > 1 && length(options$fixedFactors) > 0 && length(options$modelTerms) > 0
+
   dependentVariables <- unlist(options$dependent)
   randomFactors <- unlist(options$fixedFactors)
 
   # Read dataset
-  dataset <- .readDataSetToEnd(columns.as.numeric=dependentVariables, 
-                               columns.as.factor=randomFactors)
+  if (is.null(dataset)) {
+    dataset <- .readDataSetToEnd(columns.as.numeric = dependentVariables, 
+                                 columns.as.factor = randomFactors,
+                                 exclude.na.listwise = c(dependentVariables, randomFactors))
+  }
 
   # Error checking
-  errors <- .manovaCheckErrors(dataset, options)
+  .manovaCheckErrors(dataset, options, ready)
 
   # Compute the results
-  manovaResults <- .manovaComputeResults(jaspResults, dataset, options, errors)
+  manovaResults <- .manovaComputeResults(jaspResults, dataset, options, ready)
   
   # Output tables
-  .manovaTableMain(jaspResults, dataset, options, manovaResults, errors)
+  .manovaTableMain(jaspResults, dataset, options, manovaResults, ready)
 
-  .uniAnovaTables(jaspResults, dataset, options, manovaResults, errors)
+  .uniAnovaTables(jaspResults, dataset, options, manovaResults, ready)
   
-  .assumptionTables(jaspResults, dataset, options, errors)
+  .assumptionTables(jaspResults, dataset, options, ready)
   
   return()
   
 }
 
-.manovaComputeResults <- function(jaspResults, dataset, options, errors) {
+.manovaComputeResults <- function(jaspResults, dataset, options, ready) {
   
-  if (!is.null(errors) && errors == "No variables") return()
+  if (!ready) return()
   
   # Take results from state if possible
   if (!is.null(jaspResults[["stateManovaResults"]])) return(jaspResults[["stateManovaResults"]]$object)
@@ -118,7 +124,7 @@ Manova <- function(jaspResults, dataset, options) {
   return(results)
 }
 
-.manovaTableMain <- function(jaspResults, dataset, options, manovaResults, errors) {
+.manovaTableMain <- function(jaspResults, dataset, options, manovaResults, ready) {
   
   if (!is.null(jaspResults[["manovaContainer"]])) return()
   
@@ -136,7 +142,7 @@ Manova <- function(jaspResults, dataset, options) {
                            options$testHotellingLawley, 
                            options$testRoy)]
   
-  nameStatistic <- c(Pillai = "Trace<sub>Pillai</sub>", Wilks = "Wilk's \u039B",
+  nameStatistic <- c(Pillai = "Trace<sub>Pillai</sub>", Wilks = "Wilks' \u039B",
                      `Hotelling-Lawley` = "Trace<sub>H-L</sub>", Roy = "Largest Root")
   
   for (thisTest in whichTests) {
@@ -161,7 +167,7 @@ Manova <- function(jaspResults, dataset, options) {
     
     jaspResults[["manovaContainer"]][[thisTest]] <- manovaTable
     
-    if (!is.null(errors) && errors == "No variables")
+    if (!ready)
       next
     
 
@@ -179,7 +185,7 @@ Manova <- function(jaspResults, dataset, options) {
   }
 }
 
-.uniAnovaTables <- function(jaspResults, dataset, options, manovaResults, errors) {
+.uniAnovaTables <- function(jaspResults, dataset, options, manovaResults, ready) {
   
   if (!is.null(jaspResults[["anovaContainer"]]) || !options$includeAnovaTables) return()
   
@@ -217,14 +223,14 @@ Manova <- function(jaspResults, dataset, options) {
       anovaTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
     }
     
-    if (!is.null(errors) && errors == "No variables")
+    if (!ready)
       return()
     
     jaspResults[["anovaContainer"]][[thisVar]] <- anovaTable
     
     for (case in rownames(manovaResults[["anova"]][[thisVar]])) {
       row <- as.list(manovaResults[["anova"]][[thisVar]][case, ])
-      row["cases"] <- case
+      row["cases"] <- stringi::stri_unescape_unicode(gsub("<U\\+(....)>", "\\\\u\\1", case)) # summary() seemingly escapes unicode on windows
       row["VovkSellkeMPR"] <- if(trimws(case) == "Residuals") "" else .VovkSellkeMPR(row[["Pr(>F)"]])
       anovaTable$addRows(row, rowNames = paste0(thisVar, " - ", case))
     }
@@ -237,7 +243,7 @@ Manova <- function(jaspResults, dataset, options) {
   }
 }
 
-.boxComputation <- function(dataset, options, errors) {
+.boxComputation <- function(dataset, options) {
 
   depData <- dataset[, .v(options$dependent)]
   factorData <- as.matrix(dataset[, .v(options$fixedFactors)])
@@ -249,6 +255,7 @@ Manova <- function(jaspResults, dataset, options) {
   lev <- levels(grouping)
   dfs <- tapply(grouping, grouping, length) - 1
   
+  errors <- NULL
   if (any(dfs < p)) 
     errors <- "Too few observations to calculate statistic. Each (sub)group must have at least as many observations as there are dependent variables."
   
@@ -272,13 +279,13 @@ Manova <- function(jaspResults, dataset, options) {
   return(list(result = list(ChiSq = chiSq, df = df, p = pval), errors = errors))
 }
 
-.multivariateShapiroComputation <- function(dataset, options, errors) {
+.multivariateShapiroComputation <- function(dataset, options) {
 
   # From mvnormtest
   depData <- t(as.matrix(dataset[, .v(options$dependent)]))
-  Us <- apply(depData, 1, mean)
+  Us <- apply(depData, 1, mean, na.rm = TRUE)
   R <- depData - Us
-  
+
   tryResult <- try(expr = {
     M.1 <- solve(R %*% t(R), tol = 1e-200)
     Rmax <- diag(t(R) %*% M.1 %*% R)
@@ -287,17 +294,22 @@ Manova <- function(jaspResults, dataset, options) {
     
     result <- stats::shapiro.test(Z)
   }, silent = TRUE)
-  
-  if (grepl(tryResult[[1]], pattern = "singular")) {
-    errors <- "The design matrix is not invertible. This might be due to collinear dependent variables."
+
+  if (isTryError(tryResult)) {
     result <- NULL
+    if (grepl(tryResult[[1]], pattern = "singular"))
+      errors <- "The design matrix is not invertible. This might be due to collinear dependent variables."
+    else
+      errors <- .extractErrorMessage(tryResult)
+  } else {
+    errors <- NULL
   }
   
    
   return(list(result = result, errors = errors))
 }
 
-.assumptionTables <- function(jaspResults, dataset, options, errors) {
+.assumptionTables <- function(jaspResults, dataset, options, ready) {
   
   if (!is.null(jaspResults[["assumptionsContainer"]]) || (!options$boxMTest && !options$shapiroTest)) return()
   
@@ -308,9 +320,6 @@ Manova <- function(jaspResults, dataset, options) {
   
   if (options$boxMTest) {
     # Make Box test table
-    boxResult <- .boxComputation(dataset, options, errors)
-    boxErrors <- boxResult$errors
-    boxResult <- boxResult$result
     boxMTable <- createJaspTable(title = "Box's M-test for Homogeneity of Covariance Matrices")
     
     boxMTable$showSpecifiedColumnsOnly <- TRUE
@@ -319,19 +328,21 @@ Manova <- function(jaspResults, dataset, options) {
     boxMTable$addColumnInfo(name = "df",      title = "df",                     type = "integer")
     boxMTable$addColumnInfo(name = "p",       title = "p",                      type = "pvalue")
     
-    boxMTable$addRows(boxResult)
-    
-    if (!is.null(boxErrors))
-      boxMTable$setError(boxErrors)
-    
     jaspResults[["assumptionsContainer"]][["boxMTable"]] <- boxMTable
+    
+    if (ready) {
+      boxResult <- .boxComputation(dataset, options)
+      boxErrors <- boxResult$errors
+      boxResult <- boxResult$result
+      boxMTable$addRows(boxResult)
+    
+      if (!is.null(boxErrors))
+        boxMTable$setError(boxErrors)
+    }
   }
   
   if (options$shapiroTest) {
     # Make multivariate normal Shaprio table
-    shapiroResult <- .multivariateShapiroComputation(dataset, options, errors)
-    shapiroErrors <- shapiroResult$errors
-    shapiroResult <- shapiroResult$result
     shapiroTable <- createJaspTable(title = "Shapiro-Wilk Test for Multivariate Normality")
     
     shapiroTable$showSpecifiedColumnsOnly <- TRUE
@@ -339,22 +350,24 @@ Manova <- function(jaspResults, dataset, options) {
     shapiroTable$addColumnInfo(name = "W", title = "Shapiro-Wilk", type = "number")
     shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
     
-    shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
-    
-    if (!is.null(shapiroErrors)) 
-      shapiroTable$setError(shapiroErrors)
-    
     jaspResults[["assumptionsContainer"]][["shapiroTable"]] <- shapiroTable
+    
+    if (ready) {
+      shapiroResult <- .multivariateShapiroComputation(dataset, options)
+      shapiroErrors <- shapiroResult$errors
+      shapiroResult <- shapiroResult$result
+      shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
+      
+      if (!is.null(shapiroErrors)) 
+        shapiroTable$setError(shapiroErrors)
+    }
   }
 }
 
 
-.manovaCheckErrors <- function(dataset, options) {
-  
-  # Check if results can be computed
-  if ((length(options$dependent) < 2) || length(options$fixedFactors) == 0 || length(options$modelTerms) == 0)
-    return("No variables")
-  
+.manovaCheckErrors <- function(dataset, options, ready) {
+  if (!ready) return()
+
   # Error check
   for(i in length(options$modelTerms):1) {
     .hasErrors(

@@ -30,14 +30,13 @@
 #include "osf/onlinedatamanager.h"
 #include "log.h"
 
-
 using namespace std;
 
 AsyncLoader::AsyncLoader(QObject *parent) :
 	QObject(parent)
 { 
-	connect(this, &AsyncLoader::beginLoad, this, &AsyncLoader::loadTask);
-	connect(this, &AsyncLoader::beginSave, this, &AsyncLoader::saveTask);
+	connect(this, &AsyncLoader::beginLoad, this, &AsyncLoader::loadTask, Qt::QueuedConnection);
+	connect(this, &AsyncLoader::beginSave, this, &AsyncLoader::saveTask, Qt::QueuedConnection);
 }
 
 void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
@@ -86,6 +85,8 @@ void AsyncLoader::free(DataSet *dataSet)
 
 void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 {
+	boost::signals2::connection co = package->checkDoSync.connect(	boost::bind(&AsyncLoader::checkDoSyncSlot, this, _1));
+
 	_currentEvent = event;
 	_currentPackage = package;
 
@@ -93,6 +94,8 @@ void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
 	else
 		this->loadPackage("asyncloader");
+
+	co.disconnect();
 }
 
 void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
@@ -157,20 +160,25 @@ void AsyncLoader::progressHandler(string status, int progress)
 	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
 }
 
+void AsyncLoader::checkDoSyncSlot(bool &check)
+{
+	emit this->checkDoSyncSig(check);
+}
+
 void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
 {
 	if (_odm != nullptr)
 	{
-		disconnect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
-		disconnect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
+		disconnect(_odm, QOverload<QString>::of(&OnlineDataManager::uploadFileFinished),	this, &AsyncLoader::uploadFileFinished);
+		disconnect(_odm, QOverload<QString>::of(&OnlineDataManager::downloadFileFinished),	this, &AsyncLoader::loadPackage);
 	}
 
 	_odm = odm;
 
 	if (_odm != nullptr)
 	{
-		connect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
-		connect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
+		connect(_odm, QOverload<QString>::of(&OnlineDataManager::uploadFileFinished),	this, &AsyncLoader::uploadFileFinished, Qt::QueuedConnection);
+		connect(_odm, QOverload<QString>::of(&OnlineDataManager::downloadFileFinished), this, &AsyncLoader::loadPackage,		Qt::QueuedConnection);
 	}
 }
 
@@ -183,22 +191,20 @@ void AsyncLoader::loadPackage(QString id)
 
 		try
 		{
+			JASPTIMER_RESUME(AsyncLoader::loadPackage);
 			Log::log()  << "AsyncLoader::loadPackage(" << id.toStdString() << ")" << std::endl;
 			string path = fq(_currentEvent->path());
 			string extension = "";
 
-			if (_currentEvent->isOnlineNode())
+			if (_currentEvent->isOnlineNode()) //Find file extension in the OSF
 			{
-				//Find file extension in the OSF
-				extension=".jasp"; //default
-				QString qpath(path.c_str());
-				int slashPos = qpath.lastIndexOf("/");
-				int dotPos = qpath.lastIndexOf('.');
+						extension	= ".jasp"; //default
+				QString	qpath		= path.c_str();
+				int		slashPos	= qpath.lastIndexOf("/"),
+						dotPos		= qpath.lastIndexOf('.');
+
 				if (dotPos != -1 && dotPos > slashPos)
-				{
-					QString ext = qpath.mid(dotPos);
-					extension=ext.toStdString();
-				}
+					extension = qpath.mid(dotPos).toStdString();
 
 				dataNode = _odm->getActionDataNode(id);
 
@@ -209,23 +215,16 @@ void AsyncLoader::loadPackage(QString id)
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
 			}
 
+			extension = _loader.getExtension(path, extension); //Because it might still be ""...
+
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
-			{
-				_loader.syncPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-			}
-			else
-			{
-				//loadPackage argument extension determines type
-				_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-			}
+					_loader.syncPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+			else	_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
-			if (dataNode != nullptr)
-			{
-				if (calcMD5 != dataNode->md5().toLower())
-					throw runtime_error("The securtiy check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
-			}
+			if (dataNode != nullptr && calcMD5 != dataNode->md5().toLower())
+				throw runtime_error("The security check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 
 			_currentPackage->setInitialMD5(fq(calcMD5));
 
@@ -249,7 +248,7 @@ void AsyncLoader::loadPackage(QString id)
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
-		catch (runtime_error e)
+		catch (runtime_error & e)
 		{
 			Log::log() << "Runtime Exception in loadPackage: " << e.what() << std::endl;
 
@@ -257,7 +256,7 @@ void AsyncLoader::loadPackage(QString id)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
-		catch (exception e)
+		catch (exception & e)
 		{
 			Log::log() << "Exception in loadPackage: " << e.what() << std::endl;
 
@@ -265,6 +264,8 @@ void AsyncLoader::loadPackage(QString id)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
+
+		JASPTIMER_STOP(AsyncLoader::loadPackage);
 	}
 }
 

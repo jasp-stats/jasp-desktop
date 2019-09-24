@@ -141,7 +141,98 @@ Take note that the column titles in the data.frame returned by `.readDataSetToEn
 Hence, whenever you wish to match an option to a data.frame column you must encode or decode one of the two. In addition to encoding strings, we also provide `.vf()` and `.unvf()` to base64 encode/decode formulas.
 
 ## Step 4 - Checking for Errors
-If we have the minimum input our analysis requires, it is important to check for errors that will prevent the results from being computed (e.g., a dependent variable that has no variance). The error checks that should be conducted depend on the analysis. For the Binomial Test, we need to make sure that there is a least one factor level for each variable and that we have at least one observation for each level of the variables. Most common error checks are implemented in the convenience function `.hasErrors()`:
+If we have the minimum input our analysis requires, it is important to check for errors that could prevent the results from being computed (e.g., a dependent variable that has no variance). The error checks that should be conducted depend on the analysis. Most common error checks are implemented in the convenience function `.hasErrors()`. The arguments you can supply are as follows (\* denotes required arguments):
+
+- `dataset`\*: the dataset you obtained in the previous step
+- `type`: vector of strings containing names of the checks -- see below.
+- `message`: `short` or `default` [default: `default`], should only the first failure of a check be reported in footnote style (`short`), or should every check failure be mentioned in multi-line form.
+- `exitAnalysisIfErrors`: boolean [default: `FALSE`], should the entire analysis be aborted when a failing check is encountered (`TRUE`), or should the analysis continue running (`FALSE`).
+- `custom`: either a function or a named list of functions. If you wish to check for something that is not included you can include your own checks here. If a function returns a character string `.hasErrors` assumes it is an error. If a function returns `NULL` then no error will be reported. E.g., `function() { if (options$exProbVar != "" && options$counts == "") return("Expected counts not supported without observed counts.") }`
+- `...`: arguments passed on to each individual error check -- see below.
+
+`.hasErrors` returns its check results in list form (unless you specify `exitAnalysisIfErrors=TRUE`). Each failed check will be included in the list like `list(error-check-name1=c(variables-that-failed), error-check-name2=c(variables-that-failed)`).
+
+Each error check can be further customized by supplying check-specific arguments. For `.hasErrors` to understand where each argument has to go you need to prefix them with the checks name. So if check `aCheck` has argument `anArg` that you wish to supply with `value` then you call `aCheck.anArg = value`. If multiple checks have the same argument then you can also specify `all.anArg = value`; the `all.` prefix supplies it to all checks with argument `anArg`. Note that for most checks you can specify the `target` variable they must check, e.g., `aCheck.target=options$dependent`, you can (1) specify these targets individually per check, or (2) use `all.target=options$dependent` or (3) omit the target to automatically check all columns in the provided dataset. The check names and arguments are as follows (\* denotes required arguments):
+
+1. `infinity`: Check for infinity in a variable. 
+- `target`: string vector indicating the target variables.
+- `grouping`: string vector indicating the grouping variables.
+- `groupingLevel`: vector indicating the level of each of the grouping variables.
+
+2. `negativeValues`: Check for negative values in a variable. 
+- `target`: string vector indicating the target variables.
+- `grouping`: string vector indicating the grouping variables.
+- `groupingLevel`: vector indicating the level of each of the grouping variables.
+
+3. `missingValues`: Check for missing values in a variable. 
+- `target`: string vector indicating the target variables.
+- `grouping`: string vector indicating the grouping variables.
+- `groupingLevel`: vector indicating the level of each of the grouping variables.
+
+4. `limits`: Check if a variable is between certain limits.
+- `target`: string vector indicating the target variables.
+- `min`:  number [default: `-Inf`] indicating minimum allowed (inclusive).
+- `max`: number [default: `Inf`] indicating maximum allowed (inclusive).
+
+5. `observations`: Check the number of observations in a variable.
+- `target`: string vector indicating the target variable.
+- `grouping`: string vector indicating the grouping variables.
+- `groupingLevel`: vector indicating the level of each of the grouping variables.
+- `amount`\*: string vector indicating the amount to check for (e.g. '< 2', or '!= 2').
+
+6. `observationsPairwise`: Check the number of observations per pair.
+- `target`: string vector indicating a target pair.
+- `grouping`: string vector indicating the grouping variables.
+- `groupingLevel`: vector indicating the level of each of the grouping variables.
+- `amount`\*: string vector indicating the amount to check for (e.g. '< 2', or '!= 2').
+
+7. `factorLevels`: Check if there are the required amount of levels in factors.
+- `target`: string vector indicating the target variables.
+- `amount`\*: string vector indicating the amount to check for (e.g. '< 2', or '!= 2').
+
+8. `variance`: Check for a certain variance in a variable.
+- `target`: string vector indicating the target variables.
+- `grouping`: string vector indicating the grouping variables.
+- `groupingLevel`: vector indicating the level of each of the grouping variables.
+- `equalTo`: single number [default: `0`].
+
+9. `varCovMatrix`: Check if data is square, symmetrical and/or positive-definite
+- `nrow`: boolean [default: `TRUE`], specifying if dataset must be square.
+- `symm` boolean [default: `TRUE`], specifying if dataset must be symmetrical.
+- `posdef` boolean [default: `TRUE`], specifying if dataset must be positive-definite.
+
+10. `varCovData`: Check if the matrix returned by specified function is positive definite. 
+- `target`: string vector indicating the target variables.
+- `grouping`: string vector indicating the grouping variables.
+- `corFun`: a function [default: `cor`] that calculates a correlation matrix or covariance matrix (e.g., `cor` or `cov` are recommended)
+- `corArgs`: list with additional arguments to `corFun`, i.e. `use = "pairwise"`.
+
+11. `modelInteractions`: In case of interactions, check whether all main effects and lower-order interaction terms are in the model.
+- `modelTerms`\*: a list of models terms, generated by specifying `listViewType: "Interaction"` in an AssignedVariablesList. 
+
+Some examples:
+
+<details>
+	<summary>Code</summary>
+  
+  ```r
+    # Error check: Weird data for dependent variable in each level of the grouping variable
+    .hasErrors(dataset, type = c('observations', 'variance', 'infinity'),
+              all.target = options$variables, all.grouping = options$groupingVariable,
+              observations.amount = c('< 3'), exitAnalysisIfErrors = TRUE)
+  ```
+  
+  ```r
+    # Error check: Check for non-positive definite variance-covariance matrix
+    covnwt <- stats::cov
+    .hasErrors(dataset, type = 'varCovData',
+              varCovData.target = c(options$dependent.variable, options$main.effects.numeric),
+              varCovData.corFun = covnwt, exitAnalysisIfErrors = TRUE)
+  ```
+
+</details>
+
+For the Binomial Test, we need to make sure that there is a least one factor level for each variable and that we have at least one observation for each level of the variables. 
 
 <p><details>
 	<summary>Code</summary>
@@ -174,15 +265,9 @@ Where `.binomCheckErrors()` looks like:
 
     # Error check 2: 0 observations for a level of a variable
     for (variable in options$variables) {
-
-      column <- dataset[[.v(variable)]]
-      data   <- column[!is.na(column)]
-      levels <- levels(data)
-  
-      for (level in levels) {
-        .hasErrors(dataset = data[data == level], type = "observations",
-        observations.amount  = "< 1", exitAnalysisIfErrors = TRUE)
-      }
+        .hasErrors(dataset = dataset, type = "observations",
+        observations.target = variable, observations.amount  = "< 1", 
+        observations.grouping = variable, exitAnalysisIfErrors = TRUE)
       
     }
     
@@ -190,32 +275,6 @@ Where `.binomCheckErrors()` looks like:
   ```
   
 </details></p>
-
-Other common error checks include checking for weird data (too few observations, infinite values, variance is zero), and for a non-positive definite covariance matrix. The argument `exitAnalysisIfErrors` can be used to ensure that if any errors are encountered, JASP will stop the analysis from executing further.
-
-<details>
-	<summary>Code</summary>
-  
-  ```r
-    # Error check: Weird data for dependent variable in each level of the grouping variable
-    .hasErrors(dataset, type = c('observations', 'variance', 'infinity'),
-              all.target = options$variables, all.grouping = options$groupingVariable,
-              observations.amount = c('< 3'), exitAnalysisIfErrors = TRUE)
-  ```
-</details>
-
-<details>
-	<summary>Code</summary>
-  
-  ```r
-  # Error check: Check for non-positive definite variance-covariance matrix
-  covnwt <- stats::cov
-  .hasErrors(dataset, type = 'varCovData',
-             varCovData.target = c(options$dependent.variable, options$main.effects.numeric),
-             varCovData.corFun = covnwt, exitAnalysisIfErrors = TRUE)
-  ```
-
-</details>
 
 ## Step 5 - Creating Output Tables and Plots
 It is now time to think about our output. What tables and plots do we want to display? In most analyses you will have one main output table that is always shown and then a number of tables and plots that are optional. As a table is almost always shown we will first start explaining how to create it. 

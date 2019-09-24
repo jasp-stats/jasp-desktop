@@ -36,16 +36,22 @@ using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
 
-const char* Utils::getFileTypeString(const Utils::FileType &fileType) {
-	switch (fileType) {
-        case Utils::csv: return "csv";
-		case Utils::txt: return "txt";
-		case Utils::sav: return "sav";
-		case Utils::ods: return "ods";
-		case Utils::jasp: return "jasp";
-        case Utils::html: return "html";
-        case Utils::pdf: return "pdf";
-		default: return "";
+const char* Utils::getFileTypeString(const Utils::FileType &fileType)
+{
+	switch (fileType)
+	{
+	case Utils::csv:		return "csv";
+	case Utils::txt:		return "txt";
+	case Utils::sav:		return "sav";
+	case Utils::ods:		return "ods";
+	case Utils::jasp:		return "jasp";
+	case Utils::html:		return "html";
+	case Utils::pdf:		return "pdf";
+	case Utils::sas7bdat:	return "sas7bdat";
+	case Utils::sas7bcat:	return "sas7bcat";
+	case Utils::por:		return "por";
+	case Utils::xpt:		return "xpt";
+	default: return "";
 	}
 }
 
@@ -300,7 +306,16 @@ bool Utils::getIntValue(const double &value, int &intValue)
 	bool success = true;
 	try
 	{
-		intValue = boost::lexical_cast<int>(value);
+		double intPart;
+		success = modf(value, &intPart) == 0.0;
+		if (success)
+		{
+			if (intPart <=  INT_MAX && intPart >= INT_MIN)
+				intValue = int(intPart);
+			else
+				success = false;
+		}
+		//intValue = boost::lexical_cast<int>(value);
 	}
 	catch (...)
 	{

@@ -201,16 +201,69 @@ void jaspTable::addRows(Rcpp::RObject newData, Rcpp::CharacterVector rowNames)
 	else if(Rcpp::is<Rcpp::StringMatrix>(newData))		addRowsFromMatrix<STRSXP>((Rcpp::StringMatrix)		newData, rowNames);
 	else if(Rcpp::is<Rcpp::CharacterMatrix>(newData))	addRowsFromMatrix<STRSXP>((Rcpp::CharacterMatrix)	newData, rowNames);
 
-	else if(Rcpp::is<Rcpp::NumericVector>(newData))		addRowFromVector<REALSXP>((Rcpp::NumericVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::LogicalVector>(newData))		addRowFromVector<LGLSXP>((Rcpp::LogicalVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::IntegerVector>(newData))		addRowFromVector<INTSXP>((Rcpp::IntegerVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::StringVector>(newData))		addRowFromVector<STRSXP>((Rcpp::StringVector)		newData, rowNames);
-	else if(Rcpp::is<Rcpp::CharacterVector>(newData))	addRowFromVector<STRSXP>((Rcpp::CharacterVector)	newData, rowNames);
-
 	else
-		Rf_error("Cannot add this kind of data as a row to a jaspTable, it is not understood. Try a list, dataframe, vector or matrix instead.");
+		Rf_error("Cannot add this kind of data as rows to a jaspTable, it is not understood. Try a list, dataframe or matrix instead.");
 
 	notifyParentOfChanges();
+}
+
+void jaspTable::addRow(Rcpp::RObject newData, Rcpp::CharacterVector rowName)
+{
+	if(newData.isNULL())
+		return;
+
+	if		(Rcpp::is<Rcpp::List>(newData))				addRowFromList((Rcpp::List)							newData, rowName);
+
+	else if	(Rcpp::is<Rcpp::NumericVector>(newData))	addRowFromVector<REALSXP>((Rcpp::NumericVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::LogicalVector>(newData))	addRowFromVector<LGLSXP>((Rcpp::LogicalVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::IntegerVector>(newData))	addRowFromVector<INTSXP>((Rcpp::IntegerVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::StringVector>(newData))		addRowFromVector<STRSXP>((Rcpp::StringVector)		newData, rowName);
+	else if	(Rcpp::is<Rcpp::CharacterVector>(newData))	addRowFromVector<STRSXP>((Rcpp::CharacterVector)	newData, rowName);
+
+	else
+		Rf_error("Cannot add this kind of data as a row to a jaspTable, it is not understood. Try a list or vector instead.");
+
+	notifyParentOfChanges();
+}
+
+void jaspTable::addRowFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames)
+{
+	Rcpp::List newRowList;
+	auto shield = new Rcpp::Shield<Rcpp::List>(newRowList);
+	newRowList.push_back(newData);
+	addRowsFromList(newRowList, newRowNames);
+	delete shield;
+}
+
+void jaspTable::addRowsFromList(Rcpp::List newData, Rcpp::CharacterVector newRowNames)
+{
+	int equalizedColumnsLength		= equalizeColumnsLengths(),
+		previouslyAddedUnnamedCols	= 0;
+
+	std::vector<std::string> localRowNames = extractElementOrColumnNames(newData);
+
+	for(size_t row=0; row<localRowNames.size(); row++)
+		_rowNames[row + equalizedColumnsLength] = localRowNames[row];
+
+	for(size_t row=0; row<newRowNames.size(); row++)
+		_rowNames[row + equalizedColumnsLength] = newRowNames[row];
+
+	for(size_t row=0; row<newData.size(); row++)
+	{
+		Rcpp::RObject rij = (Rcpp::RObject)newData[row];
+
+		std::vector<std::string> localColNames;
+
+		if(Rcpp::is<Rcpp::List>(rij))
+			 localColNames = extractElementOrColumnNames<Rcpp::List>(Rcpp::as<Rcpp::List>(rij));
+
+		auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
+
+		for(size_t col=0; col<jsonRij.size(); col++)
+			previouslyAddedUnnamedCols	= pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
+
+		equalizedColumnsLength = equalizeColumnsLengths();
+	}
 }
 
 void jaspTable::addColumnsFromList(Rcpp::List newData)
@@ -271,33 +324,26 @@ int jaspTable::equalizeColumnsLengths()
 	return maximumFoundColumnLength;
 }
 
-Json::Value jaspTable::getCell(size_t col, size_t row)
+Json::Value jaspTable::getCell(size_t col, size_t row, size_t maxCol, size_t maxRow) const
 {
 	if(col < _data.size() && row < _data[col].size())
 		return _data[col][row];
 
-	bool amIExpected = col < _expectedColumnCount && row < _expectedRowCount;
-	return amIExpected ? Json::Value(".") : Json::nullValue;
+	bool	amIExpected	= col < maxCol && row < maxRow;
+	return	amIExpected ? Json::Value(".") : Json::nullValue;
 }
 
-std::string	jaspTable::getCellFormatted(size_t col, size_t row)
+std::string	jaspTable::getCellFormatted(size_t col, size_t row, size_t maxCol, size_t maxRow)
 {
-	Json::Value val(getCell(col, row));
+	Json::Value val(getCell(col, row, maxCol, maxRow));
 
 	std::string format = "";
-	if(_colFormats.containsField(getColName(col)))
-		format = _colFormats[getColName(col)];
-	else if(_colFormats.rowCount() > col)
-		format = _colFormats[col];
+	if(_colFormats.containsField(getColName(col)))	format = _colFormats[getColName(col)];
+	else if(_colFormats.rowCount() > col)			format = _colFormats[col];
 
-	if(val.isNull())
-		return "";
-
-	if(val.isString())
-		return val.asString();
-
-	if(val.isBool())
-		return val.asBool() ? "true" : "false";
+	if(val.isNull())	return "";
+	if(val.isString())	return val.asString();
+	if(val.isBool())	return val.asBool() ? "true" : "false";
 
 	if(format == "")
 	{
@@ -382,22 +428,31 @@ std::string	jaspTable::getCellFormatted(size_t col, size_t row)
 	return out.str();
 }
 
-std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths, bool onlySpecifiedColumns)
+void jaspTable::calculateMaxColRow(size_t & maxCol, size_t & maxRow) const
 {
-	size_t	maxRow = _expectedRowCount,
-			maxCol = 0;
+	maxRow = _expectedRowCount;
+	maxCol = 0;
 
-	for(size_t col=0; col<_data.size(); col++)
+	for(size_t col=0; col<std::max(_colNames.rowCount(), _data.size()); col++)
 	{
-		if(!onlySpecifiedColumns || columnSpecified(col))
+		if(!_showSpecifiedColumnsOnly || columnSpecified(col))
 			maxCol++;
 
-		maxRow = std::max(maxRow, _data[col].size());
+		if(col < _data.size())
+			maxRow = std::max(maxRow, _data[col].size());
 	}
+
+	maxCol = std::max(maxCol, _expectedColumnCount);
+}
+
+std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths)
+{
+	size_t	maxRow, maxCol;
+	calculateMaxColRow(maxCol, maxRow);
 
 	size_t colsSpecified = maxCol;
 
-	if(!onlySpecifiedColumns && _expectedColumnCount > maxCol)
+	if(!_showSpecifiedColumnsOnly && _expectedColumnCount > maxCol)
 		maxCol = _expectedColumnCount;
 
 	std::vector<std::vector<std::string>> uit;
@@ -406,12 +461,12 @@ std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool no
 	size_t colDst = 0;
 	for(size_t colSrc=0; colSrc< std::max(_data.size(), _expectedColumnCount) && colDst<maxCol; colSrc++)
 	{
-		if(!onlySpecifiedColumns || columnSpecified(colSrc) || colsSpecified < _expectedColumnCount)
+		if(!_showSpecifiedColumnsOnly || columnSpecified(colSrc) || colsSpecified < _expectedColumnCount)
 		{
 			uit[colDst].resize(maxRow);
 
 			for(size_t row=0; row<maxRow; row++)
-				uit[colDst][row] = getCellFormatted(colSrc, row);
+				uit[colDst][row] = getCellFormatted(colSrc, row, maxCol, maxRow);
 
 			colDst++;
 		}
@@ -716,7 +771,7 @@ std::string jaspTable::dataToString(std::string prefix)
 {
 	std::stringstream out;
 
-	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(!_transposeTable, _transposeTable, _showSpecifiedColumnsOnly);
+	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(!_transposeTable, _transposeTable);
 	std::vector<std::string>				colNames = getDisplayableColTitles(true, _showSpecifiedColumnsOnly),
 											rowNames = getDisplayableRowTitles();
 
@@ -735,7 +790,7 @@ std::string jaspTable::dataToString(std::string prefix)
 		else				rectangularDataWithNamesToString(out, prefix, transposeRectangularVector(vierkant),	rowNames, colNames,	{},						getOvertitlesMap());
 	}
 
-	Json::Value footnotes = _footnotes.convertToJSON();
+	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 	if(footnotes.size() > 0)
 	{
 		out << "\n" << prefix << "footnotes:   \n";
@@ -753,7 +808,7 @@ std::string jaspTable::toHtml()
 {
 	std::stringstream out;
 
-	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(false, false, _showSpecifiedColumnsOnly);
+	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(false, false);
 	std::vector<std::string>				colNames = getDisplayableColTitles(false, _showSpecifiedColumnsOnly),
 											rowNames = getDisplayableRowTitles(false);
 	out		<< "<div class=\"status " << _status << " jaspTable\">\n"
@@ -772,7 +827,7 @@ std::string jaspTable::toHtml()
 		else				rectangularDataWithNamesToHtml(out, transposeRectangularVector(vierkant),	rowNames, colNames,	{},						getOvertitlesMap());
 	}
 
-	Json::Value footnotes = _footnotes.convertToJSON();
+	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 	if(footnotes.size() > 0)
 	{
 		out << "<h4>footnotes</h4>" "\n" "<ul>";
@@ -881,6 +936,74 @@ Json::Value footnotes::convertToJSON() const
 	return notes;
 }
 
+Json::Value	footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames) const
+{
+	std::vector<Json::Value> notesToOrder;
+
+	for (const auto & keyval : _data)
+	{
+		Json::Value note(Json::objectValue);
+
+		tableFields const & fields = keyval.second;
+
+		note["text"]	= keyval.first;
+		note["symbol"]	= fields.symbol;
+		note["rows"]	= fields.rowsToJSON();
+		note["cols"]	= fields.colsToJSON();
+
+		int myOrder = 0;
+
+		if(!(note["rows"].isNull() && note["cols"].isNull()))
+		{
+
+			const int maxColOrder = colNames.size() * 2;
+			const int maxRowOrder = rowNames.size() * 2;
+
+			auto calculateOrder = [](std::string fieldName, Json::Value & note, const int maxVal, std::map<std::string, size_t> nameToIndex)
+			{
+				int myOrdering = maxVal;
+
+				if(!note[fieldName].isNull())
+				{
+					for(const Json::Value & val : note[fieldName])
+						if(nameToIndex.count(val.asString()) > 0)
+							myOrdering = std::min(static_cast<int>(nameToIndex[val.asString()]), myOrdering);
+				}
+
+				if(myOrdering == maxVal)
+					myOrdering = -1;
+
+				return myOrdering;
+			};
+
+			int		myColOrdering = calculateOrder("cols", note, maxColOrder, colNames),
+					myRowOrdering = calculateOrder("rows", note, maxRowOrder, rowNames);
+
+			if(myRowOrdering == -1)
+			{
+				if(myColOrdering != -1)
+					myOrder = myColOrdering + maxColOrder;
+			}
+			else
+			{
+				myOrder = myRowOrdering * maxColOrder;
+
+				if(myColOrdering != -1)
+					myOrder += myColOrdering;
+
+				myOrder += maxColOrder;
+			}
+		}
+
+		note["myOrder"] = myOrder;
+		notesToOrder.push_back(note);
+	}
+
+	std::sort(notesToOrder.begin(), notesToOrder.end(), [](Json::Value a, Json::Value b) { return a["myOrder"].asInt() < b["myOrder"].asInt(); });
+
+	return jaspJson::VectorJson_to_ArrayJson(notesToOrder);
+}
+
 void footnotes::convertFromJSON_SetFields(Json::Value footnotes)
 {
 	if (footnotes.isArray())
@@ -964,9 +1087,9 @@ void jaspTable::combineCells(Rcpp::map_named_args & named_args)
 
 }
 */
-Json::Value jaspTable::dataEntry()
+Json::Value jaspTable::dataEntry(std::string & errorMessage) const
 {
-	Json::Value dataJson(jaspObject::dataEntry());
+	Json::Value dataJson(jaspObject::dataEntry(errorMessage));
 
 	dataJson["title"]				= _title;
 
@@ -977,20 +1100,10 @@ Json::Value jaspTable::dataEntry()
 	dataJson["casesAcrossColumns"]	= _transposeTable;
 	dataJson["overTitle"]			= _transposeWithOvertitle;
 
-	if(_error)
-	{
-		dataJson["status"]                  = "error";
-		dataJson["error"]					= Json::objectValue;
-		dataJson["error"]["type"]			= "badData";
-		dataJson["error"]["errorMessage"]	= _errorMessage;
-	}
-	else 
-	{
-		dataJson["status"]                  = _status;
-	}
+	dataJson["status"]				= _error ? "error" : _status;
 
-	//We do this so that any unset symbols will be filled in by the javascriptside of things
-	Json::Value footnotesSymbols	= _footnotes.convertToJSON();
+	//We do this so that any unset symbols will be filled in by the javascriptside of things (symbolCounter stuff)
+	Json::Value footnotesSymbols	= _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 	int symbolCounter				= 0;
 
 	for(int i=0; i<footnotesSymbols.size(); i++)
@@ -999,19 +1112,16 @@ Json::Value jaspTable::dataEntry()
 
 	dataJson["footnotes"]			= footnotesSymbols;
 
-
 	return dataJson;
 }
 
-
-
-Json::Value	jaspTable::schemaJson()
+Json::Value	jaspTable::schemaJson() const
 {
     Json::Value schema(Json::objectValue);
 	Json::Value fields(Json::arrayValue);
 
 	std::map<std::string, std::vector<int>> footnotesPerCol;
-	Json::Value footnotes = _footnotes.convertToJSON();
+	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 	for(Json::Value::UInt i=0; i<footnotes.size(); i++)
 	{
 		const Json::Value & note = footnotes[i];
@@ -1029,7 +1139,7 @@ Json::Value	jaspTable::schemaJson()
 		Json::Value field(Json::objectValue);
 
 		std::string colName		= getColName(col);
-		std::string colTitle	= _colTitles.containsField(colName) ? _colTitles[colName] : (_colTitles[col] != "" ? _colTitles[col] : colName);
+		std::string colTitle	= _colTitles.containsField(colName)  ? _colTitles[colName]  : (_colTitles[col]  != "" ? _colTitles[col]  : colName);
 		std::string colFormat	= _colFormats.containsField(colName) ? _colFormats[colName] : (_colFormats[col] != "" ? _colFormats[col] : "");
 
 		field["name"]	= colName;
@@ -1062,12 +1172,21 @@ Json::Value	jaspTable::schemaJson()
     return schema;
 }
 
-Json::Value	jaspTable::rowsJson()
+bool jaspTable::isSpecialColumn(size_t col) const
+{
+	if(_colNames[col] == "") return false;
+
+	return _colNames[col] == ".isNewGroup" || _colNames[col] == ".footnotes";
+}
+
+
+Json::Value	jaspTable::rowsJson() const
 {
 	Json::Value rows(Json::arrayValue);
 
 	std::map<std::string, std::map<std::string, std::vector<int>>> footnotesPerRowCol;
-	Json::Value footnotes = _footnotes.convertToJSON();
+	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
+
 	for(Json::Value::UInt i=0; i<footnotes.size(); i++)
 	{
 		const Json::Value & note = footnotes[i];
@@ -1085,22 +1204,28 @@ Json::Value	jaspTable::rowsJson()
 		}
 	}
 
+	size_t	maxRow, maxCol;
+	calculateMaxColRow(maxCol, maxRow);
+
 	bool keepGoing = true;
 	for(size_t row=0; keepGoing; row++)
 	{
 		Json::Value aRow(Json::objectValue);
 		bool aColumnKeepsGoing = false;
 
-		for(size_t col=0; col<_data.size(); col++)
+		for(size_t col=0; col<std::max(_data.size(), maxCol); col++)
 		{
-			if(_data[col].size() > row)
+			bool hasDataHere = col < _data.size() && row < _data[col].size();
+
+			if(hasDataHere)
 				aColumnKeepsGoing = true;
 
-			aRow[getColName(col)] = getCell(col, row);
+			if(
+					(hasDataHere || !isSpecialColumn(col)) &&										//Either it is a normal entry, which can lack data but should still be included. Or it is a specialColumn without data and it shouldn't be included
+					(!_showSpecifiedColumnsOnly || columnSpecified(col) || isSpecialColumn(col))	//if not _showSpecifiedColumnsOnly then were done. Otherwise we need to check whether it is either specified or a specialColumn (with data)
+			)
+				aRow[getColName(col)] = getCell(col, row, maxCol, maxRow); //The add the data to the row!
 		}
-
-		for(size_t col=_data.size(); col<_expectedColumnCount; col++)
-			aRow[getColName(col)] = ".";
 
 		std::string rowName = getRowName(row);
 		if(footnotesPerRowCol.count(rowName) > 0)
@@ -1128,7 +1253,7 @@ Json::Value	jaspTable::rowsJson()
 	return rows;
 }
 
-std::string jaspTable::deriveColumnType(int col)
+std::string jaspTable::deriveColumnType(int col) const
 {
 	if(col >= _data.size())
 		return "null";
@@ -1178,7 +1303,7 @@ std::string jaspTable::deriveColumnType(int col)
 	}
 }
 
-std::string jaspTable::getColType(size_t col)
+std::string jaspTable::getColType(size_t col) const
 {
 	std::string colName = getColName(col);
 
@@ -1206,12 +1331,11 @@ void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::ROb
 }
 
 
-Json::Value jaspTable::convertToJSON()
+Json::Value jaspTable::convertToJSON() const
 {
 	Json::Value obj		= jaspObject::convertToJSON();
 
 	obj["status"]					= _status;
-	obj["errorMessage"]				= _errorMessage;
 	obj["transposeTable"]			= _transposeTable;
 	obj["transposeWithOvertitle"]	= _transposeWithOvertitle;
 	obj["showSpecifiedColumnsOnly"]	= _showSpecifiedColumnsOnly;
@@ -1261,8 +1385,6 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	jaspObject::convertFromJSON_SetFields(in);
 
 	_status						= in.get("status",						"null").asString();
-	_error						= in.get("error",						"false").asBool();
-	_errorMessage				= in.get("errorMessage",				"null").asString();
 	_transposeTable				= in.get("transposeTable",				false).asBool();
 	_transposeWithOvertitle		= in.get("transposeWithOvertitle",		false).asBool();
 	_showSpecifiedColumnsOnly	= in.get("showSpecifiedColumnsOnly",	false).asBool();
@@ -1300,4 +1422,29 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	 _specifiedColumns.clear();
 	for(Json::Value & specifiedColumnName : in.get("specifiedColumns", Json::arrayValue))
 		_specifiedColumns.insert(specifiedColumnName.asString());
+}
+
+std::map<std::string, size_t> jaspTable::mapColNamesToIndices() const
+{
+	std::map<std::string, size_t> out;
+
+	for(size_t i=0; i< _data.size(); i++)
+		out[getColName(i)] = i;
+
+	return out;
+}
+
+std::map<std::string, size_t> jaspTable::mapRowNamesToIndices() const
+{
+	std::map<std::string, size_t> out;
+
+	size_t maxRowCount = 0;
+
+	for(size_t i=0; i< _data.size(); i++)
+		maxRowCount = std::max(maxRowCount, _data[i].size());
+
+	for(size_t i=0; i<maxRowCount; i++)
+		out[getRowName(i)] = i;
+
+	return out;
 }

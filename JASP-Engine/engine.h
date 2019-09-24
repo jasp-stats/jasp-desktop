@@ -41,9 +41,10 @@ public:
 	void sendString(std::string message) { _channel->send(message); }
 
 	typedef engineAnalysisStatus Status;
-	Status getStatus() { return _analysisStatus; }
+	Status getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
+	int  getColumnType(const std::string & columnName) { return !isColumnNameOk(columnName) ? Column::ColumnTypeUnknown : provideDataSet()->column(columnName).columnType(); }
 	//return true if changed:
 	bool setColumnDataAsScale(		const std::string & columnName, const	std::vector<double>			& scalarData)												{	if(!isColumnNameOk(columnName)) return false; return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
 	bool setColumnDataAsOrdinal(	const std::string & columnName,			std::vector<int>			& ordinalData, const std::map<int, std::string> & levels)	{	if(!isColumnNameOk(columnName)) return false; return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
@@ -70,7 +71,7 @@ private: // Methods:
 	void runAnalysis();
 	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	Column::ColumnType computeColumnType);
 	void runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId);
-	void runRCode(			const std::string & rCode,				int rCodeRequestId);
+	void runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed);
 
 
 	void stopEngine();

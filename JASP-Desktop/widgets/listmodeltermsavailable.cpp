@@ -21,71 +21,94 @@
 #include "../analysis/analysisform.h"
 #include <QQmlProperty>
 
-ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
-	: ListModelAvailableInterface(listView)
+ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView, bool mixedModelTerms)
+	: ListModelAvailableInterface(listView, mixedModelTerms)
 {
 }
 
-void ListModelTermsAvailable::initTerms(const Terms &terms)
+void ListModelTermsAvailable::sortItems(SortType sortType)
 {	
-	beginResetModel();
-
-	Terms suggested;
-	Terms allowed;
-	Terms forbidden;
-
-	for (const Term &term : terms)
+	if (sortType == Sortable::None)
 	{
-		if ( ! isAllowed(term))
-			forbidden.add(term);
-		else if (isSuggested(term))
-			suggested.add(term);
-		else
-			allowed.add(term);
+		Terms suggested;
+		Terms allowed;
+		Terms forbidden;
+
+		for (const Term &term : _allTerms)
+		{
+			if ( ! isAllowed(term))
+				forbidden.add(term);
+			else if (isSuggested(term))
+				suggested.add(term);
+			else
+				allowed.add(term);
+		}
+
+		_allTerms.clear();
+		_allTerms.add(suggested);
+		_allTerms.add(allowed);
+		_allTerms.add(forbidden);
 	}
-	Terms ordered; // present them in a nice order
 
-	if (_addEmptyValue)
-		ordered.add(QString());
-
-	ordered.add(suggested);
-	ordered.add(allowed);
-	ordered.add(forbidden);
-
-	_allTerms.set(ordered);
-	_terms.removeParent();
-	_terms.set(ordered);
-	_terms.setSortParent(_allTerms);
-
-	removeTermsInAssignedList();
-	endResetModel();
+	ListModelAvailableInterface::sortItems(sortType);
 }
 
 void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
+
 	if (sourceItems.size() == 0)
 		return;
 	
 	beginResetModel();
+
 	Terms termsAvailable;
+	QVector<Terms> termsPerModel;
 	_termSourceModelMap.empty();
+
 	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
 		{
 			Terms terms = sourceModel->terms(sourceItem->modelUse);
+
 			if (sourceItem->discardModel)
 				terms.discardWhatDoesContainTheseComponents(sourceItem->discardModel->terms());
+
 			for (const Term& term : terms)
 				_termSourceModelMap[term.asQString()] = sourceModel;
+
 			termsAvailable.add(terms);
+			termsPerModel.push_back(terms);
 		}
+	}
+
+	if (_mixedModelTerms && termsPerModel.length() > 1)
+	{
+		Terms mixedTerms = termsPerModel[0];
+		mixedTerms.removeParent();
+		for (int i = 1; i < termsPerModel.length(); i++)
+		{
+			const Terms& termsToBeCombined = termsPerModel[i];
+			Terms extraTerms;
+			for (const Term& mixedTerm : mixedTerms)
+			{
+				for (const Term& termToBeCombined : termsToBeCombined)
+				{
+					QStringList components = mixedTerm.components();
+					components.append(termToBeCombined.components());
+					extraTerms.add(Term(components));
+				}
+			}
+			mixedTerms.add(extraTerms);
+		}
+		termsAvailable.add(mixedTerms);
 	}
 	
 	setChangedTerms(termsAvailable);
 	initTerms(termsAvailable);
+
 	endResetModel();
 
 	if (updateAssigned)

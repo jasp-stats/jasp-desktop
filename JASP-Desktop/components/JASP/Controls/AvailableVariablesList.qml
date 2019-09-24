@@ -18,5 +18,8 @@
 
 VariablesList
 {
-    listViewType: "AvailableVariables"
+	listViewType:	"AvailableVariables"
+	showSortMenu:	true
+
+	property bool	mixedModelTerms:	false
 }

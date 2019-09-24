@@ -216,7 +216,7 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 	catch (std::length_error &e)				{ goto retryAfterDoublingMemory; }
 	catch(std::exception & e)
 	{
-		Log::log() << "IPCChannel::send encountered an exception: " << e.what() << std::endl << std::flush;
+		Log::log() << "IPCChannel::send encountered an exception: " << e.what() << std::endl;
 		throw e; //no need to unlock because this will crash stuff
 	}
 
@@ -256,7 +256,7 @@ bool IPCChannel::receive(string &data, int timeout)
 		}
 		catch(std::exception & e)
 		{
-			Log::log() << "IPCChannel::receive encountered an exception: " << e.what() << std::endl << std::flush;
+			Log::log() << "IPCChannel::receive encountered an exception: " << e.what() << std::endl;
 			throw e;
 		}
 

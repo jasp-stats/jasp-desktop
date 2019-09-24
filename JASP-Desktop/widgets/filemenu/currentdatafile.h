@@ -47,6 +47,8 @@ public slots:
 	void setListModel(CurrentFileListModel * listModel);
 signals:
 	void listModelChanged(CurrentFileListModel * listModel);
+	void setCheckAutomaticSync(bool set);
+
 
 private:
 	CurrentFileListModel *_currentFileListModel = nullptr;

@@ -36,7 +36,9 @@ class Analyses : public QAbstractListModel
 	Q_PROPERTY(int		count					READ count													NOTIFY countChanged)
 	Q_PROPERTY(int		currentAnalysisIndex	READ currentAnalysisIndex	WRITE setCurrentAnalysisIndex	NOTIFY currentAnalysisIndexChanged)
 	Q_PROPERTY(double	currentFormHeight		READ currentFormHeight		WRITE setCurrentFormHeight		NOTIFY currentFormHeightChanged)
+	Q_PROPERTY(double	currentFormPrevH		READ currentFormPrevH		WRITE setCurrentFormPrevH		NOTIFY currentFormPrevHChanged)
 	Q_PROPERTY(bool		visible					READ visible				WRITE setVisible				NOTIFY visibleChanged)
+	Q_PROPERTY(bool		moving					READ moving					WRITE setMoving					NOTIFY movingChanged)
 
 
 	friend class EngineSync;
@@ -53,24 +55,24 @@ public:
 
 				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules)
 				{
-					connect(this, &Analyses::requestComputedColumnDestruction, this, &Analyses::dataSetChanged, Qt::QueuedConnection);
+					connect(this, &Analyses::requestComputedColumnDestruction, this, &Analyses::dataSetColumnsChanged, Qt::QueuedConnection);
 				}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "");
+	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", Json::Value *options = nullptr);
 
 	Analysis*	create(const QString &module, const QString &name, const QString &title)	{ return create(module, name, title, _nextId++, AppInfo::version);		}
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry)								{ return create(analysisEntry, _nextId++);						}
 
 	Analysis*	get(size_t id) const								{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
-	void		reload(Analysis* analysis);
+	void		reload(Analysis* analysis, bool logProblem);
 	
 	bool		allCreatedInCurrentVersion() const;
 
 	void		setAnalysesUserData(Json::Value userData);
-	void		refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames);
+	void		refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames, bool hasNewColumns = false);
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);
@@ -93,6 +95,9 @@ public:
 	int						currentAnalysisIndex()										const			{ return _currentAnalysisIndex;	}
 	double					currentFormHeight()											const			{ return _currentFormHeight;	}
 	bool					visible()													const			{ return _visible;				}
+	bool					moving()													const			{ return _moving;				}
+	double					currentFormPrevH()											const			{ return _currentFormPrevH;		}
+	Analysis*				getAnalysisBeforeMoving(size_t index);
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -109,11 +114,16 @@ public slots:
 	void rCodeReturned(QString result, int requestId);
 	void setCurrentFormHeight(double currentFormHeight);
 	void setVisible(bool visible);
+	void setMoving(bool moving);
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
 	void setChangedAnalysisTitle();
 	void analysisTitleChangedInResults(int id, QString title);
+	void refreshAvailableVariables();
+	void setCurrentFormPrevH(double currentFormPrevH);
+	void move(int fromIndex, int toIndex);
+	void duplicateAnalysis(size_t id);
 
 signals:
 	void analysesUnselected();
@@ -130,14 +140,16 @@ signals:
 	void analysisResultsChanged(		Analysis *	source);
 	void analysisTitleChanged(			Analysis *  source);
 	void analysisOptionsChanged(		Analysis *	source);
-	void sendRScript(					QString		script, int requestID);
+	void sendRScript(					QString		script, int requestID, bool whiteListedVersion);
 	void analysisSelectedIndexResults(	int			row);
 	void showAnalysisInResults(			int			id);
 	void currentAnalysisIndexChanged(	int			currentAnalysisIndex);
 	void currentFormHeightChanged(		double		currentFormHeight);
 	void visibleChanged(				bool		visible);
+	void movingChanged(					bool		moving);
 	void emptyQMLCache();
 	void dataSetChanged();
+	void dataSetColumnsChanged();
 	void somethingModified();
     void analysesExportResults();
 
@@ -145,8 +157,10 @@ signals:
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(QString columnName);
 
+	void currentFormPrevHChanged(double currentFormPrevH);
+
 private slots:
-	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName);
+	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion);
 
 
 private:
@@ -156,6 +170,7 @@ private:
 private:
 	 std::map<size_t, Analysis*>	_analysisMap;
 	 std::vector<size_t>			_orderedIds;
+	 std::vector<size_t>			_orderedIdsBeforeMoving;
 
 	 size_t							_nextId					= 0;
 	 int							_currentAnalysisIndex	= -1;
@@ -163,6 +178,7 @@ private:
 	 DynamicModules*				_dynamicModules			= nullptr;
 	 double							_currentFormHeight		= 0;
 	 bool							_visible				= false;
+	 bool							_moving					= false;
 
 	 static int								_scriptRequestID;
 	 QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;
@@ -173,6 +189,7 @@ private:
 	 void							_analysisQMLFileChanged(Analysis* analysis);
 	 
 
+	 double _currentFormPrevH;
 };
 
 #endif // ANALYSES_H

@@ -30,8 +30,8 @@ Window
 	height:				768
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 
-	minimumWidth:		800
-	minimumHeight:		600
+	minimumWidth:		800 * preferencesModel.uiScale
+	minimumHeight:		600 * preferencesModel.uiScale
 
 	onVisibleChanged:	if(!visible) helpModel.visible = false
 	//onWidthChanged:		customMenu.hide()
@@ -89,7 +89,6 @@ Window
 		{
 			id:			customMenu
 			z:			5
-			visible:	false
 		}
 
 		FileMenu
@@ -103,14 +102,6 @@ Window
 				left:	parent.left
 				bottom:	parent.bottom
 			}
-		}
-
-		ProgressBarHolder
-		{
-			id:					progressBarHolder
-			visible:			mainWindow.progressBarVisible
-			z:					10
-			anchors.centerIn:	parent
 		}
 
 		WelcomePage
@@ -145,12 +136,12 @@ Window
 
 		MouseArea
 		{
-			visible:					fileMenuModel.visible || modulesMenu.opened || customMenu.visible
-			z:							1
+			//visible:					enabled
+			enabled: 					fileMenuModel.visible || modulesMenu.opened || customMenu.visible
+			z:							enabled ? 1 : -5
 			hoverEnabled:				true
 			onContainsMouseChanged:		if(containsMouse) ribbonModel.highlightedModuleIndex = -1
 			anchors.fill:				parent
-			anchors.topMargin:			ribbon.height
 			propagateComposedEvents:	true
 
 			Rectangle
@@ -163,6 +154,8 @@ Window
 
 				Behavior on opacity
 				{
+					enabled:		!preferencesModel.safeGraphics
+
 					PropertyAnimation
 					{
 						id:				darkeningBackgroundRectDarkening
@@ -174,12 +167,14 @@ Window
 
 			onPressed:
 			{
-				mouse.accepted			= false
+				if(customMenu.visible)
+				{
+					customMenu.hide()
+					mouse.accepted = false;
+				}
 
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
-				
-				customMenu.hide()
 			}
 		}
 
@@ -215,5 +210,12 @@ Window
 	UIScaleNotifier
 	{
 		anchors.centerIn:	parent
+	}
+
+	ProgressBarHolder
+	{
+		visible:			mainWindow.progressBarVisible
+		z:					10
+		anchors.fill:		parent
 	}
 }

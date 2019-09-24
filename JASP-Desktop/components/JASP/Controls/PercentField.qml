@@ -21,18 +21,17 @@ import JASP.Controls 1.0
 import JASP.Theme 1.0
 import JASP 1.0
 
-TextField
+DoubleField
 {
-	property int	defaultValue:	50
-	property bool	showPercent:	true
-	property int	decimals:		0
-	property int	min:			0
-	property int	max:			100
-    
 	id:					percentField
+	property bool		showPercent:	true
+
+	defaultValue:		50
+	decimals:			0
+	min:				0
+	max:				100
 	inputType:			"percent"
 	fieldWidth:			Theme.font.pixelSize * (percentField.decimals + 3)
-	validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max; decimals: percentField.decimals; notation: DoubleValidator.StandardNotation}
 
 	lastValidValue:		defaultValue
 	afterLabel:			showPercent ? "%" : ""

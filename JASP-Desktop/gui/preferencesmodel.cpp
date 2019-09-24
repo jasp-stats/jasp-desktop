@@ -9,43 +9,16 @@ using namespace std;
 PreferencesModel::PreferencesModel(QObject *parent) :
 	QObject(parent)
 {
-	connect(this, &PreferencesModel::missingValuesChanged, this, &PreferencesModel::updateUtilsMissingValues);
+	connect(this, &PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues	);
+	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged		);
+	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged		);
+	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged			);
 }
 
 PreferencesModel::~PreferencesModel()
 {
 
 }
-
-/*
-const float sliderMult = 0.33333f;
-
-
-void PreferencesModel::setSliderUIScale(float scale)
-{
-	float	scaleX		= std::log((scale) / sliderMult) * 32.0f;
-	int		minSlider	= ui->sliderUIScale->minimum(),
-			maxSlider	= ui->sliderUIScale->maximum(),
-			newPos		= std::max(minSlider, std::min(maxSlider, int(scaleX)));
-
-	ui->sliderUIScale->setValue(newPos);
-}
-
-float PreferencesModel::sliderUIScale()
-{
-	//float curPos = ui->sliderUIScale->value();
-
-	//return std::exp(curPos / 32.0f) * sliderMult;
-	return -1;
-}
-
-void PreferencesModel::sliderUIScaleChanged(int)
-{
-	float scale = sliderUIScale();
-	Settings::setValue(Settings::UI_SCALE, scale);
-	emit _tabBar->UIScaleChanged(scale);
-}
-*/
 
 void PreferencesModel::browseSpreadsheetEditor()
 {
@@ -87,27 +60,34 @@ void PreferencesModel::browseDeveloperFolder()
 		
 }
 
-bool	PreferencesModel::fixedDecimals()			const { return Settings::value(Settings::FIXED_DECIMALS								).toBool();					}
-int		PreferencesModel::numDecimals()				const { return Settings::value(Settings::NUM_DECIMALS								).toInt();					}
-bool	PreferencesModel::exactPValues()			const { return Settings::value(Settings::EXACT_PVALUES								).toBool();					}
-bool	PreferencesModel::dataAutoSynchronization()	const { return Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION					).toBool();					}
-bool	PreferencesModel::useDefaultEditor()		const { return Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR				).toBool();					}
-QString	PreferencesModel::customEditor()			const { return Settings::value(Settings::SPREADSHEET_EDITOR_NAME					).toString();				}
-QString PreferencesModel::developerFolder()			const {	return Settings::value(Settings::DEVELOPER_FOLDER							).toString();				}
-bool	PreferencesModel::useDefaultPPI()			const { return Settings::value(Settings::PPI_USE_DEFAULT							).toBool();					}
-int		PreferencesModel::customPPI()				const { return Settings::value(Settings::PPI_CUSTOM_VALUE							).toInt();					}
-bool	PreferencesModel::whiteBackground()			const { return Settings::value(Settings::IMAGE_BACKGROUND							).toString() == "white";	}
-bool	PreferencesModel::developerMode()			const { return Settings::value(Settings::DEVELOPER_MODE								).toBool();					}
-double	PreferencesModel::uiScale()					const { return Settings::value(Settings::UI_SCALE									).toDouble();				}
-bool	PreferencesModel::customThresholdScale()	const { return Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE					).toBool();					}
-int		PreferencesModel::thresholdScale()			const { return Settings::value(Settings::THRESHOLD_SCALE							).toInt();					}
-bool	PreferencesModel::devModRegenDESC()			const { return Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC	).toBool();					}
-bool	PreferencesModel::logToFile()				const {	return Settings::value(Settings::LOG_TO_FILE								).toBool();					}
-int		PreferencesModel::logFilesMax()				const {	return Settings::value(Settings::LOG_FILES_MAX								).toInt();					}
-int		PreferencesModel::maxFlickVelocity()		const {	return Settings::value(Settings::QML_MAX_FLICK_VELOCITY						).toInt();					}
-bool	PreferencesModel::modulesRemember()			const { return Settings::value(Settings::MODULES_REMEMBER							).toBool();					}
+#define GET_PREF_FUNC(TYPE, NAME, SETTING, TO_FUNC)	TYPE PreferencesModel::NAME() const { return Settings::value(SETTING).TO_FUNC; }
+#define GET_PREF_FUNC_BOOL(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toBool())
+#define GET_PREF_FUNC_INT(NAME, SETTING)					GET_PREF_FUNC(int,		NAME, SETTING, toInt())
+#define GET_PREF_FUNC_STR(NAME, SETTING)					GET_PREF_FUNC(QString,	NAME, SETTING, toString())
+#define GET_PREF_FUNC_DBL(NAME, SETTING)					GET_PREF_FUNC(double,	NAME, SETTING, toDouble())
+#define GET_PREF_FUNC_WHT(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toString() == "white")
 
-
+GET_PREF_FUNC_BOOL(	fixedDecimals,				Settings::FIXED_DECIMALS							)
+GET_PREF_FUNC_INT(	numDecimals,				Settings::NUM_DECIMALS								)
+GET_PREF_FUNC_BOOL(	exactPValues,				Settings::EXACT_PVALUES								)
+GET_PREF_FUNC_BOOL(	dataAutoSynchronization,	Settings::DATA_AUTO_SYNCHRONIZATION					)
+GET_PREF_FUNC_BOOL(	useDefaultEditor,			Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
+GET_PREF_FUNC_STR(	customEditor,				Settings::SPREADSHEET_EDITOR_NAME					)
+GET_PREF_FUNC_STR(	developerFolder,			Settings::DEVELOPER_FOLDER							)
+GET_PREF_FUNC_BOOL(	useDefaultPPI,				Settings::PPI_USE_DEFAULT							)
+GET_PREF_FUNC_INT(	customPPI,					Settings::PPI_CUSTOM_VALUE							)
+GET_PREF_FUNC_WHT(	whiteBackground,			Settings::IMAGE_BACKGROUND							)
+GET_PREF_FUNC_BOOL(	developerMode,				Settings::DEVELOPER_MODE							)
+GET_PREF_FUNC_DBL(	uiScale,					Settings::UI_SCALE									)
+GET_PREF_FUNC_BOOL(	customThresholdScale,		Settings::USE_CUSTOM_THRESHOLD_SCALE				)
+GET_PREF_FUNC_INT(	thresholdScale,				Settings::THRESHOLD_SCALE							)
+GET_PREF_FUNC_BOOL(	devModRegenDESC,			Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC	)
+GET_PREF_FUNC_BOOL(	logToFile,					Settings::LOG_TO_FILE								)
+GET_PREF_FUNC_INT(	logFilesMax,				Settings::LOG_FILES_MAX								)
+GET_PREF_FUNC_INT(	maxFlickVelocity,			Settings::QML_MAX_FLICK_VELOCITY					)
+GET_PREF_FUNC_BOOL(	modulesRemember,			Settings::MODULES_REMEMBER							)
+GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
+GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
 
 QStringList PreferencesModel::missingValues()		const
 {
@@ -168,68 +148,48 @@ void PreferencesModel::setNumDecimals(int newNumDecimals)
 		emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
 
-
-void PreferencesModel::setExactPValues(bool newExactPValues)
+void PreferencesModel::onUseDefaultPPIChanged(bool )
 {
-	if (exactPValues() == newExactPValues)
-		return;
-
-	Settings::setValue(Settings::EXACT_PVALUES, newExactPValues);
-
-	emit exactPValuesChanged(newExactPValues);
-}
-
-
-
-void PreferencesModel::setDataAutoSynchronization(bool newDataAutoSynchronization)
-{
-	if (dataAutoSynchronization() == newDataAutoSynchronization)
-		return;
-
-	Settings::setValue(Settings::DATA_AUTO_SYNCHRONIZATION, newDataAutoSynchronization);
-	emit dataAutoSynchronizationChanged(newDataAutoSynchronization);
-}
-
-void PreferencesModel::setUseDefaultEditor(bool newUseDefaultEditor)
-{
-	if (useDefaultEditor() == newUseDefaultEditor)
-		return;
-
-	Settings::setValue(Settings::USE_DEFAULT_SPREADSHEET_EDITOR, newUseDefaultEditor);
-	emit useDefaultEditorChanged(newUseDefaultEditor);
-}
-
-void PreferencesModel::setCustomEditor(QString newCustomEditor)
-{
-	if (customEditor() == newCustomEditor)
-		return;
-
-	Settings::setValue(Settings::SPREADSHEET_EDITOR_NAME, newCustomEditor);
-	emit customEditorChanged(newCustomEditor);
-}
-
-void PreferencesModel::setUseDefaultPPI(bool newUseDefaultPPI)
-{
-	if (useDefaultPPI() == newUseDefaultPPI)
-		return;
-
-	Settings::setValue(Settings::PPI_USE_DEFAULT, newUseDefaultPPI);
-	emit useDefaultPPIChanged(newUseDefaultPPI);
-
 	if(customPPI() != defaultPPI())
 		emit plotPPIChanged(plotPPI(), true);
-	
 }
 
-void PreferencesModel::setDeveloperMode(bool newDeveloperMode)
+void PreferencesModel::onCustomPPIChanged(int)
 {
-	if (developerMode() == newDeveloperMode)
-		return;
-
-	Settings::setValue(Settings::DEVELOPER_MODE, newDeveloperMode);
-	emit developerModeChanged(newDeveloperMode);
-	
+	if(!useDefaultPPI())
+		emit plotPPIChanged(plotPPI(), true);
 }
+
+void PreferencesModel::onDefaultPPIChanged(int)
+{
+
+	if(useDefaultPPI())
+		emit plotPPIChanged(plotPPI(), false);
+}
+
+#define SET_PREF_FUNCTION(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
+void PreferencesModel::FUNC_NAME(TYPE newVal)							\
+{																		\
+	if(GET_FUNC() == newVal) return;									\
+	Settings::setValue(SETTING, newVal);								\
+	emit NOTIFY(newVal);												\
+}
+
+
+SET_PREF_FUNCTION(bool,		setExactPValues,			exactPValues,				exactPValuesChanged,			Settings::EXACT_PVALUES								)
+SET_PREF_FUNCTION(bool,		setDataAutoSynchronization, dataAutoSynchronization,	dataAutoSynchronizationChanged, Settings::DATA_AUTO_SYNCHRONIZATION					)
+SET_PREF_FUNCTION(bool,		setUseDefaultEditor,		useDefaultEditor,			useDefaultEditorChanged,		Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
+SET_PREF_FUNCTION(QString,	setCustomEditor,			customEditor,				customEditorChanged,			Settings::SPREADSHEET_EDITOR_NAME					)
+SET_PREF_FUNCTION(bool,		setUseDefaultPPI,			useDefaultPPI,				useDefaultPPIChanged,			Settings::PPI_USE_DEFAULT							)
+SET_PREF_FUNCTION(bool,		setDeveloperMode,			developerMode,				developerModeChanged,			Settings::DEVELOPER_MODE							)
+SET_PREF_FUNCTION(QString,	setDeveloperFolder,			developerFolder,			developerFolderChanged,			Settings::DEVELOPER_FOLDER							)
+SET_PREF_FUNCTION(int,		setCustomPPI,				customPPI,					customPPIChanged,				Settings::PPI_CUSTOM_VALUE							)
+SET_PREF_FUNCTION(bool,		setDevModRegenDESC,			devModRegenDESC,			devModRegenDESCChanged,			Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC	)
+SET_PREF_FUNCTION(bool,		setLogToFile,				logToFile,					logToFileChanged,				Settings::LOG_TO_FILE								)
+SET_PREF_FUNCTION(int,		setLogFilesMax,				logFilesMax,				logFilesMaxChanged,				Settings::LOG_FILES_MAX								)
+SET_PREF_FUNCTION(int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
+SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRememberChanged,			Settings::MODULES_REMEMBER							)
+SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -241,13 +201,13 @@ void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 	emit plotBackgroundChanged(Settings::value(Settings::IMAGE_BACKGROUND).toString());
 }
 
-void PreferencesModel::setDeveloperFolder(QString newDeveloperFolder)
+void PreferencesModel::setDefaultPPI(int defaultPPI)
 {
-	if (developerFolder() == newDeveloperFolder)
+	if (_defaultPPI == defaultPPI)
 		return;
 
-	Settings::setValue(Settings::DEVELOPER_FOLDER, newDeveloperFolder);
-	emit developerFolderChanged(newDeveloperFolder);
+	_defaultPPI = defaultPPI;
+	emit defaultPPIChanged(_defaultPPI);
 }
 
 void PreferencesModel::setUiScale(double newUiScale)
@@ -259,6 +219,26 @@ void PreferencesModel::setUiScale(double newUiScale)
 
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
 	emit uiScaleChanged(newUiScale);
+}
+
+void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
+{
+	if (modulesRemembered() == newModulesRemembered)
+		return;
+
+	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
+	emit modulesRememberedChanged();
+}
+
+void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
+{
+	if (safeGraphics() == newSafeGraphics)
+		return;
+
+	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
+	emit modulesRememberChanged(newSafeGraphics);
+
+	MessageForwarder::showWarning("Safe Graphics mode changed", "You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP");
 }
 
 void PreferencesModel::zoomIn()
@@ -277,29 +257,6 @@ void PreferencesModel::zoomReset()
 	setUiScale(1.0);
 }
 
-void PreferencesModel::setCustomPPI(int newCustomPPI)
-{
-	if (customPPI() == newCustomPPI)
-		return;
-
-	Settings::setValue(Settings::PPI_CUSTOM_VALUE, newCustomPPI);
-	emit customPPIChanged(newCustomPPI);
-
-	if(!useDefaultPPI())
-		emit plotPPIChanged(plotPPI(), true);
-}
-
-void PreferencesModel::setDefaultPPI(int defaultPPI)
-{
-	if (_defaultPPI == defaultPPI)
-		return;
-
-	_defaultPPI = defaultPPI;
-	emit defaultPPIChanged(_defaultPPI);
-
-	if(useDefaultPPI())
-		emit plotPPIChanged(plotPPI(), false);
-}
 
 void PreferencesModel::removeMissingValue(QString value)
 {
@@ -369,56 +326,3 @@ void PreferencesModel::missingValuesToStdVector(std::vector<std::string> & out)	
 		out[i] = currentValues[int(i)].toStdString();
 }
 
-void PreferencesModel::setDevModRegenDESC(bool newDevModRegenDESC)
-{
-	if (devModRegenDESC() == newDevModRegenDESC)
-		return;
-
-	Settings::setValue(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC, newDevModRegenDESC);
-	emit devModRegenDESCChanged(newDevModRegenDESC);
-}
-
-void PreferencesModel::setLogToFile(bool newLogToFile)
-{
-	if (logToFile() == newLogToFile)
-		return;
-
-	Settings::setValue(Settings::LOG_TO_FILE, newLogToFile);
-	emit logToFileChanged(newLogToFile);
-}
-
-void PreferencesModel::setLogFilesMax(int newLogFilesMax)
-{
-	if (logFilesMax() == newLogFilesMax)
-		return;
-
-	Settings::setValue(Settings::LOG_FILES_MAX, newLogFilesMax);
-	emit logFilesMaxChanged(newLogFilesMax);
-}
-
-void PreferencesModel::setMaxFlickVelocity(int newMaxFlickVelocity)
-{
-	if (maxFlickVelocity() == newMaxFlickVelocity)
-		return;
-
-	Settings::setValue(Settings::QML_MAX_FLICK_VELOCITY, newMaxFlickVelocity);
-	emit maxFlickVelocityChanged(newMaxFlickVelocity);
-}
-
-void PreferencesModel::setModulesRemember(bool newModulesRemember)
-{
-	if (modulesRemember() == newModulesRemember)
-		return;
-
-	Settings::setValue(Settings::MODULES_REMEMBER, newModulesRemember);
-	emit modulesRememberChanged(newModulesRemember);
-}
-
-void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
-{
-	if (modulesRemembered() == newModulesRemembered)
-		return;
-
-	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
-	emit modulesRememberedChanged();
-}

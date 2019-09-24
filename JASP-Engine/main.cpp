@@ -18,6 +18,7 @@
 #include "engine.h"
 #include "timers.h"
 #include "log.h"
+#include <fstream>
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -59,14 +60,21 @@ int main(int argc, char *argv[])
 		Log::setWhere(logTypeFromString(logFileWhere));
 
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
-
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
 
-		//usleep(6000000);
-
 		JASPTIMER_START(Engine Starting);
-		Engine e(slaveNo, parentPID);
-		e.run();
+
+		try
+		{
+			Engine e(slaveNo, parentPID);
+			e.run();
+
+		}
+		catch (std::exception & e)
+		{
+			Log::log() << "Engine had an uncaught exception of: " << e.what() << "\n";
+			throw e;
+		}
 
 		JASPTIMER_PRINTALL();
 
@@ -74,6 +82,23 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	Log::log() << "jaspEngine does not have all required information to run, it needs slaveNo as first argument and parent PID as second!" << std::endl;
+	std::cout << "Engine started in testing mode because it didn't receive 4 arguments." << std::endl;
+
+	const char * testFileName = "testFile.txt";
+	std::ofstream writeTestFile(testFileName);
+
+	std::cout << "Opening testfile \"" << testFileName << "\" " << (writeTestFile.is_open() ? "Succeeded!" : "Failed!") << std::endl;
+
+	if(writeTestFile.is_open())
+	{
+		writeTestFile << "Hello beautiful world!" << std::endl;
+
+		std::cout << "After writing something into the testfile the state of the outputstream is: " << (writeTestFile.good() ? "good" : "bad") << "." << std::endl;
+
+		writeTestFile.close();
+	}
+
+	std::cout << "Thank you for helping us make JASP better!" << std::endl;
+
 	return 1;
 }

@@ -24,7 +24,6 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
 	plotHeight: 240
 	plotWidth:  320
 	

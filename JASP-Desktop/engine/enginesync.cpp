@@ -43,12 +43,13 @@ using namespace boost::interprocess;
 EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent = 0)
 	: QObject(parent), _analyses(analyses), _package(package), _dynamicModules(dynamicModules)
 {
+	/* The analyses really do not need to trigger process. It will be called every 50ms anyway.
 	connect(_analyses,			&Analyses::analysisAdded,							this,					&EngineSync::ProcessAnalysisRequests			);
 	connect(_analyses,			&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests			);
 	connect(_analyses,			&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests			);
 	connect(_analyses,			&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests			);
 	connect(_analyses,			&Analyses::analysisRewriteImages,					this,					&EngineSync::ProcessAnalysisRequests			);
-	connect(_analyses,			&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests			);
+	connect(_analyses,			&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests			);*/
 	connect(_analyses,			&Analyses::sendRScript,								this,					&EngineSync::sendRCode							);
 	connect(this,				&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed					);
 	connect(this,				&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded				);
@@ -65,7 +66,13 @@ EngineSync::~EngineSync()
 {
 	if (_engineStarted)
 	{		
-		stopEngines();
+		try			{ stopEngines(); }
+		catch(...)	{ /* Whatever! */ }
+
+		for(EngineRepresentation * engine : _engines)
+			if(!engine->stopped())
+				engine->killEngine();
+
 		_engines.clear();
 		TempFiles::deleteAll();
 	}
@@ -93,9 +100,11 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					_analyses,		&Analyses::rCodeReturned												);
 			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated											);
 			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult										);
+			connect(_engines[i],	&EngineRepresentation::filterDone,						this,			&EngineSync::filterDone													);
 			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg										);
-			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded										);
-			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed										);
+			connect(_engines[i],	&EngineRepresentation::columnDataTypeChanged,			this,			&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
+			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
+			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailedHandler									);
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler								);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed									);
@@ -115,7 +124,8 @@ void EngineSync::start(int ppi)
 		throw e;
 	}
 
-	QTimer *timerProcess = new QTimer(this), *timerBeat = new QTimer(this);
+	QTimer	*timerProcess	= new QTimer(this),
+			*timerBeat		= new QTimer(this);
 
 	connect(timerProcess,	&QTimer::timeout, this, &EngineSync::process);
 	connect(timerBeat,		&QTimer::timeout, this, &EngineSync::heartbeatTempFiles);
@@ -150,30 +160,33 @@ void EngineSync::process()
 	for (auto engine : _engines)
 		engine->process();
 	
+	processFilterScript();
+
+	if(_filterRunning) return; //Do not do anything else while waiting for a filter to return
+
 	processLogCfgRequests();
 	processScriptQueue();
 	processDynamicModules();
 	ProcessAnalysisRequests();
 }
 
-void EngineSync::sendFilter(const QString & generatedFilter, const QString & filter, int requestID)
+int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
 {
-	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
-	{
-		Log::log() << "waiting filter  with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+	_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
+	Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
-		_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
-	}
+	return _filterCurrentRequestID;
 }
 
-void EngineSync::sendRCode(const QString & rCode, int requestId)
+
+void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion)
 {
-	_waitingScripts.push(new RScriptStore(requestId, rCode));
+	_waitingScripts.push(new RScriptStore(requestId, rCode, engineState::rCode, whiteListedVersion));
 }
 
 void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, Column::ColumnType columnType)
 {
-	//first we remove the previously sent requests!
+	//first we remove the previously sent requests for this same column!
 	std::queue<RScriptStore*> copiedWaiting(_waitingScripts);
 	_waitingScripts = std::queue<RScriptStore*>() ;
 
@@ -188,28 +201,51 @@ void EngineSync::computeColumn(const QString & columnName, const QString & compu
 	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, columnType));
 }
 
-void EngineSync::processScriptQueue()
+void EngineSync::processFilterScript()
 {
-	for(auto * engine : _engines)
-		if(engine->isIdle())
-		{
-			if(_waitingScripts.size() == 0 && _waitingFilter == nullptr)
-				return;
 
-			if(_waitingFilter != nullptr)
+	if (!_waitingFilter)
+		return;
+
+	pause(); //Make sure engines stop
+	_filterRunning = true;
+	resume();
+
+	try
+	{
+		for (auto *engine : _engines)
+			if (engine->isIdle())
 			{
 				engine->runScriptOnProcess(_waitingFilter);
 				_waitingFilter = nullptr;
+				return;
 			}
-			else
-			{
 
+	} catch (...){	Log::log() << "Exception sent in processFilterScript" << std::endl;	}
+}
+
+void EngineSync::filterDone(int requestID)
+{
+	if(requestID != _filterCurrentRequestID)
+		return;
+
+	_filterRunning = false; //Allow other stuff to happen
+}
+
+void EngineSync::processScriptQueue()
+{
+	try
+	{
+		for(auto * engine : _engines)
+		{
+			if(engine->isIdle() && _waitingScripts.size() > 0)
+			{
 				RScriptStore * waiting = _waitingScripts.front();
 
 				switch(waiting->typeScript)
 				{
 				case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
-				case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
+				//case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
 				case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
 				default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
 				}
@@ -218,6 +254,11 @@ void EngineSync::processScriptQueue()
 				delete waiting; //clean up
 			}
 		}
+	}
+	catch(...)
+	{
+		Log::log() << "Exception thrown in processScriptQueue" << std::endl;
+	}
 }
 
 
@@ -229,20 +270,26 @@ void EngineSync::processDynamicModules()
 		else if(_dynamicModules->aModuleNeedsToBeUnloadedFromR())	setModuleWideCastVars(_dynamicModules->getJsonForPackageUnloadingRequest());
 	}
 
-	for(auto engine : _engines)
-		if(engine->isIdle())
-		{
-			if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->getJsonForPackageInstallationRequest());
-			else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
-		}
-}
+	if	(!_dynamicModules->aModuleNeedsPackagesInstalled() && _requestWideCastModuleJson.isNull())
+		return;
 
-bool EngineSync::idleEngineAvailable()
-{
-	for(auto engine : _engines)
-		if(engine->isIdle())
-			return true;
-	return false;
+
+	try
+	{
+		for(auto engine : _engines)
+		{
+			if(engine->isIdle())
+			{
+				if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->getJsonForPackageInstallationRequest());
+				else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
+			}
+		}
+	}
+	catch(...)
+	{
+		Log::log() << "Exception thrown in processDynamicModules" << std::endl;
+	}
+
 }
 
 void EngineSync::ProcessAnalysisRequests()
@@ -259,9 +306,6 @@ void EngineSync::ProcessAnalysisRequests()
 
 	_analyses->applyToSome([&](Analysis * analysis)
 	{
-		if(!idleEngineAvailable())
-			return false;
-
 		if (analysis == nullptr || analysis->isWaitingForModule())
 			return true;
 
@@ -269,17 +313,26 @@ void EngineSync::ProcessAnalysisRequests()
 		bool needsToRun			= canUseFirstEngine		|| analysis->isInited();
 
 		if(needsToRun)
-			for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
-				if (_engines[i]->isIdle())
+		{
+			try
+			{
+				for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
 				{
-					_engines[i]->runAnalysisOnProcess(analysis);
-					break;
+					if (_engines[i]->isIdle())
+					{
+						_engines[i]->runAnalysisOnProcess(analysis);
+						break;
+					}
 				}
+			}
+			catch(...)
+			{
+				Log::log() << "Exception thrown in ProcessAnalysisRequests" << std::endl;
+			}
+		}
 
 		return true;
 	});
-
-
 }
 
 QProcess * EngineSync::startSlaveProcess(int no)
@@ -343,6 +396,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #elif __APPLE__
 
 	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("JASP_R_HOME",		rHome.absolutePath()); //Used by the modified R script in jasp-required-files/Framework/etc/bin to make sure we use the actual R of JASP! (https://github.com/jasp-stats/INTERNAL-jasp/issues/452)
 	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
 
 	//env.insert("R_ENVIRON",			"something-which-doesnt-exist");
@@ -418,6 +472,7 @@ void EngineSync::subProcessError(QProcess::ProcessError error)
 
 	Log::log() << "Engine error: " << error << std::endl;
 	emit engineTerminated();
+	_engineStarted = false;
 
 }
 
@@ -430,13 +485,14 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 	{
 		Log::log() << "subprocess finished" << exitCode << std::endl;
 		emit engineTerminated();
+		_engineStarted = false;
 
 	}
 }
 
 void EngineSync::stopEngines()
 {
-	auto timeout = QDateTime::currentSecsSinceEpoch() + 60; //shouldnt take more than a minute
+	auto timeout = QDateTime::currentSecsSinceEpoch() + 15; //shouldnt take more than a minute
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
@@ -645,8 +701,40 @@ void EngineSync::logCfgReplyReceived(size_t channelNr)
 
 void EngineSync::processLogCfgRequests()
 {
-	for(size_t channelNr : _logCfgRequested)
-		if(_engines[channelNr]->isIdle())
-			_engines[channelNr]->sendLogCfg();
+	if (_logCfgRequested.size() == 0)
+		return;
 
+
+	try
+	{
+		for(size_t channelNr : _logCfgRequested)
+			if(_engines[channelNr]->isIdle())
+				_engines[channelNr]->sendLogCfg();
+	}
+	catch (...)
+	{
+		Log::log() << "Exception thrown in processLogCfgRequests" << std:: endl << std::flush;
+	}
+}
+
+void EngineSync::cleanUpAfterClose()
+{
+	//stopEngines(); //Seems to break stuff
+	pause();
+
+	while(_waitingScripts.size() > 0)
+	{
+		delete _waitingScripts.front();
+		_waitingScripts.pop();
+	}
+
+	if(_waitingFilter)
+		delete _waitingFilter;
+	_waitingFilter = nullptr;
+
+	TempFiles::clearSessionDir();
+
+	resume();
+
+	//restartEngines();
 }

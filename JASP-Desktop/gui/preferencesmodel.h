@@ -31,6 +31,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(int			maxFlickVelocity		READ maxFlickVelocity			WRITE setMaxFlickVelocity			NOTIFY maxFlickVelocityChanged			)
 	Q_PROPERTY(bool			modulesRemember			READ modulesRemember			WRITE setModulesRemember			NOTIFY modulesRememberChanged			)
 	Q_PROPERTY(QStringList	modulesRemembered		READ modulesRemembered			WRITE setModulesRemembered			NOTIFY modulesRememberedChanged			)
+	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
+	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -60,42 +62,53 @@ public:
 	int			maxFlickVelocity()			const;
 	bool		modulesRemember()			const;
 	QStringList	modulesRemembered()			const;
+	bool		safeGraphics()				const;
+	QString		cranRepoURL()				const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
 
+
 public slots:
-	void setUiScale(double uiScale);
-	void setCustomPPI(int customPPI);
-	void setDefaultPPI(int defaultPPI);
-	void setNumDecimals(int numDecimals);
-	void setExactPValues(bool exactPValues);
-	void setCustomEditor(QString customEditor);
-	void setFixedDecimals(bool fixedDecimals);
-	void setUseDefaultPPI(bool useDefaultPPI);
-	void setDeveloperMode(bool developerMode);
-	void setWhiteBackground(bool whiteBackground);
-	void setDeveloperFolder(QString developerFolder);
-	void setUseDefaultEditor(bool useDefaultEditor);
-	void setDataAutoSynchronization(bool dataAutoSynchronization);
+	void setUiScale(					double		uiScale);
+	void setCustomPPI(					int			customPPI);
+	void setDefaultPPI(					int			defaultPPI);
+	void setNumDecimals(				int			numDecimals);
+	void setExactPValues(				bool		exactPValues);
+	void setCustomEditor(				QString		customEditor);
+	void setFixedDecimals(				bool		fixedDecimals);
+	void setUseDefaultPPI(				bool		useDefaultPPI);
+	void setDeveloperMode(				bool		developerMode);
+	void setWhiteBackground(			bool		whiteBackground);
+	void setDeveloperFolder(			QString		developerFolder);
+	void setUseDefaultEditor(			bool		useDefaultEditor);
+	void setDataAutoSynchronization(	bool		dataAutoSynchronization);
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
 	void updateUtilsMissingValues();
-	void removeMissingValue(QString value);
-	void addMissingValue(QString value);
+	void removeMissingValue(			QString		value);
+	void addMissingValue(				QString		value);
 	void resetMissingValues();
-	void setCustomThresholdScale(bool customThresholdScale);
-	void setThresholdScale(int thresholdScale);
-	void setDevModRegenDESC(bool devModRegenDESC);
-	void setLogToFile(bool logToFile);
-	void setLogFilesMax(int logFilesMax);
-	void setMaxFlickVelocity(int maxFlickVelocity);	
-	void setModulesRemember(bool modulesRemember);
-	void setModulesRemembered(QStringList modulesRemembered);
+	void setCustomThresholdScale(		bool		customThresholdScale);
+	void setThresholdScale(				int			thresholdScale);
+	void setDevModRegenDESC(			bool		devModRegenDESC);
+	void setLogToFile(					bool		logToFile);
+	void setLogFilesMax(				int			logFilesMax);
+	void setMaxFlickVelocity(			int			maxFlickVelocity);
+	void setModulesRemember(			bool		modulesRemember);
+	void setModulesRemembered(			QStringList modulesRemembered);
+	void setSafeGraphics(				bool		safeGraphics);
+	void setCranRepoURL(				QString		cranRepoURL);
 
-	void moduleEnabledChanged(QString moduleName, bool enabled);
+	void moduleEnabledChanged(			QString		moduleName, bool enabled);
+	void onUseDefaultPPIChanged(		bool		useDefault);
+	void onCustomPPIChanged(			int);
+	void onDefaultPPIChanged(			int);
+
+
+
 
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -123,6 +136,8 @@ signals:
 	void maxFlickVelocityChanged(		int			maxFlickVelocity);
 	void modulesRememberChanged(		bool		modulesRemember);
 	void modulesRememberedChanged();
+	void safeGraphicsChanged(			bool		safeGraphics);
+	void cranRepoURLChanged(			QString		cranRepoURL);
 
 private:
 	int _defaultPPI = 192;

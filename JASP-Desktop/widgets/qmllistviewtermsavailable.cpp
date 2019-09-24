@@ -26,11 +26,21 @@
 QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form, bool isInteraction)
 	: QMLItem(item, form)
 	, QMLListViewDraggable(item, form)
+
 {
+	bool mixedModelTerms = getItemProperty("mixedModelTerms").toBool();
 	if (isInteraction)
 		_availableModel = new ListModelInteractionAvailable(this);
 	else
-		_availableModel = new ListModelTermsAvailable(this);
+		_availableModel = new ListModelTermsAvailable(this, mixedModelTerms);
+
+	_sortedMenuModel = new SortMenuModel(_availableModel, {Sortable::None, Sortable::SortByName, Sortable::SortByType});
+}
+
+void QMLListViewTermsAvailable::setUp()
+{
+	QMLListViewDraggable::setUp();
+	setItemProperty("sortMenuModel", QVariant::fromValue(_sortedMenuModel));
 }
 
 void QMLListViewTermsAvailable::addAssignedModel(ListModelAssignedInterface *model)

@@ -26,7 +26,8 @@
 #include "dirs.h"
 #include "analyses.h"
 #include "analysisform.h"
-
+#include "utilities/qutils.h"
+#include "log.h"
 
 
 Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
@@ -49,7 +50,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title) :
+Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, Json::Value *data) :
 	  QObject(analyses),
 	  _options(new Options()),
 	  _id(id),
@@ -61,13 +62,50 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	  _dynamicModule(_moduleData->dynamicModule()),
 	  _analyses(analyses)
 {
+	if (data)
+		_optionsDotJASP = *data; //Same story as other constructor
+
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
 	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
 	bindOptionHandlers();
 }
 
+Analysis::Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe)
+	: QObject(			analyses					)
+	, _status(			duplicateMe->_status		)
+	, _options(			static_cast<Options*>(duplicateMe->_options->clone()))
+	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
+	, _results(			duplicateMe->_results		)
+	, _imgResults(		duplicateMe->_imgResults	)
+	, _userData(		duplicateMe->_userData		)
+	, _saveImgOptions(	duplicateMe->_saveImgOptions)
+	, _progress(		duplicateMe->_progress		)
+	, _id(				id							)
+	, _module(			duplicateMe->_module		)
+	, _name(			duplicateMe->_name			)
+	, _titleDefault(	duplicateMe->_titleDefault	)
+	, _title("Copy of "+duplicateMe->_title			)
+	, _rfile(			duplicateMe->_rfile			)
+	, _useJaspResults(	duplicateMe->_useJaspResults)
+	, _isDuplicate(		true						)
+	, _version(			duplicateMe->_version		)
+	, _moduleData(		duplicateMe->_moduleData	)
+	, _dynamicModule(	duplicateMe->_dynamicModule	)
+	, _analyses(						analyses	)
+	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry)
+	, _helpFile(						duplicateMe->_helpFile)
+{
+	bindOptionHandlers();
+}
+
 Analysis::~Analysis()
 {
+	const auto & cols = columnsCreated();
+
+	if(cols.size() > 0)
+		for(const std::string & col : cols)
+			emit requestComputedColumnDestruction(tq(col));
+
 	delete _options;
 }
 
@@ -105,7 +143,7 @@ void Analysis::abort()
 }
 
 
-void Analysis::setResults(const Json::Value & results, int progress)
+void Analysis::setResults(const Json::Value & results, const Json::Value & progress)
 {
 	_results = results;
 	_progress = progress;
@@ -129,7 +167,7 @@ void Analysis::imageEdited(const Json::Value & results)
 
 void Analysis::reload()
 {
-    _analyses->reload(this);
+	_analyses->reload(this, true);
 }
 
 void Analysis::exportResults()
@@ -143,6 +181,9 @@ void Analysis::refresh()
 	_revision++;
 	TempFiles::deleteAll(_id);
 	emit toRefreshSignal(this);
+
+	if(_analysisForm)
+		_analysisForm->refreshTableViewModels();
 }
 
 void Analysis::saveImage(const Json::Value &options)
@@ -187,10 +228,32 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 {
-	_analysisForm	= form;
-	_status			= isNewAnalysis ? Empty : Complete;
+						_analysisForm	= form;
+	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(_analyses, &Analyses::dataSetChanged, _analysisForm, &AnalysisForm::dataSetChanged);
+	connect(_analyses, &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
+	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
+}
+
+std::string Analysis::statusToString(Status status) const
+{
+	switch (status)
+	{
+	case Analysis::Empty:			return "empty";
+	case Analysis::Inited:			return "inited";
+	case Analysis::Initing:			return "initing";
+	case Analysis::Running:			return "running";
+	case Analysis::Complete:		return "complete";
+	case Analysis::Aborted:			return "aborted";
+	case Analysis::Aborting:		return "aborting";
+	case Analysis::SaveImg:			return "SaveImg";
+	case Analysis::EditImg:			return "EditImg";
+	case Analysis::RewriteImgs:		return "RewriteImgs";
+	case Analysis::ValidationError:	return "validationError";
+	case Analysis::Initializing:	return "initializing";
+	case Analysis::FatalError:		return "fatalError";
+	default:						return "?????";
+	}
 }
 
 Json::Value Analysis::asJSON() const
@@ -221,7 +284,7 @@ Json::Value Analysis::asJSON() const
 	case Analysis::RewriteImgs:		status = "RewriteImgs";		break;
 	case Analysis::ValidationError:	status = "validationError";	break;
 	case Analysis::Initializing:	status = "initializing";	break;
-	default:						status = "fatalError";	break;
+	default:						status = "fatalError";		break;
 	}
 
 	analysisAsJson["status"]	= status;
@@ -234,7 +297,7 @@ Json::Value Analysis::asJSON() const
 	return analysisAsJson;
 }
 
-void Analysis::loadFromJSON(Json::Value & options)
+void Analysis::loadExtraFromJSON(Json::Value & options)
 {
 	_titleDefault = options.get("titleDef", _titleDefault).asString();
 	//The rest is already taken in from Analyses::createFromJaspFileEntry
@@ -242,12 +305,18 @@ void Analysis::loadFromJSON(Json::Value & options)
 
 void Analysis::setStatus(Analysis::Status status)
 {
+	if(_status == status)
+		return;
+
 	if ((status == Analysis::Running || status == Analysis::Initing) && _version != AppInfo::version)
 	{
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
 		_version = AppInfo::version;
 	}
+
 	_status = status;
+
+	Log::log() << "Analysis " << title() << " (" << id() << ") now has status: " << statusToString(_status) << std::endl;
 }
 
 DataSet *Analysis::getDataSet() const
@@ -291,6 +360,7 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	case Analysis::SaveImg:		return(performType::saveImg);
 	case Analysis::EditImg:		return(performType::editImg);
 	case Analysis::RewriteImgs:	return(performType::rewriteImgs);
+	case Analysis::Aborted:
 	case Analysis::Aborting:	return(performType::abort);
 	default:					return(performType::run);
 	}
@@ -384,4 +454,27 @@ void Analysis::setTitleQ(QString title)
 	_title = strippedTitle;
 	
 	emit titleChanged();
+}
+
+void Analysis::emitDuplicationSignals()
+{
+	emit resultsChangedSignal(this);
+	emit titleChanged();
+}
+
+void Analysis::refreshAvailableVariablesModels()
+{
+	if(form() != nullptr)
+		form()->refreshAvailableVariablesModels();
+}
+
+QString	Analysis::fullHelpPath(QString helpFileName)
+{
+	if(isDynamicModule())	return dynamicModule()->helpFolderPath() + helpFileName;
+	else					return "analyses/" + helpFileName;
+}
+
+void Analysis::duplicateMe()
+{
+	_analyses->duplicateAnalysis(_id);
 }

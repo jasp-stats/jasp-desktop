@@ -169,7 +169,7 @@ themeJaspRaw = function(legend.position = "none",
         panel.border = element_blank(),
         panel.spacing = grid::unit(2, "cm"),
         panel.grid = ggplot2::element_blank(),
-        panel.background = ggplot2::element_rect(color = "white", fill = "white"),
+        panel.background = ggplot2::element_rect(color = "transparent", fill = "transparent"),
 
         # plot
         plot.background = ggplot2::element_rect(fill = "transparent", color = "transparent"),

@@ -39,7 +39,13 @@ bool PollMessagesFunctionForJaspResults()
 		if(Engine::theEngine()->paused())
 			return true;
 		else
-			return Engine::theEngine()->getStatus() == engineAnalysisStatus::changed;
+			switch(Engine::theEngine()->getAnalysisStatus())
+			{
+			case engineAnalysisStatus::changed:
+			case engineAnalysisStatus::aborted:
+			case engineAnalysisStatus::stopped:	return true;
+			default:							break;
+			}
 	}
 	return false;
 }
@@ -69,10 +75,11 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	rbridge_setStateFileSource(			boost::bind(&Engine::provideStateFileName,			this, _1, _2));
 	rbridge_setJaspResultsFileSource(	boost::bind(&Engine::provideJaspResultsFileName,	this, _1, _2));
 
-	rbridge_setColumnDataAsScaleSource(			boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2));
-	rbridge_setColumnDataAsOrdinalSource(		boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3));
-	rbridge_setColumnDataAsNominalSource(		boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3));
-	rbridge_setColumnDataAsNominalTextSource(	boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
+	rbridge_setColumnFunctionSources(	boost::bind(&Engine::getColumnType,					this, _1),
+										boost::bind(&Engine::setColumnDataAsScale,			this, _1, _2),
+										boost::bind(&Engine::setColumnDataAsOrdinal,		this, _1, _2, _3),
+										boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2, _3),
+										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 
@@ -150,7 +157,7 @@ bool Engine::receiveMessages(int timeout)
 		engineState typeRequest = engineStateFromString(jsonRequest.get("typeRequest", Json::nullValue).asString());
 
 #ifdef PRINT_ENGINE_MESSAGES
-		Log::log() << "received " << engineStateToString(typeRequest) <<" message" << std::endl << std::flush;
+		Log::log() << "received " << engineStateToString(typeRequest) <<" message" << std::endl;
 #endif
 		switch(typeRequest)
 		{
@@ -173,7 +180,7 @@ bool Engine::receiveMessages(int timeout)
 void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
-		throw std::runtime_error("Unexpected filter message, current state is not idle (" + engineStateToString(_engineState) + ")");
+		Log::log() << "Unexpected filter message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
 	_engineState				= engineState::filter;
 	std::string filter			= jsonRequest.get("filter", "").asString();
@@ -230,19 +237,20 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
-		throw std::runtime_error("Unexpected rCode message, current state is not idle (" + engineStateToString(_engineState) + ")");
+		Log::log() << "Unexpected rCode message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
 	_engineState		= engineState::rCode;
-	std::string rCode	= jsonRequest.get("rCode", "").asString();
-	int rCodeRequestId	= jsonRequest.get("requestId", -1).asInt();
+	std::string rCode	= jsonRequest.get("rCode",			"").asString();
+	int rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
+	bool whiteListed	= jsonRequest.get("whiteListed",	true).asBool();
 
-	runRCode(rCode, rCodeRequestId);
+	runRCode(rCode, rCodeRequestId, whiteListed);
 }
 
 // Evaluating arbitrary R code (as string) which returns a string
-void Engine::runRCode(const std::string & rCode, int rCodeRequestId)
+void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteListed)
 {
-	std::string rCodeResult = jaspRCPP_evalRCode(rCode.c_str());
+	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str()) : jaspRCPP_evalRCode(rCode.c_str());
 
 	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
 	else						sendRCodeResult(rCodeResult, rCodeRequestId);
@@ -269,7 +277,7 @@ void Engine::sendRCodeResult(const std::string & rCodeResult, int rCodeRequestId
 
 void Engine::sendRCodeError(int rCodeRequestId)
 {
-	Log::log() << "R Code yielded error" << std::endl << std::flush;
+	Log::log() << "R Code yielded error" << std::endl;
 
 	Json::Value rCodeResponse		= Json::objectValue;
 	std::string RError				= jaspRCPP_getLastErrorMsg();
@@ -283,7 +291,7 @@ void Engine::sendRCodeError(int rCodeRequestId)
 void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
-		throw std::runtime_error("Unexpected compute column message, current state is not idle (" + engineStateToString(_engineState) + ")");
+		Log::log() << "Unexpected compute column message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
 	_engineState = engineState::computeColumn;
 
@@ -399,13 +407,13 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageBackground		= jsonRequest.get("imageBackground",	"white").asString();
 
 		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
-		_engineState		= engineState::analysis;
+		_engineState			= engineState::analysis;
 	}
 }
 
 void Engine::runAnalysis()
 {
-	Log::log() << "Engine::runAnalysis()" << std::endl;
+	Log::log() << "Engine::runAnalysis() " << _analysisTitle << " (" << _analysisId << ") revision: " << _analysisRevision << std::endl;
 
 	if(_analysisStatus == Status::saveImg)		{ saveImage();		return; }
 	if(_analysisStatus == Status::editImg)		{ editImage();		return; }
@@ -415,6 +423,7 @@ void Engine::runAnalysis()
 	{
 		_analysisStatus	= Status::empty;
 		_engineState	= engineState::idle;
+		Log::log() << "Engine::state <= idle because it does not need to be run now (empty || aborted)" << std::endl;
 		return;
 	}
 
@@ -427,11 +436,13 @@ void Engine::runAnalysis()
 
 	_currentAnalysisKnowsAboutChange	= false;
 
+	Log::log() << "Analysis will be run now." << std::endl;
+
 	_analysisResultsString = _dynamicModuleCall != "" ?
 			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground)
 		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults);
 
-	if (_analysisStatus == Status::initing || _analysisStatus == Status::running)  // if status hasn't changed
+	if (!_analysisJaspResults && (_analysisStatus == Status::initing || _analysisStatus == Status::running))  // if status hasn't changed
 		receiveMessages();
 
 	if (_analysisStatus == Status::toInit || _analysisStatus == Status::aborted || _analysisStatus == Status::error || _analysisStatus == Status::exception)
@@ -471,18 +482,18 @@ void Engine::runAnalysis()
 
 void Engine::saveImage()
 {
-	std::string name	= _imageOptions.get("name", Json::nullValue).asString();
-	std::string type	= _imageOptions.get("type", Json::nullValue).asString();
-	int height			= _imageOptions.get("height", Json::nullValue).asInt();
-	int width			= _imageOptions.get("width", Json::nullValue).asInt();
-
-	std::string result = jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
+				width	= _imageOptions.get("width",	Json::nullValue).asInt();
+	std::string name	= _imageOptions.get("name",		Json::nullValue).asString(),
+				type	= _imageOptions.get("type",		Json::nullValue).asString(),
+				result	= jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 
 	_analysisStatus								= Status::complete;
 	_analysisResults["results"]["inputOptions"]	= _imageOptions;
 	_progress									= -1;
+
 	sendAnalysisResults();
 
 	_analysisStatus								= Status::empty;
@@ -491,16 +502,17 @@ void Engine::saveImage()
 
 void Engine::editImage()
 {
-	std::string name	= _imageOptions.get("name", Json::nullValue).asString();
-	std::string type	= _imageOptions.get("type", Json::nullValue).asString();
-	int height			= _imageOptions.get("height", Json::nullValue).asInt();
-	int width			= _imageOptions.get("width", Json::nullValue).asInt();
-	std::string result	= jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
+				width	= _imageOptions.get("width",	Json::nullValue).asInt();
+	std::string name	= _imageOptions.get("name",		Json::nullValue).asString(),
+				type	= _imageOptions.get("type",		Json::nullValue).asString(),
+				result	= jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 
 	_analysisStatus			= Status::complete;
 	_progress				= -1;
+
 	sendAnalysisResults();
 
 	_analysisStatus			= Status::empty;
@@ -515,6 +527,7 @@ void Engine::rewriteImages()
 	_analysisResults			= Json::Value();
 	_analysisResults["status"]	= analysisResultStatusToString(analysisResultStatus::imagesRewritten);
 	_progress					= -1;
+
 	sendAnalysisResults();
 
 	_analysisStatus				= Status::empty;
@@ -582,7 +595,11 @@ void Engine::removeNonKeepFiles(const Json::Value & filesToKeepValue)
 
 DataSet * Engine::provideDataSet()
 {
-	return SharedMemory::retrieveDataSet(_parentPID);
+	JASPTIMER_RESUME(Engine::provideDataSet());
+	DataSet * dataset = SharedMemory::retrieveDataSet(_parentPID);
+	JASPTIMER_STOP(Engine::provideDataSet());
+
+	return dataset;
 }
 
 void Engine::provideStateFileName(std::string &root, std::string &relativePath)
@@ -674,7 +691,7 @@ bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, const std::string &
 			if(convertedChars == keyval.second.size()) //It was a number!
 				uniqueInts[keyval.first] = asInt;
 		}
-		catch(std::invalid_argument e) {}
+		catch(std::invalid_argument & e) {}
 	}
 
 	if(uniqueInts.size() == levels.size()) //everything was an int!

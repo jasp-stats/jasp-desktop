@@ -26,9 +26,9 @@ std::string jaspPlot::dataToString(std::string prefix)
 	return out.str();
 }
 
-Json::Value jaspPlot::dataEntry()
+Json::Value jaspPlot::dataEntry(std::string & errorMessage) const
 {
-	Json::Value data(jaspObject::dataEntry());
+	Json::Value data(jaspObject::dataEntry(errorMessage));
 
 	data["title"]		= _title;
 	data["convertible"]	= true;
@@ -36,17 +36,7 @@ Json::Value jaspPlot::dataEntry()
 	data["height"]		= _height;
 	data["width"]		= _width;
 	data["aspectRatio"]	= _aspectRatio;
-	if(_error)
-    {
-		data["status"]                  = "error";
-		data["error"]					= Json::objectValue;
-		data["error"]["type"]			= "badData";//_error;
-		data["error"]["errorMessage"]	= _errorMessage;
-    }
-	else
-	{
-		data["status"]                  = _status;
-	}
+	data["status"]		= _error ? "error" : _status;
 	data["name"]		= getUniqueNestedName();
 
 	return data;
@@ -69,13 +59,17 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 		static Rcpp::Function tryToWriteImage = jaspResults::isInsideJASP() ? Rcpp::Function("tryToWriteImageJaspResults") : Rcpp::Environment::namespace_env("jaspResults")["tryToWriteImageJaspResults"];
 		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj);
 
+		// we need to overwrite plot functions with their recordedplot result
+		if(Rcpp::is<Rcpp::Function>(obj) && writeResult.containsElementNamed("obj"))
+			plotInfo["obj"] = writeResult["obj"];
+		
 		if(writeResult.containsElementNamed("png"))
-			_filePathPng = Rcpp::as<std::string>(writeResult[writeResult.findName("png")]);
+			_filePathPng = Rcpp::as<std::string>(writeResult["png"]);
 
 		if(writeResult.containsElementNamed("error"))
 		{
 			_error			= "Error during writeImage";
-			_errorMessage	= Rcpp::as<std::string>(writeResult[writeResult.findName("error")]);
+			_errorMessage	= Rcpp::as<std::string>(writeResult["error"]);
 		}
 
 		if(_status == "waiting" || _status == "running")
@@ -114,7 +108,7 @@ void jaspPlot::setChangedDimensionsFromStateObject()
 		_height = Rcpp::as<int>(plotInfoList["height"]);
 }
 
-Json::Value jaspPlot::convertToJSON()
+Json::Value jaspPlot::convertToJSON() const
 {
 	Json::Value obj		= jaspObject::convertToJSON();
 
@@ -122,7 +116,6 @@ Json::Value jaspPlot::convertToJSON()
 	obj["width"]				= _width;
 	obj["height"]				= _height;
 	obj["status"]				= _status;
-	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
 	obj["environmentName"]		= _envName;
 
@@ -136,9 +129,7 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_aspectRatio	= in.get("aspectRatio",		0.0f).asDouble();
 	_width			= in.get("width",			-1).asInt();
 	_height			= in.get("height",			-1).asInt();
-	_error			= in.get("error",			"false").asBool();
 	_status			= in.get("status",			"complete").asString();
-	_errorMessage	= in.get("errorMessage",	"null").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
 	_envName		= in.get("environmentName",	_envName).asString();
 	

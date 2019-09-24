@@ -32,7 +32,10 @@
 }
 
 # it is necessary to export custom S3 methods to the global envir as otherwise they are not registered
+# unneeded at present and seems unsupported on later R versions 
 .exportS3Methods <- function(env) {
+  return()
+  
   if (identical(env, .GlobalEnv)) {
     .setInternal("s3Methods", NULL)
     return(invisible(NULL))
@@ -49,7 +52,10 @@
   .setInternal("s3Methods", objs)
 }
 
+# unneeded at present and seems unsupported on later R versions 
 .removeS3Methods <- function() {
+  return()
+  
   objs <- .getInternal("s3Methods")
   if (length(objs))
     return(invisible(NULL))
@@ -219,13 +225,12 @@ collapseTable <- function(rows) {
     stop("expecting non-vectorized character input")
   }
 
-  analysis <- tolower(analysis)
   if (.isModule())
     analyses <- list.files(.getPkgOption("module.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   else
     analyses <- list.files(.getPkgOption("common.r.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   analyses <- gsub("\\.[RrSsQq]$", "", analyses)
-  if (! analysis %in% analyses) {
+  if (! tolower(analysis) %in% tolower(analyses)) {
     stop("Could not find the analysis. Please ensure that its name matches the main R function.")
   }
 
@@ -243,6 +248,19 @@ collapseTable <- function(rows) {
   return(FALSE)
 }
 
+.replaceFn <- function(fnName, fn, pkgName) {
+  reAssign <- function(env) {
+    unlockBinding(fnName, env)
+    assign(fnName, fn, env)
+    lockBinding(fnName, env)
+  }
+  
+  try(silent=TRUE, {
+    reAssign(getNamespace(pkgName)) # if not attached
+    reAssign(as.environment(paste0("package:", pkgName))) # if attached
+  })
+}
+
 .getErrorMsgFromLastResults <- function() {
   lastResults <- .getInternal("lastResults")
   if (jsonlite::validate(lastResults))
@@ -251,7 +269,7 @@ collapseTable <- function(rows) {
   if (is.null(lastResults) || !is.list(lastResults) || is.null(names(lastResults)))
     return(NULL)
   
-  if ((lastResults[["status"]] == "error" || lastResults[["status"]] == "exception") && is.list(lastResults[["results"]]))
+  if ((lastResults[["status"]] == "validationError" || lastResults[["status"]] == "fatalError") && is.list(lastResults[["results"]]))
     return(.errorMsgFromHtml(lastResults$results$errorMessage))
 
   return(NULL)

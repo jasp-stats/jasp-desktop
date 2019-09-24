@@ -38,6 +38,7 @@ public:
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
 	
 	void setDropMode(qmlDropMode dropMode);
+	void moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, const QString& assignOption = "");
 
 protected:
 	ListModelDraggable* _draggableModel;
@@ -53,7 +54,6 @@ private:
 	int _tempDropItemIndex;
 	QString _tempAssignOption;
 	
-	void _moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, const QString& assignOption = "");	
 };
 
 #endif // QMLLISTVIEWDRAGGABLE_H

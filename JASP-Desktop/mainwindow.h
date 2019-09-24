@@ -43,7 +43,7 @@
 #include "modules/ribbonmodelfiltered.h"
 #include "gui/preferencesmodel.h"
 #include "results/resultmenumodel.h"
-#include "utilities/resultsjsinterface.h"
+#include "results/resultsjsinterface.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "utilities/aboutmodel.h"
@@ -84,6 +84,8 @@ public:
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
+	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
+	void	checkDoSync(bool& check);
 	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 
 	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
@@ -127,6 +129,9 @@ public slots:
 	void	showLogFolder();
 
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
+	void	moveAnalysesResults(Analysis* fromAnalysis, int index);
+
+	void	setCheckAutomaticSync(bool check)		{  _checkAutomaticSync = check;	}
 
 
 private:
@@ -141,10 +146,10 @@ private:
 	void checkUsedModules();
 
 	void packageChanged(DataSetPackage *package);
-	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged);
+	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged, bool hasNewColumns);
 	void setDataSetAndPackageInModels(DataSetPackage *package);
 	void setPackageModified();
-	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged);
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 
 	bool closeRequestCheck(bool &isSaving);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
@@ -169,6 +174,7 @@ private:
 	void resumeEngines();
 
 	void _openFile();
+	void connectFileEventCompleted(FileEvent * event);
 
 signals:
 	void saveJaspFile();
@@ -251,17 +257,17 @@ private:
 
 	QSettings						_settings;
 
-	int								_progressBarProgress,
+	int								_progressBarProgress,	//Runs from 0 to 100
 									_screenPPI		= 1;
 
 	QString							_openOnLoadFilename,
-									_fatalError,
+									_fatalError				= "The engine crashed...",
 									_currentFilePath,
 									_progressBarStatus,
 									_windowTitle,
 									_downloadNewJASPUrl		= "";
 
-	AsyncLoader						_loader;
+	AsyncLoader*					_loader					= nullptr;
 	AsyncLoaderThread				_loaderThread;
 
 	bool							_applicationExiting		= false,
@@ -274,7 +280,8 @@ private:
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
 									_savingForClose			= false,
-									_welcomePageVisible		= true;
+									_welcomePageVisible		= true,
+									_checkAutomaticSync		= false;
 
 	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles,

@@ -62,7 +62,7 @@ JASPControl
 			if (KeyNavigation.tab)
 				KeyNavigation.tab.forceActiveFocus();
 		}
-		
+
 		lastValidValue = control.text
 		editingFinished();
 	}

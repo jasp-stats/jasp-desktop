@@ -19,10 +19,10 @@
 #ifndef FSBMDATALIBRARY_H
 #define FSBMDATALIBRARY_H
 
-#include "filesystemmodel.h"
+#include "filesystem.h"
 #include "common.h"
 
-class DataLibraryFileSystem : public FileSystemModel
+class DataLibraryFileSystem : public FileSystem
 {
 	Q_OBJECT
 

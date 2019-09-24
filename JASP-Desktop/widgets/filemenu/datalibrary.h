@@ -41,6 +41,7 @@ public:
 signals:
 	void breadcrumbsmodelChanged();
 	void listModelChanged();
+	void resetPath();
 
 public slots:
 	void openFile(FileEvent *event);

@@ -69,5 +69,6 @@
         <file>js/backbone-1.1.2.js</file>
         <file>js/qwebchannel.js</file>
         <file>js/htmlNode.js</file>
+        <file>js/column.js</file>
     </qresource>
 </RCC>

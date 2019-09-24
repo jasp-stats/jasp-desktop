@@ -2,7 +2,20 @@
 R package which aids developers with writing JASP analyses.
 
 ## Installation
-It is necessary to install the package. Do this using either:
+It is necessary to install some packages: 
+
+- Rcpp
+- jaspResults
+
+This can be done as follows:
+
+`install.packages("Rcpp")`
+
+and 
+
+`install.packages("/%path%/jasp-desktop/JASP-R-Interface/jaspResults/", repos = NULL, type = "source")`
+
+To install jasptools itself use: 
 
 `install.packages("/%path%/jasp-desktop/Tools/jasptools/", repos = NULL, type = "source")`
 

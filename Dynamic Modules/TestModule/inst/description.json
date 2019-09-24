@@ -8,10 +8,11 @@
 		"author":									"Joris Goosen",
 		"maintainer":								"Joris Goosen <Joris@JorisGoosen.nl>",
 		"website":									"",
-		"license":									"Whatever"
+		"license":									"Whatever",
+		"requiresDataset": 		false
 	},
 
-	"requiredPackages":	["dbscan"],
+	"requiredPackages":	[],
 
 	"menu":
 	[

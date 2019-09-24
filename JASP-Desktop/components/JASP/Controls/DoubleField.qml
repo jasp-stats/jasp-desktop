@@ -33,7 +33,7 @@ TextField
 	property string inclusive:			"yes"
 
 					inputType:			"number"
-					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: decimals; inclusive: doubleField.inclusive }
+					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; inclusive: doubleField.inclusive; notation: DoubleValidator.StandardNotation }
 					lastValidValue:		defaultValue
 					fieldWidth:			Theme.numericFieldWidth
 }

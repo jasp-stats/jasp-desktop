@@ -24,8 +24,8 @@
 class OptionVariables : public OptionTerms, public OptionVariableI
 {
 public:
-	OptionVariables() : OptionTerms(true, false) {}
-
+	OptionVariables()								: OptionTerms(true, false) {}
+	OptionVariables(std::vector<std::string> vars)	: OptionTerms(true, false) { setValue(vars); }
 
 	Json::Value					asJSON()												const	override;
 	void						set(const Json::Value& value)									override;
@@ -35,7 +35,7 @@ public:
 	void						replaceName(std::string oldName, std::string newName)			override;
 	void						removeName(std::string name)									override;
 
-	std::set<std::string>		usedVariables()													override;
+	std::set<std::string>		usedVariables()											const	override;
 	void						removeUsedVariable(std::string var)								override;
 	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
 

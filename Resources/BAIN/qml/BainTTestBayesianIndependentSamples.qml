@@ -23,7 +23,8 @@ Form
 {
 	VariablesForm
 	{
-		AvailableVariablesList { name: "variablesList"; suggestedColumns: ["nominal", "scale"]}
+		height: 200
+		AvailableVariablesList { name: "variablesList" }
 		AssignedVariablesList
 		{
             name: "variables"
@@ -66,13 +67,13 @@ Form
 
 	ColumnLayout
 	{
-		GroupBox
+		Group
 		{
 			title: qsTr("Tables")
 			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
 		}
 
-		GroupBox
+		Group
 		{
 			title: qsTr("Plots")
 			CheckBox { name: "bayesFactorPlot"; text: qsTr("Bayes factor comparison") }

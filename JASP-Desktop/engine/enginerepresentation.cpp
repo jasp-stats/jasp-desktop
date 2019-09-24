@@ -1,6 +1,7 @@
 #include "enginerepresentation.h"
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "utilities/qutils.h"
 #include "log.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
@@ -135,10 +136,12 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 	_engineState = engineState::idle;
 
 #ifdef PRINT_ENGINE_MESSAGES
-			Log::log() << "msg is filter reply" << std::endl << std::flush;
+			Log::log() << "msg is filter reply" << std::endl;
 #endif
 
 	int requestId = json.get("requestId", -1).asInt();
+
+	emit filterDone(requestId);
 
 	if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
 	{
@@ -163,6 +166,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["rCode"]			= scriptStore->script.toStdString();
 	json["requestId"]		= scriptStore->requestId;
+	json["whiteListed"]		= scriptStore->whiteListedVersion;
 
 	sendString(json.toStyledString());
 }
@@ -211,7 +215,7 @@ void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 
 	if(result == "TRUE")		emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), true);
 	else if(result == "FALSE")	emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), false);
-	else						emit computeColumnFailed(QString::fromStdString(columnName), QString::fromStdString(error == "" ? "Unknown Error" : error));
+	else						emit computeColumnFailed(	QString::fromStdString(columnName), QString::fromStdString(error == "" ? "Unknown Error" : error));
 }
 
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
@@ -229,8 +233,9 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 	Log::log() << "sending: " << json.toStyledString() << std::endl;
 #endif
 
-	if(analysis->isAborted())
-		clearAnalysisInProgress();
+	//It is dangerous to clear an aborted analysis because it might still be running and ignoring this!
+	//if(analysis->isAborted())
+	//	clearAnalysisInProgress();
 
 }
 
@@ -255,8 +260,13 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 	if(_engineState != engineState::analysis || _analysisInProgress != analysis)
 		return;
 
+	_idRemovedAnalysis = analysis->id();
+	if(analysis->status() != Analysis::Status::Aborting && analysis->status() != Analysis::Status::Aborted)
+		analysis->setStatus(Analysis::Status::Aborting);
+
 	runAnalysisOnProcess(analysis); //should abort
-	clearAnalysisInProgress();
+	_analysisInProgress = nullptr; //Because it will be deleted!
+	//But we keep the engineState at analysis to make sure another analysis won't try to run until the aborted one gets the message!
 }
 
 void EngineRepresentation::processAnalysisReply(Json::Value & json)
@@ -273,10 +283,34 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	int id						= json.get("id",		-1).asInt();
 	int revision				= json.get("revision",	-1).asInt();
-	int progress				= json.get("progress",	-1).asInt();
+	
+	Json::Value progress		= json.get("progress",	Json::nullValue);
 	Json::Value results			= json.get("results",	Json::nullValue);
 
 	analysisResultStatus status	= analysisResultStatusFromString(json.get("status", "error").asString());
+
+	if(_analysisInProgress == nullptr && id == _idRemovedAnalysis)
+	{
+		Log::log() << "Reply was for an analysis that was removed, we now check if it was done or not, the resultstatus was: " << analysisResultStatusToString(status) << std::endl;
+		switch(status)
+		{
+		case analysisResultStatus::changed:
+		case analysisResultStatus::complete:
+		case analysisResultStatus::fatalError:
+		case analysisResultStatus::validationError:
+			_engineState		= engineState::idle;
+			_idRemovedAnalysis	= -1;
+
+			Log::log() << "Analysis got the message and we now reset the engineStatus to idle!" << std::endl;
+			break;
+
+		default:
+			Log::log() << "Analysis ignores the abort it got and keeps going..." << std::endl;
+			break;
+		}
+		return;
+	}
+
 	Analysis *analysis			= _analysisInProgress;
 
 	if (analysis->id() != id || analysis->revision() < revision)
@@ -311,22 +345,14 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		break;
 
 	case analysisResultStatus::validationError:
-		analysis->setResults(results);
-		clearAnalysisInProgress();
-
-		for(std::string col : analysis->columnsCreated())
-			emit computeColumnFailed(QString::fromStdString(col), "Analysis had an error..");
-		break;
-
 	case analysisResultStatus::fatalError:
-	case analysisResultStatus::inited:
 	case analysisResultStatus::complete:
+	case analysisResultStatus::inited:
 		analysis->setResults(results);
 		clearAnalysisInProgress();
 
-		//createdColumns and if it succeeded or not should actually be communicated through jaspColumn or something, to be created
-		for(std::string col : analysis->columnsCreated())
-			emit computeColumnSucceeded(QString::fromStdString(col), "", true);
+		if(analysis->columnsCreated().size() > 0)
+			checkForComputedColumns(results);
 		break;
 
 	case analysisResultStatus::running:
@@ -336,13 +362,50 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	}
 }
 
+void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
+{
+	if(results.isArray())
+	{
+		for(const Json::Value & row : results)
+			checkForComputedColumns(row);
+		return;
+	}
+
+	if(results.isObject())
+	{
+		auto members = results.getMemberNames();
+		std::set<std::string> memberset(members.begin(), members.end());
+
+		if(memberset.count("columnName") > 0 && memberset.count("columnType") > 0 && memberset.count("dataChanged") > 0)
+		{
+			//jaspColumnType	columnType	= jaspColumnTypeFromString(results["columnType"].asString()); This would work if jaspColumn wasn't defined in jaspColumn.h and Windows would not need to have that separately in a DLL... But it isn't really needed here anyway.
+			std::string		columnName	= results["columnName"].asString();
+			bool			dataChanged	= results["dataChanged"].asBool();
+			bool			typeChanged	= results["typeChanged"].asBool();
+
+			emit computeColumnSucceeded(tq(columnName), "", dataChanged);
+
+			if(typeChanged)
+				emit columnDataTypeChanged(tq(columnName));
+		}
+		else
+			for(std::string member : members)
+				checkForComputedColumns(results[member]);
+	}
+}
+
 void EngineRepresentation::handleRunningAnalysisStatusChanges()
 {
-	if (_engineState != engineState::analysis)
+	if (_engineState != engineState::analysis || _idRemovedAnalysis >= 0)
 		return;
 
 	if(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted())
 		runAnalysisOnProcess(_analysisInProgress);
+}
+
+void EngineRepresentation::killEngine()
+{
+	_slaveProcess->kill();
 }
 
 void EngineRepresentation::stopEngine()
