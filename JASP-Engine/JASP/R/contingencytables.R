@@ -619,7 +619,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     else if (is.na(chi.result[[val]])) {
       row[[paste0("value[", type, "]")]] <- NaN
       message <- "Value could not be calculated - At least one row or column contains all zeros"
-      row[["type[", type ,"]"]] <- paste0(row[["type[", type ,"]"]], "\u207A")
+      row[[paste0("type[", type ,"]")]] <- paste0(row[[paste0("type[", type ,"]")]], "\u207A")
       analysisContainer[["crossTabNominal"]]$addFootnote(message, symbol = "\u207A")
     } else
       row[[paste0("value[", type, "]")]] <- chi.result[[val]]
@@ -1172,7 +1172,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       row[["type[LambdaR]"]] <- paste("Lambda (", options$rows, "dependent)", sep =  " ")
       row[["type[LambdaC]"]] <- paste("Lambda (", options$columns, "dependent)", sep =  " ")
       if (ready) {
-        N      <- sum(counts.matrix)
+        N       <- sum(counts.matrix)
         E1R     <- N - max(rowSums(counts.matrix))
         E2R     <- sum(apply(counts.matrix,2, function (x) sum(x) - max(x) ))
         lambdaR <- (E1 - E2)/E1
