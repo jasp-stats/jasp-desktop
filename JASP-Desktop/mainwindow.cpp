@@ -287,7 +287,7 @@ void MainWindow::makeConnections()
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
 	connect(_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
-	connect(_loader,				&AsyncLoader::checkDoSyncSig,						this,					&MainWindow::checkDoSync);
+	connect(_loader,				&AsyncLoader::checkDoSyncSig,						this,					&MainWindow::checkDoSync,									Qt::BlockingQueuedConnection);
 
 	connect(_preferences,			&PreferencesModel::missingValuesChanged,			this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(_preferences,			&PreferencesModel::plotBackgroundChanged,			this,					&MainWindow::setImageBackgroundHandler						);
