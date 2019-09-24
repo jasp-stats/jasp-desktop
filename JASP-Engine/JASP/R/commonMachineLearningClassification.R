@@ -44,8 +44,8 @@
   variables.to.read         <- c(predictors, target)
 
   customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
-  errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'), customChecks,
-                       all.target = variables.to.read, custom = ,
+  errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'), custom = customChecks,
+                       all.target = variables.to.read,
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
