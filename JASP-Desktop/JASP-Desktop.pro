@@ -93,15 +93,15 @@ exists(/app/lib/*) {
 
 
 	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
-	flatpak_appinfo_icon.path = /app/share/app-info/icons/flatpak/scalable
+	flatpak_appinfo_icon.path = /app/share/icons/hicolor/scalable/apps/
 	INSTALLS += flatpak_appinfo_icon
 
 	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jaspstats.JASP.png
-	flatpak_appinfo_icon64.path = /app/share/app-info/icons/flatpak/64x64
+	flatpak_appinfo_icon64.path = /app/share/icons/hicolor/64x64/apps/
 	INSTALLS += flatpak_appinfo_icon64
 
 	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jaspstats.JASP.png
-	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
+	flatpak_appinfo_icon128.path = /app/share/icons/hicolor/128x128/apps/
 	INSTALLS += flatpak_appinfo_icon128
 }
 
