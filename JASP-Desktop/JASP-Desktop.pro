@@ -208,6 +208,7 @@ HEADERS += \
     analysis/options/terms.h \
     analysis/analyses.h \
     analysis/analysis.h \
+    data/datasettableproxy.h \
     data/exporters/dataexporter.h \
     data/exporters/exporter.h \
     data/exporters/jaspexporter.h \
@@ -242,7 +243,6 @@ HEADERS += \
     data/computedcolumnsmodel.h \
     data/datasetloader.h \
     data/datasetpackage.h \
-    data/datasettablemodel.h \
     data/fileevent.h \
     analysis/options/variableinfo.h \
     engine/enginerepresentation.h \
@@ -270,8 +270,7 @@ HEADERS += \
     utilities/settings.h \
     utilities/simplecrypt.h \
     utilities/simplecryptkey.h \
-    variablespage/labelfiltergenerator.h \
-    variablespage/levelstablemodel.h \
+    data/labelfiltergenerator.h \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
     widgets/filemenu/filesystem.h \
@@ -353,7 +352,9 @@ HEADERS += \
     widgets/sortable.h \
     widgets/listmodelfiltereddataentry.h \
     data/importers/readstat/readstat_custom_io.h \
-    data/importers/readstat/readstat_windows_helper.h
+    data/importers/readstat/readstat_windows_helper.h \
+    data/datasettablemodel.h \
+    data/labelmodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -379,6 +380,7 @@ SOURCES += \
     analysis/options/terms.cpp \
     analysis/analyses.cpp \
     analysis/analysis.cpp \
+    data/datasettableproxy.cpp \
     data/exporters/dataexporter.cpp \
     data/exporters/exporter.cpp \
     data/exporters/jaspexporter.cpp \
@@ -411,7 +413,6 @@ SOURCES += \
     data/computedcolumnsmodel.cpp \
     data/datasetloader.cpp \
     data/datasetpackage.cpp \
-    data/datasettablemodel.cpp \
     data/fileevent.cpp \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
@@ -436,8 +437,7 @@ SOURCES += \
     results/resultsjsinterface.cpp \
     utilities/settings.cpp \
     utilities/simplecrypt.cpp \
-    variablespage/labelfiltergenerator.cpp \
-    variablespage/levelstablemodel.cpp \
+    data/labelfiltergenerator.cpp \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
     widgets/filemenu/filesystem.cpp \
@@ -489,7 +489,7 @@ SOURCES += \
     resultstesting/compareresults.cpp \
     resultstesting/resultscomparetable.cpp \
     widgets/filemenu/filemenu.cpp \
-    $$PWD/gui/messageforwarder.cpp \
+    gui/messageforwarder.cpp \
     widgets/filemenu/filemenubasiclistmodel.cpp \
     modules/ribbonmodelfiltered.cpp \
     utilities/helpmodel.cpp \
@@ -517,7 +517,9 @@ SOURCES += \
     widgets/sortmenumodel.cpp \
     widgets/sortable.cpp \
     widgets/listmodelfiltereddataentry.cpp \
-    data/importers/readstat/readstat_custom_io.cpp
+    data/importers/readstat/readstat_custom_io.cpp \
+    data/datasettablemodel.cpp \
+    data/labelmodel.cpp
 
 
 RESOURCES += \

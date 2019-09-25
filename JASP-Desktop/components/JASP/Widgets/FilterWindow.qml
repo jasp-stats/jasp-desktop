@@ -1,25 +1,20 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.2 as New
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.3
+import QtQuick			2.13
+import QtQuick.Controls 2.13
+import JASP.Theme		1.0
 import "FilterConstructor"
-import JASP.Theme 1.0
 
 FocusScope
 {
-	id: filterContainer
-	height: rFilterFields.desiredMinimumHeight
-	Layout.minimumHeight: showEasyFilter ? easyFilterConstructor.desiredMinimumHeight : rFilterFields.desiredMinimumHeight
+	id:							filterContainer
+	visible:					opened
 
-    visible: opened
+	property bool	opened:					false
+	property int	minimumHeightTextBoxes: 50 * preferencesModel.uiScale
+	property bool	showEasyFilter:			true
+	property int	desiredMinimumHeight:	showEasyFilter ? easyFilterConstructor.desiredMinimumHeight : rFilterFields.desiredMinimumHeight
 
-
-    property bool opened: false
-	property int minimumHeightTextBoxes: 50 * preferencesModel.uiScale
-	property bool showEasyFilter: true
-
-	onShowEasyFilterChanged: if(!showEasyFilter) absorbModelRFilter()
-	onVisibleChanged: if(!visible) filterWindow.close()
+	onShowEasyFilterChanged:	if(!showEasyFilter) absorbModelRFilter()
+	onVisibleChanged:			if(!visible) filterWindow.close()
 
     function toggle()
     {
@@ -62,23 +57,35 @@ FocusScope
 
 	signal rCodeChanged(string rScript)
 
-	Item
+	Rectangle
 	{
 		anchors.fill:	parent
-		visible:		parent.showEasyFilter
+		color:			Theme.uiBackground
+		border.color:	Theme.uiBorder
+		border.width:	1
+	}
+
+	Item
+	{
+		anchors.fill:		parent
+		anchors.margins:	1
+		visible:			parent.showEasyFilter
+
 
 		FilterConstructor
 		{
-			anchors.bottom:	closeEasyRectangularButton.top
-			anchors.right:	parent.right
-			anchors.left:	parent.left
-			anchors.top:	parent.top
-
-			id: easyFilterConstructor
-
+			id:				easyFilterConstructor
 			onRCodeChanged: filterContainer.rCodeChanged(rScript)
+			clip:			true
 
-			clip: true
+			anchors
+			{
+				bottom:	closeEasyRectangularButton.top
+				right:	parent.right
+				left:	parent.left
+				top:	parent.top
+			}
+
 
 			functionModel: ListModel
 			{
@@ -109,74 +116,48 @@ FocusScope
 					closeFunc()
 			}
 
-			New.Dialog
+			SaveDiscardCancelDialog
 			{
-				id: easySaveDialog
+				id:		easySaveDialog
 
-				x: (easyFilterConstructor.width - width) / 2
-				y: (easyFilterConstructor.height - height) / 2
+				title:	"Filter Changed"
+				text:	qsTr("There are unapplied changes to your filter; what would you like to do?")
 
-				modal: true
-				title: "Filter Changed"
                 property var closeFunc: undefined
 
-                footer: New.DialogButtonBox
-                {
-                    New.Button
-                    {
-                        text: qsTr("Save")
-                        onClicked:
-                        {
-                            if(easyFilterConstructor.checkAndApplyFilter())
-                                easySaveDialog.closeFunc();
-                            easySaveDialog.close();
-                        }
-                    }
-
-                    New.Button {
-                        text: qsTr("Cancel")
-
-                        onClicked:
-                        {
-                            easySaveDialog.close();
-                        }
-
-                    }
-                    New.Button {
-                        text: qsTr("Discard")
-
-                        onClicked:
-                        {
-                            easySaveDialog.closeFunc();
-                            easySaveDialog.close();
-                        }
-
-                    }
-                }
-
-				contentItem: Text
-				{
-					text: "There are unapplied changes to your filter; what would you like to do?"
-					wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-				}
+				onSave:		if(easyFilterConstructor.checkAndApplyFilter()) closeFunc();
+				onDiscard:	closeFunc();
 			}
 		}
 
 		RectangularButton
 		{
-			id: rRectangularButton
+			id:			rRectangularButton
 			iconSource: "qrc:/icons/R.png"
-			anchors.left: parent.left
-			anchors.bottom: parent.bottom
-			anchors.top: closeEasyRectangularButton.top
+			onClicked:	easyFilterConstructor.askIfChanged(function() { filterContainer.showEasyFilter = false } )
+			width:		height
+			toolTip:	qsTr("Switch to the R filter")
+			anchors
+			{
+				left:	parent.left
+				bottom:	parent.bottom
+				top:	closeEasyRectangularButton.top
+			}
+		}
 
-			onClicked: easyFilterConstructor.askIfChanged(function() { filterContainer.showEasyFilter = false } )
-
-
-			width: height
-
-			toolTip: "Switch to the R filter"
-
+		RectangularButton
+		{
+			id:			showInactiveFilteredButtonEasy
+			iconSource: dataSetModel.showInactive ? "qrc:/icons/eyeOpen.png" : "qrc:/icons/eyeClosed.png"
+			onClicked:	dataSetModel.showInactive = !dataSetModel.showInactive
+			width:		height
+			toolTip:	(dataSetModel.showInactive ? qsTr("Hide rows that were filtered out.") : qsTr("Show rows that were filtered out."))
+			anchors
+			{
+				left:	rRectangularButton.right
+				bottom:	parent.bottom
+				top:	closeEasyRectangularButton.top
+			}
 		}
 
 		RectangularButton
@@ -184,67 +165,70 @@ FocusScope
 			property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
 
 			id:				applyEasyFilter
-			text:			showApplyNotApplied ? "Apply pass-through filter" : "Filter applied"
+			text:			showApplyNotApplied ? qsTr("Apply pass-through filter") : qsTr("Filter applied")
 			enabled:		easyFilterConstructor.somethingChanged
-			anchors.left:	rRectangularButton.right
-			anchors.right:	helpEasyRectangularButton.left
-			anchors.bottom: parent.bottom
-			anchors.top:	closeEasyRectangularButton.top
-
 			onClicked:		easyFilterConstructor.checkAndApplyFilter()
+			toolTip:		showApplyNotApplied ? qsTr("Click to apply filter") : qsTr("Filter is already applied")
+			anchors
+			{
+				left:	showInactiveFilteredButtonEasy.right
+				right:	helpEasyRectangularButton.left
+				bottom: parent.bottom
+				top:	closeEasyRectangularButton.top
+			}
 
-			toolTip:		showApplyNotApplied ? "Click to apply filter" : "Filter is already applied"
 		}
 
 		RectangularButton
 		{
 			id:				helpEasyRectangularButton
 			iconSource:		"qrc:/images/info-button.png"
-			anchors.right:	closeEasyRectangularButton.left
-			anchors.bottom:	parent.bottom
-			anchors.top:	closeEasyRectangularButton.top
 
 			onClicked:		helpModel.showOrTogglePage("other/EasyFilterConstructor");
-			toolTip:		"Open Documentation"
+			toolTip:		qsTr("Open Documentation")
+			anchors
+			{
+				right:	closeEasyRectangularButton.left
+				bottom:	parent.bottom
+				top:	closeEasyRectangularButton.top
+			}
 		}
 
 		RectangularButton
 		{
-			id: closeEasyRectangularButton
-			iconSource: "qrc:/images/cross.png"
-			anchors.right: parent.right
+			id:				closeEasyRectangularButton
+			iconSource:		"qrc:/images/cross.png"
+			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
 
-			onClicked: easyFilterConstructor.askIfChanged(function() { filterWindow.toggle() } )
-			toolTip: "Hide filter"
+			onClicked:		easyFilterConstructor.askIfChanged(function() { filterWindow.toggle() } )
+			toolTip:		qsTr("Hide filter")
 		}
 	}
 
 	Item
     {
-		id: rFilterFields
-		visible: !parent.showEasyFilter
-        anchors.fill: parent
-		property real desiredMinimumHeight: filterButtons.height + (filterErrorScroll.visible ? filterErrorScroll.height : 0 ) + filterEditRectangle.desiredMinimumHeight
-
-		//orientation: Qt.Vertical
+						id:						rFilterFields
+						visible:				!parent.showEasyFilter
+						anchors.fill:			parent
+						anchors.margins:		1
+		property real	desiredMinimumHeight:	filterButtons.height + (filterErrorScroll.visible ? filterErrorScroll.height : 0 ) + filterEditRectangle.desiredMinimumHeight
 
 		Rectangle
 		{
-			id: filterEditRectangle
-			color: Theme.white
+							id:						filterEditRectangle
+							color:					Theme.white
+							border.width:			1
+							border.color:			"lightGrey"
+			property real	desiredMinimumHeight:	applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
 
-            border.width: 1
-			border.color: "lightGrey"
-			//Layout.fillHeight: true
-			//Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
-			property real desiredMinimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
-
-
-			anchors.top: parent.top
-			anchors.bottom: filterErrorScroll.top
-			anchors.left: parent.left
-			anchors.right: parent.right
+			anchors
+			{
+				top:	parent.top
+				bottom:	filterErrorScroll.top
+				left:	parent.left
+				right:	parent.right
+			}
 
 			Image
 			{
@@ -261,89 +245,95 @@ FocusScope
 				height:						implicitHeight * ratio
 			}
 
-			New.ScrollView
+			ScrollView
 			{
-				id: filterScroller
-				anchors.fill: parent
-				clip: true
-
-				contentWidth: width
-				contentHeight: filterGeneratedBox.height + filterEditBox.height
+				id:				filterScroller
+				anchors.fill:	parent
+				clip:			true
+				contentWidth:	width
+				contentHeight:	filterGeneratedBox.height + filterEditBox.height
 
 				Rectangle
 				{
-					id: filterGeneratedBox
-					anchors.top: parent.top
-					anchors.left: parent.left
-					anchors.right: parent.right
+					id:				filterGeneratedBox
+					height:			filterGeneratedEdit.contentHeight
+					color:			"transparent"
+					border.color:	"lightGray"
+					border.width:	1
 
-					height: filterGeneratedEdit.contentHeight
-					color: "transparent"
-					border.color: "lightGray"
-					border.width: 1
-
-					New.TextArea
+					anchors
 					{
-						id: filterGeneratedEdit
-						anchors.top: filterGeneratedBox.top
-						anchors.left: resetAllGeneratedFilters.right
-						anchors.right: filterGeneratedBox.right
-						text: filterModel.generatedFilter +"\n"
-						height: contentHeight
-						readOnly: true
-						color: "gray"
-						selectByMouse: true
-						onActiveFocusChanged: if(!activeFocus) deselect()
+						top:	parent.top
+						left:	parent.left
+						right:	parent.right
+					}
 
-						font.family: "Courier"
-						font.pixelSize: baseFontSize * preferencesModel.uiScale
-						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
+
+					TextArea
+					{
+						id:						filterGeneratedEdit
+						anchors.top:			filterGeneratedBox.top
+						anchors.left:			resetAllGeneratedFilters.right
+						anchors.right:			filterGeneratedBox.right
+						text:					filterModel.generatedFilter +"\n"
+						height:					contentHeight
+						readOnly:				true
+						color:					"gray"
+						selectByMouse:			true
+						onActiveFocusChanged:	if(!activeFocus) deselect()
+
+						font.family:			"Courier"
+						font.pixelSize:			baseFontSize * preferencesModel.uiScale
+						wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 
 					}
 
 					RectangularButton
 					{
-						id: resetAllGeneratedFilters
-						anchors.left: parent.left
-						anchors.verticalCenter: parent.verticalCenter
-						width: dataSetModel.columnsFilteredCount > 0 ? height : 0
-						iconSource: "qrc:/images/eraser_all.png"
-						visible: dataSetModel.columnsFilteredCount > 0
-						anchors.margins: 1
-						onClicked: dataSetModel.resetAllFilters()
-						height: filterGeneratedBox.height
-						toolTip: "Reset all checkmarks on all labels"
+						id:						resetAllGeneratedFilters
+						width:					dataSetModel.columnsFilteredCount > 0 ? height : 0
+						height:					filterGeneratedBox.height
+						iconSource:				"qrc:/images/eraser_all.png"
+						visible:				dataSetModel.columnsFilteredCount > 0
+						toolTip:				qsTr("Reset all checkmarks on all labels")
+						onClicked:				dataSetModel.resetAllFilters()
 
-						//background: Rectangle {	color: "transparent" }
+						anchors.left:			parent.left
+						anchors.verticalCenter:	parent.verticalCenter
+						anchors.margins:		1
+
 					}
 				}
 
 				Item
 				{
 					//Must be here because otherwise filterEdit turns its clipping on, because it is in a scrollview...
-					id: filterEditBox
-					anchors.top: filterGeneratedBox.bottom
-					anchors.left: parent.left
-					anchors.right: parent.right
-					height: filterEdit.height
+					id:				filterEditBox
+					height:			filterEdit.height
+					anchors.top:	filterGeneratedBox.bottom
+					anchors.left:	parent.left
+					anchors.right:	parent.right
 
-					New.TextArea
+					TextArea
 					{
 
-						id: filterEdit
-
-						anchors.top: parent.top
-						anchors.left: parent.left
-						anchors.right: parent.right
-						height: contentHeight + 30
-						selectByMouse: true
-						onActiveFocusChanged: if(!activeFocus) deselect()
+						id:						filterEdit
+						height:					contentHeight + 30
+						selectByMouse:			true
+						onActiveFocusChanged:	if(!activeFocus) deselect()
+						font.family:			"Courier"
+						font.pixelSize:			baseFontSize * preferencesModel.uiScale
+						wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 
 						property bool changedSinceLastApply: text !== filterModel.rFilter
 
-						font.family: "Courier"
-						font.pixelSize: baseFontSize * preferencesModel.uiScale
-						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
+
+						anchors
+						{
+							top:	parent.top
+							left:	parent.left
+							right:	parent.right
+						}
 					}
 				}
 			}
@@ -359,92 +349,56 @@ FocusScope
 					closeFunc()
 			}
 
-			New.Dialog
+			SaveDiscardCancelDialog
 			{
-				id: saveDialog
+				id:		saveDialog
 
-				x: (filterEditRectangle.width - width) / 2
-				y: (filterEditRectangle.height - height) / 2
+				title:	"Filter Changed"
+				text:	qsTr("There are unapplied changes to your filter; what would you like to do?")
 
-				modal: true
-				title: "Filter Changed"
-                property var closeFunc: undefined
+				property var closeFunc: undefined
 
-                footer: New.DialogButtonBox
-                {
-                    New.Button
-                    {
-                        text: qsTr("Save")
-                        onClicked:
-                        {
-                            filterWindow.applyAndSendFilter(filterEdit.text)
-                            saveDialog.closeFunc()
-                            saveDialog.close()
-                        }
-                    }
-
-                    New.Button {
-                        text: qsTr("Cancel")
-
-                        onClicked:
-                        {
-                            saveDialog.close()
-                        }
-
-                    }
-                    New.Button {
-                        text: qsTr("Discard")
-
-                        onClicked:
-                        {
-                            saveDialog.closeFunc();
-                            saveDialog.close();
-                        }
-
-                    }
-                }
-
-				contentItem: Text
-				{
-					text: "There are unapplied changes to your filter; what would you like to do?"
-					wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-				}
+				onSave:		{ filterWindow.applyAndSendFilter(filterEdit.text); closeFunc(); }
+				onDiscard:	closeFunc();
 			}
         }
 
-		New.ScrollView
+		ScrollView
 		{
-			id: filterErrorScroll
-			height: filterWindow.minimumHeightTextBoxes//filterError.contentHeight//Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)
+			id:				filterErrorScroll
+			height:			filterWindow.minimumHeightTextBoxes
 
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: filterButtons.top
-
-			New.TextArea
+			anchors
 			{
-				id: filterError
-				color: "red"
-				readOnly: true
-				text: filterModel.filterErrorMsg + "\n"
+				left:	parent.left
+				right:	parent.right
+				bottom: filterButtons.top
+			}
 
-				selectByMouse: true
-				onActiveFocusChanged: if(!activeFocus) deselect()
+			TextArea
+			{
+				id:						filterError
+				color:					"red"
+				readOnly:				true
+				text:					filterModel.filterErrorMsg + "\n"
+				selectByMouse:			true
+				onActiveFocusChanged:	if(!activeFocus) deselect()
+				font.family:			"Courier"
+				font.pixelSize:			baseFontSize * preferencesModel.uiScale
 
-				font.family: "Courier"
-				font.pixelSize: baseFontSize * preferencesModel.uiScale
-
-				states: [
-					State {
+				states:
+				[
+					State
+					{
 						name: "closed"
-						PropertyChanges { target: filterErrorScroll; visible: false; height: 0 }
 						when: filterModel.filterErrorMsg.length === 0
+						PropertyChanges { target: filterErrorScroll; visible: false; height: 0 }
 					},
-					State {
+					State
+					{
 						name: "opened"
-						PropertyChanges { target: filterErrorScroll; visible: true; height: filterError.contentHeight} //Math.min( , filterWindow.minimumHeightTextBoxes)
-
 						when: filterModel.filterErrorMsg.length > 0
+						PropertyChanges { target: filterErrorScroll; visible: true; height: filterError.contentHeight} //Math.min( , filterWindow.minimumHeightTextBoxes)
 					}
 				]
 			}
@@ -452,43 +406,61 @@ FocusScope
 
 		Item
 		{
-			id: filterButtons
-			height: closeRectangularButton.height
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: parent.bottom
-
-			RectangularButton
+			id:				filterButtons
+			height:			closeRectangularButton.height
+			anchors
 			{
-				id: easyRectangularButton
-				iconSource: "qrc:/icons/NotR.png"
-				anchors.left: parent.left
-				anchors.bottom: parent.bottom
-				anchors.top: closeRectangularButton.top
-
-				onClicked: filterEditRectangle.askIfChanged(function (){ filterContainer.showEasyFilter = true })
-
-				width: visible ? height : 0
-
-				toolTip: "Switch to the drag and drop filter"
-
+				left:		parent.left
+				right:		parent.right
+				bottom:		parent.bottom
 			}
 
 			RectangularButton
 			{
-				id: clearRectangularButton
+				id:				easyRectangularButton
+				iconSource:		"qrc:/icons/NotR.png"
+				onClicked:		filterEditRectangle.askIfChanged(function (){ filterContainer.showEasyFilter = true })
+				width:			visible ? height : 0
+				toolTip:		qsTr("Switch to the drag and drop filter")
+				anchors
+				{
+					left:		parent.left
+					bottom:		parent.bottom
+					top:		closeRectangularButton.top
+				}
+			}
+
+			RectangularButton
+			{
+				id:			showInactiveFilteredButtonR
+				iconSource: dataSetModel.showInactive ? "qrc:/icons/eyeOpen.png" : "qrc:/icons/eyeClosed.png"
+				onClicked:	dataSetModel.showInactive = !dataSetModel.showInactive
+				width:		height
+				toolTip:	(dataSetModel.showInactive ? qsTr("Hide rows that were filtered out.") : qsTr("Show rows that were filtered out."))
+				anchors
+				{
+					left:	easyRectangularButton.right
+					bottom:	parent.bottom
+					top:	easyRectangularButton.top
+				}
+			}
+
+			RectangularButton
+			{
+				id:			clearRectangularButton
 				iconSource: "qrc:/images/eraser.png"
-				anchors.left: easyRectangularButton.right
-				anchors.bottom: parent.bottom
-				anchors.top: closeRectangularButton.top
+				onClicked:	filterWindow.resetFilter()
+				width:		visible ? implicitWidth : 0
+				height:		filterContainer.buttonsHeight
+				visible:	filterEdit.text !== filterModel.defaultRFilter
+				toolTip:	qsTr("Reset to default filter")
 
-				onClicked: filterWindow.resetFilter()
-
-				width: visible ? implicitWidth : 0
-				height: filterContainer.buttonsHeight
-				visible: filterEdit.text !== filterModel.defaultRFilter
-
-				toolTip: "Reset to default filter"
+				anchors
+				{
+					left:	showInactiveFilteredButtonR.right
+					bottom: parent.bottom
+					top:	closeRectangularButton.top
+				}
 			}
 
 			RectangularButton
@@ -497,7 +469,7 @@ FocusScope
 
 				property bool filterIsDefault: filterEdit.text === filterModel.defaultRFilter
 
-				text:			filterEdit.changedSinceLastApply ? "Apply pass-through filter" : filterIsDefault ? "Default filter applied" : "Filter applied"
+				text:			filterEdit.changedSinceLastApply ? qsTr("Apply pass-through filter") : filterIsDefault ? qsTr("Default filter applied") : qsTr("Filter applied")
 				enabled:		filterEdit.changedSinceLastApply
 				anchors.left:	clearRectangularButton.right
 				anchors.right:	helpButton.left
@@ -506,7 +478,7 @@ FocusScope
 
 				onClicked:		filterWindow.applyAndSendFilter(filterEdit.text)
 
-				toolTip:		filterEdit.changedSinceLastApply ? "Click to apply filter" : filterIsDefault ? "Filter is unchanged from default" : "Filter is already applied"
+				toolTip:		filterEdit.changedSinceLastApply ? qsTr("Click to apply filter") : filterIsDefault ? qsTr("Filter is unchanged from default") : qsTr("Filter is already applied")
 			}
 
 			RectangularButton
@@ -518,7 +490,7 @@ FocusScope
 				anchors.top:	closeRectangularButton.top
 
 				onClicked:		helpModel.showOrTogglePage("other/RFilterConstructor");
-				toolTip:		"Open Documentation"
+				toolTip:		qsTr("Open Documentation")
 			}
 
 
@@ -530,7 +502,7 @@ FocusScope
 				anchors.bottom: parent.bottom
 
 				onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.toggle() })
-				toolTip:		"Hide filter"
+				toolTip:		qsTr("Hide filter")
 			}
 		}
     }

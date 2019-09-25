@@ -61,13 +61,7 @@ public:
 	 */
 	virtual size_t size() const;
 
-	/**
-	 * @brief isValueEqual Returns true if the column/row are identical.
-	 * @param col The columns
-	 * @param row
-	 * @return true if equal.
-	 */
-	virtual bool isValueEqual(Column &col, size_t row) const;
+	std::vector<std::string>	allValuesAsStrings()					const	override;
 
 	/**
 	 * @brief hasCall Checks for presence of a cell at row.
@@ -104,12 +98,12 @@ public:
 	 */
 	void postLoadProcess();
 
-	Column::ColumnType	columnType() const { return _columnType; }
+	columnType	getColumnType() const { return _columnType; }
 
 	// Getters.
-	Column::ColumnType getJASPColumnType() const { return _columnType; }
+	columnType getJASPColumnType() const { return _columnType; }
 
-	std::vector<std::string> getData();
+	std::vector<std::string> getData() const;
 
 private:
 
@@ -119,7 +113,7 @@ private:
 	typedef std::map< int, size_t > CellIndex;
 	CellIndex			_index;		///< cell indexes indexed by row.
 	int					_columnNumber; //<- We know our own column number
-	Column::ColumnType	_columnType; // Our column type.
+	columnType	_columnType; // Our column type.
 
 	/**
 	 * @brief colNumberAsExcel Returns the column number as a string (base 26 A-Z).
@@ -155,4 +149,4 @@ private:
 };
 
 } // end namespace.
-#endif // sentinal ODSIMPORTCOLUMN_H
+#endif // sentinel ODSIMPORTCOLUMN_H

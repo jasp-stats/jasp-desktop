@@ -21,7 +21,7 @@
 
 #include "analysis.h"
 #include "appinfo.h"
-#include "dataset.h"
+#include "data/datasetpackage.h"
 
 #include <QString>
 #include <QMap>
@@ -53,9 +53,11 @@ public:
 					nameRole,
 					idRole};
 
-				Analyses(QObject * parent, DynamicModules * dynamicModules) : QAbstractListModel(parent), _dynamicModules(dynamicModules)
+				Analyses(DataSetPackage * package, DynamicModules * dynamicModules) : QAbstractListModel(package), _package(package), _dynamicModules(dynamicModules)
 				{
-					connect(this, &Analyses::requestComputedColumnDestruction, this, &Analyses::dataSetColumnsChanged, Qt::QueuedConnection);
+					connect(this,		&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetColumnsChanged	, Qt::QueuedConnection	);
+					connect(_package,	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
+					connect(_package,	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
 				}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
@@ -72,7 +74,7 @@ public:
 	bool		allCreatedInCurrentVersion() const;
 
 	void		setAnalysesUserData(Json::Value userData);
-	void		refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns,	 std::vector<std::string> &oldColumnNames, bool hasNewColumns = false);
+	void		refreshAnalysesUsingColumns(std::vector<std::string> changedColumns,	 std::vector<std::string> missingColumns,	 std::map<std::string, std::string> changeNameColumns,	 std::vector<std::string> oldColumnNames, bool hasNewColumns = false);
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);
@@ -86,9 +88,6 @@ public:
 
 	void		selectAnalysis(Analysis * analysis);
 	
-	void		setDataSet(DataSet* dataSet);
-	DataSet*	getDataSet() const				{ return _dataSet; }
-
 	int						rowCount(const QModelIndex & = QModelIndex())				const override	{ return int(count()); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
@@ -98,6 +97,8 @@ public:
 	bool					moving()													const			{ return _moving;				}
 	double					currentFormPrevH()											const			{ return _currentFormPrevH;		}
 	Analysis*				getAnalysisBeforeMoving(size_t index);
+
+	DataSetPackage *		getDataSetPackage()											const			{ return _package;				}
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -165,31 +166,31 @@ private slots:
 
 private:
 	void bindAnalysisHandler(Analysis* analysis);
-	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);
+	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);	
+	void _makeBackwardCompatible(RibbonModel* ribbonModel, Version& version, Json::Value& analysisData);
+	void _analysisQMLFileChanged(Analysis* analysis);
+
 
 private:
-	 std::map<size_t, Analysis*>	_analysisMap;
-	 std::vector<size_t>			_orderedIds;
-	 std::vector<size_t>			_orderedIdsBeforeMoving;
+	DataSetPackage				*	_package				= nullptr;
+	DynamicModules				*	_dynamicModules			= nullptr;
 
-	 size_t							_nextId					= 0;
-	 int							_currentAnalysisIndex	= -1;
-	 DataSet*						_dataSet				= nullptr;
-	 DynamicModules*				_dynamicModules			= nullptr;
-	 double							_currentFormHeight		= 0;
-	 bool							_visible				= false;
-	 bool							_moving					= false;
+	std::map<size_t, Analysis*>		_analysisMap;
+	std::vector<size_t>				_orderedIds;
+	std::vector<size_t>				_orderedIdsBeforeMoving;
+	QFileSystemWatcher				_QMLFileWatcher;
 
-	 static int								_scriptRequestID;
-	 QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;
-	 
-	 QFileSystemWatcher				_QMLFileWatcher;
-	 
-	 void							_makeBackwardCompatible(RibbonModel* ribbonModel, Version& version, Json::Value& analysisData);
-	 void							_analysisQMLFileChanged(Analysis* analysis);
-	 
+	size_t							_nextId					= 0;
+	int								_currentAnalysisIndex	= -1;
+	double							_currentFormHeight		= 0,
+									_currentFormPrevH		= -1;
+	bool							_visible				= false;
+	bool							_moving					= false;
 
-	 double _currentFormPrevH;
+	static int								_scriptRequestID;
+	QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;
+
+
 };
 
 #endif // ANALYSES_H

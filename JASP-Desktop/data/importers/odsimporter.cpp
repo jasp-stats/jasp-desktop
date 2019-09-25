@@ -57,16 +57,6 @@ ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function
 	return result;
 }
 
-void ODSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
-{
-	ODSImportColumn *odsColumn = dynamic_cast<ODSImportColumn *>(importColumn);
-	const std::vector<std::string> &values = odsColumn->getData();
-
-	fillSharedMemoryColumnWithStrings(values, column);
-
-
-}
-
 void ODSImporter::readManifest(const std::string &path, ODSImportDataSet *dataset)
 {
 

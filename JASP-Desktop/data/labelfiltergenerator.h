@@ -2,14 +2,14 @@
 #define LABELFILTERGENERATOR_H
 
 #include <QObject>
-#include "data/datasetpackage.h"
+#include "data/labelmodel.h"
 
 class labelFilterGenerator : public QObject
 {
 	Q_OBJECT
 
 public:
-	labelFilterGenerator(DataSetPackage *package, QObject *parent = NULL);
+	labelFilterGenerator(LabelModel *labelModel, QObject *parent = NULL);
 
 	///Generates entire filter
 	std::string generateFilter();
@@ -25,12 +25,12 @@ private:
 	bool		labelNeedsFilter(Column & column) { return !column.allLabelsPassFilter(); }
 
 	///Generates sub-filter for specified column
-	std::string	generateLabelFilter(Column & column);
+	std::string	generateLabelFilter(size_t col);
 
 	std::string easyFilterConstructorRScript = "";
 
 
-	DataSetPackage * _package = NULL;
+	LabelModel * _labelModel = nullptr;
 
 signals:
 	void setGeneratedFilter(QString generatedFilter);

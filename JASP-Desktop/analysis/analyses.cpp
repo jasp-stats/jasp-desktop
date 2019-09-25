@@ -361,11 +361,11 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 
 
 void Analyses::refreshAnalysesUsingColumns(
-		std::vector<std::string> &changedColumns,
-		std::vector<std::string> &missingColumns,
-		std::map<std::string, std::string> &changeNameColumns,
-		std::vector<std::string> &oldColumnNames,
-		bool hasNewColumns)
+		std::vector<std::string>			changedColumns,
+		std::vector<std::string>			missingColumns,
+		std::map<std::string, std::string>	changeNameColumns,
+		std::vector<std::string>			oldColumnNames,
+		bool								hasNewColumns)
 {
 	if (hasNewColumns || missingColumns.size() > 0 || changeNameColumns.size() > 0 || changedColumns.size() > 0)
 		// Apparently this must be done at the end of the event loop
@@ -527,17 +527,6 @@ void Analyses::selectAnalysis(Analysis * analysis)
 			return;
 		}
 }
-
-void Analyses::setDataSet(DataSet *dataSet)
-{
-	if(_dataSet == dataSet)
-		return;
-
-	_dataSet = dataSet;
-	
-	emit dataSetChanged();
-}
-
 
 void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 {

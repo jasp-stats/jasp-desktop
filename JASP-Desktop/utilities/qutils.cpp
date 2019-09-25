@@ -117,3 +117,23 @@ std::vector<std::string> fq(const QVector<QString> & vec)
 	return out;
 
 }
+
+std::map<std::string, std::string>	fq(const QMap<QString, QString> & map)
+{
+	std::map<std::string, std::string>	out;
+
+	for(const auto & keyval : map.toStdMap())
+		out[fq(keyval.first)] = fq(keyval.second);
+
+	return out;
+}
+
+QMap<QString, QString> tq(const std::map<std::string, std::string> & map)
+{
+	QMap<QString, QString> out;
+
+	for(const auto & keyval : map)
+		out[tq(keyval.first)] = tq(keyval.second);
+
+	return out;
+}

@@ -65,6 +65,7 @@ Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 		Utils::FileType it = static_cast<Utils::FileType>(i);
 		std::string it_str(".");
 		it_str += Utils::getFileTypeString(it);
+
 		if (algorithm::iends_with(path, it_str))
 		{
 			filetype = it;
@@ -72,11 +73,9 @@ Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 		}
 	}
 
-	if (filetype == Utils::unknown)
-	{
-		if (!algorithm::find_last(path, "."))
-			filetype =  Utils::empty;
-	}
+	if (filetype == Utils::unknown && !algorithm::find_last(path, "."))
+		filetype =  Utils::empty;
+
 
 	return filetype;
 }
@@ -247,9 +246,7 @@ string Utils::osPath(const filesystem::path &path)
 void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 {
 	for (const string &remove : toRemove)
-	{
 		target.erase(std::remove_if(target.begin(), target.end(), [&remove](const string& str){return (str == remove);}), target.end());
-	}
 }
 
 void Utils::sleep(int ms)
@@ -263,10 +260,10 @@ void Utils::sleep(int ms)
 #endif
 }
 
-const string Utils::emptyValue = "";
-const vector<string> Utils::_defaultEmptyValues = {"NaN", "nan", ".", "NA"};
-vector<double> Utils::_currentDoubleEmptyValues = {};
-vector<string> Utils::_currentEmptyValues = Utils::_defaultEmptyValues;
+const string			Utils::emptyValue					= "";
+const vector<string>	Utils::_defaultEmptyValues			= {"NaN", "nan", ".", "NA"};
+vector<double>			Utils::_currentDoubleEmptyValues	= {};
+vector<string>			Utils::_currentEmptyValues			= Utils::_defaultEmptyValues;
 
 void Utils::setEmptyValues(const vector<string> &emptyvalues)
 {
@@ -288,55 +285,128 @@ void Utils::processEmptyValues()
 
 bool Utils::getIntValue(const string &value, int &intValue)
 {
-	bool success = true;
 	try
 	{
 		intValue = boost::lexical_cast<int>(value);
+		return true;
 	}
-	catch (...)
-	{
-		success = false;
-	}
+	catch (...)	{}
 
-	return success;
+	return false;
 }
 
 bool Utils::getIntValue(const double &value, int &intValue)
 {
-	bool success = true;
 	try
 	{
 		double intPart;
-		success = modf(value, &intPart) == 0.0;
-		if (success)
+
+		if (modf(value, &intPart) == 0.0)
 		{
 			if (intPart <=  INT_MAX && intPart >= INT_MIN)
+			{
 				intValue = int(intPart);
-			else
-				success = false;
+				return true;
+			}
 		}
-		//intValue = boost::lexical_cast<int>(value);
 	}
-	catch (...)
-	{
-		success = false;
-	}
+	catch (...) {}
 
-	return success;
+	return false;
 }
 
 bool Utils::getDoubleValue(const string &value, double &doubleValue)
 {
-	bool success = true;
 	try
 	{
 		doubleValue = boost::lexical_cast<double>(value);
+		return true;
 	}
-	catch (...)
-	{
-		success = false;
-	}
+	catch (...) {}
 
-	return success;
+	return false;
 }
 
+
+std::string Utils::_deEuropeaniseForImport(const std::string &value)
+{
+	int dots	= 0,
+		commas	= 0;
+
+	for (char k : value)
+		if		(k == '.')	dots++;
+		else if	(k == ',')	commas++;
+
+	if (commas > 0)
+	{
+		std::string uneurope = value;
+
+		if (dots > 0)
+		{
+			size_t	i = 0,
+					j = 0;
+
+			for (;i < value.size(); i++)
+				if (value[i] != '.')
+				{
+					uneurope[j] = value[i];
+					j++;
+				}
+
+			uneurope.resize(j);
+		}
+
+		for (size_t i = 0; i < uneurope.length(); i++)
+			if (uneurope[i] == ',')
+			{
+				uneurope[i] = '.';
+				break;
+			}
+
+		return uneurope;
+	}
+
+	return value;
+}
+
+bool Utils::isEmptyValue(const std::string& val)
+{
+	if (val.empty()) return true;
+
+	return std::find(_currentEmptyValues.begin(), _currentEmptyValues.end(), val) != _currentEmptyValues.end();
+}
+
+bool Utils::isEmptyValue(const double &val)
+{
+	if (std::isnan(val)) return true;
+
+	return std::find(_currentDoubleEmptyValues.begin(), _currentDoubleEmptyValues.end(), val) != _currentDoubleEmptyValues.end();
+}
+
+bool Utils::convertValueToIntForImport(const std::string &strValue, int &intValue)
+{
+	if (!isEmptyValue(strValue))
+	{
+		if (!Utils::getIntValue(strValue, intValue))
+			return false;
+	}
+	else
+		intValue = INT_MIN;
+
+	return true;
+}
+
+bool Utils::convertValueToDoubleForImport(const std::string &strValue, double &doubleValue)
+{
+	std::string v = _deEuropeaniseForImport(strValue);
+
+	if (!isEmptyValue(v))
+	{
+		if (!Utils::getDoubleValue(v, doubleValue))
+			return false;
+	}
+	else
+		doubleValue = NAN;
+
+	return true;
+}

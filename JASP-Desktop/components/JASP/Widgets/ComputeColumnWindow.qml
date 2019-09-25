@@ -1,15 +1,12 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.3
-import QtQuick.Layouts 1.3
+import QtQuick			2.7
+import QtQuick.Controls 2.13
+import QtQuick.Layouts	1.3
+import JASP.Theme		1.0
 import "FilterConstructor"
-import JASP.Theme 1.0
 
 FocusScope
 {
-	id:						computedColumnContainer
-	height:					desiredMinimumHeight
-	Layout.minimumHeight:	desiredMinimumHeight
-
+	id:							computedColumnContainer
     visible: opened
 
 	property bool	opened:						false
@@ -26,6 +23,16 @@ FocusScope
 	onSelectedColumnNameMirrorChanged:	if(selectedColumnNameMirror === "") close();
 	onJsonConstructedModelChanged:		computedColumnConstructor.initializeFromJSON(userLikesR ? "{\"formulas\":[]}" : jsonConstructedModel);
 	onComputeColumnRCodeChanged:		computeColumnEdit.text = computeColumnRCode;
+
+	Rectangle
+	{
+		id:				computedColumnWindowBackground
+		color:			Theme.uiBackground
+		border.color:	Theme.uiBorder
+		border.width:	1
+		anchors.fill:	parent
+		z:				-1
+	}
 
 	Connections
 	{
@@ -96,12 +103,16 @@ FocusScope
 	{
 		id: computeColumnCodeArea
 
-
-		anchors.top: computeColumnTitle.bottom
-		anchors.bottom: computeColumnErrorScroll.top
-		anchors.left: parent.left
-		anchors.right: parent.right
-
+		anchors
+		{
+			top:			computeColumnTitle.bottom
+			bottom:			computeColumnErrorScroll.top
+			left:			parent.left
+			right:			parent.right
+			topMargin:		1
+			leftMargin:		anchors.topMargin
+			rightMargin:	anchors.topMargin
+		}
 
 		Rectangle
 		{
@@ -250,27 +261,29 @@ FocusScope
 
 	Item
 	{
-		id: computeColumnButtons
-		height: closeColumnEditorButton.height
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.bottom: parent.bottom
-
+		id:				computeColumnButtons
+		height:			closeColumnEditorButton.height
+		anchors
+		{
+			left:		parent.left
+			right:		parent.right
+			bottom:		parent.bottom
+			margins:	1
+		}
 
 		RectangularButton
 		{
-			id: removeColumnButton
-			iconSource: "qrc:///icons/square_trashcan.png"
-			anchors.left: parent.left
-			anchors.bottom: parent.bottom
-			anchors.top: closeColumnEditorButton.top
+			id:				removeColumnButton
+			iconSource:		"qrc:///icons/square_trashcan.png"
+			toolTip:		"Remove computed column"
+			onClicked:		computedColumnsInterface.removeColumn()
 
-			onClicked: computedColumnsInterface.removeColumn()
-
-			width: visible ? implicitWidth : 0
-			//visible: computeColumnEdit.text !== defaultcomputeColumn
-
-			toolTip: "Remove computed column"
+			anchors
+			{
+				left:	parent.left
+				bottom: parent.bottom
+				top:	closeColumnEditorButton.top
+			}
 		}
 
 		RectangularButton
@@ -327,57 +340,17 @@ FocusScope
 		}		
 	}
 
-	Dialog
+
+	SaveDiscardCancelDialog
 	{
-		id: saveDialog
-
-		x: (parent.width - width) / 2
-		y: (parent.height - height) / 2
-
-		modal: true
-		title: "Computed Column Changed"
-
-		footer: DialogButtonBox
+		id:			saveDialog
+		title:		"Computed Column Changed"
+		text:		"There are unapplied changes to your computed column; what would you like to do?"
+		onDiscard:	computedColumnContainer.close()
+		onSave:
 		{
-			Button
-			{
-				text: qsTr("Save")
-				onClicked:
-				{
-					computedColumnContainer.applyComputedColumn()
-					computedColumnContainer.close()
-					saveDialog.close()
-				}
-			}
-
-			Button
-			{
-				text: qsTr("Cancel")
-
-				onClicked:
-				{
-					saveDialog.close()
-				}
-
-			}
-
-			Button
-			{
-				text: qsTr("Discard")
-
-				onClicked:
-				{
-					computedColumnContainer.close()
-					saveDialog.close();
-				}
-
-			}
-		}
-
-		contentItem: Text
-		{
-			text: "There are unapplied changes to your computed column; what would you like to do?"
-			wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+			computedColumnContainer.applyComputedColumn()
+			computedColumnContainer.close()
 		}
 	}
 }

@@ -196,9 +196,9 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 	_engineState			= engineState::computeColumn;
 
 	json["typeRequest"]		= engineStateToString(_engineState);
-	json["columnName"]		= computeColumnStore->columnName.toStdString();
+	json["columnName"]		= computeColumnStore->_columnName.toStdString();
 	json["computeCode"]		= computeColumnStore->script.toStdString();
-	json["columnType"]		= Column::columnTypeToString(computeColumnStore->columnType);
+	json["columnType"]		= columnTypeToString(computeColumnStore->_columnType);
 
 	sendString(json.toStyledString());
 }

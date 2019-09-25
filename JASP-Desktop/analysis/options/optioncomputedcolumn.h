@@ -10,7 +10,7 @@ class ComputedColumn;
 class OptionComputedColumn : public OptionString
 {
 public:
-	OptionComputedColumn(std::string columnName = "", bool computed = true, int columnType = Column::ColumnTypeScale) : OptionString(columnName), _computed(computed), _columnType(columnType) {}
+	OptionComputedColumn(std::string columnName = "", bool computed = true, int columnType = int(columnType::scale)) : OptionString(columnName), _computed(computed), _columnType(columnType) {}
 
 	void					init(const Json::Value &data)			override;
 	void					setValue(const std::string &value)		override;

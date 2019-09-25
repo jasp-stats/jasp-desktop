@@ -28,6 +28,7 @@
 #include "datablock.h"
 #include "labels.h"
 
+#include "columntype.h"
 
 class Column
 {
@@ -50,10 +51,7 @@ class Column
 
 public:
 	///ColumnType is set up to be used as bitflags in places such as assignedVariablesModel and such
-	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
-
-	static bool isEmptyValue(const std::string& val);
-	static bool isEmptyValue(const double& val);
+	//enum ColumnType { unknown = 0, nominal = 1, nominalText = 2, ordinal = 4, scale = 8 };
 
 	bool resetEmptyValues(std::map<int, std::string>& emptyValuesMap);
 
@@ -64,7 +62,7 @@ public:
 	bool overwriteDataWithOrdinal(std::vector<int> ordinalData);
 	bool overwriteDataWithNominal(std::vector<int> nominalData);
 	bool overwriteDataWithNominal(std::vector<std::string> nominalData);
-	void setDefaultValues(ColumnType columnType = ColumnTypeUnknown);
+	void setDefaultValues(columnType columnType = columnType::unknown);
 
 	typedef struct IntsStruct
 	{
@@ -139,7 +137,7 @@ public:
 
 	} Doubles;
 
-	Column(boost::interprocess::managed_shared_memory *mem)  : _mem(mem), _name(mem->get_segment_manager()), _columnType(Column::ColumnTypeNominal), _rowCount(0), _blocks(std::less<ull>(), mem->get_segment_manager()), _labels(mem)
+	Column(boost::interprocess::managed_shared_memory *mem)  : _mem(mem), _name(mem->get_segment_manager()), _columnType(columnType::nominal), _rowCount(0), _blocks(std::less<ull>(), mem->get_segment_manager()), _labels(mem)
 	{
 		_id = ++count;
 	}
@@ -182,15 +180,10 @@ public:
 	Doubles AsDoubles;
 	Ints AsInts;
 
+	void setColumnType(enum columnType columnType);
+	enum columnType getColumnType() const;
 
-
-	static std::string columnTypeToString(ColumnType type);
-	static ColumnType columnTypeFromString(std::string type);
-
-	void setColumnType(ColumnType columnType);
-	ColumnType columnType() const;
-
-	bool changeColumnType(ColumnType newColumnType);
+	bool changeColumnType(enum columnType newColumnType);
 
 	size_t rowCount() const { return _rowCount; }
 
@@ -216,50 +209,43 @@ public:
 
 	void resetFilter();
 
+	bool isColumnDifferentFromStringValues(std::vector<std::string> strVals);
+
 private:	
 
-	bool _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
+	bool		_setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 
-	boost::interprocess::managed_shared_memory *_mem;
+	void		_setRowCount(int rowCount);
+	std::string	_getLabelFromKey(int key) const;
+	std::string	_getScaleValue(int row);
 
-	String _name;
-	ColumnType _columnType;
-	size_t _rowCount;
+	void		_convertVectorIntToDouble(std::vector<int> &intValues, std::vector<double> &doubleValues);
 
-	BlockMap _blocks;
-	Labels _labels;
+	bool		_resetEmptyValuesForNominal(std::map<int, std::string> &emptyValuesMap);
+	bool		_resetEmptyValuesForScale(std::map<int, std::string> &emptyValuesMap);
+	bool		_resetEmptyValuesForNominalText(std::map<int, std::string> &emptyValuesMap, bool tryToConvert = true);
 
-	int _id;
-	static int count;
+	bool		_changeColumnToNominalOrOrdinal(enum columnType newColumnType);
+	bool		_changeColumnToScale();
 
-	void _setRowCount(int rowCount);
-	std::string _getLabelFromKey(int key) const;
-	std::string _getScaleValue(int row);
+private:
+	boost::interprocess::managed_shared_memory * _mem = nullptr;
 
-	void _convertVectorIntToDouble(std::vector<int> &intValues, std::vector<double> &doubleValues);
+	String			_name;
+	enum columnType _columnType;
+	size_t			_rowCount;
 
-	bool _resetEmptyValuesForNominal(std::map<int, std::string> &emptyValuesMap);
-	bool _resetEmptyValuesForScale(std::map<int, std::string> &emptyValuesMap);
-	bool _resetEmptyValuesForNominalText(std::map<int, std::string> &emptyValuesMap, bool tryToConvert = true);
+	BlockMap		_blocks;
+	Labels			_labels;
 
-	bool _changeColumnToNominalOrOrdinal(ColumnType newColumnType);
-	bool _changeColumnToScale();
-
+	int				_id;
+	static int		count;
 };
 
 namespace boost
 {
-	template <>
-	struct range_const_iterator< Column::Ints >
-	{
-		typedef Column::Ints::iterator type;
-	};
-
-	template <>
-	struct range_const_iterator< Column::Doubles >
-	{
-		typedef Column::Doubles::iterator type;
-	};
+	template <> struct range_const_iterator< Column::Ints >		{ typedef Column::Ints::iterator type;		};
+	template <> struct range_const_iterator< Column::Doubles >	{ typedef Column::Doubles::iterator type;	};
 }
 
 

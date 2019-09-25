@@ -59,7 +59,15 @@ public:
 	static bool getIntValue(const double& value, int& intValue);
 	static bool getDoubleValue(const std::string& value, double& doubleValue);
 
+	static bool isEmptyValue(const std::string& val);
+	static bool isEmptyValue(const double& val);
+
+	static bool		convertValueToIntForImport(		const std::string &strValue, int &intValue);
+	static bool		convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
+
 private:
+	static std::string _deEuropeaniseForImport(		const std::string &value);
+
 	static std::vector<std::string>			_currentEmptyValues;
 	static const std::vector<std::string>	_defaultEmptyValues;
 	static std::vector<double>				_currentDoubleEmptyValues;

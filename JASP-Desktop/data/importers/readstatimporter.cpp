@@ -23,14 +23,14 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	std::string				name			= readstat_variable_get_name(variable),
 							labelsID		= val_labels != NULL ? val_labels : "";
 	readstat_measure_t		colMeasure		= readstat_variable_get_measure(variable);
-	Column::ColumnType		colType;
+	columnType		colType;
 
 	switch(colMeasure)
 	{
-	case READSTAT_MEASURE_UNKNOWN:	colType = Column::ColumnTypeUnknown;	break;
-	case READSTAT_MEASURE_NOMINAL:	colType = Column::ColumnTypeNominal;	break;
-	case READSTAT_MEASURE_ORDINAL:	colType = Column::ColumnTypeOrdinal;	break;
-	case READSTAT_MEASURE_SCALE:	colType = Column::ColumnTypeScale;		break;
+	case READSTAT_MEASURE_UNKNOWN:	colType = columnType::unknown;	break;
+	case READSTAT_MEASURE_NOMINAL:	colType = columnType::nominal;	break;
+	case READSTAT_MEASURE_ORDINAL:	colType = columnType::ordinal;	break;
+	case READSTAT_MEASURE_SCALE:	colType = columnType::scale;		break;
 	}
 
 	data->addColumn(var_index, new ReadStatImportColumn(data, name, labelsID, colType));
@@ -107,24 +107,24 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	return data;
 }
 
-void ReadStatImporter::fillSharedMemoryColumn(ImportColumn * importColumn, Column & column)
+void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 {
 	ReadStatImportColumn * col = static_cast<ReadStatImportColumn*>(importColumn);
 
-	switch(col->columnType())
+	switch(col->getColumnType())
 	{
-	case Column::ColumnTypeScale:
-		column.setColumnAsScale(col->doubles());
+	case columnType::scale:
+		_packageData->initColumnAsScale(colId, col->name(), col->doubles());
 		break;
 
-	case Column::ColumnTypeOrdinal:
-	case Column::ColumnTypeNominal:
-		if(col->hasLabels())	column.setColumnAsNominalOrOrdinal(col->ints(), col->intLabels(),	col->columnType() == Column::ColumnTypeOrdinal);
-		else					column.setColumnAsNominalOrOrdinal(col->ints(), col->uniqueInts(),	col->columnType() == Column::ColumnTypeOrdinal);
+	case columnType::ordinal:
+	case columnType::nominal:
+		if(col->hasLabels())	_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->intLabels(),	col->getColumnType() == columnType::ordinal);
+		else					_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->uniqueInts(),	col->getColumnType() == columnType::ordinal);
 		break;
 
-	case Column::ColumnTypeNominalText:
-		_packageData->storeInEmptyValues(column.name(), column.setColumnAsNominalText(col->strings(), col->strLabels()));
+	case columnType::nominalText:
+		_packageData->storeInEmptyValues(col->name(), _packageData->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
 		break;
 
 	default:

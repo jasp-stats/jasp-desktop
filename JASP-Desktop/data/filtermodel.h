@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include "utilities/qutils.h"
-#include "data/datasetpackage.h"
+#include "datasetpackage.h"
+#include "labelfiltergenerator.h"
 
 class FilterModel : public QObject
 {
@@ -19,11 +20,7 @@ class FilterModel : public QObject
 	Q_PROPERTY( QString defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged	)
 
 public:
-	explicit FilterModel(DataSetPackage * package, QObject *parent) : QObject(parent), _package(package)
-	{
-		reset();
-		connect(this, &FilterModel::rFilterChanged, this, &FilterModel::rescanRFilterForColumns);
-	}
+	explicit FilterModel(DataSetPackage * package, labelFilterGenerator * labelfilterGenerator);
 
 	void init();
 
@@ -45,8 +42,6 @@ public:
 	void reset();
 
 public slots:
-	void setDataSetPackage(DataSetPackage * package);
-
 	GENERIC_SET_FUNCTION(StatusBarText,			_statusBarText,			statusBarTextChanged,		QString)
 	GENERIC_SET_FUNCTION(FilterErrorMsg,		_filterErrorMsg,		filterErrorMsgChanged,		QString)
 
@@ -60,6 +55,8 @@ public slots:
 	void rescanRFilterForColumns();
 
 	void computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
+
+	void dataSetPackageResetDone();
 
 signals:
 	void rFilterChanged();
@@ -81,22 +78,23 @@ signals:
 	void defaultRFilterChanged(); //Will never be called
 
 private:
-	DataSetPackage	*_package;
-	QString			_generatedFilter	= DEFAULT_FILTER_GEN,
-					_rFilter			= DEFAULT_FILTER,
-					_constructedJSON	= DEFAULT_FILTER_JSON,
-					_constructedR		= "",
-					_statusBarText		= "",
-					_filterErrorMsg		= "";
-
-	std::set<std::string>	_columnsUsedInConstructedFilter,
-							_columnsUsedInRFilter;
-
-	int				_lastSentRequestId	= 0;
-
 	bool _setGeneratedFilter(const QString& newGeneratedFilter);
 	bool _setRFilter(const QString& newRFilter);
 
+private:
+	DataSetPackage			*	_package				= nullptr;
+	labelFilterGenerator	*	_labelFilterGenerator	= nullptr;
+	QString						_generatedFilter		= DEFAULT_FILTER_GEN,
+								_rFilter				= DEFAULT_FILTER,
+								_constructedJSON		= DEFAULT_FILTER_JSON,
+								_constructedR			= "",
+								_statusBarText			= "",
+								_filterErrorMsg			= "";
+
+	std::set<std::string>		_columnsUsedInConstructedFilter,
+								_columnsUsedInRFilter;
+
+	int							_lastSentRequestId	= 0;
 };
 
 #endif // FILTERMODEL_H

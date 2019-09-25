@@ -1,18 +1,18 @@
 #include "labelfiltergenerator.h"
 
-labelFilterGenerator::labelFilterGenerator(DataSetPackage *package, QObject *parent) : QObject(parent)
+labelFilterGenerator::labelFilterGenerator(LabelModel *labelModel, QObject *parent)
+	: QObject(parent), _labelModel(labelModel)
 {
-	_package = package;
+	connect(_labelModel,	&LabelModel::labelFilterChanged,	this,	&labelFilterGenerator::labelFilterChanged	);
+	connect(_labelModel,	&LabelModel::allFiltersReset,		this,	&labelFilterGenerator::labelFilterChanged	);
 }
 
 std::string labelFilterGenerator::generateFilter()
 {
-	if(_package == nullptr || _package->dataSet() == nullptr) return DEFAULT_FILTER_GEN;
-
 	int neededFilters = 0;
 
-	for(Column & col : _package->dataSet()->columns())
-		if(labelNeedsFilter(col))
+	for(size_t col=0; col<_labelModel->dataColumnCount(); col++)
+		if(_labelModel->labelNeedsFilter(col))
 			neededFilters++;
 
 	std::stringstream newGeneratedFilter;
@@ -32,8 +32,8 @@ std::string labelFilterGenerator::generateFilter()
 			newGeneratedFilter << "(";
 
 
-		for(Column & col : _package->dataSet()->columns())
-			if(labelNeedsFilter(col))
+		for(size_t col=0; col<_labelModel->dataColumnCount(); col++)
+			if(_labelModel->labelNeedsFilter(col))
 			{
 				newGeneratedFilter << (first ? "" : " & ") << generateLabelFilter(col);
 				first = false;
@@ -54,24 +54,26 @@ void labelFilterGenerator::labelFilterChanged()
 	emit setGeneratedFilter(QString::fromStdString(generateFilter()));
 }
 
-std::string	labelFilterGenerator::generateLabelFilter(Column & column)
+std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 {
-	std::string columnName = column.name();
+	std::string columnName = _labelModel->columnName(col);
 	std::stringstream out;
 	int pos = 0, neg = 0;
 	bool first = true;
 
-	for(const Label & label : column.labels())
-		(label.filterAllows() ? pos : neg)++;
+	std::vector<bool> filterAllows = _labelModel->filterAllows(col);
+	for(bool allow : filterAllows)
+		(allow ? pos : neg)++;
 
 	bool bePositive = pos <= neg;
 
 	out << "(";
 
-	for(const Label & label : column.labels())
-		if(label.filterAllows() == bePositive)
+	std::vector<std::string> labels = _labelModel->labels(col);
+	for(size_t row=0; row<filterAllows.size(); row++)
+		if(filterAllows[row] == bePositive)
 		{
-			out << (!first ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << label.text() << "\"";
+			out << (!first ? (bePositive ? " | " : " & ") : "") << columnName << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
 			first = false;
 		}
 	out << ")";

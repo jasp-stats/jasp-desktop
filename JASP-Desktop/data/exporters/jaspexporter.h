@@ -36,7 +36,7 @@ private:
 	static void saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback);
 
 	static void createJARContents(archive *a);
-	static std::string getColumnTypeName(Column::ColumnType columnType);
+	static std::string getColumnTypeName(columnType columnType);
 };
 
 #endif // JASPEXPORTER_H

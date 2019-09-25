@@ -3,7 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick 2.9
 import JASP.Theme 1.0
 
-Item {
+Item
+{
 								id:						filterConstructor
 								objectName:				"computedColumnsConstructor"
 				property string	__debugName:			"filterConstructorComputedColumns"

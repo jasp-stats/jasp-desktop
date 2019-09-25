@@ -4,19 +4,19 @@ import JASP.Theme 1.0
 
 Popup
 {
-	id: popupCreateComputedColumn;
-	modal: true; focus: true;
+	id:				popupCreateComputedColumn;
+	modal:			true
+	focus:			true
+	x:				(parent.width / 2) - (width / 2)
+	y:				(parent.height / 2) - (height / 2)
+	closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
+	background:		Item{}
+	padding:		0
+	width:			popupLoader.width
+	height:			popupLoader.height+1
 
-	y: (parent.height / 2) - (height / 2)
-	x: (parent.width / 2) - (width / 2)
 
-	closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 	property bool computeTypeIsJson: true
-
-	background: Item{}
-	padding:	0
-	width:		popupLoader.width
-	height:		popupLoader.height+1
 
 	Loader
 	{
@@ -31,24 +31,24 @@ Popup
 
 		Rectangle
 		{
-			id: rootCreateComputedColumn
-
-			//width: computeColumnIconRow.width
-			height: childrenRect.height + 20
-			width: Math.max(computeColumnIconRow.width, title.width) + 20
-			color: Theme.uiBackground
-			//radius: 20
-			border.color: Theme.uiBorder
-			border.width: 1
+			id:				rootCreateComputedColumn
+			height:			childrenRect.height + 20
+			width:			Math.max(computeColumnIconRow.width, title.width) + 20
+			color:			Theme.uiBackground
+			border.color:	Theme.uiBorder
+			border.width:	1
 
 			Component.onCompleted:
 			{
-				levelsTableModel.clearColumn();
+				labelModel.visible = false;
 				nameEdit.forceActiveFocus();
 			}
 
 			function createComputedColumn()
 			{
+				if(!isNaN(nameEdit.text)) //Its a number!
+					nameEdit.text = 'V' + nameEdit.text
+
 				if(computedColumnsInterface.isColumnNameFree(nameEdit.text))
 				{
 					computedColumnsInterface.createComputedColumn(nameEdit.text, rootCreateComputedColumn.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
@@ -63,8 +63,7 @@ Popup
 			{
 				id:					title
 				text:				"Create Computed Column"
-				font.bold:			true
-				font.pixelSize:		20 * preferencesModel.uiScale
+				font:				Theme.fontGroupTitle
 				verticalAlignment:	Text.AlignVCenter
 				anchors
 				{
@@ -77,8 +76,9 @@ Popup
 			Item
 			{
 				id:		nameItem
+				height:	marge * 2 + (Theme.font.pixelSize * 1.5 * preferencesModel.uiScale)
+
 				property real marge: 10 * preferencesModel.uiScale
-				height:	marge * 2 + (baseFontSize * 1.5 * preferencesModel.uiScale)
 
 				anchors
 				{
@@ -95,6 +95,7 @@ Popup
 				{
 					id:						nameLabel
 					text:					"Name:"
+					font:					Theme.font
 					anchors.left:			parent.left
 					anchors.verticalCenter: parent.verticalCenter
 					verticalAlignment:		Text.AlignVCenter
@@ -126,9 +127,8 @@ Popup
 
 						id:						nameEdit
 						text:					defaultText
-						font.pixelSize:			baseFontSize * preferencesModel.uiScale
+						font:					Theme.font
 						color:					columnNameInUse ? Theme.red : Theme.black
-						//height:					parent.height
 
 						ToolTip.delay:			0
 						ToolTip.timeout:		10000
@@ -230,58 +230,57 @@ Popup
 
 					Rectangle
 					{
-						id:			columnTypeChangeIcon
-
-						width:		iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
-						height:		computeColumnIconRow.height
-						//radius:	10
+						id:				columnTypeChangeIcon
+						width:			iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
+						height:			computeColumnIconRow.height
+						color:			iAmSelected ? Theme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
+						border.color:	iAmSelected ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
+						border.width:	1
 
 						property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
-						color: iAmSelected ? Theme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
-
-						border.color: iAmSelected ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
-						border.width: 1
 
 						Item
 						{
-							id: iconAndTextCreateComputeColumn
-							width: (popupIconComputeImage.width + popupText.width)
-							height: computeColumnIconRow.height * 0.5
-							anchors.verticalCenter: parent.verticalCenter
-							anchors.left: parent.left
-							anchors.leftMargin: 4
+							id:					iconAndTextCreateComputeColumn
+							width:				(popupIconComputeImage.width + popupText.width)
+							height:				computeColumnIconRow.height * 0.5
+							anchors
+							{
+								verticalCenter:	parent.verticalCenter
+								left:			parent.left
+								leftMargin:		4
+							}
 
 							Image
 							{
-								id: popupIconComputeImage
+								id:						popupIconComputeImage
 
 								anchors.verticalCenter: parent.verticalCenter
 
-								source: dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
-								width:	height
-								height: parent.height
-								sourceSize.width:	width
-								sourceSize.height:	height
+								source:					dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
+								width:					height
+								height:					parent.height
+								sourceSize.width:		width
+								sourceSize.height:		height
 							}
 
 							Text
 							{
-								id: popupText
-								text: iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" :  iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text")
-
-								anchors.left: popupIconComputeImage.right
+								id:						popupText
+								text:					iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" :  iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text")
+								font:					Theme.font
+								anchors.left:			popupIconComputeImage.right
 								anchors.verticalCenter: parent.verticalCenter
-								anchors.leftMargin: 4
+								anchors.leftMargin:		4
 							}
 						}
 
 						MouseArea
 						{
-							id: popupIconComputeMouseArea
-							anchors.fill: parent
-
-							hoverEnabled: true
-							cursorShape: Qt.PointingHandCursor
+							id:				popupIconComputeMouseArea
+							anchors.fill:	parent
+							hoverEnabled:	true
+							cursorShape:	Qt.PointingHandCursor
 
 							property color useThisColor: containsMouse ? Theme.buttonColorHovered : Theme.buttonColor
 

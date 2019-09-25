@@ -9,6 +9,7 @@
 #include <locale>
 #include <cctype>
 
+///All functions are inline and here to avoid problems through the mixing of MSVC and GCC on Windows. (Because this code can be used from JASP-R-Interface which can only be compiled with RTools and JASP-Common with MSVC...)
 class stringUtils
 {
 public:    
@@ -161,6 +162,31 @@ public:
 	static inline bool startsWith(const std::string & line, const std::string & startsWithThis)
 	{
 		return line.size() >= startsWithThis.size() && line.substr(0, startsWithThis.size()) == startsWithThis;
+	}
+
+	static inline bool escapeValue(std::string &value)
+	{
+		bool useQuotes = false;
+		std::size_t found = value.find(",");
+		if (found != std::string::npos)
+			useQuotes = true;
+
+		if (value.find_first_of(" \n\r\t\v\f") == 0)
+			useQuotes = true;
+
+
+		if (value.find_last_of(" \n\r\t\v\f") == value.length() - 1)
+			useQuotes = true;
+
+		size_t p = value.find("\"");
+		while (p != std::string::npos)
+		{
+			value.insert(p, "\"");
+			p = value.find("\"", p + 2);
+			useQuotes = true;
+		}
+
+		return useQuotes;
 	}
 
 private:

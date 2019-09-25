@@ -90,11 +90,16 @@
             $inputTime = strftime($formatTime, filemtime($inputPath));
             $inputSplit = explode("-", $inputName);
             
-            if(count($inputSplit) === 4 && $inputSplit[0] === "JASP")
+            if(count($inputSplit) >= 4 && $inputSplit[0] === "JASP")
             {
               $inputType       = $inputSplit[1];
               $inputBranch     = $inputSplit[2];
-              $inputEnding     = explode(".", $inputSplit[3]);
+
+              #If somebody puts a - in the branchname...
+              for($i=3; $i < count($inputSplit) - 1; $i++)
+                $inputBranch = $inputBranch . "-" . $inputSplit[$i];
+
+              $inputEnding     = explode(".", $inputSplit[count($inputSplit) - 1]);
               $inputCommitPart = $inputEnding[0];
               $inputCommit     = "<a href='https://github.com/jasp-stats/jasp-desktop/commit/$inputCommitPart'>GitHub</a>";
               $inputExt        = $inputEnding[1];

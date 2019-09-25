@@ -50,7 +50,7 @@ public:
 public slots:
 	int		sendFilter(		const QString & generatedFilter,	const QString & filter);
 	void	sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
-	void	computeColumn(	const QString & columnName,			const QString & computeCode,	Column::ColumnType columnType);
+	void	computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
 	void	pause();
 	void	resume();
 	void	refreshAllPlots();

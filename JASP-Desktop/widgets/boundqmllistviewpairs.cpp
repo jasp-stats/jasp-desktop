@@ -28,14 +28,15 @@ using namespace std;
 BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisForm* form) 
 	: QMLItem(item, form)
 	, BoundQMLListViewDraggable(item, form)
+	, _boundTo(nullptr)
 {
-	_boundTo = nullptr;
-	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;	
-	_pairsModel = new ListModelPairsAssigned(this);
+	_variableTypesSuggested = int(columnType::nominal) | int(columnType::ordinal) | int(columnType::scale);
+	_pairsModel				= new ListModelPairsAssigned(this);
+
 	setDropMode(qmlDropMode::Replace);
-	QQmlProperty::write(_item, "showElementBorder", true);
-	QQmlProperty::write(_item, "columns", 2);
-	QQmlProperty::write(_item, "showVariableTypeIcon", false);		
+	QQmlProperty::write(_item, "showElementBorder",		true);
+	QQmlProperty::write(_item, "columns",				2);
+	QQmlProperty::write(_item, "showVariableTypeIcon",	false);
 }
 
 void BoundQMLListViewPairs::bindTo(Option *option)

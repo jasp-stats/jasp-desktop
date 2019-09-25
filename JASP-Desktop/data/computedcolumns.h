@@ -1,11 +1,10 @@
 #ifndef COMPUTEDCOLUMNS_H
 #define COMPUTEDCOLUMNS_H
 
-#include "columns.h"
+#include "columntype.h"
 #include "computedcolumn.h"
 
 class DataSetPackage;
-class Columns;
 
 class ComputedColumns
 {
@@ -13,8 +12,8 @@ public:
 	typedef std::vector<ComputedColumn*>::iterator iterator;
 
 						ComputedColumns(DataSetPackage * package = NULL) { setPackage(package); }
-	ComputedColumn *	createComputedColumn(std::string name, Column::ColumnType type, ComputedColumn::computedType desiredType);
-	void				createColumn(std::string name, Column::ColumnType type);
+	ComputedColumn *	createComputedColumn(std::string name, columnType type, ComputedColumn::computedType desiredType);
+	void				createColumn(std::string name, columnType type);
 	void				removeComputedColumn(std::string name);
 	void				refreshColumnPointers();
 	void				setPackage(DataSetPackage * package) { _package = package; }
@@ -47,12 +46,10 @@ public:
 	Json::Value			convertToJson();
 	void				convertFromJson(Json::Value json);
 
-	Columns&			columns();
-
 private:
 
 	std::vector<ComputedColumn*>	_computedColumns;
-	DataSetPackage*					_package = NULL;
+	DataSetPackage*					_package = nullptr;
 
 };
 

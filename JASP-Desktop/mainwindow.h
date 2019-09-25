@@ -32,9 +32,10 @@
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
 #include "data/columnsmodel.h"
-#include "data/computedcolumnsmodel.h"
 #include "data/datasettablemodel.h"
+#include "data/computedcolumnsmodel.h"
 #include "data/fileevent.h"
+#include "data/labelmodel.h"
 #include "data/filtermodel.h"
 #include "engine/enginesync.h"
 #include "modules/dynamicmodule.h"
@@ -47,8 +48,7 @@
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
 #include "utilities/aboutmodel.h"
-#include "variablespage/levelstablemodel.h"
-#include "variablespage/labelfiltergenerator.h"
+#include "data/labelfiltergenerator.h"
 #include "widgets/filemenu/filemenu.h"
 
 class MainWindow : public QObject
@@ -85,12 +85,7 @@ public:
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
-	void	checkDoSync(bool& check);
 	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
-
-	static QString columnTypeToString(int columnType) { return _columnTypeMap[columnType]; }
-
-
 
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -145,11 +140,14 @@ private:
 
 	void checkUsedModules();
 
-	void packageChanged(DataSetPackage *package);
-	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged, bool hasNewColumns);
-	void setDataSetAndPackageInModels(DataSetPackage *package);
+	void packageChanged();
+	void setDatasetLoaded();
 	void setPackageModified();
-	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged, bool hasNewColumns);
+	void refreshAnalysesUsingColumns(	QStringList				changedColumns,
+										QStringList				missingColumns,
+										QMap<QString, QString>	changeNameColumns,
+										bool					rowCountChanged,
+										bool					hasNewColumns);
 
 	bool closeRequestCheck(bool &isSaving);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
@@ -198,6 +196,11 @@ signals:
 	void downloadNewJASPUrlChanged(QString downloadNewJASPUrl);
 
 private slots:
+	void packageDataChanged(	QStringList				changedColumns,
+								QStringList				missingColumns,
+								QMap<QString, QString>	changeNameColumns,
+								bool					rowCountChanged,
+								bool					hasNewColumns);
 	void resultsPageLoaded();
 	void showResultsPanel() { setDataPanelVisible(false); }
 
@@ -209,17 +212,16 @@ private slots:
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
 	void startDataEditorEventCompleted(FileEvent *event);
-	void dataSetChanged(DataSet * dataSet);
 	void analysisAdded(Analysis *analysis);
 
 	void fatalError();
-	void emptyValuesChangedHandler();
 
 	void closeVariablesPage();
 	void showProgress();
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
+	bool checkDoSync();
 	void resetQmlCache();
 	void unitTestTimeOut();
 	void saveJaspFileHandler();
@@ -238,8 +240,7 @@ private:
 	Analyses					*	_analyses				= nullptr;
 	ResultsJsInterface			*	_resultsJsInterface		= nullptr;
 	DataSetPackage				*	_package				= nullptr;
-	DataSetTableModel			*	_tableModel				= nullptr;
-	LevelsTableModel			*	_levelsTableModel		= nullptr;
+	DataSetTableModel			*	_datasetTableModel		= nullptr;
 	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
 	ColumnsModel				*	_columnsModel			= nullptr;
 	ComputedColumnsModel		*	_computedColumnsModel	= nullptr;
@@ -254,11 +255,12 @@ private:
 	AboutModel					*	_aboutModel				= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
+	LabelModel					*	_labelModel				= nullptr;
 
 	QSettings						_settings;
 
 	int								_progressBarProgress,	//Runs from 0 to 100
-									_screenPPI		= 1;
+									_screenPPI				= 1;
 
 	QString							_openOnLoadFilename,
 									_fatalError				= "The engine crashed...",
@@ -267,7 +269,7 @@ private:
 									_windowTitle,
 									_downloadNewJASPUrl		= "";
 
-	AsyncLoader*					_loader					= nullptr;
+	AsyncLoader					*	_loader					= nullptr;
 	AsyncLoaderThread				_loaderThread;
 
 	bool							_applicationExiting		= false,
@@ -287,7 +289,6 @@ private:
 	static QMap<QString, QVariant>	_iconFiles,
 									_iconInactiveFiles,
 									_iconDisabledFiles;
-	static QMap<int, QString>		_columnTypeMap; //Should this be in Column ?
 };
 
 #endif // MAINWIDGET_H

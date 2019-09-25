@@ -1,14 +1,12 @@
 #ifndef COLUMNSMODEL_H
 #define COLUMNSMODEL_H
 
-#include <QObject>
-#include <QAbstractTableModel>
-
-
+#include <QTransposeProxyModel>
+#include "datasettablemodel.h"
 #include "common.h"
-#include "dataset.h"
 
-class ColumnsModel  : public QAbstractTableModel
+///Surprisingly the columns are laid out as rows ;-)
+class ColumnsModel  : public QTransposeProxyModel
 {
 	Q_OBJECT
 public:
@@ -19,24 +17,21 @@ public:
 		ToolTipRole
 	 };
 
-	ColumnsModel(QObject *parent = NULL) : QAbstractTableModel(parent) {}
-	void setDataSet(DataSet *dataSet);
+	ColumnsModel(DataSetTableModel * tableModel) : QTransposeProxyModel(tableModel), _tableModel(tableModel)
+	{
+		setSourceModel(_tableModel);
+		connect(_tableModel, &DataSetTableModel::headerDataChanged, this, &ColumnsModel::onHeaderDataChanged);
+	}
 
-	int rowCount(const QModelIndex &parent = QModelIndex())				const override { return _dataSet == NULL ? 0 : _dataSet->columnCount();  }
-	int columnCount(const QModelIndex &parent = QModelIndex())			const override { const static int roleNamesCount = roleNames().size(); return roleNamesCount; }
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	QHash<int, QByteArray> roleNames()									const override;
 
-public slots:
-	void refresh() { beginResetModel(); endResetModel(); }
-	void refreshColumn(Column * column);
-
-	void datasetHeaderDataChanged(Qt::Orientation orientation, int first, int last);
+private slots:
+	void onHeaderDataChanged(Qt::Orientation orientation, int first, int last);
 
 
 private:
-	DataSet *_dataSet = NULL;
-
+	DataSetTableModel * _tableModel = nullptr;
 };
 
 

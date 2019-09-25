@@ -68,8 +68,8 @@ BasicTableViewJasp {
         return __listView.indexAt(obj.x, obj.y)
     }
 
+	//These functions should be replaced by maxColWidth role from dataset models.
     function calculateMinimumRequiredColumnWidth(columnIndex) { return calculateMinimumRequiredColumnWidthTitle(columnIndex, "", 0, 0)}
-
     function calculateMinimumRequiredColumnWidthTitle(columnIndex, columnTitle, columnTitleExtraPadding, maxRowCount)
     {
 
