@@ -19,19 +19,24 @@
 #ifndef QUTILS_H
 #define QUTILS_H
 
+#include <QStringList>
 #include <QString>
-#include <list>
+#include <QMap>
+#include <map>
 #include <string>
 #include <vector>
 
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
-std::string					fq(const QString &from);
-std::vector<std::string>	fq(const QVector<QString> & vec);
-QString						tq(const std::string &from);
-QVector<QString>			tq(const std::vector<std::string> & vec);
-QStringList					tql(const std::vector<std::string> &from);
-std::vector<std::string>	fromQstringToStdVector(const QString &input, const QString &delimeter);
+		std::string							fq(const QString							& from);
+		std::vector<std::string>			fq(const QVector<QString>					& vec);
+inline	std::vector<std::string>			fq(const QStringList						& vec) { return fq(vec.toVector()); }
+		std::map<std::string, std::string>	fq(const QMap<QString, QString>				& map);
+		QMap<QString, QString>				tq(const std::map<std::string, std::string> & map);
+		QString								tq(const std::string						& from);
+		QVector<QString>					tq(const std::vector<std::string>			& vec);
+		QStringList							tql(const std::vector<std::string>			& from);
+		std::vector<std::string>			fromQstringToStdVector(const QString &input, const QString &delimeter);
 
 template<typename T> inline		std::vector<T>	fq(QVector<T>		in) { return in.toStdVector();				}
 template<typename T> inline		QVector<T>		tq(std::vector<T>	in) { return QVector<T>::fromStdVector(in); }

@@ -5,6 +5,7 @@
 #include <QSGNode>
 #include <queue>
 #include "timers.h"
+#include "log.h"
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
@@ -39,16 +40,16 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont
 	_lastInstancedDataSetView = this;
 }
 
-void DataSetView::setModel(QAbstractTableModel * model)
+void DataSetView::setModel(QAbstractItemModel * model)
 {
 	if(_model != model)
 	{
 		_model = model;
 
-		connect(_model, &QAbstractTableModel::dataChanged,			this, &DataSetView::modelDataChanged);
-		connect(_model, &QAbstractTableModel::headerDataChanged,	this, &DataSetView::modelHeaderDataChanged);
-		connect(_model, &QAbstractTableModel::modelAboutToBeReset,	this, &DataSetView::modelAboutToBeReset);
-		connect(_model, &QAbstractTableModel::modelReset,			this, &DataSetView::modelWasReset);
+		connect(_model, &QAbstractItemModel::dataChanged,			this, &DataSetView::modelDataChanged);
+		connect(_model, &QAbstractItemModel::headerDataChanged,		this, &DataSetView::modelHeaderDataChanged);
+		connect(_model, &QAbstractItemModel::modelAboutToBeReset,	this, &DataSetView::modelAboutToBeReset);
+		connect(_model, &QAbstractItemModel::modelReset,			this, &DataSetView::modelWasReset);
 
 		setRolenames();
 
@@ -74,6 +75,29 @@ void DataSetView::setRolenames()
 	for(auto rn : roleNames.keys())
 		_roleNameToRole[roleNames[rn].toStdString()] = rn;
 
+}
+
+void DataSetView::modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
+{
+	modelAboutToBeReset();
+	calculateCellSizes();
+}
+
+void DataSetView::modelHeaderDataChanged(Qt::Orientation, int, int)
+{
+	calculateCellSizes();
+}
+
+void DataSetView::modelAboutToBeReset()
+{
+	_storedLineFlags.clear();
+	_storedDisplayText.clear();
+}
+
+void DataSetView::modelWasReset()
+{
+	setRolenames();
+	calculateCellSizes();
 }
 
 void DataSetView::calculateCellSizes()
@@ -133,7 +157,6 @@ void DataSetView::calculateCellSizes()
 	for(int col=0; col<_model->columnCount(); col++)
 		w += _dataColsMaxWidth[col];
 
-
 	float x = _rowNumberMaxWidth;
 
 	for(int col=0; col<_model->columnCount(); col++)
@@ -144,12 +167,16 @@ void DataSetView::calculateCellSizes()
 
 	_dataWidth = w;
 
-	setWidth(	(_extraColumnItem != nullptr ? _dataRowsMaxHeight : 0 ) + _dataWidth					);
-	setHeight(	_dataRowsMaxHeight * (_model->rowCount() + 1)	);
+	qreal	newWidth	= (_extraColumnItem != nullptr ? _dataRowsMaxHeight + 1 : 0 ) + _dataWidth,
+			newHeight	= _dataRowsMaxHeight * (_model->rowCount() + 1);
+
+	//Log::log() << "Settings WxH: " << newWidth << "X" << newHeight << std::endl;
+
+	setWidth(	newWidth);
+	setHeight(	newHeight);
 	_recalculateCellSizes = false;
 
 	emit itemSizeChanged();
-
 
 	JASPTIMER_STOP(calculateCellSizes);
 }
@@ -425,7 +452,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		ItemContextualized	* itemCon	= nullptr;
 
 		QModelIndex ind(_model->index(row, col));
-		bool active = _model->data(ind, _roleNameToRole["active"]).toBool();
+		bool active = _model->data(ind, _roleNameToRole["filter"]).toBool();
 
 		if(_textItemStorage.size() > 0)
 		{
@@ -635,7 +662,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 									col,
 									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
 									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnIsInvalidated"]).toBool(),
-									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsFiltered"]).toBool(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["filter"]).toBool(),
 									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnError"]).toString());
 		}
 		else
@@ -650,7 +677,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 												col,
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnIsInvalidated"]).toBool(),
-												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsFiltered"]).toBool(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["filter"]).toBool(),
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnError"]).toString()));
 
 			_columnHeaderDelegate->create(localIncubator, itemCon->context);
@@ -741,7 +768,12 @@ void DataSetView::updateExtraColumnItem()
 	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
 	_extraColumnItem->setY(_viewportY);
 
-	connect(_extraColumnItem, &QQuickItem::widthChanged, [&](){	_extraColumnItem->setX(_viewportX + _viewportW - _extraColumnItem->width()); });
+	connect(_extraColumnItem, &QQuickItem::widthChanged, this, &DataSetView::setExtraColumnX, Qt::UniqueConnection);
+}
+
+void DataSetView::setExtraColumnX()
+{
+	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
 }
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool active, size_t col, size_t row)
@@ -773,9 +805,9 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
-	previousContext->setContextProperty("rowIndex",			row);
+	previousContext->setContextProperty("rowIndex",			_model->headerData(row, Qt::Vertical).toInt());
 	previousContext->setContextProperty("dataFont",			_font);
-	previousContext->setContextProperty("headerText",	text);
+	previousContext->setContextProperty("headerText",		text);
 
 
 	return previousContext;

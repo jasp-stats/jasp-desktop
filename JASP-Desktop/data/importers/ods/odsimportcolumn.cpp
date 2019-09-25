@@ -36,7 +36,7 @@ using namespace ods;
 ODSImportColumn::ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber, string name)
 	: ImportColumn(importDataSet, name)
 	, _columnNumber(columnNumber)
-	, _columnType(Column::ColumnTypeUnknown)
+	, _columnType(columnType::unknown)
 {
 }
 
@@ -52,14 +52,9 @@ const
 	return _rows.size();
 }
 
-bool ODSImportColumn::isValueEqual(Column &col, size_t row) const
+std::vector<std::string> ODSImportColumn::allValuesAsStrings() const
 {
-	if (row >= _rows.size())
-		return false;
-
-	const string &value = _rows.at(row)._string;
-
-	return isStringValueEqual(value, col, row);
+	return getData();
 }
 
 /**
@@ -118,7 +113,7 @@ void ODSImportColumn::postLoadProcess()
 {
 }
 
-vector<string> ODSImportColumn::getData()
+vector<string> ODSImportColumn::getData() const
 {
 	vector<string> values;
 	for (Cases::const_iterator i = _rows.begin(); i != _rows.end(); ++i)

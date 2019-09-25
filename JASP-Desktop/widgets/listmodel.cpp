@@ -29,11 +29,19 @@ ListModel::ListModel(QMLListView* listView)
 
 QHash<int, QByteArray> ListModel::roleNames() const
 {
-	QHash<int, QByteArray> roles;
-	roles[TypeRole] = "type";
-	roles[ColumnTypeRole] = "columnType";
-	roles[NameRole] = "name";
-	roles[ExtraColumnsRole] = "extraColumns";
+	static QHash<int, QByteArray>	roles = QAbstractTableModel::roleNames();
+	static bool						setMe = true;
+
+	if(setMe)
+	{
+		roles[TypeRole]			= "type";
+		roles[ColumnTypeRole]	= "columnType";
+		roles[NameRole]			= "name";
+		roles[ExtraColumnsRole] = "extraColumns";
+
+		setMe = false;
+	}
+
 	return roles;
 }
 

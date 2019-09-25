@@ -110,11 +110,12 @@ bool ListModelDraggable::canAddTerms(Terms *terms) const
 bool ListModelDraggable::isAllowed(const Term &term) const
 {
 	int variableTypesAllowed = listView()->variableTypesAllowed();
-	if (variableTypesAllowed == 0xff) return true;
-	if (term.size() > 1) return true;
+
+	if (variableTypesAllowed == 0xff || term.size() > 1)
+		return true;
 	
-	QVariant v = requestInfo(term, VariableInfo::VariableType);
-	Column::ColumnType variableType = (Column::ColumnType)v.toInt();
+	QVariant	v				= requestInfo(term, VariableInfo::VariableType);
+	int			variableType	= v.toInt();
 
 	return variableType == 0 || variableType & variableTypesAllowed;
 }
@@ -122,11 +123,11 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 bool ListModelDraggable::isSuggested(const Term &term) const
 {
 	int variableTypesSuggested = listView()->variableTypesSuggested();
-	if (variableTypesSuggested == 0) return false;
-	if (term.size() > 1) return false;
+	if (variableTypesSuggested == 0 || term.size() > 1)
+		return false;
 	
-	QVariant v = requestInfo(term, VariableInfo::VariableType);
-	Column::ColumnType variableType = (Column::ColumnType)v.toInt();
+	QVariant	v				= requestInfo(term, VariableInfo::VariableType);
+	int			variableType	= v.toInt();
 
 	return variableType == 0 || variableType & variableTypesSuggested;
 }

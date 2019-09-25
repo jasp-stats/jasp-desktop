@@ -16,17 +16,14 @@
 //
 
 #include "dataexporter.h"
-
-
 #include <boost/filesystem.hpp>
-
 #include <sys/stat.h>
-
 #include "dataset.h"
-
 #include <boost/nowide/fstream.hpp>
+#include "stringutils.h"
 
 using namespace std;
+
 
 DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(includeComputeColumns) {
 	_defaultFileType = Utils::csv;
@@ -39,51 +36,7 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 
 	boost::nowide::ofstream outfile(path.c_str(), ios::out);
 
-	DataSet *dataset = package->dataSet();
-
-	std::vector<Column*> cols;
-
-	int columnCount = dataset->columnCount();
-	for (int i = 0; i < columnCount; i++)
-	{
-		Column &column = dataset->column(i);
-		string name = column.name();
-
-		if(!package->isColumnComputed(name) || _includeComputeColumns)
-			cols.push_back(&column);
-	}
-
-
-	for (size_t i = 0; i < cols.size(); i++)
-	{
-		Column *column		= cols[i];
-		std::string name	= column->name();
-
-		if (escapeValue(name))	outfile << '"' << name << '"';
-		else					outfile << name;
-
-		if (i < cols.size()-1)	outfile << ",";
-		else					outfile << "\n";
-
-	}
-
-	size_t rowCount = dataset->rowCount();
-
-	for (size_t r = 0; r < rowCount; r++)
-		for (size_t i = 0; i < cols.size(); i++)
-		{
-			Column *column = cols[i];
-
-			string value = column->getOriginalValue(r);
-			if (value != ".")
-			{
-				if (escapeValue(value))	outfile << '"' << value << '"';
-				else					outfile << value;
-			}
-
-			if (i < cols.size()-1)		outfile << ",";
-			else if (r != rowCount-1)	outfile << "\n";
-		}
+	package->writeDataSetToOStream(outfile, _includeComputeColumns);
 
 	outfile.flush();
 	outfile.close();
@@ -92,27 +45,3 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 }
 
 
-bool DataExporter::escapeValue(std::string &value)
-{
-	bool useQuotes = false;
-	std::size_t found = value.find(",");
-	if (found != std::string::npos)
-		useQuotes = true;
-
-	if (value.find_first_of(" \n\r\t\v\f") == 0)
-		useQuotes = true;
-
-
-	if (value.find_last_of(" \n\r\t\v\f") == value.length() - 1)
-		useQuotes = true;
-
-	size_t p = value.find("\"");
-	while (p != std::string::npos)
-	{
-		value.insert(p, "\"");
-		p = value.find("\"", p + 2);
-		useQuotes = true;
-	}
-
-	return useQuotes;
-}

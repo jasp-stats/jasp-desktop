@@ -73,7 +73,7 @@ public:
 	const	Column & operator[](std::string name) const { return _columnStore[findIndexByName(name)]; }
 
 
-	Column * createColumn(std::string name);
+	Column * initializeColumnAs(int colIndex, std::string name);
 
 private:
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);

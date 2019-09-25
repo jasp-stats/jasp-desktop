@@ -20,10 +20,10 @@ public:
 	~ReadStatImporter() override;
 
 	static bool extSupported(const std::string & ext);
+	void initColumn(QVariant colId, ImportColumn * importColumn) override;
 
 protected:
 	ImportDataSet *	loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)	override;
-	void			fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)										override;
 
 	std::string		_ext;
 };

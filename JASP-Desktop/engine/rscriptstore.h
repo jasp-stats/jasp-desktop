@@ -26,11 +26,11 @@ struct RFilterStore : public RScriptStore
 
 struct RComputeColumnStore : public RScriptStore
 {
-	RComputeColumnStore(QString columnName, QString computeCode, Column::ColumnType columnType) : RScriptStore(-1, computeCode, engineState::computeColumn), columnName(columnName), columnType(columnType)
+	RComputeColumnStore(QString columnName, QString computeCode, columnType colType) : RScriptStore(-1, computeCode, engineState::computeColumn), _columnName(columnName), _columnType(colType)
 	{ }
 
-	QString				columnName;
-	Column::ColumnType	columnType;
+	QString		_columnName;
+	columnType	_columnType;
 };
 
 #endif // RSCRIPTSTORE_H

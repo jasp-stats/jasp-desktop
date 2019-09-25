@@ -181,9 +181,9 @@ Option *BoundQMLTextInput::createOption()
 	}
 	case TextInputType::AddColumnType:
 	{
-		QString colTypeProp		= getItemProperty("columnType").toString();
-		auto	colType = Column::columnTypeFromString(colTypeProp.toStdString());
-				option = new OptionComputedColumn("", false, colType);
+		QString		colTypeProp	= getItemProperty("columnType").toString();
+		columnType	colType		= columnTypeFromString(colTypeProp.toStdString());
+					option		= new OptionComputedColumn("", false, int(colType));
 
 		option->requestColumnCreation.connect(boost::bind( &Option::notifyRequestColumnCreation, form()->options(), _1, _2));
 		break;

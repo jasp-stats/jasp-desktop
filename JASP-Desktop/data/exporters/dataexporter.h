@@ -26,8 +26,6 @@ public:
 	DataExporter(bool includeComputeColumns);
 	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 
-	bool escapeValue(std::string &value);
-
 	bool _includeComputeColumns;
 };
 

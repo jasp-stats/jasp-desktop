@@ -77,8 +77,6 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	struct archive_entry *entry;
 
-	DataSet *dataset = package->dataSet();
-
 	int progress,
 		lastProgress = -1;
 
@@ -99,16 +97,13 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	metaData["filterData"]				= Json::Value(package->dataFilter());
 	metaData["filterConstructorJSON"]	= package->filterConstructorJson();
 	metaData["computedColumns"]			= package->computedColumnsPointer()->convertToJson();
-	dataSet["rowCount"]					= Json::Value(dataset ? int(dataset->rowCount())    : 0);
-	dataSet["columnCount"]				= Json::Value(dataset ? int(dataset->columnCount()) : 0);
+	dataSet["rowCount"]					= Json::Value(package->rowCount());
+	dataSet["columnCount"]				= Json::Value(package->columnCount());
 
 	dataSet["filterVector"]				= Json::arrayValue;
 
-	if (dataset)
-	{
-		for (bool filteredRow : dataset->filterVector())
-			dataSet["filterVector"].append(filteredRow);
-	}
+	for (bool filteredRow : package->filterVector())
+		dataSet["filterVector"].append(filteredRow);
 
 	dataSet["emptyValuesMap"]			= Json::objectValue;
 
@@ -129,62 +124,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	//Calculate size of data file that'll be added to the archive
 	size_t	dataSize	= 0,
-			columnCount	= dataset ? dataset->columnCount() : 0;
+			columnCount	= package->columnCount();
 
 	for (size_t i = 0; i < columnCount; i++)
 	{
-		Column &column					= dataset->column(i);
-		std::string name				= column.name();
-		Json::Value columnMetaData		= Json::Value(Json::objectValue);
-		columnMetaData["name"]			= Json::Value(name);
-		columnMetaData["measureType"]	= Json::Value(getColumnTypeName(column.columnType()));
-
-		if (column.columnType()			!= Column::ColumnTypeScale)
-		{
-			columnMetaData["type"] = Json::Value("integer");
-			dataSize += sizeof(int) * dataset->rowCount();
-		}
-		else
-		{
-			columnMetaData["type"] = Json::Value("number");
-			dataSize += sizeof(double) * dataset->rowCount();
-		}
-
-
-		if (column.columnType() != Column::ColumnTypeScale)
-		{
-			Labels &labels = column.labels();
-			if (labels.size() > 0)
-			{
-				Json::Value &columnLabelData	= labelsData[name];
-				Json::Value &labelsMetaData		= columnLabelData["labels"];
-				int labelIndex = 0;
-
-				for (const Label &label : labels)
-				{
-					Json::Value keyValueFilterPair(Json::arrayValue);
-
-					keyValueFilterPair.append(label.value());
-					keyValueFilterPair.append(label.text());
-					keyValueFilterPair.append(label.filterAllows());
-
-					labelsMetaData.append(keyValueFilterPair);
-					labelIndex += 1;
-				}
-
-				Json::Value &orgStringValuesMetaData	= columnLabelData["orgStringValues"];
-				std::map<int, std::string> &orgLabels	= labels.getOrgStringValues();
-				for (const std::pair<int, std::string> &pair : orgLabels)
-				{
-					Json::Value keyValuePair(Json::arrayValue);
-					keyValuePair.append(pair.first);
-					keyValuePair.append(pair.second);
-					orgStringValuesMetaData.append(keyValuePair);
-				}
-			}
-		}
-
-		columnsData.append(columnMetaData);
+		columnsData.append(package->columnToJsonForJASPFile(i, labelsData, dataSize));
 
 		progress = 49 * int(i / columnCount);
 		if (progress != lastProgress)
@@ -242,13 +186,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	for (size_t i = 0; i < columnCount; i++)
 	{
-		Column &column = dataset->column(i);
-
-		if (column.columnType() != Column::ColumnTypeScale)
-			for (const int & value : column.AsInts)
+		if (package->getColumnType(i) != columnType::scale)
+			for (const int & value : package->getColumnDataInts(i))
 				archive_write_data(a, reinterpret_cast<const char*>(&value), sizeof(int));
 		else
-			for (const double & value : column.AsDoubles)
+			for (const double & value : package->getColumnDataDbls(i))
 				archive_write_data(a, reinterpret_cast<const char*>(&value), sizeof(double));
 
 		progress = 49 + 50 * int(i / columnCount);
@@ -376,15 +318,4 @@ void JASPExporter::createJARContents(archive *a)
 }
 
 
-std::string JASPExporter::getColumnTypeName(Column::ColumnType columnType)
-{
-	switch(columnType)
-	{
-	case Column::ColumnTypeNominal:			return "Nominal";
-	case Column::ColumnTypeNominalText:		return "NominalText";
-	case Column::ColumnTypeOrdinal:			return "Ordinal";
-	case Column::ColumnTypeScale:			return "Continuous";
-	default:								return "Unknown";
-	}
 
-}

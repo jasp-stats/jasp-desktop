@@ -319,11 +319,6 @@ void Analysis::setStatus(Analysis::Status status)
 	Log::log() << "Analysis " << title() << " (" << id() << ") now has status: " << statusToString(_status) << std::endl;
 }
 
-DataSet *Analysis::getDataSet() const
-{
-	return _analyses->getDataSet();
-}
-
 void Analysis::optionsChangedHandler(Option *option)
 {
 	if (_refreshBlocked)
@@ -477,4 +472,9 @@ QString	Analysis::fullHelpPath(QString helpFileName)
 void Analysis::duplicateMe()
 {
 	_analyses->duplicateAnalysis(_id);
+}
+
+DataSetPackage * Analysis::getDataSetPackage() const
+{
+	return _analyses->getDataSetPackage();
 }

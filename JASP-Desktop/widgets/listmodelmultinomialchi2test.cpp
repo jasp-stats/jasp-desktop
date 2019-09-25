@@ -35,12 +35,9 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *
 	if (termsAdded && termsAdded->size() > 0)
 	{
 		const std::string	& colName	= termsAdded->at(0).asString();
-		DataSet				* dataset	= listView()->form()->getDataSet();
-		Column				& column	= dataset->columns().get(colName);
-		Labels				& labels	= column.labels();
+		QStringList			  labels	= listView()->form()->getDataSetPackage()->getColumnLabelsAsStringList(colName);
 
-		for (auto label : labels)
-			_rowNames.push_back(tq(label.text()));
+		_rowNames = labels.toVector();
 
 		QVector<double> newValues(_rowNames.length(), 1);
 		_values.push_back(newValues);

@@ -6,14 +6,14 @@
 class CSVImportColumn : public ImportColumn
 {
 public:
-	CSVImportColumn(ImportDataSet* importDataSet, std::string name);
-	virtual ~CSVImportColumn();
+									CSVImportColumn(ImportDataSet* importDataSet, std::string name);
+									~CSVImportColumn()	override;
 
-	virtual size_t size() const;
-	virtual bool isValueEqual(Column &col, size_t row) const;
+	size_t							size()									const	override;
+	std::vector<std::string>		allValuesAsStrings()					const	override { return  _data; }
+	void							addValue(const std::string &value);
+	const std::vector<std::string>& getValues()								const;
 
-	void addValue(const std::string &value);
-	const std::vector<std::string>& getValues() const;
 
 private:
 	std::vector<std::string> _data;

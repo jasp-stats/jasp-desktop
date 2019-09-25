@@ -19,6 +19,7 @@ public:
 	virtual size_t	columnCount()						const;
 
 	ImportColumn * getColumn(std::string name)			const;
+	ImportColumn * getColumn(size_t ind)				const { return _columns[ind]; }
 
 	ImportColumns::iterator			begin();
 	ImportColumns::iterator			end();

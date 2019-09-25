@@ -1,9 +1,9 @@
 #ifndef COMPUTEDCOLUMN_H
 #define COMPUTEDCOLUMN_H
 
-#include "columns.h"
 #include "jsonredirect.h"
 #include <list>
+#include <set>
 
 class Analysis;
 
@@ -12,19 +12,16 @@ class ComputedColumn
 public:
 	enum class computedType { rCode, constructorCode, analysis, analysisNotComputed};
 
-			ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Column * col, computedType kindOfCode = computedType::constructorCode)
-			: _computedColumns(allComputedColumns), _codeType(kindOfCode), _name(col->name()), _outputColumn(col)
+			ComputedColumn(std::string name, std::vector<ComputedColumn*> * allComputedColumns, computedType kindOfCode = computedType::constructorCode)
+			: _computedColumns(allComputedColumns), _codeType(kindOfCode), _name(name)
 			{
 				_constructorCode["formulas"] = Json::arrayValue;
 			}
 
-			ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Columns * columns, Json::Value json); //Conversion from JSON!
+			ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Json::Value json); //Conversion from JSON!
 
 
 			std::string				name()							const			{ return _name;								}
-			void					setColumn(Column * newPointer)					{ _outputColumn = newPointer;				}
-			Column					*column()										{ return _outputColumn;						}
-			Column::ColumnType		columnType()					const			{ return _outputColumn->columnType();		}
 
 			bool					setRCode(std::string rCode);
 			bool					setError(std::string error);
@@ -51,7 +48,7 @@ public:
 	static	std::set<std::string>	findUsedColumnNamesStatic(std::string searchThis);
 
 			void					findDependencies();
-	static	void					setAllColumnNames(std::set<std::string> names);
+	static	void					setAllColumnNames(std::vector<std::string> names);
 			bool					dependsOn(std::string columnName, bool refresh = true);
 			std::set<std::string>	findThoseDependingOnMe();
 			bool					iShouldBeSentAgain();
@@ -81,8 +78,6 @@ private:
 
 	static	std::vector<std::string>		_allColumnNames;
 			std::set<std::string>			_dependsOnColumns;
-
-			Column							*_outputColumn;
 
 			int								_analysisId			= -1;
 };

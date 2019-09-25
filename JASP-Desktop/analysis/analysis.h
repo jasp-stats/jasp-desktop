@@ -29,6 +29,7 @@
 #include <set>
 #include <QObject>
 #include "modules/dynamicmodules.h"
+#include "data/datasetpackage.h"
 
 class ComputedColumn;
 class Analyses;
@@ -123,7 +124,7 @@ public:
 			QString				helpFile()			const	{ return _helpFile;							}
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;					}
 	const	Json::Value		&	getImgResults()		const	{ return _imgResults;						}
-			DataSet			*	getDataSet()		const;
+			DataSetPackage	*	getDataSetPackage()	const;
 	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
 			AnalysisForm	*	form()				const	{ return _analysisForm;						}
 

@@ -54,8 +54,10 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &p
 
 	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
+	packageData->beginLoadingData();
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);
+	packageData->endLoadingData();
 }
 
 
@@ -75,11 +77,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 {
 	bool success = false;
 
-	Json::Value metaData;
-	Json::Value xData;
+	Json::Value metaData,
+				xData;
 
-	int columnCount = 0;
-	int rowCount = 0;
+	int	columnCount = 0,
+		rowCount = 0;
 
 	parseJsonEntry(metaData, path, "metadata.json", true);
 
@@ -141,33 +143,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 	if (rowCount < 0 || columnCount < 0)
 		throw std::runtime_error("Data size has been corrupted.");
 
-	do
-	{
-		try
-		{
-			success				= true;
-			DataSet *dataSet	= packageData->dataSet();
 
-			dataSet->setColumnCount(columnCount);
-			if (rowCount > 0)
-				dataSet->setRowCount(rowCount);
-		}
-		catch (boost::interprocess::bad_alloc &e)
-		{
-			try
-			{
-				packageData->setDataSet(SharedMemory::enlargeDataSet(packageData->dataSet()));
-				success = false;
-			}
-			catch(std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory"); }
-		}
-		catch(std::exception e)	{ Log::log() << "n " << e.what() << std::endl;	}
-		catch(...)					{ Log::log() << "something else" << std::endl;	}
-	}
-	while(!success);
+	packageData->setDataSetSize(columnCount, rowCount);
 
-	unsigned long long progress;
-	unsigned long long lastProgress = -1;
+	unsigned long long	progress,
+						lastProgress = -1;
 
 	Json::Value &columnsDesc = dataSetDesc["fields"];
 	int i = 0;
@@ -175,83 +155,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	for (Json::Value columnDesc : columnsDesc)
 	{
-		std::string name					= columnDesc["name"].asString();
-		Json::Value &orgStringValuesDesc	= columnDesc["orgStringValues"];
-		Json::Value &labelsDesc				= columnDesc["labels"];
-		std::map<int, int>& mapValues		= mapNominalTextValues[name];	// This is needed for old JASP file where factor keys where not filled in the right way
-
-		if (labelsDesc.isNull() &&  ! xData.isNull())
-		{
-			Json::Value &columnlabelData = xData[name];
-
-			if (!columnlabelData.isNull())
-			{
-				labelsDesc			= columnlabelData["labels"];
-				orgStringValuesDesc = columnlabelData["orgStringValues"];
-			}
-		}
-
-		do
-		{
-			try
-			{
-				Column &column = packageData->dataSet()->column(i);
-				Column::ColumnType columnType = parseColumnType(columnDesc["measureType"].asString());
-
-				column.setName(name);
-				column.setColumnType(columnType);
-
-				Labels &labels = column.labels();
-				labels.clear();
-				int index = 1;
-
-				for (Json::Value keyValueFilterTrip : labelsDesc)
-				{
-					int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
-					int key			= keyValueFilterTrip.get(zero,	Json::nullValue).asInt();
-					std::string val = keyValueFilterTrip.get(1,			Json::nullValue).asString();
-					bool fil		= keyValueFilterTrip.get(2,			true).asBool();
-					int labelValue	= key;
-
-					if (columnType == Column::ColumnTypeNominalText)
-					{
-						labelValue		= index;
-						mapValues[key]	= labelValue;
-					}
-
-					labels.add(labelValue, val, fil, columnType == Column::ColumnTypeNominalText);
-
-					index++;
-				}
-
-				if (!orgStringValuesDesc.isNull())
-				{
-					for (Json::Value keyValuePair : orgStringValuesDesc)
-					{
-						int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
-						int key			= keyValuePair.get(zero,	Json::nullValue).asInt();
-						std::string val = keyValuePair.get(1,		Json::nullValue).asString();
-						if (mapValues.find(key) != mapValues.end())
-							key = mapValues[key];
-						else
-							Log::log() << "Cannot find key " << key << std::flush;
-						labels.setOrgStringValues(key, val);
-					}
-				}
-				success = true;
-			}
-			catch (boost::interprocess::bad_alloc &e)
-			{
-				try {
-
-					packageData->setDataSet(SharedMemory::enlargeDataSet(packageData->dataSet()));
-					success = false;
-				}
-				catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");		}
-			}
-			catch (std::exception &e)		{ Log::log() << "std::exception " << e.what() << std::endl;	}
-			catch (...)						{ Log::log() << "something else" << std::endl;	}
-		} while (success == false);
+		packageData->columnLabelsFromJsonForJASPFile(xData, columnDesc, i, mapNominalTextValues);
 
 		progress = 50 * i / columnCount;
 		if (progress != lastProgress)
@@ -270,15 +174,17 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	char buff[sizeof(double) > sizeof(int) ? sizeof(double) : sizeof(int)];
 
+	std::vector<double>		dbls(rowCount);
+	std::vector<int>		ints(rowCount);
+
 	for (int c = 0; c < columnCount; c++)
 	{
-		Column &column					= packageData->dataSet()->column(c);
-		Column::ColumnType columnType	= column.columnType();
-		int typeSize					= (columnType == Column::ColumnTypeScale) ? sizeof(double) : sizeof(int);
-		std::map<int, int>& mapValues	= mapNominalTextValues[column.name()];
-		Labels &labels					= column.labels();
+		columnType columnType			= packageData->getColumnType(c);
+		bool isScalar					= columnType == columnType::scale;
+		int typeSize					= isScalar ? sizeof(double) : sizeof(int);
+		std::map<int, int>& mapValues	= mapNominalTextValues[packageData->getColumnName(c)];
 
-		for (int r = 0; r < rowCount; r++)
+		for (size_t r = 0; r < rowCount; r++)
 		{
 			int errorCode	= 0;
 			int size		= dataEntry.readData(buff, typeSize, errorCode);
@@ -286,27 +192,16 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 			if (errorCode != 0 || size != typeSize)
 				throw std::runtime_error("Could not read 'data.bin' in JASP archive.");
 
-			if (columnType == Column::ColumnTypeScale)
-				column.setValue(r, *(double*)buff);
+			if (isScalar)
+				dbls[r] = *reinterpret_cast<double*>(buff);
 			else
 			{
-				int value = *(int*)buff;
-				if (columnType == Column::ColumnTypeNominalText && value != INT_MIN)
+				int value = *reinterpret_cast<int*>(buff);
+
+				if (columnType == columnType::nominalText && value != INT_MIN)
 					value = mapValues[value];
 
-				//Maybe something went wrong somewhere and we do no have labels for all values...
-				try
-				{
-					if (value != INT_MIN)
-						labels.getLabelObjectFromKey(value);
-				}
-				catch (const labelNotFound &)
-				{
-					Log::log() << "Value '" << value << "' in column '" << column.name() << "' did not have a corresponding label, adding one now.\n";
-					labels.add(value, std::to_string(value), true, columnType == Column::ColumnTypeNominalText);
-				}
-
-				column.setValue(r, value);
+				ints[r] = value;
 			}
 
 			progress = 50 + (50 * ((c * rowCount) + (r + 1)) / (columnCount * rowCount));
@@ -316,7 +211,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				lastProgress = progress;
 			}
 		}
+
+		if(isScalar)	packageData->setColumnDataDbls(c, dbls);
+		else			packageData->setColumnDataInts(c, ints);
 	}
+
 	dataEntry.close();
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
@@ -338,7 +237,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 	std::vector<bool> filterVector;
 	for(const Json::Value & filteredRow : dataSetDesc.get("filterVector", Json::arrayValue))
 		filterVector.push_back(filteredRow.asBool());
-	packageData->dataSet()->setFilterVector(filterVector);
+	packageData->setFilterVector(filterVector);
 
 	//Filter should be run if filterVector was not filled and either of the filters was different from default.
 	bool filterShouldBeRun =
@@ -552,12 +451,5 @@ JASPImporter::Compatibility JASPImporter::isCompatible(DataSetPackage *packageDa
 	return JASPImporter::Compatible;
 }
 
-Column::ColumnType JASPImporter::parseColumnType(std::string name)
-{
-	if (name == "Nominal")				return  Column::ColumnTypeNominal;
-	else if (name == "NominalText")		return  Column::ColumnTypeNominalText;
-	else if (name == "Ordinal")			return  Column::ColumnTypeOrdinal;
-	else if (name == "Continuous")		return  Column::ColumnTypeScale;
-	else								return  Column::ColumnTypeUnknown;
-}
+
 

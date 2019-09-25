@@ -85,8 +85,6 @@ void AsyncLoader::free(DataSet *dataSet)
 
 void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 {
-	boost::signals2::connection co = package->checkDoSync.connect(	boost::bind(&AsyncLoader::checkDoSyncSlot, this, _1));
-
 	_currentEvent = event;
 	_currentPackage = package;
 
@@ -94,8 +92,6 @@ void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
 	else
 		this->loadPackage("asyncloader");
-
-	co.disconnect();
 }
 
 void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
@@ -139,14 +135,14 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 		else
 			event->setComplete();
 	}
-	catch (runtime_error e)
+	catch (runtime_error & e)
 	{
 		Log::log() << "Runtime Exception in saveTask: " << e.what() << std::endl;
 
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
-	catch (exception e)
+	catch (exception & e)
 	{
 		Log::log() << "Exception in saveTask: " << e.what() << std::endl;
 
@@ -158,11 +154,6 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 void AsyncLoader::progressHandler(string status, int progress)
 {
 	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
-}
-
-void AsyncLoader::checkDoSyncSlot(bool &check)
-{
-	emit this->checkDoSyncSig(check);
 }
 
 void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
@@ -313,7 +304,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
-		catch (runtime_error e)
+		catch (runtime_error & e)
 		{
 			Log::log() << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
 
@@ -321,7 +312,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
-		catch (exception e)
+		catch (exception & e)
 		{
 			Log::log() << "Exception in uploadFileFinished: " << e.what() << std::endl;
 
