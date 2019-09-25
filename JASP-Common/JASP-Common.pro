@@ -10,9 +10,6 @@ CONFIG += c++11
  
 include(../JASP.pri)
 
-   macx:INCLUDEPATH += ../../boost_1_64_0
-windows:INCLUDEPATH += ../../boost_1_64_0
-
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
