@@ -1,5 +1,5 @@
-//
 // Copyright (C) 2013-2018 University of Amsterdam
+//
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -22,8 +22,7 @@ import JASP.Widgets 1.0
 import JASP.Theme 1.0
 
 Form {
-	usesJaspResults: false
-	
+
 	VariablesForm
 	{
 		AvailableVariablesList	{ name: "allVariablesList" }
@@ -31,7 +30,7 @@ Form {
         AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				suggestedColumns: ["scale"];    allowedColumns: ["scale"]   }
 		AssignedVariablesList	{ name: "wlsWeights";	title: qsTr("WLS Weights (optional)");	suggestedColumns: ["scale"];	singleVariable: true	}
 	}
-	
+
 	BayesFactorType {}
 
 	Group
@@ -76,6 +75,7 @@ Form {
 			label: qsTr("Credible interval")
 			enabled: postSummaryTable.checked || postSummaryPlot.checked
 		}
+
 	}
 
 	RadioButtonGroup
@@ -110,7 +110,7 @@ Form {
 	Section
 	{
 		title: qsTr("Model")
-		
+
 		VariablesForm
 		{
 			height: 200
@@ -136,13 +136,13 @@ Form {
 				}
 			}
 		}
-		
+
 	}
 	
 	Section
 	{
 		title: qsTr("Plots")
-		
+
 		Group
 		{
 			title: qsTr("Coefficients")
@@ -169,7 +169,7 @@ Form {
 	Section
 	{
 		title: qsTr("Advanced Options")
-		
+
 		RadioButtonGroup
 		{
 			name: "priorRegressionCoefficients"
@@ -213,7 +213,7 @@ Form {
 				}
 			}
 		}
-			
+
 		ColumnLayout
 		{
 			RadioButtonGroup
@@ -270,5 +270,5 @@ Form {
 			}
 		}
 	}
-	
+
 }

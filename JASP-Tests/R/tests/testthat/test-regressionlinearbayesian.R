@@ -16,7 +16,7 @@ test_that("Main tables results match", {
     options$descriptives <- TRUE
     
     results <- jasptools::run("RegressionLinearBayesian", "test.csv", options)
-    table <- results[["results"]][["regressionTable"]][["data"]]
+    table <- results[["results"]][["basreg"]][["collection"]][["basreg_modelComparisonTable"]][["data"]]
     expect_equal_tables(
         table,
         list("Null model", 1, 4.74865017735093, 0.826046120541498, 0, 0.5,
@@ -25,7 +25,7 @@ test_that("Main tables results match", {
         label = "regressionTable"
     )
 
-    table <- results[["results"]][["posteriorSummary"]][["posteriorSummaryTable"]][["data"]]
+    table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
     expect_equal_tables(
         table,
         list("Intercept", -0.255843391953333, 0.0989748100578513, 1, 1, 1,
