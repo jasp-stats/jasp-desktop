@@ -182,6 +182,9 @@ JASPControl
 					leftPadding:		Theme.labelSpacing
 					padding:			Theme.jaspControlPadding
 					verticalAlignment:	Text.AlignVCenter
+					selectByMouse:		true
+					selectedTextColor:	Theme.white
+					selectionColor:		Theme.itemSelectedColor
 					validator:			doubleValidator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:
