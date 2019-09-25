@@ -166,8 +166,8 @@ void FileMenu::setCurrentDataFile(const QString &path)
 	{
 		if (checkSyncFileExists(path))
 		{
-			int sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
-			if (sync > 0)
+			bool sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+			if (sync)
 				_watcher.addPath(path);
 		}
 		else
@@ -297,8 +297,8 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 void FileMenu::syncDataFile(const QString& path)
 {
-	int autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
-	if (autoSync > 0)
+	bool autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+	if (autoSync)
 		setSyncRequest(path);
 }
 
