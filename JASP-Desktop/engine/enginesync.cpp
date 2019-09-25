@@ -43,13 +43,6 @@ using namespace boost::interprocess;
 EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent = 0)
 	: QObject(parent), _analyses(analyses), _package(package), _dynamicModules(dynamicModules)
 {
-	/* The analyses really do not need to trigger process. It will be called every 50ms anyway.
-	connect(_analyses,			&Analyses::analysisAdded,							this,					&EngineSync::ProcessAnalysisRequests			);
-	connect(_analyses,			&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests			);
-	connect(_analyses,			&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests			);
-	connect(_analyses,			&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests			);
-	connect(_analyses,			&Analyses::analysisRewriteImages,					this,					&EngineSync::ProcessAnalysisRequests			);
-	connect(_analyses,			&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests			);*/
 	connect(_analyses,			&Analyses::sendRScript,								this,					&EngineSync::sendRCode							);
 	connect(this,				&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed					);
 	connect(this,				&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded				);
@@ -60,6 +53,8 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModul
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
+
+	_package->setEngineSync(this);
 }
 
 EngineSync::~EngineSync()
@@ -118,7 +113,7 @@ void EngineSync::start(int ppi)
 
 		}
 	}
-	catch (interprocess_exception e)
+	catch (interprocess_exception & e)
 	{
 		Log::log()  << "interprocess exception! " << e.what() <<  std::endl;
 		throw e;
@@ -184,7 +179,7 @@ void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListe
 	_waitingScripts.push(new RScriptStore(requestId, rCode, engineState::rCode, whiteListedVersion));
 }
 
-void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, Column::ColumnType columnType)
+void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType)
 {
 	//first we remove the previously sent requests for this same column!
 	std::queue<RScriptStore*> copiedWaiting(_waitingScripts);
@@ -193,12 +188,12 @@ void EngineSync::computeColumn(const QString & columnName, const QString & compu
 	while(copiedWaiting.size() > 0)
 	{
 		RScriptStore * cur = copiedWaiting.front();
-		if(cur->typeScript != engineState::computeColumn || static_cast<RComputeColumnStore*>(cur)->columnName != columnName)
+		if(cur->typeScript != engineState::computeColumn || static_cast<RComputeColumnStore*>(cur)->_columnName != columnName)
 			_waitingScripts.push(cur);
 		copiedWaiting.pop();
 	}
 
-	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, columnType));
+	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, colType));
 }
 
 void EngineSync::processFilterScript()
@@ -206,6 +201,8 @@ void EngineSync::processFilterScript()
 
 	if (!_waitingFilter)
 		return;
+
+	Log::log() << "Pausing and resuming engines to make sure nothing else is running when we start the filter." << std::endl;
 
 	pause(); //Make sure engines stop
 	_filterRunning = true;
@@ -492,7 +489,9 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 void EngineSync::stopEngines()
 {
-	auto timeout = QDateTime::currentSecsSinceEpoch() + 15; //shouldnt take more than a minute
+	if(!_engineStarted) return;
+
+	auto timeout = QDateTime::currentSecsSinceEpoch() + 60; //shouldnt take more than a minute
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
@@ -537,6 +536,8 @@ void EngineSync::pause()
 {
 	JASPTIMER_RESUME(EngineSync::pause);
 
+	if(!_engineStarted) return;
+
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
 		engine->process();
@@ -554,6 +555,8 @@ void EngineSync::pause()
 void EngineSync::resume()
 {
 	JASPTIMER_RESUME(EngineSync::resume);
+
+	if(!_engineStarted) return;
 
 	for(auto * engine : _engines)
 		engine->resumeEngine();

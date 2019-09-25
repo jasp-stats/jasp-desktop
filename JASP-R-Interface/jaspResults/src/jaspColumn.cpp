@@ -9,7 +9,9 @@ bool	jaspRCPP_setColumnDataAsScale(			std::string, Rcpp::RObject) { jaspPrint("j
 bool	jaspRCPP_setColumnDataAsOrdinal(		std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
 bool	jaspRCPP_setColumnDataAsNominal(		std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
 bool	jaspRCPP_setColumnDataAsNominalText(	std::string, Rcpp::RObject) { jaspPrint("jaspColumn does nothing in R stand-alone!"); return false; };
-int		jaspRCPP_getColumnType(					std::string)				{ return ColumnTypeUnknown; }
+#define ENUM_DECLARATION_CPP
+#include "columntype.h"
+columnType jaspRCPP_getColumnType(std::string columnName) { return columnType::unknown; }
 #endif
 
 jaspColumn::jaspColumn(std::string columnName)
@@ -18,11 +20,11 @@ jaspColumn::jaspColumn(std::string columnName)
 {
 	switch(jaspRCPP_getColumnType(columnName))
 	{
-	case ColumnType::ColumnTypeScale:		_columnType = jaspColumnType::scale;		break;
-	case ColumnType::ColumnTypeOrdinal:		_columnType = jaspColumnType::ordinal;		break;
-	case ColumnType::ColumnTypeNominal:		_columnType = jaspColumnType::nominal;		break;
-	case ColumnType::ColumnTypeNominalText:	_columnType = jaspColumnType::nominalText;	break;
-	default:								_columnType = jaspColumnType::unknown;		break;
+	case columnType::scale:			_columnType = jaspColumnType::scale;		break;
+	case columnType::ordinal:		_columnType = jaspColumnType::ordinal;		break;
+	case columnType::nominal:		_columnType = jaspColumnType::nominal;		break;
+	case columnType::nominalText:	_columnType = jaspColumnType::nominalText;	break;
+	default:						_columnType = jaspColumnType::unknown;		break;
 	}
 }
 

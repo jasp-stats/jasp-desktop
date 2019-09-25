@@ -71,12 +71,7 @@ void Columns::setColumnCount(size_t columnCount)
 
 void Columns::removeColumn(size_t index)
 {
-	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it, --index)
-		if (index == 0)
-		{
-			_columnStore.erase(it);
-			return;
-		}
+	_columnStore.erase(_columnStore.begin() + index);
 }
 
 void Columns::removeColumn(std::string name)
@@ -108,9 +103,9 @@ size_t Columns::findIndexByName(std::string name) const
 }
 
 
-Column * Columns::createColumn(std::string name)
+Column * Columns::initializeColumnAs(int colIndex, std::string name)
 {
-	Column * column = &at(columnCount() - 1);
+	Column * column = &at(colIndex);
 
 	column->setName(name);
 	column->_setRowCount(maxRowCount());

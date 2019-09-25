@@ -46,8 +46,7 @@ signals:
 	void beginSave(FileEvent*, DataSetPackage*);
 	void progress(const QString &status, int progress);
 	void beginFileUpload(QString nodePath, QString sourcePath);
-
-	void checkDoSyncSig(bool &check);
+	bool checkDoSync();
 
 private slots:
 	void loadTask(FileEvent *event, DataSetPackage *package);
@@ -62,7 +61,7 @@ private:
 
 	void progressHandler(std::string status, int progress);
 
-	void checkDoSyncSlot(bool& check);
+
 
 	DataSetLoader		_loader;
 	FileEvent *			_currentEvent = nullptr;

@@ -3,14 +3,15 @@ import QtQuick.Controls 2.2
 import QtQuick 2.9
 import JASP.Theme 1.0
 
-Item {
+Item
+{
 								id:						filterConstructor
 								objectName:				"filterConstructor"
 				property string __debugName:			"FilterConstructor"
 				property real	fontPixelSize:			baseFontSize * preferencesModel.uiScale
 				property real	blockDim:				baseBlockDim * preferencesModel.uiScale
 				property var	allKeys:				["number", "boolean", "string", "variable"]
-	readonly	property real	desiredMinimumHeight:	columnsRow.height + hints.height + applyFilter.height + (blockDim * 3)
+	readonly	property real	desiredMinimumHeight:	operatorsRow.height + hints.height + applyFilter.height + (blockDim * 3)
 				property real	extraSpaceUnderColumns:	0
 				property bool	somethingChanged:		false
 				property bool	isColumnConstructor:	false
@@ -73,28 +74,27 @@ Item {
 
 	OperatorSelector
 	{
-		id: columnsRow
-		anchors.top: parent.top
-		anchors.left: parent.left
-		anchors.right: parent.right
-
-		height: filterConstructor.blockDim * 1.75
-
-		z: 3
-
-		horizontalCenterX: filterHintsColumns.x + (filterHintsColumns.width * 0.5)
+		id:					operatorsRow
+		height:				filterConstructor.blockDim * 1.75
+		z:					3
+		horizontalCenterX:	filterHintsColumns.x + (filterHintsColumns.width * 0.5)
+		anchors
+		{
+			top:	parent.top
+			left:	parent.left
+			right:	parent.right
+		}
 
 	}
 
-	Rectangle {
-		id: background
-
-		color: Theme.white
-		border.width: 1
-		border.color: "lightGrey"
-
-		anchors.fill: parent
-		z: -3
+	Rectangle
+	{
+		id:				background
+		color:			Theme.white
+		border.width:	1
+		border.color:	Theme.uiBackground
+		anchors.fill:	parent
+		z:				-3
 
 		Image
 		{
@@ -114,15 +114,17 @@ Item {
 
 	Item
 	{
-		id: columnList
+		id:		columnList
+		width:	columns.width + columnsLeftScrollBar.width
 
-		//anchors.top: columnsRow.bottom
-		anchors.top: columnsRow.bottom
-		anchors.left: parent.left
-		anchors.bottom: parent.bottom
-		anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+		anchors
+		{
+			top:			operatorsRow.bottom
+			left:			parent.left
+			bottom:			parent.bottom
+			bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+		}
 
-		width: columns.width + columnsLeftScrollBar.width
 
 		JASPScrollBar
 		{
@@ -150,46 +152,44 @@ Item {
 
 	Item
 	{
-		id: filterHintsColumns
-
-		anchors.top: columnsRow.bottom
-		anchors.left: columnList.right
-		anchors.right: funcVarLists.left
-		anchors.bottom: parent.bottom
-		//border.width: 1
-		//border.color: "grey"
-
-		z: -1
-		//clip: true
-
-
+		id:				filterHintsColumns
+		z:				-1
+		anchors
+		{
+			top:	operatorsRow.bottom
+			left:	columnList.right
+			right:	funcVarLists.left
+			bottom: parent.bottom
+		}
 
 		Rectangle
 		{
-			id: rectangularColumnContainer
-			z: parent.z + 1
-			anchors.top: parent.top
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: hints.top
+			id:				rectangularColumnContainer
+			z:				parent.z + 1
+			border.width:	1
+			border.color:	Theme.uiBorder
+			color:			"transparent"
 
-			border.width: 1
-			border.color: "grey"
-			color: "transparent"
-
-			//clip: true
+			anchors
+			{
+				top:	parent.top
+				left:	parent.left
+				right:	parent.right
+				bottom:	hints.top
+			}
 
 			ScrollView
 			{
-				id: scrollScriptColumn
-				anchors.fill: parent
-				anchors.margins: 4
-				clip: true
+				id:					scrollScriptColumn
+				anchors.fill:		parent
+				anchors.margins:	4
+				clip:				true
 
-				contentWidth: scriptColumn.childrenRect.width
-				contentHeight: scriptColumn.childrenRect.height
+				contentWidth:		scriptColumn.childrenRect.width
+				contentHeight:		scriptColumn.childrenRect.height
 
-				Item {
+				Item
+				{
 
 					Column
 					{
@@ -266,7 +266,7 @@ Item {
 	{
 		id: funcVarLists
 
-		anchors.top: columnsRow.bottom
+		anchors.top: operatorsRow.bottom
 		anchors.right: parent.right
 		anchors.bottom: parent.bottom
 		anchors.rightMargin: 4 * preferencesModel.uiScale

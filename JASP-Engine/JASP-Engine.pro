@@ -10,7 +10,7 @@ linux:CONFIG += -pipe
 
 DESTDIR = ..
 TARGET = JASPEngine
-CONFIG   += cmdline
+CONFIG   += cmdline config
 CONFIG   -= app_bundle
 
 TEMPLATE = app
@@ -74,7 +74,6 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 win32:LIBS += -lole32 -loleaut32
-macx:LIBS += -L$$_R_HOME/lib -lR
 
 mkpath($$OUT_PWD/../R/library)
 

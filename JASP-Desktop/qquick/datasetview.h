@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QQuickItem>
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
 #include <vector>
 #include <stack>
 #include <QSGFlatColorMaterial>
@@ -29,7 +29,7 @@ struct ItemContextualized
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT
-	Q_PROPERTY( QAbstractTableModel * model 			READ model					WRITE setModel					NOTIFY modelChanged					)
+	Q_PROPERTY( QAbstractItemModel * model				READ model					WRITE setModel					NOTIFY modelChanged					)
 	Q_PROPERTY( float itemHorizontalPadding 			READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )
 	Q_PROPERTY( float itemVerticalPadding				READ itemVerticalPadding	WRITE setItemVerticalPadding	NOTIFY itemVerticalPaddingChanged	)
 	Q_PROPERTY( float viewportX							READ viewportX				WRITE setViewportX				NOTIFY viewportXChanged				)
@@ -51,8 +51,8 @@ public:
 
 	static DataSetView * lastInstancedDataSetView() { return _lastInstancedDataSetView; }
 
-	QAbstractTableModel * model() { return _model; }
-	void setModel(QAbstractTableModel * model);
+	QAbstractItemModel * model() { return _model; }
+	void setModel(QAbstractItemModel * model);
 
 	float itemHorizontalPadding()	{ return _itemHorizontalPadding;}
 	float itemVerticalPadding()		{ return _itemVerticalPadding;}
@@ -126,10 +126,11 @@ public slots:
 	void reloadColumnHeaders();
 
 
-	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)	{ calculateCellSizes(); }
-	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
-	void modelAboutToBeReset()																{ _storedLineFlags.clear(); _storedDisplayText.clear(); }
-	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
+	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
+	void modelHeaderDataChanged(Qt::Orientation, int, int);
+	void modelAboutToBeReset();
+	void modelWasReset();
+	void setExtraColumnX();
 
 protected:
 	void setRolenames();
@@ -160,7 +161,7 @@ protected:
 
 
 protected:
-	QAbstractTableModel *								_model = nullptr;
+	QAbstractItemModel *								_model = nullptr;
 
 	std::vector<QSizeF>									_cellSizes; //[col]
 	std::vector<float>									_colXPositions; //[col][row]

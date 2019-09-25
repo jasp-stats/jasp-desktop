@@ -9,24 +9,24 @@ class ReadStatImportColumn : public ImportColumn
 {
 public:
 
-				ReadStatImportColumn(ImportDataSet* importDataSet, std::string name, std::string labelsID, Column::ColumnType columnType = Column::ColumnTypeUnknown);
+				ReadStatImportColumn(ImportDataSet* importDataSet, std::string name, std::string labelsID, columnType columnType = columnType::unknown);
 				~ReadStatImportColumn()							override;
 
-	size_t				size()									const	override;
-	Column::ColumnType	columnType()							const				{ return _type; }
-	bool				isValueEqual(Column &col, size_t row)	const	override;
-	bool				hasLabels()								const				{ return _labelsID != ""; }
-	const std::string &	labelsID()								const				{ return  _labelsID;	}
+	size_t						size()									const	override;
+	columnType					getColumnType()							const				{ return _type; }
+	std::vector<std::string>	allValuesAsStrings()					const	override;
+	bool						hasLabels()								const				{ return _labelsID != ""; }
+	const std::string &			labelsID()								const				{ return  _labelsID;	}
 
-	void				addValue(const readstat_value_t & val);
-	void				addValue(const double			& val);
-	void				addValue(const int				& val);
-	void				addValue(const std::string		& val);
-	void				addLabel(const int				& val,	const std::string & label);
-	void				addLabel(const std::string		& val,	const std::string & label);
-	void				addMissingValue();
+	void						addValue(const readstat_value_t & val);
+	void						addValue(const double			& val);
+	void						addValue(const int				& val);
+	void						addValue(const std::string		& val);
+	void						addLabel(const int				& val,	const std::string & label);
+	void						addLabel(const std::string		& val,	const std::string & label);
+	void						addMissingValue();
 
-	std::string			valueAsString(size_t row)	const;
+	std::string					valueAsString(size_t row)	const;
 
 	const std::vector<int>					&	ints()			const { return _ints;		}
 	const std::vector<double>				&	doubles()		const { return _doubles;	}
@@ -38,7 +38,7 @@ public:
 
 private:
 	std::string					_labelsID;
-	Column::ColumnType			_type;
+	columnType			_type;
 	std::vector<int>			_ints;
 	std::vector<double>			_doubles;
 	std::vector<std::string>	_strings;

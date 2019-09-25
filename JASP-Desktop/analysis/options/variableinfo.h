@@ -58,11 +58,11 @@ public:
 	{
 		switch (requestInfo(term, VariableInfo::VariableType).toInt())
 		{
-		case Column::ColumnTypeNominalText:
-		case Column::ColumnTypeNominal:
-		case Column::ColumnTypeOrdinal:
-		case Column::ColumnTypeScale:		return true;
-		default:							return false;
+		case int(columnType::nominalText):
+		case int(columnType::nominal):
+		case int(columnType::ordinal):
+		case int(columnType::scale):		return true;
+		default:									return false;
 		}
 	}
 
@@ -75,11 +75,11 @@ public:
 
 		switch (requestInfo(term, VariableInfo::VariableType).toInt())
 		{
-		case Column::ColumnTypeNominalText:	return nominalTextIcon;
-		case Column::ColumnTypeNominal:		return nominalIcon;
-		case Column::ColumnTypeOrdinal:		return ordinalIcon;
-		case Column::ColumnTypeScale:		return scaleIcon;
-		default:							return QVariant();
+		case int(columnType::nominalText):	return nominalTextIcon;
+		case int(columnType::nominal):		return nominalIcon;
+		case int(columnType::ordinal):		return ordinalIcon;
+		case int(columnType::scale):			return scaleIcon;
+		default:										return QVariant();
 		}
 	}
 

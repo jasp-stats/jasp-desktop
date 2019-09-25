@@ -59,10 +59,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount()
 {
-	DataSet	*	dataset		= _tableView->form()->getDataSet();
-	size_t		dataSetRows = dataset == nullptr ? 0 : dataset->rowCount();
-
-	return dataSetRows;
+	return _tableView->form()->getDataSetPackage()->rowCount();
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -311,9 +308,6 @@ void ListModelFilteredDataEntry::modelChangedSlot()
 
 QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) const
 {
-	if (_rowNames.length() == 0)
-		return QVariant();
-
 	int		column	= index.column(),
 			row		= index.row();
 
@@ -326,25 +320,18 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 	if(column == _editableColumn)
 		return QVariant(_values[0][row]);
 
-	DataSet	* dataset = _tableView->form()->getDataSet();
-
-	if(dataset == nullptr || column > _colNames.size() || column < 0)
+	if(!_tableView->form()->getDataSetPackage()->hasDataSet() || column > _colNames.size() || column < 0)
 		return QVariant();
 
-	try
-	{
-		std::string colName = _colNames[column].toStdString();
-		size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
+	std::string colName = _colNames[column].toStdString();
+	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
 
-		if(rowData > dataset->rowCount())
-			return QVariant();
+	DataSetPackage * package = _tableView->form()->getDataSetPackage();
 
-		return tq(dataset->column(colName)[static_cast<int>(rowData)]);
-	}
-	catch(columnNotFound &)
-	{
-		return QVariant();
-	}
+	int colIndex = package->getColumnIndex(colName);
+
+	return package->data(package->index(rowData, colIndex, package->parentModelForType(parIdxType::data)));
+
 }
 
 
@@ -353,20 +340,20 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 	if(column == _editableColumn)
 		return ListModelTableViewBase::getMaximumColumnWidthInCharacters(0);
 
-	int returnThis = 6;
 
-	DataSet	* dataset = _tableView->form()->getDataSet();
+	DataSetPackage * package = _tableView->form()->getDataSetPackage();
 
-	if(!(dataset == nullptr || column > _colNames.size() || column < 0))
-		try
-		{
-			std::string colName = _colNames[column].toStdString();
+	if(!(package->hasDataSet() || column > _colNames.size() || column < 0))
+	{
+		std::string colName		= _colNames[column].toStdString();
+		int			colIndex	= package->getColumnIndex(colName);
 
-			returnThis = dataset->getMaximumColumnWidthInCharacters(dataset->getColumnIndex(colName));
-		}
-		catch(columnNotFound &)	{}
+		if(colIndex > -1)
+			return package->getMaximumColumnWidthInCharacters(colIndex);
+	}
 
-	return returnThis;
+
+	return 6;
 }
 
 void ListModelFilteredDataEntry::setColName(QString colName)

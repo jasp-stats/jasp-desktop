@@ -136,5 +136,7 @@
         <file>icons/analysis-ml-ribbon.svg</file>
         <file>icons/duplicate.png</file>
         <file>icons/duplicate_disabled.png</file>
+        <file>icons/eyeClosed.png</file>
+        <file>icons/eyeOpen.png</file>
     </qresource>
 </RCC>

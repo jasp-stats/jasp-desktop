@@ -216,7 +216,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 	for(int i=0; i<(*colMax); i++)
 	{
 		colHeaders[i].name = strdup(columns[i].name().c_str());
-		colHeaders[i].type = (int)columns[i].columnType();
+		colHeaders[i].type = (int)columns[i].getColumnType();
 	}
 
 	RBridgeColumn * returnThis = rbridge_readDataSet(colHeaders, (*colMax), false);
@@ -246,7 +246,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 		if(filterColumnsUsed.count(columns[iIn].name()) > 0)
 		{
 			colHeaders[iOut].name = strdup(columns[iIn].name().c_str());
-			colHeaders[iOut].type = (int)columns[iIn].columnType();
+			colHeaders[iOut].type = (int)columns[iIn].getColumnType();
 
 			iOut++;
 		}
@@ -298,26 +298,24 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
-		RBridgeColumnType& columnInfo	= colHeaders[colNo];
-		RBridgeColumn& resultCol		= datasetStatic[colNo];
+		RBridgeColumnType	&	columnInfo		= colHeaders[colNo];
+		RBridgeColumn		&	resultCol		= datasetStatic[colNo];
+		std::string				columnName		= columnInfo.name;
+								resultCol.name	= strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
+		Column				&	column			= columns.get(columnName);
+		columnType				colType			= column.getColumnType(),
+								requestedType	= columnType(columnInfo.type);
 
-		std::string columnName			= columnInfo.name;
-		resultCol.name					= strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
-
-		Column &column					= columns.get(columnName);
-		Column::ColumnType columnType	= column.columnType();
-
-		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
-		if (requestedType == Column::ColumnTypeUnknown)
-			requestedType = columnType;
+		if (requestedType == columnType::unknown)
+			requestedType = colType;
 
 		//int rowCount = column.rowCount();
 		resultCol.nbRows = filteredRowCount;
 		int rowNo = 0, dataSetRowNo = 0;
 
-		if (requestedType == Column::ColumnTypeScale)
+		if (requestedType == columnType::scale)
 		{
-			if (columnType == Column::ColumnTypeScale)
+			if (colType == columnType::scale)
 			{
 				resultCol.isScale	= true;
 				resultCol.hasLabels	= false;
@@ -327,7 +325,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 						resultCol.doubles[rowNo++] = value;
 			}
-			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
+			else if (colType == columnType::ordinal || colType == columnType::nominal)
 			{
 				resultCol.isScale	= false;
 				resultCol.hasLabels	= false;
@@ -337,7 +335,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 						resultCol.ints[rowNo++] = value;
 			}
-			else // columnType == Column::ColumnTypeNominalText
+			else // columnType == ColumnType::nominalText
 			{
 				resultCol.isScale	= false;
 				resultCol.hasLabels = true;
@@ -354,14 +352,14 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
 			}
 		}
-		else // if (requestedType != Column::ColumnTypeScale)
+		else // if (requestedType != ColumnType::scale)
 		{
 			resultCol.isScale	= false;
 			resultCol.hasLabels	= true;
 			resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
-			resultCol.isOrdinal = (requestedType == Column::ColumnTypeOrdinal);
+			resultCol.isOrdinal = (requestedType == columnType::ordinal);
 
-			if (columnType != Column::ColumnTypeScale)
+			if (colType != columnType::scale)
 			{
 				std::map<int, int> indices;
 				int i = 1; // R starts indices from 1
@@ -485,49 +483,34 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
-		RBridgeColumnType& columnInfo = columnsType[colNo];
-		RBridgeColumnDescription& resultCol = resultCols[colNo];
+		RBridgeColumnType			&	columnInfo		= columnsType[colNo];
+		RBridgeColumnDescription	&	resultCol		= resultCols[colNo];
+		std::string						columnName		= columnInfo.name;
+										resultCol.name	= strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
+		Column						&	column			= columns.get(columnName);
+		columnType						colType			= column.getColumnType(),
+										requestedType	= columnType(columnInfo.type);
 
-		std::string columnName = columnInfo.name;
-		resultCol.name = strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
+		if (requestedType == columnType::unknown)
+			requestedType = colType;
 
-		Column &column = columns.get(columnName);
-		Column::ColumnType columnType = column.columnType();
-
-		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
-
-		if (requestedType == Column::ColumnTypeUnknown)
-			requestedType = columnType;
-
-		if (requestedType == Column::ColumnTypeScale)
+		if (requestedType == columnType::scale)
 		{
-			if (columnType == Column::ColumnTypeScale)
-			{
-				resultCol.isScale = true;
-				resultCol.hasLabels = false;
-			}
-			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
-			{
-				resultCol.isScale = false;
-				resultCol.hasLabels = false;
-			}
-			else
-			{
-				resultCol.isScale = false;
-				resultCol.hasLabels = true;
-				resultCol.isOrdinal = false;
+			resultCol.isScale	= colType == columnType::scale;
+			resultCol.hasLabels = colType == columnType::nominalText;
+			resultCol.isOrdinal = colType == columnType::ordinal; //Should I do this? Originally it was only set to false when nominaltext and not set at all in other cases...
+
+			if(colType == columnType::nominalText)
 				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
-			}
 		}
 		else
 		{
-			resultCol.isScale = false;
+			resultCol.isScale	= false;
 			resultCol.hasLabels = true;
-			resultCol.isOrdinal = (requestedType == Column::ColumnTypeOrdinal);
-			if (columnType != Column::ColumnTypeScale)
-			{
+			resultCol.isOrdinal = (requestedType == columnType::ordinal);
+
+			if (colType != columnType::scale)
 				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
-			}
 			else
 			{
 				// scale to nominal or ordinal (doesn't really make sense, but we have to do something)

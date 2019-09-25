@@ -295,22 +295,22 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 
 	_engineState = engineState::computeColumn;
 
-	std::string			computeColumnName = jsonRequest.get("columnName", "").asString();
-	std::string			computeColumnCode = jsonRequest.get("computeCode", "").asString();
-	Column::ColumnType	computeColumnType = Column::columnTypeFromString(jsonRequest.get("columnType", "").asString());
+	std::string	computeColumnName = jsonRequest.get("columnName", "").asString();
+	std::string	computeColumnCode = jsonRequest.get("computeCode", "").asString();
+	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType", "").asString());
 
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
 
-void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, Column::ColumnType computeColumnType)
+void Engine::runComputeColumn(const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
-	static const std::map<Column::ColumnType, std::string> setColumnFunction = {
-		{Column::ColumnTypeScale,		".setColumnDataAsScale"},
-		{Column::ColumnTypeOrdinal,		".setColumnDataAsOrdinal"},
-		{Column::ColumnTypeNominal,		".setColumnDataAsNominal"},
-		{Column::ColumnTypeNominalText,	".setColumnDataAsNominalText"}};
+	static const std::map<columnType, std::string> setColumnFunction = {
+		{columnType::scale,		".setColumnDataAsScale"},
+		{columnType::ordinal,		".setColumnDataAsOrdinal"},
+		{columnType::nominal,		".setColumnDataAsNominal"},
+		{columnType::nominalText,	".setColumnDataAsNominalText"}};
 
 	std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnName +"', calcedVals)));})";
 	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);

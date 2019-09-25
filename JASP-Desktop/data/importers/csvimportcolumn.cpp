@@ -24,13 +24,3 @@ const vector<string> &CSVImportColumn::getValues() const
 {
 	return _data;
 }
-
-bool CSVImportColumn::isValueEqual(Column &col, size_t row) const
-{
-	if (row >= _data.size())
-		return false;
-
-	const string &value = _data[row];
-
-	return isStringValueEqual(value, col, row);
-}

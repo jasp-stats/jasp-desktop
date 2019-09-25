@@ -56,9 +56,7 @@ using namespace std;
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
-	_options = nullptr;
-	_dataSet = nullptr;
-	
+
 	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler);
 }
 
@@ -67,21 +65,13 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	try {
 		switch(info)
 		{
-		case VariableInfo::VariableType:		return _dataSet->column(term.asString()).columnType();
-		case VariableInfo::VariableTypeName:	return MainWindow::columnTypeToString(_dataSet->column(term.asString()).columnType());
-		case VariableInfo::Labels:
-		{
-			QStringList values;
-			Labels &labels = _dataSet->column(term.asString()).labels();
-			for (const auto & label : labels)
-				values.append(tq(label.text()));
-
-			return values;
-		}
+		case VariableInfo::VariableType:		return int(_package->getColumnType(term.asString()));
+		case VariableInfo::VariableTypeName:	return columnTypeToQString(_package->getColumnType(term.asString()));
+		case VariableInfo::Labels:				return _package->getColumnLabelsAsStringList(term.asString());
 		}
 	}
-	catch(columnNotFound e) {} //just return an empty QVariant right?
-	catch(std::exception e)
+	catch(columnNotFound & e) {} //just return an empty QVariant right?
+	catch(std::exception & e)
 	{
 		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
 		throw e;
@@ -171,7 +161,7 @@ void AnalysisForm::_parseQML()
 		QMLItem *control = nullptr;
 		qmlControlType controlType;
 		try						{ controlType	= qmlControlTypeFromQString(controlTypeStr);	}
-		catch(std::exception)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); continue; }
+		catch(std::exception&)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); continue; }
 
 		switch(controlType)
 		{
@@ -230,7 +220,7 @@ void AnalysisForm::_parseQML()
 			qmlListViewType	listViewType;
 
 			try	{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
-			catch(std::exception)
+			catch(std::exception&)
 			{
 				_errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(" form VariablesList ") + controlName);
 				listViewType = qmlListViewType::AssignedVariables;
@@ -403,11 +393,8 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 	if (_allAvailableVariablesModels.size() == 0)
 		return;
 
-	vector<string> columnNames;
+	std::vector<std::string> columnNames = _package->getColumnNames();
 
-	if (_dataSet != nullptr)
-		for (Column &column: _dataSet->columns())
-			columnNames.push_back(column.name());
 
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
 	{
@@ -437,7 +424,7 @@ void AnalysisForm::bindTo()
 		unbind();
 
 	const Json::Value& optionsFromJASPFile = _analysis->optionsFromJASPFile();
-	_dataSet = _analysis->getDataSet();
+	_package = _analysis->getDataSetPackage();
 	_options = _analysis->options();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
@@ -552,8 +539,8 @@ void AnalysisForm::_formCompletedHandler()
 	QVariant analysisVariant = QQmlProperty(this, "analysis").read();
 	if (!analysisVariant.isNull())
 	{
-		_analysis = qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
-		_dataSet = _analysis->getDataSet();
+		_analysis	= qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
+		_package	= _analysis->getDataSetPackage();
 
 		_parseQML();
 
@@ -569,7 +556,6 @@ void AnalysisForm::dataSetChangedHandler()
 {
 	if (!_removed)
 	{
-		_dataSet = _analysis->getDataSet();
 		_setAllAvailableVariablesModel(true);
 		emit dataSetChanged();
 	}

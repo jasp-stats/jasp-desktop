@@ -56,14 +56,14 @@ public:
 	std::vector<std::string> resetEmptyValues(emptyValsType emptyValuesMap);
 
 	bool				setFilterVector(std::vector<bool> filterResult);
-	const BoolVector&	filterVector()		const	{ return _filterVector; }
+	BoolVector	&		filterVector()				{ return _filterVector; }
 	int					filteredRowCount()	const	{ return _filteredRowCount; }
 
 	bool allColumnsPassFilter()				const;
 	bool synchingData()						const	{ return _synchingData; }
 	void setSynchingData(bool newVal);
 
-	int	 getMaximumColumnWidthInCharacters(size_t columnIndex) const;
+	size_t	 getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 
 private:
 	Columns			_columns;

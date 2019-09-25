@@ -76,19 +76,20 @@ string DataSet::toString()
 	return ss.str();
 }
 
-vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > emptyValuesPerColumnMap)
+vector<string> DataSet::resetEmptyValues(std::map<std::string, std::map<int, std::string> > emptyValuesPerColumnMap)
 {
-	vector<string> colChanged;
-	for (Columns::iterator col_it = _columns.begin(); col_it != _columns.end(); ++col_it)
+	std::vector<std::string> colChanged;
+
+	for (Column& col : _columns)
 	{
-		Column& col = *col_it;
-		map<string, map<int, string> >::iterator it = emptyValuesPerColumnMap.find(col.name());
-		map<int, string> emptyValuesMap;
-		if (it != emptyValuesPerColumnMap.end())
-			emptyValuesMap = it->second;
+		std::map<int, std::string> emptyValuesMap;
+
+		if (emptyValuesPerColumnMap.count(col.name()))
+			emptyValuesMap = emptyValuesPerColumnMap[col.name()];
 
 		if (col.resetEmptyValues(emptyValuesMap))
 			colChanged.push_back(col.name());
+
 		emptyValuesPerColumnMap[col.name()] = emptyValuesMap;
 	}
 
@@ -146,7 +147,7 @@ void DataSet::setSynchingData(bool newVal)
 	_synchingData = newVal;
 }
 
-int DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
+size_t DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	if(columnIndex >= columnCount()) return 0;
 
@@ -154,12 +155,12 @@ int DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 
 	int extraPad = 2;
 
-	switch(col.columnType())
+	switch(col.getColumnType())
 	{
-	case Column::ColumnTypeScale:
+	case columnType::scale:
 		return 9 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + 3 because Im seeing some weird stuff with exp-notation  etc + some padding because of dots and whatnot
 
-	case Column::ColumnTypeUnknown:
+	case columnType::unknown:
 		return 0;
 
 	default:

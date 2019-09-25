@@ -48,11 +48,10 @@ void ComputedColumn::setAnalysis(Analysis *analysis)
 
 std::vector<std::string> ComputedColumn::_allColumnNames;
 
-void ComputedColumn::setAllColumnNames(std::set<std::string> names)
+void ComputedColumn::setAllColumnNames(std::vector<std::string> names)
 {
-	std::vector<std::string> sortMe(names.begin(), names.end());
-	std::sort(sortMe.begin(), sortMe.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //Sort on stringlength so that we can check the columns in the code from bigger to small (findUsedColumnNames) so that we can have both something like "Height Ratio"  and "Height"
-	_allColumnNames = sortMe;
+	std::sort(names.begin(), names.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //Sort on stringlength so that we can check the columns in the code from bigger to small (findUsedColumnNames) so that we can have both something like "Height Ratio"  and "Height"
+	_allColumnNames = names;
 }
 
 std::set<std::string> ComputedColumn::findUsedColumnNames(std::string searchThis)
@@ -226,7 +225,7 @@ Json::Value	ComputedColumn::convertToJson()
 	return json;
 }
 
-ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Columns * columns, Json::Value json) //Conversion from JSON!
+ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Json::Value json) //Conversion from JSON!
 : _computedColumns(allComputedColumns)
 {
 	_constructorCode	= json["constructorCode"];
@@ -238,7 +237,6 @@ ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns
 	_name				= json["name"].asString();
 
     _rCodeStripped		= stringUtils::stripRComments(_rCode);
-	_outputColumn		= &(*columns)[_name];
 }
 
 void ComputedColumn::findDependencies()
