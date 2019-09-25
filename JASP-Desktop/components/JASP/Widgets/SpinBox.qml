@@ -112,6 +112,9 @@ FocusScope
 		Keys.onEscapePressed:		{ text = root.lastValidValue; focus = false; }
 		onTextChanged:				if(acceptableInput) root.lastValidValue = text
 		selectByMouse:				true
+		selectedTextColor:			Theme.white
+		selectionColor:				Theme.itemSelectedColor
+
 
 		function processInput()
 		{

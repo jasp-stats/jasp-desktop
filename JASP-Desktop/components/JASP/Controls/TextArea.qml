@@ -58,11 +58,14 @@ JASPControl
 
 			TextArea.flickable: TextArea
 			{
-				id:				control
-				selectByMouse:	true
-				font:			Theme.font
-				color:			textArea.enabled ? Theme.textEnabled : Theme.textDisabled
-				wrapMode:		TextArea.Wrap
+				id:					control
+				selectByMouse:		true
+				selectedTextColor:	Theme.white
+				selectionColor:		Theme.itemSelectedColor
+
+				font:				Theme.font
+				color:				textArea.enabled ? Theme.textEnabled : Theme.textDisabled
+				wrapMode:			TextArea.Wrap
 
 				Keys.onPressed:
 				{

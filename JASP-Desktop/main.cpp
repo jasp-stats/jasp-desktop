@@ -32,7 +32,7 @@ const std::string	jaspExtension	= ".jasp",
 void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics)
 {
 	filePath		= "";
-	unitTest		= false,
+	unitTest		= false;
 	dirTest			= false;
 	save			= false;
 	logToFile		= false;

@@ -112,6 +112,9 @@ JASPControl
 			padding:				Theme.jaspControlPadding
 			leftPadding:			Theme.labelSpacing
 			selectByMouse:			true
+			selectedTextColor:		Theme.white
+			selectionColor:			Theme.itemSelectedColor
+
 			background: Rectangle
 			{
 				id:				controlBackground
@@ -119,7 +122,7 @@ JASPControl
 				border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
 				border.color:	textField.showBorder							? Theme.borderColor : "transparent"
 			}
-			
+
 			Rectangle
 			{
 				id:					externalControlBackground

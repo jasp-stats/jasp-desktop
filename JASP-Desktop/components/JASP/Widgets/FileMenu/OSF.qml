@@ -182,10 +182,13 @@ Item
 
 			TextInput
 			{
-				id				: foldernameText
-				selectByMouse	: true
-				text			: fileMenuModel.osf.savefoldername
-				font			: Theme.fontRibbon
+				id					: foldernameText
+				selectByMouse		: true
+				selectedTextColor	: Theme.white
+				selectionColor		: Theme.itemSelectedColor
+
+				text				: fileMenuModel.osf.savefoldername
+				font				: Theme.fontRibbon
 
 				anchors.fill		: parent
 				anchors.leftMargin	: Theme.itemPadding
@@ -285,10 +288,13 @@ Item
 
 			TextInput
 			{
-				id				: filenameText
-				selectByMouse	: true
-				text			: fileMenuModel.osf.savefilename
-				font			: Theme.fontRibbon
+				id					: filenameText
+				selectByMouse		: true
+				selectedTextColor	: Theme.white
+				selectionColor		: Theme.itemSelectedColor
+
+				text				: fileMenuModel.osf.savefilename
+				font				: Theme.fontRibbon
 
 				anchors.fill		: parent
 				anchors.leftMargin	: Theme.itemPadding

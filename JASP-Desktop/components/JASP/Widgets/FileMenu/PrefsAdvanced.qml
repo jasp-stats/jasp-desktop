@@ -150,6 +150,9 @@ ScrollView
 						KeyNavigation.tab:	overwriteDescriptionEtc
 						KeyNavigation.down:	overwriteDescriptionEtc
 						selectByMouse:		true
+						selectedTextColor:	Theme.white
+						selectionColor:		Theme.itemSelectedColor
+
 
 						anchors
 						{
@@ -235,6 +238,9 @@ ScrollView
 						KeyNavigation.tab:	logToFile
 						KeyNavigation.down:	logToFile
 						selectByMouse:		true
+						selectedTextColor:	Theme.white
+						selectionColor:		Theme.itemSelectedColor
+
 
 						anchors
 						{
