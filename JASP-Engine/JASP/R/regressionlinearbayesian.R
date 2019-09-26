@@ -42,7 +42,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     postSumContainer[["postSumPlot"]]               <- .basregPlotPosteriorSummary(postSumModel, options, position = 122)
   
   if (options$plotLogPosteriorOdds && is.null(basregContainer[["logPosteriorOddsPlot"]]))
-    basregContainer[["logPosteriorOddsPlot"]]       <- .basregPlotPosteriorLogOdds(basregModel, options, position = 13) # this needs to be rewritten with ggplot!
+    basregContainer[["logPosteriorOddsPlot"]]       <- .basregPlotPosteriorLogOdds(basregModel, options, position = 13)
     
   if (options$plotResidualsVsFitted && is.null(basregContainer[["ResidualsVsFittedPlot"]]))
     basregContainer[["ResidualsVsFittedPlot"]]      <- .basregPlotResidualsVsFitted(basregModel, position = 14)
@@ -962,7 +962,6 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   # fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
   bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
   bas_lm[["priorprobsPredictor"]] <- .basregComputePriorMarginalInclusionProbs(bas_lm)
-  bas_lm[["formula"]] <- formula
   bas_lm[["weights"]] <- wlsWeights
   bas_lm[["BFinclusion"]] <- .basregComputeInclusionBF(bas_lm)
   bas_lm[["namesx"]][-1] <- .unvf(bas_lm[["namesx"]][-1])
@@ -1052,7 +1051,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   # done here such that the information in the plots and tables always matches
   # if a user selects the same options. (The method uses approximations and otherwise decimals are off)
   footnote <- NULL
-  coefBMA <- .basregOverwritecoefBas(basregModel, estimator = "BMA", dataset = dataset, weights = basregModel[["weights"]])
+  
+  coefBMA <- .basregOverwritecoefBas(basregModel, estimator = "BMA", dataset = dataset, options = options, weights = basregModel[["weights"]])
   conf95BMA <- try(stats::confint(coefBMA, level = 0.95, nsim = options$nSimForCRI))
   if (isTryError(conf95BMA)) {
     conf95BMA <- cbind(NA, NA, coefBMA$postmean)
@@ -1069,7 +1069,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     coef <- coefBMA
     conf95 <- conf95BMA
   } else {
-    coef <- .basregOverwritecoefBas(basregModel, estimator = estimator, dataset = dataset, weights = basregModel[["weights"]])
+    coef <- .basregOverwritecoefBas(basregModel, estimator = estimator, dataset = dataset, options = options, weights = basregModel[["weights"]])
     conf95 <- stats::confint(coef, level = criVal, nsim = options$nSimForCRI)
   }
   
@@ -1088,11 +1088,12 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
                            conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote)
   
   basregContainer[["postSumModel"]] <- createJaspState(postSumModel)
+  basregContainer[["postSumModel"]]$dependOn(c("summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"))
   
   return(postSumModel)
 }
 
-.basregOverwritecoefBas <- function (basregModel, n.models, estimator = "BMA", dataset, weights = NULL) {
+.basregOverwritecoefBas <- function (basregModel, n.models, estimator = "BMA", dataset, options, weights = NULL) {
   # this function is an adaptation of BAS:::coef.bas
   # additional arguments:
   #
@@ -1127,29 +1128,19 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   # probably be used again
   
   if (estimator == "MPM") {
+    formula <- .basregCreateFormula(options$dependent, options$modelTerms)
     nvar = basregModel$n.vars - 1
     bestmodel <- (0:nvar)[basregModel$probne0 > 0.5]
     best = 1
     models <- rep(0, nvar + 1)
     models[bestmodel + 1] <- 1
     if (sum(models) > 1) {
-      # this if statement is ugly but crucial
-      if (is.null(weights)) {
-        basregModel <- BAS::bas.lm(formula = basregModel$formula, data = dataset,
-                                   weights = NULL,
-                                   n.models = 1,
-                                   alpha = basregModel$g, initprobs = basregModel$probne0,
-                                   prior = basregModel$prior, modelprior = basregModel$modelprior,
-                                   update = NULL, bestmodel = models, prob.local = 0)
-        
-      } else {
-        basregModel <- BAS::bas.lm(formula = basregModel$formula, data = dataset,
+        basregModel <- BAS::bas.lm(formula = formula, data = dataset,
                                    weights = weights,
                                    n.models = 1,
                                    alpha = basregModel$g, initprobs = basregModel$probne0,
                                    prior = basregModel$prior, modelprior = basregModel$modelprior,
                                    update = NULL, bestmodel = models, prob.local = 0)
-      }
     }
   }
   postprobs = basregModel$postprobs
